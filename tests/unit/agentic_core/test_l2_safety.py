@@ -37,7 +37,7 @@ class TestExecutionSafetyChecks:
 
     def test_sanitize_tool_output(self):
         """Nominal: Tool output is sanitized."""
-        import re
+        import scripts.check_canonical_structure
         output = "Result: <script>alert('xss')</script>"
         sanitized = re.sub(r'<[^>]+>', '', output)
         assert "<script>" not in sanitized

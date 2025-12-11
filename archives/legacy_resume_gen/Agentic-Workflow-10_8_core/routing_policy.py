@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from meta_profile import META_PROFILE
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import META_PROFILE  # INVALID: Cannot import from path with hyphens
 
 
 @dataclass

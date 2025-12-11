@@ -5,11 +5,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
-from core_v10_7 import BaseAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent
 
-from .rag_execution import RAGExecutionStack
-from .rag_planning import RAGPlanningStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag_execution import RAGExecutionStack  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag_planning import RAGPlanningStack  # INVALID: Cannot import from path with hyphens
 
 
 class RAGOrchestratorStack(BaseAgent):

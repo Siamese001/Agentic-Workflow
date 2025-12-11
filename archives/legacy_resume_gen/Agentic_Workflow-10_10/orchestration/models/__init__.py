@@ -12,7 +12,7 @@ from enum import Enum
 from datetime import datetime
 
 # Import DAG models from core.models for backward compatibility
-from core.models.dag_models import *
+from archives.legacy_root_folders.core.models.dag_models import *
 
 
 class OrchestrationStatus(str, Enum):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, List
 
-from meta.metacognition.models import Hypothesis
+from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
 
 
 def generate_initial_hypotheses(task: str, rag_result: Any, agent_card: Any) -> List[Hypothesis]:

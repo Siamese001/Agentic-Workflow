@@ -23,9 +23,9 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
 
-from core.models.models import PromptDefinition, PromptVersion
+from archives.legacy_root_folders.core.models.models import PromptDefinition, PromptVersion
 
 
 # ============================================================================

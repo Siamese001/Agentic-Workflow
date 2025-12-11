@@ -31,28 +31,16 @@ from datetime import datetime
 from typing import List, Dict, object, Optional
 
 # v10.5: Import from new core
-from core_v10_5 import (
-    ConfigV10_5, WorkflowContext, BaseAgent, MetaGraphState,
-    FileIOError, WorkflowError,
-    # v10.5: Import all services to be injected
-    # CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader, # v10.5 REFACTOR: Removed
-    # PromptTemplateManager, ResponseValidator, ContextBudgetManager, # v10.5 REFACTOR: Removed
-    # MetricsCollector, SemanticValidator, # v10.5 REFACTOR: Removed
-    # v10.5 REFACTOR: Import new helper function
-    create_workflow_context,
-    PydanticSchemaError,
-    track_metrics # v10.5 (Fix #8)
-)
 # v10.5: Import from new main
 # from main_v10_5 import setup_logging # v10.5 REFACTOR: Removed (dead code)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 try:
     from langgraph.checkpoint.redis import RedisSaver
 except ImportError:
     try:
         from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
     except ImportError:
-        from langgraph.checkpoint.memory import MemorySaver as RedisSaver
+        from tests.golden.semantics.test_regression_temporal_memory import MemorySaver
 
 # v10.5: Logger name updated
 logger = logging.getLogger("meta_learner_v10_5")

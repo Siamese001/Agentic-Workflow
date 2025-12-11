@@ -41,43 +41,14 @@ This refactor aligns L2 with:
 from __future__ import annotations
 
 import asyncio
-import re
+import scripts.check_canonical_structure
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Callable, Awaitable, Sequence
 
-from models import (
-    PlanObject,
-    ExecutionResult,
-    StrategyExecutionPayload,
-    StrategyBranch,
-    RAGExecutionPayload,
-    RAGDocument,
-    RAGExternalStats,
-    BulletExecutionPayload,
-    DraftExecutionPayload,
-    QAExecutionPayload,
-    QAFinding,
-    QAReport,
-    SafetyExecutionPayload,
-    SafetyIssue,
-    SafetyReport,
-    HILExecutionPayload,
-    HILPrompt,
-    HILResponse,
-    MetaLearningExecutionPayload,
-    MetaLearningSnapshot,
-    MetaLearningFinding,
-)
 
-from exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
-from retrieval import Retrieval
-from ranking import Ranking
-from meta_profile import (
-    get_routing_bias,
-    get_planning_bias,
-    get_qa_bias,
-    get_safety_bias,
-)
+from shared.exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
+from archives.legacy_root_folders.retrievers.retrieval import Retrieval
+from archives.legacy_root_folders.meta.ranking import Ranking
 
 AsyncExecutorFn = Callable[[PlanObject, Dict[str, object]], Awaitable[ExecutionResult[Any]]]
 

@@ -1,5 +1,5 @@
-from meta.metacognition.models import Hypothesis
-from meta.metacognition.uncertainty import compute_uncertainty
+from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
+from archives.legacy_root_folders.meta.metacognition.uncertainty import compute_uncertainty
 
 
 def test_uncertainty_increases_with_signals():

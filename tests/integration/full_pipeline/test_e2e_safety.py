@@ -1,7 +1,7 @@
-from orchestration.agent_registry import AgentRegistry
-from core.agent_router_policy import choose_agents_for_task
-from config.agent_profile import AgentCard
-from core.models.models import AgentRole  # normalized import
+from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry
+from archives.legacy_root_folders.core.agent_router_policy import choose_agents_for_task
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
+from archives.legacy_root_folders.core.models.models import AgentRole
 
 
 def test_choose_agents_for_strategy_task_prefers_planner():

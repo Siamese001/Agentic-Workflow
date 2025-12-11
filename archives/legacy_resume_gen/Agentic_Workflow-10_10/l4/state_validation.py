@@ -6,13 +6,13 @@ Prevents injection attacks and ensures safe state management for reliable résum
 
 from __future__ import annotations
 
-import re
+import scripts.check_canonical_structure
 from typing import Any, Callable, List, Optional
 from dataclasses import dataclass, is_dataclass
 from enum import Enum
 import logging
 
-from .types import StateValidationError
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import StateValidationError
 
 logger = logging.getLogger(__name__)
 

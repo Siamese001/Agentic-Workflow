@@ -6,7 +6,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from .exceptions import MCPClientInitializationError
+from shared.exceptions import MCPClientInitializationError
 
 logger = logging.getLogger("core_v10_7")
 

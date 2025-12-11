@@ -9,10 +9,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Awaitable, Callable, Dict, List, Optional, TypeVar
 
-from l5 import SafetySystem
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l5 import SafetySystem  # INVALID: Cannot import from path with hyphens
 
-from .integration import WorkflowExecutionConfig, create_workflow_context, execute_workflow
-from .models.dag_models import DAGResult
+from archives.legacy_root_folders.core.integration import WorkflowExecutionConfig, create_workflow_context, execute_workflow
+from archives.legacy_root_folders.orchestration.models.dag_models import DAGResult
 
 
 TState = TypeVar("TState")

@@ -16,24 +16,16 @@ import logging
 import os
 import uuid
 import asyncio
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import chromadb
-from chromadb.utils import embedding_functions
+from shared.reasoning_utils import embedding_functions
 from datetime import datetime
 from typing import List, Dict, object, Optional
 
 # v10.4: Import from new core
-from core_v10_4 import (
-    ConfigV10_4, WorkflowContext, BaseAgent, MetaGraphState,
-    FileIOError,
-    # v10.3: Import all services to be injected
-    CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader,
-    PromptTemplateManager, ResponseValidator, ContextBudgetManager,
-    PydanticSchemaError
-)
 # v10.4: Import from new main
-from main_v10_4 import setup_logging
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.4.main_v10_4 import setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 try:
     from langgraph.checkpoint.redis import RedisSaver
 except ImportError:

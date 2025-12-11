@@ -6,7 +6,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Dict, object
 
-from utils_types import PlanObject, StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class ExecutionAgent(ABC):
@@ -29,18 +29,10 @@ Consumes PlanObject inputs and returns StatePatch outputs deterministically.
 
 from typing import Any, Dict, List
 
-from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
-from retrieval import fuse_results
-from retrieval import (
-    normalize_documents,
-    dedupe_results,
-    rerank_results,
-    fuse_sources,
-    truncate_by_budget,
-    apply_ranker,
-)
-from l4_memory import ContextBudget
-from utils_types import BudgetConfig, PlanObject, StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_tooling_profiles import DEFAULT_TOOLING_PROFILE  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.retrievers.retrieval import fuse_results
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import ContextBudget  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import BudgetConfig, PlanObject, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 def _synthesize_result(query: str, index: int) -> Dict[str, object]:
@@ -108,8 +100,8 @@ Consumes PlanObject inputs and returns StatePatch outputs deterministically.
 
 from typing import Any, Dict, List
 
-from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
-from utils_types import PlanObject, StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_tooling_profiles import DEFAULT_TOOLING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class BulletExecutionAgent(ExecutionAgent):
@@ -156,8 +148,8 @@ Consumes PlanObject inputs and returns StatePatch outputs deterministically.
 
 from typing import Any, Dict, List
 
-from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
-from utils_types import PlanObject, StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_tooling_profiles import DEFAULT_TOOLING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 def _compose_section(title: str, tone: str, audience: str) -> str:
@@ -218,9 +210,9 @@ Consumes PlanObject inputs and returns StatePatch outputs deterministically.
 
 from typing import Any, Dict, List
 
-from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
-from utils_types import PlanObject, StatePatch
-from l4_memory import get_evidence_view
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_tooling_profiles import DEFAULT_TOOLING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject, StatePatch  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import get_evidence_view  # INVALID: Cannot import from path with hyphens
 
 
 def _build_checks(plan: PlanObject) -> List[str]:

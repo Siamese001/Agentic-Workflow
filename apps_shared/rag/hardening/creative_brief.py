@@ -13,7 +13,7 @@ Implements structured constraints for creative content generation:
 """
 
 
-import re
+import scripts.check_canonical_structure
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Dict, List, Optional, Set, Tuple, Union

@@ -22,20 +22,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
-from l5.types import Severity
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import Severity
 from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime
 
-from core.models.models import (
-    ExecutionContext,
-    SafetyResult,
-    SafetyFinding,
-    RiskLevel,
-    PolicyViolation,
-    HitLRequest,
-)
-from .types import SafetyPolicy
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SafetyPolicy
 
 
 class PolicyType(Enum):

@@ -30,7 +30,7 @@ import os
 import json
 import logging
 import asyncio
-import re
+import scripts.check_canonical_structure
 import math
 import uuid
 # import chromadb # v10.5 REFACTOR: Removed
@@ -51,33 +51,11 @@ from datetime import datetime
 #         "Run 'pip install rank-bm25'"
 #     )
 
-from pydantic import BaseModel, Field, validator
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field, validator
 
 # v10.5: Import from new core
-from core_v10_5 import (
-    _format_prompt_with_defaults,
-    WorkflowContext, BaseAgent,
-    ModelAPIError, JSONParsingError, ValidationError, PydanticSchemaError,
-    # Import Pydantic models
-    StrategyPlan,
-    GeneratedPrompts,
-    BulletList,
-    CritiqueResult,
-    HILAmbiguityReport,
-    HILFeedbackRoute,
-    BaseToolOutput,
-    # v10.5: Import new decorators and services
-    track_metrics,
-    MetricsCollector,
-    BaseTool # v10.5 ARCHITECTURE FIX: Import BaseTool from core
-)
 
 # v10.5 REFACTOR: Import RAG tools from the centralized tools file
-from agent_tools_v10_5 import (
-    HyDETool,
-    ChromaDBSearchTool,
-    BM25SearchTool
-)
 
 # v10.5: Logger name updated
 logger = logging.getLogger("agent_stacks_v10_5")
@@ -412,7 +390,7 @@ class RAG_SearchAgent(BaseAgent):
         # For now, this is broken, but let's assume it's fixed in core
         # self.embedding_function = embedding_functions.DefaultEmbeddingFunction()
         # v10.5 REFACTOR: Re-importing locally
-        from chromadb.utils import embedding_functions
+        from shared.reasoning_utils import embedding_functions
         self.embedding_function = embedding_functions.DefaultEmbeddingFunction()
 
     

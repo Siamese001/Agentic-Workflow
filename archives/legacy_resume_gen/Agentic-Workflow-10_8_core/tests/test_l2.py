@@ -9,8 +9,8 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
-from l1_reasoning import StrategyReasoner
-from l2_execution import BulletExecutionAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import StrategyReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import BulletExecutionAgent  # INVALID: Cannot import from path with hyphens
 
 
 def test_bullet_generation_from_strategy_plan():
@@ -30,8 +30,8 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
-from l1_reasoning import DraftingReasoner
-from l2_execution import DraftingExecutionAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import DraftingReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import DraftingExecutionAgent  # INVALID: Cannot import from path with hyphens
 
 
 def test_drafting_pipeline_creates_sections():
@@ -52,16 +52,9 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
-from l1_reasoning import RAGReasoner
-from l2_execution import RAGExecutionAgent
-from retrieval import (
-    fuse_sources,
-    normalize_documents,
-    dedupe_results,
-    rerank_results,
-    truncate_by_budget,
-)
-from utils_types import BudgetConfig
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import RAGReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import RAGExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import BudgetConfig  # INVALID: Cannot import from path with hyphens
 
 
 def test_rag_execution_pipeline_round_trip():
@@ -210,7 +203,7 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
-from l2_execution import QAValidationAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import QAValidationAgent  # INVALID: Cannot import from path with hyphens
 
 
 def test_qa_validation_reports_checks():

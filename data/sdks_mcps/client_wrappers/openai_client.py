@@ -7,8 +7,8 @@ import json
 import time
 from typing import Dict, object, Optional, List, Union
 from dataclasses import dataclass
-import openai
-from openai import OpenAI, APIError, RateLimitError, APITimeoutError
+import data.sdks_mcps.reference_clients.minimal_openai
+from data.sdks_mcps.reference_clients.minimal_openai import OpenAI, APIError, RateLimitError, APITimeoutError
 from openai.types.chat import ChatCompletion
 import backoff
 

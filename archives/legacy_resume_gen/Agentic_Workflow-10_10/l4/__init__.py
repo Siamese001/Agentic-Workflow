@@ -9,41 +9,7 @@ from __future__ import annotations
 from dataclasses import is_dataclass, replace
 from typing import Any, Dict, Optional
 
-from .types import (
-    StateOperation,
-    StateEventType,
-    StatePath,
-    StateTransition,
-    StateSnapshot,
-    StateError,
-    StateValidationError,
-    StateRollbackError,
-)
-from .manager import StateManager
-from .pinecone_adapter import (
-    PineconeAdapter,
-    PineconeConfig,
-    VectorRecord,
-    VectorQueryResult,
-)
-from .triplet_store import (
-    TemporalType,
-    TripletStatus,
-    Triplet,
-    TripletQuery,
-    TripletStore,
-    create_triplet,
-    PREDICATES,
-)
-from .entity_resolution import (
-    EntityType,
-    CanonicalEntity,
-    EntityMention,
-    ResolutionResult,
-    EntityRegistry,
-    create_entity,
-    create_mention,
-)
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.manager import StateManager
 
 
 def _prune_memory(state: Any, *, max_items: int = 200) -> Any:

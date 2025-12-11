@@ -7,7 +7,7 @@ Defines lightweight model selection and routing context for optimal résumé imp
 from dataclasses import dataclass
 from typing import Optional
 
-from core.models.models import ExecutionProfile
+from archives.legacy_root_folders.core.models.models import ExecutionProfile
 
 
 @dataclass

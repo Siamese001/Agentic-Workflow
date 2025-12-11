@@ -4,11 +4,11 @@ Rules engine for résumé processing safety policy enforcement.
 Provides deterministic rule evaluation for comprehensive résumé improvement workflows.
 """
 
-import re
+import scripts.check_canonical_structure
 from typing import List
 
-from .decisions import RuleMatch, RulesEngineResult, aggregate_severity
-from .models import PolicyRule, SafetyContext
+from archives.legacy_root_folders.infra.control_plane.decisions import RuleMatch, RulesEngineResult, aggregate_severity
+from shared.models import PolicyRule, SafetyContext
 
 
 _PII_REGEXES = [

@@ -13,9 +13,9 @@ import logging
 from typing import Dict, object
 
 # v10.2: Import from new core
-from core_v10_2 import WorkflowContext, BaseAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.core_v10_2 import WorkflowContext, BaseAgent
 # v10.2: Import from new stacks
-from agent_stacks_v10_2 import BaseTool, BiasDetectorAgent # Import from stacks
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_stacks_v10_2 import BaseTool, BiasDetectorAgent
 
 logger = logging.getLogger("agent_tools_v10_2")
 

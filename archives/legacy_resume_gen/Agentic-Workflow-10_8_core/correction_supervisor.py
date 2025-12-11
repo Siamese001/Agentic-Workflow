@@ -1,6 +1,6 @@
 from typing import Dict, object
 
-from self_correction import SelfCorrectionSurface, should_retry
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface, should_retry
 
 
 def evaluate_correction(

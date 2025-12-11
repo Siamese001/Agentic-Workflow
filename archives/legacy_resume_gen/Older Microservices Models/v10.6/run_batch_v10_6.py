@@ -23,22 +23,13 @@ from datetime import datetime
 from typing import Dict, object, List
 
 # v10.6: Import from new main/core
-from main_v10_6 import setup_logging, load_job_input
-from core_v10_6 import (
-    ConfigV10_6, WorkflowContext, MainGraphState,
-    CircuitBreakerOpenError, CostCeilingExceededError,
-    FileIOError, WorkflowError,
-    CircuitBreaker,
-    # v10.6: Import new helper functions
-    create_workflow_context, cleanup_workflow_chroma_collection,
-    get_checkpointer
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.main_v10_6 import setup_logging, load_job_input
 # v10.6: Import from new orchestration/stacks
-from agent_orchestration_v10_6 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.agent_orchestration_v10_6 import get_graph_app
 
 try:
     # v10.6: Import new meta-learner
-    from run_learning_v10_6 import run_meta_learning
+    from archives.legacy_resume_gen.Older Microservices Models.v10.6.run_learning_v10_6 import run_meta_learning
     META_LEARNER_AVAILABLE = True
 except ImportError:
     META_LEARNER_AVAILABLE = False

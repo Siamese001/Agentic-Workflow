@@ -36,20 +36,12 @@ from typing import Dict, object, List, Callable, Awaitable
 from functools import wraps
 
 # v10.5: Import from new core
-from core_v10_5 import (
-    WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
-    exponential_backoff_retry, CircuitBreakerOpenError,
-    CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
-    ConfigV10_5, # Import config for context typing
-    track_metrics, # v10.5 (Fix #8)
-    _format_prompt_with_defaults # v10.5 TEST FIX
-)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 try:
     from langgraph.checkpoint.redis import RedisSaver
 except ImportError:
     from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
-from langgraph.errors import GraphRecursionError
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
 
 # Make HIL import conditional for environment compatibility
 try:
@@ -63,44 +55,9 @@ except ImportError:
     )
 
 # v10.5: Import from new stacks
-from agent_stacks_v10_5 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    PromptInjectionDetectorAgent, # v10.5 (Fix #12)
-    QueryComplexityClassifier,  # v10.5 (Fix #2)
-    ToTStrategistAgent,
-    PromptEngineerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent
-)
 
 # v10.5: Import from new tools file
 # v10.5 REFACTOR: RAG tools are now imported from here
-from agent_tools_v10_5 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QABiasDetectorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAWordCountValidatorTool, # v10.5 (Fix #13)
-    # v10.5 REFACTOR: Add RAG tool imports
-    HyDETool,
-    ChromaDBSearchTool,
-    BM25SearchTool
-)
 
 # v10.5: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_5")

@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Optional
 
 try:
-    import redis  # type: ignore
+    import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 except ImportError as exc:
     raise ImportError("redis package not installed. Install with: pip install redis") from exc
 
@@ -56,7 +56,7 @@ def init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0) -> R
     """Initialize a Redis client from URL or default parameters."""
     if url:
         # Parse redis URL: redis://[:password@]host:port/db
-        import urllib.parse
+        import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
         parsed = urllib.parse.urlparse(url)
         return RedisClient(
             host=parsed.hostname or "localhost",

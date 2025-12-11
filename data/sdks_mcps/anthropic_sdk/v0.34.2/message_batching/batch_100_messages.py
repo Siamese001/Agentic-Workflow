@@ -6,8 +6,8 @@ import os
 import time
 import json
 from typing import List, Dict, object, Optional
-from anthropic import Anthropic
-from anthropic.types import Message
+from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic
+from shared.result_types import Message
 
 
 class BatchMessageProcessor:

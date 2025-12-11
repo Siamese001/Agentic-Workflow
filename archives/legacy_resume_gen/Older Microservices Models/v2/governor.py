@@ -11,7 +11,7 @@ from enum import Enum
 
 # Import models for type hints
 try:
-    from models_RES import ResumeSection, ValidationResult, ThematicAnalysis
+    from runtime.compat.models_RES import ResumeSection, ValidationResult, ThematicAnalysis
 except ImportError:
     # Fallback for standalone testing
     ResumeSection = Any
@@ -21,7 +21,7 @@ except ImportError:
 # Import temperature default from config (single source of truth)
 try:
     # --- REFACTOR: Standardized global config import ---
-    from config_RES_v2 import (
+    from runtime.compat.config_RES_v2 import CONFIG, DATA_DIR, OUTPUT_DIR, DEFAULT_GENERATION_TEMPERATURE, DEFAULT_MAX_RETRIES
         CONFIG, DATA_DIR, OUTPUT_DIR, 
         DEFAULT_GENERATION_TEMPERATURE,
         DEFAULT_MAX_RETRIES # <-- IMPORTED
@@ -374,7 +374,7 @@ class ContextRelayLayer:
         
         # Import prompt building functions from prompts_RES_v2
         try:
-            from prompts_RES_v2 import build_crl_context_for_section
+            from archives.legacy_resume_gen.Older Microservices Models.v2.prompts_RES_v2 import build_crl_context_for_section
             self.build_context = build_crl_context_for_section
         except ImportError:
             self.logger.warning("Could not import prompts_RES_v2. Using simplified context building.")

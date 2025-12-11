@@ -6,15 +6,6 @@ import os
 import json
 import time
 from typing import Iterator, Dict, object, Optional, List
-from vertexai.generative_models import (
-    GenerativeModel,
-    Content,
-    Part,
-    HarmCategory,
-    HarmBlockThreshold,
-    GenerationConfig,
-    SafetySetting
-)
 
 
 class StreamingVertexClient:

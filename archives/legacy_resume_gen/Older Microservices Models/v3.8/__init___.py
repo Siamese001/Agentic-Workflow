@@ -7,75 +7,28 @@ __version__ = "3.8.0"
 __author__ = "Resume Generation Team"
 
 # Import core configuration
-from .config_RES_v3_8 import (
-    CONFIG, 
-    AppConfig,
-    EnricherConfig,
-    ContentConstraintsConfig,
-    ReasoningConfig,
-    DATA_DIR,
-    OUTPUT_DIR,
-    DEFAULT_GENERATION_TEMPERATURE,
-    DEFAULT_MAX_RETRIES,
-    GEMINI_AVAILABLE,
-    SKLEARN_AVAILABLE,
-    GEMINI_PREMIUM_MODEL,
-    CLAUDE_PREMIUM_MODEL,
-    OPENAI_SYNTHESIS_MODEL
-)
 
 # Import governor agents
-from .governor_v3_8 import (
-    PolicyAgent,
-    CostRouter,
-    ContextRelayLayer,
-    CritiqueTool,
-    HIL_Interface,
-    TraceRegistry,
-    MAX_RETRIES_PER_NODE,
-    DEFAULT_MODEL,
-    MODEL_TIERS
-)
 
 # Import workflow orchestrator
-from .workflow_RES_v3_8 import (
-    WorkflowOrchestrator,
-    load_master_resume
-)
 
 # Import tool modules
-from .clerk_RES_v3_8 import ClerkExtractor
-from .enricher_RES_v3_8 import DataEnricher
-from .artist_RES_v3_8 import ArtistGenerator
-from .renderer_RES_v3_8 import FileRenderer
-from .interpreter_RES_v3_8 import CodeInterpreterTool
-from .qa_auditor_RES_v3_8 import QAReportGenerator
-from .rag_RES_v3_8 import EnhancedJobDescriptionAnalyzer
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.clerk_RES_v3_8 import ClerkExtractor
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.enricher_RES_v3_8 import DataEnricher
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.artist_RES_v3_8 import ArtistGenerator
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.renderer_RES_v3_8 import FileRenderer
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.interpreter_RES_v3_8 import CodeInterpreterTool
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.qa_auditor_RES_v3_8 import QAReportGenerator
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.rag_RES_v3_8 import EnhancedJobDescriptionAnalyzer
 
 # Import validators
-from .validator_RES_v3_8 import (
-    JDValidator,
-    ValidationEngine,
-    JDEnforcementValidator,
-    AppTrackerQAValidator,
-    PreFlightValidator,
-    ConstraintFailureClassifier
-)
 
 # Import prompt management
-from .prompts_RES_v3_8 import (
-    PromptManager,
-    load_prompts
-)
 
 # Import state management
-from .state_manager_RES_v3_8 import (
-    StateManager,
-    ManifestManager
-)
 
 # Import models
-from .models_RES import (
+from runtime.compat.models_RES import ResumeSection, ValidationSeverity, HopStatus, GateDecision, BulletProvenance, CircuitState, HopCheckpoint, ImmutableStagingBuffer, JDEnforcementResult, JDEnforcementRule, RAGState, RAGTelemetry, ThematicAnalysis, ValidationResult, CompetitiveIntelligence, RAGMission, FactualFailureException, HopExecutionError, StagingBufferError
     # Enums
     ResumeSection,
     ValidationSeverity,
@@ -103,29 +56,18 @@ from .models_RES import (
 )
 
 # Import utilities
-from .utils_RES_v3_8 import (
-    text_utils,
-    calculate_signal_score,
-    setup_workflow_logging,
-    create_directory_if_missing,
-    sanitize_filename,
-    WorkflowLogFilter,
-    DuplicateDetector,
-    reasoning_config_to_api_params,
-    enhance_system_prompt_with_reasoning
-)
 
 # Import validation components
-from .validation_context import ValidationContext
-from .validation_engine import ValidationEngineCore
-from .validation_external import ExternalValidator
-from .validation_rules import ValidationRuleSet
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_context import ValidationContext
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_engine import ValidationEngineCore
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_external import ExternalValidator
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_rules import ValidationRuleSet
 
 # Exceptions imported from models_RES
 
 # Import Gemini service if available
 try:
-    from .gemini_service import GeminiService
+    from archives.legacy_resume_gen.Older Microservices Models.v2.gemini_service import GeminiService
     GEMINI_SERVICE_AVAILABLE = True
 except ImportError:
     GEMINI_SERVICE_AVAILABLE = False

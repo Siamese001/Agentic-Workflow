@@ -2,16 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from core.models.models import (
-    TelemetryEvent,
-    RetrievalAttemptEvent,
-    RetrievalSuccessEvent,
-    RetrievalFailureEvent,
-    RankingEvent,
-    CostSnapshot,
-)
-from runtime.observability.collectors import append_event
-from runtime.observability.spans import _now_ms
+from archives.legacy_root_folders.runtime.observability.collectors import append_event
+from archives.legacy_root_folders.runtime.observability.spans import _now_ms
 
 
 def emit_node_event(node: str, status: str, details: Optional[str] = None) -> None:

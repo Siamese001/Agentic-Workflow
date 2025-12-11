@@ -8,7 +8,7 @@ Focuses on rule-based validation, ethical guidelines,
 and content compliance checking.
 """
 
-import re
+import scripts.check_canonical_structure
 import logging
 import time
 from typing import Dict, List, object, Optional, Tuple

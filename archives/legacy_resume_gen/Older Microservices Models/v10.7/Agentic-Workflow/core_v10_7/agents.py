@@ -8,12 +8,12 @@ import os
 from datetime import datetime
 from typing import TYPE_CHECKING, object, Dict, Optional
 
-from .constants import legacy_model_alias
-from .services import track_metrics
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.constants import legacy_model_alias  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.services import track_metrics  # INVALID: Cannot import from path with hyphens
 
 if TYPE_CHECKING:  # pragma: no cover - typing helpers
-    from .clients import AsyncBaseModelClient
-    from .context import WorkflowContext
+    from runtime.shared.clients import AsyncBaseModelClient
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.context import WorkflowContext  # INVALID: Cannot import from path with hyphens
 
 logger = logging.getLogger("core_v10_7")
 

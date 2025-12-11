@@ -15,7 +15,7 @@ from typing import List, Dict, object
 from collections import defaultdict
 
 # Imports from its *own* versioned files (v9.0)
-from core_v9_0 import CONFIG, setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v9.0.core_v9_0 import CONFIG, setup_logging
 
 logger = logging.getLogger("meta_learner_v9_0")
 

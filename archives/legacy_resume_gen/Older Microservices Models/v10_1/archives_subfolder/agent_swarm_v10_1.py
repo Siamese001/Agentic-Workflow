@@ -14,14 +14,10 @@ import asyncio
 from typing import Dict, object, List, Optional, Tuple
 from datetime import datetime
 
-from core_v10_1 import (
-    CONFIG, WorkflowContext, BaseAgent, MainGraphState,
-    ModelAPIError, JSONParsingError, ValidationError
-)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
-from langgraph.checkpoint.base import Checkpoint
-from langgraph.errors import GraphRecursionError
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.simulation_base import Checkpoint  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
 from langgraph.prebuilt import human_in_the_loop
 
 logger = logging.getLogger("agent_swarm_v10_1")

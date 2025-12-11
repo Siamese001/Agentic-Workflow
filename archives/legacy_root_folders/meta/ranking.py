@@ -8,7 +8,7 @@ Provides deterministic scoring and fusion to prioritize relevant résumé improv
 
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from runtime.observability import emit_telemetry_event, emit_ranking_event
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import emit_telemetry_event, emit_ranking_event
 
 
 def _core_models() -> Any:
@@ -18,7 +18,7 @@ def _core_models() -> Any:
     Ensures clean module structure for reliable résumé processing.
     """
 
-    from core.models import models as core_models  # type: ignore[import]
+    from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.dag.test_dag_models import models
 
     return core_models
 

@@ -5,13 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, Optional
 
-from core_v10_7 import BaseAgent, DraftPlan, StrategyPlan
-from agent_stacks_v10_8.components.drafting import (
-    ComplianceEditorAgent,
-    NarrativeStylistAgent,
-    StructureLeadAgent,
-)
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent, DraftPlan, StrategyPlan
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
 
 
 class DraftingExecutionStack(BaseAgent):
@@ -140,7 +135,7 @@ class DraftingExecutionStack(BaseAgent):
     ) -> Dict[str, object]:
         """Route drafting orchestration through the L2 stack."""
 
-        from .draft_orchestration import DraftOrchestratorStack
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_orchestration import DraftOrchestratorStack  # INVALID: Cannot import from path with hyphens
 
         orchestrator = DraftOrchestratorStack(self.context, self.debug_mode)
         return await orchestrator.run_async(

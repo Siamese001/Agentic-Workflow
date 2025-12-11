@@ -24,8 +24,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, object
 
-from core.models.models import RetrievalConfig, PromptDefinition
-from l1.prompt_system_v10_10 import PROMPT_REGISTRY
+from archives.legacy_root_folders.core.models.models import RetrievalConfig, PromptDefinition
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.prompt_system_v10_10 import PROMPT_REGISTRY
 
 
 # =============================================================================

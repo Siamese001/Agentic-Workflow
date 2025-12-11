@@ -21,33 +21,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from l1.cms.compiler import compile_prompt
-from l1.cms.store import get_prompt_version
-from l1.cms.schemas import validate_prompt
-from core.models.models import (
-    ContextBudget,
-    DraftingPlan,
-    DraftingResult,
-    Evidence,
-    ExecutionContext,
-    QAPlan,
-    QAResult,
-    RAGPlan,
-    RAGResult,
-    SafetyPlan,
-    SafetyResult,
-    StrategyPlan,
-    StrategyResult,
-    WorkflowPlanBundle,
-    PromptDefinition,
-    PromptMeta,
-    PromptVersion,
-)
-from l1.prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
-from infra.context_engine.assembly import assemble_context
-from infra.context_engine.pinned import PinnedItem
-from infra.context_engine.relevance import ContextItem
-from infra.context_engine.slots import ContextSlot
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.compiler import compile_prompt
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.store import get_prompt_version
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.schemas import validate_prompt
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
+from archives.legacy_root_folders.infra.context_engine.assembly import assemble_context
+from archives.legacy_root_folders.infra.context_engine.pinned import PinnedItem
+from archives.legacy_root_folders.infra.context_engine.relevance import ContextItem
+from archives.legacy_root_folders.infra.context_engine.slots import ContextSlot
 
 
 # =============================================================================

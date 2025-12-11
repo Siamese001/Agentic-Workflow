@@ -3,7 +3,7 @@
 
 __version__ = "11.10"
 
-from models import Route, Archetype
+from shared.models import Route, Archetype
 
 # NEW v11.9: Context-Aware CTA Templates
 CTA_TEMPLATES = {

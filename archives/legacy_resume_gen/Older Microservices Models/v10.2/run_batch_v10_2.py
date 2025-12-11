@@ -16,26 +16,20 @@ import asyncio
 import uuid
 from datetime import datetime
 from typing import Dict, object, List
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import chromadb # v10.2: Added
-from chromadb.utils import embedding_functions # v10.2: Added
+from shared.reasoning_utils import embedding_functions
 
 # v10.2: Import from new main/core
-from main_v10_2 import setup_logging, load_job_input
-from core_v10_2 import (
-    ConfigV10_2, WorkflowContext, MainGraphState,
-    CircuitBreakerOpenError, CostCeilingExceededError,
-    FileIOError,
-    CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.main_v10_2 import setup_logging, load_job_input
 # v10.2: Import from new orchestration/stacks
-from agent_orchestration_v10_2 import get_graph_app
-from agent_stacks_v10_2 import PIISanitizerAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_orchestration_v10_2 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_stacks_v10_2 import PIISanitizerAgent
 from langgraph.checkpoint.redis import RedisSaver
 
 try:
     # v10.2: Import new meta-learner
-    from run_learning_v10_2 import run_meta_learning
+    from archives.legacy_resume_gen.Older Microservices Models.v10.2.run_learning_v10_2 import run_meta_learning
     META_LEARNER_AVAILABLE = True
     logging.getLogger("batch_runner_v10_2").info("Meta-learning module (v10.2) loaded successfully.")
 except ImportError:

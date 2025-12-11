@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from asyncio import TimeoutError as NativeTimeoutError
 
-import core_v10_7
+import archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7
 
 
 def _module_union() -> set[str]:

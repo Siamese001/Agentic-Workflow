@@ -4,8 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
-from errors_controlflow import DAGValidationError
-from node_result import NodeResult
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.errors_controlflow import DAGValidationError  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult  # INVALID: Cannot import from path with hyphens
 
 
 @dataclass

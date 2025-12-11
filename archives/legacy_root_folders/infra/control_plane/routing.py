@@ -6,7 +6,7 @@ Provides deterministic rule resolution for comprehensive résumé improvement wo
 
 from typing import List
 
-from .models import PolicyRule, SafetyContext
+from shared.models import PolicyRule, SafetyContext
 
 
 def default_rules_for(agent_id: str | None, task_type: str | None) -> List[PolicyRule]:

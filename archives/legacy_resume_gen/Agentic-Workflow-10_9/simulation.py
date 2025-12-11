@@ -49,7 +49,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, Callable, Awaitable
 
-from main_v10_9 import run_workflow_v10_9
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.main_v10_9 import run_workflow_v10_9  # INVALID: Cannot import from path with hyphens
 
 
 # ============================================================================

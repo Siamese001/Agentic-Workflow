@@ -5,9 +5,9 @@ Coordinates planning and execution to create comprehensive résumé improvements
 """
 
 from typing import Any
-from l1.draft_planning import plan_drafting
-from l2.draft_executor import DraftExecutor
-from runtime.observability import record_event
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.draft_planning import plan_drafting
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.draft_executor import DraftExecutor
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import record_event
 
 class DraftOrchestrator:
     """

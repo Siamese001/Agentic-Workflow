@@ -2,8 +2,8 @@ import copy
 
 import pytest
 
-from core_v10_7 import BulletPlan, DraftPlan, RAGPlan
-from stacks_v10_8 import BulletPlanningStack, DraftPlanningStack, RAGPlanningStack
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BulletPlan, DraftPlan, RAGPlan
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.tests.v10_7.test_flat__stacks__test_execution_stacks_v10_8 import BulletPlanningStack, DraftPlanningStack, RAGPlanningStack  # INVALID: Cannot import from path with hyphens
 
 
 @pytest.fixture()

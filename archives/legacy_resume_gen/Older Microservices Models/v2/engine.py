@@ -7,7 +7,7 @@
 import logging
 from typing import Dict, List, Optional, Union, Callable, Union
 from collections import defaultdict
-from models_RES import ValidationResult, ValidationSeverity
+from runtime.compat.models_RES import ValidationResult, ValidationSeverity
 
 
 class ValidationRule:

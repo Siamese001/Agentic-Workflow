@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, ClassVar, Dict, List, Set, Tuple
 
 # Import from models_RES for CompetitiveAnalysisConfig
-from models_RES import CompetitiveAnalysisConfig
+from runtime.compat.models_RES import CompetitiveAnalysisConfig
 
 # --- GEMINI API SETUP ---
 try:

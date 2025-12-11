@@ -52,16 +52,6 @@ from ..shared.models import (
 )
 
 # Re-export exceptions that were historically in models_RES
-from ..shared.exceptions import (
-    HopExecutionError,
-    StagingBufferError,
-    CircuitBreakerOpenError,
-    PhaseTimeoutError,
-    FactualFailureException,
-    ValidationError,
-    ConfigurationError,
-    APIError,
-)
 
 __all__ = [
     # Enums

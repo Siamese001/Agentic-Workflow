@@ -33,7 +33,7 @@ from datetime import datetime, timedelta
 logger = logging.getLogger(__name__)
 
 # Import base orchestrator
-from .orchestrator import OutreachOrchestrator, OrchestratorOutput
+from archives.legacy_root_folders.orchestration.orchestrator import OutreachOrchestrator, OrchestratorOutput
 
 # Import Priority 1 enhancements
 from .l4.lic_cache_critique import LICCacheCritique, LICCacheCritiqueResult
@@ -41,10 +41,10 @@ from .l3.lic_circuit_breaker import LICCircuitBreaker
 from .l3.lic_fallback_tree import LICFallbackTree
 
 # Import Priority 2 enhancements  
-from .l1.self_correction_injection import SelfCorrectionInjector
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.self_correction_injection import SelfCorrectionInjector
 from .l3.lic_meta_loop import LICMetaLoop
-from .l1.v6_prompt_integration import V6PromptIntegrator
-from .l1.instructional_injection_v6 import InstructionalInjectorV6
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.v6_prompt_integration import V6PromptIntegrator
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.instructional_injection_v6 import InstructionalInjectorV6
 
 
 @dataclass

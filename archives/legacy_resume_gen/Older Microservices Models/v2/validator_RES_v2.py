@@ -4,7 +4,7 @@
 # This file contains only the PreFlightValidator, which orchestrates
 # the engine, context, and rules from its sub-modules.
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging
 from datetime import datetime
@@ -13,20 +13,15 @@ from collections import defaultdict
 from functools import partial
 
 # Import dependencies from new modules
-from config_RES_v2 import CONFIG, COVER_LETTER_SIGNATURE_TEMPLATE
-from models_RES import (
-    ValidationResult, ValidationSeverity, ThematicAnalysis, ResumeSection,
-    ImmutableStagingBuffer, GateDecision, BulletProvenance,
-    FactualFailureException
-)
-from utils_RES_v2 import text_utils, calculate_signal_score
-from interpreter_RES_v2 import CodeInterpreterTool
+from runtime.compat.config_RES_v2 import CONFIG, COVER_LETTER_SIGNATURE_TEMPLATE
+from runtime.compat.utils_RES_v2 import text_utils, calculate_signal_score
+from archives.legacy_resume_gen.Older Microservices Models.v2.interpreter_RES_v2 import CodeInterpreterTool
 
 # --- V18 REFACTOR: Import from new validation package ---
-from validation.engine import ValidationEngine, ValidationRule, ConstraintFailureClassifier
-from validation.context import ValidationContext
-from validation import rules as ValidationRules
-from validation.external import JDEnforcementValidator, AppTrackerQAValidator
+from archives.legacy_resume_gen.Older Microservices Models.v2.engine import ValidationEngine, ValidationRule, ConstraintFailureClassifier
+from scripts.utilities.format_scripts_context import ValidationContext
+from runtime.validation import rules as ValidationRules
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_external import JDEnforcementValidator, AppTrackerQAValidator
 
 # ==============================================================================
 # PRE-FLIGHT VALIDATOR

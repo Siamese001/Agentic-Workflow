@@ -16,7 +16,7 @@ import hashlib
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import subprocess
 import uuid
 from collections import defaultdict
@@ -24,9 +24,6 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import (
-    Any, Callable, ClassVar, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
-)
 
 # Optional imports with fallback handling
 try:
@@ -37,7 +34,7 @@ except ImportError:
     genai = None
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:

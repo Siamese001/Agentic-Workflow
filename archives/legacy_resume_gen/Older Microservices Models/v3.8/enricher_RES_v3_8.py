@@ -5,10 +5,10 @@
 import logging
 from typing import Dict, List, Tuple
 
-from models_RES import ValidationResult, ValidationSeverity, ThematicAnalysis
+from runtime.compat.models_RES import ValidationResult, ValidationSeverity, ThematicAnalysis
 # Import global CONFIG from v3.8
-from config_RES_v3_8 import CONFIG
-from utils_RES_v3_8 import DuplicateDetector
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.config_RES_v3_8 import CONFIG
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.utils_RES_v3_8 import DuplicateDetector
 
 logger = logging.getLogger(__name__)
 

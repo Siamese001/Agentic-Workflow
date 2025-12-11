@@ -1,6 +1,6 @@
 import pytest
 
-from core_v10_7 import BaseAgent, canonical_model_name
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent, canonical_model_name
 
 
 class DummyRoutingAgent(BaseAgent):

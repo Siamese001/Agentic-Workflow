@@ -10,13 +10,10 @@ from typing import Dict, object, Optional, Tuple
 from datetime import datetime
 
 # Import advisory crew and orchestrator
-from advisory_crew_v5_2 import CrewOrchestrator, CrewConfiguration
+from archives.legacy_resume_gen.Older Microservices Models.v5.2.advisory_crew_v5_2 import CrewOrchestrator, CrewConfiguration
 
 # Import models and config
-from models_RES import (
-    ImmutableStagingBuffer, ValidationResult, ValidationSeverity
-)
-from config_RES import CONFIG, DATA_DIR
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, DATA_DIR
 
 # Configure logging
 logging.basicConfig(

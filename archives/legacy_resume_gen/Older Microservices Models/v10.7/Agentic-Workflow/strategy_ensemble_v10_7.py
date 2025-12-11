@@ -13,15 +13,9 @@ from __future__ import annotations  # noqa: F404, E402
 import asyncio  # noqa: E402
 from typing import TYPE_CHECKING, object, Dict, List, Optional  # noqa: E402
 
-from core_v10_7 import (  # noqa: E402
-    BaseAgent,
-    StrategyPlan,
-    PlannerAssessment,
-    ScenarioSimulationResult,
-)
 
 if TYPE_CHECKING:
-    from core_v10_7 import WorkflowContext
+    from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import WorkflowContext
 
 
 def _truncate(text: str, limit: int = 160) -> str:

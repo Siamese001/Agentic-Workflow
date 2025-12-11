@@ -1,23 +1,13 @@
 import asyncio
 import asyncio
 import sys
-import types
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 from typing import Any, Dict
 
 import pytest
 
-from core_v10_7 import (
-    BaseTool,
-    MCPClientInitializationError,
-    MCPClientSpec,
-    MCPClientStub,
-    WorkflowContext,
-    instantiate_mcp_client,
-    parse_mcp_client_specs,
-    wrap_mcp,
-)
-from agent_orchestration_v10_7 import load_dynamic_tools
-from agent_tools_v10_7 import resolve_mcp_client
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import load_dynamic_tools  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_tools_v10_7 import resolve_mcp_client  # INVALID: Cannot import from path with hyphens
 
 def make_broken_module(class_name: str = "BrokenClient") -> str:
     module_name = f"mod_{class_name.lower()}"

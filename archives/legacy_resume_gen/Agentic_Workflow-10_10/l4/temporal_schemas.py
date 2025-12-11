@@ -12,7 +12,7 @@ from datetime import datetime, UTC
 from enum import Enum
 import hashlib
 
-from .types import StatePath
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import StatePath
 
 
 class TemporalFactStatus(str, Enum):

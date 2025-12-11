@@ -41,7 +41,7 @@ class ChromaConfig:
 
 def _import_chromadb():
     """Import the chromadb package using provider isolation."""
-    from providers.chromadb_client import ChromaClient
+    from archives.legacy_root_folders.providers.chromadb_client import ChromaClient
     return ChromaClient
 
 

@@ -3,24 +3,7 @@
 import json
 from typing import Any, Dict, List
 
-from core_v10_7 import (
-    BaseAgent,
-    StrategyPlan,
-    track_metrics,
-)
-from agent_tools_v10_7 import (
-    EvidenceBriefAssemblerTool,
-    EvidenceClarificationTool,
-)
 
-from .models import (
-    CritiqueFindingRecord,
-    CritiquePanelPacket,
-    EvidenceBriefRecord,
-    EvidenceClarificationRecord,
-    EvidenceLiaisonPacket,
-    SpecialistDraftPacket,
-)
 
 
 class StructureLeadAgent(BaseAgent):

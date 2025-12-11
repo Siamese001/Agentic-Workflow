@@ -14,19 +14,19 @@ from datetime import datetime
 from functools import wraps
 from typing import TYPE_CHECKING, object, Callable, Dict, List, Mapping, Optional, Tuple
 
-from chromadb.utils import embedding_functions
-from pydantic import BaseModel, ValidationError as PydanticValidationError
+from shared.reasoning_utils import embedding_functions
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, ValidationError
 
-from telemetry_v10_7 import log_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.telemetry_v10_7 import log_event  # INVALID: Cannot import from path with hyphens
 
-from .config import ConfigV10_7
-from .constants import legacy_model_alias
-from .exceptions import JSONParsingError, PydanticSchemaError
-from .models import GeneratedPrompts, StrategyPlan
+from shared.config import ConfigV10_7
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.constants import legacy_model_alias  # INVALID: Cannot import from path with hyphens
+from shared.exceptions import JSONParsingError, PydanticSchemaError
+from shared.models import GeneratedPrompts, StrategyPlan
 
 if TYPE_CHECKING:  # pragma: no cover - typing helpers
-    from .clients import AsyncBaseModelClient
-    from redis import Redis as RedisType
+    from runtime.shared.clients import AsyncBaseModelClient
+    from archives.legacy_resume_gen.Older Microservices Models.v10.6.redis import Redis
     from chromadb import Client as ChromaClientType
 else:  # pragma: no cover - fallback aliases for runtime
     AsyncBaseModelClient = Any

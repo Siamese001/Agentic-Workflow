@@ -1,6 +1,6 @@
 """Core models package - re-exports all models for convenient imports."""
 
-from .models import (
+from shared.models import ComplexityLevel, DraftingMode, ReasoningMode, AgentRole, AgentCard, JobDescription, ResumeProfile, WorkflowState, StateTransitionEvent, Checkpoint, RollbackRequest, RollbackResult, WorkflowStatePatch, ExecutionContext, ContextBudget, ExecutionProfile, RoutingHint, JobInput, ResumeInput, WorkflowConfig, StrategyBranch, StrategyResult, DraftSection, DraftingResult, QAFinding, QACheckResult, QAResult, SafetyFinding, SafetyResult, L2ResultBundle, SafetyEnforcementVerdict, SafetyPolicy, TelemetryEvent, CostSnapshot, RetrievalAttemptEvent, RetrievalResultEvent, RankingEvent, RetrievalSuccessEvent, RetrievalFailureEvent, RoutingDecisionEvent, CorrectionEvent, AgentMessage, AgentConversation, MultiAgentVote, MultiAgentCouncilResult, PromptVersion, PromptDefinition, PromptMeta, PolicyDecisionEvent, ResilienceError, TransientError, PermanentError, RetryExhaustedError, CircuitBreakerOpenError, ToolInvocationError, CircuitBreakerState, ResilienceDecision, SeniorityClassifierResult, ProfileInferenceResult, DomainClassifierResult, SkillClassifierResult, SkillClusterResult, CouncilVote, StrategyStep, StrategyPlan, DraftSectionPlan, DraftingPlan, QACheck, QAPlan, SafetyCheck, SafetyPlan, WorkflowPlanBundle, CorrectionLoopState, Evidence, RedisCacheConfig, ChromaVectorConfig, BM25BackendConfig, GoogleGenAIConfig, RetrievalConfig, RAGQueryHint, RAGPlan, RAGResult
     # Enums
     ComplexityLevel,
     DraftingMode,

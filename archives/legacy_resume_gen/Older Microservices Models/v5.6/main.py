@@ -6,7 +6,7 @@
 # ============================================================================
 # EXTERNAL IMPORTS (Consolidated)
 # ============================================================================
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import logging.handlers
@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # Import from consolidated modules
-from core import (
+from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR, ImmutableStagingBuffer, ThematicAnalysis, ValidationResult, HopResult, ValidationSeverity, ResumeSection
     # Config
     CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR,
     # Models
@@ -26,14 +26,7 @@ from core import (
     HopResult, ValidationSeverity, ResumeSection
 )
 
-from validation_stack import (
-    ValidationContext, PreFlightValidator, calculate_signal_score
-)
 
-from agent_swarm import (
-    CrewOrchestrator, CrewConfiguration, Governor,
-    GeminiService, get_gemini_service
-)
 
 # --- PRIORITY #2: Structured, Centralized Logging ---
 class JsonFormatter(logging.Formatter):

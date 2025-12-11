@@ -32,24 +32,15 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Tuple, Callable, Awaitable
 
 from orchestration.model_routing import RoutingContext, select_model
-from runtime.observability.agentic_events import CostEvent
-from runtime.observability.agentic_collectors import append_event as append_agentic_event
-from core.models.models import (
-    ResilienceError,
-    TransientError,
-    PermanentError,
-    RetryExhaustedError,
-    CircuitBreakerOpenError,
-    ToolInvocationError,
-    ResilienceDecision,
-)
-from observability import record_event, record_exception
-from providers.openai_client import run_llm_openai
-from providers.anthropic_client import run_llm_anthropic
-from providers.google_genai_client import run_llm_google
+from archives.legacy_root_folders.runtime.observability.agentic_events import CostEvent
+from archives.legacy_root_folders.runtime.observability.agentic_collectors import append_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import record_event, record_exception  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.providers.openai_client import run_llm_openai
+from archives.legacy_root_folders.providers.anthropic_client import run_llm_anthropic
+from archives.legacy_root_folders.providers.google_genai_client import run_llm_google
 
 try:  # pragma: no cover - optional dependency wiring
-    from meta.cache.redis_cache import (
+    from archives.legacy_root_folders.meta.cache.redis_cache import init_redis_client, get_llm_cache, set_llm_cache, RedisClientError, RedisNotConfiguredError
         init_redis_client,
         get_llm_cache,
         set_llm_cache,

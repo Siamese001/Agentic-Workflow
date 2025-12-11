@@ -10,34 +10,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from core.models.models import (
-    ComplexityLevel,
-    DraftingMode,
-    ReasoningMode,
-    JobInput,
-    ResumeInput,
-    WorkflowConfig,
-    ExecutionProfile,
-    RoutingHint,
-    StrategyStep,
-    StrategyPlan,
-    RAGQueryHint,
-    RAGPlan,
-    DraftSectionPlan,
-    DraftingPlan,
-    QACheck,
-    QAPlan,
-    SafetyCheck,
-    SafetyPlan,
-    WorkflowPlanBundle,
-    PromptMeta,
-    ProfileInferenceResult,
-    SeniorityClassifierResult,
-    SkillClusterResult,
-    DomainClassifierResult,
-)
-from config.config_profiles_v10_10 import ExecutionProfileSpec, get_profile
-from config.meta_profile import MetaProfileSnapshot
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.config_profiles_v10_10 import ExecutionProfileSpec, get_profile
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot
 
 
 """

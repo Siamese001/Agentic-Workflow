@@ -7,7 +7,7 @@ Immutable staging buffer, text sanitization, and validation context infrastructu
 import copy
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 

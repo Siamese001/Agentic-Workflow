@@ -5,13 +5,9 @@ Provides backward compatibility by delegating operations to atomic L1-L5 archite
 """
 
 from typing import Any, Optional, TYPE_CHECKING
-from core.models.models import (
-    AgentCard,
-    AgentRole,
-)
-from core.routing import RoutingPolicy
-from runtime.runtime_utils import SandboxConfig
-from config.meta_profile import MetaProfileSnapshot
+from archives.legacy_root_folders.core.routing import RoutingPolicy
+from archives.legacy_root_folders.runtime.runtime_utils import SandboxConfig
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot
 
 # Placeholder for missing record_event function
 def record_event(event_name: str, data: dict) -> None:
@@ -20,7 +16,7 @@ def record_event(event_name: str, data: dict) -> None:
 
 # Use TYPE_CHECKING to avoid circular imports
 if TYPE_CHECKING:
-    from atomic_integration_bridge import (
+    from archives.legacy_root_folders.integration.atomic_integration_bridge import AtomicStrategyAgent, AtomicDraftingAgent, AtomicQAAgent, AtomicSafetyAgent
         AtomicStrategyAgent,
         AtomicDraftingAgent,
         AtomicQAAgent,
@@ -37,7 +33,7 @@ class StrategyLLMAgent:
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         # Lazy import to avoid circular dependency
-        from atomic_integration_bridge import AtomicStrategyAgent
+        from archives.legacy_root_folders.integration.atomic_integration_bridge import AtomicStrategyAgent
         self._atomic_agent = AtomicStrategyAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
@@ -53,7 +49,7 @@ class DraftingGuild:
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         # Lazy import to avoid circular dependency
-        from atomic_integration_bridge import AtomicDraftingAgent
+        from archives.legacy_root_folders.integration.atomic_integration_bridge import AtomicDraftingAgent
         self._atomic_agent = AtomicDraftingAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
@@ -69,7 +65,7 @@ class SemanticQAAgent:
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         # Lazy import to avoid circular dependency
-        from atomic_integration_bridge import AtomicQAAgent
+        from archives.legacy_root_folders.integration.atomic_integration_bridge import AtomicQAAgent
         self._atomic_agent = AtomicQAAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
@@ -85,7 +81,7 @@ class ConstitutionalSafetyAgent:
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         # Lazy import to avoid circular dependency
-        from atomic_integration_bridge import AtomicSafetyAgent
+        from archives.legacy_root_folders.integration.atomic_integration_bridge import AtomicSafetyAgent
         self._atomic_agent = AtomicSafetyAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
@@ -111,7 +107,7 @@ class HYDEQueryAgent:
         Delegates to atomic execution for optimized résumé search query generation.
         """
         # Delegate to L2 LLM caller for pure execution
-        from l2.llm_caller import LLMCaller
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.llm_caller import LLMCaller
         llm_caller = LLMCaller(self.routing_policy, self.sandbox)
         
         job = getattr(ctx, "job", None)
@@ -120,7 +116,7 @@ class HYDEQueryAgent:
         job_title = getattr(job, "title", "") if job else ""
         
         # Use L1 prompt builder for pure planning
-        from l1.prompt_builder import PromptBuilder
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.prompt_builder import PromptBuilder
         prompt = PromptBuilder.build_strategy_prompt(
             {"target_role": job_title, "reasoning": "HYDE query generation"},
             job,
@@ -141,7 +137,7 @@ class QACouncilAgent:
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         # Lazy import to avoid circular dependency
-        from atomic_integration_bridge import AtomicQAAgent
+        from archives.legacy_root_folders.integration.atomic_integration_bridge import AtomicQAAgent
         self._atomic_agent = AtomicQAAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
@@ -170,7 +166,7 @@ class LLMBaseAgent:
     
     def _call_llm(self, prompt: Any) -> str:
         """Legacy LLM call - delegates to atomic L2 execution."""
-        from l2.llm_caller import LLMCaller
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.llm_caller import LLMCaller
         llm_caller = LLMCaller(self.routing_policy, self.sandbox)
         return llm_caller.call_llm(prompt, self.agent_card.role.value)
 

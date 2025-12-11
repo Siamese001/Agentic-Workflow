@@ -4,19 +4,15 @@
 
 __version__ = "12.0"
 
-import re
+import scripts.check_canonical_structure
 import json
 import os
 from typing import Dict, List, object, Tuple, Optional
 from pathlib import Path
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+from scripts.utilities.format_scripts_context import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from models_LIC import (
-    ValidationSeverity, ValidationResult, GeneratedMessage, 
-    ResearchContext, MessageClaim, RAGResult
-)
 
 # ============================================================================
 # NEW v11.6: GLOBAL ERROR CODE REGISTRY (GAP 6.1)
@@ -130,7 +126,7 @@ class ConstraintFeasibilityChecker:
         # This function needs access to ConfigRegistry, but to avoid circular
         # imports, we'll use hardcoded fallbacks if the import fails.
         try:
-            from config_LIC import CONFIG_REGISTRY
+            from archives.legacy_lic.deprecated in v13.config_LIC import CONFIG_REGISTRY
             constraints = CONFIG_REGISTRY.get_route_constraints(route, archetype)
         except ImportError:
             constraints = {"word_target": 200, "word_range": (150, 250), "route": route}
@@ -735,7 +731,7 @@ class ValidationAgent:
             
             # Require minimum 3 keyword overlap for strategic alignment
             if len(overlap) < 3:
-                from models_LIC import FailureClassifier
+                from archives.legacy_lic.Agentic LIC.models_LIC import FailureClassifier
                 results.append(ValidationResult(
                     passed=False,
                     severity=ValidationSeverity.CRITICAL,

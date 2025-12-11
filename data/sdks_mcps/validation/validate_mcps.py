@@ -5,7 +5,7 @@ Ensures data/sdks_mcps/ is the immutable single source of truth.
 import os
 import json
 import sys
-import importlib.tool
+import observability.runtime.synthesis.use_tools.invoke_observability_tool
 from pathlib import Path
 from typing import Dict, object, List
 import jsonschema

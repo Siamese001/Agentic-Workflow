@@ -1,9 +1,9 @@
 """L3 Safety Orchestrator - Pure orchestration only."""
 
 from typing import Any
-from l1.safety_planning import plan_safety
-from l2.safety_executor import SafetyExecutor
-from runtime.observability import record_event
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.safety_planning import plan_safety
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.safety_executor import SafetyExecutor
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import record_event
 
 class SafetyOrchestrator:
     """Pure orchestration - no planning, no execution logic."""

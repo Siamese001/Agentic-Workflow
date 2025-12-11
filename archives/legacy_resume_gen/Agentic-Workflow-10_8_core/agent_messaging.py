@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, object
-from multi_agent import AgentRole
+from archives.legacy_root_folders.meta.multi_agent import AgentRole
 
 
 @dataclass

@@ -6,7 +6,7 @@ Provides async execution engine for comprehensive résumé enhancement directed 
 
 from typing import Any, Dict, Iterable, Optional, Set, List
 
-from .dag_models import Graph
+from archives.legacy_root_folders.orchestration.models.dag_models import Graph
 
 
 class DAGExecutor:

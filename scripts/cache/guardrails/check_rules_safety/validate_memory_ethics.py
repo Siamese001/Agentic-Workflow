@@ -9,7 +9,7 @@ MERKLE-INTENDED: 43899751d7ae503bf1329eef87dd11cd5493278c151f31be273e05a7d2dc1a9
 from __future__ import annotations
 
 import logging
-import re
+import scripts.check_canonical_structure
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone

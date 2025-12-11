@@ -42,16 +42,6 @@ class FactualFailureException(Exception):
 # IMPORT CUSTOM EXCEPTIONS FROM CENTRALIZED MODULE
 # ============================================================================
 # Updated to import exceptions from exceptions.py instead of defining here
-from exceptions import (
-    HopExecutionError,
-    StagingBufferError,
-    CircuitBreakerOpenError,
-    PhaseTimeoutError,
-    FactualFailureException,
-    ValidationError,
-    ConfigurationError,
-    APIError
-)
 
 # ============================================================================
 # ENUMERATIONS

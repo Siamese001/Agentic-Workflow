@@ -5,10 +5,10 @@ Test Suite — Retrieval v10.8
 Validates deterministic hybrid ranking, fusion, and retrieval metadata.
 """
 
-from l1_reasoning import RAGReasoner
-from l2_execution import RAGExecutionAgent
-from retrieval import fuse_results
-from ranking import bm25_rank, dense_rank, hybrid_rank
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import RAGReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import RAGExecutionAgent  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.retrievers.retrieval import fuse_results
+from archives.legacy_root_folders.meta.ranking import bm25_rank, dense_rank, hybrid_rank
 
 
 def test_rankers_are_deterministic_and_scored():
@@ -76,7 +76,7 @@ def test_rag_history_growth_is_deterministic():
 
 import copy
 
-from l4_memory import get_evidence_view, get_retrieval_view
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import get_evidence_view, get_retrieval_view  # INVALID: Cannot import from path with hyphens
 
 
 def test_evidence_view_keys_and_defaults():

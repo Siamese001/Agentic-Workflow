@@ -8,18 +8,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Dict, List, Optional, TypeVar
 
-from l4.manager import StateManager
-from l5 import SafetySystem
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.manager import StateManager
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l5 import SafetySystem  # INVALID: Cannot import from path with hyphens
 
-from .errors import (
-    ErrorContext,
-    ErrorSeverity,
-    NodeExecutionError,
-    WorkflowError,
-    WorkflowErrorCode,
-)
-from .models.dag_models import DAGResult, NodeExecutionResult, NodeStatus
-from orchestration.workflow_context import NodeExecutionConfig, RetryConfig, WorkflowContext
+from archives.legacy_root_folders.orchestration.models.dag_models import DAGResult, NodeExecutionResult, NodeStatus
+from archives.legacy_root_folders.orchestration.workflow_context import NodeExecutionConfig, RetryConfig, WorkflowContext
 
 
 TState = TypeVar("TState")

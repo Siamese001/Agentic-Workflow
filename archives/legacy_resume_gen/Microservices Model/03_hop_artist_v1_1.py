@@ -10,7 +10,7 @@ This Artist implements:
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import sys
@@ -27,11 +27,6 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 # Import necessary components from helpers
-from helpers import (
-    setup_workflow_logging, HopExecutionError, default_serializer,
-    ValidationResult, ValidationSeverity, ThematicAnalysis, ResumeSection,
-    ReasoningConfig, ContentConstraintsConfig, enhance_system_prompt_with_reasoning
-)
 
 # Initialize module-level configuration instances
 CONSTRAINTS = ContentConstraintsConfig()

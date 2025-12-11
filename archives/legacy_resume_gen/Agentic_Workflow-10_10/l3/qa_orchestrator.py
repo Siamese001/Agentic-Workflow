@@ -1,9 +1,9 @@
 """L3 QA Orchestrator - Pure orchestration only."""
 
 from typing import Any
-from l1.qa_planning import plan_qa
-from l2.qa_executor import QAExecutor
-from runtime.observability import record_event
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.qa_planning import plan_qa
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.qa_executor import QAExecutor
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import record_event
 
 class QAOrchestrator:
     """Pure orchestration - no planning, no execution logic."""

@@ -5,7 +5,7 @@
 import logging
 from typing import Dict, List, Tuple
 
-from models_RES import BulletProvenance, ValidationResult, ValidationSeverity
+from runtime.compat.models_RES import BulletProvenance, ValidationResult, ValidationSeverity
 
 logger = logging.getLogger(__name__)
 

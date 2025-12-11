@@ -39,7 +39,7 @@ This file wraps those behaviors and exposes a stable API.
 
 from typing import Dict, List
 
-from runtime_utils import Ranking as _Ranking
+from archives.legacy_root_folders.runtime.runtime_utils import Ranking
 
 
 # ============================================================================

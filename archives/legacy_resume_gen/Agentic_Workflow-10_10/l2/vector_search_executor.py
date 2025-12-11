@@ -18,7 +18,7 @@ Non-responsibilities:
 from typing import List, Dict, object, Optional
 from dataclasses import dataclass
 
-from l4 import PineconeAdapter, VectorQueryResult
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l4 import PineconeAdapter, VectorQueryResult  # INVALID: Cannot import from path with hyphens
 
 
 @dataclass

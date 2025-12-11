@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from core_v10_7 import BaseAgent, PromptEnvelope
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent, PromptEnvelope
 
 
 class PromptRendererStack(BaseAgent):

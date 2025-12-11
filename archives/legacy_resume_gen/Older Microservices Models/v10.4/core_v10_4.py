@@ -22,14 +22,14 @@ import os
 import json
 import logging
 import hashlib
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import asyncio
 import chromadb
 import time # v10.3: Added for retry decorator
 from functools import wraps # v10.3: Added for retry decorator
-from pydantic import BaseModel, Field, ValidationError as PydanticValidationError # v10.3: Added
-from chromadb.utils import embedding_functions
-from openai import AsyncOpenAI
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field, ValidationError
+from shared.reasoning_utils import embedding_functions
+from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI
 from dataclasses import dataclass, field, asdict
 from typing import Dict, object, List, Optional, Tuple, Type, TypeVar, Callable, Awaitable
 from datetime import datetime # v10.4: Added for logging
@@ -1193,7 +1193,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
                                    response_format: Optional[str] = None) -> Dict[str, object]:
-        import anthropic
+        import data.sdks_mcps.reference_clients.minimal_anthropic
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
         provider = self._get_provider_name()
         

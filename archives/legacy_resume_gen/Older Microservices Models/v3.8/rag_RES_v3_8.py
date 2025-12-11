@@ -17,7 +17,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import signal
 import time
 from collections import defaultdict
@@ -30,7 +30,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar
 # Third-party imports
 try:
     import google.generativeai as genai
-    from gemini_service import GeminiService
+    from archives.legacy_resume_gen.Older Microservices Models.v2.gemini_service import GeminiService
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -38,7 +38,7 @@ except ImportError:
     GeminiService = None
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -49,7 +49,7 @@ except ImportError:
 # ChromaDB for Librarian Agent (NEW - Phase 3)
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
@@ -58,24 +58,12 @@ except ImportError:
 
 # Local module imports
 # --- REFACTOR: Import global CONFIG and constants ---
-from config_RES_v3_8 import (
-    CONFIG, CACHE_DIR,
-    DEFAULT_MAX_RETRIES, DEFAULT_HOP_TIMEOUT # <-- IMPORTED CONSTANTS
-)
 # --- END REFACTOR ---
 
-from models_RES import (
-    CircuitState, RAGState, RAGEvidence, RAGCritique,
-    PartialRAGResult, RAGTelemetry, CompetitiveIntelligence,
-    MasterResumeIndex, RAGMission, ThematicAnalysis, HopStatus,
-    RetrievalSource, SkillRequirement, SkillCluster,
-    HopExecutionError, CircuitBreakerOpenError, PhaseTimeoutError,
-    CompetitiveAnalysisConfig # <-- IMPORTED
-)
-from utils_RES_v3_8 import TelemetryLogger
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.utils_RES_v3_8 import TelemetryLogger
 
 # Import prompts module
-import prompts_RES_v3_8 as prompts_RES
+import archives.legacy_resume_gen.Older Microservices Models.v3.8.prompts_RES_v3_8
 
 # Type variable for phase execution
 T = TypeVar('T')

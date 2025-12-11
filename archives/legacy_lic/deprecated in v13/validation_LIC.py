@@ -5,15 +5,15 @@
 __version__ = "13.0"
 
 import json
-import re
+import scripts.check_canonical_structure
 import os
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, object, Optional, Tuple
 
-from models_LIC import ValidationSeverity, ValidationResult, AgentStatus
-from state_manager_LIC import StateManager
-from tools_LIC import ValidationToolkit, CodeInterpreterTool
+from archives.legacy_lic.Agentic LIC.models_LIC import ValidationSeverity, ValidationResult, AgentStatus
+from archives.legacy_lic.Agentic LIC.state_manager_LIC import StateManager
+from archives.legacy_lic.Agentic LIC.tools_LIC import ValidationToolkit, CodeInterpreterTool
 
 # ============================================================================
 # HOP-6: VALIDATION AGENT

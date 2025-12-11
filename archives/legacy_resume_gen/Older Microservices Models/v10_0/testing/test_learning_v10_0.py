@@ -12,14 +12,14 @@ from datetime import datetime
 pytest_plugins = ('pytest_asyncio',)
 
 try:
-    from run_learning_v10_0 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.run_learning_v10_0 import LogReaderAgent, AsyncPatternFinderAgent, AsyncHypothesisGeneratorAgent, AsyncProposalDrafterAgent, MetaPlannerAgent, AsyncProposalCritiqueAgent, run_read_logs, run_find_patterns, run_generate_hypothesis, run_draft_proposal, run_critique_proposal, run_write_proposal, get_meta_learning_graph_app, run_meta_learning
         LogReaderAgent, AsyncPatternFinderAgent, AsyncHypothesisGeneratorAgent,
         AsyncProposalDrafterAgent, MetaPlannerAgent, AsyncProposalCritiqueAgent,
         run_read_logs, run_find_patterns, run_generate_hypothesis,
         run_draft_proposal, run_critique_proposal, run_write_proposal,
         get_meta_learning_graph_app, run_meta_learning
     )
-    from core_v10_0 import WorkflowContext, MetaGraphState
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import WorkflowContext, MetaGraphState
 except ImportError:
     pytest.skip("run_learning_v10_0 module not available", allow_module_level=True)
 

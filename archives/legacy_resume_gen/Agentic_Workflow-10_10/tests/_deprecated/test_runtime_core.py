@@ -8,8 +8,8 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 
-from core.models.models import ExecutionContext, JobInput, ResumeInput
-from runtime.runtime_utils import invoke_model, SandboxConfig
+from archives.legacy_root_folders.core.models.models import ExecutionContext, JobInput, ResumeInput
+from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig
 
 
 class TestLLMInvocation:
@@ -53,7 +53,7 @@ class TestSandboxExecution:
     
     def test_sandbox_execution_mock(self):
         """Test sandbox execution with mock."""
-        from runtime.runtime_utils import get_sandbox
+        from archives.legacy_root_folders.runtime.runtime_utils import get_sandbox
         
         config = SandboxConfig(timeout=10)
         sandbox = get_sandbox(config)
@@ -89,7 +89,7 @@ class TestWorkflowOrchestration:
     @patch('l2.execute_workflow_plans')
     def test_l2_execute_with_mock_llm(self, mock_execute):
         """Test L2 execution with mock LLM responses."""
-        from l2 import execute_workflow_plans, L2ResultBundle
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import execute_workflow_plans, L2ResultBundle  # INVALID: Cannot import from path with hyphens
         
         # Mock L2 execution to return proper bundle
         mock_strategy = Mock()
@@ -113,7 +113,7 @@ class TestWorkflowOrchestration:
     def test_l3_dag_orchestration(self, mock_orchestrate):
         """Test L3 DAG orchestration."""
         from orchestration.run_dag import run_dag
-        from l2 import L2ResultBundle
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # INVALID: Cannot import from path with hyphens
         
         # Mock orchestrate execution
         mock_strategy = Mock()

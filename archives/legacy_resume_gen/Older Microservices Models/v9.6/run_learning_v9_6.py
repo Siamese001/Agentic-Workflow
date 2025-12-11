@@ -17,16 +17,8 @@ from collections import defaultdict
 
 
 # Imports from its *own* versioned files (v9.6)
-from core_v9_6 import (
-    CONFIG, BaseAgent, get_model_client, MetaGraphState,
-    META_LOG_READER_SYSTEM_PROMPT,
-    META_PATTERN_FINDER_SYSTEM_PROMPT,
-    META_HYPOTHESIS_GENERATOR_SYSTEM_PROMPT,
-    META_PROPOSAL_DRAFTER_SYSTEM_PROMPT,
-    META_PROPOSAL_CRITIQUE_SYSTEM_PROMPT
-)
-from main_v9_6 import setup_logging
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v9.6.main_v9_6 import setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger("meta_learner_v9_6")

@@ -27,28 +27,7 @@ from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from l4.interfaces import (
-    L4StateManagerInterface,
-    L4MemoryManagerInterface,
-    L4VectorStoreInterface,
-    L4GraphStoreInterface,
-    L4TemporalKGInterface,
-    L4ProvenanceManagerInterface,
-    L4CacheInterface,
-    L4StorageRequest,
-    L4StorageResult,
-    StorageType,
-)
-from l4.state_manager import StateManager, WorkflowState
-from core.models.models import (
-    ExecutionContext,
-    Entity,
-    Triplet,
-    TemporalKG,
-    StateSnapshot,
-    MemoryFragment,
-    Provenance,
-)
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.state_manager import StateManager, WorkflowState
 
 
 class StateManagerAdapter(L4StateManagerInterface):

@@ -2,7 +2,7 @@
 # Validation module for Resume Workflow
 # Contains all validation rules, engines, and QA systems
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging
 from datetime import datetime
@@ -13,21 +13,7 @@ import hashlib # Added for AppTrackerQAValidator
 
 # Import dependencies from new modules
 # --- FIX: Import _load_json_config from config_RES ---
-from config_RES import (
-    ValidatorConfig, ContentConstraintsConfig, SignalControlConfig, 
-    CONFIG, AppConfig, _load_json_config, DATA_DIR
-)
-from models_RES import (
-    ValidationResult, ValidationSeverity, JDEnforcementRule,
-    JDEnforcementResult, ThematicAnalysis, ResumeSection,
-    ImmutableStagingBuffer, GateDecision, BulletProvenance,
-    FactualFailureException
-)
 # --- FIX: REMOVE _load_json_data from this import ---
-from utils_RES import (
-    text_utils, TextUtils, DuplicateDetector, calculate_signal_score,
-    CodeInterpreterTool
-)
 
 # Load data required by AppTrackerQAValidator
 try:

@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
 # Import WorkflowExecutionConfig from core/integration for backward compatibility
-from core.integration import WorkflowExecutionConfig
+from archives.legacy_root_folders.core.integration import WorkflowExecutionConfig
 
 
 @dataclass
@@ -63,4 +63,4 @@ def get_integrator() -> OrchestrationIntegrator:
 
 
 # Re-export functions from core.integration for backward compatibility
-from core.integration import execute_workflow, create_workflow_context
+from archives.legacy_root_folders.core.integration import execute_workflow, create_workflow_context

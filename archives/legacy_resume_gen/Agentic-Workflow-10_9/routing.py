@@ -25,14 +25,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, List
 
-from core.models.models import PlanObject
-from prompt import System as PromptSystem
-from core.l5 import ModelRouter, RoutingCriteria
-from meta_profile import (
-    get_routing_bias,
-    get_planning_bias,
-    get_safety_bias,
-)
+from archives.legacy_root_folders.core.models.models import PlanObject
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.prompt import System  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l5 import ModelRouter, RoutingCriteria  # INVALID: Cannot import from path with hyphens
 
 
 # ============================================================================

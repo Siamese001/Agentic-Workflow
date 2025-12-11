@@ -6,9 +6,9 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict
 
-from l4_memory import MemoryManager
-from utils_patch_helpers import apply_patch
-from utils_types import Phase, StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import MemoryManager  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_patch_helpers import apply_patch  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import Phase, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class StateAdapter:
@@ -67,7 +67,7 @@ Provides deterministic transitions between orchestration phases.
 
 from typing import Dict, List
 
-from utils_types import Phase
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import Phase  # INVALID: Cannot import from path with hyphens
 
 
 class StateMachine:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-from core.models.models import AgentCard, AgentRole
+from archives.legacy_root_folders.core.models.models import AgentCard, AgentRole
 
 """
 Maintains catalog of specialized agents for résumé analysis workflow routing and coordination.

@@ -13,10 +13,10 @@ from typing import Dict, object, List
 sys.path.append(str(Path(__file__).parent.parent))
 
 try:
-    from client_wrappers.openai_client import create_openai_client
-    from client_wrappers.anthropic_client import create_anthropic_client  
-    from client_wrappers.vertex_client import create_vertex_client
-    from client_wrappers.multi_provider_router import create_multi_provider_router
+    from data.sdks_mcps.client_wrappers.openai_client import create_openai_client
+    from data.sdks_mcps.client_wrappers.anthropic_client import create_anthropic_client
+    from data.sdks_mcps.client_wrappers.vertex_client import create_vertex_client
+    from data.sdks_mcps.client_wrappers.multi_provider_router import create_multi_provider_router
 except ImportError as e:
     print(f"Import error: {e}")
     print("Make sure you're running from the data/sdks_mcps/ directory")
@@ -321,7 +321,7 @@ def test_reference_clients() -> Dict[str, object]:
     
     try:
         # Test OpenAI minimal client
-        from reference_clients.minimal_openai import simple_completion
+        from data.sdks_mcps.reference_clients.minimal_openai import simple_completion
         
         if os.getenv("OPENAI_API_KEY"):
             openai_result = simple_completion("Say 'minimal test'", "gpt-4o-mini")
@@ -336,7 +336,7 @@ def test_reference_clients() -> Dict[str, object]:
             }
         
         # Test Anthropic minimal client
-        from reference_clients.minimal_anthropic import simple_message
+        from data.sdks_mcps.reference_clients.minimal_anthropic import simple_message
         
         if os.getenv("ANTHROPIC_API_KEY"):
             anthropic_result = simple_message("Say 'minimal test'", "claude-3-5-haiku")
@@ -351,7 +351,7 @@ def test_reference_clients() -> Dict[str, object]:
             }
         
         # Test Vertex minimal client
-        from reference_clients.minimal_vertex import simple_generation
+        from data.sdks_mcps.reference_clients.minimal_vertex import simple_generation
         
         if os.getenv("GOOGLE_CLOUD_PROJECT"):
             vertex_result = simple_generation("Say 'minimal test'", "gemini-1.5-flash")

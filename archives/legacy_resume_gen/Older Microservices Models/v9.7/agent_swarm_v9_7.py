@@ -12,18 +12,12 @@
 
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 
-from core_v9_7 import (
-    CONFIG, BaseAgent, get_model_client, MainGraphState,
-    BIAS_DETECTOR_SYSTEM_PROMPT, PII_SCRUBBER_SYSTEM_PROMPT,
-    TOT_STRATEGIST_SYSTEM_PROMPT, PROMPT_ENGINEER_SYSTEM_PROMPT,
-    BULLET_CRITIQUE_SYSTEM_PROMPT, AgentExecutionError
-)
 
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 
 logger = logging.getLogger(__name__)
 

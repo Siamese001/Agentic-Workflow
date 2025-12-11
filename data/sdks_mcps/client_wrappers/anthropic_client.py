@@ -7,9 +7,9 @@ import json
 import time
 from typing import Dict, object, Optional, List, Union
 from dataclasses import dataclass
-import anthropic
-from anthropic import Anthropic, APIError, RateLimitError, APITimeoutError
-from anthropic.types import Message
+import data.sdks_mcps.reference_clients.minimal_anthropic
+from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic, APIError, RateLimitError, APITimeoutError
+from shared.result_types import Message
 import backoff
 
 

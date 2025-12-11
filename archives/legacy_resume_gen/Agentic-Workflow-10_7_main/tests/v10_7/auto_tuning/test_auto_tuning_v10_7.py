@@ -2,7 +2,7 @@ import copy
 
 import pytest
 
-from core_v10_7 import ConfigV10_7, MetricsCollector, PolicyAutoTuner, TuningProfile
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import ConfigV10_7, MetricsCollector, PolicyAutoTuner, TuningProfile
 
 
 CONFIG_PATH = "master_config_v10_7.json"

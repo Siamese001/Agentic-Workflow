@@ -11,7 +11,7 @@ import logging
 from typing import Dict, List, object, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
-import re
+import scripts.check_canonical_structure
 from collections import defaultdict
 
 logger = logging.getLogger(__name__)

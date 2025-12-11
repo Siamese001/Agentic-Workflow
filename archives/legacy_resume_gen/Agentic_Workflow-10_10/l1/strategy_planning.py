@@ -9,26 +9,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, List, Optional
 
-from config import config_profiles_v10_10 as config_profiles
-from core.models.models import (
-    DraftingPlan as WorkflowDraftingPlan,
-    ExecutionContext,
-    RAGResult,
-    StrategyPlan as WorkflowStrategyPlan,
-    StrategyResult,
-)
-from infra.reasoning.cot import expand_chain_of_thought
-from infra.reasoning.react import run_react_loop
-from infra.reasoning.reflexion import apply_reflexion
-from infra.reasoning.tot import tree_search
-from l1.builders.prompt_builder import (
-    PromptInstance,
-    build_drafting_prompt,
-)
-from l1.v6_prompt_adapter import build_v6_strategy_prompt, V6PromptConfig
-from l5.injection_detection import InjectionDetector, SafetyContext
-from infra.di_container import get_service
-from l5.policy import SafetyEngine
+from shared.config import config_profiles_v10_10
+from archives.legacy_root_folders.infra.reasoning.cot import expand_chain_of_thought
+from archives.legacy_root_folders.infra.reasoning.react import run_react_loop
+from archives.legacy_root_folders.infra.reasoning.reflexion import apply_reflexion
+from archives.legacy_root_folders.infra.reasoning.tot import tree_search
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.v6_prompt_adapter import build_v6_strategy_prompt, V6PromptConfig
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionDetector, SafetyContext
+from archives.legacy_root_folders.infra.di_container import get_service
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine
 
 
 @dataclass(frozen=True)

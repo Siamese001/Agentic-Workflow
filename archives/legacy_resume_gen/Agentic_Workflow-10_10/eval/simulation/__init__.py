@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .models import SimScenario, SimOutcome
-from .simulator import run_scenario
+from shared.models import SimScenario, SimOutcome
+from archives.legacy_root_folders.eval.simulation.simulator import run_scenario
 from . import metrics
 
 __all__ = [

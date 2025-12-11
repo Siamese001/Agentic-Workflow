@@ -7,7 +7,7 @@ Enterprise compliance and content quality enhancements
 that integrate with existing safety validation pipeline.
 """
 
-import re
+import scripts.check_canonical_structure
 import logging
 from typing import Dict, List, object, Tuple, Set, Optional
 from dataclasses import dataclass

@@ -659,7 +659,7 @@ class CapabilityTest:
     def test_regex_support() -> PreflightTestResult:
         """Test regex capability."""
         import time
-        import re
+        import scripts.check_canonical_structure
         start_time = time.time()
         
         try:

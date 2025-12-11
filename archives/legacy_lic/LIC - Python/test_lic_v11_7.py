@@ -5,7 +5,7 @@ Tests all 5 new implementations from QA review
 
 import pytest
 import asyncio
-from LIC_AGENTIC_v11_7 import *
+from archives.legacy_lic.LIC - Python.LIC_AGENTIC_v11_7 import *
 
 
 # ============================================================================

@@ -2,7 +2,7 @@
 # Version: 5.2.0 - Recovery System Launcher
 # Smart launcher for v5.2 workflow with v3.8 logic integration
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import os
 import sys
@@ -23,8 +23,8 @@ __version__ = "5.2.0-recovery"
 
 # Import the main components from v5.2 modules
 try:
-    from workflow_RES_v5_2 import WorkflowV52
-    from config_RES import CONFIG, OUTPUT_DIR, DATA_DIR
+    from archives.legacy_resume_gen.Older Microservices Models.v5.2.workflow_RES_v5_2 import WorkflowV52
+    from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, OUTPUT_DIR, DATA_DIR
     logger.info(f"✅ Successfully imported v5.2 modules (version: {__version__})")
 except ImportError as e:
     logger.critical(f"Error: Could not import v5.2 modules")

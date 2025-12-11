@@ -33,17 +33,17 @@ import os
 import json
 import logging
 import hashlib
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import asyncio
 import chromadb
 import time 
 from functools import wraps 
-from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
-from chromadb.utils import embedding_functions
-from openai import AsyncOpenAI
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field, ValidationError
+from shared.reasoning_utils import embedding_functions
+from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI
 # v10.5 REFACTOR: Need to import all services for the new helper function
 try:
-    import anthropic
+    import data.sdks_mcps.reference_clients.minimal_anthropic
     import google.generativeai as genai
 except ImportError:
     logging.warning("LLM provider libraries (anthropic, google-generativeai) not found. Install them if needed.")

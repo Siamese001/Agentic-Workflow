@@ -7,17 +7,8 @@ import copy
 from dataclasses import asdict, is_dataclass
 from typing import Any, Dict, Iterable, Mapping, MutableMapping
 
-from pydantic import BaseModel, ConfigDict
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, ConfigDict
 
-from core_v10_7 import (
-    A2AMessage,
-    EphemeralState,
-    EpisodicMemory,
-    MainGraphState,
-    MemoryState,
-    SemanticMemoryRef,
-    WorkflowPhase,
-)
 
 logger = logging.getLogger(__name__)
 

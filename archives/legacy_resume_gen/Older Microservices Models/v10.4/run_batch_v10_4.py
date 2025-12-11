@@ -22,25 +22,15 @@ import uuid
 import sys
 from datetime import datetime
 from typing import Dict, object, List
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import chromadb
-from chromadb.utils import embedding_functions
+from shared.reasoning_utils import embedding_functions
 
 # v10.4: Import from new main/core
-from main_v10_4 import setup_logging, load_job_input
-from core_v10_4 import (
-    ConfigV10_4, WorkflowContext, MainGraphState,
-    CircuitBreakerOpenError, CostCeilingExceededError,
-    FileIOError, WorkflowError,
-    # v10.4: Import CircuitBreaker from core
-    CircuitBreaker,
-    # v10.3: Import all services to be injected
-    CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader,
-    PromptTemplateManager, ResponseValidator, ContextBudgetManager
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.4.main_v10_4 import setup_logging, load_job_input
 # v10.4: Import from new orchestration/stacks
-from agent_orchestration_v10_4 import get_graph_app
-from agent_stacks_v10_4 import PIISanitizerAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.4.agent_orchestration_v10_4 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v10.4.agent_stacks_v10_4 import PIISanitizerAgent
 try:
     from langgraph.checkpoint.redis import RedisSaver
 except ImportError:
@@ -48,7 +38,7 @@ except ImportError:
 
 try:
     # v10.4: Import new meta-learner
-    from run_learning_v10_4 import run_meta_learning
+    from archives.legacy_resume_gen.Older Microservices Models.v10.4.run_learning_v10_4 import run_meta_learning
     META_LEARNER_AVAILABLE = True
 except ImportError:
     META_LEARNER_AVAILABLE = False

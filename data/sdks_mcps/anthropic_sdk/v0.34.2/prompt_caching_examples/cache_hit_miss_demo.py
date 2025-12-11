@@ -5,7 +5,7 @@ Shows 87% token savings achieved in production through strategic cache control.
 import os
 import time
 from typing import List, Dict, object
-from anthropic import Anthropic
+from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic
 
 
 class PromptCachingDemo:

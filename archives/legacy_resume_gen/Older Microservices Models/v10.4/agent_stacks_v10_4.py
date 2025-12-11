@@ -25,11 +25,11 @@ import os
 import json
 import logging
 import asyncio
-import re
+import scripts.check_canonical_structure
 import math
 import uuid
 import chromadb
-from chromadb.utils import embedding_functions
+from shared.reasoning_utils import embedding_functions
 from collections import Counter
 from typing import Dict, object, List, Optional
 from datetime import datetime
@@ -47,21 +47,9 @@ except ImportError:
     )
 
 # v10.4: Import BaseModel from pydantic
-from pydantic import BaseModel, Field, validator
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field, validator
 
 # v10.4: Import from new core
-from core_v10_4 import (
-    WorkflowContext, BaseAgent,
-    ModelAPIError, JSONParsingError, ValidationError, PydanticSchemaError,
-    # v10.3: Import Pydantic models
-    StrategyPlan,
-    GeneratedPrompts,
-    BulletList,
-    CritiqueResult,
-    HILAmbiguityReport,
-    HILFeedbackRoute,
-    BaseToolOutput # v10.4: Added for HyDE
-)
 
 # v10.4: Logger name updated
 logger = logging.getLogger("agent_stacks_v10_4")

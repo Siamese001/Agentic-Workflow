@@ -5,11 +5,11 @@
 # Refactored from validator_RES.py
 
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import Dict, List, Optional, Union, Tuple, Callable
-from models_RES import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection
-from config_RES import CONFIG # Import the main config object
-from utils_RES import text_utils, calculate_signal_score
+from runtime.compat.models_RES import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG
+from archives.legacy_resume_gen.Agentic AI - not communicating.utils_RES import text_utils, calculate_signal_score
 
 class ValidationContext:
     """

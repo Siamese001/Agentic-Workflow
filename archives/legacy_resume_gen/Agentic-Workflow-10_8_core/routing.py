@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from meta_profile import META_PROFILE
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import META_PROFILE  # INVALID: Cannot import from path with hyphens
 
 
 @dataclass
@@ -69,7 +69,7 @@ def decide_route(criteria: RoutingCriteria) -> RoutingDecision:
     return decision
 from typing import Dict, object
 
-from model_invocation import invoke_model
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.model_invocation import invoke_model  # INVALID: Cannot import from path with hyphens
 
 
 class ModelClient:
@@ -103,7 +103,7 @@ def configure_for_routing(route: Dict[str, object]) -> Dict[str, object]:
 
 
 def run_model_for_plan(plan: Dict[str, object], state: Dict[str, object]):
-    from prompt_utils import build_prompt_from_plan_and_state
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_utils import build_prompt_from_plan_and_state  # INVALID: Cannot import from path with hyphens
 
     rendered = build_prompt_from_plan_and_state(plan, state)
     routing_plan = get_routing_plan(plan)

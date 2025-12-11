@@ -1,5 +1,5 @@
 import pytest
-from workflow.runner import run_workflow
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.workflow.runner import run_workflow
 
 @pytest.mark.parametrize("case", ["fast","e2e","rag-heavy","qa-heavy"])
 def test_latency_smoke(benchmark, case):

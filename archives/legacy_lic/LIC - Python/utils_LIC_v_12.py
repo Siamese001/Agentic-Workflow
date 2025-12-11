@@ -3,12 +3,12 @@
 
 __version__ = "12.0"
 
-import re
+import scripts.check_canonical_structure
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Union, Callable, Tuple
 from collections import defaultdict
 
-from models_LIC import CircuitState, Archetype, CircuitBreakerOpenError
+from archives.legacy_lic.Agentic LIC.models_LIC import CircuitState, Archetype, CircuitBreakerOpenError
 
 # ============================================================================
 # NEW v11.6: CIRCUIT BREAKER (FEATURE 4.1)

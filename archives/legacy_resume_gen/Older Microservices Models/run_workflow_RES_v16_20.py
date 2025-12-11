@@ -10,12 +10,12 @@ from datetime import datetime
 # Import the main components from the refactored modules
 try:
     # Import from the new refactored modules
-    from workflow_RES import (
+    from archives.legacy_resume_gen.Agentic AI - not communicating.workflow_RES import WorkflowOrchestrator, MASTER_RESUME_DATA, __version__
         WorkflowOrchestrator, 
         MASTER_RESUME_DATA, 
         __version__
     )
-    from config_RES import CONFIG
+    from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG
 except ImportError as e:
     print(f"Error: Could not import from refactored modules (workflow.py, config.py)")
     print(f"Details: {e}")

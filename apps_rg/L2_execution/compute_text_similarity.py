@@ -13,7 +13,7 @@ import math
 from typing import List, Tuple
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
 
     SKLEARN_AVAILABLE = True

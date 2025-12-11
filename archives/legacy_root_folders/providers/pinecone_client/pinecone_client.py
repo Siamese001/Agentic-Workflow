@@ -2,7 +2,7 @@
 from typing import Any, Dict, List, TypedDict
 import os
 from pinecone import Pinecone
-from openai import OpenAI
+from data.sdks_mcps.reference_clients.minimal_openai import OpenAI
 
 
 class Vector(TypedDict):

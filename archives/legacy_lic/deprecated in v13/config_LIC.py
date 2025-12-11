@@ -7,7 +7,7 @@ __version__ = "12.0"
 from dataclasses import dataclass, field
 from typing import Dict, List, object, Optional
 
-from models_LIC import Route, Archetype
+from archives.legacy_lic.Agentic LIC.models_LIC import Route, Archetype
 
 # ============================================================================
 # PRIORITY 2: GLOBAL CONSTRAINTS SSOT WITH API ACCESS LAYER

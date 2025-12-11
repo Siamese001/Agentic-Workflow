@@ -3,20 +3,8 @@
 import json
 from typing import Any, Dict, List
 
-from core_v10_7 import BaseAgent, StrategyPlan, WorkflowContext, track_metrics
-from agent_tools_v10_7 import (
-    EvidenceBriefAssemblerTool,
-    EvidenceClarificationTool,
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent, StrategyPlan, WorkflowContext, track_metrics
 
-from .models import (
-    CritiqueFindingRecord,
-    CritiquePanelPacket,
-    EvidenceBriefRecord,
-    EvidenceClarificationRecord,
-    EvidenceLiaisonPacket,
-    SpecialistDraftPacket,
-)
 
 
 class StructureLeadAgent(BaseAgent):

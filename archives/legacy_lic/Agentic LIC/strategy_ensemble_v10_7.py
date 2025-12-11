@@ -5,15 +5,9 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, object, Dict, List, Optional
 
-from core_v10_7 import (
-    BaseAgent,
-    StrategyPlan,
-    PlannerAssessment,
-    ScenarioSimulationResult,
-)
 
 if TYPE_CHECKING:
-    from core_v10_7 import WorkflowContext
+    from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import WorkflowContext
 
 
 def _truncate(text: str, limit: int = 160) -> str:

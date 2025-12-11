@@ -3,9 +3,9 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
-from runtime.observability.utils import compute_optimization_hint
-from runtime.observability.utils import compute_optimization_hint as compute_optimization_hint
-from self_correction import SelfCorrectionSurface
+from shared.reasoning_utils import compute_optimization_hint
+from shared.reasoning_utils import compute_optimization_hint
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface
 
 
 @dataclass

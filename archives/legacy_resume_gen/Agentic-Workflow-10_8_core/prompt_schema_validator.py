@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Dict
 
-from prompt_taxonomy import PromptSection
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_taxonomy import PromptSection  # INVALID: Cannot import from path with hyphens
 
 
 def validate_sections(sections: Dict[str, str]) -> dict:

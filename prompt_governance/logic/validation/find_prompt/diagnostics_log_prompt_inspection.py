@@ -10,7 +10,7 @@ MERKLE-INTENDED: db60e0e4af33c5c034a87918cdf7195dd6566b6ff57eee66691927ee71ca9aa
 """Prompt injection detection tests."""
 
 
-from src.lic_agentic.safety import prompt_injection
+from apps_shared.safety import prompt_injection
 
 
 from src.lic_agentic.safety.prompt_injection import detect_injection

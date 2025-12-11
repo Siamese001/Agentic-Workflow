@@ -11,9 +11,9 @@ from dataclasses import dataclass, field
 from enum import Enum
 import threading
 
-from openai_client import OpenAIClient, OpenAIConfig
-from anthropic_client import AnthropicClient, AnthropicConfig
-from vertex_client import VertexClient, VertexConfig
+from data.sdks_mcps.client_wrappers.openai_client import OpenAIClient, OpenAIConfig
+from data.sdks_mcps.client_wrappers.anthropic_client import AnthropicClient, AnthropicConfig
+from data.sdks_mcps.client_wrappers.vertex_client import VertexClient, VertexConfig
 
 
 class Provider(Enum):

@@ -6,11 +6,11 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Iterable, List
 
-from injection_profiles import DEFAULT_FRAMING_PROFILE
-from l4_memory import get_evidence_view
-from meta_profile import META_PROFILE
-from retrieval import RetrievalConfig
-from utils_types import PlanObject
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_profiles import DEFAULT_FRAMING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import get_evidence_view  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import META_PROFILE  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.retrievers.retrieval import RetrievalConfig
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject  # INVALID: Cannot import from path with hyphens
 
 
 """

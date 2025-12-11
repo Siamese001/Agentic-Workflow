@@ -13,10 +13,10 @@ import logging
 from datetime import datetime
 
 # Import L1 planner
-from .rg_planner import RGPlanner, ResumeProcessingPlan
+from archives.engines.legacy_engines.rg_planner import RGPlanner, ResumeProcessingPlan
 
 # Import K-node executors - Now from agentic_core
-from agentic_core.l2_execution.draft_execution.rg_k1_extract import RGK1Extract, ExtractionOutput
+from agentic_core.L1_cognition.P1_retrieve.gather_context.extract import RGK1Extract, ExtractionOutput
 from agentic_core.l2_execution.draft_execution.rg_k2_clean import RGK2Clean, CleaningOutput
 from agentic_core.l2_execution.draft_execution.rg_k3_quantify import RGK3Quantify, QuantificationOutput
 from agentic_core.l2_execution.draft_execution.rg_k4_rewrite import RGK4Rewrite, RewritingOutput
@@ -419,7 +419,7 @@ class RGOrchestrator:
             # Simple recovery strategy: create a minimal valid output
             if node_name == "k1_extract":
                 # Create minimal extraction output
-                from .rg_k1_extract import ExtractionOutput, ExtractionMetrics
+                from agentic_core.L1_cognition.P1_retrieve.gather_context.extract import ExtractionOutput, ExtractionMetrics
                 return ExtractionOutput(
                     extracted_sections=[],
                     raw_content=str(input_data),

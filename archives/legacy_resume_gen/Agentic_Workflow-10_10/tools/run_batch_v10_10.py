@@ -6,7 +6,7 @@ Improves résumé processing efficiency by coordinating parallel analysis workfl
 
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import dataclasses
 from dataclasses import dataclass, asdict
 import json
@@ -17,11 +17,6 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple, cast
 
-from agentic_core.l2_execution.tools.main_v10_10 import (
-    run_workflow,
-    RRFStrategy,
-    TelemetryRoutingMode,
-)
 
 
 # ---------------------------------------------------------------------------

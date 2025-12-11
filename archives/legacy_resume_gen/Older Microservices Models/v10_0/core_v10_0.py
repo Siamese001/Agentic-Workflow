@@ -15,7 +15,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, asdict
 from typing import Dict, object, List, Optional, TypedDict
 from datetime import datetime
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 
 # Custom exceptions (preserved from v9.9)
 class ModelAPIError(Exception):
@@ -465,7 +465,7 @@ class AsyncAnthropicClient(AsyncBaseModelClient):
     def __init__(self, model_name: str, cache_manager: CacheManager):
         super().__init__(model_name, cache_manager)
         try:
-            from anthropic import AsyncAnthropic
+            from data.sdks_mcps.reference_clients.minimal_anthropic import AsyncAnthropic
             self.client = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
         except ImportError:
             raise ImportError("anthropic package not installed")

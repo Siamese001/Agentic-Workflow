@@ -11,7 +11,7 @@ import logging
 from typing import Dict, List, object
 
 from . import EnhancementFacade, EnhancementConfig, create_enhancement_system
-from ..orchestrator import OutreachOrchestrator
+from archives.legacy_root_folders.orchestration.orchestrator import OutreachOrchestrator
 
 logger = logging.getLogger(__name__)
 

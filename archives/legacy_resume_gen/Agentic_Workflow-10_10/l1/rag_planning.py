@@ -9,8 +9,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Sequence
 
-from core.models.models import ExecutionContext, Evidence
-from l1.builders.prompt_builder import PromptInstance, build_rag_prompt, build_hyde_prompt
+from archives.legacy_root_folders.core.models.models import ExecutionContext, Evidence
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.builders.prompt_builder import PromptInstance, build_rag_prompt, build_hyde_prompt
 
 
 @dataclass(frozen=True)

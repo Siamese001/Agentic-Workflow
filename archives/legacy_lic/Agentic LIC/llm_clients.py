@@ -5,7 +5,7 @@ __version__ = "12.0"
 
 import google.generativeai as genai
 import os
-from utils_LIC import CircuitBreaker, CircuitBreakerOpenError
+from archives.legacy_lic.Agentic LIC.utils_LIC import CircuitBreaker, CircuitBreakerOpenError
 
 class GeminiLLMClient:
     """

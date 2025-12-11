@@ -160,7 +160,7 @@ class BM25Scorer:
     def _tokenize(self, text: str) -> List[str]:
         """Tokenize text into terms."""
         # basic tokenization - lowercase and split on non-alphanumeric
-        import re
+        import scripts.check_canonical_structure
         tokens = re.findall(r'\b\w+\b', text.lower())
         # Filter short tokens and stopwords
         stopwords = {'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being',

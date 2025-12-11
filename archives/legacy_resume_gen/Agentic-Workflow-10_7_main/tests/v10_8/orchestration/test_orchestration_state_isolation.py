@@ -6,8 +6,8 @@ import copy
 
 import pytest
 
-from agent_orchestration_v10_7 import run_inject_hil_edit
-from core_v10_7 import MainGraphState
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import run_inject_hil_edit  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import MainGraphState
 
 
 @pytest.mark.asyncio

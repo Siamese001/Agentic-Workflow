@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict
 
-from orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
+from archives.legacy_resume_gen.Older Microservices Models.v2.engine import Graph, Node, Edge, DAGExecutor
 
 
 async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:

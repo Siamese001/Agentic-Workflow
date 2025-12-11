@@ -12,18 +12,14 @@ from typing import Dict, List, object, Optional
 from pathlib import Path
 
 # Core infrastructure
-from state_manager_LIC import StateManager, StateValidator
-from memory_LIC import VectorMemoryStore
-from llm_clients import GeminiLLMClient
-from retrieval_clients import GoogleSearchClient
-from tools_LIC import CodeInterpreterTool, ValidationToolkit
-from utils_LIC import CircuitBreaker
+from archives.legacy_lic.Agentic LIC.state_manager_LIC import StateManager, StateValidator
+from archives.legacy_lic.Agentic LIC.memory_LIC import VectorMemoryStore
+from archives.legacy_lic.Agentic LIC.llm_clients import GeminiLLMClient
+from archives.legacy_lic.Agentic LIC.retrieval_clients import GoogleSearchClient
+from archives.legacy_lic.Agentic LIC.tools_LIC import CodeInterpreterTool, ValidationToolkit
+from archives.legacy_lic.Agentic LIC.utils_LIC import CircuitBreaker
 
 # Models
-from models_LIC import (
-    OutreachMission, Route, Archetype, FactualGapError,
-    FailureClassifier, ValidationSeverity
-)
 
 
 # ============================================================================
@@ -692,7 +688,7 @@ class HOP6_ValidationAgent:
         # 1. Placeholder check (CRITICAL)
         patterns = self.rules["content_cleanliness_rules"]["placeholder_patterns"]["patterns"]
         for pattern in patterns:
-            import re
+            import scripts.check_canonical_structure
             if re.search(pattern, text):
                 results.append({
                     "passed": False,
@@ -765,7 +761,7 @@ class HOP6_ValidationAgent:
             min_overlap = self.rules["strategic_alignment_validation"]["min_keyword_overlap"]
             
             # Extract keywords from brief and message
-            import re
+            import scripts.check_canonical_structure
             brief_words = set(w.lower().strip('.,!?;:') for w in strategic_brief.split() if len(w) > 4)
             message_words = set(w.lower().strip('.,!?;:') for w in text.split() if len(w) > 4)
             

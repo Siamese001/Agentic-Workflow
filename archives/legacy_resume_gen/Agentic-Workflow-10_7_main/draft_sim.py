@@ -3,12 +3,7 @@
 import random
 from typing import Any, Dict
 
-from simulations.models.draft_simulation import (
-    DraftSimMetrics,
-    DraftSimRequest,
-    DraftSimResult,
-)
-from simulations.utils import model_to_payload
+from shared.reasoning_utils import model_to_payload
 
 
 class DraftSimulator:

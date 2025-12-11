@@ -9,13 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from core.models.models import (
-    ExecutionContext,
-    DraftingResult,
-    RAGResult,
-    QAResult,
-)
-from l1.builders.prompt_builder import PromptInstance, build_safety_prompt
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.builders.prompt_builder import PromptInstance, build_safety_prompt
 
 
 @dataclass(frozen=True)

@@ -13,10 +13,10 @@ from datetime import datetime
 pytest_plugins = ('pytest_asyncio',)
 
 try:
-    from main_v10_0 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.main_v10_0 import setup_logging, load_job_input, run_workflow_async, main
         setup_logging, load_job_input, run_workflow_async, main
     )
-    from core_v10_0 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import WorkflowContext, MainGraphState, FileIOError, CostCeilingExceededError
         WorkflowContext, MainGraphState,
         FileIOError, CostCeilingExceededError
     )

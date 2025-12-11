@@ -13,20 +13,16 @@ import os
 import json
 import logging
 import asyncio
-import re
+import scripts.check_canonical_structure
 import math
 import uuid # v10.2: Added
 import chromadb # v10.2: Added
-from chromadb.utils import embedding_functions # v10.2: Added
+from shared.reasoning_utils import embedding_functions
 from collections import Counter
 from typing import Dict, object, List, Optional
 from datetime import datetime
 
 # v10.2: Import from new core
-from core_v10_2 import (
-    WorkflowContext, BaseAgent,
-    ModelAPIError, JSONParsingError, ValidationError
-)
 
 logger = logging.getLogger("agent_stacks_v10_2")
 

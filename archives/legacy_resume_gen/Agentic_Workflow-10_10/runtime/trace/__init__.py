@@ -10,7 +10,7 @@ The implementation of get_routing_trace lives in trace_reconstruction.py in
 this package and mirrors the real runtime.trace helper at the repo root.
 """
 
-from .trace_reconstruction import get_routing_trace  # noqa: F401
+from archives.legacy_root_folders.runtime.trace.trace_reconstruction import get_routing_trace
 
 
 

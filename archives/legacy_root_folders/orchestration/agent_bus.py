@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-from core.models.models import AgentMessage
+from archives.legacy_root_folders.core.models.models import AgentMessage
 
 """
 Provides in-memory messaging channel for résumé analysis agents to coordinate and share context.

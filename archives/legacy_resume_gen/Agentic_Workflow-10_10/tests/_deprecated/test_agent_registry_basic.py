@@ -1,6 +1,6 @@
-from orchestration.agent_registry import AgentRegistry
-from config.agent_profile import AgentCard
-from core.models.models import AgentRole  # normalized import
+from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
+from archives.legacy_root_folders.core.models.models import AgentRole
 
 
 def test_agent_registry_register_and_lookup():

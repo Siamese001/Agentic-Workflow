@@ -4,8 +4,8 @@ import time
 import uuid
 from typing import Any, Dict, Optional
 
-from core.models.models import TelemetryEvent
-from runtime.observability.collectors import append_event, push_span, pop_span
+from archives.legacy_root_folders.core.models.models import TelemetryEvent
+from archives.legacy_root_folders.runtime.observability.collectors import append_event, push_span, pop_span
 
 
 def _now_ms() -> int:
@@ -43,7 +43,7 @@ def start_span(name: str, ctx: Optional[Dict[str, object]] = None) -> Dict[str, 
 def end_span(span_record: Dict[str, object]) -> None:
     """Close a previously-started span; no-op if unknown."""
 
-    from runtime.observability.collectors import span_stack  # local import to avoid cycles
+    from archives.legacy_root_folders.runtime.observability.collectors import span_stack
 
     if span_record not in span_stack():
         return

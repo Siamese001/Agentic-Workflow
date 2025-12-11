@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from datetime import datetime, UTC
 from enum import Enum
 import hashlib
-import re
+import scripts.check_canonical_structure
 
 
 class EntityType(str, Enum):

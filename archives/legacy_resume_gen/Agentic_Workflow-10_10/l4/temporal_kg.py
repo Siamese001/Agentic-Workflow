@@ -13,7 +13,7 @@ import hashlib
 import logging
 
 try:
-    from graph_store_neo4j import Neo4jGraphStore as _Neo4jGraphStore
+    from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore
     _NEO4J_AVAILABLE = True
 except ImportError:
     _Neo4jGraphStore = object  # type: ignore

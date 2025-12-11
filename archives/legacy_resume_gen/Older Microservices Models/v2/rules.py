@@ -5,14 +5,14 @@
 # Refactored from validator_RES_v2.py
 
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import List, Tuple, Set
 from collections import defaultdict
 
 # Import ValidationContext from same package
-from .context import ValidationContext
-from models_RES import ResumeSection, BulletProvenance
-from utils_RES_v2 import text_utils
+from scripts.utilities.format_scripts_context import ValidationContext
+from runtime.compat.models_RES import ResumeSection, BulletProvenance
+from runtime.compat.utils_RES_v2 import text_utils
 
 # --- Regex Patterns (Moved from PreFlightValidator) ---
 PROMPT_CONTAMINATION_PATTERN = re.compile(r"\b(MUST|CRITICAL|ABSOLUTELY|Do NOT|Output ONLY|Return ONLY|JSON structure|Word count:|Sentence count:|Target range:|strictly between)\b", re.IGNORECASE)

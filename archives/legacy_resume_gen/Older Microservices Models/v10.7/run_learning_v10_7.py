@@ -31,19 +31,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 # v10.7: Import from new core
-from core_v10_7 import (
-    BaseAgent,
-    ConfigV10_7,
-    MetaGraphState,
-    WorkflowContext,
-    WorkflowError,
-    create_workflow_context,
-    PydanticSchemaError,
-    track_metrics,
-    _format_prompt_with_defaults, # v10.7: Import async formatter
-    get_checkpointer
-)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 
 # v10.7: Logger name updated
 logger = logging.getLogger("meta_learner_v10_7")

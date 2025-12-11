@@ -2,7 +2,7 @@
 # Version: 3.8.0 - V3.8 Agentic Architecture with Async Governor
 # Smart launcher with async execution support - Complete Migration
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import os
 import sys
@@ -19,12 +19,12 @@ logger = logging.getLogger(__name__)
 
 # Import the main components from the v3.8 modules
 try:
-    from workflow_RES_v3_8 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v3.8.workflow_RES_v3_8 import WorkflowOrchestrator, load_master_resume, __version__
         WorkflowOrchestrator, 
         load_master_resume,
         __version__
     )
-    from config_RES_v3_8 import CONFIG, OUTPUT_DIR, DATA_DIR
+    from archives.legacy_resume_gen.Older Microservices Models.v3.8.config_RES_v3_8 import CONFIG, OUTPUT_DIR, DATA_DIR
 except ImportError as e:
     logger.critical(f"Error: Could not import from v3.8 modules (workflow_RES_v3_8.py, config_RES_v3_8.py)")
     logger.critical(f"Details: {e}")

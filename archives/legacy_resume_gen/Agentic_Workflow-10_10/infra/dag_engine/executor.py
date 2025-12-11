@@ -6,8 +6,8 @@ Provides minimal async execution engine for comprehensive résumé improvement o
 
 from typing import Any, Dict, Iterable, Optional, Set, List
 
-from orchestration.agent_registry import AgentRegistry
-from .models import Graph
+from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry
+from shared.models import Graph
 
 
 class DAGExecutor:

@@ -4,7 +4,7 @@
 """Module implementation."""
 
 import sys
-import types
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

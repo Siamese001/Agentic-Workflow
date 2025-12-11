@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Dict, List
 
-from utils_types import Phase
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import Phase  # INVALID: Cannot import from path with hyphens
 
 
 class StateMachine:

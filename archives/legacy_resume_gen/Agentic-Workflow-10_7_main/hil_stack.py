@@ -4,14 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from core_v10_7 import PersonaConsensus, StrategyPlan
-from agent_stacks_v10_8.components.hil import (
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-    HILFeedbackSummarizerAgent,
-    HILReconciliationAgent,
-    VirtualReviewerCouncilAgent,
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import PersonaConsensus, StrategyPlan
 
 
 class HILStackV10_8:

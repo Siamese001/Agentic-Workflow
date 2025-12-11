@@ -6,7 +6,7 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict, List
 
-from utils_types import Message
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import Message  # INVALID: Cannot import from path with hyphens
 
 
 class MemoryManager:
@@ -114,7 +114,7 @@ as messages, retrieved artifacts, and running summaries.
 
 from typing import List
 
-from utils_types import BudgetConfig, Message
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import BudgetConfig, Message  # INVALID: Cannot import from path with hyphens
 
 
 class ContextBudget:

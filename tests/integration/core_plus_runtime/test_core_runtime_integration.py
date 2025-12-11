@@ -190,7 +190,7 @@ class TestSecurityIntegration:
         """Integration: PII filtering works in pipeline."""
         input_text = "Contact john@example.com for details"
 
-        import re
+        import scripts.check_canonical_structure
         filtered = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[EMAIL]', input_text)
 
         assert "john@example.com" not in filtered

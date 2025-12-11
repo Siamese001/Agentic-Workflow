@@ -30,23 +30,13 @@ import logging
 import asyncio
 import os
 import importlib.util
-import inspect
+import agentic_core.L1_cognition.P2_inspect.detect_anomalies_update.inspect
 from typing import Dict, object, List, Callable, Awaitable, Tuple
 from functools import wraps, partial
 
 # v10.6: Import from new core
-from core_v10_6 import (
-    WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
-    exponential_backoff_retry, CircuitBreakerOpenError,
-    CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
-    ConfigV10_6, BaseTool,
-    track_metrics,
-    _format_prompt_with_defaults,
-    ConstitutionalReviewResult, # v10.6 (Fix #30)
-    PersonaConsensus
-)
-from langgraph.graph import StateGraph, END
-from langgraph.errors import GraphRecursionError
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
 
 # Make HIL import conditional for environment compatibility
 try:
@@ -60,43 +50,8 @@ except ImportError:
     )
 
 # v10.6: Import from new stacks
-from agent_stacks_v10_6 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    PromptInjectionDetectorAgent,
-    QueryComplexityClassifier,
-    ToTStrategistAgent,
-    PromptEngineerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-    ConstitutionalReviewerAgent, # v10.6 (Fix #30)
-    DraftingGuildCoordinator
-)
 
 # v10.6: Import from new tools file
-from agent_tools_v10_6 import (
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QABiasDetectorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAWordCountValidatorTool,
-    HyDETool,
-    ChromaDBSearchTool,
-    BM25SearchTool,
-    # v10.6 (Fix #8): Import UI tool stubs
-    UIUpdateElementTool,
-    UIFireEventTool
-)
 
 # v10.6: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_6")

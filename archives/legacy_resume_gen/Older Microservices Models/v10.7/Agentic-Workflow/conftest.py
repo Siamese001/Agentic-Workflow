@@ -2,29 +2,15 @@ import asyncio
 import contextlib
 import json
 import sys
-import types
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Tuple
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from chromadb.utils import embedding_functions
+from shared.reasoning_utils import embedding_functions
 
-from core_v10_7 import (
-    CacheManager,
-    ConfigV10_7,
-    ContextBudgetManager,
-    CostTracker,
-    FeedbackLogReader,
-    MetricsCollector,
-    PromptTemplateManager,
-    ProposedRulesLoader,
-    ResponseValidator,
-    SemanticValidator,
-    WorkflowContext,
-    WorkflowTimeoutError,
-)
 
 
 # -------------------------------------------------------------------

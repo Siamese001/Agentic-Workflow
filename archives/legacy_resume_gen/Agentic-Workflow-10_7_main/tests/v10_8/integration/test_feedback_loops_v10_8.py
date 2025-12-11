@@ -4,13 +4,8 @@ from typing import Any, Dict
 
 import pytest
 
-from agent_orchestration_v10_7 import (
-    run_prepare_hil_drafting_reentry,
-    run_prepare_hil_strategy_reentry,
-    unwrap_node_result,
-)
-from core_v10_7 import SelfCorrectionManager
-from stacks_v10_8 import DraftOrchestratorStack, RAGOrchestratorStack
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import SelfCorrectionManager
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.tests.v10_7.test_flat__stacks__test_execution_stacks_v10_8 import DraftOrchestratorStack, RAGOrchestratorStack  # INVALID: Cannot import from path with hyphens
 
 
 class _StubPlanning:

@@ -46,7 +46,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple, Callable
 from uuid import uuid4
 
-import anthropic
+import data.sdks_mcps.reference_clients.minimal_anthropic
 import google.generativeai as genai
 
 

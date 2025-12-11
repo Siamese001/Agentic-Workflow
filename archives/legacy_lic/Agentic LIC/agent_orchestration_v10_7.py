@@ -30,27 +30,15 @@ import logging
 import asyncio
 import os
 import importlib.util
-import inspect
+import agentic_core.L1_cognition.P2_inspect.detect_anomalies_update.inspect
 from typing import Dict, object, List, Callable, Awaitable, Tuple, Optional
 from functools import wraps, partial
 
 # v10.7: Import from new core
-from core_v10_7 import (
-    WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
-    exponential_backoff_retry, CircuitBreakerOpenError,
-    CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
-    ConfigV10_7, BaseTool,
-    track_metrics,
-    _format_prompt_with_defaults,
-    ConstitutionalReviewResult, # v10.7 (Fix #30)
-    PersonaConsensus,
-    wrap_mcp,
-    MCPClientStub
-)
-from mcp import get_agent
-from langgraph.graph import StateGraph, END
-from langgraph.errors import GraphRecursionError
-from telemetry_v10_7 import log_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_agent  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.telemetry_v10_7 import log_event  # INVALID: Cannot import from path with hyphens
 
 # Make HIL import conditional for environment compatibility
 try:
@@ -64,43 +52,8 @@ except ImportError:
     )
 
 # v10.7: Import from new stacks
-from agent_stacks_v10_7 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    PromptInjectionDetectorAgent,
-    QueryComplexityClassifier,
-    ToTStrategistAgent,
-    PromptEngineerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-    ConstitutionalReviewerAgent, # v10.7 (Fix #30)
-    DraftingGuildCoordinator
-)
 
 # v10.7: Import from new tools file
-from agent_tools_v10_7 import (
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QABiasDetectorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAWordCountValidatorTool,
-    HyDETool,
-    ChromaDBSearchTool,
-    BM25SearchTool,
-    # v10.7 (Fix #8): Import UI tool stubs
-    UIUpdateElementTool,
-    UIFireEventTool
-)
 
 # v10.7: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_7")

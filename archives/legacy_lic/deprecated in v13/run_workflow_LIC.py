@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, object
 
-from models_LIC import OutreachMission
+from archives.legacy_lic.Agentic LIC.models_LIC import OutreachMission
 
 __version__ = "12.0"
 
@@ -97,7 +97,7 @@ def create_orchestrator():
         WorkflowOrchestrator instance
     """
     try:
-        from workflow_LIC import WorkflowOrchestrator
+        from archives.legacy_lic.Agentic LIC.workflow_LIC import WorkflowOrchestrator
         return WorkflowOrchestrator()
     except ImportError as e:
         print(f"FATAL: Could not import WorkflowOrchestrator: {e}")

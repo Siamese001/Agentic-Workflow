@@ -6,7 +6,7 @@ import copy
 import logging
 from typing import Any, MutableMapping, Optional
 
-from pydantic import BaseModel
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 

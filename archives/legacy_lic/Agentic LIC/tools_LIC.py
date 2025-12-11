@@ -4,10 +4,10 @@
 
 __version__ = "13.0"
 
-import re
+import scripts.check_canonical_structure
 import json
 from typing import Dict, List, object, Tuple, Optional, Callable
-from sklearn.feature_extraction.text import TfidfVectorizer
+from scripts.utilities.format_scripts_context import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 

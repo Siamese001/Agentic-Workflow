@@ -6,7 +6,7 @@
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import time
 import hashlib
 from typing import Any, Dict, List, Optional, Tuple
@@ -26,16 +26,10 @@ except ImportError:
     GEMINI_AVAILABLE = False
     genai = None
 
-from models_RES import HopExecutionError, ReasoningConfig
-from utils_RES_v3_8 import text_utils, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
+from runtime.compat.models_RES import HopExecutionError, ReasoningConfig
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.utils_RES_v3_8 import text_utils, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
 
 # --- FIX: Import ALL constants from config_RES_v3_8 ---
-from config_RES_v3_8 import (
-    DEFAULT_GENERATION_TEMPERATURE, 
-    DEFAULT_SYNTHESIS_TEMPERATURE,
-    DEFAULT_MAX_RETRIES,  # <-- IMPORTED
-    DEFAULT_RETRY_DELAY   # <-- IMPORTED
-)
 # --- END FIX ---
 
 logger = logging.getLogger(__name__)

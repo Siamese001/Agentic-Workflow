@@ -1,9 +1,9 @@
 """Grouped L1 reasoning tests."""
-from l1_reasoning import DraftingReasoner
-from l1_reasoning import RAGReasoner
-from l1_reasoning import StrategyReasoner
-from prompt_system import PromptEnvelope
-from l4_memory import MemoryManager
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import DraftingReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import RAGReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import StrategyReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptEnvelope  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import MemoryManager  # INVALID: Cannot import from path with hyphens
 
 
 def test_l1_plans_include_injection_framing():
@@ -51,12 +51,12 @@ def test_memory_manager_canonicalizes_without_semantic_change():
     assert normalized["messages"][1]["role"] == "assistant"
     assert normalized["metadata"]["context_consistency"] == "unchecked"
     assert len(normalized["messages"]) == len(messages)
-from l1_reasoning import DraftingReasoner
-from l1_reasoning import RAGReasoner
-from l1_reasoning import StrategyReasoner
-from l2_execution import QAValidationAgent
-from prompt_system import PromptRenderer
-from utils_types import PlanObject
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import DraftingReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import RAGReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import StrategyReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import QAValidationAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptRenderer  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject  # INVALID: Cannot import from path with hyphens
 
 
 def test_l1_plans_include_reasoning_injection_flags():
@@ -93,14 +93,14 @@ def test_prompt_metadata_includes_reason_then_answer_flag():
     metadata = renderer.get_render_metadata()
 
     assert metadata.get("injection_reasoning", {}).get("reason_then_answer") is True
-from l2_execution import BulletExecutionAgent
-from l2_execution import DraftingExecutionAgent
-from l2_execution import QAValidationAgent
-from l2_execution import RAGExecutionAgent
-from l3_orchestration import GraphOrchestrator
-from prompt_system import PromptEnvelope
-from prompt_system import PromptRenderer
-from utils_types import PlanObject
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import BulletExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import DraftingExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import QAValidationAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import RAGExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptEnvelope  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptRenderer  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject  # INVALID: Cannot import from path with hyphens
 
 
 def test_l2_execution_agents_emit_tooling_metadata():
@@ -153,15 +153,10 @@ def test_graph_orchestrator_state_carries_reconciliation_metadata():
         result.state.get("tooling_injection", {}).get("cross_tool_reconciliation")
         is True
     )
-from injection_output_profiles import DEFAULT_SAFETY_OUTPUT_PROFILE
-from l5_safety import SafetyGateway
-from prompt_system import PromptEnvelope
-from prompt_system import PromptRenderer
-from prompt_system import (
-    DEFAULT_TEMPLATE_METADATA,
-    DEFAULT_TEMPLATE_OUTPUT_INJECTION,
-    envelope_from_template,
-)
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_output_profiles import DEFAULT_SAFETY_OUTPUT_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptEnvelope  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import PromptRenderer  # INVALID: Cannot import from path with hyphens
 
 
 def test_safety_gateway_includes_injection_safety_metadata():
@@ -216,9 +211,9 @@ def test_template_metadata_stability_contracts_intact():
 """
 Integration tests for injection taxonomy metadata exposure.
 """
-from l5_safety import InjectionDetector
-from l5_safety import SafetyGateway
-from prompt_system import DEFAULT_INJECTION_PATTERNS, INSTRUCTIONAL_INJECTION_ALL
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import InjectionDetector  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import DEFAULT_INJECTION_PATTERNS, INSTRUCTIONAL_INJECTION_ALL  # INVALID: Cannot import from path with hyphens
 
 
 def test_injection_detector_exposes_instructional_types():
@@ -247,11 +242,11 @@ def test_injection_blocking_behavior_unchanged():
     assert patch["safety_gateway"]["injection"]["is_injection"] is True
 import pytest
 
-from runtime.observability.utils import CostTracker
-from l1_reasoning import StrategyReasoner
-from l3_orchestration import QAOrchestrator
-from meta_profile import META_PROFILE
-from core.routing import RoutingCriteria, decide_route
+from shared.reasoning_utils import CostTracker
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import StrategyReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import QAOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import META_PROFILE  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.core.routing import RoutingCriteria, decide_route
 
 
 @pytest.fixture(autouse=True)

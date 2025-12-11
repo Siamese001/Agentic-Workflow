@@ -12,23 +12,16 @@ import logging
 import os
 import uuid
 import asyncio
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import chromadb # v10.2: Added
-from chromadb.utils import embedding_functions # v10.2: Added
+from shared.reasoning_utils import embedding_functions
 from datetime import datetime
 from typing import List, Dict, object, Optional
 
 # v10.2: Import from new core
-from core_v10_2 import (
-    ConfigV10_2, WorkflowContext, BaseAgent, MetaGraphState,
-    FileIOError, META_LOG_READER_SYSTEM_PROMPT,
-    META_PATTERN_FINDER_SYSTEM_PROMPT, META_HYPOTHESIS_GENERATOR_SYSTEM_PROMPT,
-    META_PROPOSAL_DRAFTER_SYSTEM_PROMPT, META_PROPOSAL_CRITIQUE_SYSTEM_PROMPT,
-    CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader
-)
 # v10.2: Import from new main
-from main_v10_2 import setup_logging
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.main_v10_2 import setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger("meta_learner_v10_2")

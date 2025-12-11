@@ -22,7 +22,7 @@
 # ============================================================================
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 import time
 import os # <-- v6.1: Added for checking rules_registry.json
 from collections import defaultdict
@@ -31,7 +31,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from core.py
 # v6.4: Imports updated to core_v6_4
-from core_v6_4 import (
+from archives.legacy_resume_gen.Older Microservices Models.v6.4.core_v6_4 import ThematicAnalysis, ResumeSection, ValidationResult, ValidationSeverity, FactualFailureException, GenerationAttempt, MechanicalFailureError, SemanticFailureError, AtomicAgentConfig, MoERouterConfig, MoEExpertResult, MoEDecision, QAClassification, VetoLevel, CONFIG, DEFAULT_GENERATION_TEMPERATURE, ACCEPTABLE_MIN_WC, ACCEPTABLE_MAX_WC, text_utils, fence_data, get_validation_prompt
     # Models
     ThematicAnalysis, ResumeSection, ValidationResult,
     ValidationSeverity, FactualFailureException, GenerationAttempt,

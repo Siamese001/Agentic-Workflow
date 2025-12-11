@@ -6,9 +6,9 @@ Orchestrates relevant information into structured text blocks for optimal résum
 
 from typing import List
 
-from .pinned import PinnedItem, filter_pinned
-from .relevance import ContextItem, score_relevance
-from .slots import ContextSlot, assign_to_slot
+from archives.legacy_root_folders.infra.context_engine.pinned import PinnedItem, filter_pinned
+from archives.legacy_root_folders.infra.context_engine.relevance import ContextItem, score_relevance
+from archives.legacy_root_folders.infra.context_engine.slots import ContextSlot, assign_to_slot
 
 
 def assemble_context(

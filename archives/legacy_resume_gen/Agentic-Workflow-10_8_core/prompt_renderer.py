@@ -12,14 +12,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from prompt_envelope import PromptEnvelope
-from prompt_schema_validator import validate_sections
-from prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection
-from prompt_templates import (
-    DEFAULT_TEMPLATE_OUTPUT_INJECTION,
-    envelope_from_template,
-    load_template,
-)
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_envelope import PromptEnvelope  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_schema_validator import validate_sections  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection  # INVALID: Cannot import from path with hyphens
 
 
 class PromptRenderer:

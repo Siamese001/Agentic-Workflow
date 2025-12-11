@@ -30,15 +30,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, object, List, Dict
 
-from core.models.models import (
-    ComplexityLevel,
-    SkillClassifierResult,
-    DomainClassifierResult,
-    MultiAgentCouncilResult,
-    RoutingDecisionEvent,
-)
-from config.meta_profile import MetaProfileSnapshot
-from observability import record_event
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import record_event  # INVALID: Cannot import from path with hyphens
 
 
 # =============================================================================

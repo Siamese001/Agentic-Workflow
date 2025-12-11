@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from eval.golden_state.models import GoldenCase, GoldenOutput
+from archives.legacy_root_folders.eval.golden_state.models import GoldenCase, GoldenOutput
 
 
 def evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> GoldenOutput:

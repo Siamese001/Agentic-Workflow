@@ -81,7 +81,7 @@ def apply_import_mappings():
     This function will be used to systematically update imports.
     """
     import os
-    import re
+    import scripts.check_canonical_structure
     
     updated_files = []
     

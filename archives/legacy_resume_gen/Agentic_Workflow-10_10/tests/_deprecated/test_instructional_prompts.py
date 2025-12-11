@@ -8,32 +8,6 @@ This module validates:
 """
 
 import pytest
-from l1.instructional_injection_v6 import (
-    InstructionalPrompt,
-    InstructionalLayer,
-    InstructionalExtension,
-    LayerContent,
-    ExtensionContent,
-    create_l1_planner_prompt,
-    create_l2_executor_prompt,
-    add_rag_extension,
-    add_cot_extension,
-)
-from l1.many_shot_examples import (
-    ExampleType,
-    get_examples,
-    format_examples_for_prompt,
-    STRATEGY_PLANNING_EXAMPLES,
-    RAG_PLANNING_EXAMPLES,
-)
-from l1.v6_prompt_integration import (
-    create_strategy_planner_prompt,
-    create_rag_planner_prompt,
-    create_qa_planner_prompt,
-    create_safety_planner_prompt,
-    create_strategy_executor_prompt,
-    validate_v6_prompt,
-)
 
 
 class TestInstructionalPromptStructure:

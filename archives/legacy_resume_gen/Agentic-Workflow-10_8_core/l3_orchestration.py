@@ -6,8 +6,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
-from errors_controlflow import DAGValidationError
-from node_result import NodeResult
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.errors_controlflow import DAGValidationError  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult  # INVALID: Cannot import from path with hyphens
 
 
 @dataclass
@@ -84,8 +84,8 @@ class DAG:
 from copy import deepcopy
 from typing import Any, Dict, List, Set
 
-from errors_controlflow import NodeExecutionError
-from node_result import NodeResult, NodeStatus
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.errors_controlflow import NodeExecutionError  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
 
 
 class DAGExecutor:
@@ -201,22 +201,22 @@ This file is scaffolded for Priority 0; implementation comes later.
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
-from core.routing import run_model_for_plan
-from runtime.observability.utils import CostTracker
-from l1_reasoning import StrategyReasoner
-from l2_execution import RAGExecutionAgent
-from l4_state import StateAdapter
-from l5_safety import SafetyGateway
-from node_result import NodeResult, NodeStatus
-from self_correction import evaluate_correction
-from self_correction import record_correction_event
-from multi_agent import MultiAgentOrchestrator, AgentMessage, AgentRole, COUNCIL_OF_QA
-from core.routing import RoutingCriteria, RoutingDecision, decide_route
-from self_correction import SelfCorrectionSurface
-from runtime.observability.utils import record_event  # type: ignore[attr-defined]
-from runtime.observability.utils import compute_optimization_hint
-from meta_profile import update_meta_profile_from_spans_and_self_correction
-from utils_types import PlanObject, StatePatch
+from archives.legacy_root_folders.core.routing import run_model_for_plan
+from shared.reasoning_utils import CostTracker
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import StrategyReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import RAGExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.self_correction import evaluate_correction
+from archives.legacy_root_folders.meta.self_correction import record_correction_event
+from archives.legacy_root_folders.meta.multi_agent import MultiAgentOrchestrator, AgentMessage, AgentRole, COUNCIL_OF_QA
+from archives.legacy_root_folders.core.routing import RoutingCriteria, RoutingDecision, decide_route
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface
+from shared.reasoning_utils import record_event
+from shared.reasoning_utils import compute_optimization_hint
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import update_meta_profile_from_spans_and_self_correction  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 @dataclass
@@ -445,19 +445,19 @@ This file is scaffolded for Priority 0; implementation comes later.
 
 from typing import Any, Dict, Optional
 
-from observability import CostTracker
-from l1_reasoning import RAGReasoner
-from l2_execution import RAGExecutionAgent
-from l4_state import StateAdapter
-from l5_safety import SafetyGateway
-from node_result import NodeResult, NodeStatus
-from self_correction import evaluate_correction
-from self_correction import record_correction_event
-from self_correction import SelfCorrectionSurface
-from observability import record_event
-from observability import compute_optimization_hint
-from meta_profile import update_meta_profile_from_spans_and_self_correction
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import CostTracker  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import RAGReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import RAGExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.self_correction import evaluate_correction
+from archives.legacy_root_folders.meta.self_correction import record_correction_event
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import record_event  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import compute_optimization_hint  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import update_meta_profile_from_spans_and_self_correction  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class RAGOrchestrator:
@@ -625,19 +625,19 @@ This file is scaffolded for Priority 0; implementation comes later.
 
 from typing import Any, Dict, Optional
 
-from observability import CostTracker
-from l1_reasoning import DraftingReasoner
-from l2_execution import DraftingExecutionAgent
-from l4_state import StateAdapter
-from l5_safety import SafetyGateway
-from node_result import NodeResult, NodeStatus
-from self_correction import evaluate_correction
-from self_correction import record_correction_event
-from self_correction import SelfCorrectionSurface
-from observability import record_event
-from observability import compute_optimization_hint
-from meta_profile import update_meta_profile_from_spans_and_self_correction
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import CostTracker  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import DraftingReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import DraftingExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.self_correction import evaluate_correction
+from archives.legacy_root_folders.meta.self_correction import record_correction_event
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import record_event  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import compute_optimization_hint  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import update_meta_profile_from_spans_and_self_correction  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class DraftOrchestrator:
@@ -805,19 +805,19 @@ This file is scaffolded for Priority 0; implementation comes later.
 
 from typing import Any, Dict, Optional
 
-from observability import CostTracker
-from l1_reasoning import StrategyReasoner
-from l2_execution import BulletExecutionAgent
-from l4_state import StateAdapter
-from l5_safety import SafetyGateway
-from node_result import NodeResult, NodeStatus
-from self_correction import evaluate_correction
-from self_correction import record_correction_event
-from self_correction import SelfCorrectionSurface
-from observability import record_event
-from observability import compute_optimization_hint
-from meta_profile import update_meta_profile_from_spans_and_self_correction
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import CostTracker  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import StrategyReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import BulletExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.self_correction import evaluate_correction
+from archives.legacy_root_folders.meta.self_correction import record_correction_event
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import record_event  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import compute_optimization_hint  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import update_meta_profile_from_spans_and_self_correction  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class BulletOrchestrator:
@@ -985,20 +985,20 @@ This file is scaffolded for Priority 0; implementation comes later.
 
 from typing import Any, Dict, Optional
 
-from observability import CostTracker
-from l1_reasoning import StrategyReasoner
-from l2_execution import QAValidationAgent
-from l4_state import StateAdapter
-from l5_safety import SafetyGateway
-from node_result import NodeResult, NodeStatus
-from self_correction import ArbitrationEngine
-from self_correction import evaluate_correction
-from self_correction import record_correction_event
-from self_correction import SelfCorrectionSurface
-from observability import record_event
-from observability import compute_optimization_hint
-from meta_profile import update_meta_profile_from_spans_and_self_correction
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import CostTracker  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import StrategyReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import QAValidationAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.self_correction import ArbitrationEngine
+from archives.legacy_root_folders.meta.self_correction import evaluate_correction
+from archives.legacy_root_folders.meta.self_correction import record_correction_event
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import record_event  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import compute_optimization_hint  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import update_meta_profile_from_spans_and_self_correction  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class QAOrchestrator:

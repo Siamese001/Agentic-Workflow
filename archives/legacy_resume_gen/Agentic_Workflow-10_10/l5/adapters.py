@@ -10,28 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from l5.interfaces import (
-    L5PolicyEnforcerInterface,
-    L5SafetyCheckerInterface,
-    L5RiskAssessmentInterface,
-    L5ComplianceCheckerInterface,
-    L5HitLInterface,
-    L5ResourceGuardInterface,
-    L5AuditLoggerInterface,
-    L5PolicyRequest,
-    L5PolicyResult,
-    PolicyType,
-    Action,
-)
-from l5.safety_validator import SafetyValidator, SafetyViolation
-from core.models.models import (
-    ExecutionContext,
-    SafetyResult,
-    SafetyFinding,
-    RiskLevel,
-    PolicyViolation,
-    HitLRequest,
-)
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.safety_validator import SafetyValidator, SafetyViolation
 
 
 class SafetyValidatorAdapter(L5SafetyCheckerInterface):
@@ -106,7 +85,7 @@ class SafetyValidatorAdapter(L5SafetyCheckerInterface):
             r'exec\s*\(',
         ]
         
-        import re
+        import scripts.check_canonical_structure
         violations = []
         
         for pattern in injection_patterns:

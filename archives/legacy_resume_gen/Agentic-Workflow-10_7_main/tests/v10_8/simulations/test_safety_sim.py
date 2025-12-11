@@ -2,8 +2,8 @@
 
 import pytest
 
-from simulations.engines.safety_sim import SafetySimulator
-from simulations.models import SafetySimRequest
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.safety_sim import SafetySimulator  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.dag.test_dag_models import SafetySimRequest
 
 
 @pytest.mark.asyncio

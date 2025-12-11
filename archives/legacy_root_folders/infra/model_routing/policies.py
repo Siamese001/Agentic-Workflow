@@ -6,11 +6,11 @@ Provides intelligent model selection and budget enforcement for optimal résumé
 
 from typing import Optional
 from l1.outreach_dataclasses import ArchetypeType
-from core.models.models import ExecutionProfile, ComplexityLevel
-from meta.routing import RoutingPolicy
-from runtime.execution_budget_manager import ExecutionBudgetManager
+from archives.legacy_root_folders.core.models.models import ExecutionProfile, ComplexityLevel
+from archives.legacy_root_folders.meta.routing import RoutingPolicy
+from archives.legacy_root_folders.runtime.execution_budget_manager import ExecutionBudgetManager
 
-from .models import ModelChoice, RoutingContext
+from shared.models import ModelChoice, RoutingContext
 
 
 def _infer_provider_from_model(model: str) -> str:

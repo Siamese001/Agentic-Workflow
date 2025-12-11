@@ -12,7 +12,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
@@ -20,24 +20,11 @@ from collections import defaultdict
 
 import google.generativeai as genai
 
-from models_RES import (
-    ResumeSection, ThematicAnalysis, HopExecutionError,
-    ValidationResult, ValidationSeverity, BulletProvenance
-)
-from gemini_service import GeminiService
+from archives.legacy_resume_gen.Older Microservices Models.v2.gemini_service import GeminiService
 # --- REFACTOR: Standardized global config and template imports ---
-from config_RES_v3_8 import (
-    CONFIG, DEFAULT_GENERATION_TEMPERATURE, # Import global CONFIG
-    ReasoningConfig, # Keep ReasoningConfig as it's used as a type/enum
-)
 # --- END REFACTOR ---
 
 # --- REFACTOR: Import global text_utils instance ---
-from utils_RES_v3_8 import (
-    text_utils, # Import the global instance
-    reasoning_config_to_api_params, enhance_system_prompt_with_reasoning,
-    TextSanitizer, build_generation_prompt_with_reinforced_constraints
-)
 # Note: CodeInterpreterTool is no longer used by the Artist.
 # Validation/Scoring is now handled by the PreFlightValidator.
 

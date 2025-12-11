@@ -5,7 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Dict
 
-from mcp import get_schema
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_schema  # INVALID: Cannot import from path with hyphens
 
 
 def load_master_config() -> Dict[str, object]:

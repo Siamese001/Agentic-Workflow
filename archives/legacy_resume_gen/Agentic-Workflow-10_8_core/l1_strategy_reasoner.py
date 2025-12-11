@@ -12,10 +12,10 @@ from __future__ import annotations
 
 from typing import Any, Dict, Iterable, List
 
-from injection_profiles import DEFAULT_FRAMING_PROFILE
-from l1_reasoning import Reasoner
-from meta_profile import META_PROFILE
-from utils_types import PlanObject
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_profiles import DEFAULT_FRAMING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import Reasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import META_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject  # INVALID: Cannot import from path with hyphens
 
 
 def _as_list(value: Any) -> List[str]:

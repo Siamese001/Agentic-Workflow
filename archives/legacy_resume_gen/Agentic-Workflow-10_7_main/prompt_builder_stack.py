@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from agent_stacks_v10_8.components.prompting import PromptEngineerAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.prompting import PromptEngineerAgent  # INVALID: Cannot import from path with hyphens
 
 
 class PromptBuilderStack:

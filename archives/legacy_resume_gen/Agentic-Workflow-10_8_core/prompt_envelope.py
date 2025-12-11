@@ -13,9 +13,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
-from injection_profiles import DEFAULT_CONTEXT_PROFILE, DEFAULT_FRAMING_PROFILE
-from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
-from prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_profiles import DEFAULT_CONTEXT_PROFILE, DEFAULT_FRAMING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_tooling_profiles import DEFAULT_TOOLING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection  # INVALID: Cannot import from path with hyphens
 
 
 @dataclass
@@ -56,7 +56,7 @@ class PromptEnvelope:
         metadata = dict(self.metadata)
         metadata["instructional_injection_types"] = INSTRUCTIONAL_INJECTION_ALL
         metadata["routing"] = (plan or {}).get("routing", {})
-        from prompt_templates import DEFAULT_TEMPLATE_OUTPUT_INJECTION
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_templates import DEFAULT_TEMPLATE_OUTPUT_INJECTION  # INVALID: Cannot import from path with hyphens
 
         metadata["injection"] = {
             "framing": {

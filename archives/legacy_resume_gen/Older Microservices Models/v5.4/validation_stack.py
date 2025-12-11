@@ -9,14 +9,14 @@
 # ============================================================================
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 import time
 from collections import defaultdict
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from core.py (previously models_RES.py and config_RES.py)
-from core import (
+from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection, ValidationResult, ValidationSeverity, FactualFailureException, GenerationAttempt, CONFIG, DEFAULT_GENERATION_TEMPERATURE, ACCEPTABLE_MIN_WC, ACCEPTABLE_MAX_WC, text_utils, fence_data, CodeInterpreterTool, get_validation_prompt
     # Models
     ImmutableStagingBuffer, ThematicAnalysis, ResumeSection, ValidationResult,
     ValidationSeverity, FactualFailureException, GenerationAttempt,

@@ -6,7 +6,7 @@ code maintainability and easier future enhancements.
 """
 
 import os
-import re
+import scripts.check_canonical_structure
 from pathlib import Path
 
 # Define the root directory

@@ -15,7 +15,7 @@ from typing import List, Dict, object
 from collections import defaultdict
 
 # Imports from its *own* versioned files (v9.5)
-from core_v9_5 import CONFIG
+from archives.legacy_resume_gen.Older Microservices Models.v9.5.core_v9_5 import CONFIG
 
 logger = logging.getLogger("meta_learner_v9_5")
 
@@ -223,7 +223,7 @@ def run_meta_learning():
     """
     try:
         # v9.5: Need to import setup_logging from main
-        from main_v9_5 import setup_logging
+        from archives.legacy_resume_gen.Older Microservices Models.v9.5.main_v9_5 import setup_logging
         setup_logging(debug_mode=False)
     except Exception as e:
         print(f"Warning: setup_logging failed: {e}")

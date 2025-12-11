@@ -1,6 +1,6 @@
 from typing import Dict, object
 
-from model_invocation import invoke_model
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.model_invocation import invoke_model  # INVALID: Cannot import from path with hyphens
 
 
 class ModelClient:
@@ -34,10 +34,10 @@ def configure_for_routing(route: Dict[str, object]) -> Dict[str, object]:
 
 
 def run_model_for_plan(plan: Dict[str, object], state: Dict[str, object]):
-    from prompt_utils import build_prompt_from_plan_and_state
-    from core.routing import RoutingCriteria, decide_route
-    from core.routing import get_routing_plan
-    from core.routing import build_client_for_route, configure_for_routing
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_utils import build_prompt_from_plan_and_state  # INVALID: Cannot import from path with hyphens
+    from archives.legacy_root_folders.core.routing import RoutingCriteria, decide_route
+    from archives.legacy_root_folders.core.routing import get_routing_plan
+    from archives.legacy_root_folders.core.routing import build_client_for_route, configure_for_routing
 
     rendered = build_prompt_from_plan_and_state(plan, state)
     routing_plan = get_routing_plan(plan)

@@ -10,7 +10,7 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict
 
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 def _merge_dict(base: Dict[str, object], patch: Dict[str, object]) -> Dict[str, object]:
