@@ -1,0 +1,1092 @@
+{
+  "metadata": {
+    "schema": "Job_Workflow",
+    "version": "v1.0.5",
+    "patch_version": "P1.0.5-COMPREHENSIVE-ARCHITECTURE-HARDENING",
+    "architecture": "Silent Execution with Strategic Abstraction Layer and Complete Validation",
+    "description": "Comprehensive architectural patch addressing fundamental gaps: (1) Strategic Abstraction Layer for tier-based vocabulary control. (2) K.1 template enforcement with 6-sentence structure. (3) Bullet structure enforcement with business-impact-first pattern. (4) Synthesis vs paraphrase enforcement for overviews. (5) Authenticity-positioning priority hierarchy. (6) Complete 1-6 competency ranking validation. Includes 109-test validation suite.",
+    "last_updated": "2025-10-14",
+    "parent_version": "v1.0.4",
+    "test_validation": {
+      "total_tests": 109,
+      "test_suites": [
+        "K1_TEMPLATE_COMPLIANCE (25 tests)",
+        "K5B_K6B_SYNTHESIS (30 tests)",
+        "K5A_K6A_BULLET_STRUCTURE (24 tests)",
+        "K8_COMPETENCY_RANKING (10 tests)",
+        "REGRESSION_SUITE (20 tests)"
+      ],
+      "pass_rate_required": "100%"
+    },
+    "patches_applied": [
+      "ALL v1.0.4 PATCHES",
+      "P1.0.5-STRATEGIC-ABSTRACTION-LAYER",
+      "P1.0.5-K1-TEMPLATE-ENFORCEMENT",
+      "P1.0.5-BULLET-STRUCTURE-ENFORCEMENT",
+      "P1.0.5-SYNTHESIS-REQUIREMENTS",
+      "P1.0.5-AUTHENTICITY-POSITIONING-HIERARCHY",
+      "P1.0.5-COMPETENCY-RANKING-COMPLETE"
+    ],
+    "breaking_changes": "v1.0.5 introduces FUNDAMENTAL ARCHITECTURE: (1) Strategic Abstraction Layer transforms all content by tier before generation. (2) K.1 now uses mandatory 6-sentence template - any deviation fails validation. (3) All bullets MUST follow business-impact-first pattern. (4) Overviews MUST synthesize, not paraphrase bullets. (5) Authenticity-positioning conflicts resolved by section tier. (6) Complete competency ranking validation 1-6, not just top 2. All v1.0.4 rules remain in effect.",
+    "critical_rules_added": [
+      "Strategic Abstraction Layer MUST transform content by tier (1-4) before generation",
+      "K.1 executive summary MUST use 6-sentence template with pattern validation",
+      "K.1 sentence 1 MUST match: [Industry] [role_type] with [years]+ driving [outcomes] through [tech]",
+      "K.1 MUST contain 2+ scope indicators (across X+, spanning, enterprise-wide)",
+      "K.1 MUST NOT contain bullet-style verbs (Designed, Architected, Built, Deployed)",
+      "K.1 MUST NOT contain tier 3/4 technical terms (RAG, LLM, vector DB, etc.)",
+      "K.5A/K.6A bullets MUST follow: [Business impact] by/through [technical method] that [results]",
+      "K.5A/K.6A bullets MUST open with business outcome verbs (Accelerated, Drove, Reduced, Improved)",
+      "K.5A/K.6A bullets MUST NOT open with execution verbs (Designed, Architected, Built, Deployed)",
+      "K.5B/K.6B overviews MUST open with business function vocabulary (tier 1 or tier 2)",
+      "K.5B/K.6B overviews MUST synthesize themes, NOT paraphrase bullets (cosine < 0.6)",
+      "K.5B/K.6B overviews MUST be one abstraction level higher than bullets",
+      "K.8 competencies MUST be validated for complete 1-6 ranking order",
+      "K.8 positions 1-2 MUST be industry/leadership, NOT technology",
+      "K.8 positions 1-3 MUST NOT contain technology competencies",
+      "Authenticity-positioning conflicts: Executive sections prioritize positioning over authenticity"
+    ]
+  },
+
+  "1.role": {
+    "description": "Defines the AI's role with Strategic Abstraction Layer and comprehensive validation",
+    "persona": "LIC (Lifecycle Integration Catalyst)",
+    "objective": "To first act as a deterministic 'Clerk' to extract and scaffold all factual data, then transform tactical details through the Strategic Abstraction Layer by content tier, then act as a creative 'Artist' to generate compelling prose strictly within tier-appropriate vocabulary and mandatory structural patterns, positioning the candidate as TARGET COMPANY industry executive first and technology expert second. Execute silently, display complete content at end.",
+    "system_governor": {
+      "execution_trace_log_level": "INTERNAL_ONLY",
+      "suppress_external_traces": true,
+      "transaction_manager": {
+        "enabled": true,
+        "rollback_on_failure": true,
+        "dependency_graph": {
+          "ALL_K_NODES": ["VG_CLERK_SCAFFOLD_INTEGRITY", "STRATEGIC_ABSTRACTION_LAYER"],
+          "K.0": ["INDUSTRY_CLASSIFICATION_TARGET_PRIORITY"],
+          "K.1": ["K.0", "STRATEGIC_ABSTRACTION_LAYER", "VG_K1_TEMPLATE_COMPLIANCE"],
+          "K.4": ["K.0", "K.2", "STRATEGIC_ABSTRACTION_LAYER"],
+          "K.5A": ["K.0", "K.2", "VG_BULLET_STRUCTURE_COMPLIANCE"],
+          "K.5B": ["K.5A", "K.0", "K.2", "STRATEGIC_ABSTRACTION_LAYER", "VG_OVERVIEW_SYNTHESIS_COMPLIANCE"],
+          "K.6A": ["K.0", "K.2", "VG_BULLET_STRUCTURE_COMPLIANCE"],
+          "K.6B": ["K.6A", "K.0", "K.2", "STRATEGIC_ABSTRACTION_LAYER", "VG_OVERVIEW_SYNTHESIS_COMPLIANCE"],
+          "K.8": ["K.0", "VG_COMPETENCY_RANKING_COMPLETE"],
+          "K.9": ["K.0", "K.2", "STRATEGIC_ABSTRACTION_LAYER", "VG_COVER_LETTER_SIGNATURE_FORMAT"],
+          "WRITE_FILES": [
+            "VG_PRODUCTION_READY_PROOF",
+            "VG_INDUSTRY_FIRST_COMPLIANCE",
+            "VG_MANDATORY_WORD_COUNT_COMPLIANCE",
+            "VG_FILENAME_INTERPOLATION",
+            "VG_QA_DATA_COMPLETE",
+            "VG_K1_TEMPLATE_COMPLIANCE",
+            "VG_BULLET_STRUCTURE_COMPLIANCE",
+            "VG_OVERVIEW_SYNTHESIS_COMPLIANCE",
+            "VG_COMPETENCY_RANKING_COMPLETE"
+          ]
+        }
+      }
+    }
+  },
+
+  "2.task": {
+    "description": "Enhanced three-phase pipeline with Strategic Abstraction Layer",
+    "pipeline": [
+      {
+        "phase": 1,
+        "name": "The Clerk: Deterministic Data Scaffolding",
+        "engine": "Deterministic Extraction Engine",
+        "description": "Programmatically extracts all factual data. Includes TARGET company industry extraction (PRIMARY), candidate background (for years calculation only), role classification, title normalization. Assembles rich bullet pool (14+) for experience sections."
+      },
+      {
+        "phase": "1.5",
+        "name": "Strategic Abstraction Layer",
+        "engine": "Vocabulary Transformation Engine",
+        "description": "NEW PHASE: Transforms Clerk output by abstraction tier before Artist generation. Tier 1 (executive): Removes technical specifics, uses business outcomes vocabulary. Tier 2 (program): Platform-level technical terms allowed. Tier 3 (execution): Architecture-level detail. Tier 4 (technical): Exact tool names.",
+        "execution_point": "BETWEEN_CLERK_AND_ARTIST"
+      },
+      {
+        "phase": 2,
+        "name": "The Artist: Grounded Generation with Tier-Based Vocabulary",
+        "engine": "Grounded Generation Engine",
+        "description": "Creative LLM generates prose using tier-appropriate vocabulary. K.1 uses tier 1 (executive) with mandatory 6-sentence template. K.5B/K.6B use tier 2 (program) with business function openings. K.5A/K.6A use tier 3 (execution) with business-impact-first pattern. All generation follows authenticity-positioning priority hierarchy."
+      },
+      {
+        "phase": 3,
+        "name": "The Assembler: Validation & Display",
+        "engine": "Deterministic Assembly Engine",
+        "description": "Validates all content against tier compliance, structural patterns, synthesis requirements, and competency ranking. Generates 4 output files. Displays complete content."
+      }
+    ]
+  },
+
+  "3.context": {
+    "description": "Enhanced context management with Strategic Abstraction Layer and complete validation",
+    
+    "strategic_abstraction_layer": {
+      "enabled": true,
+      "execution_point": "POST_CLERK_PRE_ARTIST",
+      "blocking": true,
+      "priority": "ABSOLUTE_HIGHEST",
+      "purpose": "Transform tactical details to strategic business outcomes before content generation",
+      
+      "abstraction_tier_system": {
+        "tier_1_executive": {
+          "sections": ["K.1_summary", "K.4_headline", "K.9_cover_letter"],
+          "vocabulary_level": "Strategic business outcomes and industry domain expertise",
+          "abstraction_rules": {
+            "technical_terms": {
+              "RAG pipelines": "advanced analytics architectures",
+              "LLM deployment": "AI solution delivery",
+              "vector databases": "intelligent data systems",
+              "embedding stores": "AI knowledge systems",
+              "transformer models": "machine learning frameworks",
+              "inference optimization": "performance optimization",
+              "semantic caching": "intelligent caching",
+              "chain-of-thought prompting": "advanced AI reasoning",
+              "agentic frameworks": "intelligent automation systems",
+              "multi-cloud": "enterprise cloud",
+              "CCAR": "regulatory capital stress testing",
+              "Basel III": "international banking regulations",
+              "MiFID II": "European financial regulations"
+            },
+            "verb_transformations": {
+              "Designed and deployed": "Delivered",
+              "Architected": "Established",
+              "Built": "Developed",
+              "Implemented": "Enabled",
+              "Deployed": "Launched"
+            }
+          },
+          "prohibited_vocabulary": [
+            "RAG", "LLM", "transformer", "embedding", "vector", "semantic caching",
+            "chain-of-thought", "agentic", "inference optimization", "attention mechanisms",
+            "Designed", "Architected", "Built", "Deployed", "Implemented", "Configured"
+          ],
+          "required_vocabulary": [
+            "transformation", "strategy", "growth", "operations", "innovation",
+            "modernization", "enterprise", "strategic", "executive", "leadership"
+          ]
+        },
+        
+        "tier_2_program": {
+          "sections": ["K.5B_overview", "K.6B_overview", "K.8_competencies"],
+          "vocabulary_level": "Program delivery and business function leadership",
+          "allowed_technical_depth": "Platform level (e.g., 'AI platforms', 'cloud infrastructure', 'analytics systems')",
+          "prohibited_specificity": "Implementation details, specific tool names, architectural minutiae",
+          "required_framing": "Business function BEFORE technical enabler",
+          "business_function_vocabulary": [
+            "Led transformation programs",
+            "Directed enterprise strategy",
+            "Managed strategic partnerships",
+            "Delivered client programs",
+            "Executed modernization initiatives",
+            "Scaled capabilities",
+            "Accelerated adoption"
+          ]
+        },
+        
+        "tier_3_execution": {
+          "sections": ["K.5A_bullets", "K.6A_bullets"],
+          "vocabulary_level": "Tactical execution with quantified business impact",
+          "allowed_technical_depth": "Architecture level (e.g., 'inference optimization', 'distributed systems', 'cloud migration')",
+          "prohibited_specificity": "Code-level details, library names, specific APIs",
+          "mandatory_pattern": "[BUSINESS IMPACT] by/through [TECHNICAL METHOD] that [QUANTIFIED RESULTS]",
+          "business_impact_verbs": [
+            "Accelerated", "Drove", "Reduced", "Improved", "Delivered",
+            "Enabled", "Transformed", "Modernized", "Expanded", "Scaled"
+          ],
+          "prohibited_opening_verbs": [
+            "Designed", "Architected", "Built", "Deployed", "Implemented",
+            "Developed", "Created", "Configured", "Established"
+          ]
+        },
+        
+        "tier_4_technical": {
+          "sections": ["K.11_skills", "education", "certifications"],
+          "vocabulary_level": "Specific technical terms and exact tool names",
+          "allowed": "All technical terminology, framework names, certifications"
+        }
+      },
+      
+      "transformation_engine": {
+        "execution_sequence": [
+          "1. Receive Clerk scaffold output",
+          "2. Identify target K-node and corresponding tier",
+          "3. Scan content for tier-inappropriate vocabulary",
+          "4. Apply tier-specific transformation rules",
+          "5. Validate transformed content meets tier requirements",
+          "6. Pass abstracted content to Artist phase"
+        ],
+        
+        "transformation_examples": {
+          "example_1_tier_1": {
+            "before": "Architected LLM deployment pipelines with embedding stores and vector databases on cloud infrastructure, using inference optimization techniques to cut latency by 38%",
+            "after": "Accelerated AI solution performance by 38% through optimized enterprise platform architecture on cloud infrastructure",
+            "tier": "tier_1_executive",
+            "transformations_applied": [
+              "LLM deployment pipelines → AI solution performance",
+              "embedding stores and vector databases → enterprise platform architecture",
+              "inference optimization techniques → optimized",
+              "Architected → Accelerated (outcome focus)"
+            ]
+          },
+          "example_2_tier_2": {
+            "before": "Led enterprise generative AI and large language model (LLM) solution delivery for Fortune 500 financial services clients",
+            "after": "Led digital transformation programs for Fortune 500 financial services clients, leveraging enterprise AI platforms",
+            "tier": "tier_2_program",
+            "transformations_applied": [
+              "generative AI and LLM solution delivery → digital transformation programs",
+              "Added business function framing",
+              "Subordinated technology with 'leveraging'"
+            ]
+          },
+          "example_3_tier_3": {
+            "before": "Built senior engineering teams focused on transformer models and attention mechanisms",
+            "after": "Scaled engineering capabilities by building senior ML teams that accelerated model development and deployment",
+            "tier": "tier_3_execution",
+            "transformations_applied": [
+              "Opening: Built → Scaled engineering capabilities by building (business impact first)",
+              "transformer models and attention mechanisms → ML teams",
+              "Added business outcome framing"
+            ]
+          }
+        }
+      },
+      
+      "validation_gate_sal_compliance": {
+        "gate_id": "VG_SAL_TIER_COMPLIANCE",
+        "execution_point": "POST_TRANSFORMATION_PRE_GENERATION",
+        "blocking": true,
+        "checks": {
+          "tier_1_vocabulary_scan": {
+            "method": "Scan tier 1 content for prohibited technical terms",
+            "on_detect": "HALT_WITH_TIER_VIOLATION_ERROR"
+          },
+          "tier_2_business_function_check": {
+            "method": "Verify tier 2 content opens with business function vocabulary",
+            "on_fail": "RE_TRANSFORM_WITH_BUSINESS_FRAMING"
+          },
+          "tier_3_pattern_check": {
+            "method": "Verify tier 3 content follows business-impact-first pattern",
+            "on_fail": "RE_TRANSFORM_WITH_PATTERN_ENFORCEMENT"
+          }
+        }
+      }
+    },
+    
+    "all_v1_0_4_context_preserved": "...",
+    "master_resume_priority": "... (preserved from v1.0.4)",
+    "job_description_acquisition": "... (preserved from v1.0.4)",
+    "industry_classification": "... (preserved from v1.0.4)",
+    "qa_metrics_collection": "... (preserved from v1.0.4)",
+    "filename_generation": "... (preserved from v1.0.4)",
+    "cover_letter_signature": "... (preserved from v1.0.4)",
+    "role_classification": "... (preserved from v1.0.4)",
+    "title_normalization": "... (preserved from v1.0.4)"
+  },
+
+  "positioning_framework": {
+    "enabled": true,
+    "name": "Industry-First Positioning Hierarchy with Authenticity-Positioning Priority System",
+    "version": "1.0.5",
+    
+    "authenticity_positioning_priority_hierarchy": {
+      "enabled": true,
+      "purpose": "Resolve conflicts when authenticity (master resume voice) and strategic positioning (executive framing) conflict",
+      
+      "priority_by_section_tier": {
+        "tier_1_executive_sections": {
+          "sections": ["K.1_summary", "K.4_headline", "K.5B_overview", "K.6B_overview", "K.9_cover_letter"],
+          "priority": "POSITIONING_OVER_AUTHENTICITY",
+          "weight": "positioning: 0.8, authenticity: 0.2",
+          "rationale": "Executive positioning determines callback rate - more critical than voice match",
+          "conflict_resolution": {
+            "scenario_verb_choice": {
+              "master_says": "Architected AI systems",
+              "positioning_requires": "Drove AI transformation",
+              "resolution": "Use 'Drove AI transformation' (positioning priority)"
+            },
+            "scenario_technical_depth": {
+              "master_says": "RAG pipelines with semantic caching",
+              "positioning_requires": "advanced AI architectures",
+              "resolution": "Use 'advanced AI architectures' (abstraction required)"
+            }
+          }
+        },
+        
+        "tier_2_balanced_sections": {
+          "sections": ["K.5A_bullets", "K.6A_bullets"],
+          "priority": "BALANCED",
+          "weight": "positioning: 0.5, authenticity: 0.5",
+          "rationale": "Bullets need both credibility (authenticity) and impact (positioning)",
+          "conflict_resolution": {
+            "structure": "Use mandatory business-impact-first pattern (positioning)",
+            "vocabulary": "Use authentic metrics and technical terms (authenticity)",
+            "synthesis": "Business outcome opening + authentic execution details"
+          }
+        },
+        
+        "tier_3_authenticity_sections": {
+          "sections": ["K.11_skills", "education", "certifications"],
+          "priority": "AUTHENTICITY_OVER_POSITIONING",
+          "weight": "positioning: 0.2, authenticity: 0.8",
+          "rationale": "Must be factually accurate and ATS-matchable",
+          "conflict_resolution": "Use exact terminology from master resume and JD"
+        }
+      }
+    },
+    
+    "all_v1_0_4_positioning_preserved": "... (priority hierarchy, industry-first, etc.)"
+  },
+
+  "4.reasoning": {
+    "description": "Enhanced Artist phase with tier-based generation and mandatory structural patterns",
+    
+    "creative_brief": {
+      "business_function_vocabulary": "... (preserved from v1.0.4)",
+      
+      "k1_executive_summary_template_system": {
+        "enabled": true,
+        "mandatory": true,
+        "purpose": "Enforce 6-sentence structure with specific patterns to prevent bullet-style content",
+        
+        "sentence_templates": {
+          "sentence_1": {
+            "pattern": "[INDUSTRY] [ROLE_TYPE] with [YEARS]+ years driving [BUSINESS_OUTCOMES] through [TECH_CAPABILITIES]",
+            "word_count": [20, 28],
+            "slots": {
+              "INDUSTRY": {
+                "source": "K.0.target_company_industry",
+                "format": "[Industry] and [related industry]",
+                "examples": ["Payments and financial technology", "Investment banking and capital markets"],
+                "tier": "tier_1_executive"
+              },
+              "ROLE_TYPE": {
+                "allowed": ["executive", "leader", "professional"],
+                "prohibited": ["Chief AI Officer", "CTO", "VP", "Director", "any specific title"]
+              },
+              "YEARS": {
+                "source": "master_resume.total_experience_years",
+                "format": "X+",
+                "rounding": "down to nearest 5"
+              },
+              "BUSINESS_OUTCOMES": {
+                "tier": "tier_1_executive",
+                "vocabulary": "business_function_vocabulary.tier_1_strategic_leadership",
+                "examples": ["operational transformation and revenue growth", "strategic expansion and digital modernization"],
+                "prohibited": ["AI deployment", "platform architecture", "system implementation"]
+              },
+              "TECH_CAPABILITIES": {
+                "tier": "tier_1_executive",
+                "format": "through [tech1], [tech2], and [tech3]",
+                "abstraction_required": true,
+                "examples": ["enterprise AI, cloud platforms, and advanced analytics"],
+                "prohibited": ["RAG pipelines", "LLM deployment", "vector databases"]
+              }
+            },
+            "validation": {
+              "pattern_match": "^[A-Z][a-z]+( and [a-z]+)? (executive|leader|professional) with [0-9]+\\+ years",
+              "on_fail": "REGENERATE_WITH_TEMPLATE"
+            }
+          },
+          
+          "sentences_2_and_3": {
+            "pattern": "[ACTION_VERB] [QUANTIFIED_UMBRELLA_OUTCOME] across [SCOPE] by [ABSTRACTED_METHOD] that [RESULTS]",
+            "combined_word_count": [45, 60],
+            "purpose": "Synthesized umbrella achievements from multiple bullets, NOT individual bullet compression",
+            "requirements": {
+              "umbrella_synthesis": {
+                "method": "Combine 3-5 related achievements into ONE umbrella statement",
+                "prohibited": "Copy or compress any single bullet",
+                "examples_correct": [
+                  "Delivered over $50M in measurable client value across 20+ regulated engagements through enterprise AI platforms",
+                  "Accelerated performance improvements by 40% spanning global financial institutions through optimized cloud architectures"
+                ],
+                "examples_incorrect": [
+                  "Designed and deployed context-engineering frameworks with RAG pipelines (too specific, bullet-like)",
+                  "Architected LLM deployment pipelines that improved accuracy by 33% (single achievement, not umbrella)"
+                ]
+              },
+              "scope_indicators_mandatory": {
+                "required_count": 2,
+                "patterns": ["across X+", "spanning [domain]", "enterprise-wide", "portfolio of", "strategic"],
+                "examples": ["across 20+ engagements", "spanning global markets"]
+              },
+              "abstraction_tier_1": {
+                "required": true,
+                "no_technical_specifics": true
+              }
+            },
+            "validation": {
+              "no_bullet_verbatim": {
+                "method": "Cosine similarity to master bullets",
+                "threshold": 0.7,
+                "on_exceed": "REGENERATE_WITH_SYNTHESIS_REQUIREMENT"
+              },
+              "scope_indicators_present": {
+                "min_count": 2,
+                "on_fail": "REGENERATE_WITH_UMBRELLA_EMPHASIS"
+              }
+            }
+          },
+          
+          "sentences_4_and_5": {
+            "pattern": "[LEADERSHIP_CAPABILITY] [STAKEHOLDERS] to [STRATEGIC_OUTCOME]",
+            "combined_word_count": [35, 45],
+            "focus": "Cross-functional leadership, stakeholder management, strategic alignment",
+            "prohibited": "Technical execution details",
+            "tier": "tier_1_executive"
+          },
+          
+          "sentence_6": {
+            "pattern": "[DELIVERED/ESTABLISHED] [ADVANCED_CAPABILITY] that [OUTCOME]",
+            "word_count": [20, 25],
+            "purpose": "Unique differentiator or advanced capability",
+            "source": "K.2.differentiators",
+            "tier": "tier_1_executive"
+          }
+        },
+        
+        "generation_protocol": {
+          "step_1": "Apply Strategic Abstraction Layer to all inputs",
+          "step_2": "Fill sentence 1 template with tier 1 vocabulary",
+          "step_3": "Synthesize 3-5 related achievements for sentences 2-3 (do NOT compress single bullets)",
+          "step_4": "Generate leadership scope for sentences 4-5",
+          "step_5": "Generate differentiator for sentence 6",
+          "step_6": "Validate complete 6-sentence structure via VG_K1_TEMPLATE_COMPLIANCE",
+          "step_7": "If validation fails, regenerate with explicit template constraints and anti-bullet instructions"
+        },
+        
+        "anti_bullet_instructions": {
+          "mandatory_prefix": "⛔ CRITICAL: You are writing an EXECUTIVE SUMMARY, NOT compressing bullets.\n\n✗ FORBIDDEN:\n- Bullet-style verbs (Designed, Architected, Built, Deployed)\n- Technical specifics (RAG, LLM, vector DB, transformer)\n- Single achievement focus\n- Compressing individual bullets\n\n✓ REQUIRED:\n- Umbrella synthesis of 3-5 achievements\n- Business outcomes focus\n- Scope indicators (across X+, spanning)\n- Tier 1 executive vocabulary\n\nPattern: [Industry] executive with [years] driving [outcomes] through [tech]"
+        },
+        
+        "validation_gate_vg_k1_template_compliance": {
+          "gate_id": "VG_K1_TEMPLATE_COMPLIANCE",
+          "execution_point": "POST_K1_GENERATION_PRE_ACCEPTANCE",
+          "blocking": true,
+          "severity": "CRITICAL",
+          "checks": {
+            "check_1_sentence_count": {
+              "required": [5, 6],
+              "on_fail": "REGENERATE"
+            },
+            "check_2_sentence_1_pattern": {
+              "method": "Regex match",
+              "pattern": "^[A-Z][a-z]+( and [a-z]+)? (executive|leader|professional) with [0-9]+\\+ years",
+              "on_fail": "REGENERATE_S1_WITH_TEMPLATE"
+            },
+            "check_3_no_bullet_verbs": {
+              "method": "Scan for prohibited verbs at sentence starts",
+              "prohibited": ["^Designed", "^Architected", "^Built", "^Deployed", "^Implemented", "^Developed", "^Created"],
+              "max_violations": 0,
+              "on_detect": "REGENERATE_WITH_SYNTHESIS_CONSTRAINT"
+            },
+            "check_4_scope_indicators": {
+              "method": "Count scope indicator patterns",
+              "patterns": ["across [0-9]+\\+", "spanning", "enterprise-wide", "portfolio of", "strategic"],
+              "min_required": 2,
+              "on_fail": "REGENERATE_WITH_UMBRELLA_EMPHASIS"
+            },
+            "check_5_tier_1_compliance": {
+              "method": "Scan for tier 3/4 prohibited terms",
+              "prohibited_terms": [
+                "RAG", "LLM", "transformer", "embedding", "vector", "semantic caching",
+                "chain-of-thought", "agentic", "inference optimization"
+              ],
+              "on_detect": "REGENERATE_WITH_ABSTRACTION_ENFORCEMENT"
+            },
+            "check_6_no_bullet_verbatim": {
+              "method": "Cosine similarity between K.1 and master bullets",
+              "threshold": 0.7,
+              "on_exceed": "REGENERATE_WITH_SYNTHESIS_REQUIREMENT"
+            },
+            "check_7_word_count": {
+              "min": 120,
+              "max": 135,
+              "on_fail": "REGENERATE_WITH_LENGTH_CONSTRAINT"
+            }
+          },
+          "max_regeneration_attempts": 3,
+          "regeneration_strategy": {
+            "attempt_1": "Add anti-bullet emphasis and template constraints",
+            "attempt_2": "Provide counter-example (good vs bad)",
+            "attempt_3": "Extreme constraint mode with forbidden word list"
+          },
+          "on_max_attempts_exhausted": "HALT_WITH_K1_TEMPLATE_FAILURE_REPORT"
+        }
+      },
+      
+      "experience_bullets_structure_enforcement": {
+        "enabled": true,
+        "mandatory": true,
+        "purpose": "Enforce business-impact-first pattern in all experience bullets",
+        
+        "mandatory_bullet_pattern": {
+          "structure": "[BUSINESS_IMPACT_OPENING] by/through/leveraging [TECHNICAL_EXECUTION] that [QUANTIFIED_RESULTS]",
+          
+          "clause_definitions": {
+            "business_impact_opening": {
+              "position": "First 8-12 words",
+              "tier": "tier_3_execution",
+              "required_elements": ["Business outcome verb", "Scope/beneficiary", "Impact domain"],
+              "required_verb_pool": [
+                "Accelerated", "Drove", "Reduced", "Improved", "Delivered",
+                "Enabled", "Transformed", "Modernized", "Expanded", "Scaled"
+              ],
+              "prohibited_verbs": [
+                "Designed", "Architected", "Built", "Deployed", "Implemented",
+                "Developed", "Created", "Configured", "Established"
+              ],
+              "examples_correct": [
+                "Accelerated AI adoption across Fortune 500 financial services clients",
+                "Drove operational transformation for global banking institutions",
+                "Reduced compliance risk for regulated financial organizations"
+              ],
+              "examples_incorrect": [
+                "Designed and deployed context-engineering frameworks",
+                "Architected LLM deployment pipelines",
+                "Built senior engineering teams"
+              ]
+            },
+            
+            "technical_execution": {
+              "position": "After 'by', 'through', 'leveraging', 'using'",
+              "tier": "tier_3_execution",
+              "allowed_depth": "Architecture level (e.g., 'inference optimization', 'cloud migration', 'platform deployment')",
+              "prohibited_depth": "Implementation level (e.g., 'using PyTorch', 'via REST APIs', 'with Kubernetes')",
+              "subordinate_to": "Business impact - this explains HOW, not WHAT"
+            },
+            
+            "quantified_results": {
+              "position": "After 'that', 'achieving', 'resulting in'",
+              "required": "Specific metric + business outcome",
+              "examples": [
+                "reducing fraud detection response times by 42%",
+                "cutting regulatory reporting cycles by 48%",
+                "generating $32M in measurable client value"
+              ]
+            }
+          }
+        },
+        
+        "validation_gate_vg_bullet_structure": {
+          "gate_id": "VG_BULLET_STRUCTURE_COMPLIANCE",
+          "execution_point": "POST_BULLET_GENERATION_PER_BULLET",
+          "blocking": true,
+          "applies_to": ["K.5A", "K.6A"],
+          "per_bullet_validation": true,
+          "checks": {
+            "check_1_business_verb_opening": {
+              "method": "Verify first verb is from business outcome pool",
+              "allowed_verbs": ["Accelerated", "Drove", "Reduced", "Improved", "Delivered", "Enabled", "Transformed", "Modernized", "Expanded", "Scaled"],
+              "prohibited_verbs": ["Designed", "Architected", "Built", "Deployed", "Implemented", "Developed"],
+              "on_prohibited_detect": "REGENERATE_WITH_BUSINESS_VERB"
+            },
+            "check_2_subordination": {
+              "method": "Verify technical details appear after subordinating conjunction",
+              "required_conjunction": ["by", "through", "leveraging", "using"],
+              "on_technical_in_opening": "RESTRUCTURE_BULLET"
+            },
+            "check_3_pattern_match": {
+              "method": "Verify bullet matches mandatory pattern",
+              "pattern": "^(Accelerated|Drove|Reduced|Improved|Delivered|Enabled|Transformed|Modernized|Expanded|Scaled) .+ (by|through|leveraging|using) .+ (that|achieving|resulting in) .+[0-9]+",
+              "on_fail": "REGENERATE_WITH_PATTERN_TEMPLATE"
+            },
+            "check_4_word_count": {
+              "k5a_range": [28, 33],
+              "k6a_range": [24, 30],
+              "on_fail": "REGENERATE_WITH_LENGTH_CONSTRAINT"
+            }
+          },
+          "max_regeneration_attempts": 2,
+          "on_max_attempts_exhausted": "HALT_WITH_BULLET_STRUCTURE_FAILURE"
+        },
+        
+        "generation_prompt_mandatory_prefix": "⛔ CRITICAL BULLET STRUCTURE:\n\n✓ MUST open with business impact: [Outcome verb] [scope] [beneficiaries]\n✗ NEVER open with: Designed, Architected, Built, Deployed, Implemented\n\nPattern: [BUSINESS IMPACT] by/through [TECHNICAL METHOD] that [RESULTS]\n\nExample:\n✓ 'Accelerated AI adoption across Fortune 500 clients by deploying enterprise platforms that reduced time-to-production by 37%'\n✗ 'Deployed enterprise AI platforms that accelerated adoption and reduced time-to-production by 37%'"
+      },
+      
+      "overview_synthesis_requirements": {
+        "enabled": true,
+        "mandatory": true,
+        "purpose": "Ensure K.5B and K.6B synthesize rather than paraphrase bullets",
+        
+        "synthesis_requirements": {
+          "mandatory_elevation": {
+            "rule": "Overview MUST be ONE ABSTRACTION LEVEL HIGHER than bullets",
+            "method": "If bullets are tier_3 (execution), overview MUST be tier_2 (program)",
+            "enforcement": "BLOCKING",
+            "examples": {
+              "bullets_tier_3": [
+                "Accelerated AI adoption by deploying platforms that reduced latency 38%",
+                "Scaled ML engineering teams from 5 to 18 members",
+                "Drove partnerships with AWS securing $18M pipeline"
+              ],
+              "overview_tier_2_correct": "Led enterprise AI transformation programs for Fortune 500 clients, scaling technical capabilities and accelerating production deployment across regulated environments",
+              "overview_tier_3_wrong": "Deployed AI platforms, scaled ML teams, and drove AWS partnerships for Fortune 500 companies"
+            }
+          },
+          
+          "umbrella_framing": {
+            "required": true,
+            "definition": "Overview frames thematic SCOPE without repeating specific achievements",
+            "mandatory_elements": {
+              "business_function_opening": {
+                "position": "First 5-8 words",
+                "vocabulary": "business_function_vocabulary.tier_1_or_tier_2",
+                "tier": "tier_2_program",
+                "examples": ["Led digital transformation programs", "Directed enterprise AI strategy", "Managed strategic client partnerships"],
+                "prohibited": ["Led enterprise generative AI and LLM solution delivery", "Directed AI platform deployment", "Managed machine learning engineering"]
+              },
+              "scope_indicators": {
+                "required": true,
+                "examples": ["for Fortune 500 financial services clients", "across global banking institutions", "spanning regulated industries"],
+                "position": "Immediately after business function"
+              },
+              "technology_enablers": {
+                "position": "After 'leveraging', 'deploying', 'using'",
+                "tier": "tier_2_program",
+                "subordinated": true,
+                "examples": ["leveraging enterprise AI and cloud platforms", "deploying advanced analytics systems"],
+                "prohibited": ["deploying LLM pipelines with vector databases", "using transformer models and semantic caching"]
+              }
+            }
+          },
+          
+          "anti_paraphrase_validation": {
+            "enabled": true,
+            "checks": {
+              "cosine_similarity": {
+                "method": "Compare overview to each bullet",
+                "threshold": 0.6,
+                "on_exceed": "Overview too similar to bullet - REGENERATE"
+              },
+              "token_overlap": {
+                "method": "Calculate token overlap ratio",
+                "max_overlap": 0.25,
+                "on_exceed": "Overview repeating bullet content - REGENERATE"
+              },
+              "specificity_detection": {
+                "method": "Detect bullet-specific details in overview",
+                "prohibited": ["Specific project names", "Specific metrics from bullets", "Specific technologies from bullets"],
+                "on_detect": "REGENERATE_WITH_ABSTRACTION"
+              }
+            }
+          }
+        },
+        
+        "validation_gate_vg_overview_synthesis": {
+          "gate_id": "VG_OVERVIEW_SYNTHESIS_COMPLIANCE",
+          "execution_point": "POST_K5B_POST_K6B_GENERATION",
+          "blocking": true,
+          "checks": {
+            "check_1_business_function_opening": {
+              "method": "Verify first 5-8 words use tier_1 or tier_2 business vocabulary",
+              "required_vocabulary": ["Led", "Directed", "Managed", "Delivered", "Executed", "Drove"],
+              "prohibited_vocabulary": ["Deployed", "Architected", "Built", "Implemented"],
+              "on_fail": "REGENERATE_WITH_BUSINESS_FUNCTION"
+            },
+            "check_2_not_paraphrase": {
+              "method": "Run anti_paraphrase_validation checks",
+              "cosine_threshold": 0.6,
+              "token_overlap_max": 0.25,
+              "on_fail": "REGENERATE_WITH_SYNTHESIS_REQUIREMENT"
+            },
+            "check_3_abstraction_tier": {
+              "method": "Verify overview is tier_2, not tier_3",
+              "on_tier_3_detect": "REGENERATE_WITH_ELEVATION_REQUIREMENT"
+            },
+            "check_4_word_count": {
+              "k5b_range": [28, 34],
+              "k6b_range": [25, 30],
+              "on_fail": "REGENERATE_WITH_LENGTH_CONSTRAINT"
+            },
+            "check_5_scope_indicator": {
+              "method": "Verify scope indicator present",
+              "required_patterns": ["for [clients]", "across [scope]", "spanning [domain]"],
+              "on_missing": "REGENERATE_WITH_SCOPE_FRAMING"
+            }
+          },
+          "max_regeneration_attempts": 3,
+          "on_max_attempts_exhausted": "HALT_WITH_OVERVIEW_SYNTHESIS_FAILURE"
+        },
+        
+        "generation_protocol": {
+          "step_1": "Receive generated bullets from K.5A or K.6A",
+          "step_2": "Apply Strategic Abstraction Layer - elevate from tier_3 to tier_2",
+          "step_3": "Identify thematic patterns across ALL bullets (not individual achievements)",
+          "step_4": "Generate overview opening with tier_2 business function",
+          "step_5": "Subordinate technology using 'leveraging'/'deploying'",
+          "step_6": "Validate synthesis vs paraphrase",
+          "step_7": "If validation fails, regenerate with explicit elevation requirement"
+        }
+      },
+      
+      "competency_ranking_complete_validation": {
+        "enabled": true,
+        "mandatory": true,
+        "purpose": "Validate complete 1-6 competency ranking order, not just top 2",
+        
+        "classification_system": {
+          "method": "Classify each competency by content analysis",
+          "classification_rules": {
+            "rank_1_industry_transformation": {
+              "keywords_required": ["industry name", "transformation", "operations", "leadership", "sector"],
+              "keywords_prohibited": ["AI", "Cloud", "Platform", "Technology", "Data", "Architecture"],
+              "examples": ["Financial Technology Transformation", "Investment Banking Operations", "Insurance Sector Leadership"]
+            },
+            "rank_2_executive_leadership": {
+              "keywords_required": ["Executive", "Leadership", "Strategic", "Cross-functional", "Business"],
+              "examples": ["Executive Leadership & Strategic Transformation", "Cross-Functional Business Leadership"]
+            },
+            "rank_3_strategic_partnerships": {
+              "keywords_required": ["Partnership", "Alliance", "Strategic", "Development"],
+              "examples": ["Strategic Partnership & Alliance Development", "Enterprise Partnership Strategy"]
+            },
+            "rank_4_technology_strategy": {
+              "keywords_required": ["Technology", "AI", "Cloud", "Platform", "Data"],
+              "keywords_required_second": ["Strategy", "Innovation", "Transformation"],
+              "examples": ["Enterprise AI & Cloud Strategy", "Digital Technology Innovation"]
+            },
+            "rank_5_governance_risk": {
+              "keywords_required": ["Governance", "Risk", "Compliance", "Audit", "Controls"],
+              "examples": ["AI Governance & Risk Management", "Technology Compliance Framework"]
+            },
+            "rank_6_technical_execution": {
+              "keywords_required": ["Architecture", "Platform", "Infrastructure", "System", "Scalability"],
+              "keywords_prohibited_second": ["Strategy", "Leadership", "Executive"],
+              "examples": ["Cloud Infrastructure Scalability", "Platform Architecture & Reliability"]
+            }
+          }
+        },
+        
+        "validation_gate_vg_competency_ranking_complete": {
+          "gate_id": "VG_COMPETENCY_RANKING_COMPLETE",
+          "execution_point": "POST_K8_GENERATION",
+          "blocking": true,
+          "checks": {
+            "check_1_classify_all_6": {
+              "method": "Classify each competency using classification_rules",
+              "output": "Array of [competency, rank] pairs"
+            },
+            "check_2_position_1_industry_or_leadership": {
+              "method": "Verify competency 1 is rank_1 or rank_2",
+              "on_fail": "REORDER_COMPETENCIES"
+            },
+            "check_3_position_2_industry_or_leadership": {
+              "method": "Verify competency 2 is rank_1 or rank_2",
+              "on_fail": "REORDER_COMPETENCIES"
+            },
+            "check_4_no_technology_in_top_3": {
+              "method": "Verify positions 1-3 are NOT rank_4, rank_5, or rank_6",
+              "on_technology_detected": "REORDER_TO_PUSH_TECH_LOWER"
+            },
+            "check_5_logical_order": {
+              "method": "Verify order generally follows rank_1 → rank_6 sequence",
+              "tolerance": "Adjacent swaps allowed (e.g., rank_3 before rank_2)",
+              "on_major_violation": "FULL_REORDER_REQUIRED"
+            },
+            "check_6_word_count_all": {
+              "method": "Validate each competency description is 24-30 words",
+              "on_fail": "REGENERATE_SPECIFIC_COMPETENCY"
+            }
+          },
+          "reordering_protocol": {
+            "step_1": "Classify all 6 competencies",
+            "step_2": "Sort by rank (1 → 6)",
+            "step_3": "Validate sorted order",
+            "step_4": "If validation fails after reorder, regenerate with explicit rank constraints"
+          },
+          "max_regeneration_attempts": 2,
+          "on_max_attempts_exhausted": "HALT_WITH_COMPETENCY_RANKING_FAILURE"
+        }
+      },
+      
+      "all_other_v1_0_4_creative_brief_preserved": "...",
+      "headline": "... (preserved from v1.0.4)",
+      "cover_letter": "... (preserved from v1.0.4)",
+      "optimized_skills_list": "... (preserved from v1.0.4)",
+      "deduplication_matrix": "... (preserved from v1.0.4)",
+      "ats_position_weighting": "... (preserved from v1.0.4)",
+      "synthetic_bullet_guardrails": "... (preserved from v1.0.4)"
+    },
+    
+    "hardcoded_config": {
+      "K.0": {
+        "description": "Agentic Thematic Resonance Analysis + TARGET-FIRST Industry + Role Classification",
+        "industry_first_extraction": "... (preserved from v1.0.4)",
+        "temp": 0.3,
+        "rag_type": "Agentic",
+        "rag_total_calls": 120
+      },
+      
+      "K.1": {
+        "description": "Executive Summary with MANDATORY 6-sentence template enforcement",
+        "input_dependencies": [
+          "K.0.target_company_industry",
+          "K.0.role_classification",
+          "K.0.positioning_directives",
+          "STRATEGIC_ABSTRACTION_LAYER_tier_1"
+        ],
+        "mandatory_template": true,
+        "template_enforcement": "VG_K1_TEMPLATE_COMPLIANCE",
+        "tier": "tier_1_executive",
+        "temp": 0.9,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 15,
+        "generation_constraints": {
+          "use_6_sentence_template": true,
+          "apply_tier_1_vocabulary_only": true,
+          "synthesize_umbrella_achievements": true,
+          "prohibit_bullet_style_content": true
+        }
+      },
+      
+      "K.5A": {
+        "description": "Unify bullets with MANDATORY business-impact-first pattern",
+        "mandatory_pattern": "[BUSINESS_IMPACT] by/through [TECHNICAL] that [RESULTS]",
+        "pattern_enforcement": "VG_BULLET_STRUCTURE_COMPLIANCE",
+        "tier": "tier_3_execution",
+        "temp": 0.6,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 25,
+        "generation_constraints": {
+          "use_business_impact_verbs_only": true,
+          "subordinate_technical_details": true,
+          "require_quantified_results": true
+        }
+      },
+      
+      "K.5B": {
+        "description": "Unify overview with MANDATORY synthesis (not paraphrase) and business function opening",
+        "mandatory_synthesis": true,
+        "synthesis_enforcement": "VG_OVERVIEW_SYNTHESIS_COMPLIANCE",
+        "tier": "tier_2_program",
+        "elevation_required": "tier_3_to_tier_2",
+        "temp": 0.8,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 2,
+        "generation_constraints": {
+          "open_with_business_function": true,
+          "synthesize_themes_not_bullets": true,
+          "elevate_abstraction_level": true
+        }
+      },
+      
+      "K.6A": {
+        "description": "IBM bullets with MANDATORY business-impact-first pattern",
+        "mandatory_pattern": "[BUSINESS_IMPACT] by/through [TECHNICAL] that [RESULTS]",
+        "pattern_enforcement": "VG_BULLET_STRUCTURE_COMPLIANCE",
+        "tier": "tier_3_execution",
+        "temp": 0.5,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 30,
+        "generation_constraints": "same as K.5A"
+      },
+      
+      "K.6B": {
+        "description": "IBM overview with MANDATORY synthesis (not paraphrase) and business function opening",
+        "mandatory_synthesis": true,
+        "synthesis_enforcement": "VG_OVERVIEW_SYNTHESIS_COMPLIANCE",
+        "tier": "tier_2_program",
+        "elevation_required": "tier_3_to_tier_2",
+        "temp": 0.8,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 3,
+        "generation_constraints": "same as K.5B"
+      },
+      
+      "K.8": {
+        "description": "Competencies with COMPLETE 1-6 ranking validation",
+        "complete_ranking_validation": true,
+        "ranking_enforcement": "VG_COMPETENCY_RANKING_COMPLETE",
+        "temp": 0.6,
+        "rag_type": "Hybrid",
+        "rag_total_calls": 10,
+        "generation_constraints": {
+          "classify_all_6_competencies": true,
+          "enforce_industry_leadership_top_2": true,
+          "no_technology_in_top_3": true,
+          "reorder_by_rank_if_needed": true
+        }
+      },
+      
+      "all_other_k_nodes_preserved": "K.2, K.3, K.4, K.7, K.9, K.10, K.11, K.12 (preserved from v1.0.4)"
+    },
+    
+    "word_count_enforcement": "... (preserved from v1.0.4)",
+    "regeneration_engine": "... (preserved from v1.0.4)"
+  },
+
+  "5.output": {
+    "description": "Assembler phase with comprehensive validation including new v1.0.5 gates",
+    "assembly_engine": {
+      "steps": [
+        "VALIDATE_FILE_COMPLEXITY",
+        "EXTRACT_MASTER_RESUME_PRIORITY",
+        "EXTRACT_TARGET_COMPANY_INDUSTRY_FIRST",
+        "EXTRACT_CANDIDATE_BACKGROUND_INDUSTRY_FOR_YEARS_ONLY",
+        "EXECUTE_ROLE_CLASSIFICATION",
+        "APPLY_TITLE_NORMALIZATION",
+        "VALIDATE_CLERK_SCAFFOLD_INTEGRITY",
+        ">>> APPLY_STRATEGIC_ABSTRACTION_LAYER <<<",
+        "EXECUTE_K0_THEMATIC_ANALYSIS",
+        "COLLECT_QA_DATA_K0",
+        ">>> APPLY_SAL_TIER_1_TO_K1_INPUTS <<<",
+        "EXECUTE_K1_WITH_MANDATORY_TEMPLATE",
+        ">>> RUN_VG_K1_TEMPLATE_COMPLIANCE <<<",
+        "VALIDATE_K1_WORD_COUNT",
+        "COLLECT_QA_DATA_K1",
+        "EXECUTE_K2_COMPETITIVE",
+        "COLLECT_QA_DATA_K2",
+        "EXECUTE_K4_HEADLINE",
+        "VALIDATE_K4_WORD_COUNT_AND_CHARS",
+        "COLLECT_QA_DATA_K4",
+        ">>> APPLY_SAL_TIER_3_TO_K5A_INPUTS <<<",
+        "EXECUTE_K5A_WITH_MANDATORY_PATTERN",
+        ">>> RUN_VG_BULLET_STRUCTURE_COMPLIANCE_PER_BULLET <<<",
+        "VALIDATE_K5A_ALL_BULLETS_WORD_COUNT",
+        "COLLECT_QA_DATA_K5A",
+        ">>> APPLY_SAL_TIER_2_TO_K5B_INPUTS <<<",
+        "EXECUTE_K5B_WITH_MANDATORY_SYNTHESIS",
+        ">>> RUN_VG_OVERVIEW_SYNTHESIS_COMPLIANCE <<<",
+        "VALIDATE_K5B_WORD_COUNT",
+        "COLLECT_QA_DATA_K5B",
+        ">>> APPLY_SAL_TIER_3_TO_K6A_INPUTS <<<",
+        "EXECUTE_K6A_WITH_MANDATORY_PATTERN",
+        ">>> RUN_VG_BULLET_STRUCTURE_COMPLIANCE_PER_BULLET <<<",
+        "VALIDATE_K6A_ALL_BULLETS_WORD_COUNT",
+        "COLLECT_QA_DATA_K6A",
+        ">>> APPLY_SAL_TIER_2_TO_K6B_INPUTS <<<",
+        "EXECUTE_K6B_WITH_MANDATORY_SYNTHESIS",
+        ">>> RUN_VG_OVERVIEW_SYNTHESIS_COMPLIANCE <<<",
+        "VALIDATE_K6B_WORD_COUNT",
+        "COLLECT_QA_DATA_K6B",
+        "COPY_SECTIONS_3_5_FROM_MASTER",
+        "EXECUTE_K8_COMPETENCIES",
+        ">>> RUN_VG_COMPETENCY_RANKING_COMPLETE <<<",
+        "VALIDATE_K8_ALL_COMPETENCIES_WORD_COUNT",
+        "COLLECT_QA_DATA_K8",
+        "RENDER_EDUCATION",
+        "RENDER_CERTIFICATIONS",
+        "EXECUTE_K11_SKILLS",
+        "COLLECT_QA_DATA_K11",
+        "EXECUTE_K9_COVER_LETTER",
+        "VALIDATE_K9_PARAGRAPHS_WORD_COUNT",
+        "GENERATE_COVER_LETTER_SIGNATURE",
+        "VALIDATE_COVER_LETTER_SIGNATURE_FORMAT",
+        "COLLECT_QA_DATA_K9",
+        "EXECUTE_K12_APP_TRACKER",
+        "GENERATE_FILENAMES_WITH_INTERPOLATION",
+        "VALIDATE_FILENAME_INTERPOLATION",
+        ">>> RUN_ALL_V1_0_5_VALIDATION_GATES <<<",
+        "RUN_VG_QA_DATA_COMPLETE",
+        "RUN_VG_MANDATORY_WORD_COUNT_COMPLIANCE",
+        "RUN_VG_INDUSTRY_FIRST_COMPLIANCE",
+        "RUN_VG_PRODUCTION_READY_PROOF",
+        "ASSERT_ALL_GATES_EXECUTED",
+        "VERIFY_ALL_SIGNATURES_PRESENT",
+        "GENERATE_MANDATORY_QA_REPORT",
+        "WRITE_FOUR_OUTPUT_FILES",
+        "DISPLAY_FULL_CONTENT_IN_CHAT"
+      ]
+    },
+    
+    "all_v1_0_4_output_preserved": "...",
+    "file_generation": "... (preserved from v1.0.4)",
+    "enhanced_rendering_pipeline": "... (preserved from v1.0.4)",
+    
+    "validation_gates": [
+      {
+        "gate_id": "VG_K1_TEMPLATE_COMPLIANCE",
+        "execution_point": "POST_K1_GENERATION",
+        "blocking": true,
+        "severity": "CRITICAL",
+        "description": "NEW v1.0.5: Validates K.1 follows mandatory 6-sentence template"
+      },
+      {
+        "gate_id": "VG_BULLET_STRUCTURE_COMPLIANCE",
+        "execution_point": "POST_K5A_K6A_BULLET_GENERATION_PER_BULLET",
+        "blocking": true,
+        "severity": "HIGH",
+        "description": "NEW v1.0.5: Validates bullets follow business-impact-first pattern"
+      },
+      {
+        "gate_id": "VG_OVERVIEW_SYNTHESIS_COMPLIANCE",
+        "execution_point": "POST_K5B_K6B_GENERATION",
+        "blocking": true,
+        "severity": "HIGH",
+        "description": "NEW v1.0.5: Validates overviews synthesize rather than paraphrase"
+      },
+      {
+        "gate_id": "VG_COMPETENCY_RANKING_COMPLETE",
+        "execution_point": "POST_K8_GENERATION",
+        "blocking": true,
+        "severity": "MEDIUM",
+        "description": "NEW v1.0.5: Validates complete 1-6 competency ranking order"
+      },
+      {
+        "gate_id": "VG_SAL_TIER_COMPLIANCE",
+        "execution_point": "POST_TRANSFORMATION_PRE_GENERATION",
+        "blocking": true,
+        "severity": "HIGH",
+        "description": "NEW v1.0.5: Validates Strategic Abstraction Layer tier compliance"
+      },
+      "... all v1.0.4 gates preserved (VG_QA_DATA_COMPLETE, VG_FILENAME_INTERPOLATION, etc.)"
+    ],
+    
+    "qa_validation_report": {
+      "enabled": true,
+      "mandatory": true,
+      "enhanced_v1_0_5_metrics": {
+        "k1_template_compliance": {
+          "sentence_count": "integer",
+          "sentence_1_pattern_match": "boolean",
+          "bullet_verbs_detected": "array",
+          "scope_indicators_count": "integer",
+          "tier_1_compliance": "boolean",
+          "bullet_verbatim_similarity_max": "float"
+        },
+        "bullet_structure_compliance": {
+          "k5a_bullets_pattern_match": "array[7] of boolean",
+          "k5a_business_verbs_used": "array[7]",
+          "k6a_bullets_pattern_match": "array[6] of boolean",
+          "k6a_business_verbs_used": "array[6]"
+        },
+        "overview_synthesis_compliance": {
+          "k5b_business_function_opening": "boolean",
+          "k5b_cosine_similarity_to_bullets_max": "float",
+          "k5b_token_overlap": "float",
+          "k5b_tier_2_compliance": "boolean",
+          "k6b_business_function_opening": "boolean",
+          "k6b_cosine_similarity_to_bullets_max": "float",
+          "k6b_token_overlap": "float",
+          "k6b_tier_2_compliance": "boolean"
+        },
+        "competency_ranking": {
+          "competency_classifications": "array[6] of rank",
+          "position_1_rank": "string",
+          "position_2_rank": "string",
+          "technology_in_top_3": "boolean",
+          "ranking_order_valid": "boolean"
+        }
+      }
+    }
+  },
+
+  "6.conditions": {
+    "description": "Inviolable rules of v1.0.5 architecture",
+    "critical_rules": [
+      "SILENT EXECUTION: All processing internal, no commentary, display complete content at end",
+      "STRATEGIC ABSTRACTION LAYER: All content transformed by tier before generation",
+      "K.1 MANDATORY TEMPLATE: 6-sentence structure with pattern validation - ANY deviation fails",
+      "K.1 NO BULLET STYLE: No bullet verbs (Designed, Architected, Built), no technical specifics (RAG, LLM)",
+      "K.1 SYNTHESIS REQUIRED: Umbrella achievements from 3-5 bullets, NOT single achievement compression",
+      "BULLETS MANDATORY PATTERN: [Business impact] by/through [technical] that [results] - ANY deviation fails",
+      "BULLETS BUSINESS-FIRST: MUST open with business outcome verbs (Accelerated, Drove), NEVER execution verbs",
+      "OVERVIEWS MANDATORY SYNTHESIS: MUST synthesize themes, NOT paraphrase bullets (cosine < 0.6)",
+      "OVERVIEWS BUSINESS FUNCTION: MUST open with tier 1/2 business vocabulary, technology subordinated",
+      "OVERVIEWS ELEVATION REQUIRED: MUST be tier 2 (program) when bullets are tier 3 (execution)",
+      "COMPETENCIES COMPLETE VALIDATION: Full 1-6 ranking validated, positions 1-2 industry/leadership, no tech in top 3",
+      "POSITIONING PRIORITY: Executive sections (K.1, K.5B, K.6B) prioritize strategic positioning over authenticity",
+      "All v1.0.4 rules remain in effect: TARGET-FIRST industry, QA data collection, filename interpolation, signature format"
+    ]
+  }
+}
