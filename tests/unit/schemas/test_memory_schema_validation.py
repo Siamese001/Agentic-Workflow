@@ -6,8 +6,9 @@
 from __future__ import annotations
 
 from typing import Iterable, Type
+import pytest
 
-from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
+from pydantic import BaseModel
 
 
 def _get_schema_version(obj: object) -> str | None:
