@@ -28,7 +28,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from runtime.shared.clients import OPENAI_DEFAULT_SEED
 

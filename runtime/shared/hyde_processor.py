@@ -8,7 +8,7 @@ retrieval by query expansion. Essential for sparse profile enhancement.
 
 import logging
 import scripts.check_canonical_structure
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -55,11 +55,11 @@ class ValidationResult:
 class HyDEProcessor:
     """
     Hypothetical Document Embeddings engine
-    
+
     Generates hypothetical documents based on queries to improve
     retrieval by query expansion. Essential for sparse profile enhancement.
     """
-    
+
     def __init__(
         self,
         min_profile_length: int = 50,
@@ -68,7 +68,7 @@ class HyDEProcessor:
     ):
         """
         Initialize HyDE engine.
-        
+
         Args:
             min_profile_length: Minimum profile length to skip HyDE
             max_hypothetical_length: Maximum length of hypothetical document
@@ -76,7 +76,7 @@ class HyDEProcessor:
         """
         self.min_profile_length = min_profile_length
         self.max_hypothetical_length = max_hypothetical_length
-        
+
         # Forbidden patterns to prevent hallucination
         self.forbidden_patterns = forbidden_patterns or [
             r'\d{4}',  # Years (to prevent fabricated dates)
@@ -84,12 +84,12 @@ class HyDEProcessor:
             r'previously at|former|ex-',  # Fabricated work history
             r'\$\d+',  # Fabricated financial figures
         ]
-        
+
         self.compiled_forbidden = [
-            re.compile(pattern, re.IGNORECASE) 
+            re.compile(pattern, re.IGNORECASE)
             for pattern in self.forbidden_patterns
         ]
-    
+
     def should_trigger_hyde(
         self,
         profile: Optional[str] = None,
@@ -97,45 +97,45 @@ class HyDEProcessor:
     ) -> Tuple[bool, str]:
         """
         Determine if HyDE should be triggered.
-        
+
         Args:
             profile: Profile text to evaluate
             context: Additional context
-            
+
         Returns:
             Tuple of (should_trigger, reason)
         """
         context = context or {}
-        
+
         # Check profile length
         if profile is None or len(profile.strip()) < self.min_profile_length:
             return True, "Profile too short or missing"
-        
+
         # Check for sparse content indicators
         word_count = len(profile.split())
         if word_count < 20:
             return True, "Profile has insufficient word count"
-        
+
         # Check for placeholder content
         placeholder_patterns = [
             r'\[.*?\]',
             r'<.*?>',
             r'TBD|TODO|N/A|Unknown'
         ]
-        
+
         for pattern in placeholder_patterns:
             if re.search(pattern, profile, re.IGNORECASE):
                 return True, "Profile contains placeholder content"
-        
+
         # Check context flags
         if context.get('force_hyde', False):
             return True, "HyDE forced by context"
-        
+
         if context.get('sparse_data', False):
             return True, "Sparse data flag set"
-        
+
         return False, "Profile is sufficient"
-    
+
     def generate_hypothetical_profile(
         self,
         title: str,
@@ -145,30 +145,30 @@ class HyDEProcessor:
     ) -> HyDEDocument:
         """
         Generate hypothetical profile using title + company + domain.
-        
+
         Args:
             title: Job title
             company: Company name
             domain: Industry domain
             context: Additional context
-            
+
         Returns:
             HyDEDocument with hypothetical profile
         """
         context = context or {}
         domain = domain or "technology"
-        
+
         # Generate template-based hypothetical profile
         # In production, this would call an LLM
         hypothetical_profile = self._generate_profile_template(title, compdomain)
-        
+
         # Validate against forbidden patterns
         validation = self._validate_hypothetical(hypothetical_profile)
-        
+
         if not validation.is_valid:
             # Clean up violations
             hypothetical_profile = self._clean_violations(hypothetical_profile, validation.violations)
-        
+
         return HyDEDocument(
             query=f"{title} at {company}",
             hypothetical_doc=hypothetical_profile,
@@ -181,7 +181,7 @@ class HyDEProcessor:
                 "validation_passed": validation.is_valid
             }
         )
-    
+
     def generate_hypothetical_document(
         self,
         query: str,
@@ -190,26 +190,26 @@ class HyDEProcessor:
     ) -> HyDEDocument:
         """
         Generate hypothetical document for query expansion.
-        
+
         Args:
             query: Original query
             document_type: Type of document to generate
             context: Additional context
-            
+
         Returns:
             HyDEDocument with hypothetical content
         """
         context = context or {}
-        
+
         # Generate template-based hypothetical document
         hypothetical_doc = self._generate_document_template(query, document_type)
-        
+
         # Validate
         validation = self._validate_hypothetical(hypothetical_doc)
-        
+
         if not validation.is_valid:
             hypothetical_doc = self._clean_violations(hypothetical_doc, validation.violations)
-        
+
         return HyDEDocument(
             query=query,
             hypothetical_doc=hypothetical_doc,
@@ -220,7 +220,7 @@ class HyDEProcessor:
                 "validation_passed": validation.is_valid
             }
         )
-    
+
     def expand_query(
         self,
         query: str,
@@ -229,23 +229,23 @@ class HyDEProcessor:
     ) -> HyDEResult:
         """
         Expand query using HyDE if appropriate.
-        
+
         Args:
             query: Original query
             profile: Optional profile to evaluate
             context: Additional context
-            
+
         Returns:
             HyDEResult with expanded query
         """
         import time
         start_time = time.time()
-        
+
         context = context or {}
-        
+
         # Check if HyDE should be triggered
         should_trigger, trigger_reason = self.should_trigger_hyde(profile, context)
-        
+
         if not should_trigger:
             return HyDEResult(
                 original_query=query,
@@ -255,10 +255,10 @@ class HyDEProcessor:
                 trigger_reason=trigger_reason,
                 processing_time_ms=int((time.time() - start_time) * 1000)
             )
-        
+
         # Generate hypothetical documents
         hypothetical_docs = []
-        
+
         # Generate based on context
         if context.get('title') and context.get('company'):
             profile_doc = self.generate_hypothetical_profile(
@@ -267,18 +267,18 @@ class HyDEProcessor:
                 context.get('domain')
             )
             hypothetical_docs.append(profile_doc)
-        
+
         # Generate document expansion
         doc = self.generate_hypothetical_document(query, context.get('document_type', 'article'))
         hypothetical_docs.append(doc)
-        
+
         # Create expanded query
         expanded_query = self._create_expanded_query(query, hypothetical_docs)
-        
+
         processing_time = int((time.time() - start_time) * 1000)
-        
+
         logger.info(f"HyDE expansion complete: {len(hypothetical_docs)} documents generated")
-        
+
         return HyDEResult(
             original_query=query,
             expanded_query=expanded_query,
@@ -287,81 +287,81 @@ class HyDEProcessor:
             trigger_reason=trigger_reason,
             processing_time_ms=processing_time
         )
-    
+
     def _generate_profile_template(self, title: str, company: str, domain: str) -> str:
         """Generate template-based hypothetical profile."""
-        return f"""Professional with expertise in {domain} working as {title} at {company}. 
+        return f"""Professional with expertise in {domain} working as {title} at {company}.
 Focused on delivering strategic value and driving business outcomes in the {domain} space.
-Experienced in leading initiatives, collaborating with cross-functional teams, and 
+Experienced in leading initiatives, collaborating with cross-functional teams, and
 implementing solutions that drive measurable results.""".strip()
-    
+
     def _generate_document_template(self, query: str, document_type: str) -> str:
         """Generate template-based hypothetical document."""
         templates = {
-            "article": f"""This article discusses {query}. Key topics include best practices, 
-industry trends, and practical implementation strategies. The content covers 
+            "article": f"""This article discusses {query}. Key topics include best practices,
+industry trends, and practical implementation strategies. The content covers
 relevant methodologies and approaches used by leading organizations.""",
-            
-            "profile": f"""Professional profile related to {query}. This individual has 
-demonstrated expertise in relevant areas and has contributed to significant 
+
+            "profile": f"""Professional profile related to {query}. This individual has
+demonstrated expertise in relevant areas and has contributed to significant
 projects and initiatives in the field.""",
-            
-            "report": f"""This report analyzes {query}. It includes data-driven insights, 
-market analysis, and recommendations based on current industry standards 
+
+            "report": f"""This report analyzes {query}. It includes data-driven insights,
+market analysis, and recommendations based on current industry standards
 and emerging trends."""
         }
-        
+
         return templates.get(document_type, templates["article"]).strip()
-    
+
     def _validate_hypothetical(self, content: str) -> ValidationResult:
         """Validate hypothetical content against forbidden patterns."""
         violations = []
-        
+
         for i, pattern in enumerate(self.compiled_forbidden):
             matches = pattern.findall(content)
             if matches:
                 violations.append(f"Pattern {i}: {matches}")
-        
+
         # Check for fabricated dates
         if re.search(r'\b(19|20)\d{2}\b', content):
             violations.append("Contains fabricated dates")
-        
+
         is_valid = len(violations) == 0
         confidence = 1.0 if is_valid else max(0.5, 1.0 - len(violations) * 0.1)
-        
+
         return ValidationResult(
             is_valid=is_valid,
             violations=violations,
             confidence=confidence
         )
-    
+
     def _clean_violations(self, content: str, violations: List[str]) -> str:
         """Clean content by removing violations."""
         cleaned = content
-        
+
                 cleaned = re.sub(r'\b(19|20)\d{2}\b', '', cleaned)
-        
+
                 cleaned = re.sub(r'\$[\d,]+(?:\.\d{2})?', '', cleaned)
-        
+
         # Clean up extra whitespace
         cleaned = re.sub(r'\s+', ' ', cleaned).strip()
-        
+
         return cleaned
-    
+
     def _create_expanded_query(self, query: str, docs: List[HyDEDocument]) -> str:
         """Create expanded query from hypothetical documents."""
         # Extract key terms from hypothetical documents
         key_terms = set()
-        
+
         for doc in docs:
             words = doc.hypothetical_doc.lower().split()
             # Filter to meaningful words
             meaningful = [w for w in words if len(w) > 4 and w.isalpha()]
             key_terms.update(meaningful[:10])
-        
+
         # Combine with original query
         expansion = " ".join(list(key_terms)[:5])
-        
+
         return f"{query} {expansion}".strip()
 
 
