@@ -14,6 +14,9 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Set
 
+from shared.reasoning_config import ReasoningConfig
+from shared.config import CACHE_DIR, DATA_DIR
+
 try:
     import google.generativeai as genai
     GEMINI_AVAILABLE = True
