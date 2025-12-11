@@ -2,7 +2,7 @@
 from __future__ import annotations
 from unittest.mock import MagicMock, patch
 import pytest
-from agentic_workflow.runtime.shared.multi_provider_clients import reset_all_clients
+from runtime.shared.multi_provider_clients import reset_all_clients
 
 # Stub function since reset_sdk_clients doesn't exist yet
 def reset_sdk_clients():

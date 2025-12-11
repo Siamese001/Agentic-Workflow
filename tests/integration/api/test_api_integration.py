@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
-from agentic_workflow.runtime.shared.exceptions import HopExecutionError, ValidationError, APIError, CircuitBreakerOpenError
+from runtime.shared.exceptions import HopExecutionError, ValidationError, APIError, CircuitBreakerOpenError
 
 class HTTPMethod(Enum):
     GET = "GET"

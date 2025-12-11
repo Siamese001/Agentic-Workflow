@@ -4,7 +4,7 @@ cachedir: .pytest_cache
 rootdir: C:\Git\Agentic-Workflow
 plugins: anyio-4.12.0, langsmith-0.4.56, asyncio-1.3.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
-collecting ... collected 0 items / 10 errors
+collecting ... collected 5 items / 9 errors
 
 =================================== ERRORS ====================================
 _____ ERROR collecting tests/unit/runtime/test_multi_provider_clients.py ______
@@ -16,29 +16,9 @@ C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 tests\unit\runtime\test_multi_provider_clients.py:6: in <module>
     from runtime.shared.multi_provider_clients import reset_all_clients
-runtime\shared\__init__.py:5: in <module>
-    from .cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
-runtime\shared\cache.py:32: in <module>
-    from runtime.shared.clients import OPENAI_DEFAULT_SEED
-runtime\shared\clients.py:26: in <module>
-    from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI, OpenAI
-E   ImportError: cannot import name 'AsyncOpenAI' from 'data.sdks_mcps.reference_clients.minimal_openai' (C:\Git\Agentic-Workflow\data\sdks_mcps\reference_clients\minimal_openai.py)
-______________ ERROR collecting tests/unit/runtime/test_cache.py ______________
-ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\unit\runtime\test_cache.py'.
-Hint: make sure your test modules/packages have valid Python names.
-Traceback:
-C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-tests\unit\runtime\test_cache.py:3: in <module>
-    from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
-runtime\shared\__init__.py:5: in <module>
-    from .cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
-runtime\shared\cache.py:32: in <module>
-    from runtime.shared.clients import OPENAI_DEFAULT_SEED
-runtime\shared\clients.py:26: in <module>
-    from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI, OpenAI
-E   ImportError: cannot import name 'AsyncOpenAI' from 'data.sdks_mcps.reference_clients.minimal_openai' (C:\Git\Agentic-Workflow\data\sdks_mcps\reference_clients\minimal_openai.py)
+runtime\shared\__init__.py:7: in <module>
+    from .exceptions import HopExecutionError, ValidationError, APIError, CircuitBreakerOpenError
+E   ModuleNotFoundError: No module named 'runtime.shared.exceptions'
 ________ ERROR collecting tests/unit/runtime/test_cache_regression.py _________
 ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\unit\runtime\test_cache_regression.py'.
 Hint: make sure your test modules/packages have valid Python names.
@@ -88,13 +68,9 @@ C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 tests\integration\workflow\test_full_agentic_loop.py:5: in <module>
     from runtime.shared.multi_provider_clients import reset_all_clients
-runtime\shared\__init__.py:5: in <module>
-    from .cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
-runtime\shared\cache.py:32: in <module>
-    from runtime.shared.clients import OPENAI_DEFAULT_SEED
-runtime\shared\clients.py:26: in <module>
-    from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI, OpenAI
-E   ImportError: cannot import name 'AsyncOpenAI' from 'data.sdks_mcps.reference_clients.minimal_openai' (C:\Git\Agentic-Workflow\data\sdks_mcps\reference_clients\minimal_openai.py)
+runtime\shared\__init__.py:7: in <module>
+    from .exceptions import HopExecutionError, ValidationError, APIError, CircuitBreakerOpenError
+E   ModuleNotFoundError: No module named 'runtime.shared.exceptions'
 _ ERROR collecting tests/integration/cross_domain/test_schema_compatibility.py _
 ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\integration\cross_domain\test_schema_compatibility.py'.
 Hint: make sure your test modules/packages have valid Python names.
@@ -127,7 +103,6 @@ tests\unit\schemas\test_models.py:4: in <module>
 E   ImportError: cannot import name 'RAGState' from 'shared.models' (C:\Git\Agentic-Workflow\shared\models.py)
 =========================== short test summary info ===========================
 ERROR tests/unit/runtime/test_multi_provider_clients.py
-ERROR tests/unit/runtime/test_cache.py
 ERROR tests/unit/runtime/test_cache_regression.py
 ERROR tests/perf/throughput/test_cache_throughput.py
 ERROR tests/integration/api/test_api_integration.py
@@ -136,5 +111,5 @@ ERROR tests/integration/workflow/test_full_agentic_loop.py
 ERROR tests/integration/cross_domain/test_schema_compatibility.py
 ERROR tests/unit/shared/test_utils.py
 ERROR tests/unit/schemas/test_models.py
-!!!!!!!!!!!!!!!!!! Interrupted: 10 errors during collection !!!!!!!!!!!!!!!!!!!
-============================= 10 errors in 1.76s ==============================
+!!!!!!!!!!!!!!!!!!! Interrupted: 9 errors during collection !!!!!!!!!!!!!!!!!!!
+============================== 9 errors in 1.46s ==============================
