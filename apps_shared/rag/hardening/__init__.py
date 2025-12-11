@@ -27,7 +27,7 @@ from shared.config import (
 
 
 
-from agentic_core.shared.sdk_registry import (
+from runtime.shared.sdk_registry import (
     SDKCategory, SDKEntry, SDK_REGISTRY, validate_sdk, validate_all_sdks, get_available_sdks, ChromaConfig, QdrantConfig, PineconeConfig, get_vector_store, RedisConfig, get_redis_client, TracingConfig, setup_tracing, get_tracer, MCPServerConfig, create_mcp_server, create_mcp_tool_from_function, parse_document, extract_pdf_text
 )
 
@@ -49,15 +49,15 @@ from agentic_core.shared.sdk_registry import (
 
 
 
-from agentic_core.shared.rag_components import (
+from runtime.shared.rag_components import (
     CacheEntry, CacheSufficiencyResult, SemanticCache, create_semantic_cache, GapType, KnowledgeGap, SelfRAGResult, SelfRAGProcessor, create_self_rag_processor, Episode, EpisodicMemoryResult, EpisodicMemory, create_episodic_memory, KGRelationship, KGContext, KnowledgeGraphInjector, create_kg_injector, FewShotExample, FewShotInjectionResult, FewShotInjector, create_few_shot_injector
 )
 
-from agentic_core.shared.orchestration import (
+from runtime.shared.orchestration import (
     RecoveryStrategy, CircuitBreakerConfig, RetryConfig, RecoveryResult, CircuitBreaker, ErrorRecoveryManager, create_error_recovery_manager, create_circuit_breaker, TraceLevel, TraceStep, ExecutionTrace, ExecutionTracer, create_execution_tracer, ValueProposition, MessageSectionPlan, FusionPlan, FusionPlanner, create_fusion_planner
 )
 
-from agentic_core.shared.state_management import (
+from runtime.shared.state_management import (
     SanitizationLevel, SanitizationResult, TextSanitizer, create_text_sanitizer, sanitize_text, ValidationIssue, ValidationContextResult, ValidationContext, create_validation_context, WorkflowPhase, WorkflowCheckpoint, WorkflowState, WorkflowStateManager, create_workflow_state_manager, create_staging_buffer
 )
 

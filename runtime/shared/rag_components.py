@@ -9,7 +9,7 @@ and context injection.
 import logging
 import time
 import hashlib
-from typing import Dict, List, object, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime, timedelta
@@ -48,11 +48,11 @@ class CacheSufficiencyResult:
 class SemanticCache:
     """
     Enhanced Semantic Caching with Vector Similarity
-    
+
     Extends basic caching with vector similarity scoring
     to reduce redundant research by 30-50%.
     """
-    
+
     def __init__(
         self,
         max_entries: int = 1000,
@@ -62,7 +62,7 @@ class SemanticCache:
     ):
         """
         Initialize semantic cache.
-        
+
         Args:
             max_entries: Maximum cache entries
             default_ttl: Default TTL in seconds
@@ -73,35 +73,35 @@ class SemanticCache:
         self.default_ttl = default_ttl
         self.similarity_threshold = similarity_threshold
         self.freshness_threshold_days = freshness_threshold_days
-        
+
         self.cache: Dict[str, CacheEntry] = {}
         self.stats = {
             'hits': 0,
             'misses': 0,
             'evictions': 0
         }
-    
+
     def get(self, key: str) -> Optional[Any]:
         """Get value from cache."""
         if key not in self.cache:
             self.stats['misses'] += 1
             return None
-        
+
         entry = self.cache[key]
-        
+
         # Check TTL
         if self._is_expired(entry):
             del self.cache[key]
             self.stats['misses'] += 1
             return None
-        
+
         # Update access metadata
         entry.accessed_at = datetime.now()
         entry.access_count += 1
         self.stats['hits'] += 1
-        
+
         return entry.value
-    
+
     def set(
         self,
         key: str,
@@ -113,7 +113,7 @@ class SemanticCache:
         # Evict if at capacity
         if len(self.cache) >= self.max_entries:
             self._evict_lru()
-        
+
         entry = CacheEntry(
             key=key,
             value=value,
@@ -122,9 +122,9 @@ class SemanticCache:
             accessed_at=datetime.now(),
             ttl_seconds=ttl or self.default_ttl
         )
-        
+
         self.cache[key] = entry
-    
+
     def evaluate_sufficiency(
         self,
         query: str,
@@ -133,12 +133,12 @@ class SemanticCache:
     ) -> CacheSufficiencyResult:
         """
         Evaluate if cached data is sufficient for query.
-        
+
         Args:
             query: Current query
             required_targets: Required data targets
             existing_data: Existing cached data to evaluate
-            
+
         Returns:
             CacheSufficiencyResult with evaluation
         """
@@ -150,32 +150,32 @@ class SemanticCache:
                 similarity_score=0.0,
                 missing_targets=required_targets
             )
-        
+
         # Calculate coverage
         covered_targets = []
         missing_targets = []
-        
+
         for target in required_targets:
             if target in existing_data and existing_data[target]:
                 covered_targets.append(target)
             else:
                 missing_targets.append(target)
-        
+
         coverage_score = len(covered_targets) / len(required_targets) if required_targets else 0.0
-        
+
         # Calculate freshness
         freshness_score = self._calculate_freshness(existing_data)
-        
+
         # Calculate similarity (simplified)
         similarity_score = self._calculate_similarity(query, existing_data)
-        
+
         # Determine sufficiency
         is_sufficient = (
             coverage_score >= 0.8 and
             freshness_score >= 0.7 and
             similarity_score >= self.similarity_threshold
         )
-        
+
         return CacheSufficiencyResult(
             is_sufficient=is_sufficient,
             coverage_score=coverage_score,
@@ -184,28 +184,28 @@ class SemanticCache:
             missing_targets=missing_targets,
             cached_data=existing_data if is_sufficient else None
         )
-    
+
     def _is_expired(self, entry: CacheEntry) -> bool:
         """Check if cache entry is expired."""
         elapsed = (datetime.now() - entry.created_at).total_seconds()
         return elapsed > entry.ttl_seconds
-    
+
     def _evict_lru(self) -> None:
         """Evict least recently used entry."""
         if not self.cache:
             return
-        
+
         lru_key = min(self.cache, key=lambda k: self.cache[k].accessed_at)
         del self.cache[lru_key]
         self.stats['evictions'] += 1
-    
+
     def _calculate_freshness(self, data: Dict[str, object]) -> float:
         """Calculate data freshness score."""
         timestamp = data.get('timestamp') or data.get('cached_at')
-        
+
         if not timestamp:
             return 0.5
-        
+
         try:
             if isinstance(timestamp, str):
                 data_date = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
@@ -213,45 +213,45 @@ class SemanticCache:
                 data_date = timestamp
             else:
                 return 0.5
-            
+
             days_old = (datetime.now() - data_date).days
-            
+
             if days_old <= 0:
                 return 1.0
             elif days_old >= self.freshness_threshold_days:
                 return 0.0
             else:
                 return 1.0 - (days_old / self.freshness_threshold_days)
-        
+
         except (ValueError, TypeError):
             return 0.5
-    
+
     def _calculate_similarity(self, query: str, data: Dict[str, object]) -> float:
         """Calculate query-data similarity (simplified)."""
         # basic word overlap for demonstration
         query_words = set(query.lower().split())
-        
+
         data_text = ' '.join(str(v) for v in data.values() if isinstance(v, str))
         data_words = set(data_text.lower().split())
-        
+
         if not query_words or not data_words:
             return 0.5
-        
+
         overlap = len(query_words & data_words)
         return min(overlap / len(query_words), 1.0)
-    
+
     def get_stats(self) -> Dict[str, object]:
         """Get cache statistics."""
         total_requests = self.stats['hits'] + self.stats['misses']
         hit_rate = self.stats['hits'] / total_requests if total_requests > 0 else 0.0
-        
+
         return {
             **self.stats,
             'entries': len(self.cache),
             'hit_rate': round(hit_rate, 3),
             'max_entries': self.max_entries
         }
-    
+
     def clear(self) -> None:
         """Clear all cache entries."""
         self.cache.clear()
@@ -293,11 +293,11 @@ class SelfRAGResult:
 class SelfRAGProcessor:
     """
     Self-RAG Gap Detection and Closure
-    
+
     Detects knowledge gaps in retrieval results and
     generates refined queries to close them.
     """
-    
+
     def __init__(
         self,
         max_iterations: int = 3,
@@ -306,7 +306,7 @@ class SelfRAGProcessor:
     ):
         """
         Initialize Self-RAG engine.
-        
+
         Args:
             max_iterations: Maximum refinement iterations
             min_evidence_count: Minimum evidence items required
@@ -315,7 +315,7 @@ class SelfRAGProcessor:
         self.max_iterations = max_iterations
         self.min_evidence_count = min_evidence_count
         self.relevance_threshold = relevance_threshold
-    
+
     def detect_gaps(
         self,
         query: str,
@@ -323,16 +323,16 @@ class SelfRAGProcessor:
     ) -> List[KnowledgeGap]:
         """
         Detect knowledge gaps in evidence.
-        
+
         Args:
             query: Original query
             evidence: Retrieved evidence
-            
+
         Returns:
             List of detected gaps
         """
         gaps = []
-        
+
         # Check for insufficient evidence
         if len(evidence) < self.min_evidence_count:
             gaps.append(KnowledgeGap(
@@ -341,7 +341,7 @@ class SelfRAGProcessor:
                 severity=0.8,
                 suggested_query=f"{query} comprehensive detailed"
             ))
-        
+
         # Check for low relevance
         if evidence:
             avg_relevance = sum(e.get('relevance_score', 0.5) for e in evidence) / len(evidence)
@@ -352,7 +352,7 @@ class SelfRAGProcessor:
                     severity=0.7,
                     suggested_query=f"{query} specific targeted"
                 ))
-        
+
         # Check for outdated info
         old_count = sum(1 for e in evidence if e.get('recency_score', 0.5) < 0.5)
         if old_count > len(evidence) // 2:
@@ -362,7 +362,7 @@ class SelfRAGProcessor:
                 severity=0.6,
                 suggested_query=f"{query} recent 2024 current"
             ))
-        
+
         # Check for low authority
         low_auth_count = sum(1 for e in evidence if e.get('authority_score', 0.5) < 0.6)
         if low_auth_count > len(evidence) // 2:
@@ -372,9 +372,9 @@ class SelfRAGProcessor:
                 severity=0.5,
                 suggested_query=f"{query} official sources expert"
             ))
-        
+
         return gaps
-    
+
     def generate_refined_queries(
         self,
         original_query: str,
@@ -382,13 +382,13 @@ class SelfRAGProcessor:
     ) -> List[str]:
         """Generate refined queries to close gaps."""
         refined = []
-        
+
         for gap in gaps:
             if gap.suggested_query and gap.suggested_query not in refined:
                 refined.append(gap.suggested_query)
-        
+
         return refined[:self.max_iterations]
-    
+
     def process(
         self,
         query: str,
@@ -396,25 +396,25 @@ class SelfRAGProcessor:
     ) -> SelfRAGResult:
         """
         Process query with Self-RAG.
-        
+
         Args:
             query: Original query
             evidence: Retrieved evidence
-            
+
         Returns:
             SelfRAGResult with gaps and refined queries
         """
         gaps = self.detect_gaps(query, evidence)
         refined_queries = self.generate_refined_queries(query, gaps)
-        
+
         # Calculate improvement potential
         if gaps:
             improvement_score = sum(g.severity for g in gaps) / len(gaps)
         else:
             improvement_score = 0.0
-        
+
         logger.info(f"Self-RAG: {len(gaps)} gaps detected, {len(refined_queries)} refined queries")
-        
+
         return SelfRAGResult(
             original_query=query,
             gaps_detected=gaps,
@@ -450,21 +450,21 @@ class EpisodicMemoryResult:
 class EpisodicMemory:
     """
     Episodic Memory for Context Retrieval
-    
+
     Retrieves relevant past interactions and context
     for improved personalization.
     """
-    
+
     def __init__(self, max_episodes: int = 100):
         """
         Initialize episodic memory.
-        
+
         Args:
             max_episodes: Maximum episodes to retain
         """
         self.max_episodes = max_episodes
         self.episodes: Dict[str, List[Episode]] = defaultdict(list)
-    
+
     def store(
         self,
         user_id: str,
@@ -474,13 +474,13 @@ class EpisodicMemory:
     ) -> Episode:
         """
         Store an episode in memory.
-        
+
         Args:
             user_id: User identifier
             content: Episode content
             context: Episode context
             episode_type: Type of episode
-            
+
         Returns:
             Created Episode
         """
@@ -492,15 +492,15 @@ class EpisodicMemory:
             relevance=1.0,
             episode_type=episode_type
         )
-        
+
         self.episodes[user_id].append(episode)
-        
+
         # Trim if over limit
         if len(self.episodes[user_id]) > self.max_episodes:
             self.episodes[user_id] = self.episodes[user_id][-self.max_episodes:]
-        
+
         return episode
-    
+
     def retrieve(
         self,
         user_id: str,
@@ -510,24 +510,24 @@ class EpisodicMemory:
     ) -> EpisodicMemoryResult:
         """
         Retrieve relevant episodes.
-        
+
         Args:
             user_id: User identifier
             query: Optional query for relevance filtering
             episode_type: Optional type filter
             limit: Maximum episodes to return
-            
+
         Returns:
             EpisodicMemoryResult with episodes
         """
         start_time = time.time()
-        
+
         user_episodes = self.episodes.get(user_id, [])
-        
+
         # Filter by type if specified
         if episode_type:
             user_episodes = [e for e in user_episodes if e.episode_type == episode_type]
-        
+
         # Score by relevance if query provided
         if query:
             for episode in user_episodes:
@@ -536,36 +536,36 @@ class EpisodicMemory:
         else:
             # Sort by recency
             user_episodes.sort(key=lambda e: e.timestamp, reverse=True)
-        
+
         selected = user_episodes[:limit]
-        
+
         # Build context enrichment
         context_enrichment = self._build_context_enrichment(selected)
-        
+
         retrieval_time = int((time.time() - start_time) * 1000)
-        
+
         return EpisodicMemoryResult(
             episodes=selected,
             context_enrichment=context_enrichment,
             retrieval_time_ms=retrieval_time
         )
-    
+
     def _calculate_relevance(self, query: str, episode: Episode) -> float:
         """Calculate episode relevance to query."""
         query_words = set(query.lower().split())
         content_words = set(episode.content.lower().split())
-        
+
         if not query_words or not content_words:
             return 0.5
-        
+
         overlap = len(query_words & content_words)
         return min(overlap / len(query_words), 1.0)
-    
+
     def _build_context_enrichment(self, episodes: List[Episode]) -> Dict[str, object]:
         """Build context enrichment from episodes."""
         if not episodes:
             return {}
-        
+
         return {
             'episode_count': len(episodes),
             'types': list(set(e.episode_type for e in episodes)),
@@ -602,15 +602,15 @@ class KGContext:
 class KnowledgeGraphInjector:
     """
     Knowledge Graph Context Injection
-    
+
     Injects relationship context from knowledge graph
     for improved personalization.
     """
-    
+
     def __init__(self):
         """Initialize knowledge graph injector."""
         self.relationships: Dict[str, List[KGRelationship]] = defaultdict(list)
-    
+
     def add_relationship(
         self,
         source: str,
@@ -625,11 +625,11 @@ class KnowledgeGraphInjector:
             relationship_type=relationship_type,
             weight=weight
         )
-        
+
         self.relationships[source].append(rel)
-        
+
         return rel
-    
+
     def inject_context(
         self,
         sender_id: str,
@@ -637,36 +637,36 @@ class KnowledgeGraphInjector:
     ) -> KGContext:
         """
         Inject knowledge graph context.
-        
+
         Args:
             sender_id: Sender identifier
             recipient_id: Recipient identifier
-            
+
         Returns:
             KGContext with relationships
         """
         # Find relationships involving both parties
         sender_rels = self.relationships.get(sender_id, [])
         recipient_rels = self.relationships.get(recipient_id, [])
-        
+
         # Find shared connections
         sender_targets = set(r.target for r in sender_rels)
         recipient_targets = set(r.target for r in recipient_rels)
         shared = list(sender_targets & recipient_targets)
-        
+
         # Combine relevant relationships
         relevant_rels = [r for r in sender_rels if r.target in shared or r.target == recipient_id]
         relevant_rels.extend([r for r in recipient_rels if r.target in shared or r.target == sender_id])
-        
+
         # Build context summary
         summary = self._build_summary(shared, relevant_rels)
-        
+
         return KGContext(
             relationships=relevant_rels,
             shared_entities=shared,
             context_summary=summary
         )
-    
+
     def _build_summary(
         self,
         shared: List[str],
@@ -674,14 +674,14 @@ class KnowledgeGraphInjector:
     ) -> str:
         """Build context summary."""
         parts = []
-        
+
         if shared:
             parts.append(f"Shared connections: {', '.join(shared[:3])}")
-        
+
         if relationships:
             rel_types = list(set(r.relationship_type for r in relationships))
             parts.append(f"Relationship types: {', '.join(rel_types[:3])}")
-        
+
         return "; ".join(parts) if parts else "No shared context found"
 
 
@@ -710,16 +710,16 @@ class FewShotInjectionResult:
 class FewShotInjector:
     """
     Few-Shot Example Injection
-    
+
     Injects relevant few-shot examples for improved
     output quality.
     """
-    
+
     def __init__(self):
         """Initialize few-shot injector."""
         self.examples: Dict[str, List[FewShotExample]] = defaultdict(list)
         self._load_default_examples()
-    
+
     def add_example(
         self,
         category: str,
@@ -735,11 +735,11 @@ class FewShotInjector:
             category=category,
             quality_score=quality_score
         )
-        
+
         self.examples[category].append(example)
-        
+
         return example
-    
+
     def inject(
         self,
         category: str,
@@ -747,20 +747,20 @@ class FewShotInjector:
     ) -> FewShotInjectionResult:
         """
         Inject few-shot examples.
-        
+
         Args:
             category: Example category
             count: Number of examples to inject
-            
+
         Returns:
             FewShotInjectionResult with examples
         """
         category_examples = self.examples.get(category, [])
-        
+
         # Sort by quality and select top examples
         sorted_examples = sorted(category_examples, key=lambda e: e.quality_score, reverse=True)
         selected = sorted_examples[:count]
-        
+
         # Build injection text
         injection_parts = ["[EXAMPLES]"]
         for i, ex in enumerate(selected, 1):
@@ -768,15 +768,15 @@ class FewShotInjector:
             injection_parts.append(f"Input: {ex.input_text}")
             injection_parts.append(f"Output: {ex.output_text}")
         injection_parts.append("\n[END EXAMPLES]")
-        
+
         injection_text = "\n".join(injection_parts)
-        
+
         return FewShotInjectionResult(
             examples=selected,
             injection_text=injection_text,
             example_count=len(selected)
         )
-    
+
     def _load_default_examples(self) -> None:
         """Load default few-shot examples."""
         # Executive outreach examples
@@ -786,7 +786,7 @@ class FewShotInjector:
             "I noticed your company's recent expansion into cloud infrastructure. My experience leading enterprise cloud migrations could help accelerate your roadmap while reducing risk.",
             0.9
         )
-        
+
         # Technical outreach examples
         self.add_example(
             "technical",
@@ -794,7 +794,7 @@ class FewShotInjector:
             "Your work with microservices architecture is impressive. I've built similar systems handling 10M+ requests daily and would love to share patterns that improved our reliability.",
             0.85
         )
-        
+
         # Recruiter outreach examples
         self.add_example(
             "recruiter",

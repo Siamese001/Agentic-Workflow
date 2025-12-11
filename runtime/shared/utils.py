@@ -16,7 +16,7 @@ import scripts.check_canonical_structure
 import uuid
 from dataclasses import asdict
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from shared.models import ThematicAnalysis
