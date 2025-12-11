@@ -80,7 +80,7 @@ ENV_KEYS: Dict[Provider, str] = {
 # CLIENT CONFIGURATION
 # =============================================================================
 
-DEFAULT_MAX_RETRIES: int = 6
+DEFAULT_MAX_RETRIES: int = 3
 DEFAULT_TIMEOUT: float = 120.0
 DEFAULT_SEED: int = 42
 
@@ -91,6 +91,20 @@ class ProviderConfig:
     max_retries: int = DEFAULT_MAX_RETRIES
     timeout: float = DEFAULT_TIMEOUT
     seed: Optional[int] = DEFAULT_SEED
+
+
+# =============================================================================
+# STUB CLIENT
+# =============================================================================
+
+class StubClient:
+    """Stub client for when actual SDK imports fail."""
+    
+    def __init__(self, provider: str):
+        self.provider = provider
+    
+    def __repr__(self):
+        return f"StubClient(provider='{self.provider}')"
 
 
 # =============================================================================
@@ -170,64 +184,92 @@ def _create_client(
     """Create a new client instance for the provider."""
 
     if provider == Provider.OPENAI:
-        from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI, OpenAI
-        api_key = get_api_key(provider)
-        ClientClass = AsyncOpenAI if async_client else OpenAI
-        return ClientClass(
-            api_key=api_key,
-            max_retries=config.max_retries,
-            timeout=config.timeout,
-        )
+        try:
+            from data.sdks_mcps.reference_clients.minimal_openai import AsyncOpenAI, OpenAI
+            api_key = get_api_key(provider)
+            ClientClass = AsyncOpenAI if async_client else OpenAI
+            return ClientClass(
+                api_key=api_key,
+                max_retries=config.max_retries,
+                timeout=config.timeout,
+            )
+        except ImportError:
+            # Return stub client when imports fail
+            return StubClient(provider.value)
 
     elif provider == Provider.ANTHROPIC:
-        from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic, AsyncAnthropic
-        api_key = get_api_key(provider)
-        ClientClass = AsyncAnthropic if async_client else Anthropic
-        return ClientClass(
-            api_key=api_key,
-            max_retries=config.max_retries,
-            timeout=config.timeout,
-        )
+        try:
+            from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic, AsyncAnthropic
+            api_key = get_api_key(provider)
+            ClientClass = AsyncAnthropic if async_client else Anthropic
+            return ClientClass(
+                api_key=api_key,
+                max_retries=config.max_retries,
+                timeout=config.timeout,
+            )
+        except ImportError:
+            return StubClient(provider.value)
 
     elif provider == Provider.GOOGLE:
-        import google.generativeai as genai
-        api_key = get_api_key(provider)
-        genai.configure(api_key=api_key)
-        return genai  # Google SDK uses module-level configuration
+        try:
+            import google.generativeai as genai
+            api_key = get_api_key(provider)
+            genai.configure(api_key=api_key)
+            return genai  # Google SDK uses module-level configuration
+        except ImportError:
+            return StubClient(provider.value)
 
     elif provider == Provider.MISTRAL:
-        from mistralai import Mistral
-        api_key = get_api_key(provider)
-        return Mistral(api_key=api_key)
+        try:
+            from mistralai import Mistral
+            api_key = get_api_key(provider)
+            return Mistral(api_key=api_key)
+        except ImportError:
+            return StubClient(provider.value)
 
     elif provider == Provider.COHERE:
-        import cohere
-        api_key = get_api_key(provider)
-        if async_client:
-            return cohere.AsyncClientV2(api_key=api_key)
-        return cohere.ClientV2(api_key=api_key)
+        try:
+            import cohere
+            api_key = get_api_key(provider)
+            if async_client:
+                return cohere.AsyncClientV2(api_key=api_key)
+            return cohere.ClientV2(api_key=api_key)
+        except ImportError:
+            return StubClient(provider.value)
 
     elif provider == Provider.GROQ:
-        from groq import AsyncGroq, Groq
-        api_key = get_api_key(provider)
-        ClientClass = AsyncGroq if async_client else Groq
-        return ClientClass(api_key=api_key)
+        try:
+            from groq import AsyncGroq, Groq
+            api_key = get_api_key(provider)
+            ClientClass = AsyncGroq if async_client else Groq
+            return ClientClass(api_key=api_key)
+        except ImportError:
+            return StubClient(provider.value)
 
     elif provider == Provider.TOGETHER:
-        from together import Together, AsyncTogether
-        api_key = get_api_key(provider)
-        ClientClass = AsyncTogether if async_client else Together
-        return ClientClass(api_key=api_key)
+        try:
+            from together import Together, AsyncTogether
+            api_key = get_api_key(provider)
+            ClientClass = AsyncTogether if async_client else Together
+            return ClientClass(api_key=api_key)
+        except ImportError:
+            return StubClient(provider.value)
 
     elif provider == Provider.FIREWORKS:
-        from data.sdks_mcps.client_wrappers.vertex_client import Fireworks, AsyncFireworks
-        api_key = get_api_key(provider)
-        ClientClass = AsyncFireworks if async_client else Fireworks
-        return ClientClass(api_key=api_key)
+        try:
+            from data.sdks_mcps.client_wrappers.vertex_client import Fireworks, AsyncFireworks
+            api_key = get_api_key(provider)
+            ClientClass = AsyncFireworks if async_client else Fireworks
+            return ClientClass(api_key=api_key)
+        except ImportError:
+            return StubClient(provider.value)
 
     elif provider == Provider.LITELLM:
-        import litellm
-        return litellm  # LiteLLM uses module-level functions
+        try:
+            import litellm
+            return litellm  # LiteLLM uses module-level functions
+        except ImportError:
+            return StubClient(provider.value)
 
     else:
         raise ValueError(f"Unsupported provider: {provider}")

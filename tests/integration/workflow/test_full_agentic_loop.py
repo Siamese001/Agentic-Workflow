@@ -1,8 +1,15 @@
 """Integration tests for full agentic workflow loop."""
 from __future__ import annotations
+import os
 from unittest.mock import MagicMock, patch
 import pytest
 from runtime.shared.multi_provider_clients import reset_all_clients
+
+# Skip integration tests if no API keys are present
+skip_if_no_keys = pytest.mark.skipif(
+    not any(os.environ.get(k) for k in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]),
+    reason="No API keys configured for integration tests"
+)
 
 # Stub function since reset_sdk_clients doesn't exist yet
 def reset_sdk_clients():
@@ -10,6 +17,7 @@ def reset_sdk_clients():
     pass
 
 
+@skip_if_no_keys
 class TestAgenticLoopIntegration:
     @pytest.fixture(autouse=True)
     def reset_state(self):
