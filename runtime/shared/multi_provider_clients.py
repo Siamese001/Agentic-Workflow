@@ -38,7 +38,7 @@ import os
 import threading
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Type, TypeVar
+from typing import Any, Dict, List, Optional, Type, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -99,10 +99,10 @@ class ProviderConfig:
 
 class StubClient:
     """Stub client for when actual SDK imports fail."""
-    
+
     def __init__(self, provider: str):
         self.provider = provider
-    
+
     def __repr__(self):
         return f"StubClient(provider='{self.provider}')"
 
