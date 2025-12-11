@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 """
-api.py - shared Module
+State Update Operations for Cost Management.
+
+Provides enforcement, tracking, and update operations for safety budgets.
 """
 import logging
 from typing import Dict, Optional
@@ -16,8 +19,8 @@ class Result:
     metadata: Dict[str, object] = field(default_factory=dict)
 
 
-class Api:
-    """executor for shared operations."""
+class CostStateUpdate:
+    """executor for cost state update operations."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
@@ -37,4 +40,4 @@ class Api:
 
 def process(data: object, config: Optional[Dict] = None) -> Result:
     """Process data."""
-    return Api(config).process(data)
+    return CostStateUpdate(config).process(data)
