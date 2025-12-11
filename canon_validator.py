@@ -376,6 +376,23 @@ def is_under_any(path: Path, dir_names: Iterable[str]) -> bool:
     return any(part in dir_names for part in path.parts)
 
 
+def is_globally_excluded(path: Path) -> bool:
+    """
+    Universal check for excluded directories (data, archives, .git, etc.).
+    Returns True if the file should be INVISIBLE to the validator.
+    
+    This is the Single Source of Truth for exclusions.
+    """
+    # Standard infrastructure dirs
+    infra = {".git", "__pycache__", "node_modules", ".idea", ".vscode", "venv", "env"}
+    # Combine with Domain Exclusions
+    all_excluded = infra | EXCLUDED_DIRS  # {"data", "archives"}
+    
+    # Check if ANY part of the path matches a forbidden directory
+    # (Checking all parts ensures we catch nested 'archives' too)
+    return any(part in all_excluded for part in path.parts)
+
+
 # Pattern for "Virtual Namespace" directories (L1_cognition, P2_inspect, etc.)
 VIRTUAL_NAMESPACE_PATTERN = re.compile(r"^[LP]\d+_")
 
@@ -430,12 +447,13 @@ def iter_sovereign_file_data() -> Iterable[FileData]:
 
 
 def iter_project_py_files() -> Iterable[Path]:
+    """Iterate all .py files in project, respecting global exclusions."""
     if _REPO_HYDRATED:
         for fd in ALL_PY_FILES:
             yield fd.path
     else:
         for f in ROOT.rglob("*.py"):
-            if ".git" in f.parts or "__pycache__" in f.parts:
+            if is_globally_excluded(f.relative_to(ROOT)):
                 continue
             yield f
 
@@ -1846,17 +1864,20 @@ def check_key_40_validator_self_sanity() -> None:
 def _iter_light_py_files() -> Iterable[Path]:
     """
     Non-sovereign Python files under project root (uses cache).
-    Excludes: sovereign dirs, data/, archives/, __pycache__/, .git/
+    Strictly excludes sovereign dirs AND global excludes (data/archives/.git).
     """
     if _REPO_HYDRATED:
         for fd in LIGHT_FILES:
             yield fd.path
     else:
-        exclude_roots = set(SOVEREIGN_DIRS) | {"data", "archives", ".git"}
+        sov_roots = set(SOVEREIGN_DIRS)
         for f in ROOT.rglob("*.py"):
-            if any(part in exclude_roots for part in f.relative_to(ROOT).parts[:2]):
+            rel = f.relative_to(ROOT)
+            # Check 1: Global Excludes (data, archives, .git, etc.)
+            if is_globally_excluded(rel):
                 continue
-            if "__pycache__" in f.parts:
+            # Check 2: Sovereign Directories (not light)
+            if rel.parts and rel.parts[0] in sov_roots:
                 continue
             yield f
 
@@ -2039,15 +2060,12 @@ def check_key_48_final_depth_canon() -> None:
     - No CODE file in ANY directory (Sovereign or Light) may exceed depth 5
     - Exception: tests/ directory files may go to depth 7 (to mirror source structure)
     - No .py file at root except whitelisted scripts
-    - Only infrastructure dirs are exempt (.git, __pycache__, etc.)
+    - Uses is_globally_excluded() for consistent exclusion policy
     """
     violations: List[str] = []
     
     # Code file extensions to check (not all files)
     CODE_EXTENSIONS = {".py", ".yaml", ".yml", ".json", ".toml", ".cfg", ".ini"}
-    
-    # Infrastructure dirs exempt from checks
-    INFRA_DIRS = {".git", "__pycache__", "node_modules", "venv", ".idea", ".vscode"}
     
     # Relaxed depth for tests/ directory
     MAX_TESTS_DEPTH = 7
@@ -2059,8 +2077,8 @@ def check_key_48_final_depth_canon() -> None:
         rel = f.relative_to(ROOT)
         parts = rel.parts
         
-        # Skip if file is under an infrastructure or excluded directory
-        if parts and parts[0] in (INFRA_DIRS | EXCLUDED_DIRS):
+        # UNIVERSAL EXCLUSION CHECK
+        if is_globally_excluded(rel):
             continue
         
         if f.suffix not in CODE_EXTENSIONS:
@@ -2093,6 +2111,8 @@ def check_key_49_no_smashed_filenames() -> None:
     1. Signal-to-Noise: Count only high-signal words in filename
     2. Depth < 5: Max 3 high-signal words
     3. Depth >= 5: Max 4 high-signal words
+    
+    Uses is_globally_excluded() for consistent exclusion policy.
     """
     # STRICTER LIST: Removed domain terms (safety, policy, costs, budget, etc.)
     # Now only truly generic programming verbs/nouns are "low signal".
@@ -2107,15 +2127,18 @@ def check_key_49_no_smashed_filenames() -> None:
     }
     
     violations: List[str] = []
-    excluded = {".git", "__pycache__", "data", "archives", "node_modules"}
     
     for f in ROOT.rglob("*.py"):
         if f.name == "__init__.py":
             continue
-        if any(ex in f.parts for ex in excluded):
+        
+        rel = f.relative_to(ROOT)
+        
+        # UNIVERSAL EXCLUSION CHECK
+        if is_globally_excluded(rel):
             continue
         
-        depth = len(f.relative_to(ROOT).parts)
+        depth = len(rel.parts)
         stem = f.stem
         issues: List[str] = []
 
