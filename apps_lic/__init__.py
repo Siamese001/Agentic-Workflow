@@ -23,7 +23,12 @@ __all__: List[str] = [
     "__description__",
     "get_module_info",
     "validate_config",
-    "create_instance"
+    "create_instance",
+    # New LIC components
+    "data_models",
+    "campaign_rag",
+    "campaign_guardrails",
+    "profile_validator"
 ]
 
 def get_module_info() -> Dict[str, Union[str, List[str]]]:
