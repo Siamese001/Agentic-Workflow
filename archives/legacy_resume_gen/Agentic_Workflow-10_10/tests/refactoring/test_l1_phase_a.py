@@ -17,7 +17,7 @@ sys.path.insert(0, str(project_root))
 def test_l1_imports():
     """Verify all L1 modules import successfully."""
     try:
-        import l1
+#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
         assert l1 is not None
         
         print("✓ All L1 imports successful")
@@ -30,7 +30,7 @@ def test_l1_imports():
 def test_l1_strategy_planning_imports():
     """Verify strategy planning module imports."""
     try:
-        from l1.strategy_planning import (
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.strategy_planning import StrategyPlan, DraftPlan, LatentThinkingPlan, plan_strategy, plan_draft, generate_latent_thinking_plan
             StrategyPlan,
             DraftPlan,
             LatentThinkingPlan,
@@ -54,7 +54,7 @@ def test_l1_strategy_planning_imports():
 def test_l1_rag_planning_imports():
     """Verify RAG planning module imports."""
     try:
-        from l1.rag_planning import (
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.rag_planning import RAGReasoningPlan, HydePlan, plan_rag_reasoning, plan_hyde_query
             RAGReasoningPlan,
             HydePlan,
             plan_rag_reasoning,
@@ -74,7 +74,7 @@ def test_l1_rag_planning_imports():
 def test_l1_qa_planning_imports():
     """Verify QA planning module imports."""
     try:
-        from l1.qa_planning import (
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.qa_planning import SemanticQAPlan, CouncilPlan, plan_semantic_qa, plan_council_review
             SemanticQAPlan,
             CouncilPlan,
             plan_semantic_qa,
@@ -94,7 +94,7 @@ def test_l1_qa_planning_imports():
 def test_l1_safety_planning_imports():
     """Verify safety planning module imports."""
     try:
-        from l1.safety_planning import (
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.safety_planning import SafetyPlan, plan_safety_review
             SafetyPlan,
             plan_safety_review,
         )
@@ -110,7 +110,7 @@ def test_l1_safety_planning_imports():
 def test_cognitive_agents_imports():
     """Verify cognitive agents import successfully."""
     try:
-        from cognitive_agents import (  # type: ignore
+        from archives.legacy_root_folders.meta.cognitive_agents import StrategyLLMAgent, DraftingGuild, SemanticQAAgent, ConstitutionalSafetyAgent, HYDEQueryAgent, QACouncilAgent
             StrategyLLMAgent,
             DraftingGuild,
             SemanticQAAgent,
@@ -134,7 +134,7 @@ def test_cognitive_agents_imports():
 def test_l2_imports():
     """Verify L2 module imports successfully."""
     try:
-        import l2
+#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l2  # INVALID: Cannot import from path with hyphens
         assert l2 is not None
         assert hasattr(l2, 'run_l2')
         assert hasattr(l2, 'execute_workflow_plans')
@@ -151,10 +151,10 @@ def test_no_circular_dependencies():
     """Verify no circular dependencies exist."""
     try:
         # Import in order: models -> l1 -> cognitive_agents -> l2
-        import core.models.models as models  # noqa: F401
-        import l1  # noqa: F401
-        import meta.cognitive_agents  # noqa: F401
-        import l2  # noqa: F401
+        import archives.legacy_root_folders.core.models.models
+#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
+        import archives.legacy_root_folders.meta.cognitive_agents
+#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l2  # INVALID: Cannot import from path with hyphens
         
         print("✓ No circular dependencies detected")
     except Exception as e:
@@ -166,11 +166,11 @@ def test_no_circular_dependencies():
 def test_l1_planning_is_pure():
     """Verify L1 planning functions are pure (no execution)."""
     try:
-        import l1  # noqa: F401
-        from l1.strategy_planning import StrategyPlan, DraftPlan
-        from l1.rag_planning import RAGReasoningPlan, HydePlan
-        from l1.qa_planning import SemanticQAPlan, CouncilPlan
-        from l1.safety_planning import SafetyPlan
+#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.strategy_planning import StrategyPlan, DraftPlan
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.rag_planning import RAGReasoningPlan, HydePlan
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.qa_planning import SemanticQAPlan, CouncilPlan
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.safety_planning import SafetyPlan
         
         # All L1 plan dataclasses should be frozen
         import dataclasses

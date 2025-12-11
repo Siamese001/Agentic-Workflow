@@ -8,11 +8,11 @@ from typing import Any, Dict, List
 @dataclass
 class RetrievalConfig:
     queries: List[str]
-    filters: Dict[str, Any]
-    ranking: Dict[str, Any]
-    metadata: Dict[str, Any] | None = None
+    filters: Dict[str, object]
+    ranking: Dict[str, object]
+    metadata: Dict[str, object] | None = None
 
-    def to_plan_fragment(self) -> Dict[str, Any]:
+    def to_plan_fragment(self) -> Dict[str, object]:
         return {
             "queries": self.queries,
             "filters": self.filters,
@@ -21,11 +21,11 @@ class RetrievalConfig:
         }
 from typing import Any, Dict, List
 
-from ranking import bm25_rank, dense_rank, hybrid_rank
-from utils_types import BudgetConfig
+from archives.legacy_root_folders.meta.ranking import bm25_rank, dense_rank, hybrid_rank
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import BudgetConfig  # INVALID: Cannot import from path with hyphens
 
 
-def normalize_documents(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def normalize_documents(results: List[Dict[str, object]]) -> List[Dict[str, object]]:
     # Deterministic shallow normalization
     normed = []
     for r in results:
@@ -37,7 +37,7 @@ def normalize_documents(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return normed
 
 
-def dedupe_results(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def dedupe_results(results: List[Dict[str, object]]) -> List[Dict[str, object]]:
     seen = set()
     out = []
     for r in results:
@@ -48,25 +48,25 @@ def dedupe_results(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return out
 
 
-def rerank_results(results: List[Dict[str, Any]], strategy: str = "relevance_then_recency") -> List[Dict[str, Any]]:
+def rerank_results(results: List[Dict[str, object]], strategy: str = "relevance_then_recency") -> List[Dict[str, object]]:
     # Deterministic: sort by rank ascending
     return sorted(results, key=lambda r: r.get("rank", 0))
 
 
-def fuse_sources(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def fuse_sources(results: List[Dict[str, object]]) -> List[Dict[str, object]]:
     # Deterministic grouping by query
     # (Flat output, but stable order)
     return sorted(results, key=lambda r: r.get("query", ""))
 
 
-def truncate_by_budget(results: List[Dict[str, Any]], config: BudgetConfig) -> List[Dict[str, Any]]:
+def truncate_by_budget(results: List[Dict[str, object]], config: BudgetConfig) -> List[Dict[str, object]]:
     # Trim to max_rag_items
     if len(results) <= config.max_rag_items:
         return results
     return results[-config.max_rag_items:]
 
 
-def apply_ranker(results: List[Dict[str, Any]], strategy: str | None = None) -> List[Dict[str, Any]]:
+def apply_ranker(results: List[Dict[str, object]], strategy: str | None = None) -> List[Dict[str, object]]:
     if strategy == "bm25":
         return bm25_rank(results)
     if strategy == "dense":
@@ -80,8 +80,8 @@ def apply_ranker(results: List[Dict[str, Any]], strategy: str | None = None) -> 
 from typing import Any, Dict, Iterable, List
 
 
-def fuse_results(list_of_sources: Iterable[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
-    merged: List[Dict[str, Any]] = []
+def fuse_results(list_of_sources: Iterable[List[Dict[str, object]]]) -> List[Dict[str, object]]:
+    merged: List[Dict[str, object]] = []
     for source in list_of_sources:
         for item in source:
             merged.append(dict(item))

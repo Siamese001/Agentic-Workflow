@@ -12,25 +12,22 @@
 # ============================================================================
 # EXTERNAL IMPORTS
 # ============================================================================
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import logging.handlers
 import os
 import sys
 import uuid
-import re
+import scripts.check_canonical_structure
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # Import from consolidated modules (v7.5)
-from core_v7_5 import (
-    CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR
-)
 
 # v7.5: Import from the new graph builder
-from agent_swarm_v7_5 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v7.5.agent_swarm_v7_5 import get_graph_app
 
 # v7.5: Import LangGraph + Redis
 from langgraph.checkpoint.redis import RedisSaver
@@ -69,7 +66,7 @@ logger = logging.getLogger(__name__)
 # HELPER FUNCTIONS
 # ============================================================================
 
-def load_job_input(filepath: str) -> Dict[str, Any]:
+def load_job_input(filepath: str) -> Dict[str, object]:
     """Load job input from JSON file."""
     try:
         with open(filepath, 'r') as f:
@@ -91,7 +88,7 @@ def setup_logging(debug_mode: bool):
     Configure structured logging based on CONFIG.
     """
     try:
-        from core_v7_5 import CONFIG as LOG_CONFIG
+        from archives.legacy_resume_gen.Older Microservices Models.v7.5.core_v7_5 import CONFIG
     except ImportError:
         print("CRITICAL: core_v7_5.py not found. Logging setup failed.", file=sys.stderr)
         logging.basicConfig(level=logging.DEBUG if debug_mode else logging.INFO)
@@ -139,7 +136,7 @@ def setup_logging(debug_mode: bool):
     logger.info(f"Logging configured. Level: {log_level}, File: {log_config.log_file}")
 
 
-def print_summary(results: Dict[str, Any], workflow_id: str, start_time: datetime):
+def print_summary(results: Dict[str, object], workflow_id: str, start_time: datetime):
     """Print workflow execution summary from final graph state."""
     print("\n" + "=" * 80)
     print(f"WORKFLOW EXECUTION SUMMARY (v7.5)")

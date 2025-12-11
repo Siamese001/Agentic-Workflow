@@ -1,0 +1,7 @@
+{
+  "canonical_form": "- All prompts must be stored in a prompt registry.\n- Each prompt defines: ID, version, schema, owner, change log.\n- Placeholders must be used exactly as declared.\n- Same query + same corpus = same retrieval.\n- BM25, dense retrieval, and RRF must be deterministic.\n- Golden offline datasets required.\n- Drafting stack: Planner(L1) \u2192 Executor(L2) \u2192 Critic(L1) \u2192 Fix(L1) \u2192 DAG(L3)\n- High-signal outputs require:\n- No fluff\n- Metric injection\n- Persona/company alignment\n- Strict context relevance enforcement",
+  "normalized_signature": "",
+  "core_functionality": "configuration_or_data",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 """Merge Generation History - atomic implementation."""
 
-from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Dict
 
 
 
@@ -13,8 +12,8 @@ class MergeGenerationHistory:
 
     def __init__(self) -> None:
         """Initialize the component with default configuration."""
-        self.data: Dict[str, Any] = {}
+        self.data: Dict[str, object] = {}
 
-    def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def process(self, data: Dict[str, object]) -> Dict[str, object]:
         """Process input data through the transformation pipeline."""
         return {"status": "processed", "input_keys": list(data.keys())}

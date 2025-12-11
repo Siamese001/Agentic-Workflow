@@ -21,27 +21,9 @@ Non-responsibilities:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Any, List, Dict
+from typing import Optional, object, List, Dict
 
-from core.models.models import (  # type: ignore[attr-defined]
-    ComplexityLevel,
-    SkillClassifierResult,
-    DomainClassifierResult,
-    MultiAgentCouncilResult,
-    RoutingDecisionEvent,
-)
-from config.meta_profile import MetaProfileSnapshot
-from meta.multi_agent import (
-    MultiAgentCoordinator,
-    build_council,
-    AgentRole,
-    extract_council_arbitration,
-)
-from runtime.observability import (
-    get_all_events,
-    record_event,
-    emit_council_arbitration_event,
-)
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot
 
 
 # =============================================================================
@@ -243,8 +225,8 @@ def route_task_to_agent(
     task: str,
     complexity: Optional[ComplexityLevel],
     meta_profile: Optional[MetaProfileSnapshot],
-    council_candidates: Optional[List[Dict[str, Any]]] = None,
-) -> Dict[str, Any]:
+    council_candidates: Optional[List[Dict[str, object]]] = None,
+) -> Dict[str, object]:
     """META-layer helper to select agent role + optional QA council.
 
     This does **not** call any LLMs or mutate state. It is intended to be
@@ -300,7 +282,7 @@ def route_task_to_agent(
     else:
         reason = "meta_single_agent_routing"
 
-    decision: Dict[str, Any] = {
+    decision: Dict[str, object] = {
         "task": task,
         "agent_role": agent_role,
         "reason": reason,
@@ -311,7 +293,7 @@ def route_task_to_agent(
         decision["council"] = council.dict()
 
     # Emit a typed RoutingDecisionEvent for observability.
-    attrs: Dict[str, Any] = {
+    attrs: Dict[str, object] = {
         "task": task,
         "agent_role": agent_role,
         "reason": reason,
@@ -352,7 +334,7 @@ def classify_skill_profile(job: Any, resume: Any) -> SkillClassifierResult:
     but stable for routing and complexity decisions.
     """
     labels: List[str] = []
-    features: Dict[str, Any] = {}
+    features: Dict[str, object] = {}
 
     title = str(getattr(job, "title", "")).lower()
     desc = str(getattr(job, "description", "")).lower()
@@ -396,7 +378,7 @@ def classify_skill_profile(job: Any, resume: Any) -> SkillClassifierResult:
 def classify_domain_profile(job: Any, resume: Any) -> DomainClassifierResult:
     """Deterministic domain / industry classifier (non-LLM)."""
     labels: List[str] = []
-    features: Dict[str, Any] = {}
+    features: Dict[str, object] = {}
 
     company = str(getattr(job, "company", "")).lower()
     desc = str(getattr(job, "description", "")).lower()

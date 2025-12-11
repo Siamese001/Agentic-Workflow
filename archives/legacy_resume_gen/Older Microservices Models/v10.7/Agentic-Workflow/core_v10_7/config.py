@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Dict
 
-from mcp import get_schema
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_schema  # INVALID: Cannot import from path with hyphens
 
 logger = logging.getLogger("core_v10_7")
 

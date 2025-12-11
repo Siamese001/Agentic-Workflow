@@ -12,22 +12,22 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from l3_orchestration import DAGExecutor
-from l3_orchestration import DAG, DAGNode
-from observability import CostTracker
-from l1_reasoning import DraftingReasoner
-from l2_execution import DraftingExecutionAgent
-from l3_orchestration import OrchestrationResult
-from l4_state import StateAdapter
-from l5_safety import SafetyGateway
-from node_result import NodeResult, NodeStatus
-from self_correction import evaluate_correction
-from self_correction import record_correction_event
-from self_correction import SelfCorrectionSurface
-from observability import record_event
-from observability import compute_optimization_hint
-from meta_profile import update_meta_profile_from_spans_and_self_correction
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DAGExecutor  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DAG, DAGNode  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import CostTracker  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import DraftingReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import DraftingExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import OrchestrationResult  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.meta.self_correction import evaluate_correction
+from archives.legacy_root_folders.meta.self_correction import record_correction_event
+from archives.legacy_root_folders.meta.self_correction import SelfCorrectionSurface
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import record_event  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import compute_optimization_hint  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import update_meta_profile_from_spans_and_self_correction  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class DraftOrchestrator:
@@ -46,13 +46,13 @@ class DraftOrchestrator:
         self.safety_gateway = safety_gateway or SafetyGateway()
         self.cost_tracker = CostTracker()
 
-    def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
+    def orchestrate(self, state: Optional[Dict[str, object]] = None) -> OrchestrationResult:
         """Execute the L1→L2→L4→L5 drafting control flow."""
 
         if state is not None:
             self.state_adapter.apply_patch(StatePatch(state))
 
-        def run_plan(context: Dict[str, Any]) -> NodeResult:
+        def run_plan(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
@@ -65,7 +65,7 @@ class DraftOrchestrator:
             }
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
-        def run_execute(context: Dict[str, Any]) -> NodeResult:
+        def run_execute(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             self.cost_tracker.start_span("execution")
@@ -73,12 +73,12 @@ class DraftOrchestrator:
             self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
-        def run_patch(context: Dict[str, Any]) -> NodeResult:
+        def run_patch(context: Dict[str, object]) -> NodeResult:
             execution_patch = context.get("execution_patch")
             updated_state = self.state_adapter.apply_patch(execution_patch)
             return NodeResult(NodeStatus.SUCCESS, {"state": updated_state})
 
-        def run_safety(context: Dict[str, Any]) -> NodeResult:
+        def run_safety(context: Dict[str, object]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
             payload = {

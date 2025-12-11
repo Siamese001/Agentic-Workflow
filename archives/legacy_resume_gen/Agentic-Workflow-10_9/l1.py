@@ -42,22 +42,7 @@ from dataclasses import dataclass, field, asdict
 from enum import Enum
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-from models import (
-    PlanObject,
-    FramingProfile,
-    ContextProfile,
-    ToolingProfile,
-    SafetyOutputProfile,
-    AccessPolicy,
-    SelfCorrectionSurface,
-)
 
-from meta_profile import (
-    get_routing_bias,
-    get_planning_bias,
-    get_qa_bias,
-    get_safety_bias,
-)
 
 
 # =============================================================================
@@ -97,7 +82,7 @@ class ProfileSignals:
     skill_clusters: List[str] = field(default_factory=list)
     risk_flags: List[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)
 
 
@@ -115,7 +100,7 @@ class PlanningHints:
     context_hints: List[str] = field(default_factory=list)
     optimization_hints: List[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)
 
 
@@ -143,7 +128,7 @@ class CrossModeDependencies:
     meta_notes: List[str] = field(default_factory=list)
     prompt_notes: List[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)
 
 
@@ -465,7 +450,7 @@ def build_cross_mode_dependencies(
 # =============================================================================
 
 
-def _linear_strategy_steps() -> List[Dict[str, Any]]:
+def _linear_strategy_steps() -> List[Dict[str, object]]:
     """
     Restore the linear strategy plan steps from v10_8:
 
@@ -528,7 +513,7 @@ def build_strategy_plan(
     if safety_bias.get("heightened_caution"):
         adjusted_tone = "formal"
 
-    plan_dict: Dict[str, Any] = {
+    plan_dict: Dict[str, object] = {
         "layer": "l1",
         "mode": "strategy",
         "objective": framing.goal,
@@ -595,7 +580,7 @@ def build_rag_plan(
         "multi_query_fusion": complexity != ComplexityLevel.SIMPLE,
     }
 
-    retrieval_cfg: Dict[str, Any] = {
+    retrieval_cfg: Dict[str, object] = {
         "queries": base_queries,
         "ranking": {
             "strategy": "hybrid",
@@ -609,7 +594,7 @@ def build_rag_plan(
         retrieval_cfg["ranking"]["strategy"] = "hybrid"
         retrieval_cfg["ranking"]["enable_hyde"] = True
 
-    plan_dict: Dict[str, Any] = {
+    plan_dict: Dict[str, object] = {
         "layer": "l1",
         "mode": "rag",
         "objective": "Retrieve structured evidence to support strategy and drafting.",
@@ -637,7 +622,7 @@ def build_drafting_plan(
 
     seniority = profile.seniority
 
-    sections: List[Dict[str, Any]] = [
+    sections: List[Dict[str, object]] = [
         {"id": "header", "required": True},
         {"id": "summary", "required": True},
         {"id": "experience", "required": True},
@@ -657,7 +642,7 @@ def build_drafting_plan(
         "Draft a personalized, domain-aware artifact aligned with the strategy plan."
     )
 
-    plan_dict: Dict[str, Any] = {
+    plan_dict: Dict[str, object] = {
         "layer": "l1",
         "mode": "drafting",
         "objective": objective,
@@ -688,7 +673,7 @@ def build_bullets_plan(
     """
     planning_bias = get_planning_bias()
 
-    skeleton: Dict[str, Any] = {
+    skeleton: Dict[str, object] = {
         "pattern": "action_metric_outcome",
         "seniority_scaling": profile.seniority,
         "guild_transform": "default",
@@ -700,7 +685,7 @@ def build_bullets_plan(
     if planning_bias.get("conservative"):
         skeleton["enforce_metric_presence"] = True
 
-    plan_dict: Dict[str, Any] = {
+    plan_dict: Dict[str, object] = {
         "layer": "l1",
         "mode": "bullets",
         "objective": "Define bullet schemas and seniority scaling logic.",
@@ -734,7 +719,7 @@ def build_qa_plan(
     if qa_bias.get("recent_failures"):
         checks.append("extra_qa_pass")
 
-    plan_dict: Dict[str, Any] = {
+    plan_dict: Dict[str, object] = {
         "layer": "l1",
         "mode": "qa",
         "objective": "Define QA checks and validation surfaces for downstream execution.",
@@ -757,7 +742,7 @@ def build_safety_plan(
     """
     safety_bias = get_safety_bias()
 
-    rules: List[Dict[str, Any]] = []
+    rules: List[Dict[str, object]] = []
 
     if safety_profile.enable_pii_detection:
         rules.append({"id": "pii_detection", "severity": "high"})
@@ -771,7 +756,7 @@ def build_safety_plan(
     if safety_bias.get("heightened_caution"):
         rules.append({"id": "strict_mode", "severity": "high"})
 
-    plan_dict: Dict[str, Any] = {
+    plan_dict: Dict[str, object] = {
         "layer": "l1",
         "mode": "safety",
         "objective": "Define safety checks and escalation behavior for L5.",
@@ -800,7 +785,7 @@ def build_meta_learning_plan(
     if complexity == ComplexityLevel.COMPLEX:
         signals.append("log_model_routing_and_cost_metrics")
 
-    plan_dict: Dict[str, Any] = {
+    plan_dict: Dict[str, object] = {
         "layer": "l1",
         "mode": "meta_learning",
         "objective": "Define meta-learning logging and signal collection for this run.",
@@ -836,7 +821,7 @@ def build_prompt_engineering_plan(
         "prompt_leak",
     ]
 
-    plan_dict: Dict[str, Any] = {
+    plan_dict: Dict[str, object] = {
         "layer": "l1",
         "mode": "prompt_engineering",
         "objective": "Define prompt structure, taxonomy, and governance metadata.",

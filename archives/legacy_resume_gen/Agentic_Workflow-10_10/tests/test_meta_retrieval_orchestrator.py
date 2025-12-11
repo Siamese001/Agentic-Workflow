@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from typing import List
-import types
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 
-from meta.retrieval import orchestrate_retrieval
-from core.models.models import Evidence, RetrievalConfig, CouncilVote, RAGResult
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval import orchestrate_retrieval  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.core.models.models import Evidence, RetrievalConfig, CouncilVote, RAGResult
 
 
 class _DummyCtx:
@@ -18,7 +18,7 @@ def _make_ev(text: str, score: float, source: str) -> Evidence:
 
 def test_orchestrate_retrieval_combines_bm25_and_dense_hits(monkeypatch) -> None:
     # Arrange
-    import meta.retrieval as m
+#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     bm25_hits = [_make_ev("bm25-doc", 1.0, "bm25")]
     dense_hits = [_make_ev("dense-doc", 0.5, "dense")]
@@ -62,7 +62,7 @@ def test_orchestrate_retrieval_combines_bm25_and_dense_hits(monkeypatch) -> None
 
 
 def test_orchestrate_retrieval_sets_used_hyde_flag(monkeypatch) -> None:
-    import meta.retrieval as m
+#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:  # noqa: ARG001
         return [_make_ev(f"bm25-{query}", 1.0, "bm25")]
@@ -103,7 +103,7 @@ def test_orchestrate_retrieval_sets_used_hyde_flag(monkeypatch) -> None:
 
 
 def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch) -> None:
-    import meta.retrieval as m
+#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:  # noqa: ARG001
         return []
@@ -146,7 +146,7 @@ def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch) -> None:
 
 
 def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch) -> None:
-    import meta.retrieval as m
+#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:  # noqa: ARG001
         return [_make_ev("doc", 1.0, "bm25")]
@@ -198,7 +198,7 @@ def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch) -> None:
 def test_orchestrate_retrieval_isolates_bm25_failure(monkeypatch) -> None:
     """If BM25 fails, dense results should still be used."""
 
-    import meta.retrieval as m
+#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _failing_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:  # noqa: ARG001
         raise RuntimeError("bm25 failure")
@@ -236,7 +236,7 @@ def test_orchestrate_retrieval_isolates_bm25_failure(monkeypatch) -> None:
 def test_orchestrate_retrieval_handles_no_hits(monkeypatch) -> None:
     """If all retrievers return no hits, orchestrator returns empty evidence."""
 
-    import meta.retrieval as m
+#     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _empty(*args, **kwargs) -> List[Evidence]:  # type: ignore[override]
         return []

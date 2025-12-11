@@ -5,9 +5,8 @@ Domain: resume
 Generated: 2025-12-07T13:29:00.517863
 """
 
-from __future__ import annotations
 import logging
-from typing import Union, Dict, Optional, Any
+from typing import Union, Dict, Optional
 from shared.result_types import FormatResult
 
 logger = logging.getLogger(__name__)
@@ -19,7 +18,7 @@ logger = logging.getLogger(__name__)
 class FormatLlmPrompt:
     """Formatter for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.format_type = self.config.get("format", "default")
         logger.info(f"Initialized {self.__class__.__name__}")
@@ -30,7 +29,7 @@ class FormatLlmPrompt:
         transformed = self._transform(data)
         return FormatResult(data=transformed, format_type=fmt)
 
-    def _transform(self, data: Union[str, Dict]) -> Any:
+    def _transform(self, data: Union[str, Dict]) -> object:
         """Transform data."""
         if isinstance(data, str):
             return data.strip()

@@ -9,7 +9,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import signal
 import time
 from collections import defaultdict
@@ -22,14 +22,14 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union, T
 # Third-party imports - RESTORED FROM v3.8
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
     chromadb = None
     
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -38,36 +38,17 @@ except ImportError:
     cosine_similarity = None
 
 # Import models and utilities from v3.8
-from models_RES import (
-    CircuitState, RAGState, RAGEvidence, RAGCritique,
-    PartialRAGResult, RAGTelemetry, CompetitiveIntelligence,
-    MasterResumeIndex, RAGMission, ThematicAnalysis, HopStatus,
-    RetrievalSource, SkillRequirement, SkillCluster,
-    HopExecutionError, CircuitBreakerOpenError, PhaseTimeoutError,
-    CompetitiveAnalysisConfig, ResumeSection, ImmutableStagingBuffer, 
-    ValidationResult, ValidationSeverity, BulletProvenance, ReasoningConfig
-)
 
 # Import validation modules from v3.8
-from validation_context import ValidationContext
-from validation_engine import ValidationEngine
-from validation_rules import (
-    _validate_bullet_word_count_CRITICAL,
-    _validate_cross_section_similarity,
-    _validate_no_placeholders,
-    _validate_forbidden_verbs,
-    _validate_headline_format_no_titles,
-    _validate_narrative_vs_master_similarity,
-    _validate_section_presence,
-    _validate_cover_letter_full_structure
-)
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_context import ValidationContext
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_engine import ValidationEngine
 
 # Import utilities and config
-from config_RES import CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_HOP_TIMEOUT
-from config_RES import CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_HOP_TIMEOUT
-from utils_RES import TelemetryLogger, text_utils, sanitize_filename, calculate_signal_score
-from gemini_service import GeminiService, get_gemini_service
-from prompts_RES import get_prompt_template, build_crl_context_for_section, PROMPT_TEMPLATES
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_HOP_TIMEOUT
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_HOP_TIMEOUT
+from archives.legacy_resume_gen.Agentic AI - not communicating.utils_RES import TelemetryLogger, text_utils, sanitize_filename, calculate_signal_score
+from archives.legacy_resume_gen.Older Microservices Models.v2.gemini_service import GeminiService, get_gemini_service
+from archives.legacy_resume_gen.Agentic AI - not communicating.prompts_RES import get_prompt_template, build_crl_context_for_section, PROMPT_TEMPLATES
 logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
@@ -180,7 +161,7 @@ class Library_Specialist:
         thematic_analysis: ThematicAnalysis,
         company_name: str,
         job_title: str,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, object]] = None
     ) -> None:
         """Store successful RAGMission and analysis for future reference."""
         if not self.enabled:
@@ -219,7 +200,7 @@ class Library_Specialist:
         query: str,
         company_name: Optional[str] = None,
         n_results: int = 3
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Query for similar past missions to inform current extraction."""
         if not self.enabled or self.collection.count() == 0:
             return []
@@ -341,7 +322,7 @@ class Web_Specialist:
         self,
         search_prompt: str,
         phase_name: str
-    ) -> Tuple[Dict[str, Any], int]:
+    ) -> Tuple[Dict[str, object], int]:
         """Execute web search with retry and circuit breaker protection."""
         logger.info(f"Web Specialist executing: {phase_name}")
         
@@ -760,7 +741,7 @@ class Content_Generator:
     def generate_section(
         self,
         section_name: ResumeSection,
-        context: Dict[str, Any],
+        context: Dict[str, object],
         attempt: int = 1,
         reasoning_config: Optional[ReasoningConfig] = None
     ) -> str:
@@ -861,7 +842,7 @@ class FactualConsistency_Validator:
         self.complexity = complexity
         self.validation_engine = ValidationEngine()
     
-    def validate(self, context: ValidationContext) -> Dict[str, Any]:
+    def validate(self, context: ValidationContext) -> Dict[str, object]:
         """Execute all factual consistency validations."""
         results = {
             'bullet_word_count': _validate_bullet_word_count_CRITICAL(context),
@@ -889,7 +870,7 @@ class ToneValidator:
         """Initialize tone validator."""
         self.complexity = complexity
     
-    def validate(self, context: ValidationContext) -> Dict[str, Any]:
+    def validate(self, context: ValidationContext) -> Dict[str, object]:
         """Validate tone across all sections."""
         results = {}
         
@@ -919,7 +900,7 @@ class ThematicAlignment_Validator:
         """Initialize thematic alignment validator."""
         self.complexity = complexity
     
-    def validate(self, context: ValidationContext) -> Dict[str, Any]:
+    def validate(self, context: ValidationContext) -> Dict[str, object]:
         """Validate thematic alignment with JD."""
         results = {}
         
@@ -1106,7 +1087,7 @@ class AppTracker_Assembler:
         job_title: str,
         jd_url: str = "",
         status: str = "Applied"
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Assemble application tracker entry.
         Returns tracker entry dictionary.
@@ -1163,7 +1144,7 @@ class Auditor_Agent:
     def generate_qa_report(
         self,
         staging_buffer: ImmutableStagingBuffer,
-        validation_results: Dict[str, Any],
+        validation_results: Dict[str, object],
         thematic_analysis: ThematicAnalysis
     ) -> str:
         """
@@ -1314,7 +1295,7 @@ class Meta_Planner:
     def __init__(self):
         self.rules_registry = CACHE_DIR / "rules_registry.json"
 
-    def update_rules(self) -> Dict[str, Any]:
+    def update_rules(self) -> Dict[str, object]:
         """Reads logs, finds patterns, outputs updated rules."""
         logger.info("📈 Meta-Planner: Analyzing past performance to update rules...")
         # Stub: In a real system, this would perform statistical analysis on logs
@@ -1353,7 +1334,7 @@ class ChiefStrategistAgent:
         logger.info("🧑‍🔬 Chief Strategist: Developing execution strategy...")
         # Stub: returns a default high-complexity strategy
         # Imports handled inside method to avoid top-level circular dependency during load
-        from models_RES import ExecutionStrategy, ResumeSection
+        from runtime.compat.models_RES import ExecutionStrategy, ResumeSection
         return ExecutionStrategy(
             name="Aggressive Differentiator Focus",
             focus_areas=[ResumeSection.K1_EXECUTIVE_SUMMARY, ResumeSection.K9_COMPETENCIES],

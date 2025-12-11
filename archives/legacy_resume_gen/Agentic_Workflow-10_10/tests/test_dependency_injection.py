@@ -7,16 +7,8 @@ across all layers to maintain L1-L5 atomicity.
 import pytest
 from unittest.mock import Mock, patch
 
-from infra.di_container import (
-    SimpleDIContainer,
-    get_container,
-    register_service,
-    get_service,
-    initialize_default_services,
-    inject_dependencies
-)
-from l4.pinecone_adapter import PineconeAdapter, PineconeConfig
-from l5.policy import SafetyEngine
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapter, PineconeConfig
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine
 
 
 class TestSimpleDIContainer:
@@ -150,7 +142,7 @@ class TestLayerDIIntegration:
     
     def test_pinecone_adapter_di_interface(self):
         """Test that PineconeAdapter provides DI-compatible interface."""
-        from l4.pinecone_adapter import PineconeConfig
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeConfig
         
         config = PineconeConfig(
             api_key="test_key",
@@ -176,7 +168,7 @@ class TestDIAtomicityCompliance:
     
     def test_no_direct_imports_in_l2(self):
         """Test that L2 doesn't directly import services."""
-        import l2.execution
+        import archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution
         
         # Should import from DI container, not direct services
         source_lines = []
@@ -206,7 +198,7 @@ class TestDIAtomicityCompliance:
     
     def test_no_direct_imports_in_l3(self):
         """Test that L3 doesn't directly import services."""
-        import l3
+#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l3  # INVALID: Cannot import from path with hyphens
         
         # Should import from DI container
         source_lines = []

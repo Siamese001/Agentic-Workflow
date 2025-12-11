@@ -8,9 +8,9 @@ import pytest
 from unittest.mock import Mock
 from datetime import datetime
 
-from l5.injection_detection import InjectionDetector, create_injection_safety_policy
-from l5.types import SafetyContext, Severity, Verdict
-from infra.di_container import initialize_default_services, inject_dependencies
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionDetector, create_injection_safety_policy
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, Severity, Verdict
+from archives.legacy_root_folders.infra.di_container import initialize_default_services, inject_dependencies
 
 
 class TestBasicSecurityIntegration:
@@ -44,8 +44,8 @@ class TestBasicSecurityIntegration:
     
     def test_di_with_security_components(self):
         """Test that DI container provides security components."""
-        from infra.di_container import get_service
-        from l5.policy import SafetyEngine
+        from archives.legacy_root_folders.infra.di_container import get_service
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine
         
         # Get safety engine via DI
         safety_engine = get_service(SafetyEngine)

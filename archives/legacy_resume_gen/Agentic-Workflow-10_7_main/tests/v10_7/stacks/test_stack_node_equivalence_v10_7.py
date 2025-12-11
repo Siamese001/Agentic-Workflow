@@ -2,12 +2,7 @@ import json
 
 import pytest
 
-from agent_stacks_v10_8 import (
-    BulletExecutionStack,
-    HILStackV10_8,
-    SafetyStackV10_8,
-)
-from stacks_v10_8.drafting_execution import DraftingExecutionStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.stacks_v10_8.drafting_execution import DraftingExecutionStack  # INVALID: Cannot import from path with hyphens
 
 
 @pytest.mark.asyncio

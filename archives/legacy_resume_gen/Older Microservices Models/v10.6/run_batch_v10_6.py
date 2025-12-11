@@ -20,25 +20,16 @@ import asyncio
 import uuid
 import sys
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.6: Import from new main/core
-from main_v10_6 import setup_logging, load_job_input
-from core_v10_6 import (
-    ConfigV10_6, WorkflowContext, MainGraphState,
-    CircuitBreakerOpenError, CostCeilingExceededError,
-    FileIOError, WorkflowError,
-    CircuitBreaker,
-    # v10.6: Import new helper functions
-    create_workflow_context, cleanup_workflow_chroma_collection,
-    get_checkpointer
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.main_v10_6 import setup_logging, load_job_input
 # v10.6: Import from new orchestration/stacks
-from agent_orchestration_v10_6 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.agent_orchestration_v10_6 import get_graph_app
 
 try:
     # v10.6: Import new meta-learner
-    from run_learning_v10_6 import run_meta_learning
+    from archives.legacy_resume_gen.Older Microservices Models.v10.6.run_learning_v10_6 import run_meta_learning
     META_LEARNER_AVAILABLE = True
 except ImportError:
     META_LEARNER_AVAILABLE = False
@@ -57,12 +48,12 @@ SUMMARY_FILE = "batch_summary_v10_6.csv"
 class BatchFeedbackAggregator:
     """ROW 7: Aggregates feedback across batch jobs"""
     def __init__(self):
-        self.job_results: List[Dict[str, Any]] = []
+        self.job_results: List[Dict[str, object]] = []
     
-    def add_job_result(self, result: Dict[str, Any]):
+    def add_job_result(self, result: Dict[str, object]):
         self.job_results.append(result)
     
-    def get_batch_summary(self) -> Dict[str, Any]:
+    def get_batch_summary(self) -> Dict[str, object]:
         if not self.job_results: return {}
         total_jobs = len(self.job_results)
         successful = sum(1 for r in self.job_results if r['status'] == 'SUCCESS')
@@ -87,7 +78,7 @@ async def process_single_job_async(
     app, # The compiled graph app
     circuit_breaker: CircuitBreaker,
     batch_aggregator: BatchFeedbackAggregator
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Process a single job asynchronously"""
     
     job_name = os.path.basename(job_file)

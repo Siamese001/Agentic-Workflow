@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
 
 class SpecialistDraftPacket(BaseModel):
@@ -10,7 +10,7 @@ class SpecialistDraftPacket(BaseModel):
 
     specialist: str = Field(..., description="Name of the drafting specialist")
     focus_area: str = Field(..., description="Primary responsibility of the specialist")
-    sections: Dict[str, Any] = Field(default_factory=dict, description="Section-level draft contributions")
+    sections: Dict[str, object] = Field(default_factory=dict, description="Section-level draft contributions")
     notes: List[str] = Field(default_factory=list, description="Observations or hand-off notes")
     dependencies: List[str] = Field(default_factory=list, description="Dependencies or follow-up actions")
 

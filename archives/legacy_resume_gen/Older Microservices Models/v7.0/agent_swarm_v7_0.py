@@ -37,7 +37,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 from collections import defaultdict
 from enum import Enum
@@ -54,7 +54,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 from collections import defaultdict
 from enum import Enum
@@ -63,7 +63,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from core_v7_0
-from core_v7_0 import (
+from archives.legacy_resume_gen.Older Microservices Models.v7.0.core_v7_0 import BaseAgent, get_model_client, CONFIG, HopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException, ValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy, ThematicAnalysis, RAG_Blackboard, RAGMission, RAGPhase, StrategyBrief, ReflectionIteration, ReflectionResult, ReflectionStatus, ToolCall, ToolType, ReActTrace, MoEExpertResult, MoEDecision, ConductorBranch, ConductorDecision, WorkflowBlackboard, WorkflowPlan, WorkflowStep, GraphState, DEFAULT_GENERATION_TEMPERATURE, text_utils, fence_data, STRATEGY_THEME_CLASSIFICATION_SYSTEM_PROMPT, STRATEGY_THEME_CLASSIFICATION_USER_PROMPT, RAG_QUERY_GEN_SYSTEM_PROMPT, RAG_QUERY_GEN_USER_PROMPT, RAG_CRITIQUE_SYSTEM_PROMPT, RAG_CRITIQUE_USER_PROMPT, DRAFTING_STRATEGIST_SYSTEM_PROMPT, DRAFTING_REDTEAM_SYSTEM_PROMPT, DRAFTING_REFINER_SYSTEM_PROMPT, DRAFTING_USER_PROMPT, REPLANNER_SYSTEM_PROMPT, REPLANNER_USER_PROMPT, QA_CLAIM_VALIDATOR_SYSTEM_PROMPT, QA_TONE_VALIDATOR_SYSTEM_PROMPT, QA_ALIGNMENT_VALIDATOR_SYSTEM_PROMPT, QA_ENTAILMENT_VALIDATOR_SYSTEM_PROMPT, QA_NARRATIVE_VALIDATOR_SYSTEM_PROMPT, QA_ADVERSARIAL_VALIDATOR_SYSTEM_PROMPT, QA_JD_SKILLS_VALIDATOR_SYSTEM_PROMPT, QA_SIGNAL_SCORE_VALIDATOR_SYSTEM_PROMPT, QA_BIAS_VALIDATOR_SYSTEM_PROMPT, QA_TENURE_VALIDATOR_SYSTEM_PROMPT, QA_GENERIC_USER_PROMPT
     # Base
     BaseAgent, get_model_client, CONFIG,
     # Models
@@ -94,7 +94,7 @@ from core_v7_0 import (
 )
 
 # --- V7.0 LANGGRAPH IMPORTS ---
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger(__name__)
@@ -281,7 +281,7 @@ class RAG_SearchAgent(BaseAgent):
             
         self.max_react_iterations = CONFIG.react_config.max_reasoning_loops
 
-    def run(self, queries: List[str]) -> Dict[str, Any]:
+    def run(self, queries: List[str]) -> Dict[str, object]:
         self.log_info("Running Step 2: RAG ReAct Search...")
         if self.client is None:
             raise HopExecutionError("Model client not initialized for RAG_SearchAgent.")
@@ -1000,7 +1000,7 @@ class FeedbackLoggerAgent:
         self.log_path = log_path
         self.logger = logging.getLogger("FeedbackLoggerAgent")
     
-    def log(self, validation_results: Dict[str, Any], workflow_id: str):
+    def log(self, validation_results: Dict[str, object], workflow_id: str):
         if not self.log_path:
             self.logger.warning("No feedback_log_path configured. Skipping log.")
             return
@@ -1055,14 +1055,14 @@ def get_blackboard(state: 'GraphState') -> WorkflowBlackboard:
 # --- Node Wrappers ---
 # We wrap agent calls in functions that take 'state' and return a patch.
 
-def run_strategy(state: 'GraphState') -> Dict[str, Any]:
+def run_strategy(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 1: Strategy"""
     blackboard = get_blackboard(state)
     agent = ThemeClassifierAgent(blackboard, debug_mode=True)
     result = agent.run(job_description_text=state["job_input"].get("raw_jd", ""))
     return {"artifacts": {"strategy_brief": result}}
 
-def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_rag_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 2: RAG (Query, Search, Critique)"""
     blackboard = get_blackboard(state)
     
@@ -1088,7 +1088,7 @@ def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
         "rag_critique": critique_result
     }}
 
-def run_drafting_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_drafting_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3: Drafting (Prompt, Bullets, Adversarial)"""
     blackboard = get_blackboard(state)
     
@@ -1110,7 +1110,7 @@ def run_drafting_stack(state: 'GraphState') -> Dict[str, Any]:
         "final_draft": final_draft
     }}
 
-def run_qa_swarm(state: 'GraphState') -> Dict[str, Any]:
+def run_qa_swarm(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 4: QA (LLM and Logic)"""
     blackboard = get_blackboard(state)
     final_draft = state["artifacts"]["final_draft"]
@@ -1145,7 +1145,7 @@ def run_qa_swarm(state: 'GraphState') -> Dict[str, Any]:
         "validation_results": validation_summary
     }}
 
-def run_replanner(state: 'GraphState') -> Dict[str, Any]:
+def run_replanner(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3 (SC Paths): Re-Planner"""
     blackboard = get_blackboard(state)
     agent = WorkflowRePlannerAgent(blackboard, debug_mode=True)
@@ -1198,8 +1198,8 @@ def get_graph_app(checkpointer: 'RedisSaver') -> 'CompiledGraph':
     """
     Builds and compiles the persistent v7.0 StateGraph.
     """
-    from langgraph.graph import StateGraph, END
-    from core_v7_0 import GraphState
+    from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
+    from archives.legacy_resume_gen.Older Microservices Models.v7.0.core_v7_0 import GraphState
     
     workflow = StateGraph(GraphState)
 

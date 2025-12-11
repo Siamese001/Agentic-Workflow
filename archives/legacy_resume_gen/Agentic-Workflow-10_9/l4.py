@@ -37,10 +37,6 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import copy
 
-from models import (
-    WorkflowPhase,
-    StatePatch,
-)
 
 
 # ============================================================================
@@ -71,7 +67,7 @@ def _coerce_content(v: Any) -> str:
     return str(v)
 
 
-def normalize_world_facts(items: List[Any]) -> List[Dict[str, Any]]:
+def normalize_world_facts(items: List[Any]) -> List[Dict[str, object]]:
     """Normalize arbitrary world facts into a consistent schema.
 
     Each fact has the form:
@@ -84,7 +80,7 @@ def normalize_world_facts(items: List[Any]) -> List[Dict[str, Any]]:
 
     This is a pure function; it does not touch StateAdapter or phases.
     """
-    out: List[Dict[str, Any]] = []
+    out: List[Dict[str, object]] = []
     for item in items or []:
         if isinstance(item, dict):
             category = _coerce_category(item.get("category"))
@@ -128,17 +124,17 @@ class MemoryBudget:
 
     # ---- simple count-based budgets ----------------------------------------
 
-    def prune_messages(self, msgs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def prune_messages(self, msgs: List[Dict[str, object]]) -> List[Dict[str, object]]:
         if len(msgs) <= self.config.max_messages:
             return msgs
         return msgs[-self.config.max_messages :]
 
-    def prune_rag_items(self, items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def prune_rag_items(self, items: List[Dict[str, object]]) -> List[Dict[str, object]]:
         if len(items) <= self.config.max_rag_items:
             return items
         return items[-self.config.max_rag_items :]
 
-    def prune_world_items(self, items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def prune_world_items(self, items: List[Dict[str, object]]) -> List[Dict[str, object]]:
         if len(items) <= self.config.max_world_items:
             return items
         return items[-self.config.max_world_items :]
@@ -154,7 +150,7 @@ class MemoryBudget:
         # Crude approximation; good enough for budget heuristics.
         return len(text.split())
 
-    def prune_messages_by_tokens(self, msgs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def prune_messages_by_tokens(self, msgs: List[Dict[str, object]]) -> List[Dict[str, object]]:
         token_counts = [self._token_count(str(m.get("content", ""))) for m in msgs]
         total = sum(token_counts)
         limit = self.config.max_prompt_tokens
@@ -167,7 +163,7 @@ class MemoryBudget:
             idx += 1
         return msgs[idx:]
 
-    def prune_rag_items_by_tokens(self, items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def prune_rag_items_by_tokens(self, items: List[Dict[str, object]]) -> List[Dict[str, object]]:
         token_counts = [self._token_count(str(i.get("content", i.get("evidence", "")))) for i in items]
         total = sum(token_counts)
         limit = self.config.max_rag_tokens
@@ -195,7 +191,7 @@ class MemoryManager:
 
     budget: MemoryBudget = field(default_factory=MemoryBudget)
 
-    def reconcile(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    def reconcile(self, state: Dict[str, object]) -> Dict[str, object]:
         s = copy.deepcopy(state)
 
         # Ensure core containers exist
@@ -207,7 +203,7 @@ class MemoryManager:
         s.setdefault("metadata", {})
 
         # Canonicalize messages
-        canon_msgs: List[Dict[str, Any]] = []
+        canon_msgs: List[Dict[str, object]] = []
         for m in s.get("messages") or []:
             if not isinstance(m, dict):
                 canon_msgs.append({"role": "user", "content": str(m)})
@@ -221,7 +217,7 @@ class MemoryManager:
             )
 
         # Canonicalize rag_history
-        canon_rag: List[Dict[str, Any]] = []
+        canon_rag: List[Dict[str, object]] = []
         for it in s.get("rag_history") or []:
             if not isinstance(it, dict):
                 canon_rag.append({"content": str(it), "source": "unknown", "metadata": {}})
@@ -263,7 +259,7 @@ class MemoryManager:
 # 3. STATE VALIDATION & VIEWS
 # ============================================================================
 
-_EXPECTED_TYPES: Dict[str, Any] = {
+_EXPECTED_TYPES: Dict[str, object] = {
     "messages": list,
     "rag_history": list,
     "world": list,
@@ -277,7 +273,7 @@ _EXPECTED_TYPES: Dict[str, Any] = {
 }
 
 
-def validate_state(state: Dict[str, Any]) -> Dict[str, List[str]]:
+def validate_state(state: Dict[str, object]) -> Dict[str, List[str]]:
     """Return a dict describing structural issues in the state.
 
     Keys:
@@ -304,14 +300,14 @@ def validate_state(state: Dict[str, Any]) -> Dict[str, List[str]]:
     return {"errors": errors, "warnings": warnings}
 
 
-def get_conversation_view(state: Dict[str, Any]) -> Dict[str, Any]:
+def get_conversation_view(state: Dict[str, object]) -> Dict[str, object]:
     return {
         "messages": copy.deepcopy(state.get("messages") or []),
         "summary": str(state.get("summary") or ""),
     }
 
 
-def get_retrieval_view(state: Dict[str, Any]) -> Dict[str, Any]:
+def get_retrieval_view(state: Dict[str, object]) -> Dict[str, object]:
     return {
         "rag_history": copy.deepcopy(state.get("rag_history") or []),
         "world": copy.deepcopy(state.get("world") or []),
@@ -344,11 +340,11 @@ class StateAdapter:
 
     memory: MemoryManager = field(default_factory=MemoryManager)
     _phase: WorkflowPhase = field(default=WorkflowPhase.INIT, init=False)
-    _state: Dict[str, Any] = field(default_factory=dict, init=False)
+    _state: Dict[str, object] = field(default_factory=dict, init=False)
     _phase_history: List[WorkflowPhase] = field(default_factory=list, init=False)
 
     def __post_init__(self) -> None:
-        base: Dict[str, Any] = {
+        base: Dict[str, object] = {
             "messages": [],
             "rag_history": [],
             "world": [],
@@ -370,12 +366,12 @@ class StateAdapter:
     # ------------------------------------------------------------------ #
 
     @property
-    def state(self) -> Dict[str, Any]:
+    def state(self) -> Dict[str, object]:
         """Return a deep copy of the current state."""
         return copy.deepcopy(self._state)
 
     @state.setter
-    def state(self, value: Dict[str, Any]) -> None:
+    def state(self, value: Dict[str, object]) -> None:
         """Setter primarily for L3 orchestration initialization."""
         base = copy.deepcopy(value)
         base = self.memory.reconcile(base)
@@ -396,7 +392,7 @@ class StateAdapter:
     # Phase management (observability only)
     # ------------------------------------------------------------------ #
 
-    def set_phase(self, phase: WorkflowPhase) -> Dict[str, Any]:
+    def set_phase(self, phase: WorkflowPhase) -> Dict[str, object]:
         self._phase = phase
         self._phase_history.append(phase)
         updated = copy.deepcopy(self._state)
@@ -424,7 +420,7 @@ class StateAdapter:
             return merged
         return value
 
-    def apply_patch(self, patch: StatePatch) -> Dict[str, Any]:
+    def apply_patch(self, patch: StatePatch) -> Dict[str, object]:
         """Apply a StatePatch and reconcile + validate.
 
         Semantics:
@@ -459,7 +455,7 @@ class StateAdapter:
     # Explicit mutators (restored v10_8 capabilities)
     # ------------------------------------------------------------------ #
 
-    def add_message(self, role: str, content: str, **metadata: Any) -> Dict[str, Any]:
+    def add_message(self, role: str, content: str, **metadata: Any) -> Dict[str, object]:
         """Append a message to state['messages'] and reconcile."""
         updated = copy.deepcopy(self._state)
         msgs = list(updated.get("messages") or [])
@@ -472,7 +468,7 @@ class StateAdapter:
         self._state = updated
         return self.state
 
-    def add_rag_item(self, item: Dict[str, Any]) -> Dict[str, Any]:
+    def add_rag_item(self, item: Dict[str, object]) -> Dict[str, object]:
         """Append an item to state['rag_history'] and reconcile."""
         updated = copy.deepcopy(self._state)
         rag = list(updated.get("rag_history") or [])
@@ -489,8 +485,8 @@ class StateAdapter:
         self,
         surface: str,
         message: str,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        metadata: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         """Record a correction event in the CORRECTION_JOURNAL."""
         updated = copy.deepcopy(self._state)
         journal = list(updated.get("correction_journal") or [])
@@ -513,7 +509,7 @@ class StateAdapter:
     # Episodic events & checkpoints
     # ------------------------------------------------------------------ #
 
-    def add_episodic_event(self, event: Dict[str, Any]) -> Dict[str, Any]:
+    def add_episodic_event(self, event: Dict[str, object]) -> Dict[str, object]:
         """Append an event to state['episodic'] and reconcile."""
         updated = copy.deepcopy(self._state)
         episodic = list(updated.get("episodic") or [])
@@ -526,7 +522,7 @@ class StateAdapter:
         self._state = updated
         return self.state
 
-    def add_checkpoint(self, checkpoint_id: str, notes: str = "") -> Dict[str, Any]:
+    def add_checkpoint(self, checkpoint_id: str, notes: str = "") -> Dict[str, object]:
         """Append a checkpoint record to state['checkpoints'] and reconcile."""
         updated = copy.deepcopy(self._state)
         checkpoints = list(updated.get("checkpoints") or [])
@@ -549,10 +545,10 @@ class StateAdapter:
     # Reset
     # ------------------------------------------------------------------ #
 
-    def reset(self, new_state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def reset(self, new_state: Optional[Dict[str, object]] = None) -> Dict[str, object]:
         """Reset adapter state to a new dictionary (or empty canonical state)."""
         if new_state is None:
-            base: Dict[str, Any] = {
+            base: Dict[str, object] = {
                 "messages": [],
                 "rag_history": [],
                 "world": [],

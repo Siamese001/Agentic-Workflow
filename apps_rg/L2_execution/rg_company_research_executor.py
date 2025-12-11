@@ -1,18 +1,17 @@
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
-"""Rg Company Research Executor - atomic wrapper."""
-
-from __future__ import annotations
-
-from typing import Any, Dict
+"""Rg Company Research Executor - atomic execution layer."""
 
 
+from typing import Dict
 
-def rg_company_research_executor(data: Dict[str, Any]) -> Dict[str, Any]:
+
+
+def rg_company_research_executor(data: Dict[str, object]) -> Dict[str, object]:
     """Process rg company research executor data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
 
-def get_rg_company_research_executor_config() -> Dict[str, Any]:
+def get_rg_company_research_executor_config() -> Dict[str, object]:
     """Get configuration for rg_company_research_executor."""
     return {"enabled": True, "version": "1.0"}

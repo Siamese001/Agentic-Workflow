@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "01_agentic_core\\L1_cognition\\P1_retrieve\\gather_context_inputs\\utility\\utility_prepare_information\\build_core_filters.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "108fe30cd97a945e",
-  "original_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\logic\\data_access\\get_prompt_info\\utility_prepare_information\\build_prompt_filters.py",
-  "created": "2025-12-07T11:54:50.800094"
-}

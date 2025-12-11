@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.877485
 from __future__ import annotations
 import logging
 import math
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -17,15 +17,15 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ComputationResult:
     """Result of computation."""
-    value: Any
+    value: object
     method: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class ComputeScriptsEmbeddings:
     """Computation engine for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.precision = self.config.get("precision", 4)
         logger.info(f"Initialized {self.__class__.__name__}")

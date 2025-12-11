@@ -4,8 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
-from errors_controlflow import DAGValidationError
-from node_result import NodeResult
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.errors_controlflow import DAGValidationError  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult  # INVALID: Cannot import from path with hyphens
 
 
 @dataclass
@@ -13,8 +13,8 @@ class DAGNode:
     """Structural node definition for DAG orchestration."""
 
     name: str
-    run: Callable[[Dict[str, Any]], NodeResult]
-    condition: Optional[Callable[[Dict[str, Any]], bool]] = None
+    run: Callable[[Dict[str, object]], NodeResult]
+    condition: Optional[Callable[[Dict[str, object]], bool]] = None
     conditional_edges: Dict[str, List[str]] = field(default_factory=dict)
     retries: int = 0
     fallback_edge: Optional[str] = None

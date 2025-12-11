@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"META layer package (v10_10).\nProvides retrieval, metacognition, and other META-only utilities.\n\"\"\"\nfrom .retrieval import retrieval # noqa: F401\nfrom . import metacognition as metacognition # noqa: F401\n__all__ = [\"retrieval\", \"metacognition\"]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

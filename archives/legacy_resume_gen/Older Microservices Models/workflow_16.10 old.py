@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import shutil
 import signal
 import time
@@ -20,26 +20,14 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 import functools
 from functools import partial
-from typing import (
-    Any, Callable, ClassVar, Dict, List, 
-    Optional, Set, Tuple, TypeVar, Union
-)
 
 from dataclasses import asdict, dataclass, field, is_dataclass
 
 # Import all refactored modules
-from config import (
-    CONFIG, AppConfig, ReasoningConfig, ContentConstraintsConfig,
-    FilePathsConfig, ArtistConfig, PROMPT_ADDENDUM_CONFIG, DEFAULT_GENERATION_TEMPERATURE
-)
-from models import *
-from utils import *
-import prompts
-from validation import (
-    ValidationEngine, JDEnforcementValidator, AppTrackerQAValidator,
-    PreFlightValidator, ValidationContext, ConstraintFailureClassifier, ValidationRule
-)
-from rag import EnhancedJobDescriptionAnalyzer
+from shared.models import *
+from runtime.shared.utils import *
+import archives.legacy_lic.LIC - Python.prompts
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import EnhancedJobDescriptionAnalyzer  # INVALID: Cannot import from path with hyphens
 
 # Import Gemini if available
 try:
@@ -282,7 +270,7 @@ class ArtistGenerator:
                 result[key] = value
         return result
     
-    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, Any]]:
+    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, object]]:
         try:
             reconstructed_specs = {}
             for section_name, spec in raw_specs.items():
@@ -328,7 +316,7 @@ class ArtistGenerator:
     def _build_generation_prompt_with_reinforced_constraints(
         self,
         base_prompt: str,
-        constraints: Dict[str, Any],
+        constraints: Dict[str, object],
         attempt_number: int
     ) -> str:
         """
@@ -1645,10 +1633,10 @@ class ImmutableStagingBuffer:
     def data(self) -> Dict:
         return copy.deepcopy(self._data)
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Union, Tuple
 
 class TextSanitizer:
     FORBIDDEN_DASHES: str = (
@@ -2464,9 +2452,9 @@ class WorkflowOrchestrator:
 
         temperature_schedule = [1.0, 0.8, 0.6, 0.4, 0.2]
         max_attempts = len(temperature_schedule)
-        final_generation_state: Dict[str, Any] = {}
+        final_generation_state: Dict[str, object] = {}
         locked_section_temps: Dict[ResumeSection, float] = {}
-        copied_content: Dict[str, Any] = {}
+        copied_content: Dict[str, object] = {}
 
         all_llm_sections = {
             section_enum for section_enum, spec in artist.SECTION_GENERATION_SPECS.items()
@@ -2558,7 +2546,7 @@ class WorkflowOrchestrator:
             self.logger.info(f"    Sections to generate: {[s.name for s in sections_to_generate]}")
             attempt_start_time = time.time()
             calls_this_attempt = 0
-            newly_generated_content: Dict[str, Any] = {}
+            newly_generated_content: Dict[str, object] = {}
 
             try:
                 temp_overrides = {section: temperature for section in sections_to_generate}
@@ -3290,7 +3278,7 @@ class WorkflowOrchestrator:
             self.logger.warning(f"Could not rename log file: {e}", exc_info=True)
 
 
-    def _create_checkpoint( self, hop_id: str, hop_name: str, validation_results: List[ValidationResult], output_data: Any, start_time: datetime, metadata: Optional[Dict[str, Any]] = None, error_message: Optional[str] = None ) -> HopCheckpoint:
+    def _create_checkpoint( self, hop_id: str, hop_name: str, validation_results: List[ValidationResult], output_data: Any, start_time: datetime, metadata: Optional[Dict[str, object]] = None, error_message: Optional[str] = None ) -> HopCheckpoint:
         end_time = datetime.now(); duration = (end_time - start_time).total_seconds(); status = HopStatus.PASS
         if error_message:
             status = HopStatus.FAIL
@@ -3629,22 +3617,22 @@ class HopCheckpoint:
     timestamp_end: str
     output_hash: Optional[str] = None
     validation_results: List[ValidationResult] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     error_message: Optional[str] = None
 
 # NOTE: HopExecutionError and StagingBufferError are imported from models.py
 # Duplicate declarations removed to avoid confusion
 
-import re
+import scripts.check_canonical_structure
 import logging
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime
 import json
 from collections import defaultdict
 
-import re
+import scripts.check_canonical_structure
 import logging
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime
 import json
 from collections import defaultdict

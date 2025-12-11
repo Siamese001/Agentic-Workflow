@@ -23,13 +23,6 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
-from core.models.models import (
-    WorkflowPlanBundle,
-    ExecutionContext,
-    ComplexityLevel,
-    TaskDecomposition,
-    UncertaintyEstimate,
-)
 
 
 @dataclass
@@ -37,7 +30,7 @@ class L1PlanRequest:
     """Input request for L1 planning operations."""
     mission: str
     context: ExecutionContext
-    constraints: Optional[Dict[str, Any]] = None
+    constraints: Optional[Dict[str, object]] = None
     complexity_hint: Optional[ComplexityLevel] = None
 
 
@@ -47,7 +40,7 @@ class L1PlanResult:
     plan_bundle: WorkflowPlanBundle
     decomposition: TaskDecomposition
     uncertainty: UncertaintyEstimate
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 class L1PlannerInterface(ABC):

@@ -10,11 +10,11 @@ Injection Type: Tool Injection Defense (ID 7)
 
 from __future__ import annotations
 
-import re
+import scripts.check_canonical_structure
 import json
 from typing import Any, List, Optional
 
-from l2.interfaces import L2ToolOutputValidatorInterface, ToolOutputValidationResult
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.interfaces import L2ToolOutputValidatorInterface, ToolOutputValidationResult
 
 
 class L2ToolOutputValidator(L2ToolOutputValidatorInterface):

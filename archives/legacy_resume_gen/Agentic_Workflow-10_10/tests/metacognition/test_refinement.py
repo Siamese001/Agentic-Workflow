@@ -1,5 +1,5 @@
-from meta.metacognition.models import Hypothesis
-from meta.metacognition.refinement import refine_low_confidence
+from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
+from archives.legacy_root_folders.meta.metacognition.refinement import refine_low_confidence
 
 
 def test_refine_marks_very_low_confidence_as_discarded():

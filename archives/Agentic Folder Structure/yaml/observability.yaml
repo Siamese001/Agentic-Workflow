@@ -1,0 +1,91 @@
+'logging/                           # L4 Logs (event, state, error)': {}
+'sinks/                         # -1  Concrete output destinations': {}
+console_logger.py: null
+file_logger.py: null
+structured_json_logger.py: null
+'formatters/                    # -1  Formatting logic for log events': {}
+base_formatter.py: null
+json_formatter.py: null
+color_formatter.py: null
+'processors/                    # -1  Interceptors, enrichers, scrubbers': {}
+pii_sanitizer.py: null
+metadata_enricher.py: null
+sampling_processor.py: null
+'core/                          # -1  Core logging interfaces': {}
+logger.py: null
+log_event.py: null
+log_config.py: null
+'adapters/                      # -1  External adapter integrations': {}
+openai_logger_adapter.py: null
+mcp_tool_logger.py: null
+http_api_logger.py: null
+'metrics/                           # L4 Metrics (counters, timers, gauges)': {}
+'collectors/                    # -1  Concrete metric collectors': {}
+base_collector.py: null
+runtime_metrics_collector.py: null
+pipeline_metrics_collector.py: null
+'exporters/                     # -1  Output channels for metrics': {}
+prometheus_exporter.py: null
+json_exporter.py: null
+in_memory_exporter.py: null
+'instruments/                   # -1  Metric primitives': {}
+counter.py: null
+gauge.py: null
+histogram.py: null
+'registries/                    # -1 Metric registry objects': {}
+metric_registry.py: null
+metric_config.py: null
+'adapters/                      # -1 Third-party metrics hooks': {}
+opentelemetry_adapter.py: null
+cloudwatch_adapter.py: null
+'tracing/                           # L4 Distributed Tracing': {}
+'spans/                         # -1 Span models': {}
+span.py: null
+span_context.py: null
+span_config.py: null
+'propagators/                   # -1 Context propagation': {}
+w3c_trace_context.py: null
+baggage_propagator.py: null
+'samplers/                      # -1 Sampling strategies': {}
+always_on_sampler.py: null
+probabilistic_sampler.py: null
+parent_based_sampler.py: null
+'exporters/                     # -1  Trace exporters': {}
+otlp_exporter.py: null
+json_trace_exporter.py: null
+console_trace_exporter.py: null
+'adapters/                      # -1  Third-party tracing bridges': {}
+opentelemetry_tracing_adapter.py: null
+jaeger_adapter.py: null
+'audits/                            # L5 Compliance + tamper-proof trails': {}
+'event_log/                     # -1  Immutable audit event objects': {}
+audit_event.py: null
+audit_schema.json: null
+'stores/                        # -1  Where audit logs persist': {}
+sqlite_audit_store.py: null
+file_audit_store.py: null
+append_only_store.py: null
+'verifiers/                     # -1  Integrity verification': {}
+hash_chain_verifier.py: null
+signature_verifier.py: null
+tamper_detector.py: null
+'processors/                    # -1  Pre-store transformations': {}
+pii_redaction.py: null
+audit_event_normalizer.py: null
+'diagnostics/                       # Internal debugging & health surfaces':
+  'health_checks/                 # -1  Liveness + readiness checks': {}
+  cpu_check.py: null
+  memory_check.py: null
+  dependency_check.py: null
+  'profilers/                     # -1  Perf & latency profiling': {}
+  time_profiler.py: null
+  async_profiler.py: null
+  cost_profiler.py: null
+  'inspectors/                    # -1  Attach-at-runtime introspection': {}
+  state_inspector.py: null
+  token_budget_inspector.py: null
+  dag_runtime_inspector.py: null
+  'snapshots/                     # -1  Periodic snapshots':
+    runtime_snapshot.py: null
+    planning_snapshot.py: null
+    execution_snapshot.py: null

@@ -1,5 +1,5 @@
 import pytest
-from workflow.graph import get_nodes, get_edges
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.workflow.graph import get_nodes, get_edges
 
 # Minimal but concrete: assert core safety and qa nodes exist across many ids
 @pytest.mark.parametrize("node", [

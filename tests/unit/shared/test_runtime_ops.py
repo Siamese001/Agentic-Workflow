@@ -3,7 +3,7 @@ Unit tests for shared/runtime_ops/
 Tests runtime operations including data access, guardrails, synthesis, and validation.
 """
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -12,7 +12,7 @@ class RuntimeContext:
     request_id: str
     start_time: datetime
     timeout_seconds: int
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 class TestRuntimeDataAccess:
     """Tests for runtime data access operations."""
@@ -41,7 +41,7 @@ class TestRuntimeDataAccess:
 
     def test_runtime_state_storage(self):
         """Runtime state is stored and retrieved."""
-        runtime_state: Dict[str, Any] = {}
+        runtime_state: Dict[str, object] = {}
 
         runtime_state["current_step"] = "processing"
         runtime_state["progress"] = 0.5

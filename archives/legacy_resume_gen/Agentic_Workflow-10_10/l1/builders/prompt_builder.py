@@ -21,33 +21,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from l1.cms.compiler import compile_prompt
-from l1.cms.store import get_prompt_version
-from l1.cms.schemas import validate_prompt
-from core.models.models import (
-    ContextBudget,
-    DraftingPlan,
-    DraftingResult,
-    Evidence,
-    ExecutionContext,
-    QAPlan,
-    QAResult,
-    RAGPlan,
-    RAGResult,
-    SafetyPlan,
-    SafetyResult,
-    StrategyPlan,
-    StrategyResult,
-    WorkflowPlanBundle,
-    PromptDefinition,
-    PromptMeta,
-    PromptVersion,
-)
-from l1.prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
-from infra.context_engine.assembly import assemble_context
-from infra.context_engine.pinned import PinnedItem
-from infra.context_engine.relevance import ContextItem
-from infra.context_engine.slots import ContextSlot
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.compiler import compile_prompt
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.store import get_prompt_version
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.schemas import validate_prompt
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
+from archives.legacy_root_folders.infra.context_engine.assembly import assemble_context
+from archives.legacy_root_folders.infra.context_engine.pinned import PinnedItem
+from archives.legacy_root_folders.infra.context_engine.relevance import ContextItem
+from archives.legacy_root_folders.infra.context_engine.slots import ContextSlot
 
 
 # =============================================================================
@@ -100,11 +81,11 @@ class PromptInstance:
     role: str
     rendered: str
     envelope: PromptEnvelope
-    variables: Dict[str, Any]
+    variables: Dict[str, object]
     layer: str
     agent: str
     model_tier: str
-    context_budget_hints: Dict[str, Any]
+    context_budget_hints: Dict[str, object]
 
 
 # =============================================================================
@@ -285,7 +266,7 @@ def _render_envelope_with_template(
     return body
 
 
-def _build_context_budget_hints_from_plan(plan: Any) -> Dict[str, Any]:
+def _build_context_budget_hints_from_plan(plan: Any) -> Dict[str, object]:
     """
     Extract context-budget hints from a plan object if it carries them.
 
@@ -314,7 +295,7 @@ def _make_prompt_instance(
     agent: str,
     model_tier: str,
     envelope: PromptEnvelope,
-    variables: Dict[str, Any],
+    variables: Dict[str, object],
 ) -> PromptInstance:
     """
     Core helper to build a PromptInstance with ACL enforcement.

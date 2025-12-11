@@ -12,7 +12,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 import uuid
 from collections import defaultdict
@@ -21,23 +21,8 @@ from functools import partial
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from modular components
-from models import (
-    BulletProvenance, CircuitState, GateDecision, HopCheckpoint, HopStatus,
-    ImmutableStagingBuffer, JDEnforcementResult, JDEnforcementRule,
-    RAGState, RAGTelemetry, ResumeSection, ThematicAnalysis,
-    ValidationResult, ValidationSeverity, HopExecutionError, StagingBufferError,
-    CompetitiveIntelligence, RAGMission
-)
-from config import (
-    CONFIG, AppConfig, ArtistConfig, EnricherConfig, ContentConstraintsConfig,
-    ReasoningConfig, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
-)
-from utils import (
-    TextUtils, calculate_signal_score, setup_workflow_logging,
-    create_directory_if_missing, sanitize_filename
-)
-from validation import PreFlightValidator, JDEnforcementValidator, QAReportGenerator
-from rag import EnhancedJobDescriptionAnalyzer, WebSearchRAG
+from runtime.validation import PreFlightValidator, JDEnforcementValidator, QAReportGenerator
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import EnhancedJobDescriptionAnalyzer, WebSearchRAG  # INVALID: Cannot import from path with hyphens
 
 try:
     import google.generativeai as genai
@@ -54,7 +39,7 @@ except ImportError:
     logging.warning("Warning: google-generativeai package not installed")
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -144,8 +129,8 @@ class ClerkExtractor:
 
         return experience_sections
 
-import re
-from typing import List, Dict, Any, Optional
+import scripts.check_canonical_structure
+from typing import List, Dict, object, Optional
 
 
 
@@ -363,7 +348,7 @@ class ArtistGenerator:
                 result[key] = value
         return result
     
-    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, Any]]:
+    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, object]]:
         try:
             reconstructed_specs = {}
             for section_name, spec in raw_specs.items():
@@ -409,7 +394,7 @@ class ArtistGenerator:
     def _build_generation_prompt_with_reinforced_constraints(
         self,
         base_prompt: str,
-        constraints: Dict[str, Any],
+        constraints: Dict[str, object],
         attempt_number: int
     ) -> str:
         """
@@ -1723,7 +1708,7 @@ class ValidationContext:
             self._dup_detector = DuplicateDetector()
         return self._dup_detector
 
-    def _calculate_metric_details(self, section_enum: ResumeSection, metrics_to_calc: List[Tuple[str, Callable]], constraints: Dict[str, Any]) -> Dict:
+    def _calculate_metric_details(self, section_enum: ResumeSection, metrics_to_calc: List[Tuple[str, Callable]], constraints: Dict[str, object]) -> Dict:
         text = self.staging_buffer.get(section_enum.value, '')
         details = {}
         for metric_name, calc_func in metrics_to_calc:
@@ -2727,9 +2712,9 @@ class WorkflowOrchestrator:
 
         temperature_schedule = [1.0, 0.8, 0.6, 0.4, 0.2]
         max_attempts = len(temperature_schedule)
-        final_generation_state: Dict[str, Any] = {}
+        final_generation_state: Dict[str, object] = {}
         locked_section_temps: Dict[ResumeSection, float] = {}
-        copied_content: Dict[str, Any] = {}
+        copied_content: Dict[str, object] = {}
 
         all_llm_sections = {
             section_enum for section_enum, spec in artist.SECTION_GENERATION_SPECS.items()
@@ -2821,7 +2806,7 @@ class WorkflowOrchestrator:
             self.logger.info(f"    Sections to generate: {[s.name for s in sections_to_generate]}")
             attempt_start_time = time.time()
             calls_this_attempt = 0
-            newly_generated_content: Dict[str, Any] = {}
+            newly_generated_content: Dict[str, object] = {}
 
             try:
                 temp_overrides = {section: temperature for section in sections_to_generate}
@@ -3553,7 +3538,7 @@ class WorkflowOrchestrator:
             self.logger.warning(f"Could not rename log file: {e}", exc_info=True)
 
 
-    def _create_checkpoint( self, hop_id: str, hop_name: str, validation_results: List[ValidationResult], output_data: Any, start_time: datetime, metadata: Optional[Dict[str, Any]] = None, error_message: Optional[str] = None ) -> HopCheckpoint:
+    def _create_checkpoint( self, hop_id: str, hop_name: str, validation_results: List[ValidationResult], output_data: Any, start_time: datetime, metadata: Optional[Dict[str, object]] = None, error_message: Optional[str] = None ) -> HopCheckpoint:
         end_time = datetime.now(); duration = (end_time - start_time).total_seconds(); status = HopStatus.PASS
         if error_message:
             status = HopStatus.FAIL

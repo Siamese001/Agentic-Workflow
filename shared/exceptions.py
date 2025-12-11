@@ -15,7 +15,7 @@ from __future__ import annotations
 
 
 class AgenticWorkflowError(Exception):
-    """Base exception for all agentic workflow errors."""
+    """foundation exception for all agentic workflow errors."""
 
     pass
 

@@ -34,69 +34,30 @@
 import pytest
 import pytest_asyncio
 import asyncio
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import json
 import time
 import tempfile
 import os
-import re # v10.2: Added for regex matching
+import scripts.check_canonical_structure
 from pathlib import Path
 from unittest.mock import MagicMock, AsyncMock, patch, Mock
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.2: Import from new core
-from core_v10_2 import (
-    WorkflowContext, ConfigV10_2, CacheManager, CostTracker, 
-    FeedbackLogReader, ProposedRulesLoader, MainGraphState, BaseAgent,
-    CostCeilingExceededError, CircuitBreakerOpenError
-)
 
 # Import all classes to be tested
 # v10.2: Import from new stacks
-from agent_stacks_v10_2 import (
-    BaseTool,
-    ToTStrategistAgent,
-    BiasDetectorAgent,
-    PIISanitizerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-    ChromaDBSearchTool # v10.2: Added for DI test
-)
 # v10.2: Import from new tools
-from agent_tools_v10_2 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAAdversarialReviewerTool,
-    QABiasDetectorTool
-)
 # v10.2: Import from new orchestration
-from agent_orchestration_v10_2 import (
-    ReActConductorAgent,
-    QAConductorAgent,
-    get_graph_app
-)
 # v10.2: Import from new batch runner
-from run_batch_v10_2 import CircuitBreaker, BatchFeedbackAggregator
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.run_batch_v10_2 import CircuitBreaker, BatchFeedbackAggregator
 
 # Try to import main for E2E tests
 try:
     # v10.2: Import from new main
-    from main_v10_2 import run_workflow_async
+    from archives.legacy_resume_gen.Older Microservices Models.v10.2.main_v10_2 import run_workflow_async
     MAIN_AVAILABLE = True
 except ImportError:
     MAIN_AVAILABLE = False
@@ -1606,7 +1567,7 @@ async def test_e2e_retry_recovery(mock_workflow_context):
     
     # Test conditional logic
     # v10.2: Use new orchestration path
-    from agent_orchestration_v10_2 import get_graph_app
+    from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_orchestration_v10_2 import get_graph_app
     
     # Verify retry counter increments
     initial_retries = state.metadata.retries["bullet_retries"]
@@ -1905,7 +1866,7 @@ def test_functional_bias_detector_finds_issues():
     context.config.agent_stacks.bias_detection_threshold = 0.7
     
     # v10.2: Use new stacks path
-    from agent_stacks_v10_2 import BiasDetectorAgent
+    from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_stacks_v10_2 import BiasDetectorAgent
     agent = BiasDetectorAgent(context)
     
     text_with_bias = "Looking for young, energetic candidates"
@@ -2051,10 +2012,10 @@ def test_transformation_pii_redaction_enriches():
 def test_architecture_no_circular_imports():
     """Architecture Test 1: No circular import dependencies."""
     # This test passes if the imports at top of file work
-    from core_v10_2 import WorkflowContext
-    from agent_stacks_v10_2 import PIISanitizerAgent
-    from agent_tools_v10_2 import DraftingStrategistTool
-    from agent_orchestration_v10_2 import ReActConductorAgent
+    from archives.legacy_resume_gen.Older Microservices Models.v10.2.core_v10_2 import WorkflowContext
+    from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_stacks_v10_2 import PIISanitizerAgent
+    from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_tools_v10_2 import DraftingStrategistTool
+    from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_orchestration_v10_2 import ReActConductorAgent
     
     # Verify hierarchy: core <- stacks <- tools <- orchestration
     assert WorkflowContext is not None

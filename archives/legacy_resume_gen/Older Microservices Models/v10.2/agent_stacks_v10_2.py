@@ -13,20 +13,16 @@ import os
 import json
 import logging
 import asyncio
-import re
+import scripts.check_canonical_structure
 import math
 import uuid # v10.2: Added
 import chromadb # v10.2: Added
-from chromadb.utils import embedding_functions # v10.2: Added
+from shared.reasoning_utils import embedding_functions
 from collections import Counter
-from typing import Dict, Any, List, Optional
+from typing import Dict, object, List, Optional
 from datetime import datetime
 
 # v10.2: Import from new core
-from core_v10_2 import (
-    WorkflowContext, BaseAgent,
-    ModelAPIError, JSONParsingError, ValidationError
-)
 
 logger = logging.getLogger("agent_stacks_v10_2")
 
@@ -38,11 +34,11 @@ class BaseTool(BaseAgent):
     """Base interface for tools used by ReAct Conductors"""
     tool_name: str = "base_tool"
     
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Execute the tool"""
         raise NotImplementedError
     
-    def get_schema(self) -> Dict[str, Any]:
+    def get_schema(self) -> Dict[str, object]:
         """Return the tool's JSON schema"""
         return {
             "name": self.tool_name,
@@ -68,7 +64,7 @@ class PIISanitizerAgent(BaseAgent):
         "NAME": re.compile(r'\b[A-Z][a-z]+ [A-Z][a-z]+\b') 
     }
     
-    def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume: Dict[str, object]) -> Dict[str, object]:
         """Sanitize PII locally using regex"""
         self.log_info("Sanitizing PII (local regex processing)...")
         
@@ -99,7 +95,7 @@ class PIISanitizerAgent(BaseAgent):
 class BiasDetectorAgent(BaseAgent):
     """ROW 7: Local bias detection with dynamic constitution"""
     
-    def run(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
+    def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         """Detect bias locally with dynamic rules"""
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         
@@ -146,7 +142,7 @@ class BiasDetectorAgent(BaseAgent):
 class ToTStrategistAgent(BaseAgent):
     """ROW 7: Tree-of-Thought strategist with feedback-aware branch selection"""
     
-    async def run_async(self, job_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, job_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Generate strategy with ToT and feedback awareness"""
         self.log_info("Generating ToT strategy with feedback-aware branching...")
         
@@ -213,7 +209,7 @@ Output JSON:
 class PromptEngineerAgent(BaseAgent):
     """ROW 7: LLM-driven prompt engineering with feedback awareness"""
     
-    async def run_async(self, strategy: Dict[str, Any], workflow_id: str) -> Dict[str, str]:
+    async def run_async(self, strategy: Dict[str, object], workflow_id: str) -> Dict[str, str]:
         """Generate prompts with feedback-aware optimization"""
         self.log_info("Engineering prompts with feedback awareness...")
         
@@ -267,7 +263,7 @@ class HyDETool(BaseTool):
     """Generates hypothetical documents for query expansion"""
     tool_name = "generate_hypothetical_documents"
     
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Generating HyDE documents...")
         query = tool_input.get("query", "")
         
@@ -304,7 +300,7 @@ class ChromaDBSearchTool(BaseTool):
         self.collection_name = self.config.chromadb_config.default_collection_name
         self.chroma_client = self.context.chromadb_client
         
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         query = tool_input.get("query", "")
         self.log_info(f"Searching ChromaDB (semantic) for: {query}")
 
@@ -648,7 +644,7 @@ class AsyncBulletCritiqueAgent(BaseAgent):
 class HILAmbiguityDetectorAgent(BaseAgent):
     """Proactively detects ambiguity to trigger HIL"""
     
-    async def run_async(self, strategy: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, strategy: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Detect ambiguity in the strategy"""
         self.log_info("Detecting ambiguity...")
         
@@ -681,7 +677,7 @@ Output JSON:
 class HILFeedbackRouterAgent(BaseAgent):
     """Routes human feedback to the correct next step"""
     
-    async def run_async(self, human_feedback: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, human_feedback: str, workflow_id: str) -> Dict[str, object]:
         """Routes human feedback"""
         self.log_info(f"Routing human feedback: {human_feedback[:50]}...")
         

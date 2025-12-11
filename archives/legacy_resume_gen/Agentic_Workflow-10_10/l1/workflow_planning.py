@@ -10,34 +10,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from core.models.models import (
-    ComplexityLevel,
-    DraftingMode,
-    ReasoningMode,
-    JobInput,
-    ResumeInput,
-    WorkflowConfig,
-    ExecutionProfile,
-    RoutingHint,
-    StrategyStep,
-    StrategyPlan,
-    RAGQueryHint,
-    RAGPlan,
-    DraftSectionPlan,
-    DraftingPlan,
-    QACheck,
-    QAPlan,
-    SafetyCheck,
-    SafetyPlan,
-    WorkflowPlanBundle,
-    PromptMeta,
-    ProfileInferenceResult,
-    SeniorityClassifierResult,
-    SkillClusterResult,
-    DomainClassifierResult,
-)
-from config.config_profiles_v10_10 import ExecutionProfileSpec, get_profile
-from config.meta_profile import MetaProfileSnapshot
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.config_profiles_v10_10 import ExecutionProfileSpec, get_profile
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot
 
 
 """
@@ -113,7 +87,7 @@ Ensures the best AI models are selected based on user profile for consistent ré
 """
 
 
-def _map_meta_profile_to_routing_hint(meta_profile: Optional[MetaProfileSnapshot]) -> Dict[str, Any]:
+def _map_meta_profile_to_routing_hint(meta_profile: Optional[MetaProfileSnapshot]) -> Dict[str, object]:
     """
     Converts meta-profile into routing configuration.
     
@@ -151,7 +125,7 @@ def _build_prompt_meta(
     Creates structured prompt planning data for consistent résumé improvement workflows.
     """
 
-    sections: List[Dict[str, Any]] = []
+    sections: List[Dict[str, object]] = []
 
     # High-level conceptual sections broadly aligned with Strategy/RAG/Drafting/QA/Safety.
     sections.append({"id": "strategy", "role": "planner", "order": 0})
@@ -168,13 +142,13 @@ def _build_prompt_meta(
         "safety_policies",
     ]
 
-    taxonomy: Dict[str, Any] = {
+    taxonomy: Dict[str, object] = {
         "profile_id": profile_spec.id,
         "safety_tier": getattr(profile_spec.safety_tier, "value", profile_spec.safety_tier),
         "model_tier": getattr(profile_spec.model_tier, "value", profile_spec.model_tier),
     }
 
-    meta_bias: Dict[str, Any] = {}
+    meta_bias: Dict[str, object] = {}
     if meta_profile is not None:
         meta_bias = {
             "reasoning_mode_hint": meta_profile.reasoning_mode_hint,

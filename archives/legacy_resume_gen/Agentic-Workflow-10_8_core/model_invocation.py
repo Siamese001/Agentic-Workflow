@@ -1,7 +1,7 @@
-from typing import Dict, Any
+from typing import Dict, object
 
 
-def invoke_model(prompt: str, route_metadata: Dict[str, Any]) -> Dict[str, Any]:
+def invoke_model(prompt: str, route_metadata: Dict[str, object]) -> Dict[str, object]:
     """Deterministic model invocation stub that echoes prompt metadata."""
 
     completion = prompt[:30]

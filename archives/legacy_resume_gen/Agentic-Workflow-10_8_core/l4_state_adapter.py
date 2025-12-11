@@ -10,11 +10,11 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict
 
-from l4_memory import MemoryManager
-from l4_state import StateMachine
-from l4_state import validate
-from utils_patch_helpers import apply_patch
-from utils_types import Phase, StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import MemoryManager  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateMachine  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import validate  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_patch_helpers import apply_patch  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import Phase, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class StateAdapter:
@@ -23,7 +23,7 @@ class StateAdapter:
     def __init__(self, memory_manager: MemoryManager | None = None, state_machine: StateMachine | None = None) -> None:
         self.memory_manager = memory_manager or MemoryManager()
         self.state_machine = state_machine or StateMachine()
-        self._state: Dict[str, Any] = {
+        self._state: Dict[str, object] = {
             "messages": [],
             "rag_history": [],
             "summary": "",
@@ -35,12 +35,12 @@ class StateAdapter:
         }
 
     @property
-    def state(self) -> Dict[str, Any]:
+    def state(self) -> Dict[str, object]:
         """Return a deep copy of the current state."""
 
         return copy.deepcopy(self._state)
 
-    def apply_patch(self, patch: StatePatch) -> Dict[str, Any]:
+    def apply_patch(self, patch: StatePatch) -> Dict[str, object]:
         """Apply a patch, reconcile memory budgets, and update cached state."""
 
         updated = apply_patch(self._state, patch)

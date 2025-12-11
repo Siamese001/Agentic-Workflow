@@ -1,12 +1,12 @@
 import copy
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
 import pytest
 
-from agent_orchestration_v10_7 import _attach_arbitration_report
-from core_v10_7.config import ConfigSection
-from core_v10_7.models import ArbitrationReport
-from core_v10_7.services import ArbitrationEngine, MetricsCollector
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import _attach_arbitration_report  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.config import ConfigSection
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.models import ArbitrationReport
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.services import ArbitrationEngine, MetricsCollector
 
 
 BASE_STAGES = {

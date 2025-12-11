@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Dict\nfrom runtime.observability.spans import start_span, end_span\ndef start_agent_span(name: str, meta: Dict[str, Any]) -> str:\n\"\"\"Start an agent-level span and return its span identifier.\nThis is a thin convenience wrapper over the core spans module so that\nhigher layers have a semantic home for agent-centric tracing.\n\"\"\"\nctx = meta if isinstance(meta, dict) else {\"meta\": str(meta)}\nspan_id = start_span(name, ctx=ctx)\nreturn span_id\ndef end_agent_span(span_id: str) -> None:\n\"\"\"End a previously-started agent span.\nThe span identifier is passed straight through to the spans module.\n\"\"\"\nend_span(span_id)",
+  "normalized_signature": "func:start_agent_span;func:end_agent_span",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:start_agent_span,end_agent_span",
+  "test_coverage": []
+}

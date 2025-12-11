@@ -1,7 +1,7 @@
 import pytest
 
-from core_v10_7.models import NodeResult, NodeStatus
-from agent_orchestration_v10_7 import node_success, node_error
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.models import NodeResult, NodeStatus
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import node_success, node_error  # INVALID: Cannot import from path with hyphens
 
 
 def test_node_status_values():

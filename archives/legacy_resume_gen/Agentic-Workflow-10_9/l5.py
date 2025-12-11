@@ -34,13 +34,13 @@ Integration points:
 
 from __future__ import annotations
 
-import re
+import scripts.check_canonical_structure
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from models import ArbitrationDecision
-from meta_profile import get_safety_bias, get_planning_bias
+from shared.models import ArbitrationDecision
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import get_safety_bias, get_planning_bias  # INVALID: Cannot import from path with hyphens
 
 
 # ============================================================================
@@ -163,7 +163,7 @@ _PI_PATTERNS = [
 ]
 
 
-def detect_prompt_injection(text: str) -> Dict[str, Any]:
+def detect_prompt_injection(text: str) -> Dict[str, object]:
     """
     Deterministic prompt injection detector using simple regex patterns.
 
@@ -204,7 +204,7 @@ _CONSTITUTION_RULES = {
 }
 
 
-def constitutional_review(text: str) -> Dict[str, Any]:
+def constitutional_review(text: str) -> Dict[str, object]:
     """
     Deterministic constitutional review.
 
@@ -261,7 +261,7 @@ class SafetyEngine:
         default_factory=lambda: ["explicit", "violence", "hate", "slur", "password", "api key"]
     )
 
-    def _extract_content_and_audience(self, state: Dict[str, Any], plan: Any) -> (str, str):
+    def _extract_content_and_audience(self, state: Dict[str, object], plan: Any) -> (str, str):
         # Audience.
         audience = str(getattr(plan, "get", lambda *_: None)("audience", None) or state.get("audience", "general"))
 
@@ -293,7 +293,7 @@ class SafetyEngine:
 
         return content, audience
 
-    def validate(self, content: str, audience: str = "general") -> Dict[str, Any]:
+    def validate(self, content: str, audience: str = "general") -> Dict[str, object]:
         """
         Validate a single content string and return a structured safety report.
 
@@ -329,7 +329,7 @@ class SafetyEngine:
             "sanitized": redacted,
         }
 
-    def evaluate_content(self, state: Dict[str, Any], plan: Any) -> Dict[str, Any]:
+    def evaluate_content(self, state: Dict[str, object], plan: Any) -> Dict[str, object]:
         """
         Main entrypoint used by main_v10_9.
 
@@ -363,7 +363,7 @@ class PolicyEngine:
 
     base_mode: SafetyMode = SafetyMode.BALANCED
 
-    def review(self, safety_report: Dict[str, Any]) -> Dict[str, Any]:
+    def review(self, safety_report: Dict[str, object]) -> Dict[str, object]:
         """
         Return a structured policy decision from a safety_report.
 
@@ -454,7 +454,7 @@ class ArbitrationEngine:
         • escalate  — escalate to external HIL/safety review
     """
 
-    def arbitrate(self, policy_decision: Dict[str, Any], safety_report: Dict[str, Any]) -> ArbitrationDecision:
+    def arbitrate(self, policy_decision: Dict[str, object], safety_report: Dict[str, object]) -> ArbitrationDecision:
         decision = policy_decision.get("decision", "allow")
         mode = policy_decision.get("mode", SafetyMode.BALANCED.value)
 

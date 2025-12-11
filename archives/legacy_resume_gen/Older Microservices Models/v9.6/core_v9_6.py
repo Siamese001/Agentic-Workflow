@@ -26,8 +26,8 @@ import hashlib
 import json
 import logging
 import os
-import redis
-import re
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
+import scripts.check_canonical_structure
 import subprocess
 import uuid
 from collections import defaultdict
@@ -35,9 +35,6 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import (
-    Any, Callable, ClassVar, Dict, List, Optional, Set, Tuple, Union, TypedDict
-)
 
 # v9.5: Add OpenTelemetry Imports (Item #5)
 from opentelemetry import trace
@@ -53,7 +50,7 @@ except ImportError:
     genai = None
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -242,7 +239,7 @@ class CacheManager:
             return None
         try:
             return self.redis_client.get(key)
-        except:
+        except (ValueError, TypeError, KeyError):
             return None
     
     def set(self, key: str, value: str):
@@ -250,7 +247,7 @@ class CacheManager:
             return
         try:
             self.redis_client.setex(key, self.ttl, value)
-        except:
+        except (ValueError, TypeError, KeyError):
             pass
 
 _cache_manager = None
@@ -836,7 +833,7 @@ class TextUtils:
         try:
             vectorizer.fit([text])
             return vectorizer.get_feature_names_out().tolist()
-        except:
+        except (ValueError, TypeError, KeyError):
             return []
     
     @staticmethod
@@ -857,7 +854,7 @@ class TextUtils:
             vectors = vectorizer.fit_transform([text1, text2])
             similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
             return float(similarity)
-        except:
+        except (ValueError, TypeError, KeyError):
             return 0.0
 
 text_utils = TextUtils()

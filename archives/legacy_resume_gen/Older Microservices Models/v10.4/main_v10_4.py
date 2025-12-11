@@ -16,25 +16,18 @@ import sys
 import json
 import logging
 import asyncio
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import uuid
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import chromadb
-from chromadb.utils import embedding_functions
+from shared.reasoning_utils import embedding_functions
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 # v10.4: Import from new core
-from core_v10_4 import (
-    ConfigV10_4, WorkflowContext, MainGraphState,
-    FileIOError, CostCeilingExceededError,
-    # v10.3: Import all services to be injected
-    CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader,
-    PromptTemplateManager, ResponseValidator, ContextBudgetManager
-)
 # v10.4: Import from new orchestration/stacks
-from agent_orchestration_v10_4 import get_graph_app
-from agent_stacks_v10_4 import PIISanitizerAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.4.agent_orchestration_v10_4 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v10.4.agent_stacks_v10_4 import PIISanitizerAgent
 try:
     from langgraph.checkpoint.redis import RedisSaver
 except ImportError:
@@ -61,7 +54,7 @@ def setup_logging(config: ConfigV10_4, debug_mode: bool = False):
     
     logger.info(f"v10.4 Logging initialized: {config.logging_config.log_file}")
 
-def load_job_input(path: str) -> Dict[str, Any]:
+def load_job_input(path: str) -> Dict[str, object]:
     """Load job input JSON"""
     try:
         with open(path, 'r') as f:
@@ -79,7 +72,7 @@ async def run_workflow_async(
     master_resume_path: str,
     debug_mode: bool = False,
     enable_hil: bool = True
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Run workflow asynchronously with v10.4 Hybrid RAG & Validation"""
     
     logger.info(f"===== Starting v10.4 Instructional Injection Workflow =====")

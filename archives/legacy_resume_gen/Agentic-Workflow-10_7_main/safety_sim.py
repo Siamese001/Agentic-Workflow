@@ -2,12 +2,7 @@
 
 import random
 
-from simulations.models.safety_simulation import (
-    SafetySimMetrics,
-    SafetySimRequest,
-    SafetySimResult,
-)
-from simulations.utils import model_to_payload
+from shared.reasoning_utils import model_to_payload
 
 
 class SafetySimulator:

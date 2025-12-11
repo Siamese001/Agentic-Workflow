@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from enum import Enum
-from typing import Dict, Any
+from typing import Dict, object
 
 
 class SelfCorrectionSurface(str, Enum):
@@ -16,7 +16,7 @@ def all_surfaces() -> Dict[str, str]:
     return {s.name: s.value for s in SelfCorrectionSurface}
 
 
-def should_retry(surface: SelfCorrectionSurface, state: Dict[str, Any], last_result: Dict[str, Any]) -> bool:
+def should_retry(surface: SelfCorrectionSurface, state: Dict[str, object], last_result: Dict[str, object]) -> bool:
     """
     Deterministic stub to indicate whether a local retry is warranted.
 
@@ -32,13 +32,13 @@ def should_retry(surface: SelfCorrectionSurface, state: Dict[str, Any], last_res
             if f.get("status") == "pending":
                 return True
     return False
-from typing import Dict, Any
+from typing import Dict, object
 
 
 
 def evaluate_correction(
-    surface: SelfCorrectionSurface, state: Dict[str, Any], last_patch: Dict[str, Any]
-) -> Dict[str, Any]:
+    surface: SelfCorrectionSurface, state: Dict[str, object], last_patch: Dict[str, object]
+) -> Dict[str, object]:
     """
     Deterministic metadata-only correction recommendation generator.
     """
@@ -71,7 +71,7 @@ from typing import Any, Dict
 CORRECTION_JOURNAL = []
 
 
-def record_correction_event(surface: str, recommendation: Dict[str, Any], plan: Dict[str, Any]):
+def record_correction_event(surface: str, recommendation: Dict[str, object], plan: Dict[str, object]):
     CORRECTION_JOURNAL.append(
         {
             "surface": surface,
@@ -80,7 +80,7 @@ def record_correction_event(surface: str, recommendation: Dict[str, Any], plan: 
             "mode": plan.get("mode"),
         }
     )
-from typing import Dict, Any
+from typing import Dict, object
 
 
 class ArbitrationEngine:
@@ -91,7 +91,7 @@ class ArbitrationEngine:
     returns one of: accept, retry, replan, escalate
     """
 
-    def evaluate(self, state: Dict[str, Any], qa_report: Dict[str, Any], safety_patch: Dict[str, Any]) -> Dict[str, str]:
+    def evaluate(self, state: Dict[str, object], qa_report: Dict[str, object], safety_patch: Dict[str, object]) -> Dict[str, str]:
         # 1) If safety is blocked → escalate
         sg = safety_patch.get("safety_gateway", {})
         if sg.get("status") == "blocked":

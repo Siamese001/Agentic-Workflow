@@ -1,0 +1,13 @@
+{
+  "safety_checks": [],
+  "policy_compliance": [
+    "regulatory_compliance"
+  ],
+  "security_patterns": [
+    "cryptography"
+  ],
+  "data_handling": [],
+  "access_controls": [
+    "rbac"
+  ]
+}

@@ -37,36 +37,21 @@
 import pytest
 import pytest_asyncio
 import asyncio
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import json
 import time
 import tempfile
 import os
-import re
+import scripts.check_canonical_structure
 from pathlib import Path
-from unittest.mock import MagicMock, AsyncMock, patch, Mock, ANY
+from unittest.mock import MagicMock, AsyncMock, patch, Mock, object
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.5: Import from new core
-from core_v10_5 import (
-    WorkflowContext, ConfigV10_5, CacheManager, CostTracker, 
-    FeedbackLogReader, ProposedRulesLoader, MainGraphState, BaseAgent,
-    CostCeilingExceededError, CircuitBreakerOpenError, PydanticSchemaError, ModelAPIError,
-    WorkflowTimeoutError, # v10.5 (Fix #6)
-    PromptTemplateManager, ResponseValidator, ContextBudgetManager,
-    MetricsCollector, SemanticValidator, # v10.5 (Fix #8, #13)
-    exponential_backoff_retry,
-    StrategyPlan, CritiqueResult, BulletList, QAClaimOutput, DraftStrategyOutput,
-    RefineSectionOutput, HILFeedbackRoute, # v10.5 (Fix #5)
-    BaseModel, # v10.5: Import BaseModel for test
-    MetaGraphState, # v10.5: Import for meta test
-    BaseTool, # v10.5: Import BaseTool from core
-    GeneratedPrompts # v10.5 CRITICAL FIX: Import for base_state
-)
 
 # v10.5: Import from new stacks
-from agent_stacks_v10_5 import (
+from archives.legacy_resume_gen.Older Microservices Models.v10.5.agent_stacks_v10_5 import ToTStrategistAgent, BiasDetectorAgent, PIISanitizerAgent, PromptInjectionDetectorAgent, QueryComplexityClassifier, RAG_SearchAgent, AsyncBulletGeneratorAgent, AsyncBulletCritiqueAgent, HILAmbiguityDetectorAgent, HILFeedbackRouterAgent
     # BaseTool, # v10.5: No longer imported from here
     ToTStrategistAgent,
     BiasDetectorAgent,
@@ -83,56 +68,24 @@ from agent_stacks_v10_5 import (
     # BM25SearchTool
 )
 # v10.5: Import from new tools
-from agent_tools_v10_5 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAAdversarialReviewerTool,
-    QABiasDetectorTool,
-    QAWordCountValidatorTool, # v10.5 (Fix #13)
-    # v10.5 REFACTOR: Added RAG tools
-    ChromaDBSearchTool,
-    BM25SearchTool
-)
 # v10.5: Import from new orchestration
-from agent_orchestration_v10_5 import (
-    ReActConductorAgent,
-    QAConductorAgent,
-    get_graph_app,
-    # v10.5: Import nodes/edges for testing
-    run_classify_complexity,
-    run_detect_prompt_injection,
-    check_prompt_injection,
-    run_inject_hil_edit,
-    route_feedback
-)
 # v10.5: Import from new batch runner
-from core_v10_5 import CircuitBreaker
-from run_batch_v10_5 import BatchFeedbackAggregator
+from archives.legacy_resume_gen.Older Microservices Models.v10.5.core_v10_5 import CircuitBreaker
+from archives.legacy_resume_gen.Older Microservices Models.v10.5.run_batch_v10_5 import BatchFeedbackAggregator
 
 # v10.5: Import from new meta-learner
-from run_learning_v10_5 import check_proposal_type
+from archives.legacy_resume_gen.Older Microservices Models.v10.5.run_learning_v10_5 import check_proposal_type
 
 try:
     # v10.5: Import from new main
-    from main_v10_5 import run_workflow_async
+    from archives.legacy_resume_gen.Older Microservices Models.v10.5.main_v10_5 import run_workflow_async
     MAIN_AVAILABLE = True
 except ImportError:
     MAIN_AVAILABLE = False
 
 # v10.5: Import graph errors
 try:
-    from langgraph.errors import NodeExecutionError
+    from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import NodeExecutionError
 except ImportError:
     # Fallback for newer versions of langgraph
     class NodeExecutionError(Exception):
@@ -670,17 +623,17 @@ def test_architecture_dependency_injection_v10_5(mock_workflow_context):
 
 def test_main_removes_global_config():
     """(Cat 3) Test that main_v10_5.py does not have a global CONFIG."""
-    import main_v10_5
+    import archives.legacy_resume_gen.Older Microservices Models.v10.5.main_v10_5
     assert not hasattr(main_v10_5, 'CONFIG')
 
 def test_batch_removes_global_config():
     """(Cat 3) Test that run_batch_v10_5.py does not have a global CONFIG."""
-    import run_batch_v10_5
+    import archives.legacy_resume_gen.Older Microservices Models.v10.5.run_batch_v10_5
     assert not hasattr(run_batch_v10_5, 'CONFIG')
 
 def test_architecture_all_tools_inherit_base_tool(mock_workflow_context):
     """(Cat 3) Test Interface compliance: all tools inherit BaseTool."""
-    import agent_tools_v10_5
+    import archives.legacy_resume_gen.Older Microservices Models.v10.5.agent_tools_v10_5
     
     tool_classes = [
         getattr(agent_tools_v10_5, name) 
@@ -1072,7 +1025,7 @@ async def test_orchestration_qa_retry_logic(mock_workflow_context, base_state):
 
 def test_design_validation_bullet_critique_edge(mock_workflow_context):
     """(Cat 4) Test conditional edge logic for 'check_bullets_passed'."""
-    from agent_orchestration_v10_5 import check_bullets_passed
+    from archives.legacy_resume_gen.Older Microservices Models.v10.5.agent_orchestration_v10_5 import check_bullets_passed
     
     state = {"bullets": {"critiqued_bullets": [{"critique": {"score": 8.0}}]}}
     assert check_bullets_passed(state) == "bullets_passed"
@@ -1082,7 +1035,7 @@ def test_design_validation_bullet_critique_edge(mock_workflow_context):
 
 def test_integration_hil_ambiguity_edge(mock_workflow_context):
     """(Cat 5) Test conditional edge logic for 'check_ambiguity'."""
-    from agent_orchestration_v10_5 import check_ambiguity
+    from archives.legacy_resume_gen.Older Microservices Models.v10.5.agent_orchestration_v10_5 import check_ambiguity
     
     state = {"hil": {"ambiguity_report": {"ambiguity_detected": True}}}
     assert check_ambiguity(state) == "pause_for_human"
@@ -1297,7 +1250,7 @@ async def test_fix_12_prompt_injection_node(mock_workflow_context, mock_llm_clie
     # to manually inject the budget_manager dependency.
     
     # 1. Get the original class
-    from agent_stacks_v10_5 import PromptInjectionDetectorAgent
+    from archives.legacy_resume_gen.Older Microservices Models.v10.5.agent_stacks_v10_5 import PromptInjectionDetectorAgent
     
     # 2. Create a wrapper that injects the dependency
     class PatchedAgent(PromptInjectionDetectorAgent):
@@ -1446,7 +1399,7 @@ async def test_fix_8_metrics_decorator(mock_workflow_context, base_state):
     # TEST FIX #14: We must patch the Agent classes that the node function imports
     # to manually inject the metrics_collector dependency.
     
-    from agent_stacks_v10_5 import PIISanitizerAgent, BiasDetectorAgent
+    from archives.legacy_resume_gen.Older Microservices Models.v10.5.agent_stacks_v10_5 import PIISanitizerAgent, BiasDetectorAgent
     
     class PatchedPIIAgent(PIISanitizerAgent):
         def __init__(self, context, *args, **kwargs):
@@ -1467,15 +1420,15 @@ async def test_fix_8_metrics_decorator(mock_workflow_context, base_state):
              patch('agent_orchestration_v10_5.PIISanitizerAgent', new=PatchedPIIAgent), \
              patch('agent_orchestration_v10_5.BiasDetectorAgent', new=PatchedBiasAgent):
             
-            from agent_orchestration_v10_5 import run_sanitize_pii
+            from archives.legacy_resume_gen.Older Microservices Models.v10.5.agent_orchestration_v10_5 import run_sanitize_pii
             await run_sanitize_pii(base_state) # Run the node
     
     # Verify the decorator called the metrics collector
     mock_workflow_context.metrics_collector.record.assert_any_call(
-        "PIISanitizerAgent", "run_pii_sanitizer", ANY, success=True, error=None, metadata=ANY
+        "PIISanitizerAgent", "run_pii_sanitizer", object, success=True, error=None, metadata=ANY
     )
     mock_workflow_context.metrics_collector.record.assert_any_call(
-        "BiasDetectorAgent", "run_bias_detector", ANY, success=True, error=None, metadata=ANY
+        "BiasDetectorAgent", "run_bias_detector", object, success=True, error=None, metadata=ANY
     )
 
 # ============================================================================

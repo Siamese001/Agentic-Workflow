@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from typing import Dict, List
 
-from l5_policy import PolicyRule, SafetyConfig, load_default_safety_config
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import PolicyRule, SafetyConfig, load_default_safety_config  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class PolicyEngine:

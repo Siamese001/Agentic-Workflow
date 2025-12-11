@@ -23,7 +23,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 import uuid
 from collections import defaultdict
@@ -33,7 +33,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from core_v8_0
-from core_v8_0 import (
+from archives.legacy_resume_gen.Older Microservices Models.v8.0.core_v8_0 import BaseAgent, get_model_client, CONFIG, HopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException, ValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy, ThematicAnalysis, RAG_Blackboard, RAGMission, RAGPhase, StrategyBrief, ReflectionIteration, ReflectionResult, ReflectionStatus, ToolCall, ToolType, ReActTrace, MoEExpertResult, MoEDecision, ConductorBranch, ConductorDecision, WorkflowBlackboard, WorkflowPlan, WorkflowStep, GraphState, DEFAULT_GENERATION_TEMPERATURE, text_utils, fence_data, STRATEGY_THEME_CLASSIFICATION_SYSTEM_PROMPT, STRATEGY_THEME_CLASSIFICATION_USER_PROMPT, RAG_QUERY_GEN_SYSTEM_PROMPT, RAG_QUERY_GEN_USER_PROMPT, RAG_THOUGHT_SYSTEM_PROMPT, RAG_CRITIQUE_STEP_SYSTEM_PROMPT, RAG_CRITIQUE_SYSTEM_PROMPT, RAG_CRITIQUE_USER_PROMPT, BULLET_CUSTOMIZER_SYSTEM_PROMPT, BULLET_CUSTOMIZER_USER_PROMPT, BULLET_SYNTHETIC_SYSTEM_PROMPT, BULLET_SYNTHETIC_USER_PROMPT, DRAFTING_CONDUCTOR_SYSTEM_PROMPT, DRAFTING_CONDUCTOR_USER_PROMPT, DRAFTING_STRATEGIST_SYSTEM_PROMPT, DRAFTING_REDTEAM_SYSTEM_PROMPT, DRAFTING_REFINER_SYSTEM_PROMPT, DRAFTING_METRICS_SYSTEM_PROMPT, DRAFTING_USER_PROMPT, REPLANNER_SYSTEM_PROMPT, REPLANNER_USER_PROMPT, QA_CONDUCTOR_SYSTEM_PROMPT, QA_CONDUCTOR_USER_PROMPT, QA_CLAIM_VALIDATOR_SYSTEM_PROMPT, QA_TONE_VALIDATOR_SYSTEM_PROMPT, QA_ALIGNMENT_VALIDATOR_SYSTEM_PROMPT, QA_ENTAILMENT_VALIDATOR_SYSTEM_PROMPT, QA_NARRATIVE_VALIDATOR_SYSTEM_PROMPT, QA_ADVERSARIAL_VALIDATOR_SYSTEM_PROMPT, QA_JD_SKILLS_VALIDATOR_SYSTEM_PROMPT, QA_SIGNAL_SCORE_VALIDATOR_SYSTEM_PROMPT, QA_BIAS_VALIDATOR_SYSTEM_PROMPT, QA_TENURE_VALIDATOR_SYSTEM_PROMPT, QA_MISSED_OPPORTUNITY_SYSTEM_PROMPT, QA_GENERIC_USER_PROMPT
     # Base
     BaseAgent, get_model_client, CONFIG,
     # Models
@@ -76,7 +76,7 @@ class GraphDatabaseClient:
     def write(self, s: str, r: str, o: str): return True
 
 # --- V7.0 LANGGRAPH IMPORTS ---
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger(__name__)
@@ -267,7 +267,7 @@ class RAG_SearchAgent(BaseAgent):
             self.client = None
             self.critique_client = None
 
-    def run(self, queries: List[str]) -> Dict[str, Any]:
+    def run(self, queries: List[str]) -> Dict[str, object]:
         self.log_info(f"Running Step 2: RAG Search (ReAct) for {len(queries)} queries...")
         if self.client is None:
             raise HopExecutionError("Model client not initialized for RAG Search.")
@@ -1047,7 +1047,7 @@ def get_blackboard(state: 'GraphState') -> WorkflowBlackboard:
         artifacts=state["artifacts"]
     )
 
-def run_strategy(state: 'GraphState') -> Dict[str, Any]:
+def run_strategy(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 1: Strategy Classification"""
     blackboard = get_blackboard(state)
     
@@ -1056,7 +1056,7 @@ def run_strategy(state: 'GraphState') -> Dict[str, Any]:
     
     return {"artifacts": {"strategy_brief": strategy_brief}}
 
-def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_rag_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 2: RAG (QueryGen, Search, Critique)"""
     blackboard = get_blackboard(state)
     
@@ -1081,7 +1081,7 @@ def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
         "rag_critique": critique_result
     }}
 
-def run_bullet_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_bullet_stack(state: 'GraphState') -> Dict[str, object]:
     """v8.0 Node: Runs the new Advanced Bullet Swarm (Req #2)"""
     blackboard = get_blackboard(state)
     
@@ -1091,7 +1091,7 @@ def run_bullet_stack(state: 'GraphState') -> Dict[str, Any]:
     
     return {"artifacts": {"generated_bullets": bullets}}
 
-def run_drafting_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_drafting_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3: Drafting (Prompt, Bullets, Adversarial)"""
     # v8.0: This node is now split into two: run_bullet_stack and run_drafting_stack
     # This function is now *only* for drafting.
@@ -1114,7 +1114,7 @@ def run_drafting_stack(state: 'GraphState') -> Dict[str, Any]:
         "final_draft": final_draft
     }}
 
-def run_qa_swarm(state: 'GraphState') -> Dict[str, Any]:
+def run_qa_swarm(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 4: QA (LLM and Logic)"""
     blackboard = get_blackboard(state)
     final_draft = state["artifacts"].get("final_draft", "")
@@ -1149,7 +1149,7 @@ def run_qa_swarm(state: 'GraphState') -> Dict[str, Any]:
         "validation_results": validation_summary
     }}
 
-def run_replanner(state: 'GraphState') -> Dict[str, Any]:
+def run_replanner(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3 (SC Paths): Re-Planner"""
     blackboard = get_blackboard(state)
     agent = WorkflowRePlannerAgent(blackboard, debug_mode=True) # v8.0 logic is now inside this agent
@@ -1178,7 +1178,7 @@ def run_replanner(state: 'GraphState') -> Dict[str, Any]:
 
 # --- v7.5 New Nodes ---
 
-def human_review_pause(state: 'GraphState') -> Dict[str, Any]:
+def human_review_pause(state: 'GraphState') -> Dict[str, object]:
     """
     Node: This node saves the final draft to the state for HIL diffing.
     The graph will be configured to *interrupt* before this node,
@@ -1188,7 +1188,7 @@ def human_review_pause(state: 'GraphState') -> Dict[str, Any]:
     # Save the AI draft so we can diff it against the human's version
     return {"original_draft": state["artifacts"]["final_draft"]}
 
-def run_preference_capture(state: 'GraphState') -> Dict[str, Any]:
+def run_preference_capture(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 5: Preference Capture"""
     if not CONFIG.hil_config.enable_preference_learning:
         return {"preference_insight": {"status": "disabled"}}
@@ -1234,8 +1234,8 @@ def get_graph_app(checkpointer: 'RedisSaver', enable_hil: bool = True) -> 'Compi
     """
     Builds and compiles the persistent v8.0 StateGraph.
     """
-    from langgraph.graph import StateGraph, END
-    from core_v8_0 import GraphState
+    from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
+    from archives.legacy_resume_gen.Older Microservices Models.v8.0.core_v8_0 import GraphState
     
     workflow = StateGraph(GraphState)
 

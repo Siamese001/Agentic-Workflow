@@ -16,7 +16,7 @@
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -36,31 +36,31 @@ logger = logging.getLogger(__name__)
 
 class MainGraphState(TypedDict):
     """Enhanced v9.8 graph state with P1/P2 additions."""
-    master_resume: Dict[str, Any]
-    job_input: Dict[str, Any]
-    artifacts: Dict[str, Any]
+    master_resume: Dict[str, object]
+    job_input: Dict[str, object]
+    artifacts: Dict[str, object]
     replan_count: int
     workflow_id: str
     original_draft: str
     human_approved_draft: str
-    preference_insight: Optional[Dict[str, Any]]
-    provenance_ledger: List[Dict[str, Any]]
+    preference_insight: Optional[Dict[str, object]]
+    provenance_ledger: List[Dict[str, object]]
     # P0 Item #2: Tree-of-Thoughts fields
-    strategy_thoughts: List[Dict[str, Any]]
-    selected_strategy: Optional[Dict[str, Any]]
+    strategy_thoughts: List[Dict[str, object]]
+    selected_strategy: Optional[Dict[str, object]]
     # P0 Item #4: Local self-correction tracking
     local_retry_count: int
-    bullet_critique_history: List[Dict[str, Any]]
+    bullet_critique_history: List[Dict[str, object]]
     # P1: ReAct conductor tracking
-    conductor_thoughts: List[Dict[str, Any]]  # NEW: Conductor reasoning traces
-    conductor_plan: Optional[Dict[str, Any]]  # NEW: Current execution plan
+    conductor_thoughts: List[Dict[str, object]]  # NEW: Conductor reasoning traces
+    conductor_plan: Optional[Dict[str, object]]  # NEW: Current execution plan
     # P1: Dynamic tooling
-    available_tools: List[Dict[str, Any]]  # NEW: Tool registry
-    tool_execution_history: List[Dict[str, Any]]  # NEW: Tool usage log
+    available_tools: List[Dict[str, object]]  # NEW: Tool registry
+    tool_execution_history: List[Dict[str, object]]  # NEW: Tool usage log
     # P1: HIL interaction
     ambiguity_detected: bool  # NEW: Ambiguity flag
-    hil_feedback_queue: List[Dict[str, Any]]  # NEW: Pending feedback requests
-    hil_responses: List[Dict[str, Any]]  # NEW: Human responses
+    hil_feedback_queue: List[Dict[str, object]]  # NEW: Pending feedback requests
+    hil_responses: List[Dict[str, object]]  # NEW: Human responses
     # P2: Cost tracking
     agent_costs: Dict[str, float]  # NEW: Per-agent cost accumulation
     total_workflow_cost: float  # NEW: Running total cost
@@ -70,11 +70,11 @@ class MainGraphState(TypedDict):
 class MetaGraphState(TypedDict):
     """Meta-learning graph state (unchanged from v9.7)."""
     raw_logs: Dict[str, str]
-    log_summary: Dict[str, Any]
-    patterns: List[Dict[str, Any]]
-    hypotheses: List[Dict[str, Any]]
-    proposal: Dict[str, Any]
-    critique: Dict[str, Any]
+    log_summary: Dict[str, object]
+    patterns: List[Dict[str, object]]
+    hypotheses: List[Dict[str, object]]
+    proposal: Dict[str, object]
+    critique: Dict[str, object]
     replan_count: int
     workflow_id: str
 
@@ -89,7 +89,7 @@ class ToolDefinition:
         self,
         name: str,
         description: str,
-        parameters: Dict[str, Any],
+        parameters: Dict[str, object],
         implementation: Callable,
         cost_per_call: float = 0.0,
         reliability_score: float = 1.0
@@ -104,7 +104,7 @@ class ToolDefinition:
         self.success_count = 0
         self.total_latency = 0.0
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Serialize tool definition for agents."""
         return {
             "name": self.name,
@@ -116,7 +116,7 @@ class ToolDefinition:
             "success_rate": self.success_count / max(self.execution_count, 1)
         }
     
-    def execute(self, **kwargs) -> Dict[str, Any]:
+    def execute(self, **kwargs) -> Dict[str, object]:
         """Execute tool with tracking."""
         start_time = time.time()
         self.execution_count += 1
@@ -146,7 +146,7 @@ class ToolRegistry:
     
     def __init__(self):
         self.tools: Dict[str, ToolDefinition] = {}
-        self.generation_history: List[Dict[str, Any]] = []
+        self.generation_history: List[Dict[str, object]] = []
     
     def register_tool(self, tool: ToolDefinition):
         """Register a new tool."""
@@ -157,7 +157,7 @@ class ToolRegistry:
         """Retrieve tool by name."""
         return self.tools.get(name)
     
-    def list_tools(self) -> List[Dict[str, Any]]:
+    def list_tools(self) -> List[Dict[str, object]]:
         """List all available tools."""
         return [tool.to_dict() for tool in self.tools.values()]
     
@@ -178,7 +178,7 @@ class ToolRegistry:
         sorted_tools = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         return [name for name, score in sorted_tools[:max_tools] if score > 0]
     
-    def generate_tool(self, specification: Dict[str, Any]) -> Optional[ToolDefinition]:
+    def generate_tool(self, specification: Dict[str, object]) -> Optional[ToolDefinition]:
         """P1: Generate new tool from specification (placeholder for LLM-based generation)."""
         self.generation_history.append({
             "timestamp": datetime.now().isoformat(),
@@ -209,7 +209,7 @@ class HILRequest:
     request_id: str
     ambiguity_type: AmbiguityType
     question: str
-    context: Dict[str, Any]
+    context: Dict[str, object]
     options: Optional[List[str]] = None
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     response: Optional[str] = None
@@ -226,7 +226,7 @@ class HILInteractionManager:
     
     def detect_ambiguity(
         self,
-        context: Dict[str, Any],
+        context: Dict[str, object],
         confidence_threshold: float = 0.8
     ) -> Optional[HILRequest]:
         """Detect potential ambiguities requiring human input."""
@@ -300,7 +300,7 @@ class CostTracker:
     def __init__(self):
         self.agent_costs: Dict[str, float] = {}
         self.workflow_cost: float = 0.0
-        self.cost_log: List[Dict[str, Any]] = []
+        self.cost_log: List[Dict[str, object]] = []
     
     def estimate_cost(
         self,
@@ -341,7 +341,7 @@ class CostTracker:
         """Check if workflow cost exceeds ceiling."""
         return self.workflow_cost < ceiling
     
-    def get_cost_summary(self) -> Dict[str, Any]:
+    def get_cost_summary(self) -> Dict[str, object]:
         """Get cost breakdown summary."""
         return {
             "total_workflow_cost": self.workflow_cost,
@@ -431,7 +431,7 @@ class LoggingConfig:
     log_file: str = "./logs/workflow_v9_8.log"
     log_format: str = "json"
     correlation_ids: bool = True
-    log_rotation: Dict[str, Any] = field(default_factory=lambda: {
+    log_rotation: Dict[str, object] = field(default_factory=lambda: {
         "max_bytes": 10485760,
         "backup_count": 5
     })
@@ -620,7 +620,7 @@ class BaseModelClient(ABC):
         temperature: float = 0.7,
         max_tokens: int = 4096,
         response_format: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Execute chat completion."""
         pass
 
@@ -646,7 +646,7 @@ class GoogleGeminiClient(BaseModelClient):
         temperature: float = 0.7,
         max_tokens: int = 4096,
         response_format: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Execute chat completion with token tracking."""
         try:
             # Convert messages to Gemini format
@@ -695,7 +695,7 @@ class AnthropicClient(BaseModelClient):
             raise ValueError("ANTHROPIC_API_KEY environment variable not set")
         
         try:
-            import anthropic
+            import data.sdks_mcps.reference_clients.minimal_anthropic
             self.client = anthropic.Anthropic(api_key=self.api_key)
         except ImportError:
             raise ImportError("anthropic package not installed")
@@ -706,7 +706,7 @@ class AnthropicClient(BaseModelClient):
         temperature: float = 0.7,
         max_tokens: int = 4096,
         response_format: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Execute chat completion with token tracking."""
         try:
             # Separate system message

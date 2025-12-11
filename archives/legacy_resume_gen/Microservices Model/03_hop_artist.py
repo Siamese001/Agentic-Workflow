@@ -12,7 +12,7 @@ This advanced Artist implements a "Select, then Synthesize" strategy.
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import os
@@ -20,7 +20,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List, Set
+from typing import Dict, object, Tuple, List, Set
 
 # --- High-Signal Imports ---
 import numpy as np
@@ -31,10 +31,6 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 # Import necessary components
-from helpers import (
-    setup_workflow_logging, HopExecutionError, default_serializer,
-    ValidationResult, ValidationSeverity, ThematicAnalysis, ResumeSection
-)
 
 # --- Mock Components (for high-signal orchestration) ---
 # In a real system, these would be robust, shared clients.
@@ -129,7 +125,7 @@ class ArtistGenerator:
         self.target_embeddings: np.ndarray | None = None
         self.target_keywords: Set[str] = set()
         self.selected_bullets_map: Dict[str, List[Dict]] = {}
-        self.generated_content: Dict[str, Any] = {}
+        self.generated_content: Dict[str, object] = {}
         self.validation_results: List[ValidationResult] = []
         self.api_calls_made = 0
 

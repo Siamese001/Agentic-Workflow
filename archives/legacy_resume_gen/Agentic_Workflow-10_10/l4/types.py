@@ -53,7 +53,7 @@ class StateTransition(Generic[T]):
     path: StatePath
     value: Any = None
     condition: Optional[Callable[[T], bool]] = field(default=None, compare=False)
-    metadata: Dict[str, Any] = field(default_factory=dict, compare=False)
+    metadata: Dict[str, object] = field(default_factory=dict, compare=False)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc), compare=False)
     
     def with_metadata(self, **kwargs: Any) -> StateTransition[T]:
@@ -75,7 +75,7 @@ class StateSnapshot(Generic[T]):
     parent_id: Optional[str] = None
     transition: Optional[StateTransition[T]] = None
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     def get_hash(self) -> str:
         """Generate a deterministic hash of this snapshot."""

@@ -32,24 +32,16 @@
 import json
 import logging
 import asyncio
-from typing import Dict, Any, List, Callable, Awaitable
+from typing import Dict, object, List, Callable, Awaitable
 from functools import wraps
 
 # v10.5: Import from new core
-from core_v10_5 import (
-    WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
-    exponential_backoff_retry, CircuitBreakerOpenError,
-    CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
-    ConfigV10_5, # Import config for context typing
-    track_metrics, # v10.5 (Fix #8)
-    _format_prompt_with_defaults # v10.5 TEST FIX
-)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 try:
     from langgraph.checkpoint.redis import RedisSaver
 except ImportError:
     from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
-from langgraph.errors import GraphRecursionError
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
 
 # Make HIL import conditional for environment compatibility
 try:
@@ -63,44 +55,9 @@ except ImportError:
     )
 
 # v10.5: Import from new stacks
-from agent_stacks_v10_5 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    PromptInjectionDetectorAgent, # v10.5 (Fix #12)
-    QueryComplexityClassifier,  # v10.5 (Fix #2)
-    ToTStrategistAgent,
-    PromptEngineerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent
-)
 
 # v10.5: Import from new tools file
 # v10.5 REFACTOR: RAG tools are now imported from here
-from agent_tools_v10_5 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QABiasDetectorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAWordCountValidatorTool, # v10.5 (Fix #13)
-    # v10.5 REFACTOR: Add RAG tool imports
-    HyDETool,
-    ChromaDBSearchTool,
-    BM25SearchTool
-)
 
 # v10.5: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_5")
@@ -158,7 +115,7 @@ class ReActConductorAgent(BaseAgent):
         self.style_guide = "Style: Professional, high-impact, and metrics-driven."
 
     @track_metrics('run_react_draft_conductor') # v10.5 (Fix #8)
-    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, task_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct Drafting Conductor (v10.5)...")
         
         client = self.get_model_client("react_conductor_model") # Uses dynamic routing
@@ -287,7 +244,7 @@ class QAConductorAgent(BaseAgent):
         self.style_guide = "Style: Ensure professional, clear, and unbiased language."
 
     @track_metrics('run_react_qa_conductor') # v10.5 (Fix #8)
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct QA Conductor (v10.5)...")
         
         max_steps = 15

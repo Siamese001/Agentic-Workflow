@@ -44,7 +44,7 @@ class RetrievalNode:
     stage: RetrievalStage
     
     # Configuration
-    config: Dict[str, Any] = field(default_factory=dict)
+    config: Dict[str, object] = field(default_factory=dict)
     
     # Dependencies
     depends_on: List[str] = field(default_factory=list)
@@ -123,11 +123,11 @@ class HybridRetrievalResult:
     """Result of hybrid KG + Vector retrieval."""
     
     # Combined results
-    results: List[Dict[str, Any]]
+    results: List[Dict[str, object]]
     
     # Component results
-    kg_results: List[Dict[str, Any]] = field(default_factory=list)
-    vector_results: List[Dict[str, Any]] = field(default_factory=list)
+    kg_results: List[Dict[str, object]] = field(default_factory=list)
+    vector_results: List[Dict[str, object]] = field(default_factory=list)
     
     # Scores
     kg_contribution: float = 0.0
@@ -263,8 +263,8 @@ class KGFirstRetrievalOrchestrator:
         """
         start_time = datetime.now(UTC)
         
-        kg_results: List[Dict[str, Any]] = []
-        vector_results: List[Dict[str, Any]] = []
+        kg_results: List[Dict[str, object]] = []
+        vector_results: List[Dict[str, object]] = []
         
         execution_order = dag.get_execution_order()
         
@@ -332,9 +332,9 @@ class KGFirstRetrievalOrchestrator:
     
     async def _execute_kg_query(
         self,
-        config: Dict[str, Any],
+        config: Dict[str, object],
         context: HybridRetrievalContext,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Execute KG query stage.
         
         Args:
@@ -348,7 +348,7 @@ class KGFirstRetrievalOrchestrator:
             return []
         
         # Use the L1 planner to create a query plan
-        from l1.kg_retrieval_planning import KGRetrievalPlanner, QueryType
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.kg_retrieval_planning import KGRetrievalPlanner, QueryType
         
         planner = self.kg_planner or KGRetrievalPlanner()
         plan = planner.plan_query(
@@ -378,10 +378,10 @@ class KGFirstRetrievalOrchestrator:
     
     async def _execute_vector_search(
         self,
-        config: Dict[str, Any],
+        config: Dict[str, object],
         context: HybridRetrievalContext,
         kg_entities: List[str],
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Execute vector search stage.
         
         Args:
@@ -421,7 +421,7 @@ class KGFirstRetrievalOrchestrator:
     
     def _extract_entities_from_kg(
         self,
-        kg_results: List[Dict[str, Any]],
+        kg_results: List[Dict[str, object]],
     ) -> List[str]:
         """Extract entity names from KG results.
         
@@ -443,8 +443,8 @@ class KGFirstRetrievalOrchestrator:
     def _execute_fusion(
         self,
         dag: RetrievalDAG,
-        config: Dict[str, Any],
-    ) -> List[Dict[str, Any]]:
+        config: Dict[str, object],
+    ) -> List[Dict[str, object]]:
         """Execute fusion stage - combine KG and vector results.
         
         Args:
@@ -474,7 +474,7 @@ class KGFirstRetrievalOrchestrator:
             vector_results.extend(enhanced_node.result)
         
         # Score and combine results
-        scored_results: Dict[str, Dict[str, Any]] = {}
+        scored_results: Dict[str, Dict[str, object]] = {}
         
         # Score KG results
         for i, fact in enumerate(kg_results):
@@ -531,8 +531,8 @@ class KGFirstRetrievalOrchestrator:
     def _execute_filtering(
         self,
         dag: RetrievalDAG,
-        config: Dict[str, Any],
-    ) -> List[Dict[str, Any]]:
+        config: Dict[str, object],
+    ) -> List[Dict[str, object]]:
         """Execute filtering stage.
         
         Args:
@@ -555,7 +555,7 @@ class KGFirstRetrievalOrchestrator:
         # Deduplicate if requested
         if config.get("deduplicate", True):
             seen_texts: Set[str] = set()
-            unique: List[Dict[str, Any]] = []
+            unique: List[Dict[str, object]] = []
             
             for result in filtered:
                 text = result.get("text", "")

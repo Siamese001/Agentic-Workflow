@@ -2,14 +2,6 @@ import copy
 import json
 import pytest
 
-from stacks_v10_8 import (
-    BulletExecutionStack,
-    BulletPlanningStack,
-    DraftPlanningStack,
-    DraftingExecutionStack,
-    RAGExecutionStack,
-    RAGPlanningStack,
-)
 
 
 class DummyLLMClient:

@@ -6,9 +6,9 @@ Provides intelligent model selection and budget enforcement for optimal résumé
 
 from typing import Optional
 
-from core.models.models import ExecutionProfile
+from archives.legacy_root_folders.core.models.models import ExecutionProfile
 
-from .models import ModelChoice, RoutingContext
+from shared.models import ModelChoice, RoutingContext
 
 
 def _infer_provider_from_model(model: str) -> str:

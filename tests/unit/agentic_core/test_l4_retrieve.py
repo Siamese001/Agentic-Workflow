@@ -1,6 +1,6 @@
 """Unit tests for L4_memory/P1_retrieve - memory retrieval operations."""
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict
 from datetime import datetime
 
 class TestMemoryRetrieval:
@@ -17,7 +17,7 @@ class TestMemoryRetrieval:
 
     def test_retrieve_missing_key(self):
         """Negative: Missing key returns None."""
-        memory_store: Dict[str, Any] = {}
+        memory_store: Dict[str, object] = {}
         value = memory_store.get("nonexistent")
         assert value is None
 

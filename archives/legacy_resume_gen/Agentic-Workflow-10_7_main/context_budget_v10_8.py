@@ -6,7 +6,7 @@ import copy
 import logging
 from typing import Any, MutableMapping, Optional
 
-from pydantic import BaseModel
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class ContextBudgetManager:
 
         return working_state
 
-    def _trim_episodic_memory(self, state: MutableMapping[str, Any]) -> None:
+    def _trim_episodic_memory(self, state: MutableMapping[str, object]) -> None:
         memory = self._ensure_mapping(state.get("memory"))
         episodic = self._ensure_mapping(memory.get("episodic")) if memory else None
         conversation = episodic.get("conversation") if episodic else None
@@ -73,7 +73,7 @@ class ContextBudgetManager:
         state["memory"] = memory
         self.logger.info("Episodic memory pruned to %s messages", limit)
 
-    def _trim_rag_history(self, state: MutableMapping[str, Any]) -> None:
+    def _trim_rag_history(self, state: MutableMapping[str, object]) -> None:
         rag = self._ensure_mapping(state.get("rag"))
         history = rag.get("history") if rag else None
 
@@ -88,7 +88,7 @@ class ContextBudgetManager:
         state["rag"] = rag
         self.logger.info("RAG history trimmed to %s documents", limit)
 
-    def _trim_summary(self, state: MutableMapping[str, Any]) -> None:
+    def _trim_summary(self, state: MutableMapping[str, object]) -> None:
         summary_parent = None
         summary_key = None
         summary_value: Optional[str] = None
@@ -116,7 +116,7 @@ class ContextBudgetManager:
             state["resume"] = resume
         self.logger.info("Summary truncated to %s characters", limit)
 
-    def _coerce_mapping(self, state: Any) -> Optional[MutableMapping[str, Any]]:
+    def _coerce_mapping(self, state: Any) -> Optional[MutableMapping[str, object]]:
         if isinstance(state, MutableMapping):
             return state
         if hasattr(state, "to_dict") and callable(state.to_dict):
@@ -131,7 +131,7 @@ class ContextBudgetManager:
                 return None
         return None
 
-    def _ensure_mapping(self, value: Any) -> Optional[MutableMapping[str, Any]]:
+    def _ensure_mapping(self, value: Any) -> Optional[MutableMapping[str, object]]:
         if isinstance(value, MutableMapping):
             return value
         if hasattr(value, "model_dump") and callable(value.model_dump):

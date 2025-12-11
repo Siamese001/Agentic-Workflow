@@ -16,7 +16,7 @@
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -36,30 +36,30 @@ logger = logging.getLogger(__name__)
 
 class MainGraphState(TypedDict):
     """Enhanced v9.7 graph state with P0 additions."""
-    master_resume: Dict[str, Any]
-    job_input: Dict[str, Any]
-    artifacts: Dict[str, Any]
+    master_resume: Dict[str, object]
+    job_input: Dict[str, object]
+    artifacts: Dict[str, object]
     replan_count: int
     workflow_id: str
     original_draft: str
     human_approved_draft: str
-    preference_insight: Optional[Dict[str, Any]]
-    provenance_ledger: List[Dict[str, Any]]
+    preference_insight: Optional[Dict[str, object]]
+    provenance_ledger: List[Dict[str, object]]
     # P0 Item #2: Tree-of-Thoughts fields
-    strategy_thoughts: List[Dict[str, Any]]  # NEW: ToT candidates
-    selected_strategy: Optional[Dict[str, Any]]  # NEW: Best strategy path
+    strategy_thoughts: List[Dict[str, object]]  # NEW: ToT candidates
+    selected_strategy: Optional[Dict[str, object]]  # NEW: Best strategy path
     # P0 Item #4: Local self-correction tracking
     local_retry_count: int  # NEW: Track local retries
-    bullet_critique_history: List[Dict[str, Any]]  # NEW: Critique history
+    bullet_critique_history: List[Dict[str, object]]  # NEW: Critique history
 
 class MetaGraphState(TypedDict):
     """Meta-learning graph state (unchanged from v9.6)."""
     raw_logs: Dict[str, str]
-    log_summary: Dict[str, Any]
-    patterns: List[Dict[str, Any]]
-    hypotheses: List[Dict[str, Any]]
-    proposal: Dict[str, Any]
-    critique: Dict[str, Any]
+    log_summary: Dict[str, object]
+    patterns: List[Dict[str, object]]
+    hypotheses: List[Dict[str, object]]
+    proposal: Dict[str, object]
+    critique: Dict[str, object]
     replan_count: int
     workflow_id: str
 
@@ -75,7 +75,7 @@ class LoggingConfig:
     log_file: str = "./logs/workflow_v9_7.log"
     log_format: str = "json"
     correlation_ids: bool = True
-    log_rotation: Dict[str, Any] = field(default_factory=lambda: {
+    log_rotation: Dict[str, object] = field(default_factory=lambda: {
         "max_bytes": 10485760,
         "backup_count": 5
     })
@@ -230,7 +230,7 @@ class BaseModelClient(ABC):
         temperature: float = 0.7,
         max_tokens: int = 4096,
         response_format: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Execute chat completion."""
         pass
 
@@ -256,7 +256,7 @@ class GoogleGeminiClient(BaseModelClient):
         temperature: float = 0.7,
         max_tokens: int = 4096,
         response_format: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Execute Gemini chat completion."""
         # Convert messages to Gemini format
         prompt_parts = []
@@ -311,7 +311,7 @@ class AnthropicClient(BaseModelClient):
             raise ValueError("ANTHROPIC_API_KEY environment variable not set")
         
         try:
-            import anthropic
+            import data.sdks_mcps.reference_clients.minimal_anthropic
             self.client = anthropic.Anthropic(api_key=self.api_key)
         except ImportError:
             raise ImportError("anthropic package not installed")
@@ -322,7 +322,7 @@ class AnthropicClient(BaseModelClient):
         temperature: float = 0.7,
         max_tokens: int = 4096,
         response_format: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Execute Claude chat completion."""
         # Extract system message if present
         system_msg = None

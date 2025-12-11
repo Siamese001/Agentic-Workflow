@@ -12,15 +12,12 @@
 import json
 import logging
 import asyncio
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.2: Import from new core
-from core_v10_2 import (
-    WorkflowContext, BaseAgent
-)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
-from langgraph.errors import GraphRecursionError
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
 
 # Make HIL import conditional for environment compatibility
 try:
@@ -35,36 +32,8 @@ except ImportError:
     )
 
 # v10.2: Import from new stacks
-from agent_stacks_v10_2 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    ToTStrategistAgent,
-    PromptEngineerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent
-)
 
 # v10.2: Import from new tools file
-from agent_tools_v10_2 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QABiasDetectorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool
-)
 
 logger = logging.getLogger("agent_orchestration_v10_2")
 
@@ -87,7 +56,7 @@ class ReActConductorAgent(BaseAgent):
         }
         self.tool_schemas = [t.get_schema() for t in self.tools.values()]
 
-    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, task_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct Drafting Conductor...")
         
         feedback_reader = self.context.feedback_reader
@@ -185,7 +154,7 @@ class QAConductorAgent(BaseAgent):
         }
         self.tool_schemas = [t.get_schema() for t in self.tools.values()]
 
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct QA Conductor with 11 tools...")
         
         feedback_reader = self.context.feedback_reader

@@ -1,4 +1,4 @@
-from agents import PIISanitizerAgent, PromptInjectionDetector, StrategyAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import PIISanitizerAgent, PromptInjectionDetector, StrategyAgent  # INVALID: Cannot import from path with hyphens
 import pytest
 
 

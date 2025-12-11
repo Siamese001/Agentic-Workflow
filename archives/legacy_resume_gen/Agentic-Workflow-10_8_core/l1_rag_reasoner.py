@@ -12,14 +12,14 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from injection_profiles import DEFAULT_FRAMING_PROFILE
-from l1_reasoning import Reasoner
-from utils_types import PlanObject
-from retrieval import RetrievalConfig
-from l4_memory import get_evidence_view
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_profiles import DEFAULT_FRAMING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import Reasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.retrievers.retrieval import RetrievalConfig
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import get_evidence_view  # INVALID: Cannot import from path with hyphens
 
 
-def _latest_user_message(state: Dict[str, Any]) -> str:
+def _latest_user_message(state: Dict[str, object]) -> str:
     """Return the most recent user message content from state messages."""
 
     messages = state.get("messages") or []
@@ -31,7 +31,7 @@ def _latest_user_message(state: Dict[str, Any]) -> str:
     return ""
 
 
-def _build_queries(state: Dict[str, Any]) -> List[str]:
+def _build_queries(state: Dict[str, object]) -> List[str]:
     """Create deterministic RAG queries from state signals."""
 
     explicit_queries = state.get("rag_queries") or []
@@ -52,7 +52,7 @@ def _build_queries(state: Dict[str, Any]) -> List[str]:
 class RAGReasoner(Reasoner):
     """Plan deterministic retrieval intents for downstream execution."""
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         evidence_view = get_evidence_view(state)
         queries = _build_queries(state)
         filters = state.get("rag_filters") or {}

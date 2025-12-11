@@ -17,7 +17,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from .exceptions import MCPClientInitializationError
+from shared.exceptions import MCPClientInitializationError
 
 logger = logging.getLogger("core_v10_7.mcp")
 
@@ -53,7 +53,7 @@ class MCPClientSpec:
     provider: str = "stub"
     module: Optional[str] = None
     class_name: Optional[str] = None
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: Dict[str, object] = field(default_factory=dict)
     optional: bool = False
 
     def resolved_module(self) -> Optional[str]:
@@ -81,7 +81,7 @@ class MCPClientStub:
       {"error": "<reason>", "stub": true, ...parameters}
     """
 
-    def __init__(self, name: str, parameters: Optional[Dict[str, Any]] = None):
+    def __init__(self, name: str, parameters: Optional[Dict[str, object]] = None):
         self.name = name
         self.parameters = parameters or {}
 
@@ -105,7 +105,7 @@ class MCPClientStub:
 # Spec parser
 # ---------------------------------------------------------------------------
 
-def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpec]:
+def parse_mcp_client_specs(raw_specs: List[Dict[str, object]]) -> List[MCPClientSpec]:
     """Validate and normalise MCP client specifications."""
 
     specs: List[MCPClientSpec] = []

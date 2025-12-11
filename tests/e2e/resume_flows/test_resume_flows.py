@@ -1,7 +1,8 @@
 """E2E tests for resume flows - resume generation and optimization workflows."""
 from __future__ import annotations
+import re
 import pytest
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -16,8 +17,8 @@ class ResumeSection(Enum):
 class ResumeData:
     name: str
     email: str
-    experience: List[Dict[str, Any]]
-    education: List[Dict[str, Any]]
+    experience: List[Dict[str, object]]
+    education: List[Dict[str, object]]
     skills: List[str]
     summary: Optional[str] = None
 
@@ -116,7 +117,7 @@ class TestResumeOptimization:
     def test_quantification_check(self):
         """E2E: Achievements are quantified."""
         bullet = "Increased sales by 25% over 6 months"
-        import re
+        import scripts.check_canonical_structure
         has_numbers = bool(re.search(r'\d+', bullet))
         assert has_numbers is True
 
@@ -203,7 +204,7 @@ class TestResumeExport:
 
     def test_export_multiple_versions(self):
         """E2E: Multiple resume versions can be exported."""
-        versions = ["general", "tech_focused", "management_focused"]
+        versions = ["standard", "tech_focused", "management_focused"]
         exports = {v: f"resume_{v}.pdf" for v in versions}
         assert len(exports) == 3
 

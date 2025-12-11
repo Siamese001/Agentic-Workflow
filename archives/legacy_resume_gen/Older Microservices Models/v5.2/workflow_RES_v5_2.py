@@ -6,17 +6,14 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, object, Optional, Tuple
 from datetime import datetime
 
 # Import advisory crew and orchestrator
-from advisory_crew_v5_2 import CrewOrchestrator, CrewConfiguration
+from archives.legacy_resume_gen.Older Microservices Models.v5.2.advisory_crew_v5_2 import CrewOrchestrator, CrewConfiguration
 
 # Import models and config
-from models_RES import (
-    ImmutableStagingBuffer, ValidationResult, ValidationSeverity
-)
-from config_RES import CONFIG, DATA_DIR
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, DATA_DIR
 
 # Configure logging
 logging.basicConfig(
@@ -63,7 +60,7 @@ class WorkflowV52:
         job_title: str,
         master_resume_path: Optional[str] = None,
         output_dir: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Run the complete workflow for a single job application.
         
@@ -139,7 +136,7 @@ class WorkflowV52:
             self.logger.info("Workflow v5.2 execution completed")
             self.logger.info("=" * 80)
     
-    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, Any]:
+    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, object]:
         """Load master resume from file or use default."""
         if master_resume_path and os.path.exists(master_resume_path):
             self.logger.info(f"Loading master resume from: {master_resume_path}")
@@ -156,7 +153,7 @@ class WorkflowV52:
                 self.logger.warning("No master resume found, using empty template")
                 return self._create_empty_master_resume()
     
-    def _create_empty_master_resume(self) -> Dict[str, Any]:
+    def _create_empty_master_resume(self) -> Dict[str, object]:
         """Create an empty master resume template."""
         return {
             "personal_info": {
@@ -174,7 +171,7 @@ class WorkflowV52:
     
     def _save_artifacts(
         self,
-        results: Dict[str, Any],
+        results: Dict[str, object],
         output_dir: str,
         company_name: str,
         job_title: str

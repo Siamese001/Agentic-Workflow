@@ -3,12 +3,7 @@
 import random
 from typing import Any
 
-from simulations.models.strategy_simulation import (
-    StrategySimMetrics,
-    StrategySimRequest,
-    StrategySimResult,
-)
-from simulations.utils import model_to_payload
+from shared.reasoning_utils import model_to_payload
 
 
 class StrategySimulator:

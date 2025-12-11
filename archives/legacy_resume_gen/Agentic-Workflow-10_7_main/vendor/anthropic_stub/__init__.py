@@ -34,11 +34,11 @@ class Client:
         self,
         *,
         model: str,
-        messages: List[Dict[str, Any]],
+        messages: List[Dict[str, object]],
         max_tokens: int = 2048,
         temperature: float = 0.7,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         return {
             "model": model,
             "content": [{"type": "text", "text": "stubbed anthropic response"}],
@@ -61,11 +61,11 @@ class AsyncAnthropic:
         self,
         *,
         model: str,
-        messages: List[Dict[str, Any]],
+        messages: List[Dict[str, object]],
         max_tokens: int = 2048,
         temperature: float = 0.7,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         await asyncio.sleep(0)  # maintain async contract
         return {
             "model": model,

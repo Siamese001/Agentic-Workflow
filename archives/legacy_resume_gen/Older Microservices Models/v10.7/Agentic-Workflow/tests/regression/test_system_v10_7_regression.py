@@ -8,52 +8,11 @@ from typing import Any, Dict, List
 from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
-from pydantic import BaseModel
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
 
-from core_v10_7 import (
-    BaseAgent,
-    BaseTool,
-    CacheManager,
-    ContextBudgetManager,
-    CircuitBreaker,
-    CircuitBreakerOpenError,
-    ConfigV10_7,
-    FeedbackLogReader,
-    MetricsCollector,
-    PromptTemplateManager,
-    ProposedRulesLoader,
-    ModelAPIError,
-    PydanticSchemaError,
-    ResponseValidator,
-    SemanticValidator,
-    StrategyPlan,
-    WorkflowContext,
-    WorkflowTimeoutError,
-    _format_prompt_with_defaults,
-    exponential_backoff_retry,
-)
-from agent_orchestration_v10_7 import (
-    check_constitution,
-    get_graph_app,
-    load_dynamic_tools,
-    run_classify_complexity,
-    run_constitutional_review,
-)
-from agent_tools_v10_7 import DraftingStrategistTool
-from agent_stacks_v10_7 import (
-    DraftingGuildCoordinator,
-    SpecialistDraftPacket,
-    EvidenceLiaisonPacket,
-    EvidenceClarificationRecord,
-    EvidenceBriefRecord,
-    CritiquePanelPacket,
-    CritiqueFindingRecord,
-    BiasDetectorAgent,
-    RAG_SearchAgent,
-    ToTStrategistAgent,
-)
-from langgraph.errors import NodeExecutionError
-from run_batch_v10_7 import run_batch_async
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_tools_v10_7 import DraftingStrategistTool  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import NodeExecutionError
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.run_batch_v10_7 import run_batch_async  # INVALID: Cannot import from path with hyphens
 
 
 # ---------------------------------------------------------------------------
@@ -76,14 +35,14 @@ class InMemoryRedis:
 
 class FakeCollection:
     def __init__(self) -> None:
-        self.records: Dict[str, Dict[str, Any]] = {}
+        self.records: Dict[str, Dict[str, object]] = {}
 
     def add(
         self,
         *,
         embeddings: List[List[float]],
         documents: List[str],
-        metadatas: List[Dict[str, Any]],
+        metadatas: List[Dict[str, object]],
         ids: List[str],
     ) -> None:
         for doc, metadata, record_id in zip(documents, metadatas, ids):
@@ -94,8 +53,8 @@ class FakeCollection:
         *,
         query_embeddings: List[List[float]],
         n_results: int,
-        where: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        where: Dict[str, object],
+    ) -> Dict[str, object]:
         for record in self.records.values():
             metadata = record["metadata"]
             if all(metadata.get(key) == value for key, value in where.items()):
@@ -392,10 +351,10 @@ async def test_fix_8_metrics_decorator(mock_workflow_context, base_state):
     mock_workflow_context.metrics_collector.record = MagicMock()
     with patch('agent_stacks_v10_7.PIISanitizerAgent.run', return_value={}), \
          patch('agent_stacks_v10_7.BiasDetectorAgent.run', return_value={"bias_detected": False}):
-        from agent_orchestration_v10_7 import run_sanitize_pii
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import run_sanitize_pii  # INVALID: Cannot import from path with hyphens
         await run_sanitize_pii(base_state, mock_workflow_context)
-    mock_workflow_context.metrics_collector.record.assert_any_call("PIISanitizerAgent", "run_pii_sanitizer", ANY, success=True, error=None, metadata=ANY)
-    mock_workflow_context.metrics_collector.record.assert_any_call("BiasDetectorAgent", "run_bias_detector", ANY, success=True, error=None, metadata=ANY)
+    mock_workflow_context.metrics_collector.record.assert_any_call("PIISanitizerAgent", "run_pii_sanitizer", object, success=True, error=None, metadata=ANY)
+    mock_workflow_context.metrics_collector.record.assert_any_call("BiasDetectorAgent", "run_bias_detector", object, success=True, error=None, metadata=ANY)
 
 # ============================================================================
 # SECTION 21: legacy Fix #13 - SEMANTIC CACHING TEST (NEW)

@@ -1,14 +1,14 @@
 from dataclasses import dataclass
-from typing import Dict, Any
-from multi_agent import AgentRole
+from typing import Dict, object
+from archives.legacy_root_folders.meta.multi_agent import AgentRole
 
 
 @dataclass
 class AgentMessage:
     sender: AgentRole
     recipient: AgentRole
-    content: Dict[str, Any]
-    metadata: Dict[str, Any]
+    content: Dict[str, object]
+    metadata: Dict[str, object]
 
 
 def route_to_specialist(graph, message: AgentMessage):

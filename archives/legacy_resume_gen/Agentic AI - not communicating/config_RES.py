@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, ClassVar, Dict, List, Set, Tuple
 
 # Import from models_RES for CompetitiveAnalysisConfig
-from models_RES import CompetitiveAnalysisConfig
+from runtime.compat.models_RES import CompetitiveAnalysisConfig
 
 # --- GEMINI API SETUP ---
 try:
@@ -49,7 +49,7 @@ CACHE_DIR = ROOT_DIR / "cache"
 # JSON CONFIG LOADER (NOW CENTRALIZED)
 # ============================================================================
 
-def _load_json_config(filename: str, description: str, required: bool = True) -> Dict[str, Any]:
+def _load_json_config(filename: str, description: str, required: bool = True) -> Dict[str, object]:
     """
     Loads a JSON config file.
     It now checks the provided path first, then checks relative to DATA_DIR.

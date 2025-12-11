@@ -1,0 +1,303 @@
+.............................F.......................................... [  9%]
+...........................................ssss......................... [ 19%]
+.....FFF..............sssssssssss........FFF...s........................ [ 28%]
+............................FF.......................................... [ 38%]
+...........F.................FssssFFF...............sss................. [ 47%]
+...............F..........................................sss....s.sF.s. [ 57%]
+............FFFFFF...................................................... [ 66%]
+................................................F....................... [ 76%]
+................................FFFFFFFFFFFFFFFFFFFFFFFF........FFFFFFF. [ 85%]
+........................................................................ [ 95%]
+...................................                                      [100%]
+============================== warnings summary ===============================
+tests/unit/agentic_core/test_apply_tests_safety.py::test_apply_tests_safety
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_apply_tests_safety.py::test_apply_tests_safety returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_architectural_compliance.py::test_architectural_compliance
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_architectural_compliance.py::test_architectural_compliance returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_build_tests_orchestration.py::test_build_tests_orchestration
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_build_tests_orchestration.py::test_build_tests_orchestration returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_check_tests_compliance.py::test_check_tests_compliance
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_check_tests_compliance.py::test_check_tests_compliance returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_check_tests_policy.py::test_check_tests_policy
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_check_tests_policy.py::test_check_tests_policy returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_compute_tests_score.py::test_compute_tests_score
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_compute_tests_score.py::test_compute_tests_score returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_constitutional_review.py::test_constitutional_review
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_constitutional_review.py::test_constitutional_review returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_content_inspection.py::test_content_inspection
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_content_inspection.py::test_content_inspection returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_contract_enforcement.py::test_contract_enforcement
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_contract_enforcement.py::test_contract_enforcement returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_coordinate_tests_operations.py::test_coordinate_tests_operations
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_coordinate_tests_operations.py::test_coordinate_tests_operations returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_data_transformation.py::test_data_transformation
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_data_transformation.py::test_data_transformation returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_design_validation.py::test_design_validation
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_design_validation.py::test_design_validation returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_diagnose_tests_issues.py::test_diagnose_tests_issues
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_diagnose_tests_issues.py::test_diagnose_tests_issues returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_enforce_tests_filters.py::test_enforce_tests_filters
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_enforce_tests_filters.py::test_enforce_tests_filters returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_execution_planning.py::test_execution_planning
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_execution_planning.py::test_execution_planning returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_functional_behavior.py::test_functional_behavior
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_functional_behavior.py::test_functional_behavior returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_inspect_tests_quality.py::test_inspect_tests_quality
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_inspect_tests_quality.py::test_inspect_tests_quality returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_intent_parsing.py::test_intent_parsing
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_intent_parsing.py::test_intent_parsing returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_load_tests_planning.py::test_load_tests_planning
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_load_tests_planning.py::test_load_tests_planning returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_log_tests_metrics.py::test_log_tests_metrics
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_log_tests_metrics.py::test_log_tests_metrics returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_manage_tests_parameters.py::test_manage_tests_parameters
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_manage_tests_parameters.py::test_manage_tests_parameters returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_memory_operations.py::test_memory_operations
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_memory_operations.py::test_memory_operations returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_mock_detection.py::test_mock_detection
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_mock_detection.py::test_mock_detection returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_orchestrate_tests_planning.py::test_orchestrate_tests_planning
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_orchestrate_tests_planning.py::test_orchestrate_tests_planning returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_prepare_tests_orchestration.py::test_prepare_tests_orchestration
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_prepare_tests_orchestration.py::test_prepare_tests_orchestration returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_prepare_tests_payload.py::test_prepare_tests_payload
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_prepare_tests_payload.py::test_prepare_tests_payload returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_result_aggregation.py::test_result_aggregation
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_result_aggregation.py::test_result_aggregation returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_safety_rules.py::test_safety_rules
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_safety_rules.py::test_safety_rules returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_semantic_cache_reconstruction.py::test_semantic_cache_reconstruction
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_semantic_cache_reconstruction.py::test_semantic_cache_reconstruction returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_tool_calls.py::test_tool_calls
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_tool_calls.py::test_tool_calls returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_validate_tests_constraints.py::test_validate_tests_constraints
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_validate_tests_constraints.py::test_validate_tests_constraints returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_validate_tests_ethics.py::test_validate_tests_ethics
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_validate_tests_ethics.py::test_validate_tests_ethics returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_validate_tests_schema.py::test_validate_tests_schema
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_validate_tests_schema.py::test_validate_tests_schema returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/agentic_core/test_workflow_orchestration.py::test_workflow_orchestration
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/agentic_core/test_workflow_orchestration.py::test_workflow_orchestration returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/apps_lic/test_lic_msg_executor.py::test_lic_message_generation_executor
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/apps_lic/test_lic_msg_executor.py::test_lic_message_generation_executor returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/apps_lic/test_lic_research_planner.py::test_lic_research_planner
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/apps_lic/test_lic_research_planner.py::test_lic_research_planner returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/apps_rg/test_rg_resume_builder.py::test_rg_resume_builder
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/apps_rg/test_rg_resume_builder.py::test_rg_resume_builder returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/apps_rg/test_rg_safety_planner.py::test_rg_safety_planner
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/apps_rg/test_rg_safety_planner.py::test_rg_safety_planner returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+tests/unit/apps_rg/test_rg_scoring.py::test_rg_scoring
+  C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:170: PytestReturnNotNoneWarning: Test functions should return None, but tests/unit/apps_rg/test_rg_scoring.py::test_rg_scoring returned <class 'dict'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/e2e/admin_flows/test_admin_system_management.py::TestMaintenanceModeE2E::test_scheduled_maintenance_window
+FAILED tests/integration/api/test_provider_routing.py::TestProviderRouting::test_available_providers_with_keys
+FAILED tests/integration/api/test_provider_routing.py::TestProviderRouting::test_client_creation_with_valid_key
+FAILED tests/integration/api/test_provider_routing.py::TestProviderRouting::test_provider_enum_routing
+FAILED tests/integration/cross_domain/test_schema_compatibility.py::TestConfigSchemaCompatibility::test_config_safety_threshold_matches_models
+FAILED tests/integration/cross_domain/test_schema_compatibility.py::TestConfigSchemaCompatibility::test_sdk_registry_categories_are_valid
+FAILED tests/integration/cross_domain/test_schema_compatibility.py::TestValidationModelIntegration::test_gate_decision_with_validation_result
+FAILED tests/integration/workflow/test_full_agentic_loop.py::TestAgenticLoopIntegration::test_vector_store_query_flow
+FAILED tests/integration/workflow/test_full_agentic_loop.py::TestAgenticLoopIntegration::test_multi_provider_fallback_pattern
+FAILED tests/load/spike/test_spike.py::TestSuddenLoadSpike::test_queue_backpressure
+FAILED tests/perf/cost/test_cost_estimation.py::TestTokenEstimation::test_long_message_scaling
+FAILED tests/perf/throughput/test_cache_throughput.py::TestCacheKeyThroughput::test_cache_key_throughput_10k_per_second
+FAILED tests/perf/throughput/test_cache_throughput.py::TestCacheKeyThroughput::test_fingerprint_key_throughput
+FAILED tests/perf/throughput/test_cache_throughput.py::TestBatchProcessingThroughput::test_batch_key_generation
+FAILED tests/unit/agentic_core/test_l3_inspect.py::TestWorkflowStateInspection::test_inspect_resource_usage
+FAILED tests/unit/apps_lic/test_lic_outreach_dag.py::test_outreach_stack_handles_string_draft_from_architect
+FAILED tests/unit/config/test_config.py::TestConfigSingleton::test_config_exists
+FAILED tests/unit/config/test_config.py::TestConfigSingleton::test_config_is_instance
+FAILED tests/unit/config/test_config.py::TestConfigSingleton::test_config_singleton_identity
+FAILED tests/unit/config/test_config.py::TestModelConfig::test_creation - Nam...
+FAILED tests/unit/config/test_config.py::TestRAGConfig::test_creation - NameE...
+FAILED tests/unit/config/test_config.py::TestGovernorConfig::test_creation - ...
+FAILED tests/unit/engine/test_scoring_ops.py::TestScoreThresholds::test_dynamic_threshold
+FAILED tests/unit/runtime/test_cache.py::TestGenerateCacheKey::test_returns_string
+FAILED tests/unit/runtime/test_cache.py::TestGenerateCacheKey::test_different_models_different_keys
+FAILED tests/unit/runtime/test_cache.py::TestGenerateCacheKey::test_determinism
+FAILED tests/unit/runtime/test_cache.py::TestCacheKeyWithFingerprint::test_fingerprint_affects_key
+FAILED tests/unit/runtime/test_cache.py::TestShouldInvalidateCache::test_returns_bool
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_different_models
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_different_messages
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_message_order
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyCollisionRegression::test_no_collision_role_change
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_empty_messages_list
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_unicode_content
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_very_long_content
+FAILED tests/unit/runtime/test_cache_regression.py::TestCacheKeyEdgeCases::test_special_characters_in_content
+FAILED tests/unit/runtime/test_cache_regression.py::TestFingerprintRegression::test_fingerprint_isolation
+FAILED tests/unit/runtime/test_cache_regression.py::TestFingerprintRegression::test_empty_fingerprint
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderEnum::test_provider_values
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderEnum::test_provider_iteration_determinism
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetApiKey::test_success
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetApiKey::test_missing_raises
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetApiKey::test_determinism
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetClient::test_singleton
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetClient::test_missing_key_raises
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderConfig::test_defaults
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderConfig::test_custom
+FAILED tests/unit/schemas/test_models.py::TestAPICallStatus::test_is_enum - N...
+FAILED tests/unit/schemas/test_models.py::TestReasoningConfig::test_creation
+FAILED tests/unit/schemas/test_models.py::TestReasoningConfig::test_determinism
+FAILED tests/unit/schemas/test_models.py::TestValidationResult::test_creation
+FAILED tests/unit/schemas/test_models.py::TestValidationResult::test_invalid_case
+FAILED tests/unit/schemas/test_models.py::TestRAGState::test_creation - NameE...
+FAILED tests/unit/schemas/test_models.py::TestImmutableStagingBuffer::test_creation
+54 failed, 672 passed, 29 skipped, 39 warnings in 3.50s

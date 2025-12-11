@@ -83,7 +83,7 @@ class TestSchemaCompatibility:
 
 
 class TestCrossServiceCommunication:
-    """Integration tests for cross-service communication."""
+    """Integration tests for cross-provider communication."""
 
     def test_event_propagation(self):
         """Integration: Events propagate across services."""

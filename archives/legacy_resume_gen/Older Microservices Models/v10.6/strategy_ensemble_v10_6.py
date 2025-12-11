@@ -3,17 +3,11 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, object, Dict, List, Optional
 
-from core_v10_6 import (
-    BaseAgent,
-    StrategyPlan,
-    PlannerAssessment,
-    ScenarioSimulationResult,
-)
 
 if TYPE_CHECKING:
-    from core_v10_6 import WorkflowContext
+    from archives.legacy_resume_gen.Older Microservices Models.v10.6.core_v10_6 import WorkflowContext
 
 
 def _truncate(text: str, limit: int = 160) -> str:
@@ -28,7 +22,7 @@ class DomainPlannerAgent(BaseAgent):
     async def run_async(
         self,
         plan: StrategyPlan,
-        job_context: Dict[str, Any],
+        job_context: Dict[str, object],
         workflow_id: str,
     ) -> PlannerAssessment:
         job_title = (job_context.get("job_title") or "").lower()
@@ -77,7 +71,7 @@ class RiskAssessorAgent(BaseAgent):
     async def run_async(
         self,
         plan: StrategyPlan,
-        job_context: Dict[str, Any],
+        job_context: Dict[str, object],
         workflow_id: str,
     ) -> PlannerAssessment:
         focus_count = len(plan.focus_areas)
@@ -130,7 +124,7 @@ class FeasibilityAnalystAgent(BaseAgent):
     async def run_async(
         self,
         plan: StrategyPlan,
-        job_context: Dict[str, Any],
+        job_context: Dict[str, object],
         workflow_id: str,
     ) -> PlannerAssessment:
         achievements = plan.key_achievements_to_highlight
@@ -182,7 +176,7 @@ class StrategyScenarioSimulatorAgent(BaseAgent):
     async def run_async(
         self,
         plan: StrategyPlan,
-        job_context: Dict[str, Any],
+        job_context: Dict[str, object],
         workflow_id: str,
     ) -> List[ScenarioSimulationResult]:
         focus_lower = [focus.lower() for focus in plan.focus_areas]
@@ -266,10 +260,10 @@ class StrategyCoordinatorAgent(BaseAgent):
 
     async def run_async(
         self,
-        job_context: Dict[str, Any],
+        job_context: Dict[str, object],
         base_plan: StrategyPlan,
         workflow_id: str,
-        downstream_feedback: Optional[Dict[str, Any]] = None,
+        downstream_feedback: Optional[Dict[str, object]] = None,
     ) -> StrategyPlan:
         plan = base_plan.model_copy(deep=True)
 
@@ -335,7 +329,7 @@ class StrategyCoordinatorAgent(BaseAgent):
     def _apply_feedback(
         self,
         plan: StrategyPlan,
-        downstream_feedback: Optional[Dict[str, Any]],
+        downstream_feedback: Optional[Dict[str, object]],
     ) -> List[str]:
         if not downstream_feedback:
             return []

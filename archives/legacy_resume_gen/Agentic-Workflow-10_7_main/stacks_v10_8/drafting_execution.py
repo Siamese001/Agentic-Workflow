@@ -5,13 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, Optional
 
-from core_v10_7 import BaseAgent, DraftPlan, StrategyPlan
-from agent_stacks_v10_8.components.drafting import (
-    ComplianceEditorAgent,
-    NarrativeStylistAgent,
-    StructureLeadAgent,
-)
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent, DraftPlan, StrategyPlan
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
 
 
 class DraftingExecutionStack(BaseAgent):
@@ -28,8 +23,8 @@ class DraftingExecutionStack(BaseAgent):
         self._adapter = StateAdapterStack(context, debug_mode)
 
     async def run_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
         plan = self._plan_from_state(state)
         bullets = state.get("bullets", {}).get("generated_bullets", [])
@@ -83,7 +78,7 @@ class DraftingExecutionStack(BaseAgent):
         patch["constitutional_review"] = constitutional_review.dict()
         return patch
 
-    def _plan_from_state(self, state: Dict[str, Any]) -> DraftPlan:
+    def _plan_from_state(self, state: Dict[str, object]) -> DraftPlan:
         plan_payload = state.get("draft", {}).get("plan")
         if plan_payload is None:
             raise ValueError("Draft plan missing from state['draft']['plan']")
@@ -91,7 +86,7 @@ class DraftingExecutionStack(BaseAgent):
             return plan_payload
         return DraftPlan.model_validate(plan_payload)
 
-    def _strategy_from_state(self, state: Dict[str, Any], plan: DraftPlan) -> StrategyPlan:
+    def _strategy_from_state(self, state: Dict[str, object], plan: DraftPlan) -> StrategyPlan:
         strategy_payload = state.get("strategy", {}).get("strategy_plan")
         if isinstance(strategy_payload, StrategyPlan):
             base = strategy_payload
@@ -110,9 +105,9 @@ class DraftingExecutionStack(BaseAgent):
 
     def _append_agent_note(
         self,
-        state: Dict[str, Any],
+        state: Dict[str, object],
         plan: DraftPlan,
-        sections: Dict[str, Any],
+        sections: Dict[str, object],
     ) -> list[str]:
         existing = state.get("memory", {}).get("episodic", {}).get("agent_notes") or []
         note = (
@@ -121,9 +116,9 @@ class DraftingExecutionStack(BaseAgent):
         return [*existing, note]
 
     def _apply_plan_structure(
-        self, plan: DraftPlan, sections: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        ordered_sections: Dict[str, Any] = {}
+        self, plan: DraftPlan, sections: Dict[str, object]
+    ) -> Dict[str, object]:
+        ordered_sections: Dict[str, object] = {}
         for section_name in plan.structure:
             key = section_name.lower().replace(" ", "_")
             payload = json.loads(json.dumps(sections.get(key) or sections.get(section_name) or {}))
@@ -136,11 +131,11 @@ class DraftingExecutionStack(BaseAgent):
         return ordered_sections
 
     async def run_from_state_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         """Route drafting orchestration through the L2 stack."""
 
-        from .draft_orchestration import DraftOrchestratorStack
+#         from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_orchestration import DraftOrchestratorStack  # INVALID: Cannot import from path with hyphens
 
         orchestrator = DraftOrchestratorStack(self.context, self.debug_mode)
         return await orchestrator.run_async(

@@ -19,26 +19,14 @@ from datetime import datetime, timedelta
 import functools
 from functools import partial
 from enum import Enum, auto
-from typing import (
-    Any, Callable, ClassVar, Dict, List, 
-    Optional, Set, Tuple, TypeVar, Union
-)
 
 from dataclasses import asdict, dataclass, field, is_dataclass
 
 # Import all refactored modules
-from config import (
-    CONFIG, AppConfig, ReasoningConfig, ContentConstraintsConfig,
-    FilePathsConfig, ArtistConfig, PROMPT_ADDENDUM_CONFIG, DEFAULT_GENERATION_TEMPERATURE
-)
-from models import *
-from utils import *
-import prompts
-from validation import (
-    ValidationEngine, JDEnforcementValidator, AppTrackerQAValidator,
-    PreFlightValidator, ValidationContext, ConstraintFailureClassifier, ValidationRule
-)
-from rag import EnhancedJobDescriptionAnalyzer
+from shared.models import *
+from runtime.shared.utils import *
+import archives.legacy_lic.LIC - Python.prompts
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import EnhancedJobDescriptionAnalyzer  # INVALID: Cannot import from path with hyphens
 
 # Import Gemini if available
 try:

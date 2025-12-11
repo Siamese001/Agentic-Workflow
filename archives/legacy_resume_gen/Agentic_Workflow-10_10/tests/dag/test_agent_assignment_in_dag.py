@@ -3,13 +3,13 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict
 
-from orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
-from orchestration.agent_registry import AgentRegistry
-from config.agent_profile import AgentCard
-from core.models.models import AgentRole
+from archives.legacy_resume_gen.Older Microservices Models.v2.engine import Graph, Node, Edge, DAGExecutor
+from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
+from archives.legacy_root_folders.core.models.models import AgentRole
 
 
-async def _noop(ctx: Dict[str, Any]) -> Dict[str, Any]:
+async def _noop(ctx: Dict[str, object]) -> Dict[str, object]:
     return dict(ctx)
 
 

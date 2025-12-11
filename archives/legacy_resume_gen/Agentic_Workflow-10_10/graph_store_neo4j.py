@@ -23,12 +23,12 @@ class Neo4jGraphStore:
     def close(self) -> None:
         self._driver.close()
 
-    def run(self, cypher: str, params: Dict[str, Any] | None = None) -> List[Any]:
+    def run(self, cypher: str, params: Dict[str, object] | None = None) -> List[Any]:
         with self._driver.session() as session:
             return list(session.run(cypher, params or {}))
 
     def upsert_entity(self, entity_id: str, etype: str, name: str,
-                        metadata: Dict[str, Any] | None = None) -> None:
+                        metadata: Dict[str, object] | None = None) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
         """
@@ -77,7 +77,7 @@ class Neo4jGraphStore:
         object_id: str,
         valid_at: str | None,
         invalid_at: str | None,
-        attrs: Dict[str, Any] | None = None,
+        attrs: Dict[str, object] | None = None,
     ) -> None:
         """
         MERGE a RELATION edge between two Entity nodes with temporal validity.
@@ -88,7 +88,7 @@ class Neo4jGraphStore:
         MERGE (s)-[r:RELATION {id: $rel_id}]->(o)
         SET r.predicate = $predicate
         """
-        params: Dict[str, Any] = {
+        params: Dict[str, object] = {
             "rel_id": rel_id,
             "subject_id": subject_id,
             "object_id": object_id,
@@ -129,7 +129,7 @@ class Neo4jGraphStore:
         cypher = """
         MATCH ()-[r:RELATION {id: $rel_id}]->()
         """
-        params: Dict[str, Any] = {"rel_id": rel_id}
+        params: Dict[str, object] = {"rel_id": rel_id}
 
         if invalid_at is not None:
             cypher += "\nSET r.invalid_at = datetime($invalid_at)"

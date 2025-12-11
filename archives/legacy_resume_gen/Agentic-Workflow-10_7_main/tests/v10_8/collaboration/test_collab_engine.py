@@ -1,6 +1,6 @@
-import types
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 
-from core_v10_7.services import CollaborationEngine
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.services import CollaborationEngine
 
 
 def _make_config(enabled: bool):

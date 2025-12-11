@@ -10,28 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from l5.interfaces import (
-    L5PolicyEnforcerInterface,
-    L5SafetyCheckerInterface,
-    L5RiskAssessmentInterface,
-    L5ComplianceCheckerInterface,
-    L5HitLInterface,
-    L5ResourceGuardInterface,
-    L5AuditLoggerInterface,
-    L5PolicyRequest,
-    L5PolicyResult,
-    PolicyType,
-    Action,
-)
-from l5.safety_validator import SafetyValidator, SafetyViolation
-from core.models.models import (
-    ExecutionContext,
-    SafetyResult,
-    SafetyFinding,
-    RiskLevel,
-    PolicyViolation,
-    HitLRequest,
-)
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.safety_validator import SafetyValidator, SafetyViolation
 
 
 class SafetyValidatorAdapter(L5SafetyCheckerInterface):
@@ -106,7 +85,7 @@ class SafetyValidatorAdapter(L5SafetyCheckerInterface):
             r'exec\s*\(',
         ]
         
-        import re
+        import scripts.check_canonical_structure
         violations = []
         
         for pattern in injection_patterns:
@@ -212,12 +191,12 @@ class PolicyEnforcerAdapter(L5PolicyEnforcerInterface):
         
         return result
     
-    async def validate_policy_config(self, policy_config: Dict[str, Any]) -> bool:
+    async def validate_policy_config(self, policy_config: Dict[str, object]) -> bool:
         """Validate policy configuration."""
         required_keys = ["enabled_policies", "thresholds"]
         return all(key in policy_config for key in required_keys)
     
-    async def _log_policy_event(self, event_type: str, data: Dict[str, Any]) -> None:
+    async def _log_policy_event(self, event_type: str, data: Dict[str, object]) -> None:
         """Log policy-related events."""
         # Simple logging - would integrate with proper audit system
         print(f"POLICY_EVENT: {event_type} - {data}")
@@ -363,7 +342,7 @@ class ComplianceCheckerAdapter(L5ComplianceCheckerInterface):
             metadata={"ethical_guidelines": guidelines},
         )
     
-    async def audit_operation(self, operation: str, data: Any, context: ExecutionContext) -> Dict[str, Any]:
+    async def audit_operation(self, operation: str, data: Any, context: ExecutionContext) -> Dict[str, object]:
         """Create audit trail for operation."""
         audit_entry = {
             "timestamp": datetime.now().isoformat(),
@@ -408,7 +387,7 @@ class HitLAdapter(L5HitLInterface):
         self.pending_requests[request.id] = request
         return request
     
-    async def process_hitl_response(self, request_id: str, response: Dict[str, Any]) -> bool:
+    async def process_hitl_response(self, request_id: str, response: Dict[str, object]) -> bool:
         """Process human response to approval request."""
         if request_id not in self.pending_requests:
             return False
@@ -447,7 +426,7 @@ class ResourceGuardAdapter(L5ResourceGuardInterface):
         }
         self.usage = {}
     
-    async def check_resource_limits(self, resource_usage: Dict[str, Any], limits: Dict[str, Any]) -> bool:
+    async def check_resource_limits(self, resource_usage: Dict[str, object], limits: Dict[str, object]) -> bool:
         """Check if resource usage exceeds limits."""
         for resource, usage_value in resource_usage.items():
             limit_value = limits.get(resource)
@@ -476,9 +455,9 @@ class AuditLoggerAdapter(L5AuditLoggerInterface):
     """Adapter for audit logging operations."""
     
     def __init__(self):
-        self.audit_log: List[Dict[str, Any]] = []
+        self.audit_log: List[Dict[str, object]] = []
     
-    async def log_policy_event(self, event_type: str, data: Dict[str, Any], context: ExecutionContext) -> bool:
+    async def log_policy_event(self, event_type: str, data: Dict[str, object], context: ExecutionContext) -> bool:
         """Log policy-related events."""
         try:
             log_entry = {
@@ -500,7 +479,7 @@ class AuditLoggerAdapter(L5AuditLoggerInterface):
             "description": violation.description,
         }, context)
     
-    async def create_compliance_report(self, time_range: Dict[str, datetime], filters: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_compliance_report(self, time_range: Dict[str, datetime], filters: Dict[str, object]) -> Dict[str, object]:
         """Generate compliance reports."""
         filtered_logs = [
             log for log in self.audit_log
@@ -515,7 +494,7 @@ class AuditLoggerAdapter(L5AuditLoggerInterface):
             "violations": [log for log in filtered_logs if "violation" in log["event_type"]],
         }
     
-    async def export_audit_trail(self, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def export_audit_trail(self, filters: Dict[str, object]) -> List[Dict[str, object]]:
         """Export audit trail data."""
         return [log for log in self.audit_log if self._matches_filters(log, filters)]
     
@@ -524,14 +503,14 @@ class AuditLoggerAdapter(L5AuditLoggerInterface):
         ts = datetime.fromisoformat(timestamp)
         return time_range["start"] <= ts <= time_range["end"]
     
-    def _matches_filters(self, log: Dict[str, Any], filters: Dict[str, Any]) -> bool:
+    def _matches_filters(self, log: Dict[str, object], filters: Dict[str, object]) -> bool:
         """Check if log entry matches filters."""
         for key, value in filters.items():
             if key in log and log[key] != value:
                 return False
         return True
     
-    def _group_by_type(self, logs: List[Dict[str, Any]]) -> Dict[str, int]:
+    def _group_by_type(self, logs: List[Dict[str, object]]) -> Dict[str, int]:
         """Group logs by event type."""
         groups = {}
         for log in logs:

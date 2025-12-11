@@ -31,23 +31,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Tuple, Optional
 
-from core.agents.v10_7_agents import (
-    AgentRole,
-    AgentNode,
-    AgentGraph,
-    summarize_graph,
-    deterministic_vote,     # from agents.py — correct tie-breaking
-)
-from core.models.models import (
-    MultiAgentVote,
-    MultiAgentCouncilResult,
-)
-from meta_profile import (
-    get_planning_bias,
-    get_routing_bias,
-    get_safety_bias,
-    get_qa_bias,
-)
 
 
 # ============================================================================
@@ -156,8 +139,8 @@ class AgentMessage:
     """Meta-layer conceptual message exchanged between agent roles."""
     sender: str
     recipient: str
-    content: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    content: Dict[str, object]
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 def can_delegate(from_role: str, to_role: str) -> bool:
@@ -178,7 +161,7 @@ def can_delegate(from_role: str, to_role: str) -> bool:
     return False
 
 
-def delegation_metadata(sender: str, recipient: str) -> Dict[str, Any]:
+def delegation_metadata(sender: str, recipient: str) -> Dict[str, object]:
     """Return structured metadata describing permitted/blocked delegation."""
     return {
         "from": sender,
@@ -191,7 +174,7 @@ def delegation_metadata(sender: str, recipient: str) -> Dict[str, Any]:
 # SECTION 3 — COUNCIL VOTING (META-ONLY, FIXED)
 # ============================================================================
 
-def council_vote(graph: AgentGraph, role: str, candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+def council_vote(graph: AgentGraph, role: str, candidates: List[Dict[str, object]]) -> Dict[str, object]:
     """
     Deterministic council voting given candidate scores.
 
@@ -239,10 +222,10 @@ class MultiAgentCoordinator:
 
     graph: AgentGraph
 
-    def summarize(self) -> Dict[str, Any]:
+    def summarize(self) -> Dict[str, object]:
         return summarize_graph(self.graph)
 
-    def route_message(self, message: AgentMessage) -> Dict[str, Any]:
+    def route_message(self, message: AgentMessage) -> Dict[str, object]:
         """
         Compute routing metadata for conceptual messages.
         Validates delegation rules and embeds graph summary.
@@ -263,13 +246,13 @@ class MultiAgentCoordinator:
             "graph_summary": self.summarize(),
         }
 
-    def run_council(self, role: str, candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def run_council(self, role: str, candidates: List[Dict[str, object]]) -> Dict[str, object]:
         """Wrapper for council voting."""
         return council_vote(self.graph, role, candidates)
 
     # --- patch helper ------------------------------------------------------
 
-    def build_patch(self, block_name: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def build_patch(self, block_name: str, payload: Dict[str, object]) -> Dict[str, object]:
         """
         Return a dict representing an L4-ready patch:
 
@@ -285,8 +268,8 @@ class MultiAgentCoordinator:
 # ============================================================================
 
 def build_council_result(
-    candidates: List[Dict[str, Any]],
-    winner: Dict[str, Any],
+    candidates: List[Dict[str, object]],
+    winner: Dict[str, object],
 ) -> MultiAgentCouncilResult:
     """
     Build a typed MultiAgentCouncilResult for downstream layers.
@@ -327,11 +310,11 @@ class MultiAgentSimulation:
 
     coordinator: MultiAgentCoordinator
 
-    def simulate_routing(self, sender: str, recipient: str, content: Dict[str, Any]) -> Dict[str, Any]:
+    def simulate_routing(self, sender: str, recipient: str, content: Dict[str, object]) -> Dict[str, object]:
         msg = AgentMessage(sender=sender, recipient=recipient, content=content)
         return self.coordinator.route_message(msg)
 
-    def simulate_council(self, role: str) -> Dict[str, Any]:
+    def simulate_council(self, role: str) -> Dict[str, object]:
         dummy_candidates = [
             {"id": 1, "score": 0.72, "rationale": "synthetic"},
             {"id": 2, "score": 0.65, "rationale": "synthetic"},

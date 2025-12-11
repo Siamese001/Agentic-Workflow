@@ -38,28 +38,16 @@ import logging
 import asyncio
 import os
 import importlib.util
-import inspect
+import agentic_core.L1_cognition.P2_inspect.detect_anomalies_update.inspect
 import time
-from typing import Dict, Any, List, Callable, Awaitable, Tuple, Optional
+from typing import Dict, object, List, Callable, Awaitable, Tuple, Optional
 from functools import wraps, partial
 
 # v10.7: Import from new core
-from core_v10_7 import (
-    WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
-    exponential_backoff_retry, CircuitBreakerOpenError,
-    CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
-    ConfigV10_7, BaseTool,
-    track_metrics,
-    _format_prompt_with_defaults,
-    ConstitutionalReviewResult, # v10.7 (Fix #30)
-    PersonaConsensus,
-    wrap_mcp,
-    MCPClientStub
-)
-from mcp import get_agent
-from langgraph.graph import StateGraph, END
-from langgraph.errors import GraphRecursionError
-from telemetry_v10_7 import log_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_agent  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.telemetry_v10_7 import log_event  # INVALID: Cannot import from path with hyphens
 
 # Make HIL import conditional for environment compatibility
 try:
@@ -73,43 +61,8 @@ except ImportError:
     )
 
 # v10.7: Import from new stacks
-from agent_stacks_v10_7 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    PromptInjectionDetectorAgent,
-    QueryComplexityClassifier,
-    ToTStrategistAgent,
-    PromptEngineerAgent,
-    RAG_SearchAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-    ConstitutionalReviewerAgent, # v10.7 (Fix #30)
-    DraftingGuildCoordinator
-)
 
 # v10.7: Import from new tools file
-from agent_tools_v10_7 import (
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QABiasDetectorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAWordCountValidatorTool,
-    HyDETool,
-    ChromaDBSearchTool,
-    BM25SearchTool,
-    # v10.7 (Fix #8): Import UI tool stubs
-    UIUpdateElementTool,
-    UIFireEventTool
-)
 
 # v10.7: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_7")
@@ -310,7 +263,7 @@ class QAConductorAgent(BaseAgent):
         self.style_guide = "Style: Ensure professional, clear, and unbiased language."
 
     @track_metrics('run_react_qa_conductor')
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Running ReAct QA Conductor (v10.7)...")
 
         max_steps = self.config.agent_stacks.conductor_max_steps
@@ -421,7 +374,7 @@ When finished, output:
 class MetaLearningLoop(BaseAgent):
     """Placeholder MCP agent for telemetry-aligned meta learning."""
 
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("MetaLearningLoop invoked - emitting telemetry only.")
         log_event("MetaLearningLoop", "executed", {"workflow_id": workflow_id})
         return {"meta_learning": {"status": "noop"}}
@@ -842,7 +795,7 @@ def get_graph_app(
     )
     timeout_wrapper = get_timeout_decorator(timeout_seconds)
 
-    def add_async_node(name: str, func: Callable[..., Awaitable[Dict[str, Any]]]):
+    def add_async_node(name: str, func: Callable[..., Awaitable[Dict[str, object]]]):
         workflow.add_node(name, timeout_wrapper(func))
 
     # --- ADD NODES (v10.7: Added new nodes) ---

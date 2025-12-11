@@ -25,15 +25,6 @@ from typing import Any, Dict, List, Optional, Sequence, Callable, Awaitable
 from dataclasses import dataclass
 from enum import Enum
 
-from core.models.models import (
-    WorkflowPlanBundle,
-    ExecutionContext,
-    L2ResultBundle,
-    WorkflowStatus,
-    NodeResult,
-    DAGNode,
-    DAGEdge,
-)
 
 
 class ExecutionMode(Enum):
@@ -50,7 +41,7 @@ class L3OrchestrationRequest:
     plan_bundle: WorkflowPlanBundle
     execution_context: ExecutionContext
     mode: ExecutionMode = ExecutionMode.SEQUENTIAL
-    constraints: Optional[Dict[str, Any]] = None
+    constraints: Optional[Dict[str, object]] = None
 
 
 @dataclass
@@ -59,7 +50,7 @@ class L3OrchestrationResult:
     success: bool
     status: WorkflowStatus
     results: List[NodeResult]
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
     errors: Optional[List[str]] = None
 
 
@@ -143,16 +134,16 @@ class L3ResourceMonitorInterface(ABC):
     """Interface for resource monitoring operations."""
     
     @abstractmethod
-    async def monitor_resource_usage(self, execution_id: str) -> Dict[str, Any]:
+    async def monitor_resource_usage(self, execution_id: str) -> Dict[str, object]:
         """Monitor resource usage for an execution."""
         pass
     
     @abstractmethod
-    async def enforce_resource_limits(self, limits: Dict[str, Any], current_usage: Dict[str, Any]) -> bool:
+    async def enforce_resource_limits(self, limits: Dict[str, object], current_usage: Dict[str, object]) -> bool:
         """Enforce resource limits during execution."""
         pass
     
     @abstractmethod
-    async def optimize_execution_plan(self, nodes: List[DAGNode], resource_constraints: Dict[str, Any]) -> List[DAGNode]:
+    async def optimize_execution_plan(self, nodes: List[DAGNode], resource_constraints: Dict[str, object]) -> List[DAGNode]:
         """Optimize execution plan based on resource constraints."""
         pass

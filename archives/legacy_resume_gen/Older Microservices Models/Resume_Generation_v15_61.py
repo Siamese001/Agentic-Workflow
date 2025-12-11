@@ -6,7 +6,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import shutil
 import signal
 import time
@@ -16,10 +16,6 @@ from datetime import datetime, timedelta
 import functools
 from functools import partial
 from enum import Enum, auto
-from typing import (
-    Any, Callable, ClassVar, Dict, List, 
-    Optional, Set, Tuple, TypeVar, Union
-)
 
 T = TypeVar('T')
 
@@ -52,7 +48,7 @@ except ImportError:
     logging.warning("Warning: google-generativeai package not installed. Web RAG disabled.")
 
 # sklearn is now required
-from sklearn.feature_extraction.text import TfidfVectorizer
+from scripts.utilities.format_scripts_context import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -634,7 +630,7 @@ class GateDecision(Enum):
     PROCEED = "PROCEED"
     HALT = "HALT"
 
-from typing import Dict, Any, Union, Callable
+from typing import Dict, object, Union, Callable
 class ValidationSeverity(Enum):
     INFO = auto()
     LOW = auto()
@@ -1594,7 +1590,7 @@ class PhaseExecutor:
 
 # Inside class PhaseExecutor:
 
-    def _validate_phase_result(self, result: Dict[str, Any], phase_name: str) -> bool:
+    def _validate_phase_result(self, result: Dict[str, object], phase_name: str) -> bool:
         """
         Validate that phase result has required structure.
         v14.50 FIX: Relaxed validation to only check for primary data key,
@@ -1642,10 +1638,10 @@ class PhaseExecutor:
 
 @dataclass
 class PartialRAGResult:
-    phase1_result: Optional[Dict[str, Any]] = None
-    phase2_result: Optional[Dict[str, Any]] = None
-    phase3_result: Optional[Dict[str, Any]] = None
-    phase4_result: Optional[Dict[str, Any]] = None # v8.10: Approach 3
+    phase1_result: Optional[Dict[str, object]] = None
+    phase2_result: Optional[Dict[str, object]] = None
+    phase3_result: Optional[Dict[str, object]] = None
+    phase4_result: Optional[Dict[str, object]] = None # v8.10: Approach 3
 
     phase1_success: bool = False
     phase2_success: bool = False
@@ -1708,7 +1704,7 @@ class RAGTelemetry:
 
     total_duration_seconds: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
 
         return {
             "timestamp": self.timestamp,
@@ -1798,7 +1794,7 @@ class GeminiWebSearchClient:
         self,
         prompt: str,
         phase_name: str = "unknown"
-    ) -> Tuple[Dict[str, Any], int]:
+    ) -> Tuple[Dict[str, object], int]:
         logger = logging.getLogger(__name__)
         logger.info(f"Starting {phase_name}...")
 
@@ -1888,7 +1884,7 @@ class GeminiWebSearchClient:
         attempt: int,
         phase_name: str,
         logger # Added logger parameter
-    ) -> Tuple[Dict[str, Any], int]:
+    ) -> Tuple[Dict[str, object], int]:
         start_time = time.time()
         calls_made = 0 # Track calls within this specific attempt
 
@@ -2007,7 +2003,7 @@ class GeminiWebSearchClient:
 
         return max(0.1, base_delay + jitter)
 
-    def _extract_json(self, text_content: str) -> Dict[str, Any]:
+    def _extract_json(self, text_content: str) -> Dict[str, object]:
         # --- START FIX: Relax initial check ---
         # Allow starting with '{' or '```json' after stripping whitespace
         stripped_content = text_content.strip() if isinstance(text_content, str) else ""
@@ -2088,7 +2084,7 @@ class GeminiWebSearchClient:
             f"Content preview: {text_content[:200]}..."
         )
 
-    def _attempt_json_repair(self, text: str) -> Optional[Dict[str, Any]]:
+    def _attempt_json_repair(self, text: str) -> Optional[Dict[str, object]]:
         repairs = [
             lambda s: re.sub(r',(\s*[}\]])', r'\1', s),
             # Fix single quotes to double quotes
@@ -2117,7 +2113,7 @@ class JDCacheManager:
 
         return hashlib.md5(job_description.encode('utf-8')).hexdigest()
 
-    def get(self, job_description: str) -> Optional[Dict[str, Any]]:
+    def get(self, job_description: str) -> Optional[Dict[str, object]]:
         """Retrieve cached analysis if available and not expired."""
         cache_key = self.get_cache_key(job_description)
         cache_file = os.path.join(self.cache_dir, f"{cache_key}.json")
@@ -2133,7 +2129,7 @@ class JDCacheManager:
         with open(cache_file, 'r') as f:
             return json.load(f)
 
-    def set(self, job_description: str, analysis: Dict[str, Any]):
+    def set(self, job_description: str, analysis: Dict[str, object]):
         cache_key = self.get_cache_key(job_description)
         cache_file = os.path.join(self.cache_dir, f"{cache_key}.json")
 
@@ -2155,7 +2151,7 @@ class WebSearchRAG:
             "Technology": ["Google", "Microsoft", "Meta", "Apple", "Amazon"]
         }
 
-    def phase1_thematic_research(self, job_description: str, mission: RAGMission) -> Dict[str, Any]:
+    def phase1_thematic_research(self, job_description: str, mission: RAGMission) -> Dict[str, object]:
         def main_phase1():
             prompt = self._build_phase1_prompt(job_description, mission)
             return self.client.search_and_analyze(prompt, "Phase 1: Thematic Research")
@@ -2241,7 +2237,7 @@ CRITICAL: Ensure the final output is ONLY the JSON object, starting with {{ and 
         self,
         job_description: str,
         mission: RAGMission
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Phase 2: Extract how real professionals present themselves.
         """
@@ -2322,7 +2318,7 @@ CRITICAL: Return ONLY valid JSON. Extract REAL patterns from profiles. Ensure al
         self,
         job_description: str,
         mission: RAGMission
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Phase 3: Analyze competitive landscape and differentiators.
         """
@@ -2434,7 +2430,7 @@ CRITICAL: Ensure the final output is ONLY the JSON object, starting with {{ and 
         return [p for p in peers if p.lower() not in company_name.lower()][:5]
         # --- END REFACTOR ---
 
-    def phase4_narrative_mining(self, mission: RAGMission) -> Dict[str, Any]:
+    def phase4_narrative_mining(self, mission: RAGMission) -> Dict[str, object]:
         def main_phase4():
             prompt = self._build_phase4_prompt(mission)
             return self.client.search_and_analyze(prompt, "Phase 4: Narrative Mining")
@@ -2920,7 +2916,7 @@ CRITICAL: Return only the JSON object. Do not include any preamble, explanation,
         # Assuming Enum is imported from enum
 
         # Helper for recursive conversion (can be defined outside or inside)
-        def safe_to_dict(obj: Any) -> Any:
+        def safe_to_dict(obj: object) -> Any:
             """Recursively convert dataclass instances to dictionaries."""
             if obj is None:
                 return {}
@@ -3337,8 +3333,8 @@ class ClerkExtractor:
 
         return metrics
 
-import re
-from typing import List, Dict, Any, Optional
+import scripts.check_canonical_structure
+from typing import List, Dict, object, Optional
 
 
 class DataEnricher:
@@ -3507,7 +3503,7 @@ class ArtistGenerator:
         },
     }
 
-    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, Any]]:
+    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, object]]:
         """Parses pre-loaded generation specs and reconstructs Python objects."""
         try:
             reconstructed_specs = {}
@@ -4689,10 +4685,10 @@ class ImmutableStagingBuffer:
     def data(self) -> Dict:
         return copy.deepcopy(self._data)
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging # Ensure logging is imported
-from typing import Dict, List, Optional, Any, Tuple # Ensure needed types are imported
+from typing import Dict, List, Optional, Union, Tuple # Ensure needed types are imported
 
 class TextSanitizer:
     FORBIDDEN_DASHES: str = (
@@ -4905,9 +4901,9 @@ def calculate_signal_score(text_content, thematic_analysis: ThematicAnalysis):
 
 from collections import defaultdict # Added for error message formatting
 import copy # Added for deepcopy in prepare_validation_data
-import re # Ensure re is imported for validation methods
+import scripts.check_canonical_structure
 from datetime import datetime # Ensure datetime is imported for validation methods
-from typing import Dict, List, Optional, Any, Tuple, Set, Union # Ensure types are imported
+from typing import Dict, List, Optional, Union, Tuple, Set, Union # Ensure types are imported
 from collections import defaultdict # Added for error message formatting
 import logging # Ensure logging is imported
 
@@ -4930,7 +4926,7 @@ class ValidationContext:
             self._dup_detector = DuplicateDetector() # Assuming DuplicateDetector is defined
         return self._dup_detector
 
-    def _calculate_metric_details(self, section_enum: ResumeSection, metrics_to_calc: List[Tuple[str, Callable]], constraints: Dict[str, Any]) -> Dict:
+    def _calculate_metric_details(self, section_enum: ResumeSection, metrics_to_calc: List[Tuple[str, Callable]], constraints: Dict[str, object]) -> Dict:
         """
         Generic helper to calculate and cache metrics for a given section.
         """
@@ -6805,9 +6801,9 @@ class WorkflowOrchestrator:
 
         temperature_schedule = [1.0, 0.8, 0.6, 0.4, 0.2] # Example schedule
         max_attempts = len(temperature_schedule)
-        final_generation_state: Dict[str, Any] = {}
+        final_generation_state: Dict[str, object] = {}
         locked_section_temps: Dict[ResumeSection, float] = {}
-        copied_content: Dict[str, Any] = {}
+        copied_content: Dict[str, object] = {}
 
         # Determine all LLM-generated sections using the ArtistGenerator spec
         all_llm_sections = {
@@ -6867,7 +6863,7 @@ class WorkflowOrchestrator:
             self.logger.info(f"    Sections to generate: {[s.name for s in sections_to_generate]}")
             attempt_start_time = time.time()
             calls_this_attempt = 0
-            newly_generated_content: Dict[str, Any] = {} # Initialize for this attempt
+            newly_generated_content: Dict[str, object] = {} # Initialize for this attempt
 
             # --- Generation ---
             try:
@@ -7562,7 +7558,7 @@ class WorkflowOrchestrator:
         except NameError: self.logger.warning("RAGConfig class not found, using default settings for JD Analyzer.")
         return EnhancedJobDescriptionAnalyzer(self.master_resume, enable_web_search=True, config=rag_config)
 
-    def _create_checkpoint( self, hop_id: str, hop_name: str, validation_results: List[ValidationResult], output_data: Any, start_time: datetime, metadata: Optional[Dict[str, Any]] = None, error_message: Optional[str] = None ) -> HopCheckpoint:
+    def _create_checkpoint( self, hop_id: str, hop_name: str, validation_results: List[ValidationResult], output_data: Any, start_time: datetime, metadata: Optional[Dict[str, object]] = None, error_message: Optional[str] = None ) -> HopCheckpoint:
         end_time = datetime.now(); duration = (end_time - start_time).total_seconds(); status = HopStatus.PASS
         if error_message:
             status = HopStatus.FAIL
@@ -7864,23 +7860,23 @@ class HopCheckpoint:
     timestamp_end: str
     output_hash: Optional[str] = None
     validation_results: List[ValidationResult] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     error_message: Optional[str] = None
 
 class HopExecutionError(Exception): pass
 
 class StagingBufferError(Exception): pass
 
-import re
+import scripts.check_canonical_structure
 import logging
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime
 import json
 from collections import defaultdict
 
-import re
+import scripts.check_canonical_structure
 import logging
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Dict, List, Optional, Union, Tuple, Union
 from datetime import datetime
 import json
 from collections import defaultdict

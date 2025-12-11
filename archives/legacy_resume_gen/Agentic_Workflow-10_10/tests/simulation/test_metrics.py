@@ -1,4 +1,4 @@
-from eval.simulation.metrics import compute_collaboration_score, compute_conflict_index
+from archives.legacy_root_folders.eval.simulation.metrics import compute_collaboration_score, compute_conflict_index
 
 
 class _DummyOutcome:

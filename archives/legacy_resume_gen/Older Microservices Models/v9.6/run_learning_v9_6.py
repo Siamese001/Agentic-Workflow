@@ -12,21 +12,13 @@ import logging
 import os
 import uuid
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 from collections import defaultdict
 
 
 # Imports from its *own* versioned files (v9.6)
-from core_v9_6 import (
-    CONFIG, BaseAgent, get_model_client, MetaGraphState,
-    META_LOG_READER_SYSTEM_PROMPT,
-    META_PATTERN_FINDER_SYSTEM_PROMPT,
-    META_HYPOTHESIS_GENERATOR_SYSTEM_PROMPT,
-    META_PROPOSAL_DRAFTER_SYSTEM_PROMPT,
-    META_PROPOSAL_CRITIQUE_SYSTEM_PROMPT
-)
-from main_v9_6 import setup_logging
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v9.6.main_v9_6 import setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger("meta_learner_v9_6")
@@ -62,7 +54,7 @@ class PatternFinderAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.5-flash")
     
-    def run(self, raw_logs: Dict[str, str]) -> List[Dict[str, Any]]:
+    def run(self, raw_logs: Dict[str, str]) -> List[Dict[str, object]]:
         self.log_info(f"Analyzing log data to find patterns...")
         if not raw_logs["feedback_log"] and not raw_logs["preference_log"]:
             self.log_warning("No log data found. No patterns to find.")

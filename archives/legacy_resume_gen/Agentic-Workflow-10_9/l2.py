@@ -41,45 +41,16 @@ This refactor aligns L2 with:
 from __future__ import annotations
 
 import asyncio
-import re
+import scripts.check_canonical_structure
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Callable, Awaitable, Sequence
 
-from models import (
-    PlanObject,
-    ExecutionResult,
-    StrategyExecutionPayload,
-    StrategyBranch,
-    RAGExecutionPayload,
-    RAGDocument,
-    RAGExternalStats,
-    BulletExecutionPayload,
-    DraftExecutionPayload,
-    QAExecutionPayload,
-    QAFinding,
-    QAReport,
-    SafetyExecutionPayload,
-    SafetyIssue,
-    SafetyReport,
-    HILExecutionPayload,
-    HILPrompt,
-    HILResponse,
-    MetaLearningExecutionPayload,
-    MetaLearningSnapshot,
-    MetaLearningFinding,
-)
 
-from exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
-from retrieval import Retrieval
-from ranking import Ranking
-from meta_profile import (
-    get_routing_bias,
-    get_planning_bias,
-    get_qa_bias,
-    get_safety_bias,
-)
+from shared.exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
+from archives.legacy_root_folders.retrievers.retrieval import Retrieval
+from archives.legacy_root_folders.meta.ranking import Ranking
 
-AsyncExecutorFn = Callable[[PlanObject, Dict[str, Any]], Awaitable[ExecutionResult[Any]]]
+AsyncExecutorFn = Callable[[PlanObject, Dict[str, object]], Awaitable[ExecutionResult[Any]]]
 
 
 # =============================================================================
@@ -108,7 +79,7 @@ class ExecutionAgent(ABC):
     """
 
     @abstractmethod
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[Any]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[Any]:
         """
         Execute a plan against the current state and return an ExecutionResult
         with a typed payload.
@@ -147,7 +118,7 @@ class StrategyExecutor(ExecutionAgent):
         • Exposing metadata for multi-agent councils and self-correction surfaces.
     """
 
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[StrategyExecutionPayload]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[StrategyExecutionPayload]:
         branches_data = plan.get("branches") or []
         branches: List[StrategyBranch] = []
         for b in branches_data:
@@ -219,7 +190,7 @@ class RAGExecutor(ExecutionAgent):
         • routing_bias.prefer_robust_retrieval → emphasize HYDE and hybrid ranking.
     """
 
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[RAGExecutionPayload]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[RAGExecutionPayload]:
         routing_bias = get_routing_bias()
 
         retrieval_cfg = plan.get("retrieval") or {}
@@ -237,8 +208,8 @@ class RAGExecutor(ExecutionAgent):
 
         complexity = str(plan.get("complexity", "moderate"))
 
-        def _run_once(current_queries: Sequence[str]) -> (List[RAGDocument], RAGExternalStats, Dict[str, Any]):
-            hyde_docs: List[Dict[str, Any]] = []
+        def _run_once(current_queries: Sequence[str]) -> (List[RAGDocument], RAGExternalStats, Dict[str, object]):
+            hyde_docs: List[Dict[str, object]] = []
             if enable_hyde:
                 for q in current_queries:
                     hyde_docs.append(
@@ -249,7 +220,7 @@ class RAGExecutor(ExecutionAgent):
                         }
                     )
 
-            raw_docs: List[Dict[str, Any]] = []
+            raw_docs: List[Dict[str, object]] = []
             for q in current_queries:
                 raw_docs.append(
                     {
@@ -343,7 +314,7 @@ class BulletExecutor(ExecutionAgent):
         • Metric hints from resume.
     """
 
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[BulletExecutionPayload]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[BulletExecutionPayload]:
         framework = plan.get("framework") or {}
         pattern = str(framework.get("pattern", "action_metric_outcome"))
         seniority = str(framework.get("seniority_scaling", "mid"))
@@ -430,7 +401,7 @@ class DraftingExecutor(ExecutionAgent):
         • qa_bias.recent_failures  → emphasize clarity and structure.
     """
 
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[DraftExecutionPayload]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[DraftExecutionPayload]:
         planning_bias = get_planning_bias()
         routing_bias = get_routing_bias()
         qa_bias = get_qa_bias()
@@ -560,7 +531,7 @@ class QAExecutor(ExecutionAgent):
         • qa_bias.recent_failures → keep "recent_failures" flag for downstream.
     """
 
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[QAExecutionPayload]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[QAExecutionPayload]:
         qa_bias = get_qa_bias()
 
         checks: List[str] = [str(c) for c in plan.get("checks", [])]
@@ -657,7 +628,7 @@ class SafetyExecutor(ExecutionAgent):
         • safety_bias.heightened_caution → lower thresholds, more sensitive.
     """
 
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[SafetyExecutionPayload]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[SafetyExecutionPayload]:
         safety_bias = get_safety_bias()
 
         content = ""
@@ -748,13 +719,13 @@ class PromptEngineeringExecutor(ExecutionAgent):
     consumption by the prompt layer.
     """
 
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[Dict[str, Any]]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[Dict[str, object]]:
         sections = plan.get("sections") or []
         injection_types = plan.get("injection_types") or []
         taxonomy = plan.get("taxonomy") or {"version": "v1"}
 
         target_modes: List[str] = [str(m) for m in plan.get("target_modes", [])]
-        constraints: Dict[str, Any] = dict(plan.get("constraints", {}))
+        constraints: Dict[str, object] = dict(plan.get("constraints", {}))
 
         envelopes_meta = {
             mode: {
@@ -800,7 +771,7 @@ class HILExecutor(ExecutionAgent):
     system handles that and writes back the HILResponse.
     """
 
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[HILExecutionPayload]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[HILExecutionPayload]:
         question_template = str(plan.get("question_template", "")).strip() or (
             "Please review this artifact for correctness, tone, and completeness."
         )
@@ -861,7 +832,7 @@ class MetaLearningExecutor(ExecutionAgent):
     while keeping the implementation deterministic and local.
     """
 
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[MetaLearningExecutionPayload]:
+    async def execute(self, plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[MetaLearningExecutionPayload]:
         workflow_id = str(state.get("workflow_id", plan.get("workflow_id", "unknown_workflow")))
         signals: List[str] = [str(s) for s in plan.get("signals", [])]
 
@@ -933,7 +904,7 @@ class MetaLearningExecutor(ExecutionAgent):
 # =============================================================================
 
 
-async def route_executor(plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[Any]:
+async def route_executor(plan: PlanObject, state: Dict[str, object]) -> ExecutionResult[Any]:
     """
     Unified L2 routing function.
 

@@ -2,7 +2,7 @@
 # Version: 16.32 - Centralized Path Management
 # Smart launcher with resume capability and argparse interface
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import os
 import sys
@@ -10,12 +10,12 @@ from datetime import datetime
 
 # Import the main components from the refactored modules
 try:
-    from workflow_RES import (
+    from archives.legacy_resume_gen.Agentic AI - not communicating.workflow_RES import WorkflowOrchestrator, MASTER_RESUME_DATA, __version__
         WorkflowOrchestrator, 
         MASTER_RESUME_DATA, 
         __version__
     )
-    from config_RES import CONFIG, OUTPUT_DIR, DATA_DIR
+    from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, OUTPUT_DIR, DATA_DIR
 except ImportError as e:
     print(f"Error: Could not import from refactored modules (workflow_RES.py, config_RES.py)")
     print(f"Details: {e}")
@@ -77,7 +77,7 @@ def list_available_runs():
                 title = manifest.get('job_input', {}).get('job_title', 'Unknown')
                 start_time = manifest.get('start_time_utc', 'Unknown')
                 print(f"  {run_id}: {company} - {title} (Started: {start_time})")
-            except:
+            except (ValueError, TypeError, KeyError):
                 print(f"  {run_id}: (manifest unreadable)")
         else:
             print(f"  {run_id}: (no manifest)")

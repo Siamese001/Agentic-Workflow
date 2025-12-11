@@ -12,10 +12,10 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 
-SAFETY_LOG: List[Dict[str, Any]] = []
+SAFETY_LOG: List[Dict[str, object]] = []
 
 
-def log_safety_decision(payload: Dict[str, Any], patch: Dict[str, Any]) -> None:
+def log_safety_decision(payload: Dict[str, object], patch: Dict[str, object]) -> None:
     """Deterministic stub for logging safety gateway decisions."""
 
     SAFETY_LOG.append({"payload": payload, "patch": patch, "ts": datetime.utcnow().isoformat()})

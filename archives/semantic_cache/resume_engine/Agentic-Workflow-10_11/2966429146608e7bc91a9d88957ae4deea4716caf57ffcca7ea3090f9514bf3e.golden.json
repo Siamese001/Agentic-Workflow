@@ -1,0 +1,9 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom eval.golden_state.models import GoldenStateTestCase, JudgeVerdict\ndef evaluate_output(test_case: GoldenStateTestCase, agent_output: str) -> JudgeVerdict:\n\"\"\"Deterministic judge over agent output for a given test case.\nThis initial implementation is intentionally simple and does not\ncall any language models. It uses string heuristics to produce a\ncoarse score in [0.0, 1.0].\n\"\"\"\ntext = (agent_output or \"\").strip().lower()\nif not text:\nreturn JudgeVerdict(\nscore=0.0,\nrating=\"fail\",\nexplanation=\"Empty output.\",\n)\nexpected = (test_case.expected_behavior or \"\").lower()\nkey_ok = \"professional\" in expected and \"professional\" in text\nif key_ok:\nreturn JudgeVerdict(\nscore=1.0,\nrating=\"pass\",\nexplanation=\"Output contains key expected behavior signal.\",\n)\nreturn JudgeVerdict(\nscore=0.5,\nrating=\"borderline\",\nexplanation=\"Output is non-empty but did not hit key expected signals.\",\n)",
+  "normalized_signature": "func:evaluate_output",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:evaluate_output",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

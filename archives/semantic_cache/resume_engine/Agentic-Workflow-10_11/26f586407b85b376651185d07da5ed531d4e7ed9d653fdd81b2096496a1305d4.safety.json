@@ -1,0 +1,14 @@
+{
+  "safety_checks": [
+    "input_validation"
+  ],
+  "policy_compliance": [],
+  "security_patterns": [
+    "cryptography",
+    "auth"
+  ],
+  "data_handling": [],
+  "access_controls": [
+    "rbac"
+  ]
+}

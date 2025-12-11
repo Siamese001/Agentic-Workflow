@@ -101,7 +101,7 @@ class DictBacked:
     layers should convert into typed payloads where appropriate.
     """
 
-    def __init__(self, data: Optional[Dict[str, Any]] = None):
+    def __init__(self, data: Optional[Dict[str, object]] = None):
         object.__setattr__(self, "_data", data or {})
 
     # --- attribute access -----------------------------------------------------
@@ -125,12 +125,12 @@ class DictBacked:
     def get(self, key: str, default: Any = None) -> Any:
         return self._data.get(key, default)
 
-    def update(self, other: Dict[str, Any]) -> None:
+    def update(self, other: Dict[str, object]) -> None:
         self._data.update(other)
 
     # --- serialization --------------------------------------------------------
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return copy.deepcopy(self._data)
 
     def deep_clone(self) -> "DictBacked":
@@ -174,7 +174,7 @@ class PlanObject(DictBacked):
     convert into typed payloads when needed.
     """
 
-    def __init__(self, data: Optional[Dict[str, Any]] = None):
+    def __init__(self, data: Optional[Dict[str, object]] = None):
         super().__init__(data or {})
 
     def copy(self) -> "PlanObject":
@@ -224,9 +224,9 @@ class StrategyExecutionPayload:
     aggregated_rationale: str = ""
     complexity: Optional[str] = None
     surfaces: List[SelfCorrectionSurface] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         d = asdict(self)
         # Convert enums to values
         d["surfaces"] = [s.value for s in self.surfaces]
@@ -247,7 +247,7 @@ class RAGDocument:
     source: str = "synthetic"
     score: float = 0.0
     rank: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -264,7 +264,7 @@ class RAGExternalStats:
     latency_ms: float
     cache_hit: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)
 
 
@@ -279,9 +279,9 @@ class RAGExecutionPayload:
     queries: List[str] = field(default_factory=list)
     documents: List[RAGDocument] = field(default_factory=list)
     external_stats: Optional[RAGExternalStats] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "queries": list(self.queries),
             "documents": [asdict(doc) for doc in self.documents],
@@ -305,9 +305,9 @@ class BulletExecutionPayload:
 
     bullets: List[str] = field(default_factory=list)
     sections: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)
 
 
@@ -324,11 +324,11 @@ class DraftExecutionPayload:
     Typically returned as ExecutionResult.payload for "drafting".
     """
 
-    sections: List[Dict[str, Any]] = field(default_factory=list)
+    sections: List[Dict[str, object]] = field(default_factory=list)
     full_text: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)
 
 
@@ -344,7 +344,7 @@ class QAFinding:
     check_id: str
     severity: str
     message: str
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -359,9 +359,9 @@ class QAReport:
     passed: bool = False
     summary: str = ""
     shadow_validation: bool = False
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)
 
 
@@ -375,7 +375,7 @@ class QAExecutionPayload:
 
     report: QAReport
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {"report": self.report.to_dict()}
 
 
@@ -393,7 +393,7 @@ class SafetyIssue:
     category: str
     message: str
     span: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -408,9 +408,9 @@ class SafetyReport:
     blocked: bool = False
     redacted_text: Optional[str] = None
     summary: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "issues": [asdict(issue) for issue in self.issues],
             "blocked": self.blocked,
@@ -430,7 +430,7 @@ class SafetyExecutionPayload:
 
     report: SafetyReport
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {"report": self.report.to_dict()}
 
 
@@ -445,7 +445,7 @@ class HILPrompt:
 
     prompt_id: str
     instructions: str
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -455,7 +455,7 @@ class HILResponse:
     prompt_id: str
     accepted: bool
     feedback: str = ""
-    edits: Dict[str, Any] = field(default_factory=dict)
+    edits: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -469,7 +469,7 @@ class HILExecutionPayload:
     prompt: HILPrompt
     response: Optional[HILResponse] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "prompt": asdict(self.prompt),
             "response": asdict(self.response) if self.response else None,
@@ -488,7 +488,7 @@ class MetaLearningFinding:
     finding_id: str
     category: str
     message: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -499,10 +499,10 @@ class MetaLearningSnapshot:
     """
 
     findings: List[MetaLearningFinding] = field(default_factory=list)
-    raw_logs: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    raw_logs: Dict[str, object] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)
 
 
@@ -516,7 +516,7 @@ class MetaLearningExecutionPayload:
 
     snapshot: MetaLearningSnapshot
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {"snapshot": self.snapshot.to_dict()}
 
 
@@ -533,7 +533,7 @@ class MultiAgentVote:
     decision: str
     confidence: float = 0.0
     rationale: str = ""
-    payload: Dict[str, Any] = field(default_factory=dict)
+    payload: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -548,9 +548,9 @@ class MultiAgentCouncilResult:
     aggregated_decision: str = ""
     aggregated_confidence: float = 0.0
     rationale: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "votes": [asdict(v) for v in self.votes],
             "aggregated_decision": self.aggregated_decision,
@@ -572,9 +572,9 @@ class ArbitrationDecision:
 
     action: str
     reason: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "action": self.action,
             "reason": self.reason,
@@ -594,9 +594,9 @@ class CheckpointInfo:
     checkpoint_id: str
     phase: WorkflowPhase
     created_at: float  # epoch seconds
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         d = asdict(self)
         d["phase"] = self.phase.value
         return d
@@ -618,7 +618,7 @@ class RouteTraceEntry:
     model: Optional[str] = None
     endpoint: Optional[str] = None
     rationale: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -633,7 +633,7 @@ class CorrectionJournalEntry:
     surface: str
     message: str
     created_at: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 # =============================================================================
@@ -663,14 +663,14 @@ class ExecutionResult(Generic[PayloadT]):
     payload: Optional[PayloadT] = None
     errors: List[str] = field(default_factory=list)
     model: Optional[str] = None
-    usage: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    usage: Dict[str, object] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
     @property
     def ok(self) -> bool:
         return self.status == "success" and not self.errors
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         if self.payload is None:
             payload = None
         elif hasattr(self.payload, "to_dict"):
@@ -715,10 +715,10 @@ class WorkflowState:
     phase: WorkflowPhase
     node_statuses: Dict[str, NodeStatus]
     summary: str
-    result: Dict[str, Any]
+    result: Dict[str, object]
     errors: List[str]
     trace_id: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 # =============================================================================
@@ -762,9 +762,9 @@ class TraceSpan:
 
     name: str
     duration_ms: float
-    tags: Dict[str, Any] = field(default_factory=dict)
+    tags: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)
 
 
@@ -778,7 +778,7 @@ class PhaseMetadata:
 
     phase: str
     history: List[str] = field(default_factory=list)
-    notes: Dict[str, Any] = field(default_factory=dict)
+    notes: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return asdict(self)

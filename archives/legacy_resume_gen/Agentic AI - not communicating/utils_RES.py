@@ -7,7 +7,7 @@ import hashlib
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import subprocess
 import uuid
 from collections import defaultdict
@@ -22,7 +22,7 @@ except ImportError:
     genai = None # Add a placeholder for type hints
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -31,12 +31,8 @@ except ImportError:
     cosine_similarity = None # Placeholder
 
 # Import required classes from other modules
-from models_RES import ThematicAnalysis, ValidationResult, ValidationSeverity
+from runtime.compat.models_RES import ThematicAnalysis, ValidationResult, ValidationSeverity
 # --- FIX: Import DATA_DIR and CACHE_DIR ---
-from config_RES import (
-    ReasoningConfig, RAGConfig, PROMPT_ADDENDUM_CONFIG, 
-    DEFAULT_GENERATION_TEMPERATURE, DATA_DIR, CACHE_DIR
-)
 
 # ============================================================================
 # FILE SYSTEM UTILITIES
@@ -343,7 +339,7 @@ class TextSanitizer:
 
         return text.strip()
 
-    def sanitize_buffer(self, buffer: 'ImmutableStagingBuffer') -> Tuple[List[ValidationResult], Dict[str, Any]]:
+    def sanitize_buffer(self, buffer: 'ImmutableStagingBuffer') -> Tuple[List[ValidationResult], Dict[str, object]]:
         """
         Recursively sanitizes all string values within the staging buffer's data.
         
@@ -518,7 +514,7 @@ def build_reasoning_prompt_addendum(config: ReasoningConfig) -> str:
 
 # --- START: ADDED MISSING FUNCTIONS ---
 
-def reasoning_config_to_api_params(config: ReasoningConfig) -> Dict[str, Any]:
+def reasoning_config_to_api_params(config: ReasoningConfig) -> Dict[str, object]:
     """
     Converts a ReasoningConfig object into a dictionary for the Gemini API.
     
@@ -734,7 +730,7 @@ class CodeInterpreterTool:
             'min': min,
         }
     
-    def execute(self, code: str, context: Optional[Dict[str, Any]] = None) -> Any:
+    def execute(self, code: str, context: Optional[Dict[str, object]] = None) -> Any:
         """
         Execute Python code in a sandboxed environment.
         

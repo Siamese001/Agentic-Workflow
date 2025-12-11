@@ -8,19 +8,19 @@ import os
 import random
 from typing import Any, Dict, List, Optional
 
-from mcp import get_tool
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_tool  # INVALID: Cannot import from path with hyphens
 
-from .config import ConfigV10_7
-from .exceptions import ModelAPIError
-from .services import CacheManager, ContextBudgetManager, CostTracker, MetricsCollector, track_metrics
+from shared.reasoning_config import ConfigV10_7
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.exceptions import ModelAPIError
+from apps_shared.pipeline.synthesis.use_tools.invoke_pipeline_services import CacheManager, ContextBudgetManager, CostTracker, MetricsCollector, track_metrics
 
 try:  # pragma: no cover - optional provider SDKs
 <<<<<<< HEAD
-    import anthropic
+    import data.sdks_mcps.reference_clients.minimal_anthropic
 except ImportError:  # pragma: no cover - provider optional
     anthropic = None
 =======
-    from anthropic import AsyncAnthropic as _AsyncAnthropic
+    from data.sdks_mcps.reference_clients.minimal_anthropic import AsyncAnthropic as _AsyncAnthropic
 except ImportError:  # pragma: no cover - provider optional
     try:  # pragma: no cover - provider optional
         import anthropic as _anthropic_module
@@ -70,7 +70,7 @@ class AsyncBaseModelClient:
         if "gpt-" in self.model_name: return "openai"
         return "unknown"
 
-    async def _run_idempotency_check(self, cached_response: Dict[str, Any], 
+    async def _run_idempotency_check(self, cached_response: Dict[str, object], 
                                      messages: List[Dict[str, str]], temperature: float,
                                      response_format: Optional[str] = None):
         """v10.7 (Fix #29): Runs a 'shadow call' to check for cache drift."""
@@ -99,7 +99,7 @@ class AsyncBaseModelClient:
     @track_metrics('AsyncBaseModelClient') # v10.7 (Fix #15): Track latency
     async def chat_completion_async(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
         provider = self._get_provider_name()
         
@@ -123,14 +123,14 @@ class AsyncBaseModelClient:
 
     async def _internal_api_call(self, messages: List[Dict[str, str]], 
                                  temperature: float = 0.7,
-                                 response_format: Optional[str] = None) -> Dict[str, Any]:
+                                 response_format: Optional[str] = None) -> Dict[str, object]:
         """Subclasses must implement the actual API call logic here."""
         raise NotImplementedError
 
 class AnthropicAsyncClient(AsyncBaseModelClient):
     async def _internal_api_call(self, messages: List[Dict[str, str]],
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
 <<<<<<< HEAD
         if anthropic is None or not hasattr(anthropic, "Client"):
             raise ModelAPIError("Anthropic library not installed. Run 'pip install anthropic'")
@@ -174,7 +174,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
 class GeminiAsyncClient(AsyncBaseModelClient):
     async def _internal_api_call(self, messages: List[Dict[str, str]], 
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         if genai is None:
             raise ModelAPIError("Google GenerativeAI library not installed. Run 'pip install google-generativeai'")
         try:
@@ -198,7 +198,7 @@ class GeminiAsyncClient(AsyncBaseModelClient):
 class OpenAIAsyncClient(AsyncBaseModelClient):
     async def _internal_api_call(self, messages: List[Dict[str, str]],
                                    temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+                                   response_format: Optional[str] = None) -> Dict[str, object]:
         if AsyncOpenAI is None:
             raise ModelAPIError("OpenAI library not available. Install 'openai' to enable this client.")
         try:

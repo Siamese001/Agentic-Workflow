@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Anthropic client adapter for v10_10.\nThis module is the ONLY place where the Anthropic SDK is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\nfrom __future__ import annotations\nimport os\nfrom typing import Any, List\ndef run_llm_anthropic(\nmodel: str,\nprompt: str,\n*,\ntemperature: float,\nmax_tokens: int,\ntimeout_s: int,\n) -> str:\n\"\"\"Run an Anthropic message completion and return the response text.\"\"\"\ntry:\nimport anthropic # type: ignore\nexcept ImportError as exc: # pragma: no cover - optional dependency\nraise ImportError(\"anthropic package not installed\") from exc\napi_key = os.getenv(\"ANTHROPIC_API_KEY\")\nif not api_key:\nraise RuntimeError(\"ANTHROPIC_API_KEY must be set for Anthropic provider\")\nclient = anthropic.Anthropic(api_key=api_key)\nresp: Any = client.messages.create(\nmodel=model,\nmessages=[{\"role\": \"user\", \"content\": prompt}],\ntemperature=temperature,\nmax_tokens=max_tokens,\ntimeout=timeout_s,\n)\nparts: List[str] = []\nfor block in getattr(resp, \"content\", []) or []:\nif getattr(block, \"type\", None) == \"text\":\nparts.append(getattr(block, \"text\", \"\"))\nreturn \"\\n\".join(parts)",
+  "normalized_signature": "func:run_llm_anthropic",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:run_llm_anthropic",
+  "test_coverage": []
+}

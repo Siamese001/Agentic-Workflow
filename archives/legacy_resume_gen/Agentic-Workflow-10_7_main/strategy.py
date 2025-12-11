@@ -6,16 +6,9 @@ import asyncio
 import json
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
 
-from core_v10_7 import (
-    BaseAgent,
-    StrategyPlan,
-    ValidationError,
-    track_metrics,
-    _format_prompt_with_defaults,
-)
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
 
 
 class QueryComplexityClassifier(BaseAgent):
@@ -89,10 +82,10 @@ class ToTStrategistAgent(BaseAgent):
 
     async def _generate_branches(
         self,
-        job_context: Dict[str, Any],
+        job_context: Dict[str, object],
         client: Any,
         branching_factor: int,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         prompt_template = self.prompt_manager.get_template("strategy_tot_branch")
 
         branch_tasks = []
@@ -121,7 +114,7 @@ class ToTStrategistAgent(BaseAgent):
 
         responses = await asyncio.gather(*branch_tasks, return_exceptions=True)
 
-        branches: List[Dict[str, Any]] = []
+        branches: List[Dict[str, object]] = []
         for i, res in enumerate(responses):
             if isinstance(res, Exception):
                 self.log_warning(f"ToT Branch {i + 1} failed API call: {res}")
@@ -140,10 +133,10 @@ class ToTStrategistAgent(BaseAgent):
     @track_metrics("run_tot_strategy")
     async def run_async(
         self,
-        job_context: Dict[str, Any],
+        job_context: Dict[str, object],
         workflow_id: str,
-        state: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         self.log_info("Generating ToT strategy with voting (v10.7)...")
 
         workflow_id = workflow_id or ""

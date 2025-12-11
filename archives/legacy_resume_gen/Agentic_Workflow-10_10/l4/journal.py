@@ -11,7 +11,7 @@ import uuid
 import logging
 from enum import Enum
 
-from .types import StateTransition, StateSnapshot, StatePath, StateOperation
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import StateTransition, StateSnapshot, StatePath, StateOperation
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class JournalEntry(Generic[T]):
     snapshot_before: StateSnapshot[T]
     snapshot_after: StateSnapshot[T]
     correlation_id: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     corrections: List[Correction] = field(default_factory=list)
 
 @dataclass
@@ -44,7 +44,7 @@ class Correction(Generic[T]):
     correction_type: CorrectionType
     timestamp: datetime
     reason: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     # The transition that was used to correct the state
     correction_transition: Optional[StateTransition[T]] = None
     # The resulting state after applying the correction
@@ -69,7 +69,7 @@ class StateJournal(Generic[T]):
         snapshot_before: StateSnapshot[T],
         snapshot_after: StateSnapshot[T],
         correlation_id: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, object]] = None
     ) -> JournalEntry[T]:
         """Record a new state transition in the journal."""
         entry_id = str(uuid.uuid4())
@@ -108,7 +108,7 @@ class StateJournal(Generic[T]):
         reason: str,
         correction_transition: Optional[StateTransition[T]] = None,
         corrected_snapshot: Optional[StateSnapshot[T]] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, object]] = None
     ) -> Correction[T]:
         """Record a correction to a previous journal entry."""
         if entry_id not in self._entries:
@@ -197,7 +197,7 @@ class StateJournal(Generic[T]):
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
         include_corrections: bool = True
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """Generate an audit trail of all state changes."""
         audit = []
         
@@ -246,7 +246,7 @@ def record_transition(
     snapshot_before: StateSnapshot[T],
     snapshot_after: StateSnapshot[T],
     correlation_id: Optional[str] = None,
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, object]] = None
 ) -> JournalEntry[T]:
     """Record a state transition in the global journal."""
     return get_global_journal().record(

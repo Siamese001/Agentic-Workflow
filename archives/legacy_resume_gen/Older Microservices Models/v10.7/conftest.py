@@ -1,7 +1,7 @@
 import asyncio
 import json
 import sys
-import types
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 from pathlib import Path
 from typing import Any, Dict, List
 <<<<<<< HEAD
@@ -23,25 +23,10 @@ import pytest
 <<<<<<< HEAD
 =======
 =======
-from unittest.mock import AsyncMock, MagicMock, ANY, patch
+from unittest.mock import AsyncMock, MagicMock, object, patch
 
 import pytest
 
-from core_v10_6 import (
-    BaseAgent,
-    CacheManager,
-    ConfigV10_6,
-    ContextBudgetManager,
-    CostTracker,
-    FeedbackLogReader,
-    MetricsCollector,
-    PromptTemplateManager,
-    ProposedRulesLoader,
-    ResponseValidator,
-    SemanticValidator,
-    StrategyPlan,
-    WorkflowContext,
-)
 >>>>>>> main
 >>>>>>> main
 >>>>>>> main
@@ -180,20 +165,6 @@ if "langgraph" not in sys.modules:
 # -------------------------------------------------------------------
 # IMPORT v10.7 MODULES (this is the corrected section)
 # -------------------------------------------------------------------
-from core_v10_7 import (
-    CacheManager,
-    ConfigV10_7,
-    ContextBudgetManager,
-    CostTracker,
-    FeedbackLogReader,
-    MetricsCollector,
-    PromptTemplateManager,
-    ProposedRulesLoader,
-    ResponseValidator,
-    SemanticValidator,
-    WorkflowContext,
-    WorkflowTimeoutError,
-)
 
 # -------------------------------------------------------------------
 # DUMMY EMBEDDING FUNCTION (simple, deterministic)
@@ -209,7 +180,7 @@ class DummyEmbeddingFunction:
 # -------------------------------------------------------------------
 class FakeCollection:
     def __init__(self):
-        self.records: Dict[str, Dict[str, Any]] = {}
+        self.records: Dict[str, Dict[str, object]] = {}
 
     def add(self, *, embeddings, documents, metadatas, ids):
         for doc, meta, record_id in zip(documents, metadatas, ids):
@@ -246,15 +217,7 @@ def pytest_pyfunc_call(pyfuncitem):
 <<<<<<< HEAD
 =======
 =======
-from agent_orchestration_v10_6 import (
-    check_constitution,
-    get_graph_app,
-    load_dynamic_tools,
-    run_classify_complexity,
-    run_constitutional_review,
-    run_sanitize_pii,
-)
-from agent_stacks_v10_6 import BiasDetectorAgent, RAG_SearchAgent, ToTStrategistAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.agent_stacks_v10_6 import BiasDetectorAgent, RAG_SearchAgent, ToTStrategistAgent
 
 
 class DummyEmbeddingFunction:
@@ -264,14 +227,14 @@ class DummyEmbeddingFunction:
 
 class FakeCollection:
     def __init__(self) -> None:
-        self.records: Dict[str, Dict[str, Any]] = {}
+        self.records: Dict[str, Dict[str, object]] = {}
 
     def add(
         self,
         *,
         embeddings: List[List[float]],
         documents: List[str],
-        metadatas: List[Dict[str, Any]],
+        metadatas: List[Dict[str, object]],
         ids: List[str],
     ) -> None:
         for doc, metadata, record_id in zip(documents, metadatas, ids):
@@ -282,8 +245,8 @@ class FakeCollection:
         *,
         query_embeddings: List[List[float]],
         n_results: int,
-        where: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        where: Dict[str, object],
+    ) -> Dict[str, object]:
         for record in self.records.values():
             metadata = record["metadata"]
             if all(metadata.get(key) == value for key, value in where.items()):
@@ -595,7 +558,7 @@ def mock_context_budget_manager() -> Any:
 
 
 @pytest.fixture()
-def base_state() -> Dict[str, Any]:
+def base_state() -> Dict[str, object]:
 >>>>>>> main
 >>>>>>> main
 >>>>>>> main

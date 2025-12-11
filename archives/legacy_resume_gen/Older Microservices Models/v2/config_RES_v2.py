@@ -7,10 +7,10 @@ import os
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Any
+from typing import Dict, List, Optional, Set, object
 from dataclasses import dataclass, field
 from enum import Enum
-from models_RES import ReasoningConfig
+from runtime.compat.models_RES import ReasoningConfig
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -243,7 +243,7 @@ class ValidatorConfig:
 @dataclass
 class PromptConfig:
     """Configuration for prompt templates"""
-    prompts: Dict[str, Any] = field(default_factory=dict)
+    prompts: Dict[str, object] = field(default_factory=dict)
     
     @classmethod
     def from_json(cls, json_path: Path = None) -> 'PromptConfig':

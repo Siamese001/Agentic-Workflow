@@ -34,7 +34,7 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
-from main_v10_9 import run_workflow_v10_9
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.main_v10_9 import run_workflow_v10_9  # INVALID: Cannot import from path with hyphens
 
 
 # ============================================================================
@@ -102,11 +102,11 @@ class BatchFeedbackAggregator:
         • successful: len(results)
     """
 
-    results: List[Dict[str, Any]] = field(default_factory=list)
+    results: List[Dict[str, object]] = field(default_factory=list)
     failed: int = 0
     breaker_open: bool = False
 
-    def add_result(self, result: Dict[str, Any]) -> None:
+    def add_result(self, result: Dict[str, object]) -> None:
         self.results.append(result)
 
     def add_failure(self) -> None:
@@ -120,7 +120,7 @@ class BatchFeedbackAggregator:
     def successful(self) -> int:
         return len(self.results)
 
-    def summary(self) -> Dict[str, Any]:
+    def summary(self) -> Dict[str, object]:
         return {
             "total_jobs": self.total_jobs,
             "successful": self.successful,
@@ -134,15 +134,15 @@ class BatchFeedbackAggregator:
 # ============================================================================
 
 async def run_batch_async(
-    job_inputs: List[Dict[str, Any]],
+    job_inputs: List[Dict[str, object]],
     *,
     max_concurrency: Optional[int] = None,
     failure_threshold: int = 3,
     max_jobs: Optional[int] = None,
-    meta_learning_callback: Optional[Callable[[List[Dict[str, Any]]], Any]] = None,
+    meta_learning_callback: Optional[Callable[[List[Dict[str, object]]], object]] = None,
     compat_mode: Optional[str] = None,
     debug_mode: bool = False,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Execute a batch of v10_9 agentic workflows asynchronously.
 
@@ -202,7 +202,7 @@ async def run_batch_async(
         else None
     )
 
-    async def _run_single_job(initial_state: Dict[str, Any]) -> None:
+    async def _run_single_job(initial_state: Dict[str, object]) -> None:
         """Execute one job with circuit-breaker protection + concurrency control."""
         try:
             breaker.check()
@@ -264,15 +264,15 @@ async def run_batch_async(
 # ============================================================================
 
 def run_batch_sync(
-    job_inputs: List[Dict[str, Any]],
+    job_inputs: List[Dict[str, object]],
     *,
     max_concurrency: Optional[int] = None,
     failure_threshold: int = 3,
     max_jobs: Optional[int] = None,
-    meta_learning_callback: Optional[Callable[[List[Dict[str, Any]]], Any]] = None,
+    meta_learning_callback: Optional[Callable[[List[Dict[str, object]]], object]] = None,
     compat_mode: Optional[str] = None,
     debug_mode: bool = False,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Synchronous wrapper around run_batch_async — for CLI, scripts,
     notebooks, or local developer runs.
@@ -310,7 +310,7 @@ if __name__ == "__main__":
         },
     ]
 
-    def _example_meta_callback(results: List[Dict[str, Any]]) -> None:
+    def _example_meta_callback(results: List[Dict[str, object]]) -> None:
         print(f"[META LEARNING] Completed {len(results)} workflow results.")
 
     print("=== Running v10_9 Batch (example) ===")

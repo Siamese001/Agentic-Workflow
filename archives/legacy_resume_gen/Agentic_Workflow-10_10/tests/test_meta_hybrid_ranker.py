@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from meta.retrieval.hybrid_ranker import fuse_and_rank
-from core.models.models import CouncilVote, Evidence, RetrievalConfig
+from archives.legacy_root_folders.meta.retrieval.hybrid_ranker import fuse_and_rank
+from archives.legacy_root_folders.core.models.models import CouncilVote, Evidence, RetrievalConfig
 
 
 def _make_ev(text: str, score: float, source: str) -> Evidence:

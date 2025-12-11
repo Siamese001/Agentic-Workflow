@@ -6,12 +6,11 @@ MERKLE-INTENDED: c8c7f5b24884dce9c43f63a7eaf21627614dac8719a897037c4b2c9e644a6be
 """
 
 
-from __future__ import annotations
 # Execution task performance operations
 
 
 
-from workflow.runner import run_workflow
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.workflow.runner import run_workflow
 
 
 def test_latency_smoke(benchmark: any, case: any) -> None:

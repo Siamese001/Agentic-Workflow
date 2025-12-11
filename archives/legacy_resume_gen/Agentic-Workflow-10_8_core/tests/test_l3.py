@@ -1,14 +1,14 @@
 """Grouped L3 orchestration tests."""
 import math
 
-from l3_orchestration import DAGExecutor
-from l3_orchestration import DAG, DAGNode
-from node_result import NodeResult, NodeStatus
-from l3_orchestration import BulletOrchestrator
-from l3_orchestration import DraftOrchestrator
-from l3_orchestration import GraphOrchestrator
-from l3_orchestration import QAOrchestrator
-from l3_orchestration import RAGOrchestrator
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DAGExecutor  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DAG, DAGNode  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import BulletOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DraftOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import QAOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
 
 
 def test_dag_sequencing_basic():
@@ -152,10 +152,10 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
-from l3_orchestration import BulletOrchestrator
-from l3_orchestration import DraftOrchestrator
-from l3_orchestration import QAOrchestrator
-from l3_orchestration import RAGOrchestrator
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import BulletOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DraftOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import QAOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
 
 
 def test_bullet_orchestrator_sequences_calls():
@@ -216,11 +216,11 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
-from l3_orchestration import BulletOrchestrator
-from l3_orchestration import DraftOrchestrator
-from l3_orchestration import RAGOrchestrator
-from l3_orchestration import QAOrchestrator
-from l4_state import StateAdapter
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import BulletOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DraftOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import QAOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
 
 
 def test_end_to_end_control_flow():

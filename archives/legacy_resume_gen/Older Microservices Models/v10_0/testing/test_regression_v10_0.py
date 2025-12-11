@@ -10,12 +10,12 @@ from unittest.mock import Mock, MagicMock, patch, AsyncMock
 pytest_plugins = ('pytest_asyncio',)
 
 try:
-    from agent_swarm_v10_0 import PIISanitizerAgent, BiasDetectorAgent
-    from core_v10_0 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.agent_swarm_v10_0 import PIISanitizerAgent, BiasDetectorAgent
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import WorkflowContext, MainGraphState, CostCeilingExceededError, ModelAPIError, JSONParsingError, FileIOError
         WorkflowContext, MainGraphState,
         CostCeilingExceededError, ModelAPIError, JSONParsingError, FileIOError
     )
-    from main_v10_0 import run_workflow_async
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.main_v10_0 import run_workflow_async
 except ImportError:
     pytest.skip("v10.0 modules not available", allow_module_level=True)
 
@@ -181,7 +181,7 @@ class TestV99ErrorHandling:
         
         Validates that cost ceiling checks still work
         """
-        from core_v10_0 import CostTracker
+        from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import CostTracker
         
         mock_config = MagicMock()
         mock_config.cost_config.cost_ceiling_per_workflow = 5.0
@@ -207,7 +207,7 @@ class TestV99ErrorHandling:
         Validates that system fails immediately on critical errors
         rather than silent failures
         """
-        from core_v10_0 import CostTracker
+        from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import CostTracker
         
         mock_config = MagicMock()
         mock_config.cost_config.enable_cost_tracking = True
@@ -381,7 +381,7 @@ class TestV99PerformanceBaseline:
         
         Validates that cost tracking remains accurate in v10.0
         """
-        from core_v10_0 import CostTracker
+        from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import CostTracker
         
         mock_config = MagicMock()
         mock_config.cost_config.enable_cost_tracking = True
@@ -470,7 +470,7 @@ class TestV99ArchitecturalPrinciples:
         # In v10.0, should use dependency injection instead of globals
         # This is actually an improvement, not a regression
         
-        from core_v10_0 import WorkflowContext
+        from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import WorkflowContext
         
         # Should require explicit initialization
         mock_config = MagicMock()
@@ -494,7 +494,7 @@ class TestV99ArchitecturalPrinciples:
         # v9.9 had specific fixes that should be preserved
         # Example: Cost tracking, PII sanitization, error handling
         
-        from core_v10_0 import CostTracker
+        from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import CostTracker
         
         mock_config = MagicMock()
         mock_config.cost_config.enable_cost_tracking = True

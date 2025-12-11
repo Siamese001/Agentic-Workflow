@@ -11,21 +11,12 @@ import logging
 import os
 import uuid
 import asyncio
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 
-from core_v10_0 import (
-    CONFIG, WorkflowContext, BaseAgent, MetaGraphState,
-    META_LOG_READER_SYSTEM_PROMPT,
-    META_PATTERN_FINDER_SYSTEM_PROMPT,
-    META_HYPOTHESIS_GENERATOR_SYSTEM_PROMPT,
-    META_PROPOSAL_DRAFTER_SYSTEM_PROMPT,
-    META_PROPOSAL_CRITIQUE_SYSTEM_PROMPT,
-    FileIOError
-)
-from main_v10_0 import setup_logging
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10_0.main_v10_0 import setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger("meta_learner_v10_0")
@@ -65,7 +56,7 @@ class AsyncPatternFinderAgent(BaseAgent):
         super().__init__(context, debug_mode)
         self.client = context.get_model_client("google", "gemini-2.0-flash-exp")
     
-    async def run_async(self, raw_logs: Dict[str, str]) -> List[Dict[str, Any]]:
+    async def run_async(self, raw_logs: Dict[str, str]) -> List[Dict[str, object]]:
         self.log_info("Analyzing logs for patterns (ASYNC)...")
         
         if not raw_logs["feedback_log"] and not raw_logs["preference_log"]:

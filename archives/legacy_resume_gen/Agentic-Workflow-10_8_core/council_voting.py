@@ -1,7 +1,7 @@
-from typing import List, Dict, Any
+from typing import List, Dict, object
 
 
-def deterministic_vote(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+def deterministic_vote(candidates: List[Dict[str, object]]) -> Dict[str, object]:
     """
     Deterministic selection:
     - Highest score wins

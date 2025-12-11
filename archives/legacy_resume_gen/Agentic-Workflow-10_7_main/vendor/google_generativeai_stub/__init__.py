@@ -42,7 +42,7 @@ class StubContent:
 @dataclass
 class StubCandidate:
     content: StubContent
-    safety_ratings: List[Dict[str, Any]] = None
+    safety_ratings: List[Dict[str, object]] = None
 
 
 # Gemini response stub
@@ -63,7 +63,7 @@ class GenerativeModel:
     async def generate_content(
         self,
         prompt: str,
-        generation_config: Optional[Dict[str, Any]] = None,
+        generation_config: Optional[Dict[str, object]] = None,
         **_kwargs
     ) -> StubGenerativeResponse:
         """

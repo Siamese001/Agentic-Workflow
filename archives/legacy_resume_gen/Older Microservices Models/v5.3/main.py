@@ -6,7 +6,7 @@
 # ============================================================================
 # EXTERNAL IMPORTS (Consolidated)
 # ============================================================================
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import os
@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # Import from consolidated modules
-from core import (
+from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR, ImmutableStagingBuffer, ThematicAnalysis, ValidationResult, HopResult, ValidationSeverity, ResumeSection
     # Config
     CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR,
     # Models
@@ -24,14 +24,7 @@ from core import (
     HopResult, ValidationSeverity, ResumeSection
 )
 
-from validation_stack import (
-    ValidationContext, PreFlightValidator, calculate_signal_score
-)
 
-from agent_swarm import (
-    CrewOrchestrator, CrewConfiguration, Governor,
-    GeminiService, get_gemini_service
-)
 
 # Configure logging
 logging.basicConfig(
@@ -84,7 +77,7 @@ class WorkflowV52:
         job_title: str,
         master_resume_path: Optional[str] = None,
         output_dir: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Run the complete workflow for a single job application.
         
@@ -163,7 +156,7 @@ class WorkflowV52:
             self.logger.info("Workflow v5.2 execution completed")
             self.logger.info("=" * 80)
     
-    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, Any]:
+    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, object]:
         """Load master resume from file or use default."""
         # Try provided path first
         if master_resume_path and os.path.exists(master_resume_path):
@@ -188,7 +181,7 @@ class WorkflowV52:
         self.logger.warning("No master resume found, using empty template")
         return self._create_empty_master_resume()
     
-    def _create_empty_master_resume(self) -> Dict[str, Any]:
+    def _create_empty_master_resume(self) -> Dict[str, object]:
         """Create an empty master resume template."""
         return {
             "owner": {
@@ -208,7 +201,7 @@ class WorkflowV52:
     
     def _save_artifacts(
         self,
-        results: Dict[str, Any],
+        results: Dict[str, object],
         output_dir: str,
         company_name: str,
         job_title: str
@@ -279,7 +272,7 @@ class WorkflowV52:
 # PART 2: WORKFLOW RUNNER (from run_workflow_RES_v5_2.py)
 # ============================================================================
 
-def load_job_input(filename: str) -> Dict[str, Any]:
+def load_job_input(filename: str) -> Dict[str, object]:
     """Loads the job input JSON file with error handling."""
     if not os.path.exists(filename):
         logger.critical("=" * 80)
@@ -322,7 +315,7 @@ def load_job_input(filename: str) -> Dict[str, Any]:
         logger.critical("=" * 80)
         sys.exit(1)
 
-def load_master_resume(filename: str = "master_resume.json") -> Dict[str, Any]:
+def load_master_resume(filename: str = "master_resume.json") -> Dict[str, object]:
     """Loads the master resume JSON file."""
     master_path = Path(filename)
     
@@ -357,7 +350,7 @@ def load_master_resume(filename: str = "master_resume.json") -> Dict[str, Any]:
         "certifications": []
     }
 
-def print_summary(results: Dict[str, Any]):
+def print_summary(results: Dict[str, object]):
     """Print a summary of the workflow results."""
     print("\n" + "=" * 80)
     print("WORKFLOW SUMMARY - V5.2 Consolidated System")

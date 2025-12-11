@@ -2,8 +2,8 @@
 
 import pytest
 
-from simulations.engines.strategy_sim import StrategySimulator
-from simulations.models import StrategySimRequest
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.strategy_sim import StrategySimulator  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.dag.test_dag_models import StrategySimRequest
 
 
 @pytest.mark.asyncio

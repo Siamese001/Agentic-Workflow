@@ -13,7 +13,7 @@ import hashlib
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import subprocess
 import uuid
 from collections import defaultdict
@@ -21,9 +21,6 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import (
-    Any, Callable, ClassVar, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
-)
 
 # Optional imports with fallback handling
 try:
@@ -34,7 +31,7 @@ except ImportError:
     genai = None
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -687,7 +684,7 @@ class TextUtils:
             vectorizer = TfidfVectorizer(max_features=top_n, stop_words='english')
             vectorizer.fit([text])
             return vectorizer.get_feature_names_out().tolist()
-        except:
+        except (ValueError, TypeError, KeyError):
             return []
     
     @staticmethod
@@ -711,7 +708,7 @@ class TextUtils:
             tfidf_matrix = vectorizer.fit_transform([text1, text2])
             similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
             return float(similarity)
-        except:
+        except (ValueError, TypeError, KeyError):
             return 0.0
     
     @staticmethod

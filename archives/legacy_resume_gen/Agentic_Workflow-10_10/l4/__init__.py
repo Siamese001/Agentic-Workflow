@@ -9,41 +9,7 @@ from __future__ import annotations
 from dataclasses import is_dataclass, replace
 from typing import Any, Dict, Optional
 
-from .types import (
-    StateOperation,
-    StateEventType,
-    StatePath,
-    StateTransition,
-    StateSnapshot,
-    StateError,
-    StateValidationError,
-    StateRollbackError,
-)
-from .manager import StateManager
-from .pinecone_adapter import (
-    PineconeAdapter,
-    PineconeConfig,
-    VectorRecord,
-    VectorQueryResult,
-)
-from .triplet_store import (
-    TemporalType,
-    TripletStatus,
-    Triplet,
-    TripletQuery,
-    TripletStore,
-    create_triplet,
-    PREDICATES,
-)
-from .entity_resolution import (
-    EntityType,
-    CanonicalEntity,
-    EntityMention,
-    ResolutionResult,
-    EntityRegistry,
-    create_entity,
-    create_mention,
-)
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.manager import StateManager
 
 
 def _prune_memory(state: Any, *, max_items: int = 200) -> Any:
@@ -64,7 +30,7 @@ def _prune_memory(state: Any, *, max_items: int = 200) -> Any:
         # non-dataclass objects by simply returning the original.
         return state
 
-    updates: Dict[str, Any] = {}
+    updates: Dict[str, object] = {}
 
     if has_messages:
         messages = getattr(state, "messages")
@@ -87,7 +53,7 @@ def record_correction_event(
     *,
     surface: str,
     message: str,
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: Optional[Dict[str, object]] = None,
     ctx: Any = None,  # kept for signature compatibility; intentionally unused
 ) -> Any:
     """
@@ -132,7 +98,7 @@ def apply_state_patch(
     ctx: Any,
     *,
     safety_passed: bool = True
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Applies L2 results as state patch for résumé processing workflows.
     

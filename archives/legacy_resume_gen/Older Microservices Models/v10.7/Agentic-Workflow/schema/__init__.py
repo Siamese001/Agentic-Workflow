@@ -15,7 +15,7 @@ class ResumeOutputSchema:
     summary: str
     highlights: List[str] = field(default_factory=list)
     skills: List[str] = field(default_factory=list)
-    sections: List[Dict[str, Any]] = field(default_factory=list)
+    sections: List[Dict[str, object]] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if not self.candidate:

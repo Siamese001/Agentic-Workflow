@@ -1,4 +1,4 @@
-import asyncio, sys, types, pytest
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -45,11 +45,11 @@ class InMemoryRedis:
 
 class FakeCollection:
     def __init__(self) -> None:
-        self.records: Dict[str, Dict[str, Any]] = {}
-    def add(self, *, embeddings: List[List[float]], documents: List[str], metadatas: List[Dict[str, Any]], ids: List[str]) -> None:
+        self.records: Dict[str, Dict[str, object]] = {}
+    def add(self, *, embeddings: List[List[float]], documents: List[str], metadatas: List[Dict[str, object]], ids: List[str]) -> None:
         for doc, metadata, record_id in zip(documents, metadatas, ids):
             self.records[record_id] = {"document": doc, "metadata": metadata}
-    def query(self, *, query_embeddings: List[List[float]], n_results: int, where: Dict[str, Any]) -> Dict[str, Any]:
+    def query(self, *, query_embeddings: List[List[float]], n_results: int, where: Dict[str, object]) -> Dict[str, object]:
         for record in self.records.values():
             md = record["metadata"]
             if all(md.get(k) == v for k, v in where.items()):
@@ -67,11 +67,6 @@ class DummyEmbeddingFunction:
         return [[float(len(p))] for p in prompts]
 
 # ---- Core fixtures pulled together like your v10_7 tests ----
-from core_v10_7 import (
-    CacheManager, ConfigV10_7, CostTracker, FeedbackLogReader, ProposedRulesLoader,
-    PromptTemplateManager, ResponseValidator, MetricsCollector, SemanticValidator,
-    ContextBudgetManager, WorkflowContext
-)
 
 @pytest.fixture(scope="session")
 def config() -> ConfigV10_7:

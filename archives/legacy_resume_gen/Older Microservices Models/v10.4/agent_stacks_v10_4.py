@@ -25,13 +25,13 @@ import os
 import json
 import logging
 import asyncio
-import re
+import scripts.check_canonical_structure
 import math
 import uuid
 import chromadb
-from chromadb.utils import embedding_functions
+from shared.reasoning_utils import embedding_functions
 from collections import Counter
-from typing import Dict, Any, List, Optional
+from typing import Dict, object, List, Optional
 from datetime import datetime
 
 # v10.3: Added for Hybrid RAG
@@ -47,21 +47,9 @@ except ImportError:
     )
 
 # v10.4: Import BaseModel from pydantic
-from pydantic import BaseModel, Field, validator
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field, validator
 
 # v10.4: Import from new core
-from core_v10_4 import (
-    WorkflowContext, BaseAgent,
-    ModelAPIError, JSONParsingError, ValidationError, PydanticSchemaError,
-    # v10.3: Import Pydantic models
-    StrategyPlan,
-    GeneratedPrompts,
-    BulletList,
-    CritiqueResult,
-    HILAmbiguityReport,
-    HILFeedbackRoute,
-    BaseToolOutput # v10.4: Added for HyDE
-)
 
 # v10.4: Logger name updated
 logger = logging.getLogger("agent_stacks_v10_4")
@@ -74,11 +62,11 @@ class BaseTool(BaseAgent):
     """Base interface for tools used by ReAct Conductors"""
     tool_name: str = "base_tool"
     
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Execute the tool"""
         raise NotImplementedError
     
-    def get_schema(self) -> Dict[str, Any]:
+    def get_schema(self) -> Dict[str, object]:
         """Return the tool's JSON schema"""
         return {
             "name": self.tool_name,
@@ -100,7 +88,7 @@ class PIISanitizerAgent(BaseAgent):
         "NAME": re.compile(r'\b[A-Z][a-z]+ [A-Z][a-z]+\b') 
     }
     
-    def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume: Dict[str, object]) -> Dict[str, object]:
         self.log_info("Sanitizing PII (local regex processing)...")
         sanitized_resume = json.loads(json.dumps(resume))
         
@@ -122,7 +110,7 @@ class PIISanitizerAgent(BaseAgent):
 class BiasDetectorAgent(BaseAgent):
     """v10.3: Local bias detection with dynamic constitution."""
     
-    def run(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
+    def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         
         # Reads rules from proposed_rules.jsonl via the loader
@@ -157,7 +145,7 @@ class BiasDetectorAgent(BaseAgent):
 class ToTStrategistAgent(BaseAgent):
     """v10.3: ToT strategist, now with centralized prompts and validation."""
     
-    async def run_async(self, job_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, job_context: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Generating ToT strategy (v10.4)...")
         
         feedback_reader = self.context.feedback_reader
@@ -226,7 +214,7 @@ class ToTStrategistAgent(BaseAgent):
 class PromptEngineerAgent(BaseAgent):
     """v10.3: LLM-driven prompt engineering with validation and style injection."""
     
-    async def run_async(self, strategy: StrategyPlan, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, strategy: StrategyPlan, workflow_id: str) -> Dict[str, object]:
         self.log_info("Engineering prompts with feedback awareness (v10.4)...")
         
         # Feedback-aware logic can be re-implemented here
@@ -274,7 +262,7 @@ class HyDETool(BaseTool):
     class HyDEOutput(BaseModel):
         hypothetical_document: str = Field(..., description="A hypothetical document that answers the query.")
 
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running HyDE (v10.4)...")
         client = self.get_model_client("hyde_model")
         
@@ -315,7 +303,7 @@ class ChromaDBSearchTool(BaseTool):
         self.collection_name = self.config.chromadb_config.default_collection_name
         self.chroma_client = self.context.chromadb_client
         
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         query = tool_input.get("query", "")
         self.log_info(f"Searching ChromaDB (Vector) for: {query}")
 
@@ -361,7 +349,7 @@ class BM25SearchTool(BaseTool):
         if not BM25_AVAILABLE:
             self.log_error("BM25SearchTool disabled: 'rank_bm25' not installed.")
     
-    async def run_async(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         if not BM25_AVAILABLE:
             return {"search_results": []}
             
@@ -706,7 +694,7 @@ class AsyncBulletCritiqueAgent(BaseAgent):
 class HILAmbiguityDetectorAgent(BaseAgent):
     """v10.3: Proactively detects ambiguity, now with validation."""
     
-    async def run_async(self, strategy: StrategyPlan, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, strategy: StrategyPlan, workflow_id: str) -> Dict[str, object]:
         self.log_info("Detecting ambiguity (v10.4)...")
         client = self.get_model_client("qa_model")
         
@@ -733,7 +721,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
 class HILFeedbackRouterAgent(BaseAgent):
     """v10.3: Routes human feedback, now with validation."""
     
-    async def run_async(self, human_feedback: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, human_feedback: str, workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Routing human feedback (v10.4)...")
         
         # Logging to preference_log.jsonl

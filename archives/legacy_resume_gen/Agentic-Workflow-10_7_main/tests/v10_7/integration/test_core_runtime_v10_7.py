@@ -1,13 +1,6 @@
 import asyncio
 import pytest
 
-from core_v10_7 import (
-    CacheManager,
-    CircuitBreaker,
-    CircuitBreakerOpenError,
-    ModelAPIError,
-    exponential_backoff_retry,
-)
 
 # ---- CircuitBreaker matrix (threshold x pattern) → 12 tests
 @pytest.mark.parametrize("threshold,failures,opens", [

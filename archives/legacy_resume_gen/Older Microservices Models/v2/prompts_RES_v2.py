@@ -4,22 +4,22 @@
 # Contains all *logic* for loading and formatting prompts from prompts.json
 # V2 UPDATE: Enhanced with CRL integration helpers and v2-specific prompt builders
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging
 import os
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, object
 from collections import defaultdict
 
 # --- REFACTOR: Import global CONFIG ---
-from config_RES_v2 import CONFIG
+from runtime.compat.config_RES_v2 import CONFIG
 # --- END REFACTOR ---
 
 # Import models needed for type hinting
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from models_RES import RAGMission, MasterResumeIndex, ThematicAnalysis, ValidationResult
-    from config_RES_v2 import ContentConstraintsConfig, CompetitiveAnalysisConfig
+    from runtime.compat.models_RES import RAGMission, MasterResumeIndex, ThematicAnalysis, ValidationResult
+    from runtime.compat.config_RES_v2 import ContentConstraintsConfig, CompetitiveAnalysisConfig
 
 # --- REFACTOR: Load 'Recipe Book' (prompts.json) from global CONFIG ---
 try:
@@ -49,7 +49,7 @@ def build_crl_context_for_section(
     thematic_analysis: 'ThematicAnalysis',
     enriched_scaffold: Dict,
     **kwargs
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     V2 INTEGRATION: Builds context dictionary for ContextRelayLayer.
     
@@ -308,7 +308,7 @@ def _build_narrative_context_dict(
     **kwargs
 ) -> Dict:
     """Build context dictionary for narrative generation."""
-    from models_RES import HopExecutionError, ResumeSection
+    from runtime.compat.models_RES import HopExecutionError, ResumeSection
     
     # --- REFACTOR: Source dependencies from kwargs/CONFIG ---
     master_resume = kwargs.get('master_resume', {})
@@ -899,7 +899,7 @@ def build_overview_generation_prompt(
 
 def build_generation_prompt_with_reinforced_constraints(
     base_prompt: str,
-    constraints: Dict[str, Any],
+    constraints: Dict[str, object],
     attempt_number: int
 ) -> str:
     """

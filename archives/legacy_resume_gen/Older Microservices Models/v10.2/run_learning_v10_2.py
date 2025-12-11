@@ -12,23 +12,16 @@ import logging
 import os
 import uuid
 import asyncio
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import chromadb # v10.2: Added
-from chromadb.utils import embedding_functions # v10.2: Added
+from shared.reasoning_utils import embedding_functions
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 
 # v10.2: Import from new core
-from core_v10_2 import (
-    ConfigV10_2, WorkflowContext, BaseAgent, MetaGraphState,
-    FileIOError, META_LOG_READER_SYSTEM_PROMPT,
-    META_PATTERN_FINDER_SYSTEM_PROMPT, META_HYPOTHESIS_GENERATOR_SYSTEM_PROMPT,
-    META_PROPOSAL_DRAFTER_SYSTEM_PROMPT, META_PROPOSAL_CRITIQUE_SYSTEM_PROMPT,
-    CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader
-)
 # v10.2: Import from new main
-from main_v10_2 import setup_logging
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.main_v10_2 import setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger("meta_learner_v10_2")
@@ -44,7 +37,7 @@ class HotReloadRuleManager:
         self.rules_path = rules_path
         self.auto_approve_threshold = auto_approve_threshold
     
-    def write_proposed_rule(self, rule: Dict[str, Any], confidence: float) -> bool:
+    def write_proposed_rule(self, rule: Dict[str, object], confidence: float) -> bool:
         """Write rule with auto-approval decision"""
         try:
             if confidence >= self.auto_approve_threshold:
@@ -115,7 +108,7 @@ class LogReaderAgent(BaseAgent):
 class AsyncLogSummarizerAgent(BaseAgent):
     """Async LLM-based log summarizer"""
     
-    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, object]:
         """Summarize logs"""
         self.log_info("Summarizing logs with LLM...")
         
@@ -151,7 +144,7 @@ Output JSON summary."""
 class AsyncPatternFinderAgent(BaseAgent):
     """Async pattern detection"""
     
-    async def run_async(self, log_summary: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, log_summary: Dict[str, object], workflow_id: str) -> List[Dict]:
         """Find recurring patterns"""
         self.log_info("Finding patterns in logs...")
         
@@ -179,7 +172,7 @@ class AsyncPatternFinderAgent(BaseAgent):
 class AsyncHypothesisGeneratorAgent(BaseAgent):
     """Async hypothesis generation"""
     
-    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, object], workflow_id: str) -> List[Dict]:
         """Generate hypotheses for patterns"""
         self.log_info("Generating hypotheses...")
         
@@ -210,7 +203,7 @@ class AsyncHypothesisGeneratorAgent(BaseAgent):
 class AsyncProposalDrafterAgent(BaseAgent):
     """Async proposal drafting"""
     
-    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, hypothesis: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         """Draft change proposal"""
         self.log_info(f"Drafting proposal for hypothesis: {hypothesis.get('id', 'unknown')}")
         
@@ -240,7 +233,7 @@ class AsyncProposalDrafterAgent(BaseAgent):
 class AsyncProposalCritiqueAgent(BaseAgent):
     """Async proposal critique"""
     
-    async def run_async(self, proposal: Dict[str, Any], patterns: List[Dict], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, proposal: Dict[str, object], patterns: List[Dict], workflow_id: str) -> Dict[str, object]:
         """Critique proposal"""
         self.log_info("Critiquing proposal...")
         

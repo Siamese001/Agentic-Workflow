@@ -15,7 +15,7 @@ import hashlib
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import subprocess
 import uuid
 from collections import defaultdict
@@ -31,7 +31,7 @@ except ImportError:
     genai = None  # Add a placeholder for type hints
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -40,13 +40,9 @@ except ImportError:
     cosine_similarity = None  # Placeholder
 
 # Import required classes from other modules
-from models_RES import ThematicAnalysis, ValidationResult, ValidationSeverity
+from runtime.compat.models_RES import ThematicAnalysis, ValidationResult, ValidationSeverity
 
 # V3.8 Migration: Import from config_RES
-from config_RES import (
-    ReasoningConfig, RAGConfig, PROMPT_ADDENDUM_CONFIG, 
-    DEFAULT_GENERATION_TEMPERATURE, DATA_DIR, CACHE_DIR
-)
 
 # ============================================================================
 # FILE SYSTEM UTILITIES
@@ -288,7 +284,7 @@ class TextSanitizer:
                         if key in data:
                             text = data[key]
                             break
-            except:
+            except (ValueError, TypeError, KeyError):
                 pass  # Not valid JSON, keep as is
         
         # Remove common LLM prefixes
@@ -410,7 +406,7 @@ class DuplicateDetector:
             logging.warning(f"Duplicate detection failed: {e}")
             return []
     
-    def find_duplicates_in_list(self, texts: List[str]) -> List[Dict[str, Any]]:
+    def find_duplicates_in_list(self, texts: List[str]) -> List[Dict[str, object]]:
         """
         Find duplicates and return detailed information.
         
@@ -563,7 +559,7 @@ class TelemetryLogger:
 def reasoning_config_to_api_params(
     reasoning_config: ReasoningConfig,
     section_id: str
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Converts a ReasoningConfig dataclass into API parameters.
     
@@ -646,7 +642,7 @@ def enhance_system_prompt_with_reasoning(
 
 def build_generation_prompt_with_reinforced_constraints(
     base_prompt: str,
-    constraints: Dict[str, Any],
+    constraints: Dict[str, object],
     attempt: int
 ) -> str:
     """

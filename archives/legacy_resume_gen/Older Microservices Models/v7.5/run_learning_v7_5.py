@@ -14,11 +14,11 @@ import json
 import logging
 import os
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, object
 from collections import defaultdict
 
 # Imports from its *own* versioned files (v7.5)
-from core_v7_5 import CONFIG, setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v7.5.core_v7_5 import CONFIG, setup_logging
 
 logger = logging.getLogger("meta_learner_v7_5")
 
@@ -31,7 +31,7 @@ class PatternFinderAgent:
         self.config = config
         self.logger = logging.getLogger(f"{__name__}.PatternFinderAgent")
     
-    def find_patterns(self, feedback_log_path: str) -> List[Dict[str, Any]]:
+    def find_patterns(self, feedback_log_path: str) -> List[Dict[str, object]]:
         self.logger.info(f"Analyzing feedback log: {feedback_log_path}")
         
         if not os.path.exists(feedback_log_path):
@@ -104,7 +104,7 @@ class MetaPlannerAgent:
     def __init__(self):
         self.logger = logging.getLogger(f"{__name__}.MetaPlannerAgent")
 
-    def propose_updates(self, patterns: List[Dict[str, Any]], proposed_rules_path: str) -> bool:
+    def propose_updates(self, patterns: List[Dict[str, object]], proposed_rules_path: str) -> bool:
         self.logger.info(f"Analyzing patterns to create proposals...")
         
         proposals = []

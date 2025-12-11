@@ -28,31 +28,19 @@ import asyncio
 # import chromadb # v10.5 REFACTOR: Removed
 # from chromadb.utils import embedding_functions # v10.5 REFACTOR: Removed
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, object, Optional
 
 # v10.5: Import from new core
-from core_v10_5 import (
-    ConfigV10_5, WorkflowContext, BaseAgent, MetaGraphState,
-    FileIOError, WorkflowError,
-    # v10.5: Import all services to be injected
-    # CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader, # v10.5 REFACTOR: Removed
-    # PromptTemplateManager, ResponseValidator, ContextBudgetManager, # v10.5 REFACTOR: Removed
-    # MetricsCollector, SemanticValidator, # v10.5 REFACTOR: Removed
-    # v10.5 REFACTOR: Import new helper function
-    create_workflow_context,
-    PydanticSchemaError,
-    track_metrics # v10.5 (Fix #8)
-)
 # v10.5: Import from new main
 # from main_v10_5 import setup_logging # v10.5 REFACTOR: Removed (dead code)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 try:
     from langgraph.checkpoint.redis import RedisSaver
 except ImportError:
     try:
         from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
     except ImportError:
-        from langgraph.checkpoint.memory import MemorySaver as RedisSaver
+        from tests.golden.semantics.test_regression_temporal_memory import MemorySaver
 
 # v10.5: Logger name updated
 logger = logging.getLogger("meta_learner_v10_5")
@@ -68,7 +56,7 @@ class HotReloadRuleManager:
         self.rules_path = rules_path
         self.auto_approve_threshold = auto_approve_threshold
     
-    def write_proposed_rule(self, rule: Dict[str, Any], confidence: float) -> bool:
+    def write_proposed_rule(self, rule: Dict[str, object], confidence: float) -> bool:
         try:
             status = "APPROVED" if confidence >= self.auto_approve_threshold else "PROPOSED"
             log_entry = {
@@ -114,7 +102,7 @@ class LogReaderAgent(BaseAgent):
 class AsyncLogSummarizerAgent(BaseAgent):
     """Async LLM-based log summarizer"""
     @track_metrics('meta_summarize_logs') # v10.5 (Fix #8)
-    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, object]:
         self.log_info("Summarizing logs with LLM (v10.5)...")
         client = self.get_model_client("qa_model")
         
@@ -139,7 +127,7 @@ class AsyncLogSummarizerAgent(BaseAgent):
 class AsyncPatternFinderAgent(BaseAgent):
     """Async pattern detection"""
     @track_metrics('meta_find_patterns') # v10.5 (Fix #8)
-    async def run_async(self, log_summary: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, log_summary: Dict[str, object], workflow_id: str) -> List[Dict]:
         self.log_info("Finding patterns in logs (v10.5)...")
         client = self.get_model_client("strategy_model")
         
@@ -162,7 +150,7 @@ class AsyncPatternFinderAgent(BaseAgent):
 class AsyncHypothesisGeneratorAgent(BaseAgent):
     """Async hypothesis generation"""
     @track_metrics('meta_gen_hypotheses') # v10.5 (Fix #8)
-    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, Any], workflow_id: str) -> List[Dict]:
+    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, object], workflow_id: str) -> List[Dict]:
         self.log_info("Generating hypotheses (v10.5)...")
         client = self.get_model_client("strategy_model")
         
@@ -188,7 +176,7 @@ class AsyncHypothesisGeneratorAgent(BaseAgent):
 class AsyncProposalDrafterAgent(BaseAgent):
     """Async proposal drafting"""
     @track_metrics('meta_draft_proposal') # v10.5 (Fix #8)
-    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, hypothesis: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Drafting proposal for hypothesis (v10.5)...")
         client = self.get_model_client("prompt_engineer_model")
         
@@ -214,7 +202,7 @@ class AsyncProposalDrafterAgent(BaseAgent):
 class AsyncProposalCritiqueAgent(BaseAgent):
     """Async proposal critique"""
     @track_metrics('meta_critique_proposal') # v10.5 (Fix #8)
-    async def run_async(self, proposal: Dict[str, Any], patterns: List[Dict], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, proposal: Dict[str, object], patterns: List[Dict], workflow_id: str) -> Dict[str, object]:
         self.log_info("Critiquing proposal (v10.5)...")
         client = self.get_model_client("critique_model")
         
@@ -241,7 +229,7 @@ class AsyncProposalCritiqueAgent(BaseAgent):
 class AsyncToolGeneratorAgent(BaseAgent):
     """Async LLM-based tool code generator."""
     @track_metrics('meta_generate_tool') # v10.5 (Fix #8)
-    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, hypothesis: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Generating new tool code from hypothesis (v10.5)...")
         client = self.get_model_client("meta_tool_generator_model")
         
@@ -266,7 +254,7 @@ class AsyncToolGeneratorAgent(BaseAgent):
 class AsyncToolCritiqueAgent(BaseAgent):
     """Async LLM-based tool code critique."""
     @track_metrics('meta_critique_tool') # v10.5 (Fix #8)
-    async def run_async(self, tool_code: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, tool_code: str, workflow_id: str) -> Dict[str, object]:
         self.log_info("Critiquing generated tool code (v10.5)...")
         client = self.get_model_client("meta_tool_critique_model")
         
@@ -288,7 +276,7 @@ class AsyncToolCritiqueAgent(BaseAgent):
 class GeneratedToolWriterAgent(BaseAgent):
     """Local agent to write generated tool code to disk."""
     @track_metrics('meta_write_tool') # v10.5 (Fix #8)
-    def run(self, tool_name: str, tool_code: str, workflow_id: str) -> Dict[str, Any]:
+    def run(self, tool_name: str, tool_code: str, workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Writing generated tool '{tool_name}' to disk...")
         
         try:

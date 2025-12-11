@@ -12,8 +12,8 @@ import shutil
 from datetime import datetime
 
 # Imports from its *own* versioned files
-from main_v5_9 import WorkflowV59, setup_logging 
-from core_v5_9 import CONFIG
+from archives.legacy_resume_gen.Older Microservices Models.v5.9.main_v5_9 import WorkflowV59, setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v5.9.core_v5_9 import CONFIG
 
 logger = logging.getLogger("batch_runner_v5_9")
 setup_logging(debug_mode=False)

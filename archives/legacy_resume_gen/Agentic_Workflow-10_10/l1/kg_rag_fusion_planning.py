@@ -10,13 +10,6 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime, UTC
 from enum import Enum
 
-from .kg_retrieval_planning import (
-    QueryType,
-    KGQueryPlan,
-    KGRetrievalPlanner,
-    HopSpec,
-    HopDirection,
-)
 
 
 class RetrievalStepType(str, Enum):
@@ -63,8 +56,8 @@ class RAGRetrievalStep:
     similarity_threshold: float = 0.7
     
     # Filters
-    metadata_filter: Optional[Dict[str, Any]] = None
-    temporal_filter: Optional[Dict[str, Any]] = None
+    metadata_filter: Optional[Dict[str, object]] = None
+    temporal_filter: Optional[Dict[str, object]] = None
     
     # Context
     context_sources: List[str] = field(default_factory=list)
@@ -151,7 +144,7 @@ class KGRAGFusionPlanner:
         self.kg_planner = kg_planner or KGRetrievalPlanner()
         self._fusion_templates = self._build_fusion_templates()
     
-    def _build_fusion_templates(self) -> Dict[str, Dict[str, Any]]:
+    def _build_fusion_templates(self) -> Dict[str, Dict[str, object]]:
         """
         Creates résumé analysis templates for different job categories and experience levels.
 
@@ -200,9 +193,9 @@ class KGRAGFusionPlanner:
         self,
         user_question: str,
         start_entities: Optional[List[str]] = None,
-        temporal_constraints: Optional[Dict[str, Any]] = None,
-        kg_config: Optional[Dict[str, Any]] = None,
-        rag_config: Optional[Dict[str, Any]] = None,
+        temporal_constraints: Optional[Dict[str, object]] = None,
+        kg_config: Optional[Dict[str, object]] = None,
+        rag_config: Optional[Dict[str, object]] = None,
         fusion_template: Optional[str] = None,
         max_recursion_depth: int = 3,
         complexity_hint: Optional[QueryComplexity] = None,
@@ -252,7 +245,7 @@ class KGRAGFusionPlanner:
         self,
         question: str,
         start_entities: Optional[List[str]],
-        temporal_constraints: Optional[Dict[str, Any]],
+        temporal_constraints: Optional[Dict[str, object]],
         hint: Optional[QueryComplexity],
     ) -> QueryComplexity:
         """
@@ -302,9 +295,9 @@ class KGRAGFusionPlanner:
         template_name: str,
         user_question: str,
         start_entities: Optional[List[str]],
-        temporal_constraints: Optional[Dict[str, Any]],
-        kg_config: Optional[Dict[str, Any]],
-        rag_config: Optional[Dict[str, Any]],
+        temporal_constraints: Optional[Dict[str, object]],
+        kg_config: Optional[Dict[str, object]],
+        rag_config: Optional[Dict[str, object]],
         max_recursion_depth: int,
     ) -> KGRAGFusionPlan:
         """
@@ -397,7 +390,7 @@ class KGRAGFusionPlanner:
         query_id: str,
         user_question: str,
         start_entities: Optional[List[str]],
-        temporal_constraints: Optional[Dict[str, Any]],
+        temporal_constraints: Optional[Dict[str, object]],
     ) -> KGRAGFusionPlan:
         """
         Creates basic résumé analysis plans for straightforward job matching questions.
@@ -451,9 +444,9 @@ class KGRAGFusionPlanner:
         query_id: str,
         user_question: str,
         start_entities: Optional[List[str]],
-        temporal_constraints: Optional[Dict[str, Any]],
-        kg_config: Optional[Dict[str, Any]],
-        rag_config: Optional[Dict[str, Any]],
+        temporal_constraints: Optional[Dict[str, object]],
+        kg_config: Optional[Dict[str, object]],
+        rag_config: Optional[Dict[str, object]],
     ) -> KGRAGFusionPlan:
         """
         Creates intermediate résumé analysis plans for multi-step career progression questions.
@@ -530,9 +523,9 @@ class KGRAGFusionPlanner:
         query_id: str,
         user_question: str,
         start_entities: Optional[List[str]],
-        temporal_constraints: Optional[Dict[str, Any]],
-        kg_config: Optional[Dict[str, Any]],
-        rag_config: Optional[Dict[str, Any]],
+        temporal_constraints: Optional[Dict[str, object]],
+        kg_config: Optional[Dict[str, object]],
+        rag_config: Optional[Dict[str, object]],
         max_recursion_depth: int,
     ) -> KGRAGFusionPlan:
         """
@@ -641,9 +634,9 @@ class KGRAGFusionPlanner:
         query_id: str,
         user_question: str,
         start_entities: Optional[List[str]],
-        temporal_constraints: Optional[Dict[str, Any]],
-        kg_config: Optional[Dict[str, Any]],
-        rag_config: Optional[Dict[str, Any]],
+        temporal_constraints: Optional[Dict[str, object]],
+        kg_config: Optional[Dict[str, object]],
+        rag_config: Optional[Dict[str, object]],
         max_recursion_depth: int,
     ) -> KGRAGFusionPlan:
         """
@@ -780,7 +773,7 @@ class KGRAGFusionPlanner:
             },
         )
     
-    def get_fusion_template(self, name: str) -> Optional[Dict[str, Any]]:
+    def get_fusion_template(self, name: str) -> Optional[Dict[str, object]]:
         """
         Retrieves job-specific résumé analysis templates for different career stages.
 
@@ -803,7 +796,7 @@ class KGRAGFusionPlanner:
 
 def plan_temporal_entity_facts(
     entity_id: str,
-    temporal_range: Optional[Dict[str, Any]] = None,
+    temporal_range: Optional[Dict[str, object]] = None,
 ) -> KGRAGFusionPlan:
     """
     Creates résumé analysis plans for specific career experiences with timeline context.

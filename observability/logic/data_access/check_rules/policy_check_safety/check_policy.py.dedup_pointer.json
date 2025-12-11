@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\logic\\data_access\\check_rules\\policy_check_safety\\check_policy.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "5ed9894a09c2a6ab",
-  "original_path": "C:\\Git\\Agentic-Workflow\\07_observability\\logic\\data_access\\check_rules\\policy_check_safety\\check_policy.py",
-  "created": "2025-12-07T11:54:50.889928"
-}

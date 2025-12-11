@@ -1,9 +1,9 @@
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
 import pytest
 
-from stacks_v10_8.rag_orchestration import RAGOrchestratorStack
-from stacks_v10_8.draft_orchestration import DraftOrchestratorStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.stacks_v10_8.rag_orchestration import RAGOrchestratorStack  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.stacks_v10_8.draft_orchestration import DraftOrchestratorStack  # INVALID: Cannot import from path with hyphens
 
 
 class _SpySafety:

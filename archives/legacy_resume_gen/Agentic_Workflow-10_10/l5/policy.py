@@ -10,14 +10,6 @@ import logging
 import uuid
 from datetime import datetime, UTC
 
-from .types import (
-    SafetyContext,
-    SafetyFinding,
-    PolicyDecision,
-    Verdict,
-    Severity,
-    SafetyPolicy
-)
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +25,7 @@ T = TypeVar('T')
 class PolicyResult:
     """Result of evaluating multiple policies."""
     decisions: List[PolicyDecision] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     @property
     def final_verdict(self) -> Verdict:
@@ -62,7 +54,7 @@ class PolicyResult:
         """Get all findings that would cause a block."""
         return [f for f in self.all_findings if f.severity >= Severity.HIGH]
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to a dictionary for serialization."""
         return {
             'verdict': self.final_verdict.value,

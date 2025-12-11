@@ -1,4 +1,4 @@
-from core_v10_7 import CostTracker
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import CostTracker
 
 
 def test_cost_tracker_records_calls_and_sums():

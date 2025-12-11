@@ -4,11 +4,11 @@
 import logging
 from typing import Dict, List, Tuple
 
-from models_RES import ValidationResult, ValidationSeverity, ThematicAnalysis
+from runtime.compat.models_RES import ValidationResult, ValidationSeverity, ThematicAnalysis
 # --- REFACTOR: Import global CONFIG ---
-from config_RES_v2 import CONFIG
+from runtime.compat.config_RES_v2 import CONFIG
 # --- END REFACTOR ---
-from utils_RES_v2 import DuplicateDetector
+from runtime.compat.utils_RES_v2 import DuplicateDetector
 
 logger = logging.getLogger(__name__)
 

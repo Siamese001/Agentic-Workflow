@@ -4,17 +4,17 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Dict, List, Set
 
-from l3_orchestration import DAG
-from errors_controlflow import NodeExecutionError
-from node_result import NodeResult, NodeStatus
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DAG  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.errors_controlflow import NodeExecutionError  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.node_result import NodeResult, NodeStatus  # INVALID: Cannot import from path with hyphens
 
 
 class DAGExecutor:
     """Deterministic executor for DAG nodes with retry logic."""
 
-    def run(self, dag: DAG, initial_context: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    def run(self, dag: DAG, initial_context: Dict[str, object] | None = None) -> Dict[str, object]:
         dag.validate()
-        context: Dict[str, Any] = deepcopy(initial_context) if initial_context else {}
+        context: Dict[str, object] = deepcopy(initial_context) if initial_context else {}
 
         parents = self._build_parents_map(dag)
         ready: List[str] = sorted([name for name, deps in parents.items() if not deps])
@@ -43,7 +43,7 @@ class DAGExecutor:
         return context
 
     def _execute_with_retries(
-        self, node_name: str, node: Any, context: Dict[str, Any]
+        self, node_name: str, node: Any, context: Dict[str, object]
     ) -> tuple[NodeResult, Set[str]]:
         attempted: Set[str] = set()
         attempts = node.retries + 1
@@ -56,7 +56,7 @@ class DAGExecutor:
         assert last_result is not None
         return NodeResult(NodeStatus.FAILURE, last_result.payload), attempted
 
-    def _determine_edges(self, dag: DAG, node: Any, context: Dict[str, Any]) -> List[str]:
+    def _determine_edges(self, dag: DAG, node: Any, context: Dict[str, object]) -> List[str]:
         if node.condition:
             try:
                 condition_result = bool(node.condition(context))
@@ -95,8 +95,8 @@ class DAGExecutor:
         ready.sort()
 
     def _execute_parallel_nodes(
-        self, dag: DAG, parallel_nodes: List[str], context: Dict[str, Any], executed: Set[str]
-    ) -> Dict[str, Any]:
+        self, dag: DAG, parallel_nodes: List[str], context: Dict[str, object], executed: Set[str]
+    ) -> Dict[str, object]:
         merged = deepcopy(context)
         for child_name in sorted(parallel_nodes):
             if child_name not in dag.nodes:

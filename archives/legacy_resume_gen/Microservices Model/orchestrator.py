@@ -10,17 +10,14 @@ from __future__ import annotations
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import shutil
 import subprocess
 import time
 import uuid
 from pathlib import Path
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 from datetime import datetime
-from typing import (
-    Any, Dict, List, Optional, Set, Tuple
-)
 
 # Use networkx for DAG creation and topological sort
 # This is a hard requirement for a "world-class" orchestrator
@@ -31,13 +28,6 @@ except ImportError:
     sys.exit(1)
 
 # Import all canonical definitions from our winning helper file
-from helpers import (
-    setup_workflow_logging, default_serializer, hash_file,
-    HopCheckpoint, HopStatus, HopExecutionError, GateDecision,
-    ValidationResult, WorkflowSpecError,
-    WorkflowSpec, HopSpec, HopInput, HopOutput, RetryPolicy, Artifact,
-    ThematicAnalysis, ImmutableStagingBuffer, ResumeSection
-)
 
 from dotenv import load_dotenv
 load_dotenv()

@@ -1,4 +1,4 @@
-from stacks_v10_8.constitutional_engine import ConstitutionalEngine
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_constitutional_engine import ConstitutionalEngine  # INVALID: Cannot import from path with hyphens
 
 
 def _make_engine():

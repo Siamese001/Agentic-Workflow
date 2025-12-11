@@ -12,16 +12,16 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from injection_output_profiles import DEFAULT_SAFETY_OUTPUT_PROFILE
-from l5_safety import ConstitutionalEngine
-from l5_safety import InjectionDetector
-from l5_policy import PolicyEngine
-from prompt_system import DEFAULT_INJECTION_PATTERNS, INSTRUCTIONAL_INJECTION_ALL
-from l5_policy import evaluate_routing_permissions
-from l5_policy import SafetyMode
-from l5_policy import permissions as tool_permissions
-from l5_safety import log_safety_decision
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_output_profiles import DEFAULT_SAFETY_OUTPUT_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import ConstitutionalEngine  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import InjectionDetector  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import PolicyEngine  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_system import DEFAULT_INJECTION_PATTERNS, INSTRUCTIONAL_INJECTION_ALL  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import evaluate_routing_permissions  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import SafetyMode  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import permissions  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import log_safety_decision  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class SafetyGateway:
@@ -39,7 +39,7 @@ class SafetyGateway:
         self.injection_detector = injection_detector or InjectionDetector()
         self.safety_mode = safety_mode
 
-    def evaluate(self, payload: Dict[str, Any]) -> StatePatch:
+    def evaluate(self, payload: Dict[str, object]) -> StatePatch:
         """Perform safety checks on the provided payload and return a StatePatch."""
 
         content = str(payload.get("content", ""))

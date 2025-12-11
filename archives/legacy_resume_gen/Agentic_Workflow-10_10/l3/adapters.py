@@ -8,23 +8,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
-from l3.interfaces import (
-    L3OrchestratorInterface,
-    L3DAGExecutorInterface,
-    L3OrchestrationRequest,
-    L3OrchestrationResult,
-    ExecutionMode,
-)
-from l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator
-from core.models.models import (
-    WorkflowPlanBundle,
-    ExecutionContext,
-    L2ResultBundle,
-    WorkflowStatus,
-    NodeResult,
-    DAGNode,
-    DAGEdge,
-)
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator
 
 
 class UnifiedWorkflowOrchestratorAdapter(L3OrchestratorInterface):

@@ -4,21 +4,16 @@ from typing import Any, Dict
 
 import pytest
 
-from agent_orchestration_v10_7 import (
-    run_prepare_hil_drafting_reentry,
-    run_prepare_hil_strategy_reentry,
-    unwrap_node_result,
-)
-from core_v10_7 import SelfCorrectionManager
-from stacks_v10_8 import DraftOrchestratorStack, RAGOrchestratorStack
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import SelfCorrectionManager
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.tests.v10_7.test_flat__stacks__test_execution_stacks_v10_8 import DraftOrchestratorStack, RAGOrchestratorStack  # INVALID: Cannot import from path with hyphens
 
 
 class _StubPlanning:
-    def __init__(self, patch: Dict[str, Any]):
+    def __init__(self, patch: Dict[str, object]):
         self.patch = patch
         self.calls = 0
 
-    async def run_async(self, *_args, **_kwargs) -> Dict[str, Any]:
+    async def run_async(self, *_args, **_kwargs) -> Dict[str, object]:
         self.calls += 1
         return deepcopy(self.patch)
 
@@ -27,7 +22,7 @@ class _StubRAGExecution:
     def __init__(self) -> None:
         self.calls = 0
 
-    async def run_async(self, state: Dict[str, Any], *_args, **_kwargs) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], *_args, **_kwargs) -> Dict[str, object]:
         self.calls += 1
         if self.calls == 1:
             return {"resume": {"experience_bullets": []}, "rag": {"metadata": {"call": self.calls}}}
@@ -42,7 +37,7 @@ class _StubBulletExecution:
     def __init__(self) -> None:
         self.calls = 0
 
-    async def run_async(self, *_args, **_kwargs) -> Dict[str, Any]:
+    async def run_async(self, *_args, **_kwargs) -> Dict[str, object]:
         self.calls += 1
         return {"bullets": {"plan": {"target_sections": ["summary"]}, "generated_bullets": [{"id": "x"}]}}
 
@@ -55,7 +50,7 @@ class _StubDraftExecution:
     def __init__(self) -> None:
         self.calls = 0
 
-    async def run_async(self, *_args, **_kwargs) -> Dict[str, Any]:
+    async def run_async(self, *_args, **_kwargs) -> Dict[str, object]:
         self.calls += 1
         status = "revise" if self.calls == 1 else "approved"
         sections = {"summary": {"draft": f"run-{self.calls}"}}
