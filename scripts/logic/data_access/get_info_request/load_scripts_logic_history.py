@@ -1,188 +1,471 @@
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: fetch_data_history.py
-# Match Score: 0.8387
-# ============================================================
+"""Scripts Logic History Loader - Loads and manages scripts logic operation history.
 
-"""
-L5 Agentic Core - Plan Layer - fetch_data_history
-Implements L1 Cognitive Planning Layer for fetch data history operations
+This module provides history loading and management capabilities for scripts logic operations,
+including operation tracking, state persistence, and historical analysis.
+Follows the functional component pattern with proper logging.
 """
 
-from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any, Union
 import logging
-from abc import ABC, abstractmethod
+import json
+from datetime import datetime, timedelta
+from enum import Enum
+from pathlib import Path
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class FetchDataHistoryMemoryType(Enum):
-    """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
+
+class HistoryFilter(Enum):
+    """Filters for history queries."""
+    ALL = "all"
+    SUCCESS = "success"
+    FAILURE = "failure"
+    BY_OPERATION = "by_operation"
+    BY_DATE = "by_date"
+    BY_USER = "by_user"
+
+
+class HistorySort(Enum):
+    """Sorting options for history."""
+    TIMESTAMP_ASC = "timestamp_asc"
+    TIMESTAMP_DESC = "timestamp_desc"
+    OPERATION_ASC = "operation_asc"
+    OPERATION_DESC = "operation_desc"
+
 
 @dataclass
-class FetchDataHistoryMemoryConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class HistoryEntry:
+    """Individual history entry."""
+    id: str
+    operation: str
+    status: str
+    timestamp: datetime
+    duration_ms: float
+    input_data: Dict[str, Any] = field(default_factory=dict)
+    output_data: Dict[str, Any] = field(default_factory=dict)
+    error_message: Optional[str] = None
+    user_id: Optional[str] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
-class FetchDataHistoryMemoryResult:
-    """L5 Result structure with full type safety"""
-    success: bool
-    data: Dict[str, object] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+class HistoryQuery:
+    """Query configuration for history retrieval."""
+    filter_type: HistoryFilter = HistoryFilter.ALL
+    filter_value: Optional[str] = None
+    sort_by: HistorySort = HistorySort.TIMESTAMP_DESC
+    limit: int = 100
+    offset: int = 0
+    date_from: Optional[datetime] = None
+    date_to: Optional[datetime] = None
 
-class FetchDataHistoryMemoryProcessor(ABC):
-    """L5 interface foundation - ensures L1 pure planning behavior"""
 
-    @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> FetchDataHistoryMemoryResult:
-        """Process data with L5 safety constraints"""
-        ...
+@dataclass
+class HistoryResult:
+    """Result of history query."""
+    entries: List[HistoryEntry] = field(default_factory=list)
+    total_count: int = 0
+    query: HistoryQuery = field(default_factory=HistoryQuery)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
 
-class FetchDataHistoryMemoryImpl(FetchDataHistoryMemoryProcessor):
-    """
-    L5 Implementation - L1 Cognitive Planning Layer
-    Pure planning functionality with no side effects
-    """
+@dataclass
+class HistoryConfig:
+    """Configuration for history management."""
+    storage_path: str = "data/scripts_logic_history.json"
+    max_entries: int = 10000
+    retention_days: int = 30
+    auto_cleanup: bool = True
+    compression: bool = False
 
-    def __init__(self, constraints: Optional[FetchDataHistoryMemoryConstraints] = None):
-        self.constraints = constraints or FetchDataHistoryMemoryConstraints()
+
+class ScriptsLogicHistoryLoader:
+    """Main class for loading and managing scripts logic history."""
+
+    def __init__(self, config: Optional[HistoryConfig] = None):
+        self.config = config or HistoryConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
+        self._history_cache = []
+        self._load_history()
 
-    def process(self, input_data: Dict[str, object]) -> FetchDataHistoryMemoryResult:
-        """Process input following L5 architecture principles"""
-        self.logger.info(f"Processing {input_data}")
-
-        # L5 Input validation
-        self._validate_input(input_data)
-
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(input_data):
-            raise SecurityError("Input failed L5 safety validation")
-
-        # Create result with L5 structure
-        result = FetchDataHistoryMemoryResult(
-            success=True,
-            data={"processed": True, "input": input_data},
-            safety_validated=True,
-            timestamp=self._get_timestamp()
-        )
-
-        self.logger.info(f"Successfully processed: {result.success}")
-        return result
-
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
+    def load_history(self, query: HistoryQuery) -> HistoryResult:
+        """Load history based on query parameters.
+        
+        Args:
+            query: History query configuration
+            
+        Returns:
+            HistoryResult: Query results with entries and metadata
+        """
+        self.logger.info(f"Loading history with filter: {query.filter_type.value}")
+        
         try:
-            # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "eval(", "exec(", "__import__"]
-            data_str = str(data).lower()
-            for pattern in dangerous_patterns:
-                if pattern in data_str:
-                    self.logger.error(f" Dangerous pattern detected: {pattern}")
-                    return False
+            # Apply filters
+            filtered_entries = self._apply_filters(query)
+            
+            # Apply sorting
+            sorted_entries = self._apply_sorting(filtered_entries, query.sort_by)
+            
+            # Apply pagination
+            total_count = len(sorted_entries)
+            paginated_entries = sorted_entries[query.offset:query.offset + query.limit]
+            
+            result = HistoryResult(
+                entries=paginated_entries,
+                total_count=total_count,
+                query=query,
+                metadata={
+                    "loaded_at": datetime.utcnow().isoformat(),
+                    "storage_path": self.config.storage_path,
+                    "loader": "ScriptsLogicHistoryLoader"
+                }
+            )
+            
+            self.logger.info(
+                f"History loaded: {len(paginated_entries)} entries (total: {total_count})"
+            )
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Failed to load history: {str(e)}")
+            return HistoryResult(
+                entries=[],
+                total_count=0,
+                query=query,
+                metadata={"error": str(e)}
+            )
 
-            # Check data size
-            if len(str(data)) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds size limit")
-                return False
-
-            self.logger.info("Data passed L5 safety validation")
+    def add_entry(self, entry: HistoryEntry) -> bool:
+        """Add a new history entry.
+        
+        Args:
+            entry: History entry to add
+            
+        Returns:
+            bool: True if entry was added successfully
+        """
+        try:
+            # Add to cache
+            self._history_cache.append(entry)
+            
+            # Persist to storage
+            self._save_history()
+            
+            # Cleanup if needed
+            if self.config.auto_cleanup:
+                self._cleanup_old_entries()
+            
+            self.logger.debug(f"Added history entry: {entry.id}")
             return True
-        except (ValueError, TypeError, KeyError) as e:
-            self.logger.error("Safety validation error: %s", e)
-            return False  # Fail-closed
+            
+        except Exception as e:
+            self.logger.error(f"Failed to add history entry: {str(e)}")
+            return False
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
-        """L5 Input validation"""
-        if not isinstance(input_data, dict):
-            raise ValueError("Input must be a dictionary")
+    def get_entry(self, entry_id: str) -> Optional[HistoryEntry]:
+        """Get a specific history entry by ID.
+        
+        Args:
+            entry_id: ID of entry to retrieve
+            
+        Returns:
+            HistoryEntry: Entry if found, None otherwise
+        """
+        for entry in self._history_cache:
+            if entry.id == entry_id:
+                return entry
+        return None
 
-        if not input_data:
-            raise ValueError("Input cannot be empty")
+    def delete_entry(self, entry_id: str) -> bool:
+        """Delete a history entry.
+        
+        Args:
+            entry_id: ID of entry to delete
+            
+        Returns:
+            bool: True if entry was deleted
+        """
+        original_length = len(self._history_cache)
+        self._history_cache = [e for e in self._history_cache if e.id != entry_id]
+        
+        if len(self._history_cache) < original_length:
+            self._save_history()
+            self.logger.debug(f"Deleted history entry: {entry_id}")
+            return True
+        
+        return False
 
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
+    def get_statistics(self) -> Dict[str, Any]:
+        """Get history statistics.
+        
+        Returns:
+            Dict: Statistics about the history
+        """
+        if not self._history_cache:
+            return {"total_entries": 0}
+        
+        # Calculate statistics
+        total_entries = len(self._history_cache)
+        successful_entries = len([e for e in self._history_cache if e.status == "success"])
+        failed_entries = len([e for e in self._history_cache if e.status == "failure"])
+        
+        # Operation counts
+        operation_counts = {}
+        for entry in self._history_cache:
+            operation_counts[entry.operation] = operation_counts.get(entry.operation, 0) + 1
+        
+        # Time range
+        timestamps = [e.timestamp for e in self._history_cache]
+        oldest_entry = min(timestamps)
+        newest_entry = max(timestamps)
+        
+        # Average duration
+        durations = [e.duration_ms for e in self._history_cache if e.duration_ms > 0]
+        avg_duration = sum(durations) / len(durations) if durations else 0
+        
+        return {
+            "total_entries": total_entries,
+            "successful_entries": successful_entries,
+            "failed_entries": failed_entries,
+            "success_rate": successful_entries / total_entries if total_entries > 0 else 0,
+            "operation_counts": operation_counts,
+            "oldest_entry": oldest_entry.isoformat(),
+            "newest_entry": newest_entry.isoformat(),
+            "average_duration_ms": avg_duration,
+            "retention_days": self.config.retention_days,
+            "max_entries": self.config.max_entries
+        }
 
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
+    def clear_history(self, older_than_days: Optional[int] = None) -> int:
+        """Clear history entries.
+        
+        Args:
+            older_than_days: Only clear entries older than this many days
+            
+        Returns:
+            int: Number of entries cleared
+        """
+        if older_than_days is None:
+            # Clear all entries
+            count = len(self._history_cache)
+            self._history_cache.clear()
+        else:
+            # Clear old entries
+            cutoff_date = datetime.utcnow() - timedelta(days=older_than_days)
+            original_count = len(self._history_cache)
+            self._history_cache = [e for e in self._history_cache if e.timestamp >= cutoff_date]
+            count = original_count - len(self._history_cache)
+        
+        self._save_history()
+        self.logger.info(f"Cleared {count} history entries")
+        return count
 
-# L5 Interface compliance
-class FetchDataHistoryMemoryInterface:
-    """L5 Interface - ensures contract compliance"""
-
-    def __init__(self, engine: FetchDataHistoryMemoryProcessor):
-        self._processor = engine
-
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
-        """L5 Interface method - executes safely"""
+    def _load_history(self) -> None:
+        """Load history from storage."""
         try:
-            result = self._processor.process(input_data)
-            return {
-                "success": result.success,
-                "data": result.data,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
+            storage_file = Path(self.config.storage_path)
+            
+            if storage_file.exists():
+                with open(storage_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                # Convert JSON data to HistoryEntry objects
+                self._history_cache = []
+                for entry_data in data.get("entries", []):
+                    entry = HistoryEntry(
+                        id=entry_data["id"],
+                        operation=entry_data["operation"],
+                        status=entry_data["status"],
+                        timestamp=datetime.fromisoformat(entry_data["timestamp"]),
+                        duration_ms=entry_data["duration_ms"],
+                        input_data=entry_data.get("input_data", {}),
+                        output_data=entry_data.get("output_data", {}),
+                        error_message=entry_data.get("error_message"),
+                        user_id=entry_data.get("user_id"),
+                        metadata=entry_data.get("metadata", {})
+                    )
+                    self._history_cache.append(entry)
+                
+                self.logger.info(f"Loaded {len(self._history_cache)} history entries")
+            else:
+                self._history_cache = []
+                self.logger.info("No existing history file found, starting fresh")
+                
+        except Exception as e:
+            self.logger.error(f"Failed to load history: {str(e)}")
+            self._history_cache = []
+
+    def _save_history(self) -> None:
+        """Save history to storage."""
+        try:
+            storage_file = Path(self.config.storage_path)
+            storage_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Convert to JSON-serializable format
+            data = {
+                "entries": [
+                    {
+                        "id": entry.id,
+                        "operation": entry.operation,
+                        "status": entry.status,
+                        "timestamp": entry.timestamp.isoformat(),
+                        "duration_ms": entry.duration_ms,
+                        "input_data": entry.input_data,
+                        "output_data": entry.output_data,
+                        "error_message": entry.error_message,
+                        "user_id": entry.user_id,
+                        "metadata": entry.metadata
+                    }
+                    for entry in self._history_cache
+                ],
+                "saved_at": datetime.utcnow().isoformat()
             }
-        except (ValueError, TypeError, KeyError) as e:
-            raise SecurityError(f"Execution failed: {e}")
+            
+            with open(storage_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            
+            self.logger.debug(f"Saved {len(self._history_cache)} history entries")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to save history: {str(e)}")
 
-# L5 builder
-class FetchDataHistoryMemoryFactory:
-    """L5 builder for creating processors with proper configuration"""
+    def _apply_filters(self, query: HistoryQuery) -> List[HistoryEntry]:
+        """Apply filters to history entries."""
+        filtered = self._history_cache.copy()
+        
+        # Apply date range filter
+        if query.date_from:
+            filtered = [e for e in filtered if e.timestamp >= query.date_from]
+        
+        if query.date_to:
+            filtered = [e for e in filtered if e.timestamp <= query.date_to]
+        
+        # Apply specific filters
+        if query.filter_type == HistoryFilter.SUCCESS:
+            filtered = [e for e in filtered if e.status == "success"]
+        elif query.filter_type == HistoryFilter.FAILURE:
+            filtered = [e for e in filtered if e.status == "failure"]
+        elif query.filter_type == HistoryFilter.BY_OPERATION and query.filter_value:
+            filtered = [e for e in filtered if e.operation == query.filter_value]
+        elif query.filter_type == HistoryFilter.BY_USER and query.filter_value:
+            filtered = [e for e in filtered if e.user_id == query.filter_value]
+        
+        return filtered
 
-    @staticmethod
-    def create_processor(safety_level: str = "strict") -> FetchDataHistoryMemoryInterface:
-        """Create configured engine"""
-        constraints = FetchDataHistoryMemoryConstraints(safety_level=safety_level)
-        engine = FetchDataHistoryMemoryImpl(constraints)
-        return FetchDataHistoryMemoryInterface(engine)
+    def _apply_sorting(self, entries: List[HistoryEntry], sort_by: HistorySort) -> List[HistoryEntry]:
+        """Apply sorting to history entries."""
+        if sort_by == HistorySort.TIMESTAMP_ASC:
+            return sorted(entries, key=lambda x: x.timestamp)
+        elif sort_by == HistorySort.TIMESTAMP_DESC:
+            return sorted(entries, key=lambda x: x.timestamp, reverse=True)
+        elif sort_by == HistorySort.OPERATION_ASC:
+            return sorted(entries, key=lambda x: x.operation)
+        elif sort_by == HistorySort.OPERATION_DESC:
+            return sorted(entries, key=lambda x: x.operation, reverse=True)
+        else:
+            return entries
 
-# L5 Main execution point
-def fetch_data_history(input_data: Dict[str, object]) -> Dict[str, object]:
-    """
-    L5 Main function - fetch data history operations
+    def _cleanup_old_entries(self) -> None:
+        """Clean up old entries based on retention policy."""
+        if not self.config.retention_days:
+            return
+        
+        cutoff_date = datetime.utcnow() - timedelta(days=self.config.retention_days)
+        original_count = len(self._history_cache)
+        
+        # Remove old entries
+        self._history_cache = [e for e in self._history_cache if e.timestamp >= cutoff_date]
+        
+        # Limit total entries
+        if len(self._history_cache) > self.config.max_entries:
+            # Keep newest entries
+            self._history_cache.sort(key=lambda x: x.timestamp, reverse=True)
+            self._history_cache = self._history_cache[:self.config.max_entries]
+        
+        cleaned_count = original_count - len(self._history_cache)
+        if cleaned_count > 0:
+            self.logger.info(f"Cleaned up {cleaned_count} old history entries")
 
+
+# Factory function for easy instantiation
+def create_scripts_logic_history_loader(
+    storage_path: str = "data/scripts_logic_history.json",
+    max_entries: int = 10000,
+    retention_days: int = 30,
+    **kwargs
+) -> ScriptsLogicHistoryLoader:
+    """Create a configured scripts logic history loader."""
+    config = HistoryConfig(
+        storage_path=storage_path,
+        max_entries=max_entries,
+        retention_days=retention_days,
+        **kwargs
+    )
+    return ScriptsLogicHistoryLoader(config)
+
+
+# Convenience function for direct usage
+def load_scripts_logic_history(
+    filter_type: str = "all",
+    filter_value: Optional[str] = None,
+    sort_by: str = "timestamp_desc",
+    limit: int = 100,
+    offset: int = 0,
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Load scripts logic history.
+    
     Args:
-        input_data: Input data to process
-
+        filter_type: Type of filter to apply
+        filter_value: Value for the filter
+        sort_by: How to sort the results
+        limit: Maximum number of entries to return
+        offset: Number of entries to skip
+        config: Optional loader configuration
+        
     Returns:
-        Dict: Processed result
-
-    Raises:
-        SecurityError: If execution fails any safety check
+        Dict: History results
     """
-    builder = FetchDataHistoryMemoryFactory()
-    engine = builder.create_processor()
-    return engine.execute(input_data)
-
-if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": True}
-        result = fetch_data_history(test_data)
-        logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:
-        logger.error("L5 Security error: %s", e)
-    except (ValueError, TypeError, KeyError) as e:
-        logger.error("L5 Unexpected error: %s", e)
+    # Create loader and load history
+    loader_config = HistoryConfig(**config or {})
+    loader = ScriptsLogicHistoryLoader(loader_config)
+    
+    query = HistoryQuery(
+        filter_type=HistoryFilter(filter_type),
+        filter_value=filter_value,
+        sort_by=HistorySort(sort_by),
+        limit=limit,
+        offset=offset
+    )
+    
+    result = loader.load_history(query)
+    
+    # Convert result to dict for JSON serialization
+    return {
+        "entries": [
+            {
+                "id": e.id,
+                "operation": e.operation,
+                "status": e.status,
+                "timestamp": e.timestamp.isoformat(),
+                "duration_ms": e.duration_ms,
+                "input_data": e.input_data,
+                "output_data": e.output_data,
+                "error_message": e.error_message,
+                "user_id": e.user_id,
+                "metadata": e.metadata
+            }
+            for e in result.entries
+        ],
+        "total_count": result.total_count,
+        "query": {
+            "filter_type": result.query.filter_type.value,
+            "filter_value": result.query.filter_value,
+            "sort_by": result.query.sort_by.value,
+            "limit": result.query.limit,
+            "offset": result.query.offset
+        },
+        "metadata": result.metadata
+    }
