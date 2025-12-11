@@ -48,7 +48,7 @@ except ImportError:
     logging.warning("ChromaDB not available - Librarian Agent will be disabled")
 
 # Local module imports
-from apps_rg.resume_generation.utils import TelemetryLogger
+from apps_shared.rag.hardening.utils import TelemetryLogger
 
 # Import prompts module
 import prompt_governance.prompts

@@ -7,7 +7,7 @@ import scripts.check_canonical_structure
 import json
 import logging
 import os  # <-- Import os
-from typing import Dict, List, Tuple, Optional, object
+from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
 
 # --- FIX: Import the DATA_DIR constant ---
@@ -16,7 +16,7 @@ from config.config import DATA_DIR
 # Import models needed for type hinting
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from runtime.compat.models_RES import RAGMission, MasterResumeIndex, ThematicAnalysis
+    from apps_shared.rag.hardening.models import RAGMission, MasterResumeIndex, ThematicAnalysis
     from config.config import ContentConstraintsConfig, CompetitiveAnalysisConfig
 
 # --- LOGIC: Load the 'Recipe Book' (prompts.json) at startup ---

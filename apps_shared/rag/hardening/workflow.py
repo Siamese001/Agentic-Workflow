@@ -25,7 +25,7 @@ from dataclasses import asdict, is_dataclass
 from apps_shared.rag.hardening.rag import EnhancedJobDescriptionAnalyzer, LibrarianAgent
 from agentic_core.planning.state_manager import StateSerializer, ManifestManager
 try:
-    from apps_rg.resume_generation.utils import TelemetryLogger, _load_json_config
+    from apps_shared.rag.hardening.utils import TelemetryLogger, _load_json_config
     PROMPT_TEMPLATES_GLOBAL = _load_json_config(str(DATA_DIR / "prompts.json"), "Prompts")
 except Exception as e:
     logging.critical(f"FATAL: Could not load prompts.json: {e}")
