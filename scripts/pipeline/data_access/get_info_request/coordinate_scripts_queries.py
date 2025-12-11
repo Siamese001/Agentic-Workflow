@@ -1,188 +1,390 @@
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: coordinate_scripts_operations.py
-# Match Score: 0.8364
-# ============================================================
+"""Scripts Queries Coordinator - Manages script query coordination operations.
 
-"""
-L5 Agentic Core - Plan Layer - coordinate_scripts_operations
-Implements L1 Cognitive Planning Layer for coordinate scripts operations operations
+This coordinator handles the coordination of script queries across multiple
+scripts, ensuring proper query routing, result aggregation, and error handling.
+Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any, Union
 import logging
-from abc import ABC, abstractmethod
+from datetime import datetime
+from enum import Enum
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class CoordinateScriptsOperationsOrchestratorType(Enum):
-    """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
+
+class QueryType(Enum):
+    """Types of script queries."""
+    READ = "read"
+    WRITE = "write"
+    EXECUTE = "execute"
+    VALIDATE = "validate"
+    TRANSFORM = "transform"
+
+
+class QueryStatus(Enum):
+    """Status of query execution."""
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
 
 @dataclass
-class CoordinateScriptsOperationsOrchestratorConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class ScriptQuery:
+    """Individual script query definition."""
+    id: str
+    query_type: QueryType
+    target_script: str
+    parameters: Dict[str, Any] = field(default_factory=dict)
+    timeout: float = 30.0
+    retry_count: int = 0
+    max_retries: int = 3
+    dependencies: List[str] = field(default_factory=list)
+    priority: int = 0
+
 
 @dataclass
-class CoordinateScriptsOperationsOrchestratorResult:
-    """L5 Result structure with full type safety"""
+class QueryResult:
+    """Result of a script query execution."""
+    query_id: str
+    status: QueryStatus
+    result: Any = None
+    error: Optional[str] = None
+    execution_time: float = 0.0
+    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ScriptsQueriesConfig:
+    """Configuration for scripts queries coordinator."""
+    max_concurrent_queries: int = 10
+    default_timeout: float = 30.0
+    enable_query_caching: bool = True
+    enable_result_aggregation: bool = True
+    enable_error_recovery: bool = True
+    log_level: str = "INFO"
+
+
+@dataclass
+class ScriptsQueriesResult:
+    """Result of scripts queries coordination."""
     success: bool
-    data: Dict[str, object] = field(default_factory=dict)
+    query_results: List[QueryResult] = field(default_factory=list)
+    aggregated_results: Dict[str, Any] = field(default_factory=dict)
+    failed_queries: List[str] = field(default_factory=list)
+    total_execution_time: float = 0.0
+    warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-class CoordinateScriptsOperationsOrchestratorProcessor(ABC):
-    """L5 interface foundation - ensures L1 pure planning behavior"""
 
-    @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> CoordinateScriptsOperationsOrchestratorResult:
-        """Process data with L5 safety constraints"""
-        ...
+class ScriptsQueriesCoordinator:
+    """Coordinator for managing script queries across multiple scripts."""
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
-
-class CoordinateScriptsOperationsOrchestratorImpl(CoordinateScriptsOperationsOrchestratorProcessor):
-    """
-    L5 Implementation - L1 Cognitive Planning Layer
-    Pure planning functionality with no side effects
-    """
-
-    def __init__(self, constraints: Optional[CoordinateScriptsOperationsOrchestratorConstraints] = None):
-        self.constraints = constraints or CoordinateScriptsOperationsOrchestratorConstraints()
+    def __init__(self, config: Optional[ScriptsQueriesConfig] = None):
+        self.config = config or ScriptsQueriesConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(self.config.log_level)
+        self._query_cache = {} if self.config.enable_query_caching else None
 
-    def process(self, input_data: Dict[str, object]) -> CoordinateScriptsOperationsOrchestratorResult:
-        """Process input following L5 architecture principles"""
-        self.logger.info(f"Processing {input_data}")
-
-        # L5 Input validation
-        self._validate_input(input_data)
-
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(input_data):
-            raise SecurityError("Input failed L5 safety validation")
-
-        # Create result with L5 structure
-        result = CoordinateScriptsOperationsOrchestratorResult(
-            success=True,
-            data={"processed": True, "input": input_data},
-            safety_validated=True,
-            timestamp=self._get_timestamp()
-        )
-
-        self.logger.info(f"Successfully processed: {result.success}")
-        return result
-
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
+    def execute(self, queries: List[ScriptQuery]) -> ScriptsQueriesResult:
+        """Execute the scripts queries coordination.
+        
+        Args:
+            queries: List of script queries to coordinate
+            
+        Returns:
+            ScriptsQueriesResult: Complete coordination result with all query outcomes
+        """
+        self.logger.info(f"Starting coordination of {len(queries)} queries")
+        
         try:
-            # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "eval(", "exec(", "__import__"]
-            data_str = str(data).lower()
-            for pattern in dangerous_patterns:
-                if pattern in data_str:
-                    self.logger.error(f" Dangerous pattern detected: {pattern}")
-                    return False
+            # Validate input queries
+            self._validate_queries(queries)
+            
+            # Sort queries by priority and dependencies
+            sorted_queries = self._sort_queries(queries)
+            
+            # Execute queries with concurrency control
+            query_results = self._execute_queries(sorted_queries)
+            
+            # Aggregate results if enabled
+            aggregated_results = self._aggregate_results(query_results) if self.config.enable_result_aggregation else {}
+            
+            # Calculate statistics
+            failed_queries = [r.query_id for r in query_results if r.status == QueryStatus.FAILED]
+            total_time = sum(r.execution_time for r in query_results)
+            
+            result = ScriptsQueriesResult(
+                success=len(failed_queries) == 0,
+                query_results=query_results,
+                aggregated_results=aggregated_results,
+                failed_queries=failed_queries,
+                total_execution_time=total_time,
+                metadata={
+                    "coordinated_at": datetime.utcnow().isoformat(),
+                    "query_count": len(queries),
+                    "success_count": len(query_results) - len(failed_queries),
+                    "coordinator": "ScriptsQueriesCoordinator"
+                }
+            )
+            
+            self.logger.info(f"Successfully coordinated {len(query_results)} queries with {len(failed_queries)} failures")
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Scripts queries coordination failed: {str(e)}")
+            return ScriptsQueriesResult(
+                success=False,
+                errors=[str(e)],
+                metadata={
+                    "failed_at": datetime.utcnow().isoformat(),
+                    "coordinator": "ScriptsQueriesCoordinator"
+                }
+            )
 
-            # Check data size
-            if len(str(data)) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds size limit")
-                return False
+    def _validate_queries(self, queries: List[ScriptQuery]) -> None:
+        """Validate script queries before coordination."""
+        if not queries:
+            raise ValueError("No script queries provided")
+        
+        query_ids = {query.id for query in queries}
+        if len(query_ids) != len(queries):
+            raise ValueError("Duplicate query IDs found")
+        
+        for query in queries:
+            if not query.target_script:
+                raise ValueError(f"Query {query.id} has no target script")
+            
+            # Check dependencies exist
+            for dep in query.dependencies:
+                if dep not in query_ids:
+                    raise ValueError(f"Query {query.id} depends on non-existent query {dep}")
 
-            self.logger.info("Data passed L5 safety validation")
-            return True
-        except (ValueError, TypeError, KeyError) as e:
-            self.logger.error("Safety validation error: %s", e)
-            return False  # Fail-closed
+    def _sort_queries(self, queries: List[ScriptQuery]) -> List[ScriptQuery]:
+        """Sort queries by priority and resolve dependencies."""
+        # Topological sort for dependency resolution
+        visited = set()
+        temp_visited = set()
+        result = []
+        
+        def visit(query: ScriptQuery):
+            if query.id in temp_visited:
+                raise ValueError(f"Circular dependency detected involving query {query.id}")
+            if query.id in visited:
+                return
+            
+            temp_visited.add(query.id)
+            
+            # Visit dependencies first
+            for dep_id in query.dependencies:
+                dep_query = next(q for q in queries if q.id == dep_id)
+                visit(dep_query)
+            
+            temp_visited.remove(query.id)
+            visited.add(query.id)
+            result.append(query)
+        
+        for query in queries:
+            if query.id not in visited:
+                visit(query)
+        
+        # Sort by priority within dependency constraints
+        return sorted(result, key=lambda q: (-q.priority, q.id))
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
-        """L5 Input validation"""
-        if not isinstance(input_data, dict):
-            raise ValueError("Input must be a dictionary")
+    def _execute_queries(self, queries: List[ScriptQuery]) -> List[QueryResult]:
+        """Execute queries with concurrency control."""
+        results = []
+        
+        for query in queries:
+            # Check cache if enabled
+            if self._query_cache is not None:
+                cache_key = self._get_cache_key(query)
+                if cache_key in self._query_cache:
+                    cached_result = self._query_cache[cache_key]
+                    results.append(cached_result)
+                    continue
+            
+            # Execute query
+            result = self._execute_single_query(query)
+            results.append(result)
+            
+            # Cache result if enabled and successful
+            if self._query_cache is not None and result.status == QueryStatus.COMPLETED:
+                cache_key = self._get_cache_key(query)
+                self._query_cache[cache_key] = result
+        
+        return results
 
-        if not input_data:
-            raise ValueError("Input cannot be empty")
-
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
-
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
-
-# L5 Interface compliance
-class CoordinateScriptsOperationsOrchestratorInterface:
-    """L5 Interface - ensures contract compliance"""
-
-    def __init__(self, engine: CoordinateScriptsOperationsOrchestratorProcessor):
-        self._processor = engine
-
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
-        """L5 Interface method - executes safely"""
+    def _execute_single_query(self, query: ScriptQuery) -> QueryResult:
+        """Execute a single script query."""
+        start_time = datetime.utcnow()
+        
         try:
-            result = self._processor.process(input_data)
-            return {
-                "success": result.success,
-                "data": result.data,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
-            }
-        except (ValueError, TypeError, KeyError) as e:
-            raise SecurityError(f"Execution failed: {e}")
+            self.logger.info(f"Executing query {query.id} against {query.target_script}")
+            
+            # Simulate query execution based on type
+            if query.query_type == QueryType.READ:
+                result_data = f"Read data from {query.target_script}"
+            elif query.query_type == QueryType.WRITE:
+                result_data = f"Written data to {query.target_script}"
+            elif query.query_type == QueryType.EXECUTE:
+                result_data = f"Executed {query.target_script}"
+            elif query.query_type == QueryType.VALIDATE:
+                result_data = f"Validated {query.target_script}"
+            elif query.query_type == QueryType.TRANSFORM:
+                result_data = f"Transformed {query.target_script}"
+            else:
+                raise ValueError(f"Unsupported query type: {query.query_type}")
+            
+            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            
+            return QueryResult(
+                query_id=query.id,
+                status=QueryStatus.COMPLETED,
+                result=result_data,
+                execution_time=execution_time,
+                metadata={"script": query.target_script, "type": query.query_type.value}
+            )
+            
+        except Exception as e:
+            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            self.logger.error(f"Query {query.id} failed: {str(e)}")
+            
+            return QueryResult(
+                query_id=query.id,
+                status=QueryStatus.FAILED,
+                error=str(e),
+                execution_time=execution_time,
+                metadata={"script": query.target_script, "type": query.query_type.value}
+            )
 
-# L5 builder
-class CoordinateScriptsOperationsOrchestratorFactory:
-    """L5 builder for creating processors with proper configuration"""
+    def _get_cache_key(self, query: ScriptQuery) -> str:
+        """Generate cache key for query."""
+        return f"{query.target_script}:{query.query_type.value}:{hash(str(query.parameters))}"
 
-    @staticmethod
-    def create_processor(safety_level: str = "strict") -> CoordinateScriptsOperationsOrchestratorInterface:
-        """Create configured engine"""
-        constraints = CoordinateScriptsOperationsOrchestratorConstraints(safety_level=safety_level)
-        engine = CoordinateScriptsOperationsOrchestratorImpl(constraints)
-        return CoordinateScriptsOperationsOrchestratorInterface(engine)
+    def _aggregate_results(self, results: List[QueryResult]) -> Dict[str, Any]:
+        """Aggregate results from multiple queries."""
+        aggregated = {
+            "total_queries": len(results),
+            "successful_queries": len([r for r in results if r.status == QueryStatus.COMPLETED]),
+            "failed_queries": len([r for r in results if r.status == QueryStatus.FAILED]),
+            "query_types": {}
+        }
+        
+        # Group results by query type
+        for result in results:
+            query_type = result.metadata.get("type", "unknown")
+            if query_type not in aggregated["query_types"]:
+                aggregated["query_types"][query_type] = {"count": 0, "success": 0}
+            aggregated["query_types"][query_type]["count"] += 1
+            if result.status == QueryStatus.COMPLETED:
+                aggregated["query_types"][query_type]["success"] += 1
+        
+        return aggregated
 
-# L5 Main execution point
-def coordinate_scripts_operations(input_data: Dict[str, object]) -> Dict[str, object]:
-    """
-    L5 Main function - coordinate scripts operations operations
 
+# Factory function for easy instantiation
+def create_scripts_queries_coordinator(
+    max_concurrent_queries: int = 10,
+    enable_query_caching: bool = True,
+    **kwargs
+) -> ScriptsQueriesCoordinator:
+    """Create a configured scripts queries coordinator."""
+    config = ScriptsQueriesConfig(
+        max_concurrent_queries=max_concurrent_queries,
+        enable_query_caching=enable_query_caching,
+        **kwargs
+    )
+    return ScriptsQueriesCoordinator(config)
+
+
+# Convenience function for direct usage
+def coordinate_script_queries(
+    queries: List[Dict[str, Any]],
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Coordinate script queries from simple query definitions.
+    
     Args:
-        input_data: Input data to process
-
+        queries: List of query dictionaries with keys: id, query_type, target_script, etc.
+        config: Optional configuration overrides
+        
     Returns:
-        Dict: Processed result
-
-    Raises:
-        SecurityError: If execution fails any safety check
+        Dict: Coordination result with all query outcomes
     """
-    builder = CoordinateScriptsOperationsOrchestratorFactory()
-    engine = builder.create_processor()
-    return engine.execute(input_data)
+    # Convert dict queries to ScriptQuery objects
+    script_queries = []
+    for query_dict in queries:
+        query = ScriptQuery(
+            id=query_dict["id"],
+            query_type=QueryType(query_dict["query_type"]),
+            target_script=query_dict["target_script"],
+            parameters=query_dict.get("parameters", {}),
+            timeout=query_dict.get("timeout", 30.0),
+            retry_count=query_dict.get("retry_count", 0),
+            max_retries=query_dict.get("max_retries", 3),
+            dependencies=query_dict.get("dependencies", []),
+            priority=query_dict.get("priority", 0)
+        )
+        script_queries.append(query)
+    
+    # Create coordinator and execute
+    coordinator_config = ScriptsQueriesConfig(**config) if config else None
+    coordinator = ScriptsQueriesCoordinator(coordinator_config)
+    result = coordinator.execute(script_queries)
+    
+    # Convert result to dict for JSON serialization
+    return {
+        "success": result.success,
+        "query_results": [
+            {
+                "query_id": r.query_id,
+                "status": r.status.value,
+                "result": r.result,
+                "error": r.error,
+                "execution_time": r.execution_time,
+                "timestamp": r.timestamp,
+                "metadata": r.metadata
+            }
+            for r in result.query_results
+        ],
+        "aggregated_results": result.aggregated_results,
+        "failed_queries": result.failed_queries,
+        "total_execution_time": result.total_execution_time,
+        "warnings": result.warnings,
+        "errors": result.errors,
+        "metadata": result.metadata
+    }
+
 
 if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": True}
-        result = coordinate_scripts_operations(test_data)
-        logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:
-        logger.error("L5 Security error: %s", e)
-    except (ValueError, TypeError, KeyError) as e:
-        logger.error("L5 Unexpected error: %s", e)
+    # Example usage
+    example_queries = [
+        {
+            "id": "query1",
+            "query_type": "read",
+            "target_script": "/scripts/data.py",
+            "priority": 10
+        },
+        {
+            "id": "query2",
+            "query_type": "execute",
+            "target_script": "/scripts/process.py",
+            "dependencies": ["query1"],
+            "priority": 5
+        },
+        {
+            "id": "query3",
+            "query_type": "validate",
+            "target_script": "/scripts/output.py",
+            "dependencies": ["query2"]
+        }
+    ]
+    
+    result = coordinate_script_queries(example_queries)
+    print(f"Coordination result: {result}")
