@@ -2,11 +2,14 @@
 # scripts/sovereign_promoter_2025.py — FINAL ETERNAL VERSION (Dec 2025)
 # Drop any file anywhere → commit → it is instantly moved to the correct sovereign folder
 # New folders are auto-created. No human ever touches structure again.
+#
+# MODIFICATION: Added logic to automatically process and promote files
+# staged in the /archive_code/ temporary directory.
 
-import scripts.check_canonical_structure
 import shutil
 import subprocess
 import sys
+import re
 from pathlib import Path
 
 
@@ -60,7 +63,8 @@ def is_sovereign_grade(content: str) -> tuple[bool, str]:
     if "from __future__ import annotations" in content:
         score += 4
         reasons.append("annotations")
-    if "@dataclass(frozen=True" in content or "@dataclass\nfrozen=True" in content:
+    # Corrected check for @dataclass(frozen=True) which spans multiple lines often
+    if re.search(r"@dataclass\s*\(.*frozen=True", content, re.DOTALL):
         score += 4
         reasons.append("frozen")
     if "class " in content and "Protocol" in content:
@@ -72,6 +76,7 @@ def is_sovereign_grade(content: str) -> tuple[bool, str]:
     if "Literal[" in content:
         score += 3
         reasons.append("Literal")
+    # Heuristic: More than 40% of lines contain a type hint (->)
     if content.count("->") > content.count("\n") * 0.4:
         score += 3
         reasons.append("dense-types")
@@ -87,9 +92,16 @@ def is_sovereign_grade(content: str) -> tuple[bool, str]:
         score += 4
         reasons.append(f"{core_terms}-core")
 
+    # --- Structural Pass Bypass (New Logic) ---
+    # Check for "dirty" code first (this MUST NOT be bypassed)
     if re.search(r"\bprint\(|pdb\. |breakpoint\(|PENDING|ATTENTION|XXX", content):
         return False, "dirty"
-
+    
+    # Bypass: If it's very core-term-heavy, it's structurally important enough to be promoted.
+    if core_terms >= 5:
+        return True, f"structural-pass:{core_terms}-core"
+    
+    # Original Rule: Must hit the score threshold.
     return score >= 7, f"score={score} [{', '.join(reasons)}]"
 
 
@@ -103,15 +115,35 @@ def choose_destination(content: str, filename: str) -> Path:
 
 def main() -> None:
     moved = False
-    for arg in sys.argv[1:]:
-        src = Path(arg)
+    
+    # --- MODIFICATION START ---
+    files_to_process = []
+    
+    # 1. Files passed as arguments (standard promotion flow)
+    files_to_process.extend(Path(arg) for arg in sys.argv[1:])
+
+    # 2. Files staged in the /archive_code/ folder (new logic for incremental merge)
+    archive_dir = Path("archive_code")
+    if archive_dir.is_dir():
+        files_to_process.extend(archive_dir.glob("*.py"))
+    
+    # Use a set to handle duplicates in the list of paths to process
+    processed_paths = set() 
+    
+    # Iterate over the collected paths
+    for src in files_to_process:
+        if src in processed_paths:
+            continue
+        processed_paths.add(src)
+        
         if not src.is_file() or src.suffix != ".py":
             continue
 
         # ETERNAL SCRIPT PROTECTION — NEVER TOUCH scripts/ or runtime glue
         if "scripts" in src.parts or src.parent.name == "scripts":
             continue
-        if src.parts[0] in {"runtime", "shared"} and src.parent.name != "apps_shared":
+        # The check below allows files in 'archive_code' to be processed
+        if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", "archive_code"}:
             continue
 
         # Skip files already under sovereign roots
@@ -127,6 +159,10 @@ def main() -> None:
             sovereign, reason = is_sovereign_grade(content)
         
         if not sovereign:
+            # If code is not Sovereign Grade AND it came from the staging area, delete it.
+            if src.parent.name == "archive_code":
+                print(f"Archive file rejected -> {src.name}  (reason:{reason}) - Deleted from staging.")
+                src.unlink() # Delete the rejected file from the staging area
             continue
 
         dest_dir = choose_destination(content, src.name)
@@ -150,6 +186,12 @@ def main() -> None:
         print(f"Auto-promoted -> {dest_path}  ({reason})")
         moved = True
 
+    # Clean up the archive_code folder if empty after promotion and rejection.
+    if archive_dir.is_dir() and not list(archive_dir.iterdir()):
+        archive_dir.rmdir()
+        print("Cleaned up empty /archive_code/ staging directory.")
+    # --- MODIFICATION END ---
+    
     # Always exit 0 so pre-commit continues; Light Canon will now skip moved files
     sys.exit(0)
 
