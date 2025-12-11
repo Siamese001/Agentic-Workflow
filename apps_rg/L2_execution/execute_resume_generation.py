@@ -12,6 +12,7 @@ from typing import Dict, Optional, Any
 from shared.result_types import ExecutionResult
 from .job_analyzer import JobAnalyzer
 from .resume_generator import ResumeGenerator
+from ..state.workflow_loader import WorkflowLoader, create_workflow_loader
 
 logger = logging.getLogger(__name__)
 
@@ -21,15 +22,28 @@ logger = logging.getLogger(__name__)
 class ExecuteResumeGeneration:
     """Executor for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None, workflow_loader: Optional[WorkflowLoader] = None):
         self.config = config or {}
         self.timeout = self.config.get("timeout", 30.0)
         
-        # Initialize LLM-powered components
-        self.job_analyzer = JobAnalyzer()
-        self.resume_generator = ResumeGenerator()
+        # Load workflow configuration
+        self.workflow = workflow_loader or create_workflow_loader()
         
-        logger.info(f"Initialized {self.__class__.__name__}")
+        # Initialize LLM-powered components with workflow configuration
+        creative_brief = self.workflow.get_creative_brief()
+        self.job_analyzer = JobAnalyzer(
+            llm_client=self.config.get("llm_client"),
+            provider=self.config.get("provider"),
+            workflow_config=self.workflow.get_knode_config("K.0")
+        )
+        self.resume_generator = ResumeGenerator(
+            llm_client=self.config.get("llm_client"),
+            provider=self.config.get("provider"),
+            creative_brief=creative_brief,
+            validation_rules=self.workflow.get_validation_rules()
+        )
+        
+        logger.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
