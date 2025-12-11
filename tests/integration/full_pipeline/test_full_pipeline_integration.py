@@ -1,6 +1,6 @@
 """Integration tests for full pipeline execution."""
 from __future__ import annotations
-from typing import Dict, List, object, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 

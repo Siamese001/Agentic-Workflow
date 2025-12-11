@@ -11,10 +11,6 @@ from typing import Dict
 class TestSafetyEnforcement:
     """TestSafetyEnforcement implementation."""
 
-    def __init__(self) -> None:
-        """Initialize."""
-        self.data: Dict[str, object] = {}
-
     def process(self, data: Dict[str, object]) -> Dict[str, object]:
         """Process data."""
         return {"status": "processed", "input_keys": list(data.keys())}

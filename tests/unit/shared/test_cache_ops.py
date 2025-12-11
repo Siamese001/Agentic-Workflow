@@ -3,7 +3,7 @@ Unit tests for shared/cache_ops/
 Tests cache operations including data access and guardrails.
 """
 from __future__ import annotations
-from typing import Dict, object
+from typing import Dict
 from datetime import datetime, timedelta
 import hashlib
 import json

@@ -1,6 +1,6 @@
 """Integration tests for API layer."""
 from __future__ import annotations
-from typing import Dict, object, Optional
+from typing import Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
 

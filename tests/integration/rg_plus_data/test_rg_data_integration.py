@@ -1,7 +1,7 @@
 """Integration tests for Resume Generation + Data layer."""
 from __future__ import annotations
 import pytest
-from typing import Dict, List, object
+from typing import Dict, List
 from dataclasses import dataclass
 
 @dataclass

@@ -1,7 +1,7 @@
 """Soak tests for long-running stability validation."""
 from __future__ import annotations
 import time
-from typing import Dict, List, object
+from typing import Dict, List
 from dataclasses import dataclass
 import gc
 

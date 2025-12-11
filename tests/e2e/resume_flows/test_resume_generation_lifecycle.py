@@ -1,7 +1,7 @@
 """E2E tests for complete resume generation lifecycle."""
 from __future__ import annotations
 import pytest
-from typing import Dict, List, object
+from typing import Dict, List
 from dataclasses import dataclass, field
 from enum import Enum
 
