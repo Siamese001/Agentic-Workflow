@@ -8,7 +8,7 @@ and content quality assurance.
 
 import scripts.check_canonical_structure
 import logging
-from typing import Dict, List, object, Optional, Set
+from typing import Dict, List, Optional, Set
 from dataclasses import dataclass, field
 from enum import Enum
 

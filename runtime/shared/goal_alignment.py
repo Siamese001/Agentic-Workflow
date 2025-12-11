@@ -8,7 +8,7 @@ by 30-50% through goal-aware prompt engineering.
 
 import logging
 import time
-from typing import Dict, List, object, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
