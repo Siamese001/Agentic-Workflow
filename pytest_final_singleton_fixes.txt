@@ -1,12 +1,12 @@
-..........................ssss.......................................... [  9%]
+.............................F.......................................... [  9%]
 ...........................................ssss......................... [ 19%]
-.....sss..............sssssssssss..............s........................ [ 28%]
-............................ss.......................................... [ 38%]
+.....FFF..............sssssssssss........FFF...s........................ [ 28%]
+............................FF.......................................... [ 38%]
 ...........F.................Fssss..................sss................. [ 47%]
 ...............F..........................................sss....s.sF.s. [ 57%]
 ........................................................................ [ 66%]
-........................................................................ [ 76%]
-........................................................................ [ 85%]
+................................................F....................... [ 76%]
+....................................F...............F................... [ 85%]
 ........................................................................ [ 95%]
 ...................................                                      [100%]
 ============================== warnings summary ===============================
@@ -249,8 +249,20 @@ tests/unit/schemas/test_models.py::TestImmutableStagingBuffer::test_creation
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ===========================
+FAILED tests/e2e/admin_flows/test_admin_system_management.py::TestMaintenanceModeE2E::test_scheduled_maintenance_window
+FAILED tests/integration/api/test_provider_routing.py::TestProviderRouting::test_available_providers_with_keys
+FAILED tests/integration/api/test_provider_routing.py::TestProviderRouting::test_client_creation_with_valid_key
+FAILED tests/integration/api/test_provider_routing.py::TestProviderRouting::test_provider_enum_routing
+FAILED tests/integration/cross_domain/test_schema_compatibility.py::TestConfigSchemaCompatibility::test_config_safety_threshold_matches_models
+FAILED tests/integration/cross_domain/test_schema_compatibility.py::TestConfigSchemaCompatibility::test_sdk_registry_categories_are_valid
+FAILED tests/integration/cross_domain/test_schema_compatibility.py::TestValidationModelIntegration::test_gate_decision_with_validation_result
+FAILED tests/integration/workflow/test_full_agentic_loop.py::TestAgenticLoopIntegration::test_vector_store_query_flow
+FAILED tests/integration/workflow/test_full_agentic_loop.py::TestAgenticLoopIntegration::test_multi_provider_fallback_pattern
 FAILED tests/load/spike/test_spike.py::TestSuddenLoadSpike::test_queue_backpressure
 FAILED tests/perf/cost/test_cost_estimation.py::TestTokenEstimation::test_long_message_scaling
 FAILED tests/unit/agentic_core/test_l3_inspect.py::TestWorkflowStateInspection::test_inspect_resource_usage
 FAILED tests/unit/apps_lic/test_lic_outreach_dag.py::test_outreach_stack_handles_string_draft_from_architect
-4 failed, 713 passed, 38 skipped, 40 warnings in 3.00s
+FAILED tests/unit/engine/test_scoring_ops.py::TestScoreThresholds::test_dynamic_threshold
+FAILED tests/unit/runtime/test_cache.py::TestShouldInvalidateCache::test_returns_bool
+FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetClient::test_singleton
+16 failed, 710 passed, 29 skipped, 40 warnings in 3.77s

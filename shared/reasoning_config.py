@@ -12,13 +12,26 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import Enum, auto
 from typing import ClassVar, Optional, Dict, Any, List
+
+
+class ModelProvider(str, Enum):
+    """Available model providers."""
+    
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    MISTRAL = "mistral"
+    COHERE = "cohere"
+    GROQ = "groq"
 
 
 @dataclass
 class ModelConfig:
     """Configuration for LLM model parameters."""
     
+    provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = "gpt-4o"
     temperature: float = 0.7
     max_tokens: int = 2000
@@ -91,6 +104,9 @@ ReasoningConfig.DEFAULT = ReasoningConfig()
 # Global CONFIG singleton for backward compatibility
 CONFIG = ReasoningConfig.DEFAULT
 
+# C2 variable for singleton testing
+C2 = CONFIG
+
 # Section-specific configurations
 _REASONING_CONFIGS = [
     ("K0_HEADLINE_CONFIG", {"cot_min_paths": 4, "tot_branches": 3, "min_tot_depth": 2, "self_consistency": 6, "reflexion": True}),
@@ -117,10 +133,12 @@ for _name, _cfg in _REASONING_CONFIGS:
 SAFETY_THRESHOLD = 0.95
 
 __all__ = [
+    "ModelProvider",
     "ModelConfig",
     "RAGConfig", 
     "GovernorConfig",
     "ReasoningConfig",
     "CONFIG",
+    "C2",
     "SAFETY_THRESHOLD",
 ]
