@@ -1120,15 +1120,33 @@ def check_key_26_syntax_and_strict_typing() -> None:
     """
     violations: List[str] = []
 
+    # BANNED type hints - lazy shortcuts that defeat the purpose of typing
+    BANNED_TYPE_HINTS: Set[str] = {"Any", "object"}
+    
     class StrictTypeVisitor(ast.NodeVisitor):
         def __init__(self, filename: str):
             self.filename = filename
             self.errors = []
 
+        def _check_annotation(self, annotation: ast.expr, context: str) -> None:
+            """Check if annotation uses banned type hints."""
+            if isinstance(annotation, ast.Name):
+                if annotation.id in BANNED_TYPE_HINTS:
+                    self.errors.append(f"'{annotation.id}' forbidden in {context}")
+            elif isinstance(annotation, ast.Subscript):
+                # Check inside generics like Dict[str, object]
+                if isinstance(annotation.slice, ast.Tuple):
+                    for elt in annotation.slice.elts:
+                        self._check_annotation(elt, context)
+                else:
+                    self._check_annotation(annotation.slice, context)
+
         def visit_FunctionDef(self, node: ast.FunctionDef):
             # Check return type
             if node.returns is None and node.name != "__init__":
                 self.errors.append(f"Missing return hint for '{node.name}'")
+            elif node.returns is not None:
+                self._check_annotation(node.returns, f"return type of '{node.name}'")
             
             # Check args
             for arg in node.args.args:
@@ -1136,8 +1154,8 @@ def check_key_26_syntax_and_strict_typing() -> None:
                     continue
                 if arg.annotation is None:
                     self.errors.append(f"Missing type hint for arg '{arg.arg}' in '{node.name}'")
-                elif isinstance(arg.annotation, ast.Name) and arg.annotation.id == 'Any':
-                    self.errors.append(f"'Any' forbidden for arg '{arg.arg}' in '{node.name}'")
+                else:
+                    self._check_annotation(arg.annotation, f"arg '{arg.arg}' in '{node.name}'")
             
             self.generic_visit(node)
 
