@@ -59,6 +59,7 @@ class TestSuddenLoadSpike:
         queue: List[int] = []
         max_queue_size = 100
         dropped = 0
+        processed = 0
 
         for i in range(500):
             if len(queue) < max_queue_size:
@@ -66,9 +67,10 @@ class TestSuddenLoadSpike:
             else:
                 dropped += 1
 
-            # Process some items
-            if len(queue) > 50:
+            # Process some items (slower to create pressure)
+            if len(queue) > 50 and i % 3 == 0:  # Only process every 3rd item
                 queue.pop(0)
+                processed += 1
 
         # Some items should be dropped under pressure
         assert dropped > 0
