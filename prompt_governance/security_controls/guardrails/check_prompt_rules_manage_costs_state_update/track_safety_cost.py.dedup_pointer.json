@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\security_controls\\guardrails\\check_rules\\manage_runtime_costs_state_update_ops\\track_safety_cost.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "e92b546c9da8acbb",
-  "original_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\security_controls\\guardrails\\check_prompt_rules\\manage_prompt_costs_state_update_ops\\track_safety_cost.py",
-  "created": "2025-12-07T11:54:46.594127"
-}

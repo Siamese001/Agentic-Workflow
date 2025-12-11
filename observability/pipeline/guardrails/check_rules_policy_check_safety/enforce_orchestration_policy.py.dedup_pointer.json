@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "09_apps\\__init__.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "a8f46d884f284d88",
-  "original_path": "C:\\Git\\Agentic-Workflow\\07_observability\\pipeline_ops\\guardrails\\check_rules\\policy_check_safety\\enforce_orchestration_policy.py",
-  "created": "2025-12-07T11:54:46.216509"
-}
