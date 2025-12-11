@@ -10,7 +10,7 @@ import logging
 import scripts.check_canonical_structure
 import time
 import unicodedata
-from typing import Dict, List, object, Optional, Set
+from typing import Dict, List, Optional, Set
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
@@ -216,7 +216,7 @@ class TextSanitizer:
         changes = []
         result = text
         
-                control_pattern = r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]'
+        control_pattern = r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]'
         if re.search(control_pattern, result):
             result = re.sub(control_pattern, '', result)
             changes.append("Removed control characters")

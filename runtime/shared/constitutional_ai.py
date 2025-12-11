@@ -11,7 +11,7 @@ and content compliance checking.
 import scripts.check_canonical_structure
 import logging
 import time
-from typing import Dict, List, object, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 from collections import defaultdict

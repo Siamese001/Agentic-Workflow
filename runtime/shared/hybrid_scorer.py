@@ -9,7 +9,7 @@ Combines semantic similarity and BM25 keyword scoring for
 import logging
 import math
 import time
-from typing import Dict, List, object, Optional, Set
+from typing import Dict, List, Optional, Set
 from dataclasses import dataclass, field
 from collections import Counter
 

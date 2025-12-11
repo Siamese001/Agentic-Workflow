@@ -8,7 +8,7 @@ with error recovery, execution tracing, and fusion planning.
 
 import logging
 import time
-from typing import Dict, List, object, Optional, Callable, Tuple
+from typing import Dict, List, Optional, Callable, Tuple, Any
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime

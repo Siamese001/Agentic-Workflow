@@ -8,7 +8,7 @@ Essential for enterprise compliance (GDPR/CCPA).
 
 import scripts.check_canonical_structure
 import logging
-from typing import Dict, List, object, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 

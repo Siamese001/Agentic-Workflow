@@ -8,7 +8,7 @@ freshness, and completeness for improved evidence utilization.
 
 import logging
 import time
-from typing import Dict, List, object, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime

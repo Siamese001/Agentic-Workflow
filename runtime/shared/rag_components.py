@@ -9,7 +9,7 @@ and context injection.
 import logging
 import time
 import hashlib
-from typing import Dict, List, object, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime, timedelta

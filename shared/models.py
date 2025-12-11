@@ -31,6 +31,7 @@ __all__ = [
     "HopCheckpoint",
     "Provider",
     "APICallStatus",
+    "APICallMetrics",
     "RAGState",
     "ImmutableStagingBuffer",
 ]
@@ -96,6 +97,18 @@ class APICallStatus(Enum):
     FAILED = auto()
     TIMEOUT = auto()
     RATE_LIMITED = auto()
+
+
+@dataclass
+class APICallMetrics:
+    """Metrics for API call tracking"""
+    call_count: int = 0
+    success_count: int = 0
+    error_count: int = 0
+    total_tokens_used: int = 0
+    total_latency_ms: float = 0
+    safety_blocks: int = 0
+    rate_limits: int = 0
 
 
 @dataclass
