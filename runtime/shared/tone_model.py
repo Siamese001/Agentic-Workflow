@@ -9,7 +9,7 @@ and formality adaptations.
 
 import logging
 import scripts.check_canonical_structure
-from typing import Dict, List, object, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 

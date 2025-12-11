@@ -11,7 +11,7 @@ adaptive parameter tuning.
 import logging
 import time
 import json
-from typing import Dict, List, object, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
