@@ -1,188 +1,402 @@
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: retrieve_data_similarity.py
-# Match Score: 0.8837
-# ============================================================
+"""Similarity Retriever - Retrieves and computes similarity between vectors.
 
-"""
-L5 Agentic Core - Plan Layer - retrieve_data_similarity
-Implements L1 Cognitive Planning Layer for retrieve data similarity operations
+This module provides similarity retrieval capabilities for vector operations,
+including similarity computation, ranking, and batch processing.
+Follows the functional component pattern with proper logging.
 """
 
-from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any, Union, Tuple
 import logging
-from abc import ABC, abstractmethod
+import numpy as np
+from datetime import datetime
+from enum import Enum
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class RetrieveDataSimilarityMemoryType(Enum):
-    """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
+
+class SimilarityMetric(Enum):
+    """Similarity metrics for vector comparison."""
+    COSINE = "cosine"
+    EUCLIDEAN = "euclidean"
+    DOT_PRODUCT = "dot_product"
+    MANHATTAN = "manhattan"
+    JACCARD = "jaccard"
+
 
 @dataclass
-class RetrieveDataSimilarityMemoryConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class SimilarityRequest:
+    """Request for similarity computation."""
+    query_vector: List[float]
+    candidate_vectors: List[List[float]]
+    metric: SimilarityMetric = SimilarityMetric.COSINE
+    top_k: int = 10
+    threshold: float = 0.0
+    return_distances: bool = False
+
 
 @dataclass
-class RetrieveDataSimilarityMemoryResult:
-    """L5 Result structure with full type safety"""
-    success: bool
-    data: Dict[str, object] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+class SimilarityResult:
+    """Result of similarity computation."""
+    scores: List[float]
+    indices: List[int]
+    distances: Optional[List[float]] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-class RetrieveDataSimilarityMemoryProcessor(ABC):
-    """L5 interface foundation - ensures L1 pure planning behavior"""
 
-    @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> RetrieveDataSimilarityMemoryResult:
-        """Process data with L5 safety constraints"""
-        ...
+@dataclass
+class BatchSimilarityRequest:
+    """Request for batch similarity computation."""
+    query_vectors: List[List[float]]
+    candidate_vectors: List[List[float]]
+    metric: SimilarityMetric = SimilarityMetric.COSINE
+    top_k: int = 10
+    threshold: float = 0.0
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
 
-class RetrieveDataSimilarityMemoryImpl(RetrieveDataSimilarityMemoryProcessor):
-    """
-    L5 Implementation - L1 Cognitive Planning Layer
-    Pure planning functionality with no side effects
-    """
+@dataclass
+class SimilarityConfig:
+    """Configuration for similarity operations."""
+    default_metric: SimilarityMetric = SimilarityMetric.COSINE
+    normalize_vectors: bool = True
+    batch_size: int = 1000
+    use_approximate_search: bool = False
+    num_threads: int = 4
 
-    def __init__(self, constraints: Optional[RetrieveDataSimilarityMemoryConstraints] = None):
-        self.constraints = constraints or RetrieveDataSimilarityMemoryConstraints()
+
+class SimilarityRetriever:
+    """Main class for similarity retrieval operations."""
+
+    def __init__(self, config: Optional[SimilarityConfig] = None):
+        self.config = config or SimilarityConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
+        self._vector_cache = {}
 
-    def process(self, input_data: Dict[str, object]) -> RetrieveDataSimilarityMemoryResult:
-        """Process input following L5 architecture principles"""
-        self.logger.info(f"Processing {input_data}")
+    def compute_similarity(self, request: SimilarityRequest) -> SimilarityResult:
+        """Compute similarity between query and candidate vectors.
+        
+        Args:
+            request: Similarity computation request
+            
+        Returns:
+            SimilarityResult: Similarity scores and rankings
+        """
+        self.logger.info(f"Computing similarity with metric: {request.metric.value}")
+        
+        try:
+            # Convert to numpy arrays
+            query_vector = np.array(request.query_vector)
+            candidate_vectors = np.array(request.candidate_vectors)
+            
+            # Normalize vectors if configured
+            if self.config.normalize_vectors:
+                query_vector = self._normalize_vector(query_vector)
+                candidate_vectors = np.array([self._normalize_vector(v) for v in candidate_vectors])
+            
+            # Compute similarities
+            if request.metric == SimilarityMetric.COSINE:
+                similarities = np.dot(candidate_vectors, query_vector)
+            elif request.metric == SimilarityMetric.DOT_PRODUCT:
+                similarities = np.dot(candidate_vectors, query_vector)
+            elif request.metric == SimilarityMetric.EUCLIDEAN:
+                distances = np.linalg.norm(candidate_vectors - query_vector, axis=1)
+                similarities = 1 / (1 + distances)
+            elif request.metric == SimilarityMetric.MANHATTAN:
+                distances = np.sum(np.abs(candidate_vectors - query_vector), axis=1)
+                similarities = 1 / (1 + distances)
+            elif request.metric == SimilarityMetric.JACCARD:
+                similarities = np.array([self._jaccard_similarity(query_vector, v) for v in candidate_vectors])
+            else:
+                similarities = np.zeros(len(candidate_vectors))
+            
+            # Apply threshold
+            threshold_mask = similarities >= request.threshold
+            filtered_indices = np.where(threshold_mask)[0]
+            filtered_similarities = similarities[threshold_mask]
+            
+            # Sort by similarity (descending)
+            sorted_indices = np.argsort(filtered_similarities)[::-1]
+            top_indices = sorted_indices[:request.top_k]
+            final_indices = filtered_indices[top_indices]
+            final_scores = filtered_similarities[top_indices].tolist()
+            
+            # Compute distances if requested
+            distances = None
+            if request.return_distances:
+                if request.metric == SimilarityMetric.EUCLIDEAN:
+                    distances = np.linalg.norm(candidate_vectors[final_indices] - query_vector, axis=1).tolist()
+                elif request.metric == SimilarityMetric.MANHATTAN:
+                    distances = np.sum(np.abs(candidate_vectors[final_indices] - query_vector), axis=1).tolist()
+                else:
+                    distances = [(1 - s) if s <= 1 else 0 for s in final_scores]
+            
+            result = SimilarityResult(
+                scores=final_scores,
+                indices=final_indices.tolist(),
+                distances=distances,
+                metadata={
+                    "computed_at": datetime.utcnow().isoformat(),
+                    "metric": request.metric.value,
+                    "total_candidates": len(request.candidate_vectors),
+                    "threshold_applied": request.threshold,
+                    "retriever": "SimilarityRetriever"
+                }
+            )
+            
+            self.logger.info(
+                f"Similarity computed: {len(final_scores)} results above threshold {request.threshold}"
+            )
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Similarity computation failed: {str(e)}")
+            return SimilarityResult(
+                scores=[],
+                indices=[],
+                metadata={"error": str(e)}
+            )
 
-        # L5 Input validation
-        self._validate_input(input_data)
+    def batch_similarity(self, request: BatchSimilarityRequest) -> List[SimilarityResult]:
+        """Compute similarity for multiple query vectors.
+        
+        Args:
+            request: Batch similarity request
+            
+        Returns:
+            List[SimilarityResult]: Results for each query vector
+        """
+        self.logger.info(f"Computing batch similarity for {len(request.query_vectors)} queries")
+        
+        results = []
+        
+        try:
+            # Process in batches to manage memory
+            for i in range(0, len(request.query_vectors), self.config.batch_size):
+                batch_queries = request.query_vectors[i:i + self.config.batch_size]
+                
+                for query_vector in batch_queries:
+                    similarity_request = SimilarityRequest(
+                        query_vector=query_vector,
+                        candidate_vectors=request.candidate_vectors,
+                        metric=request.metric,
+                        top_k=request.top_k,
+                        threshold=request.threshold
+                    )
+                    
+                    result = self.compute_similarity(similarity_request)
+                    results.append(result)
+            
+            self.logger.info(f"Batch similarity completed for {len(results)} queries")
+            
+        except Exception as e:
+            self.logger.error(f"Batch similarity failed: {str(e)}")
+            # Return empty results for failed batch
+            results = [SimilarityResult(scores=[], indices=[], metadata={"error": str(e)}) 
+                      for _ in request.query_vectors]
+        
+        return results
 
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(input_data):
-            raise SecurityError("Input failed L5 safety validation")
-
-        # Create result with L5 structure
-        result = RetrieveDataSimilarityMemoryResult(
-            success=True,
-            data={"processed": True, "input": input_data},
-            safety_validated=True,
-            timestamp=self._get_timestamp()
+    def find_similar_vectors(self, query_vector: List[float], vector_dict: Dict[str, List[float]], 
+                           metric: Optional[SimilarityMetric] = None, top_k: int = 10) -> List[Tuple[str, float]]:
+        """Find most similar vectors from a dictionary.
+        
+        Args:
+            query_vector: Query vector to compare against
+            vector_dict: Dictionary of vector_id -> vector
+            metric: Similarity metric to use
+            top_k: Number of results to return
+            
+        Returns:
+            List of (vector_id, similarity_score) tuples
+        """
+        if not vector_dict:
+            return []
+        
+        # Extract vectors and maintain mapping to IDs
+        vector_ids = list(vector_dict.keys())
+        vectors = list(vector_dict.values())
+        
+        # Compute similarity
+        request = SimilarityRequest(
+            query_vector=query_vector,
+            candidate_vectors=vectors,
+            metric=metric or self.config.default_metric,
+            top_k=top_k
         )
+        
+        result = self.compute_similarity(request)
+        
+        # Map indices back to IDs
+        similar_vectors = [(vector_ids[idx], score) for idx, score in zip(result.indices, result.scores)]
+        
+        return similar_vectors
 
-        self.logger.info(f"Successfully processed: {result.success}")
-        return result
+    def compute_pairwise_similarity(self, vectors: List[List[float]], 
+                                  metric: Optional[SimilarityMetric] = None) -> np.ndarray:
+        """Compute pairwise similarity matrix.
+        
+        Args:
+            vectors: List of vectors to compare
+            metric: Similarity metric to use
+            
+        Returns:
+            np.ndarray: Similarity matrix
+        """
+        if not vectors:
+            return np.array([])
+        
+        metric = metric or self.config.default_metric
+        vectors_array = np.array(vectors)
+        
+        # Normalize if configured
+        if self.config.normalize_vectors:
+            vectors_array = np.array([self._normalize_vector(v) for v in vectors_array])
+        
+        # Compute similarity matrix
+        n = len(vectors)
+        similarity_matrix = np.zeros((n, n))
+        
+        for i in range(n):
+            for j in range(i, n):
+                if i == j:
+                    similarity_matrix[i, j] = 1.0
+                else:
+                    if metric == SimilarityMetric.COSINE:
+                        sim = np.dot(vectors_array[i], vectors_array[j])
+                    elif metric == SimilarityMetric.DOT_PRODUCT:
+                        sim = np.dot(vectors_array[i], vectors_array[j])
+                    elif metric == SimilarityMetric.EUCLIDEAN:
+                        dist = np.linalg.norm(vectors_array[i] - vectors_array[j])
+                        sim = 1 / (1 + dist)
+                    elif metric == SimilarityMetric.MANHATTAN:
+                        dist = np.sum(np.abs(vectors_array[i] - vectors_array[j]))
+                        sim = 1 / (1 + dist)
+                    else:
+                        sim = 0.0
+                    
+                    similarity_matrix[i, j] = sim
+                    similarity_matrix[j, i] = sim
+        
+        return similarity_matrix
 
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
-        try:
-            # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "eval(", "exec(", "__import__"]
-            data_str = str(data).lower()
-            for pattern in dangerous_patterns:
-                if pattern in data_str:
-                    self.logger.error(f" Dangerous pattern detected: {pattern}")
-                    return False
+    def _normalize_vector(self, vector: np.ndarray) -> np.ndarray:
+        """Normalize vector to unit length."""
+        norm = np.linalg.norm(vector)
+        if norm == 0:
+            return vector
+        return vector / norm
 
-            # Check data size
-            if len(str(data)) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds size limit")
-                return False
+    def _jaccard_similarity(self, vector1: np.ndarray, vector2: np.ndarray) -> float:
+        """Compute Jaccard similarity for binary vectors."""
+        # Convert to binary (non-zero = 1)
+        binary1 = (vector1 != 0).astype(int)
+        binary2 = (vector2 != 0).astype(int)
+        
+        intersection = np.sum(binary1 & binary2)
+        union = np.sum(binary1 | binary2)
+        
+        return intersection / union if union > 0 else 0.0
 
-            self.logger.info("Data passed L5 safety validation")
-            return True
-        except (ValueError, TypeError, KeyError) as e:
-            self.logger.error("Safety validation error: %s", e)
-            return False  # Fail-closed
+    def cache_vector(self, vector_id: str, vector: List[float]) -> None:
+        """Cache a vector for faster retrieval.
+        
+        Args:
+            vector_id: Unique identifier for the vector
+            vector: Vector to cache
+        """
+        self._vector_cache[vector_id] = np.array(vector)
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
-        """L5 Input validation"""
-        if not isinstance(input_data, dict):
-            raise ValueError("Input must be a dictionary")
+    def get_cached_vector(self, vector_id: str) -> Optional[List[float]]:
+        """Get a cached vector.
+        
+        Args:
+            vector_id: ID of cached vector
+            
+        Returns:
+            Vector if found, None otherwise
+        """
+        if vector_id in self._vector_cache:
+            return self._vector_cache[vector_id].tolist()
+        return None
 
-        if not input_data:
-            raise ValueError("Input cannot be empty")
+    def clear_cache(self) -> None:
+        """Clear the vector cache."""
+        self._vector_cache.clear()
+        self.logger.info("Vector cache cleared")
 
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
+    def get_cache_stats(self) -> Dict[str, Any]:
+        """Get cache statistics.
+        
+        Returns:
+            Dict: Cache statistics
+        """
+        return {
+            "cached_vectors": len(self._vector_cache),
+            "cache_memory_mb": sum(v.nbytes for v in self._vector_cache.values()) / (1024 * 1024),
+            "batch_size": self.config.batch_size,
+            "normalize_vectors": self.config.normalize_vectors
+        }
 
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
 
-# L5 Interface compliance
-class RetrieveDataSimilarityMemoryInterface:
-    """L5 Interface - ensures contract compliance"""
+# Factory function for easy instantiation
+def create_similarity_retriever(
+    default_metric: str = "cosine",
+    normalize_vectors: bool = True,
+    batch_size: int = 1000,
+    **kwargs
+) -> SimilarityRetriever:
+    """Create a configured similarity retriever."""
+    config = SimilarityConfig(
+        default_metric=SimilarityMetric(default_metric),
+        normalize_vectors=normalize_vectors,
+        batch_size=batch_size,
+        **kwargs
+    )
+    return SimilarityRetriever(config)
 
-    def __init__(self, engine: RetrieveDataSimilarityMemoryProcessor):
-        self._processor = engine
 
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
-        """L5 Interface method - executes safely"""
-        try:
-            result = self._processor.process(input_data)
-            return {
-                "success": result.success,
-                "data": result.data,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
-            }
-        except (ValueError, TypeError, KeyError) as e:
-            raise SecurityError(f"Execution failed: {e}")
-
-# L5 builder
-class RetrieveDataSimilarityMemoryFactory:
-    """L5 builder for creating processors with proper configuration"""
-
-    @staticmethod
-    def create_processor(safety_level: str = "strict") -> RetrieveDataSimilarityMemoryInterface:
-        """Create configured engine"""
-        constraints = RetrieveDataSimilarityMemoryConstraints(safety_level=safety_level)
-        engine = RetrieveDataSimilarityMemoryImpl(constraints)
-        return RetrieveDataSimilarityMemoryInterface(engine)
-
-# L5 Main execution point
-def retrieve_data_similarity(input_data: Dict[str, object]) -> Dict[str, object]:
-    """
-    L5 Main function - retrieve data similarity operations
-
+# Convenience function for direct usage
+def retrieve_similarity(
+    query_vector: List[float],
+    candidate_vectors: List[List[float]],
+    metric: str = "cosine",
+    top_k: int = 10,
+    threshold: float = 0.0,
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Retrieve similarity scores.
+    
     Args:
-        input_data: Input data to process
-
+        query_vector: Query vector
+        candidate_vectors: List of candidate vectors
+        metric: Similarity metric to use
+        top_k: Number of top results to return
+        threshold: Minimum similarity threshold
+        config: Optional retriever configuration
+        
     Returns:
-        Dict: Processed result
-
-    Raises:
-        SecurityError: If execution fails any safety check
+        Dict: Similarity results
     """
-    builder = RetrieveDataSimilarityMemoryFactory()
-    engine = builder.create_processor()
-    return engine.execute(input_data)
-
-if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": True}
-        result = retrieve_data_similarity(test_data)
-        logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:
-        logger.error("L5 Security error: %s", e)
-    except (ValueError, TypeError, KeyError) as e:
-        logger.error("L5 Unexpected error: %s", e)
+    # Create retriever and compute similarity
+    retriever_config = SimilarityConfig(**config or {})
+    retriever = SimilarityRetriever(retriever_config)
+    
+    request = SimilarityRequest(
+        query_vector=query_vector,
+        candidate_vectors=candidate_vectors,
+        metric=SimilarityMetric(metric),
+        top_k=top_k,
+        threshold=threshold,
+        return_distances=True
+    )
+    
+    result = retriever.compute_similarity(request)
+    
+    # Convert result to dict for JSON serialization
+    return {
+        "scores": result.scores,
+        "indices": result.indices,
+        "distances": result.distances,
+        "metadata": result.metadata
+    }

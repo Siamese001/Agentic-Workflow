@@ -1,189 +1,529 @@
-import ast
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: retrieve_data_similarity.py
-# Match Score: 0.8400
-# ============================================================
+"""Schema Similarity Retriever - Retrieves and computes schema similarity.
 
-"""
-L5 Agentic Core - Plan Layer - retrieve_data_similarity
-Implements L1 Cognitive Planning Layer for retrieve data similarity operations
+This module provides schema similarity retrieval capabilities for schema operations,
+including structural similarity, semantic similarity, and compatibility checking.
+Follows the functional component pattern with proper logging.
 """
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any, Union, Tuple, Set
 import logging
-from abc import ABC, abstractmethod
+import numpy as np
+from datetime import datetime
+from enum import Enum
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class RetrieveDataSimilarityMemoryType(Enum):
-    """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
+
+class SimilarityMethod(Enum):
+    """Methods for computing schema similarity."""
+    STRUCTURAL = "structural"
+    SEMANTIC = "semantic"
+    FIELD_OVERLAP = "field_overlap"
+    TYPE_COMPATIBILITY = "type_compatibility"
+    HYBRID = "hybrid"
+
+
+class CompatibilityLevel(Enum):
+    """Levels of schema compatibility."""
+    IDENTICAL = "identical"
+    COMPATIBLE = "compatible"
+    PARTIALLY_COMPATIBLE = "partially_compatible"
+    INCOMPATIBLE = "incompatible"
+
 
 @dataclass
-class RetrieveDataSimilarityMemoryConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class SchemaSimilarityRequest:
+    """Request for schema similarity computation."""
+    source_schema: Dict[str, Any]
+    target_schema: Dict[str, Any]
+    method: SimilarityMethod = SimilarityMethod.STRUCTURAL
+    include_field_details: bool = False
+    weight_structural: float = 0.4
+    weight_semantic: float = 0.3
+    weight_overlap: float = 0.3
+
 
 @dataclass
-class RetrieveDataSimilarityMemoryResult:
-    """L5 Result structure with full type safety"""
-    success: bool
-    data: Dict[str, object] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+class FieldMatch:
+    """Field-level match information."""
+    field_name: str
+    source_type: str
+    target_type: str
+    type_match: bool
+    semantic_similarity: float = 0.0
+    confidence: float = 0.0
 
-class RetrieveDataSimilarityMemoryProcessor(ABC):
-    """L5 interface foundation - ensures L1 pure planning behavior"""
 
-    @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> RetrieveDataSimilarityMemoryResult:
-        """Process data with L5 safety constraints"""
-        ...
+@dataclass
+class SchemaSimilarityResult:
+    """Result of schema similarity computation."""
+    similarity_score: float
+    compatibility_level: CompatibilityLevel
+    field_matches: List[FieldMatch] = field(default_factory=list)
+    missing_fields: List[str] = field(default_factory=list)
+    extra_fields: List[str] = field(default_factory=list)
+    type_conflicts: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
 
-class RetrieveDataSimilarityMemoryImpl(RetrieveDataSimilarityMemoryProcessor):
-    """
-    L5 Implementation - L1 Cognitive Planning Layer
-    Pure planning functionality with no side effects
-    """
+@dataclass
+class SchemaSimilarityConfig:
+    """Configuration for schema similarity operations."""
+    default_method: SimilarityMethod = SimilarityMethod.HYBRID
+    type_compatibility_matrix: Dict[str, Set[str]] = field(default_factory=lambda: {
+        "string": {"string", "text"},
+        "integer": {"integer", "number"},
+        "number": {"integer", "number", "float"},
+        "boolean": {"boolean"},
+        "array": {"array", "list"},
+        "object": {"object", "dict"},
+        "null": {"null", "any"}
+    })
+    similarity_thresholds: Dict[str, float] = field(default_factory=lambda: {
+        "identical": 0.95,
+        "compatible": 0.7,
+        "partially_compatible": 0.4
+    })
 
-    def __init__(self, constraints: Optional[RetrieveDataSimilarityMemoryConstraints] = None):
-        self.constraints = constraints or RetrieveDataSimilarityMemoryConstraints()
+
+class SchemaSimilarityRetriever:
+    """Main class for schema similarity retrieval operations."""
+
+    def __init__(self, config: Optional[SchemaSimilarityConfig] = None):
+        self.config = config or SchemaSimilarityConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: Dict[str, object]) -> RetrieveDataSimilarityMemoryResult:
-        """Process input following L5 architecture principles"""
-        self.logger.info(f"Processing {input_data}")
-
-        # L5 Input validation
-        self._validate_input(input_data)
-
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(input_data):
-            raise SecurityError("Input failed L5 safety validation")
-
-        # Create result with L5 structure
-        result = RetrieveDataSimilarityMemoryResult(
-            success=True,
-            data={"processed": True, "input": input_data},
-            safety_validated=True,
-            timestamp=self._get_timestamp()
-        )
-
-        self.logger.info(f"Successfully processed: {result.success}")
-        return result
-
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
+    def retrieve_similarity(self, request: SchemaSimilarityRequest) -> SchemaSimilarityResult:
+        """Retrieve similarity between two schemas.
+        
+        Args:
+            request: Similarity computation request
+            
+        Returns:
+            SchemaSimilarityResult: Detailed similarity analysis
+        """
+        self.logger.info(f"Computing schema similarity using method: {request.method.value}")
+        
         try:
-            # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
-            data_str = str(data).lower()
-            for pattern in dangerous_patterns:
-                if pattern in data_str:
-                    self.logger.error(f" Dangerous pattern detected: {pattern}")
-                    return False
+            # Extract fields from schemas
+            source_fields = self._extract_fields_with_types(request.source_schema)
+            target_fields = self._extract_fields_with_types(request.target_schema)
+            
+            # Compute similarity based on method
+            if request.method == SimilarityMethod.STRUCTURAL:
+                similarity = self._compute_structural_similarity(source_fields, target_fields)
+            elif request.method == SimilarityMethod.SEMANTIC:
+                similarity = self._compute_semantic_similarity(source_fields, target_fields)
+            elif request.method == SimilarityMethod.FIELD_OVERLAP:
+                similarity = self._compute_field_overlap_similarity(source_fields, target_fields)
+            elif request.method == SimilarityMethod.TYPE_COMPATIBILITY:
+                similarity = self._compute_type_compatibility_similarity(source_fields, target_fields)
+            else:  # HYBRID
+                similarity = self._compute_hybrid_similarity(
+                    source_fields, target_fields, 
+                    request.weight_structural, request.weight_semantic, request.weight_overlap
+                )
+            
+            # Determine compatibility level
+            compatibility = self._determine_compatibility(similarity)
+            
+            # Analyze field differences
+            field_analysis = self._analyze_field_differences(source_fields, target_fields)
+            
+            # Create field matches if requested
+            field_matches = []
+            if request.include_field_details:
+                field_matches = self._create_field_matches(source_fields, target_fields)
+            
+            result = SchemaSimilarityResult(
+                similarity_score=similarity,
+                compatibility_level=compatibility,
+                field_matches=field_matches,
+                missing_fields=field_analysis["missing"],
+                extra_fields=field_analysis["extra"],
+                type_conflicts=field_analysis["conflicts"],
+                metadata={
+                    "computed_at": datetime.utcnow().isoformat(),
+                    "method": request.method.value,
+                    "source_field_count": len(source_fields),
+                    "target_field_count": len(target_fields),
+                    "retriever": "SchemaSimilarityRetriever"
+                }
+            )
+            
+            self.logger.info(
+                f"Schema similarity computed: {similarity:.3f} (compatibility: {compatibility.value})"
+            )
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Failed to compute schema similarity: {str(e)}")
+            return SchemaSimilarityResult(
+                similarity_score=0.0,
+                compatibility_level=CompatibilityLevel.INCOMPATIBLE,
+                metadata={"error": str(e)}
+            )
 
-            # Check data size
-            if len(str(data)) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds size limit")
-                return False
+    def batch_similarity(self, source_schema: Dict[str, Any], 
+                         target_schemas: List[Dict[str, Any]],
+                         method: Optional[SimilarityMethod] = None) -> List[SchemaSimilarityResult]:
+        """Compute similarity against multiple target schemas.
+        
+        Args:
+            source_schema: Source schema to compare
+            target_schemas: List of target schemas
+            method: Similarity method to use
+            
+        Returns:
+            List[SchemaSimilarityResult]: Results for each target schema
+        """
+        self.logger.info(f"Computing batch similarity for {len(target_schemas)} schemas")
+        
+        results = []
+        method = method or self.config.default_method
+        
+        for target_schema in target_schemas:
+            request = SchemaSimilarityRequest(
+                source_schema=source_schema,
+                target_schema=target_schema,
+                method=method
+            )
+            result = self.retrieve_similarity(request)
+            results.append(result)
+        
+        # Sort by similarity score (descending)
+        results.sort(key=lambda x: x.similarity_score, reverse=True)
+        
+        return results
 
-            self.logger.info("Data passed L5 safety validation")
+    def find_compatible_schemas(self, schema: Dict[str, Any], 
+                              schema_candidates: List[Tuple[str, Dict[str, Any]]],
+                              min_compatibility: CompatibilityLevel = CompatibilityLevel.PARTIALLY_COMPATIBLE) -> List[Tuple[str, SchemaSimilarityResult]]:
+        """Find schemas compatible with a given schema.
+        
+        Args:
+            schema: Reference schema
+            schema_candidates: List of (schema_id, schema) tuples
+            min_compatibility: Minimum compatibility level
+            
+        Returns:
+            List of (schema_id, similarity_result) tuples
+        """
+        compatible_schemas = []
+        
+        # Define compatibility thresholds
+        compatibility_order = [
+            CompatibilityLevel.INCOMPATIBLE,
+            CompatibilityLevel.PARTIALLY_COMPATIBLE,
+            CompatibilityLevel.COMPATIBLE,
+            CompatibilityLevel.IDENTICAL
+        ]
+        
+        min_threshold = compatibility_order.index(min_compatibility)
+        
+        for schema_id, candidate_schema in schema_candidates:
+            request = SchemaSimilarityRequest(
+                source_schema=schema,
+                target_schema=candidate_schema,
+                method=self.config.default_method
+            )
+            
+            result = self.retrieve_similarity(request)
+            
+            # Check if meets minimum compatibility
+            result_threshold = compatibility_order.index(result.compatibility_level)
+            if result_threshold >= min_threshold:
+                compatible_schemas.append((schema_id, result))
+        
+        # Sort by similarity score
+        compatible_schemas.sort(key=lambda x: x[1].similarity_score, reverse=True)
+        
+        return compatible_schemas
+
+    def _extract_fields_with_types(self, schema: Dict[str, Any]) -> Dict[str, str]:
+        """Extract field names and their types from a schema."""
+        fields = {}
+        
+        def extract_recursive(obj, prefix=""):
+            if isinstance(obj, dict):
+                # Handle JSON Schema format
+                if "properties" in obj:
+                    for key, value in obj["properties"].items():
+                        field_name = f"{prefix}.{key}" if prefix else key
+                        field_type = value.get("type", "unknown")
+                        fields[field_name] = field_type
+                        extract_recursive(value, field_name)
+                
+                # Handle other formats
+                elif "fields" in obj:
+                    for key, value in obj["fields"].items():
+                        field_name = f"{prefix}.{key}" if prefix else key
+                        field_type = value.get("type", "unknown")
+                        fields[field_name] = field_type
+                        extract_recursive(value, field_name)
+                
+                # Handle direct fields
+                else:
+                    for key, value in obj.items():
+                        if key not in ["type", "required", "description"]:
+                            field_name = f"{prefix}.{key}" if prefix else key
+                            if isinstance(value, dict) and "type" in value:
+                                fields[field_name] = value["type"]
+                            else:
+                                fields[field_name] = type(value).__name__.lower()
+        
+        extract_recursive(schema)
+        return fields
+
+    def _compute_structural_similarity(self, source_fields: Dict[str, str], 
+                                     target_fields: Dict[str, str]) -> float:
+        """Compute structural similarity based on field hierarchy."""
+        # Compare field paths
+        source_paths = set(source_fields.keys())
+        target_paths = set(target_fields.keys())
+        
+        # Calculate path similarity
+        intersection = source_paths.intersection(target_paths)
+        union = source_paths.union(target_paths)
+        
+        if not union:
+            return 0.0
+        
+        # Jaccard similarity
+        path_similarity = len(intersection) / len(union)
+        
+        # Calculate type similarity for matching fields
+        type_matches = 0
+        for path in intersection:
+            if source_fields[path] == target_fields[path]:
+                type_matches += 1
+        
+        type_similarity = type_matches / len(intersection) if intersection else 0.0
+        
+        # Combine similarities
+        return (path_similarity * 0.6 + type_similarity * 0.4)
+
+    def _compute_semantic_similarity(self, source_fields: Dict[str, str], 
+                                    target_fields: Dict[str, str]) -> float:
+        """Compute semantic similarity based on field names."""
+        source_names = set(path.split('.')[-1] for path in source_fields.keys())
+        target_names = set(path.split('.')[-1] for path in target_fields.keys())
+        
+        # Simple semantic similarity based on common field names
+        intersection = source_names.intersection(target_names)
+        union = source_names.union(target_names)
+        
+        if not union:
+            return 0.0
+        
+        return len(intersection) / len(union)
+
+    def _compute_field_overlap_similarity(self, source_fields: Dict[str, str], 
+                                         target_fields: Dict[str, str]) -> float:
+        """Compute similarity based on field overlap."""
+        source_paths = set(source_fields.keys())
+        target_paths = set(target_fields.keys())
+        
+        intersection = source_paths.intersection(target_paths)
+        
+        # Normalize by the smaller schema size
+        min_size = min(len(source_paths), len(target_paths))
+        
+        if min_size == 0:
+            return 0.0
+        
+        return len(intersection) / min_size
+
+    def _compute_type_compatibility_similarity(self, source_fields: Dict[str, str], 
+                                              target_fields: Dict[str, str]) -> float:
+        """Compute similarity based on type compatibility."""
+        source_paths = set(source_fields.keys())
+        target_paths = set(target_fields.keys())
+        
+        intersection = source_paths.intersection(target_paths)
+        
+        if not intersection:
+            return 0.0
+        
+        compatible_types = 0
+        for path in intersection:
+            source_type = source_fields[path]
+            target_type = target_fields[path]
+            
+            if self._are_types_compatible(source_type, target_type):
+                compatible_types += 1
+        
+        return compatible_types / len(intersection)
+
+    def _compute_hybrid_similarity(self, source_fields: Dict[str, str], 
+                                 target_fields: Dict[str, str],
+                                 weight_structural: float, weight_semantic: float, 
+                                 weight_overlap: float) -> float:
+        """Compute hybrid similarity combining multiple methods."""
+        # Normalize weights
+        total_weight = weight_structural + weight_semantic + weight_overlap
+        if total_weight == 0:
+            return 0.0
+        
+        w_structural = weight_structural / total_weight
+        w_semantic = weight_semantic / total_weight
+        w_overlap = weight_overlap / total_weight
+        
+        # Compute individual similarities
+        structural = self._compute_structural_similarity(source_fields, target_fields)
+        semantic = self._compute_semantic_similarity(source_fields, target_fields)
+        overlap = self._compute_field_overlap_similarity(source_fields, target_fields)
+        
+        # Combine with weights
+        return structural * w_structural + semantic * w_semantic + overlap * w_overlap
+
+    def _determine_compatibility(self, similarity_score: float) -> CompatibilityLevel:
+        """Determine compatibility level from similarity score."""
+        thresholds = self.config.similarity_thresholds
+        
+        if similarity_score >= thresholds["identical"]:
+            return CompatibilityLevel.IDENTICAL
+        elif similarity_score >= thresholds["compatible"]:
+            return CompatibilityLevel.COMPATIBLE
+        elif similarity_score >= thresholds["partially_compatible"]:
+            return CompatibilityLevel.PARTIALLY_COMPATIBLE
+        else:
+            return CompatibilityLevel.INCOMPATIBLE
+
+    def _analyze_field_differences(self, source_fields: Dict[str, str], 
+                                  target_fields: Dict[str, str]) -> Dict[str, List[str]]:
+        """Analyze differences between schemas."""
+        source_paths = set(source_fields.keys())
+        target_paths = set(target_fields.keys())
+        
+        missing = list(source_paths - target_paths)
+        extra = list(target_paths - source_paths)
+        
+        # Find type conflicts
+        conflicts = []
+        intersection = source_paths.intersection(target_paths)
+        for path in intersection:
+            if not self._are_types_compatible(source_fields[path], target_fields[path]):
+                conflicts.append(path)
+        
+        return {
+            "missing": missing,
+            "extra": extra,
+            "conflicts": conflicts
+        }
+
+    def _create_field_matches(self, source_fields: Dict[str, str], 
+                            target_fields: Dict[str, str]) -> List[FieldMatch]:
+        """Create detailed field match information."""
+        matches = []
+        intersection = source_fields.keys() & target_fields.keys()
+        
+        for field_name in intersection:
+            source_type = source_fields[field_name]
+            target_type = target_fields[field_name]
+            
+            match = FieldMatch(
+                field_name=field_name,
+                source_type=source_type,
+                target_type=target_type,
+                type_match=source_type == target_type,
+                semantic_similarity=1.0 if source_type == target_type else 0.5,
+                confidence=1.0 if source_type == target_type else 0.7
+            )
+            matches.append(match)
+        
+        return matches
+
+    def _are_types_compatible(self, type1: str, type2: str) -> bool:
+        """Check if two types are compatible."""
+        # Direct match
+        if type1 == type2:
             return True
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            self.logger.error(f"Safety validation error: {e}")
-            return False  # Fail-closed
+        
+        # Check compatibility matrix
+        if type1 in self.config.type_compatibility_matrix:
+            return type2 in self.config.type_compatibility_matrix[type1]
+        
+        if type2 in self.config.type_compatibility_matrix:
+            return type1 in self.config.type_compatibility_matrix[type2]
+        
+        return False
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
-        """L5 Input validation"""
-        if not isinstance(input_data, dict):
-            raise ValueError("Input must be a dictionary")
 
-        if not input_data:
-            raise ValueError("Input cannot be empty")
+# Factory function for easy instantiation
+def create_schema_similarity_retriever(
+    default_method: str = "hybrid",
+    **kwargs
+) -> SchemaSimilarityRetriever:
+    """Create a configured schema similarity retriever."""
+    config = SchemaSimilarityConfig(
+        default_method=SimilarityMethod(default_method),
+        **kwargs
+    )
+    return SchemaSimilarityRetriever(config)
 
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
 
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
-
-# L5 Interface compliance
-class RetrieveDataSimilarityMemoryInterface:
-    """L5 Interface - ensures contract compliance"""
-
-    def __init__(self, engine: RetrieveDataSimilarityMemoryProcessor):
-        self._processor = engine
-
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
-        """L5 Interface method - executes safely"""
-        try:
-            result = self._processor.process(input_data)
-            return {
-                "success": result.success,
-                "data": result.data,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
-            }
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f"Execution failed: {e}")
-
-# L5 builder
-class RetrieveDataSimilarityMemoryFactory:
-    """L5 builder for creating processors with proper configuration"""
-
-    @staticmethod
-    def create_processor(safety_level: str = "strict") -> RetrieveDataSimilarityMemoryInterface:
-        """Create configured engine"""
-        constraints = RetrieveDataSimilarityMemoryConstraints(safety_level=safety_level)
-        engine = RetrieveDataSimilarityMemoryImpl(constraints)
-        return RetrieveDataSimilarityMemoryInterface(engine)
-
-# L5 Main execution point
-def retrieve_data_similarity(input_data: Dict[str, object]) -> Dict[str, object]:
-    """
-    L5 Main function - retrieve data similarity operations
-
+# Convenience function for direct usage
+def retrieve_schema_similarity(
+    source_schema: Dict[str, Any],
+    target_schema: Dict[str, Any],
+    method: str = "hybrid",
+    include_field_details: bool = False,
+    weight_structural: float = 0.4,
+    weight_semantic: float = 0.3,
+    weight_overlap: float = 0.3,
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Retrieve schema similarity.
+    
     Args:
-        input_data: Input data to process
-
+        source_schema: Source schema
+        target_schema: Target schema
+        method: Similarity method to use
+        include_field_details: Whether to include field-level details
+        weight_structural: Weight for structural similarity
+        weight_semantic: Weight for semantic similarity
+        weight_overlap: Weight for field overlap similarity
+        config: Optional retriever configuration
+        
     Returns:
-        Dict: Processed result
-
-    Raises:
-        SecurityError: If execution fails any safety check
+        Dict: Similarity results
     """
-    builder = RetrieveDataSimilarityMemoryFactory()
-    engine = builder.create_processor()
-    return engine.execute(input_data)
-
-if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": True}
-        result = retrieve_data_similarity(test_data)
-        logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:
-        logger.error(f"L5 Security error: {e}")
-    except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        logger.error(f"L5 Unexpected error: {e}")
+    # Create retriever and compute similarity
+    retriever_config = SchemaSimilarityConfig(**config or {})
+    retriever = SchemaSimilarityRetriever(retriever_config)
+    
+    request = SchemaSimilarityRequest(
+        source_schema=source_schema,
+        target_schema=target_schema,
+        method=SimilarityMethod(method),
+        include_field_details=include_field_details,
+        weight_structural=weight_structural,
+        weight_semantic=weight_semantic,
+        weight_overlap=weight_overlap
+    )
+    
+    result = retriever.retrieve_similarity(request)
+    
+    # Convert result to dict for JSON serialization
+    return {
+        "similarity_score": result.similarity_score,
+        "compatibility_level": result.compatibility_level.value,
+        "field_matches": [
+            {
+                "field_name": m.field_name,
+                "source_type": m.source_type,
+                "target_type": m.target_type,
+                "type_match": m.type_match,
+                "semantic_similarity": m.semantic_similarity,
+                "confidence": m.confidence
+            }
+            for m in result.field_matches
+        ],
+        "missing_fields": result.missing_fields,
+        "extra_fields": result.extra_fields,
+        "type_conflicts": result.type_conflicts,
+        "metadata": result.metadata
+    }
