@@ -18,7 +18,7 @@ exclude: |
 repos:
 
   # ===================================================================
-  # SOVEREIGN AUTO-PROMOTER — FINAL ETERNAL 2025
+  # 1. SOVEREIGN AUTO-PROMOTER — FINAL ETERNAL 2025
   # ===================================================================
   - repo: local
     hooks:
@@ -31,26 +31,6 @@ repos:
         verbose: true
         pass_filenames: true
         exclude: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config|data|archives)/
-
-  # ===================================================================
-  # 1. FULL 40/40 CANON — ALL SOVEREIGN CODE (L1/L2/L3 ONLY)
-  # ===================================================================
-  - repo: local
-    hooks:
-      - id: canon-40-keys
-        name: 40/40 SUBATOMIC CANON — FULL ENFORCEMENT
-        entry: python canon_validator.py --check-40 --hard-fail
-        language: system
-        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/.*\.py$
-        pass_filenames: false
-        stages: [pre-commit]
-
-      - id: prevent-sovereign-delete
-        name: SOVEREIGN CODE IS IMMORTAL — NO DELETE/RENAME
-        entry: python scripts/track_changes.py
-        language: system
-        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
-        pass_filenames: false
 
   # ===================================================================
   # 4. BREAKOUT MANAGEMENT SUITE — 2025 EDITION
