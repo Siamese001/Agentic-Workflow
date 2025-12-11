@@ -448,35 +448,3 @@ def plan_shared_resources(
         "warnings": result.warnings,
         "errors": result.errors,
         "metadata": result.metadata
-    }
-
-
-if __name__ == "__main__":
-    # Example usage
-    example_resources = [
-        {
-            "id": "shared_db",
-            "name": "Shared Database",
-            "type": "database",
-            "sharing_policy": "shared",
-            "access_level": "read_write",
-            "endpoint": "postgresql://shared-db:5432/common",
-            "limits": {"max_consumers": 10}
-        }
-    ]
-    
-    example_dependencies = [
-        {
-            "service_id": "user_service",
-            "service_name": "User Service",
-            "version": "1.0.0",
-            "required_resources": ["shared_db"]
-        }
-    ]
-    
-    result = plan_shared_resources(
-        domain="microservices",
-        shared_resources=example_resources,
-        service_dependencies=example_dependencies
-    )
-    print(f"Shared planning result: {result}")

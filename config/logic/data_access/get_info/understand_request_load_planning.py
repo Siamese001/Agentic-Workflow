@@ -1,189 +1,561 @@
-import ast
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: load_data_planning.py
-# Match Score: 0.8387
-# ============================================================
+"""Config Info Understanding Load Planner - Plans loading for configuration understanding.
 
-"""
-L5 Agentic Core - Plan Layer - load_data_planning
-Implements L1 Cognitive Planning Layer for load data planning operations
+This planner manages the loading phase for understanding configuration requests,
+including parameter extraction, validation rules, and configuration mapping.
+Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any, Union
 import logging
-from abc import ABC, abstractmethod
+from datetime import datetime
+from enum import Enum
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class LoadDataPlanningPlanType(Enum):
-    """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
+
+class ConfigType(Enum):
+    """Types of configurations."""
+    SYSTEM_CONFIG = "system_config"
+    APP_CONFIG = "app_config"
+    USER_CONFIG = "user_config"
+    ENV_CONFIG = "env_config"
+    FEATURE_FLAGS = "feature_flags"
+    SECURITY_CONFIG = "security_config"
+
+
+class ValidationLevel(Enum):
+    """Validation levels for configuration."""
+    NONE = "none"
+    BASIC = "basic"
+    STRICT = "strict"
+    COMPREHENSIVE = "comprehensive"
+
+
+class ConfigScope(Enum):
+    """Scopes for configuration loading."""
+    GLOBAL = "global"
+    ORGANIZATION = "organization"
+    PROJECT = "project"
+    SERVICE = "service"
+    MODULE = "module"
+    USER = "user"
+
 
 @dataclass
-class LoadDataPlanningPlanConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class ConfigParameter:
+    """Information about a configuration parameter."""
+    key: str
+    value: Any
+    type: str
+    required: bool = False
+    default_value: Optional[Any] = None
+    description: str = ""
+    validation_rules: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
-class LoadDataPlanningPlanResult:
-    """L5 Result structure with full type safety"""
+class ConfigSection:
+    """Information about a configuration section."""
+    name: str
+    parameters: List[ConfigParameter] = field(default_factory=list)
+    subsections: List['ConfigSection'] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ValidationRule:
+    """Information about a validation rule."""
+    name: str
+    type: str
+    condition: str
+    error_message: str
+    severity: str = "error"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ConfigLoadPlan:
+    """Complete plan for configuration loading."""
+    id: str
+    name: str
+    config_type: ConfigType
+    scope: ConfigScope
+    sections: List[ConfigSection] = field(default_factory=list)
+    validation_rules: List[ValidationRule] = field(default_factory=list)
+    validation_level: ValidationLevel = ValidationLevel.BASIC
+    enable_caching: bool = True
+    cache_ttl: int = 600
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ConfigLoadConfig:
+    """Configuration for config load planning."""
+    enable_validation: bool = True
+    enable_type_checking: bool = True
+    enable_default_values: bool = True
+    max_parameters_per_config: int = 500
+    default_validation_level: str = "basic"
+    log_level: str = "INFO"
+
+
+@dataclass
+class ConfigLoadResult:
+    """Result of config load planning."""
     success: bool
-    data: Dict[str, object] = field(default_factory=dict)
+    load_plan: Optional[ConfigLoadPlan] = None
+    parameter_count: int = 0
+    section_count: int = 0
+    validation_rule_count: int = 0
+    load_time_estimate: int = 0
+    memory_estimate: int = 0
+    warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-class LoadDataPlanningPlanProcessor(ABC):
-    """L5 interface foundation - ensures L1 pure planning behavior"""
 
-    @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> LoadDataPlanningPlanResult:
-        """Process data with L5 safety constraints"""
-        ...
+class ConfigLoadPlanner:
+    """Planner for configuration loading operations."""
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
-
-class LoadDataPlanningPlanImpl(LoadDataPlanningPlanProcessor):
-    """
-    L5 Implementation - L1 Cognitive Planning Layer
-    Pure planning functionality with no side effects
-    """
-
-    def __init__(self, constraints: Optional[LoadDataPlanningPlanConstraints] = None):
-        self.constraints = constraints or LoadDataPlanningPlanConstraints()
+    def __init__(self, config: Optional[ConfigLoadConfig] = None):
+        self.config = config or ConfigLoadConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(self.config.log_level)
 
-    def process(self, input_data: Dict[str, object]) -> LoadDataPlanningPlanResult:
-        """Process input following L5 architecture principles"""
-        self.logger.info(f"Processing {input_data}")
+    def plan_load(self, load_request: Dict[str, Any]) -> ConfigLoadResult:
+        """Plan configuration loading operations.
+        
+        Args:
+            load_request: Dictionary containing configuration loading requirements
+            
+        Returns:
+            ConfigLoadResult: Complete planning result with load plan
+        """
+        self.logger.info(f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}")
+        
+        try:
+            # Validate input request
+            self._validate_request(load_request)
+            
+            # Parse config type
+            config_type = self._parse_config_type(load_request)
+            
+            # Parse scope
+            scope = self._parse_scope(load_request)
+            
+            # Parse sections
+            sections = self._parse_sections(load_request)
+            
+            # Parse validation rules if enabled
+            validation_rules = (
+                self._parse_validation_rules(load_request) 
+                if self.config.enable_validation else []
+            )
+            
+            # Parse validation level
+            validation_level = self._parse_validation_level(load_request)
+            
+            # Create load plan
+            load_plan = self._create_load_plan(
+                load_request, config_type, scope,
+                sections, validation_rules, validation_level
+            )
+            
+            # Count items
+            parameter_count = sum(
+                len(section.parameters) for section in sections
+            )
+            section_count = len(sections)
+            validation_rule_count = len(validation_rules)
+            
+            # Estimate load time
+            load_time = self._estimate_load_time(load_plan)
+            
+            # Estimate memory usage
+            memory_estimate = self._estimate_memory_usage(load_plan)
+            
+            result = ConfigLoadResult(
+                success=True,
+                load_plan=load_plan,
+                parameter_count=parameter_count,
+                section_count=section_count,
+                validation_rule_count=validation_rule_count,
+                load_time_estimate=load_time,
+                memory_estimate=memory_estimate,
+                metadata={
+                    "planned_at": datetime.utcnow().isoformat(),
+                    "plan_name": load_request.get("plan_name"),
+                    "config_type": config_type.value,
+                    "scope": scope.value,
+                    "planner": "ConfigLoadPlanner"
+                }
+            )
+            
+            self.logger.info(
+                f"Successfully planned config load: "
+                f"{parameter_count} parameters in {section_count} sections"
+            )
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Config load planning failed: {str(e)}")
+            return ConfigLoadResult(
+                success=False,
+                errors=[str(e)],
+                metadata={
+                    "failed_at": datetime.utcnow().isoformat(),
+                    "planner": "ConfigLoadPlanner"
+                }
+            )
 
-        # L5 Input validation
-        self._validate_input(input_data)
+    def _validate_request(self, request: Dict[str, Any]) -> None:
+        """Validate config load planning request."""
+        if not request:
+            raise ValueError("Config load planning request cannot be empty")
+        
+        if "plan_name" not in request:
+            raise ValueError("Plan name is required in config load planning request")
+        
+        if "config_type" not in request:
+            raise ValueError("Config type is required in config load planning request")
 
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(input_data):
-            raise SecurityError("Input failed L5 safety validation")
+    def _parse_config_type(self, request: Dict[str, Any]) -> ConfigType:
+        """Parse config type from request."""
+        type_mapping = {
+            "system_config": ConfigType.SYSTEM_CONFIG,
+            "app_config": ConfigType.APP_CONFIG,
+            "user_config": ConfigType.USER_CONFIG,
+            "env_config": ConfigType.ENV_CONFIG,
+            "feature_flags": ConfigType.FEATURE_FLAGS,
+            "security_config": ConfigType.SECURITY_CONFIG
+        }
+        
+        config_type_str = request.get("config_type", "app_config")
+        return type_mapping.get(config_type_str, ConfigType.APP_CONFIG)
 
-        # Create result with L5 structure
-        result = LoadDataPlanningPlanResult(
-            success=True,
-            data={"processed": True, "input": input_data},
-            safety_validated=True,
-            timestamp=self._get_timestamp()
+    def _parse_scope(self, request: Dict[str, Any]) -> ConfigScope:
+        """Parse scope from request."""
+        scope_mapping = {
+            "global": ConfigScope.GLOBAL,
+            "organization": ConfigScope.ORGANIZATION,
+            "project": ConfigScope.PROJECT,
+            "service": ConfigScope.SERVICE,
+            "module": ConfigScope.MODULE,
+            "user": ConfigScope.USER
+        }
+        
+        scope_str = request.get("scope", "project")
+        return scope_mapping.get(scope_str, ConfigScope.PROJECT)
+
+    def _parse_validation_level(self, request: Dict[str, Any]) -> ValidationLevel:
+        """Parse validation level from request."""
+        level_mapping = {
+            "none": ValidationLevel.NONE,
+            "basic": ValidationLevel.BASIC,
+            "strict": ValidationLevel.STRICT,
+            "comprehensive": ValidationLevel.COMPREHENSIVE
+        }
+        
+        level_str = request.get("validation_level", self.config.default_validation_level)
+        return level_mapping.get(level_str, ValidationLevel.BASIC)
+
+    def _parse_sections(self, request: Dict[str, Any]) -> List[ConfigSection]:
+        """Parse sections from request."""
+        sections = []
+        raw_sections = request.get("sections", [])
+        
+        for raw_section in raw_sections:
+            if isinstance(raw_section, dict):
+                # Parse parameters
+                parameters = []
+                raw_params = raw_section.get("parameters", [])
+                
+                for raw_param in raw_params:
+                    if isinstance(raw_param, dict):
+                        param = ConfigParameter(
+                            key=raw_param.get("key", "unnamed"),
+                            value=raw_param.get("value"),
+                            type=raw_param.get("type", "string"),
+                            required=raw_param.get("required", False),
+                            default_value=raw_param.get("default_value"),
+                            description=raw_param.get("description", ""),
+                            validation_rules=raw_param.get("validation_rules", []),
+                            metadata=raw_param.get("metadata", {})
+                        )
+                        parameters.append(param)
+                
+                # Parse subsections recursively
+                subsections = self._parse_subsections(raw_section.get("subsections", []))
+                
+                section = ConfigSection(
+                    name=raw_section.get("name", "unnamed"),
+                    parameters=parameters,
+                    subsections=subsections,
+                    metadata=raw_section.get("metadata", {})
+                )
+                sections.append(section)
+        
+        # Validate parameter count
+        total_params = sum(len(s.parameters) for s in sections)
+        if total_params > self.config.max_parameters_per_config:
+            raise ValueError(
+                f"Number of parameters ({total_params}) exceeds maximum "
+                f"({self.config.max_parameters_per_config})"
+            )
+        
+        return sections
+
+    def _parse_subsections(self, raw_subsections: List[Dict[str, Any]]) -> List[ConfigSection]:
+        """Parse subsections recursively."""
+        subsections = []
+        
+        for raw_sub in raw_subsections:
+            if isinstance(raw_sub, dict):
+                # Parse parameters
+                parameters = []
+                raw_params = raw_sub.get("parameters", [])
+                
+                for raw_param in raw_params:
+                    if isinstance(raw_param, dict):
+                        param = ConfigParameter(
+                            key=raw_param.get("key", "unnamed"),
+                            value=raw_param.get("value"),
+                            type=raw_param.get("type", "string"),
+                            required=raw_param.get("required", False),
+                            default_value=raw_param.get("default_value"),
+                            description=raw_param.get("description", ""),
+                            validation_rules=raw_param.get("validation_rules", []),
+                            metadata=raw_param.get("metadata", {})
+                        )
+                        parameters.append(param)
+                
+                # Recursively parse nested subsections
+                nested_subsections = self._parse_subsections(
+                    raw_sub.get("subsections", [])
+                )
+                
+                subsection = ConfigSection(
+                    name=raw_sub.get("name", "unnamed"),
+                    parameters=parameters,
+                    subsections=nested_subsections,
+                    metadata=raw_sub.get("metadata", {})
+                )
+                subsections.append(subsection)
+        
+        return subsections
+
+    def _parse_validation_rules(self, request: Dict[str, Any]) -> List[ValidationRule]:
+        """Parse validation rules from request."""
+        rules = []
+        raw_rules = request.get("validation_rules", [])
+        
+        for raw_rule in raw_rules:
+            if isinstance(raw_rule, dict):
+                rule = ValidationRule(
+                    name=raw_rule.get("name", "unnamed"),
+                    type=raw_rule.get("type", "condition"),
+                    condition=raw_rule.get("condition", ""),
+                    error_message=raw_rule.get("error_message", ""),
+                    severity=raw_rule.get("severity", "error"),
+                    metadata=raw_rule.get("metadata", {})
+                )
+                rules.append(rule)
+        
+        return rules
+
+    def _create_load_plan(
+        self,
+        request: Dict[str, Any],
+        config_type: ConfigType,
+        scope: ConfigScope,
+        sections: List[ConfigSection],
+        validation_rules: List[ValidationRule],
+        validation_level: ValidationLevel
+    ) -> ConfigLoadPlan:
+        """Create config load plan from parsed components."""
+        return ConfigLoadPlan(
+            id=request.get("plan_id", f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"),
+            name=request.get("plan_name", "unnamed_plan"),
+            config_type=config_type,
+            scope=scope,
+            sections=sections,
+            validation_rules=validation_rules,
+            validation_level=validation_level,
+            enable_caching=request.get("enable_caching", True),
+            cache_ttl=request.get("cache_ttl", 600),
+            metadata=request.get("metadata", {})
         )
 
-        self.logger.info(f"Successfully processed: {result.success}")
-        return result
+    def _estimate_load_time(self, plan: ConfigLoadPlan) -> int:
+        """Estimate load time in seconds."""
+        base_time = 3  # Base setup time
+        
+        # Time per parameter
+        param_count = sum(
+            len(section.parameters) for section in plan.sections
+        )
+        param_time = param_count * 0.01
+        
+        # Time per validation rule
+        validation_time = len(plan.validation_rules) * 0.05
+        
+        # Validation level multiplier
+        level_multiplier = {
+            ValidationLevel.NONE: 0.5,
+            ValidationLevel.BASIC: 1.0,
+            ValidationLevel.STRICT: 1.5,
+            ValidationLevel.COMPREHENSIVE: 2.0
+        }
+        
+        total_time = (
+            base_time + param_time + validation_time
+        ) * level_multiplier.get(plan.validation_level, 1.0)
+        
+        return int(total_time)
 
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
-        try:
-            # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
-            data_str = str(data).lower()
-            for pattern in dangerous_patterns:
-                if pattern in data_str:
-                    self.logger.error(f" Dangerous pattern detected: {pattern}")
-                    return False
+    def _estimate_memory_usage(self, plan: ConfigLoadPlan) -> int:
+        """Estimate memory usage in MB."""
+        # Base memory usage
+        base_memory = 10  # 10MB base
+        
+        # Memory for parameters (assume average 512 bytes per parameter)
+        param_count = sum(
+            len(section.parameters) for section in plan.sections
+        )
+        param_memory = param_count * 512
+        
+        # Memory for validation rules (assume average 256 bytes per rule)
+        rule_memory = len(plan.validation_rules) * 256
+        
+        # Validation level memory multiplier
+        level_multiplier = {
+            ValidationLevel.NONE: 0.5,
+            ValidationLevel.BASIC: 1.0,
+            ValidationLevel.STRICT: 1.5,
+            ValidationLevel.COMPREHENSIVE: 2.0
+        }
+        
+        total_memory_bytes = (
+            base_memory * 1024 * 1024 + 
+            param_memory + rule_memory
+        ) * level_multiplier.get(plan.validation_level, 1.0)
+        
+        return total_memory_bytes // (1024 * 1024)  # Convert to MB
 
-            # Check data size
-            if len(str(data)) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds size limit")
-                return False
 
-            self.logger.info("Data passed L5 safety validation")
-            return True
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            self.logger.error(f"Safety validation error: {e}")
-            return False  # Fail-closed
+# Factory function for easy instantiation
+def create_config_load_planner(
+    enable_validation: bool = True,
+    enable_type_checking: bool = True,
+    enable_default_values: bool = True,
+    **kwargs
+) -> ConfigLoadPlanner:
+    """Create a configured config load planner."""
+    config = ConfigLoadConfig(
+        enable_validation=enable_validation,
+        enable_type_checking=enable_type_checking,
+        enable_default_values=enable_default_values,
+        **kwargs
+    )
+    return ConfigLoadPlanner(config)
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
-        """L5 Input validation"""
-        if not isinstance(input_data, dict):
-            raise ValueError("Input must be a dictionary")
 
-        if not input_data:
-            raise ValueError("Input cannot be empty")
-
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
-
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
-
-# L5 Interface compliance
-class LoadDataPlanningPlanInterface:
-    """L5 Interface - ensures contract compliance"""
-
-    def __init__(self, engine: LoadDataPlanningPlanProcessor):
-        self._processor = engine
-
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
-        """L5 Interface method - executes safely"""
-        try:
-            result = self._processor.process(input_data)
-            return {
-                "success": result.success,
-                "data": result.data,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
-            }
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f"Execution failed: {e}")
-
-# L5 builder
-class LoadDataPlanningPlanFactory:
-    """L5 builder for creating processors with proper configuration"""
-
-    @staticmethod
-    def create_processor(safety_level: str = "strict") -> LoadDataPlanningPlanInterface:
-        """Create configured engine"""
-        constraints = LoadDataPlanningPlanConstraints(safety_level=safety_level)
-        engine = LoadDataPlanningPlanImpl(constraints)
-        return LoadDataPlanningPlanInterface(engine)
-
-# L5 Main execution point
-def load_data_planning(input_data: Dict[str, object]) -> Dict[str, object]:
-    """
-    L5 Main function - load data planning operations
-
+# Convenience function for direct usage
+def plan_config_load(
+    plan_name: str,
+    config_type: str,
+    scope: str = "project",
+    sections: Optional[List[Dict[str, Any]]] = None,
+    validation_rules: Optional[List[Dict[str, Any]]] = None,
+    validation_level: str = "basic",
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Plan config load from simple parameters.
+    
     Args:
-        input_data: Input data to process
-
+        plan_name: Name of the load plan
+        config_type: Type of configuration
+        scope: Scope of the configuration
+        sections: Optional list of configuration sections
+        validation_rules: Optional list of validation rules
+        validation_level: Level of validation to apply
+        config: Optional planner configuration overrides
+        
     Returns:
-        Dict: Processed result
-
-    Raises:
-        SecurityError: If execution fails any safety check
+        Dict: Planning result with load plan and resource requirements
     """
-    builder = LoadDataPlanningPlanFactory()
-    engine = builder.create_processor()
-    return engine.execute(input_data)
-
-if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": True}
-        result = load_data_planning(test_data)
-        logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:
-        logger.error(f"L5 Security error: {e}")
-    except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        logger.error(f"L5 Unexpected error: {e}")
+    # Build request
+    request = {
+        "plan_name": plan_name,
+        "config_type": config_type,
+        "scope": scope,
+        "sections": sections or [],
+        "validation_rules": validation_rules or [],
+        "validation_level": validation_level
+    }
+    
+    # Create planner and execute
+    planner_config = ConfigLoadConfig(**config) if config else None
+    planner = ConfigLoadPlanner(planner_config)
+    result = planner.plan_load(request)
+    
+    # Convert result to dict for JSON serialization
+    def serialize_section(section: ConfigSection) -> Dict[str, Any]:
+        return {
+            "name": section.name,
+            "parameters": [
+                {
+                    "key": p.key,
+                    "value": p.value,
+                    "type": p.type,
+                    "required": p.required,
+                    "default_value": p.default_value,
+                    "description": p.description,
+                    "validation_rules": p.validation_rules,
+                    "metadata": p.metadata
+                }
+                for p in section.parameters
+            ],
+            "subsections": [
+                serialize_section(sub) for sub in section.subsections
+            ],
+            "metadata": section.metadata
+        }
+    
+    return {
+        "success": result.success,
+        "load_plan": {
+            "id": result.load_plan.id,
+            "name": result.load_plan.name,
+            "config_type": result.load_plan.config_type.value,
+            "scope": result.load_plan.scope.value,
+            "sections": [
+                serialize_section(section) for section in result.load_plan.sections
+            ],
+            "validation_rules": [
+                {
+                    "name": r.name,
+                    "type": r.type,
+                    "condition": r.condition,
+                    "error_message": r.error_message,
+                    "severity": r.severity,
+                    "metadata": r.metadata
+                }
+                for r in result.load_plan.validation_rules
+            ],
+            "validation_level": result.load_plan.validation_level.value,
+            "enable_caching": result.load_plan.enable_caching,
+            "cache_ttl": result.load_plan.cache_ttl,
+            "metadata": result.load_plan.metadata
+        } if result.load_plan else None,
+        "parameter_count": result.parameter_count,
+        "section_count": result.section_count,
+        "validation_rule_count": result.validation_rule_count,
+        "load_time_estimate": result.load_time_estimate,
+        "memory_estimate": result.memory_estimate,
+        "warnings": result.warnings,
+        "errors": result.errors,
+        "metadata": result.metadata
+    }
