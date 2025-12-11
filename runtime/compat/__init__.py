@@ -10,6 +10,6 @@ from __future__ import annotations
 
 # Re-export everything from shared modules for compatibility
 from ..shared.exceptions import *  # Implementation pending# noqa: F401, F403
-from ..shared.models import *  # Implementation pending# noqa: F401, F403
-from ..shared.config import *  # Implementation pending# noqa: F401, F403
+from shared.models import *  # Import from shared/models instead of runtime.shared.models# noqa: F401, F403
+from shared.config import *  # Import from shared/config instead of runtime.shared.config# noqa: F401, F403
 from runtime.shared.utils import *

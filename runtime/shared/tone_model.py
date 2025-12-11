@@ -9,7 +9,7 @@ and formality adaptations.
 
 import logging
 import scripts.check_canonical_structure
-from typing import Dict, List, object, Optional
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -64,18 +64,18 @@ class ToneAdaptation:
 class AdvancedToneModel:
     """
     Advanced Tone/Voice Adaptation Model
-    
+
     Applies sophisticated tone adjustments to content based on
     persona configurations, including word choice, sentence structure,
     and formality adaptations.
     """
-    
+
     def __init__(self):
         """Initialize tone model with default configurations."""
         self.tone_profiles = self._load_default_profiles()
         self.word_mappings = self._load_word_mappings()
         self.formality_patterns = self._load_formality_patterns()
-    
+
     def adapt_tone(
         self,
         content: str,
@@ -85,32 +85,32 @@ class AdvancedToneModel:
     ) -> ToneAdaptation:
         """
         Adapt content to target tone and formality.
-        
+
         Args:
             content: Original content
             target_tone: Target tone type
             formality: Target formality level
             context: Additional context
-            
+
         Returns:
             ToneAdaptation with adapted content
         """
         context = context or {}
         changes_made = []
-        
+
         # Get or create tone profile
         profile = self._get_tone_profile(target_tone, formality, context)
-        
+
         adapted_content = content
         word_replacements = 0
         structure_changes = 0
-        
+
         # Apply word choice adaptations
         adapted_content, word_count = self._apply_word_choices(adapted_content, profile)
         word_replacements = word_count
         if word_count > 0:
             changes_made.append(f"Replaced {word_count} words for tone alignment")
-        
+
         # Apply formality adjustments
         adapted_content, formality_count = self._apply_formality_adjustments(
             adapted_content, formality
@@ -118,7 +118,7 @@ class AdvancedToneModel:
         if formality_count > 0:
             changes_made.append(f"Made {formality_count} formality adjustments")
             structure_changes += formality_count
-        
+
         # Apply sentence structure adaptations
         adapted_content, structure_count = self._apply_sentence_structure(
             adapted_content, profile
@@ -126,30 +126,30 @@ class AdvancedToneModel:
         if structure_count > 0:
             changes_made.append(f"Adjusted {structure_count} sentence structures")
             structure_changes += structure_count
-        
+
         # Apply confidence adjustments
         if profile.confidence_level > 0.7:
             adapted_content, confidence_count = self._boost_confidence(adapted_content)
             if confidence_count > 0:
                 changes_made.append(f"Enhanced confidence in {confidence_count} phrases")
-        
+
         # Apply warmth adjustments
         if profile.warmth_level > 0.6:
             adapted_content, warmth_count = self._add_warmth(adapted_content)
             if warmth_count > 0:
                 changes_made.append(f"Added warmth to {warmth_count} phrases")
-        
+
                 adapted_content, removed_count = self._remove_avoided_patterns(adapted_content, profile)
         if removed_count > 0:
             changes_made.append(f"Removed {removed_count} inappropriate patterns")
-        
+
         # Calculate adaptation confidence
         adaptation_confidence = self._calculate_adaptation_confidence(
             content, adapted_content, changes_made
         )
-        
+
         logger.info(f"Tone adaptation complete: {len(changes_made)} changes, confidence={adaptation_confidence:.2f}")
-        
+
         return ToneAdaptation(
             original_content=content,
             adapted_content=adapted_content,
@@ -159,7 +159,7 @@ class AdvancedToneModel:
             word_replacements=word_replacements,
             structure_changes=structure_changes
         )
-    
+
     def _get_tone_profile(
         self,
         tone_type: ToneType,
@@ -168,7 +168,7 @@ class AdvancedToneModel:
     ) -> ToneProfile:
         """Get or create tone profile for target tone."""
         base_profile = self.tone_profiles.get(tone_type)
-        
+
         if base_profile:
             # Clone and adjust for formality
             return ToneProfile(
@@ -180,7 +180,7 @@ class AdvancedToneModel:
                 sentence_patterns=base_profile.sentence_patterns.copy(),
                 avoid_patterns=base_profile.avoid_patterns.copy()
             )
-        
+
         # Create default profile
         return ToneProfile(
             tone_type=tone_type,
@@ -188,7 +188,7 @@ class AdvancedToneModel:
             confidence_level=0.7,
             warmth_level=0.5
         )
-    
+
     def _apply_word_choices(
         self,
         content: str,
@@ -197,20 +197,20 @@ class AdvancedToneModel:
         """Apply word choice adaptations."""
         adapted = content
         replacement_count = 0
-        
+
         # Get word mappings for this tone
         mappings = self.word_mappings.get(profile.tone_type, {})
         mappings.update(profile.word_choices)
-        
+
         for original, replacement in mappings.items():
             pattern = r'\b' + re.escape(original) + r'\b'
             matches = len(re.findall(pattern, adapted, re.IGNORECASE))
             if matches > 0:
                 adapted = re.sub(pattern, replacement, adapted, flags=re.IGNORECASE)
                 replacement_count += matches
-        
+
         return adapted, replacement_count
-    
+
     def _apply_formality_adjustments(
         self,
         content: str,
@@ -219,9 +219,9 @@ class AdvancedToneModel:
         """Apply formality-based adjustments."""
         adapted = content
         adjustment_count = 0
-        
+
         patterns = self.formality_patterns.get(formality, {})
-        
+
         # Contraction handling
         if formality in [FormalityLevel.VERY_FORMAL, FormalityLevel.FORMAL]:
             # Expand contractions
@@ -251,14 +251,14 @@ class AdvancedToneModel:
                 "who's": "who is",
                 "let's": "let us"
             }
-            
+
             for contraction, expansion in contractions.items():
                 pattern = r'\b' + re.escape(contraction) + r'\b'
                 matches = len(re.findall(pattern, adapted, re.IGNORECASE))
                 if matches > 0:
                     adapted = re.sub(pattern, expansion, adapted, flags=re.IGNORECASE)
                     adjustment_count += matches
-        
+
         elif formality in [FormalityLevel.INFORMAL, FormalityLevel.CASUAL]:
             # Add contractions where appropriate
             expansions = {
@@ -276,16 +276,16 @@ class AdvancedToneModel:
                 "they are": "they're",
                 "it is": "it's"
             }
-            
+
             for expansion, contraction in expansions.items():
                 pattern = r'\b' + re.escape(expansion) + r'\b'
                 matches = len(re.findall(pattern, adapted, re.IGNORECASE))
                 if matches > 0:
                     adapted = re.sub(pattern, contraction, adapted, flags=re.IGNORECASE)
                     adjustment_count += matches
-        
+
         return adapted, adjustment_count
-    
+
     def _apply_sentence_structure(
         self,
         content: str,
@@ -294,19 +294,19 @@ class AdvancedToneModel:
         """Apply sentence structure adaptations."""
         adapted = content
         change_count = 0
-        
+
         # Apply sentence patterns from profile
         for pattern in profile.sentence_patterns:
             # Pattern application logic would go here
             pass
-        
+
         return adapted, change_count
-    
+
     def _boost_confidence(self, content: str) -> tuple[str, int]:
         """Boost confidence in language."""
         adapted = content
         boost_count = 0
-        
+
         # Replace hedging language with confident alternatives
         hedging_replacements = {
             "I think": "I believe",
@@ -320,24 +320,24 @@ class AdvancedToneModel:
             "a little bit": "",
             "somewhat": ""
         }
-        
+
         for hedge, confident in hedging_replacements.items():
             pattern = r'\b' + re.escape(hedge) + r'\b'
             matches = len(re.findall(pattern, adapted, re.IGNORECASE))
             if matches > 0:
                 adapted = re.sub(pattern, confident, adapted, flags=re.IGNORECASE)
                 boost_count += matches
-        
+
         # Clean up extra spaces
         adapted = re.sub(r'\s+', ' ', adapted).strip()
-        
+
         return adapted, boost_count
-    
+
     def _add_warmth(self, content: str) -> tuple[str, int]:
         """Add warmth to language."""
         adapted = content
         warmth_count = 0
-        
+
         # Replace cold language with warmer alternatives
         warmth_replacements = {
             "You must": "I'd encourage you to",
@@ -347,16 +347,16 @@ class AdvancedToneModel:
             "You are required": "You're invited",
             "immediately": "at your earliest convenience"
         }
-        
+
         for cold, warm in warmth_replacements.items():
             pattern = r'\b' + re.escape(cold) + r'\b'
             matches = len(re.findall(pattern, adapted, re.IGNORECASE))
             if matches > 0:
                 adapted = re.sub(pattern, warm, adapted, flags=re.IGNORECASE)
                 warmth_count += matches
-        
+
         return adapted, warmth_count
-    
+
     def _remove_avoided_patterns(
         self,
         content: str,
@@ -365,7 +365,7 @@ class AdvancedToneModel:
         """Remove patterns that should be avoided."""
         adapted = content
         removed_count = 0
-        
+
         for pattern in profile.avoid_patterns:
             try:
                 matches = len(re.findall(pattern, adapted, re.IGNORECASE))
@@ -374,12 +374,12 @@ class AdvancedToneModel:
                     removed_count += matches
             except re.error:
                 pass
-        
+
         # Clean up extra spaces
         adapted = re.sub(r'\s+', ' ', adapted).strip()
-        
+
         return adapted, removed_count
-    
+
     def _calculate_adaptation_confidence(
         self,
         original: str,
@@ -389,21 +389,21 @@ class AdvancedToneModel:
         """Calculate confidence in adaptation quality."""
         if original == adapted:
             return 1.0 if not changes else 0.5
-        
+
         # foundation confidence
         confidence = 0.8
-        
+
         # Adjust based on number of changes
         if len(changes) > 5:
             confidence -= 0.1
-        
+
         # Adjust based on content length change
         length_ratio = len(adapted) / len(original) if original else 1.0
         if length_ratio < 0.8 or length_ratio > 1.2:
             confidence -= 0.1
-        
+
         return max(0.3, min(1.0, confidence))
-    
+
     def _load_default_profiles(self) -> Dict[ToneType, ToneProfile]:
         """Load default tone profiles."""
         return {
@@ -440,7 +440,7 @@ class AdvancedToneModel:
                 warmth_level=0.4
             )
         }
-    
+
     def _load_word_mappings(self) -> Dict[ToneType, Dict[str, str]]:
         """Load word mappings for different tones."""
         return {
@@ -474,7 +474,7 @@ class AdvancedToneModel:
                 "perhaps": "certainly"
             }
         }
-    
+
     def _load_formality_patterns(self) -> Dict[FormalityLevel, Dict[str, object]]:
         """Load formality-specific patterns."""
         return {
