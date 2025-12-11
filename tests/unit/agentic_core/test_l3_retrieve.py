@@ -1,6 +1,6 @@
 """Unit tests for L3_orchestration/P1_retrieve - workflow context retrieval."""
 from __future__ import annotations
-from typing import Dict, object
+from typing import Dict
 
 class TestWorkflowContextRetrieval:
     """Tests for retrieving workflow context."""

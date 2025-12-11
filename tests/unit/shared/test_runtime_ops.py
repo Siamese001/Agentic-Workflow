@@ -3,7 +3,7 @@ Unit tests for shared/runtime_ops/
 Tests runtime operations including data access, guardrails, synthesis, and validation.
 """
 from __future__ import annotations
-from typing import Dict, object
+from typing import Dict
 from dataclasses import dataclass
 from datetime import datetime
 

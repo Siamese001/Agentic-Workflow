@@ -18,7 +18,7 @@ Tests that verify:
 - Early exit (stops when appropriate)
 """
 from __future__ import annotations
-from typing import Dict, List, object
+from typing import Dict, List
 from dataclasses import dataclass, field
 from enum import Enum
 

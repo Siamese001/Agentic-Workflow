@@ -1,7 +1,7 @@
 """Unit tests for observability - logging, tracing, and metrics."""
 from __future__ import annotations
 import time
-from typing import Dict, List, object, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
