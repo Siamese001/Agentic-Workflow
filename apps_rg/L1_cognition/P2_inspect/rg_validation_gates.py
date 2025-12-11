@@ -6,7 +6,7 @@ Ported from: archives/legacy_resume_gen/Job Workflow - JSON/Job_Workflow_v61.27.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 import re
 
 

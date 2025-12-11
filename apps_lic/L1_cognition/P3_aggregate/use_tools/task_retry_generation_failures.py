@@ -7,7 +7,7 @@ Generated: 2025-12-07T13:28:54.092345
 
 import logging
 import time
-from typing import Callable, Dict, Optional
+from typing import Dict, Optional
 from shared.result_types import RetryResult
 
 logger = logging.getLogger(__name__)

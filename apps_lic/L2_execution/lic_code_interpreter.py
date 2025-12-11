@@ -6,7 +6,7 @@ Ported from: archives/legacy_lic/Agentic LIC/tools_LIC.py
 
 import re
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
