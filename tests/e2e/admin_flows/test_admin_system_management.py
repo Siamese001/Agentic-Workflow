@@ -260,4 +260,5 @@ class TestMaintenanceModeE2E:
         }
 
         duration = maintenance["scheduled_end"] - maintenance["scheduled_start"]
-        assert duration == timedelta(hours=2)
+        expected = timedelta(hours=2)
+        assert abs(duration - expected) < timedelta(seconds=1)

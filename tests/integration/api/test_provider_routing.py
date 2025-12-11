@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from unittest.mock import MagicMock, patch
 import pytest
-from runtime.shared.multi_provider_clients import reset_all_clients
+from runtime.shared.multi_provider_clients import reset_all_clients, get_available_providers, Provider, get_client
 
 # Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION
 # skip_if_no_keys = pytest.mark.skipif(
@@ -34,7 +34,7 @@ class TestProviderRouting:
     def test_client_creation_with_valid_key(self):
         """Client is created when API key is present."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "sk-test"}):
-            with patch("agentic_workflow.runtime.shared.multi_provider_clients.AsyncOpenAI") as mock:
+            with patch("data.sdks_mcps.reference_clients.minimal_openai.AsyncOpenAI") as mock:
                 mock.return_value = MagicMock()
                 client = get_client(Provider.OPENAI)
                 assert client is not None
