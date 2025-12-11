@@ -1,0 +1,5 @@
+
+ERROR tests/unit/agentic_core/test_fallback_paths.py
+ERROR tests/unit/agentic_core/test_tool_request_builder.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!
+
