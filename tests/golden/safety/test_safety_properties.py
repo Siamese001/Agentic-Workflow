@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from shared.reasoning_config import SAFETY_THRESHOLD
-from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.dag.test_dag_models import GateDecision, ValidationSeverity
+from shared.models import GateDecision, ValidationSeverity
 
 class TestSafetyThresholdProperties:
     def test_threshold_in_valid_range(self):
