@@ -46,7 +46,7 @@ class TestOutreachCampaignCreation:
         """E2E: Campaign message is personalized."""
         template = "Hi {name}, I saw your work at {company} on {topic}."
         contact = Contact(id="c1", name="John", company="Acme", title="CTO")
-        personalized = template.format(name=contact.name, company=contact.comptopic="AI")
+        personalized = template.format(name=contact.name, company=contact.company, topic="AI")
         assert "John" in personalized
         assert "Acme" in personalized
 
