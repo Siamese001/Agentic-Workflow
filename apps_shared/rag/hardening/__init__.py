@@ -9,98 +9,26 @@ MERKLE-INTENDED: 7d5b6ed86f6afb9d2ba4e4ca60be5e450370b4d2e95a94d3e9603409c08e4e1
 from __future__ import annotations
 
 
-from shared.models import GateDecision, ValidationSeverity, ResumeSection, JDEnforcementRule, BulletProvenance, CircuitState, HopStatus, APICallStatus, ReasoningConfig, ValidationResult, ThematicAnalysis, JDEnforcementResult, CompetitiveAnalysisConfig, RAGMission, SkillRequirement, SkillCluster, MasterResumeIndex, RAGEvidence, RAGCritique, RAGState, CompetitiveIntelligence, RetrievalSource, PartialRAGResult, RAGTelemetry, HopCheckpoint, APICallMetrics, ImmutableStagingBuffer
-    # Enums
-    GateDecision,
-    ValidationSeverity,
-    ResumeSection,
-    JDEnforcementRule,
-    BulletProvenance,
-    CircuitState,
-    HopStatus,
-    APICallStatus,
-    # Dataclasses
-    ReasoningConfig,
-    ValidationResult,
-    ThematicAnalysis,
-    JDEnforcementResult,
-    CompetitiveAnalysisConfig,
-    RAGMission,
-    SkillRequirement,
-    SkillCluster,
-    MasterResumeIndex,
-    RAGEvidence,
-    RAGCritique,
-    RAGState,
-    CompetitiveIntelligence,
-    RetrievalSource,
-    PartialRAGResult,
-    RAGTelemetry,
-    HopCheckpoint,
-    APICallMetrics,
-    # Classes
-    ImmutableStagingBuffer,
+from .models import (
+    GateDecision, ValidationSeverity, ResumeSection, JDEnforcementRule, BulletProvenance, 
+    CircuitState, HopStatus, ValidationResult, ThematicAnalysis, JDEnforcementResult, 
+    CompetitiveAnalysisConfig, RAGMission, SkillRequirement, SkillCluster, MasterResumeIndex, 
+    RAGEvidence, RAGCritique, RAGState, CompetitiveIntelligence, RetrievalSource, 
+    PartialRAGResult, RAGTelemetry, HopCheckpoint, ImmutableStagingBuffer
 )
+from shared.models import APICallStatus
+from shared.reasoning_config import ReasoningConfig
 
-from shared.config import DEFAULT_MAX_RETRIES, DEFAULT_RETRY_DELAY, DEFAULT_API_TIMEOUT, DEFAULT_GENERATION_TEMPERATURE, DEFAULT_SYNTHESIS_TEMPERATURE, DEFAULT_MAX_OUTPUT_TOKENS, SAFETY_THRESHOLD, ModelProvider, ModelConfig, RAGConfig, GovernorConfig, WorkflowConfig, ContentConstraintsConfig, Config, CONFIG, PROJECT_ROOT, DATA_DIR, OUTPUT_DIR, CACHE_DIR, LOGS_DIR
-    # Constants
-    DEFAULT_MAX_RETRIES,
-    DEFAULT_RETRY_DELAY,
-    DEFAULT_API_TIMEOUT,
-    DEFAULT_GENERATION_TEMPERATURE,
-    DEFAULT_SYNTHESIS_TEMPERATURE,
-    DEFAULT_MAX_OUTPUT_TOKENS,
-    SAFETY_THRESHOLD,
-    # Config classes
-    ModelProvider,
-    ModelConfig,
-    RAGConfig,
-    GovernorConfig,
-    WorkflowConfig,
-    ContentConstraintsConfig,
-    Config,
-    CONFIG,
-    # Paths
-    PROJECT_ROOT,
-    DATA_DIR,
-    OUTPUT_DIR,
-    CACHE_DIR,
-    LOGS_DIR,
+from shared.config import (
+    DEFAULT_MAX_RETRIES, DEFAULT_RETRY_DELAY, DEFAULT_API_TIMEOUT, DEFAULT_GENERATION_TEMPERATURE, DEFAULT_SYNTHESIS_TEMPERATURE, DEFAULT_MAX_OUTPUT_TOKENS, SAFETY_THRESHOLD, ModelProvider, ModelConfig, RAGConfig, GovernorConfig, WorkflowConfig, ContentConstraintsConfig, Config, CONFIG, PROJECT_ROOT, DATA_DIR, OUTPUT_DIR, CACHE_DIR, LOGS_DIR
 )
 
 
 
 
 
-from agentic_core.shared.sdk_registry import SDKCategory, SDKEntry, SDK_REGISTRY, validate_sdk, validate_all_sdks, get_available_sdks, ChromaConfig, QdrantConfig, PineconeConfig, get_vector_store, RedisConfig, get_redis_client, TracingConfig, setup_tracing, get_tracer, MCPServerConfig, create_mcp_server, create_mcp_tool_from_function, parse_document, extract_pdf_text
-    # Enums
-    SDKCategory,
-    # Registry
-    SDKEntry,
-    SDK_REGISTRY,
-    # Validation
-    validate_sdk,
-    validate_all_sdks,
-    get_available_sdks,
-    # Vector Stores
-    ChromaConfig,
-    QdrantConfig,
-    PineconeConfig,
-    get_vector_store,
-    # Redis
-    RedisConfig,
-    get_redis_client,
-    # Tracing
-    TracingConfig,
-    setup_tracing,
-    get_tracer,
-    # MCP
-    MCPServerConfig,
-    create_mcp_server,
-    create_mcp_tool_from_function,
-    # Document Processing
-    parse_document,
-    extract_pdf_text,
+from agentic_core.shared.sdk_registry import (
+    SDKCategory, SDKEntry, SDK_REGISTRY, validate_sdk, validate_all_sdks, get_available_sdks, ChromaConfig, QdrantConfig, PineconeConfig, get_vector_store, RedisConfig, get_redis_client, TracingConfig, setup_tracing, get_tracer, MCPServerConfig, create_mcp_server, create_mcp_tool_from_function, parse_document, extract_pdf_text
 )
 
 # =============================================================================
@@ -121,78 +49,16 @@ from agentic_core.shared.sdk_registry import SDKCategory, SDKEntry, SDK_REGISTRY
 
 
 
-from agentic_core.shared.rag_components import CacheEntry, CacheSufficiencyResult, SemanticCache, create_semantic_cache, GapType, KnowledgeGap, SelfRAGResult, SelfRAGProcessor, create_self_rag_processor, Episode, EpisodicMemoryResult, EpisodicMemory, create_episodic_memory, KGRelationship, KGContext, KnowledgeGraphInjector, create_kg_injector, FewShotExample, FewShotInjectionResult, FewShotInjector, create_few_shot_injector
-    # Semantic Cache
-    CacheEntry,
-    CacheSufficiencyResult,
-    SemanticCache,
-    create_semantic_cache,
-    # Self-RAG
-    GapType,
-    KnowledgeGap,
-    SelfRAGResult,
-    SelfRAGProcessor,
-    create_self_rag_processor,
-    # Episodic Memory
-    Episode,
-    EpisodicMemoryResult,
-    EpisodicMemory,
-    create_episodic_memory,
-    # Knowledge Graph
-    KGRelationship,
-    KGContext,
-    KnowledgeGraphInjector,
-    create_kg_injector,
-    # Few-Shot
-    FewShotExample,
-    FewShotInjectionResult,
-    FewShotInjector,
-    create_few_shot_injector,
+from agentic_core.shared.rag_components import (
+    CacheEntry, CacheSufficiencyResult, SemanticCache, create_semantic_cache, GapType, KnowledgeGap, SelfRAGResult, SelfRAGProcessor, create_self_rag_processor, Episode, EpisodicMemoryResult, EpisodicMemory, create_episodic_memory, KGRelationship, KGContext, KnowledgeGraphInjector, create_kg_injector, FewShotExample, FewShotInjectionResult, FewShotInjector, create_few_shot_injector
 )
 
-from agentic_core.shared.orchestration import RecoveryStrategy, CircuitBreakerConfig, RetryConfig, RecoveryResult, CircuitBreaker, ErrorRecoveryManager, create_error_recovery_manager, create_circuit_breaker, TraceLevel, TraceStep, ExecutionTrace, ExecutionTracer, create_execution_tracer, ValueProposition, MessageSectionPlan, FusionPlan, FusionPlanner, create_fusion_planner
-    # Error Recovery
-    RecoveryStrategy,
-    CircuitBreakerConfig,
-    RetryConfig,
-    RecoveryResult,
-    CircuitBreaker,
-    ErrorRecoveryManager,
-    create_error_recovery_manager,
-    create_circuit_breaker,
-    # Execution Trace
-    TraceLevel,
-    TraceStep,
-    ExecutionTrace,
-    ExecutionTracer,
-    create_execution_tracer,
-    # Fusion Planner
-    ValueProposition,
-    MessageSectionPlan,
-    FusionPlan,
-    FusionPlanner,
-    create_fusion_planner,
+from agentic_core.shared.orchestration import (
+    RecoveryStrategy, CircuitBreakerConfig, RetryConfig, RecoveryResult, CircuitBreaker, ErrorRecoveryManager, create_error_recovery_manager, create_circuit_breaker, TraceLevel, TraceStep, ExecutionTrace, ExecutionTracer, create_execution_tracer, ValueProposition, MessageSectionPlan, FusionPlan, FusionPlanner, create_fusion_planner
 )
 
-from agentic_core.shared.state_management import SanitizationLevel, SanitizationResult, TextSanitizer, create_text_sanitizer, sanitize_text, ValidationIssue, ValidationContextResult, ValidationContext, create_validation_context, WorkflowPhase, WorkflowCheckpoint, WorkflowState, WorkflowStateManager, create_workflow_state_manager, create_staging_buffer
-    # Text Sanitizer
-    SanitizationLevel,
-    SanitizationResult,
-    TextSanitizer,
-    create_text_sanitizer,
-    sanitize_text,
-    # Validation Context
-    ValidationIssue,
-    ValidationContextResult,
-    ValidationContext,
-    create_validation_context,
-    # Workflow State
-    WorkflowPhase,
-    WorkflowCheckpoint,
-    WorkflowState,
-    WorkflowStateManager,
-    create_workflow_state_manager,
-    create_staging_buffer,
+from agentic_core.shared.state_management import (
+    SanitizationLevel, SanitizationResult, TextSanitizer, create_text_sanitizer, sanitize_text, ValidationIssue, ValidationContextResult, ValidationContext, create_validation_context, WorkflowPhase, WorkflowCheckpoint, WorkflowState, WorkflowStateManager, create_workflow_state_manager, create_staging_buffer
 )
 
 # =============================================================================
@@ -242,7 +108,6 @@ __all__ = [
     "PartialRAGResult",
     "RAGTelemetry",
     "HopCheckpoint",
-    "APICallMetrics",
     # Classes
     "ImmutableStagingBuffer",
     # Config

@@ -10,7 +10,7 @@ from datetime import datetime
 
 # Import the main components from the refactored modules
 try:
-    from agentic_core.planning.workflow import WorkflowOrchestrator, MASTER_RESUME_DATA, __version__
+    from apps_shared.rag.hardening.workflow import WorkflowOrchestrator, MASTER_RESUME_DATA, __version__
     from config.config import CONFIG, OUTPUT_DIR, DATA_DIR
 except ImportError as e:
     print(f"Error: Could not import from refactored modules (workflow.py, config.py)")
