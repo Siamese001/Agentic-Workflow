@@ -24,11 +24,22 @@ from dataclasses import asdict, is_dataclass
 # Import from modular components
 from apps_shared.rag.hardening.rag import EnhancedJobDescriptionAnalyzer, LibrarianAgent
 from agentic_core.planning.state_manager import StateSerializer, ManifestManager
+from runtime.shared.models import (
+    BulletProvenance, ValidationResult, ValidationSeverity,
+    HopExecutionError, ResumeSection, ReasoningConfig, ThematicAnalysis
+)
+from runtime.shared.utils import TextUtils, DuplicateDetector
+from shared.config import DATA_DIR
+from config.config import EnricherConfig, AppConfig
+
+logger = logging.getLogger(__name__)
+
 try:
-    from apps_shared.rag.hardening.utils import TelemetryLogger, _load_json_config
+    from apps_shared.rag.hardening.utils import TelemetryLogger, CodeInterpreterTool
+    from config.config import _load_json_config
     PROMPT_TEMPLATES_GLOBAL = _load_json_config(str(DATA_DIR / "prompts.json"), "Prompts")
 except Exception as e:
-    logging.critical(f"FATAL: Could not load prompts.json: {e}")
+    logger.critical(f"FATAL: Could not load prompts.json: {e}")
     PROMPT_TEMPLATES_GLOBAL = {}
 
 try:
@@ -98,9 +109,8 @@ COVER_LETTER_SIGNATURE_TEMPLATE = """Sincerely,
 {name}  
 {email}  
 {phone}  
-{linkedin}"""
+{linkedin}""" # Added two spaces at the end of each line to force Markdown line breaks
 
-logger = logging.getLogger(__name__)
 # ============================================================================
 # CLERKEXTRACTOR CLASS
 # ============================================================================
@@ -169,7 +179,7 @@ class ClerkExtractor:
         return experience_sections
 
 import scripts.check_canonical_structure
-from typing import List, Dict, object, Optional
+from typing import List, Dict, Optional
 
 # ============================================================================
 # DATAENRICHER CLASS
