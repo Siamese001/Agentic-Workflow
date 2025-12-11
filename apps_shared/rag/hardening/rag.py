@@ -49,6 +49,14 @@ except ImportError:
 
 # Local module imports
 from apps_shared.rag.hardening.utils import TelemetryLogger
+from apps_shared.rag.hardening.models import RAGMission, ThematicAnalysis, CircuitState
+from shared.config import CACHE_DIR, DATA_DIR
+from shared.reasoning_config import RAGConfig
+from config.config import WebRagConfig, AppConfig
+from runtime.shared.models import (
+    MasterResumeIndex, CompetitiveAnalysisConfig, RAGTelemetry, PartialRAGResult,
+    CompetitiveIntelligence, RetrievalSource
+)
 
 # Import prompts module
 import prompt_governance.prompts
