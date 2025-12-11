@@ -1,7 +1,8 @@
 """Unit tests for runtime/shared/models.py"""
 from __future__ import annotations
 from enum import Enum
-from shared.models import GateDecision, ValidationSeverity, HopStatus, CircuitState, ValidationResult, ThematicAnalysis, HopCheckpoint
+from shared.models import GateDecision, ValidationSeverity, HopStatus, CircuitState, ValidationResult, ThematicAnalysis, HopCheckpoint, APICallStatus, RAGState, ImmutableStagingBuffer
+from shared.reasoning_config import ReasoningConfig
 # Utils classes don't exist yet, skipping import
 
 
@@ -48,19 +49,21 @@ class TestReasoningConfig:
 class TestValidationResult:
     def test_creation(self):
         result = ValidationResult(
-            is_valid=True,
+            rule_id="test_rule",
+            passed=True,
             severity=list(ValidationSeverity)[0],
             message="ok",
         )
-        assert result.is_valid is True
+        assert result.passed is True
 
     def test_invalid_case(self):
         result = ValidationResult(
-            is_valid=False,
+            rule_id="test_rule",
+            passed=False,
             severity=list(ValidationSeverity)[-1],
             message="fail",
         )
-        assert result.is_valid is False
+        assert result.passed is False
 
 class TestRAGState:
     def test_creation(self):
