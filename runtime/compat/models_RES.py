@@ -49,9 +49,16 @@ from ..shared.models import (
     APICallMetrics,
     # Classes
     ImmutableStagingBuffer,
+    # Exceptions
+    HopExecutionError,
+    StagingBufferError,
+    CircuitBreakerOpenError,
+    PhaseTimeoutError,
+    ValidationError,
+    APIError,
 )
 
-# Re-export exceptions that were historically in models_RES
+# Note: FactualFailureException and ConfigurationError may need to be added if they exist
 
 __all__ = [
     # Enums
@@ -89,8 +96,6 @@ __all__ = [
     "StagingBufferError",
     "CircuitBreakerOpenError",
     "PhaseTimeoutError",
-    "FactualFailureException",
     "ValidationError",
-    "ConfigurationError",
     "APIError",
 ]
