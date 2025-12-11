@@ -7,7 +7,7 @@ Generated: 2025-12-07T12:07:59.851272
 
 import logging
 import time
-from typing import Callable, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
