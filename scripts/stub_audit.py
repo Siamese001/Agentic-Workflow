@@ -28,7 +28,6 @@ STUB_PATTERNS = [
 # Folders to skip
 SKIP_FOLDERS = {'.git', '__pycache__', '.venv', 'venv', 'node_modules', '06_data'}
 
-
 def is_stub_file(file_path: Path) -> Tuple[bool, str]:
     """Check if a file is a stub/placeholder. Returns (is_stub, reason)."""
     try:
@@ -72,7 +71,6 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
 
     except (ValueError, TypeError, KeyError) as e:
         return False, f"error: {e}"
-
 
 def audit_stubs() -> Dict:
     """Audit all Python files for stubs/placeholders."""
@@ -136,45 +134,25 @@ def audit_stubs() -> Dict:
 
     return report
 
-
 def print_report(report: Dict) -> None:
     """Print formatted audit report."""
-    print("=" * 70)
-    print("STUB/PLACEHOLDER AUDIT REPORT")
-    print("=" * 70)
-
-    print("\n## SUMMARY")
-    print(f"  Total Python files: {report['summary']['total_py_files']}")
-    print(f"  Stub/placeholder:   {report['summary']['stub_files']}")
-    print(f"  Real files:         {report['summary']['real_files']}")
 
     stub_pct = (report['summary']['stub_files'] / report['summary']['total_py_files'] * 100) if report['summary']['total_py_files'] > 0 else 0
-    print(f"  Stub percentage:    {stub_pct:.1f}%")
 
-    print("\n## BY REASON")
     for reason, files in sorted(report["by_reason"].items(), key=lambda x: -len(x[1])):
-        print(f"  {reason}: {len(files)} files")
 
-    print("\n## BY TOP-LEVEL FOLDER")
     for folder, stats in sorted(report["by_folder"].items(), key=lambda x: -x[1]["stubs"]):
         total = stats["stubs"] + stats["real"]
         if stats["stubs"] > 0:
             pct = stats["stubs"] / total * 100 if total > 0 else 0
-            print(f"  {folder}/: {stats['stubs']} stubs / {total} total ({pct:.0f}%)")
 
     print("\n    for stub in report["stubs"][:20]:
-        print(f"  [{stub['reason']}] {stub['path']}")
 
     if len(report["stubs"]) > 20:
-        print(f"  ... and {len(report['stubs']) - 20} more")
 
     if report["recommendations"]:
-        print("\n## RECOMMENDATIONS")
+
         for i, rec in enumerate(report["recommendations"][:10], 1):
-            print(f"  {i}. {rec}")
-
-    print("\n" + "=" * 70)
-
 
 def main():
     report = audit_stubs()
@@ -189,10 +167,7 @@ def main():
     with open(report_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, default=str)
 
-    print(f"\nReport saved to: {report_path}")
-
     return report
-
 
 if __name__ == "__main__":
     main()

@@ -6,7 +6,6 @@ import os
 import json
 from openai import OpenAI, AsyncOpenAI
 
-
 def simple_completion(prompt: str, model: str = "gpt-4o-2024-08-06") -> str:
     """Simple chat completion with OpenAI.
     
@@ -27,7 +26,6 @@ def simple_completion(prompt: str, model: str = "gpt-4o-2024-08-06") -> str:
     )
     
     return response.choices[0].message.content
-
 
 def structured_completion(prompt: str, schema: dict) -> dict:
     """Structured completion with JSON schema.
@@ -57,12 +55,10 @@ def structured_completion(prompt: str, schema: dict) -> dict:
     
     return json.loads(response.choices[0].message.content)
 
-
 if __name__ == "__main__":
     # Test simple completion
     result = simple_completion("Explain AI in one sentence")
-    print("Simple:", result)
-    
+
     # Test structured completion
     schema = {
         "type": "object",
@@ -74,4 +70,3 @@ if __name__ == "__main__":
     }
     
     structured = structured_completion("Summarize machine learning", schema)
-    print("Structured:", json.dumps(structured, indent=2))

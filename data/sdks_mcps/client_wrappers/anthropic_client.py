@@ -12,7 +12,6 @@ from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic, APIErr
 from shared.result_types import Message
 import backoff
 
-
 @dataclass
 class AnthropicConfig:
     """Configuration for Anthropic client."""
@@ -24,7 +23,6 @@ class AnthropicConfig:
     default_temperature: float = 0.7
     default_max_tokens: int = 4096
     enable_caching: bool = True
-
 
 class AnthropicClient:
     """Production-ready Anthropic client with caching and tool use support."""
@@ -382,7 +380,6 @@ class AnthropicClient:
             "errors": 0
         }
 
-
 # builder function for easy instantiation
 def create_anthropic_client(
     api_key: Optional[str] = None,
@@ -409,7 +406,6 @@ def create_anthropic_client(
     )
     return AnthropicClient(config)
 
-
 # Example usage
 if __name__ == "__main__":
     # Create client with caching
@@ -427,8 +423,7 @@ if __name__ == "__main__":
     
     try:
         response = client.message(messages)
-        print("Response:", response.content[0].text if response.content else "No content")
-        
+
         # Cached message with system prompt
         system = [
             {"type": "text", "text": "You are an expert physics educator."}
@@ -439,14 +434,8 @@ if __name__ == "__main__":
             system=system,
             cache_system=True
         )
-        print("Cached Response:", cached_response.content[0].text if cached_response.content else "No content")
-        
+
         # Usage stats with cache metrics
         stats = client.get_usage_stats()
-        print("Usage Stats:")
-        print(f"  Cache Hit Rate: {stats['cache_hit_rate']:.1f}%")
-        print(f"  Cache Savings: {stats['cache_savings_percent']:.1f}%")
-        print(f"  Total Cost: ${stats['total_cost']:.4f}")
-        
+
     except Exception as e:
-        print("Error:", e)

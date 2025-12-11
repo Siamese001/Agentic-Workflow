@@ -9,13 +9,11 @@ sovereign_dirs = [
 ]
 fixed_count = 0
 
-
 def get_body_start_line(node: ast.AST) -> int:
     """Get the line number where the function/class body starts."""
     if hasattr(node, 'body') and node.body:
         return node.body[0].lineno
     return node.lineno + 1
-
 
 for sdir in sovereign_dirs:
     if not os.path.exists(sdir):
@@ -59,10 +57,7 @@ for sdir in sovereign_dirs:
 
             pyfile.write_text('\n'.join(lines), encoding='utf-8')
             fixed_count += 1
-            print(f'Fixed: {pyfile}')
-        except SyntaxError:
-            print(f'Syntax error in: {pyfile}')
-        except (ValueError, TypeError, RuntimeError, OSError) as e:
-            print(f'Error in {pyfile}: {e}')
 
-print(f'Total files fixed: {fixed_count}')
+        except SyntaxError:
+
+        except (ValueError, TypeError, RuntimeError, OSError) as e:

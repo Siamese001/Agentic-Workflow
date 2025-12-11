@@ -57,7 +57,6 @@ EXCLUDE_PATTERNS = [
     "06_data",  # Exclude entire data folder from dedup
 ]
 
-
 @dataclass
 class DedupManifest:
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
@@ -69,7 +68,6 @@ class DedupManifest:
     removed_files: List[Dict] = field(default_factory=list)
     errors: List[Dict] = field(default_factory=list)
 
-
 def compute_hash(filepath: Path) -> str:
     """Compute SHA256 hash of file."""
     sha256 = hashlib.sha256()
@@ -77,7 +75,6 @@ def compute_hash(filepath: Path) -> str:
         for chunk in iter(lambda: f.read(8192), b""):
             sha256.update(chunk)
     return sha256.hexdigest()
-
 
 def find_duplicates(folders: List[str]) -> Dict[str, List[Path]]:
     """Find all duplicate files by hash."""
@@ -100,7 +97,6 @@ def find_duplicates(folders: List[str]) -> Dict[str, List[Path]]:
 
     # Return only groups with duplicates
     return {h: files for h, files in hash_to_files.items() if len(files) > 1}
-
 
 def select_canonical(files: List[Path]) -> Tuple[Path, List[Path]]:
     """
@@ -140,18 +136,14 @@ def select_canonical(files: List[Path]) -> Tuple[Path, List[Path]]:
     sorted_files = sorted(files, key=score_file)
     return sorted_files[0], sorted_files[1:]
 
-
 def execute_dedup(dry_run: bool = False) -> DedupManifest:
     """Execute deduplication."""
     manifest = DedupManifest()
 
-    print("Scanning for duplicates...")
     duplicates = find_duplicates(SCAN_FOLDERS)
 
     manifest.duplicate_groups = len(duplicates)
     manifest.total_scanned = sum(len(files) for files in duplicates.values())
-
-    print(f"Found {manifest.duplicate_groups} duplicate groups ({manifest.total_scanned} files)")
 
     if not dry_run:
         ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
@@ -166,8 +158,6 @@ def execute_dedup(dry_run: bool = False) -> DedupManifest:
             "duplicates_removed": len(to_remove),
         })
 
-        print(f"\n[KEEP] {canonical.relative_to(REPO_ROOT)}")
-
         for dup_file in to_remove:
             rel_path = dup_file.relative_to(REPO_ROOT)
             file_size = dup_file.stat().st_size
@@ -181,8 +171,6 @@ def execute_dedup(dry_run: bool = False) -> DedupManifest:
 
             manifest.bytes_saved += file_size
             manifest.files_removed += 1
-
-            print(f"  [REMOVE] {rel_path}")
 
             if not dry_run:
                 try:
@@ -212,29 +200,16 @@ def execute_dedup(dry_run: bool = False) -> DedupManifest:
 
     return manifest
 
-
 def print_summary(manifest: DedupManifest, dry_run: bool):
     """Print deduplication summary."""
-    print("\n" + "=" * 60)
-    print("DEDUPLICATION SUMMARY")
-    print("=" * 60)
-    print(f"Timestamp: {manifest.timestamp}")
-    print(f"Duplicate groups: {manifest.duplicate_groups}")
-    print(f"Files removed: {manifest.files_removed}")
-    print(f"Bytes saved: {manifest.bytes_saved:,} ({manifest.bytes_saved / 1024 / 1024:.2f} MB)")
 
     if manifest.errors:
-        print(f"\nErrors: {len(manifest.errors)}")
-        for err in manifest.errors[:5]:
-            print(f"  {err['path']}: {err['error']}")
 
-    print(f"\nManifest saved to: {MANIFEST_PATH}")
+        for err in manifest.errors[:5]:
 
     if dry_run:
-        print("\n[DRY RUN] No files were actually removed.")
-    else:
-        print(f"\nArchived files to: {ARCHIVE_DIR}")
 
+    else:
 
 if __name__ == "__main__":
     import sys
@@ -242,9 +217,6 @@ if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv or "-n" in sys.argv
 
     if dry_run:
-        print("=" * 60)
-        print("DRY RUN MODE - No files will be removed")
-        print("=" * 60)
 
     manifest = execute_dedup(dry_run=dry_run)
     print_summary(manifest, dry_run)

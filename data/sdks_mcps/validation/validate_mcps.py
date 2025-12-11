@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Dict, object, List
 import jsonschema
 
-
 def validate_json_schema(schema: Dict[str, object]) -> List[str]:
     """Validate a JSON schema against Draft 07 specification.
     
@@ -43,7 +42,6 @@ def validate_json_schema(schema: Dict[str, object]) -> List[str]:
         errors.append(f"Unexpected validation error: {e}")
     
     return errors
-
 
 def validate_mcp_catalogs() -> Dict[str, object]:
     """Validate all MCP catalog files."""
@@ -127,7 +125,6 @@ def validate_mcp_catalogs() -> Dict[str, object]:
     
     return results
 
-
 def validate_python_files() -> Dict[str, object]:
     """Validate all Python files for syntax and imports."""
     results = {
@@ -186,7 +183,6 @@ def validate_python_files() -> Dict[str, object]:
     
     return results
 
-
 def validate_schemas() -> Dict[str, object]:
     """Validate all JSON schema files."""
     results = {
@@ -236,7 +232,6 @@ def validate_schemas() -> Dict[str, object]:
     
     return results
 
-
 def check_environment_variables() -> Dict[str, object]:
     """Check for required environment variables."""
     results = {
@@ -264,12 +259,9 @@ def check_environment_variables() -> Dict[str, object]:
     
     return results
 
-
 def main():
     """Run all validation checks."""
-    print("🔍 Validating MCP Catalogs and SDKs...")
-    print("=" * 60)
-    
+
     # Change to sdks_mcps directory
     os.chdir(Path(__file__).parent.parent)
     
@@ -280,50 +272,33 @@ def main():
     env_results = check_environment_variables()
     
     # Print results
-    print(f"📋 MCP Catalogs: {'✅ VALID' if mcp_results['valid'] else '❌ INVALID'}")
+
     if mcp_results["errors"]:
         for error in mcp_results["errors"]:
-            print(f"   ❌ {error}")
-    
-    print(f"🐍 Python Files: {'✅ VALID' if python_results['valid'] else '❌ INVALID'}")
+
     if python_results["errors"]:
         for error in python_results["errors"]:
-            print(f"   ❌ {error}")
-    
-    print(f"📄 JSON Schemas: {'✅ VALID' if schema_results['valid'] else '❌ INVALID'}")
+
     if schema_results["errors"]:
         for error in schema_results["errors"]:
-            print(f"   ❌ {error}")
-    
-    print(f"🔧 Environment: {'⚠️  CHECK' if env_results['valid'] else '❌ ISSUES'}")
+
     missing_vars = [var for var, info in env_results["env_vars"].items() if not info["present"]]
     if missing_vars:
-        print(f"   ⚠️  Missing env vars: {', '.join(missing_vars)}")
-    
+
     # Overall result
     overall_valid = mcp_results['valid'] and python_results['valid'] and schema_results['valid']
-    
-    print("\n" + "=" * 60)
+
     if overall_valid:
-        print("🎉 ALL VALIDATIONS PASSED - SDKs ready for production!")
-        print("   data/sdks_mcps/ is confirmed as the single source of truth.")
+
     else:
-        print("❌ VALIDATION FAILED - Fix issues before using as source of truth.")
-    
+
     # Summary statistics
     total_files = len(python_results["files"]) + len(mcp_results["catalogs"]) + len(schema_results["schemas"])
     valid_files = sum(1 for f in python_results["files"].values() if f.get("valid", False))
     valid_catalogs = sum(1 for c in mcp_results["catalogs"].values() if c.get("valid", False))
     valid_schemas = sum(1 for s in schema_results["schemas"].values() if s.get("valid", False))
-    
-    print(f"\n📊 Summary:")
-    print(f"   Total files validated: {total_files}")
-    print(f"   Python files: {valid_files}/{len(python_results['files'])}")
-    print(f"   MCP catalogs: {valid_catalogs}/{len(mcp_results['catalogs'])}")
-    print(f"   JSON schemas: {valid_schemas}/{len(schema_results['schemas'])}")
-    
-    return 0 if overall_valid else 1
 
+    return 0 if overall_valid else 1
 
 if __name__ == "__main__":
     sys.exit(main())

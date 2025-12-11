@@ -14,7 +14,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 STUB_REPORT_DIR = REPO_ROOT / "06_data" / "stub_elimination"
 ARCHIVE_DIR = REPO_ROOT / "06_data" / "stub_archive"
 
-
 def load_latest_report() -> Dict:
     """Load the most recent stub scan report."""
     reports = sorted(STUB_REPORT_DIR.glob("stub_scan_*.json"), reverse=True)
@@ -23,7 +22,6 @@ def load_latest_report() -> Dict:
 
     with open(reports[0]) as f:
         return json.load(f)
-
 
 def get_module_type(filepath: Path) -> str:
     """Determine module type from filepath."""
@@ -71,7 +69,6 @@ def get_module_type(filepath: Path) -> str:
     else:
         return "standard"
 
-
 def generate_hardened_code(filepath: Path, module_type: str) -> str:
     """Generate hardened code based on module type."""
     name = filepath.stem
@@ -104,7 +101,6 @@ def generate_hardened_code(filepath: Path, module_type: str) -> str:
     generator = generators.get(module_type, generate_generic_module)
     return generator(name, class_name, domain)
 
-
 def generate_scoring_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
 {name}.py - Scoring Module
@@ -120,7 +116,6 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ScoreResult:
     """Result of scoring operation."""
@@ -128,7 +123,6 @@ class ScoreResult:
     confidence: float
     factors: Dict[str, float] = field(default_factory=dict)
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Scoring engine for {domain} domain."""
@@ -171,12 +165,10 @@ class {class_name}:
         """Compute confidence level."""
         return min(1.0, len(factors) / 5)
 
-
 def score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult:
     """Convenience function for scoring."""
     return {class_name}(config).compute_score(data)
 '''
-
 
 def generate_validation_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -194,12 +186,10 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class ValidationSeverity(Enum):
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
-
 
 @dataclass
 class ValidationFinding:
@@ -208,7 +198,6 @@ class ValidationFinding:
     message: str
     severity: ValidationSeverity
     path: Optional[str] = None
-
 
 @dataclass
 class ValidationResult:
@@ -219,7 +208,6 @@ class ValidationResult:
     @property
     def errors(self) -> List[ValidationFinding]:
         return [f for f in self.findings if f.severity == ValidationSeverity.ERROR]
-
 
 class {class_name}:
     """Validator for {domain} domain."""
@@ -266,12 +254,10 @@ class {class_name}:
                     ))
         return findings
 
-
 def validate(data: object, schema: Optional[Dict] = None, config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return {class_name}(config).validate(data, schema)
 '''
-
 
 def generate_formatting_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -288,14 +274,12 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class FormattedOutput:
     """Result of formatting."""
     data: object
     format_type: str
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Formatter for {domain} domain."""
@@ -340,12 +324,10 @@ class {class_name}:
                 result[new_key] = value
         return result
 
-
 def format_data(data: object, config: Optional[Dict] = None) -> FormattedOutput:
     """Convenience function for formatting."""
     return {class_name}(config).format(data)
 '''
-
 
 def generate_computation_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -363,14 +345,12 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ComputationResult:
     """Result of computation."""
     value: object
     method: str
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Computation engine for {domain} domain."""
@@ -407,12 +387,10 @@ class {class_name}:
             return math.sqrt(sum((x - mean) ** 2 for x in values) / len(values))
         return sum(values) / len(values)
 
-
 def compute(values: Sequence[float], operation: str = "mean", config: Optional[Dict] = None) -> ComputationResult:
     """Convenience function for computation."""
     return {class_name}(config).compute(values, operation)
 '''
-
 
 def generate_orchestration_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -431,13 +409,11 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class StepStatus(Enum):
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
-
 
 @dataclass
 class StepResult:
@@ -448,14 +424,12 @@ class StepResult:
     error: Optional[str] = None
     duration_ms: float = 0.0
 
-
 @dataclass
 class OrchestrationResult:
     """Result of orchestration."""
     success: bool
     steps: List[StepResult] = field(default_factory=list)
     final_output: object = None
-
 
 class {class_name}:
     """Orchestrator for {domain} domain."""
@@ -505,7 +479,6 @@ class {class_name}:
             final_output=context["outputs"].get(self.steps[-1]["name"]) if self.steps else None
         )
 
-
 def orchestrate(steps: List[Dict], initial_input: object = None, config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     orch = {class_name}(config)
@@ -513,7 +486,6 @@ def orchestrate(steps: List[Dict], initial_input: object = None, config: Optiona
         orch.add_step(step["name"], step["executor"], step.get("dependencies"))
     return orch.execute(initial_input)
 '''
-
 
 def generate_adjustment_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -530,14 +502,12 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class AdjustmentResult:
     """Result of adjustment."""
     original: object
     adjusted: object
     method: str
-
 
 class {class_name}:
     """Adjuster for {domain} domain."""
@@ -579,12 +549,10 @@ class {class_name}:
         std = math.sqrt(sum((x - mean) ** 2 for x in values) / len(values))
         return [(v - mean) / std if std > 0 else 0.0 for v in values]
 
-
 def adjust(values: Sequence[float], method: str = "minmax", config: Optional[Dict] = None) -> List[AdjustmentResult]:
     """Convenience function for adjustment."""
     return {class_name}(config).adjust(values, method)
 '''
-
 
 def generate_assessment_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -602,13 +570,11 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class AssessmentLevel(Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
-
 
 @dataclass
 class AssessmentResult:
@@ -616,7 +582,6 @@ class AssessmentResult:
     level: AssessmentLevel
     score: float
     findings: List[str] = field(default_factory=list)
-
 
 class {class_name}:
     """Assessor for {domain} domain."""
@@ -660,12 +625,10 @@ class {class_name}:
             findings.append("Score below threshold")
         return findings
 
-
 def assess(data: object, config: Optional[Dict] = None) -> AssessmentResult:
     """Convenience function for assessment."""
     return {class_name}(config).assess(data)
 '''
-
 
 def generate_diagnostics_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -683,7 +646,6 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class DiagnosticReport:
     """Diagnostic report."""
@@ -691,7 +653,6 @@ class DiagnosticReport:
     healthy: bool = True
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Diagnostics engine for {domain} domain."""
@@ -717,12 +678,10 @@ class {class_name}:
 
         return DiagnosticReport(healthy=healthy, issues=issues, metrics=metrics)
 
-
 def diagnose(target: object, config: Optional[Dict] = None) -> DiagnosticReport:
     """Convenience function for diagnostics."""
     return {class_name}(config).diagnose(target)
 '''
-
 
 def generate_management_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -740,7 +699,6 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ManagedResource:
     """A managed resource."""
@@ -750,7 +708,6 @@ class ManagedResource:
     data: object = None
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
-
 @dataclass
 class ManagementResult:
     """Result of management operation."""
@@ -758,7 +715,6 @@ class ManagementResult:
     operation: str
     resource: Optional[ManagedResource] = None
     message: Optional[str] = None
-
 
 class {class_name}:
     """coordinator for {domain} domain."""
@@ -795,7 +751,6 @@ class {class_name}:
         """Get resource."""
         return self.resources.get(resource_id)
 
-
 def manage(operation: str, resource_id: str, **kwargs) -> ManagementResult:
     """Convenience function for management."""
     coordinator = {class_name}(kwargs.get("config"))
@@ -807,7 +762,6 @@ def manage(operation: str, resource_id: str, **kwargs) -> ManagementResult:
         return coordinator.delete(resource_id)
     return ManagementResult(success=False, operation=operation, message="Unknown operation")
 '''
-
 
 def generate_optimization_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -826,14 +780,12 @@ logger = logging.getLogger(__name__)
 
 T = TypeVar('T')
 
-
 @dataclass
 class OptimizationResult:
     """Result of optimization."""
     items: List[Any]
     method: str
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Optimizer for {domain} domain."""
@@ -850,12 +802,10 @@ class {class_name}:
         optimized = sorted(items, key=key, reverse=True) if key else items
         return OptimizationResult(items=optimized, method=self.method, metadata={{"count": len(items)}})
 
-
 def optimize(items: List[Any], key: Optional[Callable] = None, config: Optional[Dict] = None) -> OptimizationResult:
     """Convenience function for optimization."""
     return {class_name}(config).optimize(items, key)
 '''
-
 
 def generate_metrics_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -874,7 +824,6 @@ from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class Metric:
     """A single metric."""
@@ -882,7 +831,6 @@ class Metric:
     value: float
     labels: Dict[str, str] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
-
 
 class {class_name}:
     """Metrics collector for {domain} domain."""
@@ -916,21 +864,17 @@ class {class_name}:
         else:
             self.metrics.clear()
 
-
 # Global instance
 _collector = {class_name}()
-
 
 def record_metric(name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
     """Record a metric to global collector."""
     _collector.record(name, value, labels)
 
-
 def get_metrics(name: Optional[str] = None) -> List[Metric]:
     """Get metrics from global collector."""
     return _collector.get_metrics(name)
 '''
-
 
 def generate_tracing_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -950,7 +894,6 @@ from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class Span:
     """A trace span."""
@@ -968,7 +911,6 @@ class Span:
         if self.end_time:
             return (self.end_time - self.start_time) * 1000
         return 0.0
-
 
 class {class_name}:
     """Tracer for {domain} domain."""
@@ -1016,10 +958,8 @@ class {class_name}:
         """Get all recorded spans."""
         return self.spans
 
-
 # Global tracer
 _tracer = {class_name}()
-
 
 @contextmanager
 def trace(name: str, attributes: Optional[Dict] = None):
@@ -1027,7 +967,6 @@ def trace(name: str, attributes: Optional[Dict] = None):
     with _tracer.start_span(name, attributes) as span:
         yield span
 '''
-
 
 def generate_logging_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -1044,7 +983,6 @@ from typing import Dict, Optional
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
-
 
 class StructuredFormatter(logging.Formatter):
     """JSON structured log formatter."""
@@ -1067,7 +1005,6 @@ class StructuredFormatter(logging.Formatter):
             log_data["exception"] = self.formatException(record.exc_info)
 
         return json.dumps(log_data)
-
 
 class {class_name}:
     """Logger for {domain} domain."""
@@ -1106,7 +1043,6 @@ class {class_name}:
         """Log debug message."""
         self.logger.debug(message, extra={{"extra": kwargs}})
 
-
 def get_logger(name: Optional[str] = None, config: Optional[Dict] = None) -> {class_name}:
     """Get a configured logger."""
     cfg = config or {{}}
@@ -1114,7 +1050,6 @@ def get_logger(name: Optional[str] = None, config: Optional[Dict] = None) -> {cl
         cfg["name"] = name
     return {class_name}(cfg)
 '''
-
 
 def generate_exporter_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -1133,7 +1068,6 @@ from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ExportResult:
     """Result of export operation."""
@@ -1142,7 +1076,6 @@ class ExportResult:
     destination: str
     errors: List[str] = None
 
-
 class BaseExporter(ABC):
     """foundation class for exporters."""
 
@@ -1150,7 +1083,6 @@ class BaseExporter(ABC):
     def export(self, data: object) -> ExportResult:
         """Export data."""
         ...
-
 
 class {class_name}(BaseExporter):
     """Exporter for {domain} domain."""
@@ -1167,7 +1099,7 @@ class {class_name}(BaseExporter):
 
             if self.destination == "stdout":
                 for item in items:
-                    print(json.dumps(item, default=str, indent=2))
+
             elif self.destination == "file":
                 filepath = self.config.get("filepath", "export.json")
                 with open(filepath, "w") as f:
@@ -1187,12 +1119,10 @@ class {class_name}(BaseExporter):
                 errors=[str(e)]
             )
 
-
 def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
     """Convenience function for export."""
     return {class_name}(config).export(data)
 '''
-
 
 def generate_propagator_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -1207,7 +1137,6 @@ import logging
 from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
-
 
 class {class_name}:
     """Context propagator for {domain} domain."""
@@ -1242,17 +1171,14 @@ class {class_name}:
 
         return context
 
-
 def inject_context(context: Dict[str, object], carrier: Dict[str, str], config: Optional[Dict] = None) -> None:
     """Inject context into carrier."""
     {class_name}(config).inject(context, carrier)
-
 
 def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> Dict[str, object]:
     """Extract context from carrier."""
     return {class_name}(config).extract(carrier)
 '''
-
 
 def generate_collector_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -1270,14 +1196,12 @@ from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class CollectedItem:
     """A collected item."""
     source: str
     data: object
     timestamp: float = field(default_factory=lambda: __import__("time").time())
-
 
 class {class_name}:
     """Collector for {domain} domain."""
@@ -1314,21 +1238,17 @@ class {class_name}:
             self.items.clear()
         return items
 
-
 # Global collector
 _collector = {class_name}()
-
 
 def collect(source: str, data: object) -> None:
     """Collect data to global collector."""
     _collector.collect(source, data)
 
-
 def get_collected(source: Optional[str] = None) -> List[CollectedItem]:
     """Get items from global collector."""
     return _collector.get_items(source)
 '''
-
 
 def generate_sampling_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -1345,14 +1265,12 @@ from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
-
 class SamplingDecision:
     """Sampling decision."""
 
     def __init__(self, sampled: bool, reason: str):
         self.sampled = sampled
         self.reason = reason
-
 
 class {class_name}:
     """Sampler for {domain} domain."""
@@ -1385,12 +1303,10 @@ class {class_name}:
                 return False
         return True
 
-
 def should_sample(context: Optional[Dict] = None, config: Optional[Dict] = None) -> bool:
     """Check if should sample."""
     return {class_name}(config).should_sample(context).sampled
 '''
-
 
 def generate_embedding_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -1408,7 +1324,6 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class EmbeddingResult:
     """Result of embedding operation."""
@@ -1417,14 +1332,12 @@ class EmbeddingResult:
     model: str
     metadata: Dict[str, object] = field(default_factory=dict)
 
-
 @dataclass
 class SimilarityResult:
     """Result of similarity search."""
     query: str
     matches: List[Tuple[str, float]]
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Embedding engine for {domain} domain."""
@@ -1473,17 +1386,14 @@ class {class_name}:
             return 0.0
         return dot / (norm_a * norm_b)
 
-
 def embed(text: str, config: Optional[Dict] = None) -> EmbeddingResult:
     """Generate embedding."""
     return {class_name}(config).embed(text)
-
 
 def find_similar(query: str, candidates: List[str], config: Optional[Dict] = None) -> SimilarityResult:
     """Find similar texts."""
     return {class_name}(config).similarity(query, candidates)
 '''
-
 
 def generate_pii_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -1501,7 +1411,6 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class PIIMatch:
     """A PII match."""
@@ -1511,14 +1420,12 @@ class PIIMatch:
     end: int
     confidence: float
 
-
 @dataclass
 class RedactionResult:
     """Result of redaction."""
     original: str
     redacted: str
     matches: List[PIIMatch] = field(default_factory=list)
-
 
 class {class_name}:
     """PII detector and redactor for {domain} domain."""
@@ -1569,17 +1476,14 @@ class {class_name}:
 
         return RedactionResult(original=text, redacted=redacted, matches=matches)
 
-
 def detect_pii(text: str, config: Optional[Dict] = None) -> List[PIIMatch]:
     """Detect PII in text."""
     return {class_name}(config).detect(text)
-
 
 def redact_pii(text: str, config: Optional[Dict] = None) -> RedactionResult:
     """Redact PII from text."""
     return {class_name}(config).redact(text)
 '''
-
 
 def generate_generic_module(name: str, class_name: str, domain: str) -> str:
     return f'''"""
@@ -1596,7 +1500,6 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class OperationResult:
     """Result of operation."""
@@ -1604,7 +1507,6 @@ class OperationResult:
     data: object = None
     message: Optional[str] = None
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """function class for {domain} domain."""
@@ -1626,12 +1528,10 @@ class {class_name}:
         """Process data."""
         return data
 
-
 def execute(data: object, config: Optional[Dict] = None, **kwargs) -> OperationResult:
     """Convenience function."""
     return {class_name}(config).execute(data, **kwargs)
 '''
-
 
 def populate_hardened_code(dry_run: bool = True) -> Dict:
     """Populate hardened code for all stub files."""
@@ -1648,10 +1548,6 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
 
     if not dry_run:
         ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
-
-    print("=" * 70)
-    print(f"POPULATING HARDENED CODE {'(DRY RUN)' if dry_run else ''}")
-    print("=" * 70)
 
     for stub_info in report["stub_files"]:
         filepath = REPO_ROOT / stub_info["path"]
@@ -1670,8 +1566,6 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
         results["files_processed"] += 1
         module_type = get_module_type(filepath)
 
-        print(f"\n[{module_type.upper()}] {stub_info['path']}")
-
         try:
             hardened_code = generate_hardened_code(filepath, module_type)
 
@@ -1687,29 +1581,17 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
                 # Write hardened code
                 filepath.write_text(hardened_code, encoding="utf-8")
                 results["files_updated"] += 1
-                print(f"  [UPDATED] Wrote {len(hardened_code)} bytes")
+
             else:
-                print(f"  [DRY-RUN] Would write {len(hardened_code)} bytes")
+
                 results["files_updated"] += 1
 
         except (ValueError, TypeError, KeyError) as e:
             results["errors"].append({"path": stub_info["path"], "error": str(e)})
-            print(f"  [ERROR] {e}")
-
-    print("\n" + "=" * 70)
-    print("SUMMARY")
-    print("=" * 70)
-    print(f"Files processed: {results['files_processed']}")
-    print(f"Files updated: {results['files_updated']}")
-    print(f"Files archived: {results['files_archived']}")
-    print(f"Errors: {len(results['errors'])}")
 
     if dry_run:
-        print("\n[DRY RUN] No files were actually modified.")
-        print("Run with --execute to apply changes.")
 
     return results
-
 
 if __name__ == "__main__":
     import sys

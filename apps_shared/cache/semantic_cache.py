@@ -26,7 +26,6 @@ class LICCacheCritique:
 class LICCacheCritiqueResult:
     pass
 
-
 @dataclass
 class VectorSimilarityResult:
     """Vector similarity evaluation result"""
@@ -34,7 +33,6 @@ class VectorSimilarityResult:
     is_sufficient: bool
     matched_targets: List[str]
     confidence: float
-
 
 class EnhancedSemanticCache(LICCacheCritique):
     """
@@ -319,7 +317,6 @@ class EnhancedSemanticCache(LICCacheCritique):
         # In production, this would update the actual cache store
         # For now, we simulate the cache update
         pass
-
 
 # Factory function for easy integration
 def create_enhanced_semantic_cache(threshold: float = 0.8) -> EnhancedSemanticCache:

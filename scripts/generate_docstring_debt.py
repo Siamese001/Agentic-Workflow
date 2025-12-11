@@ -36,14 +36,5 @@ for f in root.rglob("*.py"):
     except (ValueError, TypeError, KeyError):
         pass
 
-print('"""')
-print("DOCSTRING DEBT REGISTRY")
-print("Generated: 2025-12-08")
-print("These symbols lack proper docstrings and are acknowledged as technical debt.")
-print("No NEW missing docstrings will be allowed. This list can only shrink.")
-print('"""')
-print("")
-print("DOCSTRING_DEBT = {")
 for m in sorted(missing):
-    print(f'    "{m}",')
-print("}")
+

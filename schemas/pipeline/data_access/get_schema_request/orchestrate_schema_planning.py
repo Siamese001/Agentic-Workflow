@@ -13,7 +13,6 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class SchemaType(Enum):
     """Types of schemas for different data formats."""
     JSON = "json"
@@ -23,14 +22,12 @@ class SchemaType(Enum):
     SQL = "sql"
     YAML = "yaml"
 
-
 class ValidationLevel(Enum):
     """Levels of schema validation."""
     SYNTAX = "syntax"
     SEMANTIC = "semantic"
     BUSINESS = "business"
     FULL = "full"
-
 
 class TransformationType(Enum):
     """Types of schema transformations."""
@@ -39,7 +36,6 @@ class TransformationType(Enum):
     TYPE_COERCION = "type_coercion"
     STRUCTURE_REFACTOR = "structure_refactor"
     VERSION_MIGRATION = "version_migration"
-
 
 @dataclass
 class SchemaDefinition:
@@ -52,7 +48,6 @@ class SchemaDefinition:
     description: Optional[str] = None
     tags: List[str] = field(default_factory=list)
 
-
 @dataclass
 class ValidationRule:
     """Rule for schema validation."""
@@ -61,7 +56,6 @@ class ValidationRule:
     condition: str
     message: str
     severity: str = "error"
-
 
 @dataclass
 class TransformationPlan:
@@ -73,7 +67,6 @@ class TransformationPlan:
     validation_rules: List[ValidationRule] = field(default_factory=list)
     dependencies: List[str] = field(default_factory=list)
 
-
 @dataclass
 class SchemaPlanningConfig:
     """Configuration for schema planning orchestrator."""
@@ -83,7 +76,6 @@ class SchemaPlanningConfig:
     max_schema_depth: int = 10
     strict_validation: bool = True
     log_level: str = "INFO"
-
 
 @dataclass
 class SchemaPlanningResult:
@@ -96,7 +88,6 @@ class SchemaPlanningResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-
 
 class SchemaPlanningOrchestrator:
     """Orchestrator for planning schema operations."""
@@ -253,7 +244,6 @@ class SchemaPlanningOrchestrator:
         
         return errors
 
-
 # Factory function for easy instantiation
 def create_schema_planning_orchestrator(
     enable_validation: bool = True,
@@ -267,7 +257,6 @@ def create_schema_planning_orchestrator(
         **kwargs
     )
     return SchemaPlanningOrchestrator(config)
-
 
 # Convenience function for direct usage
 def plan_schema_operations(
@@ -331,7 +320,6 @@ def plan_schema_operations(
         "metadata": result.metadata
     }
 
-
 if __name__ == "__main__":
     # Example usage
     example_schemas = [
@@ -347,8 +335,6 @@ if __name__ == "__main__":
         operation="validate",
         schemas=example_schemas
     )
-    print(f"Schema planning result: {result}")
-
 
 class OrchestrateDataPlanningOrchestratorImpl(OrchestrateDataPlanningOrchestratorProcessor):
     """

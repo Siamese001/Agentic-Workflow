@@ -7,7 +7,6 @@ import json
 from vertexai.generative_models import GenerativeModel, Content, Part
 from vertexai import init as vertex_init
 
-
 def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:
     """Simple content generation with Vertex AI.
     
@@ -35,7 +34,6 @@ def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:
     )
     
     return response.text
-
 
 def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
     """Generation with Google Search grounding and citations.
@@ -89,7 +87,6 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
         "content": response.text,
         "grounding_metadata": grounding_metadata
     }
-
 
 def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
     """Generation with configurable safety settings.
@@ -155,18 +152,13 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
         "safety_ratings": safety_ratings
     }
 
-
 if __name__ == "__main__":
     # Test simple generation
     result = simple_generation("Explain AI in one sentence")
-    print("Simple:", result)
-    
+
     # Test grounded generation
     grounded = grounded_generation("What are the latest developments in AI?")
-    print("Grounded:", grounded["content"][:200] + "...")
-    print("Grounding Score:", grounded["grounding_metadata"])
-    
+
     # Test safe generation
     safe = safe_generation("Write a professional email")
-    print("Safe:", safe["content"][:200] + "...")
-    print("Safety Ratings:", len(safe["safety_ratings"]))
+

@@ -78,16 +78,13 @@ FORBIDDEN_PATTERNS = [
 # Banned folder names
 BANNED_FOLDERS = ["logic"]  # Not in YAML taxonomy
 
-
 def collect_test_files() -> List[Path]:
     """Collect all test files."""
     return [f for f in TESTS_ROOT.rglob("test_*.py")]
 
-
 def collect_test_dirs() -> List[Path]:
     """Collect all test directories."""
     return [d for d in TESTS_ROOT.rglob("*") if d.is_dir()]
-
 
 def check_forbidden_patterns(path: Path) -> List[str]:
     """Check if path contains forbidden L/P patterns."""
@@ -100,7 +97,6 @@ def check_forbidden_patterns(path: Path) -> List[str]:
 
     return violations
 
-
 def check_banned_folders(path: Path) -> List[str]:
     """Check if path is in a banned folder."""
     violations = []
@@ -111,7 +107,6 @@ def check_banned_folders(path: Path) -> List[str]:
             violations.append(part)
 
     return violations
-
 
 def get_test_category(path: Path) -> Tuple[str, str]:
     """Get the test category (unit/integration/e2e/etc) and subcategory."""
@@ -124,7 +119,6 @@ def get_test_category(path: Path) -> Tuple[str, str]:
         return category, subcategory
 
     return None, None
-
 
 def audit_tests() -> Dict:
     """Run full audit of test structure."""
@@ -215,52 +209,32 @@ def audit_tests() -> Dict:
 
     return report
 
-
 def print_report(report: Dict) -> None:
     """Print formatted audit report."""
-    print("=" * 70)
-    print("TEST STRUCTURE AUDIT REPORT")
-    print("=" * 70)
-
-    print("\n## SUMMARY")
-    print(f"  Total test files: {report['summary']['total_test_files']}")
-    print(f"  Total test dirs:  {report['summary']['total_test_dirs']}")
-    print(f"  YAML compliant:   {report['summary']['yaml_compliant']}")
-    print(f"  Violations:       {report['summary']['violations']}")
 
     if report["violations"]["forbidden_lp_patterns"]:
-        print("\n## VIOLATIONS: L/P Pattern Mirroring (CRITICAL)")
+
         for v in report["violations"]["forbidden_lp_patterns"][:10]:
-            print(f"  ✗ {v['file']}")
-            print(f"    Patterns: {', '.join(v['patterns'])}")
+
         if len(report["violations"]["forbidden_lp_patterns"]) > 10:
-            print(f"  ... and {len(report['violations']['forbidden_lp_patterns']) - 10} more")
 
     if report["violations"]["banned_folders"]:
-        print("\n## VIOLATIONS: Banned Folders")
+
         for v in report["violations"]["banned_folders"]:
-            print(f"  ✗ {v['file']}")
 
     if report["violations"]["unknown_categories"]:
-        print("\n## VIOLATIONS: Unknown Categories")
-        for v in report["violations"]["unknown_categories"]:
-            print(f"  ✗ {v['category']}/")
 
-    print("\n## COVERAGE BY CATEGORY")
+        for v in report["violations"]["unknown_categories"]:
+
     for category in ["unit", "integration", "e2e", "golden", "perf", "load"]:
         subs = report["coverage"].get(category, {})
         total = sum(len(files) for files in subs.values())
-        print(f"\n  {category}/ ({total} tests)")
+
         for sub, files in sorted(subs.items()):
-            print(f"    {sub}/: {len(files)} tests")
 
     if report["recommendations"]:
-        print("\n## RECOMMENDATIONS")
+
         for i, rec in enumerate(report["recommendations"], 1):
-            print(f"  {i}. {rec}")
-
-    print("\n" + "=" * 70)
-
 
 def main():
     report = audit_tests()
@@ -275,10 +249,7 @@ def main():
     with open(report_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, default=str)
 
-    print(f"\nReport saved to: {report_path}")
-
     return report
-
 
 if __name__ == "__main__":
     main()

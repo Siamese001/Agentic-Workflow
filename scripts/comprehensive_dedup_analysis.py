@@ -53,7 +53,6 @@ EXCLUDE_PATTERNS = [
     "stray_root_archive",
 ]
 
-
 @dataclass
 class FileFingerprint:
     """Complete fingerprint for a Python file."""
@@ -70,7 +69,6 @@ class FileFingerprint:
     is_stub: bool = False
     parse_error: Optional[str] = None
 
-
 @dataclass
 class DuplicateCluster:
     """A cluster of duplicate files."""
@@ -80,7 +78,6 @@ class DuplicateCluster:
     duplicates: List[Path] = field(default_factory=list)
     fingerprints: List[FileFingerprint] = field(default_factory=list)
     merge_plan: Dict = field(default_factory=dict)
-
 
 @dataclass
 class DedupReport:
@@ -95,11 +92,9 @@ class DedupReport:
     clusters: List[DuplicateCluster] = field(default_factory=list)
     bytes_recoverable: int = 0
 
-
 def compute_content_hash(content: str) -> str:
     """Compute SHA256 hash of content."""
     return hashlib.sha256(content.encode('utf-8', errors='replace')).hexdigest()
-
 
 def compute_ast_hash(content: str) -> Tuple[str, Optional[str]]:
     """
@@ -120,7 +115,6 @@ def compute_ast_hash(content: str) -> Tuple[str, Optional[str]]:
         return "", f"SyntaxError: {e}"
     except (ValueError, TypeError, KeyError) as e:
         return "", str(e)
-
 
 def normalize_content(content: str) -> str:
     """
@@ -149,12 +143,10 @@ def normalize_content(content: str) -> str:
         # Fallback: basic whitespace normalization
         return re.sub(r'\s+', ' ', content).strip()
 
-
 def compute_normalized_hash(content: str) -> str:
     """Compute hash of normalized content."""
     normalized = normalize_content(content)
     return hashlib.sha256(normalized.encode()).hexdigest()
-
 
 def extract_semantic_elements(content: str) -> Tuple[List[str], List[str], List[str]]:
     """Extract imports, function names, and class names from content."""
@@ -184,12 +176,10 @@ def extract_semantic_elements(content: str) -> Tuple[List[str], List[str], List[
 
     return sorted(imports), sorted(functions), sorted(classes)
 
-
 def compute_semantic_hash(imports: List[str], functions: List[str], classes: List[str]) -> str:
     """Compute hash of semantic elements."""
     semantic_str = f"imports:{','.join(imports)}|functions:{','.join(functions)}|classes:{','.join(classes)}"
     return hashlib.sha256(semantic_str.encode()).hexdigest()
-
 
 def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool:
     """Detect if file is a stub/placeholder."""
@@ -211,7 +201,6 @@ def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool
         return True
 
     return False
-
 
 def fingerprint_file(filepath: Path) -> FileFingerprint:
     """Generate complete fingerprint for a file."""
@@ -250,7 +239,6 @@ def fingerprint_file(filepath: Path) -> FileFingerprint:
         parse_error=ast_error
     )
 
-
 def collect_fingerprints() -> List[FileFingerprint]:
     """Collect fingerprints for all Python files."""
     fingerprints = []
@@ -270,7 +258,6 @@ def collect_fingerprints() -> List[FileFingerprint]:
                 fingerprints.append(fp)
 
     return fingerprints
-
 
 def find_duplicate_clusters(fingerprints: List[FileFingerprint]) -> List[DuplicateCluster]:
     """Find all duplicate clusters using multiple hash types."""
@@ -361,7 +348,6 @@ def find_duplicate_clusters(fingerprints: List[FileFingerprint]) -> List[Duplica
 
     return clusters
 
-
 def select_canonical_path(cluster: DuplicateCluster) -> Path:
     """Select the canonical file from a cluster based on YAML-defined priorities."""
     # Priority order for canonical selection
@@ -400,7 +386,6 @@ def select_canonical_path(cluster: DuplicateCluster) -> Path:
     sorted_fps = sorted(cluster.fingerprints, key=score_path)
     return sorted_fps[0].path
 
-
 def generate_merge_plan(cluster: DuplicateCluster) -> Dict:
     """Generate a merge plan for a duplicate cluster."""
     canonical = select_canonical_path(cluster)
@@ -426,30 +411,19 @@ def generate_merge_plan(cluster: DuplicateCluster) -> Dict:
     cluster.merge_plan = plan
     return plan
 
-
 def run_analysis() -> DedupReport:
     """Run complete deduplication analysis."""
-    print("=" * 70)
-    print("COMPREHENSIVE ZERO-LOSS DEDUPLICATION ANALYSIS")
-    print("=" * 70)
 
-    print("\nPhase 1: Collecting file fingerprints...")
     fingerprints = collect_fingerprints()
-    print(f"  Scanned {len(fingerprints)} Python files")
 
     # Count stubs
     stubs = [fp for fp in fingerprints if fp.is_stub]
-    print(f"  Identified {len(stubs)} stub/placeholder files")
 
     # Count parse errors
     errors = [fp for fp in fingerprints if fp.parse_error]
-    print(f"  Parse errors: {len(errors)}")
 
-    print("\nPhase 2: Finding duplicate clusters...")
     clusters = find_duplicate_clusters(fingerprints)
-    print(f"  Found {len(clusters)} duplicate clusters")
 
-    print("\nPhase 3: Generating merge plans...")
     for cluster in clusters:
         generate_merge_plan(cluster)
 
@@ -467,58 +441,25 @@ def run_analysis() -> DedupReport:
 
     return report
 
-
 def print_section_a(report: DedupReport):
     """Print SECTION A - Duplicate Clusters."""
-    print("\n" + "=" * 70)
-    print("SECTION A — Duplicate Clusters (by structural hash)")
-    print("=" * 70)
 
     for cluster in report.clusters:
-        print(f"\n[{cluster.cluster_id}] Match Type: {cluster.match_type.upper()}")
-        print(f"  Files in cluster: {len(cluster.duplicates)}")
+
         for fp in cluster.fingerprints:
             rel_path = fp.path.relative_to(REPO_ROOT)
             stub_marker = " [STUB]" if fp.is_stub else ""
-            print(f"    - {rel_path} ({fp.size} bytes, {fp.line_count} lines){stub_marker}")
-
 
 def print_section_b(report: DedupReport):
     """Print SECTION B - Merge Plans."""
-    print("\n" + "=" * 70)
-    print("SECTION B — Merge Plans (canonical + non-canonical + diff summary)")
-    print("=" * 70)
 
     for cluster in report.clusters:
         plan = cluster.merge_plan
-        print(f"\n[{cluster.cluster_id}] {cluster.match_type.upper()} MERGE PLAN")
-        print(f"  Canonical: {plan['canonical_path']}")
-        print(f"  Hash: {plan['canonical_hash']}")
-        print(f"  Size: {plan['canonical_size']} bytes")
-        print(f"  Functions: {', '.join(plan['functions_preserved'][:5]) or 'None'}")
-        print(f"  Classes: {', '.join(plan['classes_preserved'][:5]) or 'None'}")
-        print(f"  Non-canonical duplicates ({len(plan['non_canonical'])}):")
-        for nc in plan['non_canonical']:
-            print(f"    - {nc}")
-        print(f"  Bytes recoverable: {plan['bytes_recoverable']:,}")
 
+        for nc in plan['non_canonical']:
 
 def print_section_e(report: DedupReport):
     """Print SECTION E - Final Summary."""
-    print("\n" + "=" * 70)
-    print("SECTION E — Final Repository Dedup Summary")
-    print("=" * 70)
-
-    print(f"\nTimestamp: {report.timestamp}")
-    print(f"\nFiles Analyzed: {report.total_files_scanned}")
-    print(f"\nDuplicate Statistics:")
-    print(f"  Total duplicate files: {report.total_duplicates}")
-    print(f"  - Exact content duplicates: {report.exact_duplicates}")
-    print(f"  - AST structure duplicates: {report.ast_duplicates}")
-    print(f"  - Normalized content duplicates: {report.normalized_duplicates}")
-    print(f"  - Semantic role duplicates: {report.semantic_duplicates}")
-    print(f"\nDuplicate Clusters: {len(report.clusters)}")
-    print(f"Bytes Recoverable: {report.bytes_recoverable:,} ({report.bytes_recoverable / 1024 / 1024:.2f} MB)")
 
     # Group by folder
     by_folder = defaultdict(int)
@@ -527,10 +468,7 @@ def print_section_e(report: DedupReport):
             folder = str(fp.path.relative_to(REPO_ROOT)).split('/')[0].split('\\')[0]
             by_folder[folder] += 1
 
-    print(f"\nDuplicates by Folder:")
     for folder, count in sorted(by_folder.items(), key=lambda x: -x[1]):
-        print(f"  {folder}: {count}")
-
 
 def save_report(report: DedupReport):
     """Save report to JSON."""
@@ -561,9 +499,7 @@ def save_report(report: DedupReport):
     with open(output_path, "w") as f:
         json.dump(report_data, f, indent=2)
 
-    print(f"\nReport saved to: {output_path}")
     return output_path
-
 
 if __name__ == "__main__":
     report = run_analysis()

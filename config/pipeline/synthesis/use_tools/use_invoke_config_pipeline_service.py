@@ -31,8 +31,8 @@ except ImportError:
     GEMINI_AVAILABLE = False
     genai = None
 
-from runtime.compat.models_RES import HopExecutionError, ReasoningConfig
-from runtime.compat.utils_RES_v2 import text_utils, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
+from agentic_core.compat.models_RES import HopExecutionError, ReasoningConfig
+from agentic_core.compat.utils_RES_v2 import text_utils, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
 
 # --- FIX: Import ALL constants from config_RES_v2 ---
 # --- END FIX ---

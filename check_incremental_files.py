@@ -97,20 +97,14 @@ for archive_file in ARCHIVE_SOURCE_LIST:
 # --- Reporting ---
 
 if net_incremental_files:
-    print("\n✅ SUCCESS: NET INCREMENTAL FILES IDENTIFIED (Ready for Staging)")
-    print(f"Total files to be moved to /archive_code/: {len(net_incremental_files)}")
-    print("--- Incremental Files List ---")
+
     for filename in net_incremental_files:
-        print(f"- {filename}")
-    print("\nNext Action: Manually copy these files into the /archive_code/ staging folder.")
+
 else:
-    print("\n✅ SUCCESS: NO NET INCREMENTAL FILES FOUND.")
-    print("All files in the legacy archive are already present in the current sovereign codebase (duplicates).")
 
 if duplicates_found:
-    print("\n--- Duplicates Skipped (Hardened Check Confirmed) ---")
+
     for filename in duplicates_found:
-        print(f"- {filename}")
 
 # Exit cleanly
 sys.exit(0)

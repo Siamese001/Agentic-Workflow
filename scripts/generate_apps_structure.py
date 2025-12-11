@@ -10,7 +10,6 @@ from datetime import datetime
 
 REPO = Path("c:/Git/Agentic-Workflow")
 
-
 def extract_yaml_paths(obj, prefix='', paths=None):
     """Extract file paths from YAML structure."""
     if paths is None:
@@ -25,7 +24,6 @@ def extract_yaml_paths(obj, prefix='', paths=None):
             elif isinstance(value, dict) and value:
                 extract_yaml_paths(value, new_prefix, paths)
     return paths
-
 
 def classify_module(path: str) -> str:
     """Classify module type from path."""
@@ -55,7 +53,6 @@ def classify_module(path: str) -> str:
     else:
         return "standard"
 
-
 def get_domain_context(path: str, app_type: str) -> dict:
     """Get domain-specific context for code generation."""
     if app_type == "lic":
@@ -75,7 +72,6 @@ def get_domain_context(path: str, app_type: str) -> dict:
             "data_type": "content"
         }
 
-
 def generate_policy_module(name: str, ctx: dict) -> str:
     """Generate policy enforcement module."""
     class_name = ''.join(word.capitalize() for word in name.replace('-', '_').split('_'))
@@ -94,12 +90,10 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class PolicyDecision(Enum):
     ALLOW = "allow"
     DENY = "deny"
     WARN = "warn"
-
 
 @dataclass
 class PolicyViolation:
@@ -109,14 +103,12 @@ class PolicyViolation:
     severity: str
     context: Dict[str, object] = field(default_factory=dict)
 
-
 @dataclass
 class PolicyResult:
     """Result of policy evaluation."""
     decision: PolicyDecision
     violations: List[PolicyViolation] = field(default_factory=list)
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Policy enforcer for {ctx['domain']} domain."""
@@ -191,12 +183,10 @@ class {class_name}:
                 break
         return violations
 
-
 def evaluate_policy(data: object, config: Optional[Dict] = None) -> PolicyResult:
     """Evaluate data against policy."""
     return {class_name}(config).evaluate(data)
 '''
-
 
 def generate_embedding_module(name: str, ctx: dict) -> str:
     """Generate embedding/similarity module."""
@@ -217,7 +207,6 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class EmbeddingResult:
     """Result of embedding operation."""
@@ -225,14 +214,12 @@ class EmbeddingResult:
     dimension: int
     metadata: Dict[str, object] = field(default_factory=dict)
 
-
 @dataclass
 class SimilarityMatch:
     """A similarity match."""
     item: object
     score: float
     rank: int
-
 
 class {class_name}:
     """Embedding operations for {ctx['domain']} domain."""
@@ -274,12 +261,10 @@ class {class_name}:
         norm = math.sqrt(sum(v * v for v in vec))
         return [v / norm for v in vec] if norm else vec
 
-
 def compute_embedding(text: str, config: Optional[Dict] = None) -> EmbeddingResult:
     """Compute embedding for text."""
     return {class_name}(config).embed(text)
 '''
-
 
 def generate_scoring_module(name: str, ctx: dict) -> str:
     """Generate scoring module."""
@@ -298,14 +283,12 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ScoreResult:
     """Scoring result."""
     score: float
     confidence: float
     factors: Dict[str, float] = field(default_factory=dict)
-
 
 class {class_name}:
     """Scorer for {ctx['domain']} domain."""
@@ -344,12 +327,10 @@ class {class_name}:
         """Compute confidence."""
         return min(1.0, len(factors) / 5)
 
-
 def compute_score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult:
     """Compute score."""
     return {class_name}(config).score(data)
 '''
-
 
 def generate_state_update_module(name: str, ctx: dict) -> str:
     """Generate state update module."""
@@ -369,7 +350,6 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class StateUpdate:
     """A state update."""
@@ -378,14 +358,12 @@ class StateUpdate:
     new_value: object
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
-
 @dataclass
 class StateResult:
     """Result of state operation."""
     success: bool
     updates: List[StateUpdate] = field(default_factory=list)
     state: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """State coordinator for {ctx['domain']} domain."""
@@ -415,12 +393,10 @@ class {class_name}:
         """Get state value."""
         return self.state.get(key, default)
 
-
 def update_state(updates: Dict[str, object], config: Optional[Dict] = None) -> StateResult:
     """Update state."""
     return {class_name}(config).update(updates)
 '''
-
 
 def generate_retrieval_module(name: str, ctx: dict) -> str:
     """Generate retrieval module."""
@@ -439,7 +415,6 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class RetrievalResult:
     """Retrieval result."""
@@ -447,7 +422,6 @@ class RetrievalResult:
     total: int
     query: Optional[str] = None
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Retrieval engine for {ctx['domain']} domain."""
@@ -471,12 +445,10 @@ class {class_name}:
         """Execute query."""
         return []
 
-
 def retrieve(query: str, config: Optional[Dict] = None, **kwargs) -> RetrievalResult:
     """Retrieve items."""
     return {class_name}(config).retrieve(query, **kwargs)
 '''
-
 
 def generate_formatting_module(name: str, ctx: dict) -> str:
     """Generate formatting module."""
@@ -495,14 +467,12 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class FormatResult:
     """Formatting result."""
     data: object
     format_type: str
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Formatter for {ctx['domain']} domain."""
@@ -524,12 +494,10 @@ class {class_name}:
             return data.strip()
         return data
 
-
 def format_data(data: object, config: Optional[Dict] = None) -> FormatResult:
     """Format data."""
     return {class_name}(config).format(data)
 '''
-
 
 def generate_retry_module(name: str, ctx: dict) -> str:
     """Generate retry/fallback module."""
@@ -549,7 +517,6 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class RetryResult:
     """Retry result."""
@@ -557,7 +524,6 @@ class RetryResult:
     attempts: int
     result: object = None
     error: Optional[str] = None
-
 
 class {class_name}:
     """Retry executor for {ctx['domain']} domain."""
@@ -588,12 +554,10 @@ class {class_name}:
             return result.result
         return fallback(*args, **kwargs)
 
-
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return {class_name}(config).execute(func)
 '''
-
 
 def generate_execution_module(name: str, ctx: dict) -> str:
     """Generate execution module."""
@@ -613,7 +577,6 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ExecutionResult:
     """Execution result."""
@@ -622,7 +585,6 @@ class ExecutionResult:
     error: Optional[str] = None
     duration_ms: float = 0.0
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Executor for {ctx['domain']} domain."""
@@ -654,12 +616,10 @@ class {class_name}:
         logger.info(f"Executing {{action}} with {{params}}")
         return {{"action": action, "params": params, "status": "completed"}}
 
-
 def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return {class_name}(config).execute(action, params)
 '''
-
 
 def generate_diagnostics_module(name: str, ctx: dict) -> str:
     """Generate diagnostics module."""
@@ -679,7 +639,6 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class DiagnosticReport:
     """Diagnostic report."""
@@ -687,7 +646,6 @@ class DiagnosticReport:
     healthy: bool = True
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Diagnostics for {ctx['domain']} domain."""
@@ -711,12 +669,10 @@ class {class_name}:
         metrics["type"] = type(target).__name__
         return DiagnosticReport(healthy=len(issues) == 0, issues=issues, metrics=metrics)
 
-
 def diagnose(target: object, config: Optional[Dict] = None) -> DiagnosticReport:
     """Run diagnostics."""
     return {class_name}(config).diagnose(target)
 '''
-
 
 def generate_refinement_module(name: str, ctx: dict) -> str:
     """Generate refinement module."""
@@ -735,14 +691,12 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class RefinementResult:
     """Refinement result."""
     original: object
     refined: object
     changes: List[str]
-
 
 class {class_name}:
     """Refiner for {ctx['domain']} domain."""
@@ -767,12 +721,10 @@ class {class_name}:
 
         return RefinementResult(original=data, refined=refined, changes=changes)
 
-
 def refine(data: object, adjustments: Optional[Dict] = None, config: Optional[Dict] = None) -> RefinementResult:
     """Refine data."""
     return {class_name}(config).refine(data, adjustments)
 '''
-
 
 def generate_generic_module(name: str, ctx: dict) -> str:
     """Generate standard module."""
@@ -791,14 +743,12 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class OperationResult:
     """Operation result."""
     success: bool
     data: object = None
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class {class_name}:
     """Operations executor for {ctx['domain']} domain."""
@@ -820,12 +770,10 @@ class {class_name}:
         """Execute processing."""
         return data
 
-
 def process(data: object, config: Optional[Dict] = None) -> OperationResult:
     """Process data."""
     return {class_name}(config).process(data)
 '''
-
 
 GENERATORS = {
     "policy": generate_policy_module,
@@ -841,7 +789,6 @@ GENERATORS = {
     "standard": generate_generic_module,
 }
 
-
 def generate_init_file(package_path: str) -> str:
     """Generate __init__.py content."""
     return f'''"""
@@ -854,7 +801,6 @@ from __future__ import annotations
 
 __all__: list[str] = []
 '''
-
 
 def main():
     """Generate apps structure from YAML."""
@@ -871,16 +817,12 @@ def main():
 
     for app_key, (dest_folder, app_type) in apps_to_generate.items():
         if app_key not in spec:
-            print(f"SKIP: {app_key} not in YAML")
+
             continue
 
         paths = extract_yaml_paths(spec[app_key])
         dest_base = REPO / dest_folder
         ctx = get_domain_context("", app_type)
-
-        print(f"\n{'='*60}")
-        print(f"Generating {app_key} -> {dest_folder}")
-        print(f"{'='*60}")
 
         # Create __init__.py files for all directories
         dirs_created = set()
@@ -915,14 +857,6 @@ def main():
             content = generator(name, ctx)
             full_path.write_text(content, encoding="utf-8")
             total_created += 1
-            print(f"  [{module_type.upper()}] {path}")
-
-    print(f"\n{'='*60}")
-    print("SUMMARY")
-    print(f"{'='*60}")
-    print(f"Files created: {total_created}")
-    print(f"Files skipped (exist): {total_skipped}")
-
 
 if __name__ == "__main__":
     main()

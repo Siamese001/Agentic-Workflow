@@ -64,7 +64,7 @@ def analyze_and_extract():
             dest_path = staging_dir / filename
             shutil.copy2(py_file, dest_path)
             extracted_files.append(filename)
-            print(f"Extracted (new filename): {filename}")
+
         elif existing_hashes[filename] != legacy_hash:
             # Same filename but different content - might be valuable
             # Rename with _LIC suffix to preserve
@@ -72,24 +72,16 @@ def analyze_and_extract():
             dest_path = staging_dir / new_name
             shutil.copy2(py_file, dest_path)
             unique_content_files.append((filename, new_name))
-            print(f"Extracted (unique content): {filename} -> {new_name}")
+
         else:
             duplicate_files.append(filename)
     
     return extracted_files, unique_content_files, duplicate_files
 
 if __name__ == "__main__":
-    print("=== Phase 1: Content-Based Extraction from legacy_lic ===\n")
-    
+
     extracted, unique_content, duplicates = analyze_and_extract()
-    
-    print(f"\n=== Extraction Summary ===")
-    print(f"- New filenames extracted: {len(extracted)}")
-    print(f"- Unique content (renamed): {len(unique_content)}")
-    print(f"- Exact duplicates (skipped): {len(duplicates)}")
-    print(f"- Total files in staging: {len(extracted) + len(unique_content)}")
-    
+
     if unique_content:
-        print("\nUnique content files (renamed with _LIC suffix):")
+
         for orig, new in sorted(unique_content):
-            print(f"  - {orig} -> {new}")

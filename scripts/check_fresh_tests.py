@@ -45,7 +45,7 @@ for f in sys.argv[1:]:
         continue
 
     if test_path.stat().st_mtime < p.stat().st_mtime:
-        print(f"TEST STALE: {test_path} is older than {p}")
+
         exit_code = 1
 
 sys.exit(exit_code)

@@ -2,7 +2,6 @@
 from __future__ import annotations
 from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache, CACHE_KEY_VERSION
 
-
 class TestGenerateCacheKey:
     def test_returns_string(self):
         key = generate_llm_cache_key(model="gpt-4o", messages=[{"role": "user", "content": "Hi"}])

@@ -51,7 +51,6 @@ DESTINATION_RULES = [
     (r"readme|guide|doc|manual|setup|install", "docs"),
 ]
 
-
 def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
     """
     Returns: (score, reasons, is_dirty)
@@ -112,7 +111,6 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
 
     return score, reasons, is_dirty
 
-
 def choose_destination(content: str, filename: str) -> Path:
     lower = (content + "\n" + filename).lower()
     for pattern, dest in DESTINATION_RULES:
@@ -126,7 +124,6 @@ def choose_destination(content: str, filename: str) -> Path:
         return Path("config")
     # Default fallback for unclassified Python
     return Path("apps_shared/core")
-
 
 def main() -> None:
     files_to_process = []
@@ -201,7 +198,7 @@ def main() -> None:
             if is_staged_file:
                 # This branch technically shouldn't be reached due to Rule 4, 
                 # unless the file is empty/unreadable.
-                print(f"Archive file rejected -> {src.name} (reason: empty/invalid) - Deleted.")
+
                 src.unlink()
             continue
 
@@ -223,15 +220,11 @@ def main() -> None:
         subprocess.run(["git", "add", str(dest_path)], capture_output=True)
         subprocess.run(["git", "rm", "--cached", str(src)], capture_output=True)
 
-        print(f"Auto-promoted -> {dest_path}  ({promotion_reason})")
-
     # Cleanup staging if empty
     if archive_dir.is_dir() and not list(archive_dir.iterdir()):
         archive_dir.rmdir()
-        print("Cleaned up empty /archive_code/ staging directory.")
 
     sys.exit(0)
-
 
 if __name__ == "__main__":
     main()

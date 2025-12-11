@@ -41,7 +41,6 @@ ROOT_FOLDERS = [
     "tests",
 ]
 
-
 @dataclass
 class MergeManifest:
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
@@ -50,7 +49,6 @@ class MergeManifest:
     routings: List[Dict] = field(default_factory=list)
     errors: List[Dict] = field(default_factory=list)
 
-
 def compute_hash(filepath: Path) -> str:
     """Compute SHA256 hash of file."""
     sha256 = hashlib.sha256()
@@ -58,7 +56,6 @@ def compute_hash(filepath: Path) -> str:
         for chunk in iter(lambda: f.read(8192), b""):
             sha256.update(chunk)
     return sha256.hexdigest()[:16]
-
 
 def analyze_content(filepath: Path) -> Dict:
     """Analyze file content for routing hints."""
@@ -91,7 +88,6 @@ def analyze_content(filepath: Path) -> Dict:
         hints.append("schema")
 
     return {"type": filepath.suffix, "hints": hints}
-
 
 def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tuple[str, str]:
     """
@@ -203,7 +199,6 @@ def route_file_in_root(filepath: Path, root_name: str, parent_folder: str) -> Tu
     # === Default fallback ===
     return f"logic/{filename}", "default_logic"
 
-
 def find_unassigned_folders() -> List[Tuple[Path, str]]:
     """Find all _unassigned folders under root folders (excluding archives)."""
     results = []
@@ -231,16 +226,13 @@ def find_unassigned_folders() -> List[Tuple[Path, str]]:
 
     return results
 
-
 def execute_merge(dry_run: bool = False) -> MergeManifest:
     """Execute the merge operation."""
     manifest = MergeManifest()
 
     unassigned_folders = find_unassigned_folders()
-    print(f"Found {len(unassigned_folders)} _unassigned folders to process")
 
     for unassigned_path, root_name in unassigned_folders:
-        print(f"\n=== Processing {unassigned_path.relative_to(REPO_ROOT)} ===")
 
         root_path = REPO_ROOT / root_name
 
@@ -279,7 +271,6 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
                     manifest.routed_files += 1
                 else:
                     manifest.routed_files += 1
-                    print(f"  [DRY-RUN] {filename} -> {target_subpath}")
 
             except (ValueError, TypeError, KeyError) as e:
                 manifest.errors.append({
@@ -297,7 +288,7 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
 
                                 if unassigned_path.exists() and not any(unassigned_path.iterdir()):
                     unassigned_path.rmdir()
-                    print(f"  Removed empty: {unassigned_path.relative_to(REPO_ROOT)}")
+
             except (ValueError, TypeError, KeyError) as e:
                 manifest.errors.append({
                     "source": str(unassigned_path),
@@ -318,16 +309,8 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
 
     return manifest
 
-
 def print_summary(manifest: MergeManifest):
     """Print merge summary."""
-    print("\n" + "=" * 60)
-    print("MERGE SUMMARY")
-    print("=" * 60)
-    print(f"Timestamp: {manifest.timestamp}")
-    print(f"Total files: {manifest.total_files}")
-    print(f"Routed files: {manifest.routed_files}")
-    print(f"Errors: {len(manifest.errors)}")
 
     # Group by target root
     by_root = defaultdict(int)
@@ -335,17 +318,11 @@ def print_summary(manifest: MergeManifest):
         root = r["target"].split("/")[0] if "/" in r["target"] else r["target"].split("\\")[0]
         by_root[root] += 1
 
-    print("\nFiles per root folder:")
     for root, count in sorted(by_root.items()):
-        print(f"  {root}: {count}")
 
     if manifest.errors:
-        print("\nErrors:")
+
         for err in manifest.errors[:5]:
-            print(f"  {err['source']}: {err['error']}")
-
-    print(f"\nManifest saved to: {MANIFEST_PATH}")
-
 
 if __name__ == "__main__":
     import sys
@@ -353,12 +330,8 @@ if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv or "-n" in sys.argv
 
     if dry_run:
-        print("=" * 60)
-        print("DRY RUN MODE - No files will be moved")
-        print("=" * 60)
 
     manifest = execute_merge(dry_run=dry_run)
     print_summary(manifest)
 
     if not dry_run and manifest.routed_files == manifest.total_files and not manifest.errors:
-        print("\n[OK] All files routed successfully!")

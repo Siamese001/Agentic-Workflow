@@ -82,32 +82,21 @@ def extract_net_incremental():
             dest_path = staging_dir / filename
             shutil.copy2(py_file, dest_path)
             extracted_files.append(filename)
-            print(f"Extracted: {filename}")
-    
+
     return extracted_files
 
 if __name__ == "__main__":
-    print("=== Phase 1: Detailed Analysis of legacy_lic ===\n")
-    
+
     all_files, net_incremental, duplicates = analyze_legacy_files()
-    
-    print(f"Total Python files in legacy_lic: {len(all_files)}")
-    print(f"Net incremental files: {len(net_incremental)}")
-    print(f"Duplicate filenames: {len(duplicates)}\n")
-    
+
     if net_incremental:
-        print("Net incremental files to extract:")
+
         for f in sorted(net_incremental):
-            print(f"  - {f}")
-        
-        print("\n=== Extracting to staging ===")
+
         extracted = extract_net_incremental()
-        print(f"\nExtraction Summary:")
-        print(f"- Total Files Extracted: {len(extracted)}")
-        print(f"- Staging Directory: archive_code/")
+
     else:
-        print("No net incremental files found.")
+
         if duplicates:
-            print("\nDuplicate filenames found (already exist in sovereign codebase):")
+
             for f in sorted(set(duplicates)):
-                print(f"  - {f}")

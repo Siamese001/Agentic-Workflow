@@ -9,7 +9,6 @@ from typing import List, Dict, object, Optional
 from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic
 from shared.result_types import Message
 
-
 class BatchMessageProcessor:
     """Handles Anthropic message batching with prompt caching optimization."""
     
@@ -166,7 +165,6 @@ class BatchMessageProcessor:
             "estimated_cost_savings_percent": round(estimated_savings * 100, 2)
         }
 
-
 def create_outreach_batch_requests(leads_data: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """Create batch requests for outreach message generation.
     
@@ -206,7 +204,6 @@ def create_outreach_batch_requests(leads_data: List[Dict[str, object]]) -> List[
     
     return requests
 
-
 if __name__ == "__main__":
     # Example usage with 100 leads
     sample_leads = []
@@ -223,9 +220,7 @@ if __name__ == "__main__":
     # Create batch requests
     engine = BatchMessageProcessor()
     batch_requests = create_outreach_batch_requests(sample_leads)
-    
-    print(f"Created {len(batch_requests)} batch requests")
-    
+
     # Process batch with caching
     start_time = time.time()
     results = engine.process_batch_async(batch_requests, concurrent_limit=10)
@@ -233,10 +228,4 @@ if __name__ == "__main__":
     
     # Calculate and display savings
     savings = engine.calculate_cache_savings(results)
-    
-    print(f"\nBatch Processing Results:")
-    print(f"Processing time: {end_time - start_time:.2f} seconds")
-    print(f"Successful requests: {savings['successful_requests']}/{savings['total_requests']}")
-    print(f"Cache hit rate: {savings['cache_hit_rate_percent']}%")
-    print(f"Estimated token savings: {savings['estimated_token_savings_percent']}%")
-    print(f"Estimated cost savings: {savings['estimated_cost_savings_percent']}%")
+

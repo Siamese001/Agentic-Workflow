@@ -7,7 +7,6 @@ import json
 import time
 from typing import Iterator, Dict, object, Optional, List
 
-
 class StreamingVertexClient:
     """Vertex AI client with streaming and configurable safety settings."""
     
@@ -199,7 +198,6 @@ class StreamingVertexClient:
             }
         }
 
-
 def demonstrate_safety_thresholds():
     """Demonstrate different safety threshold configurations."""
     
@@ -235,17 +233,11 @@ def demonstrate_safety_thresholds():
             "description": "Block all potentially harmful content"
         }
     ]
-    
-    print("Vertex AI Streaming Safety Settings Demo")
-    print("=" * 60)
-    
+
     for config in safety_configs:
-        print(f"\n{config['name']}: {config['description']}")
-        print("-" * 40)
-        
+
         for i, prompt in enumerate(test_prompts[:2]):  # Test first 2 prompts
-            print(f"\nPrompt {i+1}: {prompt[:50]}...")
-            
+
             try:
                 result = client.collect_stream_with_metadata(
                     prompt,
@@ -253,21 +245,12 @@ def demonstrate_safety_thresholds():
                     temperature=0.5,
                     max_tokens=200
                 )
-                
-                print(f"  Success: {result['success']}")
-                print(f"  Text length: {len(result['text'])}")
-                print(f"  Safety events: {len(result['safety_events'])}")
-                print(f"  Processing time: {result['processing_time_seconds']:.2f}s")
-                
-                if result['safety_events']:
-                    print(f"  Safety blocks: {result['safety_events']}")
-                
-                if not result['success']:
-                    print(f"  Errors: {[e['error'] for e in result['errors']]}")
-                
-            except Exception as e:
-                print(f"  Failed: {e}")
 
+                if result['safety_events']:
+
+                if not result['success']:
+
+            except Exception as e:
 
 def custom_safety_example():
     """Example with custom safety thresholds per category."""
@@ -283,31 +266,19 @@ def custom_safety_example():
     }
     
     prompt = "Write a technical blog post about AI safety considerations"
-    
-    print("Custom Safety Thresholds Example")
-    print("=" * 40)
-    print(f"Prompt: {prompt}")
-    print("\nCustom thresholds:")
+
     for category, threshold in custom_thresholds.items():
-        print(f"  {category.name}: {threshold.name}")
-    
+
     result = client.collect_stream_with_metadata(
         prompt,
         custom_safety=custom_thresholds,
         temperature=0.6
     )
-    
-    print(f"\nResult:")
-    print(f"  Success: {result['success']}")
-    print(f"  Text preview: {result['text'][:200]}...")
-    print(f"  Safety events: {len(result['safety_events'])}")
-
 
 if __name__ == "__main__":
     # Run safety demonstrations
     demonstrate_safety_thresholds()
-    
-    print("\n" + "=" * 60)
+
     custom_safety_example()
     
     # Export configuration examples
@@ -345,5 +316,3 @@ if __name__ == "__main__":
     
     with open("vertex_safety_configurations.json", "w") as f:
         json.dump(config_examples, f, indent=2)
-    
-    print(f"\nSafety configuration examples saved to: vertex_safety_configurations.json")

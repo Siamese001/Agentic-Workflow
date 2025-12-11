@@ -12,7 +12,6 @@ from pathlib import Path
 
 SOVEREIGN_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
 
-
 def main():
     root = Path(".").resolve()
 
@@ -28,7 +27,7 @@ def main():
     )
 
     if result.returncode != 0:
-        print("Failed to get git diff", file=sys.stderr)
+
         sys.exit(1)
 
     changes = []
@@ -69,24 +68,19 @@ def main():
         renames = [c for c in changes if "|RENAME|" in c]
 
         if deletes:
-            print(f"SOVEREIGN CODE DELETION DETECTED: {len(deletes)} file(s)")
+
             for d in deletes[:3]:
-                print(f"  - {d.split('|')[0]}")
+
             if len(deletes) > 3:
-                print(f"  ... and {len(deletes) - 3} more")
 
         if renames:
-            print(f"SOVEREIGN CODE RENAME/MOVE DETECTED: {len(renames)} file(s)")
+
             for r in renames[:3]:
                 parts = r.split("|")
-                print(f"  - {parts[0]} → {parts[2]}")
-            if len(renames) > 3:
-                print(f"  ... and {len(renames) - 3} more")
 
-        print("Canon validator will block this commit.")
+            if len(renames) > 3:
 
     sys.exit(0)
-
 
 if __name__ == "__main__":
     main()

@@ -15,13 +15,11 @@ from data.sdks_mcps.client_wrappers.openai_client import OpenAIClient, OpenAICon
 from data.sdks_mcps.client_wrappers.anthropic_client import AnthropicClient, AnthropicConfig
 from data.sdks_mcps.client_wrappers.vertex_client import VertexClient, VertexConfig
 
-
 class Provider(Enum):
     """Available model providers."""
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE_VERTEX = "google_vertex"
-
 
 @dataclass
 class ProviderConfig:
@@ -34,7 +32,6 @@ class ProviderConfig:
     timeout: int = 60
     config: Dict[str, object] = field(default_factory=dict)
 
-
 @dataclass
 class RouterConfig:
     """Configuration for the multi-provider router."""
@@ -44,7 +41,6 @@ class RouterConfig:
     enable_caching: bool = True
     health_check_interval: int = 300  # seconds
     circuit_breaker_threshold: int = 5  # failures before circuit opens
-
 
 class MultiProviderRouter:
     """Production router with intelligent provider selection and failover."""
@@ -137,7 +133,7 @@ class MultiProviderRouter:
                 }
                 
             except Exception as e:
-                print(f"Failed to initialize {provider_config.provider.value}: {e}")
+
                 if provider_config.provider in self.health_status:
                     self.health_status[provider_config.provider]["healthy"] = False
     
@@ -518,7 +514,7 @@ class MultiProviderRouter:
                 self.health_status[provider]["consecutive_failures"] = 0
                 
             except Exception as e:
-                print(f"Health check failed for {provider.value}: {e}")
+
                 self.health_status[provider]["consecutive_failures"] += 1
                 if self.health_status[provider]["consecutive_failures"] >= 3:
                     self.health_status[provider]["healthy"] = False
@@ -543,7 +539,6 @@ class MultiProviderRouter:
                 for provider, stats in self.usage_stats.items()
             }
         }
-
 
 # builder function for easy instantiation
 def create_multi_provider_router(
@@ -604,7 +599,6 @@ def create_multi_provider_router(
     config = RouterConfig(providers=provider_configs, **kwargs)
     return MultiProviderRouter(config)
 
-
 # Example usage
 if __name__ == "__main__":
     # Create router with all available providers
@@ -617,11 +611,7 @@ if __name__ == "__main__":
     
     try:
         result = router.chat_completion(messages, strategy="priority")
-        print("Router Result:")
-        print(f"  Success: {result['success']}")
-        print(f"  Provider: {result.get('provider', 'N/A')}")
-        print(f"  Strategy: {result['metadata']['strategy']}")
-        
+
         if result['success']:
             if hasattr(result['response'], 'choices'):
                 content = result['response'].choices[0].message.content
@@ -629,13 +619,8 @@ if __name__ == "__main__":
                 content = result['response'].content[0].text
             else:
                 content = str(result['response'])
-            print(f"  Content: {content}")
-        
+
         # Router statistics
         stats = router.get_router_stats()
-        print(f"\nRouter Stats:")
-        print(f"  Total Requests: {stats['total_requests']}")
-        print(f"  Success Rate: {stats['success_rate']:.1f}%")
-        
+
     except Exception as e:
-        print(f"Router error: {e}")

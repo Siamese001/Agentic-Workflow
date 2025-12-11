@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-03_runtime.runtime_ops — Package initialization
+agentic_workflow.runtime.runtime_ops — Package initialization
 
 Auto-generated to satisfy SSoT structure requirements.
 """

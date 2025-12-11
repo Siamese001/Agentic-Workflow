@@ -21,7 +21,6 @@ SKIP_FOLDERS = {'.git', '__pycache__', '.venv', 'venv', 'node_modules', '06_data
 # Files to always keep (even if empty)
 KEEP_FILES = {'__init__.py', 'conftest.py', 'setup.py', 'pyproject.toml'}
 
-
 def is_empty_or_minimal(file_path: Path) -> bool:
     """Check if file is empty or has minimal stub content."""
     try:
@@ -49,7 +48,6 @@ def is_empty_or_minimal(file_path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
-
 def has_meaningful_placeholder(file_path: Path) -> bool:
     """Check if file has meaningful placeholder content worth keeping."""
     try:
@@ -72,7 +70,6 @@ def has_meaningful_placeholder(file_path: Path) -> bool:
         return False
     except (ValueError, TypeError, KeyError):
         return False
-
 
 def remove_empty_directories(start_path: Path) -> List[str]:
     """Remove empty directories recursively."""
@@ -97,7 +94,6 @@ def remove_empty_directories(start_path: Path) -> List[str]:
                 ...
 
     return removed
-
 
 def cleanup_stubs() -> Dict:
     """Clean up stub files."""
@@ -135,50 +131,29 @@ def cleanup_stubs() -> Dict:
 
     return log
 
-
 def main():
-    print("=" * 70)
-    print("STUB CLEANUP")
-    print("=" * 70)
 
     # Run cleanup
-    print("\n[STEP 1] Deleting empty/minimal stub files...")
+
     log = cleanup_stubs()
 
-    print(f"  ✓ Deleted {len(log['deleted_files'])} empty files")
-    print(f"  ✓ Kept {len(log['kept_with_placeholders'])} files with meaningful placeholders")
-    print(f"  ✓ Removed {len(log['deleted_directories'])} empty directories")
-
     if log["errors"]:
-        print(f"  ⚠ {len(log['errors'])} errors")
 
     # Show sample of deleted files
-    print("\n## SAMPLE DELETED FILES (first 20)")
+
     for f in log["deleted_files"][:20]:
-        print(f"  ✗ {f}")
+
     if len(log["deleted_files"]) > 20:
-        print(f"  ... and {len(log['deleted_files']) - 20} more")
 
     # Show kept placeholders
     if log["kept_with_placeholders"]:
-        print("\n## KEPT WITH PLACEHOLDERS")
+
         for f in log["kept_with_placeholders"][:10]:
-            print(f"  → {f}")
 
     # Save log
     log_path = REPO_ROOT / "stub_cleanup_log.json"
     with open(log_path, "w", encoding="utf-8") as f:
         json.dump(log, f, indent=2)
-
-    print("\n" + "=" * 70)
-    print("CLEANUP COMPLETE")
-    print("=" * 70)
-    print(f"\nLog saved to: {log_path}")
-    print("\nNext steps:")
-    print("  1. git add -A")
-    print("  2. git commit -m 'chore: remove empty stub files'")
-    print("  3. Run stub_audit.py again to verify")
-
 
 if __name__ == "__main__":
     main()

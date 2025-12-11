@@ -13,7 +13,6 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class ConfigEnvironment(Enum):
     """Deployment environments for configuration."""
     DEVELOPMENT = "development"
@@ -21,7 +20,6 @@ class ConfigEnvironment(Enum):
     STAGING = "staging"
     PRODUCTION = "production"
     DR = "disaster_recovery"
-
 
 class ConfigFormat(Enum):
     """Configuration file formats."""
@@ -32,7 +30,6 @@ class ConfigFormat(Enum):
     ENV = "env"
     XML = "xml"
 
-
 class DeploymentStrategy(Enum):
     """Configuration deployment strategies."""
     BLUE_GREEN = "blue_green"
@@ -40,7 +37,6 @@ class DeploymentStrategy(Enum):
     ROLLING = "rolling"
     ATOMIC = "atomic"
     SHADOW = "shadow"
-
 
 @dataclass
 class ConfigDefinition:
@@ -54,7 +50,6 @@ class ConfigDefinition:
     description: Optional[str] = None
     tags: List[str] = field(default_factory=list)
 
-
 @dataclass
 class ConfigValidationRule:
     """Rule for validating configuration."""
@@ -64,7 +59,6 @@ class ConfigValidationRule:
     constraint: Any
     message: str
     severity: str = "error"
-
 
 @dataclass
 class DeploymentPlan:
@@ -76,7 +70,6 @@ class DeploymentPlan:
     rollback_plan: Optional[str] = None
     dependencies: List[str] = field(default_factory=list)
 
-
 @dataclass
 class ConfigPlanningConfig:
     """Configuration for config planning orchestrator."""
@@ -86,7 +79,6 @@ class ConfigPlanningConfig:
     auto_backup: bool = True
     max_config_size: int = 1048576  # 1MB
     log_level: str = "INFO"
-
 
 @dataclass
 class ConfigPlanningResult:
@@ -98,7 +90,6 @@ class ConfigPlanningResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-
 
 class ConfigPlanningOrchestrator:
     """Orchestrator for planning configuration operations."""
@@ -277,7 +268,6 @@ class ConfigPlanningOrchestrator:
         
         return errors
 
-
 # Factory function for easy instantiation
 def create_config_planning_orchestrator(
     enable_validation: bool = True,
@@ -291,7 +281,6 @@ def create_config_planning_orchestrator(
         **kwargs
     )
     return ConfigPlanningOrchestrator(config)
-
 
 # Convenience function for direct usage
 def plan_config_deployment(
@@ -356,7 +345,6 @@ def plan_config_deployment(
         "metadata": result.metadata
     }
 
-
 if __name__ == "__main__":
     # Example usage
     example_configs = [
@@ -374,4 +362,3 @@ if __name__ == "__main__":
         configs=example_configs,
         deployment={"strategy": "blue_green"}
     )
-    print(f"Config planning result: {result}")

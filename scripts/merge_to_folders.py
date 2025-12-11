@@ -49,7 +49,6 @@ TARGETS = {
     "tests": REPO_ROOT / "tests",
 }
 
-
 @dataclass
 class FileRouting:
     """Routing decision for a single file."""
@@ -60,7 +59,6 @@ class FileRouting:
     content_hash: str
     file_size: int
 
-
 @dataclass
 class MergeManifest:
     """Complete merge manifest for audit trail."""
@@ -70,7 +68,6 @@ class MergeManifest:
     routings: List[Dict] = field(default_factory=list)
     errors: List[Dict] = field(default_factory=list)
 
-
 def compute_hash(filepath: Path) -> str:
     """Compute SHA256 hash of file content."""
     sha256 = hashlib.sha256()
@@ -78,7 +75,6 @@ def compute_hash(filepath: Path) -> str:
         for chunk in iter(lambda: f.read(8192), b""):
             sha256.update(chunk)
     return sha256.hexdigest()[:16]
-
 
 def analyze_content(filepath: Path) -> Dict[str, str]:
     """Analyze file content to determine routing hints."""
@@ -123,7 +119,6 @@ def analyze_content(filepath: Path) -> Dict[str, str]:
         hints.append("script")
 
     return {"type": "python" if filepath.suffix == ".py" else "other", "hints": hints}
-
 
 def route_file(filepath: Path, filename: str, parent_folder: str = "") -> Tuple[str, str, str]:
     """
@@ -317,21 +312,18 @@ def route_file(filepath: Path, filename: str, parent_folder: str = "") -> Tuple[
     # Fallback: Archive in 06_data
     return "06_data", f"_unassigned_archive/{filename}", "fallback_archive"
 
-
 def execute_merge(dry_run: bool = False) -> MergeManifest:
     """Execute the merge operation."""
     manifest = MergeManifest()
 
     if not UNASSIGNED_ROOT.exists():
-        print(f"ERROR: {UNASSIGNED_ROOT} does not exist")
+
         return manifest
 
     # Collect all files
     all_files = list(UNASSIGNED_ROOT.rglob("*"))
     files_to_route = [f for f in all_files if f.is_file()]
     manifest.total_files = len(files_to_route)
-
-    print(f"Found {manifest.total_files} files to route")
 
     for filepath in files_to_route:
         filename = filepath.name
@@ -383,7 +375,6 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
                     })
             else:
                 manifest.routed_files += 1
-                print(f"  [DRY-RUN] {filepath.name} → {target_folder}/{target_subpath}")
 
         except (ValueError, TypeError, KeyError) as e:
             manifest.errors.append({
@@ -405,16 +396,8 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
 
     return manifest
 
-
 def print_summary(manifest: MergeManifest):
     """Print merge summary."""
-    print("\n" + "=" * 60)
-    print("MERGE SUMMARY")
-    print("=" * 60)
-    print(f"Timestamp: {manifest.timestamp}")
-    print(f"Total files: {manifest.total_files}")
-    print(f"Routed files: {manifest.routed_files}")
-    print(f"Errors: {len(manifest.errors)}")
 
     # Group by target folder
     by_folder = {}
@@ -422,19 +405,13 @@ def print_summary(manifest: MergeManifest):
         folder = r["target"].split("/")[0]
         by_folder[folder] = by_folder.get(folder, 0) + 1
 
-    print("\nFiles per target folder:")
     for folder, count in sorted(by_folder.items()):
-        print(f"  {folder}: {count}")
 
     if manifest.errors:
-        print("\nErrors:")
+
         for err in manifest.errors[:10]:
-            print(f"  {err['source']}: {err['error']}")
+
         if len(manifest.errors) > 10:
-            print(f"  ... and {len(manifest.errors) - 10} more")
-
-    print(f"\nManifest saved to: {MANIFEST_PATH}")
-
 
 if __name__ == "__main__":
     import sys
@@ -442,15 +419,10 @@ if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv or "-n" in sys.argv
 
     if dry_run:
-        print("=" * 60)
-        print("DRY RUN MODE - No files will be moved")
-        print("=" * 60)
 
     manifest = execute_merge(dry_run=dry_run)
     print_summary(manifest)
 
     if not dry_run and manifest.routed_files == manifest.total_files and not manifest.errors:
-        print("\n[OK] All files routed successfully!")
-        print("You may now safely delete _unassigned/ after verification.")
+
     elif dry_run:
-        print("\n[OK] Dry run complete. Run without --dry-run to execute.")
