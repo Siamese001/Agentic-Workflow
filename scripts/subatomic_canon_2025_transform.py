@@ -92,7 +92,6 @@ RENAME_MAPPINGS: Dict[str, str] = {
 # Quarantine folder for L4 non-retrieve phases
 QUARANTINE_L4 = "__QUARANTINE_L4_NON_RETRIEVE__"
 
-
 # =============================================================================
 # function FUNCTIONS
 # =============================================================================
@@ -104,11 +103,9 @@ def is_banned_name(name: str) -> bool:
             return True
     return False
 
-
 def get_new_filename(old_name: str) -> str:
     """Get the new filename based on rename mappings."""
     return RENAME_MAPPINGS.get(old_name, old_name)
-
 
 def collect_py_files(directory: Path) -> List[Path]:
     """Recursively collect all .py files in a directory."""
@@ -116,13 +113,11 @@ def collect_py_files(directory: Path) -> List[Path]:
         return []
     return list(directory.rglob("*.py"))
 
-
 def ensure_init_py(directory: Path) -> None:
     """Ensure __init__.py exists in directory."""
     init_file = directory / "__init__.py"
     if not init_file.exists():
         init_file.write_text('"""Auto-generated __init__.py for subatomic canon 2025."""\n')
-
 
 def move_file_with_rename(src: Path, dest_dir: Path, apply_rename: bool = True) -> Path:
     """Move a file to destination directory, optionally applying rename mappings."""
@@ -145,7 +140,6 @@ def move_file_with_rename(src: Path, dest_dir: Path, apply_rename: bool = True) 
         shutil.move(str(src), str(dest_path))
 
     return dest_path
-
 
 # =============================================================================
 # TRANSFORMATION FUNCTIONS
@@ -183,13 +177,11 @@ def flatten_layer(layer_path: Path, layer_name: str) -> Dict[str, List[str]]:
             shutil.rmtree(phase_dir)
             log["deleted_dirs"].append(str(phase_dir))
         except (ValueError, TypeError, KeyError) as e:
-            print(f"Warning: Could not remove {phase_dir}: {e}")
 
     # Ensure __init__.py exists at layer root
     ensure_init_py(layer_path)
 
     return log
-
 
 def quarantine_l4_non_retrieve(l4_path: Path) -> Dict[str, List[str]]:
     """
@@ -216,7 +208,6 @@ def quarantine_l4_non_retrieve(l4_path: Path) -> Dict[str, List[str]]:
 
     return log
 
-
 def delete_banned_folders(root: Path) -> List[str]:
     """
     Delete all folders matching banned patterns.
@@ -241,10 +232,8 @@ def delete_banned_folders(root: Path) -> List[str]:
                     shutil.rmtree(banned_dir)
                     deleted.append(str(banned_dir))
                 except (ValueError, TypeError, KeyError) as e:
-                    print(f"Warning: Could not remove {banned_dir}: {e}")
 
     return deleted
-
 
 def apply_file_renames(root: Path) -> List[str]:
     """
@@ -262,7 +251,6 @@ def apply_file_renames(root: Path) -> List[str]:
                 renamed.append(f"{py_file} -> {new_path}")
 
     return renamed
-
 
 # =============================================================================
 # YAML UPDATE FUNCTIONS
@@ -316,7 +304,6 @@ subatomic_canon_2025:
 
     yaml_path.write_text(content, encoding="utf-8")
 
-
 def update_main_yaml(yaml_path: Path) -> None:
     """Update unified_structure_subatomic.yaml to reflect flat structure."""
     content = yaml_path.read_text(encoding="utf-8")
@@ -325,7 +312,6 @@ def update_main_yaml(yaml_path: Path) -> None:
     content = content.replace("agentic_core", "agentic_core")
 
     yaml_path.write_text(content, encoding="utf-8")
-
 
 # =============================================================================
 # IMPORT FIXER
@@ -358,9 +344,8 @@ def fix_imports_in_file(file_path: Path, old_to_new: Dict[str, str]) -> bool:
             return True
         return False
     except (ValueError, TypeError, KeyError) as e:
-        print(f"Warning: Could not fix imports in {file_path}: {e}")
-        return False
 
+        return False
 
 def fix_all_imports(root: Path) -> int:
     """Fix imports across the entire repository."""
@@ -372,15 +357,11 @@ def fix_all_imports(root: Path) -> int:
 
     return fixed_count
 
-
 # =============================================================================
 # MAIN EXECUTION
 # =============================================================================
 
 def main():
-    print("=" * 70)
-    print("SUBATOMIC CANON 2025 — FINAL TRANSFORMATION")
-    print("=" * 70)
 
     all_logs = {
         "flattened_layers": {},
@@ -391,7 +372,7 @@ def main():
     }
 
     # Step 1: Flatten L2, L3, L5 layers
-    print("\n[STEP 1] Flattening L2_execution, L3_orchestration, L5_safety...")
+
     for root in COGNITIVE_ROOTS:
         for layer in FLAT_LAYERS:
             layer_path = root / layer
@@ -399,67 +380,48 @@ def main():
                 log = flatten_layer(layer_path, layer)
                 key = f"{root.name}/{layer}"
                 all_logs["flattened_layers"][key] = log
-                print(f"  ✓ Flattened {key}: {len(log['moved'])} files moved")
 
     # Step 2: Quarantine L4 non-retrieve phases
-    print("\n[STEP 2] Quarantining L4_memory non-retrieve phases...")
+
     for root in COGNITIVE_ROOTS:
         l4_path = root / "L4_memory"
         if l4_path.exists():
             log = quarantine_l4_non_retrieve(l4_path)
             key = f"{root.name}/L4_memory"
             all_logs["quarantined_l4"][key] = log
-            print(f"  ✓ Quarantined {key}: {len(log['quarantined'])} phases")
 
     # Step 3: Delete banned folders
-    print("\n[STEP 3] Deleting banned folders (ops, utils, coordinator, etc.)...")
+
     for root in COGNITIVE_ROOTS:
         deleted = delete_banned_folders(root)
         all_logs["deleted_banned"].extend(deleted)
-    print(f"  ✓ Deleted {len(all_logs['deleted_banned'])} banned folders")
 
     # Step 4: Apply file renames
-    print("\n[STEP 4] Applying many-shot rename mappings...")
+
     for root in COGNITIVE_ROOTS:
         renamed = apply_file_renames(root)
         all_logs["renamed_files"].extend(renamed)
-    print(f"  ✓ Renamed {len(all_logs['renamed_files'])} files")
 
     # Step 5: Update YAML files
-    print("\n[STEP 5] Updating YAML SSoT files...")
+
     meta_yaml = REPO_ROOT / "unified_structure_subatomic_meta.yaml"
     main_yaml = REPO_ROOT / "unified_structure_subatomic.yaml"
 
     if meta_yaml.exists():
         update_meta_yaml(meta_yaml)
-        print("  ✓ Updated unified_structure_subatomic_meta.yaml")
 
     if main_yaml.exists():
         update_main_yaml(main_yaml)
-        print("  ✓ Updated unified_structure_subatomic.yaml")
 
     # Step 6: Fix imports
-    print("\n[STEP 6] Fixing imports repo-wide...")
+
     fixed = fix_all_imports(REPO_ROOT)
     all_logs["fixed_imports"] = fixed
-    print(f"  ✓ Fixed imports in {fixed} files")
 
     # Write transformation log
     log_path = REPO_ROOT / "subatomic_canon_2025_transform_log.json"
     with open(log_path, "w", encoding="utf-8") as f:
         json.dump(all_logs, f, indent=2, default=str)
-    print(f"\n[LOG] Transformation log written to: {log_path}")
-
-    print("\n" + "=" * 70)
-    print("TRANSFORMATION COMPLETE")
-    print("=" * 70)
-    print("\nNext steps:")
-    print("  1. Review the transformation log")
-    print("  2. Run: pytest")
-    print("  3. Run: ruff check .")
-    print("  4. Run: mypy .")
-    print("  5. Commit with: git commit -m 'feat: 100% subatomic canon 2025 — 30+ many-shot renaming, flat L2/L3/L5, retrieval-only L4'")
-
 
 if __name__ == "__main__":
     main()

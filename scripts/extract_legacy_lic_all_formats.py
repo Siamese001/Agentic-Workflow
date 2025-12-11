@@ -80,7 +80,7 @@ def analyze_and_extract():
             shutil.copy2(file_path, dest_path)
             extracted_files.append(filename)
             file_type = filename.split('.')[-1].upper()
-            print(f"Extracted (new {file_type}): {filename}")
+
         elif existing_hashes[filename] != legacy_hash:
             # Same filename but different content - might be valuable
             # Rename with _LIC suffix to preserve
@@ -90,29 +90,20 @@ def analyze_and_extract():
             shutil.copy2(file_path, dest_path)
             unique_content_files.append((filename, new_name))
             file_type = name_parts[1].upper()
-            print(f"Extracted (unique {file_type}): {filename} -> {new_name}")
+
         else:
             duplicate_files.append(filename)
     
     return extracted_files, unique_content_files, duplicate_files
 
 if __name__ == "__main__":
-    print("=== Phase 1: Content-Based Extraction from legacy_lic (Python + JSON + Markdown) ===\n")
-    
+
     extracted, unique_content, duplicates = analyze_and_extract()
-    
-    print(f"\n=== Extraction Summary ===")
-    print(f"- New filenames extracted: {len(extracted)}")
-    print(f"- Unique content (renamed): {len(unique_content)}")
-    print(f"- Exact duplicates (skipped): {len(duplicates)}")
-    print(f"- Total files in staging: {len(extracted) + len(unique_content)}")
-    
+
     if extracted:
-        print("\nNew filenames:")
+
         for f in sorted(extracted):
-            print(f"  - {f}")
-    
+
     if unique_content:
-        print("\nUnique content files (renamed with _LIC suffix):")
+
         for orig, new in sorted(unique_content):
-            print(f"  - {orig} -> {new}")

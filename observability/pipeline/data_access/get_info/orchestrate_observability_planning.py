@@ -13,14 +13,12 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class MetricType(Enum):
     """Types of metrics for observability."""
     COUNTER = "counter"
     GAUGE = "gauge"
     HISTOGRAM = "histogram"
     TIMER = "timer"
-
 
 class LogLevel(Enum):
     """Log levels for observability."""
@@ -30,14 +28,12 @@ class LogLevel(Enum):
     ERROR = "error"
     CRITICAL = "critical"
 
-
 class AlertSeverity(Enum):
     """Severity levels for alerts."""
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
-
 
 @dataclass
 class MetricDefinition:
@@ -49,7 +45,6 @@ class MetricDefinition:
     sampling_rate: float = 1.0
     aggregation: Optional[str] = None
 
-
 @dataclass
 class LogConfiguration:
     """Configuration for log collection."""
@@ -60,7 +55,6 @@ class LogConfiguration:
     include_trace_id: bool = True
     filters: List[str] = field(default_factory=list)
 
-
 @dataclass
 class TraceConfiguration:
     """Configuration for distributed tracing."""
@@ -69,7 +63,6 @@ class TraceConfiguration:
     include_payload: bool = False
     max_spans_per_trace: int = 1000
     export_batch_size: int = 100
-
 
 @dataclass
 class AlertRule:
@@ -80,7 +73,6 @@ class AlertRule:
     threshold: float
     duration: int  # seconds
     notification_channels: List[str] = field(default_factory=list)
-
 
 @dataclass
 class ObservabilityPlanningConfig:
@@ -94,7 +86,6 @@ class ObservabilityPlanningConfig:
     metric_retention_days: int = 90
     log_level: str = "INFO"
 
-
 @dataclass
 class ObservabilityPlanningResult:
     """Result of observability planning orchestration."""
@@ -107,7 +98,6 @@ class ObservabilityPlanningResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-
 
 class ObservabilityPlanningOrchestrator:
     """Orchestrator for planning observability operations."""
@@ -371,7 +361,6 @@ class ObservabilityPlanningOrchestrator:
         
         return estimates
 
-
 # Factory function for easy instantiation
 def create_observability_planning_orchestrator(
     enable_metrics: bool = True,
@@ -387,7 +376,6 @@ def create_observability_planning_orchestrator(
         **kwargs
     )
     return ObservabilityPlanningOrchestrator(config)
-
 
 # Convenience function for direct usage
 def plan_observability(
@@ -464,7 +452,6 @@ def plan_observability(
         "metadata": result.metadata
     }
 
-
 if __name__ == "__main__":
     # Example usage
     result = plan_observability(
@@ -472,7 +459,7 @@ if __name__ == "__main__":
         service_type="api",
         config={"log_level": "info", "tracing_sampling_rate": 0.1}
     )
-    print(f"Observability planning result: {result}")
+
 class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
     """L5 interface foundation - ensures L1 pure planning behavior"""
 
@@ -485,7 +472,6 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
     def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
         ...
-
 
 class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityPlanningOrchestratorProcessor):
     """
@@ -554,11 +540,9 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
         from datetime import datetime
         return datetime.utcnow().isoformat()
 
-
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
     ...
-
 
 class OrchestrateObservabilityPlanningOrchestratorInterface:
     """L5 Interface - ensures contract compliance"""
@@ -580,7 +564,6 @@ class OrchestrateObservabilityPlanningOrchestratorInterface:
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-
 class OrchestrateObservabilityPlanningOrchestratorFactory:
     """L5 builder for creating processors with proper configuration"""
 
@@ -590,7 +573,6 @@ class OrchestrateObservabilityPlanningOrchestratorFactory:
         constraints = OrchestrateObservabilityPlanningOrchestratorConstraints(safety_level=safety_level)
         engine = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
         return OrchestrateObservabilityPlanningOrchestratorInterface(engine)
-
 
 def orchestrate_observability_planning(input_data: Dict[str, object]) -> Dict[str, object]:
     """
@@ -608,7 +590,6 @@ def orchestrate_observability_planning(input_data: Dict[str, object]) -> Dict[st
     builder = OrchestrateObservabilityPlanningOrchestratorFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
-
 
 if __name__ == "__main__":
     # L5 Test execution

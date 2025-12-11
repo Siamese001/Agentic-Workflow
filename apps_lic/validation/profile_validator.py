@@ -13,7 +13,6 @@ import numpy as np
 # from scripts.utilities.format_scripts_context import TfidfVectorizer  # TODO: Replace with sovereign equivalent
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 # ============================================================================
 # NEW v11.6: GLOBAL ERROR CODE REGISTRY (GAP 6.1)
 # ============================================================================
@@ -204,7 +203,6 @@ class ContentCleanlinessValidator:
         
         return True, ""
 
-
 class PlaceholderDetector:
     """
     Comprehensive placeholder detection
@@ -368,11 +366,10 @@ class ValidationAgent:
             self.claim_scorer = ClaimConfidenceScorer()
             self.signal_scorer = SignalQualityScorer()
         except ImportError:
-            print("ERROR: Could not import rag.py for ValidationAgent. Claim/Signal scoring will fail.")
+
             self.claim_scorer = None
             self.signal_scorer = None
 
-    
     def validate_message(
         self,
         message: GeneratedMessage,

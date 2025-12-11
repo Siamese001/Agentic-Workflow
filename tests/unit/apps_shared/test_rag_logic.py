@@ -20,7 +20,6 @@ from apps_shared.cache.semantic_cache import (
     VectorSimilarityResult
 )
 
-
 class TestHybridScorer:
     """Test suite for HybridScorer logic expansion."""
     
@@ -204,7 +203,6 @@ class TestHybridScorer:
             weights=weights
         )
         assert 0.0 <= score2 <= 1.0
-
 
 class TestEnhancedSemanticCache:
     """Test suite for EnhancedSemanticCache logic expansion."""
@@ -404,7 +402,6 @@ class TestEnhancedSemanticCache:
             system.strip()
         )
         assert fp1 == fp_stripped
-
 
 class TestRAGIntegration:
     """Integration tests for RAG components."""

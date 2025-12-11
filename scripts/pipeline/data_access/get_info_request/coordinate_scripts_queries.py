@@ -13,7 +13,6 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class QueryType(Enum):
     """Types of script queries."""
     READ = "read"
@@ -22,7 +21,6 @@ class QueryType(Enum):
     VALIDATE = "validate"
     TRANSFORM = "transform"
 
-
 class QueryStatus(Enum):
     """Status of query execution."""
     PENDING = "pending"
@@ -30,7 +28,6 @@ class QueryStatus(Enum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
-
 
 @dataclass
 class ScriptQuery:
@@ -45,7 +42,6 @@ class ScriptQuery:
     dependencies: List[str] = field(default_factory=list)
     priority: int = 0
 
-
 @dataclass
 class QueryResult:
     """Result of a script query execution."""
@@ -57,7 +53,6 @@ class QueryResult:
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
 class ScriptsQueriesConfig:
     """Configuration for scripts queries coordinator."""
@@ -67,7 +62,6 @@ class ScriptsQueriesConfig:
     enable_result_aggregation: bool = True
     enable_error_recovery: bool = True
     log_level: str = "INFO"
-
 
 @dataclass
 class ScriptsQueriesResult:
@@ -80,7 +74,6 @@ class ScriptsQueriesResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-
 
 class ScriptsQueriesCoordinator:
     """Coordinator for managing script queries across multiple scripts."""
@@ -287,7 +280,6 @@ class ScriptsQueriesCoordinator:
         
         return aggregated
 
-
 # Factory function for easy instantiation
 def create_scripts_queries_coordinator(
     max_concurrent_queries: int = 10,
@@ -301,7 +293,6 @@ def create_scripts_queries_coordinator(
         **kwargs
     )
     return ScriptsQueriesCoordinator(config)
-
 
 # Convenience function for direct usage
 def coordinate_script_queries(
@@ -361,7 +352,6 @@ def coordinate_script_queries(
         "metadata": result.metadata
     }
 
-
 if __name__ == "__main__":
     # Example usage
     example_queries = [
@@ -387,4 +377,3 @@ if __name__ == "__main__":
     ]
     
     result = coordinate_script_queries(example_queries)
-    print(f"Coordination result: {result}")

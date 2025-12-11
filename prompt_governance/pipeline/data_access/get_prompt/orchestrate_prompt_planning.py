@@ -13,7 +13,6 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class PromptType(Enum):
     """Types of prompts for different use cases."""
     GENERATION = "generation"
@@ -23,14 +22,12 @@ class PromptType(Enum):
     TRANSFORMATION = "transformation"
     QUESTION_ANSWERING = "question_answering"
 
-
 class PromptComplexity(Enum):
     """Complexity levels for prompt planning."""
     SIMPLE = "simple"
     MODERATE = "moderate"
     COMPLEX = "complex"
     ADVANCED = "advanced"
-
 
 @dataclass
 class PromptTemplate:
@@ -44,7 +41,6 @@ class PromptTemplate:
     examples: List[Dict[str, Any]] = field(default_factory=list)
     constraints: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
 class PromptPlanningConfig:
     """Configuration for prompt planning orchestrator."""
@@ -54,7 +50,6 @@ class PromptPlanningConfig:
     max_template_variants: int = 5
     default_temperature: float = 0.7
     log_level: str = "INFO"
-
 
 @dataclass
 class PromptPlanningResult:
@@ -68,7 +63,6 @@ class PromptPlanningResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-
 
 class PromptPlanningOrchestrator:
     """Orchestrator for planning prompt engineering operations."""
@@ -303,7 +297,6 @@ class PromptPlanningOrchestrator:
             "reliability_score": 0.9
         }
 
-
 # Factory function for easy instantiation
 def create_prompt_planning_orchestrator(
     enable_template_optimization: bool = True,
@@ -317,7 +310,6 @@ def create_prompt_planning_orchestrator(
         **kwargs
     )
     return PromptPlanningOrchestrator(config)
-
 
 # Convenience function for direct usage
 def plan_prompt_engineering(
@@ -378,7 +370,6 @@ def plan_prompt_engineering(
         "metadata": result.metadata
     }
 
-
 if __name__ == "__main__":
     # Example usage
     example_request = {
@@ -394,4 +385,3 @@ if __name__ == "__main__":
         task_type="generate",
         context=example_request["context"]
     )
-    print(f"Prompt planning result: {result}")
