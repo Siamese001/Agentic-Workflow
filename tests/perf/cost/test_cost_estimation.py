@@ -59,11 +59,11 @@ class TestTokenEstimation:
     def test_long_message_scaling(self):
         """Token estimate scales linearly with message length."""
         short = "Hello"
-        long = "Hello " * 100
+        long = short * 100  # Use same base string repeated 100 times
 
-        short_est = len(short) // 4
-        long_est = len(long) // 4
+        short_est = len(short) / 4  # Use float division for more accurate estimate
+        long_est = len(long) / 4
 
         # Long should be roughly 100x short
         ratio = long_est / max(short_est, 1)
-        assert 50 < ratio < 150  # Allow some variance
+        assert 90 < ratio < 110  # Tighter range for exact 100x scaling

@@ -1,189 +1,377 @@
-import ast
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: orchestrate_scripts_planning.py
-# Match Score: 0.8364
-# ============================================================
+"""Config Planning Orchestrator - Coordinates configuration management and deployment operations.
 
-"""
-L5 Agentic Core - Plan Layer - orchestrate_scripts_planning
-Implements L1 Cognitive Planning Layer for orchestrate scripts planning operations
+This orchestrator manages the planning phase for configuration operations,
+including validation, environment management, version control, and deployment strategies.
+Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any
 import logging
-from abc import ABC, abstractmethod
+from datetime import datetime
+from enum import Enum
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class OrchestrateScriptsPlanningOrchestratorType(Enum):
-    """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
+
+class ConfigEnvironment(Enum):
+    """Deployment environments for configuration."""
+    DEVELOPMENT = "development"
+    TESTING = "testing"
+    STAGING = "staging"
+    PRODUCTION = "production"
+    DR = "disaster_recovery"
+
+
+class ConfigFormat(Enum):
+    """Configuration file formats."""
+    JSON = "json"
+    YAML = "yaml"
+    TOML = "toml"
+    INI = "ini"
+    ENV = "env"
+    XML = "xml"
+
+
+class DeploymentStrategy(Enum):
+    """Configuration deployment strategies."""
+    BLUE_GREEN = "blue_green"
+    CANARY = "canary"
+    ROLLING = "rolling"
+    ATOMIC = "atomic"
+    SHADOW = "shadow"
+
 
 @dataclass
-class OrchestrateScriptsPlanningOrchestratorConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_depth: int = 5
-    allowed_operations: List[str] = field(default_factory=lambda: ["read", "validate", "filter"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class ConfigDefinition:
+    """Definition of a configuration item."""
+    name: str
+    format: ConfigFormat
+    environment: ConfigEnvironment
+    content: Dict[str, Any]
+    version: str = "1.0.0"
+    namespace: Optional[str] = None
+    description: Optional[str] = None
+    tags: List[str] = field(default_factory=list)
+
 
 @dataclass
-class OrchestrateScriptsPlanningOrchestratorResult:
-    """L5 Result structure with full type safety"""
+class ConfigValidationRule:
+    """Rule for validating configuration."""
+    name: str
+    path: str  # JSON path or similar
+    rule_type: str  # required, pattern, range, enum
+    constraint: Any
+    message: str
+    severity: str = "error"
+
+
+@dataclass
+class DeploymentPlan:
+    """Plan for configuration deployment."""
+    strategy: DeploymentStrategy
+    target_environments: List[ConfigEnvironment]
+    rollout_percentage: float = 100.0
+    validation_steps: List[str] = field(default_factory=list)
+    rollback_plan: Optional[str] = None
+    dependencies: List[str] = field(default_factory=list)
+
+
+@dataclass
+class ConfigPlanningConfig:
+    """Configuration for config planning orchestrator."""
+    enable_validation: bool = True
+    enable_versioning: bool = True
+    enable_encryption: bool = False
+    auto_backup: bool = True
+    max_config_size: int = 1048576  # 1MB
+    log_level: str = "INFO"
+
+
+@dataclass
+class ConfigPlanningResult:
+    """Result of config planning orchestration."""
     success: bool
-    data: Dict[str, object] = field(default_factory=dict)
+    validated_configs: List[ConfigDefinition] = field(default_factory=list)
+    deployment_plan: Optional[DeploymentPlan] = None
+    validation_errors: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-class OrchestrateScriptsPlanningOrchestratorProcessor(ABC):
-    """L5 interface foundation - ensures L1 pure planning behavior"""
 
-    @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> OrchestrateScriptsPlanningOrchestratorResult:
-        """Process data with L5 safety constraints"""
-        ...
+class ConfigPlanningOrchestrator:
+    """Orchestrator for planning configuration operations."""
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
-
-class OrchestrateScriptsPlanningOrchestratorImpl(OrchestrateScriptsPlanningOrchestratorProcessor):
-    """
-    L5 Implementation - L1 Cognitive Planning Layer
-    Pure planning functionality with no side effects
-    """
-
-    def __init__(self, constraints: Optional[OrchestrateScriptsPlanningOrchestratorConstraints] = None):
-        self.constraints = constraints or OrchestrateScriptsPlanningOrchestratorConstraints()
+    def __init__(self, config: Optional[ConfigPlanningConfig] = None):
+        self.config = config or ConfigPlanningConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(self.config.log_level)
 
-    def process(self, input_data: Dict[str, object]) -> OrchestrateScriptsPlanningOrchestratorResult:
-        """Process input following L5 architecture principles"""
-        self.logger.info(f"Processing {input_data}")
+    def execute(self, config_request: Dict[str, Any]) -> ConfigPlanningResult:
+        """Execute the config planning orchestration.
+        
+        Args:
+            config_request: Dictionary containing configuration requirements
+            
+        Returns:
+            ConfigPlanningResult: Complete planning result with validated configs and deployment plan
+        """
+        self.logger.info(f"Starting config planning for: {config_request.get('service', 'unknown')}")
+        
+        try:
+            # Validate input request
+            self._validate_request(config_request)
+            
+            # Parse and validate configurations
+            validated_configs = []
+            if self.config.enable_validation:
+                validated_configs = self._validate_configs(config_request)
+            
+            # Create deployment plan
+            deployment_plan = self._create_deployment_plan(config_request, validated_configs)
+            
+            # Collect validation errors
+            validation_errors = self._collect_validation_errors(config_request)
+            
+            result = ConfigPlanningResult(
+                success=len(validation_errors) == 0,
+                validated_configs=validated_configs,
+                deployment_plan=deployment_plan,
+                validation_errors=validation_errors,
+                metadata={
+                    "planned_at": datetime.utcnow().isoformat(),
+                    "service": config_request.get("service"),
+                    "config_count": len(validated_configs),
+                    "orchestrator": "ConfigPlanningOrchestrator"
+                }
+            )
+            
+            self.logger.info(f"Successfully planned configuration: {len(validated_configs)} configs validated")
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Config planning failed: {str(e)}")
+            return ConfigPlanningResult(
+                success=False,
+                errors=[str(e)],
+                metadata={
+                    "failed_at": datetime.utcnow().isoformat(),
+                    "orchestrator": "ConfigPlanningOrchestrator"
+                }
+            )
 
-        # L5 Input validation
-        self._validate_input(input_data)
+    def _validate_request(self, request: Dict[str, Any]) -> None:
+        """Validate config planning request."""
+        if not request:
+            raise ValueError("Config request cannot be empty")
+        
+        if "service" not in request:
+            raise ValueError("Service name is required in config request")
+        
+        if "environment" not in request:
+            raise ValueError("Target environment is required in config request")
 
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(input_data):
-            raise SecurityError("Input failed L5 safety validation")
+    def _validate_configs(self, request: Dict[str, Any]) -> List[ConfigDefinition]:
+        """Validate and parse configurations from request."""
+        configs = []
+        raw_configs = request.get("configs", [])
+        environment_str = request.get("environment")
+        
+        # Map string to enum
+        env_mapping = {
+            "dev": ConfigEnvironment.DEVELOPMENT,
+            "development": ConfigEnvironment.DEVELOPMENT,
+            "test": ConfigEnvironment.TESTING,
+            "testing": ConfigEnvironment.TESTING,
+            "staging": ConfigEnvironment.STAGING,
+            "prod": ConfigEnvironment.PRODUCTION,
+            "production": ConfigEnvironment.PRODUCTION,
+            "dr": ConfigEnvironment.DR
+        }
+        
+        environment = env_mapping.get(environment_str.lower(), ConfigEnvironment.DEVELOPMENT)
+        
+        for raw_config in raw_configs:
+            if isinstance(raw_config, dict):
+                config = ConfigDefinition(
+                    name=raw_config.get("name", "unnamed"),
+                    format=ConfigFormat(raw_config.get("format", "json")),
+                    environment=environment,
+                    content=raw_config.get("content", {}),
+                    version=raw_config.get("version", "1.0.0"),
+                    namespace=raw_config.get("namespace"),
+                    description=raw_config.get("description"),
+                    tags=raw_config.get("tags", [])
+                )
+                configs.append(config)
+        
+        return configs
 
-        # Create result with L5 structure
-        result = OrchestrateScriptsPlanningOrchestratorResult(
-            success=True,
-            data={"processed": True, "input": input_data},
-            safety_validated=True,
-            timestamp=self._get_timestamp()
+    def _create_deployment_plan(self, request: Dict[str, Any], configs: List[ConfigDefinition]) -> Optional[DeploymentPlan]:
+        """Create deployment plan for configurations."""
+        if not configs:
+            return None
+        
+        deployment_config = request.get("deployment", {})
+        strategy_str = deployment_config.get("strategy", "atomic")
+        
+        # Map string to enum
+        strategy_mapping = {
+            "blue_green": DeploymentStrategy.BLUE_GREEN,
+            "canary": DeploymentStrategy.CANARY,
+            "rolling": DeploymentStrategy.ROLLING,
+            "atomic": DeploymentStrategy.ATOMIC,
+            "shadow": DeploymentStrategy.SHADOW
+        }
+        
+        strategy = strategy_mapping.get(strategy_str.lower(), DeploymentStrategy.ATOMIC)
+        
+        # Get target environments
+        target_envs_str = deployment_config.get("target_environments", [request.get("environment")])
+        target_envs = []
+        
+        for env_str in target_envs_str:
+            env_mapping = {
+                "dev": ConfigEnvironment.DEVELOPMENT,
+                "development": ConfigEnvironment.DEVELOPMENT,
+                "test": ConfigEnvironment.TESTING,
+                "testing": ConfigEnvironment.TESTING,
+                "staging": ConfigEnvironment.STAGING,
+                "prod": ConfigEnvironment.PRODUCTION,
+                "production": ConfigEnvironment.PRODUCTION,
+                "dr": ConfigEnvironment.DR
+            }
+            env = env_mapping.get(env_str.lower(), ConfigEnvironment.DEVELOPMENT)
+            target_envs.append(env)
+        
+        return DeploymentPlan(
+            strategy=strategy,
+            target_environments=target_envs,
+            rollout_percentage=deployment_config.get("rollout_percentage", 100.0),
+            validation_steps=deployment_config.get("validation_steps", []),
+            rollback_plan=deployment_config.get("rollback_plan"),
+            dependencies=deployment_config.get("dependencies", [])
         )
 
-        self.logger.info(f"Successfully processed: {result.success}")
-        return result
+    def _collect_validation_errors(self, request: Dict[str, Any]) -> List[str]:
+        """Collect validation errors from configurations."""
+        errors = []
+        configs = request.get("configs", [])
+        
+        for config in configs:
+            if not isinstance(config, dict):
+                errors.append("Invalid config format")
+                continue
+            
+            if "name" not in config:
+                errors.append("Config missing name")
+            
+            if "content" not in config:
+                errors.append("Config missing content")
+            
+            # Check config size
+            content_size = len(str(config.get("content", {})))
+            if content_size > self.config.max_config_size:
+                errors.append(f"Config exceeds maximum size: {content_size} > {self.config.max_config_size}")
+        
+        return errors
 
-    def validate_safety(self, data: Dict[str, object]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
-        try:
-            # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
-            data_str = str(data).lower()
-            for pattern in dangerous_patterns:
-                if pattern in data_str:
-                    self.logger.error(f" Dangerous pattern detected: {pattern}")
-                    return False
 
-            # Check data size
-            if len(str(data)) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds size limit")
-                return False
+# Factory function for easy instantiation
+def create_config_planning_orchestrator(
+    enable_validation: bool = True,
+    enable_versioning: bool = True,
+    **kwargs
+) -> ConfigPlanningOrchestrator:
+    """Create a configured config planning orchestrator."""
+    config = ConfigPlanningConfig(
+        enable_validation=enable_validation,
+        enable_versioning=enable_versioning,
+        **kwargs
+    )
+    return ConfigPlanningOrchestrator(config)
 
-            self.logger.info("Data passed L5 safety validation")
-            return True
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            self.logger.error(f"Safety validation error: {e}")
-            return False  # Fail-closed
 
-    def _validate_input(self, input_data: Dict[str, object]) -> None:
-        """L5 Input validation"""
-        if not isinstance(input_data, dict):
-            raise ValueError("Input must be a dictionary")
-
-        if not input_data:
-            raise ValueError("Input cannot be empty")
-
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
-
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
-
-# L5 Interface compliance
-class OrchestrateScriptsPlanningOrchestratorInterface:
-    """L5 Interface - ensures contract compliance"""
-
-    def __init__(self, engine: OrchestrateScriptsPlanningOrchestratorProcessor):
-        self._processor = engine
-
-    def execute(self, input_data: Dict[str, object]) -> Dict[str, object]:
-        """L5 Interface method - executes safely"""
-        try:
-            result = self._processor.process(input_data)
-            return {
-                "success": result.success,
-                "data": result.data,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
-            }
-        except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f"Execution failed: {e}")
-
-# L5 builder
-class OrchestrateScriptsPlanningOrchestratorFactory:
-    """L5 builder for creating processors with proper configuration"""
-
-    @staticmethod
-    def create_processor(safety_level: str = "strict") -> OrchestrateScriptsPlanningOrchestratorInterface:
-        """Create configured engine"""
-        constraints = OrchestrateScriptsPlanningOrchestratorConstraints(safety_level=safety_level)
-        engine = OrchestrateScriptsPlanningOrchestratorImpl(constraints)
-        return OrchestrateScriptsPlanningOrchestratorInterface(engine)
-
-# L5 Main execution point
-def orchestrate_scripts_planning(input_data: Dict[str, object]) -> Dict[str, object]:
-    """
-    L5 Main function - orchestrate scripts planning operations
-
+# Convenience function for direct usage
+def plan_config_deployment(
+    service: str,
+    environment: str,
+    configs: List[Dict[str, Any]],
+    deployment: Optional[Dict[str, Any]] = None,
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Plan configuration deployment from simple parameters.
+    
     Args:
-        input_data: Input data to process
-
+        service: Name of the service
+        environment: Target environment
+        configs: List of configuration definitions
+        deployment: Optional deployment configuration
+        config: Optional orchestrator configuration overrides
+        
     Returns:
-        Dict: Processed result
-
-    Raises:
-        SecurityError: If execution fails any safety check
+        Dict: Planning result with validated configs and deployment plan
     """
-    builder = OrchestrateScriptsPlanningOrchestratorFactory()
-    engine = builder.create_processor()
-    return engine.execute(input_data)
+    # Build request
+    request = {
+        "service": service,
+        "environment": environment,
+        "configs": configs,
+        "deployment": deployment or {}
+    }
+    
+    # Create orchestrator and execute
+    orchestrator_config = ConfigPlanningConfig(**config) if config else None
+    orchestrator = ConfigPlanningOrchestrator(orchestrator_config)
+    result = orchestrator.execute(request)
+    
+    # Convert result to dict for JSON serialization
+    return {
+        "success": result.success,
+        "validated_configs": [
+            {
+                "name": c.name,
+                "format": c.format.value,
+                "environment": c.environment.value,
+                "content": c.content,
+                "version": c.version,
+                "namespace": c.namespace,
+                "description": c.description,
+                "tags": c.tags
+            }
+            for c in result.validated_configs
+        ],
+        "deployment_plan": {
+            "strategy": result.deployment_plan.strategy.value,
+            "target_environments": [e.value for e in result.deployment_plan.target_environments],
+            "rollout_percentage": result.deployment_plan.rollout_percentage,
+            "validation_steps": result.deployment_plan.validation_steps,
+            "rollback_plan": result.deployment_plan.rollback_plan,
+            "dependencies": result.deployment_plan.dependencies
+        } if result.deployment_plan else None,
+        "validation_errors": result.validation_errors,
+        "warnings": result.warnings,
+        "errors": result.errors,
+        "metadata": result.metadata
+    }
+
 
 if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": True}
-        result = orchestrate_scripts_planning(test_data)
-        logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:
-        logger.error(f"L5 Security error: {e}")
-    except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        logger.error(f"L5 Unexpected error: {e}")
+    # Example usage
+    example_configs = [
+        {
+            "name": "database_config",
+            "format": "json",
+            "content": {"host": "localhost", "port": 5432},
+            "version": "1.0.0"
+        }
+    ]
+    
+    result = plan_config_deployment(
+        service="user_service",
+        environment="production",
+        configs=example_configs,
+        deployment={"strategy": "blue_green"}
+    )
+    print(f"Config planning result: {result}")
