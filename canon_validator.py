@@ -103,6 +103,7 @@ BANNED_FILENAME_TOKENS: Set[str] = {
     "factory",
     "module",
     "unit",
+    "dedup_pointer",  # Garbage artifact marker
 }
 
 # Banned symbol prefixes
@@ -163,11 +164,11 @@ POISON_MARKERS: List[str] = [
 # TODO/FIXME/HACK etc in comments
 TODO_PATTERN = re.compile(r"#.*\b(TODO|FIXME|HACK|XXX|STUB|WIP)\b", re.IGNORECASE)
 
-# === ETERNAL CANON CONSTANTS — FINAL 2026-12-10 ===
+# === ETERNAL CANON CONSTANTS — IMMUTABLE ===
 MIN_SOVEREIGN_BYTES = 350
-MAX_SOVEREIGN_BYTES = 45_000  # Increased for generated scaffold files
-MAX_FUNCTION_LINES = 160  # Increased for complex workflow functions
-MAX_NESTING_DEPTH = 6  # Increased for nested control flow
+MAX_SOVEREIGN_BYTES = 25_000  # STRICT: No file > 25KB
+MAX_FUNCTION_LINES = 100  # STRICT: No function > 100 lines
+MAX_NESTING_DEPTH = 5  # STRICT: No nesting > 5 levels
 
 # ONE UNIVERSAL DEPTH LAW — REPLACES ALL PREVIOUS DEPTH RULES
 MAX_ANY_FILE_DEPTH = 5
@@ -538,14 +539,22 @@ def check_key_08_no_empty_sov_roots() -> None:
 # ---------------------------------------------------------------------
 
 def check_key_09_banned_tokens_in_filenames() -> None:
-    """Key 09 – Banned tokens in sovereign filenames."""
+    """Key 09 – Banned tokens in sovereign filenames (ALL files, not just .py)."""
     violations: List[str] = []
-    for f in iter_sovereign_py_files():
-        lower_name = f.name.lower()
-        for token in BANNED_FILENAME_TOKENS:
-            if token in lower_name:
-                violations.append(str(f.relative_to(ROOT)))
-                break
+    # Scan ALL files in sovereign directories, not just .py
+    for root in sovereign_roots():
+        for f in root.rglob("*"):
+            if not f.is_file():
+                continue
+            # Skip infrastructure directories
+            rel = f.relative_to(ROOT)
+            if any(p in {"__pycache__", ".git", "node_modules"} for p in rel.parts):
+                continue
+            lower_name = f.name.lower()
+            for token in BANNED_FILENAME_TOKENS:
+                if token in lower_name:
+                    violations.append(str(rel))
+                    break
     if violations:
         fail(
             "09",
@@ -644,59 +653,38 @@ def check_key_13_hardcoded_paths() -> None:
         success("13", "No hardcoded OS paths in sovereign code")
 
 
-# Operational constants allowlist for Key 14 (magic numbers)
+# STRICT Operational constants allowlist for Key 14 (magic numbers)
+# NO BLOAT - only truly universal constants allowed
 ALLOWED_MAGIC_NUMBERS: Set[int] = {
-    # Standard loop/index controls
+    # Loop/Index controls
     0, 1, 2, -1,
-    # Common powers of 2 / byte sizes
-    256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536,
-    # HTTP Success codes
-    200, 201, 204,
-    # HTTP Client Error codes
-    400, 401, 403, 404, 405, 408, 409, 422, 429,
-    # HTTP Server Error codes
-    500, 502, 503, 504,
-    # Common ports
-    80, 443, 3000, 5000, 8000, 8080, 8443,
-    # Common timeouts (seconds)
-    10, 30, 60, 120, 300, 600, 3600,
-    # Common limits
-    100, 1000, 10000, 100000, 1000000,
-    # Year values (for date validation)
-    2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030,
-    # Common word/char limits for content
-    125, 135, 140, 150, 160, 175, 200, 250, 280, 500,
-    # Match scores (0.XXXX * 10000) - allow 7000-9999 range
-    *range(7000, 10000),
-    # Token/context limits
-    4000, 4096, 8000, 8192, 16000, 16384, 32000, 32768,
-    # Common character limits and line numbers
-    110, 147, 170, 180, 190, 212, 220, 230, 240, 255, 256, 330, 371, 410, 651,
-    # Line numbers in large files (1000-6999 range)
-    *range(1000, 7000),
+    # HTTP codes (minimal set)
+    200, 201, 204, 400, 401, 403, 404, 422, 429, 500, 502, 503,
+    # Ports (minimal set)
+    80, 443, 8080,
+    # Bytes/Powers of 2
+    1024, 2048, 4096, 8192,
+    # Timeouts (seconds)
+    10, 30, 60,
 }
 
 
 def check_key_14_magic_numbers() -> None:
     """
-    Key 14 – Magic number heuristic with operational allowlist.
+    Key 14 – STRICT magic number detection.
     
-    Flags inline numeric constants in the "suspicious" range (100-99999) except:
-    - HTTP status codes (200, 404, 500, etc.)
-    - Common ports (80, 443, 8080, etc.)
-    - Standard byte sizes (1024, 4096, etc.)
-    - Common timeouts and limits
-    Numbers >= 10000 are likely line numbers/hashes and are ignored.
+    Flags ANY 3+ digit numeric constant not in the minimal allowlist.
+    Code must extract constants to named variables.
     """
-    # Match 3-4 digit numbers (100-9999) not in allowlist
-    magic_pattern = re.compile(r"\b(\d{3,4})\b")
+    # Match 3+ digit numbers
+    magic_pattern = re.compile(r"\b(\d{3,})\b")
     violations: List[str] = []
     
     for f in iter_sovereign_py_files():
         text = read_file(f)
         matches = magic_pattern.findall(text)
-        # Only flag numbers in suspicious range (100-9999) not in allowlist
-        bad_numbers = [m for m in matches if 100 <= int(m) <= 9999 and int(m) not in ALLOWED_MAGIC_NUMBERS]
+        # Flag ALL numbers >= 100 not in strict allowlist
+        bad_numbers = [m for m in matches if int(m) >= 100 and int(m) not in ALLOWED_MAGIC_NUMBERS]
         if bad_numbers:
             # Dedupe and limit
             unique_bad = sorted(set(bad_numbers), key=int)[:5]
@@ -1282,7 +1270,13 @@ def check_key_31_max_path_depth_sov() -> None:
 
 
 def check_key_32_fake_nesting_names() -> None:
-    """Key 32 – No fake nesting folder names (legacy, v2025, wrapper, etc.)."""
+    """
+    Key 32 – No fake nesting folder names AND no smashed directories.
+    
+    Rules:
+    1. No legacy/wrapper/temp folder names
+    2. No smashed directories (>= 3 underscores) - decompose into subfolders
+    """
     FAKE_NESTING = {
         "v2025",
         "wrapper",
@@ -1297,16 +1291,34 @@ def check_key_32_fake_nesting_names() -> None:
         "tmp",
     }
     violations: List[str] = []
+    excluded = {"__pycache__", ".git", "node_modules"}
+    
     for root in sovereign_roots():
         for d in root.rglob("*"):
             if not d.is_dir():
                 continue
-            if d.name.lower() in FAKE_NESTING:
-                violations.append(str(d.relative_to(ROOT)))
+            # Skip infrastructure directories
+            if any(ex in d.parts for ex in excluded):
+                continue
+            
+            dir_name = d.name.lower()
+            
+            # Check fake nesting names
+            if dir_name in FAKE_NESTING:
+                violations.append(f"{d.relative_to(ROOT)} – fake nesting name '{dir_name}'")
+                continue
+            
+            # Check smashed directories (>= 3 underscores)
+            underscore_count = d.name.count("_")
+            if underscore_count >= 3:
+                violations.append(
+                    f"{d.relative_to(ROOT)} – smashed directory ({underscore_count} underscores); decompose into subfolders"
+                )
+    
     if violations:
         fail(
             "32",
-            "Fake nesting directory names under sovereign roots:\n"
+            "Directory hygiene violations (fake nesting or smashed names):\n"
             + "\n".join(f"  - {v}" for v in violations[:40])
             + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
         )
@@ -1521,7 +1533,7 @@ def _iter_light_py_files() -> Iterable[Path]:
 
 
 def check_key_41_light_no_debug() -> None:
-    """Key 41 – Light Canon: no debug statements in non-sovereign code (except scripts/CLI)."""
+    """Key 41 – Light Canon: STRICT no debug statements in non-sovereign code."""
     debug_patterns = [
         r"\bprint\s*\(",
         r"\bpdb\.",
@@ -1531,19 +1543,14 @@ def check_key_41_light_no_debug() -> None:
     ]
     compiled = [re.compile(p) for p in debug_patterns]
     violations: List[str] = []
-    # CLI tools and validation utilities that legitimately use print()
-    cli_tools = {"canon_validator.py", "verify_installation.py", "sdk_registry.py"}
+    # ONLY canon_validator.py is exempt (it needs print for output)
+    exempt = {"canon_validator.py"}
     
     for f in _iter_light_py_files():
-        # FIX: Allow print() in scripts/ folder and CLI tools
-        if "scripts" in f.parts or f.name in cli_tools:
-            # Check for non-print debuggers only
-            relevant_patterns = compiled[1:]  # Skip print pattern
-        else:
-            relevant_patterns = compiled
-        
+        if f.name in exempt:
+            continue
         text = read_file(f)
-        if any(p.search(text) for p in relevant_patterns):
+        if any(p.search(text) for p in compiled):
             violations.append(str(f.relative_to(ROOT)))
     
     if violations:
@@ -1729,48 +1736,131 @@ def check_key_48_final_depth_canon() -> None:
 
 
 def check_key_49_no_smashed_filenames() -> None:
-    """Key 49 – No smashed filenames at shallow depth (use subfolders instead)."""
+    """
+    Key 49 – Depth-Aware Signal-to-Noise Filename Strictness.
+    
+    Smart algorithm that distinguishes "signal" words from "noise" words:
+    - LOW_SIGNAL_WORDS don't count against the limit (config, cache, etc.)
+    - Only HIGH-SIGNAL words are counted
+    - Depth-aware limits: shallow files stricter than deep files
+    
+    Rules:
+    1. Signal-to-Noise: Count only high-signal words in filename
+    2. Depth < 5: Max 3 high-signal words
+    3. Depth >= 5: Max 4 high-signal words
+    4. No repeated concepts (update_update, check_check, etc.)
+    5. No stuttering: file cannot start with parent directory name
+    6. Prefix fatigue: if 3+ files share same prefix, create subdirectory
+    """
+    # Low-signal words that don't count against the limit
+    LOW_SIGNAL_WORDS: Set[str] = {
+        "config", "cache", "utils", "test", "spec", "impl",
+        "manager", "service", "handler", "controller", "base", "common",
+        "data", "info", "get", "set", "load", "save", "read", "write",
+        "check", "validate", "process", "execute", "run", "init",
+        "create", "update", "delete", "find", "fetch", "store",
+        "input", "output", "result", "context", "state", "status",
+    }
+    
     violations: List[str] = []
     excluded = {".git", "__pycache__", "data", "archives", "node_modules"}
+    
+    # Track files by directory for prefix fatigue detection
+    dir_files: Dict[Path, List[Path]] = {}
 
     for f in ROOT.rglob("*.py"):
         if f.name == "__init__.py":
             continue
         if any(ex in f.parts for ex in excluded):
             continue
-        depth = len(f.relative_to(ROOT).parts)  # full depth from project root
-        if depth > 4:
-            continue  # only enforce for shallow paths (room for subfolders)
-
+        
+        # Track for prefix fatigue analysis
+        parent = f.parent
+        if parent not in dir_files:
+            dir_files[parent] = []
+        dir_files[parent].append(f)
+        
+        depth = len(f.relative_to(ROOT).parts)
         stem = f.stem
         issues: List[str] = []
 
+        # Rule 1: Max filename length
         if len(f.name) > 60:
             issues.append(f"{len(f.name)} chars")
-        underscore_count = stem.count("_")
-        if underscore_count >= 4:
-            issues.append(f"{underscore_count} underscores")
+        
+        # Rule 2: Signal-to-Noise word count with depth-aware limits
+        words = stem.lower().split("_")
+        high_signal_words = [w for w in words if w and w not in LOW_SIGNAL_WORDS]
+        low_signal_ignored = [w for w in words if w and w in LOW_SIGNAL_WORDS]
+        signal_count = len(high_signal_words)
+        
+        # Depth-aware limits
+        if depth < 5:
+            max_signal = 3  # Stricter for shallow files
+        else:
+            max_signal = 4  # Slightly relaxed for deep files
+        
+        if signal_count > max_signal:
+            ignored_str = f" (ignored: {', '.join(low_signal_ignored)})" if low_signal_ignored else ""
+            issues.append(
+                f"{signal_count} high-signal words (max {max_signal} at depth {depth}){ignored_str}"
+            )
+        
+        # Rule 3: No repeated concepts
         if re.search(
-            r"(update.*update|check.*check|state.*state|cost.*cost|policy.*policy|rule.*rule)",
+            r"(update.*update|check.*check|state.*state|cost.*cost|policy.*policy|rule.*rule|safety.*safety)",
             stem,
             re.IGNORECASE,
         ):
             issues.append("repeated concept in filename")
+        
+        # Rule 4: No stuttering (file starts with parent dir name)
+        parent_name = f.parent.name
+        if parent_name and stem.startswith(parent_name + "_"):
+            issues.append(f"stuttering (starts with parent dir '{parent_name}_')")
 
         if issues:
             violations.append(
                 f"{f.relative_to(ROOT)} (depth {depth}) – " + ", ".join(issues)
             )
+    
+    # Rule 5: Prefix fatigue detection
+    MIN_PREFIX_LEN = 6
+    MIN_FILES_FOR_FATIGUE = 3
+    
+    for directory, files in dir_files.items():
+        if len(files) < MIN_FILES_FOR_FATIGUE:
+            continue
+        
+        # Group files by common prefix
+        prefix_groups: Dict[str, List[Path]] = {}
+        for f in files:
+            stem = f.stem
+            # Find prefix up to first underscore that's at least MIN_PREFIX_LEN chars
+            if "_" in stem:
+                prefix = stem.split("_")[0]
+                if len(prefix) >= MIN_PREFIX_LEN:
+                    full_prefix = prefix + "_"
+                    if full_prefix not in prefix_groups:
+                        prefix_groups[full_prefix] = []
+                    prefix_groups[full_prefix].append(f)
+        
+        # Flag directories with prefix fatigue
+        for prefix, group_files in prefix_groups.items():
+            if len(group_files) >= MIN_FILES_FOR_FATIGUE:
+                violations.append(
+                    f"{directory.relative_to(ROOT)}/ – PREFIX FATIGUE: {len(group_files)} files start with '{prefix}*'; create {prefix.rstrip('_')}/ subdirectory"
+                )
 
     if violations:
         fail(
             "49",
-            "Smashed filenames at shallow depth (should be decomposed into subfolders):\n"
+            "Filename hygiene violations (signal-to-noise, stuttering, or prefix fatigue):\n"
             + "\n".join(f"  - {v}" for v in violations[:40])
             + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
         )
     else:
-        success("49", "No smashed filenames at shallow depth")
+        success("49", "No smashed filenames – signal-to-noise ratio OK")
 
 
 def check_key_50_canon_meta_integrity() -> None:

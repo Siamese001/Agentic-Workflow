@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\logic\\validation\\convert_content\\embedding_compare_meaning\\calculate_similarity.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "e5afce269bee674a",
-  "original_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\logic\\validation\\convert_schema_content\\embedding_compare_meaning\\calculate_schema_similarity.py",
-  "created": "2025-12-07T11:54:50.743512"
-}
