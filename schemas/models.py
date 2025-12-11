@@ -1,5 +1,5 @@
-# Ownership: shared
-# Layer: shared
+# Ownership: schemas
+# Layer: schemas
 # Agent: all
 # -*- coding: utf-8 -*-
 """
@@ -46,34 +46,6 @@ class ValidationSeverity(Enum):
     CRITICAL = auto()
 
 
-@dataclass
-class ValidationResult:
-    """Result of a validation rule execution."""
-
-    rule_id: str
-    passed: bool
-    severity: ValidationSeverity
-    message: str
-    details: Dict[str, object] = field(default_factory=dict)
-
-
-@dataclass
-class ThematicAnalysis:
-    """Thematic analysis results from content inspection."""
-
-    primary_theme: Dict[str, object] = field(default_factory=dict)
-    secondary_themes: List[Dict[str, object]] = field(default_factory=list)
-    role_classification: Dict[str, object] = field(default_factory=dict)
-    positioning_directives: Dict[str, object] = field(default_factory=dict)
-    authenticity_patterns: Dict[str, object] = field(default_factory=dict)
-    competitive_intelligence: object = None
-    problem_solution_narratives: Optional[Dict[str, object]] = None
-    signal_quality_score: float = 0.0
-    retrieval_method: str = "UNKNOWN"
-    retrieval_sources: List[Any] = field(default_factory=list)
-    weighting_formula: Optional[Dict[str, object]] = None
-
-
 class Provider(str, Enum):
     """Available LLM providers."""
     
@@ -96,6 +68,28 @@ class APICallStatus(Enum):
     FAILED = auto()
     TIMEOUT = auto()
     RATE_LIMITED = auto()
+
+
+@dataclass
+class ValidationResult:
+    """Result of a validation rule execution."""
+
+    rule_id: str
+    passed: bool
+    severity: ValidationSeverity
+    message: str = ""
+    details: Dict[str, Any] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+
+
+@dataclass
+class ThematicAnalysis:
+    """Analysis of thematic content in text."""
+    
+    themes: List[str] = field(default_factory=list)
+    confidence_scores: List[float] = field(default_factory=list)
+    dominant_theme: Optional[str] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
