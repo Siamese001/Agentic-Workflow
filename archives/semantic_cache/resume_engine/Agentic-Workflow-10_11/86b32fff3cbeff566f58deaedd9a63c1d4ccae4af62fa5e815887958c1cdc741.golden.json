@@ -1,0 +1,9 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import Dict, List\ndef build_ephemeral_rootfs() -> Dict[str, object]:\n\"\"\"Return a deterministic description of an ephemeral rootfs.\nThis does not perform any real filesystem mutation; instead it\nreturns a structure that can be inspected in tests.\n\"\"\"\nreturn {\n\"tmpfs\": True,\n\"restricted_paths\": [\"/\", \"/etc\", \"/var\", \"/home\"],\n\"writable_paths\": [\"/tmp\", \"/sandbox\"],\n}",
+  "normalized_signature": "func:build_ephemeral_rootfs",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:build_ephemeral_rootfs",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

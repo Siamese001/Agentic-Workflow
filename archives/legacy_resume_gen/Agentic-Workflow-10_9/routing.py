@@ -25,21 +25,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, List
 
-from core.models.models import PlanObject
-from prompt import System as PromptSystem
-from core.l5 import ModelRouter, RoutingCriteria
-from meta_profile import (
-    get_routing_bias,
-    get_planning_bias,
-    get_safety_bias,
-)
+from archives.legacy_root_folders.core.models.models import PlanObject
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.prompt import System  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l5 import ModelRouter, RoutingCriteria  # INVALID: Cannot import from path with hyphens
 
 
 # ============================================================================
 # 1. SAFE READ-ONLY CONTEXT VIEW (META-LAYER LOCAL HELPER)
 # ============================================================================
 
-def get_prompt_context_view(state: Dict[str, Any]) -> Dict[str, Any]:
+def get_prompt_context_view(state: Dict[str, object]) -> Dict[str, object]:
     """
     META-layer is allowed to read state (NOT mutate it).
     This helper extracts only the fields needed for prompt construction.
@@ -57,7 +52,7 @@ def get_prompt_context_view(state: Dict[str, Any]) -> Dict[str, Any]:
 # 2. DETERMINISTIC MODEL INVOCATION STUB (NO PROVIDER CALLS)
 # ============================================================================
 
-def invoke_model(prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:
+def invoke_model(prompt: str, config: Dict[str, object]) -> Dict[str, object]:
     """
     Deterministic stub — simulates model invocation.
     Never calls real LLM providers.
@@ -94,7 +89,7 @@ class RoutingConfig:
 # 4. META-AWARE ROUTING CRITERIA BUILDERS
 # ============================================================================
 
-def _derive_complexity(plan: Dict[str, Any]) -> str:
+def _derive_complexity(plan: Dict[str, object]) -> str:
     c = str(plan.get("complexity", "")).lower()
     if c in ("low", "simple"):
         return "low"
@@ -105,7 +100,7 @@ def _derive_complexity(plan: Dict[str, Any]) -> str:
     return "low"
 
 
-def _derive_risk_level(plan: Dict[str, Any], routing_cfg: RoutingConfig) -> str:
+def _derive_risk_level(plan: Dict[str, object], routing_cfg: RoutingConfig) -> str:
     safety = get_safety_bias()
     safety_meta = plan.get("safety_metadata") or {}
 
@@ -157,8 +152,8 @@ def _apply_meta_biases(criteria: RoutingCriteria) -> RoutingCriteria:
 
 
 def _build_routing_criteria(
-    plan: Dict[str, Any],
-    state: Dict[str, Any],
+    plan: Dict[str, object],
+    state: Dict[str, object],
     routing_cfg: RoutingConfig,
 ) -> RoutingCriteria:
 
@@ -177,7 +172,7 @@ def _build_routing_criteria(
 # 5. PROMPT CONSTRUCTION (PromptEnvelope)
 # ============================================================================
 
-def _format_context(context: Dict[str, Any], plan: Dict[str, Any]) -> str:
+def _format_context(context: Dict[str, object], plan: Dict[str, object]) -> str:
     lines: List[str] = []
     if plan.get("objective"):
         lines.append(f"Objective: {plan['objective']}")
@@ -194,7 +189,7 @@ def _format_context(context: Dict[str, Any], plan: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _format_reasoning(plan: Dict[str, Any]) -> str:
+def _format_reasoning(plan: Dict[str, object]) -> str:
     inj = plan.get("injection_reasoning", {}) or {}
     out: List[str] = []
     if inj.get("reason_then_answer"):
@@ -210,7 +205,7 @@ def _format_reasoning(plan: Dict[str, Any]) -> str:
     return "\n".join(out)
 
 
-def _format_instructions(plan: Dict[str, Any]) -> str:
+def _format_instructions(plan: Dict[str, object]) -> str:
     lines = [
         f"You are executing a '{plan.get('mode')}' task.",
         "Follow the plan precisely.",
@@ -223,7 +218,7 @@ def _format_instructions(plan: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _format_output_schema(plan: Dict[str, Any]) -> str:
+def _format_output_schema(plan: Dict[str, object]) -> str:
     schema = plan.get("output_schema")
     if isinstance(schema, str):
         return schema
@@ -232,7 +227,7 @@ def _format_output_schema(plan: Dict[str, Any]) -> str:
     return "Respond using concise, structured output (JSON when appropriate)."
 
 
-def _build_prompt_bundle(plan: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
+def _build_prompt_bundle(plan: Dict[str, object], state: Dict[str, object]) -> Dict[str, object]:
     context_view = get_prompt_context_view(state)
     prompt = PromptSystem.make_prompt(
         framing=plan.get("injection_framing", {}).get("global_goal", ""),
@@ -265,10 +260,10 @@ def _build_prompt_bundle(plan: Dict[str, Any], state: Dict[str, Any]) -> Dict[st
 # ============================================================================
 
 def run_model_for_plan(
-    plan: PlanObject | Dict[str, Any],
-    state: Dict[str, Any],
+    plan: PlanObject | Dict[str, object],
+    state: Dict[str, object],
     routing_cfg: Optional[RoutingConfig] = None,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     End-to-end META routing pipeline:
 

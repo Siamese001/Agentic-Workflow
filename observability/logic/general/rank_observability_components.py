@@ -1,5 +1,4 @@
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
-# Source: SSoT taxonomy + golden fallback
 # ======================================================================
 
 """
@@ -9,24 +8,18 @@ Writes entities, relations, and events to Neo4jGraphStore
 to support resume timeline analysis and job alignment.
 """
 
-from __future__ import annotations
 
 from typing import List, Optional
 from datetime import datetime
 
 try:
-    from graph_store_neo4j import Neo4jGraphStore
+    from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore
     _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()
     _NEO4J_AVAILABLE = True
 except ImportError:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
 
-from l4.temporal_schemas import (
-    TemporalEntity,
-    TemporalTriplet,
-    TemporalEvent,
-)
 
 
 async def insert_entity(entity: TemporalEntity) -> None:
@@ -52,7 +45,7 @@ async def insert_entity(entity: TemporalEntity) -> None:
                     **entity.metadata,
                 },
             )
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, KeyError):
         # Log error but don't fail - Neo4j is optional mirror
         ...
 
@@ -82,7 +75,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                     **triplet.metadata,
                 },
             )
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, KeyError):
         # Log error but don't fail - Neo4j is optional mirror
         ...
 
@@ -108,7 +101,7 @@ async def insert_event(event: TemporalEvent) -> None:
                     invalid_at=invalid_at.isoformat() if isinstance(invalid_at, datetime) else invalid_at,
                     invalidated_by=invalidated_by,
                 )
-    except Exception:
+    except (ValueError, TypeError, RuntimeError, KeyError):
         # Log error but don't fail - Neo4j is optional mirror
         ...
 

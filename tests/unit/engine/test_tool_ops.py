@@ -3,7 +3,7 @@ Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -17,7 +17,7 @@ class ToolStatus(Enum):
 class ToolDefinition:
     name: str
     description: str
-    parameters: Dict[str, Any]
+    parameters: Dict[str, object]
     required_params: List[str]
 
 @dataclass

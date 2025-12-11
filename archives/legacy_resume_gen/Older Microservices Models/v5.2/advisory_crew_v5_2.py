@@ -5,50 +5,16 @@
 
 import logging
 import time
-from typing import Dict, Any, List, Optional, Tuple, Union
+from typing import Dict, object, List, Optional, Tuple, Union
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
 
 # Import enhanced execution specialists
-from execution_specialists_v5_2 import (
-    Library_Specialist,
-    Web_Specialist,
-    RAG_Synthesizer,
-    Content_Generator,
-    Gemini_Drafter,
-    Claude_Drafter,
-    Muse_Drafter,
-    ChiefStrategistAgent,
-    StrategyValidatorAgent,
-    RetryPolicyAgent,
-    Meta_Planner,
-    HIL_Feedback_Logger,
-    HIL_EscalationAgent,
-    PromptSelectorAgent,
-    ContextAssemblerAgent,
-    PromptFormatterAgent,
-    Mechanical_Critic,
-    Strategic_Critic,
-    FactualConsistency_Validator,
-    ToneValidator,
-    ThematicAlignment_Validator,
-    PreFlightValidator,
-    Resume_Assembler,
-    CoverLetter_Assembler,
-    AppTracker_Assembler,
-    Auditor_Agent,
-)
 
 # Import v3.8 models and utilities
-from prompts_RES import build_crl_context_for_section
-from models_RES import (
-    ImmutableStagingBuffer, ThematicAnalysis, ValidationResult,
-    MasterResumeIndex, CompetitiveAnalysisConfig,
-    ResumeSection, GovernanceState, AgentSignal, VetoRecord, ExecutionStrategy,
-    ValidationSeverity, GateDecision
-)
-from validation_context import ValidationContext
-from config_RES import CONFIG
+from archives.legacy_resume_gen.Agentic AI - not communicating.prompts_RES import build_crl_context_for_section
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_context import ValidationContext
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -69,12 +35,12 @@ class CrewContext:
     job_description: str
     company_name: str
     job_title: str
-    master_resume: Dict[str, Any]
+    master_resume: Dict[str, object]
     staging_buffer: ImmutableStagingBuffer = field(default_factory=ImmutableStagingBuffer)
     thematic_analysis: Optional[ThematicAnalysis] = None
-    validation_results: Dict[str, Any] = field(default_factory=dict)
-    artifacts: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     # Governor-specific state tracking
     execution_strategy: Optional[ExecutionStrategy] = None
     state: GovernanceState = GovernanceState.INIT
@@ -148,7 +114,7 @@ class Governor:
             if not attr.startswith('_') and (hasattr(getattr(self, attr), 'complexity') or hasattr(getattr(self, attr), 'log_path'))
         ])
     
-    def execute_workflow(self, context: CrewContext) -> Dict[str, Any]:
+    def execute_workflow(self, context: CrewContext) -> Dict[str, object]:
         """
         Executes the autonomous Governor control loop.
         Flow: INIT -> META_LEARNING -> STRATEGY -> EXECUTION_LOOP -> (VETO/HIL) -> FINALIZING -> COMPLETED
@@ -229,7 +195,7 @@ class Governor:
         workflow_results['end_time'] = datetime.now().isoformat()
         return workflow_results
     
-    def _execute_rag_phase(self, context: CrewContext) -> Dict[str, Any]:
+    def _execute_rag_phase(self, context: CrewContext) -> Dict[str, object]:
         """Execute RAG analysis phase using enhanced specialists."""
         phase_results = {'status': 'STARTED'}
         
@@ -270,7 +236,7 @@ class Governor:
         
         return phase_results
     
-    def _execute_generation_phase(self, context: CrewContext) -> Dict[str, Any]:
+    def _execute_generation_phase(self, context: CrewContext) -> Dict[str, object]:
         """
         Governor's main execution loop for content generation.
         Commands Drafting Specialists and handles immediate VETO signals.
@@ -362,7 +328,7 @@ class Governor:
         
         return phase_results
 
-    def _build_generation_context(self, section: ResumeSection, context: CrewContext, current_staging: Dict) -> Dict[str, Any]:
+    def _build_generation_context(self, section: ResumeSection, context: CrewContext, current_staging: Dict) -> Dict[str, object]:
         """Uses ContextAssemblerAgent to build prompt context."""
         # Use the v3.8 CRL builder if available, otherwise manual map
         try:
@@ -384,7 +350,7 @@ class Governor:
                 "master_context": str(context.master_resume)[:2000]
             }
     
-    def _execute_assembly_phase(self, context: CrewContext) -> Dict[str, Any]:
+    def _execute_assembly_phase(self, context: CrewContext) -> Dict[str, object]:
         """Execute assembly phase to create final artifacts."""
         phase_results = {'status': 'STARTED', 'artifacts': {}}
         
@@ -435,7 +401,7 @@ class Governor:
         
         return phase_results
     
-    def _execute_audit_phase(self, context: CrewContext) -> Dict[str, Any]:
+    def _execute_audit_phase(self, context: CrewContext) -> Dict[str, object]:
         """Execute quality audit phase."""
         phase_results = {'status': 'STARTED'}
         
@@ -526,8 +492,8 @@ class CrewOrchestrator:
         job_description: str,
         company_name: str,
         job_title: str,
-        master_resume: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        master_resume: Dict[str, object]
+    ) -> Dict[str, object]:
         """
         Process a single job application through the crew workflow.
         """
@@ -560,9 +526,9 @@ class CrewOrchestrator:
     
     def process_batch(
         self,
-        applications: List[Dict[str, Any]],
+        applications: List[Dict[str, object]],
         parallel: bool = False
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, object]]:
         """
         Process multiple job applications.
         """

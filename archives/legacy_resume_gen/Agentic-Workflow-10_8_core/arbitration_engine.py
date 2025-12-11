@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, object
 
 
 class ArbitrationEngine:
@@ -9,7 +9,7 @@ class ArbitrationEngine:
     returns one of: accept, retry, replan, escalate
     """
 
-    def evaluate(self, state: Dict[str, Any], qa_report: Dict[str, Any], safety_patch: Dict[str, Any]) -> Dict[str, str]:
+    def evaluate(self, state: Dict[str, object], qa_report: Dict[str, object], safety_patch: Dict[str, object]) -> Dict[str, str]:
         # 1) If safety is blocked → escalate
         sg = safety_patch.get("safety_gateway", {})
         if sg.get("status") == "blocked":

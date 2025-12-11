@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Set
 from datetime import datetime, timedelta, UTC
 from enum import Enum
 
-from l4.triplet_store import Triplet, TripletStore, TripletStatus, TripletQuery
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.triplet_store import Triplet, TripletStore, TripletStatus, TripletQuery
 
 
 class InvalidationReason(str, Enum):
@@ -73,7 +73,7 @@ class InvalidationResult:
     invalidated: bool
     reason: Optional[InvalidationReason] = None
     superseded_by: Optional[str] = None
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -358,7 +358,7 @@ class InvalidationExecutor:
         self,
         subject: str,
         reason: InvalidationReason = InvalidationReason.MANUAL,
-        details: Optional[Dict[str, Any]] = None,
+        details: Optional[Dict[str, object]] = None,
     ) -> List[InvalidationResult]:
         """Invalidate all triplets for a subject.
         

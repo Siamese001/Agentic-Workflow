@@ -56,7 +56,7 @@ from __future__ import annotations
 import os
 import sys
 from asyncio import TimeoutError as AsyncTimeoutError
-from types import ModuleType
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import ModuleType
 from typing import List
 
 # -------------------------------------------------------------------
@@ -99,16 +99,16 @@ from . import resilience as _resilience
 from . import services as _services
 
 # Wildcard imports so public names are available directly on core_v10_7
-from .agents import *      # noqa: F401,F403
-from .clients import *     # noqa: F401,F403
-from .config import *      # noqa: F401,F403
-from .constants import *   # noqa: F401,F403
-from .context import *     # noqa: F401,F403
-from .exceptions import *  # noqa: F401,F403
-from .mcp import *         # noqa: F401,F403
-from .models import *      # noqa: F401,F403
-from .resilience import *  # noqa: F401,F403
-from .services import *    # noqa: F401,F403
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import *  # INVALID: Cannot import from path with hyphens
+from runtime.shared.clients import *
+from shared.config import *
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.constants import *  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.context import *  # INVALID: Cannot import from path with hyphens
+from shared.exceptions import *
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import *  # INVALID: Cannot import from path with hyphens
+from shared.models import *
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.resilience import *  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.services import *  # INVALID: Cannot import from path with hyphens
 
 
 # -------------------------------------------------------------------
@@ -154,17 +154,6 @@ __all__ = sorted(
 )
 
 
-from agent_stacks_v10_8 import (  # noqa: E402
-    BulletExecutionStack as BulletExecutionStackV10_8,
-    DraftingExecutionStack as DraftingExecutionStackV10_8,
-    HILStackV10_8,
-    QAValidationStack as QAValidationStackV10_8,
-    RAGExecutionStack as RAGExecutionStackV10_8,
-    SafetyStackV10_8,
-    StateAdapterStack,
-    StrategyStackV10_8,
-    RobustnessStack,
-)
 
 __all__ = sorted(
     set(

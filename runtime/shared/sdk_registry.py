@@ -32,7 +32,7 @@ import os
 import threading
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -326,7 +326,7 @@ def get_available_sdks(category: Optional[SDKCategory] = None) -> List[str]:
 # VECTOR STORE CLIENTS
 # =============================================================================
 
-_vector_clients: Dict[str, Any] = {}
+_vector_clients: Dict[str, object] = {}
 _lock = threading.Lock()
 
 
@@ -359,7 +359,7 @@ class PineconeConfig:
 def get_vector_store(
     provider: str,
     config: Optional[Union[ChromaConfig, QdrantConfig, PineconeConfig]] = None,
-) -> Any:
+) -> object:
     """
     Get a configured vector store client.
 
@@ -441,7 +441,7 @@ class RedisConfig:
     retry_on_timeout: bool = True
 
 
-def get_redis_client(config: Optional[RedisConfig] = None, async_client: bool = False) -> Any:
+def get_redis_client(config: Optional[RedisConfig] = None, async_client: bool = False) -> object:
     """
     Get a configured Redis client.
 
@@ -462,7 +462,7 @@ def get_redis_client(config: Optional[RedisConfig] = None, async_client: bool = 
             return _redis_client
 
     with _lock:
-        import redis
+        # import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis  # Commented out due to invalid syntax
 
         cfg = config or RedisConfig()
         url = cfg.url or os.environ.get("REDIS_URL")
@@ -534,7 +534,7 @@ class TracingConfig:
 _tracer_provider: Optional[Any] = None
 
 
-def setup_tracing(config: Optional[TracingConfig] = None) -> Any:
+def setup_tracing(config: Optional[TracingConfig] = None) -> object:
     """
     Set up OpenTelemetry tracing.
 
@@ -556,13 +556,13 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> Any:
 
     cfg = config or TracingConfig()
 
-    resource = Resource.create({"service.name": cfg.service_name})
+    resource = Resource.create({"provider.name": cfg.service_name})
     provider = TracerProvider(resource=resource)
 
     if cfg.exporter == "console":
         exporter = ConsoleSpanExporter()
     elif cfg.exporter == "otlp":
-        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+        from observability.logic.tracing.console_trace_exporter import OTLPSpanExporter
         endpoint = cfg.otlp_endpoint or os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT")
         exporter = OTLPSpanExporter(endpoint=endpoint)
     else:
@@ -572,18 +572,18 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> Any:
     trace.set_tracer_provider(provider)
 
     _tracer_provider = provider
-    logger.info(f"Initialized OpenTelemetry tracing (service={cfg.service_name}, exporter={cfg.exporter})")
+    logger.info(f"Initialized OpenTelemetry tracing (provider={cfg.service_name}, exporter={cfg.exporter})")
     return provider
 
 
-def get_tracer(name: str = "agentic-workflow") -> Any:
+def get_tracer(name: str = "agentic-workflow") -> object:
     """Get a tracer instance."""
     from opentelemetry import trace
     return trace.get_tracer(name)
 
 
 # =============================================================================
-# MCP SERVER FACTORY
+# MCP SERVER builder
 # =============================================================================
 
 
@@ -596,7 +596,7 @@ class MCPServerConfig:
     port: int = 8000
 
 
-def create_mcp_server(config: Optional[MCPServerConfig] = None) -> Any:
+def create_mcp_server(config: Optional[MCPServerConfig] = None) -> object:
     """
     Create a FastMCP server instance.
 
@@ -633,7 +633,7 @@ def create_mcp_tool_from_function(
     func: Callable,
     name: Optional[str] = None,
     description: Optional[str] = None,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Create an MCP tool definition from a Python function.
 
@@ -645,7 +645,7 @@ def create_mcp_tool_from_function(
     Returns:
         MCP tool definition dict
     """
-    import inspect
+    import agentic_core.L1_cognition.P2_inspect.detect_anomalies_update.inspect
     from typing import get_type_hints
 
     tool_name = name or func.__name__
@@ -695,7 +695,7 @@ def create_mcp_tool_from_function(
 # =============================================================================
 
 
-def parse_document(file_path: str, strategy: str = "auto") -> List[Dict[str, Any]]:
+def parse_document(file_path: str, strategy: str = "auto") -> List[Dict[str, object]]:
     """
     Parse a document using unstructured.
 

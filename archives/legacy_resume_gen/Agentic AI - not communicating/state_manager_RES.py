@@ -7,13 +7,6 @@ import os
 from dataclasses import asdict
 from typing import Any, Dict, List, Optional
 
-from models_RES import (
-    ThematicAnalysis,
-    ValidationResult,
-    ValidationSeverity,
-    HopCheckpoint,
-    HopStatus
-)
 
 
 class StateSerializer:
@@ -205,7 +198,7 @@ class StateSerializer:
         if expected_type == ThematicAnalysis:
             # Use the static method from rag_RES.py
             # Import here to avoid circular dependencies
-            from rag_RES import EnhancedJobDescriptionAnalyzer
+            from archives.legacy_resume_gen.Agentic AI - not communicating.rag_RES import EnhancedJobDescriptionAnalyzer
             return EnhancedJobDescriptionAnalyzer._dict_to_thematic_analysis(data_dict)
         
         if expected_type == "list[ValidationResult]":

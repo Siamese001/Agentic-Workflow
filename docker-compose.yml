@@ -1,0 +1,79 @@
+# ONE COMMAND TO RULE THEM ALL — SUBATOMIC AGENTIC ARCHITECTURE 2025
+# Complete orchestration: Redis Stack + Agentic SDK Stack
+# Usage: docker-compose up --build
+
+version: '3.8'
+
+services:
+  # Redis Stack - Production Redis with JSON/Search/Bloom
+  redis-stack:
+    image: redis/redis-stack-server:7.4.0-v3
+    container_name: agentic-redis-stack
+    ports:
+      - "6379:6379"    # Redis API
+      - "8001:8001"    # RedisInsight UI
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - agentic-network
+
+  # Agentic Application - Complete SDK Stack
+  agentic-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agentic-workflow
+    depends_on:
+      redis-stack:
+        condition: service_healthy
+    environment:
+      # Redis Configuration
+      - REDIS_HOST=redis-stack
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis-stack:6379
+      
+      # API Keys (Set these in .env file)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - MISTRALAI_API_KEY=${MISTRALAI_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY}
+      - FIREWORKS_API_KEY=${FIREWORKS_API_KEY}
+      
+      # Application Configuration
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    volumes:
+      # Mount data directory with all golden datasets and prompts
+      - ./data:/app/data
+      # Mount configuration files
+      - ./config:/app/config
+      # Mount scripts directory with validation tools
+      - ./scripts:/app/scripts
+      # Mount logs directory
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"    # Application API
+      - "8501:8501"    # Streamlit UI (if using)
+    networks:
+      - agentic-network
+    restart: unless-stopped
+    command: python verify_installation.py
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  agentic-network:
+    driver: bridge

@@ -10,14 +10,14 @@ This Artist implements:
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List, Set
+from typing import Dict, object, Tuple, List, Set
 
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -27,11 +27,6 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 # Import necessary components from helpers
-from helpers import (
-    setup_workflow_logging, HopExecutionError, default_serializer,
-    ValidationResult, ValidationSeverity, ThematicAnalysis, ResumeSection,
-    ReasoningConfig, ContentConstraintsConfig, enhance_system_prompt_with_reasoning
-)
 
 # Initialize module-level configuration instances
 CONSTRAINTS = ContentConstraintsConfig()
@@ -112,7 +107,7 @@ class ArtistGenerator:
         self.target_embeddings: np.ndarray | None = None
         self.target_keywords: Set[str] = set()
         self.selected_bullets_map: Dict[str, List[Dict]] = {}
-        self.generated_content: Dict[str, Any] = {}
+        self.generated_content: Dict[str, object] = {}
         self.api_calls_made = 0
 
     def _get_reasoning_config(self, section_key: str) -> ReasoningConfig:
@@ -328,7 +323,7 @@ class ArtistGenerator:
 
         return f"Generate content for {section_key} targeting {primary_theme}."
 
-    def generate_all_sections(self) -> Tuple[Dict[str, Any], int]:
+    def generate_all_sections(self) -> Tuple[Dict[str, object], int]:
         """
         Main generation orchestrator
         """

@@ -26,7 +26,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 from collections import defaultdict
 from enum import Enum
@@ -35,7 +35,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from core_v6_5
-from core_v6_5 import (
+from archives.legacy_resume_gen.Older Microservices Models.v6.5.core_v6_5 import BaseAgent, get_model_client, CONFIG, HopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException, ValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy, ThematicAnalysis, RAG_Blackboard, RAGMission, RAGPhase, StrategyBrief, ReflectionIteration, ReflectionResult, ReflectionStatus, ToolCall, ToolType, ReActTrace, MoEExpertResult, MoEDecision, ConductorBranch, ConductorDecision, WorkflowBlackboard, WorkflowPlan, WorkflowStep, DEFAULT_GENERATION_TEMPERATURE, text_utils, fence_data, STRATEGY_THEME_CLASSIFICATION_SYSTEM_PROMPT, STRATEGY_THEME_CLASSIFICATION_USER_PROMPT, RAG_QUERY_GEN_SYSTEM_PROMPT, RAG_QUERY_GEN_USER_PROMPT, RAG_CRITIQUE_SYSTEM_PROMPT, RAG_CRITIQUE_USER_PROMPT, DRAFTING_STRATEGIST_SYSTEM_PROMPT, DRAFTING_REDTEAM_SYSTEM_PROMPT, DRAFTING_REFINER_SYSTEM_PROMPT, DRAFTING_USER_PROMPT, REPLANNER_SYSTEM_PROMPT, REPLANNER_USER_PROMPT, QA_CLAIM_VALIDATOR_SYSTEM_PROMPT, QA_TONE_VALIDATOR_SYSTEM_PROMPT, QA_ALIGNMENT_VALIDATOR_SYSTEM_PROMPT, QA_ENTAILMENT_VALIDATOR_SYSTEM_PROMPT, QA_NARRATIVE_VALIDATOR_SYSTEM_PROMPT, QA_ADVERSARIAL_VALIDATOR_SYSTEM_PROMPT, QA_JD_SKILLS_VALIDATOR_SYSTEM_PROMPT, QA_SIGNAL_SCORE_VALIDATOR_SYSTEM_PROMPT, QA_BIAS_VALIDATOR_SYSTEM_PROMPT, QA_TENURE_VALIDATOR_SYSTEM_PROMPT, QA_GENERIC_USER_PROMPT
     # Base
     BaseAgent, get_model_client, CONFIG,
     # Models
@@ -248,7 +248,7 @@ class RAG_SearchAgent(BaseAgent):
             
         self.max_react_iterations = CONFIG.react_config.max_reasoning_loops
 
-    def run(self, queries: List[str]) -> Dict[str, Any]:
+    def run(self, queries: List[str]) -> Dict[str, object]:
         self.log_info("Running Step 2: RAG ReAct Search...")
         if self.client is None:
             raise HopExecutionError("Model client not initialized for RAG_SearchAgent.")
@@ -995,7 +995,7 @@ class Governor:
             
         return result
 
-    def run_dynamic_orchestration(self) -> Dict[str, Any]:
+    def run_dynamic_orchestration(self) -> Dict[str, object]:
         """
         v6.5: Main orchestration loop, modified to run the v7.0 linear flow.
         """
@@ -1126,7 +1126,7 @@ class Governor:
         finally:
             self.cost_tracker.log_final_cost(self.blackboard.workflow_id, {})
             
-    def _log_feedback(self, validation_results: Dict[str, Any]):
+    def _log_feedback(self, validation_results: Dict[str, object]):
         """Logs validation results for the meta-learning loop."""
         self.feedback_logger.log(validation_results, self.blackboard.workflow_id)
 
@@ -1160,7 +1160,7 @@ class FeedbackLoggerAgent:
         self.log_path = log_path
         self.logger = logging.getLogger("FeedbackLoggerAgent")
     
-    def log(self, validation_results: Dict[str, Any], workflow_id: str):
+    def log(self, validation_results: Dict[str, object], workflow_id: str):
         if not self.log_path:
             self.logger.warning("No feedback_log_path configured. Skipping log.")
             return
@@ -1213,7 +1213,7 @@ class CrewContext:
     job_description: str
     company_name: str
     job_title: str
-    master_resume: Dict[str, Any]
+    master_resume: Dict[str, object]
     workflow_id: str
 
 class CrewOrchestrator:
@@ -1245,8 +1245,8 @@ class CrewOrchestrator:
         self.logger = logging.getLogger(f"{__name__}.CrewOrchestrator")
     
     def process_job_application(self, job_description: str, company_name: str,
-                               job_title: str, master_resume: Dict[str, Any],
-                               workflow_id: str) -> Dict[str, Any]:
+                               job_title: str, master_resume: Dict[str, object],
+                               workflow_id: str) -> Dict[str, object]:
         """Process complete job application."""
         self.logger.info(f"📋 Orchestrating: {company_name} - {job_title}")
         

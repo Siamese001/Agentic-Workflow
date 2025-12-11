@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 import uuid
 from enum import Enum
@@ -22,32 +22,10 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 from dataclasses import asdict, is_dataclass
 
 # Import from modular components
-from models_RES import (
-    BulletProvenance, CircuitState, GateDecision, HopCheckpoint, HopStatus,
-    ImmutableStagingBuffer, JDEnforcementResult, JDEnforcementRule,
-    RAGState, RAGTelemetry, ResumeSection, ThematicAnalysis, FactualFailureException,
-    ValidationResult, ValidationSeverity, HopExecutionError, StagingBufferError,
-    CompetitiveIntelligence, RAGMission
-)
-from config_RES import (
-    CONFIG, AppConfig, ArtistConfig, EnricherConfig, ContentConstraintsConfig,
-    ReasoningConfig, DATA_DIR, OUTPUT_DIR, _load_json_config
-)
-from utils_RES import (
-    TextUtils, calculate_signal_score, setup_workflow_logging,
-    create_directory_if_missing, sanitize_filename,
-    WorkflowLogFilter, DuplicateDetector, CodeInterpreterTool,
-    reasoning_config_to_api_params, enhance_system_prompt_with_reasoning,
-    TextSanitizer
-)
-from validation_RES import (
-    PreFlightValidator, JDEnforcementValidator, QAReportGenerator, GateDecisionEngine,
-    ConstraintFailureClassifier, AppTrackerQAValidator
-)
-from rag_RES import EnhancedJobDescriptionAnalyzer, LibrarianAgent
-from state_manager_RES import StateSerializer, ManifestManager
+from archives.legacy_resume_gen.Agentic AI - not communicating.rag_RES import EnhancedJobDescriptionAnalyzer, LibrarianAgent
+from archives.legacy_resume_gen.Agentic AI - not communicating.state_manager_RES import StateSerializer, ManifestManager
 try:
-    import prompts_RES
+    import archives.legacy_resume_gen.Agentic AI - not communicating.prompts_RES
     # --- FIX: Use _load_json_config ---
     PROMPT_TEMPLATES_GLOBAL = _load_json_config(str(DATA_DIR / "prompts.json"), "Prompts")
 except Exception as e:
@@ -69,7 +47,7 @@ except ImportError:
     logging.warning("Warning: google-generativeai package not installed")
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -79,7 +57,7 @@ except ImportError:
 # --- NEW: Import ChromaDB ---
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
@@ -92,7 +70,7 @@ CODE_INTERPERTER_AVAILABLE = True  # Assuming CodeInterpreterTool is always avai
 MAX_SLOW_LOOP_ITERATIONS = 3  # Maximum number of slow loop iterations before giving up
 
 # --- Import LibrarianAgent from rag_RES ---
-from rag_RES import EnhancedJobDescriptionAnalyzer, LibrarianAgent
+from archives.legacy_resume_gen.Agentic AI - not communicating.rag_RES import EnhancedJobDescriptionAnalyzer, LibrarianAgent
 
 __version__ = "16.32"
 
@@ -191,8 +169,8 @@ class ClerkExtractor:
 
         return experience_sections
 
-import re
-from typing import List, Dict, Any, Optional
+import scripts.check_canonical_structure
+from typing import List, Dict, object, Optional
 
 # ============================================================================
 # DATAENRICHER CLASS
@@ -367,7 +345,7 @@ class ArtistGenerator:
                 result[key] = value
         return result
     
-    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, Any]]:
+    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, object]]:
         """
         Parse artist_specs.json and convert section names to ResumeSection enums.
         
@@ -2527,7 +2505,7 @@ class WorkflowOrchestrator:
             sections_to_generate_all = set(artist.SECTION_GENERATION_SPECS.keys())
             
             # Get the default high temperature from config_RES
-            from config_RES import DEFAULT_GENERATION_TEMPERATURE #
+            from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import DEFAULT_GENERATION_TEMPERATURE
             
             # Build the temperature map for the first pass
             temperature_overrides_pass1 = {
@@ -3071,7 +3049,7 @@ class WorkflowOrchestrator:
         thematic_analysis = None
         try:
             thematic_analysis = self.state_serializer.load(0)
-        except:
+        except (ValueError, TypeError, KeyError):
             pass
         
         coc_ledger = self._build_coc_ledger(
@@ -3156,7 +3134,7 @@ def load_master_resume() -> Dict:
     """Load master resume from JSON file."""
     # --- FIX: Use _load_json_config and DATA_DIR from config ---
     try:
-        from config_RES import _load_json_config, DATA_DIR
+        from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import _load_json_config, DATA_DIR
         path_to_try = DATA_DIR / "master_resume.json"
         data = _load_json_config(str(path_to_try), "Master Resume", required=True)
         return data

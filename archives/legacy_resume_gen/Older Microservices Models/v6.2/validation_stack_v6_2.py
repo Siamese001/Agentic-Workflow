@@ -16,7 +16,7 @@
 # ============================================================================
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 import time
 import os # <-- v6.1: Added for checking rules_registry.json
 from collections import defaultdict
@@ -25,7 +25,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from core.py
 # v6.2: Imports updated to core_v6_2
-from core_v6_2 import (
+from archives.legacy_resume_gen.Older Microservices Models.v6.2.core_v6_2 import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection, ValidationResult, ValidationSeverity, FactualFailureException, GenerationAttempt, MechanicalFailureError, SemanticFailureError, AtomicAgentConfig, MoERouterConfig, MoEExpertResult, MoEDecision, QAClassification, VetoLevel, CONFIG, DEFAULT_GENERATION_TEMPERATURE, ACCEPTABLE_MIN_WC, ACCEPTABLE_MAX_WC, text_utils, fence_data, get_validation_prompt, build_atomic_agent_prompt
     # Models
     ImmutableStagingBuffer, ThematicAnalysis, ResumeSection, ValidationResult,
     ValidationSeverity, FactualFailureException, GenerationAttempt,
@@ -928,7 +928,7 @@ class ValidationEngine:
             
         return router_class(config)
     
-    def validate_all(self, context: ValidationContext) -> Dict[str, Any]:
+    def validate_all(self, context: ValidationContext) -> Dict[str, object]:
         """
         Execute all MoE routers and aggregate results.
         REFACTORED: Passes the full ValidationContext or specific parts as needed.

@@ -2,8 +2,8 @@ import copy
 
 import pytest
 
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
-from core_v10_7 import MainGraphState, StrategyPlan
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import MainGraphState, StrategyPlan
 
 
 @pytest.fixture

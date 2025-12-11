@@ -7,7 +7,7 @@ Generated: 2025-12-07T12:07:59.878858
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -19,18 +19,18 @@ class ScoreResult:
     score: float
     confidence: float
     factors: Dict[str, float] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class ComputeScriptsScore:
     """Scoring engine for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.weights = self.config.get("weights", {})
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def compute_score(self, data: Dict[str, Any], context: Optional[Dict] = None) -> ScoreResult:
+    def compute_score(self, data: Dict[str, object], context: Optional[Dict] = None) -> ScoreResult:
         """Compute score for given data."""
         factors = self._extract_factors(data)
         raw_score = self._compute_weighted_score(factors)
@@ -43,7 +43,7 @@ class ComputeScriptsScore:
             metadata={"context": context}
         )
 
-    def _extract_factors(self, data: Dict[str, Any]) -> Dict[str, float]:
+    def _extract_factors(self, data: Dict[str, object]) -> Dict[str, float]:
         """Extract scoring factors from data."""
         factors = {}
         for key, value in data.items():
@@ -64,6 +64,6 @@ class ComputeScriptsScore:
         return min(1.0, len(factors) / 5)
 
 
-def score(data: Dict[str, Any], config: Optional[Dict] = None) -> ScoreResult:
+def score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult:
     """Convenience function for scoring."""
     return ComputeScriptsScore(config).compute_score(data)

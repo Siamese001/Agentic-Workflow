@@ -5,12 +5,6 @@ from __future__ import annotations
 import json
 from typing import Any, Dict
 
-from agent_stacks_v10_8.components.safety import (
-    BiasDetectorAgent,
-    ConstitutionalReviewerAgent,
-    PIISanitizerAgent,
-    PromptInjectionDetectorAgent,
-)
 
 
 class SafetyStackV10_8:
@@ -28,19 +22,19 @@ class SafetyStackV10_8:
             context, debug_mode
         )
 
-    def sanitize_resume(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def sanitize_resume(self, resume: Dict[str, object]) -> Dict[str, object]:
         """Run the legacy PII sanitizer."""
 
         return self._pii_sanitizer.run(resume)
 
-    def detect_bias(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
+    def detect_bias(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         """Run the local bias detector."""
 
         return self._bias_detector.run(text, workflow_id)
 
     async def detect_prompt_injection_async(
         self, user_input: str, workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Delegate to the v10.7 prompt injection detector."""
 
         return await self._prompt_injection_detector.run_async(user_input, workflow_id)
@@ -53,8 +47,8 @@ class SafetyStackV10_8:
         return await self._constitutional_reviewer.run_async(final_draft, workflow_id)
 
     async def constitutional_review_from_state_async(
-        self, state: Dict[str, Any], workflow_id: str
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: str
+    ) -> Dict[str, object]:
         """Extract the final resume payload using the legacy fallback chain."""
 
         artifacts_bucket = state.get("artifacts", {})

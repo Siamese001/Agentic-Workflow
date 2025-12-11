@@ -11,7 +11,7 @@ def _stable_dense_score(query: str) -> int:
     return int(digest, 16) % 100
 
 
-def _order_and_rank(items: List[Dict[str, Any]], score_key: str) -> List[Dict[str, Any]]:
+def _order_and_rank(items: List[Dict[str, object]], score_key: str) -> List[Dict[str, object]]:
     ranked = []
     for item in items:
         ranked.append(dict(item))
@@ -29,8 +29,8 @@ def _order_and_rank(items: List[Dict[str, Any]], score_key: str) -> List[Dict[st
     return ranked
 
 
-def bm25_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    scored: List[Dict[str, Any]] = []
+def bm25_rank(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
+    scored: List[Dict[str, object]] = []
     for item in items:
         evidence = str(item.get("evidence", ""))
         score = len(evidence)
@@ -38,8 +38,8 @@ def bm25_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return _order_and_rank(scored, "score")
 
 
-def dense_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    scored: List[Dict[str, Any]] = []
+def dense_rank(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
+    scored: List[Dict[str, object]] = []
     for item in items:
         query = str(item.get("query", ""))
         score = _stable_dense_score(query)
@@ -47,8 +47,8 @@ def dense_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return _order_and_rank(scored, "score")
 
 
-def hybrid_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    scored: List[Dict[str, Any]] = []
+def hybrid_rank(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
+    scored: List[Dict[str, object]] = []
     for item in items:
         evidence = str(item.get("evidence", ""))
         query = str(item.get("query", ""))

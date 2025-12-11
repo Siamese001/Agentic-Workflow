@@ -2,32 +2,18 @@
 # Validation module for Resume Workflow
 # Contains all validation rules, engines, and QA systems
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple, Set, Union, Callable
+from typing import Dict, List, Optional, Union, Tuple, Set, Union, Callable
 from collections import defaultdict
 from functools import partial
 import hashlib # Added for AppTrackerQAValidator
 
 # Import dependencies from new modules
 # --- FIX: Import _load_json_config from config_RES ---
-from config_RES import (
-    ValidatorConfig, ContentConstraintsConfig, SignalControlConfig, 
-    CONFIG, AppConfig, _load_json_config, DATA_DIR
-)
-from models_RES import (
-    ValidationResult, ValidationSeverity, JDEnforcementRule,
-    JDEnforcementResult, ThematicAnalysis, ResumeSection,
-    ImmutableStagingBuffer, GateDecision, BulletProvenance,
-    FactualFailureException
-)
 # --- FIX: REMOVE _load_json_data from this import ---
-from utils_RES import (
-    text_utils, TextUtils, DuplicateDetector, calculate_signal_score,
-    CodeInterpreterTool
-)
 
 # Load data required by AppTrackerQAValidator
 try:
@@ -777,7 +763,7 @@ class ValidationContext:
         """Retrieves cached details for a given rule ID."""
         return self._cache.get(rule_id, {})
 
-    def _calculate_metric_details(self, section_enum: ResumeSection, metrics_to_calc: List[Tuple[str, Callable]], constraints: Dict[str, Any]) -> Dict:
+    def _calculate_metric_details(self, section_enum: ResumeSection, metrics_to_calc: List[Tuple[str, Callable]], constraints: Dict[str, object]) -> Dict:
         """Helper to calculate and cache metrics for a section."""
         text = self.staging_buffer.get(section_enum.value, '')
         details = {}
@@ -2054,7 +2040,7 @@ class PreFlightValidator:
         # Use try-except to safely get details that might not be calculated yet
         try:
             jd_keywords = context.jd_keyword_range_details.get("jd_keywords_found", [])
-        except:
+        except (ValueError, TypeError, KeyError):
             jd_keywords = [] # Fallback
             
         primary_theme = context.thematic_analysis.primary_theme.get("name", "").lower()
@@ -2118,9 +2104,9 @@ print(json.dumps({{"winner_text": drafts[best_index], "winner_index": best_index
         staging_buffer: ImmutableStagingBuffer,
         thematic_analysis: ThematicAnalysis,
         job_description: str,
-        macro_tot_drafts: Dict[str, Any], # Changed type hint
+        macro_tot_drafts: Dict[str, object], # Changed type hint
         sections_under_test: Optional[Set[ResumeSection]] = None
-    ) -> Tuple[List[ValidationResult], bool, Set[ResumeSection], Dict[str, Any]]: # Changed return type
+    ) -> Tuple[List[ValidationResult], bool, Set[ResumeSection], Dict[str, object]]: # Changed return type
         """
         Runs the validation engine against the staging buffer.
         NEW: Runs "Evaluator" logic first, then validates the winners.

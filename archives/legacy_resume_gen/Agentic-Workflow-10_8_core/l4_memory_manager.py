@@ -10,9 +10,9 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict, List
 
-from l4_memory import ContextBudget
-from utils_types import Message
-from l4_memory import normalize_world_facts
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import ContextBudget  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import Message  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import normalize_world_facts  # INVALID: Cannot import from path with hyphens
 
 
 class MemoryManager:
@@ -21,7 +21,7 @@ class MemoryManager:
     def __init__(self, context_budget: ContextBudget | None = None) -> None:
         self.context_budget = context_budget or ContextBudget()
 
-    def reconcile_state(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    def reconcile_state(self, state: Dict[str, object]) -> Dict[str, object]:
         """Ensure memory-related keys exist and respect budgeting constraints."""
 
         normalized = copy.deepcopy(state)
@@ -34,7 +34,7 @@ class MemoryManager:
         canonical_messages: List[Message] = []
         for message in messages:
             if isinstance(message, dict):
-                message_copy: Dict[str, Any] = copy.deepcopy(message)
+                message_copy: Dict[str, object] = copy.deepcopy(message)
             else:
                 message_copy = {"role": "unknown", "content": str(message)}
             message_copy["role"] = str(message_copy.get("role", ""))
@@ -46,7 +46,7 @@ class MemoryManager:
         rag_canonical: List[dict] = []
         for item in rag_history:
             if isinstance(item, dict):
-                item_copy: Dict[str, Any] = copy.deepcopy(item)
+                item_copy: Dict[str, object] = copy.deepcopy(item)
             else:
                 item_copy = {"query": str(item), "evidence": []}
             item_copy["query"] = str(item_copy.get("query", ""))
@@ -71,7 +71,7 @@ class MemoryManager:
         normalized["metadata"]["context_consistency"] = "unchecked"
         return normalized
 
-    def add_messages(self, state: Dict[str, Any], new_messages: List[Message]) -> Dict[str, Any]:
+    def add_messages(self, state: Dict[str, object], new_messages: List[Message]) -> Dict[str, object]:
         """Append episodic messages and prune according to the budget."""
 
         merged = copy.deepcopy(state)
@@ -80,7 +80,7 @@ class MemoryManager:
         merged["messages"] = self.context_budget.prune_messages(merged["messages"])
         return merged
 
-    def add_rag_items(self, state: Dict[str, Any], items: List[dict]) -> Dict[str, Any]:
+    def add_rag_items(self, state: Dict[str, object], items: List[dict]) -> Dict[str, object]:
         """Append semantic retrieval entries and prune to the configured limit."""
 
         merged = copy.deepcopy(state)
@@ -89,14 +89,14 @@ class MemoryManager:
         merged["rag_history"] = self.context_budget.prune_rag_items(merged["rag_history"])
         return merged
 
-    def update_summary(self, state: Dict[str, Any], summary: str) -> Dict[str, Any]:
+    def update_summary(self, state: Dict[str, object], summary: str) -> Dict[str, object]:
         """Replace the summary while respecting the summary budget."""
 
         merged = copy.deepcopy(state)
         merged["summary"] = self.context_budget.prune_summary(summary)
         return merged
 
-    def add_world_facts(self, state: Dict[str, Any], facts: List[dict]) -> Dict[str, Any]:
+    def add_world_facts(self, state: Dict[str, object], facts: List[dict]) -> Dict[str, object]:
         """Append world facts and prune according to the budget."""
 
         merged = copy.deepcopy(state)
@@ -105,7 +105,7 @@ class MemoryManager:
         merged["world"] = self.context_budget.prune_world(merged["world"])
         return merged
 
-    def prune_world(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    def prune_world(self, state: Dict[str, object]) -> Dict[str, object]:
         """Prune world facts in the provided state."""
 
         merged = copy.deepcopy(state)

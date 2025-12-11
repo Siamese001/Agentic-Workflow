@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 import uuid
 from enum import Enum
@@ -22,28 +22,8 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 from dataclasses import asdict, is_dataclass
 
 # Import from modular components
-from models_RES import (
-    BulletProvenance, CircuitState, GateDecision, HopCheckpoint, HopStatus,
-    ImmutableStagingBuffer, JDEnforcementResult, JDEnforcementRule,
-    RAGState, RAGTelemetry, ResumeSection, ThematicAnalysis,
-    ValidationResult, ValidationSeverity, HopExecutionError, StagingBufferError,
-    CompetitiveIntelligence, RAGMission
-)
-from config_RES import (
-    CONFIG, AppConfig, ArtistConfig, EnricherConfig, ContentConstraintsConfig,
-    ReasoningConfig, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
-)
-from utils_RES import (
-    TextUtils, calculate_signal_score, setup_workflow_logging,
-    create_directory_if_missing, sanitize_filename,
-    _load_json_data, WorkflowLogFilter, DuplicateDetector
-)
-from validation_RES import (
-    PreFlightValidator, JDEnforcementValidator, QAReportGenerator, GateDecisionEngine,
-    ConstraintFailureClassifier, AppTrackerQAValidator
-)
-from rag_RES import EnhancedJobDescriptionAnalyzer, WebSearchRAG
-from state_manager_RES import StateSerializer, ManifestManager
+from archives.legacy_resume_gen.Agentic AI - not communicating.rag_RES import EnhancedJobDescriptionAnalyzer, WebSearchRAG
+from archives.legacy_resume_gen.Agentic AI - not communicating.state_manager_RES import StateSerializer, ManifestManager
 
 try:
     import google.generativeai as genai
@@ -60,7 +40,7 @@ except ImportError:
     logging.warning("Warning: google-generativeai package not installed")
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -162,8 +142,8 @@ class ClerkExtractor:
 
         return experience_sections
 
-import re
-from typing import List, Dict, Any, Optional
+import scripts.check_canonical_structure
+from typing import List, Dict, object, Optional
 
 # ============================================================================
 # DATAENRICHER CLASS
@@ -299,7 +279,7 @@ class ArtistGenerator:
                 result[key] = value
         return result
     
-    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, Any]]:
+    def _parse_specs(self, raw_specs: Dict) -> Dict['ResumeSection', Dict[str, object]]:
         try:
             reconstructed_specs = {}
             for section_name, spec in raw_specs.items():
@@ -345,7 +325,7 @@ class ArtistGenerator:
     def _build_generation_prompt_with_reinforced_constraints(
         self,
         base_prompt: str,
-        constraints: Dict[str, Any],
+        constraints: Dict[str, object],
         attempt_number: int
     ) -> str:
         """
@@ -1690,7 +1670,7 @@ class TextSanitizer:
         # TextUtils is already imported in workflow.py
         self.text_utils = TextUtils()
 
-    def sanitize_buffer(self, staging_buffer: ImmutableStagingBuffer) -> Tuple[List[ValidationResult], Dict[str, Any]]:
+    def sanitize_buffer(self, staging_buffer: ImmutableStagingBuffer) -> Tuple[List[ValidationResult], Dict[str, object]]:
         """
         Iterates through the buffer and sanitizes all string content.
         """
@@ -2759,7 +2739,7 @@ class WorkflowOrchestrator:
 
     def _create_jd_analyzer(self):
         """Create JD analyzer instance."""
-        from rag_RES import EnhancedJobDescriptionAnalyzer
+        from archives.legacy_resume_gen.Agentic AI - not communicating.rag_RES import EnhancedJobDescriptionAnalyzer
         return EnhancedJobDescriptionAnalyzer(
             self.master_resume,
             enable_web_search=True,
@@ -2940,7 +2920,7 @@ class WorkflowOrchestrator:
         thematic_analysis = None
         try:
             thematic_analysis = self.state_serializer.load(0)
-        except:
+        except (ValueError, TypeError, KeyError):
             pass
         
         coc_ledger = self._build_coc_ledger(

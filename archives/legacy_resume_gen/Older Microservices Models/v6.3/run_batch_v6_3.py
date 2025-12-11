@@ -12,8 +12,8 @@ import shutil
 from datetime import datetime
 
 # Imports from its *own* versioned files
-from main_v6_3 import WorkflowV63, setup_logging 
-from core_v6_3 import CONFIG, CircuitBreakerOpenError
+from archives.legacy_resume_gen.Older Microservices Models.v6.3.main_v6_3 import WorkflowV63, setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v6.3.core_v6_3 import CONFIG, CircuitBreakerOpenError
 
 logger = logging.getLogger("batch_runner_v6_3")
 setup_logging(debug_mode=False)

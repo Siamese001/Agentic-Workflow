@@ -7,22 +7,8 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
-from core_v10_7 import (
-    BaseAgent,
-    HILAmbiguityReport,
-    HILFeedbackIntent,
-    HILFeedbackRoute,
-    HILReconciliationResult,
-    PersonaConsensus,
-    PersonaReviewDecision,
-    StrategyPlan,
-    WorkflowContext,
-    track_metrics,
-    _format_prompt_with_defaults,
-    PydanticSchemaError,
-)
 
 
 class VirtualReviewerPersonaAgent(BaseAgent):
@@ -204,7 +190,7 @@ class HILFeedbackSummarizerAgent(BaseAgent):
     async def run_async(
         self,
         human_feedback: str,
-        state_snapshot: Optional[Dict[str, Any]],
+        state_snapshot: Optional[Dict[str, object]],
         workflow_id: str,
     ) -> SummarizerOutput:
         if not human_feedback.strip():
@@ -261,7 +247,7 @@ class HILReconciliationAgent(BaseAgent):
     @track_metrics("run_hil_reconciliation")
     async def run_async(
         self,
-        draft_sections: Dict[str, Any],
+        draft_sections: Dict[str, object],
         specialist_feedback: List[str],
         persona_consensus: Optional[PersonaConsensus],
         workflow_id: str,
@@ -351,7 +337,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
         self,
         strategy: StrategyPlan,
         workflow_id: str,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         self.log_info("Detecting ambiguity (v10.7)...")
         client = self.get_model_client("qa_model")
 
@@ -398,8 +384,8 @@ class HILFeedbackRouterAgent(BaseAgent):
         self,
         human_feedback: str,
         workflow_id: str,
-        state_snapshot: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state_snapshot: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         self._log_feedback_preference(human_feedback, workflow_id)
         base_result = await self._execute_feedback_router(
             human_feedback,
@@ -434,9 +420,9 @@ class HILFeedbackRouterAgent(BaseAgent):
         self,
         human_feedback: str,
         workflow_id: str,
-        state_snapshot: Optional[Dict[str, Any]] = None,
-        self_heal_hint: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state_snapshot: Optional[Dict[str, object]] = None,
+        self_heal_hint: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         self.log_info("Routing human feedback with persona council...")
 
         hint = self_heal_hint or {}
@@ -541,9 +527,9 @@ class HILFeedbackRouterAgent(BaseAgent):
         self,
         human_feedback: str,
         workflow_id: str,
-        state_snapshot: Optional[Dict[str, Any]],
-        base_result: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        state_snapshot: Optional[Dict[str, object]],
+        base_result: Dict[str, object],
+    ) -> Dict[str, object]:
         manager = getattr(self, "self_correction_manager", None)
         if not manager:
             return base_result

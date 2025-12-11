@@ -13,7 +13,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import signal
 import time
 import warnings
@@ -35,14 +35,14 @@ except ImportError:
 
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
     chromadb = None
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -51,7 +51,7 @@ except ImportError:
     cosine_similarity = None
 
 # Import from core.py
-from core import (
+from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import HopExecutionError, CircuitBreakerOpenError, PhaseTimeoutError, ResumeSection, ValidationSeverity, ImmutableStagingBuffer, ValidationResult, ThematicAnalysis, MasterResumeIndex, RAGMission, RAGPhase, CircuitBreakerState, CircuitBreakerConfig, ReasoningConfig, ReasoningStrategy, VetoLevel, QAClassification, StrategyBrief, VetoSignal, CONFIG, CACHE_DIR, DEFAULT_MAX_RETRIES, DEFAULT_RETRY_DELAY, DEFAULT_GENERATION_TEMPERATURE, DEFAULT_SYNTHESIS_TEMPERATURE, DEFAULT_MAX_OUTPUT_TOKENS, SAFETY_THRESHOLD, text_utils, fence_data, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning, DuplicateDetector, TextSanitizer, build_crl_context_for_section, format_prompt_with_context, build_crl_context_for_section, format_prompt_with_context, get_rag_phase_prompt, get_specialist_prompt, build_atomic_agent_prompt
     # Models
     HopExecutionError, CircuitBreakerOpenError, PhaseTimeoutError,
     ResumeSection, ValidationSeverity, ImmutableStagingBuffer,
@@ -73,11 +73,6 @@ from core import (
 )
 
 # Import from validation_stack.py
-from validation_stack import (
-    ValidationContext, ValidationRule, ValidationEngine, 
-    ConstraintFailureClassifier, PreFlightValidator,
-    calculate_signal_score
-)
 
 logger = logging.getLogger(__name__)
 
@@ -142,15 +137,15 @@ AGENT_COMPLEXITY = {
 class CrewContext:
     """Context for crew operations (if not already defined)."""
     job_description: str = ""
-    master_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: Dict[str, object] = field(default_factory=dict)
     strategy: Optional[StrategyBrief] = None
     staging_buffer: Optional[Any] = None
     thematic_analysis: Optional[Any] = None
     company_name: str = ""
     job_title: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    validation_results: Dict[str, Any] = field(default_factory=dict)
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
 
 class SwarmAgent:
     """Base class for all swarm agents."""
@@ -165,7 +160,7 @@ class SwarmAgent:
 class FeedbackLoggerAgent(SwarmAgent):
     """Logs HIL interactions and QA failures for pattern finding."""
     def __init__(self): super().__init__("FeedbackLoggerAgent")
-    def log_event(self, event_type: str, data: Dict[str, Any]):
+    def log_event(self, event_type: str, data: Dict[str, object]):
         # In a real async system, this would write to a dedicated log stream
         pass
 
@@ -182,7 +177,7 @@ class AutoTunerAgent(SwarmAgent):
     def __init__(self): 
         super().__init__("AutoTunerAgent")
     
-    def analyze_telemetry(self, log_path: str) -> Dict[str, Any]:
+    def analyze_telemetry(self, log_path: str) -> Dict[str, object]:
         # Finds patterns like "K1 always fails word count when set < 100"
         return {"recommended_changes": {}}
 
@@ -201,7 +196,7 @@ class OntologyMapperAgent(SwarmAgent):
     """TIER 1: Standardizes messy skills into canonical entities."""
     def __init__(self):
         super().__init__("OntologyMapperAgent")
-        from agent_swarm import get_gemini_service
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.agent_swarm import get_gemini_service
         self.gemini = get_gemini_service()
 
     def normalize_skills(self, raw_skills: List[str]) -> List[str]:
@@ -216,7 +211,7 @@ class OntologyMapperAgent(SwarmAgent):
         """
 
         # Use new atomic builder (incorporates E1, E2, E3, E4)
-        from prompts_RES import build_atomic_agent_prompt
+        from archives.legacy_resume_gen.Agentic AI - not communicating.prompts_RES import build_atomic_agent_prompt
         prompt = build_atomic_agent_prompt(
             task_directive="Normalize the provided raw skills list into canonical, standardized skill entities.",
             agent_identity="OntologyMapperAgent (Tier 1 atomic normalizer)",
@@ -287,7 +282,7 @@ class StrategyValidatorAgent(SwarmAgent):
     
     def validate(self, strategy: StrategyBrief) -> VetoSignal:
         # Import inline to avoid circular dependency
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         if strategy.confidence_score < 0.7:
              return VetoSignal(VetoLevel.STRATEGY, self.name, "Strategy confidence too low")
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
@@ -321,7 +316,7 @@ class Constraint_Jargon_Checker(SwarmAgent):
         super().__init__("Constraint_Jargon_Checker")
     
     def check(self, content: str) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         # Placeholder logic
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
 
@@ -331,7 +326,7 @@ class FormatComplianceAgent(SwarmAgent):
         super().__init__("FormatComplianceAgent")
     
     def check_ats(self, content: str) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         if "<table>" in content or "invisible" in content:
             return VetoSignal(VetoLevel.QA1_LINGUISTIC, self.name, "ATS Violation: Tables detected")
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
@@ -344,7 +339,7 @@ class BiasScrubberAgent(SwarmAgent):
         self.protected_groups = CONFIG.get('new_agent_configs', {}).get('bias_scrubber', {}).get('protected_groups', ["age", "gender", "race", "disability"])
 
     def scan(self, content: str) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         # Expanded basic list + config awareness
         biased_terms = ["ninja", "rockstar", "guru", "guys", "manpower", "chairman", "native english"]
         found_terms = [term for term in biased_terms if f" {term} " in content.lower()]
@@ -359,7 +354,7 @@ class FactualConsistency_Validator(SwarmAgent):
         super().__init__("FactualConsistency_Validator")
     
     def validate(self, content: str, master: Dict) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
 
 class ThematicAlignment_Validator(SwarmAgent):
@@ -368,7 +363,7 @@ class ThematicAlignment_Validator(SwarmAgent):
         super().__init__("ThematicAlignment_Validator")
     
     def align(self, content: str, strategy: StrategyBrief) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
 
 class SemanticEntailmentValidator(SwarmAgent):
@@ -378,7 +373,7 @@ class SemanticEntailmentValidator(SwarmAgent):
         self.gemini = get_gemini_service()
     
     def align(self, content: str, strategy: StrategyBrief) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         # Zero-shot NLI check
         prompt = f"""Task: Semantic Entailment
 Premise (Strategy): Primary focus is {strategy.primary_focus} with differentiators {strategy.differentiators}
@@ -398,7 +393,7 @@ class NarrativeThreadAgent(SwarmAgent):
         super().__init__("NarrativeThreadAgent")
     
     def check_coherence(self, full_draft: Dict[str, str], strategy: StrategyBrief) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         # Checks if 'primary_focus' from strategy appears in all major sections
         return VetoSignal(VetoLevel.NONE, self.name, "PASS")
 
@@ -409,7 +404,7 @@ class AdversarialReviewerAgent(SwarmAgent):
         self.system_prompt = "You are a skeptical CTO. Find reasons NOT to hire this candidate. Be harsh."
     
     def red_team(self, full_draft: str) -> VetoSignal:
-        from core import VetoLevel
+        from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import VetoLevel
         # This would actually call Gemini with the hostile persona
         return VetoSignal(VetoLevel.NONE, self.name, "PASS (No obvious red flags)")
 
@@ -436,7 +431,7 @@ class GeminiResponse:
     """Response structure from Gemini API."""
     text: str
     usage: Dict[str, int]
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
     cached: bool = False
     
 @dataclass
@@ -669,7 +664,7 @@ class Library_Specialist:
             logger.error(f"Failed to initialize ChromaDB: {e}")
             self.enabled = False
     
-    def store_memory(self, content: str, metadata: Dict[str, Any]) -> bool:
+    def store_memory(self, content: str, metadata: Dict[str, object]) -> bool:
         """Store a memory in persistent storage."""
         if not self.enabled:
             return False
@@ -696,7 +691,7 @@ class Library_Specialist:
             return False
     
     def retrieve_memories(self, query: str, n_results: int = 5, 
-                         filter_metadata: Optional[Dict] = None) -> List[Dict[str, Any]]:
+                         filter_metadata: Optional[Dict] = None) -> List[Dict[str, object]]:
         """Retrieve relevant memories based on query."""
         if not self.enabled:
             return []
@@ -729,7 +724,7 @@ class Library_Specialist:
             logger.error(f"Failed to retrieve memories: {e}")
             return []
     
-    def rehydrate_master_index(self, master_resume: Dict[str, Any]) -> MasterResumeIndex:
+    def rehydrate_master_index(self, master_resume: Dict[str, object]) -> MasterResumeIndex:
         """
         V5.2 PATCH: Rehydrate MasterResumeIndex from master resume data.
         This is the critical recovery mechanism from v3.8.
@@ -819,7 +814,7 @@ class Web_Specialist:
         return True
     
     def fetch_competitive_intelligence(self, company_name: str, 
-                                      job_title: str) -> Dict[str, Any]:
+                                      job_title: str) -> Dict[str, object]:
         """Fetch competitive intelligence about company and role."""
         if not self._check_circuit_breaker():
             logger.warning("Circuit breaker OPEN - returning cached data")
@@ -886,7 +881,7 @@ class RAG_Synthesizer:
         self.gemini_service = get_gemini_service()
     
     def execute_rag_mission(self, mission: RAGMission, 
-                           context: Dict[str, Any]) -> Dict[str, Any]:
+                           context: Dict[str, object]) -> Dict[str, object]:
         """Execute a complete 4-phase RAG mission."""
         logger.info(f"🎯 Executing RAG mission for phase: {mission.phase.value}")
         
@@ -922,7 +917,7 @@ class RAG_Synthesizer:
             return results
     
     def _execute_extraction(self, mission: RAGMission, 
-                          context: Dict[str, Any]) -> Dict[str, Any]:
+                          context: Dict[str, object]) -> Dict[str, object]:
         """Execute extraction phase."""
         prompt = get_rag_phase_prompt(RAGPhase.EXTRACTION, mission, context)
         response = self.gemini_service.generate(prompt, temperature=0.3)
@@ -947,7 +942,7 @@ class RAG_Synthesizer:
         }
     
     def _execute_enrichment(self, mission: RAGMission, 
-                          context: Dict[str, Any]) -> Dict[str, Any]:
+                          context: Dict[str, object]) -> Dict[str, object]:
         """Execute enrichment phase."""
         # Use extracted evidence as base
         base_evidence = context.get('extraction_evidence', [])
@@ -971,7 +966,7 @@ class RAG_Synthesizer:
         }
     
     def _execute_synthesis(self, mission: RAGMission, 
-                          context: Dict[str, Any]) -> Dict[str, Any]:
+                          context: Dict[str, object]) -> Dict[str, object]:
         """Execute synthesis phase."""
         prompt = get_rag_phase_prompt(RAGPhase.SYNTHESIS, mission, context)
         response = self.gemini_service.generate(prompt, temperature=0.7)
@@ -986,7 +981,7 @@ class RAG_Synthesizer:
         }
     
     def _execute_validation(self, mission: RAGMission, 
-                          context: Dict[str, Any]) -> Dict[str, Any]:
+                          context: Dict[str, object]) -> Dict[str, object]:
         """Execute validation phase."""
         prompt = get_rag_phase_prompt(RAGPhase.VALIDATION, mission, context)
         response = self.gemini_service.generate(prompt, temperature=0.2)
@@ -1004,8 +999,8 @@ class RAG_Synthesizer:
             'evidence': context.get('synthesis_evidence', [])
         }
     
-    def _calculate_signal_score(self, results: Dict[str, Any], 
-                               context: Dict[str, Any]) -> float:
+    def _calculate_signal_score(self, results: Dict[str, object], 
+                               context: Dict[str, object]) -> float:
         """Calculate signal quality score for results."""
         score = 0.0
         factors = []
@@ -1045,7 +1040,7 @@ class QA_Auditor:
     def audit_output(self, staging_buffer: ImmutableStagingBuffer,
                     thematic_analysis: ThematicAnalysis,
                     job_description: str,
-                    master_resume: Dict[str, Any]) -> Dict[str, Any]:
+                    master_resume: Dict[str, object]) -> Dict[str, object]:
         """Perform comprehensive QA audit."""
         logger.info("🔍 Performing QA audit on output")
         
@@ -1096,12 +1091,12 @@ class CrewContext:
     job_description: str
     company_name: str
     job_title: str
-    master_resume: Dict[str, Any]
+    master_resume: Dict[str, object]
     staging_buffer: ImmutableStagingBuffer = field(default_factory=ImmutableStagingBuffer)
     thematic_analysis: Optional[ThematicAnalysis] = None
-    validation_results: Dict[str, Any] = field(default_factory=dict)
-    artifacts: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    validation_results: Dict[str, object] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class Governor:
     """
@@ -1158,7 +1153,7 @@ class Governor:
         # Validation engine
         self.validator = PreFlightValidator()
     
-    def process_request(self, context: CrewContext) -> Dict[str, Any]:
+    def process_request(self, context: CrewContext) -> Dict[str, object]:
         """
         Main orchestration method - processes a complete job application.
         V5.2 10 Agents Patch: Integrated multi-tier validation flow.
@@ -1218,7 +1213,7 @@ class Governor:
             # (SemanticEntailment would check specific bullets here)
             
             # QA4/5 (Holistic & Adversarial - usually run on full draft, simplified here)
-            from core import ResumeSection
+            from archives.legacy_resume_gen.Older Microservices Models.v5.3.core import ResumeSection
             veto = self.narrative_thread.check_coherence(
                 {ResumeSection.K1_EXECUTIVE_SUMMARY.value: draft}, 
                 context.strategy
@@ -1245,7 +1240,7 @@ class Governor:
             results['validation'] = {'passed': False, 'error': str(e)}
             return results
     
-    def _handle_veto(self, veto: VetoSignal, context: CrewContext, results: Dict[str, Any]) -> Dict[str, Any]:
+    def _handle_veto(self, veto: VetoSignal, context: CrewContext, results: Dict[str, object]) -> Dict[str, object]:
         """Handle a veto signal from validation."""
         self.logger.warning(f"🚫 VETO from {veto.agent_name}: {veto.message} (Level: {veto.level})")
         
@@ -1288,7 +1283,7 @@ class Governor:
         
         return analysis
     
-    def _execute_rag_pipeline(self, context: CrewContext) -> Dict[str, Any]:
+    def _execute_rag_pipeline(self, context: CrewContext) -> Dict[str, object]:
         """Execute 4-phase RAG pipeline."""
         results = {}
         accumulated_context = {'job_description': context.job_description}
@@ -1399,7 +1394,7 @@ class Governor:
         
         return template_map.get(section, 'generic_section')
     
-    def _validate_output(self, context: CrewContext) -> Dict[str, Any]:
+    def _validate_output(self, context: CrewContext) -> Dict[str, object]:
         """Validate generated output."""
         passed, results, signal_score = self.validator.validate(
             staging_buffer=context.staging_buffer,
@@ -1417,7 +1412,7 @@ class Governor:
             'production_ready': passed and signal_score >= CONFIG.min_confidence_score
         }
     
-    def _assemble_artifacts(self, context: CrewContext) -> Dict[str, Any]:
+    def _assemble_artifacts(self, context: CrewContext) -> Dict[str, object]:
         """Assemble final artifacts from validated content."""
         artifacts = {}
         
@@ -1491,7 +1486,7 @@ class Governor:
         
         return artifacts
     
-    def _format_qa_report(self, validation_results: Dict[str, Any]) -> str:
+    def _format_qa_report(self, validation_results: Dict[str, object]) -> str:
         """Format validation results as QA report."""
         report = f"""# QA Report
 
@@ -1520,8 +1515,8 @@ class HIL_EscalationAgent:
         self.escalation_log = []
         self.escalation_file = CACHE_DIR / "hil_escalations.json"
     
-    def escalate(self, issue: str, context: Dict[str, Any], 
-                severity: str = "HIGH") -> Dict[str, Any]:
+    def escalate(self, issue: str, context: Dict[str, object], 
+                severity: str = "HIGH") -> Dict[str, object]:
         """
         Escalate issue to human operator.
         V5.2 PATCH: Persist using json.dump instead of in-memory storage.
@@ -1559,7 +1554,7 @@ class CrewOrchestrator:
         self.logger = logging.getLogger(__name__)
     
     def process_job_application(self, job_description: str, company_name: str,
-                               job_title: str, master_resume: Dict[str, Any]) -> Dict[str, Any]:
+                               job_title: str, master_resume: Dict[str, object]) -> Dict[str, object]:
         """
         Process a complete job application through the crew.
         """

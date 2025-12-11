@@ -8,8 +8,8 @@
 
 import asyncio
 import logging
-import re
-from typing import Dict, Any, List, Optional
+import scripts.check_canonical_structure
+from typing import Dict, object, List, Optional
 from datetime import datetime
 
 # Local Presidio for PII (v9.9 security hardening preserved)
@@ -20,11 +20,7 @@ try:
 except ImportError:
     PRESIDIO_AVAILABLE = False
 
-from core_v10_0 import (
-    BaseAgent, WorkflowContext, MainGraphState,
-    ModelAPIError, JSONParsingError, CONFIG
-)
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 
 logger = logging.getLogger("agent_swarm_v10_0")
 
@@ -88,7 +84,7 @@ class BiasDetectorAgent(BaseAgent):
     def __init__(self, context: WorkflowContext, debug_mode: bool = False):
         super().__init__(context, debug_mode)
 
-    def run(self, text: str) -> Dict[str, Any]:
+    def run(self, text: str) -> Dict[str, object]:
         """Detect bias using local regex"""
         self.log_info("Running LOCAL bias detection...")
         

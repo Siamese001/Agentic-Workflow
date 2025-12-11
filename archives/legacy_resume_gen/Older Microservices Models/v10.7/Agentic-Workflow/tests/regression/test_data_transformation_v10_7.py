@@ -1,5 +1,5 @@
 import pytest
-from agents import PIISanitizerAgent, QAAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agents import PIISanitizerAgent, QAAgent  # INVALID: Cannot import from path with hyphens
 
 
 @pytest.mark.data

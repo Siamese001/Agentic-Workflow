@@ -4,21 +4,13 @@ from __future__ import annotations
 import asyncio
 import logging
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, object, Awaitable, Callable, Dict, Optional, Tuple
 
-from mcp import sync_context
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import sync_context  # INVALID: Cannot import from path with hyphens
 
-from .exceptions import (
-    CircuitBreakerOpenError,
-    JSONParsingError,
-    ModelAPIError,
-    PydanticSchemaError,
-    WorkflowError,
-    WorkflowTimeoutError,
-)
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
-    from .context import WorkflowContext
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.context import WorkflowContext  # INVALID: Cannot import from path with hyphens
 
 logger = logging.getLogger("core_v10_7")
 
@@ -123,10 +115,10 @@ def get_timeout_decorator(timeout_seconds: float) -> Callable[[Callable[..., Awa
     return async_timeout(int(timeout_seconds))
 
 
-def _extract_workflow_context(args: Tuple[Any, ...], kwargs: Dict[str, Any]) -> Optional["WorkflowContext"]:
+def _extract_workflow_context(args: Tuple[Any, ...], kwargs: Dict[str, object]) -> Optional["WorkflowContext"]:
     """Inspect call arguments to find a WorkflowContext instance."""
 
-    from .context import WorkflowContext  # Local import avoids circular import issues.
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.context import WorkflowContext  # INVALID: Cannot import from path with hyphens
 
     for arg in args:
         if isinstance(arg, WorkflowContext):

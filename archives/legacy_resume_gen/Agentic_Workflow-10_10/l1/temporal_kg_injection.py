@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone, UTC, timedelta
 from enum import Enum
 
-from l1.instructional_injection_v6 import InstructionalExtension, ExtensionContent
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.instructional_injection_v6 import InstructionalExtension, ExtensionContent
 
 
 class TemporalRelation(str, Enum):
@@ -35,7 +35,7 @@ class TemporalFact:
     timestamp: datetime
     confidence: float = 1.0
     source: str = "unknown"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     
     def is_valid_at(self, time: datetime) -> bool:
         """Check if this fact is valid at the given time."""
@@ -43,7 +43,7 @@ class TemporalFact:
         max_age = timedelta(days=365)  # 1 year default
         return (time - self.timestamp) <= max_age
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to dictionary representation."""
         return {
             "fact_id": self.fact_id,
@@ -64,7 +64,7 @@ class TemporalFactRelation:
     target_fact_id: str
     relation_type: TemporalRelation
     confidence: float = 1.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class TemporalKnowledgeGraph:

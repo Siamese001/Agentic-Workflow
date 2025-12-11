@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Render PromptEnvelope into a final prompt string with L5 safety signals.\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, Optional\nfrom core_v10_7 import BaseAgent, PromptEnvelope\nclass PromptRendererStack(BaseAgent):\n\"\"\"L2 stack responsible for rendering prompts from a PromptEnvelope.\"\"\"\nasync def run_async(\nself, state: Dict[str, Any], workflow_id: Optional[str] = None\n) -> Dict[str, Any]:\nenv = PromptEnvelope.model_validate(state[\"prompts\"][\"prompt_envelope\"])\ninj = self.context.prompt_injection_detector.detect(str(env))\npol = self.context.policy_stack.guard_output(env.model_dump())\ncr = self.context.constitutional_engine.review_text(str(env))\nenv.safety_context = {\n\"injection\": inj,\n\"policy\": pol.dict(),\n\"constitution\": cr.dict(),\n}\nfinal = self._render(env)\nreturn {\"prompts\": {\"final_prompt\": final}}\ndef _render(self, env: PromptEnvelope) -> str:\nreturn f\"\"\"\n[FRAMING]\n{env.framing}\n[CONTEXT]\n{env.context}\n[REASONING]\n{env.reasoning}\n[INSTRUCTIONS]\n{env.instructions}\n[TOOL CONTEXT]\n{env.tool_context}\n[SAFETY SIGNALS]\n{env.safety_context}\n[OUTPUT SCHEMA]\n{env.output_schema}\n\"\"\"",
+  "normalized_signature": "func:_render;class:PromptRendererStack",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

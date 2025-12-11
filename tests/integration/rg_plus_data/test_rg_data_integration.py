@@ -1,7 +1,7 @@
 """Integration tests for Resume Generation + Data layer."""
 from __future__ import annotations
 import pytest
-from typing import Dict, List, Any
+from typing import Dict, List
 from dataclasses import dataclass
 
 @dataclass
@@ -17,8 +17,8 @@ class UserProfile:
     id: str
     name: str
     skills: List[str]
-    experience: List[Dict[str, Any]]
-    education: List[Dict[str, Any]]
+    experience: List[Dict[str, object]]
+    education: List[Dict[str, object]]
 
 
 class TestRGDataIntegration:
@@ -139,7 +139,7 @@ class TestJobDataEnrichment:
         """Integration: Keywords are extracted from job description."""
         description = "Looking for a Python developer with AWS experience and machine learning skills"
 
-        # Simple keyword extraction
+        # basic keyword extraction
         tech_keywords = ["python", "aws", "machine learning", "java", "sql"]
         extracted = [kw for kw in tech_keywords if kw in description.lower()]
 

@@ -3,16 +3,16 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict
 
-from orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
+from archives.legacy_resume_gen.Older Microservices Models.v2.engine import Graph, Node, Edge, DAGExecutor
 
 
-async def _noop_node(ctx: Dict[str, Any]) -> Dict[str, Any]:
+async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:
     ctx = dict(ctx)
     ctx.setdefault("steps", []).append("noop")
     return ctx
 
 
-async def _set_value(ctx: Dict[str, Any]) -> Dict[str, Any]:
+async def _set_value(ctx: Dict[str, object]) -> Dict[str, object]:
     ctx = dict(ctx)
     ctx["value"] = 42
     return ctx

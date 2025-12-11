@@ -1,0 +1,10 @@
+{
+  "canonical_form": "\"\"\"Test stub for pytest-benchmark to satisfy imports.\"\"\"\ndef __getattr__(name):\nraise AttributeError(f\"pytest_benchmark stub does not expose '{name}'\")",
+  "normalized_signature": "func:__getattr__",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:",
+  "test_coverage": [
+    "contains_tests",
+    "uses_testing_framework"
+  ]
+}

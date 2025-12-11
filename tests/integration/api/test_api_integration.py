@@ -1,8 +1,9 @@
 """Integration tests for API layer."""
 from __future__ import annotations
-from typing import Dict, Any, Optional
+from typing import Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
+from runtime.shared.exceptions import HopExecutionError, ValidationError, APIError, CircuitBreakerOpenError
 
 class HTTPMethod(Enum):
     GET = "GET"
@@ -15,13 +16,13 @@ class APIRequest:
     method: HTTPMethod
     path: str
     headers: Dict[str, str]
-    body: Optional[Dict[str, Any]] = None
+    body: Optional[Dict[str, object]] = None
 
 @dataclass
 class APIResponse:
     status_code: int
     headers: Dict[str, str]
-    body: Dict[str, Any]
+    body: Dict[str, object]
 
 
 class TestAPIEndpointIntegration:

@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nProvides observability compatibility shim for resume generation system.\nEnsures runtime monitoring and tracking capabilities for improved\nresume generation quality and debugging.\n\"\"\"\nfrom __future__ import annotations\nfrom runtime.observability.spans import * # noqa: F401,F403\nfrom runtime.observability.events import * # noqa: F401,F403\nfrom runtime.observability.emitters import * # noqa: F401,F403\nfrom runtime.observability.collectors import ( # noqa: F401\nget_events,\nclear_events as _clear_events_impl,\n)\ndef get_all_events():\n\"\"\"Retrieves all observability events for resume generation monitoring.\nEnsures comprehensive tracking of resume generation processes\nfor quality assurance and debugging.\n\"\"\"\nreturn get_events()\ndef clear_events() -> None: # type: ignore[override]\n\"\"\"Clears observability events to maintain clean monitoring state.\nEnsures resume generation tracking remains organized and\nmanageable for quality control purposes.\n\"\"\"\n_clear_events_impl()",
+  "normalized_signature": "func:get_all_events;func:clear_events",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:get_all_events,clear_events",
+  "test_coverage": []
+}

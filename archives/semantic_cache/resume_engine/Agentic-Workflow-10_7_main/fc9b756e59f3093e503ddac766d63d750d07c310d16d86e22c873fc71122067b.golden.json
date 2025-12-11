@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"v10.8 planning + execution stacks used across the workflow.\"\"\"\nfrom .rag_planning import RAGPlanningStack\nfrom .bullet_planning import BulletPlanningStack\nfrom .draft_planning import DraftPlanningStack\nfrom .rag_execution import RAGExecutionStack\nfrom .bullet_execution import BulletExecutionStack\nfrom .drafting_execution import DraftingExecutionStack\nfrom .rag_orchestration import RAGOrchestratorStack\nfrom .draft_orchestration import DraftOrchestratorStack\n__all__ = [\n\"RAGPlanningStack\",\n\"BulletPlanningStack\",\n\"DraftPlanningStack\",\n\"RAGExecutionStack\",\n\"BulletExecutionStack\",\n\"DraftingExecutionStack\",\n\"RAGOrchestratorStack\",\n\"DraftOrchestratorStack\",\n]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

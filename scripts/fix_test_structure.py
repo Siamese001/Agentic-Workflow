@@ -89,8 +89,7 @@ def remove_empty_lp_dirs() -> List[str]:
     if not unit_dir.exists():
         return removed
 
-    # Walk bottom-up to remove empty dirs
-    for domain_dir in unit_dir.iterdir():
+        for domain_dir in unit_dir.iterdir():
         if not domain_dir.is_dir():
             continue
 
@@ -98,16 +97,14 @@ def remove_empty_lp_dirs() -> List[str]:
             for lp_dir in domain_dir.rglob(lp_pattern):
                 if lp_dir.is_dir():
                     try:
-                        # Remove if empty or only has __init__.py
-                        contents = list(lp_dir.iterdir())
+                                                contents = list(lp_dir.iterdir())
                         if not contents or all(f.name == "__init__.py" for f in contents):
                             shutil.rmtree(lp_dir)
                             removed.append(str(lp_dir.relative_to(TESTS_ROOT)))
-                    except Exception as e:
+                    except (ValueError, TypeError, KeyError) as e:
                         print(f"  ⚠ Could not remove {lp_dir}: {e}")
 
-    # Second pass: remove any remaining empty dirs
-    for dirpath, dirnames, filenames in os.walk(unit_dir, topdown=False):
+        for dirpath, dirnames, filenames in os.walk(unit_dir, topdown=False):
         current = Path(dirpath)
         if current == unit_dir:
             continue
@@ -123,7 +120,7 @@ def remove_empty_lp_dirs() -> List[str]:
                     shutil.rmtree(current)
                     if str(current.relative_to(TESTS_ROOT)) not in removed:
                         removed.append(str(current.relative_to(TESTS_ROOT)))
-                except:
+                except (ValueError, TypeError, KeyError):
                     ...
 
     return removed
@@ -157,8 +154,7 @@ def move_logic_tests() -> List[str]:
                 shutil.move(str(test_file), str(dest))
                 moved.append(f"logic/{test_file.name} -> unit/agentic_core/{test_file.name}")
 
-    # Remove logic/ if empty
-    if logic_dir.exists():
+        if logic_dir.exists():
         remaining = [f for f in logic_dir.iterdir() if f.name not in ["__init__.py", "__pycache__"]]
         if not remaining:
             shutil.rmtree(logic_dir)
@@ -203,8 +199,7 @@ def main():
     if len(log["flattened"]) > 5:
         print(f"    ... and {len(log['flattened']) - 5} more")
 
-    # Step 2: Remove empty L/P directories
-    print("\n[STEP 2] Removing empty L/P directories...")
+        print("\n[STEP 2] Removing empty L/P directories...")
     log["removed_dirs"] = remove_empty_lp_dirs()
     print(f"  ✓ Removed {len(log['removed_dirs'])} directories")
 

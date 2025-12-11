@@ -1,6 +1,7 @@
 """Integration tests for agentic_core + runtime integration."""
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+import re
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -14,8 +15,8 @@ class LayerType(Enum):
 @dataclass
 class RuntimeContext:
     request_id: str
-    config: Dict[str, Any]
-    state: Dict[str, Any] = field(default_factory=dict)
+    config: Dict[str, object]
+    state: Dict[str, object] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
 
 
@@ -190,7 +191,7 @@ class TestSecurityIntegration:
         """Integration: PII filtering works in pipeline."""
         input_text = "Contact john@example.com for details"
 
-        import re
+        import scripts.check_canonical_structure
         filtered = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[EMAIL]', input_text)
 
         assert "john@example.com" not in filtered

@@ -25,7 +25,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 import uuid
 from collections import defaultdict
@@ -35,7 +35,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 # Import from core_v9_5
-from core_v9_5 import (
+from archives.legacy_resume_gen.Older Microservices Models.v9.5.core_v9_5 import (
     # Base
     BaseAgent, get_model_client, CONFIG,
     # Models
@@ -78,7 +78,7 @@ class GraphDatabaseClient:
     def write(self, s: str, r: str, o: str): return True
 
 # --- V7.0 LANGGRAPH IMPORTS ---
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ class PIISanitizerAgent:
         self.logger = logging.getLogger(f"{__name__}.PIISanitizerAgent")
         self.replacements = {}
 
-    def run(self, master_resume: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, master_resume: Dict[str, object]) -> Dict[str, object]:
         self.logger.info("Sanitizing master_resume PII...")
         
         # We need a deep copy to avoid modifying the original dict
@@ -308,7 +308,7 @@ class RAG_SearchAgent(BaseAgent):
             self.client = None
             self.critique_client = None
 
-    def run(self, queries: List[str]) -> Dict[str, Any]:
+    def run(self, queries: List[str]) -> Dict[str, object]:
         self.log_info(f"Running Step 2: RAG Search (ReAct) for {len(queries)} queries...")
         if self.client is None:
             raise HopExecutionError("Model client not initialized for RAG Search.")
@@ -627,7 +627,7 @@ class ProvenanceRouterAgent(BaseAgent):
         remaining_pool = [bullet for score, bullet in scored_bullets[n:n+10]] # Get next 10 for customizer
         return verbatim, remaining_pool
 
-    def run(self) -> Dict[str, Any]: # v9.5: Return dict for provenance
+    def run(self) -> Dict[str, object]: # v9.5: Return dict for provenance
         self.log_info("Running Step 3: Advanced Bullet Swarm (v9.5)...")
         try:
             strategy = self.blackboard.get_artifact("strategy_brief")
@@ -1141,7 +1141,7 @@ def get_blackboard(state: 'GraphState') -> WorkflowBlackboard:
         workflow_id=state["workflow_id"] # v9.5: Pass workflow_id
     )
 
-def run_strategy(state: 'GraphState') -> Dict[str, Any]:
+def run_strategy(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 1: Strategy Classification"""
     blackboard = get_blackboard(state)
     
@@ -1150,7 +1150,7 @@ def run_strategy(state: 'GraphState') -> Dict[str, Any]:
     
     return {"artifacts": {"strategy_brief": strategy_brief}}
 
-def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_rag_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 2: RAG (QueryGen, Search, Critique)"""
     blackboard = get_blackboard(state)
     
@@ -1183,7 +1183,7 @@ def run_rag_stack(state: 'GraphState') -> Dict[str, Any]:
         "rag_critique": critique_result,
     }, "provenance_ledger": [provenance_entry]} # v9.5
 
-def run_bullet_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_bullet_stack(state: 'GraphState') -> Dict[str, object]:
     """v9.5 Node: Runs the new Advanced Bullet Swarm (Req #2)"""
     blackboard = get_blackboard(state)
     
@@ -1200,7 +1200,7 @@ def run_bullet_stack(state: 'GraphState') -> Dict[str, Any]:
         "provenance_ledger": state["provenance_ledger"] + [provenance_entry] # v9.5
     }
 
-def run_bullet_critique(state: 'GraphState') -> Dict[str, Any]:
+def run_bullet_critique(state: 'GraphState') -> Dict[str, object]:
     """v9.5 Node: Runs the new BulletCritiqueAgent"""
     blackboard = get_blackboard(state)
     agent = BulletCritiqueAgent(blackboard, debug_mode=True)
@@ -1211,7 +1211,7 @@ def run_bullet_critique(state: 'GraphState') -> Dict[str, Any]:
     )
     return {"artifacts": {"bullet_critique_results": critique_results}}
 
-def run_drafting_stack(state: 'GraphState') -> Dict[str, Any]:
+def run_drafting_stack(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3: Drafting (Prompt, Bullets, Adversarial)"""
     # v9.5: This node is now split into two: run_bullet_stack and run_drafting_stack
     # This function is now *only* for drafting.
@@ -1234,7 +1234,7 @@ drafting_agent = DraftingConductorAgent(blackboard, debug_mode=True) # v9.5
         "final_draft": final_draft
     }}
 
-def run_qa_swarm(state: 'GraphState') -> Dict[str, Any]:
+def run_qa_swarm(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 4: QA (LLM and Logic)"""
     blackboard = get_blackboard(state)
     final_draft = state["artifacts"].get("final_draft", "")
@@ -1269,7 +1269,7 @@ qa_llm_agent = QAConductorAgent(blackboard, debug_mode=True) # v9.5
         "validation_results": validation_summary
     }}
 
-def run_replanner(state: 'GraphState') -> Dict[str, Any]:
+def run_replanner(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 3 (SC Paths): Re-Planner"""
     blackboard = get_blackboard(state)
     
@@ -1312,7 +1312,7 @@ agent = WorkflowRePlannerAgent(blackboard, debug_mode=True) # v9.5 logic is now 
 
 # --- v7.5 New Nodes ---
 
-def human_review_pause(state: 'GraphState') -> Dict[str, Any]:
+def human_review_pause(state: 'GraphState') -> Dict[str, object]:
     """
     Node: This node saves the final draft to the state for HIL diffing.
     The graph will be configured to *interrupt* before this node,
@@ -1322,7 +1322,7 @@ def human_review_pause(state: 'GraphState') -> Dict[str, Any]:
     # Save the AI draft so we can diff it against the human's version
     return {"original_draft": state["artifacts"]["final_draft"]}
 
-def run_preference_capture(state: 'GraphState') -> Dict[str, Any]:
+def run_preference_capture(state: 'GraphState') -> Dict[str, object]:
     """Node: Runs Step 5: Preference Capture"""
     if not CONFIG.hil_config.enable_preference_learning:
         return {"preference_insight": {"status": "disabled"}}
@@ -1388,8 +1388,8 @@ def get_graph_app(checkpointer: 'RedisSaver', enable_hil: bool = True) -> 'Compi
     """
     Builds and compiles the persistent v9.5 StateGraph.
     """
-    from langgraph.graph import StateGraph, END
-from core_v9_5 import GraphState
+    from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v9.5.core_v9_5 import GraphState
     
     workflow = StateGraph(GraphState)
 

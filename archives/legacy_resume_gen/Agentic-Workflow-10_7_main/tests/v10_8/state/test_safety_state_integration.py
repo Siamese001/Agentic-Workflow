@@ -1,5 +1,5 @@
 import pathlib
-from models import MainGraphState
+from shared.models import MainGraphState
 
 def test_safety_fields_merge():
     base = MainGraphState()
@@ -10,7 +10,7 @@ def test_safety_fields_merge():
     }
 
     # simulate adapter logic
-    from state_adapter_stack import StateAdapterStack
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
     adapter = StateAdapterStack(context=None, debug_mode=False)
 
     new_state = adapter.apply_patch(base, patch)

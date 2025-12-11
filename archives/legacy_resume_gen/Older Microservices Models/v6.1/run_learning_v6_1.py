@@ -12,7 +12,7 @@ from datetime import datetime
 
 # Imports from its *own* versioned files
 # We need to import the agents, but also core_v6_1 for config and logging
-from core_v6_0 import CONFIG, setup_logging # Assuming setup_logging is in core
+from archives.legacy_resume_gen.Older Microservices Models.v6.0.core_v6_0 import CONFIG, setup_logging
 # We need the agent definitions, which are in agent_swarm
 # We'll use stubbed agents for this file as they are not defined yet
 # from agent_swarm_v6_1 import PatternFinderAgent, MetaPlannerAgent, FeedbackLoggerAgent

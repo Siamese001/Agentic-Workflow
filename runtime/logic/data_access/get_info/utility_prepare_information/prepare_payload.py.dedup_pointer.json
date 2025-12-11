@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "03_runtime\\runtime_ops\\synthesis\\use_tools\\utility_prepare_information\\prepare_execution_payload.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "301f0d87adaad137",
-  "original_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\logic\\data_access\\get_info\\utility_prepare_information\\prepare_payload.py",
-  "created": "2025-12-07T11:54:50.515456"
-}

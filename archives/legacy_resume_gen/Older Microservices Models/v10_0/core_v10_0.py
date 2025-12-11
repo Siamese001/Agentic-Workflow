@@ -13,9 +13,9 @@ import hashlib
 import asyncio
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional, TypedDict
+from typing import Dict, object, List, Optional, TypedDict
 from datetime import datetime
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 
 # Custom exceptions (preserved from v9.9)
 class ModelAPIError(Exception):
@@ -45,8 +45,8 @@ class CostCeilingExceededError(Exception):
 @dataclass
 class ResumeContext:
     """Isolated resume state"""
-    master_resume: Dict[str, Any] = field(default_factory=dict)
-    sanitized_resume: Dict[str, Any] = field(default_factory=dict)
+    master_resume: Dict[str, object] = field(default_factory=dict)
+    sanitized_resume: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class JobContext:
@@ -65,7 +65,7 @@ class WorkflowMetadata:
 @dataclass
 class ArtifactsState:
     """Generated artifacts"""
-    artifacts: Dict[str, Any] = field(default_factory=dict)
+    artifacts: Dict[str, object] = field(default_factory=dict)
     original_draft: str = ""
     human_approved_draft: str = ""
 
@@ -127,7 +127,7 @@ class MainGraphState:
     quality: QualityState = field(default_factory=QualityState)
     provenance: ProvenanceState = field(default_factory=ProvenanceState)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """Convert to flat dict for LangGraph compatibility"""
         result = {}
         for key, value in asdict(self).items():
@@ -139,7 +139,7 @@ class MainGraphState:
         return result
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'MainGraphState':
+    def from_dict(cls, data: Dict[str, object]) -> 'MainGraphState':
         """Reconstruct from flat dict"""
         state = cls()
         
@@ -224,7 +224,7 @@ class CacheManager:
         except Exception as e:
             self.logger.warning(f"Cache write error: {e}")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> Dict[str, object]:
         """Cache performance stats"""
         total = self.hits + self.misses
         hit_rate = (self.hits / total * 100) if total > 0 else 0
@@ -465,7 +465,7 @@ class AsyncAnthropicClient(AsyncBaseModelClient):
     def __init__(self, model_name: str, cache_manager: CacheManager):
         super().__init__(model_name, cache_manager)
         try:
-            from anthropic import AsyncAnthropic
+            from data.sdks_mcps.reference_clients.minimal_anthropic import AsyncAnthropic
             self.client = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
         except ImportError:
             raise ImportError("anthropic package not installed")
@@ -622,7 +622,7 @@ class HILManager:
     
     def __init__(self):
         self.feedback_queue: List[Dict] = []
-        self.responses: Dict[str, Any] = {}
+        self.responses: Dict[str, object] = {}
         self.logger = logging.getLogger(f"{__name__}.HILManager")
 
     def queue_feedback_request(self, request: Dict):

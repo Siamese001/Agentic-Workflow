@@ -1,8 +1,8 @@
 """Grouped L5 safety and policy tests."""
-from l5_safety import detect_bias, detect_pii
-from l5_safety import ConstitutionalEngine
-from l5_safety import SafetyGateway
-from l5_policy import SafetyMode
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import detect_bias, detect_pii  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import ConstitutionalEngine  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import SafetyMode  # INVALID: Cannot import from path with hyphens
 
 
 def test_detect_pii_email():
@@ -54,9 +54,9 @@ def test_safety_gateway_blocking_logic_unchanged():
 
     policy_patch = balanced_gateway.evaluate({"content": "", "intent": {"action": "execute_code"}})
     assert policy_patch["safety_gateway"]["status"] == "blocked"
-from l5_safety import InjectionDetector
-from l5_policy import PolicyEngine
-from l5_policy import InjectionPattern, PolicyRule, SafetyConfig, load_default_safety_config
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import InjectionDetector  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import PolicyEngine  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import InjectionPattern, PolicyRule, SafetyConfig, load_default_safety_config  # INVALID: Cannot import from path with hyphens
 
 
 def test_default_config_loads():
@@ -104,14 +104,14 @@ def test_injection_patterns_override_defaults():
     assert patch["injection_scan"]["is_injection"] is True
 import pytest
 
-from l1_reasoning import DraftingReasoner
-from l1_reasoning import RAGReasoner
-from l1_reasoning import StrategyReasoner
-from l3_orchestration import BulletOrchestrator
-from l3_orchestration import DraftOrchestrator
-from l3_orchestration import GraphOrchestrator
-from l3_orchestration import QAOrchestrator
-from l3_orchestration import RAGOrchestrator
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import DraftingReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import RAGReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import StrategyReasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import BulletOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import DraftOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import QAOrchestrator  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
 
 
 class DummyExecutor:
@@ -189,8 +189,8 @@ def test_safety_gateway_receives_metadata():
     metadata = intent["safety_metadata"]
     assert metadata["objective"] == "propagate"
     assert metadata["audience"] == "ops"
-from l5_safety import SafetyGateway
-from l5_policy import SafetyMode
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy import SafetyMode  # INVALID: Cannot import from path with hyphens
 
 
 def test_strict_blocks_on_any_violation():
@@ -247,10 +247,10 @@ def test_audit_logging_called(monkeypatch):
 """
 Test Suite — Safety Plane Metadata v10.8
 """
-from l5_safety import ConstitutionalEngine
-from l5_safety import InjectionDetector
-from l5_safety import SafetyGateway
-from l5_safety import SAFETY_LOG
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import ConstitutionalEngine  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import InjectionDetector  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SAFETY_LOG  # INVALID: Cannot import from path with hyphens
 
 
 def test_tool_and_routing_metadata_present():
@@ -296,7 +296,7 @@ def test_safety_log_records_entries():
 """
 Test Suite — Safety v10.8
 """
-from l5_safety import SafetyGateway
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_safety import SafetyGateway  # INVALID: Cannot import from path with hyphens
 
 
 def test_safety_gateway_blocks_injection():

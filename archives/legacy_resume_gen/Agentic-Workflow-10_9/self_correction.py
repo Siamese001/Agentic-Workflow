@@ -28,7 +28,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from core.models.models import SelfCorrectionSurface, SafetyIssue
+from archives.legacy_root_folders.core.models.models import SelfCorrectionSurface, SafetyIssue
 
 
 # ============================================================================
@@ -56,9 +56,9 @@ class CorrectionSignal:
 
     surface: str
     reason: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "surface": self.surface,
             "reason": self.reason,
@@ -81,9 +81,9 @@ class CorrectionRecommendation:
     needed: bool
     surface: Optional[str] = None
     rationale: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "needed": self.needed,
             "surface": self.surface,
@@ -96,7 +96,7 @@ class CorrectionRecommendation:
 # 3. ERROR SIGNAL DETECTORS (STATE-BASED, PURE)
 # ============================================================================
 
-def _detect_rag_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+def _detect_rag_errors(state: Dict[str, object]) -> Optional[CorrectionSignal]:
     """
     Detect whether retrieval was insufficient.
     """
@@ -126,7 +126,7 @@ def _detect_rag_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
     return None
 
 
-def _detect_qa_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+def _detect_qa_errors(state: Dict[str, object]) -> Optional[CorrectionSignal]:
     """
     Detect failed QA checks.
     """
@@ -144,7 +144,7 @@ def _detect_qa_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
     return None
 
 
-def _detect_strategy_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+def _detect_strategy_errors(state: Dict[str, object]) -> Optional[CorrectionSignal]:
     """
     Detect that L1 strategy recommended revision.
 
@@ -171,7 +171,7 @@ def _detect_strategy_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]
     return None
 
 
-def _detect_safety_halt(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+def _detect_safety_halt(state: Dict[str, object]) -> Optional[CorrectionSignal]:
     """
     Detect safety failures requiring human escalation.
 
@@ -204,7 +204,7 @@ def _detect_safety_halt(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
     return None
 
 
-def _detect_checkpoint_recovery(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+def _detect_checkpoint_recovery(state: Dict[str, object]) -> Optional[CorrectionSignal]:
     """
     Detect if the last checkpoint indicates workflow failure.
     """
@@ -228,7 +228,7 @@ def _detect_checkpoint_recovery(state: Dict[str, Any]) -> Optional[CorrectionSig
 # 4. SURFACE SELECTION LOGIC (ENTERPRISE PRIORITY ORDER)
 # ============================================================================
 
-def analyze_state_for_correction(state: Dict[str, Any]) -> CorrectionRecommendation:
+def analyze_state_for_correction(state: Dict[str, object]) -> CorrectionRecommendation:
     """
     Priority-ordered correction analysis:
 
@@ -266,7 +266,7 @@ def analyze_state_for_correction(state: Dict[str, Any]) -> CorrectionRecommendat
 # 5. MULTI-SURFACE ANALYSIS (ALL SIGNALS)
 # ============================================================================
 
-def analyze_all_surfaces(state: Dict[str, Any]) -> List[CorrectionSignal]:
+def analyze_all_surfaces(state: Dict[str, object]) -> List[CorrectionSignal]:
     """
     Return ALL applicable correction signals, sorted by enterprise priority.
 
@@ -297,7 +297,7 @@ def analyze_all_surfaces(state: Dict[str, Any]) -> List[CorrectionSignal]:
 # 6. FORMATTERS (PATCH + METADATA)
 # ============================================================================
 
-def to_patch_dict(rec: CorrectionRecommendation) -> Dict[str, Any]:
+def to_patch_dict(rec: CorrectionRecommendation) -> Dict[str, object]:
     """
     Convert CorrectionRecommendation to a dict suitable for
     state insertion under key "self_correction" by L4.StateAdapter.
@@ -305,7 +305,7 @@ def to_patch_dict(rec: CorrectionRecommendation) -> Dict[str, Any]:
     return {"self_correction": rec.to_dict()}
 
 
-def to_metadata_block(rec: CorrectionRecommendation) -> Dict[str, Any]:
+def to_metadata_block(rec: CorrectionRecommendation) -> Dict[str, object]:
     """
     Convert CorrectionRecommendation into simplified metadata for
     telemetry/meta-learning.

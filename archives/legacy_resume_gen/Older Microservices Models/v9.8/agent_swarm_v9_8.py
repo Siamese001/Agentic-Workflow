@@ -13,22 +13,12 @@
 
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 
-from core_v9_8 import (
-    CONFIG, BaseAgent, get_model_client, MainGraphState,
-    BIAS_DETECTOR_SYSTEM_PROMPT, PII_SCRUBBER_SYSTEM_PROMPT,
-    TOT_STRATEGIST_SYSTEM_PROMPT, PROMPT_ENGINEER_SYSTEM_PROMPT,
-    BULLET_CRITIQUE_SYSTEM_PROMPT, AgentExecutionError,
-    REACT_CONDUCTOR_SYSTEM_PROMPT, TOOL_SELECTOR_SYSTEM_PROMPT,
-    HIL_AMBIGUITY_DETECTOR_PROMPT, HYDE_GENERATION_PROMPT,
-    RERANKING_PROMPT, TOOL_REGISTRY, HIL_MANAGER,
-    AgentReliabilityTracker
-)
 
-from langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +35,7 @@ class BiasDetectorAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, content: str, context: Optional[str] = None) -> Dict[str, Any]:
+    def run(self, content: str, context: Optional[str] = None) -> Dict[str, object]:
         """Detect bias in content."""
         self.log_info("Analyzing content for bias...")
         
@@ -82,7 +72,7 @@ class PIISanitizerAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, resume_data: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume_data: Dict[str, object]) -> Dict[str, object]:
         """Sanitize PII."""
         self.log_info("Sanitizing PII...")
         
@@ -126,7 +116,7 @@ class ToTStrategistAgent(BaseAgent):
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
         self.branching_factor = CONFIG.agent_stacks.strategy_tot_branching_factor
     
-    def run(self, master_resume: Dict, job_input: Dict) -> Dict[str, Any]:
+    def run(self, master_resume: Dict, job_input: Dict) -> Dict[str, object]:
         """Generate strategic approaches."""
         self.log_info(f"Generating {self.branching_factor} thought branches...")
         
@@ -163,7 +153,7 @@ class ToTStrategistAgent(BaseAgent):
             self.log_error(f"ToT failed: {e}")
             raise AgentExecutionError(f"ToTStrategistAgent failed: {e}")
     
-    def _simplified_strategy(self, master_resume: Dict, job_input: Dict) -> Dict[str, Any]:
+    def _simplified_strategy(self, master_resume: Dict, job_input: Dict) -> Dict[str, object]:
         """Fallback strategy."""
         return {
             "strategy_thoughts": [],
@@ -182,7 +172,7 @@ class DynamicPromptEngineerAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
     
-    def run(self, strategy: Dict, job_requirements: List[str], candidate_context: Dict) -> Dict[str, Any]:
+    def run(self, strategy: Dict, job_requirements: List[str], candidate_context: Dict) -> Dict[str, object]:
         """Engineer optimal prompt."""
         self.log_info("Engineering prompt...")
         
@@ -218,7 +208,7 @@ class DynamicPromptEngineerAgent(BaseAgent):
             self.log_error(f"Prompt engineering failed: {e}")
             return self._template_prompt(strategy, job_requirements)
     
-    def _template_prompt(self, strategy: Dict, job_requirements: List[str]) -> Dict[str, Any]:
+    def _template_prompt(self, strategy: Dict, job_requirements: List[str]) -> Dict[str, object]:
         """Fallback template."""
         return {
             "system_prompt": f"Write resume bullets. Strategy: {strategy.get('positioning_theme', 'N/A')}",
@@ -235,7 +225,7 @@ class BulletCritiqueAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, bullet: str, strategy: Dict, source_experience: Dict, target_requirements: List[str]) -> Dict[str, Any]:
+    def run(self, bullet: str, strategy: Dict, source_experience: Dict, target_requirements: List[str]) -> Dict[str, object]:
         """Critique bullet."""
         self.log_info("Critiquing bullet...")
         
@@ -289,7 +279,7 @@ class ReActConductorAgent(BaseAgent):
         """Override in subclass to define actions."""
         return []
     
-    def run(self, goal: str, state: Dict) -> Dict[str, Any]:
+    def run(self, goal: str, state: Dict) -> Dict[str, object]:
         """Execute ReAct loop."""
         self.log_info(f"Starting ReAct loop. Goal: {goal}")
         
@@ -330,7 +320,7 @@ class ReActConductorAgent(BaseAgent):
             "steps": step_count
         }
     
-    def _react_step(self, goal: str, state: Dict, prior_actions: List[Dict]) -> Optional[Dict[str, Any]]:
+    def _react_step(self, goal: str, state: Dict, prior_actions: List[Dict]) -> Optional[Dict[str, object]]:
         """Execute single ReAct step."""
         try:
             available_actions = self._get_available_actions()
@@ -367,7 +357,7 @@ class ReActConductorAgent(BaseAgent):
             self.log_error(f"ReAct step failed: {e}")
             return None
     
-    def _fallback_plan(self) -> Dict[str, Any]:
+    def _fallback_plan(self) -> Dict[str, object]:
         """Fallback when ReAct disabled."""
         return {
             "thoughts": [],
@@ -449,7 +439,7 @@ class ToolSelectorAgent(BaseAgent):
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
         self.tool_registry = TOOL_REGISTRY
     
-    def run(self, task_description: str) -> Dict[str, Any]:
+    def run(self, task_description: str) -> Dict[str, object]:
         """Select best tools for task."""
         self.log_info(f"Selecting tools for: {task_description[:50]}...")
         
@@ -511,7 +501,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
         self.hil_manager = HIL_MANAGER
     
-    def run(self, context: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def run(self, context: Dict[str, object]) -> Optional[Dict[str, object]]:
         """Detect ambiguities in context."""
         self.log_info("Detecting ambiguities...")
         
@@ -559,7 +549,7 @@ class HILAmbiguityDetectorAgent(BaseAgent):
                     self.log_info(f"Ambiguity detected (confidence: {confidence:.2f})")
                     
                     # Create HIL request
-                    from core_v9_8 import HILRequest, AmbiguityType
+                    from archives.legacy_resume_gen.Older Microservices Models.v9.8.core_v9_8 import HILRequest, AmbiguityType
                     request = HILRequest(
                         request_id=f"hil_{datetime.now().timestamp()}",
                         ambiguity_type=AmbiguityType(content_data.get("ambiguity_type", "missing_context")),
@@ -593,7 +583,7 @@ class HyDEGeneratorAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("anthropic", "claude-sonnet-4-20250514")
     
-    def run(self, query: str) -> Dict[str, Any]:
+    def run(self, query: str) -> Dict[str, object]:
         """Generate hypothetical ideal document."""
         self.log_info("Generating HyDE document...")
         
@@ -642,7 +632,7 @@ class RAG_ReRankerAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, query: str, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def run(self, query: str, documents: List[Dict[str, object]]) -> List[Dict[str, object]]:
         """Rerank documents by relevance."""
         self.log_info(f"Reranking {len(documents)} documents...")
         
@@ -713,7 +703,7 @@ class RAG_SearchAgent(BaseAgent):
         self.hyde_generator = HyDEGeneratorAgent(blackboard, debug_mode) if CONFIG.agent_stacks.enable_hyde else None
         self.reranker = RAG_ReRankerAgent(blackboard, debug_mode) if CONFIG.agent_stacks.enable_reranking else None
     
-    def run(self, query: str, master_resume: Dict) -> List[Dict[str, Any]]:
+    def run(self, query: str, master_resume: Dict) -> List[Dict[str, object]]:
         """Search with HyDE and reranking."""
         self.log_info(f"RAG search: {query[:50]}...")
         
@@ -736,7 +726,7 @@ class RAG_SearchAgent(BaseAgent):
         self.log_info(f"Retrieved {len(results)} relevant bullets")
         return results
     
-    def _search_master_resume(self, query: str, expansion_terms: List[str], master_resume: Dict) -> List[Dict[str, Any]]:
+    def _search_master_resume(self, query: str, expansion_terms: List[str], master_resume: Dict) -> List[Dict[str, object]]:
         """Internal search logic."""
         results = []
         all_search_terms = query.split() + expansion_terms
@@ -765,7 +755,7 @@ class JDParserAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, raw_jd: str) -> Dict[str, Any]:
+    def run(self, raw_jd: str) -> Dict[str, object]:
         """Parse JD."""
         self.log_info("Parsing JD...")
         
@@ -869,7 +859,7 @@ class QAValidatorAgent(BaseAgent):
         super().__init__(blackboard, debug_mode)
         self.client = get_model_client("google", "gemini-2.0-flash-exp")
     
-    def run(self, draft: str, requirements: Dict) -> Dict[str, Any]:
+    def run(self, draft: str, requirements: Dict) -> Dict[str, object]:
         """Validate draft."""
         self.log_info("Running QA...")
         
@@ -1111,7 +1101,7 @@ def increment_local_retry(state: MainGraphState) -> Dict:
 
 def update_cost_tracking(state: MainGraphState) -> Dict:
     """P2: Update cost tracking in state."""
-    from core_v9_8 import COST_TRACKER
+    from archives.legacy_resume_gen.Older Microservices Models.v9.8.core_v9_8 import COST_TRACKER
     
     summary = COST_TRACKER.get_cost_summary()
     
@@ -1179,7 +1169,7 @@ def get_graph_app(checkpointer: 'RedisSaver', enable_hil: bool = True) -> 'Compi
 
 def register_default_tools():
     """Register default tools in global registry."""
-    from core_v9_8 import ToolDefinition, TOOL_REGISTRY
+    from archives.legacy_resume_gen.Older Microservices Models.v9.8.core_v9_8 import ToolDefinition, TOOL_REGISTRY
     
     # Define tool implementations
     def tool_master_resume_search(query: str, resume: Dict) -> List[Dict]:

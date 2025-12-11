@@ -1,18 +1,11 @@
 import json
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
 import json
 
 import pytest
 
-from core_v10_7 import ConfigV10_7
-from run_learning_v10_7 import (
-    AsyncToolCritiqueAgent,
-    AsyncToolGeneratorAgent,
-    HotReloadRuleManager,
-    _read_log_tail,
-    run_meta_learning,
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import ConfigV10_7
 
 
 class StubLLMClient:

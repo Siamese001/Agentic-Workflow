@@ -13,18 +13,13 @@ from typing import List, Optional
 from datetime import datetime
 
 try:
-    from graph_store_neo4j import Neo4jGraphStore
+    from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore
     _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()
     _NEO4J_AVAILABLE = True
 except ImportError:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
 
-from l4.temporal_schemas import (
-    TemporalEntity,
-    TemporalTriplet,
-    TemporalEvent,
-)
 
 
 async def insert_entity(entity: TemporalEntity) -> None:

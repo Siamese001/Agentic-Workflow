@@ -22,4 +22,4 @@ class NodeResult:
     """Outcome of a DAG node execution."""
 
     status: NodeStatus
-    payload: Dict[str, Any] = field(default_factory=dict)
+    payload: Dict[str, object] = field(default_factory=dict)

@@ -6,7 +6,7 @@
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import time
 import hashlib
 from typing import Any, Dict, List, Optional, Tuple
@@ -26,16 +26,10 @@ except ImportError:
     GEMINI_AVAILABLE = False
     genai = None
 
-from models_RES import HopExecutionError, ReasoningConfig
-from utils_RES import text_utils, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
+from runtime.compat.models_RES import HopExecutionError, ReasoningConfig
+from archives.legacy_resume_gen.Agentic AI - not communicating.utils_RES import text_utils, reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
 
 # --- FIX: Import ALL constants from config_RES ---
-from config_RES import (
-    DEFAULT_GENERATION_TEMPERATURE, 
-    DEFAULT_SYNTHESIS_TEMPERATURE,
-    DEFAULT_MAX_RETRIES,  # <-- IMPORTED
-    DEFAULT_RETRY_DELAY   # <-- IMPORTED
-)
 # --- END FIX ---
 
 logger = logging.getLogger(__name__)
@@ -129,7 +123,7 @@ class GeminiService:
             try:
                 if hasattr(genai, '_config'):
                     api_key = genai._config.api_key
-            except:
+            except (ValueError, TypeError, KeyError):
                 pass
             
             if not api_key:
@@ -378,7 +372,7 @@ class GeminiService:
         temperature: float,
         max_tokens: int,
         section_id: str,
-        api_params: Dict[str, Any]
+        api_params: Dict[str, object]
     ) -> Tuple[Any, APICallStatus]:
         """
         Execute a single API call with proper configuration.
@@ -571,7 +565,7 @@ SYNTHESIZED RESPONSE:"""
             if pattern in text:
                 logger.warning(f"{context}: Response contains potential error: '{pattern}'")
     
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> Dict[str, object]:
         """
         Get current metrics for the service.
         
@@ -614,7 +608,7 @@ SYNTHESIZED RESPONSE:"""
         max_tokens: Optional[int] = None,
         # --- END FIX ---
         retry_count: int = 3,
-    ) -> Tuple[dict, int, Any]: # <-- FIX: Return tuple
+    ) -> Tuple[dict, int, object]: # <-- FIX: Return tuple
         """
         Calls the Gemini API and ensures the response is valid JSON.
         This is the missing method required by rag_RES.py.

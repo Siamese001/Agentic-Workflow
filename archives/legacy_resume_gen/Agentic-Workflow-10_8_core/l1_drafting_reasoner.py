@@ -12,12 +12,12 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from injection_profiles import DEFAULT_FRAMING_PROFILE
-from l1_reasoning import Reasoner
-from utils_types import PlanObject
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_profiles import DEFAULT_FRAMING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l1_reasoning import Reasoner  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject  # INVALID: Cannot import from path with hyphens
 
 
-def _collect_sections(state: Dict[str, Any]) -> List[str]:
+def _collect_sections(state: Dict[str, object]) -> List[str]:
     """Assemble deterministic section headings for the draft."""
 
     if state.get("outline"):
@@ -33,7 +33,7 @@ def _collect_sections(state: Dict[str, Any]) -> List[str]:
 class DraftingReasoner(Reasoner):
     """Create drafting briefs for L2 executors without side effects."""
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
+    def plan(self, state: Dict[str, object]) -> PlanObject:
         objective = state.get("objective", "unspecified-objective")
         tone = state.get("tone", "neutral")
         audience = state.get("audience", "general")

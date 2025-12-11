@@ -28,20 +28,14 @@ import sys
 import json
 import logging
 import asyncio
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import uuid
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, object, Optional
 
 # v10.7: Import from new core
-from core_v10_7 import (
-    ConfigV10_7, WorkflowContext, MainGraphState,
-    FileIOError, CostCeilingExceededError, WorkflowError,
-    create_workflow_context, cleanup_workflow_chroma_collection,
-    get_checkpointer
-)
 # v10.7: Import from new orchestration/stacks
-from agent_orchestration_v10_7 import get_graph_app
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import get_graph_app  # INVALID: Cannot import from path with hyphens
 
 # v10.7: Logger name updated
 logger = logging.getLogger("main_v10_7")
@@ -74,7 +68,7 @@ def setup_logging(config: ConfigV10_7, debug_mode: bool = False):
     logger.info(f"v10.7 Logging initialized: {config.logging_config.log_file}")
     logger.info(f"v10.7 Metrics logging to: {metrics_log_path}")
 
-def load_job_input(path: str) -> Dict[str, Any]:
+def load_job_input(path: str) -> Dict[str, object]:
     """Load job input JSON"""
     try:
         with open(path, 'r') as f:
@@ -93,7 +87,7 @@ async def run_workflow_async(
     debug_mode: bool = False,
     enable_hil: bool = True,
     enable_mcp: Optional[bool] = None
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Run workflow asynchronously with v10.7 streaming and validation"""
     
     logger.info(f"===== Starting v10.7 Instructional Injection Workflow =====")

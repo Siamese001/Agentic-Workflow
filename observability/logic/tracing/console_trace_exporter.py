@@ -5,11 +5,10 @@ Domain: tracing
 Generated: 2025-12-07T12:07:59.855290
 """
 
-from __future__ import annotations
 import logging
 import time
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Generator, Dict, List, Optional
 from dataclasses import dataclass, field
 from contextlib import contextmanager
 
@@ -24,12 +23,13 @@ class Span:
     name: str
     start_time: float = field(default_factory=time.time)
     end_time: Optional[float] = None
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: Dict[str, object] = field(default_factory=dict)
     events: List[Dict] = field(default_factory=list)
     parent_id: Optional[str] = None
 
     @property
     def duration_ms(self) -> float:
+        """Execute duration_ms operation."""
         if self.end_time:
             return (self.end_time - self.start_time) * 1000
         return 0.0
@@ -38,14 +38,14 @@ class Span:
 class ConsoleTraceExporter:
     """Tracer for tracing domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.spans: List[Span] = []
         self._current_span: Optional[Span] = None
         logger.info(f"Initialized {self.__class__.__name__}")
 
     @contextmanager
-    def start_span(self, name: str, attributes: Optional[Dict] = None):
+    def start_span(self, name: str, attributes: Optional[Dict] = None) -> Generator[Span, None, None]:
         """Start a new span."""
         trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
@@ -87,7 +87,7 @@ _tracer = ConsoleTraceExporter()
 
 
 @contextmanager
-def trace(name: str, attributes: Optional[Dict] = None):
+def trace(name: str, attributes: Optional[Dict] = None) -> Generator[Span, None, None]:
     """Create a trace span."""
     with _tracer.start_span(name, attributes) as span:
         yield span

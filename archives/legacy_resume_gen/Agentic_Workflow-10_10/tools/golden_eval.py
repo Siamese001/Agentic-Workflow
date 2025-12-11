@@ -53,9 +53,9 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 import json
 import sys
 
-from core.models.models import CostSnapshot
-from observability import emit_golden_eval_event, get_all_events
-from runtime.trace.trace_reconstruction import get_routing_trace
+from archives.legacy_root_folders.core.models.models import CostSnapshot
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import emit_golden_eval_event, get_all_events  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.runtime.trace.trace_reconstruction import get_routing_trace
 
 
 # =============================================================================
@@ -81,7 +81,7 @@ class ModelLike:
     """
 
     # Pydantic v2 compatibility
-    def model_dump(self) -> Dict[str, Any]:  # type: ignore[override]
+    def model_dump(self) -> Dict[str, object]:  # type: ignore[override]
         if is_dataclass(self):
             return asdict(self)  # type: ignore[arg-type]
         return dict(self.__dict__)
@@ -94,7 +94,7 @@ class ModelLike:
         return json.dumps(self.model_dump(), indent=indent, sort_keys=True)
 
 
-def _as_mapping(obj: Any) -> Mapping[str, Any]:
+def _as_mapping(obj: object) -> Mapping[str, object]:
     """
     Best‑effort view of an arbitrary object as a mapping.
     """
@@ -119,7 +119,7 @@ def _as_mapping(obj: Any) -> Mapping[str, Any]:
     return {}
 
 
-def _safe_get_attr_or_item(obj: Any, name: str, default: Any = _MISSING) -> Any:
+def _safe_get_attr_or_item(obj: object, name: str, default: Any = _MISSING) -> Any:
     """
     Helper that tries both attribute and mapping access.
     """
@@ -132,7 +132,7 @@ def _safe_get_attr_or_item(obj: Any, name: str, default: Any = _MISSING) -> Any:
     return default
 
 
-def _dotted_get(obj: Any, path: str, default: Any = _MISSING) -> Any:
+def _dotted_get(obj: object, path: str, default: Any = _MISSING) -> Any:
     """
     Generic dotted‑path lookup against nested dicts / models.
 
@@ -162,13 +162,13 @@ def _count_where(items: Iterable[Any], predicate) -> int:
     return sum(1 for x in items if predicate(x))
 
 
-def _summarise_resilience_events() -> Dict[str, Any]:
+def _summarise_resilience_events() -> Dict[str, object]:
     """Build a coarse resilience summary from in-memory telemetry events.
 
     This is META-layer only and does not affect runtime behaviour.
     """
 
-    summary: Dict[str, Any] = {
+    summary: Dict[str, object] = {
         "event_counts": {},
     }
 
@@ -239,7 +239,7 @@ class FieldExpectation(ModelLike):
     description: str = ""
 
     @classmethod
-    def from_dict(cls, data: Mapping[str, Any]) -> "FieldExpectation":
+    def from_dict(cls, data: Mapping[str, object]) -> "FieldExpectation":
         data = dict(data)
         comp = data.get("comparator", Comparator.EQ)
         if not isinstance(comp, Comparator):
@@ -294,7 +294,7 @@ class GoldenExpectation(ModelLike):
     field_expectations: List[FieldExpectation] = field(default_factory=list)
 
     @classmethod
-    def from_dict(cls, data: Mapping[str, Any]) -> "GoldenExpectation":
+    def from_dict(cls, data: Mapping[str, object]) -> "GoldenExpectation":
         data = dict(data)
         fe_raw = data.get("field_expectations") or []
         if isinstance(fe_raw, list):
@@ -355,7 +355,7 @@ class EvalMetric(ModelLike):
     reason: str
     weight: float = 1.0
     category: Optional[str] = None
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -364,7 +364,7 @@ class EvalReport(ModelLike):
     passed: bool
     total_score: float
     metrics: List[EvalMetric]
-    summary: Dict[str, Any] = field(default_factory=dict)
+    summary: Dict[str, object] = field(default_factory=dict)
     scenario_description: str = ""
     scenario_tags: List[str] = field(default_factory=list)
 
@@ -374,7 +374,7 @@ class EvalReport(ModelLike):
         scenario_id: str,
         expectation: GoldenExpectation,
         metrics: List[EvalMetric],
-        summary: Optional[Dict[str, Any]] = None,
+        summary: Optional[Dict[str, object]] = None,
     ) -> "EvalReport":
         if not metrics:
             total_score = 0.0
@@ -645,7 +645,7 @@ GOLDEN_SCENARIOS: Dict[str, GoldenScenario] = _build_default_scenarios()
 # =============================================================================
 
 
-def _extract_sections(state_patch: Mapping[str, Any]) -> List[Mapping[str, Any]]:
+def _extract_sections(state_patch: Mapping[str, object]) -> List[Mapping[str, object]]:
     # Prefer a flat "drafted_sections" key if present.
     sections = state_patch.get("drafted_sections")
     if not sections:
@@ -655,7 +655,7 @@ def _extract_sections(state_patch: Mapping[str, Any]) -> List[Mapping[str, Any]]
     if not isinstance(sections, list):
         return []
 
-    out: List[Mapping[str, Any]] = []
+    out: List[Mapping[str, object]] = []
     for item in sections:
         if not isinstance(item, Mapping):
             item = _as_mapping(item)
@@ -663,7 +663,7 @@ def _extract_sections(state_patch: Mapping[str, Any]) -> List[Mapping[str, Any]]
     return out
 
 
-def _extract_rag_evidence(state_patch: Mapping[str, Any]) -> List[Mapping[str, Any]]:
+def _extract_rag_evidence(state_patch: Mapping[str, object]) -> List[Mapping[str, object]]:
     evidence = state_patch.get("rag_evidence")
     if not evidence:
         rag = state_patch.get("rag") or {}
@@ -672,7 +672,7 @@ def _extract_rag_evidence(state_patch: Mapping[str, Any]) -> List[Mapping[str, A
     if not isinstance(evidence, list):
         return []
 
-    out: List[Mapping[str, Any]] = []
+    out: List[Mapping[str, object]] = []
     for item in evidence:
         if not isinstance(item, Mapping):
             item = _as_mapping(item)
@@ -680,7 +680,7 @@ def _extract_rag_evidence(state_patch: Mapping[str, Any]) -> List[Mapping[str, A
     return out
 
 
-def _extract_correction_state(state_patch: Mapping[str, Any]) -> Mapping[str, Any]:
+def _extract_correction_state(state_patch: Mapping[str, object]) -> Mapping[str, object]:
     candidate = (
         state_patch.get("correction_loop_state")
         or state_patch.get("correction_state")
@@ -690,7 +690,7 @@ def _extract_correction_state(state_patch: Mapping[str, Any]) -> Mapping[str, An
     return _as_mapping(candidate)
 
 
-def _extract_knob(state_patch: Mapping[str, Any], knob_name: str) -> Any:
+def _extract_knob(state_patch: Mapping[str, object], knob_name: str) -> Any:
     """
     Attempt to recover a Phase‑3 knob value from the patch by checking
     several common locations.
@@ -731,7 +731,7 @@ def _extract_knob(state_patch: Mapping[str, Any], knob_name: str) -> Any:
     return None
 
 
-def _detect_telemetry(state_patch: Mapping[str, Any]) -> bool:
+def _detect_telemetry(state_patch: Mapping[str, object]) -> bool:
     telemetry = (
         state_patch.get("telemetry_summary")
         or state_patch.get("telemetry")
@@ -745,7 +745,7 @@ def _detect_telemetry(state_patch: Mapping[str, Any]) -> bool:
     return bool(telemetry_counts)
 
 
-def _detect_cost_snapshot(state_patch: Mapping[str, Any]) -> bool:
+def _detect_cost_snapshot(state_patch: Mapping[str, object]) -> bool:
     if any(
         key in state_patch
         for key in ("cost_snapshot", "cost", "token_usage", "usage")
@@ -757,7 +757,7 @@ def _detect_cost_snapshot(state_patch: Mapping[str, Any]) -> bool:
     )
 
 
-def _detect_correction_audit(state_patch: Mapping[str, Any]) -> bool:
+def _detect_correction_audit(state_patch: Mapping[str, object]) -> bool:
     return bool(
         state_patch.get("correction_audit_log")
         or state_patch.get("correction_events")
@@ -771,7 +771,7 @@ def _detect_correction_audit(state_patch: Mapping[str, Any]) -> bool:
 
 
 def _metric_sections(
-    state_patch: Mapping[str, Any],
+    state_patch: Mapping[str, object],
     expectation: GoldenExpectation,
 ) -> Optional[EvalMetric]:
     if not expectation.required_sections:
@@ -802,7 +802,7 @@ def _metric_sections(
 
 
 def _metric_rag_and_hyde(
-    state_patch: Mapping[str, Any],
+    state_patch: Mapping[str, object],
     expectation: GoldenExpectation,
 ) -> List[EvalMetric]:
     metrics: List[EvalMetric] = []
@@ -858,7 +858,7 @@ def _metric_rag_and_hyde(
 
 
 def _metric_rrf_and_council(
-    state_patch: Mapping[str, Any],
+    state_patch: Mapping[str, object],
     expectation: GoldenExpectation,
 ) -> List[EvalMetric]:
     metrics: List[EvalMetric] = []
@@ -927,7 +927,7 @@ def _metric_rrf_and_council(
 
 
 def _metric_correction_loop(
-    state_patch: Mapping[str, Any],
+    state_patch: Mapping[str, object],
     expectation: GoldenExpectation,
 ) -> Optional[EvalMetric]:
     corr = _extract_correction_state(state_patch)
@@ -983,7 +983,7 @@ def _metric_correction_loop(
 
 
 def _metric_qa(
-    state_patch: Mapping[str, Any],
+    state_patch: Mapping[str, object],
     expectation: GoldenExpectation,
 ) -> Optional[EvalMetric]:
     qa_findings = state_patch.get("qa_findings") or []
@@ -1019,7 +1019,7 @@ def _metric_qa(
 
 
 def _metric_safety(
-    state_patch: Mapping[str, Any],
+    state_patch: Mapping[str, object],
     expectation: GoldenExpectation,
 ) -> List[EvalMetric]:
     metrics: List[EvalMetric] = []
@@ -1082,7 +1082,7 @@ def _metric_safety(
 
 
 def _metric_telemetry_and_cost(
-    state_patch: Mapping[str, Any],
+    state_patch: Mapping[str, object],
     expectation: GoldenExpectation,
 ) -> List[EvalMetric]:
     metrics: List[EvalMetric] = []
@@ -1174,7 +1174,7 @@ def _metric_telemetry_and_cost(
 
 
 def _metric_field_expectations(
-    state_patch: Mapping[str, Any],
+    state_patch: Mapping[str, object],
     field_expectations: List[FieldExpectation],
 ) -> List[EvalMetric]:
     metrics: List[EvalMetric] = []
@@ -1314,7 +1314,7 @@ def _apply_comparator(value: Any, fe: FieldExpectation) -> bool:
 
 
 def evaluate_patch(
-    state_patch: Mapping[str, Any],
+    state_patch: Mapping[str, object],
     expectation: GoldenExpectation,
 ) -> EvalReport:
     """
@@ -1461,7 +1461,7 @@ def load_expectations(path: str | Path) -> List[GoldenExpectation]:
     path = Path(path)
     raw = json.loads(path.read_text(encoding="utf-8"))
 
-    records: List[Dict[str, Any]] = []
+    records: List[Dict[str, object]] = []
 
     if isinstance(raw, list):
         for item in raw:
@@ -1518,7 +1518,7 @@ def _select_expectation(
     raise ValueError(f"No expectation with scenario_id={scenario_id!r} found.")
 
 
-def _load_patch(path: str | Path) -> Mapping[str, Any]:
+def _load_patch(path: str | Path) -> Mapping[str, object]:
     """
     Load a patch JSON file.
 
@@ -1549,7 +1549,7 @@ def _cli(argv: Optional[Sequence[str]] = None) -> None:
     If --expectation is omitted or set to the literal string "builtin",
     the built‑in GOLDEN_SCENARIOS registry is used.
     """
-    import argparse
+    import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 
     parser = argparse.ArgumentParser(description="Golden State Evaluator (v10_10)")
     parser.add_argument("--patch", required=True, help="Path to state_patch JSON.")

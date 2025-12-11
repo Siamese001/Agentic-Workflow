@@ -8,14 +8,14 @@ from typing import Any, Dict, Optional
 from pathlib import Path
 
 # Import concrete implementations to be wrapped
-from l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator
-from l4.state_manager import StateManager
-from l5.safety_validator import SafetyValidator
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.state_manager import StateManager
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.safety_validator import SafetyValidator
 
 # Import core types and configurations
-from core.routing import RoutingPolicy
-from config.meta_profile import MetaProfileSnapshot
-from runtime.runtime_utils import SandboxConfig
+from archives.legacy_root_folders.core.routing import RoutingPolicy
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot
+from archives.legacy_root_folders.runtime.runtime_utils import SandboxConfig
 
 class AtomicWorkflowBridge:
     """Bridge layer that enforces L1-L5 atomicity within OpenAI structure."""
@@ -30,7 +30,7 @@ class AtomicWorkflowBridge:
             routing_policy, sandbox, state_manager, safety_validator, meta_profile
         )
     
-    def execute_atomic_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, Any]:
+    def execute_atomic_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, object]:
         """Execute workflow through strict L1-L5 atomic layers."""
         return self.unified_orchestrator.orchestrate_full_workflow(job, resume, config)
 

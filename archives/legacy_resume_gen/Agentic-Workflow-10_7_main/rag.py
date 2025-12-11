@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
-from core_v10_7.agents import BaseAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.agents import BaseAgent
 def _build_execution_stack(context: Any, debug_mode: bool = False):
     from agent_stacks_v10_8 import RAGExecutionStack as RAGExecutionStackV10_8
 
@@ -20,7 +20,7 @@ class RAG_SearchAgent(BaseAgent):
         self._stack = _build_execution_stack(context, debug_mode)
         self._stack_initialized_via_init = True
 
-    async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object]) -> Dict[str, object]:
         if not hasattr(self, "_stack"):
             self._ensure_context_dependencies()
             debug_mode = getattr(self, "debug_mode", False)
@@ -51,7 +51,7 @@ class RAG_SearchAgent(BaseAgent):
             {"query": query, "num_results": len(ranked or [])},
         )
 
-    async def _maybe_precompute_embeddings(self, state: Dict[str, Any]) -> None:
+    async def _maybe_precompute_embeddings(self, state: Dict[str, object]) -> None:
         engine = getattr(self.context, "precompute_engine", None)
         if not engine or not hasattr(engine, "precompute_embeddings"):
             return
@@ -61,7 +61,7 @@ class RAG_SearchAgent(BaseAgent):
             if hasattr(engine, "precompute_hyde_document"):
                 await engine.precompute_hyde_document(query)
 
-    def _derive_query(self, state: Dict[str, Any]) -> str:
+    def _derive_query(self, state: Dict[str, object]) -> str:
         job = state.get("job", {})
         title = job.get("job_title") or job.get("title") or ""
         company = job.get("company") or job.get("employer") or ""

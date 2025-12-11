@@ -1,14 +1,8 @@
 import copy
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
 import pytest
 
-from agent_orchestration_v10_7 import (
-    _get_robustness_stack,
-    check_bullets_passed,
-    check_qa_passed,
-    node_success,
-)
 
 
 def _make_context(max_local_retries: int = 1):

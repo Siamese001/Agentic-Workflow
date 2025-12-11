@@ -34,9 +34,9 @@ class TestMemoryAggregation:
 
     def test_aggregate_merge_updates(self):
         """Nominal: Memory updates are merged."""
-        base = {"topic": "preference", "value": "old_value", "version": 1}
+        foundation = {"topic": "preference", "value": "old_value", "version": 1}
         update = {"topic": "preference", "value": "new_value", "version": 2}
-        merged = {**base, **update}
+        merged = {**foundation, **update}
         assert merged["value"] == "new_value"
         assert merged["version"] == 2
 

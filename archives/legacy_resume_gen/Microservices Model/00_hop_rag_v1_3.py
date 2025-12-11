@@ -7,7 +7,7 @@ and writes the resulting ThematicAnalysis object as JSON.
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import os
@@ -16,7 +16,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List
+from typing import Dict, object, Tuple, List
 
 # Imports for enhancements
 import networkx as nx
@@ -27,10 +27,6 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 # Import necessary components from helpers
-from helpers import (
-    setup_workflow_logging, _load_json_data, HopExecutionError, default_serializer,
-    CircuitState
-)
 
 # --- Define Classes needed specifically for HOP-0 ---
 

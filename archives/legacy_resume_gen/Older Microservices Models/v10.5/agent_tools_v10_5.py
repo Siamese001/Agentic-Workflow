@@ -28,11 +28,11 @@ import json
 import logging
 import asyncio # v10.5 REFACTOR: Added
 import uuid # v10.5 REFACTOR: Added
-from typing import Dict, Any, List
+from typing import Dict, object, List
 
 # v10.5 REFACTOR: Added imports for RAG tools
-from pydantic import BaseModel, Field
-from chromadb.utils import embedding_functions
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+from shared.reasoning_utils import embedding_functions
 try:
     from rank_bm25 import BM25Okapi
     BM25_AVAILABLE = True
@@ -44,34 +44,8 @@ except ImportError:
     )
 
 # v10.5: Import from new core
-from core_v10_5 import (
-    WorkflowContext, 
-    PydanticSchemaError,
-    # Import all 15 Pydantic output models
-    BaseToolOutput,
-    DraftStrategyOutput,
-    RedTeamOutput,
-    RefineSectionOutput,
-    AddMetricsOutput,
-    QAClaimOutput,
-    QAToneOutput,
-    QAThematicAlignmentOutput,
-    QASemanticEntailmentOutput,
-    QANarrativeThreadOutput,
-    QAJDSkillsOutput,
-    QASignalScoreOutput,
-    QATenureOutput,
-    QAMissedOpportunitiesOutput,
-    QAAdversarialOutput,
-    QABiasOutput,
-    # v10.5: Import new decorator
-    track_metrics,
-    BaseTool, # v10.5 ARCHITECTURE FIX: Import BaseTool from core
-    # v10.5 TEST FIX: Import centralized prompt formatter
-    _format_prompt_with_defaults
-)
 # v10.5: Import from new stacks
-from agent_stacks_v10_5 import BiasDetectorAgent # Import from stacks
+from archives.legacy_resume_gen.Older Microservices Models.v10.5.agent_stacks_v10_5 import BiasDetectorAgent
 
 # v10.5: Logger name updated
 logger = logging.getLogger("agent_tools_v10_5")
@@ -93,7 +67,7 @@ class DraftingStrategistTool(BaseTool):
     output_model = DraftStrategyOutput
 
     @track_metrics('tool_drafting_strategist') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Reviewing draft strategy (v10.5)...")
         client = self.get_model_client("drafting_strategist_model")
         prompt_template = self.prompt_manager.get_template(self.tool_name)
@@ -119,7 +93,7 @@ class DraftingRedTeamTool(BaseTool):
     output_model = RedTeamOutput
 
     @track_metrics('tool_drafting_redteam') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Red teaming draft (v10.5)...")
         client = self.get_model_client("drafting_redteam_model")
         prompt_template = self.prompt_manager.get_template(self.tool_name)
@@ -145,7 +119,7 @@ class DraftingRefinerTool(BaseTool):
     output_model = RefineSectionOutput
 
     @track_metrics('tool_drafting_refiner') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Refining section (Debate Pattern) (v10.5)...")
         client = self.get_model_client("drafting_refiner_model")
         
@@ -174,7 +148,7 @@ class DraftingMetricsTool(BaseTool):
     output_model = AddMetricsOutput
 
     @track_metrics('tool_drafting_metrics') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Adding metrics (v10.5)...")
         client = self.get_model_client("drafting_metrics_model")
         prompt_template = self.prompt_manager.get_template(self.tool_name)
@@ -208,7 +182,7 @@ class HyDETool(BaseTool):
         hypothetical_document: str = Field(..., description="A hypothetical document that answers the query.")
 
     @track_metrics('run_hyde_tool') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running HyDE (v10.5)...")
         client = self.get_model_client("hyde_model")
         
@@ -245,7 +219,7 @@ class ChromaDBSearchTool(BaseTool):
         self.chroma_client = self.context.chromadb_client
         
     @track_metrics('run_chroma_tool') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         query = tool_input.get("query", "")
         self.log_info(f"Searching ChromaDB (Vector) for: {query}")
 
@@ -288,7 +262,7 @@ class BM25SearchTool(BaseTool):
             self.log_error("BM25SearchTool disabled: 'rank_bm25' not installed.")
     
     @track_metrics('run_bm25_tool') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         if not BM25_AVAILABLE:
             return {"search_results": []}
             
@@ -333,7 +307,7 @@ class QABaseValidatorTool(BaseTool):
     output_model: Any = BaseToolOutput # Subclasses must override this
     
     @track_metrics('tool_qa_base_validator') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running {self.tool_name} (v10.5)...")
         client = self.get_model_client(self.model_config_name)
         
@@ -360,7 +334,7 @@ class QAClaimValidatorTool(QABaseValidatorTool):
     
     # v10.5: Override track_metrics for specific task name
     @track_metrics('tool_qa_claim_validator')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         return await super()._run_async_internal(tool_input, workflow_id)
 
 class QAToneValidatorTool(QABaseValidatorTool):
@@ -368,7 +342,7 @@ class QAToneValidatorTool(QABaseValidatorTool):
     tool_name = "validate_tone"
     output_model = QAToneOutput
     @track_metrics('tool_qa_tone_validator')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         return await super()._run_async_internal(tool_input, workflow_id)
 
 class QAThematicAlignmentTool(QABaseValidatorTool):
@@ -376,7 +350,7 @@ class QAThematicAlignmentTool(QABaseValidatorTool):
     tool_name = "validate_thematic_alignment"
     output_model = QAThematicAlignmentOutput
     @track_metrics('tool_qa_thematic_alignment')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         return await super()._run_async_internal(tool_input, workflow_id)
 
 class QASemanticEntailmentTool(QABaseValidatorTool):
@@ -384,7 +358,7 @@ class QASemanticEntailmentTool(QABaseValidatorTool):
     tool_name = "validate_semantic_entailment"
     output_model = QASemanticEntailmentOutput
     @track_metrics('tool_qa_semantic_entailment')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         return await super()._run_async_internal(tool_input, workflow_id)
 
 class QANarrativeThreadTool(QABaseValidatorTool):
@@ -392,7 +366,7 @@ class QANarrativeThreadTool(QABaseValidatorTool):
     tool_name = "validate_narrative_thread"
     output_model = QANarrativeThreadOutput
     @track_metrics('tool_qa_narrative_thread')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         return await super()._run_async_internal(tool_input, workflow_id)
 
 class QAJDSkillsValidatorTool(QABaseValidatorTool):
@@ -400,7 +374,7 @@ class QAJDSkillsValidatorTool(QABaseValidatorTool):
     tool_name = "validate_jd_skills"
     output_model = QAJDSkillsOutput
     @track_metrics('tool_qa_jd_skills')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         return await super()._run_async_internal(tool_input, workflow_id)
 
 class QASignalScoreValidatorTool(QABaseValidatorTool):
@@ -408,7 +382,7 @@ class QASignalScoreValidatorTool(QABaseValidatorTool):
     tool_name = "validate_signal_score"
     output_model = QASignalScoreOutput
     @track_metrics('tool_qa_signal_score')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         return await super()._run_async_internal(tool_input, workflow_id)
 
 class QATenureValidatorTool(QABaseValidatorTool):
@@ -416,7 +390,7 @@ class QATenureValidatorTool(QABaseValidatorTool):
     tool_name = "validate_tenure"
     output_model = QATenureOutput
     @track_metrics('tool_qa_tenure')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         return await super()._run_async_internal(tool_input, workflow_id)
 
 class QAMissedOpportunityTool(QABaseValidatorTool):
@@ -424,7 +398,7 @@ class QAMissedOpportunityTool(QABaseValidatorTool):
     tool_name = "find_missed_opportunities"
     output_model = QAMissedOpportunitiesOutput
     @track_metrics('tool_qa_missed_opportunity')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         return await super()._run_async_internal(tool_input, workflow_id)
 
 class QAAdversarialReviewerTool(BaseTool):
@@ -433,7 +407,7 @@ class QAAdversarialReviewerTool(BaseTool):
     output_model = QAAdversarialOutput 
 
     @track_metrics('tool_qa_adversarial') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running Adversarial Review (v10.5)...")
         client = self.get_model_client("qa_adversarial_model")
         prompt_template = self.prompt_manager.get_template(self.tool_name)
@@ -459,7 +433,7 @@ class QABiasDetectorTool(BaseTool):
     output_model = QABiasOutput
 
     @track_metrics('tool_qa_bias_detector') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         # This is a local tool, not an LLM call.
         bias_agent = BiasDetectorAgent(self.context)
         draft_text = json.dumps(tool_input.get("draft_text", ""))
@@ -489,7 +463,7 @@ class QAWordCountValidatorTool(BaseTool):
     output_model = WordCountOutput
 
     @track_metrics('tool_qa_word_count') # v10.5 (Fix #8)
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running Word Count Validator (v10.5)...")
         
         # Get inputs from the tool_input dict

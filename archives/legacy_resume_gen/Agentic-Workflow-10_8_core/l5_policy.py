@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class SafetyMode(str, Enum):
@@ -101,7 +101,7 @@ PERMITTED_MODELS: Set[str] = {"gpt-4o", "gpt-4o-mini"}
 PERMITTED_ENDPOINTS: Set[str] = {"default", "fast"}
 
 
-def evaluate_routing_permissions(payload: Dict[str, Any]) -> Dict[str, Any]:
+def evaluate_routing_permissions(payload: Dict[str, object]) -> Dict[str, object]:
     """Return metadata describing routing allowance for the payload."""
 
     model = str(payload.get("model", "")).strip()

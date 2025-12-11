@@ -5,11 +5,11 @@
 # Refactored from validator_RES.py
 
 import logging
-import re
-from typing import Dict, List, Optional, Any, Tuple, Callable
-from models_RES import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection
-from config_RES import CONFIG # Import the main config object
-from utils_RES import text_utils, calculate_signal_score
+import scripts.check_canonical_structure
+from typing import Dict, List, Optional, Union, Tuple, Callable
+from runtime.compat.models_RES import ImmutableStagingBuffer, ThematicAnalysis, ResumeSection
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG
+from archives.legacy_resume_gen.Agentic AI - not communicating.utils_RES import text_utils, calculate_signal_score
 
 class ValidationContext:
     """
@@ -32,7 +32,7 @@ class ValidationContext:
         """Retrieves cached details for a given rule ID."""
         return self._cache.get(rule_id, {})
 
-    def _calculate_metric_details(self, section_enum: ResumeSection, metrics_to_calc: List[Tuple[str, Callable]], constraints: Dict[str, Any]) -> Dict:
+    def _calculate_metric_details(self, section_enum: ResumeSection, metrics_to_calc: List[Tuple[str, Callable]], constraints: Dict[str, object]) -> Dict:
         """Helper to calculate and cache metrics for a section."""
         text = self.staging_buffer.get(section_enum.value, '')
         details = {}

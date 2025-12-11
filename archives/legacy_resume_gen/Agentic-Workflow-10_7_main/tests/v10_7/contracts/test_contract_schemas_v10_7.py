@@ -1,6 +1,6 @@
 import pytest
-from workflow.runner import run_workflow
-from schema import ResumeOutputSchema
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.workflow.runner import run_workflow
+from tests.unit.agentic_core.test_validate_tests_schema import ResumeOutputSchema
 
 @pytest.mark.parametrize("jd", ["AWS","Anthropic","Databricks","CoreWeave","Citi"])
 def test_resume_schema_compliance(jd):

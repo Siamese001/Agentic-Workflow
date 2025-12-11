@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import sys
-import types
+import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
 from typing import Any, List
 
 import pytest

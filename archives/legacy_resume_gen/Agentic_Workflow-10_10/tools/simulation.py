@@ -32,29 +32,7 @@ from dataclasses import dataclass
 from itertools import product
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
-from agentic_core.l2_execution.tools.main_v10_10 import (
-    run_workflow,
-    RRFStrategy,
-    TelemetryRoutingMode,
-)
-from agentic_core.l2_execution.tools.golden_eval import (
-    GOLDEN_SCENARIOS,
-    GoldenScenario,
-    ScenarioKnobs,
-    EvalReport,
-    evaluate_patch,
-)
-from observability import (
-    emit_scenario_start_event,
-    emit_scenario_end_event,
-    emit_scenario_simulation_event,
-)
 
-from agentic_core.l2_execution.tools.run_batch_v10_10 import (
-    run_batch,
-    BatchJobResult,
-    BatchTelemetrySummary,
-)
 
 
 # ============================================================================
@@ -62,7 +40,7 @@ from agentic_core.l2_execution.tools.run_batch_v10_10 import (
 # ============================================================================
 
 
-def _as_mapping(obj: Any) -> Mapping[str, Any]:
+def _as_mapping(obj: object) -> Mapping[str, object]:
     """
     Best-effort conversion of arbitrary objects into a mapping view.
     """
@@ -85,7 +63,7 @@ def _as_mapping(obj: Any) -> Mapping[str, Any]:
     return {}
 
 
-def _extract_state_patch(result: Mapping[str, Any]) -> Mapping[str, Any]:
+def _extract_state_patch(result: Mapping[str, object]) -> Mapping[str, object]:
     """
     Try to recover the final state patch from a WorkflowOutput-like object.
 
@@ -110,14 +88,14 @@ def _extract_state_patch(result: Mapping[str, Any]) -> Mapping[str, Any]:
     return {}
 
 
-def _extract_l2_results(result: Mapping[str, Any]) -> Mapping[str, Any]:
+def _extract_l2_results(result: Mapping[str, object]) -> Mapping[str, object]:
     l2 = result.get("l2_results")
     if isinstance(l2, Mapping):
         return l2
     return {}
 
 
-def _build_snapshot(result: Mapping[str, Any]) -> Dict[str, Any]:
+def _build_snapshot(result: Mapping[str, object]) -> Dict[str, object]:
     """
     Build a trimmed, stable snapshot from a workflow result for CI output.
     """
@@ -144,7 +122,7 @@ def _build_snapshot(result: Mapping[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _summarise_telemetry(result: Mapping[str, Any], patch: Mapping[str, Any]) -> Dict[str, Any]:
+def _summarise_telemetry(result: Mapping[str, object], patch: Mapping[str, object]) -> Dict[str, object]:
     """
     Approximate telemetry summary: presence + simple counts.
     """
@@ -176,12 +154,12 @@ def _summarise_telemetry(result: Mapping[str, Any], patch: Mapping[str, Any]) ->
 
 
 def _summarise_outcome(
-    result: Mapping[str, Any],
-    patch: Mapping[str, Any],
+    result: Mapping[str, object],
+    patch: Mapping[str, object],
     eval_report: Optional[EvalReport],
     council_size: Optional[int],
     correction_max_iterations: Optional[int],
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Collate outcome-level statistics used by tests and CI dashboards.
     """
@@ -258,7 +236,7 @@ class SimulationKnobs:
             telemetry_routing_mode=TelemetryRoutingMode(knobs.telemetry_routing_mode),
         )
 
-    def to_kwargs(self) -> Dict[str, Any]:
+    def to_kwargs(self) -> Dict[str, object]:
         return {
             "hyde_enabled": self.hyde_enabled,
             "rrf_strategy": self.rrf_strategy,
@@ -279,13 +257,13 @@ class SimulationResult:
     description: str
     workflow_id: Optional[str]
     knobs: SimulationKnobs
-    outcome: Dict[str, Any]
-    telemetry: Dict[str, Any]
+    outcome: Dict[str, object]
+    telemetry: Dict[str, object]
     eval_report: Optional[EvalReport]
-    state_patch: Mapping[str, Any]
-    snapshot: Mapping[str, Any]
+    state_patch: Mapping[str, object]
+    snapshot: Mapping[str, object]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         return {
             "scenario_id": self.scenario_id,
             "description": self.description,
@@ -308,7 +286,7 @@ class SimulationResult:
 
 async def _run_with_golden_scenario(
     golden: GoldenScenario,
-    overrides: Optional[Dict[str, Any]] = None,
+    overrides: Optional[Dict[str, object]] = None,
 ) -> SimulationResult:
     """
     Run a single GoldenScenario through the real entrypoint and evaluate it.
@@ -557,7 +535,7 @@ def run_knob_matrix_sync(
     routing_policy_name: str = "default",
     sandbox_profile_name: str = "default",
     meta_profile_name: str = "default",
-) -> Dict[str, Dict[str, Any]]:
+) -> Dict[str, Dict[str, object]]:
     """
     Synchronous convenience wrapper for the knob-matrix simulation.
     """
@@ -602,8 +580,8 @@ class Engine:
     @staticmethod
     async def run(
         name: str,
-        overrides: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        overrides: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         if name not in SCENARIO_REGISTRY:
             raise ValueError(f"Unknown simulation scenario: {name!r}")
 
@@ -613,10 +591,10 @@ class Engine:
 
     @staticmethod
     async def run_all(
-        overrides: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Dict[str, Any]]:
+        overrides: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, Dict[str, object]]:
         overrides = overrides or {}
-        results: Dict[str, Dict[str, Any]] = {}
+        results: Dict[str, Dict[str, object]] = {}
         for name, golden in SCENARIO_REGISTRY.items():
             sim_result = await _run_with_golden_scenario(golden, overrides=overrides)
             results[name] = sim_result.to_dict()
@@ -625,14 +603,14 @@ class Engine:
     @staticmethod
     def run_sync(
         name: str,
-        overrides: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        overrides: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         return asyncio.run(Engine.run(name, overrides=overrides))
 
     @staticmethod
     def run_all_sync(
-        overrides: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Dict[str, Any]]:
+        overrides: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, Dict[str, object]]:
         return asyncio.run(Engine.run_all(overrides=overrides))
 
     @staticmethod
@@ -649,7 +627,7 @@ class Engine:
 
 
 def run_batch_simulation(
-    jobs: Sequence[Mapping[str, Any]],
+    jobs: Sequence[Mapping[str, object]],
     *,
     execution_profile_name: str = "default",
     routing_policy_name: str = "default",
@@ -664,7 +642,7 @@ def run_batch_simulation(
     and optional SimulationKnobs. It returns whatever the underlying
     run_batch implementation returns, without modification.
     """
-    knob_kwargs: Dict[str, Any] = {}
+    knob_kwargs: Dict[str, object] = {}
     if knobs is not None:
         knob_kwargs = knobs.to_kwargs()
 
@@ -684,7 +662,7 @@ def run_batch_simulation(
 
 
 def _cli() -> None:
-    import argparse
+    import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
     import json as _json
 
     parser = argparse.ArgumentParser(

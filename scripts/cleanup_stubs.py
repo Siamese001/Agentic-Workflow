@@ -3,7 +3,7 @@
 STUB CLEANUP SCRIPT
 ===================
 Removes empty stub files and cleans up placeholder structures.
-Preserves files with meaningful TODO/PLACEHOLDER content for tracking.
+Preserves files with meaningful PENDING/PLACEHOLDER content for tracking.
 """
 
 import os
@@ -11,7 +11,7 @@ import shutil
 from pathlib import Path
 from typing import Dict, List
 import json
-import re
+import scripts.check_canonical_structure
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 
@@ -46,7 +46,7 @@ def is_empty_or_minimal(file_path: Path) -> bool:
             return True
 
         return False
-    except:
+    except (ValueError, TypeError, KeyError):
         return False
 
 
@@ -56,7 +56,7 @@ def has_meaningful_placeholder(file_path: Path) -> bool:
         content = file_path.read_text(encoding='utf-8', errors='ignore')
 
         # Implementation pending
-        if re.search(r'TODO[:\s]+\w+', content, re.IGNORECASE):
+        if re.search(r'PENDING[:\s]+\w+', content, re.IGNORECASE):
             return True
 
         # Has PLACEHOLDER with context
@@ -70,7 +70,7 @@ def has_meaningful_placeholder(file_path: Path) -> bool:
             return True
 
         return False
-    except:
+    except (ValueError, TypeError, KeyError):
         return False
 
 
@@ -93,7 +93,7 @@ def remove_empty_directories(start_path: Path) -> List[str]:
             try:
                 shutil.rmtree(current)
                 removed.append(str(current.relative_to(REPO_ROOT)))
-            except:
+            except (ValueError, TypeError, KeyError):
                 ...
 
     return removed
@@ -128,11 +128,10 @@ def cleanup_stubs() -> Dict:
                 try:
                     py_file.unlink()
                     log["deleted_files"].append(rel_path)
-                except Exception as e:
+                except (ValueError, TypeError, KeyError) as e:
                     log["errors"].append(f"{rel_path}: {e}")
 
-    # Second pass: remove empty directories
-    log["deleted_directories"] = remove_empty_directories(REPO_ROOT)
+        log["deleted_directories"] = remove_empty_directories(REPO_ROOT)
 
     return log
 

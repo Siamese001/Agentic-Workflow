@@ -4,27 +4,22 @@
 # This file contains only the PreFlightValidator, which orchestrates
 # the engine, context, and rules from its sub-modules.
 
-import re
+import scripts.check_canonical_structure
 import json
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple, Set, Union, Callable
+from typing import Dict, List, Optional, Union, Tuple, Set, Union, Callable
 from collections import defaultdict
 from functools import partial
 
 # Import dependencies from new modules
-from config_RES import CONFIG, COVER_LETTER_SIGNATURE_TEMPLATE
-from models_RES import (
-    ValidationResult, ValidationSeverity, ThematicAnalysis, ResumeSection,
-    ImmutableStagingBuffer, GateDecision, BulletProvenance,
-    FactualFailureException
-)
-from utils_RES import text_utils, calculate_signal_score
+from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, COVER_LETTER_SIGNATURE_TEMPLATE
+from archives.legacy_resume_gen.Agentic AI - not communicating.utils_RES import text_utils, calculate_signal_score
 
 # --- V18 REFACTOR: Import from validation modules ---
-from validation_engine import ValidationEngine, ValidationRule, ConstraintFailureClassifier
-from validation_context import ValidationContext
-import validation_rules as ValidationRules
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_engine import ValidationEngine, ValidationRule, ConstraintFailureClassifier
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_context import ValidationContext
+import archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_rules
 
 # ==============================================================================
 # PRE-FLIGHT VALIDATOR

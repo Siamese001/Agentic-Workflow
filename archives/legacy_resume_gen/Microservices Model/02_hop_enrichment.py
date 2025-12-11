@@ -6,23 +6,19 @@ and duplicate detection, writes enriched scaffold as JSON.
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List
+from typing import Dict, object, Tuple, List
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 # Import necessary components
-from helpers import (
-    setup_workflow_logging, HopExecutionError, default_serializer,
-    ValidationResult, ValidationSeverity, ThematicAnalysis
-)
 
 # --- DataEnricher and Dependencies (Placeholder - Move to shared module) ---
 class DuplicateDetector:

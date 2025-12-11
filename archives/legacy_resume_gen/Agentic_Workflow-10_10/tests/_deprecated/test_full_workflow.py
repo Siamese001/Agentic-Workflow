@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from core.models.models import ExecutionContext, JobInput, ResumeInput, WorkflowConfig
+from archives.legacy_root_folders.core.models.models import ExecutionContext, JobInput, ResumeInput, WorkflowConfig
 
 
 class TestEndToEndWorkflow:
@@ -44,7 +44,7 @@ class TestEndToEndWorkflow:
                 ]
                 
                 # Mock L2 execution
-                from l2 import L2ResultBundle
+#                 from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # INVALID: Cannot import from path with hyphens
                 mock_strategy = Mock()
                 mock_strategy.branches = [Mock(description="Senior engineer strategy")]
                 
@@ -165,7 +165,7 @@ class TestWorkflowPerformance:
         )
         
         with patch('l2.execute_workflow_plans') as mock_execute:
-            from l2 import L2ResultBundle
+#             from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # INVALID: Cannot import from path with hyphens
             mock_strategy = Mock()
             mock_strategy.branches = [Mock(description="Test strategy")]
             

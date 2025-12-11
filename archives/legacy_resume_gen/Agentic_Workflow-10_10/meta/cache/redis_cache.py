@@ -29,7 +29,7 @@ def _import_redis():
     """
 
     try:  # pragma: no cover - import path is environment dependent
-        import redis  # type: ignore
+        import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
     except ImportError as exc:  # pragma: no cover
         raise RedisClientError("redis package not installed") from exc
     return redis

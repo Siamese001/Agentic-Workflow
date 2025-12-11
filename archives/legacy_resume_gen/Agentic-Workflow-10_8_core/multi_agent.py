@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, object
 
 
 @dataclass
 class AgentMessage:
     sender: AgentRole
     recipient: AgentRole
-    content: Dict[str, Any]
-    metadata: Dict[str, Any]
+    content: Dict[str, object]
+    metadata: Dict[str, object]
 
 
 def route_to_specialist(graph, message: AgentMessage):
@@ -28,7 +28,7 @@ def route_to_specialist(graph, message: AgentMessage):
     return None
 from enum import Enum
 from dataclasses import dataclass
-from typing import List, Dict, Any
+from typing import List, Dict, object
 
 
 class AgentRole(str, Enum):
@@ -43,7 +43,7 @@ class AgentRole(str, Enum):
 @dataclass
 class AgentNode:
     role: AgentRole
-    config: Dict[str, Any]
+    config: Dict[str, object]
 
 
 @dataclass
@@ -90,7 +90,7 @@ def summarize_graph(graph):
         "nodes": [_role_value(n) for n in graph.nodes],
         "edges": [(_role_value(a), _role_value(b)) for (a, b) in graph.edges],
     }
-from typing import Dict, Any
+from typing import Dict, object
 
 
 def can_delegate(from_role: AgentRole, to_role: AgentRole) -> bool:
@@ -108,16 +108,16 @@ def can_delegate(from_role: AgentRole, to_role: AgentRole) -> bool:
     return False
 
 
-def delegation_metadata(sender: AgentRole, recipient: AgentRole) -> Dict[str, Any]:
+def delegation_metadata(sender: AgentRole, recipient: AgentRole) -> Dict[str, object]:
     return {
         "from": sender.value,
         "to": recipient.value,
         "allowed": can_delegate(sender, recipient),
     }
-from typing import List, Dict, Any
+from typing import List, Dict, object
 
 
-def deterministic_vote(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+def deterministic_vote(candidates: List[Dict[str, object]]) -> Dict[str, object]:
     """
     Deterministic selection:
     - Highest score wins
@@ -131,9 +131,9 @@ def deterministic_vote(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
         key=lambda c: (-float(c.get("score", 0.0)), int(c.get("id", 999999))),
     )
     return sorted_candidates[0]
-from typing import Dict, Any
+from typing import Dict, object
 
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 class MultiAgentOrchestrator:
@@ -141,11 +141,11 @@ class MultiAgentOrchestrator:
         self.graph = graph
         self.state_adapter = state_adapter
 
-    def dispatch(self, message: AgentMessage, state: Dict[str, Any]) -> Dict[str, Any]:
+    def dispatch(self, message: AgentMessage, state: Dict[str, object]) -> Dict[str, object]:
         recipient_node = route_to_specialist(self.graph, message)
         recipient = recipient_node.role if recipient_node else None
 
-        multi_agent_block: Dict[str, Any] = {
+        multi_agent_block: Dict[str, object] = {
             "last_message": {
                 "content": message.content,
                 "sender": message.sender.value,

@@ -10,19 +10,7 @@ from typing import Dict, List, Optional, Callable
 from enum import Enum
 import logging
 
-from l5.interfaces import (
-    SafetyConstraint,
-    SafetyPolicy,
-    SafetyViolation,
-    PolicyDecision,
-    PolicyEvaluationError,
-    Severity,
-    Verdict,
-    ExecutionContext,
-    SafetyResult,
-    SafetyFinding
-)
-from l5.types import SafetyContext
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext
 
 logger = logging.getLogger(__name__)
 

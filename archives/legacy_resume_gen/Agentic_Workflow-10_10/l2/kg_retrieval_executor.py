@@ -24,13 +24,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from datetime import datetime, UTC
 from collections import defaultdict
 
-from l1.kg_retrieval_planning import (
-    KGQueryPlan,
-    HopSpec,
-    HopDirection,
-    QueryType,
-)
-from l4.triplet_store import Triplet, TripletStore, TripletQuery
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.triplet_store import Triplet, TripletStore, TripletQuery
 
 
 @dataclass
@@ -89,7 +83,7 @@ class KGRetrievalResult:
     facts_by_predicate: Dict[str, List[Triplet]] = field(default_factory=dict)
     
     # Metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 
 class KGRetrievalExecutor:
@@ -487,7 +481,7 @@ def execute_entity_query(
     Returns:
         KGRetrievalResult
     """
-    from l1.kg_retrieval_planning import plan_entity_retrieval
+    from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.kg_retrieval_planning import plan_entity_retrieval
     
     plan = plan_entity_retrieval(entity_id, predicates)
     executor = KGRetrievalExecutor(store)
@@ -511,7 +505,7 @@ def execute_multi_hop_query(
     Returns:
         KGRetrievalResult
     """
-    from l1.kg_retrieval_planning import KGRetrievalPlanner, QueryType
+    from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.kg_retrieval_planning import KGRetrievalPlanner, QueryType
     
     planner = KGRetrievalPlanner()
     plan = planner.plan_query(

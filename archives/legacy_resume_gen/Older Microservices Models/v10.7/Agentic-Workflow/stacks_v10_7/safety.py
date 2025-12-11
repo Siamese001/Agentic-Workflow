@@ -1,18 +1,11 @@
 """Safety guard stack agents."""
 
 import json
-import re
+import scripts.check_canonical_structure
 from typing import Any, Dict
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
-from core_v10_7 import (
-    BaseAgent,
-    ConstitutionalReviewResult,
-    track_metrics,
-    _format_prompt_with_defaults,
-    detect_bias,
-)
 
 
 class PIISanitizerAgent(BaseAgent):
@@ -25,7 +18,7 @@ class PIISanitizerAgent(BaseAgent):
     }
 
     @track_metrics("run_pii_sanitizer")
-    def run(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, resume: Dict[str, object]) -> Dict[str, object]:
         self.log_info("Sanitizing PII (local regex processing)...")
         sanitized_resume = json.loads(json.dumps(resume))
 
@@ -52,7 +45,7 @@ class BiasDetectorAgent(BaseAgent):
     """Runs local bias detection with dynamic constitution rules."""
 
     @track_metrics("run_bias_detector")
-    def run(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
+    def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         result = detect_bias(self.context, text, workflow_id)
 
@@ -76,7 +69,7 @@ class PromptInjectionDetectorAgent(BaseAgent):
         confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the detection")
 
     @track_metrics("run_pi_detector")
-    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, object]:
         self.log_info("Detecting prompt injection...")
 
         if not self.config.agent_stacks.enable_prompt_injection_detection:

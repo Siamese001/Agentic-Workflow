@@ -1,4 +1,4 @@
-from core.models.models import ExecutionProfile, RetrievalConfig
+from archives.legacy_root_folders.core.models.models import ExecutionProfile, RetrievalConfig
 from orchestration.model_routing import ModelChoice, enforce_budget
 
 

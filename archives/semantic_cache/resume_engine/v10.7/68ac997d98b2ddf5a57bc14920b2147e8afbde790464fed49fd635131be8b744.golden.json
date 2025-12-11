@@ -1,0 +1,11 @@
+{
+  "canonical_form": "import pytest\nfrom workflow.runner import run_workflow\n@pytest.mark.integration\ndef test_parallel_branch_merge():\nctx = {\"resume\": \"multi_branch_case\", \"jd\": \"AI Director\"}\nresult = run_workflow(ctx)\nassert \"merged_output\" in result\n@pytest.mark.integration\ndef test_hil_trigger_on_ambiguity():\nctx = {\"resume\": \"confused output\"}\nout = run_workflow(ctx)\nassert \"HIL\" in out[\"events\"]\n@pytest.mark.xfail(\nreason=\"Add 18 integration flow tests for cache, async merges, and redis persistence\",\nstrict=False,\n)\ndef test_placeholder():\npytest.xfail(\n\"Add 18 integration flow tests for cache, async merges, and redis persistence\"\n)",
+  "normalized_signature": "func:test_parallel_branch_merge;func:test_hil_trigger_on_ambiguity;func:test_placeholder",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_parallel_branch_merge,test_hil_trigger_on_ambiguity,test_placeholder",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions",
+    "uses_testing_framework"
+  ]
+}

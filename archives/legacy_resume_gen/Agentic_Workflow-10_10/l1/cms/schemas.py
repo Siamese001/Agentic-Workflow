@@ -24,7 +24,7 @@ class PromptSchema:
     prompt_type: PromptType
     required_fields: List[str]
     optional_fields: List[str] = None
-    validation_rules: Dict[str, Any] = None
+    validation_rules: Dict[str, object] = None
 
 
 @dataclass

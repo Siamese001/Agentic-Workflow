@@ -1,5 +1,5 @@
-from models import MainGraphState
-from state_adapter_stack import StateAdapterStack
+from shared.models import MainGraphState
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
 
 
 def test_safety_fields_persist_via_patch():

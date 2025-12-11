@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 import uuid
 from enum import Enum
@@ -23,51 +23,23 @@ from dataclasses import asdict, is_dataclass
 import asyncio
 
 # V3.8 Agent imports (Governor Module)
-from governor_v3_8 import (
-    PolicyAgent, CostRouter, ContextRelayLayer, 
-    CritiqueTool, HIL_Interface, TraceRegistry,
-    MAX_RETRIES_PER_NODE, DEFAULT_MODEL
-)
 
 # V3.8 Modular Tool imports
-from clerk_RES_v3_8 import ClerkExtractor
-from enricher_RES_v3_8 import DataEnricher
-from artist_RES_v3_8 import ArtistGenerator
-from renderer_RES_v3_8 import FileRenderer
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.clerk_RES_v3_8 import ClerkExtractor
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.enricher_RES_v3_8 import DataEnricher
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.artist_RES_v3_8 import ArtistGenerator
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.renderer_RES_v3_8 import FileRenderer
 
 # Import from modular components
-from models_RES import (
-    BulletProvenance, CircuitState, GateDecision, HopCheckpoint, HopStatus,
-    ImmutableStagingBuffer, JDEnforcementResult, JDEnforcementRule,
-    RAGState, RAGTelemetry, ResumeSection, ThematicAnalysis, FactualFailureException,
-    ValidationResult, ValidationSeverity, HopExecutionError, StagingBufferError,
-    CompetitiveIntelligence, RAGMission
-)
-from config_RES_v3_8 import (
-    CONFIG, AppConfig, EnricherConfig, ContentConstraintsConfig,
-    ReasoningConfig, DATA_DIR, OUTPUT_DIR, _load_json_config,
-    COVER_LETTER_SIGNATURE_TEMPLATE, GEMINI_AVAILABLE, SKLEARN_AVAILABLE,
-    DEFAULT_GENERATION_TEMPERATURE
-)
-from utils_RES_v3_8 import (
-    text_utils, calculate_signal_score, setup_workflow_logging,
-    create_directory_if_missing, sanitize_filename,
-    WorkflowLogFilter, DuplicateDetector,
-    reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
-)
-from interpreter_RES_v3_8 import CodeInterpreterTool
-from validator_RES_v3_8 import (
-    PreFlightValidator, ConstraintFailureClassifier,
-    JDEnforcementValidator, AppTrackerQAValidator
-)
-from qa_auditor_RES_v3_8 import QAReportGenerator
-from rag_RES_v3_8 import EnhancedJobDescriptionAnalyzer
-from state_manager_RES_v3_8 import ManifestManager
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.interpreter_RES_v3_8 import CodeInterpreterTool
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.qa_auditor_RES_v3_8 import QAReportGenerator
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.rag_RES_v3_8 import EnhancedJobDescriptionAnalyzer
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.state_manager_RES_v3_8 import ManifestManager
 
 # Import ChromaDB if available
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
@@ -98,7 +70,7 @@ class WorkflowOrchestrator:
         self.master_resume = master_resume
         
         # V3.8 In-Memory State
-        self.drafts: Dict[ResumeSection, Any] = {}
+        self.drafts: Dict[ResumeSection, object] = {}
         self.failures: Dict[ResumeSection, int] = defaultdict(int)
         self.thematic_analysis: Optional[ThematicAnalysis] = None
         self.enriched_scaffold: Optional[Dict] = None
@@ -578,7 +550,7 @@ class WorkflowOrchestrator:
 def load_master_resume() -> Dict:
     """Load master resume from JSON file."""
     try:
-        from config_RES_v3_8 import _load_json_config, DATA_DIR
+        from archives.legacy_resume_gen.Older Microservices Models.v3.8.config_RES_v3_8 import _load_json_config, DATA_DIR
         path_to_try = DATA_DIR / "master_resume.json"
         data = _load_json_config(str(path_to_try), "Master Resume", required=True)
         return data

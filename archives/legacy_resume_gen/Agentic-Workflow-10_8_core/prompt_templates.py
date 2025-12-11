@@ -13,8 +13,8 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Dict
 
-from prompt_envelope import PromptEnvelope
-from prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_envelope import PromptEnvelope  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection  # INVALID: Cannot import from path with hyphens
 
 
 DEFAULT_TEMPLATE = {
@@ -59,7 +59,7 @@ def load_template(name: str | None = None) -> Dict[str, str]:
     raise ValueError(f"Unknown template: {name}")
 
 
-def envelope_from_template(name: str | None = None, overrides: Dict[str, Any] | None = None) -> PromptEnvelope:
+def envelope_from_template(name: str | None = None, overrides: Dict[str, object] | None = None) -> PromptEnvelope:
     """Create a PromptEnvelope from a named template with optional overrides."""
 
     template = load_template(name)

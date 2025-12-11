@@ -43,21 +43,10 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Set, Tuple
 
-from models import (
-    PlanObject,
-    ExecutionResult,
-    WorkflowState,
-    WorkflowPhase,
-    NodeResult,
-    NodeStatus,
-    StatePatch,
-    RouteTraceEntry,
-    CorrectionJournalEntry,
-)
-from exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
-from core.l4 import StateAdapter
-from core.l2 import route_executor
-from meta_profile import get_routing_bias, get_safety_bias, get_meta_profile_snapshot
+from shared.exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l4 import StateAdapter  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import route_executor  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.meta_profile import get_routing_bias, get_safety_bias, get_meta_profile_snapshot  # INVALID: Cannot import from path with hyphens
 
 
 # =============================================================================
@@ -106,7 +95,7 @@ class DAGNode:
     fallback: List[str] = field(default_factory=list)
     parallel_group: Optional[str] = None
     max_retries: int = 0
-    predictive_cache_key: Optional[Dict[str, Any]] = None
+    predictive_cache_key: Optional[Dict[str, object]] = None
     surfaces: List[str] = field(default_factory=list)
 
 
@@ -303,7 +292,7 @@ class CostTracker:
         self.total_tokens: int = 0
         self.per_node: Dict[str, int] = {}
 
-    def record(self, node_name: str, usage: Dict[str, Any]) -> None:
+    def record(self, node_name: str, usage: Dict[str, object]) -> None:
         tokens = int(usage.get("tokens", 0))
         self.total_tokens += tokens
         self.per_node[node_name] = self.per_node.get(node_name, 0) + tokens
@@ -332,7 +321,7 @@ class DAGExecutor:
     def __init__(
         self,
         state_adapter: StateAdapter,
-        l2_executor: Callable[[PlanObject, Dict[str, Any]], Awaitable[ExecutionResult[Any]]] = route_executor,
+        l2_executor: Callable[[PlanObject, Dict[str, object]], Awaitable[ExecutionResult[Any]]] = route_executor,
     ) -> None:
         self.state_adapter = state_adapter
         self.l2_executor = l2_executor
@@ -422,7 +411,7 @@ class DAGExecutor:
     async def _execute_node(
         self,
         node: DAGNode,
-        state: Dict[str, Any],
+        state: Dict[str, object],
         cost_tracker: CostTracker,
     ) -> NodeResult:
         started_at = time.time()
@@ -475,7 +464,7 @@ class DAGExecutor:
         self.node_results[node.name] = nr
         return nr
 
-    def run(self, plan: PlanObject, initial_state: Dict[str, Any]) -> WorkflowState:
+    def run(self, plan: PlanObject, initial_state: Dict[str, object]) -> WorkflowState:
         """
         Execute full L3 orchestration for a single L1 PlanObject.
 
@@ -582,7 +571,7 @@ class DAGExecutor:
 
         meta_snapshot = get_meta_profile_snapshot()
 
-        metadata: Dict[str, Any] = {
+        metadata: Dict[str, object] = {
             "history": [p.value for p in machine.history],
             "total_tokens": cost_tracker.total_tokens,
             "per_node_tokens": cost_tracker.per_node,

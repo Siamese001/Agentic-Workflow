@@ -4,7 +4,7 @@ Vector search planning for résumé evidence retrieval.
 Creates structured plans to support comprehensive résumé improvement through semantic search.
 """
 from dataclasses import dataclass
-from typing import Dict, Any, Optional
+from typing import Dict, object, Optional
 
 
 @dataclass
@@ -17,7 +17,7 @@ class VectorSearchPlan:
     query_text: str
     namespace: str
     top_k: int = 5
-    metadata_filters: Optional[Dict[str, Any]] = None
+    metadata_filters: Optional[Dict[str, object]] = None
 
 
 @dataclass
@@ -30,14 +30,14 @@ class VectorUpsertPlan:
     id: str
     text: str
     namespace: str
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 def plan_vector_search(
     query: str,
     namespace: str = "default",
     top_k: int = 5,
-    metadata_filters: Optional[Dict[str, Any]] = None
+    metadata_filters: Optional[Dict[str, object]] = None
 ) -> VectorSearchPlan:
     """
     Creates vector search plan for résumé evidence retrieval.
@@ -56,7 +56,7 @@ def plan_vector_upsert(
     id: str,
     text: str,
     namespace: str = "default",
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, object]] = None
 ) -> VectorUpsertPlan:
     """
     Plans vector storage for résumé improvement data.

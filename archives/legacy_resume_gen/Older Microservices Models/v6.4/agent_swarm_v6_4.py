@@ -21,7 +21,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 from collections import defaultdict
 from enum import Enum
@@ -39,7 +39,7 @@ except ImportError:
 
 # Import from core
 # v6.4: Imports updated to core_v6_4
-from core_v6_4 import (
+from archives.legacy_resume_gen.Older Microservices Models.v6.4.core_v6_4 import (
     # Models
     HopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException,
     ValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy,
@@ -60,12 +60,6 @@ from core_v6_4 import (
 
 # Import from validation_stack
 # v6.4: Imports updated to validation_stack_v6_4
-from validation_stack_v6_4 import (
-    ValidationEngine, ValidationContext, calculate_signal_score,
-    # v6.4: Import specific agents for dynamic validation
-    JDSkillsValidatorAgent, SignalScoreValidatorAgent,
-    MetricValidatorAgent, ClaimValidatorAgent
-)
 
 
 logger = logging.getLogger(__name__)
@@ -74,7 +68,7 @@ logger = logging.getLogger(__name__)
 # V6.4: CENTRAL LLM SIMULATION HELPER
 # ============================================================================
 
-def _simulate_llm_call(prompt_key: str, context_data: Dict[str, Any]) -> Any:
+def _simulate_llm_call(prompt_key: str, context_data: Dict[str, object]) -> Any:
     """
     A single, central "fake LLM" to replace all stubs.
     This simulates an LLM call by returning realistic, context-aware data.
@@ -368,7 +362,7 @@ class WorkflowRePlannerAgent:
 
 class JDParserAgent:
     """Parses job description."""
-    def execute(self, raw_jd: str) -> Dict[str, Any]:
+    def execute(self, raw_jd: str) -> Dict[str, object]:
         return _simulate_llm_call("jd_parser", {"raw_jd": raw_jd})
 
 class ThemeIdentifierAgent:
@@ -383,7 +377,7 @@ class ThemeRankerAgent:
 
 class GapAnalysisAgent:
     """Analyzes gaps between resume and JD."""
-    def execute(self, themes: List[str], master_resume: Dict) -> Dict[str, Any]:
+    def execute(self, themes: List[str], master_resume: Dict) -> Dict[str, object]:
         return _simulate_llm_call("gap_analysis", {"themes": themes, "master_resume": master_resume})
 
 class DifferentiatorAgent:
@@ -402,7 +396,7 @@ class StrategyCritiqueAgent:
     v6.4: Critiques strategy brief *during* creation (debate loop).
     This is different from the reflection loop's critique.
     """
-    def execute(self, brief: StrategyBrief, jd: str) -> Dict[str, Any]:
+    def execute(self, brief: StrategyBrief, jd: str) -> Dict[str, object]:
         """Critiques the brief. Returns critique object."""
         return _simulate_llm_call("strategy_critique", {"brief": brief, "jd": jd})
 
@@ -446,7 +440,7 @@ class RAG_SearchAgent:
         self.max_react_iterations = CONFIG.react_config.max_reasoning_loops
         self.available_tools = CONFIG.react_config.available_tools
     
-    def execute(self, queries: List[str], blackboard: WorkflowBlackboard) -> Dict[str, Any]:
+    def execute(self, queries: List[str], blackboard: WorkflowBlackboard) -> Dict[str, object]:
         """
         --- v6.4: Full ReAct loop implementation ---
         Executes searches using Thought-Action-Observation reasoning.
@@ -521,7 +515,7 @@ class RAG_SearchAgent:
         else:
             return f"Found {len(current_results)} results. This seems sufficient."
     
-    def _select_action(self, thought: str, query: str) -> Dict[str, Any]:
+    def _select_action(self, thought: str, query: str) -> Dict[str, object]:
         """v6.4: Simulate LLM action selection based on thought."""
         thought_low = thought.lower()
         if "chromadb_search" in thought_low or "internal memory" in thought_low:
@@ -533,7 +527,7 @@ class RAG_SearchAgent:
         # Default to web_search
         return {"type": "web_search", "input": {"query": query}}
     
-    def _execute_action(self, action: Dict, query: str, master_resume: Dict) -> Tuple[Dict[str, Any], ToolType]:
+    def _execute_action(self, action: Dict, query: str, master_resume: Dict) -> Tuple[Dict[str, object], ToolType]:
         """
         v6.4: Execute the selected action.
         --- UN-STUBBED for 'chromadb_search' ---
@@ -965,7 +959,7 @@ class FeedbackLoggerAgent:
         self.log_path = log_path
         self.logger = logging.getLogger("FeedbackLoggerAgent")
     
-    def log(self, validation_results: Dict[str, Any], workflow_id: str):
+    def log(self, validation_results: Dict[str, object], workflow_id: str):
         """Appends a new log entry to the feedback_log.jsonl file."""
         if not self.log_path:
             self.logger.warning("No feedback_log_path configured. Skipping log.")
@@ -1018,7 +1012,7 @@ class CrewContext:
     job_description: str
     company_name: str
     job_title: str
-    master_resume: Dict[str, Any]
+    master_resume: Dict[str, object]
     workflow_id: str
 
 # ============================================================================
@@ -1343,14 +1337,14 @@ class Governor:
 
         return validation_results
     
-    def _log_feedback(self, validation_results: Dict[str, Any], blackboard: WorkflowBlackboard):
+    def _log_feedback(self, validation_results: Dict[str, object], blackboard: WorkflowBlackboard):
         """
         --- v6.4: UN-STUBBED ---
         Logs validation results for the meta-learning loop.
         """
         self.feedback_logger.log(validation_results, blackboard.workflow_id)
     
-    def run_dynamic_orchestration(self, blackboard: WorkflowBlackboard) -> Dict[str, Any]:
+    def run_dynamic_orchestration(self, blackboard: WorkflowBlackboard) -> Dict[str, object]:
         """
         v6.4: Main orchestration with dynamic, goal-driven, test-driven execution.
         Receives a pre-populated blackboard from the CrewOrchestrator.
@@ -1498,8 +1492,8 @@ class CrewOrchestrator:
         self.logger = logging.getLogger(__name__)
     
     def process_job_application(self, job_description: str, company_name: str,
-                               job_title: str, master_resume: Dict[str, Any],
-                               workflow_id: str) -> Dict[str, Any]:
+                               job_title: str, master_resume: Dict[str, object],
+                               workflow_id: str) -> Dict[str, object]:
         """Process complete job application."""
         self.logger.info(f"📋 Orchestrating: {company_name} - {job_title}")
         

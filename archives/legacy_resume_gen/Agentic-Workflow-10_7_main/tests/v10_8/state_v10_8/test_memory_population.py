@@ -1,5 +1,5 @@
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
-from core_v10_7 import MainGraphState
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import MainGraphState
 
 
 def test_memory_patch_populates_and_preserves_existing_state():

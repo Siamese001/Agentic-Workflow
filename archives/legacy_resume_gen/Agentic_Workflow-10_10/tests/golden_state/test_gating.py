@@ -1,4 +1,4 @@
-from eval.golden_state.gating import gate_experiment
+from archives.legacy_root_folders.eval.golden_state.gating import gate_experiment
 
 
 def test_gate_experiment_allows_without_baseline():

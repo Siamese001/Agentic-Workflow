@@ -1,16 +1,16 @@
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 from typing import Any, Dict
 
 from typing import Any, Dict
 
 import pytest
 import agent_stacks_v10_8.components.drafting as drafting_module
-from agent_tools_v10_7 import EvidenceBriefAssemblerTool, EvidenceClarificationTool
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_tools_v10_7 import EvidenceBriefAssemblerTool, EvidenceClarificationTool  # INVALID: Cannot import from path with hyphens
 from agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator
 
 
 @pytest.fixture
-def strategy_payload() -> Dict[str, Any]:
+def strategy_payload() -> Dict[str, object]:
     return {
         "strategy_name": "AI Trailblazer",
         "focus_areas": ["automation", "scalability"],
@@ -71,7 +71,7 @@ def guild_coordinator(workflow_context, monkeypatch):
     )
 
     def simple_merge(self, *layers):
-        merged: Dict[str, Any] = {}
+        merged: Dict[str, object] = {}
         for layer in layers:
             for key, value in layer.items():
                 merged[key] = value

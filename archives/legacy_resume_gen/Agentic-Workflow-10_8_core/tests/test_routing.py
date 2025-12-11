@@ -1,9 +1,9 @@
 """Grouped routing tests."""
 import pytest
 
-from core.routing import build_client_for_route, configure_for_routing
-from l3_orchestration import GraphOrchestrator
-from core.routing import RoutingCriteria, decide_route
+from archives.legacy_root_folders.core.routing import build_client_for_route, configure_for_routing
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import GraphOrchestrator  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.core.routing import RoutingCriteria, decide_route
 
 
 def test_decide_route_is_deterministic_and_metadata_rich():
@@ -57,7 +57,7 @@ def test_graph_orchestrator_includes_selected_model():
     assert selected_model == "gpt-4o-mini"
 import pytest
 
-from routing import RoutingCriteria, decide_route
+from archives.legacy_root_folders.core.routing import RoutingCriteria, decide_route
 
 
 def test_high_complexity_routes_to_gpt4o():
@@ -83,12 +83,7 @@ def test_default_case_rationale_deterministic():
     assert decision.rationale == "Default routing for normal tasks."
 import pytest
 
-from core.routing import configure_for_routing
-from core.routing import (
-    get_routing_metadata,
-    get_routing_model_name,
-    get_routing_plan,
-)
+from archives.legacy_root_folders.core.routing import configure_for_routing
 
 
 def test_get_routing_plan_returns_routing_metadata():
@@ -130,7 +125,7 @@ def test_configure_for_routing_constructs_deterministic_client_config():
     }
 import pytest
 
-from core.routing import ModelClient, build_client_for_route
+from archives.legacy_root_folders.core.routing import ModelClient, build_client_for_route
 
 
 def test_build_client_for_route_returns_model_client():

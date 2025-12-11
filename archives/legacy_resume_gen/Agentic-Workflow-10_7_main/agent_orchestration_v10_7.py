@@ -38,30 +38,16 @@ import logging
 import asyncio
 import os
 import importlib.util
-import inspect
+import agentic_core.L1_cognition.P2_inspect.detect_anomalies_update.inspect
 from datetime import datetime
-from typing import Dict, Any, List, Callable, Awaitable, Tuple, Optional
+from typing import Dict, object, List, Callable, Awaitable, Tuple, Optional
 from functools import wraps, partial
 
 # v10.7: Import from new core
-from core_v10_7 import (
-    WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
-    CircuitBreakerOpenError,
-    CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
-    ConfigV10_7, BaseTool,
-    track_metrics,
-    _format_prompt_with_defaults,
-    ConstitutionalReviewResult, # v10.7 (Fix #30)
-    wrap_mcp,
-    MCPClientStub,
-    ArbitrationReport,
-    NodeResult,
-    NodeStatus,
-)
-from mcp import get_agent
-from langgraph.graph import StateGraph, END
-from langgraph.errors import GraphRecursionError
-from telemetry_v10_7 import log_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_agent  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.graph import StateGraph, END
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.vendor.langgraph.errors import GraphRecursionError
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.telemetry_v10_7 import log_event  # INVALID: Cannot import from path with hyphens
 
 # Make HIL import conditional for environment compatibility
 try:
@@ -75,40 +61,9 @@ except ImportError:
     )
 
 # v10.7: Import from new stacks
-from agent_stacks_v10_8 import (
-    BulletExecutionStack,
-    DraftingExecutionStack,
-    HILStackV10_8,
-    PromptBuilderStack,
-    QAValidationStack,
-    SafetyStackV10_8,
-    StateAdapterStack,
-    StrategyStackV10_8,
-    RobustnessStack,
-)
-from stacks_v10_8 import RAGOrchestratorStack, PromptRendererStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.tests.v10_7.test_flat__stacks__test_execution_stacks_v10_8 import RAGOrchestratorStack, PromptRendererStack  # INVALID: Cannot import from path with hyphens
 
 # v10.7: Import from new tools file
-from agent_tools_v10_7 import (
-    QAClaimValidatorTool,
-    QAToneValidatorTool,
-    QAThematicAlignmentTool,
-    QASemanticEntailmentTool,
-    QANarrativeThreadTool,
-    QAAdversarialReviewerTool,
-    QAJDSkillsValidatorTool,
-    QASignalScoreValidatorTool,
-    QABiasDetectorTool,
-    QATenureValidatorTool,
-    QAMissedOpportunityTool,
-    QAWordCountValidatorTool,
-    HyDETool,
-    ChromaDBSearchTool,
-    BM25SearchTool,
-    # v10.7 (Fix #8): Import UI tool stubs
-    UIUpdateElementTool,
-    UIFireEventTool
-)
 
 # v10.7: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_7")
@@ -116,7 +71,7 @@ logger = logging.getLogger("agent_orchestration_v10_7")
 NODE_RESULT_KEYS = {"node", "status", "payload"}
 
 
-def node_success(node: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+def node_success(node: str, payload: Dict[str, object]) -> Dict[str, object]:
     """Build a SUCCESS NodeResult for the given node and payload."""
 
     return NodeResult(
@@ -131,8 +86,8 @@ def node_error(
     status: NodeStatus,
     error_kind: str,
     error_message: str,
-    payload: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    payload: Optional[Dict[str, object]] = None,
+) -> Dict[str, object]:
     """Build an error NodeResult for the given node."""
 
     return NodeResult(
@@ -157,7 +112,7 @@ def _looks_like_node_result(value: Any) -> bool:
     return False
 
 
-def _extract_node_payload(state: Dict[str, Any]) -> Dict[str, Any]:
+def _extract_node_payload(state: Dict[str, object]) -> Dict[str, object]:
     if _looks_like_node_result(state):
         payload = state.get("payload") or {}
         if isinstance(payload, dict):
@@ -166,7 +121,7 @@ def _extract_node_payload(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def _ensure_node_result(node_name: str, result: Any) -> Dict[str, Any]:
+def _ensure_node_result(node_name: str, result: Any) -> Dict[str, object]:
     sanitized = result
     if isinstance(result, dict):
         sanitized = dict(result)
@@ -189,7 +144,7 @@ def _ensure_node_result(node_name: str, result: Any) -> Dict[str, Any]:
         ) from exc
 
 
-def unwrap_node_result(result: Dict[str, Any]) -> Dict[str, Any]:
+def unwrap_node_result(result: Dict[str, object]) -> Dict[str, object]:
     """Utility for modules that need to recover the workflow state from a node result."""
 
     return _extract_node_payload(result)
@@ -267,7 +222,7 @@ def _get_robustness_stack(workflow_context: WorkflowContext) -> RobustnessStack:
 def apply_robustness(stage_name: str):
     """Decorator that routes node execution through the robustness stack."""
 
-    def decorator(func: Callable[..., Awaitable[Dict[str, Any]]]):
+    def decorator(func: Callable[..., Awaitable[Dict[str, object]]]):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             workflow_context = kwargs.get("workflow_context")
@@ -288,7 +243,7 @@ def apply_robustness(stage_name: str):
 def add_node_with_policies(
     workflow: StateGraph,
     name: str,
-    fn: Callable[..., Awaitable[Dict[str, Any]]],
+    fn: Callable[..., Awaitable[Dict[str, object]]],
     workflow_context: WorkflowContext,
     *,
     enable_timeout: bool = True,
@@ -297,14 +252,14 @@ def add_node_with_policies(
 ) -> None:
     """Apply all orchestration policies in a single, deterministic location."""
 
-    async def base_executor(state: Dict[str, Any], *args, **kwargs) -> Dict[str, Any]:
+    async def base_executor(state: Dict[str, object], *args, **kwargs) -> Dict[str, object]:
         payload = _extract_node_payload(state)
         result = fn(payload, *args, workflow_context=workflow_context, **kwargs)
         if asyncio.iscoroutine(result):
             result = await result
         return result
 
-    wrapped: Callable[..., Awaitable[Dict[str, Any]]] = base_executor
+    wrapped: Callable[..., Awaitable[Dict[str, object]]] = base_executor
 
     if enable_mcp and getattr(workflow_context, "wrap_mcp_nodes", True):
         wrapped = wrap_mcp(wrapped)
@@ -318,7 +273,7 @@ def add_node_with_policies(
         )
         wrapped = get_timeout_decorator(timeout_sec)(wrapped)
 
-    async def enforce_contract(state: Dict[str, Any], *args, **kwargs) -> Dict[str, Any]:
+    async def enforce_contract(state: Dict[str, object], *args, **kwargs) -> Dict[str, object]:
         result = wrapped(state, *args, **kwargs)
         if asyncio.iscoroutine(result):
             result = await result
@@ -495,7 +450,7 @@ class QAConductorAgent(BaseAgent):
         self.style_guide = "Style: Ensure professional, clear, and unbiased language."
 
     @track_metrics('run_react_qa_conductor')
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         collab = getattr(self.context, "collaboration_engine", None)
         if collab and collab.enabled():
             team = collab.form_team(self.__class__.__name__)
@@ -514,10 +469,10 @@ class QAConductorAgent(BaseAgent):
 
     async def _execute_conductor(
         self,
-        state: Dict[str, Any],
+        state: Dict[str, object],
         workflow_id: str,
-        self_heal_hint: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        self_heal_hint: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         self.log_info("Running ReAct QA Conductor (v10.7)...")
 
         hint = self_heal_hint or {}
@@ -633,10 +588,10 @@ When finished, output:
 
     async def _maybe_self_correct(
         self,
-        state: Dict[str, Any],
+        state: Dict[str, object],
         workflow_id: str,
-        base_result: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        base_result: Dict[str, object],
+    ) -> Dict[str, object]:
         manager = getattr(self, "self_correction_manager", None)
         if not manager:
             return base_result
@@ -675,7 +630,7 @@ When finished, output:
 class MetaLearningLoop(BaseAgent):
     """Placeholder MCP agent for telemetry-aligned meta learning."""
 
-    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(self, state: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         collab = getattr(self.context, "collaboration_engine", None)
         if collab and collab.enabled():
             team = collab.form_team(self.__class__.__name__)
@@ -1273,7 +1228,7 @@ def check_hil_reentry_allowed(result: dict, workflow_context: WorkflowContext) -
     return "halt"
 
 
-def _append_hil_a2a(state: dict, message_type: str, payload: Dict[str, Any]) -> None:
+def _append_hil_a2a(state: dict, message_type: str, payload: Dict[str, object]) -> None:
     channel = state.setdefault("a2a", {})
     messages = channel.setdefault("messages", [])
     messages.append(
@@ -1437,7 +1392,7 @@ def get_graph_app(
 
     def register_node(
         name: str,
-        func: Callable[..., Awaitable[Dict[str, Any]]],
+        func: Callable[..., Awaitable[Dict[str, object]]],
         *,
         enable_timeout: bool = True,
         enable_robustness: bool = True,

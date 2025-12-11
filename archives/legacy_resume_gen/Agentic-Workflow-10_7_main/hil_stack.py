@@ -4,14 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from core_v10_7 import PersonaConsensus, StrategyPlan
-from agent_stacks_v10_8.components.hil import (
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-    HILFeedbackSummarizerAgent,
-    HILReconciliationAgent,
-    VirtualReviewerCouncilAgent,
-)
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import PersonaConsensus, StrategyPlan
 
 
 class HILStackV10_8:
@@ -28,14 +21,14 @@ class HILStackV10_8:
 
     async def summarize_feedback_async(
         self, human_feedback: str, workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Cluster HIL feedback via the v10.7 summarizer."""
 
         return await self._summarizer.run_async(human_feedback, workflow_id)
 
     async def detect_ambiguity_async(
         self, strategy_plan: Any, workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Delegate ambiguity detection for strategy plans."""
 
         if isinstance(strategy_plan, dict):
@@ -48,15 +41,15 @@ class HILStackV10_8:
         self,
         feedback: str,
         workflow_id: str,
-        state_snapshot: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state_snapshot: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         """Delegate routing decisions to the legacy router."""
 
         return await self._router.run_async(feedback, workflow_id, state_snapshot)
 
     async def route_from_state_async(
-        self, state: Dict[str, Any], workflow_id: str
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: str
+    ) -> Dict[str, object]:
         """Read the HIL feedback payload and emit a normalized patch."""
 
         hil_bucket = state.get("hil", {}) if isinstance(state, dict) else {}
@@ -75,7 +68,7 @@ class HILStackV10_8:
 
     async def reconcile_feedback_async(
         self,
-        draft_sections: Dict[str, Any],
+        draft_sections: Dict[str, object],
         specialist_feedback: List[Any],
         persona_consensus: Optional[PersonaConsensus],
         workflow_id: str,
@@ -87,8 +80,8 @@ class HILStackV10_8:
         )
 
     async def reconcile_from_state_async(
-        self, state: Dict[str, Any], workflow_id: str
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: str
+    ) -> Dict[str, object]:
         """Assemble reconciliation inputs from the shared state tree."""
 
         hil_bucket = state.get("hil", {}) if isinstance(state, dict) else {}
@@ -115,14 +108,14 @@ class HILStackV10_8:
 
     async def convene_virtual_council_async(
         self, human_feedback: str, intent_clusters: List[Any], workflow_id: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """Convene the existing virtual reviewer council."""
 
         return await self._virtual_council.run_async(human_feedback, intent_clusters, workflow_id)
 
     async def inject_edit_from_state_async(
-        self, state: Dict[str, Any], workflow_id: str
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: str
+    ) -> Dict[str, object]:
         """Build the summary patch for a HIL edit injection."""
 
         payload = state.get("hil", {}).get("payload")

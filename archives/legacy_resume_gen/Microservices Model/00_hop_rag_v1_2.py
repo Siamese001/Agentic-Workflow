@@ -6,7 +6,7 @@ and writes the resulting ThematicAnalysis object as JSON.
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import os
@@ -14,7 +14,7 @@ import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Tuple, List
+from typing import Dict, object, Tuple, List
 
 # Imports for new enhancements
 import networkx as nx
@@ -26,9 +26,6 @@ sys.path.append(str(project_root))
 
 # Import necessary components from helpers
 # v1.1: ThematicAnalysis is now defined as a local placeholder to show new fields
-from helpers import (
-    setup_workflow_logging, _load_json_data, HopExecutionError, default_serializer
-)
 
 # --- Define Classes needed specifically for HOP-0 ---
 # These would ideally be in shared modules (e.g., rag_components.py)

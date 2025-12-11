@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\n\"\"\"AIS repair / mitigation policies.\nPolicies consume FailureSignal-like inputs and propose coarse-grained\nrepair actions (retry, downgrade, replan, escalate).\n\"\"\"\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\nfrom .failure_detector import FailureSignal\n@dataclass\nclass RepairAction:\n\"\"\"Single AIS repair action recommendation.\"\"\"\nkind: str # e.g. \"retry\", \"downgrade\", \"replan\", \"escalate\"\nreason: str\nmetadata: Dict[str, Any]\ndef propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:\n\"\"\"Map FailureSignal list into a set of RepairAction recommendations.\"\"\"\nactions: List[RepairAction] = []\nfor sig in signals or []:\nif sig.severity == \"high\":\nactions.append(\nRepairAction(\nkind=\"escalate\",\nreason=f\"High-severity failure: {sig.code}\",\nmetadata={\"signal\": sig},\n)\n)\nelif sig.severity == \"medium\":\nactions.append(\nRepairAction(\nkind=\"retry\",\nreason=f\"Medium-severity failure: {sig.code}\",\nmetadata={\"signal\": sig},\n)\n)\nelse:\nactions.append(\nRepairAction(\nkind=\"observe\",\nreason=f\"Low-severity failure: {sig.code}\",\nmetadata={\"signal\": sig},\n)\n)\nreturn actions",
+  "normalized_signature": "func:propose_repairs;class:RepairAction",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:propose_repairs",
+  "test_coverage": []
+}

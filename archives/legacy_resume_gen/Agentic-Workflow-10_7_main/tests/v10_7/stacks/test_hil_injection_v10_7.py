@@ -1,6 +1,6 @@
 import pytest
 
-from agent_stacks_v10_8.hil_stack import HILStackV10_8
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.hil_stack import HILStackV10_8  # INVALID: Cannot import from path with hyphens
 
 
 @pytest.mark.asyncio

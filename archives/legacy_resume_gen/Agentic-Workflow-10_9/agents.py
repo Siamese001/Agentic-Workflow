@@ -30,13 +30,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from models import (
-    MultiAgentVote,
-    MultiAgentCouncilResult,
-    SelfCorrectionSurface,
-    PlanObject,
-    StatePatch,
-)
 
 # ---------------------------------------------------------------------------
 # SECTION 1 — AGENT ROLES, NODES, AND GRAPHS
@@ -68,7 +61,7 @@ class AgentNode:
     """
 
     role: str
-    config: Dict[str, Any] = field(default_factory=dict)
+    config: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -82,7 +75,7 @@ class AgentGraph:
 
     nodes: Dict[str, AgentNode] = field(default_factory=dict)
     edges: Dict[str, List[str]] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
     def add_node(self, name: str, role: str, **config: Any) -> None:
         self.nodes[name] = AgentNode(role=role, config=dict(config))
@@ -91,7 +84,7 @@ class AgentGraph:
         self.edges.setdefault(source, []).append(target)
 
 
-def summarize_graph(graph: AgentGraph) -> Dict[str, Any]:
+def summarize_graph(graph: AgentGraph) -> Dict[str, object]:
     """Pure-data summary for telemetry."""
     return {
         "nodes": {
@@ -128,9 +121,9 @@ COUNCIL_OF_QA = AgentGraph(
 
 def _qa_candidate_scores(
     graph: AgentGraph,
-    state: Dict[str, Any],
+    state: Dict[str, object],
     plan: Any,
-) -> List[Dict[str, Any]]:
+) -> List[Dict[str, object]]:
     """
     Deterministic scoring for each meta-agent in a QA council.
     Higher score → higher scrutiny / more conservative decision
@@ -192,7 +185,7 @@ def _qa_candidate_scores(
     return candidates
 
 
-def deterministic_vote(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+def deterministic_vote(candidates: List[Dict[str, object]]) -> Dict[str, object]:
     """Highest score wins; ties broken by lowest agent_id."""
     if not candidates:
         return {
@@ -211,7 +204,7 @@ def deterministic_vote(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 def build_council_result(
     graph: AgentGraph,
-    state: Dict[str, Any],
+    state: Dict[str, object],
     plan: Any,
 ) -> MultiAgentCouncilResult:
     """
@@ -287,7 +280,7 @@ class MultiAgentOrchestrator:
     graph: AgentGraph
     state_adapter: Any  # must expose .state (read-only usage here)
 
-    def _plan_dict(self, plan: Any) -> Dict[str, Any]:
+    def _plan_dict(self, plan: Any) -> Dict[str, object]:
         if isinstance(plan, PlanObject):
             return plan.to_dict()
         if isinstance(plan, dict):
@@ -297,7 +290,7 @@ class MultiAgentOrchestrator:
         except Exception:
             return {"repr": repr(plan)}
 
-    def _synthetic_message_for_qa(self, plan: Any) -> Dict[str, Any]:
+    def _synthetic_message_for_qa(self, plan: Any) -> Dict[str, object]:
         p = self._plan_dict(plan)
         return {
             "role": "system",
@@ -311,7 +304,7 @@ class MultiAgentOrchestrator:
     # PUBLIC META-AWARE ENTRYPOINTS
     # ----------------------------------------------------------------------
 
-    def dispatch_for_qa(self, state: Dict[str, Any], plan: Any) -> Dict[str, Any]:
+    def dispatch_for_qa(self, state: Dict[str, object], plan: Any) -> Dict[str, object]:
         """
         Execute the QA council and produce an L4-patch-ready payload:
 
@@ -344,7 +337,7 @@ class MultiAgentOrchestrator:
         council_result: MultiAgentCouncilResult,
         *,
         reason: str,
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Build a meta-layer patch-ready payload for block/escalation cases.
         """
@@ -357,7 +350,7 @@ class MultiAgentOrchestrator:
         }
         return {"multi_agent": {"qa_block": payload}}
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, object]:
         """
         Return pure-data description of this orchestrator (meta-only).
         """

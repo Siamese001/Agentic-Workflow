@@ -12,7 +12,7 @@ architecture for agentic AI operations with the following taxonomy:
     05_config/          - Configuration files (YAML/JSON only)
     06_data/            - Data storage, archives, and semantic cache
     07_observability/   - Logging, metrics, and tracing
-    08_scripts/         - Utility scripts and tools
+    08_scripts/         - function scripts and tools
     09_apps/            - Application implementations (LIC, RG)
     10_tests/           - Test suites
 

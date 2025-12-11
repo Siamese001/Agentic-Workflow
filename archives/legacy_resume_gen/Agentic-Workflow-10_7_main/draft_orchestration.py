@@ -6,13 +6,13 @@ import copy
 from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
 
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
-from core_v10_7 import BaseAgent
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.state_adapter_stack import StateAdapterStack  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent
 
-from .bullet_execution import BulletExecutionStack
-from .bullet_planning import BulletPlanningStack
-from .draft_planning import DraftPlanningStack
-from .drafting_execution import DraftingExecutionStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.bullet_execution import BulletExecutionStack  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.bullet_planning import BulletPlanningStack  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_planning import DraftPlanningStack  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.drafting_execution import DraftingExecutionStack  # INVALID: Cannot import from path with hyphens
 
 
 class DraftOrchestratorStack(BaseAgent):
@@ -31,10 +31,10 @@ class DraftOrchestratorStack(BaseAgent):
 
     async def run_async(
         self,
-        state: Dict[str, Any],
+        state: Dict[str, object],
         workflow_id: Optional[str] = None,
-        state_snapshot: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        state_snapshot: Optional[Dict[str, object]] = None,
+    ) -> Dict[str, object]:
         workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
         current_state = state
         baseline = state_snapshot or state
@@ -142,7 +142,7 @@ class DraftOrchestratorStack(BaseAgent):
         return current_state
 
     def _append_a2a_message(
-        self, state: Dict[str, Any], *, message_type: str, payload: Dict[str, Any]
+        self, state: Dict[str, object], *, message_type: str, payload: Dict[str, object]
     ) -> None:
         channel = state.setdefault("a2a", {})
         messages = channel.setdefault("messages", [])
@@ -157,7 +157,7 @@ class DraftOrchestratorStack(BaseAgent):
         )
 
     async def _record_arbitration(
-        self, state: Dict[str, Any], stage: str, workflow_id: str
+        self, state: Dict[str, object], stage: str, workflow_id: str
     ) -> None:
         engine = getattr(self.context, "arbitration_engine", None)
         if engine is None:
@@ -173,8 +173,8 @@ class DraftOrchestratorStack(BaseAgent):
         )
 
     async def _maybe_retry_drafting(
-        self, state: Dict[str, Any], workflow_id: str
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: str
+    ) -> Dict[str, object]:
         scm = getattr(self, "self_correction_manager", None)
         critique_status = self._extract_critique_status(state)
         if critique_status not in {"revise", "block"}:
@@ -214,7 +214,7 @@ class DraftOrchestratorStack(BaseAgent):
         )
         return state
 
-    def _extract_critique_status(self, state: Dict[str, Any]) -> str:
+    def _extract_critique_status(self, state: Dict[str, object]) -> str:
         draft_bucket = state.get("draft", {})
         artifacts = draft_bucket.get("artifacts", {})
         possible_payloads = []
@@ -251,13 +251,13 @@ class DraftOrchestratorStack(BaseAgent):
 
     def _apply_plan_patch(
         self,
-        state: Dict[str, Any],
-        patch: Dict[str, Any],
+        state: Dict[str, object],
+        patch: Dict[str, object],
         *,
         bucket: str,
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    ) -> Tuple[Dict[str, object], Dict[str, object]]:
         sanitized_patch = copy.deepcopy(patch)
-        plan_payload: Dict[str, Any] = {}
+        plan_payload: Dict[str, object] = {}
         preserved_plan = self._detach_plan(state, bucket)
         bucket_body = sanitized_patch.get(bucket)
         if isinstance(bucket_body, dict):
@@ -270,7 +270,7 @@ class DraftOrchestratorStack(BaseAgent):
             state.setdefault(bucket, {})["plan"] = final_plan
         return state, final_plan
 
-    def _detach_plan(self, state: Dict[str, Any], bucket: str) -> Dict[str, Any]:
+    def _detach_plan(self, state: Dict[str, object], bucket: str) -> Dict[str, object]:
         container = state.get(bucket)
         if isinstance(container, dict) and "plan" in container:
             preserved = copy.deepcopy(container["plan"])
@@ -280,7 +280,7 @@ class DraftOrchestratorStack(BaseAgent):
             return preserved
         return {}
 
-    def _apply_state_patch(self, state: Dict[str, Any], patch: Dict[str, Any]) -> Dict[str, Any]:
+    def _apply_state_patch(self, state: Dict[str, object], patch: Dict[str, object]) -> Dict[str, object]:
         preserved_plans = {
             "draft": self._detach_plan(state, "draft"),
             "bullets": self._detach_plan(state, "bullets"),

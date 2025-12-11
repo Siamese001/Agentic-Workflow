@@ -10,24 +10,20 @@ This hop:
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
-import re
+import scripts.check_canonical_structure
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List, Union
+from typing import Dict, object, List, Union
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 # Import necessary components from helpers
-from helpers import (
-    setup_workflow_logging, HopExecutionError, default_serializer,
-    ImmutableStagingBuffer, ResumeSection, ThematicAnalysis, calculate_signal_score
-)
 
 # --- Content Sanitizer with Signal Scoring ---
 

@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\nclass SandboxError(RuntimeError):\n\"\"\"Base class for sandbox-related errors.\"\"\"\nclass SandboxTimeoutError(SandboxError):\n\"\"\"Raised when a tool call exceeds its allowed timeout inside the VM.\"\"\"\nclass SandboxExecutionError(SandboxError):\n\"\"\"Raised when a tool execution fails inside the VM.\"\"\"\nclass SandboxIsolationError(SandboxError):\n\"\"\"Raised when an isolation invariant appears to be violated.\"\"\"",
+  "normalized_signature": "class:SandboxError;class:SandboxTimeoutError;class:SandboxExecutionError;class:SandboxIsolationError",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

@@ -1,0 +1,55 @@
+engines/: {}
+outreach_engine/: {}
+archetype.yaml: null
+messaging.yaml: null
+personalization.yaml: null
+reflective_checks.yaml: null
+resume_engine/: {}
+rewriting.yaml: null
+scoring.yaml: null
+summarization.yaml: null
+system_prompts.yaml: null
+evaluations/: {}
+eval_sets.yaml: null
+regression_tests.yaml: null
+rubric.yaml: null
+style_checks.yaml: null
+governance/: {}
+approval_workflow.yaml: null
+change_history.yaml: null
+guard_base.py: null
+ownership.yaml: null
+policy_base.py: null
+semantic_versioning.yaml: null
+schemas/: {}
+prompt_schema.json: null
+injections/: {}
+constraints.yaml: null
+context_engineering.yaml: null
+framing.yaml: null
+output_governance.yaml: null
+reasoning.yaml: null
+safety.yaml: null
+tool_use.yaml: null
+layering/: {}
+injection_templates.py: null
+registry/: {}
+prompt_index.yaml: null
+prompt_manifest.yaml: null
+rollback_policies.yaml: null
+version_map.yaml: null
+prompts/: {}
+analysis_prompt.json: null
+draft_executor.json: null
+version_map/: {}
+templates/:
+  base.py: null
+  __init__.py: null
+  outreach/: {}
+  cold_outreach_template.md: null
+  connection_request.md: null
+  followup_template.md: null
+  resume/:
+    experience_template.md: null
+    skills_template.md: null
+    summary_template.md: null

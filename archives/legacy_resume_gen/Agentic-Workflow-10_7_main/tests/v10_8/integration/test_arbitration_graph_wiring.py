@@ -1,7 +1,7 @@
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
-from agent_orchestration_v10_7 import get_graph_app
-from core_v10_7.models import ArbitrationReport
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import get_graph_app  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.models import ArbitrationReport
 
 
 class DummyArbitrationEngine:

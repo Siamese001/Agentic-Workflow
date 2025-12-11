@@ -1,7 +1,7 @@
 """Performance tests for cost estimation consistency."""
 from __future__ import annotations
 
-from agentic_workflow.runtime.shared.multi_provider_clients import Provider
+from runtime.shared.multi_provider_clients import Provider
 
 class TestCostEstimationConsistency:
     """Tests for token and cost calculation determinism."""
@@ -46,7 +46,7 @@ class TestTokenEstimation:
     def test_message_token_estimation_determinism(self):
         """Same message produces same token estimate."""
         message = "This is a test message for token estimation."
-        # Simple heuristic: ~4 chars per token
+        # basic heuristic: ~4 chars per token
         estimate1 = len(message) // 4
         estimate2 = len(message) // 4
         assert estimate1 == estimate2
@@ -59,11 +59,11 @@ class TestTokenEstimation:
     def test_long_message_scaling(self):
         """Token estimate scales linearly with message length."""
         short = "Hello"
-        long = "Hello " * 100
+        long = short * 100  # Use same base string repeated 100 times
 
-        short_est = len(short) // 4
-        long_est = len(long) // 4
+        short_est = len(short) / 4  # Use float division for more accurate estimate
+        long_est = len(long) / 4
 
         # Long should be roughly 100x short
         ratio = long_est / max(short_est, 1)
-        assert 50 < ratio < 150  # Allow some variance
+        assert 90 < ratio < 110  # Tighter range for exact 100x scaling

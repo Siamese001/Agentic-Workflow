@@ -11,23 +11,19 @@ This is a risk-aware, dynamic decision engine.
 """
 from __future__ import annotations
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, object
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 # Import necessary components
-from helpers import (
-    setup_workflow_logging, HopExecutionError, default_serializer,
-    ValidationResult, ValidationSeverity, GateDecision
-)
 
 # --- High-Signal Configuration ---
 
@@ -58,7 +54,7 @@ RISK_WEIGHTS = {
 class RiskAwareGate:
     """Evaluates validation results using a dynamic, risk-based model."""
     
-    def __init__(self, validation_results: List[ValidationResult], config: Dict[str, Any]):
+    def __init__(self, validation_results: List[ValidationResult], config: Dict[str, object]):
         self.logger = logging.getLogger(__name__)
         self.validation_results = validation_results
         
@@ -101,7 +97,7 @@ class RiskAwareGate:
                 # Add to risk score
                 self.total_risk_score += RISK_WEIGHTS.get(vr.severity, 0)
 
-    def evaluate_decision(self) -> Tuple[GateDecision, Dict[str, Any]]:
+    def evaluate_decision(self) -> Tuple[GateDecision, Dict[str, object]]:
         """
         Runs the full evaluation logic.
         Returns the final decision and a metadata dictionary.
@@ -151,7 +147,7 @@ class RiskAwareGate:
         metadata = self._build_metadata(decision, reason)
         return decision, metadata
 
-    def _build_metadata(self, decision: GateDecision, reason: str) -> Dict[str, Any]:
+    def _build_metadata(self, decision: GateDecision, reason: str) -> Dict[str, object]:
         """Helper to assemble the final output metadata block."""
         return {
             "decision": decision.value,

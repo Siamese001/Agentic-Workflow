@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from prompt_taxonomy import *  # noqa: F401,F403
-from prompt_envelope import *  # noqa: F401,F403
-from prompt_templates import *  # noqa: F401,F403
-from prompt_renderer import *  # noqa: F401,F403
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_taxonomy import *  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_envelope import *  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_templates import *  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_renderer import *  # INVALID: Cannot import from path with hyphens

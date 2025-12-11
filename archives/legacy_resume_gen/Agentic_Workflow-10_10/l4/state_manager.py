@@ -19,7 +19,7 @@ class TemporalContext:
     """
     current_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     processing_window: str = "30d"  # Default 30-day window
-    temporal_relationships: Dict[str, Any] = field(default_factory=dict)
+    temporal_relationships: Dict[str, object] = field(default_factory=dict)
     
     def is_within_window(self, timestamp: datetime) -> bool:
         """Check if a timestamp is within the processing window."""
@@ -34,10 +34,10 @@ class EpisodicMemory:
     
     Maintains interaction history for contextual learning and improvement.
     """
-    interactions: List[Dict[str, Any]] = field(default_factory=list)
+    interactions: List[Dict[str, object]] = field(default_factory=list)
     max_interactions: int = 100
     
-    def add_interaction(self, interaction: Dict[str, Any]) -> None:
+    def add_interaction(self, interaction: Dict[str, object]) -> None:
         """Add a new interaction to episodic memory."""
         interaction['timestamp'] = datetime.now(timezone.utc).isoformat()
         self.interactions.append(interaction)
@@ -46,7 +46,7 @@ class EpisodicMemory:
         if len(self.interactions) > self.max_interactions:
             self.interactions = self.interactions[-self.max_interactions:]
     
-    def get_recent_interactions(self, count: int = 10) -> List[Dict[str, Any]]:
+    def get_recent_interactions(self, count: int = 10) -> List[Dict[str, object]]:
         """Get the most recent interactions."""
         return self.interactions[-count:]
 
@@ -57,17 +57,17 @@ class ProceduralMemory:
     
     Maintains how-to knowledge and process patterns for consistent execution.
     """
-    procedures: Dict[str, Any] = field(default_factory=dict)
-    success_patterns: List[Dict[str, Any]] = field(default_factory=list)
+    procedures: Dict[str, object] = field(default_factory=dict)
+    success_patterns: List[Dict[str, object]] = field(default_factory=list)
     
-    def add_procedure(self, name: str, procedure: Dict[str, Any]) -> None:
+    def add_procedure(self, name: str, procedure: Dict[str, object]) -> None:
         """Add a new procedure to procedural memory."""
         self.procedures[name] = {
             **procedure,
             'created_at': datetime.now(timezone.utc).isoformat()
         }
     
-    def get_procedure(self, name: str) -> Optional[Dict[str, Any]]:
+    def get_procedure(self, name: str) -> Optional[Dict[str, object]]:
         """Retrieve a procedure by name."""
         return self.procedures.get(name)
 
@@ -78,14 +78,14 @@ class WorkflowState:
     
     Maintains job, resume, strategy data, and temporal context for reliable résumé processing continuity.
     """
-    job_data: Optional[Dict[str, Any]] = None
-    resume_data: Optional[Dict[str, Any]] = None
+    job_data: Optional[Dict[str, object]] = None
+    resume_data: Optional[Dict[str, object]] = None
     strategy_result: Optional[str] = None
     draft_result: Optional[str] = None
     temporal_context: TemporalContext = field(default_factory=TemporalContext)
     episodic_memory: EpisodicMemory = field(default_factory=EpisodicMemory)
     procedural_memory: ProceduralMemory = field(default_factory=ProceduralMemory)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class StateManager:
     """
@@ -177,7 +177,7 @@ class StateManager:
         
         return self._state
     
-    def add_interaction(self, interaction_type: str, content: Dict[str, Any]) -> None:
+    def add_interaction(self, interaction_type: str, content: Dict[str, object]) -> None:
         """
         Add an interaction to episodic memory for temporal context.
         

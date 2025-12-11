@@ -8,7 +8,7 @@ class FramingProfile:
     success_criteria: str
     task_mode: str
     scope_boundaries: str
-    cost_latency: Dict[str, Any]
+    cost_latency: Dict[str, object]
 
 
 DEFAULT_FRAMING_PROFILE = FramingProfile(

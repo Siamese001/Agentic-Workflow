@@ -15,19 +15,19 @@ import shutil
 import concurrent.futures
 import uuid
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 # Imports from its *own* versioned files (v7.5)
-from main_v7_5 import setup_logging, load_job_input
-from core_v7_5 import CONFIG, CircuitBreakerOpenError
+from archives.legacy_resume_gen.Older Microservices Models.v7.5.main_v7_5 import setup_logging, load_job_input
+from archives.legacy_resume_gen.Older Microservices Models.v7.5.core_v7_5 import CONFIG, CircuitBreakerOpenError
 
 # v7.5: Import the graph builder and checkpointer
-from agent_swarm_v7_5 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v7.5.agent_swarm_v7_5 import get_graph_app
 from langgraph.checkpoint.redis import RedisSaver
 
 # v7.5: Import the meta-learner
 try:
-    from run_learning_v7_5 import run_meta_learning
+    from archives.legacy_resume_gen.Older Microservices Models.v7.5.run_learning_v7_5 import run_meta_learning
     META_LEARNER_AVAILABLE = True
 except ImportError:
     META_LEARNER_AVAILABLE = False
@@ -66,7 +66,7 @@ def get_compiled_graph():
         app = get_graph_app(checkpointer, enable_hil=False)
     return app, checkpointer
 
-def process_single_job(job_path: str) -> Dict[str, Any]:
+def process_single_job(job_path: str) -> Dict[str, object]:
     """
     Wraps the execution of a single job for the parallel executor.
     Returns a dictionary for the summary CSV.

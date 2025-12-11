@@ -9,23 +9,13 @@ from __future__ import annotations
 from enum import Enum
 from typing import Dict
 
-from pydantic import BaseModel, Field
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
 
-from core.models.models import (
-    RetrievalConfig,
-    ContextBudget,
-    ReasoningMode,
-    RedisCacheConfig,
-    ChromaVectorConfig,
-    GoogleGenAIConfig,
-    BM25BackendConfig,
-    ComplexityLevel,
-)
-from config.llm_profile import LLMProfile
-from config.retrieval_profile import RetrievalProfile
-from config.safety_profile import SafetyProfile
-from config.context_profile import ContextProfile
-from config.budget_profile import BudgetProfile
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.llm_profile import LLMProfile
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.retrieval_profile import RetrievalProfile
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.safety_profile import SafetyProfile
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.context_profile import ContextProfile
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.budget_profile import BudgetProfile
 
 
 # ======================================================================

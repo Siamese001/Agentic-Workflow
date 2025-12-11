@@ -3,15 +3,7 @@
 import asyncio
 from typing import Any, Dict, List
 
-from simulations.models import (
-    DraftSimRequest,
-    RAGSimRequest,
-    SafetySimRequest,
-    SimulationBatchResult,
-    SimulationResult,
-    StrategySimRequest,
-)
-from simulations.registry import get_simulator
+from runtime.shared.sdk_registry import get_simulator
 
 
 REQUEST_MODEL_MAP = {
@@ -22,7 +14,7 @@ REQUEST_MODEL_MAP = {
 }
 
 
-async def run_simulation(sim_type: str, payload: Dict[str, Any]) -> SimulationResult:
+async def run_simulation(sim_type: str, payload: Dict[str, object]) -> SimulationResult:
     """Run a single simulation request."""
 
     simulator = get_simulator(sim_type)
@@ -35,7 +27,7 @@ async def run_simulation(sim_type: str, payload: Dict[str, Any]) -> SimulationRe
     return await simulator.run(request)
 
 
-async def run_batch(sim_requests: List[Dict[str, Any]]) -> SimulationBatchResult:
+async def run_batch(sim_requests: List[Dict[str, object]]) -> SimulationBatchResult:
     """Run a batch of simulations sequentially."""
 
     results = []
@@ -48,7 +40,7 @@ async def run_batch(sim_requests: List[Dict[str, Any]]) -> SimulationBatchResult
     return SimulationBatchResult(results=results)
 
 
-def run_simulation_sync(sim_type: str, payload: Dict[str, Any]) -> SimulationResult:
+def run_simulation_sync(sim_type: str, payload: Dict[str, object]) -> SimulationResult:
     """Convenience synchronous wrapper."""
 
     return asyncio.run(run_simulation(sim_type, payload))

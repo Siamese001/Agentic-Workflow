@@ -14,7 +14,7 @@ import hashlib
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 import subprocess
 import uuid
 from collections import defaultdict
@@ -29,7 +29,7 @@ except ImportError:
     genai = None # Add a placeholder for type hints
 
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -38,12 +38,8 @@ except ImportError:
     cosine_similarity = None # Placeholder
 
 # Import required classes from other modules
-from models_RES import ThematicAnalysis, ValidationResult, ValidationSeverity
+from runtime.compat.models_RES import ThematicAnalysis, ValidationResult, ValidationSeverity
 # --- FIX: Import DATA_DIR and CACHE_DIR ---
-from config_RES_v2 import (
-    ReasoningConfig, RAGConfig, PROMPT_ADDENDUM_CONFIG, 
-    DEFAULT_GENERATION_TEMPERATURE, DATA_DIR, CACHE_DIR
-)
 
 # ============================================================================
 # FILE SYSTEM UTILITIES
@@ -501,7 +497,7 @@ class TelemetryLogger:
 def reasoning_config_to_api_params(
     reasoning_config: ReasoningConfig,
     section_id: str
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """
     Converts a ReasoningConfig dataclass into API parameters.
     (This is a stub, as the full logic depends on the specific API)
@@ -572,7 +568,7 @@ def enhance_system_prompt_with_reasoning(
 
 def build_generation_prompt_with_reinforced_constraints(
     base_prompt: str,
-    constraints: Dict[str, Any],
+    constraints: Dict[str, object],
     attempt: int
 ) -> str:
     """

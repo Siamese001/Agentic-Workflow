@@ -1,9 +1,9 @@
 import pytest
 
-from models import MainGraphState
+from shared.models import MainGraphState
 
 try:  # Optional depending on build exposure
-    from agent_orchestration_v10_7 import build_workflow
+#     from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import build_workflow  # INVALID: Cannot import from path with hyphens
 
     HAS_WORKFLOW = True
 except ImportError:  # pragma: no cover - guard until workflow factory is available

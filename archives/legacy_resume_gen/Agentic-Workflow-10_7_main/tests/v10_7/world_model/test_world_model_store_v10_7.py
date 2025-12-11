@@ -1,15 +1,11 @@
 import json
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
 import pytest
 
-from core_v10_7.models import StrategyPlan
-from core_v10_7.services import WorldModelStore
-from agent_stacks_v10_8.components.strategy import (
-    QueryComplexityClassifier,
-    ToTStrategistAgent,
-)
-from agent_stacks_v10_8.components.rag import RAG_SearchAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.models import StrategyPlan
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.Agentic-Workflow.core_v10_7.services import WorldModelStore
+from archives.engines.legacy_engines.lic_rag import RAG_SearchAgent
 
 
 class _DummyRedis:

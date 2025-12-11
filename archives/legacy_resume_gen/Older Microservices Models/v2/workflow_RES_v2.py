@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import random
-import re
+import scripts.check_canonical_structure
 import time
 import uuid
 from enum import Enum
@@ -23,55 +23,28 @@ from dataclasses import asdict, is_dataclass
 import asyncio
 
 # V2 Agent imports (Governor Module)
-from governor import (
-    PolicyAgent, CostRouter, ContextRelayLayer, 
-    CritiqueTool, HIL_Interface, TraceRegistry,
-    MAX_RETRIES_PER_NODE, DEFAULT_MODEL
-)
 
 # V2 Modular Tool imports
-from clerk_RES_v2 import ClerkExtractor
-from enricher_RES_v2 import DataEnricher
-from artist_RES_v2 import ArtistGenerator
-from renderer_RES_v2 import FileRenderer
+from archives.legacy_resume_gen.Older Microservices Models.v2.clerk_RES_v2 import ClerkExtractor
+from archives.legacy_resume_gen.Older Microservices Models.v2.enricher_RES_v2 import DataEnricher
+from archives.legacy_resume_gen.Older Microservices Models.v2.artist_RES_v2 import ArtistGenerator
+from archives.legacy_resume_gen.Older Microservices Models.v2.renderer_RES_v2 import FileRenderer
 
 # Import from modular components
-from models_RES import (
-    BulletProvenance, CircuitState, GateDecision, HopCheckpoint, HopStatus,
-    ImmutableStagingBuffer, JDEnforcementResult, JDEnforcementRule,
-    RAGState, RAGTelemetry, ResumeSection, ThematicAnalysis, FactualFailureException,
-    ValidationResult, ValidationSeverity, HopExecutionError, StagingBufferError,
-    CompetitiveIntelligence, RAGMission
-)
-from config_RES_v2 import (
-    CONFIG, AppConfig, EnricherConfig, ContentConstraintsConfig,
-    ReasoningConfig, DATA_DIR, OUTPUT_DIR, _load_json_config,
-    COVER_LETTER_SIGNATURE_TEMPLATE, GEMINI_AVAILABLE, SKLEARN_AVAILABLE,
-    DEFAULT_GENERATION_TEMPERATURE # <-- IMPORTED DEFAULT TEMP
-)
-from utils_RES_v2 import (
-    text_utils, calculate_signal_score, setup_workflow_logging,
-    create_directory_if_missing, sanitize_filename,
-    WorkflowLogFilter, DuplicateDetector,
-    reasoning_config_to_api_params, enhance_system_prompt_with_reasoning
-)
-from interpreter_RES_v2 import CodeInterpreterTool
-from validator_RES_v2 import (
-    PreFlightValidator, ConstraintFailureClassifier
-)
-from qa_auditor_RES_v2 import QAReportGenerator
-from rag_RES_v2 import EnhancedJobDescriptionAnalyzer
-from state_manager_RES_v2 import ManifestManager
+from archives.legacy_resume_gen.Older Microservices Models.v2.interpreter_RES_v2 import CodeInterpreterTool
+from archives.legacy_resume_gen.Older Microservices Models.v2.qa_auditor_RES_v2 import QAReportGenerator
+from archives.legacy_resume_gen.Older Microservices Models.v2.rag_RES_v2 import EnhancedJobDescriptionAnalyzer
+from archives.legacy_resume_gen.Older Microservices Models.v2.state_manager_RES_v2 import ManifestManager
 
 # GEMINI_AVAILABLE and SKLEARN_AVAILABLE are imported from config_RES_v2
 
 # --- V18 REFACTOR: Import consolidated validation classes ---
-from validator_RES_v2 import JDEnforcementValidator, AppTrackerQAValidator
+from archives.legacy_resume_gen.Older Microservices Models.v2.validator_RES_v2 import JDEnforcementValidator, AppTrackerQAValidator
 
 # --- NEW: Import ChromaDB ---
 try:
     import chromadb
-    from chromadb.config import Settings
+    from shared.reasoning_config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
@@ -113,7 +86,7 @@ class WorkflowOrchestrator:
         self.master_resume = master_resume
         
         # --- V2 In-Memory State ---
-        self.drafts: Dict[ResumeSection, Any] = {}
+        self.drafts: Dict[ResumeSection, object] = {}
         self.failures: Dict[ResumeSection, int] = defaultdict(int)
         self.thematic_analysis: Optional[ThematicAnalysis] = None
         self.enriched_scaffold: Optional[Dict] = None
@@ -499,7 +472,7 @@ class WorkflowOrchestrator:
                     
                     # Build temporary context for scoring
                     temp_buffer_for_scoring = self._create_buffer_for_section(section_enum, draft[0])  # Use first draft as placeholder
-                    from validator_RES_v2 import ValidationContext
+                    from archives.legacy_resume_gen.Older Microservices Models.v2.validator_RES_v2 import ValidationContext
                     scoring_context = ValidationContext(
                         staging_buffer=temp_buffer_for_scoring,
                         thematic_analysis=self.thematic_analysis,
@@ -918,7 +891,7 @@ def load_master_resume() -> Dict:
     """Load master resume from JSON file."""
     # --- FIX: Use _load_json_config and DATA_DIR from config ---
     try:
-        from config_RES_v2 import _load_json_config, DATA_DIR
+        from runtime.compat.config_RES_v2 import _load_json_config, DATA_DIR
         path_to_try = DATA_DIR / "master_resume.json"
         data = _load_json_config(str(path_to_try), "Master Resume", required=True)
         return data

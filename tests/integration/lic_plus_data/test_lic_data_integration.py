@@ -1,6 +1,6 @@
 """Integration tests for LinkedIn outreach + data layer integration."""
 from __future__ import annotations
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 @dataclass
@@ -10,7 +10,7 @@ class ContactData:
     company: str
     title: str
     linkedin_url: Optional[str] = None
-    enrichment_data: Optional[Dict[str, Any]] = None
+    enrichment_data: Optional[Dict[str, object]] = None
 
 @dataclass
 class CompanyData:
@@ -132,7 +132,7 @@ class TestCompanyDataIntegration:
         from datetime import datetime, timedelta
 
         news_items = [
-            {"title": "Old news", "date": datetime.now() - timedelta(days=60)},
+            {"title": "previous news", "date": datetime.now() - timedelta(days=60)},
             {"title": "Recent news", "date": datetime.now() - timedelta(days=5)},
         ]
 

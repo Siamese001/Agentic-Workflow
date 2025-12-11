@@ -11,23 +11,18 @@ import sys
 import json
 import logging
 import asyncio
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import uuid
-import redis
+import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
 import chromadb # v10.2: Added
-from chromadb.utils import embedding_functions # v10.2: Added
+from shared.reasoning_utils import embedding_functions
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 # v10.2: Import from new core
-from core_v10_2 import (
-    ConfigV10_2, WorkflowContext, MainGraphState,
-    FileIOError, CostCeilingExceededError,
-    CacheManager, CostTracker, FeedbackLogReader, ProposedRulesLoader
-)
 # v10.2: Import from new orchestration/stacks
-from agent_orchestration_v10_2 import get_graph_app
-from agent_stacks_v10_2 import PIISanitizerAgent
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_orchestration_v10_2 import get_graph_app
+from archives.legacy_resume_gen.Older Microservices Models.v10.2.agent_stacks_v10_2 import PIISanitizerAgent
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger("main_v10_2")
@@ -53,7 +48,7 @@ def setup_logging(debug_mode: bool = False):
     
     logger.info(f"v10.2 Logging initialized: {CONFIG.logging_config.log_file}")
 
-def load_job_input(path: str) -> Dict[str, Any]:
+def load_job_input(path: str) -> Dict[str, object]:
     """Load job input JSON"""
     try:
         with open(path, 'r') as f:
@@ -70,7 +65,7 @@ async def run_workflow_async(
     master_resume_path: str,
     debug_mode: bool = False,
     enable_hil: bool = True
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Run workflow asynchronously with v10.2 ChromaDB RAG"""
     
     logger.info(f"===== Starting v10.2 Semantic RAG Workflow ({datetime.now().isoformat()}) =====")

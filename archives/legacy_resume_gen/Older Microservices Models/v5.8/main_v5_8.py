@@ -8,20 +8,20 @@
 # ============================================================================
 # EXTERNAL IMPORTS (Consolidated)
 # ============================================================================
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import logging
 import logging.handlers
 import os
 import sys
 import uuid
-import re
+import scripts.check_canonical_structure
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # Import from consolidated modules
-from core_v5_8 import (
+from archives.legacy_resume_gen.Older Microservices Models.v5.8.core_v5_8 import CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR, ImmutableStagingBuffer, ThematicAnalysis, ValidationResult, HopResult, ValidationSeverity, ResumeSection, WorkflowBlackboard, ConductorDecision
     # Config
     CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR,
     # Models
@@ -31,14 +31,7 @@ from core_v5_8 import (
     WorkflowBlackboard, ConductorDecision
 )
 
-from validation_stack_v5_8 import (
-    ValidationContext, ValidationEngine, calculate_signal_score
-)
 
-from agent_swarm_v5_8 import (
-    CrewOrchestrator, CrewConfiguration, Governor,
-    ConductorAgent
-)
 
 # ============================================================================
 # STRUCTURED LOGGING
@@ -121,7 +114,7 @@ class WorkflowV58:
         job_title: str,
         master_resume_path: Optional[str] = None,
         output_dir: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, object]:
         """
         Run the complete workflow for a single job application.
         """
@@ -197,7 +190,7 @@ class WorkflowV58:
             self.logger.info(f"Workflow v5.8 execution finished [workflow_id: {workflow_id}]")
             self.logger.info("=" * 80)
     
-    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, Any]:
+    def _load_master_resume(self, master_resume_path: Optional[str] = None) -> Dict[str, object]:
         """
         Load master resume from file or use default.
         REFACTORED: Reads fallback paths from CONFIG.
@@ -229,7 +222,7 @@ class WorkflowV58:
         # Convert namespace back to dict for consistency
         return vars(CONFIG.file_paths.empty_master_resume_template)
     
-    def _create_empty_master_resume(self) -> Dict[str, Any]:
+    def _create_empty_master_resume(self) -> Dict[str, object]:
         """
         DEPRECATED: Left for compatibility, but _load_master_resume now handles this.
         REFACTORED: Reads empty template from CONFIG.
@@ -237,7 +230,7 @@ class WorkflowV58:
         self.logger.warning("Using empty master resume template from config.")
         return vars(CONFIG.file_paths.empty_master_resume_template)
     
-    def _save_artifacts(self, results: Dict[str, Any], output_dir: str, 
+    def _save_artifacts(self, results: Dict[str, object], output_dir: str, 
                        company_name: str, job_title: str):
         """Save workflow artifacts to output directory."""
         output_path = Path(output_dir)
@@ -278,7 +271,7 @@ class WorkflowV58:
 # HELPER FUNCTIONS
 # ============================================================================
 
-def load_job_input(filepath: str) -> Dict[str, Any]:
+def load_job_input(filepath: str) -> Dict[str, object]:
     """Load job input from JSON file."""
     try:
         with open(filepath, 'r') as f:
@@ -295,7 +288,7 @@ def load_job_input(filepath: str) -> Dict[str, Any]:
         logger.error(f"Failed to load job input: {e}")
         raise
 
-def load_master_resume(filepath: str) -> Dict[str, Any]:
+def load_master_resume(filepath: str) -> Dict[str, object]:
     """Load master resume from JSON file."""
     try:
         with open(filepath, 'r') as f:
@@ -351,7 +344,7 @@ def setup_logging(debug_mode: bool):
     logger.info(f"Logging configured. Level: {log_level}, File: {log_config.log_file}")
 
 
-def print_summary(results: Dict[str, Any]):
+def print_summary(results: Dict[str, object]):
     """Print workflow execution summary."""
     print("\n" + "=" * 80)
     print("WORKFLOW EXECUTION SUMMARY")

@@ -3,6 +3,7 @@ Unit tests for shared/logic/
 Tests logic operations including data access, guardrails, synthesis, and validation.
 """
 from __future__ import annotations
+import re
 import pytest
 from typing import Dict, List
 from dataclasses import dataclass
@@ -73,7 +74,7 @@ class TestLogicGuardrails:
     def test_input_sanitization(self):
         """Inputs are sanitized before processing."""
         raw_input = "  Hello <script>alert('xss')</script> World  "
-        import re
+        import scripts.check_canonical_structure
         sanitized = re.sub(r'<[^>]+>', '', raw_input).strip()
         assert "<script>" not in sanitized
         assert sanitized == "Hello alert('xss') World"

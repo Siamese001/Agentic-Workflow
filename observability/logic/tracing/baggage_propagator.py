@@ -5,9 +5,8 @@ Domain: tracing
 Generated: 2025-12-07T12:07:59.853999
 """
 
-from __future__ import annotations
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +18,11 @@ class BaggagePropagator:
     HEADER_SPAN_ID = "X-Span-ID"
     HEADER_SAMPLED = "X-Sampled"
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def inject(self, context: Dict[str, Any], carrier: Dict[str, str]) -> None:
+    def inject(self, context: Dict[str, object], carrier: Dict[str, str]) -> None:
         """Inject context into carrier."""
         if "trace_id" in context:
             carrier[self.HEADER_TRACE_ID] = context["trace_id"]
@@ -32,7 +31,7 @@ class BaggagePropagator:
         if "sampled" in context:
             carrier[self.HEADER_SAMPLED] = "1" if context["sampled"] else "0"
 
-    def extract(self, carrier: Dict[str, str]) -> Dict[str, Any]:
+    def extract(self, carrier: Dict[str, str]) -> Dict[str, object]:
         """Extract context from carrier."""
         context = {}
 
@@ -46,11 +45,11 @@ class BaggagePropagator:
         return context
 
 
-def inject_context(context: Dict[str, Any], carrier: Dict[str, str], config: Optional[Dict] = None) -> None:
+def inject_context(context: Dict[str, object], carrier: Dict[str, str], config: Optional[Dict] = None) -> None:
     """Inject context into carrier."""
     BaggagePropagator(config).inject(context, carrier)
 
 
-def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> Dict[str, Any]:
+def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> Dict[str, object]:
     """Extract context from carrier."""
     return BaggagePropagator(config).extract(carrier)

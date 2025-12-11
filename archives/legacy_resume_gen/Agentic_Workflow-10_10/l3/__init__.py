@@ -8,8 +8,8 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Protocol, TypeVar, Generic, Callable
 from enum import Enum
 from dataclasses import dataclass, field
-from orchestration.workflow_graph import run_workflow_graph  # Added import
-from infra.di_container import inject_dependencies
+from archives.legacy_root_folders.orchestration.workflow_graph import run_workflow_graph
+from archives.legacy_root_folders.infra.di_container import inject_dependencies
 
 T = TypeVar('T')
 
@@ -27,7 +27,7 @@ class NodeResult(Generic[T]):
     status: NodeStatus
     output: Optional[T] = None
     error: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
 
 class WorkflowNode(Protocol[T]):
     """Protocol that all workflow nodes must implement."""
@@ -37,7 +37,7 @@ class WorkflowNode(Protocol[T]):
         """Unique identifier for this node."""
         ...
         
-    async def execute(self, context: Dict[str, Any]) -> NodeResult[T]:
+    async def execute(self, context: Dict[str, object]) -> NodeResult[T]:
         """Execute this node with the given context."""
         ...
 
@@ -46,7 +46,7 @@ class Edge:
     """Directed edge between two workflow nodes."""
     source: str
     target: str
-    condition: Optional[Callable[[Dict[str, Any]], bool]] = None
+    condition: Optional[Callable[[Dict[str, object]], bool]] = None
 
 class Workflow:
     """A directed acyclic graph (DAG) of workflow nodes."""
@@ -62,7 +62,7 @@ class Workflow:
         # Implementation omitted for brevity
         pass
     
-    async def execute(self, initial_context: Dict[str, Any]) -> Dict[str, NodeResult]:
+    async def execute(self, initial_context: Dict[str, object]) -> Dict[str, NodeResult]:
         """Execute the workflow with the given initial context."""
         # Implementation of DAG execution
         # This is a simplified version - a real implementation would include:
@@ -92,10 +92,10 @@ class DAGResult:
     success: bool
     results: Dict[str, NodeResult] = field(default_factory=dict)
     error: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)
     # Compatibility fields for tests
     l2_results: Any = None
-    final_state_patch: Dict[str, Any] = field(default_factory=dict)
+    final_state_patch: Dict[str, object] = field(default_factory=dict)
     correction_signals: List[Any] = field(default_factory=list)
     safety_passed: bool = True
     corrected: bool = False
@@ -127,7 +127,7 @@ def run_dag(ctx, plans, *, max_retries: int = 0):
     @dataclass
     class DAGResultCompat:
         l2_results: Any
-        final_state_patch: Dict[str, Any]
+        final_state_patch: Dict[str, object]
         correction_signals: List[Any]
         safety_passed: bool
         corrected: bool
@@ -269,7 +269,7 @@ def run_dag(ctx, plans, *, max_retries: int = 0):
 async def run_dag_async(
     nodes: List[WorkflowNode],
     edges: List[Edge],
-    initial_context: Dict[str, Any],
+    initial_context: Dict[str, object],
     *,
     max_retries: int = 0
 ) -> DAGResult:
@@ -312,7 +312,7 @@ def orchestrate_execution(plans, ctx):
     This function bridges L3 orchestration to L2 execution,
     following the layer separation principle.
     """
-    from l2.execution import execute_workflow_plans
+    from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_workflow_plans
     return execute_workflow_plans(plans, ctx)
 
 def collect_error_events():

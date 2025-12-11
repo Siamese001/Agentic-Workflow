@@ -7,7 +7,7 @@ Generated: 2025-12-07T12:07:59.893601
 
 from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -43,12 +43,12 @@ class ValidationResult:
 class ValidateScriptsConstraints:
     """Validator for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None):
         self.config = config or {}
         self.strict = self.config.get("strict", False)
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def validate(self, data: Any, schema: Optional[Dict] = None) -> ValidationResult:
+    def validate(self, data: object, schema: Optional[Dict] = None) -> ValidationResult:
         """Validate data against schema."""
         findings = []
         findings.extend(self._validate_types(data, schema))
@@ -57,7 +57,7 @@ class ValidateScriptsConstraints:
         is_valid = not any(f.severity == ValidationSeverity.ERROR for f in findings)
         return ValidationResult(is_valid=is_valid, findings=findings)
 
-    def _validate_types(self, data: Any, schema: Optional[Dict]) -> List[ValidationFinding]:
+    def _validate_types(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate data types."""
         findings = []
         if schema and "type" in schema:
@@ -71,7 +71,7 @@ class ValidateScriptsConstraints:
                 ))
         return findings
 
-    def _validate_required(self, data: Any, schema: Optional[Dict]) -> List[ValidationFinding]:
+    def _validate_required(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate required fields."""
         findings = []
         if schema and "required" in schema and isinstance(data, dict):
@@ -86,6 +86,6 @@ class ValidateScriptsConstraints:
         return findings
 
 
-def validate(data: Any, schema: Optional[Dict] = None, config: Optional[Dict] = None) -> ValidationResult:
+def validate(data: object, schema: Optional[Dict] = None, config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return ValidateScriptsConstraints(config).validate(data, schema)

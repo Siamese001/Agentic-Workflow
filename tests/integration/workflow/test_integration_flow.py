@@ -18,7 +18,7 @@ Tests that verify:
 - Early exit (stops when appropriate)
 """
 from __future__ import annotations
-from typing import Dict, List, Any
+from typing import Dict, List
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -32,7 +32,7 @@ class WorkflowStatus(Enum):
 class WorkflowState:
     id: str
     status: WorkflowStatus
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: Dict[str, object] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
     execution_log: List[str] = field(default_factory=list)
 

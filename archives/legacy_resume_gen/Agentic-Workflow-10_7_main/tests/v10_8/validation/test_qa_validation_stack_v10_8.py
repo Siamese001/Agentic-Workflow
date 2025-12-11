@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from types import SimpleNamespace
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types import SimpleNamespace
 
 import pytest
 
-from agent_stacks_v10_8.qa_validation_stack import QAValidationStack
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_stacks_v10_8.qa_validation_stack import QAValidationStack  # INVALID: Cannot import from path with hyphens
 
 
 class _DummyTool:

@@ -2,14 +2,14 @@
 # Version: 5.2.0 - Recovery System Launcher
 # Smart launcher for v5.2 workflow with v3.8 logic integration
 
-import argparse
+import agentic_core.L1_cognition.P1_retrieve.gather_context.parse
 import json
 import os
 import sys
 from datetime import datetime
 from pathlib import Path
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, object, Optional
 
 # Configure logging for the launcher
 logging.basicConfig(
@@ -23,8 +23,8 @@ __version__ = "5.2.0-recovery"
 
 # Import the main components from v5.2 modules
 try:
-    from workflow_RES_v5_2 import WorkflowV52
-    from config_RES import CONFIG, OUTPUT_DIR, DATA_DIR
+    from archives.legacy_resume_gen.Older Microservices Models.v5.2.workflow_RES_v5_2 import WorkflowV52
+    from archives.legacy_resume_gen.Agentic AI - not communicating.config_RES import CONFIG, OUTPUT_DIR, DATA_DIR
     logger.info(f"✅ Successfully imported v5.2 modules (version: {__version__})")
 except ImportError as e:
     logger.critical(f"Error: Could not import v5.2 modules")
@@ -38,7 +38,7 @@ except ImportError as e:
     sys.exit(1)
 
 
-def load_job_input(filename: str) -> Dict[str, Any]:
+def load_job_input(filename: str) -> Dict[str, object]:
     """Loads the job input JSON file with error handling."""
     if not os.path.exists(filename):
         logger.critical("=" * 80)
@@ -82,7 +82,7 @@ def load_job_input(filename: str) -> Dict[str, Any]:
         sys.exit(1)
 
 
-def load_master_resume(filename: str = "master_resume.json") -> Dict[str, Any]:
+def load_master_resume(filename: str = "master_resume.json") -> Dict[str, object]:
     """Loads the master resume JSON file."""
     master_path = Path(filename)
     
@@ -120,11 +120,11 @@ def load_master_resume(filename: str = "master_resume.json") -> Dict[str, Any]:
 
 
 def run_workflow(
-    job_input: Dict[str, Any],
-    master_resume: Dict[str, Any],
+    job_input: Dict[str, object],
+    master_resume: Dict[str, object],
     output_dir: Optional[str] = None,
-    config_overrides: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+    config_overrides: Optional[Dict[str, object]] = None
+) -> Dict[str, object]:
     """
     Run the v5.2 workflow for a single job application.
     
@@ -163,7 +163,7 @@ def run_workflow(
     return results
 
 
-def print_summary(results: Dict[str, Any]):
+def print_summary(results: Dict[str, object]):
     """Print a summary of the workflow results."""
     print("\n" + "=" * 80)
     print("WORKFLOW SUMMARY - V5.2 Recovery System")

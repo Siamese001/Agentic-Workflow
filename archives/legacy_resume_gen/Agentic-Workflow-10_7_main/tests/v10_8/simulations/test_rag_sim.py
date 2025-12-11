@@ -2,8 +2,8 @@
 
 import pytest
 
-from simulations.engines.rag_sim import RAGSimulator
-from simulations.models import RAGSimRequest
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag_sim import RAGSimulator  # INVALID: Cannot import from path with hyphens
+from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.dag.test_dag_models import RAGSimRequest
 
 
 @pytest.mark.asyncio

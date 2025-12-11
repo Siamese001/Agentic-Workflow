@@ -12,22 +12,14 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
-from l2_execution import ExecutionAgent
-from retrieval import fuse_results
-from retrieval import (
-    normalize_documents,
-    dedupe_results,
-    rerank_results,
-    fuse_sources,
-    truncate_by_budget,
-    apply_ranker,
-)
-from l4_memory import ContextBudget
-from utils_types import BudgetConfig, PlanObject, StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_tooling_profiles import DEFAULT_TOOLING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import ExecutionAgent  # INVALID: Cannot import from path with hyphens
+from archives.legacy_root_folders.retrievers.retrieval import fuse_results
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import ContextBudget  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import BudgetConfig, PlanObject, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
-def _synthesize_result(query: str, index: int) -> Dict[str, Any]:
+def _synthesize_result(query: str, index: int) -> Dict[str, object]:
     """Create a deterministic retrieval result for a query."""
 
     return {
@@ -40,7 +32,7 @@ def _synthesize_result(query: str, index: int) -> Dict[str, Any]:
 class RAGExecutionAgent(ExecutionAgent):
     """Deterministic retrieval executor that returns state patches only."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         retrieval = plan.get("retrieval", {})
         queries: List[str] = [str(q) for q in retrieval.get("queries", [])]
         filters = retrieval.get("filters", {})

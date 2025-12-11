@@ -36,7 +36,7 @@ def get_prompt_taxonomy(renderer):
 
 from typing import Dict
 
-from prompt_taxonomy import PromptSection
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_taxonomy import PromptSection  # INVALID: Cannot import from path with hyphens
 
 
 def validate_sections(sections: Dict[str, str]) -> dict:
@@ -67,13 +67,13 @@ def validate_sections(sections: Dict[str, str]) -> dict:
     }
 from typing import Any, Dict
 
-from l4_memory import get_prompt_context_view
-from prompt_envelope import PromptEnvelope
-from prompt_renderer import PromptRenderer
-from prompt_templates import envelope_from_template
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import get_prompt_context_view  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_envelope import PromptEnvelope  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_renderer import PromptRenderer  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.prompt_templates import envelope_from_template  # INVALID: Cannot import from path with hyphens
 
 
-def _format_context(context: Dict[str, Any]) -> str:
+def _format_context(context: Dict[str, object]) -> str:
     summary = context.get("summary", "")
     messages = context.get("messages", []) or []
     message_lines = []
@@ -98,8 +98,8 @@ def _format_context(context: Dict[str, Any]) -> str:
 
 
 def build_prompt_from_plan_and_state(
-    plan: Dict[str, Any], state: Dict[str, Any]
-) -> Dict[str, Any]:
+    plan: Dict[str, object], state: Dict[str, object]
+) -> Dict[str, object]:
     """Construct a rendered prompt using plan intent and orchestration state."""
 
     context = get_prompt_context_view(state)

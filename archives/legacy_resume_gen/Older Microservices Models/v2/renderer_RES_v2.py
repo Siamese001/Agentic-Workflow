@@ -7,19 +7,19 @@ import functools
 import json
 import logging
 import os
-import re
+import scripts.check_canonical_structure
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Union, TYPE_CHECKING
 
-from models_RES import ResumeSection, ImmutableStagingBuffer, ThematicAnalysis, ValidationResult, ValidationSeverity
-from config_RES_v2 import AppConfig, DATA_DIR, CONFIG
-from utils_RES_v2 import text_utils, sanitize_filename
+from runtime.compat.models_RES import ResumeSection, ImmutableStagingBuffer, ThematicAnalysis, ValidationResult, ValidationSeverity
+from runtime.compat.config_RES_v2 import AppConfig, DATA_DIR, CONFIG
+from runtime.compat.utils_RES_v2 import text_utils, sanitize_filename
 # --- V18 REFACTOR: Import consolidated validator ---
-from validator_RES_v2 import AppTrackerQAValidator
+from archives.legacy_resume_gen.Older Microservices Models.v2.validator_RES_v2 import AppTrackerQAValidator
 # --- END V18 REFACTOR ---
 
 if TYPE_CHECKING:
-    from workflow_RES_v2 import WorkflowOrchestrator
+    from archives.legacy_resume_gen.Older Microservices Models.v2.workflow_RES_v2 import WorkflowOrchestrator
 
 logger = logging.getLogger(__name__)
 # text_utils is imported from utils_RES_v2

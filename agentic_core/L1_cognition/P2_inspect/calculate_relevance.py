@@ -4,7 +4,6 @@ AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
 L5 CANONICAL — WINDSURF Ω — 2025-12-07
 MERKLE-INTENDED: 51e12a4231e9a6ea3c046d062e0971a5bec2f9ba2bccdbfb0076ccc12ab87a22
 """
-from __future__ import annotations
 # Relevance calculation for inspection phase
 
 """
@@ -16,7 +15,7 @@ Provides deterministic scoring to prioritize relevant information for résumé i
 
 
 
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 
 class ContextItem:
@@ -27,7 +26,7 @@ class ContextItem:
     """
     id: str
     text: str
-    metadata: Dict[str, Any]
+    metadata: Dict[str, object]
 
 
 def score_relevance(query: str, items: List[ContextItem]) -> List[Tuple[ContextItem, float]]:

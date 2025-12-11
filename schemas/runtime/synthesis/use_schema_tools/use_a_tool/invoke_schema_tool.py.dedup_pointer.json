@@ -1,8 +1,0 @@
-{
-  "pointer_type": "dedup",
-  "canonical_path": "09_apps\\__init__.py",
-  "reason": "AST+semantic duplicate - zero-loss merge",
-  "source_hash": "a8f46d884f284d88",
-  "original_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\runtime_ops\\synthesis\\use_schema_tools\\use_a_tool\\invoke_schema_tool.py",
-  "created": "2025-12-07T11:54:45.925912"
-}

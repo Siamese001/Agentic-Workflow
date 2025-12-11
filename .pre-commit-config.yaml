@@ -1,26 +1,143 @@
-# .pre-commit-config.yaml — SADISTIC ZERO-MERCY EDITION — DEC 2025
+# .pre-commit-config.yaml — SUBATOMIC CANON 2025 (Light Canon moved to canon_validator.py)
+# Sovereign code: full 40 keys (including schemas, prompt_governance, observability, config)
+# Non-sovereign code: strict Light Canon (12 brutal checks)
+# data/ and archives/: 100% immune
+
 fail_fast: true
-exclude: ^06_data/
+
+# ===================================================================
+# IMMUNE ZONES — NEVER TOUCHED BY ANY HOOK
+# ===================================================================
+exclude: |
+  (?x)^(
+    ^data/|
+    ^archives/|
+    ^__pycache__/
+  )
 
 repos:
-  # 1. CANON + SOVEREIGN IMMORTALITY — ACTIVE
+
+  # ===================================================================
+  # SOVEREIGN AUTO-PROMOTER — FINAL ETERNAL 2025
+  # ===================================================================
   - repo: local
     hooks:
-      - id: canon-validator
-        name: SADISTIC ZERO-MERCY CANON — 40/40 OR DEATH
-        entry: python canon_validator.py --check-40 --hard-fail
+      - id: sovereign-auto-promoter-2025
+        name: Sovereign Auto-Promoter — Eternal 2025 (auto-creates folders)
+        entry: python scripts/sovereign_promoter_2025.py
         language: system
         files: \.py$
-        pass_filenames: false
+        stages: [pre-commit]
+        verbose: true
+        pass_filenames: true
+        exclude: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config|data|archives)/
 
-      - id: prevent-sovereign-changes
-        name: SOVEREIGN CODE IMMORTAL
+  # ===================================================================
+  # 1. FULL 40/40 CANON — ALL SOVEREIGN CODE (L1/L2/L3 ONLY)
+  # ===================================================================
+  - repo: local
+    hooks:
+      - id: canon-40-keys
+        name: 40/40 SUBATOMIC CANON — FULL ENFORCEMENT
+        entry: python canon_validator.py --check-40 --hard-fail
+        language: system
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/.*\.py$
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: prevent-sovereign-delete
+        name: SOVEREIGN CODE IS IMMORTAL — NO DELETE/RENAME
         entry: python scripts/track_changes.py
         language: system
-        files: ^(agentic_core|apps_lic|apps_rg)/
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
         pass_filenames: false
 
-  # 2. BASIC INTEGRITY
+  # ===================================================================
+  # 4. BREAKOUT MANAGEMENT SUITE — 2025 EDITION
+  # Runs right after sovereign auto-promoter, before Light Canon
+  # ===================================================================
+  - repo: local
+    hooks:
+      # 1. Auto-create missing __init__.py in new directories
+      - id: auto-init-py
+        name: "[Breakout] Auto-create __init__.py in new packages"
+        entry: python scripts/auto_init_py.py
+        language: system
+        files: ^.*/[^/]+\.py$
+        stages: [pre-commit]
+        pass_filenames: true
+
+      # 2. Auto-sort imports (ruff) on every new/changed file
+      - id: auto-sort-imports
+        name: "[Breakout] Auto-sort imports with ruff"
+        entry: ruff check --select I --fix
+        language: system
+        files: \.py$
+        stages: [pre-commit]
+
+      # 3. Auto-add file to correct pyproject.toml [tool.ruff] path list
+      - id: auto-ruff-path
+        name: "[Breakout] Auto-register new .py in pyproject.toml ruff paths"
+        entry: python scripts/auto_ruff_path.py
+        language: system
+        files: \.py$
+        stages: [pre-commit]
+
+      # 4. Auto-name new files using verb_noun.py canon (e.g. retrieve_claims.py)
+      - id: auto-verb-noun-naming
+        name: "[Breakout] Enforce & auto-rename to verb_noun.py canon"
+        entry: python scripts/enforce_verb_noun.py --auto-rename
+        language: system
+        files: \.py$
+        stages: [pre-commit]
+        pass_filenames: true
+
+      # 5. Auto-add new sovereign file to README table of contents
+      - id: auto-update-readme-toc
+        name: "[Breakout] Auto-update README.md sovereign TOC"
+        entry: python scripts/update_readme_toc.py
+        language: system
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/.*\.py$
+        stages: [pre-commit]
+
+      # 6. Auto-create companion test file for new sovereign modules
+      - id: auto-create-test
+        name: "[Breakout] Auto-create missing test_*.py for sovereign modules"
+        entry: python scripts/auto_create_test.py
+        language: system
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/.*\.py$
+        stages: [pre-commit]
+
+  # ===================================================================
+  # 3. SOVEREIGN-ONLY QUALITY TOOLS
+  # ===================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
+      - id: ruff-format
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
+
+  - repo: local
+    hooks:
+      - id: pyright-strict
+        name: PYRIGHT — SOVEREIGN ONLY
+        entry: pyright --verifytypes agentic_core apps_lic apps_rg apps_shared schemas prompt_governance observability config --ignoreexternal --level strict
+        language: system
+        pass_filenames: false
+
+      - id: 100-percent-coverage
+        name: 100% COVERAGE — SOVEREIGN ONLY
+        entry: pytest --cov=agentic_core --cov=apps_lic --cov=apps_rg --cov=apps_shared --cov=schemas --cov=prompt_governance --cov=observability --cov=config --cov-fail-under=100 -q
+        language: system
+        pass_filenames: false
+        require_serial: true
+
+  # ===================================================================
+  # 4. BASIC HYGIENE — EVERYWHERE EXCEPT IMMUNE ZONES
+  # ===================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -32,31 +149,38 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
-  # 3. RUFF — ONLY ON TRUE SOVEREIGN MODULE (generated code excluded)
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.4
+  # ===================================================================
+  # 5. CUSTOM VALIDATION — PROJECT-SPECIFIC
+  # ===================================================================
+  - repo: local
     hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-        files: ^agentic_core/
-      - id: ruff-format
-        files: ^agentic_core/
+      - id: validate-data-immortality
+        name: Validate data immortality
+        entry: python scripts/validate_data_immortality.py
+        language: system
+        always_run: true
 
-  # 4. PYRIGHT — SOVEREIGN + SHARED ONLY (temporarily disabled)
-  # - repo: local
-  #   hooks:
-  #     - id: pyright-strict
-  #       name: PYRIGHT 100% TYPE PERFECTION
-  #       entry: pyright --verifytypes agentic_core apps_lic apps_rg runtime/shared --ignoreexternal --level strict
-  #       language: system
-  #       pass_filenames: false
+      - id: check-canonical-structure
+        name: Check canonical project structure
+        entry: python scripts/check_canonical_structure.py
+        language: system
 
-  # 5. COVERAGE + MUTATION — SOVEREIGN ONLY (temporarily disabled)
-  # - repo: local
-  #   hooks:
-  #     - id: 100-percent-coverage
-  #       name: 100% COVERAGE OR DIE
-  #       entry: pytest --cov=agentic_core --cov=apps_lic --cov=apps_rg --cov-fail-under=100 -q
-  #       language: system
-  #       pass_filenames: false
-  #       require_serial: true
+      - id: validate-sdk-files
+        name: Validate SDK files are executable
+        entry: python scripts/validate_sdk_files.py
+        language: system
+        files: '^data/sdks_mcps/.*\.py$'
+
+  # ===================================================================
+  # AUTO-UPDATE GITHUB README — SOVEREIGN COMMITS ONLY
+  # Updates README.md and stages it (NO git commit inside hook - avoids recursion)
+  # ===================================================================
+  - repo: local
+    hooks:
+      - id: update-main-readme
+        name: AUTO-UPDATE README ON SOVEREIGN CHANGES
+        entry: python scripts/update_readme.py
+        language: system
+        files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
+        pass_filenames: false
+        stages: [pre-commit]

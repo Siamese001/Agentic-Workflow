@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from core_v10_7 import BaseAgent, RAGPlan
+from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import BaseAgent, RAGPlan
 
-from .planning_utils import describe_experience, extract_job_profile, extract_resume_profile
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.planning_utils import describe_experience, extract_job_profile, extract_resume_profile  # INVALID: Cannot import from path with hyphens
 
 
 class RAGPlanningStack(BaseAgent):
@@ -16,12 +16,12 @@ class RAGPlanningStack(BaseAgent):
         super().__init__(context, debug_mode)
 
     async def run_async(
-        self, state: Dict[str, Any], workflow_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, state: Dict[str, object], workflow_id: Optional[str] = None
+    ) -> Dict[str, object]:
         plan = self._build_plan(state)
         return {"rag": {"plan": plan.model_dump()}}
 
-    def _build_plan(self, state: Dict[str, Any]) -> RAGPlan:
+    def _build_plan(self, state: Dict[str, object]) -> RAGPlan:
         job_profile = extract_job_profile(state)
         resume_profile = extract_resume_profile(state)
         experiences = resume_profile["experiences"]
@@ -39,7 +39,7 @@ class RAGPlanningStack(BaseAgent):
             risk_checks=risk_checks,
         )
 
-    def _goal_statement(self, job_profile: Dict[str, Any]) -> str:
+    def _goal_statement(self, job_profile: Dict[str, object]) -> str:
         title = job_profile["title"]
         company = job_profile["company"]
         if title and company:
@@ -49,7 +49,7 @@ class RAGPlanningStack(BaseAgent):
         return "Surface evidence aligned to the target role"
 
     def _context_inputs(
-        self, job_profile: Dict[str, Any], resume_profile: Dict[str, Any]
+        self, job_profile: Dict[str, object], resume_profile: Dict[str, object]
     ) -> List[str]:
         inputs: List[str] = []
         if job_profile["summary"]:
@@ -67,8 +67,8 @@ class RAGPlanningStack(BaseAgent):
 
     def _queries(
         self,
-        job_profile: Dict[str, Any],
-        experiences: List[Dict[str, Any]],
+        job_profile: Dict[str, object],
+        experiences: List[Dict[str, object]],
         requirements: List[str],
     ) -> List[str]:
         queries: List[str] = []
@@ -91,7 +91,7 @@ class RAGPlanningStack(BaseAgent):
     def _prioritization(
         self,
         requirements: List[str],
-        experiences: List[Dict[str, Any]],
+        experiences: List[Dict[str, object]],
     ) -> List[str]:
         prioritization: List[str] = []
         if requirements:

@@ -17,15 +17,15 @@ import logging
 import shutil
 import concurrent.futures
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, object
 
 # Imports from its *own* versioned files (v6.5)
-from main_v6_5 import WorkflowV65, setup_logging
-from core_v6_5 import CONFIG, CircuitBreakerOpenError
+from archives.legacy_resume_gen.Older Microservices Models.v6.5.main_v6_5 import WorkflowV65, setup_logging
+from archives.legacy_resume_gen.Older Microservices Models.v6.5.core_v6_5 import CONFIG, CircuitBreakerOpenError
 
 # v6.5: Import the meta-learner to be triggered automatically
 try:
-    from run_learning_v6_5 import run_meta_learning
+    from archives.legacy_resume_gen.Older Microservices Models.v6.5.run_learning_v6_5 import run_meta_learning
     META_LEARNER_AVAILABLE = True
 except ImportError:
     META_LEARNER_AVAILABLE = False
@@ -46,7 +46,7 @@ BATCH_QUEUE_DIR = "batch_queue"
 BATCH_COMPLETE_DIR = "batch_complete"
 SUMMARY_FILE = "batch_summary_v6_5.csv"
 
-def process_single_job(job_path: str) -> Dict[str, Any]:
+def process_single_job(job_path: str) -> Dict[str, object]:
     """
     Wraps the execution of a single job for the parallel executor.
     Returns a dictionary for the summary CSV.

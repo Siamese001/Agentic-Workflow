@@ -5,10 +5,10 @@ import uuid
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from observability import record_event
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import record_event  # INVALID: Cannot import from path with hyphens
 
-from infra.sandbox.models import ToolCallRequest, ToolCallResult
-from infra.sandbox.sandbox_errors import SandboxTimeoutError
+from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest, ToolCallResult
+from archives.legacy_root_folders.infra.sandbox.sandbox_errors import SandboxTimeoutError
 
 
 @dataclass
@@ -19,11 +19,11 @@ class MicroVM:
     """
 
     id: str
-    resource_limits: Dict[str, Any]
+    resource_limits: Dict[str, object]
     created_at_ms: int
 
 
-def create_vm(resource_limits: Dict[str, Any] | None = None) -> MicroVM:
+def create_vm(resource_limits: Dict[str, object] | None = None) -> MicroVM:
     vm = MicroVM(id=str(uuid.uuid4()), resource_limits=dict(resource_limits or {}), created_at_ms=_now_ms())
     record_event(
         "sandbox_start",

@@ -28,10 +28,10 @@ import json
 import logging
 import asyncio
 import uuid
-from typing import Dict, Any, List, Type, Optional
+from typing import Dict, object, List, Type, Optional
 
-from pydantic import BaseModel, Field
-from chromadb.utils import embedding_functions
+from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+from shared.reasoning_utils import embedding_functions
 try:
     from rank_bm25 import BM25Okapi
     BM25_AVAILABLE = True
@@ -43,34 +43,6 @@ except ImportError:
     )
 
 # v10.7: Import from new core
-from core_v10_7 import (
-    WorkflowContext,
-    PydanticSchemaError,
-    # Import all 15 Pydantic output models
-    BaseToolOutput,
-    DraftStrategyOutput,
-    RedTeamOutput,
-    RefineSectionOutput,
-    AddMetricsOutput,
-    QAClaimOutput,
-    QAToneOutput,
-    QAThematicAlignmentOutput,
-    QASemanticEntailmentOutput,
-    QANarrativeThreadOutput,
-    QAJDSkillsOutput,
-    QASignalScoreOutput,
-    QATenureOutput,
-    QAMissedOpportunitiesOutput,
-    QAAdversarialOutput,
-    QABiasOutput,
-    # v10.7: Import new decorator
-    track_metrics,
-    BaseTool,
-    # v10.7: Import centralized prompt formatter
-    _format_prompt_with_defaults,
-    detect_bias,
-    MCPClientStub
-)
 
 # v10.7: Logger name updated
 logger = logging.getLogger("agent_tools_v10_7")
@@ -81,7 +53,7 @@ def resolve_mcp_client(
     name: str,
     *,
     optional: bool = False,
-    fallback_parameters: Optional[Dict[str, Any]] = None,
+    fallback_parameters: Optional[Dict[str, object]] = None,
 ):
     """Helper that returns an MCP client or a stub fallback."""
 
@@ -107,7 +79,7 @@ class DraftingLLMTool(BaseTool):
     log_action: str = ""
 
     @track_metrics('tool_drafting_llm')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         action = self.log_action or f"Running {self.tool_name}"
         self.log_info(f"Tool: {action} (v10.7)...")
 
@@ -202,7 +174,7 @@ class EvidenceClarificationTool(BaseTool):
     output_model = ClarificationRequestOutput
 
     @track_metrics('tool_request_evidence_clarification')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Tool: Logging clarification request (v10.7 Guild)...")
 
         recipient = tool_input.get("recipient", "bullet_team")
@@ -241,7 +213,7 @@ class EvidenceBriefAssemblerTool(BaseTool):
     output_model = EvidenceBriefOutput
 
     @track_metrics('tool_assemble_evidence_brief')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info("Tool: Assembling evidence brief (v10.7 Guild)...")
 
         section_name = tool_input.get("section", "general")
@@ -289,7 +261,7 @@ class HyDETool(BaseTool):
         hypothetical_document: str = Field(..., description="A hypothetical document that answers the query.")
 
     @track_metrics('run_hyde_tool')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running HyDE (v10.7)...")
         client = self.get_model_client("hyde_model")
         
@@ -331,7 +303,7 @@ class ChromaDBSearchTool(BaseTool):
         self.chroma_client = self.context.chromadb_client
         
     @track_metrics('run_chroma_tool')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         query = tool_input.get("query", "")
         self.log_info(f"Searching ChromaDB (Vector) for: {query}")
 
@@ -374,7 +346,7 @@ class BM25SearchTool(BaseTool):
             self.log_error("BM25SearchTool disabled: 'rank_bm25' not installed.")
     
     @track_metrics('run_bm25_tool')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         if not BM25_AVAILABLE:
             return {"search_results": []}
             
@@ -418,7 +390,7 @@ class QABaseValidatorTool(BaseTool):
     output_model: Any = BaseToolOutput
 
     @track_metrics('tool_qa_validator')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running {self.tool_name} (v10.7)...")
         client = self.get_model_client(self.model_config_name)
 
@@ -510,7 +482,7 @@ class QAAdversarialReviewerTool(BaseTool):
     output_model = QAAdversarialOutput 
 
     @track_metrics('tool_qa_adversarial')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running Adversarial Review (v10.7)...")
         client = self.get_model_client("qa_adversarial_model")
         prompt_template = self.prompt_manager.get_template(self.tool_name)
@@ -539,7 +511,7 @@ class QABiasDetectorTool(BaseTool):
     output_model = QABiasOutput
 
     @track_metrics('tool_qa_bias_detector')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running local bias detector (v10.7)...")
         draft_text = json.dumps(tool_input.get("draft_text", ""))
 
@@ -564,7 +536,7 @@ class QAWordCountValidatorTool(BaseTool):
     output_model = WordCountOutput
 
     @track_metrics('tool_qa_word_count')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         self.log_info(f"Tool: Running Word Count Validator (v10.7)...")
         
         text_to_check = tool_input.get("text_to_check", "")
@@ -605,7 +577,7 @@ class UIUpdateElementTool(BaseTool):
     output_model = BaseToolOutput
 
     @track_metrics('tool_ui_update_element')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         element_id = tool_input.get("element_id", "unknown")
         content = tool_input.get("content", "")
         
@@ -622,7 +594,7 @@ class UIFireEventTool(BaseTool):
     output_model = BaseToolOutput
 
     @track_metrics('tool_ui_fire_event')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def _run_async_internal(self, tool_input: Dict[str, object], workflow_id: str) -> Dict[str, object]:
         event_name = tool_input.get("event_name", "unknown_event")
         payload = tool_input.get("payload", {})
         

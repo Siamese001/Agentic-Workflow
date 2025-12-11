@@ -5,14 +5,14 @@
 # Refactored from validator_RES_v3_8.py
 
 import logging
-import re
+import scripts.check_canonical_structure
 from typing import List, Tuple, Set
 from collections import defaultdict
 
 # Import ValidationContext from same package
-from validation_context import ValidationContext
-from models_RES import ResumeSection, BulletProvenance
-from utils_RES import text_utils, calculate_signal_score
+from archives.legacy_resume_gen.Older Microservices Models.v3.8.validation_context import ValidationContext
+from runtime.compat.models_RES import ResumeSection, BulletProvenance
+from archives.legacy_resume_gen.Agentic AI - not communicating.utils_RES import text_utils, calculate_signal_score
 
 # --- Regex Patterns (Moved from PreFlightValidator) ---
 PROMPT_CONTAMINATION_PATTERN = re.compile(r"\b(MUST|CRITICAL|ABSOLUTELY|Do NOT|Output ONLY|Return ONLY|JSON structure|Word count:|Sentence count:|Target range:|strictly between)\b", re.IGNORECASE)

@@ -10,10 +10,10 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict
 
-from utils_types import StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
-def _merge_dict(base: Dict[str, Any], patch: Dict[str, Any]) -> Dict[str, Any]:
+def _merge_dict(base: Dict[str, object], patch: Dict[str, object]) -> Dict[str, object]:
     """Recursively merge dictionaries with deterministic ordering."""
 
     result = copy.deepcopy(base)
@@ -30,7 +30,7 @@ def _merge_dict(base: Dict[str, Any], patch: Dict[str, Any]) -> Dict[str, Any]:
     return result
 
 
-def apply_patch(state: Dict[str, Any], patch: StatePatch) -> Dict[str, Any]:
+def apply_patch(state: Dict[str, object], patch: StatePatch) -> Dict[str, object]:
     """Apply a StatePatch to a state dictionary deterministically.
 
     The function returns a new state without mutating the original input.

@@ -12,9 +12,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
-from l2_execution import ExecutionAgent
-from utils_types import PlanObject, StatePatch
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.injection_tooling_profiles import DEFAULT_TOOLING_PROFILE  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import ExecutionAgent  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import PlanObject, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
 def _compose_section(title: str, tone: str, audience: str) -> str:
@@ -26,7 +26,7 @@ def _compose_section(title: str, tone: str, audience: str) -> str:
 class DraftingExecutionAgent(ExecutionAgent):
     """Create draft content without performing any tool calls."""
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+    def execute(self, plan: PlanObject, state: Dict[str, object]) -> StatePatch:
         tone = str(plan.get("tone", "neutral"))
         audience = str(plan.get("audience", "general"))
         sections: List[str] = [str(section) for section in plan.get("sections", [])]

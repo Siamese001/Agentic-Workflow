@@ -11,57 +11,12 @@ import pytest
 from datetime import datetime, UTC
 
 # L4 Components
-from l4.triplet_store import (
-    TripletStore,
-    Triplet,
-    TripletQuery,
-    TemporalType,
-    TripletStatus,
-    create_triplet,
-    PREDICATES,
-)
-from l4.entity_resolution import (
-    EntityRegistry,
-    EntityType,
-    CanonicalEntity,
-    EntityMention,
-    create_entity,
-    create_mention,
-)
 
 # L1 Components
-from l1.kg_retrieval_planning import (
-    KGRetrievalPlanner,
-    KGQueryPlan,
-    QueryType,
-    HopDirection,
-    plan_entity_retrieval,
-)
 
 # L2 Components
-from l2.kg_retrieval_executor import (
-    KGRetrievalExecutor,
-    KGRetrievalResult,
-    execute_entity_query,
-)
-from l2.triplet_extraction_executor import (
-    TripletExtractionExecutor,
-    ExtractionPlan,
-    create_extraction_plan,
-)
-from l2.invalidation_executor import (
-    InvalidationExecutor,
-    InvalidationPlan,
-    InvalidationReason,
-    create_invalidation_plan,
-)
 
 # L3 Components
-from orchestration.kg_retrieval_orchestration import (
-    KGFirstRetrievalOrchestrator,
-    HybridRetrievalContext,
-    create_hybrid_context,
-)
 
 
 class TestTripletStore:
@@ -252,7 +207,7 @@ class TestKGRetrievalExecutor:
         store.add_triplet(create_triplet("user_1", "has_skill", "Python"))
         store.add_triplet(create_triplet("job_1", "requires_skill", "Python"))
         
-        from l2.kg_retrieval_executor import execute_multi_hop_query
+        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_retrieval_executor import execute_multi_hop_query
         
         result = execute_multi_hop_query(
             store,

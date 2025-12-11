@@ -1,6 +1,6 @@
-from eval.golden_state.datasets import load_golden_cases
-from eval.golden_state.evaluator import evaluate_case_output
-from eval.golden_state.models import GoldenCase, GoldenOutput
+from archives.legacy_root_folders.eval.golden_state.datasets import load_golden_cases
+from archives.legacy_root_folders.eval.golden_state.evaluator import evaluate_case_output
+from archives.legacy_root_folders.eval.golden_state.models import GoldenCase, GoldenOutput
 
 
 def test_evaluate_case_output_basic():

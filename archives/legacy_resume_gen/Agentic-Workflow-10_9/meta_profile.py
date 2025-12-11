@@ -108,8 +108,8 @@ class MetaUpdate:
         deltas:    snapshot of bias fields that changed
     """
     source: str
-    payload: Dict[str, Any] = field(default_factory=dict)
-    deltas: Dict[str, Any] = field(default_factory=dict)
+    payload: Dict[str, object] = field(default_factory=dict)
+    deltas: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -134,7 +134,7 @@ class MetaProfile:
     safety_bias: SafetyBias = field(default_factory=SafetyBias)
     history: List[MetaUpdate] = field(default_factory=list)
 
-    def snapshot(self) -> Dict[str, Any]:
+    def snapshot(self) -> Dict[str, object]:
         """
         Return a snapshot safe for logging or inspection.
         Only the last N history entries are preserved to bound size.
@@ -154,7 +154,7 @@ class MetaProfile:
             ],
         }
 
-    def _record_update(self, source: str, payload: Dict[str, Any], deltas: Dict[str, Any]) -> None:
+    def _record_update(self, source: str, payload: Dict[str, object], deltas: Dict[str, object]) -> None:
         """
         Internal helper to append a MetaUpdate to history.
         """
@@ -176,7 +176,7 @@ META_PROFILE = MetaProfile()
 # ============================================================================
 
 
-def update_from_spans(spans: List[Dict[str, Any]]) -> None:
+def update_from_spans(spans: List[Dict[str, object]]) -> None:
     """
     Update META_PROFILE from a list of span dicts, each of form:
 
@@ -198,7 +198,7 @@ def update_from_spans(spans: List[Dict[str, Any]]) -> None:
     p_ms = float(planning.get("duration_ms", 0.0)) if planning else 0.0
     e_ms = float(execution.get("duration_ms", 0.0)) if execution else 0.0
 
-    payload: Dict[str, Any] = {
+    payload: Dict[str, object] = {
         "planning_ms": p_ms,
         "execution_ms": e_ms,
     }
@@ -210,7 +210,7 @@ def update_from_spans(spans: List[Dict[str, Any]]) -> None:
     else:
         META_PROFILE.routing_bias.prefer_fast = False
 
-    deltas: Dict[str, Any] = {}
+    deltas: Dict[str, object] = {}
     if META_PROFILE.routing_bias.prefer_fast != prefer_fast_before:
         deltas["routing_bias.prefer_fast"] = META_PROFILE.routing_bias.prefer_fast
 
@@ -223,7 +223,7 @@ def update_from_spans(spans: List[Dict[str, Any]]) -> None:
 # ============================================================================
 
 
-def update_from_self_correction(self_correction_block: Dict[str, Any]) -> None:
+def update_from_self_correction(self_correction_block: Dict[str, object]) -> None:
     """
     Update META_PROFILE from a self_correction block, typically derived
     from self_correction.CorrectionRecommendation.to_dict().
@@ -270,7 +270,7 @@ def update_from_self_correction(self_correction_block: Dict[str, Any]) -> None:
         "metadata": self_correction_block.get("metadata", {}),
     }
 
-    deltas: Dict[str, Any] = {}
+    deltas: Dict[str, object] = {}
 
     if surface == "qa_recheck":
         if not META_PROFILE.planning_bias.conservative:
@@ -309,7 +309,7 @@ def update_from_self_correction(self_correction_block: Dict[str, Any]) -> None:
 # ============================================================================
 
 
-def update_from_run_summary(run_summary: Dict[str, Any]) -> None:
+def update_from_run_summary(run_summary: Dict[str, object]) -> None:
     """
     Optional hook: update META_PROFILE from a run_summary as produced
     by observability.summarize_run().
@@ -343,13 +343,13 @@ def update_from_run_summary(run_summary: Dict[str, Any]) -> None:
     safety_issues = issues.get("safety") or []
     hil_issues = issues.get("hil") or []
 
-    payload: Dict[str, Any] = {
+    payload: Dict[str, object] = {
         "qa_issue_count": len(qa_issues),
         "safety_issue_count": len(safety_issues),
         "hil_issue_count": len(hil_issues),
     }
 
-    deltas: Dict[str, Any] = {}
+    deltas: Dict[str, object] = {}
 
     if qa_issues:
         if not META_PROFILE.planning_bias.conservative:
@@ -378,7 +378,7 @@ def update_from_run_summary(run_summary: Dict[str, Any]) -> None:
 # ============================================================================
 
 
-def get_routing_bias() -> Dict[str, Any]:
+def get_routing_bias() -> Dict[str, object]:
     """
     Return a copy of the current routing bias block.
 
@@ -390,7 +390,7 @@ def get_routing_bias() -> Dict[str, Any]:
     return dict(META_PROFILE.routing_bias.__dict__)
 
 
-def get_planning_bias() -> Dict[str, Any]:
+def get_planning_bias() -> Dict[str, object]:
     """
     Return a copy of the current planning bias block.
 
@@ -403,7 +403,7 @@ def get_planning_bias() -> Dict[str, Any]:
     return dict(META_PROFILE.planning_bias.__dict__)
 
 
-def get_qa_bias() -> Dict[str, Any]:
+def get_qa_bias() -> Dict[str, object]:
     """
     Return a copy of the current QA bias block.
 
@@ -416,7 +416,7 @@ def get_qa_bias() -> Dict[str, Any]:
     return dict(META_PROFILE.qa_bias.__dict__)
 
 
-def get_safety_bias() -> Dict[str, Any]:
+def get_safety_bias() -> Dict[str, object]:
     """
     Return a copy of the current safety bias block.
 
@@ -429,7 +429,7 @@ def get_safety_bias() -> Dict[str, Any]:
     return dict(META_PROFILE.safety_bias.__dict__)
 
 
-def get_meta_profile_snapshot() -> Dict[str, Any]:
+def get_meta_profile_snapshot() -> Dict[str, object]:
     """
     Return a full snapshot of the meta profile for logging or debugging.
     """

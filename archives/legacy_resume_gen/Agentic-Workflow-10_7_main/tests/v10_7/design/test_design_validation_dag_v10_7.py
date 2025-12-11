@@ -1,12 +1,6 @@
 import pytest
 
-from agent_orchestration_v10_7 import get_graph_app
-from agentic_workflow.workflow_v10_7.dag_spec import (
-    CONCEPTUAL_DAG,
-    CONCEPTUAL_EDGES,
-    all_concrete_nodes,
-    conceptual_node_map,
-)
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.agent_orchestration_v10_7 import get_graph_app  # INVALID: Cannot import from path with hyphens
 
 EXPECTED_NODES = [
     "SafetyGuardStack",

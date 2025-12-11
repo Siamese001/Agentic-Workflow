@@ -9,7 +9,7 @@ PERMITTED_MODELS: Set[str] = {"gpt-4o", "gpt-4o-mini"}
 PERMITTED_ENDPOINTS: Set[str] = {"default", "fast"}
 
 
-def evaluate_routing_permissions(payload: Dict[str, Any]) -> Dict[str, Any]:
+def evaluate_routing_permissions(payload: Dict[str, object]) -> Dict[str, object]:
     """Return metadata describing routing allowance for the payload."""
 
     model = str(payload.get("model", "")).strip()

@@ -108,8 +108,7 @@ def execute_dedup(dry_run: bool = True) -> Dict:
                     pointer_path = nc_path.with_suffix('.py.dedup_pointer.json')
                     pointer_path.write_text(pointer_content)
 
-                    # Remove original
-                    nc_path.unlink()
+                                        nc_path.unlink()
 
                     results['pointers_created'] += 1
 
@@ -117,7 +116,7 @@ def execute_dedup(dry_run: bool = True) -> Dict:
                 results['bytes_recovered'] += file_size
                 print(f"  [{'WOULD ARCHIVE' if dry_run else 'ARCHIVED'}] {nc_path_str} ({file_size} bytes)")
 
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 results['errors'].append({
                     "path": nc_path_str,
                     "error": str(e)

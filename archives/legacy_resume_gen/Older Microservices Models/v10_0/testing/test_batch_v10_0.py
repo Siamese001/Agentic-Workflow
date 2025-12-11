@@ -14,11 +14,11 @@ from datetime import datetime
 pytest_plugins = ('pytest_asyncio',)
 
 try:
-    from run_batch_v10_0 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.run_batch_v10_0 import process_single_job_async, run_batch_async, run_batch, BATCH_QUEUE_DIR, BATCH_COMPLETE_DIR, SUMMARY_FILE
         process_single_job_async, run_batch_async, run_batch,
         BATCH_QUEUE_DIR, BATCH_COMPLETE_DIR, SUMMARY_FILE
     )
-    from core_v10_0 import (
+    from archives.legacy_resume_gen.Older Microservices Models.v10_0.core_v10_0 import WorkflowContext, MainGraphState, CircuitBreakerOpenError, CostCeilingExceededError
         WorkflowContext, MainGraphState,
         CircuitBreakerOpenError, CostCeilingExceededError
     )

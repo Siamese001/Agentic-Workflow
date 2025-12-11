@@ -13,30 +13,12 @@ import sys
 from unittest.mock import Mock, MagicMock, patch, call
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, object
 
 # Add the module to path
 sys.path.insert(0, '/home/claude')
 
 # Import from the refactored workflow
-from resume_workflow_v16_20 import (
-    WorkflowOrchestrator,
-    ConstraintFailureClassifier,
-    ValidationResult,
-    ValidationSeverity,
-    ValidationEngine,
-    ValidationRule,
-    ArtistGenerator,
-    PreFlightValidator,
-    ResumeSection,
-    HopExecutionError,
-    AppTrackerQAValidator,
-    GeminiWebSearchClient,
-    WebSearchRAG,
-    RAGMission,
-    PhaseExecutor,
-    __version__
-)
 
 
 # ============================================================================

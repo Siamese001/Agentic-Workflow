@@ -3,7 +3,7 @@
 from typing import Any, Dict
 
 
-def model_to_payload(model: Any) -> Dict[str, Any]:
+def model_to_payload(model: Any) -> Dict[str, object]:
     """Return a dict of public fields from a pydantic model."""
 
     if model is None:

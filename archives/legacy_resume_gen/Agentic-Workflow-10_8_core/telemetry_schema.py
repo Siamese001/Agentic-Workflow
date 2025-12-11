@@ -6,7 +6,7 @@ from typing import Any, Dict
 class MetricEvent:
     name: str
     value: float
-    tags: Dict[str, Any]
+    tags: Dict[str, object]
 
 
 @dataclass
@@ -14,7 +14,7 @@ class SpanEvent:
     name: str
     start_time_ms: int
     end_time_ms: int
-    tags: Dict[str, Any]
+    tags: Dict[str, object]
 
 
 @dataclass
