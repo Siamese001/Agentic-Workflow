@@ -1,5 +1,9 @@
 """Unit tests for runtime/shared/utils.py"""
 from __future__ import annotations
+from agentic_workflow.runtime.shared.utils import TextUtils, ImmutableStagingBuffer, DuplicateDetector
+
+# Create singleton instance for testing
+text_utils = TextUtils()
 
 
 class TestTextUtils:

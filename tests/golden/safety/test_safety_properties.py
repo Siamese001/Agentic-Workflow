@@ -10,7 +10,8 @@ class TestSafetyThresholdProperties:
 
     def test_threshold_determinism(self):
         from shared.reasoning_config import SAFETY_THRESHOLD
-        assert SAFETY_THRESHOLD == T2
+        # SAFETY_THRESHOLD should be deterministic
+        assert SAFETY_THRESHOLD == 0.95
 
 class TestGateDecisionProperties:
     def test_gate_decision_has_values(self):

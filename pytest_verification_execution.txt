@@ -1,0 +1,1712 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.9, pytest-9.0.1, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python313\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\Agentic-Workflow
+plugins: anyio-4.12.0, langsmith-0.4.56, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 790 items / 80 errors
+
+=================================== ERRORS ====================================
+_______ ERROR collecting apps_shared/rag/retrieval/test_sdk_latency.py ________
+ImportError while importing test module 'C:\Git\Agentic-Workflow\apps_shared\rag\retrieval\test_sdk_latency.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+apps_shared\rag\retrieval\test_sdk_latency.py:5: in <module>
+    from runtime.shared.cache import generate_llm_cache_key
+E   ModuleNotFoundError: No module named 'runtime.shared'
+_ ERROR collecting archives/legacy_lic/LIC - Python/test_LIC_AGENTIC_v11_1.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_lic\LIC - Python\test_LIC_AGENTIC_v11_1.py", line 49
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_ ERROR collecting archives/legacy_lic/LIC - Python/test_LIC_AGENTIC_v11_2.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_lic\LIC - Python\test_LIC_AGENTIC_v11_2.py", line 48
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_ ERROR collecting archives/legacy_lic/LIC - Python/test_LIC_AGENTIC_v11_3.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_lic\LIC - Python\test_LIC_AGENTIC_v11_3.py", line 54
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_ ERROR collecting archives/legacy_lic/LIC - Python/test_LIC_AGENTIC_v11_4.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_lic\LIC - Python\test_LIC_AGENTIC_v11_4.py", line 48
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_____ ERROR collecting archives/legacy_lic/LIC - Python/test_lic_v11_6.py _____
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_lic\LIC - Python\test_lic_v11_6.py", line 660
+E       from archives.legacy_lic.LIC - Python.LIC_AGENTIC_v11_6 import CircuitBreakerOpenError
+E                                    ^
+E   SyntaxError: invalid syntax
+_____ ERROR collecting archives/legacy_lic/LIC - Python/test_lic_v11_7.py _____
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_lic\LIC - Python\test_lic_v11_7.py", line 8
+E       from archives.legacy_lic.LIC - Python.LIC_AGENTIC_v11_7 import *
+E                                    ^
+E   SyntaxError: invalid syntax
+_____ ERROR collecting archives/legacy_lic/LIC - Python/test_lic_v11_8.py _____
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_lic\LIC - Python\test_lic_v11_8.py", line 19
+E       from archives.legacy_lic.LIC - Python.LIC_AGENTIC_v11_8 import *
+E                                    ^
+E   SyntaxError: invalid syntax
+_____ ERROR collecting archives/legacy_lic/LIC - Python/test_lic_v11_9.py _____
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_lic\LIC - Python\test_lic_v11_9.py", line 19
+E       from archives.legacy_lic.LIC - Python.LIC_AGENTIC_v11_8 import *
+E                                    ^
+E   SyntaxError: invalid syntax
+_____ ERROR collecting archives/legacy_lic/Monolithic/test_lic_v11_10.py ______
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_lic\Monolithic\test_lic_v11_10.py", line 30
+E       from archives.legacy_resume_gen.Older Microservices Models.workflow import *
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+___ ERROR collecting archives/legacy_resume_gen/Agentic-Workflow-10_7_main ____
+Defining 'pytest_plugins' in a non-top-level conftest is no longer supported:
+It affects the entire test suite instead of just below the conftest as expected.
+  C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic-Workflow-10_7_main\conftest.py
+Please move it to a top level conftest file at the rootdir:
+  C:\Git\Agentic-Workflow
+For more information, visit:
+  https://docs.pytest.org/en/stable/deprecations.html#pytest-plugins-in-non-top-level-conftest-files
+_ ERROR collecting archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_l1.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_l1.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_l1.py:245: in <module>
+    from shared.reasoning_utils import CostTracker
+E   ImportError: cannot import name 'CostTracker' from 'shared.reasoning_utils' (C:\Git\Agentic-Workflow\shared\reasoning_utils.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_l5.py _
+archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_l5.py:133: in <module>
+    [StrategyReasoner, RAGReasoner, DraftingReasoner],
+     ^^^^^^^^^^^^^^^^
+E   NameError: name 'StrategyReasoner' is not defined
+_ ERROR collecting archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_multi_agent.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_multi_agent.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_multi_agent.py:2: in <module>
+    from archives.legacy_root_folders.meta.multi_agent import AgentMessage, route_to_specialist
+archives\legacy_root_folders\meta\__init__.py:7: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import retrieval
+archives\legacy_root_folders\retrievers\retrieval.py:9: in <module>
+    from archives.legacy_root_folders.meta.retrieval.retrieval import run_rag_retrieval
+archives\legacy_root_folders\meta\retrieval\__init__.py:11: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import orchestrate_retrieval, run_rag_retrieval
+E   ImportError: cannot import name 'orchestrate_retrieval' from partially initialized module 'archives.legacy_root_folders.retrievers.retrieval' (most likely due to a circular import) (C:\Git\Agentic-Workflow\archives\legacy_root_folders\retrievers\retrieval.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_observability.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_observability.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_observability.py:4: in <module>
+    from shared.reasoning_utils import CostTracker
+E   ImportError: cannot import name 'CostTracker' from 'shared.reasoning_utils' (C:\Git\Agentic-Workflow\shared\reasoning_utils.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_prompt.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_prompt.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_prompt.py:93: in <module>
+    from archives.legacy_root_folders.core.routing import run_model_for_plan
+archives\legacy_root_folders\core\routing.py:3: in <module>
+    from archives.legacy_root_folders.meta.routing import *
+archives\legacy_root_folders\meta\__init__.py:7: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import retrieval
+archives\legacy_root_folders\retrievers\retrieval.py:9: in <module>
+    from archives.legacy_root_folders.meta.retrieval.retrieval import run_rag_retrieval
+archives\legacy_root_folders\meta\retrieval\__init__.py:11: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import orchestrate_retrieval, run_rag_retrieval
+E   ImportError: cannot import name 'orchestrate_retrieval' from partially initialized module 'archives.legacy_root_folders.retrievers.retrieval' (most likely due to a circular import) (C:\Git\Agentic-Workflow\archives\legacy_root_folders\retrievers\retrieval.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_retrieval.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_retrieval.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_retrieval.py:10: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import fuse_results
+archives\legacy_root_folders\retrievers\retrieval.py:9: in <module>
+    from archives.legacy_root_folders.meta.retrieval.retrieval import run_rag_retrieval
+archives\legacy_root_folders\meta\__init__.py:7: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import retrieval
+E   ImportError: cannot import name 'retrieval' from partially initialized module 'archives.legacy_root_folders.retrievers.retrieval' (most likely due to a circular import) (C:\Git\Agentic-Workflow\archives\legacy_root_folders\retrievers\retrieval.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_routing.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_routing.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic-Workflow-10_8_core\tests\test_routing.py:4: in <module>
+    from archives.legacy_root_folders.core.routing import build_client_for_route, configure_for_routing
+archives\legacy_root_folders\core\routing.py:3: in <module>
+    from archives.legacy_root_folders.meta.routing import *
+archives\legacy_root_folders\meta\__init__.py:7: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import retrieval
+archives\legacy_root_folders\retrievers\retrieval.py:9: in <module>
+    from archives.legacy_root_folders.meta.retrieval.retrieval import run_rag_retrieval
+archives\legacy_root_folders\meta\retrieval\__init__.py:11: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import orchestrate_retrieval, run_rag_retrieval
+E   ImportError: cannot import name 'orchestrate_retrieval' from partially initialized module 'archives.legacy_root_folders.retrievers.retrieval' (most likely due to a circular import) (C:\Git\Agentic-Workflow\archives\legacy_root_folders\retrievers\retrieval.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/sdk_validation_test.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\sdk_validation_test.py", line 32
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/_deprecated _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1310: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'tests._deprecated'
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/contracts/test_typed_contracts.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\contracts\test_typed_contracts.py", line 5
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/control_plane/test_routing_and_pipeline.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\control_plane\test_routing_and_pipeline.py:1: in <module>
+    from orchestration.control_plane import SafetyContext, run_safety_pipeline
+archives\legacy_resume_gen\Agentic_Workflow-10_10\orchestration\control_plane\__init__.py:10: in <module>
+    from archives.legacy_root_folders.infra.control_plane.models import SafetyContext, PolicyRule, PolicyDecision
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\infra\control_plane\models.py", line 9
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/control_plane/test_rules_engine.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\control_plane\test_rules_engine.py:1: in <module>
+    from orchestration.control_plane import SafetyContext, PolicyRule, evaluate_rules
+archives\legacy_resume_gen\Agentic_Workflow-10_10\orchestration\control_plane\__init__.py:10: in <module>
+    from archives.legacy_root_folders.infra.control_plane.models import SafetyContext, PolicyRule, PolicyDecision
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\infra\control_plane\models.py", line 9
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/dag/test_agent_assignment_in_dag.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\dag\test_agent_assignment_in_dag.py", line 8
+E       from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
+E                                                             ^
+E   SyntaxError: invalid decimal literal
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/dag/test_dag_executor_basic.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\dag\test_dag_executor_basic.py", line 8
+E       from archives.legacy_resume_gen.Older Microservices Models.v2.engine import Graph, Node, Edge, DAGExecutor
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/dag/test_dag_models.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\dag\test_dag_models.py", line 6
+E       from archives.legacy_resume_gen.Older Microservices Models.v2.engine import Graph, Node, Edge, DAGExecutor
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_datasets.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\golden_state\test_datasets.py:1: in <module>
+    from archives.legacy_root_folders.eval.golden_state.datasets import load_golden_inputs, load_baseline_scores, load_exemplar_prompts
+archives\legacy_root_folders\eval\golden_state\datasets.py:7: in <module>
+    from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase, GoldenCase
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\eval\golden_state\models.py", line 6
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_evaluator.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\golden_state\test_evaluator.py:1: in <module>
+    from archives.legacy_root_folders.eval.golden_state.datasets import load_golden_cases
+archives\legacy_root_folders\eval\golden_state\datasets.py:7: in <module>
+    from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase, GoldenCase
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\eval\golden_state\models.py", line 6
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_judge.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\golden_state\test_judge.py:1: in <module>
+    from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\eval\golden_state\models.py", line 6
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_runner.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\golden_state\test_runner.py:3: in <module>
+    from archives.legacy_root_folders.core.models.models import ExecutionProfile, RetrievalConfig
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\core\models\__init__.py", line 5
+E       ComplexityLevel,
+E   IndentationError: unexpected indent
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_scorer.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\golden_state\test_scorer.py:1: in <module>
+    from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\eval\golden_state\models.py", line 6
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/metacognition/test_hypothesis_evaluation.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\metacognition\test_hypothesis_evaluation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\metacognition\test_hypothesis_evaluation.py:1: in <module>
+    from archives.legacy_root_folders.meta.metacognition.evaluator import evaluate_hypotheses
+archives\legacy_root_folders\meta\__init__.py:7: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import retrieval
+archives\legacy_root_folders\retrievers\retrieval.py:9: in <module>
+    from archives.legacy_root_folders.meta.retrieval.retrieval import run_rag_retrieval
+archives\legacy_root_folders\meta\retrieval\__init__.py:11: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import orchestrate_retrieval, run_rag_retrieval
+E   ImportError: cannot import name 'orchestrate_retrieval' from partially initialized module 'archives.legacy_root_folders.retrievers.retrieval' (most likely due to a circular import) (C:\Git\Agentic-Workflow\archives\legacy_root_folders\retrievers\retrieval.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/metacognition/test_hypothesis_generation.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\metacognition\test_hypothesis_generation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\metacognition\test_hypothesis_generation.py:1: in <module>
+    from archives.legacy_root_folders.meta.metacognition.hypothesis import generate_initial_hypotheses
+archives\legacy_root_folders\meta\__init__.py:7: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import retrieval
+archives\legacy_root_folders\retrievers\retrieval.py:9: in <module>
+    from archives.legacy_root_folders.meta.retrieval.retrieval import run_rag_retrieval
+archives\legacy_root_folders\meta\retrieval\__init__.py:11: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import orchestrate_retrieval, run_rag_retrieval
+E   ImportError: cannot import name 'orchestrate_retrieval' from partially initialized module 'archives.legacy_root_folders.retrievers.retrieval' (most likely due to a circular import) (C:\Git\Agentic-Workflow\archives\legacy_root_folders\retrievers\retrieval.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/metacognition/test_refinement.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\metacognition\test_refinement.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\metacognition\test_refinement.py:1: in <module>
+    from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
+archives\legacy_root_folders\meta\__init__.py:7: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import retrieval
+archives\legacy_root_folders\retrievers\retrieval.py:9: in <module>
+    from archives.legacy_root_folders.meta.retrieval.retrieval import run_rag_retrieval
+archives\legacy_root_folders\meta\retrieval\__init__.py:11: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import orchestrate_retrieval, run_rag_retrieval
+E   ImportError: cannot import name 'orchestrate_retrieval' from partially initialized module 'archives.legacy_root_folders.retrievers.retrieval' (most likely due to a circular import) (C:\Git\Agentic-Workflow\archives\legacy_root_folders\retrievers\retrieval.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/metacognition/test_uncertainty_model.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\metacognition\test_uncertainty_model.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\metacognition\test_uncertainty_model.py:1: in <module>
+    from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
+archives\legacy_root_folders\meta\__init__.py:7: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import retrieval
+archives\legacy_root_folders\retrievers\retrieval.py:9: in <module>
+    from archives.legacy_root_folders.meta.retrieval.retrieval import run_rag_retrieval
+archives\legacy_root_folders\meta\retrieval\__init__.py:11: in <module>
+    from archives.legacy_root_folders.retrievers.retrieval import orchestrate_retrieval, run_rag_retrieval
+E   ImportError: cannot import name 'orchestrate_retrieval' from partially initialized module 'archives.legacy_root_folders.retrievers.retrieval' (most likely due to a circular import) (C:\Git\Agentic-Workflow\archives\legacy_root_folders\retrievers\retrieval.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/model_routing/test_budget_enforcement.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\model_routing\test_budget_enforcement.py:1: in <module>
+    from archives.legacy_root_folders.core.models.models import ExecutionProfile, RetrievalConfig
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\core\models\__init__.py", line 5
+E       ComplexityLevel,
+E   IndentationError: unexpected indent
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/model_routing/test_policy_selection.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\model_routing\test_policy_selection.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\model_routing\test_policy_selection.py:1: in <module>
+    from orchestration.model_routing import RoutingContext, choose_provider_and_model
+archives\legacy_resume_gen\Agentic_Workflow-10_10\orchestration\model_routing\__init__.py:10: in <module>
+    from archives.legacy_root_folders.infra.model_routing.models import RoutingContext, ModelChoice
+archives\legacy_root_folders\infra\model_routing\__init__.py:6: in <module>
+    from archives.legacy_root_folders.infra.model_routing.policies import ModelRoutingPolicy
+archives\legacy_root_folders\infra\model_routing\policies.py:8: in <module>
+    from l1.outreach_dataclasses import ArchetypeType
+E   ModuleNotFoundError: No module named 'l1.outreach_dataclasses'
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/model_routing/test_selector_integration.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\model_routing\test_selector_integration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\model_routing\test_selector_integration.py:1: in <module>
+    from orchestration.model_routing import RoutingContext, select_model
+archives\legacy_resume_gen\Agentic_Workflow-10_10\orchestration\model_routing\__init__.py:10: in <module>
+    from archives.legacy_root_folders.infra.model_routing.models import RoutingContext, ModelChoice
+archives\legacy_root_folders\infra\model_routing\__init__.py:6: in <module>
+    from archives.legacy_root_folders.infra.model_routing.policies import ModelRoutingPolicy
+archives\legacy_root_folders\infra\model_routing\policies.py:8: in <module>
+    from l1.outreach_dataclasses import ArchetypeType
+E   ModuleNotFoundError: No module named 'l1.outreach_dataclasses'
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/refactoring/test_l1_phase_a.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\refactoring\test_l1_phase_a.py", line 33
+E       from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.strategy_planning import StrategyPlan, DraftPlan, LatentThinkingPlan, plan_strategy, plan_draft, generate_latent_thinking_plan
+E                                                             ^
+E   SyntaxError: invalid decimal literal
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_microvm_basic.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\sandbox\test_microvm_basic.py:1: in <module>
+    from archives.legacy_root_folders.infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm
+archives\legacy_root_folders\infra\sandbox\microvm.py:10: in <module>
+    from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest, ToolCallResult
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\infra\sandbox\models.py", line 5
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_models.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\sandbox\test_models.py:1: in <module>
+    from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest, ToolCallResult, SandboxEvent
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\infra\sandbox\models.py", line 5
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_sandbox_observability.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\sandbox\test_sandbox_observability.py:1: in <module>
+    from archives.legacy_root_folders.infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm
+archives\legacy_root_folders\infra\sandbox\microvm.py:10: in <module>
+    from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest, ToolCallResult
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\infra\sandbox\models.py", line 5
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_sandbox_timeout.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\sandbox\test_sandbox_timeout.py:3: in <module>
+    from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\infra\sandbox\models.py", line 5
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_tool_middleware_vm_integration.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\sandbox\test_tool_middleware_vm_integration.py:1: in <module>
+    from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\infra\sandbox\models.py", line 5
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_vm_manager.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\sandbox\test_vm_manager.py:1: in <module>
+    from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\infra\sandbox\models.py", line 5
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/simulation/test_metrics.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\simulation\test_metrics.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\simulation\test_metrics.py:1: in <module>
+    from archives.legacy_root_folders.eval.simulation.metrics import compute_collaboration_score, compute_conflict_index
+archives\legacy_root_folders\eval\simulation\__init__.py:3: in <module>
+    from shared.models import SimScenario, SimOutcome
+E   ImportError: cannot import name 'SimScenario' from 'shared.models' (C:\Git\Agentic-Workflow\shared\models.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/simulation/test_simulator.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\simulation\test_simulator.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\simulation\test_simulator.py:3: in <module>
+    from archives.legacy_root_folders.eval.simulation.models import SimScenario
+archives\legacy_root_folders\eval\simulation\__init__.py:3: in <module>
+    from shared.models import SimScenario, SimOutcome
+E   ImportError: cannot import name 'SimScenario' from 'shared.models' (C:\Git\Agentic-Workflow\shared\models.py)
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/test_dependency_injection.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\test_dependency_injection.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'tests.test_dependency_injection'
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/test_meta_hybrid_ranker.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\test_meta_hybrid_ranker.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'tests.test_meta_hybrid_ranker'
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/test_meta_ranking.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\test_meta_ranking.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'tests.test_meta_ranking'
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/test_meta_retrieval_orchestrator.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\test_meta_retrieval_orchestrator.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'tests.test_meta_retrieval_orchestrator'
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/unit/l2_execution/test_neo4j_integration.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\unit\l2_execution\test_neo4j_integration.py", line 37
+E       from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import factual_qa, trend_analysis
+E                                                             ^
+E   SyntaxError: invalid decimal literal
+_ ERROR collecting archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/unit/l5_safety/test_injection_detection.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Agentic_Workflow-10_10\tests\unit\l5_safety\test_injection_detection.py", line 11
+E       from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, SafetyFinding, Severity, Verdict
+E                                                             ^
+E   SyntaxError: invalid decimal literal
+_ ERROR collecting archives/legacy_resume_gen/Monolith/test_resume_workflow_v16_20.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Monolith\test_resume_workflow_v16_20.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+archives\legacy_resume_gen\Monolith\test_resume_workflow_v16_20.py:16: in <module>
+    from typing import Dict, List, object
+E   ImportError: cannot import name 'object' from 'typing' (C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\typing.py)
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10.2/test_system_v10_2.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10.2\test_system_v10_2.py", line 37
+E       import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
+E                                               ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10.4/test_system_v10_4.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10.4\test_system_v10_4.py", line 26
+E       import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
+E                                               ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10.5/test_system_v10_5.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10.5\test_system_v10_5.py", line 69
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10.6/test_system_v10_6.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10.6\test_system_v10_6.py", line 14
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.agent_tools_v10_6 import DraftingStrategistTool
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10.7 _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10.7\conftest.py", line 4
+E       import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
+E                                                               ^
+E   SyntaxError: invalid decimal literal
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_batch_v10_0.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10_0\testing\test_batch_v10_0.py", line 20
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_core_v10_0.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10_0\testing\test_core_v10_0.py", line 19
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_e2e_v10_0.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10_0\testing\test_e2e_v10_0.py", line 19
+E       from archives.legacy_resume_gen.Older Microservices Models.v10_0.main_v10_0 import run_workflow_async
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_learning_v10_0.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10_0\testing\test_learning_v10_0.py", line 21
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_main_v10_0.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10_0\testing\test_main_v10_0.py", line 18
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_regression_v10_0.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10_0\testing\test_regression_v10_0.py", line 17
+E       )
+E       ^
+E   SyntaxError: unmatched ')'
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10_1/archives_subfolder/test_system_v10_1.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10_1\archives_subfolder\test_system_v10_1.py", line 13
+E       import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
+E                                               ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_resume_gen/Older Microservices Models/v10_1/test_system_v10_1.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_resume_gen\Older Microservices Models\v10_1\test_system_v10_1.py", line 36
+E       import archives.legacy_resume_gen.Older Microservices Models.v10.6.redis
+E                                               ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_ ERROR collecting archives/legacy_root_folders/validation/sdk_validation_test.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Git\Agentic-Workflow\archives\legacy_root_folders\validation\sdk_validation_test.py", line 44
+E       from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field
+E                                             ^^^^^^^^^^^^^
+E   SyntaxError: invalid syntax
+_______ ERROR collecting data/sdks_mcps/validation/test_all_clients.py ________
+ImportError while importing test module 'C:\Git\Agentic-Workflow\data\sdks_mcps\validation\test_all_clients.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+data\sdks_mcps\validation\test_all_clients.py:10: in <module>
+    from typing import Dict, object, List
+E   ImportError: cannot import name 'object' from 'typing' (C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\typing.py)
+_______ ERROR collecting tests/integration/api/test_api_integration.py ________
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\integration\api\test_api_integration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\integration\api\test_api_integration.py:6: in <module>
+    from runtime.shared.exceptions import HopExecutionError, ValidationError, APIError, CircuitBreakerOpenError
+E   ModuleNotFoundError: No module named 'runtime.shared'
+_______ ERROR collecting tests/integration/api/test_provider_routing.py _______
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\integration\api\test_provider_routing.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\integration\api\test_provider_routing.py:6: in <module>
+    from runtime.shared.multi_provider_clients import reset_all_clients
+E   ModuleNotFoundError: No module named 'runtime.shared'
+_ ERROR collecting tests/integration/cross_domain/test_schema_compatibility.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\integration\cross_domain\test_schema_compatibility.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\integration\cross_domain\test_schema_compatibility.py:6: in <module>
+    from runtime.shared.sdk_registry import SDK_REGISTRY
+E   ModuleNotFoundError: No module named 'runtime.shared'
+____ ERROR collecting tests/integration/workflow/test_full_agentic_loop.py ____
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\integration\workflow\test_full_agentic_loop.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\integration\workflow\test_full_agentic_loop.py:5: in <module>
+    from runtime.shared.multi_provider_clients import reset_all_clients
+E   ModuleNotFoundError: No module named 'runtime.shared'
+__________ ERROR collecting tests/perf/cost/test_cost_estimation.py ___________
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\perf\cost\test_cost_estimation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\perf\cost\test_cost_estimation.py:4: in <module>
+    from runtime.shared.multi_provider_clients import Provider
+E   ModuleNotFoundError: No module named 'runtime.shared'
+_______ ERROR collecting tests/perf/throughput/test_cache_throughput.py _______
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\perf\throughput\test_cache_throughput.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\perf\throughput\test_cache_throughput.py:4: in <module>
+    from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
+E   ModuleNotFoundError: No module named 'runtime.shared'
+______________ ERROR collecting tests/unit/runtime/test_cache.py ______________
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\unit\runtime\test_cache.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\runtime\test_cache.py:3: in <module>
+    from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
+E   ModuleNotFoundError: No module named 'runtime.shared'
+________ ERROR collecting tests/unit/runtime/test_cache_regression.py _________
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\unit\runtime\test_cache_regression.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\runtime\test_cache_regression.py:3: in <module>
+    from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
+E   ModuleNotFoundError: No module named 'runtime.shared'
+_____ ERROR collecting tests/unit/runtime/test_multi_provider_clients.py ______
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\unit\runtime\test_multi_provider_clients.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\runtime\test_multi_provider_clients.py:6: in <module>
+    from runtime.shared.multi_provider_clients import reset_all_clients
+E   ModuleNotFoundError: No module named 'runtime.shared'
+_____________ ERROR collecting tests/unit/schemas/test_models.py ______________
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\unit\schemas\test_models.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\schemas\test_models.py:4: in <module>
+    from shared.models import GateDecision, ValidationSeverity, HopStatus, CircuitState, ValidationResult, ThematicAnalysis, RAGState, HopCheckpoint
+E   ImportError: cannot import name 'RAGState' from 'shared.models' (C:\Git\Agentic-Workflow\shared\models.py)
+______________ ERROR collecting tests/unit/shared/test_utils.py _______________
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\unit\shared\test_utils.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\shared\test_utils.py:3: in <module>
+    from runtime.shared.utils import TextUtils, ImmutableStagingBuffer, DuplicateDetector
+E   ModuleNotFoundError: No module named 'runtime.shared'
+=========================== short test summary info ===========================
+ERROR apps_shared/rag/retrieval/test_sdk_latency.py
+ERROR archives/legacy_lic/LIC - Python/test_LIC_AGENTIC_v11_1.py
+ERROR archives/legacy_lic/LIC - Python/test_LIC_AGENTIC_v11_2.py
+ERROR archives/legacy_lic/LIC - Python/test_LIC_AGENTIC_v11_3.py
+ERROR archives/legacy_lic/LIC - Python/test_LIC_AGENTIC_v11_4.py
+ERROR archives/legacy_lic/LIC - Python/test_lic_v11_6.py
+ERROR archives/legacy_lic/LIC - Python/test_lic_v11_7.py
+ERROR archives/legacy_lic/LIC - Python/test_lic_v11_8.py
+ERROR archives/legacy_lic/LIC - Python/test_lic_v11_9.py
+ERROR archives/legacy_lic/Monolithic/test_lic_v11_10.py
+ERROR archives/legacy_resume_gen/Agentic-Workflow-10_7_main - Failed: Definin...
+ERROR archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_l1.py
+ERROR archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_l5.py
+ERROR archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_multi_agent.py
+ERROR archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_observability.py
+ERROR archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_prompt.py
+ERROR archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_retrieval.py
+ERROR archives/legacy_resume_gen/Agentic-Workflow-10_8_core/tests/test_routing.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/sdk_validation_test.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/_deprecated - M...
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/contracts/test_typed_contracts.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/control_plane/test_routing_and_pipeline.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/control_plane/test_rules_engine.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/dag/test_agent_assignment_in_dag.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/dag/test_dag_executor_basic.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/dag/test_dag_models.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_datasets.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_evaluator.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_judge.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_runner.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/golden_state/test_scorer.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/metacognition/test_hypothesis_evaluation.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/metacognition/test_hypothesis_generation.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/metacognition/test_refinement.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/metacognition/test_uncertainty_model.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/model_routing/test_budget_enforcement.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/model_routing/test_policy_selection.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/model_routing/test_selector_integration.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/refactoring/test_l1_phase_a.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_microvm_basic.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_models.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_sandbox_observability.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_sandbox_timeout.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_tool_middleware_vm_integration.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/sandbox/test_vm_manager.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/simulation/test_metrics.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/simulation/test_simulator.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/test_dependency_injection.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/test_meta_hybrid_ranker.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/test_meta_ranking.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/test_meta_retrieval_orchestrator.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/unit/l2_execution/test_neo4j_integration.py
+ERROR archives/legacy_resume_gen/Agentic_Workflow-10_10/tests/unit/l5_safety/test_injection_detection.py
+ERROR archives/legacy_resume_gen/Monolith/test_resume_workflow_v16_20.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10.2/test_system_v10_2.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10.4/test_system_v10_4.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10.5/test_system_v10_5.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10.6/test_system_v10_6.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10.7 -   File "C...
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_batch_v10_0.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_core_v10_0.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_e2e_v10_0.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_learning_v10_0.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_main_v10_0.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10_0/testing/test_regression_v10_0.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10_1/archives_subfolder/test_system_v10_1.py
+ERROR archives/legacy_resume_gen/Older Microservices Models/v10_1/test_system_v10_1.py
+ERROR archives/legacy_root_folders/validation/sdk_validation_test.py
+ERROR data/sdks_mcps/validation/test_all_clients.py
+ERROR tests/integration/api/test_api_integration.py
+ERROR tests/integration/api/test_provider_routing.py
+ERROR tests/integration/cross_domain/test_schema_compatibility.py
+ERROR tests/integration/workflow/test_full_agentic_loop.py
+ERROR tests/perf/cost/test_cost_estimation.py
+ERROR tests/perf/throughput/test_cache_throughput.py
+ERROR tests/unit/runtime/test_cache.py
+ERROR tests/unit/runtime/test_cache_regression.py
+ERROR tests/unit/runtime/test_multi_provider_clients.py
+ERROR tests/unit/schemas/test_models.py
+ERROR tests/unit/shared/test_utils.py
+!!!!!!!!!!!!!!!!!! Interrupted: 80 errors during collection !!!!!!!!!!!!!!!!!!!
+============================= 80 errors in 11.13s =============================
