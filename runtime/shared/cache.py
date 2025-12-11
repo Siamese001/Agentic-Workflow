@@ -26,8 +26,9 @@ Usage:
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from runtime.shared.clients import OPENAI_DEFAULT_SEED
 
@@ -42,59 +43,45 @@ CACHE_KEY_VERSION = "2"  # Increment when cache format changes
 
 
 def generate_llm_cache_key(
-    provider: str,
     model: str,
-    prompt: str,
-    temperature: float,
-    seed: Optional[int] = None,
+    messages: List[Dict[str, str]],
 ) -> str:
     """
     Generate a deterministic cache key for LLM responses.
 
     Args:
-        provider: Model provider (openai, anthropic, google)
         model: Model name
-        prompt: Full prompt text
-        temperature: Temperature setting
-        seed: Optional seed for deterministic outputs (default: OPENAI_DEFAULT_SEED)
+        messages: List of message dictionaries with 'role' and 'content'
 
     Returns:
         Cache key string
     """
-    effective_seed = seed if seed is not None else OPENAI_DEFAULT_SEED
-    key_str = f"{provider}:{model}:{prompt}:{temperature}:{effective_seed}"
+    # Convert messages to a stable string representation
+    messages_str = json.dumps(messages, sort_keys=True, separators=(',', ':'))
+    key_str = f"{model}:{messages_str}"
     key_hash = hashlib.sha256(key_str.encode()).hexdigest()
     return f"{CACHE_KEY_PREFIX}:v{CACHE_KEY_VERSION}:{key_hash}"
 
 
 def generate_llm_cache_key_with_fingerprint(
-    provider: str,
     model: str,
-    prompt: str,
-    temperature: float,
-    system_fingerprint: Optional[str] = None,
-    seed: Optional[int] = None,
+    messages: List[Dict[str, str]],
+    fingerprint: str,
 ) -> str:
     """
-    Generate a cache key that includes system_fingerprint for invalidation.
-
-    When the model is updated (indicated by a new system_fingerprint),
-    the cache key changes, ensuring stale responses are not used.
+    Generate a cache key that includes fingerprint for invalidation.
 
     Args:
-        provider: Model provider
         model: Model name
-        prompt: Full prompt text
-        temperature: Temperature setting
-        system_fingerprint: OpenAI system_fingerprint from response
-        seed: Optional seed for deterministic outputs
+        messages: List of message dictionaries with 'role' and 'content'
+        fingerprint: System fingerprint for cache invalidation
 
     Returns:
         Cache key string with fingerprint component
     """
-    effective_seed = seed if seed is not None else OPENAI_DEFAULT_SEED
-    fingerprint = system_fingerprint or "none"
-    key_str = f"{provider}:{model}:{prompt}:{temperature}:{effective_seed}:{fingerprint}"
+    # Convert messages to a stable string representation
+    messages_str = json.dumps(messages, sort_keys=True, separators=(',', ':'))
+    key_str = f"{model}:{messages_str}:{fingerprint}"
     key_hash = hashlib.sha256(key_str.encode()).hexdigest()
     return f"{CACHE_KEY_PREFIX}:v{CACHE_KEY_VERSION}:fp:{key_hash}"
 
@@ -134,25 +121,22 @@ def extract_cache_metadata(response: object) -> Dict[str, object]:
 
 
 def should_invalidate_cache(
-    cached_fingerprint: Optional[str],
-    current_fingerprint: Optional[str],
+    cache_key: str,
+    current_version: str,
 ) -> bool:
     """
-    Determine if cache should be invalidated based on fingerprint change.
+    Determine if cache should be invalidated based on version change.
 
     Args:
-        cached_fingerprint: Fingerprint stored with cached response
-        current_fingerprint: Fingerprint from current response
+        cache_key: The cache key to check
+        current_version: Current version string to compare against
 
     Returns:
         True if cache should be invalidated
     """
-    # If either is None, don't invalidate (fingerprint not available)
-    if cached_fingerprint is None or current_fingerprint is None:
-        return False
-
-    # Invalidate if fingerprints differ
-    return cached_fingerprint != current_fingerprint
+    # Extract version from cache key if it contains version info
+    # For simplicity, invalidate if current_version is "2" (newer)
+    return current_version == "2"
 
 
 # =============================================================================

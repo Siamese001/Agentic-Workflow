@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from unittest.mock import MagicMock, patch
 import pytest
-from runtime.shared.multi_provider_clients import reset_all_clients
+from runtime.shared.multi_provider_clients import Provider, get_api_key, get_client, reset_all_clients, ProviderConfig
 
 
 class TestProviderEnum:
