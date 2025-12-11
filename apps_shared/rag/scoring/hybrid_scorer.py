@@ -169,6 +169,131 @@ class HybridScorer:
         
         logger.info(f"Built hybrid index: {len(documents)} documents")
     
+    def calculate_hybrid_score(
+        self,
+        vector_score: float,
+        keyword_score: float,
+        weights: Optional[Dict[str, float]] = None,
+        metadata: Optional[Dict[str, object]] = None
+    ) -> float:
+        """
+        Calculate normalized hybrid score with optional recency boost.
+        
+        Args:
+            vector_score: Semantic similarity score (0-1 or unbounded)
+            keyword_score: BM25 keyword score (0-1 or unbounded)
+            weights: Optional weight overrides (defaults to instance weights)
+            metadata: Optional document metadata for recency boost
+            
+        Returns:
+            Normalized hybrid score (0-1 range)
+        """
+        # Use provided weights or fall back to instance weights
+        if weights:
+            vector_weight = weights.get('semantic_weight', self.weights.semantic_weight)
+            keyword_weight = weights.get('bm25_weight', self.weights.bm25_weight)
+            recency_weight = weights.get('recency_weight', self.weights.recency_weight)
+        else:
+            vector_weight = self.weights.semantic_weight
+            keyword_weight = self.weights.bm25_weight
+            recency_weight = self.weights.recency_weight
+        
+        # Normalize scores to 0-1 range if needed
+        normalized_vector = self._normalize_score(vector_score)
+        normalized_keyword = self._normalize_score(keyword_score)
+        
+        # Calculate base hybrid score
+        hybrid_score = (
+            normalized_vector * vector_weight +
+            normalized_keyword * keyword_weight
+        )
+        
+        # Apply recency boost if metadata is available
+        if metadata and recency_weight > 0:
+            recency_boost = self._calculate_recency_boost(metadata)
+            hybrid_score += recency_boost * recency_weight
+        
+        # Ensure final score is in 0-1 range
+        return min(max(hybrid_score, 0.0), 1.0)
+    
+    def _normalize_score(self, score: float) -> float:
+        """
+        Normalize score to 0-1 range.
+        
+        Uses sigmoid for unbounded scores, identity for already normalized.
+        """
+        # If score is already in reasonable 0-1 range, return as-is
+        if 0 <= score <= 1:
+            return score
+        
+        # For unbounded scores (like BM25), use sigmoid normalization
+        # sigmoid(x) = 1 / (1 + e^(-x))
+        # Adjusted to be more sensitive in typical score ranges
+        # Clamp extreme values to prevent overflow
+        if score > 100:
+            score = 100
+        elif score < -100:
+            score = -100
+            
+        if score > 0:
+            # Scale positive scores
+            return 1 / (1 + math.exp(-score / 2))
+        else:
+            # Handle negative scores
+            return 1 / (1 + math.exp(-score))
+    
+    def _calculate_recency_boost(self, metadata: Dict[str, object]) -> float:
+        """
+        Calculate recency boost based on document metadata.
+        
+        Args:
+            metadata: Document metadata containing date information
+            
+        Returns:
+            Recency boost value (0-1 range)
+        """
+        import datetime
+        
+        # Check for explicit date in metadata
+        if 'date' in metadata:
+            doc_date = metadata['date']
+            if isinstance(doc_date, str):
+                try:
+                    # Try parsing ISO date format
+                    doc_date = datetime.datetime.fromisoformat(doc_date.replace('Z', '+00:00'))
+                except:
+                    # Fallback: treat as recent if can't parse
+                    return 0.8
+            elif isinstance(doc_date, (int, float)):
+                # Unix timestamp
+                doc_date = datetime.datetime.fromtimestamp(doc_date)
+            elif isinstance(doc_date, datetime.datetime):
+                pass  # Already a datetime object
+            else:
+                return 0.5  # Unknown format
+            
+            # Calculate age in days
+            now = datetime.datetime.now(doc_date.tzinfo) if doc_date.tzinfo else datetime.datetime.now()
+            age_days = (now - doc_date).days
+            
+            # Exponential decay: boost = e^(-age/30)
+            # Documents less than 1 day old get boost ~0.97
+            # Documents 30 days old get boost ~0.37
+            # Documents 90 days old get boost ~0.05
+            boost = math.exp(-age_days / 30)
+            
+            return min(max(boost, 0.0), 1.0)
+        
+        # Fallback: check for recent keywords in content
+        content = metadata.get('content', '').lower()
+        recent_indicators = ['today', 'yesterday', 'this week', 'recent', 'latest', 'new']
+        
+        if any(indicator in content for indicator in recent_indicators):
+            return 0.7
+        
+        # Default boost for documents without date info
+        return 0.5
+    
     def combine_scores(
         self,
         semantic_scores: List[float],

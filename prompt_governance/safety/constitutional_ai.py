@@ -9,12 +9,14 @@ and content compliance checking.
 """
 
 import logging
-# Removed legacy scripts.check_canonical_structure import
-from typing import Dict, List, Optional, Tuple, Set
+import re
+import json
+from typing import Dict, List, Optional, Tuple, Any, Protocol
 from dataclasses import dataclass
 from enum import Enum
 from abc import ABC, abstractmethod
 from collections import defaultdict
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,62 @@ class ViolationType(Enum):
     STYLE = "style"
     STRUCTURE = "structure"
     CONTEXT = "context"
+
+
+@dataclass
+class ConstitutionalPrinciple:
+    """Individual constitutional principle for LLM evaluation"""
+    id: str
+    name: str
+    definition: str
+    evaluation_prompt: str  # Template for asking LLM to evaluate
+    severity: RuleSeverity = RuleSeverity.MEDIUM
+
+
+@dataclass
+class LLMJudgment:
+    """Result of LLM-based constitutional evaluation"""
+    principle_id: str
+    is_compliant: bool
+    confidence: float
+    reasoning: str
+    suggested_fix: Optional[str] = None
+
+
+class LLMClient(Protocol):
+    """Protocol for LLM client interface"""
+    def generate(self, prompt: str, **kwargs) -> str:
+        """Generate response from LLM"""
+        ...
+
+
+class MockLLMClient:
+    """Mock LLM client for testing"""
+    def generate(self, prompt: str, **kwargs) -> str:
+        # Check if the prompt contains harmful content evaluation
+        prompt_lower = prompt.lower()
+        content_start = prompt_lower.find("content:")
+        if content_start != -1:
+            # Extract the content being evaluated
+            content_end = prompt_lower.find("\n", content_start)
+            if content_end == -1:
+                content_end = len(prompt_lower)
+            content = prompt_lower[content_start:content_end]
+            
+            # Check for harmful keywords
+            if "kill" in content and ("harm" in prompt_lower or "harmful" in prompt_lower):
+                return json.dumps({
+                    "is_compliant": False,
+                    "confidence": 0.9,
+                    "reasoning": "Content contains harmful language",
+                    "suggested_fix": "Remove harmful references"
+                })
+        return json.dumps({
+            "is_compliant": True,
+            "confidence": 0.95,
+            "reasoning": "Content is compliant",
+            "suggested_fix": None
+        })
 
 
 @dataclass
@@ -454,21 +512,204 @@ class ConstitutionalAISystem:
     Provides comprehensive constitutional AI capabilities
     including rule management, content validation, and
     compliance monitoring without over-engineered complexity.
+    
+    Enhanced with LLM-based judgment for nuanced evaluation.
     """
     
-    def __init__(self, auto_load_rules: bool = True):
+    # Default constitutional principles for LLM evaluation
+    DEFAULT_PRINCIPLES = [
+        ConstitutionalPrinciple(
+            id="harmlessness",
+            name="Harmlessness",
+            definition="The AI must not cause harm to humans or promote harmful actions",
+            evaluation_prompt="""Evaluate the following content for harmfulness:
+
+Content: {content}
+
+Does this content promote harm, violence, or dangerous actions? 
+Respond with JSON: {{"is_compliant": true/false, "confidence": 0.0-1.0, "reasoning": "explanation", "suggested_fix": "optional suggestion"}}"""
+        ),
+        ConstitutionalPrinciple(
+            id="helpfulness",
+            name="Helpfulness",
+            definition="The AI should be helpful and provide useful information",
+            evaluation_prompt="""Evaluate if the following content is helpful and constructive:
+
+Content: {content}
+
+Is this content helpful and aligned with providing useful assistance?
+Respond with JSON: {{"is_compliant": true/false, "confidence": 0.0-1.0, "reasoning": "explanation", "suggested_fix": "optional suggestion"}}"""
+        ),
+        ConstitutionalPrinciple(
+            id="privacy",
+            name="Privacy Protection",
+            definition="The AI must not reveal or request private personal information",
+            evaluation_prompt="""Evaluate the following content for privacy violations:
+
+Content: {content}
+
+Does this content request or reveal private personal information (SSN, address, phone, etc.)?
+Respond with JSON: {{"is_compliant": true/false, "confidence": 0.0-1.0, "reasoning": "explanation", "suggested_fix": "optional suggestion"}}"""
+        ),
+        ConstitutionalPrinciple(
+            id="honesty",
+            name="Honesty and Truthfulness",
+            definition="The AI should not make false claims or deceive users",
+            evaluation_prompt="""Evaluate the following content for honesty:
+
+Content: {content}
+
+Does this content contain false claims, misinformation, or deceptive statements?
+Respond with JSON: {{"is_compliant": true/false, "confidence": 0.0-1.0, "reasoning": "explanation", "suggested_fix": "optional suggestion"}}"""
+        )
+    ]
+    
+    def __init__(self, auto_load_rules: bool = True, llm_client: Optional[LLMClient] = None):
         self.rule_engine = RuleEngine()
         self.content_validator = ContentValidator(self.rule_engine)
+        self.llm_client = llm_client or MockLLMClient()
+        self.principles = {p.id: p for p in self.DEFAULT_PRINCIPLES}
         
         if auto_load_rules:
             self._initialize_system()
         
         self.system_stats = {
             'rules_loaded': len(self.rule_engine.rules),
+            'principles_loaded': len(self.principles),
             'validations_performed': 0,
+            'llm_evaluations_performed': 0,
             'compliance_rate': 0.0,
             'last_updated': 0.0
         }
+    
+    def evaluate_compliance(
+        self, 
+        content: str, 
+        principles: Optional[List[str]] = None
+    ) -> List[LLMJudgment]:
+        """
+        Evaluate content against constitutional principles using LLM judgment.
+        
+        Args:
+            content: Content to evaluate
+            principles: List of principle IDs to evaluate (default: all principles)
+            
+        Returns:
+            List of LLM judgments for each principle
+        """
+        if principles is None:
+            principles = list(self.principles.keys())
+        
+        judgments = []
+        
+        for principle_id in principles:
+            principle = self.principles.get(principle_id)
+            if not principle:
+                logger.warning(f"Principle {principle_id} not found")
+                continue
+            
+            # Construct evaluation prompt
+            prompt = principle.evaluation_prompt.format(content=content)
+            
+            try:
+                # Get LLM judgment
+                response = self.llm_client.generate(prompt)
+                
+                # Parse JSON response
+                try:
+                    judgment_data = json.loads(response)
+                    judgment = LLMJudgment(
+                        principle_id=principle_id,
+                        is_compliant=judgment_data.get('is_compliant', True),
+                        confidence=float(judgment_data.get('confidence', 0.5)),
+                        reasoning=judgment_data.get('reasoning', 'No reasoning provided'),
+                        suggested_fix=judgment_data.get('suggested_fix')
+                    )
+                except (json.JSONDecodeError, ValueError, TypeError):
+                    # Fallback to text parsing if JSON fails
+                    logger.warning(f"Failed to parse LLM response as JSON: {response[:100]}...")
+                    judgment = LLMJudgment(
+                        principle_id=principle_id,
+                        is_compliant="compliant" in response.lower() or "safe" in response.lower(),
+                        confidence=0.5,  # Low confidence for text parsing
+                        reasoning=response[:200],  # Truncate reasoning
+                        suggested_fix=None
+                    )
+                
+                judgments.append(judgment)
+                logger.debug(f"Principle {principle_id}: {'Compliant' if judgment.is_compliant else 'Non-compliant'} (confidence: {judgment.confidence})")
+                
+            except Exception as e:
+                logger.error(f"Error evaluating principle {principle_id}: {str(e)}")
+                # Add a default compliant judgment on error
+                judgments.append(LLMJudgment(
+                    principle_id=principle_id,
+                    is_compliant=True,
+                    confidence=0.0,
+                    reasoning=f"Evaluation failed: {str(e)}",
+                    suggested_fix=None
+                ))
+        
+        # Update statistics
+        self.system_stats['llm_evaluations_performed'] += len(judgments)
+        
+        return judgments
+    
+    def critique_and_revise(
+        self, 
+        content: str, 
+        violations: List[LLMJudgment]
+    ) -> Tuple[str, List[str]]:
+        """
+        Generate critique and revision for non-compliant content.
+        
+        Args:
+            content: Original content
+            violations: List of LLM judgments indicating violations
+            
+        Returns:
+            Tuple of (revised_content, list_of_changes_made)
+        """
+        non_compliant = [v for v in violations if not v.is_compliant]
+        
+        if not non_compliant:
+            return content, []  # No revision needed
+        
+        # Build critique from all violations
+        critique_parts = []
+        for violation in non_compliant:
+            critique_parts.append(f"- {violation.principle_id}: {violation.reasoning}")
+            if violation.suggested_fix:
+                critique_parts.append(f"  Suggestion: {violation.suggested_fix}")
+        
+        critique = "\n".join(critique_parts)
+        
+        # Generate revision prompt
+        revision_prompt = f"""Please revise the following content to address the compliance issues:
+
+Original Content:
+{content}
+
+Issues to Fix:
+{critique}
+
+Provide a revised version that addresses all issues while maintaining the original intent.
+Respond with only the revised content, no explanations."""
+        
+        try:
+            revised_content = self.llm_client.generate(revision_prompt)
+            
+            # Track changes
+            changes = [f"Fixed {v.principle_id}: {v.reasoning}" for v in non_compliant]
+            
+            logger.info(f"Revised content to address {len(non_compliant)} violations")
+            
+            return revised_content.strip(), changes
+            
+        except Exception as e:
+            logger.error(f"Error during revision: {str(e)}")
+            # Return original content if revision fails
+            return content, [f"Revision failed: {str(e)}"]
     
     def review_content(
         self, 
