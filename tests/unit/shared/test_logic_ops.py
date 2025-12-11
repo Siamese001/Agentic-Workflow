@@ -3,6 +3,7 @@ Unit tests for shared/logic/
 Tests logic operations including data access, guardrails, synthesis, and validation.
 """
 from __future__ import annotations
+import re
 import pytest
 from typing import Dict, List
 from dataclasses import dataclass

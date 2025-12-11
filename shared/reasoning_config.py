@@ -45,6 +45,9 @@ class ReasoningConfig:
 # Initialize default config
 ReasoningConfig.DEFAULT = ReasoningConfig()
 
+# Global CONFIG singleton for backward compatibility
+CONFIG = ReasoningConfig.DEFAULT
+
 # Section-specific configurations
 _REASONING_CONFIGS = [
     ("K0_HEADLINE_CONFIG", {"cot_min_paths": 4, "tot_branches": 3, "min_tot_depth": 2, "self_consistency": 6, "reflexion": True}),
