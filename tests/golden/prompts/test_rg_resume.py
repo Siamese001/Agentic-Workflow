@@ -17,6 +17,7 @@ Version: 4.8.0
 Date: October 2025
 """
 
+import re
 import scripts.check_canonical_structure
 from typing import Dict, List
 from enum import Enum

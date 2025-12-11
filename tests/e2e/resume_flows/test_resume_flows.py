@@ -1,5 +1,6 @@
 """E2E tests for resume flows - resume generation and optimization workflows."""
 from __future__ import annotations
+import re
 import pytest
 from typing import Dict, List, Optional
 from dataclasses import dataclass

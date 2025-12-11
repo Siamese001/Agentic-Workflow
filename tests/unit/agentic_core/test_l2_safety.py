@@ -1,5 +1,6 @@
 """Unit tests for L2_execution/P4_safety - execution safety checks."""
 from __future__ import annotations
+import re
 
 class TestExecutionSafetyChecks:
     """Tests for execution-level safety checks."""

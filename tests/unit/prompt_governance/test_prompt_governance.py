@@ -1,5 +1,6 @@
 """Unit tests for prompt governance - template management and validation."""
 from __future__ import annotations
+import re
 import pytest
 import scripts.check_canonical_structure
 from typing import List

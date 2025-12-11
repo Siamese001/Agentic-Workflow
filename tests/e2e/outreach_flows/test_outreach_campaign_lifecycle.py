@@ -1,5 +1,6 @@
 """E2E tests for complete outreach campaign lifecycle."""
 from __future__ import annotations
+import re
 from typing import Dict, List
 from dataclasses import dataclass, field
 from enum import Enum
