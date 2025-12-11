@@ -7,7 +7,7 @@ import sys
 import json
 import time
 from pathlib import Path
-from typing import Dict, object, List
+from typing import Dict, List
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))

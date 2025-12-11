@@ -6,7 +6,7 @@
 ...............F..........................................sss....s.sF.s. [ 57%]
 ............FFFFFF...................................................... [ 66%]
 ................................................F....................... [ 76%]
-................................FFFFFFFFFFFFFFFFFFFFFFFF................ [ 85%]
+................................FFFFFFFFFFFFFFFFFFFFFFFF........FFFFFFF. [ 85%]
 ........................................................................ [ 95%]
 ...................................                                      [100%]
 ============================== warnings summary ===============================
@@ -244,9 +244,6 @@ tests/unit/apps_rg/test_rg_scoring.py::test_rg_scoring
   See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
     warnings.warn(
 
-tests/unit/schemas/test_models.py::TestImmutableStagingBuffer::test_creation
-  <string>:5: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ===========================
 FAILED tests/e2e/admin_flows/test_admin_system_management.py::TestMaintenanceModeE2E::test_scheduled_maintenance_window
@@ -296,4 +293,11 @@ FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetClient::test_si
 FAILED tests/unit/runtime/test_multi_provider_clients.py::TestGetClient::test_missing_key_raises
 FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderConfig::test_defaults
 FAILED tests/unit/runtime/test_multi_provider_clients.py::TestProviderConfig::test_custom
-47 failed, 679 passed, 29 skipped, 40 warnings in 3.48s
+FAILED tests/unit/schemas/test_models.py::TestAPICallStatus::test_is_enum - N...
+FAILED tests/unit/schemas/test_models.py::TestReasoningConfig::test_creation
+FAILED tests/unit/schemas/test_models.py::TestReasoningConfig::test_determinism
+FAILED tests/unit/schemas/test_models.py::TestValidationResult::test_creation
+FAILED tests/unit/schemas/test_models.py::TestValidationResult::test_invalid_case
+FAILED tests/unit/schemas/test_models.py::TestRAGState::test_creation - NameE...
+FAILED tests/unit/schemas/test_models.py::TestImmutableStagingBuffer::test_creation
+54 failed, 672 passed, 29 skipped, 39 warnings in 3.54s

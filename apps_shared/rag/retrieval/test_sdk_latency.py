@@ -2,7 +2,7 @@
 import time
 from unittest.mock import MagicMock, patch
 
-from agentic_workflow.runtime.shared.cache import generate_llm_cache_key
+from runtime.shared.cache import generate_llm_cache_key
 
 class TestSDKValidationLatency:
     """TestSDKValidationLatency implementation."""
