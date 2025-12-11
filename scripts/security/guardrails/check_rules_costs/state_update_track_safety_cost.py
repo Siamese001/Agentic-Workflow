@@ -1,313 +1,443 @@
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: track_data_cost.py
-# Match Score: 0.8125
-# ============================================================
+"""Safety Cost Tracker - Tracks and manages safety-related costs.
 
-"""
-L5 Agentic Core - Safety Layer - track_data_cost
-Implements L5 Safety/Policy Layer for track data cost operations
+This module provides cost tracking for safety operations,
+including policy enforcement, filter applications, and compliance checks.
+Follows the functional component pattern with proper logging.
 """
 
-from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any, Union
 import logging
-import scripts.check_canonical_structure
-from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+from enum import Enum
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class TrackDataCostSafetyType(Enum):
-    """L5 Typed enumeration for deterministic safety operations"""
-    APPLY = "apply"
-    ENFORCE = "enforce"
-    VALIDATE = "validate"
+
+class CostType(Enum):
+    """Types of safety costs."""
+    POLICY_CHECK = "policy_check"
+    FILTER_APPLICATION = "filter_application"
+    ETHICS_VALIDATION = "ethics_validation"
+    COMPLIANCE_CHECK = "compliance_check"
+    VIOLATION_HANDLING = "violation_handling"
+    API_CALL = "api_call"
+    STORAGE = "storage"
+    COMPUTE = "compute"
+
 
 @dataclass
-class TrackDataCostSafetyConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_risk_score: float = 0.5
-    allowed_operations: List[str] = field(default_factory=lambda: ["apply", "enforce", "validate"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class CostRecord:
+    """Record of a safety cost."""
+    cost_type: CostType
+    amount: float
+    currency: str = "USD"
+    operation_id: Optional[str] = None
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
-class TrackDataCostSafetyResult:
-    """L5 Safety result with full type safety"""
-    success: bool
-    safety_score: float = 0.0
-    risk_assessment: Dict[str, str] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+class CostBudget:
+    """Budget definition for safety costs."""
+    budget_type: CostType
+    limit: float
+    period: str  # daily, weekly, monthly
+    current_usage: float = 0.0
+    alert_threshold: float = 0.8
+    currency: str = "USD"
 
-class TrackDataCostSafetySafety(ABC):
-    """L5 interface foundation - ensures L5 pure safety behavior"""
 
-    @abstractmethod
-    def apply_safety(self, data: Dict[str, str]) -> TrackDataCostSafetyResult:
-        """Apply safety checks with L5 constraints"""
-        ...
+@dataclass
+class CostSummary:
+    """Summary of safety costs."""
+    total_cost: float
+    cost_breakdown: Dict[str, float] = field(default_factory=dict)
+    period_costs: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    budget_status: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    forecast: Optional[Dict[str, float]] = None
+    generated_at: datetime = field(default_factory=datetime.utcnow)
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, str]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
 
-class TrackDataCostSafetyImpl(TrackDataCostSafetySafety):
-    """
-    L5 Implementation - L5 Safety/Policy Layer
-    Fail-closed safety enforcement with comprehensive policy checks
-    """
+@dataclass
+class SafetyCostConfig:
+    """Configuration for safety cost tracking."""
+    enable_budget_tracking: bool = True
+    default_currency: str = "USD"
+    cost_precision: int = 4
+    forecast_days: int = 30
+    alert_thresholds: Dict[str, float] = field(default_factory=lambda: {
+        "daily": 0.8,
+        "weekly": 0.7,
+        "monthly": 0.9
+    })
+    log_level: str = "INFO"
 
-    def __init__(self, constraints: Optional[TrackDataCostSafetyConstraints] = None):
-        self.constraints = constraints or TrackDataCostSafetyConstraints()
+
+class SafetyCostTracker:
+    """Main class for tracking safety costs."""
+
+    def __init__(self, config: Optional[SafetyCostConfig] = None):
+        self.config = config or SafetyCostConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._safety_rules = self._initialize_safety_rules()
+        self.logger.setLevel(self.config.log_level)
+        self._cost_records: List[CostRecord] = []
+        self._budgets: Dict[str, CostBudget] = {}
+        self._load_default_budgets()
 
-    def apply_safety(self, data: Dict[str, str]) -> TrackDataCostSafetyResult:
-        """Apply safety checks following L5 architecture principles"""
-        self.logger.info("Applying safety checks to data")
+    def track_cost(self, cost_record: CostRecord) -> bool:
+        """Track a new safety cost.
+        
+        Args:
+            cost_record: Cost record to track
+            
+        Returns:
+            bool: True if cost was tracked successfully
+        """
+        try:
+            self.logger.info(f"Tracking safety cost: {cost_record.cost_type.value} = {cost_record.amount} {cost_record.currency}")
+            
+            # Add cost record
+            self._cost_records.append(cost_record)
+            
+            # Update budget usage
+            if self.config.enable_budget_tracking:
+                self._update_budget_usage(cost_record)
+            
+            # Check budget alerts
+            if self.config.enable_budget_tracking:
+                self._check_budget_alerts(cost_record.cost_type)
+            
+            # Clean old records
+            self._cleanup_old_records()
+            
+            self.logger.info(f"Safety cost tracked successfully")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to track safety cost: {str(e)}")
+            return False
 
-        # L5 Input validation
-        self._validate_input(data)
+    def get_cost_summary(self, period: str = "total") -> CostSummary:
+        """Get cost summary for a period.
+        
+        Args:
+            period: Period for summary (total, daily, weekly, monthly)
+            
+        Returns:
+            CostSummary: Cost summary
+        """
+        try:
+            summary = CostSummary(total_cost=0.0)
+            
+            # Filter records by period
+            filtered_records = self._filter_records_by_period(self._cost_records, period)
+            
+            # Calculate total cost
+            summary.total_cost = sum(r.amount for r in filtered_records)
+            summary.total_cost = round(summary.total_cost, self.config.cost_precision)
+            
+            # Calculate cost breakdown by type
+            for record in filtered_records:
+                cost_type = record.cost_type.value
+                summary.cost_breakdown[cost_type] = summary.cost_breakdown.get(cost_type, 0.0) + record.amount
+            
+            # Round breakdown costs
+            for key in summary.cost_breakdown:
+                summary.cost_breakdown[key] = round(summary.cost_breakdown[key], self.config.cost_precision)
+            
+            # Calculate period costs
+            if period != "total":
+                summary.period_costs = self._calculate_period_costs(filtered_records)
+            
+            # Check budget status
+            if self.config.enable_budget_tracking:
+                summary.budget_status = self._get_budget_status()
+            
+            # Generate forecast
+            summary.forecast = self._generate_forecast(filtered_records)
+            
+            return summary
+            
+        except Exception as e:
+            self.logger.error(f"Failed to get cost summary: {str(e)}")
+            return CostSummary(total_cost=0.0, generated_at=datetime.utcnow())
 
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(data):
-            raise SecurityError("Data failed L5 safety validation")
+    def set_budget(self, budget: CostBudget) -> bool:
+        """Set a cost budget.
+        
+        Args:
+            budget: Budget to set
+            
+        Returns:
+            bool: True if budget was set successfully
+        """
+        try:
+            self.logger.info(f"Setting budget: {budget.budget_type.value} = {budget.limit} {budget.currency}/{budget.period}")
+            
+            budget_key = f"{budget.budget_type.value}_{budget.period}"
+            self._budgets[budget_key] = budget
+            
+            # Update current usage
+            budget.current_usage = self._calculate_current_usage(budget.budget_type, budget.period)
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to set budget: {str(e)}")
+            return False
 
-        # Calculate safety score
-        safety_score = self._calculate_safety_score(data)
+    def check_budget_status(self, cost_type: CostType, period: str) -> Dict[str, Any]:
+        """Check budget status for a cost type and period.
+        
+        Args:
+            cost_type: Type of cost to check
+            period: Period to check
+            
+        Returns:
+            Dict: Budget status information
+        """
+        try:
+            budget_key = f"{cost_type.value}_{period}"
+            budget = self._budgets.get(budget_key)
+            
+            if not budget:
+                return {"status": "no_budget", "message": f"No budget set for {cost_type.value} {period}"}
+            
+            current_usage = self._calculate_current_usage(cost_type, period)
+            usage_percentage = current_usage / budget.limit if budget.limit > 0 else 0
+            
+            status = {
+                "budget_limit": budget.limit,
+                "current_usage": round(current_usage, self.config.cost_precision),
+                "usage_percentage": round(usage_percentage * 100, 2),
+                "remaining": round(budget.limit - current_usage, self.config.cost_precision),
+                "alert_threshold": round(budget.alert_threshold * 100, 2)
+            }
+            
+            # Determine status level
+            if usage_percentage >= 1.0:
+                status["status"] = "exceeded"
+                status["alert"] = True
+            elif usage_percentage >= budget.alert_threshold:
+                status["status"] = "warning"
+                status["alert"] = True
+            else:
+                status["status"] = "ok"
+                status["alert"] = False
+            
+            return status
+            
+        except Exception as e:
+            self.logger.error(f"Failed to check budget status: {str(e)}")
+            return {"status": "error", "message": str(e)}
 
-        # Perform risk assessment
-        risk_assessment = self._assess_risks(data)
-
-        # Create result with L5 structure
-        result = TrackDataCostSafetyResult(
-            success=safety_score <= self.constraints.max_risk_score,
-            safety_score=safety_score,
-            risk_assessment=risk_assessment,
-            safety_validated=True,
-            timestamp=self._get_timestamp()
+    def _load_default_budgets(self) -> None:
+        """Load default budgets."""
+        # Daily budgets
+        self._budgets["policy_check_daily"] = CostBudget(
+            cost_type=CostType.POLICY_CHECK,
+            limit=10.0,
+            period="daily",
+            alert_threshold=0.8
+        )
+        
+        self._budgets["filter_application_daily"] = CostBudget(
+            cost_type=CostType.FILTER_APPLICATION,
+            limit=5.0,
+            period="daily",
+            alert_threshold=0.8
+        )
+        
+        # Weekly budgets
+        self._budgets["ethics_validation_weekly"] = CostBudget(
+            cost_type=CostType.ETHICS_VALIDATION,
+            limit=50.0,
+            period="weekly",
+            alert_threshold=0.7
+        )
+        
+        # Monthly budgets
+        self._budgets["compliance_check_monthly"] = CostBudget(
+            cost_type=CostType.COMPLIANCE_CHECK,
+            limit=100.0,
+            period="monthly",
+            alert_threshold=0.9
         )
 
-        self.logger.info(f"Safety check completed: score={safety_score}, passed={result.success}")
-        return result
+    def _update_budget_usage(self, cost_record: CostRecord) -> None:
+        """Update budget usage for all relevant budgets."""
+        cost_type = cost_record.cost_type
+        
+        for period in ["daily", "weekly", "monthly"]:
+            budget_key = f"{cost_type.value}_{period}"
+            budget = self._budgets.get(budget_key)
+            
+            if budget:
+                budget.current_usage = self._calculate_current_usage(cost_type, period)
 
-    def validate_safety(self, data: Dict[str, str]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
-        try:
-            # Check for critical dangerous patterns
-            critical_patterns = [
-                r"<script[^>]*>.*?</script>",
-                r"javascript:",
-                r"eval\s*\(",
-                r"exec\s*\(",
-                r"__import__",
-                r"subprocess\.",
-                r"os\.system",
-                r"\.\./.*\.\.",
-            ]
+    def _calculate_current_usage(self, cost_type: CostType, period: str) -> float:
+        """Calculate current usage for a cost type and period."""
+        filtered_records = self._filter_records_by_period(
+            [r for r in self._cost_records if r.cost_type == cost_type],
+            period
+        )
+        return sum(r.amount for r in filtered_records)
 
-            data_str = str(data).lower()
-            for pattern in critical_patterns:
-                if re.search(pattern, data_str, re.IGNORECASE):
-                    self.logger.error(f"Critical dangerous pattern detected: {pattern}")
-                    return False
-
-            # Check data size limits
-            if len(data_str) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds safety size limit")
-                return False
-
-            self.logger.info("Data passed L5 safety validation")
-            return True
-        except (ValueError, TypeError, KeyError) as e:
-            self.logger.error("Safety validation error: %s", e)
-            return False  # Fail-closed
-
-    def _validate_input(self, data: Dict[str, str]) -> None:
-        """L5 Input validation"""
-        if not isinstance(data, dict):
-            raise ValueError("Input must be a dictionary")
-
-        if not data:
-            raise ValueError("Input cannot be empty")
-
-    def _calculate_safety_score(self, data: Dict[str, str]) -> float:
-        """Calculate L5 safety score (0.0 = safe, 1.0 = dangerous)"""
-        score = 0.0
-        data_str = str(data).lower()
-
-        # Check for suspicious patterns
-        suspicious_patterns = [
-            ("password", 0.3),
-            ("secret", 0.3),
-            ("token", 0.2),
-            ("key", 0.1),
-            ("admin", 0.2),
-            ("root", 0.3),
-        ]
-
-        for pattern, weight in suspicious_patterns:
-            if pattern in data_str:
-                score += weight
-
-        # Check complexity
-        if len(data_str) > 10000:
-            score += 0.2
-
-        return min(score, 1.0)
-
-    def _assess_risks(self, data: Dict[str, str]) -> Dict[str, str]:
-        """Perform comprehensive risk assessment"""
-        risks = {
-            "injection_risk": self._check_injection_risk(data),
-            "size_risk": self._check_size_risk(data),
-            "complexity_risk": self._check_complexity_risk(data),
-            "pattern_risk": self._check_pattern_risk(data)
-        }
-
-        return {
-            "risks": risks,
-            "overall_risk": "low" if all(r == "low" for r in risks.values()) else "medium" if any(r == "medium" for r in risks.values()) else "high"
-        }
-
-    def _check_injection_risk(self, data: Dict[str, str]) -> str:
-        """Check for injection risks"""
-        injection_patterns = ["'", '"', ";", "--", "/*", "*/", "xp_", "sp_"]
-        data_str = str(data)
-
-        for pattern in injection_patterns:
-            if pattern in data_str:
-                return "high"
-
-        return "low"
-
-    def _check_size_risk(self, data: Dict[str, str]) -> str:
-        """Check size-related risks"""
-        size = len(str(data))
-
-        if size > 100000:
-            return "high"
-        elif size > 10000:
-            return "medium"
+    def _filter_records_by_period(self, records: List[CostRecord], period: str) -> List[CostRecord]:
+        """Filter cost records by period."""
+        if period == "total":
+            return records
+        
+        now = datetime.utcnow()
+        
+        if period == "daily":
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        elif period == "weekly":
+            start_date = now - timedelta(days=now.weekday())
+            start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        elif period == "monthly":
+            start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         else:
-            return "low"
+            return records
+        
+        return [r for r in records if r.timestamp >= start_date]
 
-    def _check_complexity_risk(self, data: Dict[str, str]) -> str:
-        """Check complexity risks"""
+    def _check_budget_alerts(self, cost_type: CostType) -> None:
+        """Check and trigger budget alerts."""
+        for period in ["daily", "weekly", "monthly"]:
+            status = self.check_budget_status(cost_type, period)
+            
+            if status.get("alert"):
+                self.logger.warning(
+                    f"Budget alert for {cost_type.value} {period}: "
+                    f"{status['usage_percentage']}% used ({status['current_usage']}/{status['budget_limit']})"
+                )
+
+    def _calculate_period_costs(self, records: List[CostRecord]) -> Dict[str, Dict[str, float]]:
+        """Calculate costs by sub-periods."""
+        period_costs = {}
+        
+        # Group by date
+        daily_costs = {}
+        for record in records:
+            date_key = record.timestamp.date().isoformat()
+            if date_key not in daily_costs:
+                daily_costs[date_key] = {}
+            
+            cost_type = record.cost_type.value
+            daily_costs[date_key][cost_type] = daily_costs[date_key].get(cost_type, 0.0) + record.amount
+        
+        # Round costs
+        for date in daily_costs:
+            for cost_type in daily_costs[date]:
+                daily_costs[date][cost_type] = round(daily_costs[date][cost_type], self.config.cost_precision)
+        
+        period_costs["daily"] = daily_costs
+        return period_costs
+
+    def _get_budget_status(self) -> Dict[str, Dict[str, Any]]:
+        """Get status for all budgets."""
+        budget_status = {}
+        
+        for budget_key, budget in self._budgets.items():
+            cost_type, period = budget_key.split("_")
+            status = self.check_budget_status(CostType(cost_type), period)
+            budget_status[budget_key] = status
+        
+        return budget_status
+
+    def _generate_forecast(self, records: List[CostRecord]) -> Optional[Dict[str, float]]:
+        """Generate cost forecast."""
+        if len(records) < 7:
+            return None
+        
         try:
-            # Check nesting depth
-            depth = self._calculate_depth(data)
-            if depth > 10:
-                return "high"
-            elif depth > 5:
-                return "medium"
-            else:
-                return "low"
-        except (ValueError, TypeError, KeyError):
-            return "high"
-
-    def _check_pattern_risk(self, data: Dict[str, str]) -> str:
-        """Check for risky patterns"""
-        risky_patterns = ["eval", "exec", "import", "subprocess", "os.system"]
-        data_str = str(data).lower()
-
-        for pattern in risky_patterns:
-            if pattern in data_str:
-                return "high"
-
-        return "low"
-
-    def _calculate_depth(self, obj: object, current_depth: int = 0) -> int:
-        """Calculate nesting depth"""
-        if isinstance(obj, dict):
-            return max([self._calculate_depth(v, current_depth + 1) for v in obj.values()], default=current_depth)
-        elif isinstance(obj, list):
-            return max([self._calculate_depth(item, current_depth + 1) for item in obj], default=current_depth)
-        else:
-            return current_depth
-
-    def _initialize_safety_rules(self) -> List[Dict[str, str]]:
-        """Initialize L5 safety rules"""
-        return [
-            {"name": "no_injection", "pattern": r"(union|select|insert|update|delete|drop)", "severity": "high"},
-            {"name": "no_scripts", "pattern": r"<script", "severity": "high"},
-            {"name": "no_eval", "pattern": r"eval\s*\(", "severity": "high"},
-            {"name": "size_limit", "max_size": 1000000, "severity": "medium"}
-        ]
-
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
-
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
-
-# L5 Interface compliance
-class TrackDataCostSafetyInterface:
-    """L5 Interface - ensures contract compliance"""
-
-    def __init__(self, safety: TrackDataCostSafetySafety):
-        self._safety = safety
-
-    def apply_safety(self, data: Dict[str, str]) -> Dict[str, str]:
-        """L5 Interface method - applies safety safely"""
-        try:
-            result = self._safety.apply_safety(data)
-            return {
-                "success": result.success,
-                "safety_score": result.safety_score,
-                "risk_assessment": result.risk_assessment,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
+            # Simple linear forecast based on recent trend
+            recent_costs = []
+            now = datetime.utcnow()
+            
+            # Get daily costs for last 7 days
+            for i in range(7):
+                date = now - timedelta(days=i)
+                date_records = [r for r in records if r.timestamp.date() == date.date()]
+                daily_cost = sum(r.amount for r in date_records)
+                recent_costs.append(daily_cost)
+            
+            # Calculate average daily cost
+            avg_daily_cost = sum(recent_costs) / len(recent_costs)
+            
+            # Generate forecast
+            forecast = {
+                "daily_forecast": round(avg_daily_cost, self.config.cost_precision),
+                "weekly_forecast": round(avg_daily_cost * 7, self.config.cost_precision),
+                "monthly_forecast": round(avg_daily_cost * 30, self.config.cost_precision)
             }
-        except (ValueError, TypeError, KeyError) as e:
-            raise SecurityError(f"Safety application failed: {e}")
+            
+            return forecast
+            
+        except Exception as e:
+            self.logger.warning(f"Failed to generate forecast: {str(e)}")
+            return None
 
-# L5 builder
-class TrackDataCostSafetyFactory:
-    """L5 builder for creating safety handlers with proper configuration"""
+    def _cleanup_old_records(self) -> None:
+        """Clean up old cost records."""
+        # Keep records for 90 days
+        cutoff_date = datetime.utcnow() - timedelta(days=90)
+        original_count = len(self._cost_records)
+        
+        self._cost_records = [r for r in self._cost_records if r.timestamp >= cutoff_date]
+        
+        if len(self._cost_records) < original_count:
+            self.logger.info(f"Cleaned up {original_count - len(self._cost_records)} old cost records")
 
-    @staticmethod
-    def create_safety(safety_level: str = "strict") -> TrackDataCostSafetyInterface:
-        """Create configured safety executor"""
-        constraints = TrackDataCostSafetyConstraints(safety_level=safety_level)
-        safety = TrackDataCostSafetyImpl(constraints)
-        return TrackDataCostSafetyInterface(safety)
 
-# L5 Main execution point
-def track_data_cost(data: Dict[str, str]) -> Dict[str, str]:
-    """
-    L5 Main function - track data cost operations
+# Factory function for easy instantiation
+def create_safety_cost_tracker(
+    enable_budget_tracking: bool = True,
+    default_currency: str = "USD",
+    forecast_days: int = 30,
+    **kwargs
+) -> SafetyCostTracker:
+    """Create a configured safety cost tracker."""
+    config = SafetyCostConfig(
+        enable_budget_tracking=enable_budget_tracking,
+        default_currency=default_currency,
+        forecast_days=forecast_days,
+        **kwargs
+    )
+    return SafetyCostTracker(config)
 
+
+# Convenience function for direct usage
+def track_safety_cost(
+    cost_type: str,
+    amount: float,
+    operation_id: Optional[str] = None,
+    metadata: Optional[Dict[str, Any]] = None,
+    config: Optional[Dict[str, Any]] = None
+) -> bool:
+    """Track a safety cost.
+    
     Args:
-        data: Data to apply safety checks to
-
+        cost_type: Type of cost
+        amount: Cost amount
+        operation_id: Optional operation ID
+        metadata: Optional metadata
+        config: Optional tracker configuration
+        
     Returns:
-        Dict: Safety result
-
-    Raises:
-        SecurityError: If safety check fails any validation
+        bool: True if cost was tracked successfully
     """
-    builder = TrackDataCostSafetyFactory()
-    safety = builder.create_safety()
-    return safety.apply_safety(data)
-
-if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": "safe_data"}
-        result = track_data_cost(test_data)
-        logger.info(f"L5 Safety check successful: {result}")
-    except SecurityError as e:
-        logger.error("L5 Security error: %s", e)
-    except (ValueError, TypeError, KeyError) as e:
-        logger.error("L5 Unexpected error: %s", e)
+    # Create tracker and track
+    tracker_config = SafetyCostConfig(**config or {})
+    tracker = SafetyCostTracker(tracker_config)
+    
+    cost_record = CostRecord(
+        cost_type=CostType(cost_type),
+        amount=amount,
+        operation_id=operation_id,
+        metadata=metadata or {}
+    )
+    
+    return tracker.track_cost(cost_record)

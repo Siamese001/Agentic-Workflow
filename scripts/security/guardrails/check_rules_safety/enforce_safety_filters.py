@@ -1,313 +1,448 @@
-# ============================================================
-# Hydrated via Phase 3 — Filename Matching
-# Source: enforce_data_filters.py
-# Match Score: 0.8571
-# ============================================================
+"""Safety Filters Enforcement - Enforces safety filters on content and operations.
 
-"""
-L5 Agentic Core - Safety Layer - enforce_data_filters
-Implements L5 Safety/Policy Layer for enforce data filters operations
+This module provides safety filter enforcement for AI operations,
+including content filtering, profanity detection, and harmful content blocking.
+Follows the functional component pattern with proper logging.
 """
 
-from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, field
-from enum import Enum
+from typing import Dict, List, Optional, Any, Union, Set, Pattern
 import logging
-import scripts.check_canonical_structure
-from abc import ABC, abstractmethod
+import re
+from datetime import datetime
+from enum import Enum
 
-# Configure logging for L5 observability
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class EnforceDataFiltersSafetyType(Enum):
-    """L5 Typed enumeration for deterministic safety operations"""
-    APPLY = "apply"
-    ENFORCE = "enforce"
-    VALIDATE = "validate"
+
+class FilterType(Enum):
+    """Types of safety filters."""
+    PROFANITY = "profanity"
+    TOXICITY = "toxicity"
+    VIOLENCE = "violence"
+    HATE_SPEECH = "hate_speech"
+    SELF_HARM = "self_harm"
+    SEXUAL_CONTENT = "sexual_content"
+    MISINFORMATION = "misinformation"
+    ILLEGAL_CONTENT = "illegal_content"
+
+
+class FilterAction(Enum):
+    """Actions to take when filter is triggered."""
+    BLOCK = "block"
+    WARN = "warn"
+    REDACT = "redact"
+    FLAG = "flag"
+    LOG = "log"
+
 
 @dataclass
-class EnforceDataFiltersSafetyConstraints:
-    """L5 Safety constraints - fail-closed behavior"""
-    max_risk_score: float = 0.5
-    allowed_operations: List[str] = field(default_factory=lambda: ["apply", "enforce", "validate"])
-    safety_level: str = "strict"
-    requires_approval: bool = True
+class SafetyFilter:
+    """Definition of a safety filter."""
+    id: str
+    name: str
+    filter_type: FilterType
+    patterns: List[str]
+    action: FilterAction
+    enabled: bool = True
+    severity: str = "medium"
+    description: str = ""
+    keywords: List[str] = field(default_factory=list)
+
 
 @dataclass
-class EnforceDataFiltersSafetyResult:
-    """L5 Safety result with full type safety"""
-    success: bool
-    safety_score: float = 0.0
-    risk_assessment: Dict[str, str] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
-    safety_validated: bool = False
-    timestamp: str = ""
+class FilterMatch:
+    """Record of a filter match."""
+    filter_id: str
+    filter_name: str
+    filter_type: FilterType
+    action: FilterAction
+    matched_content: str
+    position: Optional[int] = None
+    confidence: float = 0.0
+    timestamp: datetime = field(default_factory=datetime.utcnow)
 
-class EnforceDataFiltersSafetySafety(ABC):
-    """L5 interface foundation - ensures L5 pure safety behavior"""
 
-    @abstractmethod
-    def apply_safety(self, data: Dict[str, str]) -> EnforceDataFiltersSafetyResult:
-        """Apply safety checks with L5 constraints"""
-        ...
+@dataclass
+class FilterResult:
+    """Result of safety filtering."""
+    safe: bool
+    filtered_content: Optional[str] = None
+    matches: List[FilterMatch] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+    blocked_content: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-    @abstractmethod
-    def validate_safety(self, data: Dict[str, str]) -> bool:
-        """L5 Safety validation - fail-closed by default"""
-        ...
 
-class EnforceDataFiltersSafetyImpl(EnforceDataFiltersSafetySafety):
-    """
-    L5 Implementation - L5 Safety/Policy Layer
-    Fail-closed safety enforcement with comprehensive policy checks
-    """
+@dataclass
+class SafetyFiltersConfig:
+    """Configuration for safety filters enforcement."""
+    enabled_filters: List[FilterType] = field(default_factory=lambda: [
+        FilterType.PROFANITY, FilterType.TOXICITY, FilterType.VIOLENCE
+    ])
+    default_action: FilterAction = FilterAction.WARN
+    strict_mode: bool = False
+    auto_redact: bool = True
+    custom_filters: List[SafetyFilter] = field(default_factory=list)
+    allowed_domains: Set[str] = field(default_factory=set)
+    log_level: str = "INFO"
 
-    def __init__(self, constraints: Optional[EnforceDataFiltersSafetyConstraints] = None):
-        self.constraints = constraints or EnforceDataFiltersSafetyConstraints()
+
+class SafetyFiltersEnforcer:
+    """Main class for safety filters enforcement."""
+
+    def __init__(self, config: Optional[SafetyFiltersConfig] = None):
+        self.config = config or SafetyFiltersConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._safety_rules = self._initialize_safety_rules()
+        self.logger.setLevel(self.config.log_level)
+        self._filters = []
+        self._compiled_patterns = {}
+        self._load_default_filters()
 
-    def apply_safety(self, data: Dict[str, str]) -> EnforceDataFiltersSafetyResult:
-        """Apply safety checks following L5 architecture principles"""
-        self.logger.info("Applying safety checks to data")
+    def enforce_filters(self, content: str, context: Optional[Dict[str, Any]] = None) -> FilterResult:
+        """Enforce safety filters on content.
+        
+        Args:
+            content: Content to filter
+            context: Optional context information
+            
+        Returns:
+            FilterResult: Filter enforcement results
+        """
+        self.logger.info(f"Enforcing safety filters on content ({len(content)} chars)")
+        
+        matches = []
+        warnings = []
+        blocked_content = []
+        filtered_content = content
+        
+        try:
+            # Apply each enabled filter
+            for filter_type in self.config.enabled_filters:
+                type_filters = [f for f in self._filters if f.filter_type == filter_type and f.enabled]
+                
+                for safety_filter in type_filters:
+                    filter_matches = self._apply_filter(safety_filter, content)
+                    matches.extend(filter_matches)
+            
+            # Apply custom filters
+            for safety_filter in self.config.custom_filters:
+                if safety_filter.enabled:
+                    filter_matches = self._apply_filter(safety_filter, content)
+                    matches.extend(filter_matches)
+            
+            # Process matches based on actions
+            for match in matches:
+                if match.action == FilterAction.BLOCK:
+                    blocked_content.append(match.matched_content)
+                elif match.action == FilterAction.WARN:
+                    warnings.append(f"Warning: {match.filter_name} detected")
+                elif match.action == FilterAction.REDACT and self.config.auto_redact:
+                    filtered_content = self._redact_content(filtered_content, match)
+            
+            # Determine if content is safe
+            safe = not any(m.action == FilterAction.BLOCK for m in matches)
+            
+            result = FilterResult(
+                safe=safe,
+                filtered_content=filtered_content if filtered_content != content else None,
+                matches=matches,
+                warnings=warnings,
+                blocked_content=blocked_content,
+                metadata={
+                    "filtered_at": datetime.utcnow().isoformat(),
+                    "original_length": len(content),
+                    "filters_applied": len(self._filters) + len(self.config.custom_filters),
+                    "enforcer": "SafetyFiltersEnforcer"
+                }
+            )
+            
+            self.logger.info(
+                f"Filter enforcement completed: {'safe' if safe else 'unsafe'} "
+                f"({len(matches)} matches, {len(blocked_content)} blocked)"
+            )
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Filter enforcement failed: {str(e)}")
+            return FilterResult(
+                safe=False,
+                matches=[FilterMatch(
+                    filter_id="system_error",
+                    filter_name="System Error",
+                    filter_type=FilterType.PROFANITY,
+                    action=FilterAction.BLOCK,
+                    matched_content=str(e),
+                    confidence=1.0
+                )],
+                metadata={"error": str(e)}
+            )
 
-        # L5 Input validation
-        self._validate_input(data)
+    def _apply_filter(self, safety_filter: SafetyFilter, content: str) -> List[FilterMatch]:
+        """Apply a single safety filter to content."""
+        matches = []
+        
+        try:
+            # Get compiled patterns for this filter
+            patterns = self._compiled_patterns.get(safety_filter.id, [])
+            
+            # Check each pattern
+            for pattern in patterns:
+                for match in pattern.finditer(content):
+                    filter_match = FilterMatch(
+                        filter_id=safety_filter.id,
+                        filter_name=safety_filter.name,
+                        filter_type=safety_filter.filter_type,
+                        action=safety_filter.action,
+                        matched_content=match.group(),
+                        position=match.start(),
+                        confidence=0.9
+                    )
+                    matches.append(filter_match)
+            
+            # Check keywords
+            for keyword in safety_filter.keywords:
+                if keyword.lower() in content.lower():
+                    positions = [m.start() for m in re.finditer(re.escape(keyword), content, re.IGNORECASE)]
+                    for pos in positions:
+                        filter_match = FilterMatch(
+                            filter_id=safety_filter.id,
+                            filter_name=safety_filter.name,
+                            filter_type=safety_filter.filter_type,
+                            action=safety_filter.action,
+                            matched_content=keyword,
+                            position=pos,
+                            confidence=0.8
+                        )
+                        matches.append(filter_match)
+            
+        except Exception as e:
+            self.logger.warning(f"Filter {safety_filter.id} failed: {str(e)}")
+        
+        return matches
 
-        # L5 Safety validation - fail-closed
-        if not self.validate_safety(data):
-            raise SecurityError("Data failed L5 safety validation")
+    def _redact_content(self, content: str, match: FilterMatch) -> str:
+        """Redact matched content from text."""
+        if match.position is not None:
+            start = match.position
+            end = start + len(match.matched_content)
+            return content[:start] + "[REDACTED]" + content[end:]
+        return content.replace(match.matched_content, "[REDACTED]")
 
-        # Calculate safety score
-        safety_score = self._calculate_safety_score(data)
-
-        # Perform risk assessment
-        risk_assessment = self._assess_risks(data)
-
-        # Create result with L5 structure
-        result = EnforceDataFiltersSafetyResult(
-            success=safety_score <= self.constraints.max_risk_score,
-            safety_score=safety_score,
-            risk_assessment=risk_assessment,
-            safety_validated=True,
-            timestamp=self._get_timestamp()
+    def _load_default_filters(self) -> None:
+        """Load default safety filters."""
+        # Profanity filter
+        profanity_filter = SafetyFilter(
+            id="profanity_filter",
+            name="Profanity Filter",
+            filter_type=FilterType.PROFANITY,
+            patterns=[
+                r'\b(damn|hell|shit|crap|bullshit)\b',
+                r'\b(fuck|screw|piss|bitch|bastard)\b'
+            ],
+            action=FilterAction.REDACT,
+            severity="medium",
+            description="Filters profane language"
         )
+        self._filters.append(profanity_filter)
+        
+        # Toxicity filter
+        toxicity_filter = SafetyFilter(
+            id="toxicity_filter",
+            name="Toxicity Filter",
+            filter_type=FilterType.TOXICITY,
+            patterns=[
+                r'\b(kill|die|harm|hurt)\s+(yourself|you)',
+                r'\b(stupid|idiot|moron|dumb)\s+(person|people|human)'
+            ],
+            action=FilterAction.WARN,
+            severity="high",
+            description="Detects toxic content"
+        )
+        self._filters.append(toxicity_filter)
+        
+        # Violence filter
+        violence_filter = SafetyFilter(
+            id="violence_filter",
+            name="Violence Filter",
+            filter_type=FilterType.VIOLENCE,
+            patterns=[
+                r'\b(violence|attack|assault|murder|kill)\b',
+                r'\b(weapon|gun|knife|bomb|explosive)\b'
+            ],
+            action=FilterAction.FLAG,
+            severity="high",
+            description="Detects violent content"
+        )
+        self._filters.append(violence_filter)
+        
+        # Hate speech filter
+        hate_speech_filter = SafetyFilter(
+            id="hate_speech_filter",
+            name="Hate Speech Filter",
+            filter_type=FilterType.HATE_SPEECH,
+            patterns=[
+                r'\b(hate|despise|loathe)\s+\w+\s+(people|persons|race|religion)',
+                r'\b(superior|inferior)\s+(race|gender|religion)'
+            ],
+            action=FilterAction.BLOCK,
+            severity="critical",
+            description="Blocks hate speech"
+        )
+        self._filters.append(hate_speech_filter)
+        
+        # Self harm filter
+        self_harm_filter = SafetyFilter(
+            id="self_harm_filter",
+            name="Self Harm Filter",
+            filter_type=FilterType.SELF_HARM,
+            patterns=[
+                r'\b(suicide|kill\s+myself|end\s+my\s+life)',
+                r'\b(self\s+harm|hurt\s+myself)'
+            ],
+            action=FilterAction.BLOCK,
+            severity="critical",
+            description="Blocks self-harm content"
+        )
+        self._filters.append(self_harm_filter)
+        
+        # Compile all patterns
+        self._compile_patterns()
 
-        self.logger.info(f"Safety check completed: score={safety_score}, passed={result.success}")
-        return result
+    def _compile_patterns(self) -> None:
+        """Compile regex patterns for all filters."""
+        for safety_filter in self._filters:
+            compiled = []
+            for pattern in safety_filter.patterns:
+                try:
+                    compiled.append(re.compile(pattern, re.IGNORECASE))
+                except re.error as e:
+                    self.logger.warning(f"Invalid regex pattern in {safety_filter.id}: {str(e)}")
+            self._compiled_patterns[safety_filter.id] = compiled
 
-    def validate_safety(self, data: Dict[str, str]) -> bool:
-        """L5 Safety validation with fail-closed behavior"""
-        try:
-            # Check for critical dangerous patterns
-            critical_patterns = [
-                r"<script[^>]*>.*?</script>",
-                r"javascript:",
-                r"eval\s*\(",
-                r"exec\s*\(",
-                r"__import__",
-                r"subprocess\.",
-                r"os\.system",
-                r"\.\./.*\.\.",
-            ]
+    def add_filter(self, safety_filter: SafetyFilter) -> None:
+        """Add a custom safety filter.
+        
+        Args:
+            safety_filter: Filter to add
+        """
+        self.logger.info(f"Adding safety filter: {safety_filter.id}")
+        self.config.custom_filters.append(safety_filter)
+        
+        # Compile patterns for new filter
+        compiled = []
+        for pattern in safety_filter.patterns:
+            try:
+                compiled.append(re.compile(pattern, re.IGNORECASE))
+            except re.error as e:
+                self.logger.warning(f"Invalid regex pattern in {safety_filter.id}: {str(e)}")
+        self._compiled_patterns[safety_filter.id] = compiled
 
-            data_str = str(data).lower()
-            for pattern in critical_patterns:
-                if re.search(pattern, data_str, re.IGNORECASE):
-                    self.logger.error(f"Critical dangerous pattern detected: {pattern}")
-                    return False
+    def remove_filter(self, filter_id: str) -> bool:
+        """Remove a safety filter.
+        
+        Args:
+            filter_id: ID of filter to remove
+            
+        Returns:
+            bool: True if filter was removed
+        """
+        # Remove from default filters
+        original_length = len(self._filters)
+        self._filters = [f for f in self._filters if f.id != filter_id]
+        
+        # Remove from custom filters
+        self.config.custom_filters = [f for f in self.config.custom_filters if f.id != filter_id]
+        
+        # Remove compiled patterns
+        if filter_id in self._compiled_patterns:
+            del self._compiled_patterns[filter_id]
+        
+        return len(self._filters) < original_length
 
-            # Check data size limits
-            if len(data_str) > 1000000:  # 1MB limit
-                self.logger.error("Data exceeds safety size limit")
-                return False
-
-            self.logger.info("Data passed L5 safety validation")
-            return True
-        except (ValueError, TypeError, KeyError) as e:
-            self.logger.error("Safety validation error: %s", e)
-            return False  # Fail-closed
-
-    def _validate_input(self, data: Dict[str, str]) -> None:
-        """L5 Input validation"""
-        if not isinstance(data, dict):
-            raise ValueError("Input must be a dictionary")
-
-        if not data:
-            raise ValueError("Input cannot be empty")
-
-    def _calculate_safety_score(self, data: Dict[str, str]) -> float:
-        """Calculate L5 safety score (0.0 = safe, 1.0 = dangerous)"""
-        score = 0.0
-        data_str = str(data).lower()
-
-        # Check for suspicious patterns
-        suspicious_patterns = [
-            ("password", 0.3),
-            ("secret", 0.3),
-            ("token", 0.2),
-            ("key", 0.1),
-            ("admin", 0.2),
-            ("root", 0.3),
-        ]
-
-        for pattern, weight in suspicious_patterns:
-            if pattern in data_str:
-                score += weight
-
-        # Check complexity
-        if len(data_str) > 10000:
-            score += 0.2
-
-        return min(score, 1.0)
-
-    def _assess_risks(self, data: Dict[str, str]) -> Dict[str, str]:
-        """Perform comprehensive risk assessment"""
-        risks = {
-            "injection_risk": self._check_injection_risk(data),
-            "size_risk": self._check_size_risk(data),
-            "complexity_risk": self._check_complexity_risk(data),
-            "pattern_risk": self._check_pattern_risk(data)
-        }
-
+    def get_filter_summary(self) -> Dict[str, Any]:
+        """Get summary of filter configuration.
+        
+        Returns:
+            Dict: Filter configuration summary
+        """
         return {
-            "risks": risks,
-            "overall_risk": "low" if all(r == "low" for r in risks.values()) else "medium" if any(r == "medium" for r in risks.values()) else "high"
+            "enabled_filters": [f.value for f in self.config.enabled_filters],
+            "total_filters": len(self._filters) + len(self.config.custom_filters),
+            "default_action": self.config.default_action.value,
+            "strict_mode": self.config.strict_mode,
+            "auto_redact": self.config.auto_redact
         }
 
-    def _check_injection_risk(self, data: Dict[str, str]) -> str:
-        """Check for injection risks"""
-        injection_patterns = ["'", '"', ";", "--", "/*", "*/", "xp_", "sp_"]
-        data_str = str(data)
 
-        for pattern in injection_patterns:
-            if pattern in data_str:
-                return "high"
+# Factory function for easy instantiation
+def create_safety_filters_enforcer(
+    enabled_filters: List[str] = None,
+    default_action: str = "warn",
+    strict_mode: bool = False,
+    **kwargs
+) -> SafetyFiltersEnforcer:
+    """Create a configured safety filters enforcer."""
+    config = SafetyFiltersConfig(
+        enabled_filters=[FilterType(f) for f in (enabled_filters or ["profanity", "toxicity", "violence"])],
+        default_action=FilterAction(default_action),
+        strict_mode=strict_mode,
+        **kwargs
+    )
+    return SafetyFiltersEnforcer(config)
 
-        return "low"
 
-    def _check_size_risk(self, data: Dict[str, str]) -> str:
-        """Check size-related risks"""
-        size = len(str(data))
-
-        if size > 100000:
-            return "high"
-        elif size > 10000:
-            return "medium"
-        else:
-            return "low"
-
-    def _check_complexity_risk(self, data: Dict[str, str]) -> str:
-        """Check complexity risks"""
-        try:
-            # Check nesting depth
-            depth = self._calculate_depth(data)
-            if depth > 10:
-                return "high"
-            elif depth > 5:
-                return "medium"
-            else:
-                return "low"
-        except (ValueError, TypeError, KeyError):
-            return "high"
-
-    def _check_pattern_risk(self, data: Dict[str, str]) -> str:
-        """Check for risky patterns"""
-        risky_patterns = ["eval", "exec", "import", "subprocess", "os.system"]
-        data_str = str(data).lower()
-
-        for pattern in risky_patterns:
-            if pattern in data_str:
-                return "high"
-
-        return "low"
-
-    def _calculate_depth(self, obj: object, current_depth: int = 0) -> int:
-        """Calculate nesting depth"""
-        if isinstance(obj, dict):
-            return max([self._calculate_depth(v, current_depth + 1) for v in obj.values()], default=current_depth)
-        elif isinstance(obj, list):
-            return max([self._calculate_depth(item, current_depth + 1) for item in obj], default=current_depth)
-        else:
-            return current_depth
-
-    def _initialize_safety_rules(self) -> List[Dict[str, str]]:
-        """Initialize L5 safety rules"""
-        return [
-            {"name": "no_injection", "pattern": r"(union|select|insert|update|delete|drop)", "severity": "high"},
-            {"name": "no_scripts", "pattern": r"<script", "severity": "high"},
-            {"name": "no_eval", "pattern": r"eval\s*\(", "severity": "high"},
-            {"name": "size_limit", "max_size": 1000000, "severity": "medium"}
-        ]
-
-    def _get_timestamp(self) -> str:
-        """Get current timestamp for L5 observability"""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
-
-class SecurityError(Exception):
-    """L5 Security exception for fail-closed behavior"""
-    ...
-
-# L5 Interface compliance
-class EnforceDataFiltersSafetyInterface:
-    """L5 Interface - ensures contract compliance"""
-
-    def __init__(self, safety: EnforceDataFiltersSafetySafety):
-        self._safety = safety
-
-    def apply_safety(self, data: Dict[str, str]) -> Dict[str, str]:
-        """L5 Interface method - applies safety safely"""
-        try:
-            result = self._safety.apply_safety(data)
-            return {
-                "success": result.success,
-                "safety_score": result.safety_score,
-                "risk_assessment": result.risk_assessment,
-                "errors": result.errors,
-                "safety_validated": result.safety_validated,
-                "timestamp": result.timestamp
-            }
-        except (ValueError, TypeError, KeyError) as e:
-            raise SecurityError(f"Safety application failed: {e}")
-
-# L5 builder
-class EnforceDataFiltersSafetyFactory:
-    """L5 builder for creating safety handlers with proper configuration"""
-
-    @staticmethod
-    def create_safety(safety_level: str = "strict") -> EnforceDataFiltersSafetyInterface:
-        """Create configured safety executor"""
-        constraints = EnforceDataFiltersSafetyConstraints(safety_level=safety_level)
-        safety = EnforceDataFiltersSafetyImpl(constraints)
-        return EnforceDataFiltersSafetyInterface(safety)
-
-# L5 Main execution point
-def enforce_data_filters(data: Dict[str, str]) -> Dict[str, str]:
-    """
-    L5 Main function - enforce data filters operations
-
+# Convenience function for direct usage
+def enforce_safety_filters(
+    content: str,
+    filters: List[str] = None,
+    strict_mode: bool = False,
+    auto_redact: bool = True,
+    context: Optional[Dict[str, Any]] = None,
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Enforce safety filters on content.
+    
     Args:
-        data: Data to apply safety checks to
-
+        content: Content to filter
+        filters: List of filter types to apply
+        strict_mode: Whether to use strict mode
+        auto_redact: Whether to automatically redact content
+        context: Optional context information
+        config: Optional enforcer configuration
+        
     Returns:
-        Dict: Safety result
-
-    Raises:
-        SecurityError: If safety check fails any validation
+        Dict: Filter enforcement results
     """
-    builder = EnforceDataFiltersSafetyFactory()
-    safety = builder.create_safety()
-    return safety.apply_safety(data)
-
-if __name__ == "__main__":
-    # L5 Test execution
-    try:
-        test_data = {"test": "safe_data"}
-        result = enforce_data_filters(test_data)
-        logger.info(f"L5 Safety check successful: {result}")
-    except SecurityError as e:
-        logger.error("L5 Security error: %s", e)
-    except (ValueError, TypeError, KeyError) as e:
-        logger.error("L5 Unexpected error: %s", e)
+    # Create enforcer and execute
+    enforcer_config = SafetyFiltersConfig(
+        enabled_filters=[FilterType(f) for f in (filters or ["profanity", "toxicity", "violence"])],
+        strict_mode=strict_mode,
+        auto_redact=auto_redact,
+        **config or {}
+    )
+    enforcer = SafetyFiltersEnforcer(enforcer_config)
+    result = enforcer.enforce_filters(content, context)
+    
+    # Convert result to dict for JSON serialization
+    return {
+        "safe": result.safe,
+        "filtered_content": result.filtered_content,
+        "matches": [
+            {
+                "filter_id": m.filter_id,
+                "filter_name": m.filter_name,
+                "filter_type": m.filter_type.value,
+                "action": m.action.value,
+                "matched_content": m.matched_content,
+                "position": m.position,
+                "confidence": m.confidence,
+                "timestamp": m.timestamp.isoformat()
+            }
+            for m in result.matches
+        ],
+        "warnings": result.warnings,
+        "blocked_content": result.blocked_content,
+        "metadata": result.metadata
+    }
