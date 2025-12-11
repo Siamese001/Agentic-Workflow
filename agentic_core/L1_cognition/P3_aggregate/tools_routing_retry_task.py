@@ -7,7 +7,7 @@ within the shared application layer.
 """
 
 import logging
-from typing import Union, Dict, Optional, Any
+from typing import Dict, Optional, Any, Union, List
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
