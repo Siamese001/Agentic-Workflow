@@ -257,7 +257,7 @@ class RGWorkflowOrchestrator:
         self.validation_results: List[ValidationResult] = []
 
         self._dag_builder: Optional[DAGBuilder] = None
-        self._hop_handlers: Dict[str, Callable[..., Any]] = {}
+        self._hop_executors: Dict[str, Callable[..., Any]] = {}
 
     def load_spec_from_file(self, spec_path: Path) -> None:
         """Load workflow spec from a JSON file."""
@@ -287,13 +287,13 @@ class RGWorkflowOrchestrator:
             hops=hops,
         )
 
-    def register_hop_handler(
+    def register_hop_executor(
         self,
         hop_id: str,
         executor: Callable[..., Any],
     ) -> None:
         """Register a executor function for a hop."""
-        self._hop_handlers[hop_id] = executor
+        self._hop_executors[hop_id] = executor
 
     def setup_run_directory(
         self,
@@ -367,7 +367,7 @@ class RGWorkflowOrchestrator:
         )
 
         try:
-            executor = self._hop_handlers.get(hop_id)
+            executor = self._hop_executors.get(hop_id)
             if executor is None:
                 raise HopExecutionError(f"No executor registered for hop: {hop_id}")
 

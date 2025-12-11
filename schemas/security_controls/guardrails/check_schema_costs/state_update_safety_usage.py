@@ -274,7 +274,7 @@ class UpdateDataUsageSafetyInterface:
 
 # L5 builder
 class UpdateDataUsageSafetyFactory:
-    """L5 builder for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety executors with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> UpdateDataUsageSafetyInterface:

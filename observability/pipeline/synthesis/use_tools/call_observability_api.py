@@ -274,7 +274,7 @@ class ApplyObservabilitySafetySafetyInterface:
 
 # L5 builder
 class ApplyObservabilitySafetySafetyFactory:
-    """L5 builder for creating safety handlers with proper configuration"""
+    """L5 builder for creating safety executors with proper configuration"""
 
     @staticmethod
     def create_safety(safety_level: str = "strict") -> ApplyObservabilitySafetySafetyInterface:
