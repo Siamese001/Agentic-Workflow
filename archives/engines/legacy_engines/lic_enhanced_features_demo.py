@@ -31,10 +31,9 @@ class EnhancedOutreachDemo:
     
     def demo_semantic_caching(self) -> Dict[str, object]:
         """Demonstrate Priority 1: Semantic Caching"""
-        print("\n" + "="*60)
-        print("PRIORITY 1 DEMO: Semantic Caching")
-        print("="*60)
-        
+
+
+
         # Simulate existing cache data
         existing_cache = {
             "funding": [
@@ -58,18 +57,15 @@ class EnhancedOutreachDemo:
             existing_signals=existing_cache,
             targets=required_targets
         )
-        
-        print(f"📊 Cache Evaluation Results:")
-        print(f"   • Cache Sufficient: {'✅ YES' if cache_result.is_good_enough else '❌ NO'}")
-        print(f"   • Coverage Score: {cache_result.coverage_score:.2f}")
-        print(f"   • Freshness Score: {cache_result.freshness_score:.2f}")
-        print(f"   • Missing Targets: {cache_result.missing_targets}")
-        
+
+
+
+
+
         if cache_result.is_good_enough:
-            print("🎯 RESULT: Using existing cache - research pipeline skipped")
+
         else:
-            print("🔄 RESULT: Cache insufficient - running full research pipeline")
-        
+
         return {
             "feature": "semantic_caching",
             "cache_sufficient": cache_result.is_good_enough,
@@ -79,10 +75,9 @@ class EnhancedOutreachDemo:
     
     def demo_error_recovery(self) -> Dict[str, object]:
         """Demonstrate Priority 1: Error Recovery"""
-        print("\n" + "="*60)
-        print("PRIORITY 1 DEMO: Error Recovery")
-        print("="*60)
-        
+
+
+
         # Simulate mission that might fail
         mission = {
             "target_company": "TechCorp Inc.",
@@ -102,26 +97,23 @@ class EnhancedOutreachDemo:
             "company": "TechCorp Inc.",
             "seniority": "senior"
         }
-        
-        print("🔄 Simulating pipeline execution with error recovery...")
-        
+
         # Attempt 1: Simulate failure
-        print("   Attempt 1: Simulating API failure...")
+
         attempt1_success = False
         
         # Attempt 2: Simulate retry
-        print("   Attempt 2: Retrying with backup endpoint...")
+
         attempt2_success = True
         
         # Attempt 3: Would use fallback if needed
-        print("   Fallback Strategy: Ready if all retries fail")
-        
+
         if attempt2_success:
-            print("✅ RESULT: Error recovery successful - message generated on retry")
+
             success = True
             recovery_method = "retry"
         else:
-            print("⚠️ RESULT: Would use fallback strategy")
+
             success = False
             recovery_method = "fallback"
         
@@ -134,10 +126,9 @@ class EnhancedOutreachDemo:
     
     def demo_self_correction(self) -> Dict[str, object]:
         """Demonstrate Priority 2: Self-Correction"""
-        print("\n" + "="*60)
-        print("PRIORITY 2 DEMO: Self-Correction")
-        print("="*60)
-        
+
+
+
         # Initial low-quality output
         initial_output = "Hi, I'm interested in talking about opportunities."
         
@@ -146,23 +137,18 @@ class EnhancedOutreachDemo:
             "company": "TechCorp Inc.",
             "desired_tone": "professional"
         }
-        
-        print(f"📝 Initial Output: '{initial_output}'")
-        print("🔍 Analyzing output quality...")
-        
+
+
         # Check if correction is needed
         quality_score = 0.3  # Low quality
         should_correct = quality_score < 0.7
         
         if should_correct:
-            print("⚡ Self-correction triggered...")
-            
+
             # Apply correction
             corrected_output = "I'm reaching out to explore potential collaboration opportunities between my background in distributed systems and TechCorp's innovative engineering team. I've been following your work on scalable infrastructure and would value the chance to discuss how my experience might align with your current initiatives."
-            
-            print(f"✨ Corrected Output: '{corrected_output}'")
-            print("📈 Quality improved from 0.3 to 0.85")
-            
+
+
             return {
                 "feature": "self_correction",
                 "correction_applied": True,
@@ -171,7 +157,7 @@ class EnhancedOutreachDemo:
                 "improvement": 0.55
             }
         else:
-            print("✅ Output quality acceptable - no correction needed")
+
             return {
                 "feature": "self_correction",
                 "correction_applied": False,
@@ -180,17 +166,14 @@ class EnhancedOutreachDemo:
     
     def demo_advanced_prompt_engineering(self) -> Dict[str, object]:
         """Demonstrate Priority 2: Advanced Prompt Engineering"""
-        print("\n" + "="*60)
-        print("PRIORITY 2 DEMO: Advanced Prompt Engineering")
-        print("="*60)
-        
+
+
+
         base_mission = {
             "target_company": "TechCorp Inc.",
             "message_goal": "explore opportunities"
         }
-        
-        print("🔧 Applying advanced prompt engineering...")
-        
+
         # V6 Prompt Integration
         enhanced_mission = {
             **base_mission,
@@ -209,15 +192,12 @@ class EnhancedOutreachDemo:
             "Maintain professional but conversational tone",
             "Keep message concise but impactful"
         ]
-        
-        print("✅ Enhanced prompt features applied:")
+
         for enhancement in enhanced_mission["prompt_enhancements"]:
-            print(f"   • {enhancement}: {enhanced_mission['prompt_enhancements'][enhancement]}")
-        
-        print("📋 Instructional injections added:")
+
+
         for instruction in enhanced_instructions:
-            print(f"   • {instruction}")
-        
+
         return {
             "feature": "advanced_prompt_engineering",
             "enhancements_applied": len(enhanced_mission["prompt_enhancements"]),
@@ -227,10 +207,9 @@ class EnhancedOutreachDemo:
     
     def run_complete_demo(self) -> Dict[str, object]:
         """Run all Priority 1 & 2 demonstrations."""
-        print("🚀 ENHANCED OUTREACH ENGINE DEMO")
-        print("Priority 1 & 2 Features Showcase")
-        print("=" * 60)
-        
+
+
+
         results = {}
         
         # Priority 1 Features
@@ -242,10 +221,9 @@ class EnhancedOutreachDemo:
         results["advanced_prompt_engineering"] = self.demo_advanced_prompt_engineering()
         
         # Summary
-        print("\n" + "="*60)
-        print("DEMO SUMMARY")
-        print("="*60)
-        
+
+
+
         priority1_success = (
             results["semantic_caching"]["coverage_score"] > 0.5 and
             results["error_recovery"]["success"]
@@ -255,14 +233,11 @@ class EnhancedOutreachDemo:
             results["self_correction"].get("correction_applied", False) and
             results["advanced_prompt_engineering"]["enhancements_applied"] > 0
         )
-        
-        print(f"Priority 1 (Semantic Caching + Error Recovery): {'✅ SUCCESS' if priority1_success else '❌ FAILED'}")
-        print(f"Priority 2 (Self-Correction + Advanced Prompts): {'✅ SUCCESS' if priority2_success else '❌ FAILED'}")
-        
+
+
         if priority1_success and priority2_success:
-            print("\n🎉 ALL PRIORITY 1 & 2 FEATURES WORKING!")
-            print("Enhanced outreach engine is ready for production use.")
-        
+
+
         return {
             "demo_complete": True,
             "priority1_success": priority1_success,
