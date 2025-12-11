@@ -1,0 +1,66 @@
+{
+  "provenance_split_targets": {
+    "K2_UNIFY_BULLETS": {
+      "Verbatim": 2,
+      "Customized": 3,
+      "Synthetic": 2
+    },
+    "K3_IBM_BULLETS": {
+      "Verbatim": 2,
+      "Customized": 2,
+      "Synthetic": 2
+    },
+    "K9_COMPETENCIES": {
+      "Verbatim": 2,
+      "Customized": 2,
+      "Synthetic": 2
+    }
+  },
+  "bullet_word_count_ranges": {
+    "K2_UNIFY_BULLETS": [25, 40],
+    "K3_IBM_BULLETS": [25, 40],
+    "K9_COMPETENCIES": [25, 40]
+  },
+  "narrative_config": {
+    "K4_TRADERSENSE_NARRATIVE": {
+      "min_wc_key": "TRADERSENSE_NARRATIVE_WORD_COUNT_MIN",
+      "max_wc_key": "TRADERSENSE_NARRATIVE_WORD_COUNT_MAX",
+      "rag_signals": [
+        "high-frequency trading",
+        "low-latency",
+        "risk controls",
+        "backtesting",
+        "FIX protocol",
+        "cloud infrastructure"
+      ],
+      "focus": "Emphasize the early adoption of cloud, low-latency systems, HFT, risk management, and quantitative analysis, linking them to broader technical leadership and system design capabilities relevant today.",
+      "k0_themes": []
+    },
+    "K5_EY_NARRATIVE": {
+      "min_wc_key": "EY_NARRATIVE_WORD_COUNT_MIN",
+      "max_wc_key": "EY_NARRATIVE_WORD_COUNT_MAX",
+      "rag_signals": [],
+      "focus": "Focus on transferable executive themes and how this consulting experience built foundational capabilities relevant to current target role requirements.",
+      "k0_themes": [
+        "Leadership",
+        "Strategic Vision",
+        "Executive Communication",
+        "Risk Management",
+        "Client Advisory"
+      ]
+    },
+    "K6_EARLY_CAREER_NARRATIVE": {
+      "min_wc_key": "EARLY_CAREER_NARRATIVE_WORD_COUNT_MIN",
+      "max_wc_key": "EARLY_CAREER_NARRATIVE_WORD_COUNT_MAX",
+      "rag_signals": [
+        "quantitative analysis",
+        "modeling",
+        "data-driven",
+        "problem-solving",
+        "analytical foundation"
+      ],
+      "focus": "Emphasize how early quantitative and actuarial work built analytical foundations that enabled transition to technology career.",
+      "k0_themes": []
+    }
+  }
+}
