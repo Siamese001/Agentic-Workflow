@@ -1,94 +1,17 @@
-============================================================
-SUBATOMIC CANON 2025 - 40-KEY VALIDATION
-============================================================
+<unknown>:2: SyntaxWarning: invalid escape sequence '\s'
+================================================================
+SUBATOMIC CANON 2026 ù 50-KEY VALIDATION (NON-DESTRUCTIVE)
+Project root: C:\Git\Agentic-Workflow
+================================================================
 
-[FAIL] Key 00: DOCSTRING REQUIRED ù 138 violations
-============================================================
-Every public function and class must have a docstring.
-============================================================
-  ò apps_shared\rag\hardening\preflight.py:708 ù missing docstring on class 'TestClass'
-  ò apps_shared\rag\hardening\transaction_manager.py:209 ù missing docstring on function 'visit'
-  ò apps_shared\rag\hardening\validation_gates.py:231 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:303 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:357 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:399 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:479 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:520 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:557 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:600 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:633 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:667 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:696 ù missing docstring on function 'validate'
-  ò apps_shared\rag\hardening\validation_gates.py:728 ù missing docstring on function 'validate'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:703 ù missing docstring on class 'ResumeContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:709 ù missing docstring on class 'JobContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:716 ù missing docstring on class 'StrategyContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:721 ù missing docstring on class 'PromptContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:725 ù missing docstring on class 'BulletContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:730 ù missing docstring on class 'DraftContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:734 ù missing docstring on class 'QAContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:740 ù missing docstring on class 'ArtifactContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:744 ù missing docstring on class 'MetadataContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:754 ù missing docstring on class 'SafetyContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:761 ù missing docstring on class 'FeedbackContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:767 ù missing docstring on class 'HILContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:774 ù missing docstring on class 'A2AMessage'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:794 ù missing docstring on class 'A2AContext'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:326 ù missing docstring on function 'get_model_client'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:399 ù missing docstring on function 'is_mcp_enabled'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:449 ù missing docstring on function 'get_mcp_client'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:781 ù missing docstring on function 'to_dict'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:790 ù missing docstring on function 'model_dump'
-  ò apps_shared\rag\retrieval\get_info\embedding_compare_meaning\match_context.py:809 ù missing docstring on function 'append'
-  ò apps_shared\rag\retrieval\get_info\understand_request\retrieve_context.py:703 ù missing docstring on class 'ResumeContext'
-  ò apps_shared\rag\retrieval\get_info\understand_request\retrieve_context.py:709 ù missing docstring on class 'JobContext'
-  ò apps_shared\rag\retrieval\get_info\understand_request\retrieve_context.py:716 ù missing docstring on class 'StrategyContext'
-  ò apps_shared\rag\retrieval\get_info\understand_request\retrieve_context.py:721 ù missing docstring on class 'PromptContext'
-  ò apps_shared\rag\retrieval\get_info\understand_request\retrieve_context.py:725 ù missing docstring on class 'BulletContext'
-  ò apps_shared\rag\retrieval\get_info\understand_request\retrieve_context.py:730 ù missing docstring on class 'DraftContext'
-  ... and 98 more
-[PASS] Key 01: PASS
-[PASS] Key 02: PASS
-[PASS] Key 03: PASS
-[PASS] Key 04: PASS
-[PASS] Key 05: PASS
-[PASS] Key 06: PASS
-[PASS] Key 07: PASS
-[PASS] Key 08: PASS
-[PASS] Key 09: PASS
-[PASS] Key 10: PASS
-[FAIL] Key 11: Sub-atomic fails: ["apply_safety_policy.py: process() uses 'Any'. FORBIDDEN.", "apply_safety_policy.py: process() uses 'Any'. FORBIDDEN.", "apply_safety_policy.py: _execute() uses 'Any'. FORBIDDEN.", "enforce_safety_filters.py: process() uses 'Any'. FORBIDDEN.", "enforce_safety_filters.py: process() uses 'Any'. FORBIDDEN.", "enforce_safety_filters.py: _execute() uses 'Any'. FORBIDDEN.", "validate_safety_ethics.py: process() uses 'Any'. FORBIDDEN.", "validate_safety_ethics.py: process() uses 'Any'. FORBIDDEN."]
-[PASS] Key 12: PASS
-[PASS] Key 13: PASS
-[PASS] Key 14: PASS
-[FAIL] Key 15: Retrieval verbs outside L4: ['retrieve_similarity.py', 'fetch_history.py', 'retrieve_context.py', 'fetch_universal_history.py', 'retrieve_shared_memory.py', 'fetch_history.py', 'fetch_universal_history.py', 'retrieve_shared_memory.py', 'retrieve_observability_memory.py', 'retrieve_runtime_memory.py']
-[PASS] Key 16: PASS
-[PASS] Key 17: PASS
-[PASS] Key 18: PASS
-[PASS] Key 19: PASS
-[PASS] Key 20: PASS
-[PASS] Key 21: PASS
-[FAIL] Key 22: Banned tokens/exceptions: ['transaction_manager.py', 'handle_common_failures.py', 'invoke_common_services.py', 'diagnose_common_issues.py', 'merge_common_contexts.py']
-[FAIL] Key 23: Comment violations: ['validation_gates.py', 'match_context.py', 'retrieve_context.py', 'format_context.py', 'find_context.py']
-[PASS] Key 24: PASS
-[PASS] Key 25: PASS
-[PASS] Key 26: PASS
-[PASS] Key 27: PASS
-[FAIL] Key 28: Duplicates: ['apply_safety_policy.py -> same-agent collision', 'check_compliance.py -> same-agent collision', 'enforce_contracts.py -> same-agent collision', 'validate_schema.py -> same-agent collision', 'execute_shared_action.py -> same-agent collision', 'invoke_universal_tool.py -> same-agent collision']
-[PASS] Key 29: PASS
-[PASS] Key 30: PASS
-[PASS] Key 31: PASS
-[PASS] Key 32: PASS
-[PASS] Key 33: PASS
-[PASS] Key 34: PASS
-[PASS] Key 35: PASS
-[PASS] Key 36: PASS
-[PASS] Key 37: PASS
-[PASS] Key 38: PASS
-[PASS] Key 39: PASS
-[PASS] Key 40: PASS
-
-============================================================
-RESULT: 35/40 PASS
-FAILED 6 KEYS: ['00', '11', '15', '22', '23', '28']
-COMMIT BLOCKED - FIX THE FAILS
+Traceback (most recent call last):
+  File "C:\Git\Agentic-Workflow\canon_validator.py", line 2354, in <module>
+    main()
+    ~~~~^^
+  File "C:\Git\Agentic-Workflow\canon_validator.py", line 2337, in main
+    print(f"{icon} Key {k}: {msg}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u26a0' in position 21: character maps to <undefined>
