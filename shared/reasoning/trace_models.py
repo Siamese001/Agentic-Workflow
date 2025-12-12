@@ -83,19 +83,19 @@ class ReasoningTraceModel(BaseModel):
     class Config:
         frozen = False
     
-    def add_think(self, thought: str, **kwargs) -> None:
+    def add_think(self, thought: str, **kwargs: object) -> None:
         """Add a thinking step to the trace."""
         step = ThinkStep(thought=thought, **kwargs)
         self.steps.append(step)
         self.total_steps += 1
     
-    def add_action(self, action: str, **kwargs) -> None:
+    def add_action(self, action: str, **kwargs: object) -> None:
         """Add an action step to the trace."""
         step = ActionStep(action=action, **kwargs)
         self.steps.append(step)
         self.total_steps += 1
     
-    def add_observation(self, observation: str, **kwargs) -> None:
+    def add_observation(self, observation: str, **kwargs: object) -> None:
         """Add an observation step to the trace."""
         step = ObservationStep(observation=observation, **kwargs)
         self.steps.append(step)

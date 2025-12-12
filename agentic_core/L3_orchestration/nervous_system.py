@@ -84,152 +84,89 @@ class NervousSystem(IOrchestrator):
         self._iteration = 0
         self._state = context.state.copy()
         
-        logger.info(
-            "execution_started",
-            extra={
-                "mission": context.mission,
-                "scene_keys": list(context.scene.keys()),
-            }
-        )
+        logger.info("execution_started", extra={"mission": context.mission, "scene_keys": list(context.scene.keys())})
         
         try:
-            # Phase 1: MISSION (already defined in context)
-            mission_step = {
-                "phase": ExecutionPhase.MISSION.value,
-                "mission": context.mission,
-                "timestamp": time.time(),
-            }
-            execution_trace.append(mission_step)
-            
-            # Phase 2: SCENE (gather initial context)
-            scene_result = await self.execute_step(ExecutionPhase.SCENE, context)
-            execution_trace.append({
-                "phase": ExecutionPhase.SCENE.value,
-                "result": scene_result,
-                "timestamp": time.time(),
-            })
-            
-            # Main loop: THINK -> ACT -> OBSERVE
-            while await self.should_continue(context):
-                self._iteration += 1
-                
-                if self._iteration > self.config.max_iterations:
-                    errors.append(f"Max iterations ({self.config.max_iterations}) reached")
-                    break
-                
-                logger.info(
-                    "iteration_started",
-                    extra={"iteration": self._iteration}
-                )
-                
-                # Phase 3: THINK
-                think_result = await self.think(context)
-                execution_trace.append({
-                    "phase": ExecutionPhase.THINK.value,
-                    "iteration": self._iteration,
-                    "result": think_result,
-                    "timestamp": time.time(),
-                })
-                
-                if not think_result.get("success"):
-                    errors.append(f"Think phase failed: {think_result.get('error')}")
-                    break
-                
-                # Extract actions from plan
-                actions = self._extract_actions(think_result)
-                
-                if not actions:
-                    logger.info("no_actions_planned", extra={"iteration": self._iteration})
-                    break
-                
-                # Phase 4: ACT
-                act_results = await self.act(actions, context)
-                execution_trace.append({
-                    "phase": ExecutionPhase.ACT.value,
-                    "iteration": self._iteration,
-                    "actions": [a.to_dict() for a in actions],
-                    "results": act_results,
-                    "timestamp": time.time(),
-                })
-                
-                # Phase 5: OBSERVE
-                observe_result = await self.observe(act_results, context)
-                execution_trace.append({
-                    "phase": ExecutionPhase.OBSERVE.value,
-                    "iteration": self._iteration,
-                    "result": observe_result,
-                    "timestamp": time.time(),
-                })
-                
-                # Update context with observations
-                context.state.update(observe_result.get("state_updates", {}))
-                context.history.append({
-                    "iteration": self._iteration,
-                    "think": think_result,
-                    "act": act_results,
-                    "observe": observe_result,
-                })
-                
-                # Check if mission is complete
-                if observe_result.get("mission_complete"):
-                    logger.info("mission_complete", extra={"iteration": self._iteration})
-                    break
-            
-            # Optional: REFLECT
-            if self.config.enable_reflection:
-                reflect_result = await self.brain.reflect(
-                    execution_trace=execution_trace,
-                    outcome={"state": context.state, "history": context.history},
-                )
-                execution_trace.append({
-                    "phase": ExecutionPhase.REFLECT.value,
-                    "result": reflect_result,
-                    "timestamp": time.time(),
-                })
-            
-            success = len(errors) == 0
-            
-            result = ExecutionResult(
-                success=success,
-                output=context.state.get("final_output"),
-                final_state=context.state,
-                execution_trace=execution_trace,
-                iterations=self._iteration,
-                errors=errors,
-                metadata={
-                    "execution_time_seconds": time.time() - start_time,
-                    "total_phases": len(execution_trace),
-                },
-            )
-            
-            logger.info(
-                "execution_completed",
-                extra={
-                    "success": success,
-                    "iterations": self._iteration,
-                    "execution_time": result.metadata["execution_time_seconds"],
-                }
-            )
-            
-            return result
-        
+            execution_trace = await self._execute_phases(context, execution_trace, errors)
+            return self._create_execution_result(context, execution_trace, errors, start_time)
         except Exception as e:
-            logger.error(
-                "execution_failed",
-                extra={"error": str(e)},
-                exc_info=True,
-            )
+            return self._handle_execution_error(context, execution_trace, start_time, e)
+    
+    async def _execute_phases(self, context: ExecutionContext, execution_trace: List[Dict], errors: List[str]) -> List[Dict]:
+        """Execute all phases."""
+        execution_trace.append({"phase": ExecutionPhase.MISSION.value, "mission": context.mission, "timestamp": time.time()})
+        
+        scene_result = await self.execute_step(ExecutionPhase.SCENE, context)
+        execution_trace.append({"phase": ExecutionPhase.SCENE.value, "result": scene_result, "timestamp": time.time()})
+        
+        await self._execute_main_loop(context, execution_trace, errors)
+        
+        if self.config.enable_reflection:
+            execution_trace = await self._execute_reflection(context, execution_trace)
+        
+        return execution_trace
+    
+    async def _execute_main_loop(self, context: ExecutionContext, execution_trace: List[Dict], errors: List[str]) -> None:
+        """Execute main Think-Act-Observe loop."""
+        while await self.should_continue(context):
+            self._iteration += 1
             
-            return ExecutionResult(
-                success=False,
-                final_state=context.state,
-                execution_trace=execution_trace,
-                iterations=self._iteration,
-                errors=[f"Execution failed: {str(e)}"],
-                metadata={
-                    "execution_time_seconds": time.time() - start_time,
-                },
-            )
+            if self._iteration > self.config.max_iterations:
+                errors.append(f"Max iterations ({self.config.max_iterations}) reached")
+                break
+            
+            logger.info("iteration_started", extra={"iteration": self._iteration})
+            
+            think_result = await self.think(context)
+            execution_trace.append({"phase": ExecutionPhase.THINK.value, "iteration": self._iteration, "result": think_result, "timestamp": time.time()})
+            
+            if not think_result.get("success"):
+                errors.append(f"Think phase failed: {think_result.get('error')}")
+                break
+            
+            actions = self._extract_actions(think_result)
+            if not actions:
+                logger.info("no_actions_planned", extra={"iteration": self._iteration})
+                break
+            
+            act_results = await self.act(actions, context)
+            execution_trace.append({"phase": ExecutionPhase.ACT.value, "iteration": self._iteration, "actions": [a.to_dict() for a in actions], "results": act_results, "timestamp": time.time()})
+            
+            observe_result = await self.observe(act_results, context)
+            execution_trace.append({"phase": ExecutionPhase.OBSERVE.value, "iteration": self._iteration, "result": observe_result, "timestamp": time.time()})
+            
+            context.state.update(observe_result.get("state_updates", {}))
+            context.history.append({"iteration": self._iteration, "think": think_result, "act": act_results, "observe": observe_result})
+            
+            if observe_result.get("mission_complete"):
+                logger.info("mission_complete", extra={"iteration": self._iteration})
+                break
+    
+    async def _execute_reflection(self, context: ExecutionContext, execution_trace: List[Dict]) -> List[Dict]:
+        """Execute reflection phase."""
+        reflect_result = await self.brain.reflect(execution_trace=execution_trace, outcome={"state": context.state, "history": context.history})
+        execution_trace.append({"phase": ExecutionPhase.REFLECT.value, "result": reflect_result, "timestamp": time.time()})
+        return execution_trace
+    
+    def _create_execution_result(self, context: ExecutionContext, execution_trace: List[Dict], errors: List[str], start_time: float) -> ExecutionResult:
+        """Create execution result."""
+        success = len(errors) == 0
+        result = ExecutionResult(
+            success=success, output=context.state.get("final_output"), final_state=context.state,
+            execution_trace=execution_trace, iterations=self._iteration, errors=errors,
+            metadata={"execution_time_seconds": time.time() - start_time, "total_phases": len(execution_trace)}
+        )
+        logger.info("execution_completed", extra={"success": success, "iterations": self._iteration, "execution_time": result.metadata["execution_time_seconds"]})
+        return result
+    
+    def _handle_execution_error(self, context: ExecutionContext, execution_trace: List[Dict], start_time: float, error: Exception) -> ExecutionResult:
+        """Handle execution error."""
+        logger.error("execution_failed", extra={"error": str(error)}, exc_info=True)
+        return ExecutionResult(
+            success=False, final_state=context.state, execution_trace=execution_trace,
+            iterations=self._iteration, errors=[f"Execution failed: {str(error)}"],
+            metadata={"execution_time_seconds": time.time() - start_time}
+        )
     
     async def execute_step(
         self,

@@ -91,6 +91,7 @@ def generate_hardened_code(filepath: Path, module_type: str) -> str:
     return generator(name, class_name, domain)
 
 def generate_scoring_module(name: str, class_name: str, domain: str) -> str:
+    """Generate scoring module implementation."""
     return f'''"""
 {name}.py - Scoring Module
 
@@ -160,6 +161,7 @@ def score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult
 '''
 
 def generate_validation_module(name: str, class_name: str, domain: str) -> str:
+    """Generate validation module implementation."""
     return f'''"""
 {name}.py - Validation Module
 
@@ -249,6 +251,7 @@ def validate(data: object, schema: Optional[Dict] = None, config: Optional[Dict]
 '''
 
 def generate_formatting_module(name: str, class_name: str, domain: str) -> str:
+    """Generate formatting module implementation."""
     return f'''"""
 {name}.py - Formatting Module
 
@@ -319,6 +322,7 @@ def format_data(data: object, config: Optional[Dict] = None) -> FormattedOutput:
 '''
 
 def generate_computation_module(name: str, class_name: str, domain: str) -> str:
+    """Generate computation module implementation."""
     return f'''"""
 {name}.py - Computation Module
 
@@ -382,6 +386,7 @@ def compute(values: Sequence[float], operation: str = "mean", config: Optional[D
 '''
 
 def generate_orchestration_module(name: str, class_name: str, domain: str) -> str:
+    """Generate orchestration module implementation."""
     return f'''"""
 {name}.py - Orchestration Module
 
@@ -477,6 +482,7 @@ def orchestrate(steps: List[Dict], initial_input: object = None, config: Optiona
 '''
 
 def generate_adjustment_module(name: str, class_name: str, domain: str) -> str:
+    """Generate adjustment module implementation."""
     return f'''"""
 {name}.py - Adjustment Module
 
@@ -544,6 +550,7 @@ def adjust(values: Sequence[float], method: str = "minmax", config: Optional[Dic
 '''
 
 def generate_assessment_module(name: str, class_name: str, domain: str) -> str:
+    """Generate assessment module implementation."""
     return f'''"""
 {name}.py - Assessment Module
 
@@ -620,6 +627,7 @@ def assess(data: object, config: Optional[Dict] = None) -> AssessmentResult:
 '''
 
 def generate_diagnostics_module(name: str, class_name: str, domain: str) -> str:
+    """Generate diagnostics module implementation."""
     return f'''"""
 {name}.py - Diagnostics Module
 
@@ -673,6 +681,7 @@ def diagnose(target: object, config: Optional[Dict] = None) -> DiagnosticReport:
 '''
 
 def generate_management_module(name: str, class_name: str, domain: str) -> str:
+    """Generate management module implementation."""
     return f'''"""
 {name}.py - Management Module
 
@@ -753,6 +762,7 @@ def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> Man
 '''
 
 def generate_optimization_module(name: str, class_name: str, domain: str) -> str:
+    """Generate optimization module implementation."""
     return f'''"""
 {name}.py - Optimization Module
 
@@ -797,6 +807,7 @@ def optimize(items: List[Any], key: Optional[Callable] = None, config: Optional[
 '''
 
 def generate_metrics_module(name: str, class_name: str, domain: str) -> str:
+    """Generate metrics module implementation."""
     return f'''"""
 {name}.py - Metrics Module
 
@@ -866,6 +877,7 @@ def get_metrics(name: Optional[str] = None) -> List[Metric]:
 '''
 
 def generate_tracing_module(name: str, class_name: str, domain: str) -> str:
+    """Generate tracing module implementation."""
     return f'''"""
 {name}.py - Tracing Module
 
@@ -958,6 +970,7 @@ def trace(name: str, attributes: Optional[Dict] = None):
 '''
 
 def generate_logging_module(name: str, class_name: str, domain: str) -> str:
+    """Generate logging module implementation."""
     return f'''"""
 {name}.py - Logging Module
 
@@ -1041,6 +1054,7 @@ def get_logger(name: Optional[str] = None, config: Optional[Dict] = None) -> {cl
 '''
 
 def generate_exporter_module(name: str, class_name: str, domain: str) -> str:
+    """Generate exporter module implementation."""
     return f'''"""
 {name}.py - Exporter Module
 
@@ -1114,6 +1128,7 @@ def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
 '''
 
 def generate_propagator_module(name: str, class_name: str, domain: str) -> str:
+    """Generate propagator module implementation."""
     return f'''"""
 {name}.py - Context Propagator Module
 
@@ -1170,6 +1185,7 @@ def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> D
 '''
 
 def generate_collector_module(name: str, class_name: str, domain: str) -> str:
+    """Generate collector module implementation."""
     return f'''"""
 {name}.py - Collector Module
 
@@ -1240,6 +1256,7 @@ def get_collected(source: Optional[str] = None) -> List[CollectedItem]:
 '''
 
 def generate_sampling_module(name: str, class_name: str, domain: str) -> str:
+    """Generate sampling module implementation."""
     return f'''"""
 {name}.py - Sampling Module
 
@@ -1298,6 +1315,7 @@ def should_sample(context: Optional[Dict] = None, config: Optional[Dict] = None)
 '''
 
 def generate_embedding_module(name: str, class_name: str, domain: str) -> str:
+    """Generate embedding module implementation."""
     return f'''"""
 {name}.py - Embedding Module
 
@@ -1385,6 +1403,7 @@ def find_similar(query: str, candidates: List[str], config: Optional[Dict] = Non
 '''
 
 def generate_pii_module(name: str, class_name: str, domain: str) -> str:
+    """Generate PII detection module implementation."""
     return f'''"""
 {name}.py - PII Detection and Redaction Module
 
@@ -1475,6 +1494,7 @@ def redact_pii(text: str, config: Optional[Dict] = None) -> RedactionResult:
 '''
 
 def generate_generic_module(name: str, class_name: str, domain: str) -> str:
+    """Generate generic module implementation."""
     return f'''"""
 {name}.py - function Module
 

@@ -306,39 +306,50 @@ class JudgeEvaluator:
         Returns:
             JudgeVerdict
         """
-        # Simple parsing (can be enhanced)
         lines = response.strip().split("\n")
-        
-        score_value = 0.5
-        reasoning = ""
-        evidence = []
-        suggestions = []
-        
+        score_value, reasoning, evidence, suggestions = 0.5, "", [], []
         current_section = None
         
         for line in lines:
             line = line.strip()
-            
-            if line.startswith("SCORE:"):
-                try:
-                    score_value = float(line.split(":", 1)[1].strip())
-                except (ValueError, IndexError):
-                    pass
-            elif line.startswith("REASONING:"):
-                reasoning = line.split(":", 1)[1].strip()
-                current_section = "reasoning"
-            elif line.startswith("EVIDENCE:"):
-                current_section = "evidence"
-            elif line.startswith("SUGGESTIONS:"):
-                current_section = "suggestions"
-            elif line.startswith("-") or line.startswith("•"):
-                item = line.lstrip("-•").strip()
-                if current_section == "evidence":
-                    evidence.append(item)
-                elif current_section == "suggestions":
-                    suggestions.append(item)
-            elif current_section == "reasoning" and line:
-                reasoning += " " + line
+            score_value, reasoning, current_section = self._parse_line(line, score_value, reasoning, current_section, evidence, suggestions)
+        
+        return self._create_verdict(score_value, reasoning, evidence, suggestions, criterion)
+    
+    def _parse_line(self, line: str, score_value: float, reasoning: str, current_section: Optional[str], evidence: List[str], suggestions: List[str]) -> tuple:
+        """Parse a single line."""
+        if line.startswith("SCORE:"):
+            score_value = self._parse_score(line, score_value)
+        elif line.startswith("REASONING:"):
+            reasoning, current_section = line.split(":", 1)[1].strip(), "reasoning"
+        elif line.startswith("EVIDENCE:"):
+            current_section = "evidence"
+        elif line.startswith("SUGGESTIONS:"):
+            current_section = "suggestions"
+        elif line.startswith("-") or line.startswith("•"):
+            self._parse_list_item(line, current_section, evidence, suggestions)
+        elif current_section == "reasoning" and line:
+            reasoning += " " + line
+        
+        return score_value, reasoning, current_section
+    
+    def _parse_score(self, line: str, default: float) -> float:
+        """Parse score from line."""
+        try:
+            return float(line.split(":", 1)[1].strip())
+        except (ValueError, IndexError):
+            return default
+    
+    def _parse_list_item(self, line: str, section: Optional[str], evidence: List[str], suggestions: List[str]) -> None:
+        """Parse list item into appropriate list."""
+        item = line.lstrip("-•").strip()
+        if section == "evidence":
+            evidence.append(item)
+        elif section == "suggestions":
+            suggestions.append(item)
+    
+    def _create_verdict(self, score_value: float, reasoning: str, evidence: List[str], suggestions: List[str], criterion: JudgmentCriterion) -> JudgeVerdict:
+        """Create verdict from parsed data."""
         
         # Map score to judgment
         if score_value >= 0.9:

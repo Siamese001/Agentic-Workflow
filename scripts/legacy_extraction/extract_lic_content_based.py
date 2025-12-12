@@ -35,7 +35,7 @@ def get_existing_file_hashes() -> Dict[str, str]:
     
     return existing
 
-def analyze_and_extract():
+def analyze_and_extract() -> None:
     """Analyze legacy files and extract unique content."""
     source_dir = Path("archives/legacy_lic")
     staging_dir = Path("archive_code")

@@ -171,7 +171,7 @@ class SemanticCache:
     def set(
         self,
         prompt: str,
-        response: Any,
+        response: str,
         context: Optional[Dict[str, Any]] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
