@@ -284,8 +284,7 @@ class ScriptsQueriesCoordinator:
 def create_scripts_queries_coordinator(
     max_concurrent_queries: int = 10,
     enable_query_caching: bool = True,
-    **kwargs
-) -> ScriptsQueriesCoordinator:
+    **kwargs: Dict[str, object]) -> ScriptsQueriesCoordinator:
     """Create a configured scripts queries coordinator."""
     config = ScriptsQueriesConfig(
         max_concurrent_queries=max_concurrent_queries,

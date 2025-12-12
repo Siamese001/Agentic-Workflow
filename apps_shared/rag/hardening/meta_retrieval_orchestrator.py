@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Dict
 # import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types  # INVALID: Cannot import from path with hyphens
 
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval import orchestrate_retrieval  # INVALID: Cannot import from path with hyphens
@@ -238,7 +238,7 @@ def test_orchestrate_retrieval_handles_no_hits(monkeypatch) -> None:
 
 #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
-    def _empty(*args, **kwargs) -> List[Evidence]:  # type: ignore[override]
+    def _empty(*args, **kwargs: Dict[str, object]) -> List[Evidence]:  # type: ignore[override]
         return []
 
     monkeypatch.setattr(m, "_run_bm25", _empty, raising=True)
