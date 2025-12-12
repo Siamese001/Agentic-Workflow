@@ -12,7 +12,8 @@ from pathlib import Path
 
 SOVEREIGN_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
 
-def main():
+def main() -> None:
+    """Main entry point for tracking changes."""
     root = Path(".").resolve()
 
     # Tracker file location - in .git directory
@@ -68,17 +69,20 @@ def main():
         renames = [c for c in changes if "|RENAME|" in c]
 
         if deletes:
-
+            print("\n  Deletes:")
             for d in deletes[:3]:
-
+                print(f"    - {d}")
             if len(deletes) > 3:
-
+                print(f"    ... and {len(deletes) - 3} more")
+        
         if renames:
-
+            print("\n  Renames:")
             for r in renames[:3]:
                 parts = r.split("|")
-
+                if len(parts) == 2:
+                    print(f"    - {parts[0]} -> {parts[1]}")
             if len(renames) > 3:
+                print(f"    ... and {len(renames) - 3} more")
 
     sys.exit(0)
 

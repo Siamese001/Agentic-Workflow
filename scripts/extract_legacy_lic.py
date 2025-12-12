@@ -68,9 +68,11 @@ def extract_net_incremental():
     return extracted_files
 
 if __name__ == "__main__":
-
     extracted = extract_net_incremental()
 
     if extracted:
-
+        print(f"Extracted {len(extracted)} files:")
         for f in sorted(extracted):
+            print(f"  - {f}")
+    else:
+        print("No new files to extract")

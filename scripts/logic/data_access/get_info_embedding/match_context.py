@@ -292,6 +292,7 @@ class WorkflowContext:
         logger.info("WorkflowContext initialized with v10.7 injected dependencies")
 
     def get_model_client(self, provider: str, model_name: str):
+        """Get a model client for the specified provider and model name."""
         canonical_name = canonical_model_name(model_name)
         key = f"{provider}:{canonical_name}"
         if key not in self._model_clients:
@@ -415,6 +416,7 @@ class WorkflowContext:
         return self.mcp_clients
 
     def get_mcp_client(self, name: str, default: Optional[Any] = None) -> Any:
+        """Get an MCP client by name, initializing if necessary."""
         clients = self.ensure_mcp_clients()
         if name in clients:
             return clients[name]
@@ -736,6 +738,7 @@ class HILContext:
 
 
 class A2AMessage:
+    """Agent-to-Agent message class for communication between agents."""
     sender: str
     recipient: str  # Can be "ALL"
     message_type: str  # e.g., "ERROR", "METRIC", "UI_EVENT"
@@ -756,6 +759,7 @@ class A2AMessage:
 
 
 class A2AContext:
+    """Agent-to-Agent context for managing message exchange between agents."""
     messages: List[A2AMessage] = field(default_factory=list)
 
     def __post_init__(self) -> None:
@@ -779,6 +783,7 @@ class A2AContext:
         recipient: str = "ALL",
         timestamp: Optional[str] = None,
     ) -> None:
+        """Append a new message to the A2A context."""
         message = A2AMessage(
             sender=sender,
             recipient=recipient,

@@ -27,47 +27,36 @@ def get_module_type(filepath: Path) -> str:
     """Determine module type from filepath."""
     name = filepath.stem.lower()
     path_str = str(filepath).lower()
-
-    if "score" in name or "scoring" in path_str:
-        return "scoring"
-    elif "validate" in name or "check" in name:
-        return "validation"
-    elif "format" in name or "prepare" in name:
-        return "formatting"
-    elif "compute" in name or "calculate" in name:
-        return "computation"
-    elif "coordinate" in name or "orchestrat" in name:
-        return "orchestration"
-    elif "adjust" in name or "normalize" in name:
-        return "adjustment"
-    elif "assess" in name or "evaluate" in name:
-        return "assessment"
-    elif "diagnose" in name or "inspect" in name:
-        return "diagnostics"
-    elif "manage" in name or "update" in name:
-        return "management"
-    elif "sort" in name or "optimize" in name:
-        return "optimization"
-    elif "metric" in name:
-        return "metrics"
-    elif "trace" in name or "span" in name:
-        return "tracing"
-    elif "log" in name:
-        return "logging"
-    elif "export" in name:
-        return "exporter"
-    elif "propagat" in name:
-        return "propagator"
-    elif "collect" in name:
-        return "collector"
-    elif "sampl" in name:
-        return "sampling"
-    elif "search" in name or "embed" in name:
-        return "embedding"
-    elif "pii" in name or "redact" in name:
-        return "pii"
-    else:
-        return "standard"
+    
+    # Module pattern mapping with lambda functions for complex checks
+    MODULE_PATTERNS = {
+        "scoring": lambda n, p: "score" in n or "scoring" in p,
+        "validation": lambda n, p: "validate" in n or "check" in n,
+        "formatting": lambda n, p: "format" in n or "prepare" in n,
+        "computation": lambda n, p: "compute" in n or "calculate" in n,
+        "orchestration": lambda n, p: "coordinate" in n or "orchestrat" in p,
+        "adjustment": lambda n, p: "adjust" in n or "normalize" in n,
+        "assessment": lambda n, p: "assess" in n or "evaluate" in n,
+        "diagnostics": lambda n, p: "diagnose" in n or "inspect" in n,
+        "management": lambda n, p: "manage" in n or "update" in n,
+        "optimization": lambda n, p: "sort" in n or "optimize" in n,
+        "metrics": lambda n, p: "metric" in n,
+        "tracing": lambda n, p: "trace" in n or "span" in n,
+        "logging": lambda n, p: "log" in n,
+        "exporter": lambda n, p: "export" in n,
+        "propagator": lambda n, p: "propagat" in n,
+        "collector": lambda n, p: "collect" in n,
+        "sampling": lambda n, p: "sampl" in n,
+        "embedding": lambda n, p: "search" in n or "embed" in n,
+        "pii": lambda n, p: "pii" in n or "redact" in n,
+    }
+    
+    # Check each module pattern
+    for module_type, check_func in MODULE_PATTERNS.items():
+        if check_func(name, path_str):
+            return module_type
+    
+    return "standard"
 
 def generate_hardened_code(filepath: Path, module_type: str) -> str:
     """Generate hardened code based on module type."""
@@ -1111,7 +1100,7 @@ class {class_name}(BaseExporter):
                 destination=self.destination
             )
         except (ValueError, TypeError, KeyError) as e:
-            logger.error("Export failed: {%s}", e)
+            logger.error("Export failed: %s", e)
             return ExportResult(
                 success=False,
                 items_exported=0,
@@ -1521,7 +1510,7 @@ class {class_name}:
             result = self._process(data, **kwargs)
             return OperationResult(success=True, data=result, metadata={{"input_type": type(data).__name__}})
         except (ValueError, TypeError, KeyError) as e:
-            logger.error("Operation failed: {%s}", e)
+            logger.error("Operation failed: %s", e)
             return OperationResult(success=False, message=str(e))
 
     def _process(self, data: object, **kwargs: Dict[str, object]) -> object:
@@ -1590,7 +1579,8 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
             results["errors"].append({"path": stub_info["path"], "error": str(e)})
 
     if dry_run:
-
+        print("DRY RUN: No files were modified")
+    
     return results
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@
 
 
 def test_compile_prompt_produces_string() -> None:
+    """Test that compile_prompt produces a string output."""
     schema = PromptSchema(
         id="test.prompt",
         role="system",

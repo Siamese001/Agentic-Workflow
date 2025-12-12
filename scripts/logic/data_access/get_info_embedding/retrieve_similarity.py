@@ -72,6 +72,34 @@ class SimilarityRetriever:
         self.logger = logging.getLogger(self.__class__.__name__)
         self._vector_cache = {}
 
+    def _compute_similarities_by_metric(self, query_vector: np.ndarray, candidate_vectors: np.ndarray, metric: SimilarityMetric) -> np.ndarray:
+        """Compute similarities based on the specified metric."""
+        if metric == SimilarityMetric.COSINE:
+            return np.dot(candidate_vectors, query_vector)
+        elif metric == SimilarityMetric.DOT_PRODUCT:
+            return np.dot(candidate_vectors, query_vector)
+        elif metric == SimilarityMetric.EUCLIDEAN:
+            distances = np.linalg.norm(candidate_vectors - query_vector, axis=1)
+            return 1 / (1 + distances)
+        elif metric == SimilarityMetric.MANHATTAN:
+            distances = np.sum(np.abs(candidate_vectors - query_vector), axis=1)
+            return 1 / (1 + distances)
+        elif metric == SimilarityMetric.JACCARD:
+            return np.array([self._jaccard_similarity(query_vector, v) for v in candidate_vectors])
+        else:
+            return np.zeros(len(candidate_vectors))
+
+    def _compute_distances_if_requested(self, final_indices: np.ndarray, final_scores: List[float], 
+                                       query_vector: np.ndarray, candidate_vectors: np.ndarray, 
+                                       metric: SimilarityMetric) -> Optional[List[float]]:
+        """Compute distances if requested by the user."""
+        if metric == SimilarityMetric.EUCLIDEAN:
+            return np.linalg.norm(candidate_vectors[final_indices] - query_vector, axis=1).tolist()
+        elif metric == SimilarityMetric.MANHATTAN:
+            return np.sum(np.abs(candidate_vectors[final_indices] - query_vector), axis=1).tolist()
+        else:
+            return [(1 - s) if s <= 1 else 0 for s in final_scores]
+
     def compute_similarity(self, request: SimilarityRequest) -> SimilarityResult:
         """Compute similarity between query and candidate vectors.
         
@@ -94,20 +122,7 @@ class SimilarityRetriever:
                 candidate_vectors = np.array([self._normalize_vector(v) for v in candidate_vectors])
             
             # Compute similarities
-            if request.metric == SimilarityMetric.COSINE:
-                similarities = np.dot(candidate_vectors, query_vector)
-            elif request.metric == SimilarityMetric.DOT_PRODUCT:
-                similarities = np.dot(candidate_vectors, query_vector)
-            elif request.metric == SimilarityMetric.EUCLIDEAN:
-                distances = np.linalg.norm(candidate_vectors - query_vector, axis=1)
-                similarities = 1 / (1 + distances)
-            elif request.metric == SimilarityMetric.MANHATTAN:
-                distances = np.sum(np.abs(candidate_vectors - query_vector), axis=1)
-                similarities = 1 / (1 + distances)
-            elif request.metric == SimilarityMetric.JACCARD:
-                similarities = np.array([self._jaccard_similarity(query_vector, v) for v in candidate_vectors])
-            else:
-                similarities = np.zeros(len(candidate_vectors))
+            similarities = self._compute_similarities_by_metric(query_vector, candidate_vectors, request.metric)
             
             # Apply threshold
             threshold_mask = similarities >= request.threshold
@@ -123,13 +138,10 @@ class SimilarityRetriever:
             # Compute distances if requested
             distances = None
             if request.return_distances:
-                if request.metric == SimilarityMetric.EUCLIDEAN:
-                    distances = np.linalg.norm(candidate_vectors[final_indices] - query_vector, axis=1).tolist()
-                elif request.metric == SimilarityMetric.MANHATTAN:
-                    distances = np.sum(np.abs(candidate_vectors[final_indices] - query_vector), axis=1).tolist()
-                else:
-                    distances = [(1 - s) if s <= 1 else 0 for s in final_scores]
-            
+                distances = self._compute_distances_if_requested(
+                    final_indices, final_scores, query_vector, candidate_vectors, request.metric
+                )
+                
             result = SimilarityResult(
                 scores=final_scores,
                 indices=final_indices.tolist(),
@@ -232,8 +244,23 @@ class SimilarityRetriever:
         
         return similar_vectors
 
+    def _compute_pairwise_metric(self, vector1: np.ndarray, vector2: np.ndarray, metric: SimilarityMetric) -> float:
+        """Compute similarity between two vectors for pairwise comparison."""
+        if metric == SimilarityMetric.COSINE:
+            return np.dot(vector1, vector2)
+        elif metric == SimilarityMetric.DOT_PRODUCT:
+            return np.dot(vector1, vector2)
+        elif metric == SimilarityMetric.EUCLIDEAN:
+            dist = np.linalg.norm(vector1 - vector2)
+            return 1 / (1 + dist)
+        elif metric == SimilarityMetric.MANHATTAN:
+            dist = np.sum(np.abs(vector1 - vector2))
+            return 1 / (1 + dist)
+        else:
+            return 0.0
+
     def compute_pairwise_similarity(self, vectors: List[List[float]], 
-                                  metric: Optional[SimilarityMetric] = None) -> np.ndarray:
+                              metric: Optional[SimilarityMetric] = None) -> np.ndarray:
         """Compute pairwise similarity matrix.
         
         Args:
@@ -262,19 +289,7 @@ class SimilarityRetriever:
                 if i == j:
                     similarity_matrix[i, j] = 1.0
                 else:
-                    if metric == SimilarityMetric.COSINE:
-                        sim = np.dot(vectors_array[i], vectors_array[j])
-                    elif metric == SimilarityMetric.DOT_PRODUCT:
-                        sim = np.dot(vectors_array[i], vectors_array[j])
-                    elif metric == SimilarityMetric.EUCLIDEAN:
-                        dist = np.linalg.norm(vectors_array[i] - vectors_array[j])
-                        sim = 1 / (1 + dist)
-                    elif metric == SimilarityMetric.MANHATTAN:
-                        dist = np.sum(np.abs(vectors_array[i] - vectors_array[j]))
-                        sim = 1 / (1 + dist)
-                    else:
-                        sim = 0.0
-                    
+                    sim = self._compute_pairwise_metric(vectors_array[i], vectors_array[j], metric)
                     similarity_matrix[i, j] = sim
                     similarity_matrix[j, i] = sim
         

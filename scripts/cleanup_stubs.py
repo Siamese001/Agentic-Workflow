@@ -127,28 +127,39 @@ def cleanup_stubs() -> Dict:
                 except (ValueError, TypeError, KeyError) as e:
                     log["errors"].append(f"{rel_path}: {e}")
 
-        log["deleted_directories"] = remove_empty_directories(REPO_ROOT)
+    log["deleted_directories"] = remove_empty_directories(REPO_ROOT)
 
     return log
 
-def main():
+def main() -> None:
+    """Main entry point for stub cleanup."""
 
     # Run cleanup
 
     log = cleanup_stubs()
 
     if log["errors"]:
-
+        print(f"\nErrors encountered ({len(log['errors'])}):")
+        for e in log["errors"][:5]:
+            print(f"  - {e}")
+        if len(log["errors"]) > 5:
+            print(f"  ... and {len(log['errors']) - 5} more")
+    
     # Show sample of deleted files
-
+    print(f"\nDeleted stub files ({len(log['deleted_files'])}):")
     for f in log["deleted_files"][:20]:
-
+        print(f"  - {f}")
+    
     if len(log["deleted_files"]) > 20:
+        print(f"  ... and {len(log['deleted_files']) - 20} more")
 
     # Show kept placeholders
     if log["kept_with_placeholders"]:
-
+        print(f"\nKept with placeholders ({len(log['kept_with_placeholders'])}):")
         for f in log["kept_with_placeholders"][:10]:
+            print(f"  - {f}")
+        if len(log["kept_with_placeholders"]) > 10:
+            print(f"  ... and {len(log['kept_with_placeholders']) - 10} more")
 
     # Save log
     log_path = REPO_ROOT / "stub_cleanup_log.json"

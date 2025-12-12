@@ -58,7 +58,8 @@ def get_actual_files(folder_path):
         actual.add(rel)
     return actual
 
-def main():
+def main() -> None:
+    """Main entry point for compliance scan."""
     with open(REPO / 'unified_structure_subatomic.yaml', 'r', encoding='utf-8') as f:
         spec = yaml.safe_load(f)
 
@@ -90,20 +91,26 @@ def main():
         if missing and domain not in SKIP_DOMAINS:
             all_missing.extend([(domain, folder, f) for f in sorted(missing)])
             for f in sorted(missing)[:3]:
-
+                print(f"  - {f}")
             if len(missing) > 3:
+                print(f"  ... and {len(missing) - 3} more")
 
     overall = (1 - total_missing / total_yaml) * 100 if total_yaml else 100
 
     # Summary by priority
     if all_missing:
-
         by_domain = {}
         for domain, folder, path in all_missing:
             by_domain.setdefault(domain, []).append(path)
         for domain, paths in sorted(by_domain.items()):
+            print(f"\n{domain}:")
+            for path in paths[:5]:
+                print(f"  - {path}")
+            if len(paths) > 5:
+                print(f"  ... and {len(paths) - 5} more")
 
     else:
+        print("\n✓ All required files present!")
 
 if __name__ == '__main__':
     main()

@@ -23,51 +23,39 @@ def load_latest_report() -> Dict:
     with open(reports[0]) as f:
         return json.load(f)
 
+# Module type patterns
+MODULE_PATTERNS = {
+    "scoring": lambda name, path: "score" in name or "scoring" in path,
+    "validation": lambda name, path: "validate" in name or "check" in name,
+    "formatting": lambda name, path: "format" in name or "prepare" in name,
+    "computation": lambda name, path: "compute" in name or "calculate" in name,
+    "orchestration": lambda name, path: "coordinate" in name or "orchestrat" in path,
+    "adjustment": lambda name, path: "adjust" in name or "normalize" in name,
+    "assessment": lambda name, path: "assess" in name or "evaluate" in name,
+    "diagnostics": lambda name, path: "diagnose" in name or "inspect" in name,
+    "management": lambda name, path: "manage" in name or "update" in name,
+    "optimization": lambda name, path: "sort" in name or "optimize" in name,
+    "metrics": lambda name, path: "metric" in name,
+    "tracing": lambda name, path: "trace" in name or "span" in name,
+    "logging": lambda name, path: "log" in name,
+    "exporter": lambda name, path: "export" in name,
+    "propagator": lambda name, path: "propagat" in name,
+    "collector": lambda name, path: "collect" in name,
+    "sampling": lambda name, path: "sampl" in name,
+    "embedding": lambda name, path: "search" in name or "embed" in name,
+    "pii": lambda name, path: "pii" in name or "redact" in name,
+}
+
 def get_module_type(filepath: Path) -> str:
     """Determine module type from filepath."""
     name = filepath.stem.lower()
     path_str = str(filepath).lower()
 
-    if "score" in name or "scoring" in path_str:
-        return "scoring"
-    elif "validate" in name or "check" in name:
-        return "validation"
-    elif "format" in name or "prepare" in name:
-        return "formatting"
-    elif "compute" in name or "calculate" in name:
-        return "computation"
-    elif "coordinate" in name or "orchestrat" in name:
-        return "orchestration"
-    elif "adjust" in name or "normalize" in name:
-        return "adjustment"
-    elif "assess" in name or "evaluate" in name:
-        return "assessment"
-    elif "diagnose" in name or "inspect" in name:
-        return "diagnostics"
-    elif "manage" in name or "update" in name:
-        return "management"
-    elif "sort" in name or "optimize" in name:
-        return "optimization"
-    elif "metric" in name:
-        return "metrics"
-    elif "trace" in name or "span" in name:
-        return "tracing"
-    elif "log" in name:
-        return "logging"
-    elif "export" in name:
-        return "exporter"
-    elif "propagat" in name:
-        return "propagator"
-    elif "collect" in name:
-        return "collector"
-    elif "sampl" in name:
-        return "sampling"
-    elif "search" in name or "embed" in name:
-        return "embedding"
-    elif "pii" in name or "redact" in name:
-        return "pii"
-    else:
-        return "standard"
+    for module_type, check_func in MODULE_PATTERNS.items():
+        if check_func(name, path_str):
+            return module_type
+    
+    return "standard"
 
 def generate_hardened_code(filepath: Path, module_type: str) -> str:
     """Generate hardened code based on module type."""
@@ -102,6 +90,7 @@ def generate_hardened_code(filepath: Path, module_type: str) -> str:
     return generator(name, class_name, domain)
 
 def generate_scoring_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a scoring module with standard structure."""
     return f'''"""
 {name}.py - Scoring Module
 
@@ -171,6 +160,7 @@ def score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult
 '''
 
 def generate_validation_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a validation module with standard structure."""
     return f'''"""
 {name}.py - Validation Module
 
@@ -260,6 +250,7 @@ def validate(data: object, schema: Optional[Dict] = None, config: Optional[Dict]
 '''
 
 def generate_formatting_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a formatting module with standard structure."""
     return f'''"""
 {name}.py - Formatting Module
 
@@ -330,6 +321,7 @@ def format_data(data: object, config: Optional[Dict] = None) -> FormattedOutput:
 '''
 
 def generate_computation_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a computation module with standard structure."""
     return f'''"""
 {name}.py - Computation Module
 
@@ -393,6 +385,7 @@ def compute(values: Sequence[float], operation: str = "mean", config: Optional[D
 '''
 
 def generate_orchestration_module(name: str, class_name: str, domain: str) -> str:
+    """Generate an orchestration module with standard structure."""
     return f'''"""
 {name}.py - Orchestration Module
 
@@ -488,6 +481,7 @@ def orchestrate(steps: List[Dict], initial_input: object = None, config: Optiona
 '''
 
 def generate_adjustment_module(name: str, class_name: str, domain: str) -> str:
+    """Generate an adjustment module with standard structure."""
     return f'''"""
 {name}.py - Adjustment Module
 
@@ -555,6 +549,7 @@ def adjust(values: Sequence[float], method: str = "minmax", config: Optional[Dic
 '''
 
 def generate_assessment_module(name: str, class_name: str, domain: str) -> str:
+    """Generate an assessment module with standard structure."""
     return f'''"""
 {name}.py - Assessment Module
 
@@ -631,6 +626,7 @@ def assess(data: object, config: Optional[Dict] = None) -> AssessmentResult:
 '''
 
 def generate_diagnostics_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a diagnostics module with standard structure."""
     return f'''"""
 {name}.py - Diagnostics Module
 
@@ -684,6 +680,7 @@ def diagnose(target: object, config: Optional[Dict] = None) -> DiagnosticReport:
 '''
 
 def generate_management_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a management module with standard structure."""
     return f'''"""
 {name}.py - Management Module
 
@@ -764,6 +761,7 @@ def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> Man
 '''
 
 def generate_optimization_module(name: str, class_name: str, domain: str) -> str:
+    """Generate an optimization module with standard structure."""
     return f'''"""
 {name}.py - Optimization Module
 
@@ -808,6 +806,7 @@ def optimize(items: List[Any], key: Optional[Callable] = None, config: Optional[
 '''
 
 def generate_metrics_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a metrics module with standard structure."""
     return f'''"""
 {name}.py - Metrics Module
 
@@ -877,6 +876,7 @@ def get_metrics(name: Optional[str] = None) -> List[Metric]:
 '''
 
 def generate_tracing_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a tracing module with standard structure."""
     return f'''"""
 {name}.py - Tracing Module
 
@@ -969,6 +969,7 @@ def trace(name: str, attributes: Optional[Dict] = None):
 '''
 
 def generate_logging_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a logging module with standard structure."""
     return f'''"""
 {name}.py - Logging Module
 
@@ -1052,6 +1053,7 @@ def get_logger(name: Optional[str] = None, config: Optional[Dict] = None) -> {cl
 '''
 
 def generate_exporter_module(name: str, class_name: str, domain: str) -> str:
+    """Generate an exporter module with standard structure."""
     return f'''"""
 {name}.py - Exporter Module
 
@@ -1111,7 +1113,7 @@ class {class_name}(BaseExporter):
                 destination=self.destination
             )
         except (ValueError, TypeError, KeyError) as e:
-            logger.error("Export failed: {%s}", e)
+            logger.error("Export failed: %s", e)
             return ExportResult(
                 success=False,
                 items_exported=0,
@@ -1125,6 +1127,7 @@ def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
 '''
 
 def generate_propagator_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a propagator module with standard structure."""
     return f'''"""
 {name}.py - Context Propagator Module
 
@@ -1181,6 +1184,7 @@ def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> D
 '''
 
 def generate_collector_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a collector module with standard structure."""
     return f'''"""
 {name}.py - Collector Module
 
@@ -1251,6 +1255,7 @@ def get_collected(source: Optional[str] = None) -> List[CollectedItem]:
 '''
 
 def generate_sampling_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a sampling module with standard structure."""
     return f'''"""
 {name}.py - Sampling Module
 
@@ -1309,6 +1314,7 @@ def should_sample(context: Optional[Dict] = None, config: Optional[Dict] = None)
 '''
 
 def generate_embedding_module(name: str, class_name: str, domain: str) -> str:
+    """Generate an embedding module with standard structure."""
     return f'''"""
 {name}.py - Embedding Module
 
@@ -1396,6 +1402,7 @@ def find_similar(query: str, candidates: List[str], config: Optional[Dict] = Non
 '''
 
 def generate_pii_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a PII (Personally Identifiable Information) module with standard structure."""
     return f'''"""
 {name}.py - PII Detection and Redaction Module
 
@@ -1486,6 +1493,7 @@ def redact_pii(text: str, config: Optional[Dict] = None) -> RedactionResult:
 '''
 
 def generate_generic_module(name: str, class_name: str, domain: str) -> str:
+    """Generate a generic module with standard structure."""
     return f'''"""
 {name}.py - function Module
 
@@ -1519,9 +1527,9 @@ class {class_name}:
         """Execute operation."""
         try:
             result = self._process(data, **kwargs)
-            return OperationResult(success=True, data=result, metadata={{"input_type": type(data).__name__}})
+            return OperationResult(success=True, data=result, metadata={"input_type": type(data).__name__})
         except (ValueError, TypeError, KeyError) as e:
-            logger.error("Operation failed: {%s}", e)
+            logger.error("Operation failed: %s", e)
             return OperationResult(success=False, message=str(e))
 
     def _process(self, data: object, **kwargs: Dict[str, object]) -> object:
@@ -1590,7 +1598,13 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
             results["errors"].append({"path": stub_info["path"], "error": str(e)})
 
     if dry_run:
-
+        print("\n[DRY RUN] Would populate the following stub files:")
+        print(f"  - Found {len(stubs_to_populate)} stubs")
+        for stub in stubs_to_populate[:5]:
+            print(f"    - {stub['path']}")
+        if len(stubs_to_populate) > 5:
+            print(f"    ... and {len(stubs_to_populate) - 5} more")
+    
     return results
 
 if __name__ == "__main__":

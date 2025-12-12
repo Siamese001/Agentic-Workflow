@@ -37,4 +37,5 @@ for f in root.rglob("*.py"):
         pass
 
 for m in sorted(missing):
+    print(m)
 

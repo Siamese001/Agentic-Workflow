@@ -213,30 +213,36 @@ def print_report(report: Dict) -> None:
     """Print formatted audit report."""
 
     if report["violations"]["forbidden_lp_patterns"]:
-
+        print("\n  Forbidden L/P patterns:")
         for v in report["violations"]["forbidden_lp_patterns"][:10]:
-
+            print(f"    - {v}")
         if len(report["violations"]["forbidden_lp_patterns"]) > 10:
-
+            print(f"    ... and {len(report['violations']['forbidden_lp_patterns']) - 10} more")
+    
     if report["violations"]["banned_folders"]:
-
+        print("\n  Banned folders:")
         for v in report["violations"]["banned_folders"]:
-
+            print(f"    - {v}")
+    
     if report["violations"]["unknown_categories"]:
-
+        print("\n  Unknown categories:")
         for v in report["violations"]["unknown_categories"]:
+            print(f"    - {v}")
 
     for category in ["unit", "integration", "e2e", "golden", "perf", "load"]:
         subs = report["coverage"].get(category, {})
         total = sum(len(files) for files in subs.values())
 
         for sub, files in sorted(subs.items()):
-
+            if files:
+                print(f"\n    {category}/{sub}: {len(files)} files")
+    
     if report["recommendations"]:
-
+        print("\n  Recommendations:")
         for i, rec in enumerate(report["recommendations"], 1):
+            print(f"    {i}. {rec}")
 
-def main():
+def main() -> None:
     report = audit_tests()
     print_report(report)
 

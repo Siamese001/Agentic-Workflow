@@ -396,7 +396,7 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
 
     return manifest
 
-def print_summary(manifest: MergeManifest):
+def print_summary(manifest -> None: MergeManifest) -> None:
     """Print merge summary."""
 
     # Group by target folder
@@ -406,12 +406,14 @@ def print_summary(manifest: MergeManifest):
         by_folder[folder] = by_folder.get(folder, 0) + 1
 
     for folder, count in sorted(by_folder.items()):
-
+        print(f"  {folder}: {count} files")
+    
     if manifest.errors:
-
+        print("\nErrors:")
         for err in manifest.errors[:10]:
-
+            print(f"  - {err}")
         if len(manifest.errors) > 10:
+            print(f"  ... and {len(manifest.errors) - 10} more")
 
 if __name__ == "__main__":
     import sys
@@ -419,10 +421,13 @@ if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv or "-n" in sys.argv
 
     if dry_run:
+        print("Running in dry-run mode...")
 
     manifest = execute_merge(dry_run=dry_run)
     print_summary(manifest)
 
     if not dry_run and manifest.routed_files == manifest.total_files and not manifest.errors:
-
+        print("\n✓ All files successfully routed!")
+    
     elif dry_run:
+        print(f"\n[DRY RUN] Would route {manifest.routed_files}/{manifest.total_files} files")

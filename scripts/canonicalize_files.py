@@ -78,7 +78,8 @@ def canonicalize_filename(encoded_name):
     
     return clean_name
 
-def main():
+def main() -> None:
+    """Main function to canonicalize filenames by removing banned prefixes."""
     base_dir = Path('.')
     cleaned_files = 0
     deleted_duplicates = 0

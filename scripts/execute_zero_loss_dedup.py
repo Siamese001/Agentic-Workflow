@@ -72,7 +72,7 @@ def execute_dedup(dry_run: bool = True) -> Dict:
             nc_path = REPO_ROOT / nc_path_str
 
             if not nc_path.exists():
-
+                results["errors"].append(f"File not found: {nc_path_str}")
                 continue
 
             try:
@@ -94,8 +94,8 @@ def execute_dedup(dry_run: bool = True) -> Dict:
                     # Replace original with pointer
                     pointer_path = nc_path.with_suffix('.py.dedup_pointer.json')
                     pointer_path.write_text(pointer_content)
-
-                                        nc_path.unlink()
+                    
+                    nc_path.unlink()
 
                     results['pointers_created'] += 1
 
@@ -113,7 +113,11 @@ def execute_dedup(dry_run: bool = True) -> Dict:
     # Summary
 
     if dry_run:
-
+        print("\n[DRY RUN] Would execute the following operations:")
+        print(f"  - Process {len(report['clusters'])} clusters")
+        print(f"  - Archive {results['files_archived']} files")
+        print(f"  - Create {results['pointers_created']} pointers")
+    
     return results
 
 if __name__ == "__main__":

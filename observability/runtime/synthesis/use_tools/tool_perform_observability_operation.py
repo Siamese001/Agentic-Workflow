@@ -375,6 +375,30 @@ class ObservabilityOperationPerformer:
             artifacts=all_artifacts
         )
 
+    def _validate_input_field_type(self, field_name: str, value: Any, expected_type: str) -> Optional[str]:
+        """Validate a single input field type and return error message if invalid."""
+        type_validators = {
+            "string": lambda v: isinstance(v, str),
+            "integer": lambda v: isinstance(v, int),
+            "float": lambda v: isinstance(v, (int, float)),
+            "boolean": lambda v: isinstance(v, bool),
+            "array": lambda v: isinstance(v, list),
+            "object": lambda v: isinstance(v, dict)
+        }
+        
+        validator = type_validators.get(expected_type)
+        if validator and not validator(value):
+            type_names = {
+                "string": "string",
+                "integer": "integer",
+                "float": "number",
+                "boolean": "boolean",
+                "array": "array",
+                "object": "object"
+            }
+            return f"Field {field_name} must be {type_names.get(expected_type, 'valid type')}"
+        return None
+
     def _validate_inputs(self, inputs: Dict[str, Any],
                         operation_def: ToolOperationDefinition) -> List[str]:
         """Validate operation inputs."""
@@ -390,18 +414,9 @@ class ObservabilityOperationPerformer:
                 expected_type = field_def.get("type")
                 value = inputs[field_name]
                 
-                if expected_type == "string" and not isinstance(value, str):
-                    errors.append(f"Field {field_name} must be string")
-                elif expected_type == "integer" and not isinstance(value, int):
-                    errors.append(f"Field {field_name} must be integer")
-                elif expected_type == "float" and not isinstance(value, (int, float)):
-                    errors.append(f"Field {field_name} must be number")
-                elif expected_type == "boolean" and not isinstance(value, bool):
-                    errors.append(f"Field {field_name} must be boolean")
-                elif expected_type == "array" and not isinstance(value, list):
-                    errors.append(f"Field {field_name} must be array")
-                elif expected_type == "object" and not isinstance(value, dict):
-                    errors.append(f"Field {field_name} must be object")
+                type_error = self._validate_input_field_type(field_name, value, expected_type)
+                if type_error:
+                    errors.append(type_error)
         
         return errors
 

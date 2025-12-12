@@ -140,6 +140,7 @@ class ScriptsPlanningOrchestrator:
         result = []
         
         def visit(task: ScriptTask):
+            """Recursively visit tasks for dependency resolution."""
             if task.id in temp_visited:
                 raise ValueError(f"Circular dependency detected involving task {task.id}")
             if task.id in visited:
