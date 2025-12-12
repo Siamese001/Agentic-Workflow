@@ -92,6 +92,27 @@ def _map_severity_to_decision(max_severity: Optional[str]) -> tuple[str, str]:
         return "replan", "Medium severity issue requires replanning"
     return "allow", "No safety concerns detected"
 
+def _extract_verdict_from_event(event: Any) -> tuple[Optional[str], Optional[str]]:
+    """Extract verdict and reason from event object."""
+    if not event:
+        return None, None
+    
+    verdict = getattr(event, 'verdict', None)
+    event_reason = getattr(event, 'reason', None)
+    
+    decision = None
+    if verdict:
+        verdict_str = verdict.value if hasattr(verdict, 'value') else str(verdict)
+        if verdict_str == 'block':
+            decision = 'block'
+        elif verdict_str == 'review':
+            decision = 'replan'
+        elif verdict_str == 'allow':
+            decision = 'allow'
+    
+    reason = str(event_reason) if event_reason else None
+    return decision, reason
+
 def arbitrate_safety(
     safety_result: Any,
     council_vote: Any,
@@ -117,23 +138,12 @@ def arbitrate_safety(
     # Try to call run_l5 if it exists (for test compatibility)
     try:
         event = run_l5(safety_result, council_vote, policy, ctx)
+        event_decision, event_reason = _extract_verdict_from_event(event)
         
-        # Extract verdict and reason from event if present
-        if event:
-            verdict = getattr(event, 'verdict', None)
-            event_reason = getattr(event, 'reason', None)
-            
-            if verdict:
-                verdict_str = verdict.value if hasattr(verdict, 'value') else str(verdict)
-                if verdict_str == 'block':
-                    decision = 'block'
-                elif verdict_str == 'review':
-                    decision = 'replan'
-                elif verdict_str == 'allow':
-                    decision = 'allow'
-            
-            if event_reason:
-                reason = str(event_reason)
+        if event_decision:
+            decision = event_decision
+        if event_reason:
+            reason = event_reason
     except Exception:
         # If run_l5 fails or doesn't exist, use the decision we already computed
         pass
