@@ -872,21 +872,18 @@ class S2_SupervisorAgent:
         
         # Phase 7: Archetype critique
         corrected_profile_analysis = self._critique_archetype_classification(
-            profile_analysis,
-            context
-        )
-        
         # Phase 8: Adversarial check
         adversarial_findings = await self._run_adversarial_check(context)
         context.adversarial_findings = adversarial_findings
         if adversarial_findings:
+            pass
 
         self.status = AgentStatus.COMPLETED
         
         return context, corrected_profile_analysis
     
     async def _run_adversarial_check(self, context: ResearchContext) -> List[str]:
-        """Adversarial self-verification using LLM."""
+        # ... (rest of the code remains the same)
 
         rag_summary = "\n".join([
             f"- {r.source_type}: {r.text[:100]}..." 
