@@ -1,0 +1,24 @@
+{
+  "prompts": {
+    "RAG_MISSION_EXTRACTION": {
+      "default": "Extract the mission details from the job description.",
+      "PHASE_1": "Extract the primary mission and key technologies from the job description.",
+      "PHASE_2": "Extract responsibilities and signal gap keywords from the job description."
+    },
+    "RESUME_GENERATION": {
+      "default": "Generate a professional resume based on the provided information.",
+      "EXECUTIVE_SUMMARY": "Write a compelling executive summary that highlights key achievements.",
+      "EXPERIENCE_BULLETS": "Create impactful bullet points for work experience using STAR methodology."
+    },
+    "VALIDATION": {
+      "default": "Validate the generated content against requirements.",
+      "GRAMMAR_CHECK": "Check for grammatical errors and typos.",
+      "CONTENT_REVIEW": "Review content for accuracy and completeness."
+    },
+    "SYSTEM": {
+      "default": "You are an AI assistant specializing in resume generation and optimization.",
+      "RAG_SPECIALIST": "You are an expert in retrieval-augmented generation for resume content.",
+      "VALIDATION_EXPERT": "You are an expert in validating professional resume content."
+    }
+  }
+}

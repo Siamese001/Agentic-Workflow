@@ -77,12 +77,6 @@ class TestJobAnalyzerIntegration:
         # Should have soft skills
         soft_skills = result.get("soft_skills", [])
         assert len(soft_skills) > 0, "Should extract soft skills"
-        
-        print(f"\nAnalysis Results:")
-        print(f"Hard Skills: {hard_skills}")
-        print(f"Soft Skills: {soft_skills}")
-        print(f"Experience Level: {result.get('experience_level')}")
-        print(f"North Star Metric: {result.get('north_star_metric')}")
     
     def test_extract_keywords(self):
         """Test keyword extraction."""
@@ -152,11 +146,6 @@ class TestResumeGeneratorIntegration:
         skills = result["skills"]
         assert "Python" in skills[:3], "Python should be prioritized"
         assert "Django" in skills, "Django should be added from analysis"
-        
-        print(f"\nTailored Resume Summary:")
-        print(f"Summary: {result['summary'][:100]}...")
-        print(f"Skills: {skills}")
-        print(f"Experience count: {len(result['experience'])}")
     
     def test_optimize_for_ats(self):
         """Test ATS optimization."""
@@ -245,10 +234,6 @@ class TestExecuteResumeGenerationIntegration:
         tailored = output["tailored_resume"]
         assert "_tailoring_metadata" in tailored
         assert "ats_keywords" in tailored
-        
-        print(f"\nExecution completed in {result.details.get('duration_ms', 0):.2f}ms")
-        print(f"Extracted {len(analysis['hard_skills'])} hard skills")
-        print(f"Generated {len(tailored.get('ats_keywords', []))} ATS keywords")
     
     def test_analyze_job_action(self):
         """Test the analyze_job action."""
@@ -351,9 +336,3 @@ class TestEndToEndResumeWorkflow:
         # Verify ATS optimization
         assert len(tailored_resume["ats_keywords"]) > 10
         assert "python" in [k.lower() for k in tailored_resume["ats_keywords"]]
-        
-        print("\n=== END-TO-END WORKFLOW COMPLETED ===")
-        print(f"Job Level: {analysis['experience_level']}")
-        print(f"Key Skills: {analysis['hard_skills'][:5]}")
-        print(f"North Star: {analysis['north_star_metric']}")
-        print(f"Resume Tailored: {len(tailored_resume['ats_keywords'])} ATS keywords added")

@@ -177,7 +177,7 @@ class ObservabilityToolExecutor:
                 start_time
             )
 
-    def execute_tool_stream(self, request: ToolExecutionRequest) -> Any:
+    def execute_tool_stream(self, request: ToolExecutionRequest) -> object:
         """Execute tool with streaming output.
         
         Args:
@@ -416,7 +416,7 @@ class ObservabilityToolExecutor:
             capabilities=["collect", "filter", "parse"]
         )
         
-        def _log_collector_impl(command: str, params: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+        def _log_collector_impl(command: str, params: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             if command == "collect":
                 return {
                     "stdout": "Collected 100 log entries",
@@ -448,7 +448,7 @@ class ObservabilityToolExecutor:
             capabilities=["collect", "aggregate", "query"]
         )
         
-        def _metric_collector_impl(command: str, params: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+        def _metric_collector_impl(command: str, params: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             if command == "collect":
                 return {
                     "stdout": "Collected system metrics",
@@ -481,7 +481,7 @@ class ObservabilityToolExecutor:
             capabilities=["analyze", "correlate", "visualize"]
         )
         
-        def _trace_analyzer_impl(command: str, params: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+        def _trace_analyzer_impl(command: str, params: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             trace_id = params.get("trace_id", "default")
             return {
                 "stdout": f"Analyzed trace: {trace_id}",
@@ -505,7 +505,7 @@ def create_observability_tool_executor(
     default_timeout: float = 30.0,
     max_retries: int = 3,
     enable_health_checks: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityToolExecutor:
     """Create a configured observability tool executor."""
     config = ToolExecutionConfig(

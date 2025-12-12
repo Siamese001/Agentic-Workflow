@@ -1,0 +1,1 @@
+"""Apps shared core module."""

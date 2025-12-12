@@ -394,8 +394,7 @@ def create_scripts_logic_history_loader(
     storage_path: str = "data/scripts_logic_history.json",
     max_entries: int = 10000,
     retention_days: int = 30,
-    **kwargs
-) -> ScriptsLogicHistoryLoader:
+    **kwargs: Dict[str, object]) -> ScriptsLogicHistoryLoader:
     """Create a configured scripts logic history loader."""
     config = HistoryConfig(
         storage_path=storage_path,

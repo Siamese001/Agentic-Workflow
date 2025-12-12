@@ -69,7 +69,7 @@ class UpdateScriptsBudget:
         return self.resources.get(resource_id)
 
 
-def manage(operation: str, resource_id: str, **kwargs) -> ManagementResult:
+def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> ManagementResult:
     """Convenience function for management."""
     coordinator = UpdateScriptsBudget(kwargs.get("config"))
     if operation == "create":

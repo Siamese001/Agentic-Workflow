@@ -86,7 +86,7 @@ class StateSerializer:
             raise ValueError(f"No file path config found for hop {hop_num}")
         return os.path.join(self.run_path, self.HOP_CONFIG[hop_num]['filename'])
     
-    def save(self, hop_num: int, data: Any) -> None:
+    def save(self, hop_num: int, data: object) -> None:
         """
         Serializes and saves hop output data to the file system.
         
@@ -107,7 +107,7 @@ class StateSerializer:
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data_to_save, f, indent=2, ensure_ascii=False)
     
-    def load(self, hop_num: int) -> Any:
+    def load(self, hop_num: int) -> object:
         """
         Loads and deserializes hop output data from the file system.
         
@@ -152,7 +152,7 @@ class StateSerializer:
         except ValueError:
             return False
     
-    def _serialize(self, data: Any, expected_type: Any) -> Any:
+    def _serialize(self, data: object, expected_type: type) -> Dict[str, object]:
         """
         Converts live Python objects to JSON-safe dictionaries/lists.
         
@@ -184,7 +184,7 @@ class StateSerializer:
         # Default: assume already serializable
         return data
     
-    def _deserialize(self, data_dict: Any, expected_type: Any) -> Any:
+    def _deserialize(self, data_dict: Dict[str, object], expected_type: type) -> object:
         """
         Converts JSON-safe dicts/lists back into live Python objects.
         
@@ -273,7 +273,7 @@ class ManifestManager:
         self.manifest_path = os.path.join(run_path, "run_manifest.json")
     
     def create_manifest(self, run_id: str, engine_version: str, 
-                       job_input: dict, master_resume_hash: str) -> dict:
+                       job_input: dict, master_resume_hash: str) -> Dict[str, object]:
         """
         Creates and saves a new manifest for a new run.
         
@@ -300,7 +300,7 @@ class ManifestManager:
         self._save_manifest(manifest)
         return manifest
     
-    def load_manifest(self) -> dict:
+    def load_manifest(self) -> Dict[str, object]:
         """
         Loads the manifest from disk.
         
@@ -380,7 +380,7 @@ class ManifestManager:
         
         return checkpoints
     
-    def _save_manifest(self, manifest_data: dict) -> None:
+    def _save_manifest(self, manifest_data: Dict[str, object]) -> None:
         """
         Saves the manifest to disk.
         

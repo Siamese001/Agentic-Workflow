@@ -323,6 +323,30 @@ class ObservabilityToolExecutor:
             "warnings": all_warnings
         }
 
+    def _validate_parameter_type(self, param_name: str, value: Any, expected_type: str) -> Optional[str]:
+        """Validate a single parameter type and return error message if invalid."""
+        type_validators = {
+            "string": lambda v: isinstance(v, str),
+            "integer": lambda v: isinstance(v, int),
+            "float": lambda v: isinstance(v, (int, float)),
+            "boolean": lambda v: isinstance(v, bool),
+            "array": lambda v: isinstance(v, list),
+            "object": lambda v: isinstance(v, dict)
+        }
+        
+        validator = type_validators.get(expected_type)
+        if validator and not validator(value):
+            type_names = {
+                "string": "string",
+                "integer": "integer", 
+                "float": "number",
+                "boolean": "boolean",
+                "array": "array",
+                "object": "object"
+            }
+            return f"Parameter {param_name} must be {type_names.get(expected_type, 'valid type')}"
+        return None
+
     def _validate_parameters(self, parameters: Dict[str, Any],
                             tool_def: ToolDefinition) -> List[str]:
         """Validate tool parameters."""
@@ -338,18 +362,9 @@ class ObservabilityToolExecutor:
                 expected_type = param_def.get("type")
                 value = parameters[param_name]
                 
-                if expected_type == "string" and not isinstance(value, str):
-                    errors.append(f"Parameter {param_name} must be string")
-                elif expected_type == "integer" and not isinstance(value, int):
-                    errors.append(f"Parameter {param_name} must be integer")
-                elif expected_type == "float" and not isinstance(value, (int, float)):
-                    errors.append(f"Parameter {param_name} must be number")
-                elif expected_type == "boolean" and not isinstance(value, bool):
-                    errors.append(f"Parameter {param_name} must be boolean")
-                elif expected_type == "array" and not isinstance(value, list):
-                    errors.append(f"Parameter {param_name} must be array")
-                elif expected_type == "object" and not isinstance(value, dict):
-                    errors.append(f"Parameter {param_name} must be object")
+                type_error = self._validate_parameter_type(param_name, value, expected_type)
+                if type_error:
+                    errors.append(type_error)
         
         return errors
 
@@ -478,7 +493,7 @@ def create_observability_tool_executor(
     timeout: float = 30.0,
     retry_count: int = 3,
     enable_tracing: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityToolExecutor:
     """Create a configured observability tool executor."""
     config = ToolExecutionConfig(

@@ -5,10 +5,10 @@
 
 from typing import Dict, List
 
-from shared.config import ContentConstraintsConfig
-from shared.exceptions import HopExecutionError
-from shared.models import ValidationResult
-from shared.workflow_types import HopCheckpoint, HopStatus
+from shared.configuration.config import ContentConstraintsConfig
+from shared.errors.exceptions import HopExecutionError
+from shared.types.models import ValidationResult
+from shared.types.workflow_types import HopCheckpoint, HopStatus
 
 from apps_rg.L2_execution.apply_clerk_extraction import ClerkExtractor
 from apps_rg.L2_execution.apply_data_enrichment import DataEnricher

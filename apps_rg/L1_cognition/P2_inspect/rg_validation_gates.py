@@ -7,7 +7,7 @@ Ported from: archives/legacy_resume_gen/Job Workflow - JSON/Job_Workflow_v61.27.
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Union
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 
 
 class GateDecision(Enum):
@@ -74,8 +74,8 @@ class RGValidationGates:
         self._gates: Dict[str, ValidationGate] = {}
         self._register_default_gates()
 
-    def _register_default_gates(self) -> None:
-        """Register all default validation gates."""
+    def _register_critical_gates(self) -> None:
+        """Register critical validation gates."""
         self.register_gate(
             ValidationGate(
                 gate_id=self.VG_SUMMARY_GROUNDING_CHECK,
@@ -88,7 +88,6 @@ class RGValidationGates:
                 validator=self._validate_summary_grounding,
             )
         )
-
         self.register_gate(
             ValidationGate(
                 gate_id=self.VG_BULLET_HALLUCINATION_CHECK,
@@ -102,6 +101,8 @@ class RGValidationGates:
             )
         )
 
+    def _register_high_priority_gates(self) -> None:
+        """Register high priority validation gates."""
         self.register_gate(
             ValidationGate(
                 gate_id=self.VG_THEMATIC_UNIQUENESS,
@@ -114,7 +115,6 @@ class RGValidationGates:
                 validator=self._validate_thematic_uniqueness,
             )
         )
-
         self.register_gate(
             ValidationGate(
                 gate_id=self.VG_CREATIVE_BRIEF_ADHERENCE,
@@ -127,20 +127,6 @@ class RGValidationGates:
                 validator=self._validate_creative_brief_adherence,
             )
         )
-
-        self.register_gate(
-            ValidationGate(
-                gate_id=self.VG_HEADER_INTEGRITY_CHECK,
-                name="Header Integrity Check",
-                description=(
-                    "Verifies that all section headers are correctly formatted "
-                    "and consistent."
-                ),
-                severity=GateSeverity.MEDIUM,
-                validator=self._validate_header_integrity,
-            )
-        )
-
         self.register_gate(
             ValidationGate(
                 gate_id=self.VG_BULLET_PROVENANCE_CHECK,
@@ -153,7 +139,32 @@ class RGValidationGates:
                 validator=self._validate_bullet_provenance,
             )
         )
+        self.register_gate(
+            ValidationGate(
+                gate_id=self.VG_AGENTIC_OUTPUT_VALIDATION,
+                name="Agentic Output Validation",
+                description=(
+                    "Validates that agentic outputs meet all quality standards."
+                ),
+                severity=GateSeverity.HIGH,
+                validator=self._validate_agentic_output,
+            )
+        )
 
+    def _register_medium_priority_gates(self) -> None:
+        """Register medium priority validation gates."""
+        self.register_gate(
+            ValidationGate(
+                gate_id=self.VG_HEADER_INTEGRITY_CHECK,
+                name="Header Integrity Check",
+                description=(
+                    "Verifies that all section headers are correctly formatted "
+                    "and consistent."
+                ),
+                severity=GateSeverity.MEDIUM,
+                validator=self._validate_header_integrity,
+            )
+        )
         self.register_gate(
             ValidationGate(
                 gate_id=self.VG_REDUNDANCY_CHECK,
@@ -165,20 +176,6 @@ class RGValidationGates:
                 validator=self._validate_redundancy,
             )
         )
-
-        self.register_gate(
-            ValidationGate(
-                gate_id=self.VG_NATURAL_HYPHEN_PRESERVATION,
-                name="Natural Hyphen Preservation",
-                description=(
-                    "Ensures natural hyphens in compound words are preserved "
-                    "correctly."
-                ),
-                severity=GateSeverity.LOW,
-                validator=self._validate_hyphen_preservation,
-            )
-        )
-
         self.register_gate(
             ValidationGate(
                 gate_id=self.VG_COMPETENCY_WORD_COUNT_BALANCE,
@@ -191,19 +188,6 @@ class RGValidationGates:
                 validator=self._validate_competency_balance,
             )
         )
-
-        self.register_gate(
-            ValidationGate(
-                gate_id=self.VG_BULLET_PUNCTUATION,
-                name="Bullet Punctuation",
-                description=(
-                    "Ensures consistent punctuation across all bullet points."
-                ),
-                severity=GateSeverity.LOW,
-                validator=self._validate_bullet_punctuation,
-            )
-        )
-
         self.register_gate(
             ValidationGate(
                 gate_id=self.VG_SUMMARY_VOICE_TENSE,
@@ -217,17 +201,38 @@ class RGValidationGates:
             )
         )
 
+    def _register_low_priority_gates(self) -> None:
+        """Register low priority validation gates."""
         self.register_gate(
             ValidationGate(
-                gate_id=self.VG_AGENTIC_OUTPUT_VALIDATION,
-                name="Agentic Output Validation",
+                gate_id=self.VG_NATURAL_HYPHEN_PRESERVATION,
+                name="Natural Hyphen Preservation",
                 description=(
-                    "Validates that agentic outputs meet all quality standards."
+                    "Ensures natural hyphens in compound words are preserved "
+                    "correctly."
                 ),
-                severity=GateSeverity.HIGH,
-                validator=self._validate_agentic_output,
+                severity=GateSeverity.LOW,
+                validator=self._validate_hyphen_preservation,
             )
         )
+        self.register_gate(
+            ValidationGate(
+                gate_id=self.VG_BULLET_PUNCTUATION,
+                name="Bullet Punctuation",
+                description=(
+                    "Ensures consistent punctuation across all bullet points."
+                ),
+                severity=GateSeverity.LOW,
+                validator=self._validate_bullet_punctuation,
+            )
+        )
+
+    def _register_default_gates(self) -> None:
+        """Register all default validation gates."""
+        self._register_critical_gates()
+        self._register_high_priority_gates()
+        self._register_medium_priority_gates()
+        self._register_low_priority_gates()
 
     def register_gate(self, gate: ValidationGate) -> None:
         """Register a validation gate."""

@@ -166,6 +166,7 @@ class ScriptsQueriesCoordinator:
         result = []
         
         def visit(query: ScriptQuery):
+            """Recursively visit queries for dependency resolution."""
             if query.id in temp_visited:
                 raise ValueError(f"Circular dependency detected involving query {query.id}")
             if query.id in visited:
@@ -213,6 +214,22 @@ class ScriptsQueriesCoordinator:
         
         return results
 
+    def _execute_query_by_type(self, query: ScriptQuery) -> str:
+        """Generate result data based on query type."""
+        query_type_handlers = {
+            QueryType.READ: lambda: f"Read data from {query.target_script}",
+            QueryType.WRITE: lambda: f"Written data to {query.target_script}",
+            QueryType.EXECUTE: lambda: f"Executed {query.target_script}",
+            QueryType.VALIDATE: lambda: f"Validated {query.target_script}",
+            QueryType.TRANSFORM: lambda: f"Transformed {query.target_script}",
+        }
+        
+        handler = query_type_handlers.get(query.query_type)
+        if handler:
+            return handler()
+        else:
+            raise ValueError(f"Unsupported query type: {query.query_type}")
+
     def _execute_single_query(self, query: ScriptQuery) -> QueryResult:
         """Execute a single script query."""
         start_time = datetime.utcnow()
@@ -221,18 +238,7 @@ class ScriptsQueriesCoordinator:
             self.logger.info(f"Executing query {query.id} against {query.target_script}")
             
             # Simulate query execution based on type
-            if query.query_type == QueryType.READ:
-                result_data = f"Read data from {query.target_script}"
-            elif query.query_type == QueryType.WRITE:
-                result_data = f"Written data to {query.target_script}"
-            elif query.query_type == QueryType.EXECUTE:
-                result_data = f"Executed {query.target_script}"
-            elif query.query_type == QueryType.VALIDATE:
-                result_data = f"Validated {query.target_script}"
-            elif query.query_type == QueryType.TRANSFORM:
-                result_data = f"Transformed {query.target_script}"
-            else:
-                raise ValueError(f"Unsupported query type: {query.query_type}")
+            result_data = self._execute_query_by_type(query)
             
             execution_time = (datetime.utcnow() - start_time).total_seconds()
             
@@ -284,8 +290,7 @@ class ScriptsQueriesCoordinator:
 def create_scripts_queries_coordinator(
     max_concurrent_queries: int = 10,
     enable_query_caching: bool = True,
-    **kwargs
-) -> ScriptsQueriesCoordinator:
+    **kwargs: Dict[str, object]) -> ScriptsQueriesCoordinator:
     """Create a configured scripts queries coordinator."""
     config = ScriptsQueriesConfig(
         max_concurrent_queries=max_concurrent_queries,

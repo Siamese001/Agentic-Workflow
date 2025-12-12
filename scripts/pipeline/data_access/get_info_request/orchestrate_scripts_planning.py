@@ -140,6 +140,7 @@ class ScriptsPlanningOrchestrator:
         result = []
         
         def visit(task: ScriptTask):
+            """Recursively visit tasks for dependency resolution."""
             if task.id in temp_visited:
                 raise ValueError(f"Circular dependency detected involving task {task.id}")
             if task.id in visited:
@@ -199,8 +200,7 @@ class ScriptsPlanningOrchestrator:
 def create_scripts_planning_orchestrator(
     max_concurrent_tasks: int = 5,
     enable_dependency_check: bool = True,
-    **kwargs
-) -> ScriptsPlanningOrchestrator:
+    **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestrator:
     """Create a configured scripts planning orchestrator."""
     config = ScriptsPlanningConfig(
         max_concurrent_tasks=max_concurrent_tasks,

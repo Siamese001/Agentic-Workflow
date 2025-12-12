@@ -4,7 +4,7 @@ Tests security control operations including guardrails.
 """
 from __future__ import annotations
 import re
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum

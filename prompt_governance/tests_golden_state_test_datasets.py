@@ -1,7 +1,7 @@
-from archives.legacy_root_folders.eval.golden_state.datasets import load_golden_inputs, load_baseline_scores, load_exemplar_prompts
+# from archives.legacy_root_folders.eval.golden_state.datasets import load_golden_inputs, load_baseline_scores, load_exemplar_prompts  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
-def test_load_golden_inputs_minimum_cases():
+def test_load_golden_inputs_minimum_cases() -> None:
     cases = load_golden_inputs()
     assert len(cases) >= 2
     ids = {c.id for c in cases}
@@ -9,7 +9,7 @@ def test_load_golden_inputs_minimum_cases():
     assert "gs_safety_1" in ids
 
 
-def test_load_baselines_and_exemplars_present():
+def test_load_baselines_and_exemplars_present() -> None:
     baselines = load_baseline_scores()
     exemplars = load_exemplar_prompts()
 

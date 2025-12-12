@@ -163,7 +163,7 @@ class TestObservabilityIntegration:
         """Integration: Logs are structured."""
         logs = []
 
-        def log(level: str, message: str, **kwargs):
+        def log(level: str, message: str, **kwargs: object):
             logs.append({"level": level, "message": message, **kwargs})
 
         log("INFO", "Request started", request_id="req_001")
@@ -191,7 +191,7 @@ class TestSecurityIntegration:
         """Integration: PII filtering works in pipeline."""
         input_text = "Contact john@example.com for details"
 
-        import scripts.check_canonical_structure
+        import scripts.validation.check_canonical_structure
         filtered = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[EMAIL]', input_text)
 
         assert "john@example.com" not in filtered

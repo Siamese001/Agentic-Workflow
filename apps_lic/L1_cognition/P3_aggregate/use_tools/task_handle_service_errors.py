@@ -25,7 +25,7 @@ class HandleServiceErrors:
         self.backoff = self.config.get("backoff", 1.0)
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def execute(self, func: Callable, *args, **kwargs) -> RetryResult:
+    def execute(self, func: Callable, *args, **kwargs: Dict[str, object]) -> RetryResult:
         """Execute with retry."""
         last_error = None
         for attempt in range(self.max_retries):
@@ -38,7 +38,7 @@ class HandleServiceErrors:
                 pass  # rate limit delay removed)
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
-    def fallback(self, primary: Callable, fallback: Callable, *args, **kwargs) -> object:
+    def fallback(self, primary: Callable, fallback: Callable, *args, **kwargs: Dict[str, object]) -> object:
         """Execute with fallback."""
         result = self.execute(primary, *args, **kwargs)
         if result.success:

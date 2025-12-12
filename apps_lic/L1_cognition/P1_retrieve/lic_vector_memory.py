@@ -77,7 +77,7 @@ class LICVectorMemory:
         """
         try:
             import chromadb
-            from shared.reasoning_config import Settings
+            from shared.configuration.reasoning_config import Settings
 
             self._client = chromadb.PersistentClient(
                 path=self.persist_directory,
