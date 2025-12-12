@@ -71,8 +71,8 @@ if __name__ == "__main__":
     extracted = extract_net_incremental()
 
     if extracted:
-        print(f"Extracted {len(extracted)} files:")
+        #print(f"Extracted {len(extracted)} files:")
         for f in sorted(extracted):
-            print(f"  - {f}")
+            #print(f"  - {f}")
     else:
-        print("No new files to extract")
+        #print("No new files to extract")

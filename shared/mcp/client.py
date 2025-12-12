@@ -149,16 +149,17 @@ class MCPClientRegistry:
     
     def __init__(self):
         """Initialize empty registry."""
-        self._clients: Dict[str, Any] = {}
+        self._clients: Dict[str, MCPClient] = {}
         self._specs: Dict[str, MCPClientSpec] = {}
     
-    def register(self, spec: MCPClientSpec, client: Any) -> None:
+    def register(self, name: str, client: MCPClient) -> None:
         """Register a client instance.
         
         Args:
-            spec: Client specification
+            name: Client name
             client: Instantiated client
         """
+        self._clients[name] = client
         spec.validate()
         
         self._specs[spec.name] = spec

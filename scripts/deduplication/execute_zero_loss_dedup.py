@@ -113,10 +113,10 @@ def execute_dedup(dry_run: bool = True) -> Dict:
     # Summary
 
     if dry_run:
-        print("\n[DRY RUN] Would execute the following operations:")
-        print(f"  - Process {len(report['clusters'])} clusters")
-        print(f"  - Archive {results['files_archived']} files")
-        print(f"  - Create {results['pointers_created']} pointers")
+        #print("\n[DRY RUN] Would execute the following operations:")
+        #print(f"  - Process {len(report['clusters'])} clusters")
+        #print(f"  - Archive {results['files_archived']} files")
+        #print(f"  - Create {results['pointers_created']} pointers")
     
     return results
 

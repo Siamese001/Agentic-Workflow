@@ -1599,7 +1599,7 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
             results["errors"].append({"path": stub_info["path"], "error": str(e)})
 
     if dry_run:
-        print("DRY RUN: No files were modified")
+        #print("DRY RUN: No files were modified")
     
     return results
 
