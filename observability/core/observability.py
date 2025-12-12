@@ -18,6 +18,8 @@ Non-responsibilities:
 from __future__ import annotations
 
 # from archives.legacy_root_folders.runtime.observability.spans import *  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.runtime.observability.traces import *  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.runtime.observability.metrics import *  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.runtime.observability.events import *  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.runtime.observability.emitters import *  # DEPRECATED: Archive import removed to protect archives from validation edits
 
