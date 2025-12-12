@@ -14,6 +14,7 @@ async def _noop(ctx: Dict[str, object]) -> Dict[str, object]:
 
 
 def test_dag_executor_records_agent_assignments() -> None:
+    """Test that DAG executor records agent assignments correctly."""
     nodes = {
         "n1": Node(id="n1", fn=_noop, metadata={"agent_type": "planner"}),
     }

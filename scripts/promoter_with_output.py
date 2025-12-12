@@ -91,7 +91,38 @@ def choose_destination(content: str, filename: str) -> Path:
             return Path(dest)
     return Path("apps_shared/core")
 
+def _should_promote_file(src: Path, score: int, reasons: List[str], is_dirty: bool, is_staged_file: bool) -> Tuple[bool, str]:
+    """Determine if a file should be promoted and why."""
+    if FORCE_PROMOTE_PATTERN.search(src.name):
+        return True, "force-promote:historical"
+    elif score >= 7 and not is_dirty:
+        return True, f"sovereign-grade:score={score}"
+    elif any("core" in r for r in reasons) and not is_dirty:
+        return True, "structural-pass"
+    elif is_staged_file:
+        if is_dirty:
+            return True, "legacy-import:dirty (needs cleanup)"
+        else:
+            return True, f"legacy-import:low-score={score}"
+    return False, ""
+
+def _should_skip_file(src: Path, archive_dir: Path) -> Optional[str]:
+    """Check if a file should be skipped and return the reason."""
+    if not src.is_file() or src.suffix not in {".py", ".json", ".md"}:
+        return "Invalid file type"
+    
+    # Skip system folders
+    if "scripts" in src.parts or src.parent.name == "scripts":
+        return "In scripts folder"
+    if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", "archive_code"}:
+        return "In runtime/shared"
+    if any(root in src.parts for root in SOVEREIGN_ROOTS):
+        return "Already in sovereign directory"
+    
+    return None
+
 def main() -> None:
+    """Main function to promote files from archive_code to appropriate directories."""
     files_to_process = []
     archive_dir = Path("archive_code")
     
@@ -123,23 +154,12 @@ def main() -> None:
         
         print(f"\n🔎 Processing: {src.name}")
         
-        if not src.is_file() or src.suffix not in {".py", ".json", ".md"}:
-            print(f"  ⏭️  Skipped: Invalid file type")
+        skip_reason = _should_skip_file(src, archive_dir)
+        if skip_reason:
+            print(f"  ⏭️  Skipped: {skip_reason}")
             continue
         
         is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == "archive_code")
-        
-        # Skip system folders
-        if "scripts" in src.parts or src.parent.name == "scripts":
-            print(f"  ⏭️  Skipped: In scripts folder")
-            continue
-        if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", "archive_code"}:
-            print(f"  ⏭️  Skipped: In runtime/shared")
-            continue
-        if any(root in src.parts for root in SOVEREIGN_ROOTS):
-            print(f"  ⏭️  Skipped: Already in sovereign directory")
-            continue
-        
         content = src.read_text(errors="ignore")
         score, reasons, is_dirty = analyze_file_content(content, src.name)
         
@@ -148,24 +168,7 @@ def main() -> None:
         print(f"  🧹 Dirty: {is_dirty}")
         
         # Promotion logic
-        should_promote = False
-        promotion_reason = ""
-        
-        if FORCE_PROMOTE_PATTERN.search(src.name):
-            should_promote = True
-            promotion_reason = "force-promote:historical"
-        elif score >= 7 and not is_dirty:
-            should_promote = True
-            promotion_reason = f"sovereign-grade:score={score}"
-        elif any("core" in r for r in reasons) and not is_dirty:
-            should_promote = True
-            promotion_reason = "structural-pass"
-        elif is_staged_file:
-            should_promote = True
-            if is_dirty:
-                promotion_reason = "legacy-import:dirty (needs cleanup)"
-            else:
-                promotion_reason = f"legacy-import:low-score={score}"
+        should_promote, promotion_reason = _should_promote_file(src, score, reasons, is_dirty, is_staged_file)
         
         if not should_promote:
             print(f"  ❌ REJECTED")

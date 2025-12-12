@@ -173,10 +173,11 @@ def flatten_layer(layer_path: Path, layer_name: str) -> Dict[str, List[str]]:
             if py_file.name != new_path.name:
                 log["renamed"].append(f"{py_file.name} -> {new_path.name}")
 
-                try:
-            shutil.rmtree(phase_dir)
-            log["deleted_dirs"].append(str(phase_dir))
-        except (ValueError, TypeError, KeyError) as e:
+    try:
+        shutil.rmtree(phase_dir)
+        log["deleted_dirs"].append(str(phase_dir))
+    except (ValueError, TypeError, KeyError) as e:
+        log["errors"].append(f"Failed to delete {phase_dir}: {e}")
 
     # Ensure __init__.py exists at layer root
     ensure_init_py(layer_path)
@@ -228,10 +229,11 @@ def delete_banned_folders(root: Path) -> List[str]:
                     if py_file.name != "__init__.py":
                         move_file_with_rename(py_file, current_dir)
 
-                                try:
-                    shutil.rmtree(banned_dir)
-                    deleted.append(str(banned_dir))
-                except (ValueError, TypeError, KeyError) as e:
+    try:
+        shutil.rmtree(banned_dir)
+        deleted.append(str(banned_dir))
+    except (ValueError, TypeError, KeyError) as e:
+        log["errors"].append(f"Failed to delete {banned_dir}: {e}")
 
     return deleted
 
@@ -361,7 +363,8 @@ def fix_all_imports(root: Path) -> int:
 # MAIN EXECUTION
 # =============================================================================
 
-def main():
+def main() -> None:
+    """Main entry point for subatomic canon 2025 transform."""
 
     all_logs = {
         "flattened_layers": {},

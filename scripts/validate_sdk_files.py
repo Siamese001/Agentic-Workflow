@@ -8,7 +8,7 @@ import sys
 import os
 import ast
 
-def validate_python_syntax(file_path):
+def validate_python_syntax(file_path) -> bool:
     """Check if Python file has valid syntax."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -22,7 +22,7 @@ def validate_python_syntax(file_path):
     except (ValueError, TypeError, KeyError) as e:
         return False, f"Error reading file: {e}"
 
-def main():
+def main() -> None:
     """Validate all SDK Python files."""
     files = sys.argv[1:] if len(sys.argv) > 1 else []
     
@@ -49,9 +49,9 @@ def main():
             errors.append(f"Invalid Python syntax in {file_path}: {error_msg}")
     
     if errors:
-
+        print("\nValidation errors:")
         for error in errors:
-
+            print(f"  - {error}")
         sys.exit(1)
 
     sys.exit(0)

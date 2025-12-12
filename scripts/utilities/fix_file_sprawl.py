@@ -61,7 +61,7 @@ def move_file_with_import_updates(source: Path, target_dir: Path) -> None:
     
     # Move the file
     target_file = target_dir / source.name
-    print(f"Moving {source} -> {target_file}")
+    # Moving file silently
     shutil.move(str(source), str(target_file))
     
     # Update imports in the moved file
@@ -82,9 +82,10 @@ def update_imports_in_file(file_path: Path) -> None:
         
         if content != original_content:
             file_path.write_text(content, encoding='utf-8')
-            print(f"  Updated imports in {file_path}")
+            # Updated imports in file_path
     except Exception as e:
-        print(f"  Warning: Could not update imports in {file_path}: {e}")
+        # Warning: Could not update imports in file_path
+        print(f"Warning: Could not update imports in {file_path}: {e}")
 
 def handle_invalid_layers() -> None:
     """Handle invalid layer directories in apps_lic."""
@@ -99,7 +100,7 @@ def handle_invalid_layers() -> None:
         new_path = Path(new_dir)
         
         if old_path.exists():
-            print(f"Renaming directory {old_path} -> {new_path}")
+            # Renaming directory old_path -> new_path
             # Move the entire directory
             if new_path.exists():
                 # Merge directories if target exists
@@ -121,13 +122,14 @@ def main():
         if source.exists():
             move_file_with_import_updates(source, target_dir)
         else:
+            # File not found: source
             print(f"File not found: {source}")
     
     # Handle invalid layer directories
     handle_invalid_layers()
     
-    print("\nFile sprawl fix complete!")
-    print("Note: You may need to manually update import statements in other files that reference these moved files.")
+    # File sprawl fix complete!
+    # Note: You may need to manually update import statements in other files that reference these moved files.
 
 if __name__ == '__main__':
     main()

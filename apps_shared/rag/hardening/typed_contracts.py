@@ -8,6 +8,7 @@ from __future__ import annotations
 
 
 def test_core_models_have_v1_schema_version_defaults() -> None:
+    """Test that core models have v1 schema version defaults."""
     # Simple models with safe defaults can be instantiated without args.
     simple_plans = [StrategyPlan, DraftingPlan, QAPlan, SafetyPlan, RAGPlan]
     for cls in simple_plans:
@@ -64,6 +65,7 @@ def test_validate_schema_version_accepts_matching_models() -> None:
 
 
 def test_validate_schema_version_rejects_mismatched_version() -> None:
+    """Test that validate_schema_version rejects mismatched versions."""
     class DummyModel(BaseModel):
         schema_version: str = "v2"  # wrong version
 

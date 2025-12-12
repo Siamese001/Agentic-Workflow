@@ -19,7 +19,7 @@ class ExecutionContext:
     params: Dict[str, Any] = field(default_factory=dict)
     active: bool = True
 
-def execute_operation(payload: Any, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def execute_operation(payload: object config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
     Execute the primary logic for this module.
     

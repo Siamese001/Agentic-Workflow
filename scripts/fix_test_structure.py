@@ -79,6 +79,43 @@ def flatten_unit_tests() -> List[str]:
 
     return moved
 
+def _remove_lp_dirs_in_domain(domain_dir: Path) -> List[str]:
+    """Remove L/P pattern directories in a single domain."""
+    removed = []
+    
+    for lp_pattern in FORBIDDEN_PATTERNS:
+        for lp_dir in domain_dir.rglob(lp_pattern):
+            if lp_dir.is_dir():
+                try:
+                    contents = list(lp_dir.iterdir())
+                    if not contents or all(f.name == "__init__.py" for f in contents):
+                        shutil.rmtree(lp_dir)
+                        removed.append(str(lp_dir.relative_to(TESTS_ROOT)))
+                except (ValueError, TypeError, KeyError) as e:
+                    print(f"Error removing {lp_dir}: {e}")
+    return removed
+
+def _clean_empty_dirs(unit_dir: Path) -> List[str]:
+    """Clean empty directories after removing L/P patterns."""
+    removed = []
+    
+    for dirpath, dirnames, filenames in os.walk(unit_dir, topdown=False):
+        current = Path(dirpath)
+        if current == unit_dir:
+            continue
+
+        # Check if any part of path has L/P pattern
+        rel_path = str(current.relative_to(unit_dir))
+        if any(pattern in rel_path for pattern in FORBIDDEN_PATTERNS):
+            try:
+                contents = list(current.iterdir())
+                if not contents or all(f.name == "__init__.py" for f in contents):
+                    shutil.rmtree(current)
+                    removed.append(str(current.relative_to(TESTS_ROOT)))
+            except (ValueError, TypeError, KeyError) as e:
+                print(f"Error removing {current}: {e}")
+    return removed
+
 def remove_empty_lp_dirs() -> List[str]:
     """Remove empty L/P directories after flattening."""
     removed = []
@@ -87,39 +124,12 @@ def remove_empty_lp_dirs() -> List[str]:
     if not unit_dir.exists():
         return removed
 
-        for domain_dir in unit_dir.iterdir():
+    for domain_dir in unit_dir.iterdir():
         if not domain_dir.is_dir():
             continue
-
-        for lp_pattern in FORBIDDEN_PATTERNS:
-            for lp_dir in domain_dir.rglob(lp_pattern):
-                if lp_dir.is_dir():
-                    try:
-                                                contents = list(lp_dir.iterdir())
-                        if not contents or all(f.name == "__init__.py" for f in contents):
-                            shutil.rmtree(lp_dir)
-                            removed.append(str(lp_dir.relative_to(TESTS_ROOT)))
-                    except (ValueError, TypeError, KeyError) as e:
-
-        for dirpath, dirnames, filenames in os.walk(unit_dir, topdown=False):
-        current = Path(dirpath)
-        if current == unit_dir:
-            continue
-
-        # Check if any part of path has L/P pattern
-        rel_path = str(current.relative_to(unit_dir))
-        has_lp = any(p in rel_path for p in FORBIDDEN_PATTERNS)
-
-        if has_lp:
-            contents = list(current.iterdir())
-            if not contents or all(f.name in ["__init__.py", "__pycache__"] or f.name.startswith(".") for f in contents):
-                try:
-                    shutil.rmtree(current)
-                    if str(current.relative_to(TESTS_ROOT)) not in removed:
-                        removed.append(str(current.relative_to(TESTS_ROOT)))
-                except (ValueError, TypeError, KeyError):
-                    ...
-
+        removed.extend(_remove_lp_dirs_in_domain(domain_dir))
+    
+    removed.extend(_clean_empty_dirs(unit_dir))
     return removed
 
 def move_logic_tests() -> List[str]:
@@ -151,10 +161,10 @@ def move_logic_tests() -> List[str]:
                 moved.append(f"logic/{test_file.name} -> unit/agentic_core/{test_file.name}")
 
         if logic_dir.exists():
-        remaining = [f for f in logic_dir.iterdir() if f.name not in ["__init__.py", "__pycache__"]]
-        if not remaining:
-            shutil.rmtree(logic_dir)
-            moved.append("Removed empty logic/ folder")
+            remaining = [f for f in logic_dir.iterdir() if f.name not in ["__init__.py", "__pycache__"]]
+            if not remaining:
+                shutil.rmtree(logic_dir)
+                moved.append("Removed empty logic/ folder")
 
     return moved
 
@@ -172,7 +182,8 @@ def ensure_init_files() -> int:
 
     return created
 
-def main():
+def main() -> None:
+    """Main entry point for test structure fixing."""
 
     log = {
         "flattened": [],
@@ -186,8 +197,10 @@ def main():
     log["flattened"] = flatten_unit_tests()
 
     for item in log["flattened"][:5]:
-
+        print(f"  - {item}")
+    
     if len(log["flattened"]) > 5:
+        print(f"  ... and {len(log['flattened']) - 5} more")
 
     log["removed_dirs"] = remove_empty_lp_dirs()
 
@@ -196,7 +209,8 @@ def main():
     log["moved_logic"] = move_logic_tests()
 
     for item in log["moved_logic"]:
-
+        print(f"  - {item}")
+    
     # Step 4: Ensure __init__.py files
 
     log["init_files_created"] = ensure_init_files()

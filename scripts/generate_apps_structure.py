@@ -10,7 +10,7 @@ from datetime import datetime
 
 REPO = Path("c:/Git/Agentic-Workflow")
 
-def extract_yaml_paths(obj, prefix='', paths=None):
+def extract_yaml_paths(obj, prefix='', paths=None) -> List[str]:
     """Extract file paths from YAML structure."""
     if paths is None:
         paths = []
@@ -25,33 +25,30 @@ def extract_yaml_paths(obj, prefix='', paths=None):
                 extract_yaml_paths(value, new_prefix, paths)
     return paths
 
+# Module classification patterns
+MODULE_CLASSIFICATIONS = {
+    "policy": lambda path, name: "policy_check_safety" in path or "check_rules" in path,
+    "embedding": lambda path, name: "embedding" in path or "similarity" in name or "vectors" in name,
+    "scoring": lambda path, name: "scoring_ops" in path or "score" in name,
+    "state_update": lambda path, name: "state_update_ops" in path or "aggregate" in name or "merge" in name,
+    "retrieval": lambda path, name: "understand_request" in path or "query" in name or "fetch" in name or "retrieve" in name,
+    "formatting": lambda path, name: "utility_prepare" in path or "format" in name or "prepare" in name or "build" in name,
+    "retry": lambda path, name: "routing_retry" in path or "retry" in name or "fallback" in name,
+    "execution": lambda path, name: "use_a_tool" in path or "execute" in name or "invoke" in name or "call" in name,
+    "diagnostics": lambda path, name: "diagnostics" in path or "inspect" in name or "diagnose" in name,
+    "refinement": lambda path, name: "refinement" in path or "adjust" in name or "optimize" in name or "refine" in name,
+}
+
 def classify_module(path: str) -> str:
     """Classify module type from path."""
     path_lower = path.lower()
     name = Path(path).stem.lower()
 
-    if "policy_check_safety" in path_lower or "check_rules" in path_lower:
-        return "policy"
-    elif "embedding" in path_lower or "similarity" in name or "vectors" in name:
-        return "embedding"
-    elif "scoring_ops" in path_lower or "score" in name:
-        return "scoring"
-    elif "state_update_ops" in path_lower or "aggregate" in name or "merge" in name:
-        return "state_update"
-    elif "understand_request" in path_lower or "query" in name or "fetch" in name or "retrieve" in name:
-        return "retrieval"
-    elif "utility_prepare" in path_lower or "format" in name or "prepare" in name or "build" in name:
-        return "formatting"
-    elif "routing_retry" in path_lower or "retry" in name or "fallback" in name:
-        return "retry"
-    elif "use_a_tool" in path_lower or "execute" in name or "invoke" in name or "call" in name:
-        return "execution"
-    elif "diagnostics" in path_lower or "inspect" in name or "diagnose" in name:
-        return "diagnostics"
-    elif "refinement" in path_lower or "adjust" in name or "optimize" in name or "refine" in name:
-        return "refinement"
-    else:
-        return "standard"
+    for module_type, check_func in MODULE_CLASSIFICATIONS.items():
+        if check_func(path_lower, name):
+            return module_type
+    
+    return "standard"
 
 def get_domain_context(path: str, app_type: str) -> dict:
     """Get domain-specific context for code generation."""
@@ -113,7 +110,7 @@ class PolicyResult:
 class {class_name}:
     """Policy enforcer for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         self.rules = self.config.get("rules", [])
         self.strict = self.config.get("strict", True)
@@ -224,7 +221,7 @@ class SimilarityMatch:
 class {class_name}:
     """Embedding operations for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         self.dimension = self.config.get("dimension", 128)
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -293,7 +290,7 @@ class ScoreResult:
 class {class_name}:
     """Scorer for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         self.weights = self.config.get("weights", {{}})
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -368,7 +365,7 @@ class StateResult:
 class {class_name}:
     """State coordinator for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         self.state: Dict[str, object] = {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -426,7 +423,7 @@ class RetrievalResult:
 class {class_name}:
     """Retrieval engine for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         self.cache: Dict[str, object] = {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -477,7 +474,7 @@ class FormatResult:
 class {class_name}:
     """Formatter for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         self.format_type = self.config.get("format", "default")
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -528,7 +525,7 @@ class RetryResult:
 class {class_name}:
     """Retry executor for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         self.max_retries = self.config.get("max_retries", 3)
         self.backoff = self.config.get("backoff", 1.0)
@@ -589,7 +586,7 @@ class ExecutionResult:
 class {class_name}:
     """Executor for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         self.timeout = self.config.get("timeout", 30.0)
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -650,7 +647,7 @@ class DiagnosticReport:
 class {class_name}:
     """Diagnostics for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
@@ -701,7 +698,7 @@ class RefinementResult:
 class {class_name}:
     """Refiner for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         self.weights = self.config.get("weights", {{}})
         logger.info(f"Initialized {{self.__class__.__name__}}")
@@ -753,7 +750,7 @@ class OperationResult:
 class {class_name}:
     """Operations executor for {ctx['domain']} domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, obj: objectect]] = None):
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
@@ -763,8 +760,8 @@ class {class_name}:
             result = self._execute(data, context)
             return OperationResult(success=True, data=result)
         except (ValueError, TypeError, KeyError) as e:
-            logger.error("Processing failed: {%s}", e)
-            return OperationResult(success=False, metadata={{"error": str(e)}})
+            logger.error("Processing failed: %s", e)
+            return OperationResult(success=False, metadata={"error": str(e)})
 
     def _execute(self, data: object, context: Optional[Dict]) -> object:
         """Execute processing."""
@@ -802,7 +799,47 @@ from __future__ import annotations
 __all__: list[str] = []
 '''
 
-def main():
+def _create_init_files(paths: List[Path], dest_base: Path, dirs_created: set) -> None:
+    """Create __init__.py files for all directories in paths."""
+    for path in paths:
+        full_path = dest_base / path
+        
+        # Create parent directories and __init__.py
+        for parent in list(full_path.parents):
+            if parent not in dirs_created and str(parent).startswith(str(REPO)) and parent != REPO:
+                parent.mkdir(parents=True, exist_ok=True)
+                init_file = parent / "__init__.py"
+                if not init_file.exists():
+                    try:
+                        rel_parent = str(parent.relative_to(REPO)).replace("\\", "/")
+                    except ValueError:
+                        continue
+                    init_file.write_text(generate_init_file(rel_parent), encoding="utf-8")
+                dirs_created.add(parent)
+
+def _generate_modules(paths: List[Path], dest_base: Path, ctx: Dict[str, str]) -> Tuple[int, int]:
+    """Generate module files and return counts of created/skipped files."""
+    created = 0
+    skipped = 0
+    
+    for path in paths:
+        full_path = dest_base / path
+        
+        if full_path.exists():
+            skipped += 1
+            continue
+            
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+        module_type = classify_module(path)
+        generator = GENERATORS.get(module_type, generate_generic_module)
+        name = full_path.stem
+        content = generator(name, ctx)
+        full_path.write_text(content, encoding="utf-8")
+        created += 1
+    
+    return created, skipped
+
+def main() -> None:
     """Generate apps structure from YAML."""
     with open(REPO / "unified_structure_subatomic.yaml", "r", encoding="utf-8") as f:
         spec = yaml.safe_load(f)
@@ -817,7 +854,6 @@ def main():
 
     for app_key, (dest_folder, app_type) in apps_to_generate.items():
         if app_key not in spec:
-
             continue
 
         paths = extract_yaml_paths(spec[app_key])
@@ -826,37 +862,12 @@ def main():
 
         # Create __init__.py files for all directories
         dirs_created = set()
-
-        for path in paths:
-            full_path = dest_base / path
-
-            # Create parent directories and __init__.py
-            for parent in list(full_path.parents):
-                if parent not in dirs_created and str(parent).startswith(str(REPO)) and parent != REPO:
-                    parent.mkdir(parents=True, exist_ok=True)
-                    init_file = parent / "__init__.py"
-                    if not init_file.exists():
-                        try:
-                            rel_parent = str(parent.relative_to(REPO)).replace("\\", "/")
-                        except ValueError:
-                            continue
-                        init_file.write_text(generate_init_file(rel_parent), encoding="utf-8")
-                    dirs_created.add(parent)
-
-            # Generate module file
-            if full_path.exists():
-                total_skipped += 1
-                continue
-
-            full_path.parent.mkdir(parents=True, exist_ok=True)
-
-            module_type = classify_module(path)
-            generator = GENERATORS.get(module_type, generate_generic_module)
-            name = full_path.stem
-
-            content = generator(name, ctx)
-            full_path.write_text(content, encoding="utf-8")
-            total_created += 1
+        _create_init_files(paths, dest_base, dirs_created)
+        
+        # Generate module files
+        created, skipped = _generate_modules(paths, dest_base, ctx)
+        total_created += created
+        total_skipped += skipped
 
 if __name__ == "__main__":
     main()

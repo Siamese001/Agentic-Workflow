@@ -41,7 +41,24 @@ def has_real_code(path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
-def main():
+def _categorize_pending_file(f: Path, seen_hashes: Dict[str, Path]) -> Tuple[Optional[Tuple[Path, int]], Optional[Path]]:
+    """Categorize a pending file as large real code or small/stub."""
+    size = f.stat().st_size
+    h = get_file_hash(f)
+
+    # Skip exact duplicates
+    if h in seen_hashes:
+        return None, f
+    
+    seen_hashes[h] = f
+
+    if size > 5000 and has_real_code(f):
+        return (f, size), None
+    else:
+        return None, f
+
+def main() -> None:
+    """Main entry point for review pending process."""
 
     # Find all Python files
     all_files = list(REVIEW_PENDING.rglob('*.py'))
@@ -56,26 +73,20 @@ def main():
         if '__pycache__' in str(f):
             continue
 
-        size = f.stat().st_size
-        h = get_file_hash(f)
-
-        # Skip exact duplicates
-        if h in seen_hashes:
-            small_or_stub.append(f)
-            continue
-        seen_hashes[h] = f
-
-        if size > 5000 and has_real_code(f):
-            large_real_code.append((f, size))
-        else:
-            small_or_stub.append(f)
+        large, small = _categorize_pending_file(f, seen_hashes)
+        if large:
+            large_real_code.append(large)
+        if small:
+            small_or_stub.append(small)
 
     # Show large files
 
     for f, size in sorted(large_real_code, key=lambda x: -x[1])[:20]:
         rel = f.relative_to(REVIEW_PENDING)
-
+        print(f"  - {rel} ({size} bytes)")
+    
     if len(large_real_code) > 20:
+        print(f"  ... and {len(large_real_code) - 20} more")
 
     # Find the largest unique file (likely the main Resume Engine)
     if large_real_code:
@@ -84,16 +95,18 @@ def main():
         # Copy to apps_rg as resume_generation_engine.py
         dest = REPO / '09_apps/apps_rg/resume_generation_engine.py'
         if not dest.exists():
-
+            print(f"\nCopying largest file to {dest.relative_to(REPO)}")
             shutil.copy2(largest[0], dest)
-
         else:
+            print(f"\nDestination already exists: {dest.relative_to(REPO)}")
 
     # Create archive directory
     archive_path = ARCHIVE_DIR / TIMESTAMP
     archive_path.mkdir(parents=True, exist_ok=True)
 
     # Move entire review_pending to archive
+    print(f"\nMoving {len(list(REVIEW_PENDING.rglob('*')))} items to archive...")
+    shutil.move(str(REVIEW_PENDING), str(archive_path / 'review_pending'))
 
     # Count files to move
     files_moved = 0
@@ -106,16 +119,16 @@ def main():
             files_moved += 1
 
         for d in sorted(REVIEW_PENDING.rglob('*'), reverse=True):
-        if d.is_dir():
-            try:
-                d.rmdir()
-            except OSError:
-                ...
+            if d.is_dir():
+                try:
+                    d.rmdir()
+                except OSError:
+                    pass
 
         try:
-        REVIEW_PENDING.rmdir()
-
-    except OSError:
+            REVIEW_PENDING.rmdir()
+        except OSError:
+            pass
 
 if __name__ == '__main__':
     main()

@@ -74,6 +74,42 @@ def rename_top_level_folders() -> List[str]:
 
     return renamed
 
+def _promote_app(apps_dir: Path, app_name: str) -> Optional[str]:
+    """Promote a single app from 09_apps/ to top-level."""
+    src = apps_dir / app_name
+    dst = REPO_ROOT / app_name
+    
+    if src.exists() and not dst.exists():
+        shutil.move(str(src), str(dst))
+        return f"09_apps/{app_name} -> {app_name}"
+    return None
+
+def _cleanup_remaining_apps_dir(apps_dir: Path, log: Dict[str, List[str]]) -> None:
+    """Clean up remaining items in apps directory after promotion."""
+    remaining = list(apps_dir.iterdir())
+    if len(remaining) == 0:
+        apps_dir.rmdir()
+    else:
+        # Move any remaining items to appropriate locations
+        for item in remaining:
+            if item.name == "shared":
+                # Move shared to top-level apps_shared or merge with existing shared
+                dest = REPO_ROOT / "apps_shared"
+                if not dest.exists():
+                    shutil.move(str(item), str(dest))
+            else:
+                # Move other items to top level
+                dest = REPO_ROOT / item.name
+                if not dest.exists():
+                    shutil.move(str(item), str(dest))
+                # else: Already exists, skip
+
+        try:
+            shutil.rmtree(apps_dir)
+            log["deleted_dirs"].append(str(apps_dir))
+        except (ValueError, TypeError, KeyError) as e:
+            log["errors"].append(f"Failed to delete {apps_dir}: {e}")
+
 def promote_apps_to_top_level() -> List[str]:
     """Promote apps_lic and apps_rg from 09_apps/ to top-level."""
     promoted = []
@@ -83,43 +119,19 @@ def promote_apps_to_top_level() -> List[str]:
         return promoted
 
     # Promote apps_lic
-    apps_lic_src = apps_dir / "apps_lic"
-    apps_lic_dst = REPO_ROOT / "apps_lic"
-    if apps_lic_src.exists() and not apps_lic_dst.exists():
-        shutil.move(str(apps_lic_src), str(apps_lic_dst))
-        promoted.append("09_apps/apps_lic -> apps_lic")
+    result = _promote_app(apps_dir, "apps_lic")
+    if result:
+        promoted.append(result)
 
     # Promote apps_rg
-    apps_rg_src = apps_dir / "apps_rg"
-    apps_rg_dst = REPO_ROOT / "apps_rg"
-    if apps_rg_src.exists() and not apps_rg_dst.exists():
-        shutil.move(str(apps_rg_src), str(apps_rg_dst))
+    result = _promote_app(apps_dir, "apps_rg")
+    if result:
+        promoted.append(result)
         promoted.append("09_apps/apps_rg -> apps_rg")
 
+        # Clean up remaining items in apps directory
         if apps_dir.exists():
-        remaining = list(apps_dir.iterdir())
-        if len(remaining) == 0:
-            apps_dir.rmdir()
-
-        else:
-            # Move any remaining items to appropriate locations
-            for item in remaining:
-                if item.name == "shared":
-                    # Move shared to top-level apps_shared or merge with existing shared
-                    dest = REPO_ROOT / "apps_shared"
-                    if not dest.exists():
-                        shutil.move(str(item), str(dest))
-
-                else:
-                    # Move other items to top level
-                    dest = REPO_ROOT / item.name
-                    if not dest.exists():
-                        shutil.move(str(item), str(dest))
-
-                        try:
-                shutil.rmtree(apps_dir)
-
-            except (ValueError, TypeError, KeyError) as e:
+            _cleanup_remaining_apps_dir(apps_dir, log)
 
     return promoted
 
@@ -161,7 +173,7 @@ def fix_imports_in_file(file_path: Path) -> bool:
                     content
                 )
             else:
-                                content = re.sub(
+                content = re.sub(
                     rf"\bfrom\s+{re.escape(old_path)}\.(\S+)",
                     r"from \1",
                     content
@@ -217,8 +229,8 @@ def update_yaml_files() -> None:
         # Replace all numbered prefixes
         for old_name, new_name in FOLDER_RENAMES.items():
             content = content.replace(old_name, new_name)
-
-                content = content.replace("09_apps/apps_lic", "apps_lic")
+        
+        content = content.replace("09_apps/apps_lic", "apps_lic")
         content = content.replace("09_apps/apps_rg", "apps_rg")
         content = content.replace("09_apps.", "")
         content = content.replace("09_apps:", "# 09_apps removed - apps_lic and apps_rg are now top-level")
@@ -233,8 +245,8 @@ def update_yaml_files() -> None:
         # Replace all numbered prefixes
         for old_name, new_name in FOLDER_RENAMES.items():
             content = content.replace(old_name, new_name)
-
-                content = content.replace("09_apps/apps_lic", "apps_lic")
+        
+        content = content.replace("09_apps/apps_lic", "apps_lic")
         content = content.replace("09_apps/apps_rg", "apps_rg")
         content = content.replace("09_apps.", "")
 
@@ -286,7 +298,8 @@ def update_ssot_validator() -> None:
 # MAIN EXECUTION
 # =============================================================================
 
-def main():
+def main() -> None:
+    """Main entry point for subatomic prefix purge."""
 
     log = {
         "renamed_folders": [],

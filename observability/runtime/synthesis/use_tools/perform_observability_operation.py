@@ -342,11 +342,8 @@ class ObservabilityOperationAdapter:
         }
         return f"obs_op_{hash(json.dumps(key_data, sort_keys=True))}"
 
-    def _aggregate_data(self, data: List[Any], aggregation: Optional[str]) -> Union[Dict[str, Any], List[Any]]:
-        """Aggregate data based on aggregation method."""
-        if not aggregation:
-            return data
-        
+    def _aggregate_by_method(self, data: List[Any], aggregation: str) -> Union[Dict[str, Any], List[Any]]:
+        """Perform specific aggregation method on data."""
         if aggregation == "count":
             return {"total": len(data)}
         elif aggregation == "sum":
@@ -366,8 +363,14 @@ class ObservabilityOperationAdapter:
                     groups[item_type] = []
                 groups[item_type].append(item)
             return groups
-        
         return data
+
+    def _aggregate_data(self, data: List[Any], aggregation: Optional[str]) -> Union[Dict[str, Any], List[Any]]:
+        """Aggregate data based on aggregation method."""
+        if not aggregation:
+            return data
+        
+        return self._aggregate_by_method(data, aggregation)
 
     def _calculate_aggregated_values(self, data: List[Any]) -> Dict[str, float]:
         """Calculate aggregated values from data."""

@@ -112,6 +112,7 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
     return score, reasons, is_dirty
 
 def choose_destination(content: str, filename: str) -> Path:
+    """Choose destination directory based on content and filename patterns."""
     lower = (content + "\n" + filename).lower()
     for pattern, dest in DESTINATION_RULES:
         if re.search(pattern, lower):
@@ -125,7 +126,47 @@ def choose_destination(content: str, filename: str) -> Path:
     # Default fallback for unclassified Python
     return Path("apps_shared/core")
 
+def _should_promote_file(src: Path, score: int, reasons: List[str], is_dirty: bool, is_staged_file: bool) -> Tuple[bool, str]:
+    """Determine if a file should be promoted and why."""
+    # Rule 1: Force Promote Pattern
+    if FORCE_PROMOTE_PATTERN.search(src.name):
+        return True, "force-promote:historical"
+    
+    # Rule 2: High Score (Standard Sovereign Grade)
+    elif score >= 7 and not is_dirty:
+        return True, f"sovereign-grade:score={score}"
+
+    # Rule 3: Structural Pass (Core Terms)
+    elif any("core" in r for r in reasons) and not is_dirty:
+        return True, "structural-pass"
+
+    # Rule 4: PERMISSIVE ARCHIVE MODE (The Fix)
+    # If it comes from archive_code, we promote it regardless of score/dirtiness.
+    elif is_staged_file:
+        if is_dirty:
+            return True, "legacy-import:dirty (needs cleanup)"
+        else:
+            return True, f"legacy-import:low-score={score}"
+    
+    return False, ""
+
+def _should_skip_file(src: Path) -> bool:
+    """Check if a file should be skipped."""
+    if not src.is_file() or src.suffix not in {".py", ".json", ".md"}:
+        return True
+    
+    # Skip sovereign roots and system folders
+    if "scripts" in src.parts or src.parent.name == "scripts":
+        return True
+    if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", "archive_code"}:
+        return True
+    if any(root in src.parts for root in SOVEREIGN_ROOTS):
+        return True
+    
+    return False
+
 def main() -> None:
+    """Main function to promote files from archive or CLI args to sovereign directories."""
     files_to_process = []
     
     # 1. CLI Args
@@ -148,51 +189,17 @@ def main() -> None:
             continue
         processed_paths.add(src)
         
-        if not src.is_file() or src.suffix not in {".py", ".json", ".md"}:
+        if _should_skip_file(src):
             continue
 
         # Determine if this file is from the staging area
         is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == "archive_code")
 
-        # Skip sovereign roots and system folders
-        if "scripts" in src.parts or src.parent.name == "scripts":
-            continue
-        if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", "archive_code"}:
-            continue
-        if any(root in src.parts for root in SOVEREIGN_ROOTS):
-            continue
-
         content = src.read_text(errors="ignore")
         score, reasons, is_dirty = analyze_file_content(content, src.name)
         
         # --- PROMOTION LOGIC ---
-        should_promote = False
-        promotion_reason = ""
-
-        # Rule 1: Force Promote Pattern
-        if FORCE_PROMOTE_PATTERN.search(src.name):
-            should_promote = True
-            promotion_reason = "force-promote:historical"
-        
-        # Rule 2: High Score (Standard Sovereign Grade)
-        elif score >= 7 and not is_dirty:
-            should_promote = True
-            promotion_reason = f"sovereign-grade:score={score}"
-
-        # Rule 3: Structural Pass (Core Terms)
-        elif any("core" in r for r in reasons) and not is_dirty:
-            should_promote = True
-            promotion_reason = "structural-pass"
-
-        # Rule 4: PERMISSIVE ARCHIVE MODE (The Fix)
-        # If it comes from archive_code, we promote it regardless of score/dirtiness.
-        # We capture the logic now and clean it later.
-        elif is_staged_file:
-            should_promote = True
-            if is_dirty:
-                promotion_reason = "legacy-import:dirty (needs cleanup)"
-            else:
-                promotion_reason = f"legacy-import:low-score={score}"
+        should_promote, promotion_reason = _should_promote_file(src, score, reasons, is_dirty, is_staged_file)
 
         if not should_promote:
             if is_staged_file:

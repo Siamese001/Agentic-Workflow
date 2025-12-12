@@ -7,7 +7,7 @@ This protects the immutable archives from being loaded during validation.
 import re
 from pathlib import Path
 
-def comment_archive_imports():
+def comment_archive_imports() -> None:
     """Find and comment out all imports from archives/ in canonical files."""
     root = Path(__file__).parent.parent
     canonical_dirs = {
