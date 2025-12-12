@@ -1,0 +1,105 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.9, pytest-9.0.2, pluggy-1.6.0 -- C:\Git\Agentic-Workflow\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\Agentic-Workflow
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.0, langsmith-0.4.59, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 16 items
+
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestHardenedOrchestratorBasics::test_orchestrator_creation PASSED [  6%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestHardenedOrchestratorBasics::test_workflow_execution_simple FAILED [ 12%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestHardenedOrchestratorBasics::test_workflow_with_parallel_hops FAILED [ 18%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestAtomicStateManagement::test_checkpoint_creation FAILED [ 25%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestAtomicStateManagement::test_state_persistence FAILED [ 31%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestAtomicStateManagement::test_atomic_rollback FAILED [ 37%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestResilientRouting::test_provider_fallback_on_failure FAILED [ 43%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestResilientRouting::test_all_providers_exhausted FAILED [ 50%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestCircuitBreaker::test_circuit_breaker_opens_on_failures FAILED [ 56%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestCircuitBreaker::test_circuit_breaker_recovery FAILED [ 62%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestWorkflowResumption::test_resume_from_checkpoint FAILED [ 68%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestWorkflowResumption::test_resume_preserves_execution_log FAILED [ 75%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestErrorRecovery::test_retry_on_transient_failure FAILED [ 81%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestErrorRecovery::test_graceful_degradation FAILED [ 87%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestPerformanceAndScaling::test_large_workflow_execution FAILED [ 93%]
+tests/integration/test_hardened_orchestrator_comprehensive.py::TestPerformanceAndScaling::test_checkpoint_overhead FAILED [100%]
+
+================================== FAILURES ===================================
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:68: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:90: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:117: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:140: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:166: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+------------------------------ Captured log call ------------------------------
+ERROR    runtime.shared.hardened_gemini_executor:hardened_gemini_executor.py:227 Failed to initialize hardened Gemini client: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.GOOGLE: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.OPENAI: OPENAI_API_KEY environment variable must be set
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.ANTHROPIC: ANTHROPIC_API_KEY environment variable must be set
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:204: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:233: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:258: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+------------------------------ Captured log call ------------------------------
+ERROR    runtime.shared.hardened_gemini_executor:hardened_gemini_executor.py:227 Failed to initialize hardened Gemini client: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.GOOGLE: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.OPENAI: OPENAI_API_KEY environment variable must be set
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.ANTHROPIC: ANTHROPIC_API_KEY environment variable must be set
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:284: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:318: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:357: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+------------------------------ Captured log call ------------------------------
+ERROR    runtime.shared.hardened_gemini_executor:hardened_gemini_executor.py:227 Failed to initialize hardened Gemini client: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.GOOGLE: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.OPENAI: OPENAI_API_KEY environment variable must be set
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.ANTHROPIC: ANTHROPIC_API_KEY environment variable must be set
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:388: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+------------------------------ Captured log call ------------------------------
+ERROR    runtime.shared.hardened_gemini_executor:hardened_gemini_executor.py:227 Failed to initialize hardened Gemini client: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.GOOGLE: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.OPENAI: OPENAI_API_KEY environment variable must be set
+ERROR    runtime.shared.routing.router:router.py:83 Failed to initialize executor for Provider.ANTHROPIC: ANTHROPIC_API_KEY environment variable must be set
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:417: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:452: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+E   TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+C:\Git\Agentic-Workflow\tests\integration\test_hardened_orchestrator_comprehensive.py:475: TypeError: HopSpec.__init__() got an unexpected keyword argument 'name'
+============================== warnings summary ===============================
+runtime\shared\state\schema.py:48
+  C:\Git\Agentic-Workflow\runtime\shared\state\schema.py:48: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class WorkflowState(BaseModel):
+
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:319
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:319
+  C:\Git\Agentic-Workflow\.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:319: PydanticDeprecatedSince20: `json_encoders` is deprecated. See https://docs.pydantic.dev/2.12/concepts/serialization/#custom-serializers for alternatives. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestHardenedOrchestratorBasics::test_workflow_execution_simple
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestHardenedOrchestratorBasics::test_workflow_with_parallel_hops
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestAtomicStateManagement::test_checkpoint_creation
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestAtomicStateManagement::test_state_persistence
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestAtomicStateManagement::test_atomic_rollback
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestResilientRouting::test_provider_fallback_on_failure
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestResilientRouting::test_all_providers_exhausted
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestCircuitBreaker::test_circuit_breaker_opens_on_failures
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestCircuitBreaker::test_circuit_breaker_recovery
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestWorkflowResumption::test_resume_from_checkpoint
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestWorkflowResumption::test_resume_preserves_execution_log
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestErrorRecovery::test_retry_on_transient_failure
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestErrorRecovery::test_graceful_degradation
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestPerformanceAndScaling::test_large_workflow_execution
+FAILED tests/integration/test_hardened_orchestrator_comprehensive.py::TestPerformanceAndScaling::test_checkpoint_overhead
+================== 15 failed, 1 passed, 3 warnings in 1.13s ===================
