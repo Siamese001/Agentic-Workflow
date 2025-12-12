@@ -34,7 +34,7 @@ class ValidationResult:
     errors: List[str] = None
     warnings: List[str] = None
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.errors is None:
             self.errors = []
         if self.warnings is None:

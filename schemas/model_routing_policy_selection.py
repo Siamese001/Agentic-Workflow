@@ -1,7 +1,7 @@
 from orchestration.model_routing import RoutingContext, choose_provider_and_model
 
 
-def test_policy_selection_honors_requested_model():
+def test_policy_selection_honors_requested_model() -> None:
     ctx = RoutingContext(agent_id="agent", task_type="llm_call", execution_profile=None)
 
     choice = choose_provider_and_model(ctx, requested_model="claude-3-haiku")
@@ -10,7 +10,7 @@ def test_policy_selection_honors_requested_model():
     assert choice.provider == "anthropic"
 
 
-def test_policy_selection_defaults_when_no_model():
+def test_policy_selection_defaults_when_no_model() -> None:
     ctx = RoutingContext(agent_id="agent", task_type="llm_call", execution_profile=None)
 
     choice = choose_provider_and_model(ctx, requested_model=None)

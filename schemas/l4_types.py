@@ -56,7 +56,7 @@ class StateTransition(Generic[T]):
     metadata: Dict[str, object] = field(default_factory=dict, compare=False)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc), compare=False)
     
-    def with_metadata(self, **kwargs: Any) -> StateTransition[T]:
+    def with_metadata(self, **kwargs: object) -> StateTransition[T]:
         """Create a new transition with updated metadata."""
         return StateTransition(
             operation=self.operation,
