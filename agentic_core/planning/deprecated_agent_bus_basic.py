@@ -3,6 +3,7 @@ from archives.legacy_root_folders.core.models.models import AgentMessage
 
 
 def test_agent_bus_send_and_get():
+    """Test basic agent bus send and get message operations."""
     bus = AgentBus()
 
     msg = AgentMessage(
