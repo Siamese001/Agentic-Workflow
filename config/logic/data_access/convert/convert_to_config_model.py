@@ -266,6 +266,55 @@ class ConfigModelConverter:
         else:
             raise ValueError("Invalid environment data type")
 
+    def _get_field_value(self, field_name: str, field_def: Any, data: Dict[str, Any]) -> Any:
+        """Get field value from data or environment."""
+        if field_name in data:
+            return data[field_name]
+        if field_def.env_var and field_def.env_var in data:
+            return data[field_def.env_var]
+        return None
+    
+    def _handle_missing_value(self, field_name: str, field_def: Any, errors: List[str], warnings: List[str]) -> Any:
+        """Handle missing field value."""
+        if field_def.required:
+            if self.config.mode == ConversionMode.STRICT:
+                errors.append(f"Required field missing: {field_name}")
+                return None
+            elif field_def.default_value is not None:
+                warnings.append(f"Using default value for {field_name}")
+                return field_def.default_value
+            else:
+                warnings.append(f"Optional field missing: {field_name}")
+                return None
+        elif field_def.default_value is not None:
+            return field_def.default_value
+        return None
+    
+    def _convert_field_type(self, value: Any, field_name: str, field_def: Any, errors: List[str], warnings: List[str]) -> Any:
+        """Convert field type with error handling."""
+        if not self.config.convert_types:
+            return value
+        
+        try:
+            return self._convert_type(value, field_def.type)
+        except Exception as e:
+            if self.config.mode == ConversionMode.STRICT:
+                errors.append(f"Type conversion failed for {field_name}: {str(e)}")
+            else:
+                warnings.append(f"Type conversion failed for {field_name}: {str(e)}")
+            return field_def.default_value
+    
+    def _validate_field_value(self, value: Any, field_name: str, field_def: Any, errors: List[str], warnings: List[str]) -> None:
+        """Validate field value."""
+        if value is None or not field_def.validator:
+            return
+        
+        if not self._validate_field(value, field_def.validator):
+            if self.config.mode == ConversionMode.STRICT:
+                errors.append(f"Validation failed for field: {field_name}")
+            else:
+                warnings.append(f"Validation failed for field: {field_name}")
+    
     def _convert_to_model(self, data: Dict[str, Any], 
                          model: ConfigModel) -> Tuple[Dict[str, Any], List[str], List[str]]:
         """Convert data to match configuration model."""
@@ -273,46 +322,15 @@ class ConfigModelConverter:
         errors = []
         warnings = []
         
-        # Process each field in the model
         for field_name, field_def in model.fields.items():
-            # Get value from data or environment
-            value = None
-            if field_name in data:
-                value = data[field_name]
-            elif field_def.env_var and field_def.env_var in data:
-                value = data[field_def.env_var]
+            value = self._get_field_value(field_name, field_def, data)
             
-            # Handle missing required fields
             if value is None:
-                if field_def.required:
-                    if self.config.mode == ConversionMode.STRICT:
-                        errors.append(f"Required field missing: {field_name}")
-                    elif field_def.default_value is not None:
-                        value = field_def.default_value
-                        warnings.append(f"Using default value for {field_name}")
-                    else:
-                        warnings.append(f"Optional field missing: {field_name}")
-                elif field_def.default_value is not None:
-                    value = field_def.default_value
+                value = self._handle_missing_value(field_name, field_def, errors, warnings)
             else:
-                # Convert type if needed
-                if self.config.convert_types:
-                    try:
-                        value = self._convert_type(value, field_def.type)
-                    except Exception as e:
-                        if self.config.mode == ConversionMode.STRICT:
-                            errors.append(f"Type conversion failed for {field_name}: {str(e)}")
-                        else:
-                            warnings.append(f"Type conversion failed for {field_name}: {str(e)}")
-                            value = field_def.default_value
+                value = self._convert_field_type(value, field_name, field_def, errors, warnings)
             
-            # Validate field if validator specified
-            if value is not None and field_def.validator:
-                if not self._validate_field(value, field_def.validator):
-                    if self.config.mode == ConversionMode.STRICT:
-                        errors.append(f"Validation failed for field: {field_name}")
-                    else:
-                        warnings.append(f"Validation failed for field: {field_name}")
+            self._validate_field_value(value, field_name, field_def, errors, warnings)
             
             if value is not None:
                 converted[field_name] = value
