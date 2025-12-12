@@ -22,7 +22,7 @@ from archives.legacy_root_folders.runtime.observability.events import *
 from archives.legacy_root_folders.runtime.observability.emitters import *
 
 
-def get_all_events():
+def get_all_events() -> list:
     """Backward-compatible alias for get_events()."""
 
     return get_events()

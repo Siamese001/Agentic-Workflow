@@ -12,7 +12,7 @@ PROVIDERS_PACKAGE = "providers"
 FORBIDDEN_IMPORTERS_FOR_PROVIDERS = {"core", "meta", "prompts", "profiles"}
 
 
-def _iter_project_py_files():
+def _iter_project_py_files() -> list:
     for path in PROJECT_ROOT.glob("*.py"):
         if path.name in {"l1.py", "l2.py", "cognitive_agents.py", "import_check.py"}:
             continue
@@ -50,7 +50,7 @@ def _top_level_dir_for(path: pathlib.Path) -> str | None:
     return parts[0]
 
 
-def test_no_direct_imports_of_top_level_l_layers():
+def test_no_direct_imports_of_top_level_l_layers() -> None:
     """Non-test modules must not import bare l1/l2/cognitive_agents.
 
     They should import via core.l1, core.l2, core.cognitive_agents
@@ -69,7 +69,7 @@ def test_no_direct_imports_of_top_level_l_layers():
     assert not violations, f"Forbidden direct imports found: {violations}"
 
 
-def test_non_providers_do_not_import_providers():
+def test_non_providers_do_not_import_providers() -> None:
     """Core/meta/prompts/profiles must not import the top-level providers package."""
 
     violations: list[tuple[str, list[str]]] = []

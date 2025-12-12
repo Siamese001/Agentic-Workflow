@@ -359,7 +359,6 @@ def build_macro_tot_synthesis_prompt(
         top_drafts_text=top_drafts_text,
         top_k=top_k
     )
-
 # ==============================================================================
 # DYNAMIC PROMPT BUILDERS - ArtistGenerator (HOP-3)
 # ==============================================================================
@@ -374,7 +373,7 @@ def build_narrative_prompt(
     combined_signals_str: str,
     focus_instruction: str,
     k0_themes_str: str,
-    **kwargs # Accepts extra context
+    **kwargs: object  # Accepts extra context
 ) -> str:
     """Builds the prompt for generating K4/K5/K6 narratives."""
     template = _get_prompt_template("artist_narrative")
