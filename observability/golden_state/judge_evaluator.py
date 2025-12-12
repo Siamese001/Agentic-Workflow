@@ -319,18 +319,18 @@ class JudgeEvaluator:
     def _parse_line(self, line: str, score_value: float, reasoning: str, current_section: Optional[str], evidence: List[str], suggestions: List[str]) -> tuple:
         """Parse a single line."""
         if line.startswith("SCORE:"):
-            score_value = self._parse_score(line, score_value)
-        elif line.startswith("REASONING:"):
-            reasoning, current_section = line.split(":", 1)[1].strip(), "reasoning"
-        elif line.startswith("EVIDENCE:"):
-            current_section = "evidence"
-        elif line.startswith("SUGGESTIONS:"):
-            current_section = "suggestions"
-        elif line.startswith("-") or line.startswith("•"):
+            return self._parse_score(line, score_value), reasoning, current_section
+        if line.startswith("REASONING:"):
+            return score_value, line.split(":", 1)[1].strip(), "reasoning"
+        if line.startswith("EVIDENCE:"):
+            return score_value, reasoning, "evidence"
+        if line.startswith("SUGGESTIONS:"):
+            return score_value, reasoning, "suggestions"
+        if line.startswith("-") or line.startswith("•"):
             self._parse_list_item(line, current_section, evidence, suggestions)
-        elif current_section == "reasoning" and line:
-            reasoning += " " + line
-        
+            return score_value, reasoning, current_section
+        if current_section == "reasoning" and line.strip():
+            return score_value, reasoning + " " + line.strip(), current_section
         return score_value, reasoning, current_section
     
     def _parse_score(self, line: str, default: float) -> float:

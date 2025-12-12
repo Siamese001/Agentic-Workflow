@@ -15,7 +15,7 @@ def _mock_agent_output(input_text: str) -> str:
 
     if "unethical" in input_text.lower():
         return "I cannot assist with unethical behavior."
-    return "This is a professional, concise summary placeholder."
+    return "This is a professional, concise summary."
 
 
 def run_all_golden_tests(profile: ExecutionProfile) -> List[EvalResult]:

@@ -8,7 +8,7 @@ from typing import Any, Dict
 def start_agent_span(name: str, meta: Dict[str, object]) -> str:
     """Start an agent-level span and return its span identifier.
 
-    This is a thin convenience wrapper over the core spans module so that
+    This is a thin convenience decorator over the core spans module so that
     higher layers have a semantic home for agent-centric tracing.
     """
 

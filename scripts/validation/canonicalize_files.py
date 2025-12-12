@@ -62,7 +62,7 @@ def analyze_file_complexity(file_path: str) -> Dict[str, int]:
     except (OSError, IOError, UnicodeDecodeError):
         return {'lines': 0, 'size': 0, 'hash': ''}
 
-def canonicalize_filename(encoded_name):
+def canonicalize_filename(encoded_name: str) -> str:
     """Convert path-encoded filename back to clean name"""
     # Remove common prefixes
     prefixes = [

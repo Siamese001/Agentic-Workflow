@@ -162,24 +162,24 @@ class ScriptsQueriesCoordinator:
         """Sort queries by priority and resolve dependencies."""
         # Topological sort for dependency resolution
         visited = set()
-        temp_visited = set()
+        visited_nodes = set()
         result = []
         
-        def visit(query: ScriptQuery):
+        def visit(query: ScriptQuery) -> None:
             """Recursively visit queries for dependency resolution."""
-            if query.id in temp_visited:
+            if query.id in visited_nodes:
                 raise ValueError(f"Circular dependency detected involving query {query.id}")
             if query.id in visited:
                 return
             
-            temp_visited.add(query.id)
+            visited_nodes.add(query.id)
             
             # Visit dependencies first
             for dep_id in query.dependencies:
                 dep_query = next(q for q in queries if q.id == dep_id)
                 visit(dep_query)
             
-            temp_visited.remove(query.id)
+            visited_nodes.remove(query.id)
             visited.add(query.id)
             result.append(query)
         

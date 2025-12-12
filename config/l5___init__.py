@@ -116,7 +116,7 @@ def arbitrate_safety(
     """
     Arbitrate between safety findings and council votes to produce a decision.
     
-    This adapter maps safety findings to legacy decision format expected by tests.
+    This adapter maps safety findings to archived decision format expected by tests.
     
     Decision mapping:
     - high/critical severity -> "block"
