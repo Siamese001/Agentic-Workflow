@@ -69,9 +69,8 @@ def get_domain_context(path: str, app_type: str) -> dict:
             "data_type": "content"
         }
 
-def generate_policy_module(name: str, ctx: dict) -> str:
-    """Generate policy enforcement module."""
-    class_name = ''.join(word.capitalize() for word in name.replace('-', '_').split('_'))
+def _policy_module_header(name: str, ctx: dict) -> str:
+    """Generate policy module header."""
     return f'''"""
 {name}.py - Policy Enforcement Module
 
@@ -85,7 +84,11 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)'''
+
+def _policy_module_classes() -> str:
+    """Generate policy module dataclasses."""
+    return '''
 
 class PolicyDecision(Enum):
     ALLOW = "allow"
@@ -105,7 +108,11 @@ class PolicyResult:
     """Result of policy evaluation."""
     decision: PolicyDecision
     violations: List[PolicyViolation] = field(default_factory=list)
-    metadata: Dict[str, object] = field(default_factory=dict)
+    metadata: Dict[str, object] = field(default_factory=dict)'''
+
+def _policy_module_class_body(class_name: str, ctx: dict) -> str:
+    """Generate policy enforcer class body."""
+    return f'''
 
 class {class_name}:
     """Policy enforcer for {ctx['domain']} domain."""
@@ -119,17 +126,10 @@ class {class_name}:
     def evaluate(self, data: object, context: Optional[Dict] = None) -> PolicyResult:
         """Evaluate data against policy rules."""
         violations = []
-
-        # Check required fields
         violations.extend(self._check_required(data))
-
-        # Check constraints
         violations.extend(self._check_constraints(data))
-
-        # Check safety rules
         violations.extend(self._check_safety(data))
 
-        # Determine decision
         if any(v.severity == "error" for v in violations):
             decision = PolicyDecision.DENY
         elif violations:
@@ -182,8 +182,12 @@ class {class_name}:
 
 def evaluate_policy(data: object, config: Optional[Dict] = None) -> PolicyResult:
     """Evaluate data against policy."""
-    return {class_name}(config).evaluate(data)
-'''
+    return {class_name}(config).evaluate(data)'''
+
+def generate_policy_module(name: str, ctx: dict) -> str:
+    """Generate policy enforcement module."""
+    class_name = ''.join(word.capitalize() for word in name.replace('-', '_').split('_'))
+    return _policy_module_header(name, ctx) + _policy_module_classes() + _policy_module_class_body(class_name, ctx)
 
 def generate_embedding_module(name: str, ctx: dict) -> str:
     """Generate embedding/similarity module."""
