@@ -78,88 +78,80 @@ def canonicalize_filename(encoded_name):
     
     return clean_name
 
-def main() -> None:
-    """Main function to canonicalize filenames by removing banned prefixes."""
-    base_dir = Path('.')
-    cleaned_files = 0
-    deleted_duplicates = 0
-    renamed_files = 0
-
-    # Step 1: Find all path-encoded files
+def _find_encoded_files(base_dir: Path) -> list:
+    """Find all path-encoded files."""
     encoded_files = []
     for root, dirs, files in os.walk(base_dir):
-        # Skip certain directories
         dirs[:] = [d for d in dirs if d not in ['.git', '__pycache__', 'archive_code', 'archives']]
         
         for file in files:
             if file.endswith('.py') or file.endswith('.json') or file.endswith('.md'):
-                # Check if filename is path-encoded (contains multiple underscores)
                 if '_' in file and file.count('_') >= 2:
                     full_path = Path(root) / file
                     encoded_files.append(full_path)
+    return encoded_files
 
-    # Step 2: Group files by their canonical target
+def _group_by_canonical_target(encoded_files: list) -> dict:
+    """Group files by their canonical target."""
     target_groups = defaultdict(list)
     
     for file_path in encoded_files:
         canonical_name = canonicalize_filename(file_path.name)
         target_path = file_path.parent / canonical_name
-        
-        # Check if this would conflict with an existing file
-        if target_path.exists() and target_path != file_path:
-            # This is a duplicate situation
-            target_groups[str(target_path)].append(file_path)
-        else:
-            # No conflict, just needs rename
-            target_groups[str(target_path)].append(file_path)
+        target_groups[str(target_path)].append(file_path)
     
-    # Step 3: Process duplicates
+    return target_groups
 
+def _process_duplicates(target_groups: dict) -> int:
+    """Process duplicate files and return count of deleted duplicates."""
+    deleted_duplicates = 0
+    
     for target_path, candidates in target_groups.items():
         if len(candidates) > 1:
-
-            # Analyze each candidate
             analyses = []
             for candidate in candidates:
                 analysis = analyze_file_complexity(candidate)
                 analyses.append((candidate, analysis))
 
-            # Select best candidate
-            # Prefer: more lines, larger size, higher version number
             best = max(analyses, key=lambda x: (x[1]['lines'], x[1]['size']))
             
-            # Delete others
             for candidate, analysis in analyses:
                 if candidate != best[0]:
-
                     candidate.unlink()
                     deleted_duplicates += 1
     
-    # Step 4: Clean debug statements from remaining files
+    return deleted_duplicates
 
+def _find_dirty_files(base_dir: Path) -> list:
+    """Find files with debug statements."""
     dirty_files = []
     
-    # Find files that need cleaning (based on promoter output)
     for root, dirs, files in os.walk(base_dir):
         dirs[:] = [d for d in dirs if d not in ['.git', '__pycache__', 'archive_code', 'archives']]
         
         for file in files:
             if file.endswith('.py'):
                 file_path = Path(root) / file
-                # Simple heuristic for dirty files
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                     if 'print(' in content or 'pdb.' in content or 'breakpoint()' in content:
                         dirty_files.append(file_path)
+    
+    return dirty_files
 
+def _clean_files(dirty_files: list) -> int:
+    """Clean debug statements from files and return count of cleaned files."""
+    cleaned_files = 0
     for file_path in dirty_files:
         lines_removed = clean_debug_statements(file_path)
         if lines_removed > 0:
-
             cleaned_files += 1
-    
-    # Step 5: Rename files to canonical names
+    return cleaned_files
 
+def _rename_to_canonical(base_dir: Path) -> int:
+    """Rename files to canonical names and return count of renamed files."""
+    renamed_files = 0
+    
     for root, dirs, files in os.walk(base_dir):
         dirs[:] = [d for d in dirs if d not in ['.git', '__pycache__', 'archive_code', 'archives']]
         
@@ -167,19 +159,37 @@ def main() -> None:
             if file.endswith('.py') or file.endswith('.json') or file.endswith('.md'):
                 file_path = Path(root) / file
                 
-                # Check if still path-encoded
                 if '_' in file and file.count('_') >= 2:
                     canonical_name = canonicalize_filename(file)
                     target_path = file_path.parent / canonical_name
                     
                     if file_path != target_path and not target_path.exists():
-
                         file_path.rename(target_path)
                         renamed_files += 1
     
-    # Summary
+    return renamed_files
 
-    # Count files in apps_rg
+def main() -> None:
+    """Main function to canonicalize filenames by removing banned prefixes."""
+    base_dir = Path('.')
+    
+    # Step 1: Find all path-encoded files
+    encoded_files = _find_encoded_files(base_dir)
+    
+    # Step 2: Group files by their canonical target
+    target_groups = _group_by_canonical_target(encoded_files)
+    
+    # Step 3: Process duplicates
+    deleted_duplicates = _process_duplicates(target_groups)
+    
+    # Step 4: Clean debug statements from remaining files
+    dirty_files = _find_dirty_files(base_dir)
+    cleaned_files = _clean_files(dirty_files)
+    
+    # Step 5: Rename files to canonical names
+    renamed_files = _rename_to_canonical(base_dir)
+    
+    # Summary
     apps_rg_count = len(list(Path('apps_rg').rglob('*.py'))) if Path('apps_rg').exists() else 0
 
 if __name__ == "__main__":
