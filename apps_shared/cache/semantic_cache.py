@@ -274,8 +274,16 @@ class EnhancedSemanticCache:
         Returns:
             Dictionary of cache stats
         """
+        # Remove expired entries first
+        self.cleanup_expired()
+        
+        fresh_entries = len(self.entries)
+        stale_entries = 0  # After cleanup, no stale entries
+        
         return {
-            "total_entries": len(self.entries),
+            "total_entries": fresh_entries,
+            "fresh_entries": fresh_entries,
+            "stale_entries": stale_entries,
             "embedding_cache_size": len(self.embedding_cache),
             "max_entries": self.max_entries,
             "ttl_seconds": self.ttl_seconds
@@ -285,14 +293,24 @@ class EnhancedSemanticCache:
         """Invalidate cache entries matching pattern.
         
         Args:
-            pattern: Pattern to match against cache keys
+            pattern: Pattern to match against cached content
             
         Returns:
             Number of entries invalidated
         """
         keys_to_remove = []
-        for key in self.entries:
-            if pattern in key:
+        pattern_lower = pattern.lower()
+        
+        for key, entry in self.entries.items():
+            # Check if pattern exists in content (case-insensitive)
+            content = str(entry.content).lower()
+            if isinstance(entry.content, dict):
+                # If content is a dict, check all string values
+                for value in entry.content.values():
+                    if isinstance(value, str) and pattern_lower in value.lower():
+                        keys_to_remove.append(key)
+                        break
+            elif pattern_lower in content:
                 keys_to_remove.append(key)
         
         for key in keys_to_remove:
