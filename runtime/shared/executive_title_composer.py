@@ -1,11 +1,14 @@
-"""Executive Title Composer (K.4) - Industry-First Headline Generation.
+"""Executive Title Composer - Industry-First Headline Generation (K.4).
 
 This agent generates professional headlines with strict Industry-First positioning,
-enforcing 8-13 word total count and ≤90 character limit with technology keyword
-blocking in Segment 1.
+enforcing 8-13 word total count and ≤90 character limit with technology keyword blocking.
+
+Sub-Atomic Agent Name: Executive_Title_Composer
+Legacy K-Node: K.4
 """
 
 import logging
+import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 from runtime.shared.agent_base import Agent, ReasoningConfig
@@ -15,36 +18,41 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ExecutiveTitleOutput:
+class HeadlineOutput:
     """Executive title composer output."""
     headline: str
     segment_1: str  # Industry/Domain
     segment_2: str  # Leadership/Role
     segment_3: str  # Value Proposition
-    total_words: int
-    total_chars: int
+    word_count: int
+    char_count: int
     industry_first_compliant: bool
+    technology_keywords_in_segment_1: List[str]
     metadata: Dict[str, Any]
 
 
-# Technology keywords forbidden in Segment 1 (Industry-First enforcement)
-TECHNOLOGY_KEYWORDS_FORBIDDEN_SEGMENT_1 = [
-    "AI", "ML", "Python", "Java", "Cloud", "AWS", "GCP", "Azure",
-    "Kubernetes", "Docker", "React", "Angular", "Node.js", "TensorFlow",
-    "PyTorch", "Spark", "Kafka", "Redis", "MongoDB", "PostgreSQL",
-    "API", "REST", "GraphQL", "Microservices", "DevOps", "CI/CD",
+# Technology keywords that MUST NOT appear in Segment 1 (Industry-First violation)
+TECHNOLOGY_KEYWORDS = [
+    "AI", "ML", "Python", "Java", "AWS", "Azure", "GCP", "Kubernetes",
+    "Docker", "React", "Angular", "Node.js", "TensorFlow", "PyTorch",
+    "SQL", "NoSQL", "MongoDB", "PostgreSQL", "Redis", "Kafka",
+    "Microservices", "API", "REST", "GraphQL", "DevOps", "CI/CD",
 ]
 
 
 class Executive_Title_Composer(Agent):
-    """K.4 specialist agent for headline generation with Industry-First positioning.
+    """Executive Title Composer agent for Industry-First headline generation.
     
-    This agent generates headlines with:
-    - Industry-First positioning (no technology in Segment 1)
-    - 8-13 words total (ZERO TOLERANCE)
-    - ≤90 characters (ZERO TOLERANCE)
+    This agent generates headlines with strict constraints:
+    - Total word count: 8-13 words (ZERO TOLERANCE)
+    - Character limit: ≤90 characters (ZERO TOLERANCE)
+    - Industry-First positioning: Segment 1 MUST NOT contain technology keywords
     - 3-segment structure: Domain | Leadership | Value Prop
-    - BLOCK on technology keywords in Segment 1
+    
+    Validation Gates:
+    - VG_HEADLINE_WORD_COUNT_COMPLIANCE (8-13 words)
+    - VG_HEADLINE_CHARACTER_COMPLIANCE (≤90 chars)
+    - VG_INDUSTRY_FIRST_COMPLIANCE (no tech in Segment 1)
     """
     
     def __init__(
@@ -58,11 +66,15 @@ class Executive_Title_Composer(Agent):
         
         Args:
             config: Reasoning configuration
-            word_count_min: Minimum total words (default 8)
-            word_count_max: Maximum total words (default 13)
-            char_limit: Maximum characters (default 90)
+            word_count_min: Minimum word count (default 8)
+            word_count_max: Maximum word count (default 13)
+            char_limit: Character limit (default 90)
         """
-        super().__init__(config, k_node_id="K.4", element="Executive Title")
+        super().__init__(
+            config,
+            k_node_id="K.4",
+            element="Executive Title (Industry-First)"
+        )
         
         self.word_count_min = word_count_min
         self.word_count_max = word_count_max
@@ -73,27 +85,27 @@ class Executive_Title_Composer(Agent):
             f"words={word_count_min}-{word_count_max}, chars≤{char_limit}"
         )
     
-    async def execute(self, context: Dict[str, Any]) -> ExecutiveTitleOutput:
-        """Execute K.4 headline generation.
+    async def execute(self, context: Dict[str, Any]) -> HeadlineOutput:
+        """Execute headline generation with Industry-First positioning.
         
         Args:
             context: Execution context with:
                 - target_industry: str - Target industry/domain
-                - leadership_level: str - Leadership level
-                - value_proposition: str - Key value proposition
-                - job_title: str - Target job title
+                - target_role: str - Target role/level
+                - value_propositions: List[str] - Key value props
+                - job_description: str - Target JD
                 - regeneration_feedback: Optional[str]
                 
         Returns:
-            ExecutiveTitleOutput with headline and segments
+            HeadlineOutput with 3-segment headline
         """
-        logger.info("Executing K.4 Executive Title Composer")
+        logger.info("Executing Executive_Title_Composer (Industry-First)")
         
         # Extract context
-        target_industry = context.get("target_industry", "")
-        leadership_level = context.get("leadership_level", "")
-        value_proposition = context.get("value_proposition", "")
-        job_title = context.get("job_title", "")
+        target_industry = context.get("target_industry", "Technology")
+        target_role = context.get("target_role", "Engineering Leader")
+        value_propositions = context.get("value_propositions", [])
+        job_description = context.get("job_description", "")
         regeneration_feedback = context.get("regeneration_feedback")
         
         # Build prompt
@@ -101,7 +113,7 @@ class Executive_Title_Composer(Agent):
             prompt = self._build_regeneration_prompt(context, regeneration_feedback)
         else:
             prompt = self._build_initial_prompt(
-                target_industry, leadership_level, value_proposition, job_title
+                target_industry, target_role, value_propositions, job_description
             )
         
         # Generate headline
@@ -110,26 +122,25 @@ class Executive_Title_Composer(Agent):
         
         # Parse segments
         segments = self._parse_segments(headline)
-        segment_1 = segments[0] if len(segments) > 0 else ""
-        segment_2 = segments[1] if len(segments) > 1 else ""
-        segment_3 = segments[2] if len(segments) > 2 else ""
+        
+        # Validate Industry-First compliance
+        tech_keywords_in_seg1 = self._check_technology_keywords(segments[0])
+        industry_first_compliant = len(tech_keywords_in_seg1) == 0
         
         # Calculate metrics
-        total_words = len(headline.replace("|", "").split())
-        total_chars = len(headline)
-        
-        # Check Industry-First compliance
-        industry_first_compliant = self._check_industry_first(segment_1)
+        word_count = len(headline.split())
+        char_count = len(headline)
         
         # Build output
-        output = ExecutiveTitleOutput(
+        output = HeadlineOutput(
             headline=headline,
-            segment_1=segment_1.strip(),
-            segment_2=segment_2.strip(),
-            segment_3=segment_3.strip(),
-            total_words=total_words,
-            total_chars=total_chars,
+            segment_1=segments[0],
+            segment_2=segments[1],
+            segment_3=segments[2],
+            word_count=word_count,
+            char_count=char_count,
             industry_first_compliant=industry_first_compliant,
+            technology_keywords_in_segment_1=tech_keywords_in_seg1,
             metadata={
                 "k_node_id": self.k_node_id,
                 "temperature": self.config.temperature,
@@ -139,59 +150,73 @@ class Executive_Title_Composer(Agent):
         )
         
         logger.info(
-            f"K.4 generation complete: {total_words} words, {total_chars} chars, "
+            f"Executive_Title_Composer complete: {word_count} words, {char_count} chars, "
             f"Industry-First={industry_first_compliant}"
         )
+        
+        if not industry_first_compliant:
+            logger.error(
+                f"INDUSTRY-FIRST VIOLATION: Technology keywords in Segment 1: "
+                f"{tech_keywords_in_seg1}"
+            )
         
         return output
     
     def _build_initial_prompt(
         self,
         target_industry: str,
-        leadership_level: str,
-        value_proposition: str,
-        job_title: str,
+        target_role: str,
+        value_propositions: List[str],
+        job_description: str,
     ) -> str:
-        """Build initial generation prompt.
+        """Build initial generation prompt with Industry-First enforcement.
         
         Args:
             target_industry: Target industry/domain
-            leadership_level: Leadership level
-            value_proposition: Value proposition
-            job_title: Target job title
+            target_role: Target role/level
+            value_propositions: Key value props
+            job_description: Target JD
             
         Returns:
             Formatted prompt
         """
-        prompt = f"""Generate a professional LinkedIn headline with INDUSTRY-FIRST positioning.
+        prompt = f"""Generate a professional resume headline with STRICT Industry-First positioning.
 
 CRITICAL CONSTRAINTS (ZERO TOLERANCE):
-1. Total words: {self.word_count_min}-{self.word_count_max} words (STRICT)
-2. Total characters: ≤{self.char_limit} characters (STRICT)
-3. 3-segment structure: Domain | Leadership | Value Prop
-4. Segment 1 (Domain): MUST be industry/domain - NO technology keywords
-5. Use pipe (|) as separator between segments
+1. Total word count: {self.word_count_min}-{self.word_count_max} words (STRICT)
+2. Character limit: ≤{self.char_limit} characters (STRICT)
+3. 3-segment structure: Domain | Leadership | Value Proposition
+4. INDUSTRY-FIRST POSITIONING: Segment 1 MUST NOT contain technology keywords
 
-INDUSTRY-FIRST POSITIONING:
-- Segment 1: Industry/Domain (e.g., "Healthcare AI", "Financial Services", "Enterprise SaaS")
-- Segment 2: Leadership/Role (e.g., "Engineering Leader", "VP of Product")
-- Segment 3: Value Proposition (e.g., "Scaling Teams & Systems", "Driving Innovation")
+INDUSTRY-FIRST RULE (BLOCKING):
+- Segment 1 must lead with INDUSTRY/DOMAIN (e.g., "Healthcare", "Financial Services", "Enterprise SaaS")
+- Segment 1 MUST NOT contain: AI, ML, Python, AWS, Kubernetes, Docker, etc.
+- Technology keywords belong in Segment 3 (Value Proposition) ONLY
 
-FORBIDDEN in Segment 1:
-{', '.join(TECHNOLOGY_KEYWORDS_FORBIDDEN_SEGMENT_1[:10])}
+TARGET INDUSTRY: {target_industry}
+TARGET ROLE: {target_role}
 
-TARGET CONTEXT:
-- Industry: {target_industry}
-- Leadership Level: {leadership_level}
-- Value Proposition: {value_proposition}
-- Job Title: {job_title}
+VALUE PROPOSITIONS (use for Segment 3):
+{chr(10).join(f'- {vp}' for vp in value_propositions[:3])}
 
-EXAMPLES:
-- "Healthcare AI | Engineering Leader | Scaling ML Systems at Enterprise Scale" (11 words, 76 chars)
-- "Financial Services | VP of Engineering | Building High-Performance Teams" (10 words, 74 chars)
-- "Enterprise SaaS | Chief Technology Officer | Driving Product Innovation" (10 words, 72 chars)
+JOB DESCRIPTION CONTEXT:
+{job_description[:300]}...
 
-Generate the headline now (use | as separator):
+STRUCTURE:
+Segment 1: {target_industry} [Industry/Domain - NO TECHNOLOGY KEYWORDS]
+Segment 2: {target_role} [Leadership/Role]
+Segment 3: [Value Proposition - technology keywords allowed here]
+
+EXAMPLES (Industry-First Compliant):
+✅ "Healthcare Technology Leader | AI/ML Innovation | Enterprise Scale"
+✅ "Financial Services Executive | Cloud Architecture | Digital Transformation"
+✅ "Enterprise SaaS Leader | Engineering Excellence | Scalable Solutions"
+
+EXAMPLES (Industry-First VIOLATIONS - DO NOT USE):
+❌ "AI/ML Leader | Healthcare Technology | Innovation" (tech in Segment 1)
+❌ "Python Engineer | Cloud Architecture | SaaS" (tech in Segment 1)
+
+Generate the headline now ({self.word_count_min}-{self.word_count_max} words, ≤{self.char_limit} chars):
 """
         
         return prompt
@@ -219,11 +244,14 @@ Generate the headline now (use | as separator):
 PREVIOUS HEADLINE:
 {previous_headline}
 
-CONSTRAINTS:
-- Total words: {self.word_count_min}-{self.word_count_max} (STRICT)
-- Total characters: ≤{self.char_limit} (STRICT)
-- Segment 1: NO technology keywords (Industry-First)
-- Use | as separator
+CONSTRAINTS (ZERO TOLERANCE):
+- Word count: {self.word_count_min}-{self.word_count_max} words
+- Character limit: ≤{self.char_limit} characters
+- INDUSTRY-FIRST: NO technology keywords in Segment 1
+
+INSTRUCTIONS:
+Fix the specific violations listed in feedback.
+Maintain Industry-First positioning.
 
 Generate the corrected headline:
 """
@@ -237,9 +265,10 @@ Generate the corrected headline:
             headline: Full headline
             
         Returns:
-            List of 3 segments
+            List of 3 segments [Domain, Leadership, Value Prop]
         """
-        segments = headline.split("|")
+        # Split by pipe delimiter
+        segments = [s.strip() for s in headline.split("|")]
         
         # Ensure exactly 3 segments
         while len(segments) < 3:
@@ -247,25 +276,20 @@ Generate the corrected headline:
         
         return segments[:3]
     
-    def _check_industry_first(self, segment_1: str) -> bool:
-        """Check Industry-First compliance.
-        
-        Segment 1 must NOT contain technology keywords.
+    def _check_technology_keywords(self, segment: str) -> List[str]:
+        """Check for technology keywords in segment.
         
         Args:
-            segment_1: First segment (Domain)
+            segment: Segment text
             
         Returns:
-            True if compliant, False if technology keywords found
+            List of found technology keywords
         """
-        segment_1_upper = segment_1.upper()
+        segment_upper = segment.upper()
+        found_keywords = []
         
-        for keyword in TECHNOLOGY_KEYWORDS_FORBIDDEN_SEGMENT_1:
-            if keyword.upper() in segment_1_upper:
-                logger.warning(
-                    f"Industry-First violation: Technology keyword '{keyword}' "
-                    f"found in Segment 1: '{segment_1}'"
-                )
-                return False
+        for keyword in TECHNOLOGY_KEYWORDS:
+            if keyword.upper() in segment_upper:
+                found_keywords.append(keyword)
         
-        return True
+        return found_keywords
