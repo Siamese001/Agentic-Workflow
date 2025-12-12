@@ -463,12 +463,7 @@ class SchemaHistoryFetcher:
 
 
 # Factory function for easy instantiation
-def create_schema_history_fetcher(
-    storage_path: str = "data/schema_history",
-    max_records_per_schema: int = 1000,
-    retention_days: int = 365,
-    **kwargs
-) -> SchemaHistoryFetcher:
+def create_schema_history_fetcher(storage_path: str = "data/schema_history", max_records_per_schema: int = 1000, retention_days: int = 365, **kwargs: object) -> SchemaHistoryFetcher:
     """Create a configured schema history fetcher."""
     config = SchemaHistoryConfig(
         storage_path=storage_path,
