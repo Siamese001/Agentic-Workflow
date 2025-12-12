@@ -75,7 +75,7 @@ class TestHardenedOrchestratorBasics:
             storage_path=temp_state_dir
         )
         
-        result = orchestrator.execute_workflow()
+        result = orchestrator.execute_workflow({})
         
         assert result["status"] == "COMPLETED"
         assert len(result["hops_completed"]) == 2
@@ -87,10 +87,10 @@ class TestHardenedOrchestratorBasics:
             name="test_parallel",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Root hop", dependencies=[]),
-                HopSpec(id="K.2", script="test_script.py", description="Parallel 1", dependencies=["K.1"]),
-                HopSpec(id="K.3", script="test_script.py", description="Parallel 2", dependencies=["K.1"]),
-                HopSpec(id="K.4", script="test_script.py", description="Merge", dependencies=["K.2", "K.3"])
+                HopSpec(id="K.1", script="test_script.py", description="Root hop"),
+                HopSpec(id="K.2", script="test_script.py", description="Parallel 1"),
+                HopSpec(id="K.3", script="test_script.py", description="Parallel 2"),
+                HopSpec(id="K.4", script="test_script.py", description="Merge")
             ]
         )
         
@@ -99,7 +99,7 @@ class TestHardenedOrchestratorBasics:
             storage_path=temp_state_dir
         )
         
-        result = orchestrator.execute_workflow()
+        result = orchestrator.execute_workflow({})
         
         assert result["status"] == "COMPLETED"
         assert len(result["hops_completed"]) == 4
@@ -114,8 +114,8 @@ class TestAtomicStateManagement:
             name="test_checkpoint",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Test hop 1", dependencies=[]),
-                HopSpec(id="K.2", script="test_script.py", description="Test hop 2", dependencies=["K.1"])
+                HopSpec(id="K.1", script="test_script.py", description="Test hop 1"),
+                HopSpec(id="K.2", script="test_script.py", description="Test hop 2")
             ]
         )
         
@@ -124,7 +124,7 @@ class TestAtomicStateManagement:
             storage_path=temp_state_dir
         )
         
-        orchestrator.execute_workflow()
+        orchestrator.execute_workflow({})
         
         state_manager = get_state_manager(temp_state_dir)
         checkpoints = state_manager.list_checkpoints("test_checkpoint")
@@ -137,7 +137,7 @@ class TestAtomicStateManagement:
             name="test_persist",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Test hop 1", dependencies=[])
+                HopSpec(id="K.1", script="test_script.py", description="Test hop 1")
             ]
         )
         
@@ -163,8 +163,8 @@ class TestAtomicStateManagement:
             name="test_rollback",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Test hop 1", dependencies=[]),
-                HopSpec(id="K.2", script="test_script.py", description="Test hop 2", dependencies=["K.1"])
+                HopSpec(id="K.1", script="test_script.py", description="Test hop 1"),
+                HopSpec(id="K.2", script="test_script.py", description="Test hop 2")
             ]
         )
         
@@ -180,7 +180,7 @@ class TestAtomicStateManagement:
             ]
             
             with pytest.raises(Exception):
-                orchestrator.execute_workflow()
+                orchestrator.execute_workflow({})
             
             state_manager = get_state_manager(temp_state_dir)
             state = state_manager.resume_workflow("test_rollback")
@@ -201,7 +201,7 @@ class TestResilientRouting:
             name="test_fallback",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Test hop", dependencies=[])
+                HopSpec(id="K.1", script="test_script.py", description="Test hop")
             ]
         )
         
@@ -220,7 +220,7 @@ class TestResilientRouting:
                 )
             ]
             
-            result = orchestrator.execute_workflow()
+            result = orchestrator.execute_workflow({})
             
             assert result["status"] == "COMPLETED"
     
@@ -230,7 +230,7 @@ class TestResilientRouting:
             name="test_all_fail",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Test hop", dependencies=[])
+                HopSpec(id="K.1", script="test_script.py", description="Test hop")
             ]
         )
         
@@ -243,7 +243,7 @@ class TestResilientRouting:
             mock.side_effect = Exception("All providers failed")
             
             with pytest.raises(Exception):
-                orchestrator.execute_workflow()
+                orchestrator.execute_workflow({})
 
 
 class TestCircuitBreaker:
@@ -255,7 +255,7 @@ class TestCircuitBreaker:
             name="test_circuit",
             version="1.0",
             hops=[
-                HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}", dependencies=[])
+                HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}")
                 for i in range(1, 6)
             ]
         )
@@ -269,7 +269,7 @@ class TestCircuitBreaker:
             mock.side_effect = [Exception("Failure")] * 5
             
             with pytest.raises(Exception):
-                orchestrator.execute_workflow()
+                orchestrator.execute_workflow({})
     
     def test_circuit_breaker_recovery(self, temp_state_dir):
         """Test circuit breaker recovery after successful calls."""
@@ -281,7 +281,7 @@ class TestCircuitBreaker:
             name="test_recovery",
             version="1.0",
             hops=[
-                HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}", dependencies=[])
+                HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}")
                 for i in range(1, 4)
             ]
         )
@@ -301,7 +301,7 @@ class TestCircuitBreaker:
             mock.side_effect = responses
             
             try:
-                orchestrator.execute_workflow()
+                orchestrator.execute_workflow({})
             except Exception:
                 pass
 
@@ -315,9 +315,9 @@ class TestWorkflowResumption:
             name="test_resume",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Test hop 1", dependencies=[]),
-                HopSpec(id="K.2", script="test_script.py", description="Test hop 2", dependencies=["K.1"]),
-                HopSpec(id="K.3", script="test_script.py", description="Test hop 3", dependencies=["K.2"])
+                HopSpec(id="K.1", script="test_script.py", description="Test hop 1"),
+                HopSpec(id="K.2", script="test_script.py", description="Test hop 2"),
+                HopSpec(id="K.3", script="test_script.py", description="Test hop 3")
             ]
         )
         
@@ -354,8 +354,8 @@ class TestWorkflowResumption:
             name="test_log_preserve",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Test hop 1", dependencies=[]),
-                HopSpec(id="K.2", script="test_script.py", description="Test hop 2", dependencies=["K.1"])
+                HopSpec(id="K.1", script="test_script.py", description="Test hop 1"),
+                HopSpec(id="K.2", script="test_script.py", description="Test hop 2")
             ]
         )
         
@@ -363,7 +363,7 @@ class TestWorkflowResumption:
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
-        orchestrator.execute_workflow()
+        orchestrator.execute_workflow({})
         
         state_manager = get_state_manager(temp_state_dir)
         state = state_manager.resume_workflow("test_log_preserve")
@@ -385,7 +385,7 @@ class TestErrorRecovery:
             name="test_retry",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Test hop", dependencies=[])
+                HopSpec(id="K.1", script="test_script.py", description="Test hop")
             ]
         )
         
@@ -400,7 +400,7 @@ class TestErrorRecovery:
                 AgentResponse(content="Success after retry", finish_reason="stop", usage={"total_tokens": 100})
             ]
             
-            result = orchestrator.execute_workflow()
+            result = orchestrator.execute_workflow({})
             
             assert result["status"] == "COMPLETED"
     
@@ -414,9 +414,9 @@ class TestErrorRecovery:
             name="test_degradation",
             version="1.0",
             hops=[
-                HopSpec(id="K.1", script="test_script.py", description="Required hop", dependencies=[]),
-                HopSpec(id="K.2", script="test_script.py", description="Optional hop", dependencies=["K.1"]),
-                HopSpec(id="K.3", script="test_script.py", description="Final hop", dependencies=["K.1"])
+                HopSpec(id="K.1", script="test_script.py", description="Required hop"),
+                HopSpec(id="K.2", script="test_script.py", description="Optional hop"),
+                HopSpec(id="K.3", script="test_script.py", description="Final hop")
             ]
         )
         
@@ -433,7 +433,7 @@ class TestErrorRecovery:
             ]
             
             try:
-                result = orchestrator.execute_workflow()
+                result = orchestrator.execute_workflow({})
                 assert result["status"] in ["COMPLETED", "PARTIAL"]
             except Exception:
                 pass
@@ -449,7 +449,7 @@ class TestPerformanceAndScaling:
             name="test_large",
             version="1.0",
             hops=[
-                HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}", dependencies=[f"K.{i-1}"] if i > 1 else [])
+                HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}")
                 for i in range(1, num_hops + 1)
             ]
         )
@@ -459,7 +459,7 @@ class TestPerformanceAndScaling:
             storage_path=temp_state_dir
         )
         
-        result = orchestrator.execute_workflow()
+        result = orchestrator.execute_workflow({})
         
         assert result["status"] == "COMPLETED"
         assert len(result["hops_completed"]) == num_hops
@@ -472,7 +472,7 @@ class TestPerformanceAndScaling:
             name="test_overhead",
             version="1.0",
             hops=[
-                HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}", dependencies=[])
+                HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}")
                 for i in range(1, 11)
             ]
         )

@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional
 import math
 import re
 from collections import Counter
+from datetime import datetime, timedelta
 
 
 @dataclass
@@ -224,4 +225,111 @@ class HybridScorer:
     def _calculate_freshness_score(self, doc: Dict[str, Any]) -> float:
         """Calculate freshness score."""
         # Default to neutral score
+        return 0.5
+    
+    def calculate_hybrid_score(self, vector_score: float, keyword_score: float, weights: Optional[Dict[str, float]] = None) -> float:
+        """Calculate hybrid score from vector and keyword scores.
+        
+        Args:
+            vector_score: Semantic similarity score
+            keyword_score: Keyword/BM25 score
+            weights: Optional weights dictionary
+            
+        Returns:
+            Combined hybrid score
+        """
+        if weights is None:
+            weights = {'semantic_weight': 0.5, 'bm25_weight': 0.5, 'recency_weight': 0.0}
+        
+        semantic_weight = weights.get('semantic_weight', 0.5)
+        bm25_weight = weights.get('bm25_weight', 0.5)
+        recency_weight = weights.get('recency_weight', 0.0)
+        
+        # Normalize weights to sum to 1 (excluding recency)
+        total_weight = semantic_weight + bm25_weight
+        if total_weight > 0:
+            semantic_weight = semantic_weight / total_weight
+            bm25_weight = bm25_weight / total_weight
+        
+        score = (vector_score * semantic_weight) + (keyword_score * bm25_weight)
+        
+        # Add recency boost if applicable
+        if recency_weight > 0:
+            recency_boost = self._calculate_recency_boost({})
+            score = score * (1 - recency_weight) + recency_boost * recency_weight
+        
+        return score
+    
+    def _normalize_score(self, score: float, min_score: float = 0.0, max_score: float = 1.0) -> float:
+        """Normalize score to [0, 1] range.
+        
+        Args:
+            score: Raw score
+            min_score: Minimum possible score
+            max_score: Maximum possible score
+            
+        Returns:
+            Normalized score
+        """
+        # If max_score is None or unbounded, clamp to [0, 1]
+        if max_score is None or max_score == float('inf'):
+            return min(max(score, 1.0), 0.0)
+        
+        if max_score - min_score == 0:
+            return 0.0
+        
+        normalized = (score - min_score) / (max_score - min_score)
+        # Clamp to [0, 1] range
+        return min(max(normalized, 0.0), 1.0)
+    
+    def _calculate_recency_boost(self, document: Dict[str, Any]) -> float:
+        """Calculate recency boost for document.
+        
+        Args:
+            document: Document dictionary
+            
+        Returns:
+            Recency boost factor
+        """
+        # Check for date in document
+        if "date" in document:
+            try:
+                date_value = document["date"]
+                if isinstance(date_value, datetime):
+                    days_ago = (datetime.now() - date_value).days
+                elif isinstance(date_value, str):
+                    # Try to parse ISO format date string
+                    from datetime import datetime as dt
+                    # Handle ISO format with/without timezone
+                    if 'T' in date_value:
+                        # Full ISO datetime
+                        parsed_date = dt.fromisoformat(date_value.replace('Z', '+00:00'))
+                    else:
+                        # Date only
+                        parsed_date = dt.fromisoformat(date_value)
+                    days_ago = (datetime.now() - parsed_date).days
+                else:
+                    days_ago = 999
+                
+                if days_ago <= 1:
+                    return 0.95  # Very recent document
+                elif days_ago <= 7:
+                    return 0.9  # Recent document
+                elif days_ago <= 30:
+                    return 0.7  # Medium age
+                else:
+                    return 0.5  # Old document
+            except:
+                pass
+        
+        # Check for timestamp
+        if "timestamp" in document:
+            return 0.9
+        
+        # Check for recent keywords
+        content = str(document.get("content", "")).lower()
+        recent_keywords = ["latest", "new", "recent", "current", "updated"]
+        if any(keyword in content for keyword in recent_keywords):
+            return 0.7
+        
         return 0.5
