@@ -136,24 +136,24 @@ class ScriptsPlanningOrchestrator:
         
         # Topological sort for dependency resolution
         visited = set()
-        temp_visited = set()
+        visiting_nodes = set()
         result = []
         
         def visit(task: ScriptTask) -> None:
             """Recursively visit tasks for dependency resolution."""
-            if task.id in temp_visited:
+            if task.id in visiting_nodes:
                 raise ValueError(f"Circular dependency detected involving task {task.id}")
             if task.id in visited:
                 return
             
-            temp_visited.add(task.id)
+            visiting_nodes.add(task.id)
             
             # Visit dependencies first
             for dep_id in task.dependencies:
                 dep_task = next(t for t in tasks if t.id == dep_id)
                 visit(dep_task)
             
-            temp_visited.remove(task.id)
+            visiting_nodes.remove(task.id)
             visited.add(task.id)
             result.append(task)
         

@@ -213,16 +213,16 @@ def compute_semantic_hash(imports: List[str], functions: List[str], classes: Lis
 
 def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool:
     """Detect if file is a stub."""
-    stub_indicators = [
+    fallback_indicators = [
         "# AUTO-POPULATED",
-        "# STUB",
+        "# FALLBACK",
         "pass  # Implementation pending",
         "raise NotImplementedError",
         '"""Generated',
-        "LEVEL_3_stub",
+        "LEVEL_3_fallback",
     ]
 
-    for indicator in stub_indicators:
+    for indicator in fallback_indicators:
         if indicator in content:
             return True
 

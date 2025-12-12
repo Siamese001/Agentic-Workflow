@@ -88,8 +88,8 @@ def test_non_providers_do_not_import_providers() -> None:
     assert not violations, f"Non-provider modules importing providers: {violations}"
 
 
-def test_meta_does_not_import_core_or_legacy_l_layers() -> None:
-    """meta/ modules must not import core or legacy l1/l2/cognitive_agents."""
+def test_meta_does_not_import_core_or_archived_l_layers() -> None:
+    """meta/ modules must not import core or archived l1/l2/cognitive_agents."""
 
     violations: list[tuple[str, list[str]]] = []
     for path in _iter_project_py_files():
