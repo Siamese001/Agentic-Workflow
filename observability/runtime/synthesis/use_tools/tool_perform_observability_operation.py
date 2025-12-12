@@ -435,9 +435,8 @@ class ObservabilityOperationPerformer:
             execution_time=time.time() - start_time
         )
 
-    def _initialize_operations(self) -> None:
-        """Initialize built-in operations."""
-        # Trace analysis operation
+    def _create_trace_operation(self) -> tuple:
+        """Create trace analysis operation and handler."""
         trace_op = ToolOperationDefinition(
             operation_id="trace_analysis",
             tool_name="trace_analyzer",
@@ -455,22 +454,19 @@ class ObservabilityOperationPerformer:
         )
         
         def _trace_analysis_handler(inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-            trace_data = inputs.get("trace_data", {})
-            analysis_type = inputs.get("analysis_type", "performance")
-            
             return {
                 "insights": [
                     {"type": "slow_span", "description": "Database query took 500ms"},
                     {"type": "error_rate", "description": "5% error rate detected"}
                 ],
-                "recommendations": [
-                    "Add database index",
-                    "Implement retry logic"
-                ],
+                "recommendations": ["Add database index", "Implement retry logic"],
                 "metrics": {"spans_analyzed": 10, "processing_time": 0.1}
             }
         
-        # Metric aggregation operation
+        return trace_op, _trace_analysis_handler
+    
+    def _create_metric_operation(self) -> tuple:
+        """Create metric aggregation operation and handler."""
         metric_op = ToolOperationDefinition(
             operation_id="metric_aggregation",
             tool_name="metric_aggregator",
@@ -490,21 +486,19 @@ class ObservabilityOperationPerformer:
         
         def _metric_aggregation_handler(inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
             metrics = inputs.get("metrics", [])
-            aggregation = inputs.get("aggregation", "avg")
-            
             return {
                 "aggregated_metrics": {
                     "cpu_usage": {"avg": 45.2, "max": 78.5, "min": 12.1},
                     "memory_usage": {"avg": 67.8, "max": 89.2, "min": 34.5}
                 },
-                "statistics": {
-                    "total_metrics": len(metrics),
-                    "time_range": "1h"
-                },
+                "statistics": {"total_metrics": len(metrics), "time_range": "1h"},
                 "metrics": {"metrics_processed": len(metrics)}
             }
         
-        # Log correlation operation
+        return metric_op, _metric_aggregation_handler
+    
+    def _create_log_operation(self) -> tuple:
+        """Create log correlation operation and handler."""
         log_op = ToolOperationDefinition(
             operation_id="log_correlation",
             tool_name="log_correlator",
@@ -523,7 +517,6 @@ class ObservabilityOperationPerformer:
         
         def _log_correlation_handler(inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
             log_entries = inputs.get("log_entries", [])
-            
             return {
                 "correlated_logs": [
                     {"service": "api", "message": "Request received"},
@@ -537,10 +530,17 @@ class ObservabilityOperationPerformer:
                 "metrics": {"logs_correlated": len(log_entries)}
             }
         
-        # Register built-in operations
-        self.register_operation(trace_op, _trace_analysis_handler)
-        self.register_operation(metric_op, _metric_aggregation_handler)
-        self.register_operation(log_op, _log_correlation_handler)
+        return log_op, _log_correlation_handler
+
+    def _initialize_operations(self) -> None:
+        """Initialize built-in operations."""
+        trace_op, trace_handler = self._create_trace_operation()
+        metric_op, metric_handler = self._create_metric_operation()
+        log_op, log_handler = self._create_log_operation()
+        
+        self.register_operation(trace_op, trace_handler)
+        self.register_operation(metric_op, metric_handler)
+        self.register_operation(log_op, log_handler)
 
 
 # Factory function for easy instantiation

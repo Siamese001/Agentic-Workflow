@@ -370,21 +370,13 @@ class ValidationAgent:
             self.claim_scorer = None
             self.signal_scorer = None
 
-    def validate_message(
+    def _validate_critical_rules(
         self,
         message: GeneratedMessage,
         context: ResearchContext
     ) -> List[ValidationResult]:
-        """
-        NEW v11.6: Run all validation rules
-        Returns list of validation results (empty if all passed)
-        """
-        self.status = "RUNNING"
+        """Validate critical rules that must halt on failure."""
         results = []
-        
-        # ========================================
-        # CRITICAL RULES (Must Halt)
-        # ========================================
         
         # S5.S6_BlockPlaceholders (FEATURE 3.3 / GAP 1.5)
         passed, msg = self.placeholder_detector.validate(message.content)
@@ -439,9 +431,15 @@ class ValidationAgent:
                     details=ErrorCodeRegistry.get_error("LIC-E003")
                 ))
         
-        # ========================================
-        # HIGH SEVERITY RULES (Must Halt)
-        # ========================================
+        return results
+    
+    def _validate_high_severity_rules(
+        self,
+        message: GeneratedMessage,
+        context: ResearchContext
+    ) -> List[ValidationResult]:
+        """Validate high severity rules."""
+        results = []
         
         # S5.S6_ValidateJobTitlePlacement (GAP 1.6 / LIC-QA-075)
         if message.route.value == "INMAIL":
@@ -487,9 +485,15 @@ class ValidationAgent:
                 details=ErrorCodeRegistry.get_error("LIC-E007")
             ))
         
-        # ========================================
-        # MEDIUM SEVERITY RULES (Regenerate, No Halt)
-        # ========================================
+        return results
+    
+    def _validate_medium_severity_rules(
+        self,
+        message: GeneratedMessage,
+        context: ResearchContext
+    ) -> List[ValidationResult]:
+        """Validate medium severity rules."""
+        results = []
         
         # S5.S6_BlockCorporateClichés (FEATURE 3.1)
         verbs_passed, verbs_msg = self.content_validator.validate_verbs(message.content)
@@ -547,6 +551,24 @@ class ValidationAgent:
                     message=f"Signal quality score {signal_score:.2f} below threshold 0.70",
                     details=ErrorCodeRegistry.get_error("LIC-E011")
                 ))
+        
+        return results
+    
+    def validate_message(
+        self,
+        message: GeneratedMessage,
+        context: ResearchContext
+    ) -> List[ValidationResult]:
+        """
+        NEW v11.6: Run all validation rules
+        Returns list of validation results (empty if all passed)
+        """
+        self.status = "RUNNING"
+        results = []
+        
+        results.extend(self._validate_critical_rules(message, context))
+        results.extend(self._validate_high_severity_rules(message, context))
+        results.extend(self._validate_medium_severity_rules(message, context))
         
         self.status = "COMPLETED"
         return results
