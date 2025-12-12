@@ -18,7 +18,8 @@
 # -----------------------------------------------------------------------------
 openai>=1.50.0                  # GPT-4o, o1, embeddings, function calling
 anthropic>=0.34.0               # Claude 3.5 Sonnet, tool use, extended context
-google-generativeai>=0.8.0      # Gemini 2.0, multimodal, grounding
+google-generativeai>=0.8.0      # Gemini 2.0, multimodal, grounding (legacy)
+google-genai>=1.0.0b1           # Gemini v1beta Interactions API (NEW)
 mistralai>=1.2.0                # Mistral Large, code generation, EU compliance
 cohere>=5.11.0                  # Command R+, RAG, reranking, embeddings
 

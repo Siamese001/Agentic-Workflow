@@ -123,9 +123,18 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
         )
     
     elif provider == Provider.GOOGLE:
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        return genai
+        # Try new v1beta Interactions API first, fallback to legacy
+        try:
+            from google import genai
+            client = genai.Client(api_key=api_key)
+            # Store both client and module for compatibility
+            client._legacy_genai = __import__('google.generativeai')
+            return client
+        except ImportError:
+            # Fallback to legacy SDK
+            import google.generativeai as genai
+            genai.configure(api_key=api_key)
+            return genai
     
     elif provider == Provider.MISTRAL:
         from mistralai import Mistral
