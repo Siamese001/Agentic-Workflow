@@ -16,6 +16,7 @@ def _make_agent(agent_cls, card: AgentCard | None = None):
 
 
 def test_all_major_agents_have_agent_card_with_expected_roles():
+    """Test that all major agents have agent cards with expected role definitions."""
     agents = [
         (StrategyLLMAgent, AgentRole.PLANNER),
         (DraftingGuild, AgentRole.EXECUTION),
@@ -33,6 +34,7 @@ def test_all_major_agents_have_agent_card_with_expected_roles():
 
 
 def test_allowed_tools_enforced_by_llm_base_agent_helper():
+    """Test that allowed tools are properly enforced by LLM base agent helper."""
     card = AgentCard(
         agent_id="test_agent",
         role=AgentRole.EXECUTION,

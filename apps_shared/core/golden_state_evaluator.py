@@ -4,6 +4,7 @@ from archives.legacy_root_folders.eval.golden_state.models import GoldenCase, Go
 
 
 def test_evaluate_case_output_basic():
+    """Test basic golden state case evaluation with expected outputs."""
     cases = load_golden_cases()
     assert cases
 

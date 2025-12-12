@@ -4,6 +4,7 @@ from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest
 
 
 def test_microvm_create_exec_teardown_emits_events():
+    """Test that microVM lifecycle operations emit appropriate events."""
     clear_events()
 
     vm = create_vm({"cpu_ms": 1000})

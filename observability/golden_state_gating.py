@@ -32,6 +32,16 @@ def gate_against_baseline(
     baseline_scores: Dict[str, float],
     tolerance: float = 0.0,
 ) -> bool:
+    """Gate current scores against baseline with tolerance adjustment.
+    
+    Args:
+        current_scores: Current experiment scores to validate
+        baseline_scores: Baseline scores to compare against
+        tolerance: Tolerance adjustment for baseline threshold
+        
+    Returns:
+        True if current scores meet adjusted baseline, False otherwise
+    """
     if not baseline_scores:
         return True
 

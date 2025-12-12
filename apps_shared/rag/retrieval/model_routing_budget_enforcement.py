@@ -3,6 +3,7 @@ from orchestration.model_routing import ModelChoice, enforce_budget
 
 
 def test_budget_enforcement_downgrades_cost_tier():
+    """Test that budget enforcement downgrades to lower cost tier when budget exceeded."""
     choice = ModelChoice(
         provider="openai",
         model_name="gpt-5.1-codex",

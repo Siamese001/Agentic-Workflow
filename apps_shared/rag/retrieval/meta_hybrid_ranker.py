@@ -9,6 +9,7 @@ def _make_ev(text: str, score: float, source: str) -> Evidence:
 
 
 def test_fuse_and_rank_rrf_with_uniform_weights() -> None:
+    """Test reciprocal rank fusion with uniform weights across all results."""
     cfg = RetrievalConfig(max_hits=10)
 
     lex = [
@@ -28,6 +29,7 @@ def test_fuse_and_rank_rrf_with_uniform_weights() -> None:
 
 
 def test_fuse_and_rank_truncates_to_max_hits() -> None:
+    """Test that rank fusion truncates results to the specified max hits."""
     cfg = RetrievalConfig(max_hits=1)
 
     lex = [Evidence(text="doc1", score=0.0, source="bm25", metadata={})]
@@ -38,6 +40,7 @@ def test_fuse_and_rank_truncates_to_max_hits() -> None:
 
 
 def test_fuse_and_rank_applies_council_weights() -> None:
+    """Test that council weights are properly applied during rank fusion."""
     cfg = RetrievalConfig(max_hits=10)
     council = CouncilVote(
         members=1,
