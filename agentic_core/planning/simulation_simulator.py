@@ -5,6 +5,7 @@ from archives.legacy_root_folders.eval.simulation.simulator import run_scenario
 
 
 def test_run_scenario_uses_existing_engine():
+    """Test that scenario runner properly uses existing engine instance."""
     scenarios = Engine.list()
     assert scenarios, "Expected at least one registered simulation scenario"
 

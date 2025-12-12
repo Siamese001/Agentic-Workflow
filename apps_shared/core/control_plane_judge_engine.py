@@ -1,6 +1,7 @@
 
 
 def test_judge_engine_unsafe_on_high_severity():
+    """Test that judge engine marks content unsafe when high severity violations detected."""
     ctx = SafetyContext(input_text="harmful text")
     rules_result = RulesEngineResult(
         matches=[

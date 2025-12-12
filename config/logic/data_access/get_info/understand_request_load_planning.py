@@ -503,6 +503,7 @@ def plan_config_load(
     
     # Convert result to dict for JSON serialization
     def serialize_section(section: ConfigSection) -> Dict[str, Any]:
+        """Serialize a ConfigSection to a dictionary for JSON output."""
         return {
             "name": section.name,
             "parameters": [

@@ -6,6 +6,7 @@ from archives.legacy_root_folders.eval.golden_state.runner import run_all_golden
 
 
 def test_run_all_golden_tests_returns_results():
+    """Test that running all golden tests returns valid result objects."""
     profile = ExecutionProfile(
         name="TEST",
         description="test profile",
