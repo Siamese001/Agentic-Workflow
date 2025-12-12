@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from typing import List, object
+from typing import Dict, List
 
 
-EVENTS: List[Any] = []
+EVENTS: List[Dict[str, object]] = []
 
 
-def append_event(event: Any) -> None:
+def append_event(event: Dict[str, object]) -> None:
     """Append a raw event object to the in-memory agentic event buffer."""
 
     EVENTS.append(event)
 
 
-def get_events() -> List[Any]:
+def get_events() -> List[Dict[str, object]]:
     """Return a snapshot of all collected agentic events."""
 
     return list(EVENTS)

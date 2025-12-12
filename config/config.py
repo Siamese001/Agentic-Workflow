@@ -251,7 +251,7 @@ class RAGConfig:
         "LOCAL_NLP": 0.2
     })
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Ensure source_weights is a dict, not a field factory."""
         if not isinstance(self.source_weights, dict):
             logging.error("source_weights must be a dict.")
@@ -270,7 +270,7 @@ class RAGConfig:
             logging.warning("Caching features will be disabled")
 
 
-    def _validate_source_weights(self):
+    def _validate_source_weights(self) -> None:
         """Ensure source_weights are positive and reasonable."""
         for source, weight in self.source_weights.items():
             if not isinstance(weight, (int, float)):
