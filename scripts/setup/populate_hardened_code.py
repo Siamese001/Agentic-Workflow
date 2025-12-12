@@ -1600,6 +1600,7 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
 
     if dry_run:
         #print("DRY RUN: No files were modified")
+        pass
     if dry_run:
         pass
 

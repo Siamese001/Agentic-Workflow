@@ -92,5 +92,6 @@ if __name__ == "__main__":
         #print(f"\nDuplicate files ({len(duplicates)}):")
         for f in sorted(duplicates):
             #print(f"  - {f}")
+            pass
     else:
         #print("\nNo duplicate files found")
