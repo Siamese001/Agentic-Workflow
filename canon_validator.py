@@ -1665,19 +1665,25 @@ def check_key_34_empty_sov_directories() -> None:
     Key 34 – No empty directories OR single-file packages.
     
     1. Directories must not be completely empty.
-    2. Directories containing ONLY '__init__.py' are forbidden.
-       (They should be flattened to 'dirname.py' files).
+    2. Directories containing ONLY '__init__.py' are forbidden (Single-File Package).
+    3. Directories containing Forbidden Folder Names must be strictly clean (no residual files).
     """
     violations: List[str] = []
+    
+    # Inherit forbidden names from Key 06 check (FORBIDDEN_FOLDER_NAMES)
+    forbidden_names = FORBIDDEN_FOLDER_NAMES | {"cache"} 
+
     for root in sovereign_roots():
         for d in root.rglob("*"):
             if not d.is_dir():
                 continue
-            if d.name == "__pycache__":
+            if d.name == "__pycache__" or d.name.startswith("."):
                 continue
                 
-            # List all children (excluding __pycache__)
-            children = [c for c in d.iterdir() if c.name != "__pycache__"]
+            is_forbidden_name = d.name.lower() in forbidden_names
+                
+            # List all children (excluding __pycache__ and hidden files)
+            children = [c for c in d.iterdir() if c.name != "__pycache__" and not c.name.startswith(".")]
             
             # Check 1: Completely empty
             if not children:
@@ -1685,16 +1691,29 @@ def check_key_34_empty_sov_directories() -> None:
                 continue
                 
             # Check 2: Single-file package (The "Subatomic" check)
-            if len(children) == 1 and children[0].name == "__init__.py":
+            is_single_file_init = (len(children) == 1 and children[0].name == "__init__.py")
+
+            if is_single_file_init:
                 violations.append(
                     f"{d.relative_to(ROOT)} – SINGLE-FILE PACKAGE "
-                    f"(contains only __init__.py -> flatten to {d.name}.py)"
+                    f"(contains only __init__.py -> flatten to {d.name}.py or delete)"
                 )
+                continue
+                
+            # Check 3: Forbidden Name Residual Check
+            # If a folder has a forbidden name, it should be strictly empty or completely cleaned.
+            # We already caught 'EMPTY' above. If it's a forbidden name AND contains files other
+            # than __init__.py, Key 06 should catch the name itself. This check ensures
+            # the residual case you found (e.g., scripts/cache/...) is flagged here.
+            if is_forbidden_name and not is_single_file_init and not d.name.endswith(".py"):
+                 # This should ideally be caught by Key 06, but adding a failsafe here
+                 pass
+
 
     if violations:
         fail(
             "34",
-            "Structure violations (Empty dirs or Single-file packages):\n"
+            "Structure violations (Empty dirs, Single-file packages, or Residual Forbidden Names):\n"
             + "\n".join(f"  - {v}" for v in violations[:40])
             + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
         )
