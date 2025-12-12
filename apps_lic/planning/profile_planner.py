@@ -350,33 +350,37 @@ class ProfilePlanner:
             confidence=confidence
         )
     
+    def _score_keyword(self, keyword: str, confidence: float, scores: Dict[str, float]) -> None:
+        """Score a keyword against archetype categories."""
+        if keyword in self.executive_keywords:
+            scores["executive"] += confidence
+        elif keyword in self.senior_ta_keywords:
+            scores["senior_ta"] += confidence
+        elif keyword in self.recruiter_keywords:
+            scores["recruiter"] += confidence
+    
+    def _determine_archetype_from_scores(self, scores: Dict[str, float]) -> str:
+        """Determine archetype from scores."""
+        if scores["executive"] >= scores["senior_ta"] and scores["executive"] >= scores["recruiter"]:
+            return "EXECUTIVE"
+        elif scores["senior_ta"] >= scores["recruiter"]:
+            return "SENIOR_TA"
+        elif scores["recruiter"] > 0:
+            return "RECRUITER"
+        return "OTHER"
+    
     def _infer_archetype(self, signals: List[ProfileSignal]) -> str:
         """Infer archetype from profile signals."""
-        executive_score = 0
-        senior_ta_score = 0
-        recruiter_score = 0
+        scores = {"executive": 0, "senior_ta": 0, "recruiter": 0}
         
         for signal in signals:
-            if signal.signal_type == "title_keywords":
-                keywords = signal.value.lower().split(", ")
-                
-                for keyword in keywords:
-                    if keyword in self.executive_keywords:
-                        executive_score += signal.confidence
-                    elif keyword in self.senior_ta_keywords:
-                        senior_ta_score += signal.confidence
-                    elif keyword in self.recruiter_keywords:
-                        recruiter_score += signal.confidence
+            if signal.signal_type != "title_keywords":
+                continue
+            keywords = signal.value.lower().split(", ")
+            for keyword in keywords:
+                self._score_keyword(keyword, signal.confidence, scores)
         
-        # Determine archetype based on scores
-        if executive_score >= senior_ta_score and executive_score >= recruiter_score:
-            return "EXECUTIVE"
-        elif senior_ta_score >= recruiter_score:
-            return "SENIOR_TA"
-        elif recruiter_score > 0:
-            return "RECRUITER"
-        else:
-            return "OTHER"
+        return self._determine_archetype_from_scores(scores)
     
     def _determine_seniority(self, profile: Dict[str, object], signals: List[ProfileSignal]) -> str:
         """Determine seniority level from profile and signals."""

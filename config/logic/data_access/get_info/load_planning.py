@@ -332,28 +332,32 @@ class ConfigLoadPlanner:
             metadata=request.get("metadata", {})
         )
 
+    def _get_base_size_for_type(self, config_type: ConfigType) -> int:
+        """Get base size estimate for config type."""
+        size_map = {
+            ConfigType.ENVIRONMENT: 1024,
+            ConfigType.FEATURE_FLAG: 2048,
+            ConfigType.DEPLOYMENT: 5120,
+            ConfigType.SERVICE: 10240,
+            ConfigType.SECURITY: 4096,
+        }
+        return size_map.get(config_type, 2048)
+    
+    def _apply_format_multiplier(self, size: int, format: ConfigFormat) -> int:
+        """Apply format-specific size multiplier."""
+        if format == ConfigFormat.XML:
+            return int(size * 1.5)
+        elif format == ConfigFormat.YAML:
+            return int(size * 0.8)
+        return size
+    
     def _estimate_config_size(self, plan: ConfigLoadPlan) -> int:
         """Estimate configuration size in bytes."""
         total_size = 0
         
         for source in plan.sources:
-            # Estimate size based on config type and format
-            if source.config_type == ConfigType.ENVIRONMENT:
-                total_size += 1024  # 1KB estimate
-            elif source.config_type == ConfigType.FEATURE_FLAG:
-                total_size += 2048  # 2KB estimate
-            elif source.config_type == ConfigType.DEPLOYMENT:
-                total_size += 5120  # 5KB estimate
-            elif source.config_type == ConfigType.SERVICE:
-                total_size += 10240  # 10KB estimate
-            elif source.config_type == ConfigType.SECURITY:
-                total_size += 4096  # 4KB estimate
-            
-            # Adjust for format
-            if source.format == ConfigFormat.XML:
-                total_size = int(total_size * 1.5)  # XML is more verbose
-            elif source.format == ConfigFormat.YAML:
-                total_size = int(total_size * 0.8)  # YAML is more compact
+            base_size = self._get_base_size_for_type(source.config_type)
+            total_size += self._apply_format_multiplier(base_size, source.format)
         
         return total_size
 

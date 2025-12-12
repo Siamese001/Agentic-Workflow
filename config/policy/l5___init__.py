@@ -60,68 +60,59 @@ def safety_gate(result: Any) -> bool:
     return True
 
 
+def _extract_severity_string(severity: Any) -> str:
+    """Extract severity string from severity object."""
+    if not severity:
+        return 'unknown'
+    return severity.value if hasattr(severity, 'value') else str(severity)
+
+def _process_finding(finding: Any, findings_list: List[Dict], max_severity: Optional[str]) -> Optional[str]:
+    """Process a single finding and update max severity."""
+    severity = getattr(finding, 'severity', None)
+    severity_str = _extract_severity_string(severity)
+    
+    findings_list.append({
+        'check_id': getattr(finding, 'id', 'unknown'),
+        'category': getattr(finding, 'type', getattr(finding, 'category', 'unknown')),
+        'severity': severity_str,
+        'message': getattr(finding, 'message', ''),
+    })
+    
+    if severity_str in ('critical', 'high'):
+        return 'high'
+    elif severity_str == 'medium' and max_severity != 'high':
+        return 'medium'
+    return max_severity
+
+def _map_severity_to_decision(max_severity: Optional[str]) -> tuple[str, str]:
+    """Map severity level to decision and reason."""
+    if max_severity == 'high':
+        return "block", "High severity safety violation detected"
+    elif max_severity == 'medium':
+        return "replan", "Medium severity issue requires replanning"
+    return "allow", "No safety concerns detected"
+
 def arbitrate_safety(
     safety_result: Any,
     council_vote: Any,
     policy: Any,
     ctx: Any = None
 ) -> Dict[str, object]:
-    """
-    Arbitrate between safety findings and council votes to produce a decision.
-    
-    This adapter maps safety findings to legacy decision format expected by tests.
-    
-    Decision mapping:
-    - high/critical severity -> "block"
-    - medium severity -> "replan"
-    - low/no findings -> "allow"
-    
-    Args:
-        safety_result: SafetyResult with findings
-        council_vote: CouncilVote (currently unused in decision logic)
-        policy: SafetyPolicy (currently unused in decision logic)
-        ctx: Optional execution context
-        
-    Returns:
-        dict: {"decision": str, "reason": str, "findings": list}
-    """
-    # Default decision
+    """Arbitrate between safety findings and council votes to produce a decision."""
     decision = "allow"
     reason = "No safety concerns detected"
     findings_list = []
     
-    # Extract findings from safety_result
     if safety_result and hasattr(safety_result, 'findings'):
         findings = getattr(safety_result, 'findings', [])
-        
-        # Determine decision based on highest severity
         max_severity = None
-        for finding in findings:
-            severity = getattr(finding, 'severity', None)
-            if severity:
-                severity_str = severity.value if hasattr(severity, 'value') else str(severity)
-                
-                if severity_str in ('critical', 'high'):
-                    max_severity = 'high'
-                    break
-                elif severity_str == 'medium' and max_severity != 'high':
-                    max_severity = 'medium'
-            
-            # Collect finding info
-            findings_list.append({
-                'check_id': getattr(finding, 'id', 'unknown'),
-                'category': getattr(finding, 'type', getattr(finding, 'category', 'unknown')),
-                'severity': severity_str if severity else 'unknown',
-                'message': getattr(finding, 'message', ''),
-            })
         
-        # Map severity to decision
-        if max_severity == 'high':
-            decision = "block"
-            reason = "High severity safety violation detected"
-        elif max_severity == 'medium':
-            decision = "replan"
-            reason = "Medium severity issue requires replanning"
+        for finding in findings:
+            max_severity = _process_finding(finding, findings_list, max_severity)
+            if max_severity == 'high':
+                break
+        
+        decision, reason = _map_severity_to_decision(max_severity)
     
     # Try to call run_l5 if it exists (for test compatibility)
     try:
