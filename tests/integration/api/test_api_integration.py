@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
-from runtime.shared.exceptions import HopExecutionError, ValidationError, APIError, CircuitBreakerOpenError
+from shared.core.exceptions import HopExecutionError, ValidationError, APIError, CircuitBreakerOpenError
 
 class HTTPMethod(Enum):
     GET = "GET"
