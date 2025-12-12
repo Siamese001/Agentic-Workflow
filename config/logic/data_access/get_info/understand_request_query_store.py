@@ -68,7 +68,7 @@ def get_store() -> PromptStore:
     return default_store
 
 
-def store_prompt(prompt_id: str, content: str, **kwargs) -> str:
+def store_prompt(prompt_id: str, content: str, **kwargs: Dict[str, object]) -> str:
     """Convenience function to store resume generation prompt."""
     prompt = StoredPrompt(id=prompt_id, content=content, **kwargs)
     return default_store.store(prompt)

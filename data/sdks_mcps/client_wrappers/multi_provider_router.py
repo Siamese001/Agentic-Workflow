@@ -142,8 +142,7 @@ class MultiProviderRouter:
         messages: List[Dict[str, object]],
         strategy: Optional[str] = None,
         providers: Optional[List[Provider]] = None,
-        **kwargs
-    ) -> Dict[str, object]:
+        **kwargs: Dict[str, object]) -> Dict[str, object]:
         """Route chat completion request to optimal provider.
         
         Args:
@@ -211,8 +210,7 @@ class MultiProviderRouter:
         self,
         messages: List[Dict[str, object]],
         schema: Dict[str, object],
-        **kwargs
-    ) -> Dict[str, object]:
+        **kwargs: Dict[str, object]) -> Dict[str, object]:
         """Route structured output completion to optimal provider."""
         # Prefer OpenAI for structured output (best JSON schema support)
         preferred_providers = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GOOGLE_VERTEX]
@@ -258,8 +256,7 @@ class MultiProviderRouter:
         self,
         batch_requests: List[Dict[str, object]],
         strategy: str = "weighted",
-        **kwargs
-    ) -> List[Dict[str, object]]:
+        **kwargs: Dict[str, object]) -> List[Dict[str, object]]:
         """Route batch requests across multiple providers."""
         # Distribute requests across providers
         provider_distribution = self._distribute_batch_requests(batch_requests, strategy)
@@ -378,7 +375,7 @@ class MultiProviderRouter:
         
         return distribution
     
-    def _call_provider(self, provider: Provider, messages: List[Dict[str, object]], **kwargs) -> Any:
+    def _call_provider(self, provider: Provider, messages: List[Dict[str, object]], **kwargs: Dict[str, object]) -> Any:
         """Call the specific provider with appropriate format."""
         client = self.clients[provider]
         
@@ -545,8 +542,7 @@ def create_multi_provider_router(
     enable_openai: bool = None,
     enable_anthropic: bool = None,
     enable_vertex: bool = None,
-    **kwargs
-) -> MultiProviderRouter:
+    **kwargs: Dict[str, object]) -> MultiProviderRouter:
     """Create configured multi-provider router.
     
     Args:

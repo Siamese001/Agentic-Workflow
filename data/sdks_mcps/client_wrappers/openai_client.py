@@ -62,8 +62,7 @@ class OpenAIClient:
         tools: Optional[List[Dict[str, object]]] = None,
         tool_choice: Optional[Union[str, Dict[str, object]]] = None,
         stream: bool = False,
-        **kwargs
-    ) -> Union[ChatCompletion, object]:
+        **kwargs: Dict[str, object]) -> Union[ChatCompletion, object]:
         """Execute chat completion with retry logic and error handling.
         
         Args:
@@ -117,8 +116,7 @@ class OpenAIClient:
         messages: List[Dict[str, str]],
         schema: Dict[str, object],
         model: Optional[str] = None,
-        **kwargs
-    ) -> Dict[str, object]:
+        **kwargs: Dict[str, object]) -> Dict[str, object]:
         """Execute structured output completion with validation.
         
         Args:
@@ -181,8 +179,7 @@ class OpenAIClient:
         self,
         messages: List[Dict[str, str]],
         callback: callable = None,
-        **kwargs
-    ) -> List[str]:
+        **kwargs: Dict[str, object]) -> List[str]:
         """Stream chat completion with optional callback.
         
         Args:
@@ -307,8 +304,7 @@ class OpenAIClient:
 def create_openai_client(
     api_key: Optional[str] = None,
     model: str = "gpt-4o-2024-08-06",
-    **kwargs
-) -> OpenAIClient:
+    **kwargs: Dict[str, object]) -> OpenAIClient:
     """Create configured OpenAI client.
     
     Args:

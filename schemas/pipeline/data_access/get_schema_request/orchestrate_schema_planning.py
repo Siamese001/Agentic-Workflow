@@ -248,8 +248,7 @@ class SchemaPlanningOrchestrator:
 def create_schema_planning_orchestrator(
     enable_validation: bool = True,
     enable_transformation: bool = True,
-    **kwargs
-) -> SchemaPlanningOrchestrator:
+    **kwargs: Dict[str, object]) -> SchemaPlanningOrchestrator:
     """Create a configured schema planning orchestrator."""
     config = SchemaPlanningConfig(
         enable_validation=enable_validation,

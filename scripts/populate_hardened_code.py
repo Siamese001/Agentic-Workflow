@@ -751,7 +751,7 @@ class {class_name}:
         """Get resource."""
         return self.resources.get(resource_id)
 
-def manage(operation: str, resource_id: str, **kwargs) -> ManagementResult:
+def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> ManagementResult:
     """Convenience function for management."""
     coordinator = {class_name}(kwargs.get("config"))
     if operation == "create":
@@ -1027,19 +1027,19 @@ class {class_name}:
             self.logger.addHandler(executor)
             self.logger.setLevel(self.config.get("level", logging.INFO))
 
-    def info(self, message: str, **kwargs) -> None:
+    def info(self, message: str, **kwargs: Dict[str, object]) -> None:
         """Log info message."""
         self.logger.info(message, extra={{"extra": kwargs}})
 
-    def warning(self, message: str, **kwargs) -> None:
+    def warning(self, message: str, **kwargs: Dict[str, object]) -> None:
         """Log warning message."""
         self.logger.warning(message, extra={{"extra": kwargs}})
 
-    def error(self, message: str, **kwargs) -> None:
+    def error(self, message: str, **kwargs: Dict[str, object]) -> None:
         """Log error message."""
         self.logger.error(message, extra={{"extra": kwargs}})
 
-    def debug(self, message: str, **kwargs) -> None:
+    def debug(self, message: str, **kwargs: Dict[str, object]) -> None:
         """Log debug message."""
         self.logger.debug(message, extra={{"extra": kwargs}})
 
@@ -1515,7 +1515,7 @@ class {class_name}:
         self.config = config or {{}}
         logger.info(f"Initialized {{self.__class__.__name__}}")
 
-    def execute(self, data: object, **kwargs) -> OperationResult:
+    def execute(self, data: object, **kwargs: Dict[str, object]) -> OperationResult:
         """Execute operation."""
         try:
             result = self._process(data, **kwargs)
@@ -1524,11 +1524,11 @@ class {class_name}:
             logger.error("Operation failed: {%s}", e)
             return OperationResult(success=False, message=str(e))
 
-    def _process(self, data: object, **kwargs) -> object:
+    def _process(self, data: object, **kwargs: Dict[str, object]) -> object:
         """Process data."""
         return data
 
-def execute(data: object, config: Optional[Dict] = None, **kwargs) -> OperationResult:
+def execute(data: object, config: Optional[Dict] = None, **kwargs: Dict[str, object]) -> OperationResult:
     """Convenience function."""
     return {class_name}(config).execute(data, **kwargs)
 '''

@@ -516,8 +516,7 @@ def build_overview_generation_prompt(
     word_count_range: Tuple[int, int],
     thematic_analysis: 'ThematicAnalysis',
     job_description: str,
-    **kwargs
-) -> str:
+    **kwargs: Dict[str, object]) -> str:
     """Builds the prompt for generating an experience overview."""
     template = _get_prompt_template("artist_overview_generation")
     

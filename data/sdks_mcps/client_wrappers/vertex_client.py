@@ -64,8 +64,7 @@ class VertexClient:
         safety_settings: Optional[Dict[HarmCategory, HarmBlockThreshold]] = None,
         tools: Optional[List[Tool]] = None,
         stream: bool = False,
-        **kwargs
-    ) -> Any:
+        **kwargs: Dict[str, object]) -> Any:
         """Generate content with retry logic and optional grounding.
         
         Args:
@@ -170,8 +169,7 @@ class VertexClient:
         prompt: str,
         grounding_threshold: float = 0.7,
         include_citations: bool = True,
-        **kwargs
-    ) -> Dict[str, object]:
+        **kwargs: Dict[str, object]) -> Dict[str, object]:
         """Generate response with Google Search grounding and citations.
         
         Args:
@@ -250,8 +248,7 @@ class VertexClient:
         prompt: str,
         safety_threshold: HarmBlockThreshold = HarmBlockThreshold.BLOCK_NONE,
         custom_safety: Optional[Dict[HarmCategory, HarmBlockThreshold]] = None,
-        **kwargs
-    ) -> Dict[str, object]:
+        **kwargs: Dict[str, object]) -> Dict[str, object]:
         """Generate response with configurable safety settings.
         
         Args:
@@ -301,8 +298,7 @@ class VertexClient:
         self,
         prompt: str,
         callback: callable = None,
-        **kwargs
-    ) -> List[str]:
+        **kwargs: Dict[str, object]) -> List[str]:
         """Stream response with optional callback.
         
         Args:
@@ -404,8 +400,7 @@ def create_vertex_client(
     location: str = "us-central1",
     model: str = "gemini-1.5-pro-002",
     enable_grounding: bool = True,
-    **kwargs
-) -> VertexClient:
+    **kwargs: Dict[str, object]) -> VertexClient:
     """Create configured Vertex AI client.
     
     Args:
