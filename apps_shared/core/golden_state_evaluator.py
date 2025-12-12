@@ -152,9 +152,16 @@ class GoldenStateEvaluator:
         errors: List[str] = []
         
         # Evaluate with judge
+        expected_output = case.expected_output
+        if isinstance(expected_output, dict) and "contains" in expected_output:
+            # Convert list to string for evaluation
+            expected_str = ", ".join(expected_output["contains"])
+        else:
+            expected_str = str(expected_output) if expected_output else None
+            
         judge_result = await self.judge_evaluator.evaluate(
             output=output.actual_output,
-            expected=case.expected_output.get("contains"),
+            expected=expected_str,
             context={
                 "task": case.mission,
                 "category": case.category,

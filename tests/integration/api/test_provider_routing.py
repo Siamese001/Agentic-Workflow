@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from unittest.mock import MagicMock, patch
 import pytest
-from runtime.shared.multi_provider_clients import reset_all_clients, get_available_providers, Provider, get_client
+from runtime.shared.multi_provider_clients import reset_all_clients, Provider, get_client
 
 # Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION
 # skip_if_no_keys = pytest.mark.skipif(
