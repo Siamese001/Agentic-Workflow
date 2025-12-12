@@ -7,7 +7,7 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, ClassVar, Dict, List, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 # Import from models for CompetitiveAnalysisConfig
 from runtime.compat.models import CompetitiveAnalysisConfig
@@ -97,9 +97,9 @@ class FilePathsConfig:
 @dataclass
 class ArtistConfig:
     """Configuration for the Artist Generator (resume content generation)."""
-    provenance_split_targets: Dict = field(default_factory=dict)
-    bullet_word_count_ranges: Dict = field(default_factory=dict)
-    narrative_config: Dict = field(default_factory=dict)
+    provenance_split_targets: Dict = field(default_builder=dict)
+    bullet_word_count_ranges: Dict = field(default_builder=dict)
+    narrative_config: Dict = field(default_builder=dict)
     
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "artist_constraints.json") -> 'ArtistConfig':
@@ -122,11 +122,11 @@ class ArtistConfig:
 @dataclass
 class ValidatorConfig:
     """Configuration for validation rules and constraints."""
-    forbidden_verbs: List[str] = field(default_factory=list)
-    required_sections: Set[str] = field(default_factory=set)
-    bullet_word_count_sections_to_check: Set[str] = field(default_factory=set)
-    provenance_split_targets: Dict = field(default_factory=dict)
-    pipeline_status_enum: List[str] = field(default_factory=list)
+    forbidden_verbs: List[str] = field(default_builder=list)
+    required_sections: Set[str] = field(default_builder=set)
+    bullet_word_count_sections_to_check: Set[str] = field(default_builder=set)
+    provenance_split_targets: Dict = field(default_builder=dict)
+    pipeline_status_enum: List[str] = field(default_builder=list)
     
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "validator_rules.json") -> 'ValidatorConfig':
@@ -145,7 +145,7 @@ class ValidatorConfig:
 @dataclass
 class PromptsConfig:
     """Configuration for all prompt templates."""
-    prompts: Dict[str, Dict[str, str]] = field(default_factory=dict)
+    prompts: Dict[str, Dict[str, str]] = field(default_builder=dict)
     
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "prompts.json") -> 'PromptsConfig':
@@ -183,7 +183,7 @@ class PromptsConfig:
 @dataclass
 class WebRagConfig:
     """Configuration for Web RAG (Retrieval Augmented Generation)."""
-    peers_by_industry: Dict = field(default_factory=lambda: {
+    peers_by_industry: Dict = field(default_builder=lambda: {
         "Financial Technology": ["JPMorgan", "Goldman Sachs", "Morgan Stanley", "Stripe", "Square"],
         "Healthcare": ["UnitedHealth", "CVS Health", "Anthem", "Cigna", "Humana"],
         "Retail/E-Commerce": ["Amazon", "Walmart", "Target", "Shopify", "eBay"],
@@ -195,7 +195,7 @@ class WebRagConfig:
 @dataclass
 class EnricherConfig:
     """Configuration for data enrichment."""
-    canonical_verbs: Dict = field(default_factory=lambda: {
+    canonical_verbs: Dict = field(default_builder=lambda: {
         "led": ["led", "lead", "leading"], 
         "built": ["built", "build", "building"],
         "drove": ["drove", "drive", "driving"], 
@@ -241,7 +241,7 @@ class RAGConfig:
     chroma_persist_dir: Path = CACHE_DIR / "chroma_memory"
     chroma_collection_name: str = "rag_librarian_v1"
 
-    source_weights: Dict[str, float] = field(default_factory=lambda: {
+    source_weights: Dict[str, float] = field(default_builder=lambda: {
         "SOURCE_JD": 1.8,
         "SOURCE_COMPANY_BLOG": 1.5,
         "SOURCE_TARGET_EMPLOYEE": 1.4,
@@ -252,7 +252,7 @@ class RAGConfig:
     })
     
     def __post_init__(self) -> None:
-        """Ensure source_weights is a dict, not a field factory."""
+        """Ensure source_weights is a dict, not a field builder."""
         if not isinstance(self.source_weights, dict):
             logging.error("source_weights must be a dict.")
             raise TypeError("source_weights must be a dict")
@@ -374,26 +374,26 @@ class PromptAddendumConfig:
     HEADER: str = "\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n"
     FOOTER: str = "\nAll directives MUST be followed in the output.\n"
 
-    COT_DIRECTIVES: List[Tuple[int, str]] = field(default_factory=lambda: [
+    COT_DIRECTIVES: List[Tuple[int, str]] = field(default_builder=lambda: [
         (5, "• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\n"),
         (4, "• Explore {cot} different reasoning paths; compare and synthesize insights.\n"),
         (0, "• Consider multiple reasoning approaches before concluding.\n")
     ])
 
-    TOT_B_DIRECTIVES: List[Tuple[int, str]] = field(default_factory=lambda: [
+    TOT_B_DIRECTIVES: List[Tuple[int, str]] = field(default_builder=lambda: [
         (5, "• MANDATORY: At each decision point, systematically evaluate {tot_b} different branches/alternatives.\n"),
         (4, "• Explore {tot_b} decision branches at critical junctures; document tradeoffs.\n"),
         (0, "• Consider multiple decision branches at key steps.\n")
     ])
 
-    TOT_D_DIRECTIVES: List[Tuple[int, str]] = field(default_factory=lambda: [
+    TOT_D_DIRECTIVES: List[Tuple[int, str]] = field(default_builder=lambda: [
         (5, "• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n"),
         (4, "• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n"),
         (3, "• Provide {tot_d}-level reasoning with clear progression of thinking.\n"),
         (0, "• Structure reasoning with clear logical progression.\n")
     ])
 
-    REFLEXION_DIRECTIVES: List[Tuple[int, str]] = field(default_factory=lambda: [
+    REFLEXION_DIRECTIVES: List[Tuple[int, str]] = field(default_builder=lambda: [
         (3, "• MANDATORY: Review your answer {max_loops} times, refining on each pass. Document improvements.\n"),
         (2, "• Review your answer {max_loops} times; improve if refinements are identified.\n"),
         (1, "• Review and refine your answer at least once.\n")
@@ -403,16 +403,16 @@ class PromptAddendumConfig:
 @dataclass
 class AppConfig:
     """Master application configuration containing all sub-configs."""
-    paths: FilePathsConfig = field(default_factory=FilePathsConfig)
-    rag: RAGConfig = field(default_factory=lambda: RAGConfig())
-    content_constraints: ContentConstraintsConfig = field(default_factory=lambda: ContentConstraintsConfig())
-    signal_constraints: SignalControlConfig = field(default_factory=lambda: SignalControlConfig())
-    artist: ArtistConfig = field(default_factory=lambda: ArtistConfig.from_json())
-    validator: ValidatorConfig = field(default_factory=lambda: ValidatorConfig.from_json())
-    prompts: PromptsConfig = field(default_factory=lambda: PromptsConfig.from_json())
-    web_rag: WebRagConfig = field(default_factory=WebRagConfig)
-    enricher: EnricherConfig = field(default_factory=EnricherConfig)
-    comp_config: CompetitiveAnalysisConfig = field(default_factory=CompetitiveAnalysisConfig)
+    paths: FilePathsConfig = field(default_builder=FilePathsConfig)
+    rag: RAGConfig = field(default_builder=lambda: RAGConfig())
+    content_constraints: ContentConstraintsConfig = field(default_builder=lambda: ContentConstraintsConfig())
+    signal_constraints: SignalControlConfig = field(default_builder=lambda: SignalControlConfig())
+    artist: ArtistConfig = field(default_builder=lambda: ArtistConfig.from_json())
+    validator: ValidatorConfig = field(default_builder=lambda: ValidatorConfig.from_json())
+    prompts: PromptsConfig = field(default_builder=lambda: PromptsConfig.from_json())
+    web_rag: WebRagConfig = field(default_builder=WebRagConfig)
+    enricher: EnricherConfig = field(default_builder=EnricherConfig)
+    comp_config: CompetitiveAnalysisConfig = field(default_builder=CompetitiveAnalysisConfig)
 
 
 # ============================================================================

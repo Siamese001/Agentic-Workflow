@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-# from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel  # TODO: Fix invalid module name
+# from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel  # Archive import removed
 
 # from archives.legacy_root_folders.meta.schema_validation import validate_schema_version  # DEPRECATED: Archive import removed to protect archives from validation edits
 

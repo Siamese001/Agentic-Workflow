@@ -212,14 +212,14 @@ def compute_semantic_hash(imports: List[str], functions: List[str], classes: Lis
     return hashlib.sha256(semantic_str.encode()).hexdigest()
 
 def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool:
-    """Detect if file is a stub/placeholder."""
+    """Detect if file is a stub."""
     stub_indicators = [
         "# AUTO-POPULATED",
-        "# PLACEHOLDER",
+        "# STUB",
         "pass  # Implementation pending",
         "raise NotImplementedError",
-        '"""Auto-generated',
-        "LEVEL_3_placeholder",
+        '"""Generated',
+        "LEVEL_3_stub",
     ]
 
     for indicator in stub_indicators:

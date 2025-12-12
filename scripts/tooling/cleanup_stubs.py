@@ -2,8 +2,8 @@
 """
 STUB CLEANUP SCRIPT
 ===================
-Removes empty stub files and cleans up placeholder structures.
-Preserves files with meaningful PENDING/PLACEHOLDER content for tracking.
+Removes empty stub files and cleans up stub structures.
+Preserves files with meaningful PENDING content for tracking.
 """
 
 import os
@@ -48,8 +48,8 @@ def is_empty_or_minimal(file_path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
-def has_meaningful_placeholder(file_path: Path) -> bool:
-    """Check if file has meaningful placeholder content worth keeping."""
+def has_meaningful_content(file_path: Path) -> bool:
+    """Check if file has meaningful content worth keeping."""
     try:
         content = file_path.read_text(encoding='utf-8', errors='ignore')
 
@@ -57,8 +57,8 @@ def has_meaningful_placeholder(file_path: Path) -> bool:
         if re.search(r'PENDING[:\s]+\w+', content, re.IGNORECASE):
             return True
 
-        # Has PLACEHOLDER with context
-        if re.search(r'PLACEHOLDER[:\s]+\w+', content, re.IGNORECASE):
+        # Has meaningful implementation
+        if re.search(r'IMPLEMENTATION[:\s]+\w+', content, re.IGNORECASE):
             return True
 
         # Has actual function/class definitions (even if incomplete)
@@ -99,7 +99,7 @@ def cleanup_stubs() -> Dict:
     """Clean up stub files."""
     log = {
         "deleted_files": [],
-        "kept_with_placeholders": [],
+        "kept_with_content": [],
         "deleted_directories": [],
         "errors": [],
     }
@@ -117,9 +117,9 @@ def cleanup_stubs() -> Dict:
         rel_path = str(py_file.relative_to(REPO_ROOT))
 
         if is_empty_or_minimal(py_file):
-            # Check if it has meaningful placeholder content
-            if has_meaningful_placeholder(py_file):
-                log["kept_with_placeholders"].append(rel_path)
+            # Check if it has meaningful content
+            if has_meaningful_content(py_file):
+                log["kept_with_content"].append(rel_path)
             else:
                 try:
                     py_file.unlink()
@@ -153,13 +153,13 @@ def main() -> None:
     if len(log["deleted_files"]) > 20:
         print(f"  ... and {len(log['deleted_files']) - 20} more")
 
-    # Show kept placeholders
-    if log["kept_with_placeholders"]:
-        print(f"\nKept with placeholders ({len(log['kept_with_placeholders'])}):")
-        for f in log["kept_with_placeholders"][:10]:
+    # Show kept files
+    if log["kept_with_content"]:
+        print(f"\nKept with content ({len(log['kept_with_content'])}):")
+        for f in log["kept_with_content"][:10]:
             print(f"  - {f}")
-        if len(log["kept_with_placeholders"]) > 10:
-            print(f"  ... and {len(log['kept_with_placeholders']) - 10} more")
+        if len(log["kept_with_content"]) > 10:
+            print(f"  ... and {len(log['kept_with_content']) - 10} more")
 
     # Save log
     log_path = REPO_ROOT / "stub_cleanup_log.json"

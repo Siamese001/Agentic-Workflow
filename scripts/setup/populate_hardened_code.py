@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Populate Hardened Code - Replace all stubs and placeholders with real implementations.
+Populate Hardened Code - Replace all stubs with real implementations.
 
 Reads the stub scan report and generates hardened implementations for each file.
 """

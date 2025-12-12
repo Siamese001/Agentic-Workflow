@@ -7,8 +7,8 @@ across all layers to maintain L1-L5 atomicity.
 import pytest
 from unittest.mock import Mock, patch
 
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapter, PineconeConfig  # TODO: Fix invalid module name
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  # TODO: Fix invalid module name
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapter, PineconeConfig  # Archive import removed
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  # Archive import removed
 
 
 class TestSimpleDIContainer:

@@ -232,7 +232,7 @@ class ReActEngine:
                 try:
                     import json
                     action_input = json.loads(input_str)
-                except:
+                except Exception:
                     action_input = {"input": input_str}
         
         return action, action_input
