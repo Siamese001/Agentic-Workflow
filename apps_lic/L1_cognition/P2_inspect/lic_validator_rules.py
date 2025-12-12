@@ -281,6 +281,29 @@ class LICValidator:
             result = result.replace(unicode_char, ascii_char)
         return result
 
+    def _get_recency_factor(self, recency_days: int) -> float:
+        """Get recency factor based on days."""
+        if recency_days <= 7:
+            return RECENCY_FACTORS["0-7_days"]
+        elif recency_days <= 30:
+            return RECENCY_FACTORS["8-30_days"]
+        elif recency_days <= 90:
+            return RECENCY_FACTORS["31-90_days"]
+        elif recency_days <= 180:
+            return RECENCY_FACTORS["91-180_days"]
+        else:
+            return RECENCY_FACTORS["180+_days"]
+    
+    def _calculate_source_weight(self, source: Dict[str, object], recency_days: Optional[int]) -> float:
+        """Calculate weight for a single source."""
+        source_type = source.get("source_type", "GENERIC_SEARCH")
+        base_weight = SIGNAL_SOURCE_WEIGHTS.get(source_type, 0.4)
+        
+        if recency_days is not None:
+            base_weight *= self._get_recency_factor(recency_days)
+        
+        return base_weight
+    
     def calculate_signal_score(
         self,
         sources: List[Dict[str, object]],
@@ -290,28 +313,7 @@ class LICValidator:
         if not sources:
             return 0.0
 
-        total_weight = 0.0
-        for source in sources:
-            source_type = source.get("source_type", "GENERIC_SEARCH")
-            base_weight = SIGNAL_SOURCE_WEIGHTS.get(source_type, 0.4)
-
-            # Apply recency factor if available
-            if recency_days is not None:
-                if recency_days <= 7:
-                    recency_factor = RECENCY_FACTORS["0-7_days"]
-                elif recency_days <= 30:
-                    recency_factor = RECENCY_FACTORS["8-30_days"]
-                elif recency_days <= 90:
-                    recency_factor = RECENCY_FACTORS["31-90_days"]
-                elif recency_days <= 180:
-                    recency_factor = RECENCY_FACTORS["91-180_days"]
-                else:
-                    recency_factor = RECENCY_FACTORS["180+_days"]
-                base_weight *= recency_factor
-
-            total_weight += base_weight
-
-        # Normalize by number of sources
+        total_weight = sum(self._calculate_source_weight(source, recency_days) for source in sources)
         return min(1.0, total_weight / len(sources))
 
     def validate_message(self, text: str) -> Dict[str, object]:
