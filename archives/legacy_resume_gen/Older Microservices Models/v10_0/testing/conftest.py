@@ -38,7 +38,7 @@ def pytest_configure(config):
 # ============================================================================
 
 @pytest.fixture(scope="session")
-def test_data_dir():
+def test_data_dir() -> None:
     """Create temporary directory for test data"""
     temp_dir = tempfile.mkdtemp(prefix="v10_test_")
     yield temp_dir

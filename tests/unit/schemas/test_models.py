@@ -1,8 +1,8 @@
 """Unit tests for runtime/shared/models.py"""
 from __future__ import annotations
 from enum import Enum
-from shared.models import GateDecision, ValidationSeverity, HopStatus, CircuitState, ValidationResult, ThematicAnalysis, HopCheckpoint, APICallStatus, RAGState, ImmutableStagingBuffer
-from shared.reasoning_config import ReasoningConfig
+from shared.types.models import GateDecision, ValidationSeverity, HopStatus, CircuitState, ValidationResult, ThematicAnalysis, HopCheckpoint, APICallStatus, RAGState, ImmutableStagingBuffer
+from shared.configuration.reasoning_config import ReasoningConfig
 # Utils classes don't exist yet, skipping import
 
 

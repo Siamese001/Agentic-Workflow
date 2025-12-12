@@ -32,7 +32,7 @@ def record_test_result(name: str, status: str, details: str = "", error: str = "
     })
 
 
-def test_core_dependencies():
+def test_core_dependencies() -> None:
     """Tests core Python dependencies for resume generation functionality.
 
     Ensures essential libraries work properly for reliable
@@ -73,7 +73,7 @@ def test_core_dependencies():
     try:
         from tenacity import retry, stop_after_attempt
         @retry(stop=stop_after_attempt(1))
-        def test_func():
+        def test_func() -> str:
             return "success"
         assert test_func() == "success"
         record_test_result("tenacity", "PASS", "Retry decorator working")
@@ -104,7 +104,7 @@ def test_core_dependencies():
         record_test_result("httpx", "FAIL", error=str(e))
 
 
-def test_llm_providers():
+def test_llm_providers() -> None:
     """Tests LLM provider SDKs for resume content generation.
 
     Ensures all language model integrations work properly
@@ -134,7 +134,7 @@ def test_llm_providers():
         record_test_result("google-generativeai", "FAIL", error=str(e))
 
 
-def test_vector_databases():
+def test_vector_databases() -> None:
     """Tests vector database SDKs for resume knowledge retrieval.
 
     Ensures efficient storage and retrieval of resume-related
@@ -195,7 +195,7 @@ def test_vector_databases():
         record_test_result("faiss-cpu", "FAIL", error=str(e))
 
 
-def test_ml_libraries():
+def test_ml_libraries() -> None:
     """Tests ML/NLP libraries for resume content processing.
 
     Ensures machine learning components work properly for
@@ -218,7 +218,7 @@ def test_ml_libraries():
         record_test_result("sentence-transformers", "FAIL", error=str(e))
 
 
-def test_observability():
+def test_observability() -> None:
     """Tests observability libraries for resume generation monitoring.
 
     Ensures tracking and logging capabilities work properly
@@ -248,7 +248,7 @@ def test_observability():
         record_test_result("opentelemetry-sdk", "FAIL", error=str(e))
 
 
-def test_testing_frameworks():
+def test_testing_frameworks() -> None:
     """Tests testing frameworks for resume generation quality assurance.
 
     Ensures testing infrastructure works properly for
@@ -271,7 +271,7 @@ def test_testing_frameworks():
         record_test_result("pytest-asyncio", "FAIL", error=str(e))
 
 
-def test_mcp_sdk():
+def test_mcp_sdk() -> None:
     """Tests MCP SDK for resume generation integration capabilities.
 
     Ensures external integrations work properly for enhanced
@@ -286,7 +286,7 @@ def test_mcp_sdk():
         record_test_result("mcp", "FAIL", error=str(e))
 
 
-def test_project_imports():
+def test_project_imports() -> None:
     """Tests project-specific imports for resume generation modules.
 
     Ensures all internal components can be imported properly

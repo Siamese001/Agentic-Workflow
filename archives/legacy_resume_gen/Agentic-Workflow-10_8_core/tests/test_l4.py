@@ -16,7 +16,7 @@ import copy
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import BudgetConfig  # INVALID: Cannot import from path with hyphens
 
 
-def test_context_budget_prunes_buffers():
+def test_context_budget_prunes_buffers() -> None:
     budget = ContextBudget(BudgetConfig(max_messages=2, max_rag_items=1, max_summary_chars=5))
 
     messages = budget.prune_messages([
@@ -32,7 +32,7 @@ def test_context_budget_prunes_buffers():
     assert summary == "bcdef"
 
 
-def test_context_budget_prunes_world_buffer():
+def test_context_budget_prunes_world_buffer() -> None:
     budget = ContextBudget(BudgetConfig(max_world_items=2))
 
     world = budget.prune_world([
@@ -44,7 +44,7 @@ def test_context_budget_prunes_world_buffer():
     assert world == [{"id": 2}, {"id": 3}]
 
 
-def test_world_pruning_matches_rag_semantics():
+def test_world_pruning_matches_rag_semantics() -> None:
     config = BudgetConfig(max_rag_items=2, max_world_items=2)
     budget = ContextBudget(config)
 
@@ -53,7 +53,7 @@ def test_world_pruning_matches_rag_semantics():
     assert budget.prune_world(items) == budget.prune_rag_items(items)
 
 
-def test_token_budget_prunes_messages_deterministically():
+def test_token_budget_prunes_messages_deterministically() -> None:
     config = BudgetConfig(max_prompt_tokens=5)
     budget = ContextBudget(config)
 
@@ -71,7 +71,7 @@ def test_token_budget_prunes_messages_deterministically():
     assert messages[0]["content"] == "one two three"
 
 
-def test_token_budget_prunes_rag_items():
+def test_token_budget_prunes_rag_items() -> None:
     config = BudgetConfig(max_retrieval_tokens=4)
     budget = ContextBudget(config)
 
@@ -87,7 +87,7 @@ def test_token_budget_prunes_rag_items():
     assert items[0]["query"] == "q1"
 
 
-def test_reconcile_state_respects_token_budgets_without_mutation():
+def test_reconcile_state_respects_token_budgets_without_mutation() -> None:
     budget = ContextBudget(BudgetConfig(max_prompt_tokens=3, max_retrieval_tokens=2, max_messages=10, max_rag_items=10))
     manager = MemoryManager(budget)
     state = {
@@ -111,7 +111,7 @@ import copy
 
 
 
-def test_conversational_view_defaults_and_keys():
+def test_conversational_view_defaults_and_keys() -> None:
     state = {}
     view = get_conversational_view(state)
 
@@ -121,7 +121,7 @@ def test_conversational_view_defaults_and_keys():
     assert state == {}
 
 
-def test_retrieval_view_defaults_and_keys():
+def test_retrieval_view_defaults_and_keys() -> None:
     state = {}
     view = get_retrieval_view(state)
 
@@ -131,7 +131,7 @@ def test_retrieval_view_defaults_and_keys():
     assert state == {}
 
 
-def test_prompt_context_view_combines_all_fields_without_mutation():
+def test_prompt_context_view_combines_all_fields_without_mutation() -> None:
     state = {
         "messages": ["hello"],
         "summary": "s",
@@ -150,7 +150,7 @@ def test_prompt_context_view_combines_all_fields_without_mutation():
     assert state == original_state
 
 
-def test_views_deep_copy_list_fields():
+def test_views_deep_copy_list_fields() -> None:
     state = {
         "messages": [{"role": "user", "content": "hi"}],
         "rag_history": [{"doc": "a"}],
@@ -183,7 +183,7 @@ This test file is scaffolded for Priority 0; implementation comes later.
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import Phase, StatePatch  # INVALID: Cannot import from path with hyphens
 
 
-def test_state_adapter_applies_patch_and_phase():
+def test_state_adapter_applies_patch_and_phase() -> None:
     adapter = StateAdapter()
     patch = StatePatch({"messages": [{"role": "assistant", "content": "hi"}], "phase": Phase.PLANNING.value})
 
@@ -194,7 +194,7 @@ def test_state_adapter_applies_patch_and_phase():
     assert adapter.state["phase_metadata"]["phase"] == Phase.PLANNING.value
 
 
-def test_state_adapter_phase_history_and_metadata_updates():
+def test_state_adapter_phase_history_and_metadata_updates() -> None:
     adapter = StateAdapter()
 
     planning_state = adapter.apply_patch(StatePatch({"phase": Phase.PLANNING.value}))
@@ -222,7 +222,7 @@ Validates memory budgeting, state validation, and world-model normalization.
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_memory import normalize_world_facts  # INVALID: Cannot import from path with hyphens
 
 
-def test_high_volume_messages_pruned_to_budget():
+def test_high_volume_messages_pruned_to_budget() -> None:
     adapter = StateAdapter()
     patch = StatePatch({"messages": [{"role": "user", "content": f"m{i}"} for i in range(500)]})
 
@@ -232,7 +232,7 @@ def test_high_volume_messages_pruned_to_budget():
     assert state["messages"][-1]["content"] == "m499"
 
 
-def test_validation_flags_missing_keys():
+def test_validation_flags_missing_keys() -> None:
     result = validate({"messages": [], "summary": ""})
 
     assert "rag_history" in result["missing"]
@@ -240,7 +240,7 @@ def test_validation_flags_missing_keys():
     assert "phase" in result["missing"]
 
 
-def test_validation_warns_on_inconsistent_fields():
+def test_validation_warns_on_inconsistent_fields() -> None:
     state = {
         "messages": [],
         "rag_history": [],
@@ -260,7 +260,7 @@ def test_validation_warns_on_inconsistent_fields():
     assert any("qa_report" in warning for warning in result["cross_field_warnings"])
 
 
-def test_world_model_normalization():
+def test_world_model_normalization() -> None:
     facts = [
         {"category": "event", "content": "incident", "origin": "user"},
         {"content": 123, "origin": "unknown", "category": "unknown"},
@@ -286,7 +286,7 @@ structures.
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import StatePatch  # INVALID: Cannot import from path with hyphens
 
 
-def test_state_schema_defaults_include_world_and_metadata():
+def test_state_schema_defaults_include_world_and_metadata() -> None:
     adapter = StateAdapter()
     state = adapter.state
 
@@ -302,7 +302,7 @@ def test_state_schema_defaults_include_world_and_metadata():
     assert isinstance(state.get("phase"), str)
 
 
-def test_apply_patch_preserves_default_fields_when_not_patched():
+def test_apply_patch_preserves_default_fields_when_not_patched() -> None:
     adapter = StateAdapter()
     base_state = adapter.state
 
@@ -326,7 +326,7 @@ def test_apply_patch_preserves_default_fields_when_not_patched():
     assert updated_state["phase"] == base_state["phase"]
 
 
-def test_apply_patch_retains_defaults_for_new_fields():
+def test_apply_patch_retains_defaults_for_new_fields() -> None:
     adapter = StateAdapter()
 
     patch = StatePatch({"rag_history": [{"query": "foo", "context": []}]})

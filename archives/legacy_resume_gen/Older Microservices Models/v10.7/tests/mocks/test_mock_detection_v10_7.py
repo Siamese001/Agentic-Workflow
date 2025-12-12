@@ -5,13 +5,13 @@ import pytest
 
 
 @pytest.mark.mock
-def test_no_todo_or_mock_comments():
+def test_no_todo_or_mock_comments() -> None:
     result = subprocess.run(["grep", "-R", "TODO", "agentic_workflow/"], capture_output=True, text=True)
     assert "TODO" not in result.stdout
 
 
 @pytest.mark.mock
-def test_no_identity_function_returns():
+def test_no_identity_function_returns() -> None:
     result = subprocess.run(["grep", "-R", "return input", "agentic_workflow/"], capture_output=True, text=True)
     assert "return input" not in result.stdout
 

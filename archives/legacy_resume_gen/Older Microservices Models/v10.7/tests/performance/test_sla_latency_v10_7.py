@@ -16,7 +16,7 @@ def test_latency_under_3s(benchmark):
     assert result is not None
 
 
-def test_retry_context_emits_retry_event():
+def test_retry_context_emits_retry_event() -> None:
     ctx = {"resume": "RetryCase", "low_confidence": True}
     result = run_workflow(ctx)
     assert result["status"] == "success"

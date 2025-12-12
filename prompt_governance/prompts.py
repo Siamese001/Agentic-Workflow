@@ -3,7 +3,7 @@
 # Prompt Templates module for Resume Workflow
 # Contains all *logic* for loading and formatting prompts from prompts.json
 
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 import json
 import logging
 import os  # <-- Import os
@@ -359,7 +359,6 @@ def build_macro_tot_synthesis_prompt(
         top_drafts_text=top_drafts_text,
         top_k=top_k
     )
-
 # ==============================================================================
 # DYNAMIC PROMPT BUILDERS - ArtistGenerator (HOP-3)
 # ==============================================================================
@@ -374,7 +373,7 @@ def build_narrative_prompt(
     combined_signals_str: str,
     focus_instruction: str,
     k0_themes_str: str,
-    **kwargs # Accepts extra context
+    **kwargs: object  # Accepts extra context
 ) -> str:
     """Builds the prompt for generating K4/K5/K6 narratives."""
     template = _get_prompt_template("artist_narrative")
@@ -517,8 +516,7 @@ def build_overview_generation_prompt(
     word_count_range: Tuple[int, int],
     thematic_analysis: 'ThematicAnalysis',
     job_description: str,
-    **kwargs
-) -> str:
+    **kwargs: Dict[str, object]) -> str:
     """Builds the prompt for generating an experience overview."""
     template = _get_prompt_template("artist_overview_generation")
     

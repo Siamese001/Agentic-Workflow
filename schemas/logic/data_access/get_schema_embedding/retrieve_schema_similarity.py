@@ -242,39 +242,49 @@ class SchemaSimilarityRetriever:
         
         return compatible_schemas
 
+    def _extract_from_properties(self, obj: Dict[str, Any], prefix: str, fields: Dict[str, str]) -> None:
+        """Extract fields from properties format."""
+        for key, value in obj["properties"].items():
+            field_name = f"{prefix}.{key}" if prefix else key
+            field_type = value.get("type", "unknown")
+            fields[field_name] = field_type
+            self._extract_fields_recursive(value, field_name, fields)
+    
+    def _extract_from_fields(self, obj: Dict[str, Any], prefix: str, fields: Dict[str, str]) -> None:
+        """Extract fields from fields format."""
+        for key, value in obj["fields"].items():
+            field_name = f"{prefix}.{key}" if prefix else key
+            field_type = value.get("type", "unknown")
+            fields[field_name] = field_type
+            self._extract_fields_recursive(value, field_name, fields)
+    
+    def _extract_direct_fields(self, obj: Dict[str, Any], prefix: str, fields: Dict[str, str]) -> None:
+        """Extract direct fields from object."""
+        for key, value in obj.items():
+            if key in ["type", "required", "description"]:
+                continue
+            field_name = f"{prefix}.{key}" if prefix else key
+            if isinstance(value, dict) and "type" in value:
+                fields[field_name] = value["type"]
+            else:
+                fields[field_name] = type(value).__name__.lower()
+    
+    def _extract_fields_recursive(self, obj: object, prefix: str, fields: Dict[str, str]) -> None:
+        """Recursively extract fields from nested schema objects."""
+        if not isinstance(obj, dict):
+            return
+        
+        if "properties" in obj:
+            self._extract_from_properties(obj, prefix, fields)
+        elif "fields" in obj:
+            self._extract_from_fields(obj, prefix, fields)
+        else:
+            self._extract_direct_fields(obj, prefix, fields)
+    
     def _extract_fields_with_types(self, schema: Dict[str, Any]) -> Dict[str, str]:
         """Extract field names and their types from a schema."""
         fields = {}
-        
-        def extract_recursive(obj, prefix=""):
-            if isinstance(obj, dict):
-                # Handle JSON Schema format
-                if "properties" in obj:
-                    for key, value in obj["properties"].items():
-                        field_name = f"{prefix}.{key}" if prefix else key
-                        field_type = value.get("type", "unknown")
-                        fields[field_name] = field_type
-                        extract_recursive(value, field_name)
-                
-                # Handle other formats
-                elif "fields" in obj:
-                    for key, value in obj["fields"].items():
-                        field_name = f"{prefix}.{key}" if prefix else key
-                        field_type = value.get("type", "unknown")
-                        fields[field_name] = field_type
-                        extract_recursive(value, field_name)
-                
-                # Handle direct fields
-                else:
-                    for key, value in obj.items():
-                        if key not in ["type", "required", "description"]:
-                            field_name = f"{prefix}.{key}" if prefix else key
-                            if isinstance(value, dict) and "type" in value:
-                                fields[field_name] = value["type"]
-                            else:
-                                fields[field_name] = type(value).__name__.lower()
-        
-        extract_recursive(schema)
+        self._extract_fields_recursive(schema, "", fields)
         return fields
 
     def _compute_structural_similarity(self, source_fields: Dict[str, str], 
@@ -455,7 +465,7 @@ class SchemaSimilarityRetriever:
 # Factory function for easy instantiation
 def create_schema_similarity_retriever(
     default_method: str = "hybrid",
-    **kwargs
+    **kwargs: object
 ) -> SchemaSimilarityRetriever:
     """Create a configured schema similarity retriever."""
     config = SchemaSimilarityConfig(

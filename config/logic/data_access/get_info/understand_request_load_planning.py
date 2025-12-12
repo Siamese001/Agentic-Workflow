@@ -450,7 +450,7 @@ def create_config_load_planner(
     enable_validation: bool = True,
     enable_type_checking: bool = True,
     enable_default_values: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ConfigLoadPlanner:
     """Create a configured config load planner."""
     config = ConfigLoadConfig(
@@ -503,6 +503,7 @@ def plan_config_load(
     
     # Convert result to dict for JSON serialization
     def serialize_section(section: ConfigSection) -> Dict[str, Any]:
+        """Serialize a ConfigSection to a dictionary for JSON output."""
         return {
             "name": section.name,
             "parameters": [

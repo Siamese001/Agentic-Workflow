@@ -74,7 +74,7 @@ class TestLogicGuardrails:
     def test_input_sanitization(self):
         """Inputs are sanitized before processing."""
         raw_input = "  Hello <script>alert('xss')</script> World  "
-        import scripts.check_canonical_structure
+        import scripts.validation.check_canonical_structure
         sanitized = re.sub(r'<[^>]+>', '', raw_input).strip()
         assert "<script>" not in sanitized
         assert sanitized == "Hello alert('xss') World"

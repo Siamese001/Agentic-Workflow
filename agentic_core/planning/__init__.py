@@ -1,4 +1,1 @@
-"""Configuration module for Agentic Workflow v10_10."""
-
-
-
+"""Agentic core planning module."""

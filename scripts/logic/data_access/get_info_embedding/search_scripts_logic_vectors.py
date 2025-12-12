@@ -380,8 +380,7 @@ def create_scripts_logic_vector_searcher(
     index_name: str = "scripts_logic",
     dimension: int = 1536,
     distance_metric: str = "cosine",
-    **kwargs
-) -> ScriptsLogicVectorSearcher:
+    **kwargs: Dict[str, object]) -> ScriptsLogicVectorSearcher:
     """Create a configured scripts logic vector searcher."""
     config = VectorIndexConfig(
         index_name=index_name,

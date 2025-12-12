@@ -956,7 +956,7 @@ class TestPerformance:
 # SUMMARY REPORT
 # ============================================================================
 
-def test_suite_summary():
+def test_suite_summary() -> None:
     """Print test suite summary"""
     print("\n" + "="*80)
     print("LIC v11.2 Test Suite Summary")

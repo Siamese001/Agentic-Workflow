@@ -417,16 +417,16 @@ class ObservabilityLoadPlanner:
 
 # Factory function for easy instantiation
 def create_observability_load_planner(
-    enable_metrics: bool = True,
-    enable_logs: bool = True,
-    enable_traces: bool = True,
-    **kwargs
+    max_metrics: int = 100,
+    max_logs: int = 100,
+    max_traces: int = 100,
+    **kwargs: object
 ) -> ObservabilityLoadPlanner:
     """Create a configured observability load planner."""
     config = ObservabilityLoadConfig(
-        enable_metrics=enable_metrics,
-        enable_logs=enable_logs,
-        enable_traces=enable_traces,
+        max_metrics=max_metrics,
+        max_logs=max_logs,
+        max_traces=max_traces,
         **kwargs
     )
     return ObservabilityLoadPlanner(config)

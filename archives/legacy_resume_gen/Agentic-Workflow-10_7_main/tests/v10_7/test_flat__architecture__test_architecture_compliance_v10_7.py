@@ -171,7 +171,7 @@ def _extract_imports(tree: ast.Module):
 
 
 @pytest.mark.architecture
-def test_no_circular_imports():
+def test_no_circular_imports() -> None:
     """
     Builds a simple dependency graph and ensures no A → B → A cycles.
     We only check stack files because other layers have external deps.

@@ -342,32 +342,51 @@ class ObservabilityOperationAdapter:
         }
         return f"obs_op_{hash(json.dumps(key_data, sort_keys=True))}"
 
+    def _group_by_type(self, data: List[Any]) -> Dict[str, List[Any]]:
+        """Group data items by their type."""
+        groups = {}
+        for item in data:
+            item_type = type(item).__name__
+            if item_type not in groups:
+                groups[item_type] = []
+            groups[item_type].append(item)
+        return groups
+    
+    def _aggregate_numeric(self, data: List[Any], method: str) -> Optional[Dict[str, float]]:
+        """Aggregate numeric data."""
+        if not data or not all(isinstance(d, (int, float)) for d in data):
+            return None
+        
+        if method == "sum":
+            return {"sum": sum(data)}
+        elif method == "average":
+            return {"average": sum(data) / len(data)}
+        return None
+    
+    def _aggregate_by_method(self, data: List[Any], aggregation: str) -> Union[Dict[str, Any], List[Any]]:
+        """Perform specific aggregation method on data."""
+        if aggregation == "count":
+            return {"total": len(data)}
+        
+        if aggregation in ("sum", "average"):
+            result = self._aggregate_numeric(data, aggregation)
+            if result:
+                return result
+        
+        if aggregation == "unique":
+            return {"unique_items": list(set(data))}
+        
+        if aggregation == "group_by":
+            return self._group_by_type(data)
+        
+        return data
+
     def _aggregate_data(self, data: List[Any], aggregation: Optional[str]) -> Union[Dict[str, Any], List[Any]]:
         """Aggregate data based on aggregation method."""
         if not aggregation:
             return data
         
-        if aggregation == "count":
-            return {"total": len(data)}
-        elif aggregation == "sum":
-            if data and all(isinstance(d, (int, float)) for d in data):
-                return {"sum": sum(data)}
-        elif aggregation == "average":
-            if data and all(isinstance(d, (int, float)) for d in data):
-                return {"average": sum(data) / len(data)}
-        elif aggregation == "unique":
-            return {"unique_items": list(set(data))}
-        elif aggregation == "group_by":
-            # Simple grouping by type
-            groups = {}
-            for item in data:
-                item_type = type(item).__name__
-                if item_type not in groups:
-                    groups[item_type] = []
-                groups[item_type].append(item)
-            return groups
-        
-        return data
+        return self._aggregate_by_method(data, aggregation)
 
     def _calculate_aggregated_values(self, data: List[Any]) -> Dict[str, float]:
         """Calculate aggregated values from data."""
@@ -467,7 +486,7 @@ def create_observability_operation_adapter(
     timeout: float = 30.0,
     retry_attempts: int = 3,
     enable_caching: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityOperationAdapter:
     """Create a configured observability operation adapter."""
     config = OperationConfig(

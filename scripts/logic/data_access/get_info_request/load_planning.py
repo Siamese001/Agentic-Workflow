@@ -356,8 +356,7 @@ class ScriptsLoadPlanner:
 def create_scripts_load_planner(
     enable_parallel_loading: bool = True,
     enable_validation: bool = True,
-    **kwargs
-) -> ScriptsLoadPlanner:
+    **kwargs: Dict[str, object]) -> ScriptsLoadPlanner:
     """Create a configured scripts load planner."""
     config = LoadPlanningConfig(
         enable_parallel_loading=enable_parallel_loading,

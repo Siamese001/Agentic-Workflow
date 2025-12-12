@@ -15,7 +15,7 @@ def _load_baseline(path: Path) -> dict:
         return json.load(f)
 
 
-def test_baseline_files_exist():
+def test_baseline_files_exist() -> None:
     """
     Sanity check so a missing baseline file fails with a clear message,
     not a cryptic JSON/IO error.
@@ -24,7 +24,7 @@ def test_baseline_files_exist():
     assert V10_7_BASELINE.exists(), f"Missing: {V10_7_BASELINE}"
 
 
-def test_top_level_sections_preserved():
+def test_top_level_sections_preserved() -> None:
     """
     API envelope invariant:
     All top-level sections that existed previously must still exist in v10.7.
@@ -48,7 +48,7 @@ def test_top_level_sections_preserved():
     # assert not extra, f"Unexpected new top-level sections in v10.7: {sorted(extra)}"
 
 
-def test_strategy_schema_evolution_superset():
+def test_strategy_schema_evolution_superset() -> None:
     """
     Strategy schema evolution:
 
@@ -94,7 +94,7 @@ def test_strategy_schema_evolution_superset():
     )
 
 
-def test_qa_schema_evolution_superset():
+def test_qa_schema_evolution_superset() -> None:
     """
     QA schema evolution:
 
@@ -140,7 +140,7 @@ def test_qa_schema_evolution_superset():
     )
 
 
-def test_no_contract_regression_on_fields():
+def test_no_contract_regression_on_fields() -> None:
     """
     Global contract check:
 

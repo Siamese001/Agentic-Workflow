@@ -429,7 +429,7 @@ def sample_master_resume():
 # SECTION 2: v10.3/4 PYDANTIC VALIDATION TESTS (Preserved)
 # ============================================================================
 
-def test_pydantic_models_validation_error():
+def test_pydantic_models_validation_error() -> None:
     """v10.3: Test Pydantic models raise errors on malformed LLM output."""
     malformed_data = {
         "score": "this should be a float",
@@ -439,14 +439,14 @@ def test_pydantic_models_validation_error():
     model, error = validator.validate(malformed_data, CritiqueResult)
     assert model is None and error is not None and "Input should be a valid number" in error
 
-def test_pydantic_models_validation_error_string_input():
+def test_pydantic_models_validation_error_string_input() -> None:
     """v10.3: Test Pydantic validator parses string then raises error."""
     malformed_string = 'Here is the JSON: { "unsupported_claims": "zero", "feedback": "good" }'
     validator = ResponseValidator()
     model, error = validator.validate(malformed_string, QAClaimOutput)
     assert model is None and error is not None and "Input should be a valid integer" in error
 
-def test_pydantic_models_success():
+def test_pydantic_models_success() -> None:
     """v10.3: Test Pydantic models parse correct LLM output."""
     good_data = {
         "score": 8.5,
@@ -456,7 +456,7 @@ def test_pydantic_models_success():
     model, error = validator.validate(good_data, CritiqueResult)
     assert error is None and isinstance(model, CritiqueResult) and model.score == 8.5
 
-def test_pydantic_models_success_string_input():
+def test_pydantic_models_success_string_input() -> None:
     """v10.3: Test Pydantic validator parses correct JSON from a string."""
     good_string = 'Thought: Blah. {"verified_bullets": ["bullet 1", "bullet 2"]}'
     validator = ResponseValidator()
@@ -522,7 +522,7 @@ async def test_conductor_circuit_breaker_opens(mock_workflow_context, mock_llm_c
     assert conductor.tools["red_team_critique"]._run_async_internal.call_count == 3
     assert conductor.tool_breakers["red_team_critique"].is_open is True
 
-def test_circuit_breaker_resets_on_success():
+def test_circuit_breaker_resets_on_success() -> None:
     """(Resilience) Circuit breaker resets counter on successful job."""
     breaker = CircuitBreaker(failure_threshold=3)
     breaker.record_failure(); breaker.record_failure()
@@ -621,12 +621,12 @@ def test_architecture_dependency_injection_v10_5(mock_workflow_context):
     assert hasattr(conductor, 'budget_manager')
     assert hasattr(conductor.context, 'semantic_validator') # v10.5 (Fix #13)
 
-def test_main_removes_global_config():
+def test_main_removes_global_config() -> None:
     """(Cat 3) Test that main_v10_5.py does not have a global CONFIG."""
     import archives.legacy_resume_gen.Older Microservices Models.v10.5.main_v10_5
     assert not hasattr(main_v10_5, 'CONFIG')
 
-def test_batch_removes_global_config():
+def test_batch_removes_global_config() -> None:
     """(Cat 3) Test that run_batch_v10_5.py does not have a global CONFIG."""
     import archives.legacy_resume_gen.Older Microservices Models.v10.5.run_batch_v10_5
     assert not hasattr(run_batch_v10_5, 'CONFIG')
@@ -765,7 +765,7 @@ async def test_tool_handles_malformed_json_v10_5(mock_workflow_context, mock_llm
     with pytest.raises(PydanticSchemaError):
         await tool.run_async({"strategy": "test"}, "test-wf")
 
-def test_contract_pydantic_value_range():
+def test_contract_pydantic_value_range() -> None:
     """(Cat 7) CONTRACT: Pydantic models enforce value ranges (e.g., score 0-10)."""
     validator = ResponseValidator()
     invalid_data = {"score": 11.0, "suggestions": ["Too high"]}
@@ -828,7 +828,7 @@ async def test_contract_bias_detector_uses_hot_reload_rules(mock_workflow_contex
 # SECTION 8: PRESERVED COST & BATCH TESTS (Preserved)
 # ============================================================================
 
-def test_batch_feedback_aggregator():
+def test_batch_feedback_aggregator() -> None:
     """(Batch) BatchFeedbackAggregator calculates batch health correctly."""
     aggregator = BatchFeedbackAggregator()
     aggregator.add_job_result({"status": "SUCCESS", "cost": 2.5})
@@ -892,7 +892,7 @@ def test_meta_learning_graph_tool_gen_route(mock_workflow_context):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_determinism_local_pii_sanitizer():
+async def test_determinism_local_pii_sanitizer() -> None:
     """(Determinism) Test determinism of local PII sanitizer."""
     # v10.5 PATCH FIX: PIISanitizerAgent.run is synchronous, do not await
     sanitizer = PIISanitizerAgent(MagicMock())
@@ -910,7 +910,7 @@ async def test_determinism_local_bias_detector(mock_workflow_context):
     result1 = detector.run(text, "wf1"); result2 = detector.run(text, "wf2")
     assert result1 == result2 and result1["bias_detected"] is True
 
-def test_determinism_context_budget_manager():
+def test_determinism_context_budget_manager() -> None:
     """(Determinism) Test determinism of context budget manager."""
     manager = ContextBudgetManager(default_token_limit=10, buffer=0.0)
     long_text = "a" * 100
@@ -934,7 +934,7 @@ async def test_self_consistency_caching(mock_workflow_context, mock_llm_client):
     mock_llm_client._api_call_mock.assert_called_once()
     assert result1 == result2 and result1[0]["critique"]["suggestions"] == ["Cached result"]
 
-def test_determinism_pydantic_parsing():
+def test_determinism_pydantic_parsing() -> None:
     """(Determinism) Test validator deterministically parses identical strings."""
     validator = ResponseValidator()
     text1 = 'Thought: Blah. {"score": 9.0, "suggestions": ["Test"]}'
@@ -943,7 +943,7 @@ def test_determinism_pydantic_parsing():
     model2, err2 = validator.validate(text2, CritiqueResult)
     assert err1 is None and err2 is None and model1 == model2
 
-def test_determinism_state_serialization():
+def test_determinism_state_serialization() -> None:
     """(Determinism) Test MainGraphState to_dict/from_dict is deterministic."""
     state1 = MainGraphState()
     state1.job.raw_jd = "Test JD"

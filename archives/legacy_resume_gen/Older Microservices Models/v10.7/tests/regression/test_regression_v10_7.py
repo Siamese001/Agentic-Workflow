@@ -3,7 +3,7 @@ import pytest
 
 
 @pytest.mark.regression
-def test_output_backward_compatibility():
+def test_output_backward_compatibility() -> None:
     prev = json.load(open("tests/baseline_outputs_previous.json"))
     new = json.load(open("tests/baseline_outputs_v10_7.json"))
     for k in prev.keys():
@@ -11,5 +11,5 @@ def test_output_backward_compatibility():
 
 
 @pytest.mark.xfail(reason="Add additional regression tests for model drift and scoring consistency", strict=False)
-def test_placeholder():
+def test_placeholder() -> None:
     pytest.xfail("Add additional regression tests for model drift and scoring consistency")

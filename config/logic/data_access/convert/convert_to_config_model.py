@@ -37,7 +37,7 @@ class ConfigField:
     name: str
     type: str
     required: bool = False
-    default_value: Any = None
+    default_value: object = None
     description: str = ""
     env_var: Optional[str] = None
     validator: Optional[str] = None
@@ -330,14 +330,14 @@ class ConfigModelConverter:
         
         return converted, errors, warnings
 
-    def _convert_type(self, value: Any, target_type: str) -> Any:
+    def _convert_type(self, value: object, target_type: str) -> object:
         """Convert value to target type."""
         if target_type in self._type_converters:
             return self._type_converters[target_type](value)
         else:
             return value
 
-    def _validate_field(self, value: Any, validator: str) -> bool:
+    def _validate_field(self, value: object, validator: str) -> bool:
         """Validate field value using validator."""
         # Built-in validators
         if validator == "positive":
@@ -382,7 +382,7 @@ def create_config_model_converter(
     mode: str = "lenient",
     preserve_unknown: bool = True,
     convert_types: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ConfigModelConverter:
     """Create a configured config model converter."""
     config = ConversionConfig(

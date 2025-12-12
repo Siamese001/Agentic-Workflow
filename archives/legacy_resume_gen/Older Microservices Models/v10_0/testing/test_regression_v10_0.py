@@ -592,7 +592,7 @@ class TestV99IntegrationScenarios:
 # REGRESSION TEST SUMMARY
 # ============================================================================
 
-def test_regression_summary():
+def test_regression_summary() -> None:
     """Print regression test summary"""
     print("\n" + "="*80)
     print("REGRESSION TEST SUITE SUMMARY")

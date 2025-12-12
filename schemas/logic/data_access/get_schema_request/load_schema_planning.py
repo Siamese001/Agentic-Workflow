@@ -438,8 +438,7 @@ class SchemaLoadPlanner:
 def create_schema_load_planner(
     enable_validation: bool = True,
     enable_transforms: bool = True,
-    **kwargs
-) -> SchemaLoadPlanner:
+    **kwargs: Dict[str, object]) -> SchemaLoadPlanner:
     """Create a configured schema load planner."""
     config = SchemaLoadConfig(
         enable_validation=enable_validation,

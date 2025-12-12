@@ -3,14 +3,14 @@ import pytest
 
 
 @pytest.mark.data
-def test_structure_preserved_after_sanitization():
+def test_structure_preserved_after_sanitization() -> None:
     inp = {"email": "a@b.com", "name": "John"}
     out = PIISanitizerAgent().sanitize(inp)
     assert set(inp.keys()) == set(out.keys())
 
 
 @pytest.mark.data
-def test_analyzer_adds_confidence_field():
+def test_analyzer_adds_confidence_field() -> None:
     out = QAAgent().evaluate("sample")
     assert "confidence" in out
 
@@ -19,7 +19,7 @@ def test_analyzer_adds_confidence_field():
     reason="Add 13 transformation tests on Analyzer, Enricher, Validator, Aggregator",
     strict=False,
 )
-def test_placeholder():
+def test_placeholder() -> None:
     pytest.xfail(
         "Add 13 transformation tests on Analyzer, Enricher, Validator, Aggregator"
     )

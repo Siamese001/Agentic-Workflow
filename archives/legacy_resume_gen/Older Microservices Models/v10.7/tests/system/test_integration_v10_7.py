@@ -3,14 +3,14 @@ from archives.legacy_resume_gen.Older Microservices Models.v10.7.workflow.runner
 
 
 @pytest.mark.integration
-def test_parallel_branch_merge():
+def test_parallel_branch_merge() -> None:
     ctx = {"resume": "multi_branch_case", "jd": "AI Director"}
     result = run_workflow(ctx)
     assert "merged_output" in result
 
 
 @pytest.mark.integration
-def test_hil_trigger_on_ambiguity():
+def test_hil_trigger_on_ambiguity() -> None:
     ctx = {"resume": "confused output"}
     out = run_workflow(ctx)
     assert "HIL" in out["events"]
@@ -20,7 +20,7 @@ def test_hil_trigger_on_ambiguity():
     reason="Add 18 integration flow tests for cache, async merges, and redis persistence",
     strict=False,
 )
-def test_placeholder():
+def test_placeholder() -> None:
     pytest.xfail(
         "Add 18 integration flow tests for cache, async merges, and redis persistence"
     )

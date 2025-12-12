@@ -178,7 +178,7 @@ class ObservabilityOperationPerformer:
             )
 
     def perform_operation_stream(self, context: OperationExecutionContext,
-                                inputs: Dict[str, Any]) -> Any:
+                                inputs: Dict[str, Any]) -> object:
         """Perform operation with streaming output.
         
         Args:
@@ -375,6 +375,30 @@ class ObservabilityOperationPerformer:
             artifacts=all_artifacts
         )
 
+    def _validate_input_field_type(self, field_name: str, value: Any, expected_type: str) -> Optional[str]:
+        """Validate a single input field type and return error message if invalid."""
+        type_validators = {
+            "string": lambda v: isinstance(v, str),
+            "integer": lambda v: isinstance(v, int),
+            "float": lambda v: isinstance(v, (int, float)),
+            "boolean": lambda v: isinstance(v, bool),
+            "array": lambda v: isinstance(v, list),
+            "object": lambda v: isinstance(v, dict)
+        }
+        
+        validator = type_validators.get(expected_type)
+        if validator and not validator(value):
+            type_names = {
+                "string": "string",
+                "integer": "integer",
+                "float": "number",
+                "boolean": "boolean",
+                "array": "array",
+                "object": "object"
+            }
+            return f"Field {field_name} must be {type_names.get(expected_type, 'valid type')}"
+        return None
+
     def _validate_inputs(self, inputs: Dict[str, Any],
                         operation_def: ToolOperationDefinition) -> List[str]:
         """Validate operation inputs."""
@@ -390,18 +414,9 @@ class ObservabilityOperationPerformer:
                 expected_type = field_def.get("type")
                 value = inputs[field_name]
                 
-                if expected_type == "string" and not isinstance(value, str):
-                    errors.append(f"Field {field_name} must be string")
-                elif expected_type == "integer" and not isinstance(value, int):
-                    errors.append(f"Field {field_name} must be integer")
-                elif expected_type == "float" and not isinstance(value, (int, float)):
-                    errors.append(f"Field {field_name} must be number")
-                elif expected_type == "boolean" and not isinstance(value, bool):
-                    errors.append(f"Field {field_name} must be boolean")
-                elif expected_type == "array" and not isinstance(value, list):
-                    errors.append(f"Field {field_name} must be array")
-                elif expected_type == "object" and not isinstance(value, dict):
-                    errors.append(f"Field {field_name} must be object")
+                type_error = self._validate_input_field_type(field_name, value, expected_type)
+                if type_error:
+                    errors.append(type_error)
         
         return errors
 
@@ -435,9 +450,8 @@ class ObservabilityOperationPerformer:
             execution_time=time.time() - start_time
         )
 
-    def _initialize_operations(self) -> None:
-        """Initialize built-in operations."""
-        # Trace analysis operation
+    def _create_trace_operation(self) -> tuple:
+        """Create trace analysis operation and handler."""
         trace_op = ToolOperationDefinition(
             operation_id="trace_analysis",
             tool_name="trace_analyzer",
@@ -454,23 +468,20 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.SERVICE
         )
         
-        def _trace_analysis_handler(inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-            trace_data = inputs.get("trace_data", {})
-            analysis_type = inputs.get("analysis_type", "performance")
-            
+        def _trace_analysis_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             return {
                 "insights": [
                     {"type": "slow_span", "description": "Database query took 500ms"},
                     {"type": "error_rate", "description": "5% error rate detected"}
                 ],
-                "recommendations": [
-                    "Add database index",
-                    "Implement retry logic"
-                ],
+                "recommendations": ["Add database index", "Implement retry logic"],
                 "metrics": {"spans_analyzed": 10, "processing_time": 0.1}
             }
         
-        # Metric aggregation operation
+        return trace_op, _trace_analysis_handler
+    
+    def _create_metric_operation(self) -> tuple:
+        """Create metric aggregation operation and handler."""
         metric_op = ToolOperationDefinition(
             operation_id="metric_aggregation",
             tool_name="metric_aggregator",
@@ -488,23 +499,21 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.SYSTEM
         )
         
-        def _metric_aggregation_handler(inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+        def _metric_aggregation_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             metrics = inputs.get("metrics", [])
-            aggregation = inputs.get("aggregation", "avg")
-            
             return {
                 "aggregated_metrics": {
                     "cpu_usage": {"avg": 45.2, "max": 78.5, "min": 12.1},
                     "memory_usage": {"avg": 67.8, "max": 89.2, "min": 34.5}
                 },
-                "statistics": {
-                    "total_metrics": len(metrics),
-                    "time_range": "1h"
-                },
+                "statistics": {"total_metrics": len(metrics), "time_range": "1h"},
                 "metrics": {"metrics_processed": len(metrics)}
             }
         
-        # Log correlation operation
+        return metric_op, _metric_aggregation_handler
+    
+    def _create_log_operation(self) -> tuple:
+        """Create log correlation operation and handler."""
         log_op = ToolOperationDefinition(
             operation_id="log_correlation",
             tool_name="log_correlator",
@@ -521,9 +530,8 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.REQUEST
         )
         
-        def _log_correlation_handler(inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+        def _log_correlation_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             log_entries = inputs.get("log_entries", [])
-            
             return {
                 "correlated_logs": [
                     {"service": "api", "message": "Request received"},
@@ -537,10 +545,17 @@ class ObservabilityOperationPerformer:
                 "metrics": {"logs_correlated": len(log_entries)}
             }
         
-        # Register built-in operations
-        self.register_operation(trace_op, _trace_analysis_handler)
-        self.register_operation(metric_op, _metric_aggregation_handler)
-        self.register_operation(log_op, _log_correlation_handler)
+        return log_op, _log_correlation_handler
+
+    def _initialize_operations(self) -> None:
+        """Initialize built-in operations."""
+        trace_op, trace_handler = self._create_trace_operation()
+        metric_op, metric_handler = self._create_metric_operation()
+        log_op, log_handler = self._create_log_operation()
+        
+        self.register_operation(trace_op, trace_handler)
+        self.register_operation(metric_op, metric_handler)
+        self.register_operation(log_op, log_handler)
 
 
 # Factory function for easy instantiation
@@ -548,7 +563,7 @@ def create_observability_operation_performer(
     default_timeout: float = 30.0,
     enable_tracing: bool = True,
     enable_metrics: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityOperationPerformer:
     """Create a configured observability operation performer."""
     config = OperationExecutionConfig(

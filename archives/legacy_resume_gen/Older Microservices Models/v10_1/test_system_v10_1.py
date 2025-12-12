@@ -561,7 +561,7 @@ async def test_cost_accumulation_across_agents(mock_workflow_context, mock_llm_c
     # Should be approximately $3.00
     assert 2.5 <= summary["total_workflow_cost"] <= 3.5
 
-def test_circuit_breaker_opens_after_threshold():
+def test_circuit_breaker_opens_after_threshold() -> None:
     """COST: Circuit breaker opens after hitting failure threshold."""
     breaker = CircuitBreaker(failure_threshold=3)
     
@@ -579,7 +579,7 @@ def test_circuit_breaker_opens_after_threshold():
     with pytest.raises(CircuitBreakerOpenError):
         breaker.check()
 
-def test_circuit_breaker_resets_on_success():
+def test_circuit_breaker_resets_on_success() -> None:
     """COST: Circuit breaker resets counter on successful job."""
     breaker = CircuitBreaker(failure_threshold=3)
     
@@ -590,7 +590,7 @@ def test_circuit_breaker_resets_on_success():
     assert breaker.failure_count == 0
     assert breaker.is_open is False
 
-def test_batch_feedback_aggregator():
+def test_batch_feedback_aggregator() -> None:
     """COST: BatchFeedbackAggregator calculates batch health correctly."""
     aggregator = BatchFeedbackAggregator()
     
@@ -1271,7 +1271,7 @@ async def test_regression_cost_baseline():
     # Should be under baseline (allowing 10% margin)
     assert summary["total_workflow_cost"] <= baseline_cost * 1.10
 
-def test_regression_tool_count():
+def test_regression_tool_count() -> None:
     """REGRESSION: Ensure all 15 tools are still present."""
     drafting_tools = [
         DraftingStrategistTool,
@@ -1443,7 +1443,7 @@ async def test_e2e_global_replanner_trigger(mock_workflow_context):
 # SECTION 2: CONTRACT ENFORCEMENT TESTS (10 TESTS)
 # ============================================================================
 
-def test_contract_pii_removal():
+def test_contract_pii_removal() -> None:
     """Contract Test 1: PIISanitizer removes PII as promised."""
     context = MagicMock()
     sanitizer = PIISanitizerAgent(context)
@@ -1751,7 +1751,7 @@ async def test_functional_critique_adds_scores():
     assert "critique" in result[0]
     assert "score" in result[0]["critique"]
 
-def test_functional_bias_detector_finds_issues():
+def test_functional_bias_detector_finds_issues() -> None:
     """Functional Test 4: Bias detector identifies problematic language."""
     context = MagicMock()
     context.rules_loader = MagicMock()
@@ -1772,7 +1772,7 @@ def test_functional_bias_detector_finds_issues():
     # Should flag the issue
     assert result["bias_detected"] is True or len(result.get("matches", [])) > 0
 
-def test_functional_sanitizer_transforms_data():
+def test_functional_sanitizer_transforms_data() -> None:
     """Functional Test 5: Sanitizer transforms input data."""
     context = MagicMock()
     sanitizer = PIISanitizerAgent(context)
@@ -1790,7 +1790,7 @@ def test_functional_sanitizer_transforms_data():
 # SECTION 4: MOCK DETECTION TESTS (3 TESTS)
 # ============================================================================
 
-def test_mock_detection_tfidf_not_embeddings():
+def test_mock_detection_tfidf_not_embeddings() -> None:
     """Mock Detection Test 1: GraphSearch uses TF-IDF (simulated, not mock)."""
     context = MagicMock()
     tool = GraphSearchTool(context)
@@ -1804,7 +1804,7 @@ def test_mock_detection_tfidf_not_embeddings():
     assert isinstance(vec, dict)  # Counter object
     assert len(vec) > 0
 
-def test_mock_detection_no_identity_functions():
+def test_mock_detection_no_identity_functions() -> None:
     """Mock Detection Test 2: No agents return input.copy()."""
     context = MagicMock()
     
@@ -1818,7 +1818,7 @@ def test_mock_detection_no_identity_functions():
     assert "test@test.com" not in json.dumps(result)
 
 @pytest.mark.asyncio
-async def test_mock_detection_no_hardcoded_responses():
+async def test_mock_detection_no_hardcoded_responses() -> None:
     """Mock Detection Test 3: LLM responses not hardcoded."""
     context = MagicMock()
     mock_client1 = AsyncMock()
@@ -1848,7 +1848,7 @@ async def test_mock_detection_no_hardcoded_responses():
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_transformation_synthetic_differs_from_source():
+async def test_transformation_synthetic_differs_from_source() -> None:
     """Transformation Test 1: Synthetic bullets differ from source bullets."""
     context = MagicMock()
     mock_client = AsyncMock()

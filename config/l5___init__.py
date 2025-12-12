@@ -60,6 +60,53 @@ def safety_gate(result: Any) -> bool:
     return True
 
 
+def _extract_severity_string(severity: Any) -> str:
+    """Extract severity string from severity object."""
+    if not severity:
+        return 'unknown'
+    return severity.value if hasattr(severity, 'value') else str(severity)
+
+def _process_finding(finding: Any) -> tuple[Optional[str], Dict[str, object]]:
+    """Process a single finding and return (severity_str, finding_dict)."""
+    severity = getattr(finding, 'severity', None)
+    severity_str = _extract_severity_string(severity)
+    
+    finding_dict = {
+        'check_id': getattr(finding, 'id', 'unknown'),
+        'category': getattr(finding, 'type', getattr(finding, 'category', 'unknown')),
+        'severity': severity_str,
+        'message': getattr(finding, 'message', ''),
+    }
+    
+    return severity_str, finding_dict
+
+def _determine_max_severity(findings: list) -> tuple[Optional[str], list]:
+    """Determine maximum severity from findings and collect finding info."""
+    max_severity = None
+    findings_list = []
+    
+    for finding in findings:
+        severity_str, finding_dict = _process_finding(finding)
+        findings_list.append(finding_dict)
+        
+        if severity_str in ('critical', 'high'):
+            max_severity = 'high'
+            break
+        elif severity_str == 'medium' and max_severity != 'high':
+            max_severity = 'medium'
+    
+    return max_severity, findings_list
+
+def _map_verdict_to_decision(verdict: Any) -> str:
+    """Map verdict object to decision string."""
+    verdict_str = verdict.value if hasattr(verdict, 'value') else str(verdict)
+    verdict_map = {
+        'block': 'block',
+        'review': 'replan',
+        'allow': 'allow'
+    }
+    return verdict_map.get(verdict_str, 'allow')
+
 def arbitrate_safety(
     safety_result: Any,
     council_vote: Any,
@@ -93,27 +140,7 @@ def arbitrate_safety(
     # Extract findings from safety_result
     if safety_result and hasattr(safety_result, 'findings'):
         findings = getattr(safety_result, 'findings', [])
-        
-        # Determine decision based on highest severity
-        max_severity = None
-        for finding in findings:
-            severity = getattr(finding, 'severity', None)
-            if severity:
-                severity_str = severity.value if hasattr(severity, 'value') else str(severity)
-                
-                if severity_str in ('critical', 'high'):
-                    max_severity = 'high'
-                    break
-                elif severity_str == 'medium' and max_severity != 'high':
-                    max_severity = 'medium'
-            
-            # Collect finding info
-            findings_list.append({
-                'check_id': getattr(finding, 'id', 'unknown'),
-                'category': getattr(finding, 'type', getattr(finding, 'category', 'unknown')),
-                'severity': severity_str if severity else 'unknown',
-                'message': getattr(finding, 'message', ''),
-            })
+        max_severity, findings_list = _determine_max_severity(findings)
         
         # Map severity to decision
         if max_severity == 'high':
@@ -130,17 +157,10 @@ def arbitrate_safety(
         # Extract verdict and reason from event if present
         if event:
             verdict = getattr(event, 'verdict', None)
-            event_reason = getattr(event, 'reason', None)
-            
             if verdict:
-                verdict_str = verdict.value if hasattr(verdict, 'value') else str(verdict)
-                if verdict_str == 'block':
-                    decision = 'block'
-                elif verdict_str == 'review':
-                    decision = 'replan'
-                elif verdict_str == 'allow':
-                    decision = 'allow'
+                decision = _map_verdict_to_decision(verdict)
             
+            event_reason = getattr(event, 'reason', None)
             if event_reason:
                 reason = str(event_reason)
     except Exception:

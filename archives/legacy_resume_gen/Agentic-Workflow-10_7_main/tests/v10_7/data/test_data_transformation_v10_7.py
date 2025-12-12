@@ -40,7 +40,7 @@ def test_summary_shorter_than_input(resume_text):
 # 2. Strategy Stack must enrich fields (context should exist)
 # --------------------------------------------------------------------
 @pytest.mark.data
-def test_strategy_includes_context_field():
+def test_strategy_includes_context_field() -> None:
     """
     v10.7 extends Strategy fields from ["steps","goal"] to ["steps","goal","context"].
     This verifies StrategyStack actually populates context.
@@ -57,7 +57,7 @@ def test_strategy_includes_context_field():
 # 3. QA stack must enrich with structured issues (not identity)
 # --------------------------------------------------------------------
 @pytest.mark.data
-def test_qa_issues_present_and_list_like():
+def test_qa_issues_present_and_list_like() -> None:
     """
     v10.7 QA block adds structured 'issues'.
     Ensures QAStack is not simply returning legacy fields.
@@ -121,7 +121,7 @@ def test_rag_results_semantically_distinct(query):
 # 6. Final resume object must have more fields than the original input
 # --------------------------------------------------------------------
 @pytest.mark.data
-def test_output_enriched_vs_input():
+def test_output_enriched_vs_input() -> None:
     """
     High-level check that the system as a whole adds value.
     The resume output should have more structure and fields

@@ -390,7 +390,7 @@ class ObservabilityExecutionEngine:
         return True
 
     def _evaluate_condition(self, condition: str,
-                           environment: Optional[ExecutionEnvironment]) -> Any:
+                           environment: Optional[ExecutionEnvironment]) -> object:
         """Evaluate a condition."""
         if environment:
             # Check environment variables
@@ -526,7 +526,7 @@ def create_observability_execution_engine(
     default_timeout: float = 30.0,
     max_concurrent_executions: int = 10,
     enable_queueing: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityExecutionEngine:
     """Create a configured observability execution engine."""
     config = ExecutionConfig(

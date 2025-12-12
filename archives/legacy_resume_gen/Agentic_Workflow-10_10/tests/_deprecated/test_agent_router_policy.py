@@ -4,7 +4,7 @@ from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile impo
 from archives.legacy_root_folders.core.models.models import AgentRole
 
 
-def test_choose_agents_for_strategy_task_prefers_planner():
+def test_choose_agents_for_strategy_task_prefers_planner() -> None:
     registry = AgentRegistry()
 
     planner = AgentCard(agent_id="planner-1", role=AgentRole.PLANNER, agent_type="planner")

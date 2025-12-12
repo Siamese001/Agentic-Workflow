@@ -9,7 +9,7 @@ from shared.reasoning_utils import CostTracker
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
 
 
-def test_cost_tracker_records_spans_and_cost():
+def test_cost_tracker_records_spans_and_cost() -> None:
     tracker = CostTracker()
 
     tracker.start_span("planning")
@@ -18,7 +18,7 @@ def test_cost_tracker_records_spans_and_cost():
     assert "planning" in tracker.spans
 
 
-def test_cost_tracker_snapshot_is_deterministic_copy():
+def test_cost_tracker_snapshot_is_deterministic_copy() -> None:
     tracker = CostTracker()
     tracker.start_span("execution")
 
@@ -90,7 +90,7 @@ import importlib
 # import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.telemetry_schema  # INVALID: Cannot import from path with hyphens
 
 
-def test_metric_event_instantiation():
+def test_metric_event_instantiation() -> None:
     tags = {"source": "unit-test", "env": "dev"}
     event = telemetry_schema.MetricEvent(name="requests", value=10.5, tags=tags)
 
@@ -99,7 +99,7 @@ def test_metric_event_instantiation():
     assert event.tags == tags
 
 
-def test_span_event_fields():
+def test_span_event_fields() -> None:
     tags = {"operation": "fetch", "status": "ok"}
     span = telemetry_schema.SpanEvent(
         name="http_request",
@@ -114,7 +114,7 @@ def test_span_event_fields():
     assert span.tags == tags
 
 
-def test_trace_context_spans_deterministic():
+def test_trace_context_spans_deterministic() -> None:
     span = telemetry_schema.SpanEvent(
         name="child_span",
         start_time_ms=2000,
@@ -130,7 +130,7 @@ def test_trace_context_spans_deterministic():
     assert list(context.spans.keys()) == ["span-1"]
 
 
-def test_module_has_no_side_effects():
+def test_module_has_no_side_effects() -> None:
     reloaded = importlib.reload(telemetry_schema)
     exported = {
         name
@@ -146,7 +146,7 @@ from shared.reasoning_utils import PolicyAutoTunerStub
 from shared.reasoning_utils import PredictiveCache
 
 
-def test_predictive_cache_set_get_deterministic():
+def test_predictive_cache_set_get_deterministic() -> None:
     cache = PredictiveCache()
     cache.set("alpha", {"value": 1})
 
@@ -154,7 +154,7 @@ def test_predictive_cache_set_get_deterministic():
     assert cache.get("missing") is None
 
 
-def test_predictive_cache_snapshot_is_copy():
+def test_predictive_cache_snapshot_is_copy() -> None:
     cache = PredictiveCache()
     cache.set("beta", {"count": 2})
 
@@ -166,7 +166,7 @@ def test_predictive_cache_snapshot_is_copy():
     assert "gamma" not in cache.cache
 
 
-def test_policy_auto_tuner_stub_suggests_deterministically():
+def test_policy_auto_tuner_stub_suggests_deterministically() -> None:
     tuner = PolicyAutoTunerStub()
     suggestion = tuner.suggest_config(state={}, metrics={})
 
@@ -177,7 +177,7 @@ def test_policy_auto_tuner_stub_suggests_deterministically():
     }
 
 
-def test_graph_orchestrator_exposes_predictive_cache_and_tuning_metadata():
+def test_graph_orchestrator_exposes_predictive_cache_and_tuning_metadata() -> None:
     orchestrator = GraphOrchestrator()
     result = orchestrator.orchestrate()
     final_state = result.state
@@ -204,7 +204,7 @@ def clear_telemetry_events():
     TELEMETRY_EVENTS.clear()
 
 
-def test_cost_tracker_spans():
+def test_cost_tracker_spans() -> None:
     tracker = CostTracker()
     tracker.start_span("planning")
     time.sleep(0.001)

@@ -95,7 +95,7 @@ def _build_agent(agent_cls, context):
 
 
 @pytest.mark.asyncio
-async def test_predictive_disabled_noop():
+async def test_predictive_disabled_noop() -> None:
     cfg = SimpleNamespace(predictive_caching_config=SimpleNamespace(enabled=False, max_background_tasks=1))
     pcm = PredictiveCacheManager(cfg, SimpleNamespace(), DummyMetricsCollector())
     called = False
@@ -111,7 +111,7 @@ async def test_predictive_disabled_noop():
 
 
 @pytest.mark.asyncio
-async def test_predictive_prefetch_embeddings():
+async def test_predictive_prefetch_embeddings() -> None:
     context, _, precompute_engine = _make_context(enabled=True)
     agent = _build_agent(RAG_SearchAgent, context)
 
@@ -132,7 +132,7 @@ async def test_predictive_prefetch_embeddings():
 
 
 @pytest.mark.asyncio
-async def test_predictive_prefetch_hyde():
+async def test_predictive_prefetch_hyde() -> None:
     context, _, precompute_engine = _make_context(enabled=True)
     agent = _build_agent(RAG_SearchAgent, context)
 
@@ -157,7 +157,7 @@ class _DummyStrategy:
 
 
 @pytest.mark.asyncio
-async def test_predictive_prompt_prefetch():
+async def test_predictive_prompt_prefetch() -> None:
     context, _, precompute_engine = _make_context(enabled=True)
     agent = _build_agent(PromptEngineerAgent, context)
 

@@ -306,7 +306,7 @@ class SchemaVectorSearcher:
         """Extract field names from schema."""
         fields = []
         
-        def extract_recursive(obj, prefix=""):
+        def extract_recursive(obj: object, prefix: str = "") -> None:
             if isinstance(obj, dict):
                 for key, value in obj.items():
                     field_name = f"{prefix}.{key}" if prefix else key
@@ -512,7 +512,7 @@ def create_schema_vector_searcher(
     dimension: int = 1536,
     enable_field_vectors: bool = True,
     similarity_threshold: float = 0.7,
-    **kwargs
+    **kwargs: object
 ) -> SchemaVectorSearcher:
     """Create a configured schema vector searcher."""
     config = SchemaVectorConfig(
