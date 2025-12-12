@@ -259,7 +259,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         if reasoning_config.rag_type == "AGENTIC":
             return RoutingTier.REASONING
         elif reasoning_config.temperature >= 0.7:
-            return RoutingTier.CREATIVE
+            return RoutingTier.BALANCED  # Changed from CREATIVE
         elif reasoning_config.temperature <= 0.3:
             return RoutingTier.SPEED
         else:
@@ -330,7 +330,10 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 
                 # Update workflow state progress
                 if self.workflow_state:
-                    self.workflow_state.current_k_node = i + 1
+                    # Find the actual position of this hop in the full execution order
+                    full_execution_order = self.get_execution_order()
+                    actual_position = full_execution_order.index(hop_id)
+                    self.workflow_state.current_k_node = actual_position + 1
             else:
                 results["hops_failed"].append(hop_id)
                 results["status"] = "FAILED"

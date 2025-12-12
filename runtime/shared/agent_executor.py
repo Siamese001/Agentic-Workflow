@@ -52,6 +52,7 @@ class AgentResponse:
     tool_calls: Optional[List[Dict[str, Any]]] = None
     raw_response: Optional[Any] = None
     interaction_id: Optional[str] = None  # For Google GenAI stateful continuations
+    metadata: Dict[str, Any] = field(default_factory=dict)  # Additional response metadata
 
 
 class AgentExecutor:
