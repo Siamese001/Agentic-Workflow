@@ -360,8 +360,3 @@ class TestResumeEngineIntegration:
             tailored = output["tailored_resume"]
             assert "_tailoring_metadata" in tailored
             assert "ats_keywords" in tailored
-            
-            print("\n=== MOCKED WORKFLOW COMPLETED ===")
-            print(f"Analysis extracted {len(analysis['hard_skills'])} hard skills")
-            print(f"Resume tailored with {len(tailored['ats_keywords'])} ATS keywords")
-            print(f"Execution time: {result.details.get('duration_ms', 0):.2f}ms")

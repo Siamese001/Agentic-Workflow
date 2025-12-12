@@ -195,7 +195,7 @@ def main() -> None:
         try:
             subprocess.run(["git", "add", str(dest_path)], capture_output=True, check=False)
             subprocess.run(["git", "rm", "--cached", str(src)], capture_output=True, check=False)
-        except:
+        except (FileNotFoundError, subprocess.SubprocessError, OSError):
             pass  # Git might not be available
     
     # Summary
