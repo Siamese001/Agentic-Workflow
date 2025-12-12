@@ -46,3 +46,4 @@ class ZeroLossMergeEngine:
 def execute(data: object, config: Optional[Dict] = None, **kwargs: Dict[str, object]) -> OperationResult:
     """Convenience function."""
     return ZeroLossMergeEngine(config).execute(data, **kwargs)
+

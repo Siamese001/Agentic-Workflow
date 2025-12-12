@@ -87,7 +87,7 @@ def build_librarian_strategic_analysis_prompt(
 
 def build_librarian_memory_query_prompt(
     query: str,
-    context_type: str = "general"
+    context_type: str = "standard"
 ) -> str:
     """
     Builds prompt for querying Librarian's persistent memory (ChromaDB).

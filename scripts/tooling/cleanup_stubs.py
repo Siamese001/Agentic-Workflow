@@ -2,7 +2,7 @@
 """
 STUB CLEANUP SCRIPT
 ===================
-Removes empty stub files and cleans up stub structures.
+Removes empty minimal files and cleans up stub structures.
 Preserves files with meaningful PENDING content for tracking.
 """
 
@@ -96,7 +96,7 @@ def remove_empty_directories(start_path: Path) -> List[str]:
     return removed
 
 def cleanup_stubs() -> Dict:
-    """Clean up stub files."""
+    """Clean up minimal files."""
     log = {
         "deleted_files": [],
         "kept_with_content": [],
@@ -146,7 +146,7 @@ def main() -> None:
             print(f"  ... and {len(log['errors']) - 5} more")
     
     # Show sample of deleted files
-    print(f"\nDeleted stub files ({len(log['deleted_files'])}):")
+    print(f"\nDeleted minimal files ({len(log['deleted_files'])}):")
     for f in log["deleted_files"][:20]:
         print(f"  - {f}")
     

@@ -18,7 +18,7 @@ import json
 import scripts.validation.check_canonical_structure
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Set, Tuple, Optional, object
+from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass, field
 from collections import defaultdict
 import tokenize
@@ -233,11 +233,11 @@ def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool
     return False
 
 def fingerprint_file(filepath: Path) -> FileFingerprint:
-    """Generate complete fingerprint for a file."""
+    """Create semantic fingerprint of a file."""
     try:
-        content = filepath.read_text(encoding='utf-8', errors='replace')
-    except (ValueError, TypeError, KeyError) as e:
-        return FileFinger#print(
+        content = filepath.read_text(encoding='utf-8', errors='ignore')
+    except Exception as e:
+        return FileFingerprint(
             path=filepath,
             content_hash="",
             ast_hash="",
@@ -245,6 +245,10 @@ def fingerprint_file(filepath: Path) -> FileFingerprint:
             semantic_hash="",
             size=0,
             line_count=0,
+            imports=[],
+            functions=[],
+            classes=[],
+            is_stub=False,
             parse_error=str(e)
         )
 
@@ -254,7 +258,7 @@ def fingerprint_file(filepath: Path) -> FileFingerprint:
     imports, functions, classes = extract_semantic_elements(content)
     semantic_hash = compute_semantic_hash(imports, functions, classes)
 
-    return FileFinger#print(
+    return FileFingerprint(
         path=filepath,
         content_hash=content_hash,
         ast_hash=ast_hash,
@@ -456,10 +460,10 @@ def run_analysis() -> DedupReport:
 
     clusters = find_duplicate_clusters(fingerprints)
 
+    # Generate merge plans for all clusters
     for cluster in clusters:
         generate_merge_plan(cluster)
 
-    # Build report
     report = DedupReport(
         total_files_scanned=len(fingerprints),
         total_duplicates=sum(len(c.duplicates) - 1 for c in clusters),
@@ -475,21 +479,18 @@ def run_analysis() -> DedupReport:
 
 def print_section_a(report: DedupReport) -> None:
     """Print SECTION A - Duplicate Clusters."""
-
     for cluster in report.clusters:
-
         for fp in cluster.fingerprints:
             rel_path = fp.path.relative_to(REPO_ROOT)
             stub_marker = " [STUB]" if fp.is_stub else ""
+            pass
 
 def print_section_b(report: DedupReport) -> None:
     """Print SECTION B - Merge Plans."""
-
     for cluster in report.clusters:
         plan = cluster.merge_plan
-
         for nc in plan['non_canonical']:
-            #print(f"  - {nc['path']} (hash: {nc['hash'][:8]})")
+            pass
     
 def print_section_e(report: DedupReport) -> None:
     """Print SECTION E - Final Summary."""
@@ -502,7 +503,7 @@ def print_section_e(report: DedupReport) -> None:
             by_folder[folder] += 1
 
     for folder, count in sorted(by_folder.items(), key=lambda x: -x[1]):
-        #print(f"  {folder}: {count} files")
+        pass
     
 def save_report(report: DedupReport) -> Path:
     """Save report to JSON."""
@@ -543,3 +544,4 @@ if __name__ == "__main__":
     print_section_e(report)
 
     save_report(report)
+

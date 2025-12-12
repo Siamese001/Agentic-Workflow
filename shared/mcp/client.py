@@ -20,7 +20,15 @@ class MCPClient(Protocol):
     """
     
     def __call__(self, *args: object, **kwargs: object) -> Dict[str, object]:
-        """Execute the client operation."""
+        """Execute the client operation.
+        
+        Args:
+            *args: Variable positional arguments
+            **kwargs: Variable keyword arguments
+            
+        Returns:
+            Dict with operation result
+        """
         ...
 
 
