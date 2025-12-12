@@ -1,0 +1,185 @@
+2025-12-12 16:16:04,327 - runtime.shared.state.factory - INFO - Initializing atomic state manager with file backend
+2025-12-12 16:16:04,328 - runtime.shared.state.atomic_manager - INFO - Initialized FILE backend at: C:\Users\amita\AppData\Local\Temp\tmp_m82vzcw
+2025-12-12 16:16:04,328 - runtime.shared.state.factory - INFO - Atomic state manager initialized
+2025-12-12 16:16:04,328 - runtime.shared.routing.factory - INFO - Initializing resilient router with default configurations
+2025-12-12 16:16:04,328 - runtime.shared.hardened_gemini_executor - ERROR - Failed to initialize hardened Gemini client: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+2025-12-12 16:16:04,328 - runtime.shared.routing.router - ERROR - Failed to initialize executor for Provider.GOOGLE: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+2025-12-12 16:16:04,963 - runtime.shared.routing.router - ERROR - Failed to initialize executor for Provider.ANTHROPIC: ANTHROPIC_API_KEY environment variable must be set
+2025-12-12 16:16:05,447 - runtime.shared.routing.router - ERROR - Failed to initialize executor for Provider.OPENAI: OPENAI_API_KEY environment variable must be set
+2025-12-12 16:16:05,448 - runtime.shared.routing.factory - INFO - Router initialized with tiers: ['reasoning_tier', 'speed_tier', 'cost_optimized_tier', 'balanced_tier']
+2025-12-12 16:16:05,448 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hardened orchestrator initialized with atomic state management
+2025-12-12 16:16:05,448 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Starting hardened workflow execution: test_workflow_001
+2025-12-12 16:16:05,448 - runtime.shared.state.atomic_manager - INFO - Attempting to resume workflow: test_workflow_001
+2025-12-12 16:16:05,448 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Starting new workflow: test_workflow_001
+2025-12-12 16:16:05,448 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.1 (1/3)
+2025-12-12 16:16:05,448 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.1 with tier speed_tier
+2025-12-12 16:16:05,448 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_workflow_001
+2025-12-12 16:16:05,452 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.4527686, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 3.903627395629883, "metadata": {"workflow_id": "test_workflow_001", "checkpoint_id": "test_workflow_001_1765574165448", "k_node_index": 1}}
+2025-12-12 16:16:05,452 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_workflow_001 (K-Node 1) in 3.90ms
+2025-12-12 16:16:05,453 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Checkpointed after hop K.1
+2025-12-12 16:16:05,453 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hop K.1 completed successfully
+2025-12-12 16:16:05,453 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.4 (2/3)
+2025-12-12 16:16:05,453 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.4 with tier balanced_tier
+2025-12-12 16:16:05,453 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_workflow_001
+2025-12-12 16:16:05,455 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.455382, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 2.0017623901367188, "metadata": {"workflow_id": "test_workflow_001", "checkpoint_id": "test_workflow_001_1765574165453", "k_node_index": 2}}
+2025-12-12 16:16:05,455 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_workflow_001 (K-Node 2) in 2.00ms
+2025-12-12 16:16:05,455 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Checkpointed after hop K.4
+2025-12-12 16:16:05,455 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hop K.4 completed successfully
+2025-12-12 16:16:05,455 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.5 (3/3)
+2025-12-12 16:16:05,455 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.5 with tier balanced_tier
+2025-12-12 16:16:05,455 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_workflow_001
+2025-12-12 16:16:05,458 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.4580417, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 2.0608901977539062, "metadata": {"workflow_id": "test_workflow_001", "checkpoint_id": "test_workflow_001_1765574165455", "k_node_index": 3}}
+2025-12-12 16:16:05,458 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_workflow_001 (K-Node 3) in 2.06ms
+2025-12-12 16:16:05,458 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Checkpointed after hop K.5
+2025-12-12 16:16:05,458 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hop K.5 completed successfully
+2025-12-12 16:16:05,458 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_workflow_001
+2025-12-12 16:16:05,460 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.4603868, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 2.0134449005126953, "metadata": {"workflow_id": "test_workflow_001", "checkpoint_id": "test_workflow_001_1765574165458", "k_node_index": 3}}
+2025-12-12 16:16:05,460 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_workflow_001 (K-Node 3) in 2.01ms
+2025-12-12 16:16:05,460 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hardened workflow completed with status: COMPLETED (Progress: 100.0%)
+2025-12-12 16:16:05,460 - runtime.shared.state.atomic_manager - INFO - Attempting to resume workflow: test_workflow_001
+2025-12-12 16:16:05,474 - runtime.shared.state.atomic_manager - INFO - Loaded checkpoint for test_workflow_001 (K-Node 3/3)
+2025-12-12 16:16:05,474 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_workflow_001
+2025-12-12 16:16:05,476 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.476935, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 2.162933349609375, "metadata": {"workflow_id": "test_workflow_001", "checkpoint_id": "test_workflow_001_1765574165474", "k_node_index": 1}}
+2025-12-12 16:16:05,477 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_workflow_001 (K-Node 1) in 2.16ms
+2025-12-12 16:16:05,477 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hardened orchestrator initialized with atomic state management
+2025-12-12 16:16:05,477 - runtime.shared.state.atomic_manager - INFO - Attempting to resume workflow: test_workflow_001
+2025-12-12 16:16:05,487 - runtime.shared.state.atomic_manager - INFO - Loaded checkpoint for test_workflow_001 (K-Node 1/3)
+2025-12-12 16:16:05,487 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Starting hardened workflow execution: test_workflow_001
+2025-12-12 16:16:05,487 - runtime.shared.state.atomic_manager - INFO - Attempting to resume workflow: test_workflow_001
+2025-12-12 16:16:05,487 - runtime.shared.state.atomic_manager - INFO - Loaded checkpoint for test_workflow_001 (K-Node 1/3)
+2025-12-12 16:16:05,487 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Resumed workflow test_workflow_001 from K-Node 1/3 (33.3% complete)
+2025-12-12 16:16:05,487 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Skipping 1 already completed hops
+2025-12-12 16:16:05,487 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.4 (1/2)
+2025-12-12 16:16:05,488 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.4 with tier balanced_tier
+2025-12-12 16:16:05,488 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_workflow_001
+2025-12-12 16:16:05,490 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.4900873, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 1.9524097442626953, "metadata": {"workflow_id": "test_workflow_001", "checkpoint_id": "test_workflow_001_1765574165488", "k_node_index": 2}}
+2025-12-12 16:16:05,490 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_workflow_001 (K-Node 2) in 1.95ms
+2025-12-12 16:16:05,490 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Checkpointed after hop K.4
+2025-12-12 16:16:05,490 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hop K.4 completed successfully
+2025-12-12 16:16:05,490 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.5 (2/2)
+2025-12-12 16:16:05,490 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.5 with tier balanced_tier
+2025-12-12 16:16:05,490 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_workflow_001
+2025-12-12 16:16:05,492 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.492408, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 1.844644546508789, "metadata": {"workflow_id": "test_workflow_001", "checkpoint_id": "test_workflow_001_1765574165490", "k_node_index": 2}}
+2025-12-12 16:16:05,492 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_workflow_001 (K-Node 2) in 1.84ms
+2025-12-12 16:16:05,492 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Checkpointed after hop K.5
+2025-12-12 16:16:05,492 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hop K.5 completed successfully
+2025-12-12 16:16:05,492 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_workflow_001
+2025-12-12 16:16:05,494 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.494577, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 1.8608570098876953, "metadata": {"workflow_id": "test_workflow_001", "checkpoint_id": "test_workflow_001_1765574165492", "k_node_index": 2}}
+2025-12-12 16:16:05,494 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_workflow_001 (K-Node 2) in 1.86ms
+2025-12-12 16:16:05,494 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hardened workflow completed with status: COMPLETED (Progress: 66.7%)
+2025-12-12 16:16:05,494 - runtime.shared.state.atomic_manager - INFO - Attempting to resume workflow: test_workflow_001
+2025-12-12 16:16:05,504 - runtime.shared.state.atomic_manager - INFO - Loaded checkpoint for test_workflow_001 (K-Node 2/3)
+Traceback (most recent call last):
+  File "C:\Git\Agentic-Workflow\test_hardened_integration.py", line 375, in main
+    await test()
+  File "C:\Git\Agentic-Workflow\test_hardened_integration.py", line 189, in test_hardened_orchestrator_integration
+    assert final_state.current_k_node == 3
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+2025-12-12 16:16:05,506 - runtime.shared.state.factory - INFO - Resetting atomic state manager singleton
+2025-12-12 16:16:05,506 - runtime.shared.routing.factory - INFO - Resetting resilient router singleton
+2025-12-12 16:16:05,506 - runtime.shared.state.factory - INFO - Initializing atomic state manager with file backend
+2025-12-12 16:16:05,506 - runtime.shared.state.atomic_manager - INFO - Initialized FILE backend at: C:\Users\amita\AppData\Local\Temp\tmpv3lv1mzr
+2025-12-12 16:16:05,506 - runtime.shared.state.factory - INFO - Atomic state manager initialized
+2025-12-12 16:16:05,506 - runtime.shared.routing.factory - INFO - Initializing resilient router with default configurations
+2025-12-12 16:16:05,507 - runtime.shared.hardened_gemini_executor - ERROR - Failed to initialize hardened Gemini client: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+2025-12-12 16:16:05,507 - runtime.shared.routing.router - ERROR - Failed to initialize executor for Provider.GOOGLE: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+2025-12-12 16:16:05,507 - runtime.shared.routing.router - ERROR - Failed to initialize executor for Provider.ANTHROPIC: ANTHROPIC_API_KEY environment variable must be set
+2025-12-12 16:16:05,507 - runtime.shared.routing.router - ERROR - Failed to initialize executor for Provider.OPENAI: OPENAI_API_KEY environment variable must be set
+2025-12-12 16:16:05,507 - runtime.shared.routing.factory - INFO - Router initialized with tiers: ['reasoning_tier', 'speed_tier', 'cost_optimized_tier', 'balanced_tier']
+2025-12-12 16:16:05,507 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hardened orchestrator initialized with atomic state management
+2025-12-12 16:16:05,507 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Starting hardened workflow execution: test_failure_001
+2025-12-12 16:16:05,507 - runtime.shared.state.atomic_manager - INFO - Attempting to resume workflow: test_failure_001
+2025-12-12 16:16:05,507 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Starting new workflow: test_failure_001
+2025-12-12 16:16:05,507 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.1 (1/3)
+2025-12-12 16:16:05,507 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.1 with tier speed_tier
+2025-12-12 16:16:05,507 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_failure_001
+2025-12-12 16:16:05,509 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.5095992, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 1.9390583038330078, "metadata": {"workflow_id": "test_failure_001", "checkpoint_id": "test_failure_001_1765574165507", "k_node_index": 1}}
+2025-12-12 16:16:05,509 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_failure_001 (K-Node 1) in 1.94ms
+2025-12-12 16:16:05,509 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Checkpointed after hop K.1
+2025-12-12 16:16:05,509 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hop K.1 completed successfully
+2025-12-12 16:16:05,509 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.2 (2/3)
+2025-12-12 16:16:05,509 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.2 with tier speed_tier
+2025-12-12 16:16:05,509 - apps_rg.L3_orchestration.hardened_orchestrator - ERROR - Hop K.2 failed: Simulated API failure
+2025-12-12 16:16:05,510 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_failure_001
+2025-12-12 16:16:05,511 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.511513, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 1.4824867248535156, "metadata": {"workflow_id": "test_failure_001", "checkpoint_id": "test_failure_001_1765574165510", "k_node_index": 1}}
+2025-12-12 16:16:05,511 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_failure_001 (K-Node 1) in 1.48ms
+2025-12-12 16:16:05,511 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hardened workflow completed with status: FAILED (Progress: 33.3%)
+2025-12-12 16:16:05,511 - runtime.shared.state.atomic_manager - INFO - Attempting to resume workflow: test_failure_001
+2025-12-12 16:16:05,520 - runtime.shared.state.atomic_manager - INFO - Loaded checkpoint for test_failure_001 (K-Node 1/3)
+2025-12-12 16:16:05,521 - runtime.shared.state.factory - INFO - Resetting atomic state manager singleton
+2025-12-12 16:16:05,521 - runtime.shared.routing.factory - INFO - Resetting resilient router singleton
+2025-12-12 16:16:05,521 - runtime.shared.state.factory - INFO - Initializing atomic state manager with file backend
+2025-12-12 16:16:05,521 - runtime.shared.state.atomic_manager - INFO - Initialized FILE backend at: C:\Users\amita\AppData\Local\Temp\tmpb30di8vr
+2025-12-12 16:16:05,521 - runtime.shared.state.factory - INFO - Atomic state manager initialized
+2025-12-12 16:16:05,521 - runtime.shared.routing.factory - INFO - Initializing resilient router with default configurations
+2025-12-12 16:16:05,522 - runtime.shared.hardened_gemini_executor - ERROR - Failed to initialize hardened Gemini client: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+2025-12-12 16:16:05,522 - runtime.shared.routing.router - ERROR - Failed to initialize executor for Provider.GOOGLE: API key for google not set. Please set GOOGLE_API_KEY environment variable.
+2025-12-12 16:16:05,522 - runtime.shared.routing.router - ERROR - Failed to initialize executor for Provider.ANTHROPIC: ANTHROPIC_API_KEY environment variable must be set
+2025-12-12 16:16:05,522 - runtime.shared.routing.router - ERROR - Failed to initialize executor for Provider.OPENAI: OPENAI_API_KEY environment variable must be set
+2025-12-12 16:16:05,522 - runtime.shared.routing.factory - INFO - Router initialized with tiers: ['reasoning_tier', 'speed_tier', 'cost_optimized_tier', 'balanced_tier']
+2025-12-12 16:16:05,522 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hardened orchestrator initialized with atomic state management
+2025-12-12 16:16:05,522 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Starting hardened workflow execution: test_circuit_001
+2025-12-12 16:16:05,522 - runtime.shared.state.atomic_manager - INFO - Attempting to resume workflow: test_circuit_001
+2025-12-12 16:16:05,522 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Starting new workflow: test_circuit_001
+2025-12-12 16:16:05,522 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.1 (1/1)
+2025-12-12 16:16:05,522 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Executing hop K.1 with tier speed_tier
+2025-12-12 16:16:05,522 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_circuit_001
+2025-12-12 16:16:05,525 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.5249882, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 2.260446548461914, "metadata": {"workflow_id": "test_circuit_001", "checkpoint_id": "test_circuit_001_1765574165522", "k_node_index": 1}}
+2025-12-12 16:16:05,525 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_circuit_001 (K-Node 1) in 2.26ms
+2025-12-12 16:16:05,525 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Checkpointed after hop K.1
+2025-12-12 16:16:05,525 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hop K.1 completed successfully
+2025-12-12 16:16:05,525 - runtime.shared.state.atomic_manager - INFO - Starting atomic checkpoint for workflow: test_circuit_001
+2025-12-12 16:16:05,526 - shared.resilience.telemetry.agentic-workflow - INFO - {"service": "agentic-workflow", "timestamp": 1765574165.5269368, "component": "atomic_state_manager", "operation": "checkpoint", "status": "success", "latency_ms": 1.664876937866211, "metadata": {"workflow_id": "test_circuit_001", "checkpoint_id": "test_circuit_001_1765574165525", "k_node_index": 1}}
+2025-12-12 16:16:05,527 - runtime.shared.state.atomic_manager - INFO - Atomic checkpoint complete for test_circuit_001 (K-Node 1) in 1.66ms
+2025-12-12 16:16:05,527 - apps_rg.L3_orchestration.hardened_orchestrator - INFO - Hardened workflow completed with status: COMPLETED (Progress: 100.0%)
+============================================================
+HARDENED ORCHESTRATOR INTEGRATION TEST SUITE
+============================================================
+
+=== Testing Hardened Orchestrator Integration ===
+
+--- Test 1: New Workflow Execution ---
+* New workflow completed successfully
+
+--- Test 2: Resume from Checkpoint ---
+* Simulated partial progress (1/3 hops completed)
+  Debug: Saved state current_k_node = 1
+* Workflow resumed and completed from checkpoint
+
+--- Test 3: State Persistence Verification ---
+X test_hardened_orchestrator_integration failed: 
+
+=== Testing Failure Recovery ===
+* Workflow failed at K.2 as expected
+* Failure captured in execution log
+* State preserved after failure
+Failure recovery test passed!
+
+
+=== Testing Circuit Breaker Integration ===
+* Circuit breaker integration working (provider selection successful)
+Circuit breaker integration test passed!
+
+============================================================
+TEST RESULTS: 2 passed, 1 failed
+============================================================
+Traceback (most recent call last):
+  File "C:\Git\Agentic-Workflow\test_hardened_integration.py", line 404, in <module>
+    exit_code = asyncio.run(main())
+  File "C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "C:\Git\Agentic-Workflow\test_hardened_integration.py", line 398, in main
+    print("\n\u274c Some tests failed. Check the output above.")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 2: character maps to <undefined>
