@@ -21,6 +21,7 @@ from .orchestrator import (
     OrchestratorConfig,
     ExecutionContext,
     ExecutionResult,
+    ExecutionPhase,
 )
 
 __all__ = [
@@ -36,4 +37,5 @@ __all__ = [
     "OrchestratorConfig",
     "ExecutionContext",
     "ExecutionResult",
+    "ExecutionPhase",
 ]

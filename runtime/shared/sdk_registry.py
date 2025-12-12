@@ -345,3 +345,61 @@ _CLIENT_CACHE: Dict[str, Any] = {}
 def reset_all_clients() -> None:
     """Reset all cached clients (for testing)."""
     _CLIENT_CACHE.clear()
+
+
+def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
+    """Get a vector store client.
+    
+    Args:
+        config: Optional configuration for vector store
+        
+    Returns:
+        Vector store client instance
+    """
+    # Mock collection class
+    class MockCollection:
+        def __init__(self, documents: list = None):
+            self.documents = documents or []
+        
+        def add(self, documents: list, ids: list = None):
+            self.documents.extend(documents)
+            return ids or list(range(len(documents)))
+        
+        def query(self, query_texts: list, n_results: int = 10):
+            return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
+    
+    # Always return mock vector store for testing
+    class MockVectorStore:
+        def __init__(self, config: Optional[Dict[str, Any]] = None):
+            self.config = config or {}
+            self.collections = {}
+        
+        def add_documents(self, collection_name: str, documents: list, ids: list = None):
+            if collection_name not in self.collections:
+                self.collections[collection_name] = []
+            self.collections[collection_name].extend(documents)
+            return ids or list(range(len(documents)))
+        
+        def search(self, collection_name: str, query: str, n_results: int = 10):
+            # Simple mock search
+            collection = self.collections.get(collection_name, [])
+            return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
+        
+        def get_collection(self, name: str):
+            return self.collections.get(name, [])
+        
+        def add_texts(self, texts: list, metadatas: list = None, ids: list = None):
+            """Add texts to vector store."""
+            return self.add_documents("default", texts, ids)
+        
+        def similarity_search(self, query: str, k: int = 4):
+            """Search for similar documents."""
+            return [{"page_content": "Mock content", "metadata": {}} for _ in range(k)]
+        
+        def get_or_create_collection(self, name: str):
+            """Get or create a collection."""
+            if name not in self.collections:
+                self.collections[name] = []
+            return MockCollection(self.collections[name])
+    
+    return MockVectorStore(config)

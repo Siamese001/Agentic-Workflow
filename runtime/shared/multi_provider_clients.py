@@ -10,7 +10,7 @@ import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -204,6 +204,23 @@ def reset_all_clients() -> None:
     """Reset all cached clients (for testing)."""
     _CLIENTS.clear()
     logger.debug("Reset all LLM clients")
+
+
+def get_available_providers() -> List[Provider]:
+    """Get list of providers that have API keys configured.
+    
+    Returns:
+        List of available providers
+    """
+    available = []
+    for provider in Provider:
+        try:
+            get_api_key(provider)
+            available.append(provider)
+        except ValueError:
+            # No API key configured for this provider
+            pass
+    return available
 
 
 def get_litellm_completion(
