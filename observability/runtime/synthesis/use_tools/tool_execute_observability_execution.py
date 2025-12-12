@@ -164,7 +164,7 @@ class ObservabilityToolExecutor:
             )
 
     def execute_tool_stream(self, context: ToolExecutionContext,
-                           parameters: Dict[str, Any]) -> Any:
+                           parameters: Dict[str, str]) -> Dict[str, object]:
         """Execute tool in streaming mode.
         
         Args:
@@ -229,7 +229,7 @@ class ObservabilityToolExecutor:
             return True
         return False
 
-    def get_execution_status(self, execution_id: str) -> Optional[Dict[str, Any]]:
+    def get_execution_status(self, execution_id: str) -> Optional[Dict[str, str]]:
         """Get status of execution.
         
         Args:
@@ -242,7 +242,7 @@ class ObservabilityToolExecutor:
 
     def _execute_with_context(self, handler: Callable,
                              context: ToolExecutionContext,
-                             parameters: Dict[str, Any]) -> ToolExecutionResult:
+                             parameters: Dict[str, str]) -> ToolExecutionResult:
         """Execute tool with context."""
         # Prepare execution environment
         exec_env = {
@@ -279,7 +279,7 @@ class ObservabilityToolExecutor:
             warnings=warnings
         )
 
-    def _execute_batch(self, handler: Callable, exec_env: Dict[str, Any]) -> Dict[str, Any]:
+    def _execute_batch(self, handler: Callable, exec_env: Dict[str, str]) -> Dict[str, str]:
         """Execute tool in batch mode."""
         parameters = exec_env["parameters"]
         batch_items = parameters.get("batch_items", [])
@@ -323,7 +323,7 @@ class ObservabilityToolExecutor:
             "warnings": all_warnings
         }
 
-    def _validate_parameter_type(self, param_name: str, value: Any, expected_type: str) -> Optional[str]:
+    def _validate_parameter_type(self, param_name: str, value: object, expected_type: str) -> Optional[str]:
         """Validate a single parameter type and return error message if invalid."""
         type_validators = {
             "string": lambda v: isinstance(v, str),

@@ -183,7 +183,7 @@ class ObservabilityToolInvoker:
         
         return responses
 
-    def invoke_stream(self, request: InvocationRequest) -> Any:
+    def invoke_stream(self, request: InvocationRequest) -> Dict[str, object]:
         """Invoke tool with streaming response.
         
         Args:

@@ -52,7 +52,7 @@ def create_init_files(paths: List[str]) -> int:
     
     return created_count
 
-def main():
+def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
         print("Usage: python auto_init_py.py <path1> <path2> ...")

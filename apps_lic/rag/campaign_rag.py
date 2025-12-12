@@ -791,14 +791,15 @@ class S2_SupervisorAgent:
                     )
                     rag_results.extend(validation['rag_results'])
                     if validation.get('staleness_warning'):
-
+                        staleness_warnings.append(validation['staleness_warning'])
                 elif entity['type'] == 'initiative':
                     validation = await self.organization_agent.validate_initiative(
                         entity['name'], mission
                     )
                     rag_results.extend(validation['rag_results'])
                     if validation.get('staleness_warning'):
-
+                        pass
+        
         # Phase 3: Light supplemental RAG (minimal - strategic brief is primary)
         # Only run if no strategic brief found
         if not any(r.source_type == "STRATEGIC_BRIEF" for r in rag_results):

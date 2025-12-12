@@ -67,7 +67,7 @@ class TestTripletStore:
         assert len(results) == 1
         assert results[0].object == "Python"
     
-    def test_triplet_invalidation(self):
+    def test_triplet_invalidation(self) -> None:
         """Test triplet invalidation."""
         store = TripletStore()
         
@@ -221,7 +221,7 @@ class TestKGRetrievalExecutor:
 class TestTripletExtraction:
     """Test L2 Triplet Extraction Executor."""
     
-    def test_extract_skills(self):
+    def test_extract_skills(self) -> None:
         """Test skill extraction from text."""
         executor = TripletExtractionExecutor()
         
@@ -238,7 +238,7 @@ class TestTripletExtraction:
         skills = [t.object for t in result.triplets if t.predicate == "has_skill"]
         assert len(skills) >= 1
     
-    def test_extract_experience(self):
+    def test_extract_experience(self) -> None:
         """Test experience extraction from text."""
         executor = TripletExtractionExecutor()
         

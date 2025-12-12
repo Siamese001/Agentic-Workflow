@@ -26,7 +26,7 @@ class ProcessingError(Exception):
     """Custom exception for processing errors."""
     pass
 
-def process_data(data: Any, config: Optional[Dict[str, Any]] = None) -> Any:
+def process_data(data: Dict[str, object], config: Optional[Dict[str, object]] = None) -> Dict[str, object]:
     """
     Process data with optional configuration.
     
@@ -49,11 +49,11 @@ def process_data(data: Any, config: Optional[Dict[str, Any]] = None) -> Any:
         raise ProcessingError("Failed to process data: {}".format(e))
 
 # Additional helper functions
-def validate_input(input_data: Any) -> bool:
+def validate_input(input_data: Dict[str, object]) -> bool:
     """Validate input data."""
     return input_data is not None
 
-def format_output(output_data: Any) -> str:
+def format_output(output_data: object) -> str:
     """Format output data for display."""
     return str(output_data)
 

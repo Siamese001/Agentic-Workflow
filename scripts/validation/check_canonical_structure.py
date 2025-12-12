@@ -7,7 +7,7 @@ Ensures required canonical directories exist.
 import sys
 import os
 
-def main():
+def main() -> None:
     """Check if all required canonical directories exist."""
     required_dirs = [
         '01_agentic_core',

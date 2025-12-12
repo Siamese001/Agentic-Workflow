@@ -67,7 +67,7 @@ class TestTripletStore:
         assert len(results) == 1
         assert results[0].object == "Python"
     
-    def test_triplet_invalidation(self):
+    def test_triplet_invalidation(self) -> None:
         """Test triplet invalidation."""
         store = TripletStore()
         
@@ -91,7 +91,7 @@ class TestTripletStore:
 class TestEntityResolution:
     """Test L4 EntityRegistry functionality."""
     
-    def test_entity_creation(self):
+    def test_entity_creation(self) -> None:
         """Test entity creation."""
         entity = create_entity(
             name="Python",
@@ -103,7 +103,7 @@ class TestEntityResolution:
         assert entity.entity_type == EntityType.SKILL
         assert "python" in entity.aliases
     
-    def test_entity_resolution(self):
+    def test_entity_resolution(self) -> None:
         """Test resolving entity mentions."""
         registry = EntityRegistry()
         
