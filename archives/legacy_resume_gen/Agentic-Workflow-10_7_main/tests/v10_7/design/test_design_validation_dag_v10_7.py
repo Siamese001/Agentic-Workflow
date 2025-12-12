@@ -48,32 +48,32 @@ def _runtime_node_names(compiled_workflow):
 
 
 @pytest.mark.design
-def test_conceptual_nodes_match_specification_order():
+def test_conceptual_nodes_match_specification_order() -> None:
     names = [node.name for node in CONCEPTUAL_DAG]
     assert names == EXPECTED_ORDER, "Conceptual DAG order drifted from spec"
 
 
 @pytest.mark.design
-def test_conceptual_node_names_match_expected_set():
+def test_conceptual_node_names_match_expected_set() -> None:
     assert set(node.name for node in CONCEPTUAL_DAG) == set(EXPECTED_NODES), (
         "Conceptual DAG names must match v10.7 design document"
     )
 
 
 @pytest.mark.design
-def test_conceptual_edges_match_design_doc():
+def test_conceptual_edges_match_design_doc() -> None:
     lookup = {name: idx for idx, name in enumerate(EXPECTED_ORDER)}
     for src, dst in EXPECTED_EDGES:
         assert lookup[src] < lookup[dst], f"{src} must precede {dst}"
 
 
 @pytest.mark.design
-def test_conceptual_edge_spec_matches_expected():
+def test_conceptual_edge_spec_matches_expected() -> None:
     assert CONCEPTUAL_EDGES == EXPECTED_EDGES
 
 
 @pytest.mark.design
-def test_all_conceptual_nodes_have_concrete_mappings():
+def test_all_conceptual_nodes_have_concrete_mappings() -> None:
     for node in CONCEPTUAL_DAG:
         assert node.concrete_nodes, f"Conceptual node {node.name} has no concrete mapping"
 
@@ -97,7 +97,7 @@ def test_runtime_nodes_align_with_conceptual_spec(compiled_workflow):
 
 
 @pytest.mark.design
-def test_conceptual_lookup_contains_all_nodes():
+def test_conceptual_lookup_contains_all_nodes() -> None:
     lookup = conceptual_node_map()
     for name in EXPECTED_NODES:
         assert name in lookup, f"Missing conceptual node mapping for {name}"

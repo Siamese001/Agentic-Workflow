@@ -54,6 +54,7 @@ class BaseAgent:
         self.debug_mode = debug_mode
     
     def log_info(self, msg):
+        pass
 
 def track_metrics(name):
     """Stub decorator for track_metrics - TODO: Replace with sovereign equivalent"""
@@ -523,6 +524,7 @@ class InternalAgent:
         prior_applications = self._search_job_tracker(mission)
 
         if brief_entities:
+            pass
 
         return {
             "prior_applications": prior_applications,

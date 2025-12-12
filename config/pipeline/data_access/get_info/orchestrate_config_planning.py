@@ -272,7 +272,7 @@ class ConfigPlanningOrchestrator:
 def create_config_planning_orchestrator(
     enable_validation: bool = True,
     enable_versioning: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ConfigPlanningOrchestrator:
     """Create a configured config planning orchestrator."""
     config = ConfigPlanningConfig(

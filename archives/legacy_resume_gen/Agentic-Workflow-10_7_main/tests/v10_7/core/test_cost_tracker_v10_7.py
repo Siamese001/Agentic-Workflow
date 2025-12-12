@@ -1,7 +1,7 @@
 from archives.legacy_resume_gen.Older Microservices Models.v10.7.core_v10_7 import CostTracker
 
 
-def test_cost_tracker_records_calls_and_sums():
+def test_cost_tracker_records_calls_and_sums() -> None:
     tracker = CostTracker()
     tracker.record_call("wf1", "google", "gemini-2.5-pro", input_tokens=1000, output_tokens=500)
     summary = tracker.get_cost_summary("wf1")
@@ -9,14 +9,14 @@ def test_cost_tracker_records_calls_and_sums():
     assert summary["calls"]
 
 
-def test_unknown_provider_no_cost():
+def test_unknown_provider_no_cost() -> None:
     tracker = CostTracker()
     tracker.record_call("wf2", "unknown", "mystery-model", input_tokens=1000, output_tokens=1000)
     summary = tracker.get_cost_summary("wf2")
     assert summary["total_workflow_cost"] == 0
 
 
-def test_multiple_calls_aggregated():
+def test_multiple_calls_aggregated() -> None:
     tracker = CostTracker()
     tracker.record_call("wf3", "google", "gemini-2.5-flash", input_tokens=500, output_tokens=500)
     tracker.record_call("wf3", "google", "gemini-2.5-pro", input_tokens=500, output_tokens=500)

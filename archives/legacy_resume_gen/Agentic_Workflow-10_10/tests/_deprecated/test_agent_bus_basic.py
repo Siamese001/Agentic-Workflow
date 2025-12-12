@@ -2,7 +2,7 @@ from archives.legacy_root_folders.orchestration.agent_bus import AgentBus
 from archives.legacy_root_folders.core.models.models import AgentMessage
 
 
-def test_agent_bus_send_and_get():
+def test_agent_bus_send_and_get() -> None:
     bus = AgentBus()
 
     msg = AgentMessage(

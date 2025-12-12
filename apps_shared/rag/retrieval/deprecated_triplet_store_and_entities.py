@@ -22,7 +22,7 @@ from datetime import datetime, UTC
 class TestTripletStore:
     """Test L4 TripletStore functionality."""
     
-    def test_create_triplet(self):
+    def test_create_triplet(self) -> None:
         """Test triplet creation."""
         triplet = create_triplet(
             subject="user_123",
@@ -37,7 +37,7 @@ class TestTripletStore:
         assert triplet.confidence == 0.9
         assert triplet.status == TripletStatus.ACTIVE
     
-    def test_triplet_store_add_and_query(self):
+    def test_triplet_store_add_and_query(self) -> None:
         """Test adding and querying triplets."""
         store = TripletStore()
         
@@ -54,7 +54,7 @@ class TestTripletStore:
         
         assert len(results) == 3
     
-    def test_triplet_store_predicate_filter(self):
+    def test_triplet_store_predicate_filter(self) -> None:
         """Test querying with predicate filter."""
         store = TripletStore()
         
@@ -207,7 +207,7 @@ class TestKGRetrievalExecutor:
         store.add_triplet(create_triplet("user_1", "has_skill", "Python"))
         store.add_triplet(create_triplet("job_1", "requires_skill", "Python"))
         
-        from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_retrieval_executor import execute_multi_hop_query
+#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_retrieval_executor import execute_multi_hop_query  # DEPRECATED: Archive import removed to protect archives from validation edits
         
         result = execute_multi_hop_query(
             store,

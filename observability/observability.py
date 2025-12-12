@@ -17,9 +17,9 @@ Non-responsibilities:
 
 from __future__ import annotations
 
-from archives.legacy_root_folders.runtime.observability.spans import *
-from archives.legacy_root_folders.runtime.observability.events import *
-from archives.legacy_root_folders.runtime.observability.emitters import *
+# from archives.legacy_root_folders.runtime.observability.spans import *  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.runtime.observability.events import *  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.runtime.observability.emitters import *  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
 def get_all_events() -> list:

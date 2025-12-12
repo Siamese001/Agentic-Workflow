@@ -449,7 +449,7 @@ def create_observability_tool_invoker(
     default_timeout: float = 30.0,
     retry_attempts: int = 3,
     enable_caching: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityToolInvoker:
     """Create a configured observability tool invoker."""
     config = InvocationConfig(

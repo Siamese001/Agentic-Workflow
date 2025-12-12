@@ -4,7 +4,7 @@ from archives.legacy_resume_gen.Older Microservices Models.v10.7.workflow.graph 
 
 
 @pytest.mark.design
-def test_all_design_nodes_exist():
+def test_all_design_nodes_exist() -> None:
     with open("agentic_design_v10_7.md") as f:
         doc = f.read()
     runtime = set(get_nodes())
@@ -13,7 +13,7 @@ def test_all_design_nodes_exist():
 
 
 @pytest.mark.design
-def test_edges_consistency():
+def test_edges_consistency() -> None:
     edges = get_edges()
     assert all("->" in e for e in edges)
 
@@ -22,7 +22,7 @@ def test_edges_consistency():
     reason="Add 18 design validation tests comparing LIC_10-05-2025_v8.54.json to runtime",
     strict=False,
 )
-def test_placeholder():
+def test_placeholder() -> None:
     pytest.xfail(
         "Add 18 design validation tests comparing LIC_10-05-2025_v8.54.json to runtime"
     )

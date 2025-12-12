@@ -12,7 +12,7 @@ def _make_config(enabled: bool):
     return types.SimpleNamespace(collaboration_config=cfg)
 
 
-def test_team_formation():
+def test_team_formation() -> None:
     config = _make_config(enabled=True)
     engine = CollaborationEngine(config)
 
@@ -21,7 +21,7 @@ def test_team_formation():
     assert team == ["StrategyStack", "StrategyStack_aux"]
 
 
-def test_feedback_merge():
+def test_feedback_merge() -> None:
     config = _make_config(enabled=True)
     engine = CollaborationEngine(config)
 

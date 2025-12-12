@@ -1,4 +1,4 @@
-from archives.legacy_root_folders.eval.simulation.metrics import compute_collaboration_score, compute_conflict_index
+# from archives.legacy_root_folders.eval.simulation.metrics import compute_collaboration_score, compute_conflict_index  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
 class _DummyOutcome:
@@ -7,7 +7,7 @@ class _DummyOutcome:
         self.agent_conflict_count = conflicts
 
 
-def test_compute_collaboration_score_and_conflict_index():
+def test_compute_collaboration_score_and_conflict_index() -> None:
     outputs = [
         _DummyOutcome(1.0, 0),
         _DummyOutcome(0.0, 2),

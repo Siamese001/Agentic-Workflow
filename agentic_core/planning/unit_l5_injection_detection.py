@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime
 
-from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, SafetyFinding, Severity, Verdict
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, SafetyFinding, Severity, Verdict  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 class TestInjectionDetector:
     """Test cases for injection detection patterns."""

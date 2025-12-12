@@ -335,7 +335,7 @@ def sample_master_resume():
 # ============================================================================
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_pydantic_models_validation_error():
+def test_pydantic_models_validation_error() -> None:
     """v10.3: Test Pydantic models raise errors on malformed LLM output."""
     # LLM returns wrong data type for score
     malformed_data = {
@@ -352,7 +352,7 @@ def test_pydantic_models_validation_error():
     assert "Input should be a valid number" in error
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_pydantic_models_validation_error_string_input():
+def test_pydantic_models_validation_error_string_input() -> None:
     """v10.3: Test Pydantic validator parses string then raises error."""
     # LLM returns a string containing malformed JSON
     malformed_string = 'Here is the JSON: { "unsupported_claims": "zero", "feedback": "good" }'
@@ -365,7 +365,7 @@ def test_pydantic_models_validation_error_string_input():
     assert "Input should be a valid integer" in error
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_pydantic_models_success():
+def test_pydantic_models_success() -> None:
     """v10.3: Test Pydantic models parse correct LLM output."""
     good_data = {
         "score": 8.5,
@@ -379,7 +379,7 @@ def test_pydantic_models_success():
     assert model.score == 8.5
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_pydantic_models_success_string_input():
+def test_pydantic_models_success_string_input() -> None:
     """v10.3: Test Pydantic validator parses correct JSON from a string."""
     good_string = 'Thought: Blah. {"verified_bullets": ["bullet 1", "bullet 2"]}'
     
@@ -610,13 +610,13 @@ def test_architecture_dependency_injection_v10_4(mock_workflow_context):
     assert hasattr(conductor, 'budget_manager') # v10.3
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_main_removes_global_config():
+def test_main_removes_global_config() -> None:
     """(Cat 3) Test that main_v10_4.py does not have a global CONFIG."""
     import archives.legacy_resume_gen.Older Microservices Models.v10.4.main_v10_4
     assert not hasattr(main_v10_4, 'CONFIG')
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_batch_removes_global_config():
+def test_batch_removes_global_config() -> None:
     """(Cat 3) Test that run_batch_v10_4.py does not have a global CONFIG."""
     import archives.legacy_resume_gen.Older Microservices Models.v10.4.run_batch_v10_4
     assert not hasattr(run_batch_v10_4, 'CONFIG')
@@ -843,7 +843,7 @@ async def test_tool_handles_malformed_json_v10_4(mock_workflow_context, mock_llm
         await tool.run_async({"strategy": "test"}, "test-wf")
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_contract_pydantic_value_range():
+def test_contract_pydantic_value_range() -> None:
     """(Cat 7) CONTRACT: Pydantic models enforce value ranges (e.g., score 0-10)."""
     validator = ResponseValidator()
     
@@ -944,7 +944,7 @@ def test_contract_bias_detector_uses_hot_reload_rules(mock_workflow_context):
 # ============================================================================
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_circuit_breaker_opens_after_threshold():
+def test_circuit_breaker_opens_after_threshold() -> None:
     """(Resilience) Circuit breaker opens after hitting failure threshold."""
     breaker = CircuitBreaker(failure_threshold=3)
     assert breaker.is_open is False
@@ -956,7 +956,7 @@ def test_circuit_breaker_opens_after_threshold():
         breaker.check()
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_circuit_breaker_resets_on_success():
+def test_circuit_breaker_resets_on_success() -> None:
     """(Resilience) Circuit breaker resets counter on successful job."""
     breaker = CircuitBreaker(failure_threshold=3)
     breaker.record_failure()  # 1
@@ -966,7 +966,7 @@ def test_circuit_breaker_resets_on_success():
     assert breaker.is_open is False
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_batch_feedback_aggregator():
+def test_batch_feedback_aggregator() -> None:
     """(Batch) BatchFeedbackAggregator calculates batch health correctly."""
     aggregator = BatchFeedbackAggregator()
     aggregator.add_job_result({"status": "SUCCESS", "cost": 2.5})
@@ -1025,7 +1025,7 @@ def test_hot_reload_proposed_rules(tmp_path):
 # ============================================================================
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_determinism_local_pii_sanitizer():
+def test_determinism_local_pii_sanitizer() -> None:
     """(Determinism) Test determinism of local PII sanitizer."""
     context = MagicMock()
     sanitizer = PIISanitizerAgent(context)
@@ -1048,7 +1048,7 @@ def test_determinism_local_bias_detector(mock_workflow_context):
     assert "ninja" in result1["patterns"]
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_determinism_context_budget_manager():
+def test_determinism_context_budget_manager() -> None:
     """(Determinism) Test determinism of context budget manager."""
     manager = ContextBudgetManager(default_token_limit=10, buffer=0.0)
     long_text = "a" * 100
@@ -1104,7 +1104,7 @@ async def test_self_consistency_zero_temp(mock_workflow_context, mock_llm_client
     assert result2 == ["Run 1"]
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_determinism_pydantic_parsing():
+def test_determinism_pydantic_parsing() -> None:
     """(Determinism) Test validator deterministically parses identical strings."""
     validator = ResponseValidator()
     text1 = 'Thought: Blah. {"score": 9.0, "suggestions": ["Test"]}'
@@ -1137,7 +1137,7 @@ def test_determinism_hybrid_rag_merger(mock_workflow_context):
     assert merged1 == merged2
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_determinism_circuit_breaker():
+def test_determinism_circuit_breaker() -> None:
     """(Determinism) Test circuit breaker state is deterministic."""
     breaker1 = CircuitBreaker(failure_threshold=2)
     breaker1.record_failure()
@@ -1149,7 +1149,7 @@ def test_determinism_circuit_breaker():
     assert breaker1.is_open == breaker2.is_open
 
 # v10.4: FIX - Removed @pytest.mark.asyncio
-def test_determinism_state_serialization():
+def test_determinism_state_serialization() -> None:
     """(Determinism) Test MainGraphState to_dict/from_dict is deterministic."""
     state1 = MainGraphState()
     state1.job.raw_jd = "Test JD"

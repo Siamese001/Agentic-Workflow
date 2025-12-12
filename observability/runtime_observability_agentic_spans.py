@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from archives.legacy_root_folders.runtime.observability.spans import start_span, end_span
+# from archives.legacy_root_folders.runtime.observability.spans import start_span, end_span  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
 def start_agent_span(name: str, meta: Dict[str, object]) -> str:

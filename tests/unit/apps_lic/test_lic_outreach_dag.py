@@ -45,7 +45,7 @@ class OutreachStack:
 
 
 @pytest.mark.skip(reason="Waiting for ReasoningToggles and OutreachStack implementation")
-def test_outreach_stack_blocks_high_risk_prompt():
+def test_outreach_stack_blocks_high_risk_prompt() -> None:
     """Test that high-risk prompts are blocked by the outreach stack.
     
     This test is skipped until the full implementation is ready.
@@ -58,7 +58,7 @@ def test_outreach_stack_blocks_high_risk_prompt():
     pass
 
 
-def test_outreach_stack_handles_string_draft_from_architect():
+def test_outreach_stack_handles_string_draft_from_architect() -> None:
     stack = OutreachStack(ReasoningToggles())
 
     with patch.object(stack.architect, "compose", return_value="Subject: Hi\n\nBody"):

@@ -4,7 +4,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
-def _iter_core_files():
+def _iter_core_files() -> None:
     core_root = PROJECT_ROOT / "core"
     if not core_root.exists():
         return
@@ -14,7 +14,7 @@ def _iter_core_files():
         yield path
 
 
-def _parse_calls(path: Path):
+def _parse_calls(path: Path) -> list[str]:
     try:
         source = path.read_text(encoding="utf-8")
     except OSError:
@@ -37,7 +37,7 @@ def _parse_calls(path: Path):
     return calls
 
 
-def _parse_import_from_runtime_utils(path: Path):
+def _parse_import_from_runtime_utils(path: Path) -> list[str]:
     try:
         source = path.read_text(encoding="utf-8")
     except OSError:

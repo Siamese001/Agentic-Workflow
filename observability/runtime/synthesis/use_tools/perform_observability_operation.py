@@ -467,7 +467,7 @@ def create_observability_operation_adapter(
     timeout: float = 30.0,
     retry_attempts: int = 3,
     enable_caching: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityOperationAdapter:
     """Create a configured observability operation adapter."""
     config = OperationConfig(

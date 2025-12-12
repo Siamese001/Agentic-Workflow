@@ -13,7 +13,7 @@ This test file is scaffolded for Priority 0; implementation comes later.
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import BulletExecutionAgent  # INVALID: Cannot import from path with hyphens
 
 
-def test_bullet_generation_from_strategy_plan():
+def test_bullet_generation_from_strategy_plan() -> None:
     state = {"objective": "summarize", "deliverables": ["point a", "point b"]}
     plan = StrategyReasoner().plan(state)
     patch = BulletExecutionAgent().execute(plan, state)
@@ -34,7 +34,7 @@ This test file is scaffolded for Priority 0; implementation comes later.
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import DraftingExecutionAgent  # INVALID: Cannot import from path with hyphens
 
 
-def test_drafting_pipeline_creates_sections():
+def test_drafting_pipeline_creates_sections() -> None:
     state = {"objective": "Write", "outline": ["Intro", "Body"]}
     plan = DraftingReasoner().plan(state)
     assert plan["sections"] == ["Intro", "Body"]
@@ -57,7 +57,7 @@ This test file is scaffolded for Priority 0; implementation comes later.
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.utils_types import BudgetConfig  # INVALID: Cannot import from path with hyphens
 
 
-def test_rag_execution_pipeline_round_trip():
+def test_rag_execution_pipeline_round_trip() -> None:
     state = {
         "objective": "explain determinism",
         "messages": [{"role": "user", "content": "How does this work?"}],
@@ -76,7 +76,7 @@ def test_rag_execution_pipeline_round_trip():
     assert len(patch["rag_history"]) == len(retrieval["queries"])
 
 
-def test_rag_execution_truncates_by_budget():
+def test_rag_execution_truncates_by_budget() -> None:
     queries = [f"query-{idx}" for idx in range(BudgetConfig().max_rag_items + 5)]
     plan = {
         "retrieval": {
@@ -95,7 +95,7 @@ def test_rag_execution_truncates_by_budget():
     assert patch["last_retrieval"]["ranking"] == {"strategy": "relevance", "limit": len(queries)}
 
 
-def test_rag_execution_deduplicates_results():
+def test_rag_execution_deduplicates_results() -> None:
     plan = {
         "retrieval": {
             "queries": ["dup", "dup", "unique"],
@@ -110,7 +110,7 @@ def test_rag_execution_deduplicates_results():
     assert [entry["rank"] for entry in patch["rag_history"]] == [1, 3]
 
 
-def test_normalization_produces_expected_keys():
+def test_normalization_produces_expected_keys() -> None:
     raw_results = [{"query": "q1"}, {"evidence": "ev2"}, {"rank": 3}]
     normalized = normalize_documents(raw_results)
 
@@ -121,7 +121,7 @@ def test_normalization_produces_expected_keys():
     ]
 
 
-def test_truncate_by_budget_is_deterministic():
+def test_truncate_by_budget_is_deterministic() -> None:
     results = [{"query": f"q-{i}"} for i in range(30)]
     truncated = truncate_by_budget(normalize_documents(results), BudgetConfig())
 
@@ -129,7 +129,7 @@ def test_truncate_by_budget_is_deterministic():
     assert truncated[0]["query"] == "q-10"
 
 
-def test_rerank_results_sorts_by_rank():
+def test_rerank_results_sorts_by_rank() -> None:
     unordered = [
         {"query": "q2", "rank": 3, "evidence": "e2"},
         {"query": "q1", "rank": 1, "evidence": "e1"},
@@ -142,7 +142,7 @@ def test_rerank_results_sorts_by_rank():
     assert [entry["query"] for entry in reranked] == ["q1", "q3", "q2"]
 
 
-def test_fuse_sources_sorts_by_query():
+def test_fuse_sources_sorts_by_query() -> None:
     unordered = [
         {"query": "b", "rank": 2, "evidence": "e2"},
         {"query": "a", "rank": 1, "evidence": "e1"},
@@ -155,7 +155,7 @@ def test_fuse_sources_sorts_by_query():
     assert [entry["rank"] for entry in fused] == [1, 2, 3]
 
 
-def test_full_pipeline_is_deterministic_with_rerank_and_fuse():
+def test_full_pipeline_is_deterministic_with_rerank_and_fuse() -> None:
     results = [
         {"query": "query-b", "rank": 2, "evidence": "ev-b"},
         {"query": "query-a", "rank": 3, "evidence": "ev-a"},
@@ -206,7 +206,7 @@ This test file is scaffolded for Priority 0; implementation comes later.
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l2_execution import QAValidationAgent  # INVALID: Cannot import from path with hyphens
 
 
-def test_qa_validation_reports_checks():
+def test_qa_validation_reports_checks() -> None:
     plan = {"mode": "drafting"}
     state = {"messages": [{"role": "assistant", "content": "draft"}]}
 

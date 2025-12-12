@@ -15,7 +15,7 @@ def _make_agent(agent_cls, card: AgentCard | None = None):
     return agent_cls(routing_policy=routing, sandbox=sandbox, meta_profile=None)
 
 
-def test_all_major_agents_have_agent_card_with_expected_roles():
+def test_all_major_agents_have_agent_card_with_expected_roles() -> None:
     agents = [
         (StrategyLLMAgent, AgentRole.PLANNER),
         (DraftingGuild, AgentRole.EXECUTION),
@@ -32,7 +32,7 @@ def test_all_major_agents_have_agent_card_with_expected_roles():
         assert agent.agent_card.agent_id == cls.__name__
 
 
-def test_allowed_tools_enforced_by_llm_base_agent_helper():
+def test_allowed_tools_enforced_by_llm_base_agent_helper() -> None:
     card = AgentCard(
         agent_id="test_agent",
         role=AgentRole.EXECUTION,

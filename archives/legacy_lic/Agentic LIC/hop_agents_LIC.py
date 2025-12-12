@@ -644,7 +644,7 @@ class HOPOrchestrator:
         }
 
 
-def test_hop_agents():
+def test_hop_agents() -> None:
     """
     Test the HOP agents with a sample mission
     """

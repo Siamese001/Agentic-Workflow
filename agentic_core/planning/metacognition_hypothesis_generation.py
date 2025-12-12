@@ -1,5 +1,5 @@
-from archives.legacy_root_folders.meta.metacognition.hypothesis import generate_initial_hypotheses
-from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
+# from archives.legacy_root_folders.meta.metacognition.hypothesis import generate_initial_hypotheses  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
 class DummyRAG:
@@ -12,7 +12,7 @@ class DummyAgentCard:
         self.agent_id = agent_id
 
 
-def test_generate_initial_hypotheses_with_evidence():
+def test_generate_initial_hypotheses_with_evidence(self) -> None:
     rag = DummyRAG(evidence_count=3)
     agent = DummyAgentCard("planner_1")
 
@@ -22,7 +22,7 @@ def test_generate_initial_hypotheses_with_evidence():
     assert {h.agent_id for h in hs} == {"planner_1"}
 
 
-def test_generate_initial_hypotheses_without_evidence():
+def test_generate_initial_hypotheses_without_evidence(self) -> None:
     rag = DummyRAG(evidence_count=0)
     agent = DummyAgentCard("planner_1")
 

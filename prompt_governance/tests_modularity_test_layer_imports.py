@@ -88,7 +88,7 @@ def test_non_providers_do_not_import_providers() -> None:
     assert not violations, f"Non-provider modules importing providers: {violations}"
 
 
-def test_meta_does_not_import_core_or_legacy_l_layers():
+def test_meta_does_not_import_core_or_legacy_l_layers() -> None:
     """meta/ modules must not import core or legacy l1/l2/cognitive_agents."""
 
     violations: list[tuple[str, list[str]]] = []
@@ -108,7 +108,7 @@ def test_meta_does_not_import_core_or_legacy_l_layers():
     assert not violations, f"meta modules importing forbidden core/L layers: {violations}"
 
 
-def test_prompt_files_do_not_import_providers_or_core():
+def test_prompt_files_do_not_import_providers_or_core() -> None:
     """prompt_* files must not import providers or core/l1/l2/cognitive_agents."""
 
     violations: list[tuple[str, list[str]]] = []
