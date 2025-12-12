@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from shared.resilience.mixin import HardeningMixin, TokenLimitError
 from shared.resilience.telemetry import SystemTelemetry, get_telemetry
-from shared.agent_executor import AgentMessage, AgentResponse
+from runtime.shared.agent_executor import AgentMessage, AgentResponse
 
 logger = logging.getLogger(__name__)
 
