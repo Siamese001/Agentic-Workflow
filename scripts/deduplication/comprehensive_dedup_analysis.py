@@ -504,7 +504,7 @@ def print_section_e(report: DedupReport) -> None:
     for folder, count in sorted(by_folder.items(), key=lambda x: -x[1]):
         print(f"  {folder}: {count} files")
     
-def save_report(report: DedupReport):
+def save_report(report: DedupReport) -> Path:
     """Save report to JSON."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 

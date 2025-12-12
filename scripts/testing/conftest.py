@@ -35,7 +35,7 @@ def get_config() -> Dict[str, Any]:
     """Get default configuration."""
     return DEFAULT_CONFIG.copy()
 
-def setup_environment():
+def setup_environment() -> None:
     """Setup the environment with required configurations."""
     os.environ.setdefault("PYTHONPATH", str(PROJECT_ROOT))
 

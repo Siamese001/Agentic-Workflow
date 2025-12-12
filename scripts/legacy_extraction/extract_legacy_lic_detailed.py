@@ -57,7 +57,7 @@ def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
     
     return all_files, net_incremental, duplicates
 
-def extract_net_incremental():
+def extract_net_incremental() -> None:
     """Extract files that don't exist in sovereign codebase."""
     source_dir = Path("archives/legacy_lic")
     staging_dir = Path("archive_code")

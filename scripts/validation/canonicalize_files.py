@@ -8,7 +8,7 @@ import hashlib
 from pathlib import Path
 from collections import defaultdict
 
-def clean_debug_statements(file_path):
+def clean_debug_statements(file_path: str) -> None:
     """Remove print, pdb, and breakpoint statements from a file"""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -36,7 +36,7 @@ def clean_debug_statements(file_path):
 
         return 0
 
-def get_file_hash(file_path):
+def get_file_hash(file_path: str) -> str:
     """Get SHA256 hash of file"""
     hasher = hashlib.sha256()
     with open(file_path, 'rb') as f:
@@ -44,7 +44,7 @@ def get_file_hash(file_path):
             hasher.update(chunk)
     return hasher.hexdigest()
 
-def analyze_file_complexity(file_path):
+def analyze_file_complexity(file_path: str) -> Dict[str, int]:
     """Get simple complexity metrics"""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:

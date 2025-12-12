@@ -201,7 +201,7 @@ def execute_dedup(dry_run: bool = False) -> DedupManifest:
 
     return manifest
 
-def print_summary(manifest: DedupManifest, dry_run: bool):
+def print_summary(manifest: DedupManifest, dry_run: bool) -> None:
     """Print deduplication summary."""
 
     if manifest.errors:

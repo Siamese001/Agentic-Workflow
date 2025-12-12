@@ -29,7 +29,7 @@ DOMAIN_TO_FOLDER = {
 # Domains to skip for file generation (data contains snapshots, tests are special)
 SKIP_DOMAINS = {'data', 'tests'}
 
-def extract_yaml_files(obj, prefix='', files=None):
+def extract_yaml_files(obj: object, prefix: str = '', files: set = None) -> set:
     """Extract all file paths from YAML structure."""
     if files is None:
         files = set()
@@ -44,7 +44,7 @@ def extract_yaml_files(obj, prefix='', files=None):
                 extract_yaml_files(value, new_prefix, files)
     return files
 
-def get_actual_files(folder_path):
+def get_actual_files(folder_path: str) -> set:
     """Get all Python files in folder, excluding noise."""
     actual = set()
     if not folder_path.exists():

@@ -106,7 +106,7 @@ class Test{source_path.stem.title().replace("_", "")}:
     
     return created_count
 
-def main():
+def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
         print("Usage: python auto_create_test.py <module1> <module2> ...")

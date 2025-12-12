@@ -7,10 +7,11 @@ Creates hardened module files for all paths defined in unified_structure_subatom
 import yaml
 from pathlib import Path
 from datetime import datetime
+from typing import List, Optional
 
 REPO = Path("c:/Git/Agentic-Workflow")
 
-def extract_yaml_paths(obj, prefix='', paths=None) -> List[str]:
+def extract_yaml_paths(obj: object, prefix: str = '', paths: Optional[List[str]] = None) -> List[str]:
     """Extract file paths from YAML structure."""
     if paths is None:
         paths = []
