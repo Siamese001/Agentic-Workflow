@@ -461,6 +461,62 @@ VALIDATION_GATES = [
         ],
         on_fail="REGENERATE",
     ),
+    ValidationGate(
+        gate_id="VG_K2_5_DEEP_RESEARCH_INTEGRITY",
+        execution_point="POST_K2_5_GENERATION",
+        blocking=True,
+        severity=ValidationSeverity.CRITICAL,
+        checks=[
+            "no_unbound_metrics",
+            "no_fluff_language",
+            "no_orphaned_claims",
+            "minimum_3_citations",
+            "depth_score_min_0_7",
+        ],
+        on_fail="REGENERATE",
+        halt_message="K.2.5 deep research failed integrity gate. All metrics must have citations, no fluff language, all claims linked to tech/executives, min 3 citations, depth score ≥0.7.",
+    ),
+    ValidationGate(
+        gate_id="VG_K2_5_FINANCIAL_LAYER_COMPLETENESS",
+        execution_point="POST_K2_5_GENERATION",
+        blocking=True,
+        severity=ValidationSeverity.CRITICAL,
+        checks=[
+            "min_2_financial_metrics",
+            "all_metrics_have_citations",
+            "metrics_have_specific_values",
+            "yoy_comparisons_present",
+        ],
+        on_fail="REGENERATE",
+        halt_message="K.2.5 financial layer incomplete. Requires ≥2 metrics with citations, specific values, and YoY comparisons.",
+    ),
+    ValidationGate(
+        gate_id="VG_K2_5_TECHNICAL_LAYER_SPECIFICITY",
+        execution_point="POST_K2_5_GENERATION",
+        blocking=True,
+        severity=ValidationSeverity.CRITICAL,
+        checks=[
+            "min_2_specific_technologies",
+            "implementation_details_present",
+            "performance_gains_quantified",
+            "no_generic_tech_descriptions",
+        ],
+        on_fail="REGENERATE",
+        halt_message="K.2.5 technical layer lacks specificity. Requires ≥2 specific technologies with implementation details and quantified performance gains.",
+    ),
+    ValidationGate(
+        gate_id="VG_K2_5_LEADERSHIP_MAPPING",
+        execution_point="POST_K2_5_GENERATION",
+        blocking=True,
+        severity=ValidationSeverity.CRITICAL,
+        checks=[
+            "min_2_executives_identified",
+            "executives_have_domain_ownership",
+            "initiatives_mapped_to_leaders",
+        ],
+        on_fail="REGENERATE",
+        halt_message="K.2.5 leadership mapping incomplete. Requires ≥2 executives with domain ownership and initiatives mapped to responsible leaders.",
+    ),
 ]
 
 # Feedback Loop Configuration (from v1.9.2 HOP-3)
