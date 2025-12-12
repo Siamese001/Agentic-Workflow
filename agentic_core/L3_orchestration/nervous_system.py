@@ -1,0 +1,437 @@
+"""Nervous System - Core Orchestrator Implementation.
+
+Phase 2 - Pillar 1: Layering Model
+Coordinates Brain (cognitive) and Hands (action) through Think-Act-Observe cycle.
+"""
+
+import time
+import logging
+from typing import Any, Dict, List, Optional
+
+from schemas.core_interfaces import (
+    IOrchestrator,
+    ICognitivePlane,
+    IActionPlane,
+    OrchestratorConfig,
+    ExecutionContext,
+    ExecutionResult,
+    ExecutionPhase,
+    PlanningRequest,
+    ActionRequest,
+)
+
+logger = logging.getLogger(__name__)
+
+
+class NervousSystem(IOrchestrator):
+    """Core orchestrator that coordinates cognitive and action planes.
+    
+    Implements the 5-step agentic cycle:
+    1. MISSION - Define the goal
+    2. SCENE - Gather context
+    3. THINK - Plan next actions (Brain)
+    4. ACT - Execute actions (Hands)
+    5. OBSERVE - Interpret results and update state
+    
+    Enforces strict architectural boundaries:
+    - Only orchestrator can call both planes
+    - Cognitive plane cannot trigger actions
+    - Action plane cannot make plans
+    """
+    
+    def __init__(
+        self,
+        cognitive_plane: ICognitivePlane,
+        action_plane: IActionPlane,
+        config: Optional[OrchestratorConfig] = None,
+    ):
+        """Initialize nervous system.
+        
+        Args:
+            cognitive_plane: The brain (planning/reasoning)
+            action_plane: The hands (tool execution)
+            config: Orchestrator configuration
+        """
+        self.brain = cognitive_plane
+        self.hands = action_plane
+        self.config = config or OrchestratorConfig()
+        
+        self._state: Dict[str, Any] = {}
+        self._iteration = 0
+        
+        logger.info(
+            "nervous_system_initialized",
+            extra={
+                "cognitive_capabilities": [c.value for c in self.brain.get_capabilities()],
+                "action_capabilities": [c.value for c in self.hands.get_capabilities()],
+                "config": self.config.to_dict(),
+            }
+        )
+    
+    async def execute(self, context: ExecutionContext) -> ExecutionResult:
+        """Execute mission through Think-Act-Observe cycle.
+        
+        Args:
+            context: Execution context with mission and scene
+            
+        Returns:
+            ExecutionResult with output and trace
+        """
+        start_time = time.time()
+        execution_trace: List[Dict[str, Any]] = []
+        errors: List[str] = []
+        
+        self._iteration = 0
+        self._state = context.state.copy()
+        
+        logger.info(
+            "execution_started",
+            extra={
+                "mission": context.mission,
+                "scene_keys": list(context.scene.keys()),
+            }
+        )
+        
+        try:
+            # Phase 1: MISSION (already defined in context)
+            mission_step = {
+                "phase": ExecutionPhase.MISSION.value,
+                "mission": context.mission,
+                "timestamp": time.time(),
+            }
+            execution_trace.append(mission_step)
+            
+            # Phase 2: SCENE (gather initial context)
+            scene_result = await self.execute_step(ExecutionPhase.SCENE, context)
+            execution_trace.append({
+                "phase": ExecutionPhase.SCENE.value,
+                "result": scene_result,
+                "timestamp": time.time(),
+            })
+            
+            # Main loop: THINK -> ACT -> OBSERVE
+            while await self.should_continue(context):
+                self._iteration += 1
+                
+                if self._iteration > self.config.max_iterations:
+                    errors.append(f"Max iterations ({self.config.max_iterations}) reached")
+                    break
+                
+                logger.info(
+                    "iteration_started",
+                    extra={"iteration": self._iteration}
+                )
+                
+                # Phase 3: THINK
+                think_result = await self.think(context)
+                execution_trace.append({
+                    "phase": ExecutionPhase.THINK.value,
+                    "iteration": self._iteration,
+                    "result": think_result,
+                    "timestamp": time.time(),
+                })
+                
+                if not think_result.get("success"):
+                    errors.append(f"Think phase failed: {think_result.get('error')}")
+                    break
+                
+                # Extract actions from plan
+                actions = self._extract_actions(think_result)
+                
+                if not actions:
+                    logger.info("no_actions_planned", extra={"iteration": self._iteration})
+                    break
+                
+                # Phase 4: ACT
+                act_results = await self.act(actions, context)
+                execution_trace.append({
+                    "phase": ExecutionPhase.ACT.value,
+                    "iteration": self._iteration,
+                    "actions": [a.to_dict() for a in actions],
+                    "results": act_results,
+                    "timestamp": time.time(),
+                })
+                
+                # Phase 5: OBSERVE
+                observe_result = await self.observe(act_results, context)
+                execution_trace.append({
+                    "phase": ExecutionPhase.OBSERVE.value,
+                    "iteration": self._iteration,
+                    "result": observe_result,
+                    "timestamp": time.time(),
+                })
+                
+                # Update context with observations
+                context.state.update(observe_result.get("state_updates", {}))
+                context.history.append({
+                    "iteration": self._iteration,
+                    "think": think_result,
+                    "act": act_results,
+                    "observe": observe_result,
+                })
+                
+                # Check if mission is complete
+                if observe_result.get("mission_complete"):
+                    logger.info("mission_complete", extra={"iteration": self._iteration})
+                    break
+            
+            # Optional: REFLECT
+            if self.config.enable_reflection:
+                reflect_result = await self.brain.reflect(
+                    execution_trace=execution_trace,
+                    outcome={"state": context.state, "history": context.history},
+                )
+                execution_trace.append({
+                    "phase": ExecutionPhase.REFLECT.value,
+                    "result": reflect_result,
+                    "timestamp": time.time(),
+                })
+            
+            success = len(errors) == 0
+            
+            result = ExecutionResult(
+                success=success,
+                output=context.state.get("final_output"),
+                final_state=context.state,
+                execution_trace=execution_trace,
+                iterations=self._iteration,
+                errors=errors,
+                metadata={
+                    "execution_time_seconds": time.time() - start_time,
+                    "total_phases": len(execution_trace),
+                },
+            )
+            
+            logger.info(
+                "execution_completed",
+                extra={
+                    "success": success,
+                    "iterations": self._iteration,
+                    "execution_time": result.metadata["execution_time_seconds"],
+                }
+            )
+            
+            return result
+        
+        except Exception as e:
+            logger.error(
+                "execution_failed",
+                extra={"error": str(e)},
+                exc_info=True,
+            )
+            
+            return ExecutionResult(
+                success=False,
+                final_state=context.state,
+                execution_trace=execution_trace,
+                iterations=self._iteration,
+                errors=[f"Execution failed: {str(e)}"],
+                metadata={
+                    "execution_time_seconds": time.time() - start_time,
+                },
+            )
+    
+    async def execute_step(
+        self,
+        phase: ExecutionPhase,
+        context: ExecutionContext,
+    ) -> Dict[str, Any]:
+        """Execute a single phase.
+        
+        Args:
+            phase: Which phase to execute
+            context: Current execution context
+            
+        Returns:
+            Phase result
+        """
+        if phase == ExecutionPhase.SCENE:
+            return {
+                "scene": context.scene,
+                "initial_state": context.state,
+            }
+        elif phase == ExecutionPhase.THINK:
+            return await self.think(context)
+        elif phase == ExecutionPhase.ACT:
+            # Need actions from previous think
+            return {"error": "ACT phase requires actions from THINK"}
+        elif phase == ExecutionPhase.OBSERVE:
+            # Need results from previous act
+            return {"error": "OBSERVE phase requires results from ACT"}
+        else:
+            return {"error": f"Unknown phase: {phase}"}
+    
+    async def think(self, context: ExecutionContext) -> Dict[str, Any]:
+        """Execute THINK phase - cognitive planning.
+        
+        Args:
+            context: Current execution context
+            
+        Returns:
+            Planning result with next actions
+        """
+        request = PlanningRequest(
+            task=context.mission,
+            context={
+                "scene": context.scene,
+                "state": context.state,
+                "history": context.history,
+                "iteration": self._iteration,
+            },
+            max_steps=self.config.max_iterations - self._iteration,
+        )
+        
+        result = await self.brain.plan(request)
+        
+        return {
+            "success": result.success,
+            "plan": result.plan,
+            "reasoning_trace": result.reasoning_trace,
+            "confidence": result.confidence,
+            "error": result.errors[0] if result.errors else None,
+        }
+    
+    async def act(
+        self,
+        actions: List[ActionRequest],
+        context: ExecutionContext,
+    ) -> List[Dict[str, Any]]:
+        """Execute ACT phase - action execution.
+        
+        Args:
+            actions: Actions to execute
+            context: Current execution context
+            
+        Returns:
+            List of action results
+        """
+        results = await self.hands.execute_batch(actions, parallel=False)
+        
+        return [r.to_dict() for r in results]
+    
+    async def observe(
+        self,
+        action_results: List[Dict[str, Any]],
+        context: ExecutionContext,
+    ) -> Dict[str, Any]:
+        """Execute OBSERVE phase - interpret results.
+        
+        Args:
+            action_results: Results from actions
+            context: Current execution context
+            
+        Returns:
+            Observations and state updates
+        """
+        # Aggregate results
+        all_success = all(r.get("success", False) for r in action_results)
+        outputs = [r.get("output") for r in action_results if r.get("output")]
+        errors = [r.get("error") for r in action_results if r.get("error")]
+        
+        # Use cognitive plane to interpret results
+        interpretation = await self.brain.reason(
+            query="Interpret these action results and determine next steps",
+            context={
+                "action_results": action_results,
+                "current_state": context.state,
+                "mission": context.mission,
+            },
+            mode="react",
+        )
+        
+        return {
+            "all_success": all_success,
+            "outputs": outputs,
+            "errors": errors,
+            "interpretation": interpretation,
+            "state_updates": interpretation.get("state_updates", {}),
+            "mission_complete": interpretation.get("mission_complete", False),
+        }
+    
+    async def should_continue(self, context: ExecutionContext) -> bool:
+        """Determine if execution should continue.
+        
+        Args:
+            context: Current execution context
+            
+        Returns:
+            True if should continue
+        """
+        if self._iteration >= self.config.max_iterations:
+            return False
+        
+        if context.state.get("mission_complete"):
+            return False
+        
+        if context.state.get("fatal_error"):
+            return False
+        
+        return True
+    
+    def get_state(self) -> Dict[str, Any]:
+        """Get current orchestrator state.
+        
+        Returns:
+            Current state snapshot
+        """
+        return {
+            "iteration": self._iteration,
+            "state": self._state.copy(),
+            "config": self.config.to_dict(),
+        }
+    
+    async def save_state(self, path: str) -> None:
+        """Save orchestrator state to disk.
+        
+        Args:
+            path: Path to save state
+        """
+        import json
+        
+        state = self.get_state()
+        
+        with open(path, 'w') as f:
+            json.dump(state, f, indent=2, default=str)
+        
+        logger.info("state_saved", extra={"path": path})
+    
+    async def load_state(self, path: str) -> None:
+        """Load orchestrator state from disk.
+        
+        Args:
+            path: Path to load state from
+        """
+        import json
+        
+        with open(path, 'r') as f:
+            state = json.load(f)
+        
+        self._iteration = state.get("iteration", 0)
+        self._state = state.get("state", {})
+        
+        logger.info("state_loaded", extra={"path": path, "iteration": self._iteration})
+    
+    def _extract_actions(self, think_result: Dict[str, Any]) -> List[ActionRequest]:
+        """Extract action requests from planning result.
+        
+        Args:
+            think_result: Result from think phase
+            
+        Returns:
+            List of action requests
+        """
+        actions: List[ActionRequest] = []
+        
+        plan = think_result.get("plan", [])
+        
+        for step in plan:
+            if step.get("type") == "action":
+                action = ActionRequest(
+                    action_type=step.get("action_type", "tool_call"),
+                    tool_name=step.get("tool", "unknown"),
+                    parameters=step.get("parameters", {}),
+                    context=step.get("context", {}),
+                )
+                actions.append(action)
+        
+        return actions
