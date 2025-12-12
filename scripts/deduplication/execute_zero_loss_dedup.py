@@ -113,10 +113,10 @@ def execute_dedup(dry_run: bool = True) -> Dict:
     # Summary
 
     if dry_run:
-        #print("\n[DRY RUN] Would execute the following operations:")
-        #print(f"  - Process {len(report['clusters'])} clusters")
-        #print(f"  - Archive {results['files_archived']} files")
-        #print(f"  - Create {results['pointers_created']} pointers")
+        pass  #"\n[DRY RUN] Would execute the following operations:")
+        pass  #f"  - Process {len(report['clusters'])} clusters")
+        pass  #f"  - Archive {results['files_archived']} files")
+        pass  #f"  - Create {results['pointers_created']} pointers")
     
     return results
 
@@ -132,3 +132,4 @@ if __name__ == "__main__":
     results_path.parent.mkdir(parents=True, exist_ok=True)
     with open(results_path, "w") as f:
         json.dump(results, f, indent=2)
+

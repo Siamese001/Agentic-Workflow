@@ -1,14 +1,14 @@
-"""Fallback stub to replace deprecated archive imports."""
+"""Fallback shim to replace deprecated archive imports."""
 
 # This file serves as a fallback to break import chains into the immutable archives/
-# Any import from archives/ should be replaced with this stub to prevent Python
+# Any import from archives/ should be replaced with this shim to prevent Python
 # from loading archived files during validation.
 
 class ARCHIVE_FILE_ACCESS_DEPRECATED:
-    """Placeholder class for deprecated archive imports."""
+    """Fallback class for deprecated archive imports."""
     pass
 
-# Common placeholder objects that might be imported
+# Common fallback objects that might be imported
 ContextBudget = ARCHIVE_FILE_ACCESS_DEPRECATED
 ReasoningMode = ARCHIVE_FILE_ACCESS_DEPRECATED
 Hypothesis = ARCHIVE_FILE_ACCESS_DEPRECATED

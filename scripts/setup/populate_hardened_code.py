@@ -1543,7 +1543,7 @@ def execute(data: object, config: Optional[Dict] = None, **kwargs: Dict[str, obj
 '''
 
 def populate_hardened_code(dry_run: bool = True) -> Dict:
-    """Populate hardened code for all stub files."""
+    """Populate hardened code for all minimal files."""
     report = load_latest_report()
 
     results = {
@@ -1600,7 +1600,9 @@ def populate_hardened_code(dry_run: bool = True) -> Dict:
 
     if dry_run:
         #print("DRY RUN: No files were modified")
-    
+    if dry_run:
+        pass
+
     return results
 
 if __name__ == "__main__":
