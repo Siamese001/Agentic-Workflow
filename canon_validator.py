@@ -598,12 +598,19 @@ def check_key_02_no_sovereign_renames() -> None:
     fail("02", msg)
 
 def check_key_03_data_folder_exists() -> None:
-    """Key 03 – data/ folder must exist at project root."""
+    """Key 03 – data/ folder must exist and be empty at its root (No Depth 2 files)."""
     data_dir = ROOT / DATA_FOLDER_NAME
-    if data_dir.is_dir():
-        success("03", f"{DATA_FOLDER_NAME}/ exists")
-    else:
+    if not data_dir.is_dir():
         fail("03", f"{DATA_FOLDER_NAME}/ folder missing at project root ({ROOT})")
+        return
+
+    # Check for files directly under data/ (Depth 2 sprawl)
+    files_at_root = [f.name for f in data_dir.iterdir() if f.is_file()]
+    
+    if files_at_root:
+        fail("03", f"{DATA_FOLDER_NAME}/ contains files at its root (sprawl): {', '.join(files_at_root[:3])}")
+    else:
+        success("03", f"{DATA_FOLDER_NAME}/ exists and is clean at its root")
 
 def check_key_04_no_zombie_archive_singular_root() -> None:
     """Key 04 – No root-level archive/ folder (archives/ preferred)."""
@@ -950,9 +957,7 @@ def check_key_16_eval_exec_usage() -> None:
 def check_key_17_poison_markers_and_stubs() -> None:
     """
     Key 17 – No poison markers, no stub functions in sovereign code.
-
-    NOTE: File size is checked by Key 28 (subatomic size law) to avoid
-    double jeopardy. This key focuses on content quality markers only.
+    Flags pass-only stubs AND single-line placeholder returns.
     """
     violations: List[str] = []
 
@@ -966,7 +971,7 @@ def check_key_17_poison_markers_and_stubs() -> None:
                 violations.append(f"{f.relative_to(ROOT)} – marker: {marker}")
                 break
 
-        # Stub functions (single 'pass' body)
+        # Stub functions (single 'pass' body OR single-line placeholder return)
         tree = parse_ast(f)
         if tree is None:
             continue
@@ -974,10 +979,28 @@ def check_key_17_poison_markers_and_stubs() -> None:
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if node.name.startswith("_"):
                     continue
+                
+                # Check 1: Pass-only stub
                 if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
                     violations.append(
-                        f"{f.relative_to(ROOT)}:{node.lineno} – stub function {node.name}"
+                        f"{f.relative_to(ROOT)}:{node.lineno} – stub function {node.name} (pass-only)"
                     )
+                    continue
+
+                # Check 2: Single-line placeholder return
+                if len(node.body) == 1 and isinstance(node.body[0], ast.Return):
+                    ret_val = node.body[0].value
+                    if isinstance(ret_val, ast.Constant) and ret_val.value in (None, 0, 1, 0.0, "", True, False):
+                        violations.append(
+                            f"{f.relative_to(ROOT)}:{node.lineno} – stub function {node.name} (placeholder return)"
+                        )
+                        continue
+                    if isinstance(ret_val, (ast.List, ast.Dict, ast.Set, ast.Tuple)) and not ret_val.elts:
+                        violations.append(
+                            f"{f.relative_to(ROOT)}:{node.lineno} – stub function {node.name} (placeholder empty collection)"
+                        )
+                        continue
+
 
     if violations:
         fail(
@@ -2023,20 +2046,36 @@ def check_key_46_light_no_secrets() -> None:
         success("46", "No obvious secrets in non-sovereign Python code")
 
 def check_key_47_no_zombie_archive_anywhere() -> None:
-    """Key 47 – No stray archive/ directories (use archives/ instead)."""
+    """Key 47 – No stray archive/ directories or residual compiled files/metadata."""
     violations: List[str] = []
+    
+    # 1. Check for zombie archive directories (original check)
     for d in ROOT.rglob("archive"):
         if d.is_dir():
-            violations.append(str(d.relative_to(ROOT)))
+            violations.append(f"archive/ directory: {d.relative_to(ROOT)}")
+
+    # 2. Check for residual compiled files and metadata (Hole 1 fix)
+    residual_extensions = {".pyc", ".bak", ".tmp", ".swp", ".orig", "~", ".DS_Store", "Thumbs.db"}
+    
+    # Iterate all files in the repository (excluding .git)
+    for f in ROOT.rglob("*"):
+        if not f.is_file():
+            continue
+        if is_globally_excluded(f.relative_to(ROOT)):
+            continue
+
+        if f.suffix in residual_extensions or f.name.endswith("~"):
+            violations.append(f"Residual file: {f.relative_to(ROOT)}")
+            
     if violations:
         fail(
             "47",
-            "archive/ directories found (use archives/ instead):\n"
+            "Cleanup violations (archive/ directories or residual files):\n"
             + "\n".join(f"  - {v}" for v in violations[:30])
             + (f"\n  ... and {len(violations) - 30} more" if len(violations) > 30 else ""),
         )
     else:
-        success("47", "No archive/ directories present (archives/ only)")
+        success("47", "Cleanup is pristine (archives/ only, no residual files)")
 
 def check_key_48_final_depth_canon() -> None:
     """
