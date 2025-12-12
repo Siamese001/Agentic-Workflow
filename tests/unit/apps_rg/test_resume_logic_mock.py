@@ -323,9 +323,9 @@ class TestResumeEngineIntegration:
         
         # Mock all LLM calls
         with patch('google.generativeai.GenerativeModel') as mock_model:
-            # Mock job analysis - return JSON string
-            mock_response = Mock()
-            mock_response.text = '''{
+            # Mock job analysis - return JSON string first
+            mock_job_response = Mock()
+            mock_job_response.text = '''{
                 "hard_skills": ["Python", "Django", "PostgreSQL", "AWS", "Docker"],
                 "soft_skills": ["Communication", "Teamwork", "Problem-solving"],
                 "key_responsibilities": ["Design backend systems", "Write maintainable code"],
@@ -333,7 +333,6 @@ class TestResumeEngineIntegration:
                 "cultural_indicators": ["Innovation", "Teamwork"],
                 "north_star_metric": "Application performance"
             }'''
-            mock_model.return_value.generate_content.return_value = mock_response
             
             # Mock resume generation
             def mock_generate_response(prompt, generation_config=None):
@@ -344,7 +343,16 @@ class TestResumeEngineIntegration:
                     response.text = mock_tailored["experience"][0]["responsibilities"][0]
                 return response
             
-            mock_model.return_value.generate_content.side_effect = mock_generate_response
+            # Set up side_effect to handle multiple calls
+            def mock_generate_content(prompt, generation_config=None):
+                # Check if this is a job analysis call (contains "Analyze the following job")
+                if "Analyze the following job" in prompt:
+                    return mock_job_response
+                else:
+                    # Resume generation call
+                    return mock_generate_response(prompt, generation_config)
+            
+            mock_model.return_value.generate_content.side_effect = mock_generate_content
             
             # Execute workflow with mock client to prevent real API calls
             mock_client = Mock()
