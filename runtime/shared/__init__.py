@@ -95,6 +95,30 @@ from .workflow_integration import (
     execute_hop_with_agent,
 )
 
+# K.X Nodes (Knowledge Extraction)
+from .kx_nodes import (
+    DecodingParams,
+    KNodeConfig,
+    KNodeType,
+    KXNodeRegistry,
+    RAGConfig,
+    ReasoningStrategy,
+    OUTREACH_CONNECTION_REQ_NODES,
+    OUTREACH_KX_NODES,
+    RESUME_KX_NODES,
+    get_kx_registry,
+    get_outreach_kx_node,
+    get_resume_kx_node,
+)
+
+# K.X Node Executor
+from .kx_executor import (
+    KXExecutionContext,
+    KXExecutionResult,
+    KXNodeExecutor,
+    execute_kx_node,
+)
+
 __all__ = [
     # SDK Registry
     "SDK_REGISTRY",
@@ -164,4 +188,22 @@ __all__ = [
     "create_workflow_context",
     "create_workflow_orchestrator",
     "execute_hop_with_agent",
+    # K.X Nodes
+    "KNodeType",
+    "ReasoningStrategy",
+    "RAGConfig",
+    "DecodingParams",
+    "KNodeConfig",
+    "KXNodeRegistry",
+    "RESUME_KX_NODES",
+    "OUTREACH_KX_NODES",
+    "OUTREACH_CONNECTION_REQ_NODES",
+    "get_kx_registry",
+    "get_resume_kx_node",
+    "get_outreach_kx_node",
+    # K.X Executor
+    "KXExecutionContext",
+    "KXExecutionResult",
+    "KXNodeExecutor",
+    "execute_kx_node",
 ]
