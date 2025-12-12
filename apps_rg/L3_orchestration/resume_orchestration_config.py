@@ -11,6 +11,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+from runtime.shared.routing import RoutingTier
+
 
 class RAGType(str, Enum):
     """RAG execution type."""
@@ -79,6 +81,7 @@ class ReasoningConfig:
     min_tot_depth: Optional[int] = 2
     self_consistency: int = 3
     reflexion: bool = True
+    routing_tier: Optional[RoutingTier] = None  # Auto-determined if None
 
 
 @dataclass
@@ -187,6 +190,7 @@ K_NODE_REASONING_CONFIGS = {
         min_tot_depth=1,
         self_consistency=2,
         reflexion=True,
+        routing_tier=RoutingTier.REASONING,
     ),
     "K.2": ReasoningConfig(
         temperature=0.2,
@@ -210,6 +214,7 @@ K_NODE_REASONING_CONFIGS = {
         min_tot_depth=4,
         self_consistency=6,
         reflexion=True,
+        routing_tier=RoutingTier.REASONING,
     ),
     "K.3": ReasoningConfig(  # Primary Job Role Mapping
         temperature=0.2,
@@ -233,6 +238,7 @@ K_NODE_REASONING_CONFIGS = {
         min_tot_depth=2,
         self_consistency=4,
         reflexion=True,
+        routing_tier=RoutingTier.BALANCED,
     ),
     "K.5": ReasoningConfig(  # Executive Summary
         temperature=0.7,
@@ -246,6 +252,7 @@ K_NODE_REASONING_CONFIGS = {
         min_tot_depth=2,
         self_consistency=5,
         reflexion=True,
+        routing_tier=RoutingTier.REASONING,
     ),
     "K.6": ReasoningConfig(  # Most Recent Experience
         temperature=0.5,
@@ -295,6 +302,7 @@ K_NODE_REASONING_CONFIGS = {
         min_tot_depth=1,
         self_consistency=2,
         reflexion=True,
+        routing_tier=RoutingTier.REASONING,
     ),
     "K.10": ReasoningConfig(  # Cover Letter
         temperature=0.4,
@@ -308,6 +316,7 @@ K_NODE_REASONING_CONFIGS = {
         min_tot_depth=1,
         self_consistency=3,
         reflexion=True,
+        routing_tier=RoutingTier.BALANCED,
     ),
     "K.11": ReasoningConfig(  # Optimized Skills
         temperature=0.2,
