@@ -512,7 +512,7 @@ def create_schema_vector_searcher(
     dimension: int = 1536,
     enable_field_vectors: bool = True,
     similarity_threshold: float = 0.7,
-    **kwargs
+    **kwargs: object
 ) -> SchemaVectorSearcher:
     """Create a configured schema vector searcher."""
     config = SchemaVectorConfig(

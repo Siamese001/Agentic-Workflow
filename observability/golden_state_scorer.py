@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Iterable
 
-from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict
+# from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
 def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:

@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel
+# from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel  # TODO: Fix invalid module name
 
-from archives.legacy_root_folders.meta.schema_validation import validate_schema_version
+# from archives.legacy_root_folders.meta.schema_validation import validate_schema_version  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
-def test_core_models_have_v1_schema_version_defaults():
+def test_core_models_have_v1_schema_version_defaults() -> None:
     # Simple models with safe defaults can be instantiated without args.
     simple_plans = [StrategyPlan, DraftingPlan, QAPlan, SafetyPlan, RAGPlan]
     for cls in simple_plans:
@@ -50,7 +50,7 @@ def test_core_models_have_v1_schema_version_defaults():
     assert l2_result.schema_version == "v1"
 
 
-def test_validate_schema_version_accepts_matching_models():
+def test_validate_schema_version_accepts_matching_models() -> None:
     bundle = WorkflowPlanBundle(
         strategy=StrategyPlan(),
         rag=RAGPlan(),
@@ -63,7 +63,7 @@ def test_validate_schema_version_accepts_matching_models():
     validate_schema_version(bundle, model_type=WorkflowPlanBundle)
 
 
-def test_validate_schema_version_rejects_mismatched_version():
+def test_validate_schema_version_rejects_mismatched_version() -> None:
     class DummyModel(BaseModel):
         schema_version: str = "v2"  # wrong version
 

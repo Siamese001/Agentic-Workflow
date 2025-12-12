@@ -24,7 +24,7 @@ def record_test_result(name: str, status: str, details: str = "", error: str = "
     })
 
 
-def test_core_dependencies():
+def test_core_dependencies() -> None:
     """Test core Python dependencies."""
     
     # Pydantic
@@ -92,7 +92,7 @@ def test_core_dependencies():
         record_test_result("httpx", "FAIL", error=str(e))
 
 
-def test_llm_providers():
+def test_llm_providers() -> None:
     """Test LLM provider SDKs."""
     
     # OpenAI
@@ -118,7 +118,7 @@ def test_llm_providers():
         record_test_result("google-generativeai", "FAIL", error=str(e))
 
 
-def test_vector_databases():
+def test_vector_databases() -> None:
     """Test vector database SDKs."""
     
     # Redis
@@ -175,7 +175,7 @@ def test_vector_databases():
         record_test_result("faiss-cpu", "FAIL", error=str(e))
 
 
-def test_ml_libraries():
+def test_ml_libraries() -> None:
     """Test ML/NLP libraries."""
     
     # scikit-learn
@@ -194,7 +194,7 @@ def test_ml_libraries():
         record_test_result("sentence-transformers", "FAIL", error=str(e))
 
 
-def test_observability():
+def test_observability() -> None:
     """Test observability libraries."""
     
     # OpenTelemetry API
@@ -220,7 +220,7 @@ def test_observability():
         record_test_result("opentelemetry-sdk", "FAIL", error=str(e))
 
 
-def test_testing_frameworks():
+def test_testing_frameworks() -> None:
     """Test testing frameworks."""
     
     # Pytest
@@ -239,7 +239,7 @@ def test_testing_frameworks():
         record_test_result("pytest-asyncio", "FAIL", error=str(e))
 
 
-def test_mcp_sdk():
+def test_mcp_sdk() -> None:
     """Test MCP SDK."""
     
     try:
@@ -250,7 +250,7 @@ def test_mcp_sdk():
         record_test_result("mcp", "FAIL", error=str(e))
 
 
-def test_project_imports():
+def test_project_imports() -> None:
     """Test project-specific imports."""
     
     try:

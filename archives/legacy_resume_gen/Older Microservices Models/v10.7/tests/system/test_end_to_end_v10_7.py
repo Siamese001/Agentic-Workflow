@@ -3,7 +3,7 @@ from archives.legacy_resume_gen.Older Microservices Models.v10.7.workflow.runner
 
 
 @pytest.mark.integration
-def test_full_resume_generation_pipeline():
+def test_full_resume_generation_pipeline() -> None:
     ctx = {"resume": "Jane Doe", "jd": "Chief AI Officer"}
     output = run_workflow(ctx)
     assert output["status"] == "success"
@@ -11,19 +11,19 @@ def test_full_resume_generation_pipeline():
 
 
 @pytest.mark.integration
-def test_ambiguity_triggers_tot_branching():
+def test_ambiguity_triggers_tot_branching() -> None:
     ctx = {"resume": "ambiguous input"}
     out = run_workflow(ctx)
     assert "ToT" in out["events"]
 
 
 @pytest.mark.integration
-def test_low_confidence_triggers_retry():
+def test_low_confidence_triggers_retry() -> None:
     ctx = {"resume": "low_confidence_case"}
     out = run_workflow(ctx)
     assert "retry" in out["events"]
 
 
 @pytest.mark.xfail(reason="Add 17 more integration tests for all stacks", strict=False)
-def test_placeholder():
+def test_placeholder() -> None:
     pytest.xfail("Add 17 more integration tests for all stacks")

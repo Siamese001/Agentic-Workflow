@@ -44,7 +44,7 @@ class KNodeConfig:
     reflexion: bool = False
     max_reflexion_loops: int = 3
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.input_dependencies is None:
             self.input_dependencies = []
 

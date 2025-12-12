@@ -50,7 +50,7 @@ def _top_level_dir_for(path: pathlib.Path) -> str | None:
     return parts[0]
 
 
-def test_no_direct_imports_of_top_level_l_layers():
+def test_no_direct_imports_of_top_level_l_layers() -> None:
     """Non-test modules must not import bare l1/l2/cognitive_agents.
 
     They should import via core.l1, core.l2, core.cognitive_agents
@@ -69,7 +69,7 @@ def test_no_direct_imports_of_top_level_l_layers():
     assert not violations, f"Forbidden direct imports found: {violations}"
 
 
-def test_non_providers_do_not_import_providers():
+def test_non_providers_do_not_import_providers() -> None:
     """Core/meta/prompts/profiles must not import the top-level providers package."""
 
     violations: list[tuple[str, list[str]]] = []
@@ -88,7 +88,7 @@ def test_non_providers_do_not_import_providers():
     assert not violations, f"Non-provider modules importing providers: {violations}"
 
 
-def test_meta_does_not_import_core_or_legacy_l_layers():
+def test_meta_does_not_import_core_or_legacy_l_layers() -> None:
     """meta/ modules must not import core or legacy l1/l2/cognitive_agents."""
 
     violations: list[tuple[str, list[str]]] = []
@@ -108,7 +108,7 @@ def test_meta_does_not_import_core_or_legacy_l_layers():
     assert not violations, f"meta modules importing forbidden core/L layers: {violations}"
 
 
-def test_prompt_files_do_not_import_providers_or_core():
+def test_prompt_files_do_not_import_providers_or_core() -> None:
     """prompt_* files must not import providers or core/l1/l2/cognitive_agents."""
 
     violations: list[tuple[str, list[str]]] = []

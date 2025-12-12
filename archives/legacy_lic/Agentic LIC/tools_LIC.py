@@ -525,7 +525,7 @@ class ValidationToolkit:
         return is_ascii_only, non_ascii
 
 
-def test_code_interpreter():
+def test_code_interpreter() -> None:
     """
     Test the code interpreter tool
     """
@@ -594,7 +594,7 @@ def test_code_interpreter():
     print("\nTest complete\n")
 
 
-def test_validation_toolkit():
+def test_validation_toolkit() -> None:
     """
     Test the validation toolkit
     """

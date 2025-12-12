@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from typing import List
-import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types
+# import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types  # INVALID: Cannot import from path with hyphens
 
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval import orchestrate_retrieval  # INVALID: Cannot import from path with hyphens
-from archives.legacy_root_folders.core.models.models import Evidence, RetrievalConfig, CouncilVote, RAGResult
+# from archives.legacy_root_folders.core.models.models import Evidence, RetrievalConfig, CouncilVote, RAGResult  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
 class _DummyCtx:
@@ -16,7 +16,7 @@ def _make_ev(text: str, score: float, source: str) -> Evidence:
     return Evidence(text=text, score=score, source=source, metadata={})
 
 
-def test_orchestrate_retrieval_combines_bm25_and_dense_hits(monkeypatch) -> None:
+def test_orchestrate_retrieval_combines_bm25_and_dense_hits(monkeypatch: object) -> None:
     # Arrange
 #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
@@ -61,7 +61,7 @@ def test_orchestrate_retrieval_combines_bm25_and_dense_hits(monkeypatch) -> None
     assert rag.used_hyde is False
 
 
-def test_orchestrate_retrieval_sets_used_hyde_flag(monkeypatch) -> None:
+def test_orchestrate_retrieval_sets_used_hyde_flag(monkeypatch: object) -> None:
 #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:  # noqa: ARG001
@@ -102,7 +102,7 @@ def test_orchestrate_retrieval_sets_used_hyde_flag(monkeypatch) -> None:
     assert rag.used_hyde is True
 
 
-def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch) -> None:
+def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch: object) -> None:
 #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:  # noqa: ARG001
@@ -145,7 +145,7 @@ def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch) -> None:
     assert "chroma-doc" in texts
 
 
-def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch) -> None:
+def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch: object) -> None:
 #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
     def _fake_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:  # noqa: ARG001
@@ -159,7 +159,7 @@ def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch) -> None:
 
     captured = {}
 
-    def _fake_fuse(lex_results, dense_results, cfg, council_vote, used_hyde):  # noqa: ARG001
+    def _fake_fuse(lex_results: List[Evidence], dense_results: List[Evidence], cfg: RetrievalConfig, council_vote: Optional[object], used_hyde: bool) -> RAGResult:  # noqa: ARG001
         captured["council"] = council_vote
         return RAGResult(evidence=list(lex_results) + list(dense_results), used_hyde=used_hyde)
 

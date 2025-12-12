@@ -27,7 +27,7 @@ def test_parse_mcp_client_specs_rejects(bad):
     with pytest.raises(ValueError):
         _parse_mcp_client_specs(bad)  # type: ignore[arg-type]
 
-def test_instantiate_missing_class_raises_attribute_error():
+def test_instantiate_missing_class_raises_attribute_error() -> None:
     module_name = "failing_mcp_module"
     module = types.ModuleType(module_name)
     sys.modules[module_name] = module
@@ -45,7 +45,7 @@ def test_instantiate_missing_class_raises_attribute_error():
     finally:
         sys.modules.pop(module_name, None)
 
-def test_instantiate_unknown_provider_returns_stub():
+def test_instantiate_unknown_provider_returns_stub() -> None:
     c = _instantiate_mcp_client(MCPClientSpec(name="mystery", provider="unknown"))
     assert isinstance(c, MCPClientStub)
 

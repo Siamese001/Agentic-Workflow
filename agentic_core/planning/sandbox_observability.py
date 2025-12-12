@@ -1,9 +1,9 @@
-from archives.legacy_root_folders.infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm
-from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest
+# from archives.legacy_root_folders.infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import clear_events, get_all_events  # INVALID: Cannot import from path with hyphens
 
 
-def test_sandbox_observability_events_include_vm_id():
+def test_sandbox_observability_events_include_vm_id(self) -> None:
     clear_events()
 
     vm = create_vm({})

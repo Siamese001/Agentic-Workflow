@@ -31,7 +31,7 @@ def _base_state() -> dict:
 
 
 @pytest.mark.asyncio
-async def test_qa_validation_stack_flags_issues_and_runs_all_tools():
+async def test_qa_validation_stack_flags_issues_and_runs_all_tools() -> None:
     failing_tool = _DummyTool({"unsupported_claims": 2, "status": "success"})
     passing_tool = _DummyTool({"tone_match": True, "current_tone": "Confident", "status": "success"})
     validators = [
@@ -52,7 +52,7 @@ async def test_qa_validation_stack_flags_issues_and_runs_all_tools():
 
 
 @pytest.mark.asyncio
-async def test_qa_validation_stack_pass_summary_when_no_issues():
+async def test_qa_validation_stack_pass_summary_when_no_issues() -> None:
     validators = [
         ("validate_tone", _DummyTool({"tone_match": True, "current_tone": "Warm"})),
         ("validate_word_count", _DummyTool({"validation_passed": True, "message": "ok"})),

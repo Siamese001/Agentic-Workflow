@@ -32,7 +32,7 @@ def _sanitize_state(state: dict):
 # 1. State must monotonically grow (no loss of upstream keys)
 # ----------------------------------------------------------------------
 @pytest.mark.state
-def test_state_grows_monotonically_through_pipeline():
+def test_state_grows_monotonically_through_pipeline() -> None:
     out = run_workflow({"compat_mode": "v10_7", "resume": "StateGrowUser", "jd": "AI Exec"})
     resume = out["resume"]
 
@@ -63,7 +63,7 @@ def test_state_grows_monotonically_through_pipeline():
 # 2. No downstream stack may delete or overwrite upstream keys
 # ----------------------------------------------------------------------
 @pytest.mark.state
-def test_no_upstream_state_loss():
+def test_no_upstream_state_loss() -> None:
     out = run_workflow({"compat_mode": "v10_7", "resume": "UpstreamLossTest", "jd": "AWS"})
     resume = out["resume"]
 
@@ -82,7 +82,7 @@ def test_no_upstream_state_loss():
 # 3. Deterministic state: two runs must produce same cleaned structure
 # ----------------------------------------------------------------------
 @pytest.mark.state
-def test_state_determinism_clean_structure():
+def test_state_determinism_clean_structure() -> None:
     ctx = {"compat_mode": "v10_7", "resume": "DeterminismUser", "jd": "Citi"}
 
     out1 = _sanitize_state(run_workflow(copy.deepcopy(ctx)))
@@ -99,7 +99,7 @@ def test_state_determinism_clean_structure():
 # 4. No cross-run state contamination / cache leakage
 # ----------------------------------------------------------------------
 @pytest.mark.state
-def test_no_cross_run_state_leakage():
+def test_no_cross_run_state_leakage() -> None:
     out1 = run_workflow({"compat_mode": "v10_7", "resume": "LeakUserA", "jd": "Exec"})
     out2 = run_workflow({"compat_mode": "v10_7", "resume": "LeakUserB", "jd": "Exec"})
 
@@ -115,7 +115,7 @@ def test_no_cross_run_state_leakage():
 # 5. State evolution must add AT LEAST N required keys vs empty initialization
 # ----------------------------------------------------------------------
 @pytest.mark.state
-def test_state_adds_minimum_required_keys():
+def test_state_adds_minimum_required_keys() -> None:
     out = run_workflow({"compat_mode": "v10_7", "resume": "MinKeysTest", "jd": "Director"})
     resume = out["resume"]
 
@@ -138,7 +138,7 @@ def test_state_adds_minimum_required_keys():
 # 6. State consistency between events and resume blocks
 # ----------------------------------------------------------------------
 @pytest.mark.state
-def test_event_sequence_matches_state_sequence():
+def test_event_sequence_matches_state_sequence() -> None:
     out = run_workflow({"compat_mode": "v10_7", "resume": "SeqTest", "jd": "AWS"})
     resume = out["resume"]
     events = [str(e).lower() for e in out.get("events", [])]
@@ -162,7 +162,7 @@ def test_event_sequence_matches_state_sequence():
 # 7. Regression tripwire: total number of resume keys must never shrink
 # ----------------------------------------------------------------------
 @pytest.mark.state
-def test_total_resume_key_count_does_not_shrink():
+def test_total_resume_key_count_does_not_shrink() -> None:
     """
     Acts as a tripwire for structural regressions.
     For v10.7, resume typically contains 5–7 keys.
@@ -180,7 +180,7 @@ def test_total_resume_key_count_does_not_shrink():
 # 8. State blocks must be dict-like and preserve types across runs
 # ----------------------------------------------------------------------
 @pytest.mark.state
-def test_state_block_type_stability():
+def test_state_block_type_stability() -> None:
     out = run_workflow({"compat_mode": "v10_7", "resume": "TypeStableUser", "jd": "AI Exec"})
     resume = out["resume"]
 
@@ -195,7 +195,7 @@ def test_state_block_type_stability():
 # 9. Summary/bullets must survive QA validation (no destructive overwrites)
 # ----------------------------------------------------------------------
 @pytest.mark.state
-def test_drafting_content_survives_qa():
+def test_drafting_content_survives_qa() -> None:
     out = run_workflow({"compat_mode": "v10_7", "resume": "SurvivalTest", "jd": "CoreWeave"})
     resume = out["resume"]
 

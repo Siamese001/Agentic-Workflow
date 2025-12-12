@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch, MagicMock
 # Test the core logic without requiring API keys
 
 
-def test_job_analyzer_with_mocked_client():
+def test_job_analyzer_with_mocked_client() -> None:
     """Test JobAnalyzer with a completely mocked client."""
     with patch('apps_rg.L2_execution.job_analyzer.get_client') as mock_get_client:
         # Create a mock client
@@ -44,7 +44,7 @@ def test_job_analyzer_with_mocked_client():
             assert result["experience_level"] == "senior"
 
 
-def test_resume_generator_with_mocked_client():
+def test_resume_generator_with_mocked_client() -> None:
     """Test ResumeGenerator with a completely mocked client."""
     with patch('apps_rg.L2_execution.resume_generator.get_client') as mock_get_client:
         # Create a mock client
@@ -82,7 +82,7 @@ def test_resume_generator_with_mocked_client():
         assert result["_tailoring_metadata"]["target_hard_skills"] == analysis["hard_skills"]
 
 
-def test_execute_resume_generation_with_mocked_components():
+def test_execute_resume_generation_with_mocked_components() -> None:
     """Test ExecuteResumeGeneration with mocked components."""
     with patch('apps_rg.L2_execution.execute_resume_generation.JobAnalyzer') as MockAnalyzer, \
          patch('apps_rg.L2_execution.execute_resume_generation.ResumeGenerator') as MockGenerator:
@@ -136,7 +136,7 @@ def test_execute_resume_generation_with_mocked_components():
         mock_generator.optimize_for_ats.assert_called_once()
 
 
-def test_resume_engine_components_can_be_imported():
+def test_resume_engine_components_can_be_imported() -> None:
     """Test that all Resume Engine components can be imported."""
     # These imports should work without API keys
     from apps_rg.L2_execution.job_analyzer import JobAnalyzer
@@ -154,7 +154,7 @@ def test_resume_engine_components_can_be_imported():
     assert hasattr(ExecuteResumeGeneration, 'execute')
 
 
-def test_resume_engine_with_mock_client():
+def test_resume_engine_with_mock_client() -> None:
     """Test Resume Engine works with a mock client when no API key."""
     with patch('apps_rg.L2_execution.job_analyzer.get_client') as mock_get_client, \
          patch('apps_rg.L2_execution.resume_generator.get_client') as mock_get_client_gen:

@@ -31,7 +31,7 @@ class PlanObject:
 
 
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
-def test_route_executor_strategy_mode():
+def test_route_executor_strategy_mode() -> None:
     """Test routing to strategy executor.
     
     This test is skipped until legacy L2 execution functions are implemented.
@@ -43,7 +43,7 @@ def test_route_executor_strategy_mode():
 
 
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
-def test_route_executor_qa_mode():
+def test_route_executor_qa_mode() -> None:
     """Test routing to QA executor.
     
     This test is skipped until legacy L2 execution functions are implemented.
@@ -55,7 +55,7 @@ def test_route_executor_qa_mode():
 
 
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
-def test_route_executor_invalid_mode():
+def test_route_executor_invalid_mode() -> None:
     """Test error handling for invalid mode.
     
     This test is skipped until legacy L2 execution functions are implemented.

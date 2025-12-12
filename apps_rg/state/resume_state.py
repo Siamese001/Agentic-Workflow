@@ -38,13 +38,13 @@ class ImmutableStagingBuffer:
         self._locked = False
         self._lock_timestamp = None
 
-    def set(self, key: str, value: Any):
+    def set(self, key: str, value: object) -> None:
         """Set a value in the buffer (only if not locked)"""
         if self._locked:
             raise StagingBufferError(f"Cannot set '{key}': buffer is locked")
         self._data[key] = value
 
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: object = None) -> object:
         """Get a value from the buffer"""
         return self._data.get(key, default)
 

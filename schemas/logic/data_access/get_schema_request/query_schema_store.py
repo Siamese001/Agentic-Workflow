@@ -562,7 +562,7 @@ def create_schema_store_querier(
     storage_path: str = "data/schema_store",
     max_entries_per_query: int = 1000,
     enable_versioning: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> SchemaStoreQuerier:
     """Create a configured schema store querier."""
     config = SchemaStoreConfig(

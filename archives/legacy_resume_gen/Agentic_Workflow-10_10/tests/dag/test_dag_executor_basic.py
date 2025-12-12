@@ -21,7 +21,7 @@ def _make_cyclic_graph() -> Graph:
     return Graph(nodes=nodes, edges=edges)
 
 
-def test_dag_executor_cycle_detection():
+def test_dag_executor_cycle_detection() -> None:
     graph = _make_cyclic_graph()
     executor = DAGExecutor(graph)
 

@@ -347,7 +347,7 @@ class VectorMemoryStore:
             print(f"[VectorMemory] No old documents found")
 
 
-def test_vector_memory():
+def test_vector_memory() -> None:
     """
     Test the vector memory store
     """

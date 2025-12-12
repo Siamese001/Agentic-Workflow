@@ -51,7 +51,7 @@ def _drafting_signal_metric(stage: str):
     }
 
 
-def test_auto_tuning_disabled_no_change():
+def test_auto_tuning_disabled_no_change() -> None:
     cfg = ConfigV10_7(CONFIG_PATH)
     metrics = _make_metrics(_drafting_metric(2500))
     tuner = PolicyAutoTuner(cfg, metrics)
@@ -65,7 +65,7 @@ def test_auto_tuning_disabled_no_change():
     assert updated.drafting_expand_summary == before["drafting_expand_summary"]
 
 
-def test_temperature_adjusts_with_latency():
+def test_temperature_adjusts_with_latency() -> None:
     cfg = _enabled_config()
     metrics = _make_metrics(_drafting_metric(4000))
     tuner = PolicyAutoTuner(cfg, metrics)
@@ -78,7 +78,7 @@ def test_temperature_adjusts_with_latency():
     assert updated.prune_factor == original_prune
 
 
-def test_rag_force_multi_tool_engages():
+def test_rag_force_multi_tool_engages() -> None:
     cfg = _enabled_config()
     metrics = _make_metrics(
         _drafting_metric(2000),
@@ -92,7 +92,7 @@ def test_rag_force_multi_tool_engages():
     assert updated.rag_force_multi_tool is True
 
 
-def test_drafting_overrides_trigger():
+def test_drafting_overrides_trigger() -> None:
     cfg = _enabled_config()
     metrics = _make_metrics(
         _drafting_metric(2000),
@@ -107,7 +107,7 @@ def test_drafting_overrides_trigger():
     assert updated.drafting_boost_metrics is True
 
 
-def test_profile_history_populates():
+def test_profile_history_populates() -> None:
     cfg = _enabled_config()
     metrics = _make_metrics(_drafting_metric(2000))
     tuner = PolicyAutoTuner(cfg, metrics)

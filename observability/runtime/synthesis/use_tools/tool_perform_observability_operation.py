@@ -178,7 +178,7 @@ class ObservabilityOperationPerformer:
             )
 
     def perform_operation_stream(self, context: OperationExecutionContext,
-                                inputs: Dict[str, Any]) -> Any:
+                                inputs: Dict[str, Any]) -> object:
         """Perform operation with streaming output.
         
         Args:
@@ -453,7 +453,7 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.SERVICE
         )
         
-        def _trace_analysis_handler(inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+        def _trace_analysis_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             return {
                 "insights": [
                     {"type": "slow_span", "description": "Database query took 500ms"},
@@ -484,7 +484,7 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.SYSTEM
         )
         
-        def _metric_aggregation_handler(inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+        def _metric_aggregation_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             metrics = inputs.get("metrics", [])
             return {
                 "aggregated_metrics": {
@@ -515,7 +515,7 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.REQUEST
         )
         
-        def _log_correlation_handler(inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+        def _log_correlation_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             log_entries = inputs.get("log_entries", [])
             return {
                 "correlated_logs": [
@@ -548,7 +548,7 @@ def create_observability_operation_performer(
     default_timeout: float = 30.0,
     enable_tracing: bool = True,
     enable_metrics: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityOperationPerformer:
     """Create a configured observability operation performer."""
     config = OperationExecutionConfig(

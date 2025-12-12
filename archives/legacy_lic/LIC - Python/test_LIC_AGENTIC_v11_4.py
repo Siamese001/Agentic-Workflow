@@ -567,7 +567,7 @@ class TestEndToEndIntegration:
 # SUMMARY REPORT
 # ============================================================================
 
-def test_suite_summary():
+def test_suite_summary() -> None:
     """Print test suite summary for v11.4"""
     print("\n" + "="*80)
     print("LIC v11.4 Test Suite Summary")

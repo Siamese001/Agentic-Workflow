@@ -5,7 +5,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
-def _iter_py_files(root: Path):
+def _iter_py_files(root: Path) -> None:
     if not root.exists():
         return
     for path in root.rglob("*.py"):
@@ -14,7 +14,7 @@ def _iter_py_files(root: Path):
         yield path
 
 
-def _parse_imports(path: Path):
+def _parse_imports(path: Path) -> list[str]:
     try:
         source = path.read_text(encoding="utf-8")
     except OSError:

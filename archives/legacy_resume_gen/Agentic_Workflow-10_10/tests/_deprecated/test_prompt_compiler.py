@@ -2,7 +2,7 @@ from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.schemas import Pro
 from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.compiler import compile_prompt
 
 
-def test_compile_prompt_produces_string():
+def test_compile_prompt_produces_string() -> None:
     schema = PromptSchema(
         id="test.prompt",
         role="system",

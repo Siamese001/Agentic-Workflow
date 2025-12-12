@@ -4,7 +4,7 @@ from archives.legacy_resume_gen.Older Microservices Models.v10.7.workflow.runner
 
 
 @pytest.mark.contract
-def test_resume_schema_compliance():
+def test_resume_schema_compliance() -> None:
     result = run_workflow({"resume": "AI Exec", "jd": "AWS"})
     ResumeOutputSchema(**result["resume"])
 
@@ -17,12 +17,12 @@ def test_latency_under_sla(benchmark):
 
 
 @pytest.mark.contract
-def test_idempotent_results():
+def test_idempotent_results() -> None:
     ctx = {"resume": "repeat", "jd": "same"}
     r1, r2 = run_workflow(ctx), run_workflow(ctx)
     assert r1 == r2
 
 
 @pytest.mark.xfail(reason="Add 22 more contract and SLA enforcement tests", strict=False)
-def test_placeholder():
+def test_placeholder() -> None:
     pytest.xfail("Add 22 more contract and SLA enforcement tests")

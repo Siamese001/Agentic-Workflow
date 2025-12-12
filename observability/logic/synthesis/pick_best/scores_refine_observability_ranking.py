@@ -32,7 +32,7 @@ This file wraps those behaviors and exposes a stable API.
 from typing import Dict, List
 
 
-from archives.legacy_root_folders.runtime.runtime_utils import Ranking
+# from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
 def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:

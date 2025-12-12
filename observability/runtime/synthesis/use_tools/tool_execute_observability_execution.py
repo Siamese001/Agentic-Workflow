@@ -478,7 +478,7 @@ def create_observability_tool_executor(
     timeout: float = 30.0,
     retry_count: int = 3,
     enable_tracing: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityToolExecutor:
     """Create a configured observability tool executor."""
     config = ToolExecutionConfig(

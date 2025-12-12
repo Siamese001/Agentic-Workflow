@@ -480,7 +480,7 @@ class StateValidator:
         return is_valid, errors
 
 
-def test_state_manager():
+def test_state_manager() -> None:
     """
     Test the state manager
     """

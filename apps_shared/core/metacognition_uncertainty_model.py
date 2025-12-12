@@ -1,8 +1,8 @@
-from archives.legacy_root_folders.meta.metacognition.models import Hypothesis
-from archives.legacy_root_folders.meta.metacognition.uncertainty import compute_uncertainty
+# from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.meta.metacognition.uncertainty import compute_uncertainty  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
-def test_uncertainty_increases_with_signals():
+def test_uncertainty_increases_with_signals() -> None:
     hs = [
         Hypothesis(id="h1", agent_id="a1", content="c1", confidence=0.8),
         Hypothesis(id="h2", agent_id="a1", content="c2", confidence=0.6),

@@ -3,7 +3,7 @@ from archives.legacy_root_folders.meta.multi_agent import AgentMessage, route_to
 from archives.legacy_root_folders.meta.multi_agent import AgentRole, LINEAR_PIPELINE
 
 
-def test_agent_message_stores_fields():
+def test_agent_message_stores_fields() -> None:
     message = AgentMessage(
         sender=AgentRole.PLANNER,
         recipient=AgentRole.RETRIEVER,
@@ -17,7 +17,7 @@ def test_agent_message_stores_fields():
     assert message.metadata == {"priority": "high"}
 
 
-def test_route_to_specialist_finds_recipient():
+def test_route_to_specialist_finds_recipient() -> None:
     message = AgentMessage(
         sender=AgentRole.PLANNER,
         recipient=AgentRole.DRAFTER,
@@ -30,7 +30,7 @@ def test_route_to_specialist_finds_recipient():
     assert node.role == AgentRole.DRAFTER
 
 
-def test_route_to_specialist_returns_none_when_missing():
+def test_route_to_specialist_returns_none_when_missing() -> None:
     message = AgentMessage(
         sender=AgentRole.PLANNER,
         recipient=AgentRole.BULLET,
@@ -41,7 +41,7 @@ def test_route_to_specialist_returns_none_when_missing():
     assert route_to_specialist(LINEAR_PIPELINE, message) is None
 
 
-def test_route_to_specialist_is_deterministic():
+def test_route_to_specialist_is_deterministic() -> None:
     message = AgentMessage(
         sender=AgentRole.PLANNER,
         recipient=AgentRole.QA,
@@ -55,11 +55,11 @@ def test_route_to_specialist_is_deterministic():
     assert first_result == second_result
 
 
-def test_agent_role_member_count():
+def test_agent_role_member_count() -> None:
     assert len(AgentRole) == 6
 
 
-def test_agent_graph_is_deterministic():
+def test_agent_graph_is_deterministic() -> None:
     node = AgentNode(AgentRole.PLANNER, {"example": True})
     graph_one = AgentGraph(nodes=[node], edges=[(AgentRole.PLANNER, AgentRole.PLANNER)])
     graph_two = AgentGraph(
@@ -70,7 +70,7 @@ def test_agent_graph_is_deterministic():
     assert graph_one == graph_two
 
 
-def test_linear_pipeline_roles_order():
+def test_linear_pipeline_roles_order() -> None:
     expected_roles = [
         AgentRole.PLANNER,
         AgentRole.RETRIEVER,
@@ -88,7 +88,7 @@ def test_linear_pipeline_roles_order():
     ]
 
 
-def test_council_of_qa_contains_three_nodes():
+def test_council_of_qa_contains_three_nodes() -> None:
     assert len(COUNCIL_OF_QA.nodes) == 3
     assert all(node.role == AgentRole.QA for node in COUNCIL_OF_QA.nodes)
     assert [node.config.get("id") for node in COUNCIL_OF_QA.nodes] == [1, 2, 3]
@@ -109,7 +109,7 @@ def _build_graph():
     )
 
 
-def test_dispatch_records_last_message_metadata():
+def test_dispatch_records_last_message_metadata() -> None:
     adapter = StateAdapter()
     orchestrator = MultiAgentOrchestrator(_build_graph(), adapter)
     message = AgentMessage(
@@ -128,7 +128,7 @@ def test_dispatch_records_last_message_metadata():
     assert last_message["content"] == {"query": "docs"}
 
 
-def test_dispatch_sets_routed_to_role_value():
+def test_dispatch_sets_routed_to_role_value() -> None:
     adapter = StateAdapter()
     orchestrator = MultiAgentOrchestrator(_build_graph(), adapter)
     message = AgentMessage(
@@ -148,7 +148,7 @@ def test_dispatch_sets_routed_to_role_value():
     }
 
 
-def test_dispatch_scopes_metadata_under_multi_agent_only():
+def test_dispatch_scopes_metadata_under_multi_agent_only() -> None:
     adapter = StateAdapter()
     orchestrator = MultiAgentOrchestrator(_build_graph(), adapter)
     message = AgentMessage(
@@ -165,7 +165,7 @@ def test_dispatch_scopes_metadata_under_multi_agent_only():
     assert set(state.keys()) == set(initial_state.keys()) | {"multi_agent"}
 
 
-def test_dispatch_does_not_mutate_existing_keys():
+def test_dispatch_does_not_mutate_existing_keys() -> None:
     adapter = StateAdapter()
     orchestrator = MultiAgentOrchestrator(_build_graph(), adapter)
     message = AgentMessage(
@@ -210,7 +210,7 @@ def _graph_with_different_roles():
     )
 
 
-def test_graph_summary():
+def test_graph_summary() -> None:
     graph = _graph_with_different_roles()
 
     summary = summarize_graph(graph)
@@ -230,7 +230,7 @@ def test_graph_summary():
     ]
 
 
-def test_message_route_trace():
+def test_message_route_trace() -> None:
     message = AgentMessage(
         sender=AgentRole.PLANNER,
         recipient=AgentRole.RETRIEVER,
@@ -244,7 +244,7 @@ def test_message_route_trace():
     assert message.metadata["route_trace"] == [AgentRole.PLANNER.value, AgentRole.RETRIEVER.value]
 
 
-def test_delegation_metadata():
+def test_delegation_metadata() -> None:
     assert can_delegate(AgentRole.PLANNER, AgentRole.RETRIEVER) is True
     assert can_delegate(AgentRole.PLANNER, AgentRole.SAFETY) is False
     assert can_delegate(AgentRole.RETRIEVER, AgentRole.DRAFTER) is True
@@ -260,7 +260,7 @@ def test_delegation_metadata():
     }
 
 
-def test_council_vote():
+def test_council_vote() -> None:
     candidates = [
         {"id": 1, "score": 0.7, "rationale": "baseline"},
         {"id": 2, "score": 0.7, "rationale": "alt"},
@@ -273,7 +273,7 @@ def test_council_vote():
     assert winner["rationale"] == "baseline"
 
 
-def test_multi_agent_orchestrator_metadata():
+def test_multi_agent_orchestrator_metadata() -> None:
     adapter = StateAdapter()
     orchestrator = MultiAgentOrchestrator(COUNCIL_OF_QA, adapter)
     message = AgentMessage(
@@ -307,7 +307,7 @@ def test_multi_agent_orchestrator_metadata():
     }
 
 
-def test_graph_orchestrator_runs_multi_agent_block():
+def test_graph_orchestrator_runs_multi_agent_block() -> None:
     orchestrator = GraphOrchestrator()
 
     result = orchestrator.orchestrate({"objective": "ship", "audience": "ops"})
@@ -331,7 +331,7 @@ import pytest
 from archives.legacy_root_folders.meta.self_correction import ArbitrationEngine
 
 
-def test_arbitration_escalate_on_safety_blocked():
+def test_arbitration_escalate_on_safety_blocked() -> None:
     engine = ArbitrationEngine()
     state = {"messages": ["msg"]}
     qa_report = {"findings": []}
@@ -342,7 +342,7 @@ def test_arbitration_escalate_on_safety_blocked():
     assert result["action"] == "escalate"
 
 
-def test_arbitration_retry_on_pending_qa():
+def test_arbitration_retry_on_pending_qa() -> None:
     engine = ArbitrationEngine()
     state = {"messages": ["msg"]}
     qa_report = {"findings": [{"status": "pending"}]}
@@ -353,7 +353,7 @@ def test_arbitration_retry_on_pending_qa():
     assert result["action"] == "retry"
 
 
-def test_arbitration_replan_on_empty_messages():
+def test_arbitration_replan_on_empty_messages() -> None:
     engine = ArbitrationEngine()
     state = {"messages": []}
     qa_report = {"findings": []}
@@ -364,7 +364,7 @@ def test_arbitration_replan_on_empty_messages():
     assert result["action"] == "replan"
 
 
-def test_arbitration_accept_default():
+def test_arbitration_accept_default() -> None:
     engine = ArbitrationEngine()
     state = {"messages": ["msg"]}
     qa_report = {"findings": []}
@@ -378,7 +378,7 @@ from copy import deepcopy
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.hil_interface import apply_hil_feedback  # INVALID: Cannot import from path with hyphens
 
 
-def test_apply_hil_feedback_does_not_mutate():
+def test_apply_hil_feedback_does_not_mutate() -> None:
     original_state = {"a": 1, "nested": {"b": 2}}
     snapshot = deepcopy(original_state)
 
@@ -388,7 +388,7 @@ def test_apply_hil_feedback_does_not_mutate():
     assert updated is not original_state
 
 
-def test_apply_hil_feedback_deterministic():
+def test_apply_hil_feedback_deterministic() -> None:
     state = {"foo": "bar"}
     feedback = {"note": "check"}
 
@@ -399,7 +399,7 @@ def test_apply_hil_feedback_deterministic():
     assert first["hil_feedback"] == feedback
 
 
-def test_apply_hil_feedback_sets_key():
+def test_apply_hil_feedback_sets_key() -> None:
     state = {}
     feedback = {"decision": "approve"}
 

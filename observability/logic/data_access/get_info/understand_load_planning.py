@@ -453,7 +453,7 @@ def create_observability_load_planner(
     enable_metrics: bool = True,
     enable_logs: bool = True,
     enable_traces: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityLoadPlanner:
     """Create a configured observability load planner."""
     config = ObservabilityLoadConfig(

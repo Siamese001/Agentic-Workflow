@@ -11,7 +11,7 @@ import math
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
 
 
-def test_dag_sequencing_basic():
+def test_dag_sequencing_basic() -> None:
     sequence = []
 
     def make_node(label):
@@ -37,7 +37,7 @@ def test_dag_sequencing_basic():
     assert context["path"] == ["A", "B", "C"]
 
 
-def test_dag_conditional_edges():
+def test_dag_conditional_edges() -> None:
     traversed = []
 
     def start(context):
@@ -74,7 +74,7 @@ def test_dag_conditional_edges():
     assert traversed[0:2] == ["start", "conditional"]
 
 
-def test_dag_retries_and_fallback():
+def test_dag_retries_and_fallback() -> None:
     attempts = {"unstable": 0}
 
     def unstable(context):
@@ -98,7 +98,7 @@ def test_dag_retries_and_fallback():
     assert context.get("recovered") is True
 
 
-def test_dag_parallel_branches():
+def test_dag_parallel_branches() -> None:
     def root(context):
         return NodeResult(NodeStatus.SUCCESS, {"value": "root"})
 
@@ -123,7 +123,7 @@ def test_dag_parallel_branches():
     assert context["order"] == ["two"]
 
 
-def test_orchestrators_end_to_end():
+def test_orchestrators_end_to_end() -> None:
     orchestrators = [
         GraphOrchestrator(),
         RAGOrchestrator(),
@@ -158,7 +158,7 @@ This test file is scaffolded for Priority 0; implementation comes later.
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l3_orchestration import RAGOrchestrator  # INVALID: Cannot import from path with hyphens
 
 
-def test_bullet_orchestrator_sequences_calls():
+def test_bullet_orchestrator_sequences_calls() -> None:
     orchestrator = BulletOrchestrator()
     result = orchestrator.orchestrate({"objective": "share highlights", "deliverables": ["alpha"]})
 
@@ -171,7 +171,7 @@ def test_bullet_orchestrator_sequences_calls():
     assert "safety_gateway" in result.state
 
 
-def test_rag_orchestrator_runs_end_to_end():
+def test_rag_orchestrator_runs_end_to_end() -> None:
     orchestrator = RAGOrchestrator()
     result = orchestrator.orchestrate({"objective": "collect"})
 
@@ -183,7 +183,7 @@ def test_rag_orchestrator_runs_end_to_end():
     assert result.safety_patch["safety_gateway"]["status"] == "allowed"
 
 
-def test_draft_orchestrator_integrates_safety():
+def test_draft_orchestrator_integrates_safety() -> None:
     orchestrator = DraftOrchestrator()
     result = orchestrator.orchestrate({"objective": "compose", "tone": "warm"})
 
@@ -196,7 +196,7 @@ def test_draft_orchestrator_integrates_safety():
     assert "safety_gateway" in result.state
 
 
-def test_qa_orchestrator_validates_state():
+def test_qa_orchestrator_validates_state() -> None:
     orchestrator = QAOrchestrator()
     result = orchestrator.orchestrate({"messages": [{"role": "assistant", "content": "draft"}]})
 
@@ -223,7 +223,7 @@ This test file is scaffolded for Priority 0; implementation comes later.
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l4_state import StateAdapter  # INVALID: Cannot import from path with hyphens
 
 
-def test_end_to_end_control_flow():
+def test_end_to_end_control_flow() -> None:
     adapter = StateAdapter()
 
     rag = RAGOrchestrator(state_adapter=adapter)
