@@ -29,7 +29,7 @@ class Phase4108ScriptsPurge:
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def execute(self, data: object, **kwargs) -> OperationResult:
+    def execute(self, data: object, **kwargs: Dict[str, object]) -> OperationResult:
         """Execute operation."""
         try:
             result = self._process(data, **kwargs)
@@ -38,11 +38,11 @@ class Phase4108ScriptsPurge:
             logger.error("Operation failed: %s", e)
             return OperationResult(success=False, message=str(e))
 
-    def _process(self, data: object, **kwargs) -> object:
+    def _process(self, data: object, **kwargs: Dict[str, object]) -> object:
         """Process data."""
         return data
 
 
-def execute(data: object, config: Optional[Dict] = None, **kwargs) -> OperationResult:
+def execute(data: object, config: Optional[Dict] = None, **kwargs: Dict[str, object]) -> OperationResult:
     """Convenience function."""
     return Phase4108ScriptsPurge(config).execute(data, **kwargs)

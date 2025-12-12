@@ -199,8 +199,7 @@ class ScriptsPlanningOrchestrator:
 def create_scripts_planning_orchestrator(
     max_concurrent_tasks: int = 5,
     enable_dependency_check: bool = True,
-    **kwargs
-) -> ScriptsPlanningOrchestrator:
+    **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestrator:
     """Create a configured scripts planning orchestrator."""
     config = ScriptsPlanningConfig(
         max_concurrent_tasks=max_concurrent_tasks,

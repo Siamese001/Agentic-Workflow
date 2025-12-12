@@ -344,8 +344,7 @@ def create_similarity_retriever(
     default_metric: str = "cosine",
     normalize_vectors: bool = True,
     batch_size: int = 1000,
-    **kwargs
-) -> SimilarityRetriever:
+    **kwargs: Dict[str, object]) -> SimilarityRetriever:
     """Create a configured similarity retriever."""
     config = SimilarityConfig(
         default_metric=SimilarityMetric(default_metric),

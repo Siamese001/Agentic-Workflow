@@ -38,6 +38,6 @@ class ParseOutreachTarget:
         return []
 
 
-def retrieve(query: str, config: Optional[Dict] = None, **kwargs) -> RetrievalResult:
+def retrieve(query: str, config: Optional[Dict] = None, **kwargs: Dict[str, object]) -> RetrievalResult:
     """Retrieve items."""
     return ParseOutreachTarget(config).retrieve(query, **kwargs)

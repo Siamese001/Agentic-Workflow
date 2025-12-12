@@ -67,8 +67,7 @@ class AnthropicClient:
         tools: Optional[List[Dict[str, object]]] = None,
         tool_choice: Optional[Union[str, Dict[str, object]]] = None,
         stream: bool = False,
-        **kwargs
-    ) -> Union[Message, object]:
+        **kwargs: Dict[str, object]) -> Union[Message, object]:
         """Execute message with retry logic and caching optimization.
         
         Args:
@@ -131,8 +130,7 @@ class AnthropicClient:
         system: Optional[List[Dict[str, object]]] = None,
         cache_system: bool = True,
         cache_templates: List[int] = None,
-        **kwargs
-    ) -> Message:
+        **kwargs: Dict[str, object]) -> Message:
         """Execute message with strategic prompt caching.
         
         Args:
@@ -159,8 +157,7 @@ class AnthropicClient:
         self,
         messages: List[Dict[str, object]],
         callback: callable = None,
-        **kwargs
-    ) -> List[str]:
+        **kwargs: Dict[str, object]) -> List[str]:
         """Stream message with optional callback.
         
         Args:
@@ -189,8 +186,7 @@ class AnthropicClient:
         messages: List[Dict[str, object]],
         tools: List[Dict[str, object]],
         tool_choice: str = "auto",
-        **kwargs
-    ) -> Dict[str, object]:
+        **kwargs: Dict[str, object]) -> Dict[str, object]:
         """Execute message with tool use and parse tool calls.
         
         Args:
@@ -385,8 +381,7 @@ def create_anthropic_client(
     api_key: Optional[str] = None,
     model: str = "claude-3-5-sonnet-20241022",
     enable_caching: bool = True,
-    **kwargs
-) -> AnthropicClient:
+    **kwargs: Dict[str, object]) -> AnthropicClient:
     """Create configured Anthropic client.
     
     Args:

@@ -434,8 +434,7 @@ def create_internal_schema_converter(
     strategy: str = "lenient",
     preserve_unknown: bool = False,
     validate_types: bool = True,
-    **kwargs
-) -> InternalSchemaConverter:
+    **kwargs: Dict[str, object]) -> InternalSchemaConverter:
     """Create a configured internal schema converter."""
     config = ConversionConfig(
         strategy=ConversionStrategy(strategy),

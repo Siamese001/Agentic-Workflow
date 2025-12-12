@@ -518,8 +518,7 @@ def create_scripts_cache_history_loader(
     storage_path: str = "data/scripts_cache_history.json",
     max_entries: int = 50000,
     retention_days: int = 7,
-    **kwargs
-) -> ScriptsCacheHistoryLoader:
+    **kwargs: Dict[str, object]) -> ScriptsCacheHistoryLoader:
     """Create a configured scripts cache history loader."""
     config = CacheHistoryConfig(
         storage_path=storage_path,
