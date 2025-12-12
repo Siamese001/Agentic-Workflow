@@ -957,7 +957,7 @@ def check_key_16_eval_exec_usage() -> None:
 def check_key_17_poison_markers_and_stubs() -> None:
     """
     Key 17 – No poison markers, no stub functions in sovereign code.
-    Flags pass-only stubs AND single-line placeholder returns.
+    Flags pass-only stubs, single-line placeholder returns, and empty data structures.
     """
     violations: List[str] = []
 
@@ -971,23 +971,24 @@ def check_key_17_poison_markers_and_stubs() -> None:
                 violations.append(f"{f.relative_to(ROOT)} – marker: {marker}")
                 break
 
-        # Stub functions (single 'pass' body OR single-line placeholder return)
         tree = parse_ast(f)
         if tree is None:
             continue
+
         for node in ast.walk(tree):
+            # Check 1: Function/AsyncFunction stubs
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if node.name.startswith("_"):
                     continue
                 
-                # Check 1: Pass-only stub
+                # Check 1a: Pass-only stub
                 if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
                     violations.append(
                         f"{f.relative_to(ROOT)}:{node.lineno} – stub function {node.name} (pass-only)"
                     )
                     continue
 
-                # Check 2: Single-line placeholder return
+                # Check 1b: Single-line placeholder return
                 if len(node.body) == 1 and isinstance(node.body[0], ast.Return):
                     ret_val = node.body[0].value
                     if isinstance(ret_val, ast.Constant) and ret_val.value in (None, 0, 1, 0.0, "", True, False):
@@ -1001,16 +1002,38 @@ def check_key_17_poison_markers_and_stubs() -> None:
                         )
                         continue
 
+            # Check 2: Class stub (Hole 6 Fix: Empty dataclass/NamedTuple)
+            if isinstance(node, ast.ClassDef):
+                is_data_structure = any(
+                    (isinstance(base, ast.Name) and base.id in ('dataclass', 'NamedTuple')) or
+                    (isinstance(base, ast.Call) and isinstance(base.func, ast.Name) and base.func.id in ('dataclass', 'NamedTuple'))
+                    for base in node.bases
+                )
+                
+                # Check for fields/assignments within the class body
+                has_fields = any(isinstance(item, (ast.AnnAssign, ast.Assign)) for item in node.body)
+                
+                # Check for existence of any method other than __init__ or __post_init__
+                has_methods = any(
+                    isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name not in ('__init__', '__post_init__')
+                    for item in node.body
+                )
+
+                # Flag if it's a data structure and has no functional content (fields or methods)
+                if is_data_structure and not has_fields and not has_methods:
+                    violations.append(
+                        f"{f.relative_to(ROOT)}:{node.lineno} – stub data structure {node.name} (no fields/logic)"
+                    )
 
     if violations:
         fail(
             "17",
-            "Poison markers / stub functions in sovereign code:\n"
+            "Poison markers / stub functions/data structures in sovereign code:\n"
             + "\n".join(f"  - {v}" for v in violations[:40])
             + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
         )
     else:
-        success("17", "No poison markers or stub functions in sovereign code")
+        success("17", "No poison markers, stub functions, or stub data structures in sovereign code")
 
 def check_key_18_sovereign_debug_statements() -> None:
     """Key 18 – No debug prints, sleep, or debuggers in sovereign code."""
@@ -2130,15 +2153,9 @@ def check_key_48_final_depth_canon() -> None:
 def check_key_49_no_smashed_filenames() -> None:
     """
     Key 49 – Depth-Aware Signal-to-Noise Filename Strictness.
-    
-    1. Signal-to-Noise: Count only high-signal words in filename
-    2. Depth < 5: Max 3 high-signal words
-    3. Depth >= 5: Max 4 high-signal words
-    
-    Uses is_globally_excluded() for consistent exclusion policy.
+    1. Signal-to-Noise: Max 4 high-signal words.
+    2. Universal Underscore Limit: Max 5 underscores in any filename. (Hole 5 Fix)
     """
-    # STRICTER LIST: Removed domain terms (safety, policy, costs, budget, etc.)
-    # Now only truly generic programming verbs/nouns are "low signal".
     LOW_SIGNAL_WORDS: Set[str] = {
         "config", "cache", "utils", "test", "spec", "impl",
         "manager", "service", "handler", "controller", "base", "common",
@@ -2146,7 +2163,7 @@ def check_key_49_no_smashed_filenames() -> None:
         "process", "execute", "run", "init",
         "create", "delete", "find", "fetch", "store",
         "input", "output", "result", "context", "status",
-        "check", "update", "manage", "perform", "task",  # Kept a few generic verbs
+        "check", "update", "manage", "perform", "task",
     }
     
     violations: List[str] = []
@@ -2156,31 +2173,32 @@ def check_key_49_no_smashed_filenames() -> None:
             continue
         
         rel = f.relative_to(ROOT)
-        
-        # UNIVERSAL EXCLUSION CHECK
         if is_globally_excluded(rel):
             continue
         
-        depth = len(rel.parts)
         stem = f.stem
         issues: List[str] = []
 
         # Rule 1: Max filename length
-        if len(f.name) > 60:  # Reduced from 75
+        if len(f.name) > 60:
             issues.append(f"{len(f.name)} chars (max 60)")
         
-        # Rule 2: Signal-to-Noise word count
-        words = stem.lower().split("_")
-        high_signal_words = [w for w in words if w and w not in LOW_SIGNAL_WORDS]
-        signal_count = len(high_signal_words)
-        
-        # STRICT LIMITS
-        max_signal = 4
-        
-        if signal_count > max_signal:
-            issues.append(
-                f"{signal_count} high-signal words (max {max_signal})"
-            )
+        # Rule 2: Universal Underscore Limit (Hole 5 Fix)
+        # Apply this universally for readability, regardless of sovereign status
+        if stem.count("_") > 5:
+            issues.append(f"{stem.count('_')} underscores (max 5)")
+
+        # Rule 3: Signal-to-Noise word count (applied only to Sovereign files for strictness)
+        if is_sovereign_path(f):
+            words = stem.lower().split("_")
+            high_signal_words = [w for w in words if w and w not in LOW_SIGNAL_WORDS]
+            signal_count = len(high_signal_words)
+            max_signal = 4
+            
+            if signal_count > max_signal:
+                issues.append(
+                    f"{signal_count} high-signal words (max {max_signal})"
+                )
 
         if issues:
             violations.append(
@@ -2190,12 +2208,12 @@ def check_key_49_no_smashed_filenames() -> None:
     if violations:
         fail(
             "49",
-            "Filename hygiene violations (Too complex / Word Salad):\n"
+            "Filename hygiene violations (Too complex / Word Salad / Underscore Smashes):\n"
             + "\n".join(f"  - {v}" for v in violations[:40])
             + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
         )
     else:
-        success("49", "No smashed filenames – signal-to-noise ratio OK")
+        success("49", "No smashed filenames – signal-to-noise ratio and universal underscore limits OK")
 
 def check_key_50_canon_meta_integrity() -> None:
     """
