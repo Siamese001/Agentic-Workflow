@@ -121,87 +121,74 @@ def _should_skip_file(src: Path, archive_dir: Path) -> Optional[str]:
     
     return None
 
-def main() -> None:
-    """Main function to promote files from archive_code to appropriate directories."""
-    files_to_process = []
-    archive_dir = Path("archive_code")
-    
-    print(f"🔍 Scanning archive_code directory: {archive_dir}")
-    
-    if archive_dir.is_dir():
-        py_files = list(archive_dir.glob("*.py"))
-        json_files = list(archive_dir.glob("*.json"))
-        md_files = list(archive_dir.glob("*.md"))
-        
-        files_to_process.extend(py_files)
-        files_to_process.extend(json_files)
-        files_to_process.extend(md_files)
-        
-        print(f"📁 Found {len(py_files)} .py files, {len(json_files)} .json files, {len(md_files)} .md files")
-        print(f"📊 Total files to process: {len(files_to_process)}")
-    else:
+def _scan_archive_directory(archive_dir: Path) -> List[Path]:
+    """Scan archive directory for files to process."""
+    if not archive_dir.is_dir():
         print("❌ archive_code directory not found!")
+        return []
+    
+    py_files = list(archive_dir.glob("*.py"))
+    json_files = list(archive_dir.glob("*.json"))
+    md_files = list(archive_dir.glob("*.md"))
+    
+    files = py_files + json_files + md_files
+    print(f"📁 Found {len(py_files)} .py files, {len(json_files)} .json files, {len(md_files)} .md files")
+    print(f"📊 Total files to process: {len(files)}")
+    return files
+
+def _process_single_file(src: Path, archive_dir: Path, promoted_files: List, rejected_files: List) -> None:
+    """Process a single file for promotion."""
+    print(f"\n🔎 Processing: {src.name}")
+    
+    skip_reason = _should_skip_file(src, archive_dir)
+    if skip_reason:
+        print(f"  ⏭️  Skipped: {skip_reason}")
         return
     
-    processed_paths = set()
-    promoted_files = []
-    rejected_files = []
+    is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == "archive_code")
+    content = src.read_text(errors="ignore")
+    score, reasons, is_dirty = analyze_file_content(content, src.name)
     
-    for src in files_to_process:
-        if src in processed_paths:
-            continue
-        processed_paths.add(src)
-        
-        print(f"\n🔎 Processing: {src.name}")
-        
-        skip_reason = _should_skip_file(src, archive_dir)
-        if skip_reason:
-            print(f"  ⏭️  Skipped: {skip_reason}")
-            continue
-        
-        is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == "archive_code")
-        content = src.read_text(errors="ignore")
-        score, reasons, is_dirty = analyze_file_content(content, src.name)
-        
-        print(f"  📈 Score: {score}/10")
-        print(f"  📝 Reasons: {', '.join(reasons)}")
-        print(f"  🧹 Dirty: {is_dirty}")
-        
-        # Promotion logic
-        should_promote, promotion_reason = _should_promote_file(src, score, reasons, is_dirty, is_staged_file)
-        
-        if not should_promote:
-            print(f"  ❌ REJECTED")
-            rejected_files.append(src.name)
-            continue
-        
-        # Execute promotion
-        dest_dir = choose_destination(content, src.name)
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        dest_path = dest_dir / src.name
-        
-        print(f"  ✅ PROMOTED to: {dest_dir}")
-        print(f"  📋 Reason: {promotion_reason}")
-        
-        # Auto-create __init__.py for Python packages
-        for parent in [dest_dir] + list(dest_dir.parents):
-            if parent.name in SOVEREIGN_ROOTS:
-                break
-            init = parent / "__init__.py"
-            if not init.exists() and dest_path.suffix == ".py":
-                init.touch()
-        
-        shutil.move(str(src), str(dest_path))
-        promoted_files.append((src.name, str(dest_dir), promotion_reason))
-        
-        # Git operations
-        try:
-            subprocess.run(["git", "add", str(dest_path)], capture_output=True, check=False)
-            subprocess.run(["git", "rm", "--cached", str(src)], capture_output=True, check=False)
-        except (FileNotFoundError, subprocess.SubprocessError, OSError):
-            pass  # Git might not be available
+    print(f"  📈 Score: {score}/10")
+    print(f"  📝 Reasons: {', '.join(reasons)}")
+    print(f"  🧹 Dirty: {is_dirty}")
     
-    # Summary
+    should_promote, promotion_reason = _should_promote_file(src, score, reasons, is_dirty, is_staged_file)
+    
+    if not should_promote:
+        print(f"  ❌ REJECTED")
+        rejected_files.append(src.name)
+        return
+    
+    _execute_promotion(src, content, promotion_reason, promoted_files)
+
+def _execute_promotion(src: Path, content: str, promotion_reason: str, promoted_files: List) -> None:
+    """Execute file promotion to destination directory."""
+    dest_dir = choose_destination(content, src.name)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest_path = dest_dir / src.name
+    
+    print(f"  ✅ PROMOTED to: {dest_dir}")
+    print(f"  📋 Reason: {promotion_reason}")
+    
+    for parent in [dest_dir] + list(dest_dir.parents):
+        if parent.name in SOVEREIGN_ROOTS:
+            break
+        init = parent / "__init__.py"
+        if not init.exists() and dest_path.suffix == ".py":
+            init.touch()
+    
+    shutil.move(str(src), str(dest_path))
+    promoted_files.append((src.name, str(dest_dir), promotion_reason))
+    
+    try:
+        subprocess.run(["git", "add", str(dest_path)], capture_output=True, check=False)
+        subprocess.run(["git", "rm", "--cached", str(src)], capture_output=True, check=False)
+    except (FileNotFoundError, subprocess.SubprocessError, OSError):
+        pass
+
+def _print_summary(promoted_files: List, rejected_files: List, archive_dir: Path) -> None:
+    """Print promotion summary."""
     print("\n" + "="*60)
     print("📊 PROMOTION SUMMARY")
     print("="*60)
@@ -218,10 +205,30 @@ def main() -> None:
         for name in rejected_files:
             print(f"  • {name}")
     
-    # Cleanup
     if archive_dir.is_dir() and not list(archive_dir.iterdir()):
         archive_dir.rmdir()
         print(f"\n🧹 Cleaned up empty archive_code directory")
+
+def main() -> None:
+    """Main function to promote files from archive_code to appropriate directories."""
+    archive_dir = Path("archive_code")
+    print(f"🔍 Scanning archive_code directory: {archive_dir}")
+    
+    files_to_process = _scan_archive_directory(archive_dir)
+    if not files_to_process:
+        return
+    
+    processed_paths = set()
+    promoted_files = []
+    rejected_files = []
+    
+    for src in files_to_process:
+        if src in processed_paths:
+            continue
+        processed_paths.add(src)
+        _process_single_file(src, archive_dir, promoted_files, rejected_files)
+    
+    _print_summary(promoted_files, rejected_files, archive_dir)
 
 if __name__ == "__main__":
     main()
