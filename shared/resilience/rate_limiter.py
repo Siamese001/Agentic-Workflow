@@ -34,7 +34,7 @@ class TokenBucket:
     tokens: float = field(init=False)
     last_refill: float = field(init=False)
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.tokens = self.capacity
         self.last_refill = time.time()
     

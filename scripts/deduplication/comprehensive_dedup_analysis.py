@@ -473,7 +473,7 @@ def run_analysis() -> DedupReport:
 
     return report
 
-def print_section_a(report: DedupReport):
+def print_section_a(report: DedupReport) -> None:
     """Print SECTION A - Duplicate Clusters."""
 
     for cluster in report.clusters:
@@ -482,7 +482,7 @@ def print_section_a(report: DedupReport):
             rel_path = fp.path.relative_to(REPO_ROOT)
             stub_marker = " [STUB]" if fp.is_stub else ""
 
-def print_section_b(report: DedupReport):
+def print_section_b(report: DedupReport) -> None:
     """Print SECTION B - Merge Plans."""
 
     for cluster in report.clusters:
@@ -491,7 +491,7 @@ def print_section_b(report: DedupReport):
         for nc in plan['non_canonical']:
             print(f"  - {nc['path']} (hash: {nc['hash'][:8]})")
     
-def print_section_e(report: DedupReport):
+def print_section_e(report: DedupReport) -> None:
     """Print SECTION E - Final Summary."""
 
     # Group by folder

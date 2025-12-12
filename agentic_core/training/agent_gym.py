@@ -208,96 +208,52 @@ class AgentGym:
             raise ValueError(f"Scenario not found: {scenario_id}")
         
         start_time = time.time()
+        self._log_benchmark_start(scenario_id, scenario)
         
-        if self.enable_logging:
-            logger.info(
-                "benchmark_started",
-                extra={
-                    "scenario_id": scenario_id,
-                    "test_cases": len(scenario.test_cases),
-                }
-            )
-        
-        # Execute test cases
-        outputs = {}
-        for case in scenario.test_cases:
-            try:
-                result = await agent_fn(case.mission, case.scene)
-                
-                outputs[case.id] = GoldenOutput(
-                    case_id=case.id,
-                    actual_output=result.get("output", ""),
-                    actions_taken=result.get("actions", []),
-                    execution_trace=result.get("trace", []),
-                )
-            except Exception as e:
-                if self.enable_logging:
-                    logger.error(
-                        "test_case_failed",
-                        extra={
-                            "case_id": case.id,
-                            "error": str(e),
-                        }
-                    )
-                
-                outputs[case.id] = GoldenOutput(
-                    case_id=case.id,
-                    actual_output="",
-                    metadata={"error": str(e)},
-                )
-        
-        # Evaluate results
+        outputs = await self._execute_test_cases(scenario.test_cases, agent_fn)
         reports = await self.golden_evaluator.evaluate_all(outputs)
         
-        # Calculate metrics
-        total_cases = len(scenario.test_cases)
+        return self._create_benchmark_result(scenario_id, scenario.test_cases, reports, start_time)
+    
+    async def _execute_test_cases(self, test_cases: List, agent_fn: Callable) -> Dict:
+        """Execute all test cases."""
+        outputs = {}
+        for case in test_cases:
+            try:
+                result = await agent_fn(case.mission, case.scene)
+                outputs[case.id] = GoldenOutput(case_id=case.id, actual_output=result.get("output", ""), actions_taken=result.get("actions", []), execution_trace=result.get("trace", []))
+            except Exception as e:
+                if self.enable_logging:
+                    logger.error("test_case_failed", extra={"case_id": case.id, "error": str(e)})
+                outputs[case.id] = GoldenOutput(case_id=case.id, actual_output="", metadata={"error": str(e)})
+        return outputs
+    
+    def _create_benchmark_result(self, scenario_id: str, test_cases: List, reports: Dict, start_time: float) -> BenchmarkResult:
+        """Create benchmark result from reports."""
+        total_cases = len(test_cases)
         passed_cases = sum(1 for r in reports.values() if r.passed)
-        failed_cases = total_cases - passed_cases
         pass_rate = passed_cases / total_cases if total_cases > 0 else 0.0
+        avg_score = sum(r.judge_result.overall_score for r in reports.values()) / total_cases if total_cases > 0 else 0.0
         
-        avg_score = sum(
-            r.judge_result.overall_score for r in reports.values()
-        ) / total_cases if total_cases > 0 else 0.0
-        
-        # Determine performance level
         performance_level = self._classify_performance(pass_rate, avg_score)
-        
-        # Generate recommendations
-        recommendations = self._generate_recommendations(
-            reports,
-            performance_level,
-        )
-        
-        # Detailed results
-        detailed_results = [r.to_dict() for r in reports.values()]
-        
-        execution_time = time.time() - start_time
+        recommendations = self._generate_recommendations(reports, performance_level)
         
         result = BenchmarkResult(
-            scenario_id=scenario_id,
-            total_cases=total_cases,
-            passed_cases=passed_cases,
-            failed_cases=failed_cases,
-            pass_rate=pass_rate,
-            avg_score=avg_score,
-            performance_level=performance_level,
-            execution_time_seconds=execution_time,
-            detailed_results=detailed_results,
-            recommendations=recommendations,
+            scenario_id=scenario_id, total_cases=total_cases, passed_cases=passed_cases,
+            failed_cases=total_cases - passed_cases, pass_rate=pass_rate, avg_score=avg_score,
+            performance_level=performance_level, execution_time_seconds=time.time() - start_time,
+            detailed_results=[r.to_dict() for r in reports.values()], recommendations=recommendations
         )
         
         if self.enable_logging:
-            logger.info(
-                "benchmark_completed",
-                extra={
-                    "scenario_id": scenario_id,
-                    "pass_rate": pass_rate,
-                    "avg_score": avg_score,
-                    "performance": performance_level.value,
-                }
-            )
+            logger.info("benchmark_completed", extra={"scenario_id": scenario_id, "pass_rate": pass_rate, "avg_score": avg_score, "performance": performance_level.value})
         
         return result
+    
+    def _log_benchmark_start(self, scenario_id: str, scenario) -> None:
+        """Log benchmark start."""
+        if self.enable_logging:
+            logger.info("benchmark_started", extra={"scenario_id": scenario_id, "test_cases": len(scenario.test_cases)})
     
     async def run_training_session(
         self,

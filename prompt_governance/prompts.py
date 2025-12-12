@@ -500,7 +500,7 @@ def build_bullet_reorder_prompt(
 def build_bullet_rewrite_prompt(
     original_bullet: str,
     target_word_count_range: Tuple[int, int],
-    **kwargs # Accept context/constraints
+    **kwargs: Dict[str, any]
 ) -> str:
     """Builds the prompt for rewriting a single bullet to a word count."""
     template = _get_prompt_template("artist_bullet_rewrite_wc")
