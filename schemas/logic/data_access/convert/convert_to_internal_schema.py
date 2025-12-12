@@ -136,8 +136,8 @@ class InternalSchemaConverter:
                 warnings.append(error_msg)
             return mapping.default_value
     
-    def _set_converted_value(self, mapping: FieldMapping, external_value: Any,
-                           converted_data: Dict[str, Any], errors: List[str],
+    def _set_converted_value(self, mapping: FieldMapping, external_value: object,
+                           converted_data: Dict[str, object], errors: List[str],
                            warnings: List[str]) -> None:
         """Set converted value in internal data."""
         if external_value is not None:
@@ -146,7 +146,7 @@ class InternalSchemaConverter:
             self._handle_missing_required_field(mapping, converted_data, errors, warnings)
     
     def _handle_missing_required_field(self, mapping: FieldMapping,
-                                      converted_data: Dict[str, Any],
+                                      converted_data: Dict[str, object],
                                       errors: List[str], warnings: List[str]) -> None:
         """Handle missing required field."""
         if mapping.default_value is not None:
@@ -155,7 +155,7 @@ class InternalSchemaConverter:
         else:
             errors.append(f"Missing required field: {mapping.internal_path}")
     
-    def _finalize_conversion(self, converted_data: Dict[str, Any],
+    def _finalize_conversion(self, converted_data: Dict[str, object],
                            internal_schema: InternalSchema,
                            errors: List[str]) -> None:
         """Finalize conversion with validation and cleanup."""
@@ -166,10 +166,10 @@ class InternalSchemaConverter:
             validation_errors = self._validate_internal_data(converted_data, internal_schema)
             errors.extend(validation_errors)
     
-    def convert_to_internal(self, external_data: Dict[str, Any],
+    def convert_to_internal(self, external_data: Dict[str, object],
                            internal_schema: InternalSchema,
                            field_mappings: List[FieldMapping],
-                           external_schema: Optional[Dict[str, Any]] = None) -> ConversionResult:
+                           external_schema: Optional[Dict[str, object]] = None) -> ConversionResult:
         """Convert external data to internal schema format."""
         self.logger.info(f"Converting to internal schema: {internal_schema.name}")
         
@@ -212,7 +212,7 @@ class InternalSchemaConverter:
                 metadata={"error": str(e)}
             )
 
-    def auto_generate_mappings(self, external_schema: Dict[str, Any],
+    def auto_generate_mappings(self, external_schema: Dict[str, object],
                               internal_schema: InternalSchema) -> List[FieldMapping]:
         """Automatically generate field mappings between schemas.
         
@@ -257,8 +257,8 @@ class InternalSchemaConverter:
         
         return mappings
 
-    def convert_batch(self, external_data_list: List[Dict[str, Any]],
-                     external_schema: Optional[Dict[str, Any]] = None,
+    def convert_batch(self, external_data_list: List[Dict[str, object]],
+                     external_schema: Optional[Dict[str, object]] = None,
                      internal_schema: InternalSchema = None,
                      field_mappings: List[FieldMapping] = None) -> List[ConversionResult]:
         """Convert multiple external data items.
@@ -286,7 +286,7 @@ class InternalSchemaConverter:
         
         return results
 
-    def _extract_nested_value(self, data: Dict[str, Any], path: str) -> object:
+    def _extract_nested_value(self, data: Dict[str, object], path: str) -> object:
         """Extract value from nested data structure."""
         keys = path.split(".")
         current = data
@@ -305,7 +305,7 @@ class InternalSchemaConverter:
         
         return current
 
-    def _set_nested_value(self, data: Dict[str, Any], path: str, value: Any) -> None:
+    def _set_nested_value(self, data: Dict[str, object], path: str, value: object) -> None:
         """Set value in nested data structure."""
         keys = path.split(".")
         current = data
@@ -317,7 +317,7 @@ class InternalSchemaConverter:
         
         current[keys[-1]] = value
 
-    def _apply_transform(self, value: Any, transform_func: str) -> object:
+    def _apply_transform(self, value: object, transform_func: str) -> object:
         """Apply transformation function to value."""
         if transform_func in self._transform_functions:
             return self._transform_functions[transform_func](value)
@@ -325,7 +325,7 @@ class InternalSchemaConverter:
             self.logger.warning(f"Unknown transform function: {transform_func}")
             return value
 
-    def _convert_type(self, value: Any, target_type: str) -> object:
+    def _convert_type(self, value: object, target_type: str) -> object:
         """Convert value to target type."""
         if target_type in self._type_converters:
             return self._type_converters[target_type](value)
