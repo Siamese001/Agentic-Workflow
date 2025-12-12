@@ -102,3 +102,4 @@ if __name__ == "__main__":
             #print(f"\nDuplicate files ({len(set(duplicates))}):")
             for f in sorted(set(duplicates)):
                 #print(f"  - {f}")
+                pass

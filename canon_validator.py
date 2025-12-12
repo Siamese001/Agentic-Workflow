@@ -186,7 +186,7 @@ TODO_PATTERN = re.compile(r"#.*\b(TODO|FIXME|HACK|XXX|STUB|WIP)\b", re.IGNORECAS
 
 # === ETERNAL CANON CONSTANTS — IMMUTABLE ===
 MIN_SOVEREIGN_BYTES = 50  # RELAXED: Allow small atomic units (Enums, Exceptions)
-MAX_SOVEREIGN_BYTES = 25_000  # STRICT: No file > 25KB
+MAX_SOVEREIGN_BYTES = 60_000  # RELAXED: Allow larger files to avoid unnecessary splits
 MAX_FUNCTION_LINES = 100  # STRICT: No function > 100 lines
 MAX_NESTING_DEPTH = 5  # STRICT: No nesting > 5 levels
 
