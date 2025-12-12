@@ -15,12 +15,13 @@ class BaseAgent:
         self.debug_mode = debug_mode
     
     def log_info(self, msg):
+        pass
 
 class BaseModel:
     """Stub for BaseModel - TODO: Replace with sovereign equivalent"""
     pass
 
-def Field(*args, **kwargs):
+def Field(*args, **kwargs: object):
     """Stub for Field - TODO: Replace with sovereign equivalent"""
     return None
 

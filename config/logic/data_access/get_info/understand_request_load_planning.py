@@ -450,7 +450,7 @@ def create_config_load_planner(
     enable_validation: bool = True,
     enable_type_checking: bool = True,
     enable_default_values: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ConfigLoadPlanner:
     """Create a configured config load planner."""
     config = ConfigLoadConfig(

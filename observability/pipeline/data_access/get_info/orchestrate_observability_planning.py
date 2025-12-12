@@ -366,7 +366,7 @@ def create_observability_planning_orchestrator(
     enable_metrics: bool = True,
     enable_logging: bool = True,
     enable_tracing: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityPlanningOrchestrator:
     """Create a configured observability planning orchestrator."""
     config = ObservabilityPlanningConfig(

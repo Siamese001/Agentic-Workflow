@@ -456,7 +456,7 @@ class SchemaSimilarityRetriever:
 # Factory function for easy instantiation
 def create_schema_similarity_retriever(
     default_method: str = "hybrid",
-    **kwargs
+    **kwargs: object
 ) -> SchemaSimilarityRetriever:
     """Create a configured schema similarity retriever."""
     config = SchemaSimilarityConfig(

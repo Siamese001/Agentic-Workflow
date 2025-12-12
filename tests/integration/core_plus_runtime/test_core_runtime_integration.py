@@ -163,7 +163,7 @@ class TestObservabilityIntegration:
         """Integration: Logs are structured."""
         logs = []
 
-        def log(level: str, message: str, **kwargs):
+        def log(level: str, message: str, **kwargs: object):
             logs.append({"level": level, "message": message, **kwargs})
 
         log("INFO", "Request started", request_id="req_001")

@@ -10,7 +10,7 @@ import pytest
 
 
 @pytest.mark.skip(reason="Waiting for legacy agent registry implementation")
-def test_choose_agents_for_strategy_task_prefers_planner():
+def test_choose_agents_for_strategy_task_prefers_planner() -> None:
     """Test that strategy tasks prefer planner agents.
     
     This test is skipped until the legacy agent registry is implemented.

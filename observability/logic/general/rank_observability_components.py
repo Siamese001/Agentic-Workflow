@@ -13,7 +13,7 @@ from typing import List, Optional
 from datetime import datetime
 
 try:
-    from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore
+#     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPRECATED: Archive import removed to protect archives from validation edits
     _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()
     _NEO4J_AVAILABLE = True
 except ImportError:

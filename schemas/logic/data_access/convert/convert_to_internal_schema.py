@@ -81,9 +81,9 @@ class InternalSchemaConverter:
         self._transform_functions = self._initialize_transform_functions()
 
     def convert_to_internal(self, external_data: Dict[str, Any],
-                           external_schema: Optional[Dict[str, Any]] = None,
                            internal_schema: InternalSchema,
-                           field_mappings: List[FieldMapping]) -> ConversionResult:
+                           field_mappings: List[FieldMapping],
+                           external_schema: Optional[Dict[str, Any]] = None) -> ConversionResult:
         """Convert external data to internal schema format.
         
         Args:

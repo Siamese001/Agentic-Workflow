@@ -11,11 +11,11 @@ meets security standards for job alignment.
 """
 
 from typing import Optional
-from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig
-from archives.legacy_root_folders.core.routing import RoutingPolicy
-from archives.legacy_root_folders.core.models.models import ComplexityLevel
-from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot
-from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import record_event, record_exception
+# from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.core.routing import RoutingPolicy  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.core.models.models import ComplexityLevel  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import record_event, record_exception  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 class SafetyExecutor:
     """

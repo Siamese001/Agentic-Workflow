@@ -411,7 +411,7 @@ def create_config_load_planner(
     enable_validation: bool = True,
     enable_encryption: bool = False,
     enable_caching: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ConfigLoadPlanner:
     """Create a configured config load planner."""
     config = ConfigLoadConfig(

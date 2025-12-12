@@ -397,7 +397,7 @@ def create_observability_execution_adapter(
     default_timeout: float = 10.0,
     enable_tracing: bool = True,
     enable_metrics: bool = True,
-    **kwargs
+    **kwargs: object
 ) -> ObservabilityExecutionAdapter:
     """Create a configured observability execution adapter."""
     config = ObservabilityConfig(

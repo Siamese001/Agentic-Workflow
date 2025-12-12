@@ -291,7 +291,7 @@ class MessageDiversityValidator:
             # If vectorization fails, assume diverse
             return True, 0.0, ""
     
-    def add_to_history(self, message: str):
+    def add_to_history(self, message: str) -> None:
         """Add message to history"""
         self.message_history.append(message)
 

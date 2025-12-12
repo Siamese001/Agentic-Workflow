@@ -23,7 +23,7 @@ from shared.reasoning_utils import embedding_functions
 # from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import get_tool  # INVALID: Cannot import from path with hyphens
 
 try:  # pragma: no cover - optional runtime deps
-    from archives.legacy_resume_gen.Older Microservices Models.v10.6.redis import Redis
+#     from archives.legacy_resume_gen.Older Microservices Models.v10.6.redis import Redis  # DEPRECATED: Archive import removed to protect archives from validation edits
     from chromadb import Client as ChromaClientType
 except ImportError:  # pragma: no cover - fallback types
     RedisType = Any

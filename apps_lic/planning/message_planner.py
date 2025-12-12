@@ -284,7 +284,7 @@ class MessagePlanner:
         
         return sections
     
-    def _apply_persona_refinements(self, section: MessageSection, persona_plan: Any, archetype: str) -> MessageSection:
+    def _apply_persona_refinements(self, section: MessageSection, persona_plan: object, archetype: str) -> MessageSection:
         """Apply persona-based refinements to section."""
         # Adjust based on persona parameters
         if hasattr(persona_plan, 'detail_level'):
@@ -303,7 +303,7 @@ class MessagePlanner:
         
         return section
     
-    def _apply_grounding_constraints(self, section: MessageSection, grounding_plan: Any) -> MessageSection:
+    def _apply_grounding_constraints(self, section: MessageSection, grounding_plan: object) -> MessageSection:
         """Apply grounding-based constraints to section."""
         if hasattr(grounding_plan, 'risk_flags') and grounding_plan.risk_flags:
             # Add constraint to avoid risky claims
@@ -320,7 +320,7 @@ class MessagePlanner:
         
         return section
     
-    def _apply_fusion_strategy(self, section: MessageSection, fusion_plan: Any, section_name: str) -> MessageSection:
+    def _apply_fusion_strategy(self, section: MessageSection, fusion_plan: object, section_name: str) -> MessageSection:
         """Apply fusion-based content strategy to section."""
         if hasattr(fusion_plan, 'sections'):
             # Find corresponding fusion section

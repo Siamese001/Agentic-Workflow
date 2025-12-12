@@ -436,7 +436,7 @@ def create_schema_context_matcher(
     domain_weight: float = 0.3,
     purpose_weight: float = 0.25,
     semantic_weight: float = 0.2,
-    **kwargs
+    **kwargs: object
 ) -> SchemaContextMatcher:
     """Create a configured schema context matcher."""
     config = SchemaContextConfig(

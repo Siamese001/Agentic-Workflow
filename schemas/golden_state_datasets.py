@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase, GoldenCase
+# from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase, GoldenCase  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
 _BASE_DIR = Path(__file__).resolve().parent
