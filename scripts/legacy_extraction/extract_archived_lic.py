@@ -74,5 +74,6 @@ if __name__ == "__main__":
         #print(f"Extracted {len(extracted)} files:")
         for f in sorted(extracted):
             #print(f"  - {f}")
+            pass
     else:
         #print("No new files to extract")
