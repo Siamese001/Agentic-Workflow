@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Dict
 
 # from archives.legacy_root_folders.runtime.observability.spans import start_span, end_span  # DEPRECATED: Archive import removed to protect archives from validation edits
 

@@ -30,7 +30,7 @@ class PIIMatch:
     """Single PII detection match."""
     pii_type: PIIType
     original: str
-    placeholder: str
+    redaction_token: str
     position: Tuple[int, int]
     confidence: float = 1.0
 
@@ -41,7 +41,7 @@ class PIIResult:
     original_text: str
     scrubbed_text: str
     detected_pii: List[PIIMatch]
-    placeholders: Dict[str, str]
+    redaction_tokens: Dict[str, str]
     is_compliant: bool
     
     def has_pii(self) -> bool:
@@ -56,7 +56,7 @@ class PIIResult:
 class PIIScrubber:
     """Personal Information Detection and Sanitization.
     
-    Detects and redacts PII while preserving placeholders for context.
+    Detects and redacts PII while preserving redaction tokens for context.
     Essential for enterprise compliance (GDPR/CCPA).
     """
     
@@ -78,11 +78,11 @@ class PIIScrubber:
             PIIType.DOB: r'\b(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12][0-9]|3[01])[/-](?:19|20)\d{2}\b',
         }
         
-        self.placeholder_map: Dict[str, str] = {}
-        self.placeholder_counter = 0
+        self.redaction_map: Dict[str, str] = {}
+        self.redaction_counter = 0
     
     def scrub_text(self, text: str) -> PIIResult:
-        """Detect and redact PII while preserving placeholders.
+        """Detect and redact PII while preserving redaction tokens.
         
         Args:
             text: Input text to scrub
@@ -95,7 +95,7 @@ class PIIScrubber:
                 original_text="",
                 scrubbed_text="",
                 detected_pii=[],
-                placeholders={},
+                redaction_tokens={},
                 is_compliant=True,
             )
         
@@ -107,17 +107,17 @@ class PIIScrubber:
             
             for match in matches:
                 original = match.group()
-                placeholder = self._create_placeholder(pii_type, original)
+                redaction_token = self._create_redaction_token(pii_type, original)
                 
                 pii_match = PIIMatch(
                     pii_type=pii_type,
                     original=original,
-                    placeholder=placeholder,
+                    redaction_token=redaction_token,
                     position=match.span(),
                 )
                 
                 detected_pii.append(pii_match)
-                scrubbed_text = scrubbed_text.replace(original, placeholder)
+                scrubbed_text = scrubbed_text.replace(original, redaction_token)
         
         is_compliant = len(detected_pii) == 0
         
@@ -134,43 +134,43 @@ class PIIScrubber:
             original_text=text,
             scrubbed_text=scrubbed_text,
             detected_pii=detected_pii,
-            placeholders=self.placeholder_map,
+            redaction_tokens=self.redaction_map,
             is_compliant=is_compliant,
         )
     
-    def _create_placeholder(self, pii_type: PIIType, original: str) -> str:
-        """Create a placeholder for detected PII.
+    def _create_redaction_token(self, pii_type: PIIType, original: str) -> str:
+        """Create a redaction token for detected PII.
         
         Args:
             pii_type: Type of PII
             original: Original PII value
             
         Returns:
-            Placeholder string
+            Redaction token string
         """
-        self.placeholder_counter += 1
-        placeholder = f"[{pii_type.value.upper()}_{self.placeholder_counter}]"
-        self.placeholder_map[placeholder] = original
-        return placeholder
+        self.redaction_counter += 1
+        redaction_token = f"[{pii_type.value.upper()}_{self.redaction_counter}]"
+        self.redaction_map[redaction_token] = original
+        return redaction_token
     
-    def restore_placeholders(self, scrubbed_text: str) -> str:
-        """Restore original values from placeholders.
+    def restore_redactions(self, scrubbed_text: str) -> str:
+        """Restore original values from redaction tokens.
         
         Args:
-            scrubbed_text: Text with placeholders
+            scrubbed_text: Text with redaction tokens
             
         Returns:
             Text with original PII restored
         """
         text = scrubbed_text
-        for placeholder, original in self.placeholder_map.items():
-            text = text.replace(placeholder, original)
+        for redaction_token, original in self.redaction_map.items():
+            text = text.replace(redaction_token, original)
         return text
     
     def reset(self) -> None:
-        """Reset placeholder map and counter."""
-        self.placeholder_map.clear()
-        self.placeholder_counter = 0
+        """Reset redaction map and counter."""
+        self.redaction_map.clear()
+        self.redaction_counter = 0
 
 
 def scrub_pii(text: str) -> PIIResult:
