@@ -26,6 +26,17 @@ from .backoff import (
     LinearBackoff,
     calculate_backoff_ms,
 )
+from .telemetry import (
+    SystemTelemetry,
+    TelemetryEvent,
+    OperationStatus,
+    get_telemetry,
+    set_telemetry,
+)
+from .mixin import (
+    HardeningMixin,
+    TokenLimitError,
+)
 
 __all__ = [
     "CircuitBreaker",
@@ -46,4 +57,11 @@ __all__ = [
     "ExponentialBackoff",
     "LinearBackoff",
     "calculate_backoff_ms",
+    "SystemTelemetry",
+    "TelemetryEvent",
+    "OperationStatus",
+    "get_telemetry",
+    "set_telemetry",
+    "HardeningMixin",
+    "TokenLimitError",
 ]
