@@ -3,7 +3,7 @@ from archives.legacy_root_folders.eval.golden_state.evaluator import evaluate_ca
 from archives.legacy_root_folders.eval.golden_state.models import GoldenCase, GoldenOutput
 
 
-def test_evaluate_case_output_basic():
+def test_evaluate_case_output_basic() -> None:
     """Test basic golden state case evaluation with expected outputs."""
     cases = load_golden_cases()
     assert cases
