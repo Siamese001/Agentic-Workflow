@@ -59,7 +59,7 @@ def analyze_file_complexity(file_path):
             'size': file_size,
             'hash': get_file_hash(file_path)
         }
-    except:
+    except (OSError, IOError, UnicodeDecodeError):
         return {'lines': 0, 'size': 0, 'hash': ''}
 
 def canonicalize_filename(encoded_name):

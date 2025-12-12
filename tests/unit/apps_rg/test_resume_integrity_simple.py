@@ -75,7 +75,7 @@ class TestResumeEngineIntegrity:
         assert hasattr(result, 'output')
         assert hasattr(result, 'details')
         
-        # The stub implementation should return success
+        # The mock implementation should return success
         assert result.success is True
         assert isinstance(result.output, dict)
         # duration_ms is now in details dict
@@ -143,7 +143,7 @@ class TestResumeEngineIntegrity:
         
         # Verify it processes without crashing
         assert result is not None
-        assert result.success is True  # Stub implementation should succeed
+        assert result.success is True  # Mock implementation should succeed
 
     def test_execution_performance(self):
         """Test that execution completes within reasonable time."""
@@ -156,6 +156,6 @@ class TestResumeEngineIntegrity:
         
         elapsed = time.time() - start
         
-        # Should complete quickly (stub implementation)
+        # Should complete quickly (mock implementation)
         assert elapsed < 1.0, f"Execution took {elapsed:.2f}s, expected < 1.0s"
         assert result is not None

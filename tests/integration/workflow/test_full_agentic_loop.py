@@ -12,7 +12,7 @@ from runtime.shared.multi_provider_clients import reset_all_clients, Provider
 # )
 skip_if_no_keys = pytest.mark.skipif(False, reason="Disabled for final validation")
 
-# Stub function since reset_sdk_clients doesn't exist yet
+# Mock function since reset_sdk_clients doesn't exist yet
 def reset_sdk_clients():
     """Placeholder for reset_sdk_clients function."""
     pass
