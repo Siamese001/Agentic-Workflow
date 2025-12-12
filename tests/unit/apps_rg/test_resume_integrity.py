@@ -76,7 +76,7 @@ class TestResumeEngineIntegrity:
         assert hasattr(result, 'output')
         assert hasattr(result, 'duration_ms')
         
-        # The stub implementation should return success
+        # The mock implementation should return success
         assert result.success is True
         assert isinstance(result.output, dict)
 
@@ -175,4 +175,4 @@ class TestResumeEngineIntegrity:
         
         # Verify it processes without crashing
         assert result is not None
-        assert result.success is True  # Stub implementation should succeed
+        assert result.success is True  # Mock implementation should succeed
