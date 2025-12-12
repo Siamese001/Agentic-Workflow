@@ -11,7 +11,7 @@ Enriches bullet pool with canonical verbs and deduplication.
 
 from typing import Dict, List, Optional, Tuple
 
-from shared.models import ValidationResult, ValidationSeverity
+from shared.types.models import ValidationResult, ValidationSeverity
 
 from apps_rg.L2_execution.apply_verb_canonicalization import VerbCanonicalizer
 from apps_rg.L5_safety.check_duplicate_content import DuplicateDetector

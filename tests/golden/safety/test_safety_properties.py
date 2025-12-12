@@ -1,15 +1,15 @@
 """Logic/property tests for safety escalation and thresholds."""
 from __future__ import annotations
 
-from shared.reasoning_config import SAFETY_THRESHOLD
-from shared.models import GateDecision, ValidationSeverity
+from shared.configuration.reasoning_config import SAFETY_THRESHOLD
+from shared.types.models import GateDecision, ValidationSeverity
 
 class TestSafetyThresholdProperties:
     def test_threshold_in_valid_range(self):
         assert 0.0 <= SAFETY_THRESHOLD <= 1.0
 
     def test_threshold_determinism(self):
-        from shared.reasoning_config import SAFETY_THRESHOLD
+        from shared.configuration.reasoning_config import SAFETY_THRESHOLD
         # SAFETY_THRESHOLD should be deterministic
         assert SAFETY_THRESHOLD == 0.95
 

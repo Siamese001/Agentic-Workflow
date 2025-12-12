@@ -19,7 +19,7 @@ import argparse
 import ast
 import os
 import re
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 import sys
 import time
 from collections import defaultdict, deque
@@ -43,14 +43,9 @@ def _find_project_root() -> Path:
         current = current.parent
     return Path(__file__).resolve().parent  # Fallback
 
-ROOT: Path = _find_project_root()
-DATA_FOLDER_NAME = "data"                     # data/ is the new truth
-
-# Sovereign domains – full canon applies
 # =====================================================================
 # CORE CONFIGURATION
 # =====================================================================
-# (Existing functions like _find_project_root remain)
 
 ROOT: Path = _find_project_root()
 DATA_FOLDER_NAME = "data"                     # data/ is the new truth

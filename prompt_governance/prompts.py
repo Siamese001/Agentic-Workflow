@@ -3,7 +3,7 @@
 # Prompt Templates module for Resume Workflow
 # Contains all *logic* for loading and formatting prompts from prompts.json
 
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 import json
 import logging
 import os  # <-- Import os

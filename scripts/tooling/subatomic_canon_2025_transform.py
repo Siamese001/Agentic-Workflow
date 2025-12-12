@@ -16,7 +16,7 @@ Executes the complete subatomic canon transformation with zero-loss guarantee.
 """
 
 import os
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 import shutil
 from pathlib import Path
 from typing import Dict, List

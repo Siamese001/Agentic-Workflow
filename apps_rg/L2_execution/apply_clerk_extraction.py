@@ -3,11 +3,11 @@
 """Clerk extraction for resume generation HOP-1."""
 
 
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 from typing import Dict, List, Tuple
 
-from shared.models import ValidationResult
-from shared.workflow_types import BulletProvenance
+from shared.types.models import ValidationResult
+from shared.types.workflow_types import BulletProvenance
 from apps_rg.L5_safety.check_hallucination import HallucinationDetector
 
 

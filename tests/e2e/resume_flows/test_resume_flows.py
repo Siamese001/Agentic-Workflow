@@ -117,7 +117,7 @@ class TestResumeOptimization:
     def test_quantification_check(self):
         """E2E: Achievements are quantified."""
         bullet = "Increased sales by 25% over 6 months"
-        import scripts.check_canonical_structure
+        import scripts.validation.check_canonical_structure
         has_numbers = bool(re.search(r'\d+', bullet))
         assert has_numbers is True
 

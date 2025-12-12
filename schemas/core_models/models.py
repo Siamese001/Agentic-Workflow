@@ -1,5 +1,5 @@
-# Ownership: shared
-# Layer: shared
+# Ownership: schemas
+# Layer: schemas
 # Agent: all
 # -*- coding: utf-8 -*-
 """
@@ -17,8 +17,8 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 # Re-exports for backwards compatibility
-from shared.reasoning_config import ReasoningConfig
-from shared.workflow_types import CircuitState, GateDecision, HopCheckpoint, HopStatus
+from shared.configuration.reasoning_config import ReasoningConfig
+from shared.types.workflow_types import CircuitState, GateDecision, HopCheckpoint, HopStatus
 
 __all__ = [
     "ReasoningConfig",
@@ -31,7 +31,6 @@ __all__ = [
     "HopCheckpoint",
     "Provider",
     "APICallStatus",
-    "APICallMetrics",
     "RAGState",
     "ImmutableStagingBuffer",
 ]
@@ -45,34 +44,6 @@ class ValidationSeverity(Enum):
     MEDIUM = auto()
     HIGH = auto()
     CRITICAL = auto()
-
-
-@dataclass
-class ValidationResult:
-    """Result of a validation rule execution."""
-
-    rule_id: str
-    passed: bool
-    severity: ValidationSeverity
-    message: str
-    details: Dict[str, object] = field(default_factory=dict)
-
-
-@dataclass
-class ThematicAnalysis:
-    """Thematic analysis results from content inspection."""
-
-    primary_theme: Dict[str, object] = field(default_factory=dict)
-    secondary_themes: List[Dict[str, object]] = field(default_factory=list)
-    role_classification: Dict[str, object] = field(default_factory=dict)
-    positioning_directives: Dict[str, object] = field(default_factory=dict)
-    authenticity_patterns: Dict[str, object] = field(default_factory=dict)
-    competitive_intelligence: object = None
-    problem_solution_narratives: Optional[Dict[str, object]] = None
-    signal_quality_score: float = 0.0
-    retrieval_method: str = "UNKNOWN"
-    retrieval_sources: List[Any] = field(default_factory=list)
-    weighting_formula: Optional[Dict[str, object]] = None
 
 
 class Provider(str, Enum):
@@ -100,15 +71,25 @@ class APICallStatus(Enum):
 
 
 @dataclass
-class APICallMetrics:
-    """Metrics for API call tracking"""
-    call_count: int = 0
-    success_count: int = 0
-    error_count: int = 0
-    total_tokens_used: int = 0
-    total_latency_ms: float = 0
-    safety_blocks: int = 0
-    rate_limits: int = 0
+class ValidationResult:
+    """Result of a validation rule execution."""
+
+    rule_id: str
+    passed: bool
+    severity: ValidationSeverity
+    message: str = ""
+    details: Dict[str, Any] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+
+
+@dataclass
+class ThematicAnalysis:
+    """Analysis of thematic content in text."""
+    
+    themes: List[str] = field(default_factory=list)
+    confidence_scores: List[float] = field(default_factory=list)
+    dominant_theme: Optional[str] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass

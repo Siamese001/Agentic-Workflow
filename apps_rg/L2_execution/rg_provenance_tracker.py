@@ -308,7 +308,7 @@ class BulletSelector:
         jd_score = overlap * 0.5
 
         # Metric impact (check for numbers/percentages)
-        import scripts.check_canonical_structure
+        import scripts.validation.check_canonical_structure
         metrics = re.findall(r"\d+%|\$\d+|\d+x|\d+\+", bullet.bullet_text)
         metric_score = min(len(metrics) * 0.1, 0.3)
 

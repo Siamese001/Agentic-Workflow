@@ -12,7 +12,7 @@
 import json
 import logging
 import os
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 import time
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
