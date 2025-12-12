@@ -18,7 +18,8 @@ async def _set_value(ctx: Dict[str, object]) -> Dict[str, object]:
     return ctx
 
 
-def test_graph_successors_and_predecessors():
+def test_graph_successors_and_predecessors() -> None:
+    """Test graph successor and predecessor relationships."""
     nodes = {
         "a": Node(id="a", fn=_noop_node, metadata={}),
         "b": Node(id="b", fn=_set_value, metadata={}),
@@ -33,7 +34,8 @@ def test_graph_successors_and_predecessors():
     assert preds == ["a"]
 
 
-def test_dag_executor_linear_graph():
+def test_dag_executor_linear_graph() -> None:
+    """Test DAG executor with linear graph structure."""
     nodes = {
         "a": Node(id="a", fn=_noop_node, metadata={}),
         "b": Node(id="b", fn=_set_value, metadata={}),
