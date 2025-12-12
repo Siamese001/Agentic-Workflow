@@ -47,8 +47,15 @@ ROOT: Path = _find_project_root()
 DATA_FOLDER_NAME = "data"                     # data/ is the new truth
 
 # Sovereign domains – full canon applies
-# NOTE: "scripts" removed – scripts are tooling/CLI utilities, not core domain logic
-# This allows Key 41's print() exception to work for scripts/
+# =====================================================================
+# CORE CONFIGURATION
+# =====================================================================
+# (Existing functions like _find_project_root remain)
+
+ROOT: Path = _find_project_root()
+DATA_FOLDER_NAME = "data"                     # data/ is the new truth
+
+# Sovereign domains – full canon applies
 SOVEREIGN_DIRS: Set[str] = {
     "agentic_core",
     "apps_lic",
@@ -58,6 +65,8 @@ SOVEREIGN_DIRS: Set[str] = {
     "prompt_governance",
     "observability",
     "config",
+    "shared",  # NOW SOVEREIGN
+    "scripts", # NOW SOVEREIGN
 }
 
 # Directories excluded from ALL canon checks (assets only, no code)
@@ -65,6 +74,9 @@ EXCLUDED_DIRS: Set[str] = {"data", "archives"}
 
 # "Layered" sovereign domains that must obey L1/L2/L3 structure
 LAYERED_SOVEREIGN_DIRS: Set[str] = {"agentic_core", "apps_lic", "apps_rg"}
+
+# "Categorized" sovereign domains (Support Tier) that must NOT use L1/L2/L3 folders
+CATEGORIZED_SOVEREIGN_DIRS: Set[str] = SOVEREIGN_DIRS - LAYERED_SOVEREIGN_DIRS
 
 # Only these layers are allowed in layered sovereign domains
 ALLOWED_LAYERS: Tuple[str, ...] = ("L1_cognition", "L2_execution", "L3_orchestration")
@@ -608,22 +620,22 @@ def check_key_04_no_zombie_archive_singular_root() -> None:
 
 def check_key_05_layered_structure_sane() -> None:
     """
-    Key 05 – Layered sovereign structure:
-    - For layered domains: depth-2 directories must be L1/L2/L3 only.
-    - No L4/L5 folders allowed under layered sovereign roots.
-    - No orphan files at depth 2 (files must be inside layer directories).
+    Key 05 – Sovereign structure consistency:
+    1. Layered domains (Agentic Tier) must strictly use L1/L2/L3.
+    2. Categorized domains (Support Tier) must FORBID L1/L2/L3 folders.
+    3. No orphan files (file sprawl) at domain roots (Depth 2).
     """
     violations: List[str] = []
-    # Skip infrastructure directories
     skip_dirs = {"__pycache__", ".git", "node_modules", ".idea", ".vscode"}
 
-    for agent in LAYERED_SOVEREIGN_DIRS:
-        root = ROOT / agent
+    for d_name in SOVEREIGN_DIRS:
+        root = ROOT / d_name
         if not root.is_dir():
             continue
-
+        
+        is_layered = d_name in LAYERED_SOVEREIGN_DIRS
+        
         for path in root.rglob("*"):
-            # Skip infrastructure directories
             if path.name in skip_dirs:
                 continue
             
@@ -631,39 +643,48 @@ def check_key_05_layered_structure_sane() -> None:
             parts = rel.parts
             depth = len(parts)
 
-            # Depth 1: agent name itself
+            # Depth 1: domain name itself
             if depth == 1:
                 continue
-
-            # Depth 2: check for orphan files AND invalid layer directories
+            
+            # --- Depth 2 Check (Folder Structure and File Sprawl) ---
             if depth == 2:
+                # 1. Orphan File Sprawl Check (applies to ALL sovereign domains)
                 if path.is_file():
-                    # FIX: Ban orphan files at depth 2 (except __init__.py)
+                    # Ban orphan files at depth 2 (except __init__.py)
                     if path.name != "__init__.py":
                         violations.append(
-                            f"{rel} – orphan file at layer root (must be inside L1/L2/L3 directory)"
+                            f"{rel} – File sprawl (must be inside a descriptive subdirectory)"
                         )
                 elif path.is_dir():
                     layer_name = parts[1]
-                    if layer_name in FORBIDDEN_LAYERS:
-                        violations.append(f"{rel} – forbidden layer (L4/L5)")
-                    elif layer_name not in ALLOWED_LAYERS:
-                        violations.append(f"{rel} – invalid layer (must be one of {ALLOWED_LAYERS})")
+                    
+                    # 2. Layering Check (Agentic Tier - STRICT L1/L2/L3)
+                    if is_layered:
+                        if layer_name in FORBIDDEN_LAYERS:
+                            violations.append(f"{rel} – forbidden layer (L4/L5)")
+                        elif layer_name not in ALLOWED_LAYERS:
+                            violations.append(f"{rel} – invalid layer (must be one of {ALLOWED_LAYERS})")
+                    
+                    # 3. Layering Check (Support Tier - L-Prefix BAN)
+                    else: # Categorized/Support Tier
+                        if layer_name.startswith("L") and layer_name[1].isdigit():
+                            violations.append(f"{rel} – forbidden L-prefix folder (L1/L2/L3/L4/L5 not allowed in Support Tier domains)")
                 continue
 
-            # No L4/L5 anywhere
+            # --- Depth > 2 Check (General L4/L5 ban) ---
             if any(p in FORBIDDEN_LAYERS for p in parts):
                 violations.append(f"{rel} – contains forbidden layer name (L4/L5)")
 
     if violations:
         fail(
             "05",
-            "Layered sovereign structure violations:\n"
+            "Sovereign structure consistency violations:\n"
             + "\n".join(f"  - {v}" for v in violations[:30])
             + (f"\n  ... and {len(violations) - 30} more" if len(violations) > 30 else ""),
         )
     else:
-        success("05", "Layered sovereign structure is compliant (L1–L3 only, no orphan files)")
+        success("05", "Sovereign structure is consistent (Layered/Categorized compliance, no file sprawl)")
 
 def check_key_06_no_forbidden_folder_names() -> None:
     """Key 06 – No forbidden folder names under sovereign roots."""
