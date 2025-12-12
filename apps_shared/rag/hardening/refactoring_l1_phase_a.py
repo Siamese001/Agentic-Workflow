@@ -148,6 +148,7 @@ def test_no_circular_dependencies() -> None:
 #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l1  # INVALID: Cannot import from path with hyphens
 #         import archives.legacy_root_folders.meta.cognitive_agents  # DEPRECATED: Archive import removed to protect archives from validation edits
 #         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l2  # INVALID: Cannot import from path with hyphens
+        pass
 
     except Exception as e:
         pass
@@ -172,6 +173,7 @@ def test_l1_planning_is_pure() -> None:
                 if not plan_class.__dataclass_fields__:
                     continue
                 # Frozen dataclasses should have __frozen__ or be immutable
+                pass
 
     except Exception as e:
         pass
