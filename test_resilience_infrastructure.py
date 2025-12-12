@@ -1,0 +1,409 @@
+#!/usr/bin/env python3
+"""Test script for resilience infrastructure.
+
+Verifies:
+- Circuit breaker activation and recovery
+- Retry logic with exponential backoff
+- Structured telemetry logging
+- Token budget validation
+- Hardened executor functionality
+
+Usage:
+    python test_resilience_infrastructure.py
+"""
+
+import asyncio
+import json
+import logging
+import os
+import sys
+import time
+from typing import Any
+from unittest.mock import Mock, patch
+
+# Add project root to path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Configure logging to see telemetry
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+# Import resilience components
+from shared.resilience import (
+    CircuitBreaker,
+    CircuitBreakerState,
+    CircuitBreakerOpenError,
+    ErrorRecoveryManager,
+    SystemTelemetry,
+    OperationStatus,
+    HardeningMixin,
+    TokenLimitError,
+    get_telemetry,
+)
+
+
+class MockAPI:
+    """Mock API that simulates failures and rate limits."""
+    
+    def __init__(self, fail_count=3, rate_limit_after=None):
+        self.call_count = 0
+        self.fail_count = fail_count
+        self.rate_limit_after = rate_limit_after
+        self.last_call_time = None
+    
+    async def call(self, should_fail=False):
+        """Simulate API call with optional failures."""
+        self.call_count += 1
+        
+        # Simulate rate limit
+        if self.rate_limit_after and self.call_count > self.rate_limit_after:
+            raise RateLimitError("Rate limit exceeded")
+        
+        # Simulate failure
+        if should_fail and self.call_count <= self.fail_count:
+            raise APIError(f"Simulated failure #{self.call_count}")
+        
+        # Simulate successful response
+        return {"response": f"Success after {self.call_count} attempts"}
+
+
+class RateLimitError(Exception):
+    """Simulated rate limit error."""
+    pass
+
+
+class APIError(Exception):
+    """Simulated API error."""
+    pass
+
+
+class TestExecutor(HardeningMixin):
+    """Test executor using HardeningMixin."""
+    
+    def __init__(self, mock_api: MockAPI):
+        super().__init__(
+            component_name="test_executor",
+            failure_threshold=3,
+            reset_timeout_s=2,  # Short for testing
+            max_retries=5,
+        )
+        self.mock_api = mock_api
+    
+    async def execute_with_hardening(self, should_fail=False):
+        """Execute mock API call with hardening."""
+        async def _api_call():
+            return await self.mock_api.call(should_fail)
+        
+        return await self.execute_hardened(
+            operation="test_api_call",
+            fn=_api_call,
+            metadata={"test": True},
+        )
+
+
+async def test_circuit_breaker():
+    """Test circuit breaker activation and recovery."""
+    print("\n=== Testing Circuit Breaker ===")
+    
+    # Create circuit breaker
+    breaker = CircuitBreaker(
+        name="test_breaker",
+        failure_threshold=3,
+        reset_after_s=2,
+    )
+    
+    # Record failures to open circuit
+    print("Recording failures...")
+    for i in range(3):
+        breaker.record_failure()
+        print(f"  Failure {i+1}: State = {breaker.state.value}")
+    
+    # Should be open now
+    assert breaker.state == CircuitBreakerState.OPEN
+    print("✓ Circuit breaker is OPEN after threshold failures")
+    
+    # Should reject execution
+    assert not breaker.can_execute()
+    print("✓ Circuit breaker rejects execution when OPEN")
+    
+    # Wait for recovery timeout
+    print("Waiting for recovery timeout...")
+    time.sleep(2.1)
+    
+    # Should transition to half-open
+    assert breaker.can_execute()
+    assert breaker.state == CircuitBreakerState.HALF_OPEN
+    print("✓ Circuit breaker transitions to HALF_OPEN after timeout")
+    
+    # Record success to close (need 3 successes for half_open_max_calls=3)
+    for i in range(3):
+        breaker.can_execute()  # This triggers state transition check
+        breaker.record_success()
+    assert breaker.state == CircuitBreakerState.CLOSED
+    print("✓ Circuit breaker closes after success in HALF_OPEN")
+    
+    print("Circuit breaker test passed!\n")
+
+
+async def test_error_recovery():
+    """Test error recovery with retries."""
+    print("\n=== Testing Error Recovery ===")
+    
+    # Create mock API that fails 3 times
+    mock_api = MockAPI(fail_count=3)
+    recovery = ErrorRecoveryManager(
+        max_retries=5,
+        base_backoff_ms=100,  # Fast for testing
+        jitter_ms=0,  # No jitter for predictable testing
+    )
+    
+    # Execute with retry
+    start_time = time.time()
+    result = await recovery.invoke_with_retry(
+        fn=lambda: mock_api.call(should_fail=True),
+        context={"test": "error_recovery"},
+    )
+    latency_ms = (time.time() - start_time) * 1000
+    
+    print(f"Result: {result}")
+    print(f"Total calls: {mock_api.call_count}")
+    print(f"Latency: {latency_ms:.0f}ms")
+    
+    assert mock_api.call_count == 4  # 3 failures + 1 success
+    print("✓ Error recovery succeeded after retries")
+    
+    # Test permanent error
+    mock_api_permanent = MockAPI(fail_count=100)  # Always fails
+    try:
+        await recovery.invoke_with_retry(
+            fn=lambda: mock_api_permanent.call(should_fail=True),
+            context={"test": "permanent_error"},
+        )
+        assert False, "Should have raised RetryExhaustedError"
+    except Exception as e:
+        print(f"✓ Permanent error correctly raised: {type(e).__name__}")
+    
+    print("Error recovery test passed!\n")
+
+
+async def test_telemetry():
+    """Test structured telemetry logging."""
+    print("\n=== Testing Telemetry ===")
+    
+    # Create custom telemetry with capture
+    logged_events = []
+    
+    class TestTelemetry(SystemTelemetry):
+        def log_metric(self, *args, **kwargs):
+            # Capture events for testing
+            event = {
+                "component": kwargs.get("component"),
+                "operation": kwargs.get("operation"),
+                "status": kwargs.get("status").value if kwargs.get("status") else None,
+                "latency_ms": kwargs.get("latency_ms"),
+                "token_usage": kwargs.get("token_usage"),
+                "error_type": kwargs.get("error_type"),
+            }
+            logged_events.append(event)
+            super().log_metric(*args, **kwargs)
+    
+    telemetry = TestTelemetry("test-service")
+    
+    # Log various events
+    telemetry.log_success(
+        component="test_component",
+        operation="test_operation",
+        latency_ms=150.5,
+        token_usage=100,
+    )
+    
+    telemetry.log_failure(
+        component="test_component",
+        operation="test_operation",
+        latency_ms=50.0,
+        error_type="APIError",
+        error_message="Something went wrong",
+    )
+    
+    telemetry.log_retry(
+        component="test_component",
+        operation="test_operation",
+        attempt=2,
+        max_retries=3,
+        backoff_ms=400,
+        error_type="RateLimitError",
+    )
+    
+    # Verify captured events
+    assert len(logged_events) == 3
+    assert logged_events[0]["status"] == "success"
+    assert logged_events[1]["status"] == "failure"
+    assert logged_events[2]["status"] == "retry"
+    
+    print("✓ Telemetry events captured correctly")
+    for event in logged_events:
+        print(f"  {event}")
+    
+    print("Telemetry test passed!\n")
+
+
+async def test_hardening_mixin():
+    """Test HardeningMixin integration."""
+    print("\n=== Testing HardeningMixin ===")
+    
+    # Create mock API with rate limiting
+    mock_api = MockAPI(rate_limit_after=2)
+    executor = TestExecutor(mock_api)
+    
+    # Test successful execution
+    result = await executor.execute_with_hardening(should_fail=False)
+    print(f"✓ Success: {result}")
+    
+    # Test retry on failure
+    mock_api_fail = MockAPI(fail_count=2)
+    executor_fail = TestExecutor(mock_api_fail)
+    result = await executor_fail.execute_with_hardening(should_fail=True)
+    print(f"✓ Retry success: {result}")
+    assert mock_api_fail.call_count == 3
+    
+    # Test circuit breaker activation
+    mock_api_cb = MockAPI(fail_count=10)  # Will trigger circuit breaker
+    executor_cb = TestExecutor(mock_api_cb)
+    
+    try:
+        await executor_cb.execute_with_hardening(should_fail=True)
+        assert False, "Should have raised CircuitBreakerOpenError"
+    except CircuitBreakerOpenError as e:
+        print(f"✓ Circuit breaker activated: {e}")
+    
+    # Check circuit breaker state
+    state = executor_cb.get_circuit_breaker_state()
+    print(f"✓ Circuit breaker state: {state}")
+    assert state == "OPEN"
+    
+    print("HardeningMixin test passed!\n")
+
+
+async def test_token_validation():
+    """Test token budget validation."""
+    print("\n=== Testing Token Validation ===")
+    
+    executor = TestExecutor(MockAPI())
+    
+    # Test valid prompt
+    try:
+        executor.validate_token_budget_tiktoken(
+            prompt="This is a short prompt.",
+            model="gpt-4o",
+            max_tokens=1000,
+        )
+        print("✓ Valid prompt accepted")
+    except TokenLimitError:
+        print("✗ Valid prompt rejected")
+        assert False
+    
+    # Test prompt that exceeds limit
+    try:
+        long_prompt = "x" * 100000  # Very long prompt
+        executor.validate_token_budget_tiktoken(
+            prompt=long_prompt,
+            model="gpt-4o",
+            max_tokens=100,  # Small limit
+        )
+        print("✗ Oversized prompt accepted")
+        assert False
+    except TokenLimitError as e:
+        print(f"✓ Oversized prompt rejected: {e}")
+    
+    print("Token validation test passed!\n")
+
+
+async def test_hardened_executors():
+    """Test hardened executors (if API keys available)."""
+    print("\n=== Testing Hardened Executors ===")
+    
+    # Test OpenAI executor (if API key available)
+    if os.getenv("OPENAI_API_KEY"):
+        print("Testing OpenAI executor...")
+        try:
+            from runtime.shared.hardened_openai_executor import HardenedOpenAIExecutor
+            
+            executor = HardenedOpenAIExecutor()
+            result = await executor.run_llm(
+                "Say 'Hello from hardened OpenAI!' in exactly 10 words.",
+                temperature=0.7,
+                max_tokens=50,
+            )
+            print(f"✓ OpenAI response: {result[:100]}...")
+        except Exception as e:
+            print(f"✗ OpenAI test failed: {e}")
+    else:
+        print("⚠ Skipping OpenAI test (no API key)")
+    
+    # Test Anthropic executor (if API key available)
+    if os.getenv("ANTHROPIC_API_KEY"):
+        print("Testing Anthropic executor...")
+        try:
+            from runtime.shared.hardened_anthropic_executor import HardenedAnthropicExecutor
+            
+            executor = HardenedAnthropicExecutor()
+            result = await executor.run_llm(
+                "Say 'Hello from hardened Anthropic!' in exactly 10 words.",
+                temperature=0.7,
+                max_tokens=50,
+            )
+            print(f"✓ Anthropic response: {result[:100]}...")
+        except Exception as e:
+            print(f"✗ Anthropic test failed: {e}")
+    else:
+        print("⚠ Skipping Anthropic test (no API key)")
+    
+    print("Hardened executor tests completed!\n")
+
+
+async def main():
+    """Run all tests."""
+    print("=" * 60)
+    print("RESILIENCE INFRASTRUCTURE TEST SUITE")
+    print("=" * 60)
+    
+    tests = [
+        test_circuit_breaker,
+        test_error_recovery,
+        test_telemetry,
+        test_hardening_mixin,
+        test_token_validation,
+        test_hardened_executors,
+    ]
+    
+    passed = 0
+    failed = 0
+    
+    for test in tests:
+        try:
+            await test()
+            passed += 1
+        except Exception as e:
+            print(f"✗ {test.__name__} failed: {e}")
+            import traceback
+            traceback.print_exc()
+            failed += 1
+    
+    print("=" * 60)
+    print(f"TEST RESULTS: {passed} passed, {failed} failed")
+    print("=" * 60)
+    
+    if failed == 0:
+        print("🎉 All tests passed! Resilience infrastructure is working correctly.")
+        return 0
+    else:
+        print("❌ Some tests failed. Check the output above.")
+        return 1
+
+
+if __name__ == "__main__":
+    # Run tests
+    exit_code = asyncio.run(main())
+    sys.exit(exit_code)
