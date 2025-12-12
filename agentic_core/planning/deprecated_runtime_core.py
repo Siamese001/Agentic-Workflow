@@ -176,7 +176,7 @@ def mock_invoke_model(prompt: str, model: str = "test-model") -> str:
 
 # Patch the invoke_model for tests
 @pytest.fixture(autouse=True)
-def patch_invoke_model():
+def patch_invoke_model() -> None:
     """Patch invoke_model for all tests in this module."""
     with patch('runtime.runtime_utils.invoke_model', side_effect=mock_invoke_model):
         yield
