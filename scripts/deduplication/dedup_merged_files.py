@@ -68,7 +68,7 @@ class DedupManifest:
     removed_files: List[Dict] = field(default_factory=list)
     errors: List[Dict] = field(default_factory=list)
 
-def compute_hash(filepath: Path) -> str:
+def compute_hash(filepath: Path) -> None:
     """Compute SHA256 hash of file."""
     sha256 = hashlib.sha256()
     with open(filepath, "rb") as f:

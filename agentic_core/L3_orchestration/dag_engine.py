@@ -253,8 +253,6 @@ class DAGEngine:
             DAGExecutionResult with execution summary
         """
         context = context or {}
-        
-        # Validate and sort
         execution_order = self.topological_sort()
         
         completed_tasks: Set[str] = set()
@@ -262,75 +260,80 @@ class DAGEngine:
         skipped_tasks: List[str] = []
         task_results: Dict[str, Any] = {}
         
-        if self.enable_logging:
-            logger.info(
-                "dag_execution_started",
-                extra={
-                    "total_tasks": len(self.tasks),
-                    "execution_order": execution_order,
-                }
-            )
+        self._log_dag_start(execution_order)
         
         for task_id in execution_order:
             task = self.tasks[task_id]
             
-            # Check if dependencies are met
-            if not task.is_ready(completed_tasks):
-                task.status = TaskStatus.SKIPPED
-                skipped_tasks.append(task_id)
+            if not self._should_execute_task(task, task_id, completed_tasks, context, task_results, skipped_tasks):
                 continue
             
-            # Check condition if present
-            if task.condition:
-                condition_met = self._evaluate_condition(
-                    task.condition,
-                    context,
-                    task_results,
-                )
-                if not condition_met:
-                    task.status = TaskStatus.SKIPPED
-                    skipped_tasks.append(task_id)
-                    if self.enable_logging:
-                        logger.debug(
-                            "task_skipped_condition",
-                            extra={"task_id": task_id, "condition": task.condition}
-                        )
-                    continue
-            
-            # Execute task
-            task.status = TaskStatus.RUNNING
-            
-            try:
-                if self.enable_logging:
-                    logger.info("task_started", extra={"task_id": task_id})
-                
-                result = await executor(task)
-                
-                task.status = TaskStatus.COMPLETED
-                task.result = result
-                task_results[task_id] = result
-                completed_tasks.add(task_id)
-                
-                if self.enable_logging:
-                    logger.info("task_completed", extra={"task_id": task_id})
-            
-            except Exception as e:
-                task.status = TaskStatus.FAILED
-                task.error = str(e)
-                failed_tasks.append(task_id)
-                
-                if self.enable_logging:
-                    logger.error(
-                        "task_failed",
-                        extra={"task_id": task_id, "error": str(e)},
-                        exc_info=True,
-                    )
-                
-                # Stop execution on failure
+            success = await self._execute_single_task(task, task_id, executor, completed_tasks, failed_tasks, task_results)
+            if not success:
                 break
         
-        success = len(failed_tasks) == 0
+        return self._create_dag_result(completed_tasks, failed_tasks, skipped_tasks, task_results, execution_order)
+    
+    def _log_dag_start(self, execution_order: List[str]) -> None:
+        """Log DAG execution start."""
+        if self.enable_logging:
+            logger.info("dag_execution_started", extra={"total_tasks": len(self.tasks), "execution_order": execution_order})
+    
+    def _should_execute_task(
+        self, task: Task, task_id: str, completed_tasks: Set[str], 
+        context: Dict[str, Any], task_results: Dict[str, Any], skipped_tasks: List[str]
+    ) -> bool:
+        """Check if task should be executed."""
+        if not task.is_ready(completed_tasks):
+            task.status = TaskStatus.SKIPPED
+            skipped_tasks.append(task_id)
+            return False
         
+        if task.condition:
+            condition_met = self._evaluate_condition(task.condition, context, task_results)
+            if not condition_met:
+                task.status = TaskStatus.SKIPPED
+                skipped_tasks.append(task_id)
+                if self.enable_logging:
+                    logger.debug("task_skipped_condition", extra={"task_id": task_id, "condition": task.condition})
+                return False
+        
+        return True
+    
+    async def _execute_single_task(
+        self, task: Task, task_id: str, executor: Callable, 
+        completed_tasks: Set[str], failed_tasks: List[str], task_results: Dict[str, Any]
+    ) -> bool:
+        """Execute a single task and return success status."""
+        task.status = TaskStatus.RUNNING
+        
+        try:
+            if self.enable_logging:
+                logger.info("task_started", extra={"task_id": task_id})
+            
+            result = await executor(task)
+            task.status = TaskStatus.COMPLETED
+            task.result = result
+            task_results[task_id] = result
+            completed_tasks.add(task_id)
+            
+            if self.enable_logging:
+                logger.info("task_completed", extra={"task_id": task_id})
+            return True
+        except Exception as e:
+            task.status = TaskStatus.FAILED
+            task.error = str(e)
+            failed_tasks.append(task_id)
+            if self.enable_logging:
+                logger.error("task_failed", extra={"task_id": task_id, "error": str(e)}, exc_info=True)
+            return False
+    
+    def _create_dag_result(
+        self, completed_tasks: Set[str], failed_tasks: List[str], 
+        skipped_tasks: List[str], task_results: Dict[str, Any], execution_order: List[str]
+    ) -> DAGExecutionResult:
+        """Create DAG execution result."""
+        success = len(failed_tasks) == 0
         result = DAGExecutionResult(
             success=success,
             completed_tasks=list(completed_tasks),
@@ -338,22 +341,11 @@ class DAGEngine:
             skipped_tasks=skipped_tasks,
             task_results=task_results,
             execution_order=execution_order,
-            metadata={
-                "total_tasks": len(self.tasks),
-                "completion_rate": len(completed_tasks) / len(self.tasks) if self.tasks else 0,
-            },
+            metadata={"total_tasks": len(self.tasks), "completion_rate": len(completed_tasks) / len(self.tasks) if self.tasks else 0}
         )
         
         if self.enable_logging:
-            logger.info(
-                "dag_execution_completed",
-                extra={
-                    "success": success,
-                    "completed": len(completed_tasks),
-                    "failed": len(failed_tasks),
-                    "skipped": len(skipped_tasks),
-                }
-            )
+            logger.info("dag_execution_completed", extra={"success": success, "completed": len(completed_tasks), "failed": len(failed_tasks), "skipped": len(skipped_tasks)})
         
         return result
     
@@ -384,33 +376,37 @@ class DAGEngine:
             
             # Check for result field condition
             if "==" in condition:
-                left, right = condition.split("==")
-                left = left.strip()
-                right = right.strip().strip("'\"")
-                
-                # Parse left side (e.g., "task_id.result.field")
-                parts = left.split(".")
-                if len(parts) >= 2:
-                    task_id = parts[0]
-                    if task_id in task_results:
-                        value = task_results[task_id]
-                        for part in parts[2:]:  # Skip task_id and "result"
-                            if isinstance(value, dict):
-                                value = value.get(part)
-                            else:
-                                return False
-                        return str(value) == right
+                return self._evaluate_equality_condition(condition, task_results)
             
             # Default: check if condition is in context
             return context.get(condition, False)
         
         except Exception as e:
             if self.enable_logging:
-                logger.warning(
-                    "condition_evaluation_failed",
-                    extra={"condition": condition, "error": str(e)}
-                )
+                logger.warning("condition_evaluation_failed", extra={"condition": condition, "error": str(e)})
             return False
+    
+    def _evaluate_equality_condition(self, condition: str, task_results: Dict[str, Any]) -> bool:
+        """Evaluate equality condition with reduced nesting."""
+        left, right = condition.split("==")
+        left = left.strip()
+        right = right.strip().strip("'\"")
+        
+        parts = left.split(".")
+        if len(parts) < 2:
+            return False
+        
+        task_id = parts[0]
+        if task_id not in task_results:
+            return False
+        
+        value = task_results[task_id]
+        for part in parts[2:]:
+            if not isinstance(value, dict):
+                return False
+            value = value.get(part)
+        
+        return str(value) == right
     
     def get_task_status(self, task_id: str) -> Optional[TaskStatus]:
         """Get status of a task.

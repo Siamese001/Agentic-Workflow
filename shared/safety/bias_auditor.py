@@ -212,23 +212,17 @@ class BiasAuditor:
         Returns:
             List of recommendations
         """
-        recommendations = []
+        bias_recommendations = {
+            BiasType.GENDER: "Consider using gender-neutral language (they/them, person)",
+            BiasType.AGE: "Focus on experience rather than age-related descriptors",
+            BiasType.RACE: "Remove race-based descriptors unless relevant",
+            BiasType.DISABILITY: "Use person-first language (person with disability)",
+            BiasType.AFFILIATION: "Remove political or religious affiliations",
+            BiasType.SOCIOECONOMIC: "Avoid socioeconomic stereotypes",
+            BiasType.APPEARANCE: "Remove appearance-based descriptors",
+        }
         
-        for bias_type in bias_types:
-            if bias_type == BiasType.GENDER:
-                recommendations.append("Consider using gender-neutral language (they/them, person)")
-            elif bias_type == BiasType.AGE:
-                recommendations.append("Focus on experience rather than age-related descriptors")
-            elif bias_type == BiasType.RACE:
-                recommendations.append("Remove race-based descriptors unless relevant")
-            elif bias_type == BiasType.DISABILITY:
-                recommendations.append("Use person-first language (person with disability)")
-            elif bias_type == BiasType.AFFILIATION:
-                recommendations.append("Remove political or religious affiliations")
-            elif bias_type == BiasType.SOCIOECONOMIC:
-                recommendations.append("Avoid socioeconomic stereotypes")
-            elif bias_type == BiasType.APPEARANCE:
-                recommendations.append("Remove appearance-based descriptors")
+        recommendations = [bias_recommendations.get(bt, "") for bt in bias_types if bt in bias_recommendations]
         
         if not recommendations:
             recommendations.append("Content appears neutral and inclusive")

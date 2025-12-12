@@ -19,7 +19,7 @@ class MCPClient(Protocol):
     All MCP clients must implement this protocol for type safety.
     """
     
-    def __call__(self, *args, **kwargs) -> Any:
+    def __call__(self, *args: object, **kwargs: object) -> Dict[str, object]:
         """Execute the client operation."""
         ...
 

@@ -60,7 +60,7 @@ def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpe
     return specs
 
 
-def instantiate_mcp_client(spec: MCPClientSpec) -> Any:
+def instantiate_mcp_client(spec: MCPClientSpec) -> object:
     """Create an MCP client instance from a validated spec.
     
     Args:
