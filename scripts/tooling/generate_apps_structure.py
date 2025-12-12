@@ -803,23 +803,39 @@ from __future__ import annotations
 __all__: list[str] = []
 '''
 
+def _should_create_init_for_parent(parent: Path, dirs_created: set) -> bool:
+    """Check if __init__.py should be created for parent directory."""
+    if parent in dirs_created:
+        return False
+    if not str(parent).startswith(str(REPO)):
+        return False
+    if parent == REPO:
+        return False
+    return True
+
+def _create_init_for_parent(parent: Path, dirs_created: set) -> None:
+    """Create __init__.py for a parent directory."""
+    parent.mkdir(parents=True, exist_ok=True)
+    init_file = parent / "__init__.py"
+    
+    if init_file.exists():
+        return
+    
+    try:
+        rel_parent = str(parent.relative_to(REPO)).replace("\\", "/")
+    except ValueError:
+        return
+    
+    init_file.write_text(generate_init_file(rel_parent), encoding="utf-8")
+    dirs_created.add(parent)
+
 def _create_init_files(paths: List[Path], dest_base: Path, dirs_created: set) -> None:
     """Create __init__.py files for all directories in paths."""
     for path in paths:
         full_path = dest_base / path
-        
-        # Create parent directories and __init__.py
         for parent in list(full_path.parents):
-            if parent not in dirs_created and str(parent).startswith(str(REPO)) and parent != REPO:
-                parent.mkdir(parents=True, exist_ok=True)
-                init_file = parent / "__init__.py"
-                if not init_file.exists():
-                    try:
-                        rel_parent = str(parent.relative_to(REPO)).replace("\\", "/")
-                    except ValueError:
-                        continue
-                    init_file.write_text(generate_init_file(rel_parent), encoding="utf-8")
-                dirs_created.add(parent)
+            if _should_create_init_for_parent(parent, dirs_created):
+                _create_init_for_parent(parent, dirs_created)
 
 def _generate_modules(paths: List[Path], dest_base: Path, ctx: Dict[str, str]) -> Tuple[int, int]:
     """Generate module files and return counts of created/skipped files."""
