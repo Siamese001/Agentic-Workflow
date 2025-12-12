@@ -1,6 +1,6 @@
-"""Placeholder stub to replace deprecated archive imports."""
+"""Fallback stub to replace deprecated archive imports."""
 
-# This file serves as a placeholder to break import chains into the immutable archives/
+# This file serves as a fallback to break import chains into the immutable archives/
 # Any import from archives/ should be replaced with this stub to prevent Python
 # from loading archived files during validation.
 
