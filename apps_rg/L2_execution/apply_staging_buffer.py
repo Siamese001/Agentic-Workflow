@@ -7,7 +7,7 @@ import copy
 from datetime import datetime
 from typing import Dict, Optional
 
-from shared.exceptions import StagingBufferError
+from shared.errors.exceptions import StagingBufferError
 
 
 class ImmutableStagingBuffer:

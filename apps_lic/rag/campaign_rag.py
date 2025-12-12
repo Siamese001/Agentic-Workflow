@@ -5,7 +5,7 @@
 __version__ = "12.0"
 
 import asyncio
-# import scripts.check_canonical_structure  # TODO: Replace with sovereign equivalent
+# import scripts.validation.check_canonical_structure  # TODO: Replace with sovereign equivalent
 import json
 import os
 import glob

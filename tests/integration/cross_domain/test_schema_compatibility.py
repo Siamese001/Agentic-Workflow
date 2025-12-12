@@ -1,8 +1,8 @@
 """Integration tests for cross-domain schema compatibility."""
 from __future__ import annotations
 
-from shared.reasoning_config import SAFETY_THRESHOLD
-from shared.models import ValidationResult, ValidationSeverity, GateDecision
+from shared.configuration.reasoning_config import SAFETY_THRESHOLD
+from shared.types.models import ValidationResult, ValidationSeverity, GateDecision
 from runtime.shared.sdk_registry import SDK_REGISTRY, SDKCategory
 
 class TestConfigSchemaCompatibility:

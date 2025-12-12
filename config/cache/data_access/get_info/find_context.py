@@ -42,13 +42,13 @@ except ImportError:  # pragma: no cover - fallback types
 from agentic_core.shared.clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
 
 
-from shared.config import ConfigV10_7
+from shared.configuration.config import ConfigV10_7
 
 
 # from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.constants import canonical_model_name  # INVALID: Cannot import from path with hyphens
 
 
-from shared.exceptions import MCPClientInitializationError
+from shared.errors.exceptions import MCPClientInitializationError
 
 
 # from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.mcp import MCPClientSpec, MCPClientStub, instantiate_mcp_client, parse_mcp_client_specs  # INVALID: Cannot import from path with hyphens

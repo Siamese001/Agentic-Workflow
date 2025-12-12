@@ -7,7 +7,7 @@ Ported from: archives/legacy_resume_gen/Job Workflow - JSON/Job_Workflow_v61.27.
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Union
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 
 
 class GateDecision(Enum):

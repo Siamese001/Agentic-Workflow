@@ -6,7 +6,7 @@ Identifies all stub, placeholder, and empty files in the repository.
 Categorizes them for cleanup or implementation.
 """
 
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 from pathlib import Path
 from typing import Dict, Tuple
 from collections import defaultdict

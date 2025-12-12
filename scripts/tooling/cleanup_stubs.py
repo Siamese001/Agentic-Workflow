@@ -11,7 +11,7 @@ import shutil
 from pathlib import Path
 from typing import Dict, List
 import json
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 

@@ -43,7 +43,7 @@ except ImportError:  # pragma: no cover - fallback types
 from tests.unit.runtime.test_multi_provider_clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient
 
 
-from shared.reasoning_config import ConfigV10_7
+from shared.configuration.reasoning_config import ConfigV10_7
 
 
 from .constants import canonical_model_name
