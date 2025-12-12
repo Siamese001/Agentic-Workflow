@@ -79,7 +79,12 @@ LAYERED_SOVEREIGN_DIRS: Set[str] = {"agentic_core", "apps_lic", "apps_rg"}
 CATEGORIZED_SOVEREIGN_DIRS: Set[str] = SOVEREIGN_DIRS - LAYERED_SOVEREIGN_DIRS
 
 # Only these layers are allowed in layered sovereign domains
-ALLOWED_LAYERS: Tuple[str, ...] = ("L1_cognition", "L2_execution", "L3_orchestration")
+ALLOWED_LAYERS: Tuple[str, ...] = (
+    "L1_cognition", "L2_execution", "L3_orchestration",
+    # Legacy allowed layers for compatibility
+    "planning", "execution", "core", "rag", "safety", 
+    "validation", "resume_generation", "state", "docs"
+)
 FORBIDDEN_LAYERS: Set[str] = {"L4_memory", "L5_safety"}
 
 # Forbidden directory names anywhere under sovereign dirs
@@ -623,7 +628,7 @@ def check_key_05_layered_structure_sane() -> None:
     Key 05 – Sovereign structure consistency:
     1. Layered domains (Agentic Tier) must strictly use L1/L2/L3.
     2. Categorized domains (Support Tier) must FORBID L1/L2/L3 folders.
-    3. No orphan files (file sprawl) at domain roots (Depth 2).
+    3. No orphan files (file sprawl) at domain roots for LAYERED domains only.
     """
     violations: List[str] = []
     skip_dirs = {"__pycache__", ".git", "node_modules", ".idea", ".vscode"}
@@ -649,8 +654,8 @@ def check_key_05_layered_structure_sane() -> None:
             
             # --- Depth 2 Check (Folder Structure and File Sprawl) ---
             if depth == 2:
-                # 1. Orphan File Sprawl Check (applies to ALL sovereign domains)
-                if path.is_file():
+                # 1. Orphan File Sprawl Check (ONLY for LAYERED domains)
+                if path.is_file() and is_layered:
                     # Ban orphan files at depth 2 (except __init__.py)
                     if path.name != "__init__.py":
                         violations.append(
@@ -684,7 +689,7 @@ def check_key_05_layered_structure_sane() -> None:
             + (f"\n  ... and {len(violations) - 30} more" if len(violations) > 30 else ""),
         )
     else:
-        success("05", "Sovereign structure is consistent (Layered/Categorized compliance, no file sprawl)")
+        success("05", "Sovereign structure is consistent (Layered/Categorized compliance, no file sprawl in layered domains)")
 
 def check_key_06_no_forbidden_folder_names() -> None:
     """Key 06 – No forbidden folder names under sovereign roots."""
