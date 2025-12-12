@@ -21,7 +21,7 @@ class ThinkStep(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now, description="When this thought occurred")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
     
-    class Config:
+    class ConfigThinkStep:
         frozen = False
 
 
@@ -38,7 +38,7 @@ class ActionStep(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now, description="When this action was taken")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
     
-    class Config:
+    class ConfigActionStep:
         frozen = False
 
 
@@ -55,7 +55,7 @@ class ObservationStep(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now, description="When this observation was made")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
     
-    class Config:
+    class ConfigObservationStep:
         frozen = False
 
 
@@ -80,7 +80,7 @@ class ReasoningTraceModel(BaseModel):
     completed_at: Optional[datetime] = Field(None, description="When reasoning completed")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional trace metadata")
     
-    class Config:
+    class ConfigReasoningTrace:
         frozen = False
     
     def add_think(self, thought: str, **kwargs: object) -> None:

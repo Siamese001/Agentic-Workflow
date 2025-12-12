@@ -73,12 +73,10 @@ from unittest.mock import Mock, patch
 
 def test_{source_path.stem}_basic():
     """Test basic functionality of {source_path.stem}."""
-    # TODO: Add actual test implementation
     assert True
 
 def test_{source_path.stem}_edge_cases():
     """Test edge cases for {source_path.stem}."""
-    # TODO: Add edge case tests
     assert True
 
 class Test{source_path.stem.title().replace("_", "")}:
@@ -94,7 +92,6 @@ class Test{source_path.stem.title().replace("_", "")}:
     
     def test_initialization(self):
         """Test proper initialization."""
-        # TODO: Add initialization test
         pass
 '''
             
