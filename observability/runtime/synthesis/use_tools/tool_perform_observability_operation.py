@@ -375,7 +375,7 @@ class ObservabilityOperationPerformer:
             artifacts=all_artifacts
         )
 
-    def _validate_input_field_type(self, field_name: str, value: Any, expected_type: str) -> Optional[str]:
+    def _validate_input_field_type(self, value: object, field_type: str) -> bool:
         """Validate a single input field type and return error message if invalid."""
         type_validators = {
             "string": lambda v: isinstance(v, str),

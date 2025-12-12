@@ -220,7 +220,7 @@ class ObservabilityToolInvoker:
         return results
 
     def invoke_tool_stream(self, context: ToolInvocationContext,
-                          parameters: Dict[str, Any]) -> Any:
+                          parameters: Dict[str, Any]) -> Dict[str, object]:
         """Invoke tool with streaming response.
         
         Args:
@@ -398,7 +398,7 @@ class ObservabilityToolInvoker:
         
         return errors
 
-    def _check_type(self, value: Any, expected_type: str) -> bool:
+    def _check_type(self, value: object, expected_type: str) -> bool:
         """Check value type."""
         type_map = {
             "string": str,

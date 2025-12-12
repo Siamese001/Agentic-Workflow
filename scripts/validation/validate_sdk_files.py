@@ -8,7 +8,7 @@ import sys
 import os
 import ast
 
-def validate_python_syntax(file_path) -> bool:
+def validate_python_syntax(file_path: str) -> bool:
     """Check if Python file has valid syntax."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:

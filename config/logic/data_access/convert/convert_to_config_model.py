@@ -274,7 +274,7 @@ class ConfigModelConverter:
             return data[field_def.env_var]
         return None
     
-    def _handle_missing_value(self, field_name: str, field_def: Any, errors: List[str], warnings: List[str]) -> Any:
+    def _handle_missing_value(self, field_name: str, field_def: ConfigField, errors: List[str], warnings: List[str]) -> Any:
         """Handle missing field value."""
         if field_def.required:
             if self.config.mode == ConversionMode.STRICT:
@@ -290,7 +290,7 @@ class ConfigModelConverter:
             return field_def.default_value
         return None
     
-    def _convert_field_type(self, value: Any, field_name: str, field_def: Any, errors: List[str], warnings: List[str]) -> Any:
+    def _convert_field_type(self, value: Any, field_name: str, field_def: ConfigField, errors: List[str], warnings: List[str]) -> Any:
         """Convert field type with error handling."""
         if not self.config.convert_types:
             return value
@@ -304,7 +304,7 @@ class ConfigModelConverter:
                 warnings.append(f"Type conversion failed for {field_name}: {str(e)}")
             return field_def.default_value
     
-    def _validate_field_value(self, value: Any, field_name: str, field_def: Any, errors: List[str], warnings: List[str]) -> None:
+    def _validate_field_value(self, value: Any, field_name: str, field_def: ConfigField, errors: List[str], warnings: List[str]) -> None:
         """Validate field value."""
         if value is None or not field_def.validator:
             return

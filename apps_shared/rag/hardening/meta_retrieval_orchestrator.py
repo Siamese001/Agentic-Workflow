@@ -199,7 +199,7 @@ def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch: object) 
     assert captured["council"] is council
 
 
-def test_orchestrate_retrieval_isolates_bm25_failure(monkeypatch) -> None:
+def test_orchestrate_retrieval_isolates_bm25_failure(monkeypatch: object) -> None:
     """If BM25 fails, dense results should still be used."""
 
 #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
@@ -237,12 +237,12 @@ def test_orchestrate_retrieval_isolates_bm25_failure(monkeypatch) -> None:
     assert "dense-only" in texts
 
 
-def test_orchestrate_retrieval_handles_no_hits(monkeypatch) -> None:
+def test_orchestrate_retrieval_handles_no_hits(monkeypatch: object) -> None:
     """If all retrievers return no hits, orchestrator returns empty evidence."""
 
 #     import archives.legacy_resume_gen.Agentic-Workflow-10_8_core.tests.test_retrieval  # INVALID: Cannot import from path with hyphens
 
-    def _empty(*args, **kwargs: Dict[str, object]) -> List[Evidence]:  # type: ignore[override]
+    def _empty(*args: object, **kwargs: object) -> List[Evidence]:  # type: ignore[override]
         return []
 
     monkeypatch.setattr(m, "_run_bm25", _empty, raising=True)

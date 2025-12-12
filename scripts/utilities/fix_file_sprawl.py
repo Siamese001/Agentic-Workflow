@@ -110,7 +110,7 @@ def handle_invalid_layers() -> None:
             else:
                 shutil.move(str(old_path), str(new_path))
 
-def main():
+def main() -> None:
     """Main function to fix file sprawl."""
     root = Path('.')
     

@@ -108,8 +108,8 @@ class InternalSchemaConverter:
                 warnings.append(error_msg)
     
     def _extract_and_transform_value(self, mapping: FieldMapping,
-                                    external_data: Dict[str, Any],
-                                    errors: List[str], warnings: List[str]) -> Any:
+                                    external_data: Dict[str, object],
+                                    errors: List[str], warnings: List[str]) -> object:
         """Extract and transform value from external data."""
         external_value = self._extract_nested_value(external_data, mapping.external_path)
         
@@ -124,7 +124,7 @@ class InternalSchemaConverter:
         return external_value
     
     def _convert_with_error_handling(self, value: Any, mapping: FieldMapping,
-                                    errors: List[str], warnings: List[str]) -> Any:
+                                    errors: List[str], warnings: List[str]) -> object:
         """Convert type with error handling."""
         try:
             return self._convert_type(value, mapping.type_conversion)
@@ -286,7 +286,7 @@ class InternalSchemaConverter:
         
         return results
 
-    def _extract_nested_value(self, data: Dict[str, Any], path: str) -> Any:
+    def _extract_nested_value(self, data: Dict[str, Any], path: str) -> object:
         """Extract value from nested data structure."""
         keys = path.split(".")
         current = data
@@ -317,7 +317,7 @@ class InternalSchemaConverter:
         
         current[keys[-1]] = value
 
-    def _apply_transform(self, value: Any, transform_func: str) -> Any:
+    def _apply_transform(self, value: Any, transform_func: str) -> object:
         """Apply transformation function to value."""
         if transform_func in self._transform_functions:
             return self._transform_functions[transform_func](value)
@@ -325,7 +325,7 @@ class InternalSchemaConverter:
             self.logger.warning(f"Unknown transform function: {transform_func}")
             return value
 
-    def _convert_type(self, value: Any, target_type: str) -> Any:
+    def _convert_type(self, value: Any, target_type: str) -> object:
         """Convert value to target type."""
         if target_type in self._type_converters:
             return self._type_converters[target_type](value)
