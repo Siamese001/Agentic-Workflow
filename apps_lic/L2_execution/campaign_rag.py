@@ -871,7 +871,9 @@ class S2_SupervisorAgent:
         )
         
         # Phase 7: Archetype critique
-        corrected_profile_analysis = self._critique_archetype_classification(
+        # corrected_profile_analysis = self._critique_archetype_classification(
+        # TODO: Fix incomplete function call
+        corrected_profile_analysis = None  # Placeholder
         # Phase 8: Adversarial check
         adversarial_findings = await self._run_adversarial_check(context)
         context.adversarial_findings = adversarial_findings
