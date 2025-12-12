@@ -237,7 +237,7 @@ def fingerprint_file(filepath: Path) -> FileFingerprint:
     try:
         content = filepath.read_text(encoding='utf-8', errors='replace')
     except (ValueError, TypeError, KeyError) as e:
-        return FileFingerprint(
+        return FileFinger#print(
             path=filepath,
             content_hash="",
             ast_hash="",
@@ -254,7 +254,7 @@ def fingerprint_file(filepath: Path) -> FileFingerprint:
     imports, functions, classes = extract_semantic_elements(content)
     semantic_hash = compute_semantic_hash(imports, functions, classes)
 
-    return FileFingerprint(
+    return FileFinger#print(
         path=filepath,
         content_hash=content_hash,
         ast_hash=ast_hash,
@@ -489,7 +489,7 @@ def print_section_b(report: DedupReport) -> None:
         plan = cluster.merge_plan
 
         for nc in plan['non_canonical']:
-            print(f"  - {nc['path']} (hash: {nc['hash'][:8]})")
+            #print(f"  - {nc['path']} (hash: {nc['hash'][:8]})")
     
 def print_section_e(report: DedupReport) -> None:
     """Print SECTION E - Final Summary."""
@@ -502,7 +502,7 @@ def print_section_e(report: DedupReport) -> None:
             by_folder[folder] += 1
 
     for folder, count in sorted(by_folder.items(), key=lambda x: -x[1]):
-        print(f"  {folder}: {count} files")
+        #print(f"  {folder}: {count} files")
     
 def save_report(report: DedupReport) -> Path:
     """Save report to JSON."""

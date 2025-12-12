@@ -205,20 +205,20 @@ def print_summary(manifest: DedupManifest, dry_run: bool) -> None:
     """Print deduplication summary."""
 
     if manifest.errors:
-        print("Errors encountered:")
+        #print("Errors encountered:")
         for err in manifest.errors[:5]:
-            print(f"  - {err}")
+            #print(f"  - {err}")
         if len(manifest.errors) > 5:
-            print(f"  ... and {len(manifest.errors) - 5} more")
+            #print(f"  ... and {len(manifest.errors) - 5} more")
 
     if dry_run:
-        print("\n[DRY RUN] Would perform the following operations:")
-        print(f"  - Delete {len(manifest.deleted_files)} duplicate files")
-        print(f"  - Update {len(manifest.updated_imports)} import statements")
+        #print("\n[DRY RUN] Would perform the following operations:")
+        #print(f"  - Delete {len(manifest.deleted_files)} duplicate files")
+        #print(f"  - Update {len(manifest.updated_imports)} import statements")
     else:
-        print(f"\nCompleted deduplication:")
-        print(f"  - Deleted {len(manifest.deleted_files)} duplicate files")
-        print(f"  - Updated {len(manifest.updated_imports)} import statements")
+        #print(f"\nCompleted deduplication:")
+        #print(f"  - Deleted {len(manifest.deleted_files)} duplicate files")
+        #print(f"  - Updated {len(manifest.updated_imports)} import statements")
 
 if __name__ == "__main__":
     import sys
@@ -226,7 +226,7 @@ if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv or "-n" in sys.argv
 
     if dry_run:
-        print("Running in dry-run mode...")
+        #print("Running in dry-run mode...")
 
     manifest = execute_dedup(dry_run=dry_run)
     print_summary(manifest, dry_run)

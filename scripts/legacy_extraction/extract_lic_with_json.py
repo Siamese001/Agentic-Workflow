@@ -91,11 +91,11 @@ if __name__ == "__main__":
     extracted, unique_content, duplicates = analyze_and_extract()
 
     if extracted:
-        print(f"\nExtracted files ({len(extracted)}):")
+        #print(f"\nExtracted files ({len(extracted)}):")
         for f in sorted(extracted):
-            print(f"  - {f}")
+            #print(f"  - {f}")
     
     if unique_content:
-        print(f"\nUnique content files ({len(unique_content)}):")
+        #print(f"\nUnique content files ({len(unique_content)}):")
         for orig, new in sorted(unique_content):
-            print(f"  - {orig} -> {new}")
+            #print(f"  - {orig} -> {new}")
