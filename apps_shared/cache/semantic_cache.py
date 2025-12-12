@@ -43,21 +43,20 @@ class CacheEntry:
 class EnhancedSemanticCache:
     """Enhanced semantic cache with similarity-based retrieval."""
     
-    def __init__(self, 
-                 similarity_threshold: float = 0.85,
-                 max_size: int = 1000,
-                 default_ttl: int = 3600):
-        """Initialize semantic cache.
+    def __init__(self, max_size: int = 1000, ttl_seconds: int = 3600, similarity_threshold: float = 0.8):
+        """Initialize enhanced semantic cache.
         
         Args:
-            similarity_threshold: Minimum similarity for cache hit
             max_size: Maximum number of entries in cache
-            default_ttl: Default time-to-live in seconds
+            ttl_seconds: Time-to-live for cache entries in seconds
+            similarity_threshold: Minimum similarity threshold for matches
         """
-        self.similarity_threshold = similarity_threshold
-        self.max_size = max_size
-        self.default_ttl = default_ttl
         self.entries: Dict[str, CacheEntry] = {}
+        self.max_entries = max_size
+        self.max_size = max_size
+        self.ttl_seconds = ttl_seconds
+        self.default_ttl = ttl_seconds
+        self.similarity_threshold = similarity_threshold
         self.embedding_cache: Dict[str, List[float]] = {}
         
     def get(self, 
@@ -204,16 +203,102 @@ class EnhancedSemanticCache:
         
         return dot_product / (norm1 * norm2)
     
-    def _evict_oldest(self) -> None:
-        """Evict the oldest entry from cache."""
-        if not self.entries:
-            return
+    def generate_fingerprint(self, prompt: str, model: str, temperature: float = 0.7, system_prompt: Optional[str] = None) -> str:
+        """Generate fingerprint for cache lookup.
         
-        oldest_key = min(
-            self.entries.keys(),
-            key=lambda k: self.entries[k].timestamp
+        Args:
+            prompt: Prompt string
+            model: Model name
+            temperature: Temperature setting
+            system_prompt: Optional system prompt
+            
+        Returns:
+            Fingerprint string
+        """
+        # Strip whitespace from all string inputs
+        components = [
+            prompt.strip() if isinstance(prompt, str) else str(prompt),
+            model.strip() if isinstance(model, str) else str(model),
+            str(temperature)
+        ]
+        if system_prompt is not None:
+            components.append(system_prompt.strip() if isinstance(system_prompt, str) else str(system_prompt))
+        combined = "|".join(components)
+        return hashlib.sha256(combined.encode()).hexdigest()
+    
+    def lookup(self, fingerprint: str) -> Optional[Dict[str, Any]]:
+        """Lookup cache entries by fingerprint.
+        
+        Args:
+            fingerprint: Cache fingerprint
+            
+        Returns:
+            Cached data or None
+        """
+        if fingerprint in self.entries:
+            entry = self.entries[fingerprint]
+            if not entry.is_expired():
+                # Return a copy to prevent modification of cache
+                return dict(entry.content)
+            else:
+                # Remove expired entry
+                del self.entries[fingerprint]
+        return None
+    
+    def store(self, fingerprint: str, data: Dict[str, Any], ttl_hours: Optional[float] = None) -> None:
+        """Store content in cache.
+        
+        Args:
+            fingerprint: Cache fingerprint
+            data: Data to cache
+            ttl_hours: Optional TTL in hours
+        """
+        ttl_seconds = self.ttl_seconds
+        if ttl_hours is not None:
+            ttl_seconds = int(ttl_hours * 3600)
+        
+        entry = CacheEntry(
+            key=fingerprint,
+            content=data,
+            embedding=[],  # Not used for fingerprint-based cache
+            metadata={"stored_at": datetime.now().isoformat()},
+            timestamp=datetime.now(),
+            ttl_seconds=ttl_seconds
         )
-        del self.entries[oldest_key]
+        
+        self.entries[fingerprint] = entry
+    
+    def get_cache_stats(self) -> Dict[str, Any]:
+        """Get cache statistics.
+        
+        Returns:
+            Dictionary of cache stats
+        """
+        return {
+            "total_entries": len(self.entries),
+            "embedding_cache_size": len(self.embedding_cache),
+            "max_entries": self.max_entries,
+            "ttl_seconds": self.ttl_seconds
+        }
+    
+    def invalidate_by_pattern(self, pattern: str) -> int:
+        """Invalidate cache entries matching pattern.
+        
+        Args:
+            pattern: Pattern to match against cache keys
+            
+        Returns:
+            Number of entries invalidated
+        """
+        keys_to_remove = []
+        for key in self.entries:
+            if pattern in key:
+                keys_to_remove.append(key)
+        
+        for key in keys_to_remove:
+            del self.entries[key]
+        
+        return len(keys_to_remove)
 
 
 # Import math for cosine similarity
