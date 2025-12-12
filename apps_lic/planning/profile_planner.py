@@ -11,7 +11,7 @@ K1-K7 execution pipeline for profile-driven message generation.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import logging
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 
 logger = logging.getLogger(__name__)
 

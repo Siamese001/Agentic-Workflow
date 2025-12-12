@@ -7,7 +7,7 @@ Ported from: archives/legacy_lic/Agentic LIC/validator_rules_LIC.json
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Pattern
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 
 
 class ValidationSeverity(Enum):
@@ -258,7 +258,7 @@ class LICValidator:
 
     def check_filler_phrases(self, text: str) -> List[str]:
         """Check for weak filler phrases in text."""
-        import scripts.check_canonical_structure
+        import scripts.validation.check_canonical_structure
         found = []
         for pattern in FILLER_PATTERNS:
             if re.search(pattern, text):
@@ -267,7 +267,7 @@ class LICValidator:
 
     def check_implementations(self, text: str) -> List[str]:
         """Check for implementation patterns in text."""
-        import scripts.check_canonical_structure
+        import scripts.validation.check_canonical_structure
         found = []
         for pattern in implementation_PATTERNS:
             if re.search(pattern, text):

@@ -15,7 +15,7 @@ Analysis Methods:
 import ast
 import hashlib
 import json
-import scripts.check_canonical_structure
+import scripts.validation.check_canonical_structure
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Set, Tuple, Optional, object

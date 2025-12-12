@@ -3,7 +3,7 @@
 
 __version__ = "11.10"
 
-# import scripts.check_canonical_structure  # TODO: Replace with sovereign equivalent
+# import scripts.validation.check_canonical_structure  # TODO: Replace with sovereign equivalent
 from typing import Dict, List, Any, Tuple
 from apps_lic.core.data_models import (
     OutreachMission, GeneratedMessage, ValidationResult, 
@@ -115,7 +115,7 @@ class ConstraintFeasibilityChecker:
         # This function needs access to ConfigRegistry, but to avoid circular
         # imports, we'll use hardcoded fallbacks if the import fails.
         try:
-            from shared.config import CONFIG_REGISTRY
+            from shared.configuration.config import CONFIG_REGISTRY
             constraints = CONFIG_REGISTRY.get_route_constraints(route, archetype)
         except ImportError:
             constraints = {"word_target": 200, "word_range": (150, 250), "route": route}

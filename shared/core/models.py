@@ -17,8 +17,8 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 # Re-exports for backwards compatibility
-from shared.reasoning_config import ReasoningConfig
-from shared.workflow_types import CircuitState, GateDecision, HopCheckpoint, HopStatus
+from shared.configuration.reasoning_config import ReasoningConfig
+from shared.types.workflow_types import CircuitState, GateDecision, HopCheckpoint, HopStatus
 
 __all__ = [
     "ReasoningConfig",

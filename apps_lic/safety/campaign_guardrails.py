@@ -2,7 +2,7 @@
 
 import json
 import re
-# import scripts.check_canonical_structure  # TODO: Replace with sovereign equivalent
+# import scripts.validation.check_canonical_structure  # TODO: Replace with sovereign equivalent
 from typing import Any, Dict
 
 # from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field  # TODO: Replace with sovereign equivalent

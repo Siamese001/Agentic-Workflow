@@ -2,7 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 from tests.conftest import PROJECT_ROOT, CACHE_DIR, LOGS_DIR, DEFAULT_MAX_RETRIES
-from shared.reasoning_config import (
+from shared.configuration.reasoning_config import (
     SAFETY_THRESHOLD, 
     CONFIG, 
     C2,
@@ -62,7 +62,7 @@ class TestConfigSingleton:
         assert isinstance(CONFIG, Config)
 
     def test_config_singleton_identity(self):
-        from shared.reasoning_config import CONFIG
+        from shared.configuration.reasoning_config import CONFIG
         assert CONFIG is C2
 
 class TestModelConfig:
