@@ -393,7 +393,7 @@ class SchemaContextMatcher:
         """Extract field names from schema definition."""
         fields = []
         
-        def extract_recursive(obj, prefix=""):
+        def extract_recursive(obj: object, prefix: str = "") -> None:
             if isinstance(obj, dict):
                 if "properties" in obj:
                     for key in obj["properties"].keys():

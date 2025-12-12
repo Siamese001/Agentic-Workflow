@@ -246,7 +246,7 @@ class SchemaSimilarityRetriever:
         """Extract field names and their types from a schema."""
         fields = {}
         
-        def extract_recursive(obj, prefix=""):
+        def extract_recursive(obj: object, prefix: str = "") -> None:
             """Recursively extract fields from nested schema objects."""
             if isinstance(obj, dict):
                 # Handle JSON Schema format
