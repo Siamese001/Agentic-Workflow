@@ -107,6 +107,32 @@ def _process_pending_files(pending_files: List[Path], approved_hashes: Dict, app
     
     return duplicates, unique_files, name_matches
 
+def _print_file_preview(f: Path) -> None:
+    """Print preview of file content."""
+    print(f"\n  {f.relative_to(REVIEW_PENDING)}:")
+    try:
+        content = f.read_text(encoding='utf-8', errors='ignore')
+        lines = content.split('\n')
+        shown = 0
+        for line in lines:
+            if not line.strip():
+                continue
+            print(f"    {line}")
+            shown += 1
+            if shown >= 15:
+                print("    ...")
+                break
+    except (ValueError, TypeError, KeyError) as e:
+        print(f"    Error reading file: {e}")
+
+def _print_unique_file_analysis(unique_files: List[Path]) -> None:
+    """Print detailed analysis of unique files."""
+    if not unique_files:
+        return
+    print("\nDetailed analysis of first 10 unique files:")
+    for f in unique_files[:10]:
+        _print_file_preview(f)
+
 def main() -> None:
     """Main entry point for review pending audit."""
     # Build hash index of all approved files
@@ -148,26 +174,8 @@ def main() -> None:
 
     if len(unique_files) > 20:
         print("\nShowing first 20 unique files only")
-
-    # Detailed unique file analysis
-    if unique_files:
-        print("\nDetailed analysis of first 10 unique files:")
-        for f in unique_files[:10]:
-            print(f"\n  {f.relative_to(REVIEW_PENDING)}:")
-            try:
-                content = f.read_text(encoding='utf-8', errors='ignore')
-                lines = content.split('\n')
-                # Show first 15 non-empty lines
-                shown = 0
-                for line in lines:
-                    if line.strip():
-                        print(f"    {line}")
-                        shown += 1
-                        if shown >= 15:
-                            print("    ...")
-                            break
-            except (ValueError, TypeError, KeyError) as e:
-                print(f"    Error reading file: {e}")
+    
+    _print_unique_file_analysis(unique_files)
 
 if __name__ == '__main__':
     main()

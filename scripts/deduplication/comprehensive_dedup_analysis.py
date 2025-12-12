@@ -174,6 +174,23 @@ def _process_class_node(node: ast.AST) -> Optional[str]:
         return node.name
     return None
 
+def _extract_node_elements(node: ast.AST, imports: List[str], functions: List[str], classes: List[str]) -> None:
+    """Extract semantic elements from a single AST node."""
+    if isinstance(node, (ast.Import, ast.ImportFrom)):
+        imports.extend(_process_import_node(node))
+        return
+    
+    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        func_name = _process_function_node(node)
+        if func_name:
+            functions.append(func_name)
+        return
+    
+    if isinstance(node, ast.ClassDef):
+        class_name = _process_class_node(node)
+        if class_name:
+            classes.append(class_name)
+
 def extract_semantic_elements(content: str) -> Tuple[List[str], List[str], List[str]]:
     """Extract imports, function names, and class names from content."""
     imports = []
@@ -182,23 +199,10 @@ def extract_semantic_elements(content: str) -> Tuple[List[str], List[str], List[
 
     try:
         tree = ast.parse(content)
-
         for node in ast.walk(tree):
-            # Process imports
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
-                imports.extend(_process_import_node(node))
-            # Process functions
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                func_name = _process_function_node(node)
-                if func_name:
-                    functions.append(func_name)
-            # Process classes
-            elif isinstance(node, ast.ClassDef):
-                class_name = _process_class_node(node)
-                if class_name:
-                    classes.append(class_name)
+            _extract_node_elements(node, imports, functions, classes)
     except (ValueError, TypeError, KeyError):
-        ...
+        pass
 
     return sorted(imports), sorted(functions), sorted(classes)
 
