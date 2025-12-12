@@ -103,7 +103,7 @@ def compute_ast_hash(content: str) -> Tuple[str, Optional[str]]:
     """
     try:
         tree = ast.parse(content)
-                for node in ast.walk(tree):
+        for node in ast.walk(tree):
             # Clear line/column info
             for attr in ('lineno', 'col_offset', 'end_lineno', 'end_col_offset'):
                 if hasattr(node, attr):
@@ -121,7 +121,7 @@ def normalize_content(content: str) -> str:
     Normalize content by removing comments, docstrings, and normalizing whitespace.
     """
     try:
-                result = []
+        result = []
         tokens = tokenize.generate_tokens(io.StringIO(content).readline)
         prev_toktype = tokenize.INDENT
 
@@ -148,6 +148,32 @@ def compute_normalized_hash(content: str) -> str:
     normalized = normalize_content(content)
     return hashlib.sha256(normalized.encode()).hexdigest()
 
+def _process_import_node(node: ast.AST) -> List[str]:
+    """Process an import node and return import names."""
+    imports = []
+    if isinstance(node, ast.Import):
+        for alias in node.names:
+            imports.append(alias.name)
+    elif isinstance(node, ast.ImportFrom):
+        module = node.module or ""
+        for alias in node.names:
+            imports.append(f"{module}.{alias.name}")
+    return imports
+
+def _process_function_node(node: ast.AST) -> Optional[str]:
+    """Process a function node and return function name."""
+    if isinstance(node, ast.FunctionDef):
+        return node.name
+    elif isinstance(node, ast.AsyncFunctionDef):
+        return f"async_{node.name}"
+    return None
+
+def _process_class_node(node: ast.AST) -> Optional[str]:
+    """Process a class node and return class name."""
+    if isinstance(node, ast.ClassDef):
+        return node.name
+    return None
+
 def extract_semantic_elements(content: str) -> Tuple[List[str], List[str], List[str]]:
     """Extract imports, function names, and class names from content."""
     imports = []
@@ -158,19 +184,19 @@ def extract_semantic_elements(content: str) -> Tuple[List[str], List[str], List[
         tree = ast.parse(content)
 
         for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    imports.append(alias.name)
-            elif isinstance(node, ast.ImportFrom):
-                module = node.module or ""
-                for alias in node.names:
-                    imports.append(f"{module}.{alias.name}")
-            elif isinstance(node, ast.FunctionDef):
-                functions.append(node.name)
-            elif isinstance(node, ast.AsyncFunctionDef):
-                functions.append(f"async_{node.name}")
+            # Process imports
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                imports.extend(_process_import_node(node))
+            # Process functions
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                func_name = _process_function_node(node)
+                if func_name:
+                    functions.append(func_name)
+            # Process classes
             elif isinstance(node, ast.ClassDef):
-                classes.append(node.name)
+                class_name = _process_class_node(node)
+                if class_name:
+                    classes.append(class_name)
     except (ValueError, TypeError, KeyError):
         ...
 
@@ -183,10 +209,10 @@ def compute_semantic_hash(imports: List[str], functions: List[str], classes: Lis
 
 def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool:
     """Detect if file is a stub/placeholder."""
-        stub_indicators = [
+    stub_indicators = [
         "# AUTO-POPULATED",
-        "        "# PLACEHOLDER",
-        "pass  # Implementation pending
+        "# PLACEHOLDER",
+        "pass  # Implementation pending",
         "raise NotImplementedError",
         '"""Auto-generated',
         "LEVEL_3_placeholder",
@@ -348,40 +374,42 @@ def find_duplicate_clusters(fingerprints: List[FileFingerprint]) -> List[Duplica
 
     return clusters
 
+# Priority order for canonical selection
+FOLDER_PRIORITY = {
+    "runtime": 0,  # Runtime is canonical for shared code
+    "agentic_core": 1,
+    "observability": 2,
+    "schemas": 3,
+    "prompt_governance": 4,
+    "config": 5,
+    "scripts": 6,
+    "09_apps": 7,
+}
+
+def score_path(fp: FileFingerprint) -> Tuple[int, int, int, int]:
+    """Score a file path for dedup priority based on folder and type."""
+    path_str = str(fp.path)
+
+    # Folder priority
+    folder_score = 10
+    for folder, priority in FOLDER_PRIORITY.items():
+        if folder in path_str:
+            folder_score = priority
+            break
+
+    # Prefer non-stubs
+    stub_score = 1 if fp.is_stub else 0
+
+    # Prefer larger files (more complete)
+    size_score = -fp.size
+
+    # Prefer shorter paths (less nested)
+    path_score = len(path_str)
+
+    return (stub_score, folder_score, size_score, path_score)
+
 def select_canonical_path(cluster: DuplicateCluster) -> Path:
     """Select the canonical file from a cluster based on YAML-defined priorities."""
-    # Priority order for canonical selection
-    folder_priority = {
-        "runtime": 0,  # Runtime is canonical for shared code
-        "agentic_core": 1,
-        "observability": 2,
-        "schemas": 3,
-        "prompt_governance": 4,
-        "config": 5,
-        "scripts": 6,
-        "09_apps": 7,
-    }
-
-    def score_path(fp: FileFingerprint) -> Tuple[int, int, int, int]:
-        path_str = str(fp.path)
-
-        # Folder priority
-        folder_score = 10
-        for folder, priority in folder_priority.items():
-            if folder in path_str:
-                folder_score = priority
-                break
-
-        # Prefer non-stubs
-        stub_score = 1 if fp.is_stub else 0
-
-        # Prefer larger files (more complete)
-        size_score = -fp.size
-
-        # Prefer shorter paths (less nested)
-        path_score = len(path_str)
-
-        return (stub_score, folder_score, size_score, path_score)
 
     sorted_fps = sorted(cluster.fingerprints, key=score_path)
     return sorted_fps[0].path
@@ -457,7 +485,8 @@ def print_section_b(report: DedupReport):
         plan = cluster.merge_plan
 
         for nc in plan['non_canonical']:
-
+            print(f"  - {nc['path']} (hash: {nc['hash'][:8]})")
+    
 def print_section_e(report: DedupReport):
     """Print SECTION E - Final Summary."""
 
@@ -469,7 +498,8 @@ def print_section_e(report: DedupReport):
             by_folder[folder] += 1
 
     for folder, count in sorted(by_folder.items(), key=lambda x: -x[1]):
-
+        print(f"  {folder}: {count} files")
+    
 def save_report(report: DedupReport):
     """Save report to JSON."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

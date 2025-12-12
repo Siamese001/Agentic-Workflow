@@ -282,11 +282,11 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
     if not dry_run:
         for unassigned_path, _ in unassigned_folders:
             try:
-                                for dirpath in sorted(unassigned_path.rglob("*"), key=lambda p: len(str(p)), reverse=True):
+                for dirpath in sorted(unassigned_path.rglob("*"), key=lambda p: len(str(p)), reverse=True):
                     if dirpath.is_dir() and not any(dirpath.iterdir()):
                         dirpath.rmdir()
 
-                                if unassigned_path.exists() and not any(unassigned_path.iterdir()):
+                if unassigned_path.exists() and not any(unassigned_path.iterdir()):
                     unassigned_path.rmdir()
 
             except (ValueError, TypeError, KeyError) as e:
@@ -309,7 +309,7 @@ def execute_merge(dry_run: bool = False) -> MergeManifest:
 
     return manifest
 
-def print_summary(manifest: MergeManifest):
+def print_summary(manifest -> None: MergeManifest) -> None:
     """Print merge summary."""
 
     # Group by target root
@@ -319,10 +319,14 @@ def print_summary(manifest: MergeManifest):
         by_root[root] += 1
 
     for root, count in sorted(by_root.items()):
-
+        print(f"  {root}: {count} files")
+    
     if manifest.errors:
-
+        print("\nErrors:")
         for err in manifest.errors[:5]:
+            print(f"  - {err}")
+        if len(manifest.errors) > 5:
+            print(f"  ... and {len(manifest.errors) - 5} more")
 
 if __name__ == "__main__":
     import sys
@@ -330,8 +334,10 @@ if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv or "-n" in sys.argv
 
     if dry_run:
+        print("Running in dry-run mode...")
 
     manifest = execute_merge(dry_run=dry_run)
     print_summary(manifest)
 
     if not dry_run and manifest.routed_files == manifest.total_files and not manifest.errors:
+        print("\n✓ All files successfully routed!")

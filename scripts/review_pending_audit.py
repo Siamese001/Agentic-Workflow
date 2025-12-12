@@ -46,9 +46,8 @@ def get_file_signature(path: Path) -> tuple:
     except (ValueError, TypeError, KeyError):
         return ("", 0, "")
 
-def main():
-    # Build hash index of all approved files
-
+def _build_approved_indexes() -> Tuple[Dict[str, List[Path]], Dict[str, List[Path]]]:
+    """Build hash and name indexes of all approved files."""
     approved_hashes = {}  # hash -> list of paths
     approved_names = {}   # filename -> list of paths
 
@@ -63,52 +62,98 @@ def main():
             if h:
                 approved_hashes.setdefault(h, []).append(f)
             approved_names.setdefault(f.name, []).append(f)
+    
+    return approved_hashes, approved_names
 
-    # Scan review_pending
+def _analyze_pending_file(f: Path, approved_hashes: Dict[str, List[Path]], approved_names: Dict[str, List[Path]]) -> Dict[str, Any]:
+    """Analyze a single pending file for duplicates."""
+    result = {
+        "file": f,
+        "hash_duplicate": False,
+        "name_duplicate": False,
+        "approved_matches": []
+    }
+    
+    h = get_file_hash(f)
+    if h and h in approved_hashes:
+        result["hash_duplicate"] = True
+        result["approved_matches"] = approved_hashes[h]
+    
+    if f.name in approved_names:
+        result["name_duplicate"] = True
+        if not result["approved_matches"]:
+            result["approved_matches"] = approved_names[f.name]
+    
+    return result
 
-    pending_files = list(REVIEW_PENDING.rglob('*.py'))
-
+def _process_pending_files(pending_files: List[Path], approved_hashes: Dict, approved_names: Dict) -> Tuple[List, List, List]:
+    """Process pending files and categorize them."""
     duplicates = []
     unique_files = []
     name_matches = []
-
+    
     for f in pending_files:
         if '__pycache__' in str(f):
             continue
-
-        h = get_file_hash(f)
-
-        if h in approved_hashes:
-            duplicates.append((f, approved_hashes[h][0]))
-        elif f.name in approved_names:
-            name_matches.append((f, approved_names[f.name]))
+        
+        analysis = _analyze_pending_file(f, approved_hashes, approved_names)
+        
+        if analysis["hash_duplicate"]:
+            duplicates.append((f, analysis["approved_matches"][0]))
+        elif analysis["name_duplicate"]:
+            name_matches.append((f, analysis["approved_matches"]))
         else:
             unique_files.append(f)
+    
+    return duplicates, unique_files, name_matches
+
+def main() -> None:
+    """Main entry point for review pending audit."""
+    # Build hash index of all approved files
+    approved_hashes, approved_names = _build_approved_indexes()
+
+    # Scan review_pending
+    pending_files = list(REVIEW_PENDING.rglob('*.py'))
+    
+    # Process and categorize files
+    duplicates, unique_files, name_matches = _process_pending_files(
+        pending_files, approved_hashes, approved_names
+    )
 
     # Report
-
+    print(f"\nFound {len(duplicates)} exact duplicates:")
     for pending, approved in duplicates[:10]:
-
+        print(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved.relative_to(REPO_ROOT)}")
     if len(duplicates) > 10:
-
+        print(f"  ... and {len(duplicates) - 10} more")
+    
+    print(f"\nFound {len(name_matches)} name matches:")
     for pending, approved_list in name_matches[:10]:
         size_pending = pending.stat().st_size
         size_approved = approved_list[0].stat().st_size
         status = "SAME SIZE" if size_pending == size_approved else f"DIFF ({size_pending} vs {size_approved})"
-
+        print(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved_list[0].relative_to(REPO_ROOT)} ({status})")
+    
     if len(name_matches) > 10:
-
+        print(f"  ... and {len(name_matches) - 10} more")
+    
+    print(f"\nFound {len(unique_files)} unique files:")
     for f in unique_files[:20]:
         rel = f.relative_to(REVIEW_PENDING)
         size = f.stat().st_size
+        print(f"  {rel} ({size} bytes)")
+    
+    if len(unique_files) > 20:
+        print(f"  ... and {len(unique_files) - 20} more")
 
     if len(unique_files) > 20:
+        print("\nShowing first 20 unique files only")
 
     # Detailed unique file analysis
     if unique_files:
-
+        print("\nDetailed analysis of first 10 unique files:")
         for f in unique_files[:10]:
-
+            print(f"\n  {f.relative_to(REVIEW_PENDING)}:")
             try:
                 content = f.read_text(encoding='utf-8', errors='ignore')
                 lines = content.split('\n')
@@ -116,11 +161,13 @@ def main():
                 shown = 0
                 for line in lines:
                     if line.strip():
-
+                        print(f"    {line}")
                         shown += 1
                         if shown >= 15:
+                            print("    ...")
                             break
             except (ValueError, TypeError, KeyError) as e:
+                print(f"    Error reading file: {e}")
 
 if __name__ == '__main__':
     main()

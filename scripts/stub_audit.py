@@ -41,8 +41,8 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
         if len(content) < 20:
             if content in ['pass', '...']:
                 return True, "minimal_stub"
-
-                for pattern in STUB_PATTERNS:
+    
+        for pattern in STUB_PATTERNS:
             if re.search(pattern, content, re.MULTILINE | re.IGNORECASE):
                 if 'NotImplementedError' in content:
                     return True, "not_implemented"
@@ -125,7 +125,7 @@ def audit_stubs() -> Dict:
         f"CRITICAL: {report['summary']['stub_files']} stub files ({stub_pct:.1f}%) need implementation or removal"
     )
 
-        for folder, stats in report["by_folder"].items():
+    for folder, stats in report["by_folder"].items():
         total = stats["stubs"] + stats["real"]
         if total > 0 and stats["stubs"] / total > 0.5:
             report["recommendations"].append(
@@ -140,21 +140,28 @@ def print_report(report: Dict) -> None:
     stub_pct = (report['summary']['stub_files'] / report['summary']['total_py_files'] * 100) if report['summary']['total_py_files'] > 0 else 0
 
     for reason, files in sorted(report["by_reason"].items(), key=lambda x: -len(x[1])):
+        print(f"\n    {reason}: {len(files)} files")
 
     for folder, stats in sorted(report["by_folder"].items(), key=lambda x: -x[1]["stubs"]):
         total = stats["stubs"] + stats["real"]
         if stats["stubs"] > 0:
             pct = stats["stubs"] / total * 100 if total > 0 else 0
+            print(f"\n    {folder}: {stats['stubs']}/{total} stubs ({pct:.1f}%)")
 
-    print("\n    for stub in report["stubs"][:20]:
-
+    print("\n    Stubs found:")
+    for stub in report["stubs"][:20]:
+        print(f"      - {stub}")
+    
     if len(report["stubs"]) > 20:
-
+        print(f"      ... and {len(report['stubs']) - 20} more")
+    
     if report["recommendations"]:
-
+        print("\n    Recommendations:")
         for i, rec in enumerate(report["recommendations"][:10], 1):
+            print(f"      {i}. {rec}")
 
-def main():
+def main() -> None:
+    """Main entry point for stub audit."""
     report = audit_stubs()
     print_report(report)
 

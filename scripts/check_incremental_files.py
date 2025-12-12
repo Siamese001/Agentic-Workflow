@@ -97,14 +97,17 @@ for archive_file in ARCHIVE_SOURCE_LIST:
 # --- Reporting ---
 
 if net_incremental_files:
-
+    print(f"\nFound {len(net_incremental_files)} net incremental files:")
     for filename in net_incremental_files:
-
+        print(f"  - {filename}")
+    
 else:
+    print("No net incremental files found")
 
 if duplicates_found:
-
+    print("\nDuplicate files found:")
     for filename in duplicates_found:
+        print(f"  - {filename}")
 
 # Exit cleanly
 sys.exit(0)

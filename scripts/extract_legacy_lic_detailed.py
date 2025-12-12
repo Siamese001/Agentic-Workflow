@@ -90,13 +90,14 @@ if __name__ == "__main__":
     all_files, net_incremental, duplicates = analyze_legacy_files()
 
     if net_incremental:
-
+        print(f"\nNet incremental files ({len(net_incremental)}):")
         for f in sorted(net_incremental):
-
+            print(f"  - {f}")
         extracted = extract_net_incremental()
 
     else:
-
+        print("\nNo net incremental files to extract")
         if duplicates:
-
+            print(f"\nDuplicate files ({len(set(duplicates))}):")
             for f in sorted(set(duplicates)):
+                print(f"  - {f}")

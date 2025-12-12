@@ -59,5 +59,7 @@ for sdir in sovereign_dirs:
             fixed_count += 1
 
         except SyntaxError:
-
+            pass
+        
         except (ValueError, TypeError, RuntimeError, OSError) as e:
+            print(f"Error processing {file_path}: {e}")

@@ -75,6 +75,7 @@ class PIISanitizerAgent(BaseAgent):
 
     @track_metrics("run_pii_sanitizer")
     def run(self, resume: Dict[str, object]) -> Dict[str, object]:
+        """Run PII sanitizer on the resume data."""
         self.log_info("Sanitizing PII (local regex processing)...")
         sanitized_resume = json.loads(json.dumps(resume))
 
@@ -101,6 +102,7 @@ class BiasDetectorAgent(BaseAgent):
 
     @track_metrics("run_bias_detector")
     def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
+        """Run bias detection on the provided text."""
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         result = detect_bias(self.context, text, workflow_id)
 
@@ -124,6 +126,7 @@ class PromptInjectionDetectorAgent(BaseAgent):
 
     @track_metrics("run_pi_detector")
     async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, object]:
+        """Run async prompt injection detection on user input."""
         self.log_info("Detecting prompt injection...")
 
         if not self.config.agent_stacks.enable_prompt_injection_detection:
@@ -179,6 +182,7 @@ class ConstitutionalReviewerAgent(BaseAgent):
         final_draft: str,
         workflow_id: str,
     ) -> ConstitutionalReviewResult:
+        """Run async constitutional review of the final draft."""
         self.log_info("Running final constitutional review...")
 
         if not self.config.agent_stacks.enable_constitutional_review:

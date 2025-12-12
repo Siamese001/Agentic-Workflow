@@ -108,6 +108,7 @@ def select_canonical(files: List[Path]) -> Tuple[Path, List[Path]]:
     3. Prefer shorter paths
     """
     def score_file(f: Path) -> Tuple[int, int, int]:
+        """Score a file for dedup priority based on folder, size, and path."""
         # Lower score = higher priority
         folder_priority = {
             "observability": 0,
@@ -204,12 +205,20 @@ def print_summary(manifest: DedupManifest, dry_run: bool):
     """Print deduplication summary."""
 
     if manifest.errors:
-
+        print("Errors encountered:")
         for err in manifest.errors[:5]:
+            print(f"  - {err}")
+        if len(manifest.errors) > 5:
+            print(f"  ... and {len(manifest.errors) - 5} more")
 
     if dry_run:
-
+        print("\n[DRY RUN] Would perform the following operations:")
+        print(f"  - Delete {len(manifest.deleted_files)} duplicate files")
+        print(f"  - Update {len(manifest.updated_imports)} import statements")
     else:
+        print(f"\nCompleted deduplication:")
+        print(f"  - Deleted {len(manifest.deleted_files)} duplicate files")
+        print(f"  - Updated {len(manifest.updated_imports)} import statements")
 
 if __name__ == "__main__":
     import sys
@@ -217,6 +226,7 @@ if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv or "-n" in sys.argv
 
     if dry_run:
+        print("Running in dry-run mode...")
 
     manifest = execute_dedup(dry_run=dry_run)
     print_summary(manifest, dry_run)
