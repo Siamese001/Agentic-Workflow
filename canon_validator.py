@@ -1418,25 +1418,49 @@ def check_key_27_no_empty_sov_files() -> None:
 def check_key_28_subatomic_file_size_law() -> None:
     """Key 28 – Sovereign file size bounds (MIN bytes, MAX bytes)."""
     violations: List[str] = []
-    for f in iter_sovereign_py_files():
+    
+    for fd in iter_sovereign_file_data():
         # __init__.py files are exempt (can be small namespace markers)
-        if f.name.endswith("__init__.py"):
+        if fd.path.name.endswith("__init__.py"):
             continue
         # Exempt auto-generated files from size limits
-        if is_generated_file(f):
+        if fd.is_generated:
             continue
-        # Exempt stub files (contain minimal implementation patterns)
-        text = read_file(f)
-        if 'return {"status":' in text or "atomic execution layer" in text:
+        
+        # Check MAX size limit (STRICT - always enforced)
+        if fd.size > MAX_SOVEREIGN_BYTES:
+            violations.append(f"{fd.rel_path} – {fd.size} B > {MAX_SOVEREIGN_BYTES} B")
             continue
-        size = len(text.encode("utf-8"))
-        if size < MIN_SOVEREIGN_BYTES or size > MAX_SOVEREIGN_BYTES:
-            issues = []
-            if size < MIN_SOVEREIGN_BYTES:
-                issues.append(f"{size} B < {MIN_SOVEREIGN_BYTES} B")
-            if size > MAX_SOVEREIGN_BYTES:
-                issues.append(f"{size} B > {MAX_SOVEREIGN_BYTES} B")
-            violations.append(f"{f.relative_to(ROOT)} – {', '.join(issues)}")
+        
+        # Check MIN size limit with AST-based exemption logic
+        if fd.size < MIN_SOVEREIGN_BYTES:
+            # Exempt files that are definition-only (no executable logic)
+            has_executable_logic = False
+            
+            if fd.tree:
+                # Check for complex executable statements
+                for node in ast.walk(fd.tree):
+                    # Look for statements that indicate real logic (not just definitions)
+                    if isinstance(node, (ast.If, ast.For, ast.While, ast.Try, 
+                                        ast.With, ast.Match, ast.Raise)):
+                        has_executable_logic = True
+                        break
+                    # Check for assignments that aren't simple type annotations
+                    if isinstance(node, ast.Assign):
+                        # Allow simple constant assignments at module level
+                        if not (isinstance(node.value, (ast.Constant, ast.Name, ast.List, ast.Dict, ast.Tuple))):
+                            has_executable_logic = True
+                            break
+                    # Check for function calls outside of function definitions
+                    if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
+                        has_executable_logic = True
+                        break
+            
+            # Only flag as violation if file has executable logic AND is too small
+            if has_executable_logic:
+                violations.append(f"{fd.rel_path} – {fd.size} B < {MIN_SOVEREIGN_BYTES} B")
+            # Files with only definitions (classes, functions, imports) are exempt
+    
     if violations:
         fail(
             "28",
