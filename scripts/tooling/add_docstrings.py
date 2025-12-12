@@ -63,3 +63,4 @@ for sdir in sovereign_dirs:
         
         except (ValueError, TypeError, RuntimeError, OSError) as e:
             #print(f"Error processing {file_path}: {e}")
+            pass

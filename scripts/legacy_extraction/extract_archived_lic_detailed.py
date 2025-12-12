@@ -93,6 +93,7 @@ if __name__ == "__main__":
         #print(f"\nNet incremental files ({len(net_incremental)}):")
         for f in sorted(net_incremental):
             #print(f"  - {f}")
+            pass
         extracted = extract_net_incremental()
 
     else:

@@ -104,6 +104,7 @@ if __name__ == "__main__":
         #print(f"\nExtracted files ({len(extracted)}):")
         for f in sorted(extracted):
             #print(f"  - {f}")
+            pass
     
     if unique_content:
         #print(f"\nUnique content files ({len(unique_content)}):")
