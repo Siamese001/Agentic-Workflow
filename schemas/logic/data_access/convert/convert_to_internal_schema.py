@@ -80,21 +80,97 @@ class InternalSchemaConverter:
         self._type_converters = self._initialize_type_converters()
         self._transform_functions = self._initialize_transform_functions()
 
+    def _validate_external_schema(self, external_data: Dict[str, Any],
+                                 external_schema: Optional[Dict[str, Any]],
+                                 errors: List[str], warnings: List[str]) -> None:
+        """Validate external data against schema."""
+        if not external_schema or not self.config.validate_types:
+            return
+        
+        validation_errors = self._validate_external_data(external_data, external_schema)
+        if validation_errors and self.config.strategy == ConversionStrategy.STRICT:
+            errors.extend(validation_errors)
+        else:
+            warnings.extend(validation_errors)
+    
+    def _process_field_mapping(self, mapping: FieldMapping, external_data: Dict[str, Any],
+                              converted_data: Dict[str, Any], errors: List[str],
+                              warnings: List[str]) -> None:
+        """Process a single field mapping."""
+        try:
+            external_value = self._extract_and_transform_value(mapping, external_data, errors, warnings)
+            self._set_converted_value(mapping, external_value, converted_data, errors, warnings)
+        except Exception as e:
+            error_msg = f"Failed to map field {mapping.external_path}: {str(e)}"
+            if mapping.required:
+                errors.append(error_msg)
+            else:
+                warnings.append(error_msg)
+    
+    def _extract_and_transform_value(self, mapping: FieldMapping,
+                                    external_data: Dict[str, Any],
+                                    errors: List[str], warnings: List[str]) -> Any:
+        """Extract and transform value from external data."""
+        external_value = self._extract_nested_value(external_data, mapping.external_path)
+        
+        if mapping.transform_func and self.config.apply_transforms:
+            external_value = self._apply_transform(external_value, mapping.transform_func)
+        
+        if mapping.type_conversion:
+            external_value = self._convert_with_error_handling(
+                external_value, mapping, errors, warnings
+            )
+        
+        return external_value
+    
+    def _convert_with_error_handling(self, value: Any, mapping: FieldMapping,
+                                    errors: List[str], warnings: List[str]) -> Any:
+        """Convert type with error handling."""
+        try:
+            return self._convert_type(value, mapping.type_conversion)
+        except Exception as e:
+            error_msg = f"Type conversion failed for {mapping.external_path}: {str(e)}"
+            if self.config.strategy == ConversionStrategy.STRICT:
+                errors.append(error_msg)
+            else:
+                warnings.append(error_msg)
+            return mapping.default_value
+    
+    def _set_converted_value(self, mapping: FieldMapping, external_value: Any,
+                           converted_data: Dict[str, Any], errors: List[str],
+                           warnings: List[str]) -> None:
+        """Set converted value in internal data."""
+        if external_value is not None:
+            self._set_nested_value(converted_data, mapping.internal_path, external_value)
+        elif mapping.required:
+            self._handle_missing_required_field(mapping, converted_data, errors, warnings)
+    
+    def _handle_missing_required_field(self, mapping: FieldMapping,
+                                      converted_data: Dict[str, Any],
+                                      errors: List[str], warnings: List[str]) -> None:
+        """Handle missing required field."""
+        if mapping.default_value is not None:
+            self._set_nested_value(converted_data, mapping.internal_path, mapping.default_value)
+            warnings.append(f"Using default for required field: {mapping.internal_path}")
+        else:
+            errors.append(f"Missing required field: {mapping.internal_path}")
+    
+    def _finalize_conversion(self, converted_data: Dict[str, Any],
+                           internal_schema: InternalSchema,
+                           errors: List[str]) -> None:
+        """Finalize conversion with validation and cleanup."""
+        if not self.config.preserve_unknown:
+            self._remove_unknown_fields(converted_data, internal_schema)
+        
+        if self.config.validate_types:
+            validation_errors = self._validate_internal_data(converted_data, internal_schema)
+            errors.extend(validation_errors)
+    
     def convert_to_internal(self, external_data: Dict[str, Any],
                            internal_schema: InternalSchema,
                            field_mappings: List[FieldMapping],
                            external_schema: Optional[Dict[str, Any]] = None) -> ConversionResult:
-        """Convert external data to internal schema format.
-        
-        Args:
-            external_data: External data to convert
-            external_schema: Optional external schema definition
-            internal_schema: Target internal schema
-            field_mappings: List of field mappings
-            
-        Returns:
-            ConversionResult: Conversion result with internal format data
-        """
+        """Convert external data to internal schema format."""
         self.logger.info(f"Converting to internal schema: {internal_schema.name}")
         
         try:
@@ -102,81 +178,12 @@ class InternalSchemaConverter:
             errors = []
             warnings = []
             
-            # Validate external data if schema provided
-            if external_schema and self.config.validate_types:
-                validation_errors = self._validate_external_data(external_data, external_schema)
-                if validation_errors and self.config.strategy == ConversionStrategy.STRICT:
-                    errors.extend(validation_errors)
-                else:
-                    warnings.extend(validation_errors)
+            self._validate_external_schema(external_data, external_schema, errors, warnings)
             
-            # Apply field mappings
             for mapping in field_mappings:
-                try:
-                    # Extract value from external data
-                    external_value = self._extract_nested_value(
-                        external_data, 
-                        mapping.external_path
-                    )
-                    
-                    # Apply transformation if specified
-                    if mapping.transform_func and self.config.apply_transforms:
-                        external_value = self._apply_transform(
-                            external_value, 
-                            mapping.transform_func
-                        )
-                    
-                    # Convert type if specified
-                    if mapping.type_conversion:
-                        try:
-                            external_value = self._convert_type(
-                                external_value, 
-                                mapping.type_conversion
-                            )
-                        except Exception as e:
-                            error_msg = f"Type conversion failed for {mapping.external_path}: {str(e)}"
-                            if self.config.strategy == ConversionStrategy.STRICT:
-                                errors.append(error_msg)
-                            else:
-                                warnings.append(error_msg)
-                                external_value = mapping.default_value
-                    
-                    # Set value in internal data
-                    if external_value is not None:
-                        self._set_nested_value(
-                            converted_data, 
-                            mapping.internal_path, 
-                            external_value
-                        )
-                    elif mapping.required:
-                        if mapping.default_value is not None:
-                            self._set_nested_value(
-                                converted_data, 
-                                mapping.internal_path, 
-                                mapping.default_value
-                            )
-                            warnings.append(f"Using default for required field: {mapping.internal_path}")
-                        else:
-                            errors.append(f"Missing required field: {mapping.internal_path}")
-                
-                except Exception as e:
-                    error_msg = f"Failed to map field {mapping.external_path}: {str(e)}"
-                    if mapping.required:
-                        errors.append(error_msg)
-                    else:
-                        warnings.append(error_msg)
+                self._process_field_mapping(mapping, external_data, converted_data, errors, warnings)
             
-            # Handle unknown fields
-            if not self.config.preserve_unknown:
-                self._remove_unknown_fields(converted_data, internal_schema)
-            
-            # Validate internal format
-            if self.config.validate_types:
-                validation_errors = self._validate_internal_data(
-                    converted_data, 
-                    internal_schema
-                )
-                errors.extend(validation_errors)
+            self._finalize_conversion(converted_data, internal_schema, errors)
             
             result = ConversionResult(
                 internal_schema=internal_schema,
@@ -192,9 +199,7 @@ class InternalSchemaConverter:
                 }
             )
             
-            self.logger.info(
-                f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings"
-            )
+            self.logger.info(f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings")
             return result
             
         except Exception as e:
