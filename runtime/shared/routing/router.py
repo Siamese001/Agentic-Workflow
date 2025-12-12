@@ -167,7 +167,7 @@ class HardenedRouter:
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         **kwargs,
-    ) -> str:
+    ) -> AgentResponse:
         """Execute request with automatic provider fallback.
         
         Implements the "waterfall" logic:
@@ -186,7 +186,7 @@ class HardenedRouter:
             **kwargs: Additional arguments passed to executor
             
         Returns:
-            Generated text response
+            AgentResponse with generated content and metadata
             
         Raises:
             AllProvidersDownError: If all providers are unavailable
@@ -279,7 +279,7 @@ class HardenedRouter:
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         **kwargs,
-    ) -> str:
+    ) -> AgentResponse:
         """Execute request on a specific provider.
         
         Args:
@@ -293,7 +293,7 @@ class HardenedRouter:
             **kwargs: Additional arguments
             
         Returns:
-            Generated text response
+            AgentResponse with generated content and metadata
         """
         executor = self.executors.get(provider)
         if not executor:
