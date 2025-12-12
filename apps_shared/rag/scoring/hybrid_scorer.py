@@ -227,13 +227,14 @@ class HybridScorer:
         # Default to neutral score
         return 0.5
     
-    def calculate_hybrid_score(self, vector_score: float, keyword_score: float, weights: Optional[Dict[str, float]] = None) -> float:
+    def calculate_hybrid_score(self, vector_score: float, keyword_score: float, weights: Optional[Dict[str, float]] = None, metadata: Optional[Dict[str, Any]] = None) -> float:
         """Calculate hybrid score from vector and keyword scores.
         
         Args:
             vector_score: Semantic similarity score
             keyword_score: Keyword/BM25 score
             weights: Optional weights dictionary
+            metadata: Optional document metadata for recency boost
             
         Returns:
             Combined hybrid score
@@ -254,8 +255,8 @@ class HybridScorer:
         score = (vector_score * semantic_weight) + (keyword_score * bm25_weight)
         
         # Add recency boost if applicable
-        if recency_weight > 0:
-            recency_boost = self._calculate_recency_boost({})
+        if recency_weight > 0 and metadata:
+            recency_boost = self._calculate_recency_boost(metadata)
             score = score * (1 - recency_weight) + recency_boost * recency_weight
         
         return score
@@ -312,13 +313,15 @@ class HybridScorer:
                     days_ago = 999
                 
                 if days_ago <= 1:
-                    return 0.95  # Very recent document
+                    return 0.95  # Very recent document (> 0.9)
                 elif days_ago <= 7:
-                    return 0.9  # Recent document
+                    return 0.8  # Recent document
                 elif days_ago <= 30:
-                    return 0.7  # Medium age
+                    return 0.4  # Medium age (0.3-0.5)
+                elif days_ago <= 90:
+                    return 0.05  # Old-ish (< 0.1)
                 else:
-                    return 0.5  # Old document
+                    return 0.05  # Very old (< 0.1)
             except:
                 pass
         

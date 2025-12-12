@@ -12,7 +12,7 @@ from typing import Dict, Optional, Any
 from shared.result_types import ExecutionResult
 from .job_analyzer import JobAnalyzer
 from .resume_generator import ResumeGenerator
-from ..state.workflow_loader import WorkflowLoader, create_workflow_loader
+from ..L3_orchestration.state.workflow_loader import WorkflowLoader, create_workflow_loader
 
 logger = logging.getLogger(__name__)
 
@@ -47,21 +47,27 @@ class ExecuteResumeGeneration:
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
+        from shared.result_types import ResultStatus, Result
+        
         start = time.time()
         try:
             output = self._perform_action(action, params)
             duration_ms = (time.time() - start) * 1000
             return ExecutionResult(
-                success=True,
-                output=output,
-                details={"duration_ms": duration_ms}
+                status=ResultStatus.SUCCESS,
+                data=output,
+                metadata={"duration_ms": duration_ms},
+                step_results=[Result(status=ResultStatus.SUCCESS)],
+                total_steps=1
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             duration_ms = (time.time() - start) * 1000
             return ExecutionResult(
-                success=False,
+                status=ResultStatus.FAILURE,
                 error=str(e),
-                details={"duration_ms": duration_ms}
+                metadata={"duration_ms": duration_ms},
+                step_results=[Result(status=ResultStatus.FAILURE, error=str(e))],
+                total_steps=1
             )
 
     def _perform_action(self, action: str, params: Dict[str, object]) -> object:
