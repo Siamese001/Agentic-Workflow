@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase, GoldenCase
 
@@ -11,7 +11,7 @@ _BASE_DIR = Path(__file__).resolve().parent
 _BASELINES_DIR = _BASE_DIR / "baselines"
 
 
-def _load_json(name: str) -> Any:
+def _load_json(name: str) -> Dict[str, object]:
     path = _BASELINES_DIR / name
     if not path.exists():
         return None
