@@ -42,3 +42,15 @@ class ArchetypeTemplate:
     avoid: str
     creative_brief: CreativeBrief
 
+@dataclass
+class SignatureTemplate:
+    """Template for message signature."""
+    template: str
+    use_for: List[str]
+    line_count: int
+
+@dataclass
+class GreetingTemplate:
+    """Template for message greeting."""
+    template: str
+    note: str
