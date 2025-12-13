@@ -19,6 +19,114 @@ from .reflection_engine import MutationRequest
 logger = logging.getLogger(__name__)
 
 
+class GraphTransaction:
+    """Context manager for atomic graph mutations.
+    
+    Implements copy-on-write semantics to ensure the graph is never
+    left in a corrupted state if a mutation fails partway through.
+    """
+    
+    def __init__(self, manager):
+        """Initialize the transaction.
+        
+        Args:
+            manager: The DynamicDAGManager instance
+        """
+        self.manager = manager
+        self.original_graph = None
+        self.transaction_graph = None
+        
+    def __enter__(self):
+        """Enter transaction - create a copy of the graph.
+        
+        Returns:
+            The transaction graph (copy of original)
+        """
+        # Deep copy the graph state
+        self.original_graph = self.manager.graph
+        self.transaction_graph = self.manager.graph.copy()
+        
+        # Temporarily switch manager to use transaction graph
+        self.manager._transaction_graph = self.transaction_graph
+        
+        logger.debug("Entered graph transaction")
+        return self.transaction_graph
+        
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Exit transaction - commit or rollback.
+        
+        Args:
+            exc_type: Exception type if an error occurred
+            exc_val: Exception value if an error occurred
+            exc_tb: Exception traceback if an error occurred
+            
+        Returns:
+            False to propagate exceptions, True to suppress
+        """
+        # Clean up transaction reference
+        self.manager._transaction_graph = None
+        
+        if exc_type is not None:
+            # ROLLBACK: Restore original state
+            self.manager.graph = self.original_graph
+            logger.error(f"DAG Mutation failed. Rolled back state. Error: {exc_val}")
+            return False  # Propagate error
+            
+        # COMMIT: Validate and apply changes
+        try:
+            # Validate the transaction graph
+            self._validate_transaction_graph()
+            
+            # Apply transaction graph as the new graph
+            self.manager.graph = self.transaction_graph
+            logger.debug("DAG Transaction committed successfully")
+            
+        except Exception as e:
+            # Validation failed - rollback
+            self.manager.graph = self.original_graph
+            logger.error(f"DAG Transaction validation failed. Rolled back. Error: {e}")
+            return False  # Propagate error
+            
+        return True
+        
+    def _validate_transaction_graph(self):
+        """Validate that the transaction graph is still a valid DAG.
+        
+        Raises:
+            ValueError: If validation fails
+        """
+        # Check for cycles
+        if not nx.is_directed_acyclic_graph(self.transaction_graph):
+            raise ValueError("Transaction would create a cycle")
+            
+        # Check for disconnected components (optional)
+        if not nx.is_weakly_connected(self.transaction_graph):
+            logger.warning("Transaction created disconnected components")
+            
+        # Validate all nodes have required attributes
+        for node in self.transaction_graph.nodes():
+            if 'hop_spec' not in self.transaction_graph.nodes[node]:
+                raise ValueError(f"Node {node} missing hop_spec attribute")
+                
+        # Validate depth ordering
+        self._validate_depth_ordering()
+        
+    def _validate_depth_ordering(self):
+        """Validate that depth values are consistent with graph structure."""
+        depths = nx.get_node_attributes(self.transaction_graph, 'depth')
+        
+        for edge in self.transaction_graph.edges():
+            source, target = edge
+            source_depth = depths.get(source, 0)
+            target_depth = depths.get(target, 0)
+            
+            # Source should have lower depth than target
+            if source_depth >= target_depth:
+                raise ValueError(
+                    f"Depth ordering violation: {source}({source_depth}) -> {target}({target_depth})"
+                )
+
+
 class MutationAction(Enum):
     """Types of DAG mutations."""
     SPAWN_PREDECESSOR = "SPAWN_PREDECESSOR"
@@ -93,7 +201,7 @@ class DAGMutator:
         graph: nx.DiGraph,
         mutation: DAGMutation
     ) -> MutationResult:
-        """Apply a mutation to the graph.
+        """Apply a mutation to the graph with transactional safety.
         
         Args:
             graph: The NetworkX directed graph
@@ -103,32 +211,35 @@ class DAGMutator:
             MutationResult with details
         """
         try:
-            # Validate mutation before applying
-            self._validate_mutation(graph, mutation)
-            
-            # Apply based on action type
-            if mutation.action == MutationAction.SPAWN_PREDECESSOR:
-                result = self._spawn_predecessor(graph, mutation)
-            elif mutation.action == MutationAction.SPAWN_SUCCESSOR:
-                result = self._spawn_successor(graph, mutation)
-            elif mutation.action == MutationAction.SKIP_SUCCESSOR:
-                result = self._skip_successor(graph, mutation)
-            elif mutation.action == MutationAction.REPLACE_NODE:
-                result = self._replace_node(graph, mutation)
-            else:
-                raise ValueError(f"Unknown mutation action: {mutation.action}")
-            
-            # Log mutation
-            if self.config.enable_mutation_logging:
-                logger.info(f"Applied mutation {mutation.mutation_id}: {mutation.action.value} "
-                           f"on {mutation.target_hop_id} - {mutation.reason}")
-            
-            # Store in history
-            self._store_mutation_result(result)
-            
-            return result
-            
+            # Use transaction context manager for atomic mutations
+            with GraphTransaction(self) as tx_graph:
+                # Validate mutation before applying
+                self._validate_mutation(tx_graph, mutation)
+                
+                # Apply based on action type
+                if mutation.action == MutationAction.SPAWN_PREDECESSOR:
+                    result = self._spawn_predecessor(tx_graph, mutation)
+                elif mutation.action == MutationAction.SPAWN_SUCCESSOR:
+                    result = self._spawn_successor(tx_graph, mutation)
+                elif mutation.action == MutationAction.SKIP_SUCCESSOR:
+                    result = self._skip_successor(tx_graph, mutation)
+                elif mutation.action == MutationAction.REPLACE_NODE:
+                    result = self._replace_node(tx_graph, mutation)
+                else:
+                    raise ValueError(f"Unknown mutation action: {mutation.action}")
+                
+                # Log successful mutation
+                if self.config.enable_mutation_logging:
+                    logger.info(f"Applied mutation {mutation.mutation_id}: {mutation.action.value} "
+                               f"on {mutation.target_hop_id} - {mutation.reason}")
+                
+                # Store in history
+                self._store_mutation_result(result)
+                
+                return result
+                
         except Exception as e:
+            # Create error result
             error_result = MutationResult(
                 mutation_id=mutation.mutation_id,
                 success=False,
