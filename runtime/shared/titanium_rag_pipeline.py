@@ -16,7 +16,6 @@ from typing import List, Dict, Any, Optional, Tuple
 from .contextual_compressor import (
     ContextualCompressor,
     CompressionResult,
-    create_compressor,
 )
 from .signal_quality_pipeline import (
     SignalQualityPipeline,

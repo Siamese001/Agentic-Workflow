@@ -3,6 +3,7 @@
 Provides common data structures used across the runtime shared modules.
 """
 
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 @dataclass

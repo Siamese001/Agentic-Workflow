@@ -1,7 +1,9 @@
 """Performance tests for SDK latency budgets."""
 import time
+from unittest.mock import patch
 
 from runtime.shared.cache import generate_llm_cache_key
+from runtime.shared.sdk_registry import validate_sdk, reset_all_clients, SDK_REGISTRY, get_vector_store
 
 class TestSDKValidationLatency:
     """TestSDKValidationLatency implementation."""
@@ -40,9 +42,8 @@ class TestVectorStoreInitLatency:
     def test_vector_store_init_under_500ms(self) -> None:
         """Vector store initialization within 500ms."""
         reset_all_clients()
-        with patch("agentic_workflow.runtime.shared.sdk_registry.chromadb") as mock:
-            mock.Client.return_value = MagicMock()
-            start = time.perf_counter()
-            get_vector_store("chromadb")
-            elapsed = (time.perf_counter() - start) * 1000
-            assert elapsed < 500, f"Init took {elapsed:.2f}ms"
+        # get_vector_store returns a mock, so we don't need to patch chromadb
+        start = time.perf_counter()
+        get_vector_store("chromadb")
+        elapsed = (time.perf_counter() - start) * 1000
+        assert elapsed < 500, f"Vector store init took {elapsed:.2f}ms"

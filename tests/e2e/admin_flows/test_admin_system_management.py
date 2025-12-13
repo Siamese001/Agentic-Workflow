@@ -55,7 +55,7 @@ class TestSystemMonitoringE2E:
     """E2E tests for system monitoring."""
 
     def test_health_check_all_components(self):
-            """E2E: Health check covers all system components."""
+        """E2E: Health check covers all system components."""
         components = ["api", "database", "cache", "queue", "storage"]
         health_results = {}
 
@@ -70,7 +70,7 @@ class TestSystemMonitoringE2E:
         assert all_healthy
 
     def test_metrics_collection(self):
-            """E2E: System metrics are collected."""
+        """E2E: System metrics are collected."""
         health = SystemHealth(
             status=SystemStatus.HEALTHY,
             cpu_percent=45.0,
@@ -85,7 +85,7 @@ class TestSystemMonitoringE2E:
         assert health.error_rate < 0.05
 
     def test_alert_triggering(self):
-            """E2E: Alerts are triggered on threshold breach."""
+        """E2E: Alerts are triggered on threshold breach."""
         thresholds = {
             "cpu_percent": 80,
             "memory_percent": 90,
