@@ -141,12 +141,18 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
     filepath.write_text(shim_content, encoding='utf-8')
     print(f"  Updated {filepath.name} as compatibility shim")
 
-# Files to fix - files that still have >5 defs after first pass
+# Files to fix - apps_lic cognitive density violations
 files_to_fix = [
-    "apps_rg/L1_cognition/k25_research_models_types.py",
-    "apps_rg/L2_execution/achv_bullet_synthesizer_types.py",
-    "apps_rg/L2_execution/rg_provenance_tracker_impl.py",
-    "apps_rg/L3_orchestration/orchestrate_workflow_impl.py",
+    "apps_lic/L2_execution/campaign_rag.py",
+    "apps_lic/L2_execution/data_models.py",
+    "apps_lic/L2_execution/lic_code_interpreter.py",
+    "apps_lic/L2_execution/message_assembler.py",
+    "apps_lic/L2_execution/route_classifier.py",
+    "apps_lic/L2_execution/track_lic_state.py",
+    "apps_lic/L3_orchestration/kx_nodes_outreach.py",
+    "apps_lic/L3_orchestration/outreach_orchestration_config.py",
+    "apps_lic/L3_orchestration/rag/campaign_rag.py",
+    "apps_lic/L3_orchestration/safety/campaign_guardrails.py",
 ]
 
 root = Path("c:/Git/Agentic-Workflow")
