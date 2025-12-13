@@ -1439,9 +1439,17 @@ def check_key_33_missing_init_files() -> None:
 def check_key_34_empty_sov_directories() -> None:
     """Key 34 – HARDENED: No Ghost Packages (folders with only init/cache)."""
     violations = []
+    # Exclude legitimate runtime infrastructure directories (handle both path separators)
+    exempt_ghosts = {"shared/cache", "shared/data", "shared/logs", "shared/output"}
+    
     for root in sovereign_roots():
         for d in root.rglob("*"):
             if not d.is_dir() or d.name == "__pycache__": continue
+            
+            # Skip exempt ghost packages (normalize path separators)
+            rel_path = str(d.relative_to(ROOT)).replace("\\", "/")
+            if rel_path in exempt_ghosts:
+                continue
             
             # Check for "Ghost" status: Only contains __init__.py and/or __pycache__
             children = list(d.iterdir())

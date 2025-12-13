@@ -193,6 +193,11 @@ Requirements:
         )
     
     def generate_research_prompt(self) -> str:
+        """Generate the complete research prompt for K.2.5 execution.
+        
+        Returns:
+            Formatted research prompt string with all phases and instructions
+        """
         return f"""
 {self.prompt_template}
 
