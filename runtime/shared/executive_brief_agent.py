@@ -3,6 +3,8 @@
 This module generates high-signal "Executive Briefs" that replace traditional cover
 letters. Each brief demonstrates strategic thinking by diagnosing a company's
 AI challenges and proposing solutions before the first interview.
+
+Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
 """
 
 import logging
@@ -10,8 +12,16 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Any, Union
 from pydantic import BaseModel, Field, validator
 
-
 logger = logging.getLogger(__name__)
+
+# Import Titanium search tool
+try:
+    from .titanium_search_tool import get_titanium_search_tool, get_titanium_search_with_sources
+    TITANIUM_AVAILABLE = True
+    logger.info("ExecutiveBriefAgent: Titanium RAG Pipeline available")
+except ImportError as e:
+    TITANIUM_AVAILABLE = False
+    logger.warning(f"ExecutiveBriefAgent: Titanium RAG Pipeline not available: {e}")
 
 
 class BriefSection(BaseModel):
@@ -49,7 +59,10 @@ class ExecutiveBrief(BaseModel):
 
 
 class ExecutiveBriefAgent:
-    """Generates strategic executive briefs for AI leadership positions."""
+    """Generates strategic executive briefs for AI leadership positions.
+    
+    Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
+    """
     
     def __init__(self, candidate_name: str, candidate_background: Dict[str, Any]):
         """Initialize the executive brief agent.
@@ -60,6 +73,13 @@ class ExecutiveBriefAgent:
         """
         self.candidate_name = candidate_name
         self.candidate_background = candidate_background
+        
+        # Initialize Titanium search if available
+        self.titanium_enabled = TITANIUM_AVAILABLE
+        if self.titanium_enabled:
+            logger.info("ExecutiveBriefAgent initialized with Titanium RAG Pipeline")
+        else:
+            logger.warning("ExecutiveBriefAgent using fallback research mode")
         
         # Import tone model for enforcement
         try:
@@ -99,19 +119,114 @@ class ExecutiveBriefAgent:
                 "solution": "Agentic workflows with self-correction",
                 "metric": "25% improvement in response quality"
             },
-            "talent retention": {
-                "problem": "Difficulty retaining top AI talent",
-                "solution": "Career pathing and mentorship programs",
-                "metric": "100% retention during transitions"
-            },
             "model drift": {
                 "problem": "Model performance degradation in production",
-                "solution": "Continuous monitoring and automated retraining",
-                "metric": "90% reduction in production issues"
+                "solution": "Continuous monitoring and retraining pipelines",
+                "metric": "90% reduction in undetected drift"
+            },
+            "talent retention": {
+                "problem": "Difficulty retaining AI/ML talent",
+                "solution": "Clear career progression and cutting-edge projects",
+                "metric": "30% improvement in retention"
+            },
+            "deployment latency": {
+                "problem": "Slow model deployment cycles",
+                "solution": "Automated MLOps pipelines with canary releases",
+                "metric": "50% faster time-to-production"
             }
         }
+    
+    async def _research_company_with_titanium(self, company_name: str, industry: str) -> Dict[str, Any]:
+        """Research company using Titanium RAG Pipeline for enhanced insights.
         
-        logger.info(f"Initialized ExecutiveBriefAgent for {candidate_name}")
+        Args:
+            company_name: Name of the target company
+            industry: Industry sector
+            
+        Returns:
+            Enhanced company research data
+        """
+        if not self.titanium_enabled:
+            logger.warning("Titanium not available, using fallback research")
+            return {"name": company_name, "industry": industry}
+        
+        try:
+            # Search for company's AI challenges and initiatives
+            search_queries = [
+                f"{company_name} AI challenges machine learning",
+                f"{company_name} artificial intelligence strategy",
+                f"{company_name} tech stack infrastructure",
+                f"{industry} industry AI trends 2024"
+            ]
+            
+            research_data = {
+                "name": company_name,
+                "industry": industry,
+                "ai_initiatives": [],
+                "technical_challenges": [],
+                "strategic_priorities": [],
+                "recent_news": [],
+                "competitors": []
+            }
+            
+            # Execute searches using Titanium
+            for query in search_queries:
+                results = await get_titanium_search_tool(
+                    query=query,
+                    max_results=5,
+                    include_metadata=True
+                )
+                
+                # Parse results (simplified - in production would use structured extraction)
+                if results and "No relevant information" not in results:
+                    research_data["ai_initiatives"].append(f"Insights from: {query}")
+                    
+                    # Extract specific insights based on query type
+                    if "challenges" in query.lower():
+                        research_data["technical_challenges"].append(results[:200])
+                    elif "strategy" in query.lower():
+                        research_data["strategic_priorities"].append(results[:200])
+            
+            logger.info(f"Titanium research completed for {company_name}")
+            return research_data
+            
+        except Exception as e:
+            logger.error(f"Error in Titanium research: {e}")
+            return {"name": company_name, "industry": industry}
+    
+    async def generate_brief_with_titanium(
+        self,
+        company_name: str,
+        industry: str,
+        job_description: str,
+        recipient_name: Optional[str] = None
+    ) -> ExecutiveBrief:
+        """Generate executive brief using Titanium RAG for enhanced research.
+        
+        Args:
+            company_name: Target company name
+            industry: Industry sector
+            job_description: Job posting details
+            recipient_name: Optional recipient name
+            
+        Returns:
+            ExecutiveBrief enhanced with Titanium research
+        """
+        try:
+            # Use Titanium to research company
+            company_data = await self._research_company_with_titanium(company_name, industry)
+            
+            # Generate brief using enhanced data
+            return self.generate_brief(company_data, job_description, recipient_name)
+            
+        except Exception as e:
+            logger.error(f"Error generating brief with Titanium: {e}")
+            # Fallback to basic brief
+            return self.generate_brief(
+                {"name": company_name, "industry": industry},
+                job_description,
+                recipient_name
+            )
     
     def generate_brief(
         self,
