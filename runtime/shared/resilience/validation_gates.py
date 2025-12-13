@@ -6,13 +6,29 @@ gates with repair loops and progress persistence.
 """
 
 import logging
+import asyncio
 from typing import Any, Dict, List, Optional, Callable, Awaitable
 from datetime import datetime
 from pydantic import BaseModel, Field
+from dataclasses import dataclass, field
 
 from .atomic_state_manager import AtomicStateManager, WorkflowState
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ValidationMetrics:
+    """Metrics collected during validation chain execution."""
+    total_gates: int = 0
+    passed_gates: int = 0
+    failed_gates: int = 0
+    total_repairs: int = 0
+    total_time_seconds: float = 0.0
+    gate_times: Dict[str, float] = field(default_factory=dict)
+    repair_counts: Dict[str, int] = field(default_factory=dict)
+    oscillations_detected: int = 0
+    timeouts: Dict[str, int] = field(default_factory=lambda: {"gate": 0, "repair": 0})
 
 
 class SentinelDecision(BaseModel):
@@ -36,6 +52,10 @@ class ValidationGate(BaseModel):
     # Oscillation detection
     detect_oscillation: bool = Field(True, description="Detect if repair agent is oscillating between states.")
     oscillation_threshold: int = Field(3, description="Number of repeated failures before detecting oscillation.")
+    
+    # Timeout configuration
+    gate_timeout_seconds: float = Field(60.0, description="Max time for gate validation (seconds).")
+    repair_timeout_seconds: float = Field(120.0, description="Max time for each repair attempt (seconds).")
 
 
 class GateHistory(BaseModel):
@@ -90,6 +110,9 @@ class ResilientValidationChain:
         
         # Track gate histories for oscillation detection
         self._gate_histories: Dict[str, GateHistory] = {}
+        
+        # Metrics collection
+        self.metrics = ValidationMetrics()
     
     async def _run_sentinel(self, content: str, gate: ValidationGate) -> SentinelDecision:
         """Execute the Sentinel K-Node for a specific gate.
@@ -126,11 +149,14 @@ class ResilientValidationChain:
         }
         
         try:
-            # Execute with hardened executor
-            result = await self.executor.execute_k_node(
-                messages=messages,
-                response_schema=response_schema,
-                temperature=0.1  # Low temperature for consistent validation
+            # Execute with hardened executor and timeout
+            result = await asyncio.wait_for(
+                self.executor.execute_k_node(
+                    messages=messages,
+                    response_schema=response_schema,
+                    temperature=0.1  # Low temperature for consistent validation
+                ),
+                timeout=gate.gate_timeout_seconds
             )
             
             # Parse structured response
@@ -145,6 +171,15 @@ class ResilientValidationChain:
                 metadata={"gate_name": gate.gate_name}
             )
             
+        except asyncio.TimeoutError:
+            self.logger.error(f"Sentinel timeout for gate {gate.gate_name} after {gate.gate_timeout_seconds}s")
+            self.metrics.timeouts["gate"] += 1
+            return SentinelDecision(
+                status="FAIL",
+                confidence=0.0,
+                failure_reason=f"Validation timeout after {gate.gate_timeout_seconds} seconds",
+                retry_suggestion="Try with simpler content or increase timeout"
+            )
         except Exception as e:
             self.logger.error(f"Sentinel execution failed for gate {gate.gate_name}: {e}")
             return SentinelDecision(
@@ -177,15 +212,31 @@ class ResilientValidationChain:
             f"Reason: {decision.failure_reason}"
         )
         
-        # Call repair agent with full context
-        repaired_content = await repair_agent_func(
-            original_content=content,
-            feedback=decision.failure_reason or "Validation failed",
-            instruction=decision.retry_suggestion or "Fix the issues",
-            gate_rubric=gate.rubric  # Include rubric so repair knows what to fix
-        )
-        
-        return repaired_content
+        try:
+            # Call repair agent with timeout
+            repaired_content = await asyncio.wait_for(
+                repair_agent_func(
+                    original_content=content,
+                    feedback=decision.failure_reason or "Validation failed",
+                    instruction=decision.retry_suggestion or "Fix the issues",
+                    gate_rubric=gate.rubric  # Include rubric so repair knows what to fix
+                ),
+                timeout=gate.repair_timeout_seconds
+            )
+            return repaired_content
+            
+        except asyncio.TimeoutError:
+            self.logger.error(
+                f"Repair timeout for gate {gate.gate_name} after {gate.repair_timeout_seconds}s"
+            )
+            self.metrics.timeouts["repair"] += 1
+            raise ChainFailureError(
+                f"Repair agent timed out for gate {gate.gate_name}. "
+                f"Consider increasing timeout or simplifying content."
+            )
+        except Exception as e:
+            self.logger.error(f"Repair attempt failed: {e}")
+            raise
     
     async def _checkpoint_gate_success(
         self,
@@ -282,8 +333,12 @@ class ResilientValidationChain:
             self.logger.info(f"Resuming from gate {start_from_gate}")
         
         # Execute gates
+        chain_start_time = datetime.now()
+        self.metrics.total_gates = len(gates)
+        
         for gate_idx in range(start_from_gate, len(gates)):
             gate = gates[gate_idx]
+            gate_start_time = datetime.now()
             self.logger.info(f"🚦 Entering Gate: {gate.gate_name}")
             
             # Initialize gate history
@@ -296,7 +351,7 @@ class ResilientValidationChain:
             attempts = 0
             passed = False
             
-            while attempts <= gate.max_repair_attempts:
+            while attempts < gate.max_repair_attempts + 1:  # +1 for initial attempt
                 # Run Sentinel
                 decision = await self._run_sentinel(current_content, gate)
                 
@@ -310,6 +365,7 @@ class ResilientValidationChain:
                 
                 if decision.status == "PASS":
                     self.logger.info(f"✅ Gate {gate.gate_name} Passed (attempt {attempts + 1})")
+                    self.metrics.passed_gates += 1
                     passed = True
                     break
                 
@@ -329,6 +385,7 @@ class ResilientValidationChain:
                         f"🔄 Oscillation detected in gate {gate.gate_name}. "
                         f"Same failure repeated {gate.oscillation_threshold} times."
                     )
+                    self.metrics.oscillations_detected += 1
                     if gate.fatal_on_fail:
                         raise ChainFailureError(
                             f"Oscillation detected in gate {gate.gate_name}. "
@@ -337,10 +394,10 @@ class ResilientValidationChain:
                     break
                 
                 # Check if we've exhausted attempts
-                if attempts == gate.max_repair_attempts:
+                if attempts == gate.max_repair_attempts:  # No more repairs allowed
                     break
                 
-                # Attempt repair
+                # Attempt repair (only if we haven't exhausted attempts)
                 try:
                     current_content = await self._attempt_repair(
                         current_content,
@@ -348,14 +405,19 @@ class ResilientValidationChain:
                         gate,
                         repair_agent_func
                     )
+                    self.metrics.total_repairs += 1
                 except Exception as e:
                     self.logger.error(f"Repair attempt failed: {e}")
-                    # Continue with next attempt
+                    # If repair fails, we may want to continue to next attempt or fail fast
+                    if attempts == gate.max_repair_attempts - 1:  # Last repair attempt failed
+                        self.logger.error("Last repair attempt failed, failing gate.")
+                        break
                 
                 attempts += 1
             
             # Check if gate ultimately passed
             if not passed:
+                self.metrics.failed_gates += 1
                 if gate.fatal_on_fail:
                     raise ChainFailureError(
                         f"Validation failed at {gate.gate_name} after "
@@ -367,8 +429,26 @@ class ResilientValidationChain:
                         f"Proceeding with risk."
                     )
             
+            # Record gate timing and repair count
+            gate_end_time = datetime.now()
+            gate_duration = (gate_end_time - gate_start_time).total_seconds()
+            self.metrics.gate_times[gate.gate_name] = gate_duration
+            self.metrics.repair_counts[gate.gate_name] = attempts
+            
             # Checkpoint after successful gate
             await self._checkpoint_gate_success(gate, current_content, attempts)
+        
+        # Calculate total chain time
+        chain_end_time = datetime.now()
+        self.metrics.total_time_seconds = (chain_end_time - chain_start_time).total_seconds()
+        
+        # Log final metrics
+        self.logger.info(
+            f"🎯 Validation chain completed: "
+            f"{self.metrics.passed_gates}/{self.metrics.total_gates} gates passed, "
+            f"{self.metrics.total_repairs} repairs, "
+            f"{self.metrics.total_time_seconds:.2f}s total"
+        )
         
         return current_content
     
@@ -380,6 +460,15 @@ class ResilientValidationChain:
         """
         return {
             "workflow_id": self.workflow_id,
+            "metrics": {
+                "total_gates": self.metrics.total_gates,
+                "passed_gates": self.metrics.passed_gates,
+                "failed_gates": self.metrics.failed_gates,
+                "total_repairs": self.metrics.total_repairs,
+                "total_time_seconds": self.metrics.total_time_seconds,
+                "oscillations_detected": self.metrics.oscillations_detected,
+                "timeouts": self.metrics.timeouts
+            },
             "gate_histories": {
                 name: {
                     "attempts": len(history.attempts),
@@ -389,6 +478,14 @@ class ResilientValidationChain:
                 for name, history in self._gate_histories.items()
             }
         }
+    
+    def get_metrics(self) -> ValidationMetrics:
+        """Get the validation metrics object.
+        
+        Returns:
+            ValidationMetrics instance with all collected metrics
+        """
+        return self.metrics
 
 
 # Factory function for creating common gate configurations
