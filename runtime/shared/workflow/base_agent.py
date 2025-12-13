@@ -2,10 +2,7 @@
 
 import os
 import logging
-from typing import Dict, Any, Tuple, Optional
-import instructor
-from openai import OpenAI
-from anthropic import Anthropic
+from typing import Dict, Any, Tuple, Optional, Union
 
 try:
     import instructor
@@ -55,7 +52,7 @@ class BaseExecutiveAgent:
             self.openai_client = None
             self.anthropic_client = None
     
-    def _get_client_and_model(self, config: Dict[str, Any]) -> Tuple[Optional[Any], str]:
+    def _get_client_and_model(self, config: Dict[str, Any]) -> Tuple[Optional[Union['OpenAI', 'Anthropic']], str]:
         """Get appropriate LLM client and model based on configuration.
         
         Args:
