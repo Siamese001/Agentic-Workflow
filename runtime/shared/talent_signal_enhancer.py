@@ -21,7 +21,7 @@ class TalentMetrics(BaseModel):
 
     @validator('pedigree_keywords')
     def validate_pedigree(cls, v):
-        """Ensure pedigree keywords are prestigious markers."""
+            """Ensure pedigree keywords are prestigious markers."""
         prestigious_terms = {
             'phd', 'masters', 'ex-google', 'ex-meta', 'ex-amazon', 'ex-apple',
             'ex-microsoft', 'ex-netflix', 'researchers', 'contributors',
@@ -37,7 +37,7 @@ class TalentSignalEnhancer:
     """Enhances talent signals in resume content and generates network hooks."""
 
     def __init__(self, candidate_background: Dict[str, Any]):
-        """Initialize the talent signal enhancer.
+            """Initialize the talent signal enhancer.
 
         Args:
             candidate_background: Candidate's professional background
@@ -94,7 +94,7 @@ class TalentSignalEnhancer:
     ent_experience}")
 
     def enhance_management_bullet(self, bullet_text: str) -> str:
-        """Enhance a management bullet with talent signals.
+            """Enhance a management bullet with talent signals.
 
         Args:
             bullet_text: Original management bullet
@@ -155,7 +155,7 @@ class TalentSignalEnhancer:
             return bullet_text
 
     def generate_network_hook(self, target_role: str) -> Optional[str]:
-        """Generate a P.S. hook leveraging network as asset.
+            """Generate a P.S. hook leveraging network as asset.
 
         Args:
             target_role: Role being targeted (e.g., "Senior AI Engineer")
@@ -190,7 +190,7 @@ class TalentSignalEnhancer:
             return None
 
     def get_hyde_context(self, job_description: str) -> Optional[str]:
-        """Get HyDE context if JD is hiring-heavy.
+            """Get HyDE context if JD is hiring-heavy.
 
         Args:
             job_description: Job description text
@@ -218,7 +218,7 @@ class TalentSignalEnhancer:
             return None
 
     def _detect_pedigree(self, text: str) -> List[str]:
-        """Detect prestige markers in text.
+            """Detect prestige markers in text.
 
         Args:
             text: Text to scan for pedigree markers
@@ -257,7 +257,7 @@ class TalentSignalEnhancer:
             return []
 
     def _extract_team_size(self, text: str) -> int:
-        """Extract team size from text.
+            """Extract team size from text.
 
         Args:
             text: Text containing team size
@@ -287,7 +287,7 @@ class TalentSignalEnhancer:
             return 0
 
     def _extract_hiring_metric(self, text: str) -> Optional[str]:
-        """Extract hiring velocity from text.
+            """Extract hiring velocity from text.
 
         Args:
             text: Text containing hiring information
@@ -320,7 +320,7 @@ class TalentSignalEnhancer:
             return None
 
     def _extract_retention_metric(self, text: str) -> Optional[str]:
-        """Extract retention rate from text.
+            """Extract retention rate from text.
 
         Args:
             text: Text containing retention information
@@ -354,7 +354,7 @@ class TalentSignalEnhancer:
             return None
 
     def _strengthen_generic_bullet(self, bullet: str, team_size: int) -> str:
-        """Strengthen generic management bullet.
+            """Strengthen generic management bullet.
 
         Args:
             bullet: Original bullet
@@ -406,8 +406,8 @@ def create_talent_signal_enhancer(candidate_background: Dict[str, Any]) -> Talen
     return TalentSignalEnhancer(candidate_background)
 
 # Convenience function for quick enhancement
-def enhance_talent_signals(
     """Docstring."""
+def enhance_talent_signals(
     bullets: List[str],
     candidate_background: Dict[str, Any]
 ) -> Tuple[List[str], Optional[str]]:

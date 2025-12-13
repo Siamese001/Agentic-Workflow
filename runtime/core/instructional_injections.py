@@ -7,6 +7,8 @@ covering Framing, Context, Reasoning, Tooling, Safety, and Output layers.
 import json
 import logging
 from pathlib import Path
+from dataclasses import dataclass
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)

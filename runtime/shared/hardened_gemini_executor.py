@@ -11,6 +11,7 @@ Military-grade reliability for Google GenAI v1beta with:
 import logging
 import time
 from typing import Any, Dict, List, Optional, Union
+from dataclasses import dataclass
 
     retry,
     retry_if_exception_type,
@@ -62,12 +63,12 @@ class HardenedGeminiConfig:
 
     @property
     def max_context_tokens(self) -> int:
-        """Get maximum context tokens for the model."""
+            """Get maximum context tokens for the model."""
         return self.MODEL_LIMITS.get(self.model, 1048576)
 
     @property
     def safety_threshold_tokens(self) -> int:
-        """Get safety threshold tokens."""
+            """Get safety threshold tokens."""
         return int(self.max_context_tokens * self.safety_threshold_ratio)
 
 @dataclass
@@ -102,7 +103,7 @@ class CircuitBreaker:
         recovery_timeout: float = 60.0,
         half_open_max_calls: int = 3
     ):
-        """Initialize circuit breaker.
+            """Initialize circuit breaker.
 
         Args:
             failure_threshold: Number of failures before opening
@@ -116,7 +117,7 @@ class CircuitBreaker:
         self.half_open_calls = 0
 
     def call_allowed(self) -> bool:
-        """Check if a call is allowed through the circuit breaker."""
+            """Check if a call is allowed through the circuit breaker."""
         now = time.time()
 
         if self.state.state == "CLOSED":
@@ -134,7 +135,7 @@ class CircuitBreaker:
             return self.half_open_calls < self.half_open_max_calls
 
     def record_success(self):
-        """Record a successful call."""
+            """Record a successful call."""
         if self.state.state == "HALF_OPEN":
             self.half_open_calls += 1
             # If we've had enough successes, close the circuit
@@ -148,7 +149,7 @@ class CircuitBreaker:
             self.state.failure_count = 0
 
     def record_failure(self):
-        """Record a failed call."""
+            """Record a failed call."""
         self.state.failure_count += 1
         self.state.last_failure_time = time.time()
 
@@ -166,7 +167,7 @@ class CircuitBreaker:
                 self.state.state = "OPEN"
 
     def raise_if_open(self):
-        """Raise exception if circuit breaker is open."""
+            """Raise exception if circuit breaker is open."""
         if self.state.state == "OPEN":
             raise CircuitBreakerOpenError(
                 f"Circuit breaker is open. {self.failure_threshold} failures occurred. "
@@ -189,7 +190,7 @@ class HardenedGeminiExecutor:
     """Military-grade executor for Google GenAI v1beta."""
 
     def __init__(self, config: Optional[HardenedGeminiConfig] = None):
-        """Initialize hardened executor.
+            """Initialize hardened executor.
 
         Args:
             config: Optional configuration. Uses defaults if not provided.
@@ -204,7 +205,7 @@ class HardenedGeminiExecutor:
         )
 
     def _setup_client(self):
-        """Setup Google GenAI client."""
+            """Setup Google GenAI client."""
 
         try:
             self._client = get_client(Provider.GOOGLE)
@@ -215,7 +216,7 @@ class HardenedGeminiExecutor:
             raise
 
     def build_safety_config(self) -> List[Dict[str, str]]:
-        """Build safety settings for Risk/Insurance domain.
+            """Build safety settings for Risk/Insurance domain.
 
         Returns:
             List of safety setting dictionaries.
@@ -262,12 +263,12 @@ class HardenedGeminiExecutor:
                 },
             ]
 
-    async def validate_context_budget(
         """Docstring."""
+    async def validate_context_budget(
         self,
         input_payload: List[Dict[str, Any]]
     ) -> int:
-        """Pre-flight check to ensure payload doesn't exceed context limit.
+            """Pre-flight check to ensure payload doesn't exceed context limit.
 
         Args:
             input_payload: List of messages to send
@@ -304,7 +305,7 @@ class HardenedGeminiExecutor:
         return token_count
 
     def _estimate_tokens(self, input_payload: List[Dict[str, Any]]) -> int:
-        """Fallback token estimation using simple heuristic.
+            """Fallback token estimation using simple heuristic.
 
         Args:
             input_payload: List of messages
@@ -321,7 +322,7 @@ class HardenedGeminiExecutor:
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        """Build payload for interactions.create.
+            """Build payload for interactions.create.
 
         Args:
             messages: List of agent messages
@@ -346,15 +347,15 @@ class HardenedGeminiExecutor:
 
         return payload
 
-    async def _execute_with_retry(
         """Docstring."""
+    async def _execute_with_retry(
         self,
         model: str,
         config: Dict[str, Any],
         input_payload: List[Dict[str, Any]],
         previous_interaction_id: Optional[str] = None
     ) -> Any:
-        """Execute with exponential backoff retry and circuit breaker.
+            """Execute with exponential backoff retry and circuit breaker.
 
         Args:
             model: Model name
@@ -386,7 +387,7 @@ class HardenedGeminiExecutor:
             before_sleep=lambda _: logger.warning("Retrying due to rate limit or server error")
         )
         async def _execute():
-            """Docstring."""
+                """Docstring."""
             request_params = {
                 "model": model,
                 "input": input_payload,
@@ -416,12 +417,12 @@ class HardenedGeminiExecutor:
             self._circuit_breaker.record_failure()
             raise
 
-    async def log_interaction_telemetry(
         """Docstring."""
+    async def log_interaction_telemetry(
         self,
         telemetry: InteractionTelemetry
     ):
-        """Log structured telemetry for observability.
+            """Log structured telemetry for observability.
 
         Args:
             telemetry: Telemetry data to log
@@ -442,15 +443,15 @@ class HardenedGeminiExecutor:
 
         logger.info(log_data)
 
-    async def execute_k_node(
         """Docstring."""
+    async def execute_k_node(
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
         response_schema: Optional[Dict[str, Any]] = None,
         previous_interaction_id: Optional[str] = None,
     ) -> str:
-        """Execute K-Node with hardened reliability.
+            """Execute K-Node with hardened reliability.
 
         Args:
             messages: Input messages
@@ -538,15 +539,15 @@ class HardenedGeminiExecutor:
             await self.log_interaction_telemetry(telemetry)
             raise
 
-    def execute_sync(
         """Docstring."""
+    def execute_sync(
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
         response_schema: Optional[Dict[str, Any]] = None,
         previous_interaction_id: Optional[str] = None,
     ) -> str:
-        """Synchronous version of execute_k_node.
+            """Synchronous version of execute_k_node.
 
         Args:
             messages: Input messages
@@ -581,8 +582,8 @@ class HardenedGeminiExecutor:
             )
 
 # Factory function for backward compatibility
-def create_hardened_gemini_executor(
     """Docstring."""
+def create_hardened_gemini_executor(
     model: str = "gemini-3-pro-preview",
     temperature: float = 0.3,
     **kwargs
@@ -601,8 +602,8 @@ def create_hardened_gemini_executor(
     return HardenedGeminiExecutor(config)
 
 # Integration with existing AgentExecutor
-def create_agent_executor(
     """Docstring."""
+def create_agent_executor(
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
     temperature: float = 0.7,

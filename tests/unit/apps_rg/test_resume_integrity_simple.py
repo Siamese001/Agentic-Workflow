@@ -14,7 +14,7 @@ class TestResumeEngineIntegrity:
     """Test Resume Engine instantiation and basic functionality."""
 
     def test_module_info(self):
-        """Test that module info can be retrieved."""
+            """Test that module info can be retrieved."""
         info = get_module_info()
         assert isinstance(info, dict)
         assert "name" in info
@@ -23,7 +23,7 @@ class TestResumeEngineIntegrity:
         assert "exports" in info
 
     def test_config_validation(self):
-        """Test configuration validation."""
+            """Test configuration validation."""
         # Valid config
         valid_config = {"enabled": True, "mode": "production"}
         assert validate_config(valid_config) is True
@@ -33,7 +33,7 @@ class TestResumeEngineIntegrity:
         assert validate_config(invalid_config) is False
 
     def test_create_instance(self):
-        """Test instance creation."""
+            """Test instance creation."""
         config = {"enabled": True, "mode": "test"}
         instance = create_instance(config)
         assert isinstance(instance, dict)
@@ -41,14 +41,14 @@ class TestResumeEngineIntegrity:
         assert instance["mode"] == "test"
 
     def test_execute_resume_generation_instantiation(self):
-        """Test that ExecuteResumeGeneration can be instantiated."""
+            """Test that ExecuteResumeGeneration can be instantiated."""
         executor = ExecuteResumeGeneration()
         assert executor is not None
         assert hasattr(executor, 'execute')
         assert hasattr(executor, '_perform_action')
 
     def test_execute_resume_generation_basic_execution(self):
-        """Test basic execution without crashing."""
+            """Test basic execution without crashing."""
         executor = ExecuteResumeGeneration()
 
         # Test with dummy data
@@ -77,7 +77,7 @@ class TestResumeEngineIntegrity:
         assert 'duration_ms' in result.details
 
     def test_workflow_enums(self):
-        """Test workflow enum values."""
+            """Test workflow enum values."""
         # Test HopStatus enum
         assert HopStatus.PENDING is not None
         assert HopStatus.RUNNING is not None
@@ -91,7 +91,7 @@ class TestResumeEngineIntegrity:
         assert GateDecision.SKIP is not None
 
     def test_error_handling(self):
-        """Test that errors are handled gracefully."""
+            """Test that errors are handled gracefully."""
         executor = ExecuteResumeGeneration()
 
         # Test with invalid parameters that might cause errors
@@ -104,7 +104,7 @@ class TestResumeEngineIntegrity:
             assert result.error is not None
 
     def test_resume_data_processing(self):
-        """Test processing of realistic resume data."""
+            """Test processing of realistic resume data."""
         executor = ExecuteResumeGeneration()
 
         # Realistic resume data
@@ -142,7 +142,7 @@ class TestResumeEngineIntegrity:
         assert result.success is True  # Mock implementation should succeed
 
     def test_execution_performance(self):
-        """Test that execution completes within reasonable time."""
+            """Test that execution completes within reasonable time."""
         executor = ExecuteResumeGeneration()
 
         import time

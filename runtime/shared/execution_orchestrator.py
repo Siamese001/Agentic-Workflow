@@ -15,6 +15,7 @@ Non-responsibilities:
 - Validation execution
 - Temperature management
 import logging
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ class ExecutionOrchestrator:
         self.artifacts: List[ExecutionArtifact] = []
 
     def start_execution(self, context: Dict[str, Any]) -> str:
-        """
+            """
         Start new execution with silent mode.
         Returns run_sha for tracking.
         """
@@ -108,30 +109,30 @@ class ExecutionOrchestrator:
         return run_sha
 
     def record_decision(self, decision: str, details: Optional[Dict[str, Any]] = None) -> None:
-        """Record a decision point in the execution path"""
+            """Record a decision point in the execution path"""
         if self.current_trace:
             decision_entry = decision
             if details:
                 decision_entry = f"{decision} | {json.dumps(details, separators=(',', ':'))}"
             self.current_trace.decision_path.append(decision_entry)
 
-    def record_temperature_adjustment(
         """Docstring."""
+    def record_temperature_adjustment(
         self,
         recovery_loop: AdaptiveRecoveryLoop
     ) -> None:
-        """Record temperature adjustments from recovery loop"""
+            """Record temperature adjustments from recovery loop"""
         if self.current_trace:
             self.current_trace.temperature_log.extend(
                 recovery_loop.get_temperature_log()
             )
 
-    def record_validation_failure(
         """Docstring."""
+    def record_validation_failure(
         self,
         gate_executor: IntegrityGateExecutor
     ) -> None:
-        """Record validation failures from gate executor"""
+            """Record validation failures from gate executor"""
         if self.current_trace:
             failed_results = [
                 {
@@ -148,14 +149,14 @@ class ExecutionOrchestrator:
             ]
             self.current_trace.validation_failures.extend(failed_results)
 
-    def add_artifact(
         """Docstring."""
+    def add_artifact(
         self,
         artifact_type: str,
         content: str,
         metadata: Optional[Dict[str, Any]] = None
     ) -> None:
-        """Add generated artifact to execution trace"""
+            """Add generated artifact to execution trace"""
         artifact = ExecutionArtifact(
             artifact_type=artifact_type,
             content=content,
@@ -167,13 +168,13 @@ class ExecutionOrchestrator:
         if self.current_trace:
             self.current_trace.artifacts.append(artifact)
 
-    def complete_execution(
         """Docstring."""
+    def complete_execution(
         self,
         success: bool,
         error: Optional[str] = None
     ) -> ExecutionTrace:
-        """
+            """
         Complete execution and generate audit.json.
         Returns final execution trace.
         """
@@ -193,7 +194,7 @@ class ExecutionOrchestrator:
         return self.current_trace
 
     def display_all_artifacts(self) -> str:
-        """
+            """
         Generate full content display of all artifacts.
         Returns formatted string for chat window display.
         """
@@ -223,14 +224,14 @@ class ExecutionOrchestrator:
         return "\n".join(output_sections)
 
     def _generate_run_sha(self, context: Dict[str, Any]) -> str:
-        """Generate unique SHA for this execution run"""
+            """Generate unique SHA for this execution run"""
         timestamp = str(time.time())
         context_str = json.dumps(context, sort_keys=True)
         sha_input = f"{timestamp}:{context_str}"
         return hashlib.sha256(sha_input.encode()).hexdigest()[:16]
 
     def _save_audit_json(self, trace: ExecutionTrace) -> Path:
-        """Save audit.json with complete execution trace"""
+            """Save audit.json with complete execution trace"""
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         audit_data = {
@@ -267,7 +268,7 @@ class ExecutionOrchestrator:
         return audit_path
 
     def _log(self, message: str) -> None:
-        """
+            """
         Internal logging that respects silent mode.
         Blocks banned conversational phrases.
         """
@@ -280,8 +281,8 @@ class ExecutionOrchestrator:
 
         logger.info(f"[SYSTEM] {message}")
 
-def create_execution_orchestrator(
     """Docstring."""
+def create_execution_orchestrator(
     output_dir: Optional[Path] = None,
     silent_mode: bool = True
 ) -> ExecutionOrchestrator:

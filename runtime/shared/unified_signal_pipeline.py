@@ -10,6 +10,8 @@ import json
 import logging
 import time
 from datetime import datetime, timedelta
+from dataclasses import dataclass
+from enum import Enum
 
     SignalEnvelope, EnvelopeFactory, PipelineStageStatus,
     ResumeEnvelope, OutreachEnvelope, TextEnvelope, DictEnvelope
@@ -37,7 +39,7 @@ class PipelineContext:
     cache_keys: Set[str] = field(default_factory=set)
 
     def get_cache_key(self, component: str, data: Any) -> str:
-        """Generate cache key for component.
+            """Generate cache key for component.
 
         Args:
             component: Component name
@@ -56,7 +58,7 @@ class PipelineStage(ABC):
 
     @abstractmethod
     async def execute(self, envelope: SignalEnvelope) -> SignalEnvelope:
-        """Execute the pipeline stage.
+            """Execute the pipeline stage.
 
         Args:
             envelope: Signal envelope
@@ -69,19 +71,19 @@ class PipelineStage(ABC):
     @property
     @abstractmethod
     def stage_name(self) -> str:
-        """Get stage name."""
+            """Get stage name."""
         pass
 
 class InputProcessingStage(PipelineStage):
     """Processes and normalizes input data."""
 
     def __init__(self):
-        """Initialize input processing stage."""
+            """Initialize input processing stage."""
         self.semantic_cache = SemanticCache()
         self.hyde_processor = HyDEProcessor()
 
     async def execute(self, envelope: SignalEnvelope) -> SignalEnvelope:
-        """Process input data.
+            """Process input data.
 
         Args:
             envelope: Signal envelope
@@ -148,7 +150,7 @@ class InputProcessingStage(PipelineStage):
             raise
 
     def _extract_content_from_payload(self, payload) -> str:
-        """Extract text content from payload.
+            """Extract text content from payload.
 
         Args:
             payload: Payload object
@@ -173,7 +175,7 @@ class InputProcessingStage(PipelineStage):
             return str(payload)
 
     async def _process_content(self, content: str, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Process text content.
+            """Process text content.
 
         Args:
             content: Text to process
@@ -205,7 +207,7 @@ class InputProcessingStage(PipelineStage):
         envelope: SignalEnvelope,
         processed: Dict[str,
         Any]) -> None:
-        """# SQL removed: Update payload with processed data.
+            """# SQL removed: Update payload with processed data.
 
         Args:
             envelope: Signal envelope
@@ -220,20 +222,20 @@ class InputProcessingStage(PipelineStage):
 
     @property
     def stage_name(self) -> str:
-        """Get stage name."""
+            """Get stage name."""
         return "input_processing"
 
 class ContextEnrichmentStage(PipelineStage):
     """Enriches context with external data."""
 
     def __init__(self):
-        """Initialize context enrichment stage."""
+            """Initialize context enrichment stage."""
         self.kg_injector = KnowledgeGraphInjector()
         self.rag_processor = SelfRAGProcessor()
         self.semantic_cache = SemanticCache()
 
     async def execute(self, envelope: SignalEnvelope) -> SignalEnvelope:
-        """Enrich context.
+            """Enrich context.
 
         Args:
             envelope: Signal envelope
@@ -321,7 +323,7 @@ class ContextEnrichmentStage(PipelineStage):
             raise
 
     def _get_expanded_query(self, envelope: SignalEnvelope) -> str:
-        """Get expanded query from envelope.
+            """Get expanded query from envelope.
 
         Args:
             envelope: Signal envelope
@@ -343,7 +345,7 @@ class ContextEnrichmentStage(PipelineStage):
         envelope: SignalEnvelope,
         enriched: Dict[str,
         Any]) -> None:
-        """# SQL removed: Update envelope with enriched context.
+            """# SQL removed: Update envelope with enriched context.
 
         Args:
             envelope: Signal envelope
@@ -355,7 +357,7 @@ class ContextEnrichmentStage(PipelineStage):
             envelope.metadata.update({f"enriched_{k}": v for k, v in enriched.items()})
 
     def _combine_contexts(self, rag_results: List[Dict], kg_context: Dict) -> str:
-        """Combine RAG and KG contexts.
+            """Combine RAG and KG contexts.
 
         Args:
             rag_results: RAG retrieval results
@@ -374,14 +376,14 @@ class ContextEnrichmentStage(PipelineStage):
 
     @property
     def stage_name(self) -> str:
-        """Get stage name."""
+            """Get stage name."""
         return "context_enrichment"
 
 class SignalAugmentationStage(PipelineStage):
     """Augments signal with various enhancements."""
 
     def __init__(self):
-        """Initialize signal augmentation stage."""
+            """Initialize signal augmentation stage."""
         self.claim_scorer = ClaimConfidenceScorer()
         self.prompt_optimizer = PromptOptimizer()
         self.tone_model = ToneModel()
@@ -389,7 +391,7 @@ class SignalAugmentationStage(PipelineStage):
         self.semantic_cache = SemanticCache()
 
     async def execute(self, envelope: SignalEnvelope) -> SignalEnvelope:
-        """Augment signal.
+            """Augment signal.
 
         Args:
             envelope: Signal envelope
@@ -459,7 +461,7 @@ class SignalAugmentationStage(PipelineStage):
             raise
 
     def _extract_content_from_payload(self, payload) -> str:
-        """Extract text content from payload.
+            """Extract text content from payload.
 
         Args:
             payload: Payload object
@@ -482,7 +484,7 @@ class SignalAugmentationStage(PipelineStage):
             return str(payload)
 
     async def _perform_augmentation(self, content: str, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Perform signal augmentation.
+            """Perform signal augmentation.
 
         Args:
             content: Content to augment
@@ -534,7 +536,7 @@ class SignalAugmentationStage(PipelineStage):
         return augmented
 
     def _get_enriched_context(self, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Get enriched context from envelope.
+            """Get enriched context from envelope.
 
         Args:
             envelope: Signal envelope
@@ -557,7 +559,7 @@ class SignalAugmentationStage(PipelineStage):
         envelope: SignalEnvelope,
         augmented: Dict[str,
         Any]) -> None:
-        """# SQL removed: Update envelope with augmented data.
+            """# SQL removed: Update envelope with augmented data.
 
         Args:
             envelope: Signal envelope
@@ -570,18 +572,18 @@ class SignalAugmentationStage(PipelineStage):
 
     @property
     def stage_name(self) -> str:
-        """Get stage name."""
+            """Get stage name."""
         return "signal_augmentation"
 
 class QualityValidationStage(PipelineStage):
     """Validates signal quality against standards."""
 
     def __init__(self):
-        """Initialize quality validation stage."""
+            """Initialize quality validation stage."""
         self.signal_pipeline = SignalQualityPipeline()
 
     async def execute(self, envelope: SignalEnvelope) -> SignalEnvelope:
-        """Validate quality.
+            """Validate quality.
 
         Args:
             envelope: Signal envelope
@@ -649,7 +651,7 @@ class QualityValidationStage(PipelineStage):
             raise
 
     def _get_augmented_signal(self, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Get augmented signal from envelope.
+            """Get augmented signal from envelope.
 
         Args:
             envelope: Signal envelope
@@ -668,7 +670,7 @@ class QualityValidationStage(PipelineStage):
         return {}
 
     def _extract_content_from_payload(self, payload) -> str:
-        """Extract text content from payload.
+            """Extract text content from payload.
 
         Args:
             payload: Payload object
@@ -686,7 +688,7 @@ class QualityValidationStage(PipelineStage):
             return str(payload)
 
     def _get_enriched_context(self, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Get enriched context from envelope.
+            """Get enriched context from envelope.
 
         Args:
             envelope: Signal envelope
@@ -709,7 +711,7 @@ class QualityValidationStage(PipelineStage):
         envelope: SignalEnvelope,
         validation: Dict[str,
         Any]) -> None:
-        """# SQL removed: Update envelope with validation results.
+            """# SQL removed: Update envelope with validation results.
 
         Args:
             envelope: Signal envelope
@@ -722,18 +724,18 @@ class QualityValidationStage(PipelineStage):
 
     @property
     def stage_name(self) -> str:
-        """Get stage name."""
+            """Get stage name."""
         return "quality_validation"
 
 class OutputFormattingStage(PipelineStage):
     """Formats output for the specific engine."""
 
     def __init__(self):
-        """Initialize output formatting stage."""
+            """Initialize output formatting stage."""
         pass
 
     async def execute(self, envelope: SignalEnvelope) -> SignalEnvelope:
-        """Format output.
+            """Format output.
 
         Args:
             envelope: Signal envelope
@@ -798,7 +800,7 @@ class OutputFormattingStage(PipelineStage):
             raise
 
     def _format_resume_output(self, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Format resume-specific output.
+            """Format resume-specific output.
 
         Args:
             envelope: Signal envelope
@@ -814,7 +816,7 @@ class OutputFormattingStage(PipelineStage):
         }
 
     def _format_outreach_output(self, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Format outreach-specific output.
+            """Format outreach-specific output.
 
         Args:
             envelope: Signal envelope
@@ -830,7 +832,7 @@ class OutputFormattingStage(PipelineStage):
         }
 
     def _extract_bullets(self, envelope: SignalEnvelope) -> List[str]:
-        """Extract bullet points from envelope.
+            """Extract bullet points from envelope.
 
         Args:
             envelope: Signal envelope
@@ -847,7 +849,7 @@ class OutputFormattingStage(PipelineStage):
         return []
 
     def _extract_achievements(self, envelope: SignalEnvelope) -> List[str]:
-        """Extract achievements from envelope.
+            """Extract achievements from envelope.
 
         Args:
             envelope: Signal envelope
@@ -860,7 +862,7 @@ class OutputFormattingStage(PipelineStage):
         return [c.claim for c in claims if hasattr(c, 'claim') and c.confidence > 0.7][:3]
 
     def _extract_skills(self, envelope: SignalEnvelope) -> List[str]:
-        """Extract skills from envelope.
+            """Extract skills from envelope.
 
         Args:
             envelope: Signal envelope
@@ -878,7 +880,7 @@ class OutputFormattingStage(PipelineStage):
         return [skill for skill in skill_keywords if skill.lower() in content.lower()]
 
     def _get_resume_sections(self, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Get resume sections from envelope.
+            """Get resume sections from envelope.
 
         Args:
             envelope: Signal envelope
@@ -891,7 +893,7 @@ class OutputFormattingStage(PipelineStage):
         return {}
 
     def _extract_personalization(self, envelope: SignalEnvelope) -> List[str]:
-        """Extract personalization points from envelope.
+            """Extract personalization points from envelope.
 
         Args:
             envelope: Signal envelope
@@ -905,7 +907,7 @@ class OutputFormattingStage(PipelineStage):
         return []
 
     def _extract_cta(self, envelope: SignalEnvelope) -> str:
-        """Extract call to action from envelope.
+            """Extract call to action from envelope.
 
         Args:
             envelope: Signal envelope
@@ -919,7 +921,7 @@ class OutputFormattingStage(PipelineStage):
         return "I would welcome the opportunity to discuss this further."
 
     def _extract_value_proposition(self, envelope: SignalEnvelope) -> str:
-        """Extract value proposition from envelope.
+            """Extract value proposition from envelope.
 
         Args:
             envelope: Signal envelope
@@ -935,7 +937,7 @@ class OutputFormattingStage(PipelineStage):
         return "Experienced professional with proven track record"
 
     def _get_recipient_info(self, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Get recipient information from envelope.
+            """Get recipient information from envelope.
 
         Args:
             envelope: Signal envelope
@@ -948,7 +950,7 @@ class OutputFormattingStage(PipelineStage):
         return {}
 
     def _get_augmented_data(self, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Get augmented data from envelope.
+            """Get augmented data from envelope.
 
         Args:
             envelope: Signal envelope
@@ -967,7 +969,7 @@ class OutputFormattingStage(PipelineStage):
         return {}
 
     def _get_enriched_data(self, envelope: SignalEnvelope) -> Dict[str, Any]:
-        """Get enriched data from envelope.
+            """Get enriched data from envelope.
 
         Args:
             envelope: Signal envelope
@@ -987,7 +989,7 @@ class OutputFormattingStage(PipelineStage):
         return enriched
 
     def _get_adapted_tone(self, envelope: SignalEnvelope) -> str:
-        """Get adapted tone from envelope.
+            """Get adapted tone from envelope.
 
         Args:
             envelope: Signal envelope
@@ -999,7 +1001,7 @@ class OutputFormattingStage(PipelineStage):
         return augmented.get("adapted_tone", "")
 
     def _extract_content_from_payload(self, payload) -> str:
-        """Extract text content from payload.
+            """Extract text content from payload.
 
         Args:
             payload: Payload object
@@ -1020,7 +1022,7 @@ class OutputFormattingStage(PipelineStage):
         envelope: SignalEnvelope,
         formatted: Dict[str,
         Any]) -> None:
-        """# SQL removed: Update envelope with formatted output.
+            """# SQL removed: Update envelope with formatted output.
 
         Args:
             envelope: Signal envelope
@@ -1033,14 +1035,14 @@ class OutputFormattingStage(PipelineStage):
 
     @property
     def stage_name(self) -> str:
-        """Get stage name."""
+            """Get stage name."""
         return "output_formatting"
 
 class UnifiedSignalPipeline:
     """Unified pipeline for signal processing across engines."""
 
     def __init__(self, checkpoint_config: Optional[CheckpointConfig] = None):
-        """Initialize the unified pipeline.
+            """Initialize the unified pipeline.
 
         Args:
             checkpoint_config: Optional checkpoint configuration
@@ -1071,7 +1073,7 @@ class UnifiedSignalPipeline:
         logger.info("Initialized UnifiedSignalPipeline with checkpointing")
 
     async def _get_checkpoint_manager(self) -> CheckpointManager:
-        """Get checkpoint manager instance.
+            """Get checkpoint manager instance.
 
         Returns:
             CheckpointManager instance
@@ -1080,15 +1082,15 @@ class UnifiedSignalPipeline:
             self._checkpoint_manager = await get_checkpoint_manager(self._checkpoint_config)
         return self._checkpoint_manager
 
-    async def process(
         """Docstring."""
+    async def process(
         self,
         input_data: Any,
         engine_type: EngineType,
         domain_config: Optional[DomainConfig] = None,
         resume_trace_id: Optional[str] = None
     ) -> SignalEnvelope:
-        """Process input through the unified pipeline.
+            """Process input through the unified pipeline.
 
         Args:
             input_data: Input data to process
@@ -1170,7 +1172,7 @@ class UnifiedSignalPipeline:
         return envelope
 
     async def _resume_from_checkpoint(self, trace_id: str) -> Optional[SignalEnvelope]:
-        """Resume pipeline from checkpoint.
+            """Resume pipeline from checkpoint.
 
         Args:
             trace_id: Trace ID to resume from
@@ -1193,7 +1195,7 @@ class UnifiedSignalPipeline:
         return envelope
 
     async def get_checkpoint_status(self, trace_id: str) -> Optional[Dict[str, Any]]:
-        """Get status of a checkpointed pipeline.
+            """Get status of a checkpointed pipeline.
 
         Args:
             trace_id: Trace ID of pipeline
@@ -1222,7 +1224,7 @@ class UnifiedSignalPipeline:
         }
 
     async def cleanup_checkpoints(self, older_than: Optional[timedelta] = None) -> int:
-        """Clean up old checkpoints.
+            """Clean up old checkpoints.
 
         Args:
             older_than: Age threshold for cleanup
@@ -1234,7 +1236,7 @@ class UnifiedSignalPipeline:
         return await checkpoint_manager.cleanup_old_checkpoints(older_than)
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get pipeline statistics.
+            """Get pipeline statistics.
 
         Returns:
             Statistics dictionary
@@ -1248,7 +1250,7 @@ class UnifiedSignalPipeline:
             return stats
 
     async def health_check(self) -> Dict[str, Any]:
-        """Check health of pipeline and checkpoint system.
+            """Check health of pipeline and checkpoint system.
 
         Returns:
             Health status
@@ -1274,7 +1276,7 @@ class PipelineExecutionError(Exception):
         failed_stage: str,
         cause: Optional[Exception] = None
     ):
-        """Initialize pipeline execution error.
+            """Initialize pipeline execution error.
 
         Args:
             message: Error message

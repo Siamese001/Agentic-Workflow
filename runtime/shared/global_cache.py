@@ -26,7 +26,7 @@ class CacheEntry(BaseModel):
     last_accessed: float = Field(default_factory=time.time)
 
     def is_expired(self) -> bool:
-        """Check if entry is expired.
+            """Check if entry is expired.
 
         Returns:
             True if expired
@@ -34,7 +34,7 @@ class CacheEntry(BaseModel):
         return time.time() > (self.created_at + self.ttl)
 
     def touch(self) -> None:
-        """# SQL removed: Update last accessed time."""
+            """# SQL removed: Update last accessed time."""
         self.last_accessed = time.time()
         self.hit_count += 1
 
@@ -42,7 +42,7 @@ class L1MemoryCache:
     """L1 cache - LRU memory cache for exact matches."""
 
     def __init__(self, max_size: int = 1000):
-        """Initialize L1 cache.
+            """Initialize L1 cache.
 
         Args:
             max_size: Maximum number of entries
@@ -55,7 +55,7 @@ class L1MemoryCache:
         logger.debug(f"Initialized L1 cache with max_size={max_size}")
 
     def get(self, key_hash: str) -> Optional[CacheEntry]:
-        """Get entry from cache.
+            """Get entry from cache.
 
         Args:
             key_hash: Hash of the key
@@ -83,7 +83,7 @@ class L1MemoryCache:
         return None
 
     def put(self, key_hash: str, entry: CacheEntry) -> None:
-        """Put entry in cache.
+            """Put entry in cache.
 
         Args:
             key_hash: Hash of the key
@@ -102,13 +102,13 @@ class L1MemoryCache:
             self.cache.popitem(last=False)
 
     def clear(self) -> None:
-        """Clear all entries."""
+            """Clear all entries."""
         self.cache.clear()
         self._hits = 0
         self._misses = 0
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get cache statistics.
+            """Get cache statistics.
 
         Returns:
             Statistics dictionary
@@ -128,7 +128,7 @@ class L2VectorStore:
     """L2 cache - Vector store for semantic matches."""
 
     def __init__(self, max_size: int = 10000):
-        """Initialize L2 vector store.
+            """Initialize L2 vector store.
 
         Args:
             max_size: Maximum number of entries
@@ -142,7 +142,7 @@ class L2VectorStore:
         logger.debug(f"Initialized L2 vector store with max_size={max_size}")
 
     def add(self, entry: CacheEntry) -> None:
-        """Add entry to vector store.
+            """Add entry to vector store.
 
         Args:
             entry: Cache entry with embedding
@@ -174,14 +174,14 @@ class L2VectorStore:
             self.entries.pop(0)
             self.embeddings = self.embeddings[1:]
 
-    def search(
         """Docstring."""
+    def search(
         self,
         query_embedding: List[float],
         threshold: float = 0.92,
         max_results: int = 5
     ) -> List[Tuple[CacheEntry, float]]:
-        """Search for semantically similar entries.
+            """Search for semantically similar entries.
 
         Args:
             query_embedding: Query embedding vector
@@ -224,14 +224,14 @@ class L2VectorStore:
         return results[:max_results]
 
     def clear(self) -> None:
-        """Clear all entries."""
+            """Clear all entries."""
         self.entries.clear()
         self.embeddings = np.array([]).reshape(0, 0)
         self._hits = 0
         self._misses = 0
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get store statistics.
+            """Get store statistics.
 
         Returns:
             Statistics dictionary
@@ -252,7 +252,7 @@ class SimpleEmbedder:
     """Simple local embedding generator."""
 
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
-        """Initialize embedder.
+            """Initialize embedder.
 
         Args:
             model_name: Name of sentence transformer model
@@ -264,7 +264,7 @@ class SimpleEmbedder:
         logger.debug(f"Initialized SimpleEmbedder with model: {model_name}")
 
     def _load_model(self) -> None:
-        """Load the embedding model."""
+            """Load the embedding model."""
         if self._model is None:
             try:
                 from sentence_transformers import SentenceTransformer
@@ -275,7 +275,7 @@ class SimpleEmbedder:
                 self._model = "dummy"
 
     def embed(self, text: str) -> List[float]:
-        """Generate embedding for text.
+            """Generate embedding for text.
 
         Args:
             text: Text to embed
@@ -315,7 +315,7 @@ class GlobalCache:
         l2_size: int = 10000,
         semantic_threshold: float = 0.92
     ):
-        """Initialize global cache.
+            """Initialize global cache.
 
         Args:
             l1_size: L1 cache size
@@ -340,7 +340,7 @@ class GlobalCache:
             threshold: {semantic_threshold})")
 
     def get(self, key: str) -> Optional[Any]:
-        """Get value by exact key.
+            """Get value by exact key.
 
         Args:
             key: Lookup key
@@ -372,14 +372,14 @@ class GlobalCache:
         self._stats["total_misses"] += 1
         return None
 
-    def get_semantic(
         """Docstring."""
+    def get_semantic(
         self,
         query_text: str,
         threshold: Optional[float] = None,
         max_results: int = 1
     ) -> List[Any]:
-        """Get values by semantic similarity.
+            """Get values by semantic similarity.
 
         Args:
             query_text: Query text
@@ -414,8 +414,8 @@ class GlobalCache:
         self._stats["total_misses"] += 1
         return []
 
-    def put(
         """Docstring."""
+    def put(
         self,
         key: str,
         value: Any,
@@ -423,7 +423,7 @@ class GlobalCache:
         ttl: int = 3600,
         source_engine: str = "UNKNOWN"
     ) -> None:
-        """Put value in cache.
+            """Put value in cache.
 
         Args:
             key: Cache key
@@ -457,7 +457,7 @@ class GlobalCache:
             self.l2.add(entry)
 
     def _hash_key(self, key: str) -> str:
-        """Generate hash for key.
+            """Generate hash for key.
 
         Args:
             key: Key to hash
@@ -468,7 +468,7 @@ class GlobalCache:
         return hashlib.sha256(key.encode()).hexdigest()[:16]
 
     def clear(self) -> None:
-        """Clear all cache entries."""
+            """Clear all cache entries."""
         self.l1.clear()
         self.l2.clear()
         self._stats = {
@@ -480,7 +480,7 @@ class GlobalCache:
         logger.info("Cleared global cache")
 
     def cleanup_expired(self) -> int:
-        """Remove expired entries.
+            """Remove expired entries.
 
         Returns:
             Number of entries cleaned up
@@ -508,7 +508,7 @@ class GlobalCache:
         return cleaned
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get cache statistics.
+            """Get cache statistics.
 
         Returns:
             Statistics dictionary
@@ -542,8 +542,8 @@ def get_global_cache() -> GlobalCache:
     return _global_cache
 
 # Decorator for caching function results
-def cached(
     """Docstring."""
+def cached(
     key_func: Optional[callable] = None,
     ttl: int = 3600,
     semantic: bool = False,
@@ -561,9 +561,9 @@ def cached(
         Decorated function
     """
     def decorator(func):
-        """Docstring."""
-        async def async_wrapper(*args, **kwargs):
             """Docstring."""
+        async def async_wrapper(*args, **kwargs):
+                """Docstring."""
             cache = get_global_cache()
 
             # Generate key
@@ -617,8 +617,8 @@ def cache_get(key: str) -> Optional[Any]:
     cache = get_global_cache()
     return cache.get(key)
 
-def cache_put(
     """Docstring."""
+def cache_put(
     key: str,
     value: Any,
     text_for_embedding: Optional[str] = None,
@@ -637,8 +637,8 @@ def cache_put(
     cache = get_global_cache()
     cache.put(key, value, text_for_embedding, ttl, source_engine)
 
-def cache_search_semantic(
     """Docstring."""
+def cache_search_semantic(
     query_text: str,
     threshold: Optional[float] = None,
     max_results: int = 1

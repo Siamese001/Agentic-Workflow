@@ -9,6 +9,8 @@ import logging
 import time
 import aiofiles
 from pathlib import Path
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ class ResourceManager:
     """Manages system resources with automatic cleanup."""
 
     def __init__(self, name: str = "default", max_resources: int = 1000):
-        """Initialize the resource manager.
+            """Initialize the resource manager.
 
         Args:
             name: Manager name for logging
@@ -57,7 +59,7 @@ class ResourceManager:
         logger.debug(f"Initialized ResourceManager: {name}")
 
     async def start(self) -> None:
-        """Start the resource manager."""
+            """Start the resource manager."""
         if self._running:
             return
 
@@ -66,7 +68,7 @@ class ResourceManager:
         logger.info(f"Started ResourceManager: {self.name}")
 
     async def stop(self) -> None:
-        """Stop the resource manager and clean up all resources."""
+            """Stop the resource manager and clean up all resources."""
         if not self._running:
             return
 
@@ -86,7 +88,7 @@ class ResourceManager:
         logger.info(f"Stopped ResourceManager: {self.name}")
 
     def generate_resource_id(self) -> str:
-        """Generate a unique resource ID.
+            """Generate a unique resource ID.
 
         Returns:
             Unique resource ID
@@ -94,14 +96,14 @@ class ResourceManager:
         self._resource_counter += 1
         return f"{self.name}_res_{self._resource_counter}_{int(time.time() * 1000)}"
 
-    def register_resource(
         """Docstring."""
+    def register_resource(
         self,
         resource_type: ResourceType,
         cleanup_callback: Optional[Callable] = None,
         metadata: Optional[Dict[str, Any]] = None
     ) -> str:
-        """Register a resource for tracking.
+            """Register a resource for tracking.
 
         Args:
             resource_type: Type of resource
@@ -132,7 +134,7 @@ class ResourceManager:
             return resource_id
 
     def update_last_used(self, resource_id: str) -> None:
-        """# SQL removed: Update the last used time for a resource.
+            """# SQL removed: Update the last used time for a resource.
 
         Args:
             resource_id: ID of the resource
@@ -142,7 +144,7 @@ class ResourceManager:
                 self._resources[resource_id].last_used = time.time()
 
     def unregister_resource(self, resource_id: str) -> bool:
-        """Unregister and cleanup a resource.
+            """Unregister and cleanup a resource.
 
         Args:
             resource_id: ID of the resource
@@ -169,7 +171,7 @@ class ResourceManager:
             return True
 
     async def cleanup_all(self) -> int:
-        """Clean up all registered resources.
+            """Clean up all registered resources.
 
         Returns:
             Number of resources cleaned up
@@ -186,7 +188,7 @@ class ResourceManager:
         return cleaned
 
     def _force_cleanup(self) -> None:
-        """Force cleanup of oldest unused resources."""
+            """Force cleanup of oldest unused resources."""
         cutoff_time = time.time() - 300  # 5 minutes
         to_remove = []
 
@@ -200,7 +202,7 @@ class ResourceManager:
         logger.debug(f"Force cleaned up {len(to_remove)} old resources")
 
     async def _cleanup_loop(self) -> None:
-        """Background cleanup loop."""
+            """Background cleanup loop."""
         while self._running:
             try:
                 await asyncio.sleep(60)  # Cleanup every minute
@@ -227,7 +229,7 @@ class ResourceManager:
 
     @contextmanager
     def managed_file(self, file_path: Union[str, Path], mode: str = 'r'):
-        """Context manager for managed file operations.
+            """Context manager for managed file operations.
 
         Args:
             file_path: Path to the file
@@ -250,7 +252,7 @@ class ResourceManager:
 
     @asynccontextmanager
     async def managed_async_file(self, file_path: Union[str, Path], mode: str = 'r'):
-        """Context manager for managed async file operations.
+            """Context manager for managed async file operations.
 
         Args:
             file_path: Path to the file
@@ -273,7 +275,7 @@ class ResourceManager:
 
     @asynccontextmanager
     async def atomic_write(self, file_path: Union[str, Path], temp_suffix: str = ".tmp"):
-        """Context manager for atomic file writes.
+            """Context manager for atomic file writes.
 
         Args:
             file_path: Target file path
@@ -317,7 +319,7 @@ class ResourceManager:
             self.unregister_resource(resource_id)
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get resource manager statistics.
+            """Get resource manager statistics.
 
         Returns:
             Statistics dictionary
@@ -370,7 +372,7 @@ class ConnectionPool:
     """Simple connection pool for reusing connections."""
 
     def __init__(self, name: str, max_connections: int = 10):
-        """Initialize the connection pool.
+            """Initialize the connection pool.
 
         Args:
             name: Pool name
@@ -384,7 +386,7 @@ class ConnectionPool:
         self._lock = asyncio.Lock()
 
     async def get_connection(self, create_func: Callable[[], Any]) -> Any:
-        """Get a connection from the pool.
+            """Get a connection from the pool.
 
         Args:
             create_func: Function to create new connection
@@ -402,7 +404,7 @@ class ConnectionPool:
                 return await create_func()
 
     async def return_connection(self, connection: Any) -> None:
-        """Return a connection to the pool.
+            """Return a connection to the pool.
 
         Args:
             connection: Connection to return
@@ -414,7 +416,7 @@ class ConnectionPool:
             pass
 
     async def close_all(self) -> None:
-        """Close all connections in the pool."""
+            """Close all connections in the pool."""
         while not self._available.empty():
             try:
                 connection = self._available.get_nowait()

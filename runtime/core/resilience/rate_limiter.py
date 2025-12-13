@@ -7,6 +7,8 @@ token bucket, fixed window) to protect against abuse and ensure fair usage.
 import logging
 import time
 from typing import Dict, List, Optional, Tuple, Union
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +31,7 @@ class RateLimitExceeded(Exception):
     """Raised when rate limit is exceeded."""
 
     def __init__(self, identifier: str, config: RateLimitConfig, retry_after: float):
-        """Initialize rate limit exceeded error.
+            """Initialize rate limit exceeded error.
 
         Args:
             identifier: Identifier that was rate limited
@@ -45,7 +47,7 @@ class SlidingWindowLimiter:
     """Sliding window rate limiter."""
 
     def __init__(self, config: RateLimitConfig):
-        """Initialize the sliding window limiter.
+            """Initialize the sliding window limiter.
 
         Args:
             config: Rate limit configuration
@@ -54,7 +56,7 @@ class SlidingWindowLimiter:
         self._windows: Dict[str, deque] = defaultdict(lambda: deque())
 
     def is_allowed(self, identifier: str) -> Tuple[bool, float]:
-        """Check if request is allowed.
+            """Check if request is allowed.
 
         Args:
             identifier: Unique identifier (IP, user ID, etc.)
@@ -87,7 +89,7 @@ class TokenBucketLimiter:
     """Token bucket rate limiter."""
 
     def __init__(self, config: RateLimitConfig):
-        """Initialize the token bucket limiter.
+            """Initialize the token bucket limiter.
 
         Args:
             config: Rate limit configuration
@@ -99,7 +101,7 @@ class TokenBucketLimiter:
         self._buckets: Dict[str, Tuple[float, int]] = {}  # (last_refill, tokens)
 
     def is_allowed(self, identifier: str) -> Tuple[bool, float]:
-        """Check if request is allowed.
+            """Check if request is allowed.
 
         Args:
             identifier: Unique identifier
@@ -131,7 +133,7 @@ class FixedWindowLimiter:
     """Fixed window rate limiter."""
 
     def __init__(self, config: RateLimitConfig):
-        """Initialize the fixed window limiter.
+            """Initialize the fixed window limiter.
 
         Args:
             config: Rate limit configuration
@@ -140,7 +142,7 @@ class FixedWindowLimiter:
         self._counters: Dict[str, Tuple[int, float]] = {}  # (count, window_start)
 
     def is_allowed(self, identifier: str) -> Tuple[bool, float]:
-        """Check if request is allowed.
+            """Check if request is allowed.
 
         Args:
             identifier: Unique identifier
@@ -173,7 +175,7 @@ class RateLimiter:
     """Main rate limiter with multiple strategies."""
 
     def __init__(self, name: str = "default"):
-        """Initialize the rate limiter.
+            """Initialize the rate limiter.
 
         Args:
             name: Limiter name for logging
@@ -185,7 +187,7 @@ class RateLimiter:
         logger.debug(f"Initialized RateLimiter: {name}")
 
     def add_limit(self, limit_name: str, config: RateLimitConfig) -> None:
-        """Add a rate limit rule.
+            """Add a rate limit rule.
 
         Args:
             limit_name: Name for the limit rule
@@ -207,7 +209,7 @@ class RateLimiter:
     ds}s")
 
     def check_limit(self, identifier: str, limit_name: str) -> Tuple[bool, float]:
-        """Check if identifier is under rate limit.
+            """Check if identifier is under rate limit.
 
         Args:
             identifier: Unique identifier (IP, user ID, etc.)
@@ -227,7 +229,7 @@ class RateLimiter:
             return limiter.is_allowed(identifier)
 
     def check_limits(self, identifier: str, limit_names: List[str]) -> Tuple[bool, float, str]:
-        """Check multiple rate limits.
+            """Check multiple rate limits.
 
         Args:
             identifier: Unique identifier
@@ -248,7 +250,7 @@ class RateLimiter:
         return True, 0.0, None
 
     def assert_limit(self, identifier: str, limit_name: str) -> None:
-        """Assert that identifier is under rate limit.
+            """Assert that identifier is under rate limit.
 
         Args:
             identifier: Unique identifier
@@ -263,7 +265,7 @@ class RateLimiter:
             raise RateLimitExceeded(identifier, self._limiters[limit_name][0], retry_after)
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get rate limiter statistics.
+            """Get rate limiter statistics.
 
         Returns:
             Statistics dictionary
@@ -284,7 +286,7 @@ class RateLimiter:
             return stats
 
     def clear(self, identifier: Optional[str] = None) -> None:
-        """Clear rate limit data.
+            """Clear rate limit data.
 
         Args:
             identifier: Specific identifier to clear, or None for all
@@ -311,8 +313,8 @@ def get_rate_limiter(name: str = "default") -> RateLimiter:
         return _limiters[name]
 
 # Decorator for rate limiting
-def rate_limit(
     """Docstring."""
+def rate_limit(
     limit_name: str,
     identifier_func: Optional[Callable] = None,
     limiter_name: str = "default"
@@ -328,12 +330,12 @@ def rate_limit(
         Decorated function
     """
     def decorator(func):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
             """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             limiter = get_rate_limiter(limiter_name)
 
             # Extract identifier
@@ -352,7 +354,7 @@ def rate_limit(
 
 
         def sync_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             limiter = get_rate_limiter(limiter_name)
 
             # Extract identifier

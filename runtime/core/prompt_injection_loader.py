@@ -28,7 +28,7 @@ class PromptInjectionLoader:
     """Loads and applies prompt injection patterns."""
 
     def __init__(self, config: Optional[InjectionConfig] = None):
-        """Initialize the injection loader.
+            """Initialize the injection loader.
 
         Args:
             config: Optional configuration
@@ -43,7 +43,7 @@ class PromptInjectionLoader:
         logger.info(f"Initialized PromptInjectionLoader with {len(self.injections)} patterns")
 
     def _load_injections(self) -> None:
-        """Load injection patterns from files."""
+            """Load injection patterns from files."""
         injection_dir = self.config.injection_dir
 
         # Create directory if it doesn't exist
@@ -78,7 +78,7 @@ class PromptInjectionLoader:
         self._load_instructional_injections()
 
     def _load_instructional_injections(self) -> None:
-        """Load all 30 instructional injection patterns."""
+            """Load all 30 instructional injection patterns."""
         instructional_injections = get_instructional_injections()
 
         for injection in instructional_injections:
@@ -104,7 +104,7 @@ class PromptInjectionLoader:
             logger.debug(f"Loaded instructional injection {injection.id}")
 
     def _create_builtin_injections(self) -> None:
-        """Create built-in injection patterns."""
+            """Create built-in injection patterns."""
         builtin_injections = [
             # Resume enhancement injections
             InjectionPattern(
@@ -218,15 +218,15 @@ class PromptInjectionLoader:
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(injection.dict(), f, indent=2)
 
-    def find_matching_injections(
         """Docstring."""
+    def find_matching_injections(
         self,
         hop_type: str,
         stage: str,
         context: Dict[str, Any],
         content: Optional[str] = None
     ) -> List[InjectionMatch]:
-        """Find injections matching the given context.
+            """Find injections matching the given context.
 
         Args:
             hop_type: Type of hop executing
@@ -321,7 +321,7 @@ class PromptInjectionLoader:
         content: Optional[str],
         base_score: float = 0.0
     ) -> float:
-        """Calculate relevance score for an injection."""
+            """Calculate relevance score for an injection."""
         score = base_score
 
         # Check hop type match
@@ -369,7 +369,7 @@ class PromptInjectionLoader:
         context: Dict[str, Any],
         content: Optional[str]
     ) -> Dict[str, Any]:
-        """Extract variable values from context."""
+            """Extract variable values from context."""
         values = {}
 
         for var in injection.variables:
@@ -390,7 +390,7 @@ class PromptInjectionLoader:
         return values
 
     def _generate_keywords(self, role: str) -> str:
-        """Generate relevant keywords for a role."""
+            """Generate relevant keywords for a role."""
         keyword_map = {
             "software engineer": "Python, JavaScript, React, Node.js, AWS, Git, Agile, REST APIs, Mi
     croservices",
@@ -411,13 +411,13 @@ class PromptInjectionLoader:
             Problem-solving,
             Innovation")
 
-    def apply_injections(
         """Docstring."""
+    def apply_injections(
         self,
         base_prompt: str,
         matches: List[InjectionMatch]
     ) -> str:
-        """Apply injection patterns to a base prompt.
+            """Apply injection patterns to a base prompt.
 
         Args:
             base_prompt: The base prompt to enhance
@@ -467,8 +467,8 @@ class PromptInjectionLoader:
 
         return enhanced + metadata
 
-    def apply_with_semantic_fencing(
         """Docstring."""
+    def apply_with_semantic_fencing(
         self,
         role: str,
         objective: str,
@@ -477,7 +477,7 @@ class PromptInjectionLoader:
         hop_type: str,
         additional_constraints: Optional[List[str]] = None
     ) -> str:
-        """Apply injections using semantic fencing (new recommended method).
+            """Apply injections using semantic fencing (new recommended method).
 
         Args:
             role: Agent role
@@ -519,7 +519,7 @@ class PromptInjectionLoader:
         )
 
     def get_injection_stats(self) -> Dict[str, Any]:
-        """Get statistics about loaded injections."""
+            """Get statistics about loaded injections."""
         type_counts = {}
         for injection in self.injections.values():
             type_name = injection.type.value
@@ -557,8 +557,8 @@ def get_injection_loader(**kwargs) -> PromptInjectionLoader:
     return _injection_loader
 
 # Convenience functions
-def enhance_prompt(
     """Docstring."""
+def enhance_prompt(
     base_prompt: str,
     hop_type: str,
     stage: str,

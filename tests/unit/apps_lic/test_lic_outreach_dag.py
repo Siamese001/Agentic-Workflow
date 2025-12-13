@@ -6,6 +6,7 @@
 """Tests for OutreachStack coordination logic."""
 import pytest
 from typing import Dict, Any
+from dataclasses import dataclass
 
 # Mock implementations for testing
 @dataclass
@@ -46,7 +47,7 @@ class OutreachStack:
         self.architect = type('architect', (), {'compose': lambda msg: msg})()
 
     def run(self, inputs: StackInputs) -> Dict[str, Any]:
-        """Docstring."""
+            """Docstring."""
         return {
             "draft": "Subject: Hi\n\nBody",
             "verdict": type('verdict', (), {'passed': True})()

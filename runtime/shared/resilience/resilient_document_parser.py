@@ -17,6 +17,7 @@ import os
 from typing import Any, Dict, List, Optional, Union, Tuple, BinaryIO, AsyncIterator
 from pathlib import Path
 from enum import Enum
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ class ParseResult:
     processing_time_seconds: float = 0.0
 
     def add_warning(self, warning: str) -> None:
-        """Add a warning message."""
+            """Add a warning message."""
         self.warnings.append(warning)
 
 @dataclass
@@ -102,15 +103,15 @@ class BaseDocumentParser:
         self.logger = logging.getLogger(f"Parser.{name}")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
-        """Check if this parser can handle the file."""
+            """Check if this parser can handle the file."""
         raise NotImplementedError
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
-        """Parse the document."""
+            """Parse the document."""
         raise NotImplementedError
 
     async def parse_stream(self, stream: BinaryIO, config: ParserConfig) -> ParseResult:
-        """Parse from a stream."""
+            """Parse from a stream."""
         # Default implementation writes to temp file
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             tmp.write(stream.read())
@@ -128,11 +129,11 @@ class PDFParserPyPDF2(BaseDocumentParser):
         super().__init__("pypdf2")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
-        """Docstring."""
+            """Docstring."""
         return file_type == DocumentType.PDF
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
-        """Docstring."""
+            """Docstring."""
         import PyPDF2
 
         result = ParseResult(
@@ -181,11 +182,11 @@ class PDFParserPDFPlumber(BaseDocumentParser):
         super().__init__("pdfplumber")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
-        """Docstring."""
+            """Docstring."""
         return file_type == DocumentType.PDF
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
-        """Docstring."""
+            """Docstring."""
         import pdfplumber
 
         result = ParseResult(
@@ -236,7 +237,7 @@ class PDFParserPDFPlumber(BaseDocumentParser):
         return result
 
     def _table_to_text(self, table: List[List[str]]) -> str:
-        """Convert table to text format."""
+            """Convert table to text format."""
         if not table:
             return ""
 
@@ -255,11 +256,11 @@ class PDFParserPyMuPDF(BaseDocumentParser):
         super().__init__("pymupdf")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
-        """Docstring."""
+            """Docstring."""
         return file_type == DocumentType.PDF
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
-        """Docstring."""
+            """Docstring."""
         import fitz
 
         result = ParseResult(
@@ -309,11 +310,11 @@ class DOCXParserPythonDocx(BaseDocumentParser):
         super().__init__("python-docx")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
-        """Docstring."""
+            """Docstring."""
         return file_type == DocumentType.DOCX
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
-        """Docstring."""
+            """Docstring."""
         from docx import Document
 
         result = ParseResult(
@@ -359,7 +360,7 @@ class DOCXParserPythonDocx(BaseDocumentParser):
         return result
 
     def _table_to_text(self, table) -> str:
-        """Convert table to text format."""
+            """Convert table to text format."""
         rows = []
         for row in table.rows:
             cells = [cell.text for cell in row.cells]
@@ -373,11 +374,11 @@ class TextParser(BaseDocumentParser):
         super().__init__("text")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
-        """Docstring."""
+            """Docstring."""
         return file_type in [DocumentType.TXT, DocumentType.MD, DocumentType.RTF]
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
-        """Docstring."""
+            """Docstring."""
         result = ParseResult(
             content="",
             metadata={},
@@ -425,11 +426,11 @@ class HTMLParser(BaseDocumentParser):
         super().__init__("beautifulsoup")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
-        """Docstring."""
+            """Docstring."""
         return file_type == DocumentType.HTML
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
-        """Docstring."""
+            """Docstring."""
 
         result = ParseResult(
             content="",
@@ -484,7 +485,7 @@ class ResilientDocumentParser:
     """
 
     def __init__(self, config: Optional[ParserConfig] = None):
-        """Initialize resilient document parser.
+            """Initialize resilient document parser.
 
         Args:
             config: Parser configuration
@@ -524,13 +525,13 @@ class ResilientDocumentParser:
         for parsers in self.parsers.values():
             self.stats["total_parsers"] += len(parsers)
 
-    async def parse_document(
         """Docstring."""
+    async def parse_document(
         self,
         file_path: Union[str, Path],
         chunk: bool = False
     ) -> ParseResult:
-        """Parse a document with fallbacks.
+            """Parse a document with fallbacks.
 
         Args:
             file_path: Path to the document
@@ -603,15 +604,15 @@ class ResilientDocumentParser:
 
         return result
 
-    async def parse_stream(
         """Docstring."""
+    async def parse_stream(
         self,
         stream: BinaryIO,
         file_type: DocumentType,
         filename: str = "stream",
         chunk: bool = False
     ) -> ParseResult:
-        """Parse from a stream with fallbacks.
+            """Parse from a stream with fallbacks.
 
         Args:
             stream: Binary stream
@@ -674,13 +675,13 @@ class ResilientDocumentParser:
 
         return result
 
-    async def parse_large_document(
         """Docstring."""
+    async def parse_large_document(
         self,
         file_path: Union[str, Path],
         chunk_size: Optional[int] = None
     ) -> AsyncIterator[DocumentChunk]:
-        """Parse a large document in chunks.
+            """Parse a large document in chunks.
 
         Args:
             file_path: Path to the document
@@ -721,7 +722,7 @@ class ResilientDocumentParser:
             yield chunk
 
     def _detect_file_type(self, file_path: Path) -> DocumentType:
-        """Detect document type from file extension."""
+            """Detect document type from file extension."""
         ext = file_path.suffix.lower()
 
         type_map = {
@@ -745,7 +746,7 @@ class ResilientDocumentParser:
         content: str,
         chunk_size: Optional[int] = None
     ) -> List[str]:
-        """Chunk content into smaller pieces.
+            """Chunk content into smaller pieces.
 
         Args:
             content: Text to chunk
@@ -766,7 +767,7 @@ class ResilientDocumentParser:
             return self._chunk_by_chars(content, chunk_size, overlap)
 
     def _chunk_by_chars(self, content: str, chunk_size: int, overlap: int) -> List[str]:
-        """Chunk content by characters with overlap."""
+            """Chunk content by characters with overlap."""
         chunks = []
         start = 0
 
@@ -782,7 +783,7 @@ class ResilientDocumentParser:
         return chunks
 
     def _chunk_by_sentences(self, content: str, chunk_size: int, overlap: int) -> List[str]:
-        """Chunk content respecting sentence boundaries."""
+            """Chunk content respecting sentence boundaries."""
         import re
 
         # Split into sentences
@@ -820,7 +821,7 @@ class ResilientDocumentParser:
         return chunks
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get parsing statistics."""
+            """Get parsing statistics."""
         total = self.stats["successful_parses"] + self.stats["failed_parses"]
         success_rate = self.stats["successful_parses"] / total if total > 0 else 0
 
@@ -831,7 +832,7 @@ class ResilientDocumentParser:
         }
 
     def add_parser(self, file_type: DocumentType, parser: BaseDocumentParser) -> None:
-        """Add a new parser for a file type.
+            """Add a new parser for a file type.
 
         Args:
             file_type: Document type

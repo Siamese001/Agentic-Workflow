@@ -20,7 +20,7 @@ class MockCognitivePlane(ICognitivePlane):
     """
 
     def __init__(self, predefined_plans: List[Dict[str, Any]] = None):
-        """Initialize mock cognitive plane.
+            """Initialize mock cognitive plane.
 
         Args:
             predefined_plans: Optional list of plans to return
@@ -30,7 +30,7 @@ class MockCognitivePlane(ICognitivePlane):
         self.call_history: List[Dict[str, Any]] = []
 
     async def plan(self, request: PlanningRequest) -> PlanningResult:
-        """Generate a mock plan.
+            """Generate a mock plan.
 
         Args:
             request: Planning request
@@ -69,14 +69,14 @@ class MockCognitivePlane(ICognitivePlane):
             metadata={"mock": True},
         )
 
-    async def reason(
         """Docstring."""
+    async def reason(
         self,
         query: str,
         context: Dict[str, Any],
         mode: str = "react",
     ) -> Dict[str, Any]:
-        """Apply mock reasoning.
+            """Apply mock reasoning.
 
         Args:
             query: Query to reason about
@@ -103,13 +103,13 @@ class MockCognitivePlane(ICognitivePlane):
             "mission_complete": False,
         }
 
-    async def decide(
         """Docstring."""
+    async def decide(
         self,
         options: List[Dict[str, Any]],
         criteria: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Make a mock decision.
+            """Make a mock decision.
 
         Args:
             options: Options to choose from
@@ -132,13 +132,13 @@ class MockCognitivePlane(ICognitivePlane):
             "confidence": 0.8,
         }
 
-    async def reflect(
         """Docstring."""
+    async def reflect(
         self,
         execution_trace: List[Dict[str, Any]],
         outcome: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Mock reflection.
+            """Mock reflection.
 
         Args:
             execution_trace: Execution history
@@ -160,7 +160,7 @@ class MockCognitivePlane(ICognitivePlane):
         }
 
     def get_capabilities(self) -> List[CognitiveCapability]:
-        """Get mock capabilities.
+            """Get mock capabilities.
 
         Returns:
             All cognitive capabilities
@@ -168,6 +168,6 @@ class MockCognitivePlane(ICognitivePlane):
         return list(CognitiveCapability)
 
     def reset(self) -> None:
-        """Reset mock state."""
+            """Reset mock state."""
         self.plan_index = 0
         self.call_history.clear()

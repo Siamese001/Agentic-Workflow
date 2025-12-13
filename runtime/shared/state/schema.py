@@ -8,6 +8,7 @@ Phase 3 - Atomic State Persistence
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+from enum import Enum
 
 class BackendType(str, Enum):
     """Storage backend types for state persistence."""
@@ -72,13 +73,13 @@ class WorkflowState(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
     class Config:
-        """Pydantic configuration."""
+            """Pydantic configuration."""
         json_encoders = {
             datetime: lambda v: v.isoformat(),
         }
 
-    def add_execution(
         """Docstring."""
+    def add_execution(
         self,
         k_node_index: int,
         k_node_name: str,
@@ -89,7 +90,7 @@ class WorkflowState(BaseModel):
         error: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """Add a K-Node execution to the log.
+            """Add a K-Node execution to the log.
 
         Args:
             k_node_index: Index of the K-Node
@@ -119,39 +120,39 @@ class WorkflowState(BaseModel):
             self.current_k_node = k_node_index + 1
 
     def get_last_execution(self) -> Optional[KNodeExecution]:
-        """Get the most recent K-Node execution."""
+            """Get the most recent K-Node execution."""
         if self.execution_log:
             return self.execution_log[-1]
         return None
 
     def get_successful_executions(self) -> List[KNodeExecution]:
-        """Get all successful K-Node executions."""
+            """Get all successful K-Node executions."""
         return [exec for exec in self.execution_log if exec.success]
 
     def is_complete(self) -> bool:
-        """Check if workflow has completed all K-Nodes."""
+            """Check if workflow has completed all K-Nodes."""
         return self.current_k_node >= self.total_k_nodes
 
     def get_progress_percentage(self) -> float:
-        """Get workflow completion percentage."""
+            """Get workflow completion percentage."""
         if self.total_k_nodes == 0:
             return 0.0
         return (self.current_k_node / self.total_k_nodes) * 100.0
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for serialization."""
+            """Convert to dictionary for serialization."""
         return self.dict()
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "WorkflowState":
-        """Create WorkflowState from dictionary."""
+            """Create WorkflowState from dictionary."""
         return cls(**data)
 
     def to_json(self) -> str:
-        """Convert to JSON string."""
+            """Convert to JSON string."""
         return self.json()
 
     @classmethod
     def from_json(cls, json_str: str) -> "WorkflowState":
-        """Create WorkflowState from JSON string."""
+            """Create WorkflowState from JSON string."""
         return cls.parse_raw(json_str)

@@ -9,6 +9,7 @@ import time
 import logging
 from typing import Dict, Any, Optional, List
 from datetime import datetime
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class OperationMetrics:
     timestamp: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for logging."""
+            """Convert to dictionary for logging."""
         return {
             "component": self.component,
             "operation": self.operation,
@@ -45,7 +46,7 @@ class SystemTelemetry:
     """
 
     def __init__(self):
-        """Initialize telemetry system."""
+            """Initialize telemetry system."""
         self._metrics: List[OperationMetrics] = []
         self._component_stats: Dict[str, Dict[str, Any]] = defaultdict(
             lambda: {
@@ -60,8 +61,8 @@ class SystemTelemetry:
 
         logger.info("SystemTelemetry initialized")
 
-    def log_operation(
         """Docstring."""
+    def log_operation(
         self,
         component: str,
         operation: str,
@@ -69,7 +70,7 @@ class SystemTelemetry:
         tokens: int = 0,
         error: Optional[str] = None
     ) -> None:
-        """Log an operation with metrics.
+            """Log an operation with metrics.
 
         Args:
             component: Component name (e.g., "HardenedGeminiExecutor")
@@ -122,7 +123,7 @@ class SystemTelemetry:
             self._metrics = self._metrics[-10000:]
 
     def get_component_stats(self, component: str) -> Dict[str, Any]:
-        """Get statistics for a specific component.
+            """Get statistics for a specific component.
 
         Args:
             component: Component name
@@ -156,7 +157,7 @@ class SystemTelemetry:
         }
 
     def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
-        """Get statistics for all components.
+            """Get statistics for all components.
 
         Returns:
             Dictionary mapping component names to their statistics
@@ -167,7 +168,7 @@ class SystemTelemetry:
         }
 
     def get_recent_metrics(self, limit: int = 100) -> List[Dict[str, Any]]:
-        """Get recent operation metrics.
+            """Get recent operation metrics.
 
         Args:
             limit: Maximum number of metrics to return
@@ -178,13 +179,13 @@ class SystemTelemetry:
         return [m.to_dict() for m in self._metrics[-limit:]]
 
     def clear_metrics(self) -> None:
-        """Clear all stored metrics and statistics."""
+            """Clear all stored metrics and statistics."""
         self._metrics.clear()
         self._component_stats.clear()
         logger.info("SystemTelemetry metrics cleared")
 
     def export_metrics(self) -> Dict[str, Any]:
-        """Export all metrics and statistics.
+            """Export all metrics and statistics.
 
         Returns:
             Complete telemetry data

@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
         # Mock router
         async def mock_execute(tier, prompt, **kwargs):
-            """Docstring."""
+                """Docstring."""
             return AgentResponse(
                 content="Response",
                 finish_reason="stop",

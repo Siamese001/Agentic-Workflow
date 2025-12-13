@@ -4,6 +4,8 @@ Tests security control operations including guardrails.
 """
 import re
 from typing import Dict, List
+from enum import Enum
+from dataclasses import dataclass
 
 class ThreatLevel(Enum):
     """TODO: Add docstring."""
@@ -15,8 +17,6 @@ class ThreatLevel(Enum):
     CRITICAL = "critical"
 
 @dataclass
-    """TODO: Add docstring."""
-
 class SecurityCheckResult:
     """Docstring."""
     passed: bool
@@ -244,8 +244,6 @@ class TestSecurityAudit:
     def test_security_event_logged(self):
         """Security events are logged."""
         audit_log: List[Dict] = []
-            """TODO: Add docstring."""
-
 
         def log_security_event(event_type: str, details: Dict):
             """Docstring."""

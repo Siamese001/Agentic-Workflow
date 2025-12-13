@@ -15,6 +15,8 @@ import asyncio
 import json
 from typing import Dict, Any, Optional, Type, List, Union
 from pydantic import BaseModel, ValidationError
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ class SchemaEnforcement:
     """Handles Pydantic schema validation for node outputs."""
 
     def __init__(self, schema_registry: Dict[str, Type[BaseModel]]):
-        """Initialize with schema registry.
+            """Initialize with schema registry.
 
         Args:
             schema_registry: Mapping from model names to Pydantic classes
@@ -55,13 +57,13 @@ class SchemaEnforcement:
         self.schema_registry = schema_registry
         self.logger = logging.getLogger("SchemaEnforcement")
 
-    def validate_output(
         """Docstring."""
+    def validate_output(
         self,
         context: NodeExecutionContext,
         raw_output: str
     ) -> BaseModel:
-        """Validate raw output against schema.
+            """Validate raw output against schema.
 
         Args:
             context: Execution context
@@ -78,7 +80,7 @@ class SchemaEnforcement:
         if not schema_config.get("enabled", False):
             # No schema enforcement, return raw output
             class RawOutput(BaseModel):
-                """TODO: Add docstring."""
+                    """TODO: Add docstring."""
 
                 content: str = raw_output
             return RawOutput(content=raw_output)
@@ -124,7 +126,7 @@ class CognitiveConstraints:
     """Handles negative constraints and governance policies."""
 
     def build_constraint_block(self, node_config: Dict[str, Any]) -> str:
-        """Build governance barrier from constraints.
+            """Build governance barrier from constraints.
 
         Args:
             node_config: Node configuration
@@ -158,13 +160,13 @@ class CognitiveConstraints:
 
         return constraint_block
 
-    def apply_constraints_to_prompt(
         """Docstring."""
+    def apply_constraints_to_prompt(
         self,
         base_prompt: str,
         node_config: Dict[str, Any]
     ) -> str:
-        """Apply constraints to system prompt.
+            """Apply constraints to system prompt.
 
         Args:
             base_prompt: Base system prompt
@@ -180,7 +182,7 @@ class CognitiveTelemetry:
     """Handles telemetry and observability for cognitive operations."""
 
     def __init__(self, provider: str = "langsmith", config: Optional[Dict] = None):
-        """Initialize telemetry provider.
+            """Initialize telemetry provider.
 
         Args:
             provider: Telemetry provider (langsmith, custom, etc.)
@@ -194,7 +196,7 @@ class CognitiveTelemetry:
         self.tracer = self._initialize_tracer()
 
     def _initialize_tracer(self):
-        """Initialize the appropriate tracer."""
+            """Initialize the appropriate tracer."""
         if self.provider == "langsmith":
             try:
                 return Client()
@@ -205,7 +207,7 @@ class CognitiveTelemetry:
             return MockTracer()
 
     def start_span(self, context: NodeExecutionContext):
-        """Start a telemetry span for the node.
+            """Start a telemetry span for the node.
 
         Args:
             context: Execution context
@@ -226,7 +228,7 @@ class CognitiveTelemetry:
             context.telemetry_span.set_tag("model_version", context.selected_model)
 
     def end_span(self, context: NodeExecutionContext, metrics: Dict[str, Any]):
-        """End telemetry span with metrics.
+            """End telemetry span with metrics.
 
         Args:
             context: Execution context
@@ -245,7 +247,7 @@ class CognitiveTelemetry:
         context.telemetry_span.finish()
 
     def calculate_cost(self, model: str, input_tokens: int, output_tokens: int) -> float:
-        """Calculate cost in USD.
+            """Calculate cost in USD.
 
         Args:
             model: Model name
@@ -274,7 +276,7 @@ class ModelRouter:
     """Handles dynamic model routing based on compute tier and cost optimization."""
 
     def __init__(self):
-        """Initialize model router."""
+            """Initialize model router."""
         self.model_configs = {
             ComputeTier.TIER_1_REASONING: {
                 "primary": "claude-3-5-sonnet-20241022",
@@ -299,7 +301,7 @@ class ModelRouter:
         self.logger = logging.getLogger("ModelRouter")
 
     def select_model(self, context: NodeExecutionContext) -> str:
-        """# SQL removed: Select appropriate model based on infrastructure config.
+            """# SQL removed: Select appropriate model based on infrastructure config.
 
         Args:
             context: Execution context
@@ -329,7 +331,7 @@ class ModelRouter:
             return context.selected_model
 
     def get_model_config(self, model: str) -> Dict[str, Any]:
-        """Get configuration for a specific model.
+            """Get configuration for a specific model.
 
         Args:
             model: Model name
@@ -352,14 +354,14 @@ class MockTracer:
     """Mock tracer for when telemetry provider is not available."""
 
     def start_span(self, name: str):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         return MockSpan()
 
         """TODO: Add docstring."""
 
     def finish(self):
-        """Docstring."""
+            """Docstring."""
         pass
 
 class MockSpan:
@@ -368,18 +370,18 @@ class MockSpan:
 
 
     def set_tag(self, key: str, value: str):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         pass
 
         """TODO: Add docstring."""
 
     def set_metric(self, key: str, value: Union[int, float]):
-        """Docstring."""
+            """Docstring."""
         pass
 
     def finish(self):
-        """Docstring."""
+            """Docstring."""
         pass
 
 class NodeExecutor:
@@ -390,7 +392,7 @@ class NodeExecutor:
         schema_registry: Dict[str, Type[BaseModel]],
         telemetry_config: Optional[Dict] = None
     ):
-        """Initialize the node executor.
+            """Initialize the node executor.
 
         Args:
             schema_registry: Registry of Pydantic models
@@ -407,7 +409,7 @@ class NodeExecutor:
         self.logger = logging.getLogger("NodeExecutor")
 
     async def execute_node(self, context: NodeExecutionContext) -> NodeExecutionContext:
-        """Execute a node through the full pipeline.
+            """Execute a node through the full pipeline.
 
         Args:
             context: Execution context
@@ -465,7 +467,7 @@ class NodeExecutor:
         return context
 
     async def _execute_llm(self, context: NodeExecutionContext, prompt: str) -> str:
-        """Execute the LLM (mock implementation).
+            """Execute the LLM (mock implementation).
 
         Args:
             context: Execution context
@@ -502,8 +504,8 @@ class NodeExecutor:
         return '{"content": "Mock output for testing"}'
 
 # Factory function
-def create_node_executor(
     """Docstring."""
+def create_node_executor(
     schema_registry: Optional[Dict[str, Type[BaseModel]]] = None,
     telemetry_config: Optional[Dict] = None
 ) -> NodeExecutor:

@@ -8,6 +8,7 @@ import json
 import logging
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
+from dataclasses import dataclass
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class FormatResult:
     errors: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
+            """Convert to dictionary."""
         return {
             "data": self.data,
             "format_type": self.format_type,
@@ -47,7 +48,7 @@ class FormatterStrategy(ABC):
 
     @abstractmethod
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-        """Format the data.
+            """Format the data.
 
         Args:
             data: Data to format
@@ -61,14 +62,14 @@ class FormatterStrategy(ABC):
     @property
     @abstractmethod
     def format_name(self) -> str:
-        """Get format name."""
+            """Get format name."""
         pass
 
 class DefaultFormatter(FormatterStrategy):
     """Default formatting strategy."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-        """Format data with default strategy.
+            """Format data with default strategy.
 
         Args:
             data: Data to format
@@ -100,14 +101,14 @@ class DefaultFormatter(FormatterStrategy):
 
     @property
     def format_name(self) -> str:
-        """Get format name."""
+            """Get format name."""
         return "default"
 
 class ResumeBulletFormatter(FormatterStrategy):
     """Formats resume bullet points."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-        """Format resume bullet points.
+            """Format resume bullet points.
 
         Args:
             data: Data to format
@@ -142,7 +143,7 @@ class ResumeBulletFormatter(FormatterStrategy):
             )
 
     def _format_text_to_bullets(self, text: str) -> List[str]:
-        """Format text to bullet points.
+            """Format text to bullet points.
 
         Args:
             text: Text to format
@@ -170,7 +171,7 @@ class ResumeBulletFormatter(FormatterStrategy):
         return bullets[:5]  # Limit to 5 bullets
 
     def _format_list_to_bullets(self, items: List[Any]) -> List[str]:
-        """Format list to bullet points.
+            """Format list to bullet points.
 
         Args:
             items: List of items
@@ -188,7 +189,7 @@ class ResumeBulletFormatter(FormatterStrategy):
         return bullets
 
     def _apply_config(self, bullets: List[str], config: Dict) -> List[str]:
-        """Apply configuration to bullets.
+            """Apply configuration to bullets.
 
         Args:
             bullets: List of bullets
@@ -207,7 +208,7 @@ class ResumeBulletFormatter(FormatterStrategy):
         return bullets
 
     def _ensure_metrics(self, bullet: str) -> str:
-        """Ensure bullet has metrics.
+            """Ensure bullet has metrics.
 
         Args:
             bullet: Bullet point
@@ -225,14 +226,14 @@ class ResumeBulletFormatter(FormatterStrategy):
 
     @property
     def format_name(self) -> str:
-        """Get format name."""
+            """Get format name."""
         return "resume_bullet"
 
 class ResumeSectionFormatter(FormatterStrategy):
     """Formats resume sections."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-        """Format resume section.
+            """Format resume section.
 
         Args:
             data: Data to format
@@ -261,7 +262,7 @@ class ResumeSectionFormatter(FormatterStrategy):
             )
 
     def _format_dict_section(self, data: Dict, config: Optional[Dict]) -> Dict:
-        """Format dictionary section.
+            """Format dictionary section.
 
         Args:
             data: Section data
@@ -280,7 +281,7 @@ class ResumeSectionFormatter(FormatterStrategy):
             return data
 
     def _format_experience_section(self, data: Dict) -> Dict:
-        """Format experience section.
+            """Format experience section.
 
         Args:
             data: Experience data
@@ -297,7 +298,7 @@ class ResumeSectionFormatter(FormatterStrategy):
         return data
 
     def _format_skills_section(self, data: Dict) -> Dict:
-        """Format skills section.
+            """Format skills section.
 
         Args:
             data: Skills data
@@ -313,7 +314,7 @@ class ResumeSectionFormatter(FormatterStrategy):
         return data
 
     def _is_technical_skill(self, skill: str) -> bool:
-        """Check if skill is technical.
+            """Check if skill is technical.
 
         Args:
             skill: Skill name
@@ -325,7 +326,7 @@ class ResumeSectionFormatter(FormatterStrategy):
         return any(keyword in skill.lower() for keyword in technical_keywords)
 
     def _format_text_section(self, text: str, config: Optional[Dict]) -> str:
-        """Format text section.
+            """Format text section.
 
         Args:
             text: Section text
@@ -342,14 +343,14 @@ class ResumeSectionFormatter(FormatterStrategy):
 
     @property
     def format_name(self) -> str:
-        """Get format name."""
+            """Get format name."""
         return "resume_section"
 
 class OutreachMessageFormatter(FormatterStrategy):
     """Formats outreach messages."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-        """Format outreach message.
+            """Format outreach message.
 
         Args:
             data: Data to format
@@ -380,7 +381,7 @@ class OutreachMessageFormatter(FormatterStrategy):
             )
 
     def _format_message_text(self, text: str, config: Optional[Dict]) -> str:
-        """Format message text.
+            """Format message text.
 
         Args:
             text: Message text
@@ -407,7 +408,7 @@ class OutreachMessageFormatter(FormatterStrategy):
         return text
 
     def _format_message_dict(self, data: Dict, config: Optional[Dict]) -> Dict:
-        """Format message dictionary.
+            """Format message dictionary.
 
         Args:
             data: Message data
@@ -428,14 +429,14 @@ class OutreachMessageFormatter(FormatterStrategy):
 
     @property
     def format_name(self) -> str:
-        """Get format name."""
+            """Get format name."""
         return "outreach_message"
 
 class OutreachSubjectFormatter(FormatterStrategy):
     """Formats outreach subject lines."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-        """Format outreach subject.
+            """Format outreach subject.
 
         Args:
             data: Data to format
@@ -464,7 +465,7 @@ class OutreachSubjectFormatter(FormatterStrategy):
             )
 
     def _format_subject_text(self, text: str, config: Optional[Dict]) -> str:
-        """Format subject text.
+            """Format subject text.
 
         Args:
             text: Subject text
@@ -488,14 +489,14 @@ class OutreachSubjectFormatter(FormatterStrategy):
 
     @property
     def format_name(self) -> str:
-        """Get format name."""
+            """Get format name."""
         return "outreach_subject"
 
 class JSONFormatter(FormatterStrategy):
     """Formats data as JSON."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-        """Format as JSON.
+            """Format as JSON.
 
         Args:
             data: Data to format
@@ -533,14 +534,14 @@ class JSONFormatter(FormatterStrategy):
 
     @property
     def format_name(self) -> str:
-        """Get format name."""
+            """Get format name."""
         return "json"
 
 class UnifiedFormatter:
     """Unified formatter for all engines."""
 
     def __init__(self):
-        """Initialize the unified formatter."""
+            """Initialize the unified formatter."""
         self.strategies = {
             FormatType.DEFAULT: DefaultFormatter(),
             FormatType.RESUME_BULLET: ResumeBulletFormatter(),
@@ -552,15 +553,15 @@ class UnifiedFormatter:
 
         logger.info("Initialized UnifiedFormatter")
 
-    def format(
         """Docstring."""
+    def format(
         self,
         data: Union[str, Dict, List],
         format_type: Union[FormatType, str],
         engine_type: Optional[EngineType] = None,
         config: Optional[Dict] = None
     ) -> FormatResult:
-        """Format data using specified strategy.
+            """Format data using specified strategy.
 
         Args:
             data: Data to format
@@ -597,7 +598,7 @@ class UnifiedFormatter:
         return result
 
     def register_strategy(self, format_type: FormatType, strategy: FormatterStrategy) -> None:
-        """Register a custom formatting strategy.
+            """Register a custom formatting strategy.
 
         Args:
             format_type: Format type
@@ -607,7 +608,7 @@ class UnifiedFormatter:
         logger.info(f"Registered custom strategy for {format_type.value}")
 
     def get_available_formats(self) -> List[str]:
-        """Get list of available format types.
+            """Get list of available format types.
 
         Returns:
             List of format type names
@@ -629,8 +630,8 @@ def get_unified_formatter() -> UnifiedFormatter:
     return _formatter
 
 # Convenience functions
-def format_data(
     """Docstring."""
+def format_data(
     data: Union[str, Dict, List],
     format_type: Union[FormatType, str],
     engine_type: Optional[EngineType] = None,

@@ -6,6 +6,7 @@ active voice) across all generated text in both Resume and Outreach engines.
 
 import logging
 import re
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -50,7 +51,7 @@ class ToneEnforcer:
     """Enforces tone rules across generated content."""
 
     def __init__(self):
-        """Initialize tone enforcer with default profiles."""
+            """Initialize tone enforcer with default profiles."""
         # Default tone profiles
         self.profiles: Dict[ToneVoice, ToneSettings] = self._create_default_profiles()
 
@@ -94,7 +95,7 @@ class ToneEnforcer:
         logger.info("Initialized ToneEnforcer with default profiles")
 
     def _create_default_profiles(self) -> Dict[ToneVoice, ToneSettings]:
-        """Create default tone profiles.
+            """Create default tone profiles.
 
         Returns:
             Dictionary of tone settings by voice
@@ -163,7 +164,7 @@ class ToneEnforcer:
         }
 
     def audit_content(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
-        """Audit content for tone violations.
+            """Audit content for tone violations.
 
         Args:
             text: Text to audit
@@ -195,7 +196,7 @@ class ToneEnforcer:
         return violations
 
     def _check_sentence_length(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
-        """Check sentence length violations.
+            """Check sentence length violations.
 
         Args:
             text: Text to check
@@ -238,7 +239,7 @@ class ToneEnforcer:
         return violations
 
     def _check_banned_words(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
-        """Check for banned words.
+            """Check for banned words.
 
         Args:
             text: Text to check
@@ -267,7 +268,7 @@ class ToneEnforcer:
         return violations
 
     def _check_required_keywords(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
-        """Check for required keywords.
+            """Check for required keywords.
 
         Args:
             text: Text to check
@@ -295,7 +296,7 @@ class ToneEnforcer:
         return violations
 
     def _check_voice_consistency(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
-        """Check voice consistency with primary voice.
+            """Check voice consistency with primary voice.
 
         Args:
             text: Text to check
@@ -342,7 +343,7 @@ class ToneEnforcer:
         return violations
 
     def _check_passive_voice(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
-        """Check for excessive passive voice.
+            """Check for excessive passive voice.
 
         Args:
             text: Text to check
@@ -384,7 +385,7 @@ class ToneEnforcer:
         return violations
 
     def _check_formality(self, text: str, settings: ToneSettings) -> List[ToneViolation]:
-        """Check formality level compliance.
+            """Check formality level compliance.
 
         Args:
             text: Text to check
@@ -434,7 +435,7 @@ class ToneEnforcer:
         return violations
 
     def analyze_tone(self, text: str) -> ToneAnalysisResult:
-        """Analyze tone of text and detect voice.
+            """Analyze tone of text and detect voice.
 
         Args:
             text: Text to analyze
@@ -466,7 +467,7 @@ class ToneEnforcer:
         )
 
     def _detect_voice(self, text: str) -> ToneVoice:
-        """Detect the dominant voice in text.
+            """Detect the dominant voice in text.
 
         Args:
             text: Text to analyze
@@ -499,7 +500,7 @@ class ToneEnforcer:
         return ToneVoice.AUTHORITATIVE  # Default
 
     def _calculate_compliance_score(self, violations: List[ToneViolation]) -> float:
-        """Calculate overall compliance score.
+            """Calculate overall compliance score.
 
         Args:
             violations: List of violations
@@ -520,7 +521,7 @@ class ToneEnforcer:
         return score
 
     def _calculate_metrics(self, text: str, violations: List[ToneViolation]) -> Dict[str, float]:
-        """Calculate analysis metrics.
+            """Calculate analysis metrics.
 
         Args:
             text: Analyzed text
@@ -546,7 +547,7 @@ class ToneEnforcer:
         }
 
     def get_profile(self, voice: ToneVoice) -> ToneSettings:
-        """Get tone profile for a voice.
+            """Get tone profile for a voice.
 
         Args:
             voice: Voice type
@@ -556,13 +557,13 @@ class ToneEnforcer:
         """
         return self.profiles.get(voice, self.profiles[ToneVoice.AUTHORITATIVE])
 
-    def create_custom_profile(
         """Docstring."""
+    def create_custom_profile(
         self,
         voice: ToneVoice,
         settings: ToneSettings
     ) -> None:
-        """Create or update a custom profile.
+            """Create or update a custom profile.
 
         Args:
             voice: Voice type

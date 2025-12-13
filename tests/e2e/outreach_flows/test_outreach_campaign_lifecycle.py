@@ -2,6 +2,8 @@
 import re
 from typing import Dict, List
 from datetime import datetime, timedelta
+from dataclasses import dataclass
+from enum import Enum
 
 class CampaignPhase(Enum):
     """TODO: Add docstring."""
@@ -43,7 +45,7 @@ class TestCampaignLifecycleE2E:
     """E2E tests for complete campaign lifecycle."""
 
     def test_full_campaign_lifecycle(self):
-        """E2E: Campaign progresses through all phases."""
+            """E2E: Campaign progresses through all phases."""
         state = CampaignState(
             campaign_id="camp_001",
             phase=CampaignPhase.PLANNING,
@@ -70,7 +72,7 @@ class TestCampaignLifecycleE2E:
         assert len(state.audit_log) == len(phases)
 
     def test_campaign_with_100_contacts(self):
-        """E2E: Campaign handles 100 contacts."""
+            """E2E: Campaign handles 100 contacts."""
         contacts = [{"id": f"c_{i}", "name": f"Contact {i}"} for i in range(100)]
         state = CampaignState(
             campaign_id="camp_002",
@@ -85,7 +87,7 @@ class TestCampaignLifecycleE2E:
         assert state.metrics.messages_sent == 100
 
     def test_campaign_error_recovery(self):
-        """E2E: Campaign recovers from errors."""
+            """E2E: Campaign recovers from errors."""
         state = CampaignState(
             campaign_id="camp_003",
             phase=CampaignPhase.EXECUTION,
@@ -107,7 +109,7 @@ class TestCampaignLifecycleE2E:
         assert len(state.errors) == 0
 
     def test_campaign_pause_resume(self):
-        """E2E: Campaign can be paused and resumed."""
+            """E2E: Campaign can be paused and resumed."""
         state = CampaignState(
             campaign_id="camp_004",
             phase=CampaignPhase.EXECUTION,
@@ -128,7 +130,7 @@ class TestCampaignLifecycleE2E:
         assert state.metrics.messages_sent == 50
 
     def test_campaign_metrics_tracking(self):
-        """E2E: Campaign metrics are tracked throughout."""
+            """E2E: Campaign metrics are tracked throughout."""
         state = CampaignState(
             campaign_id="camp_005",
             phase=CampaignPhase.MONITORING,
@@ -154,7 +156,7 @@ class TestMultiChannelOutreachE2E:
     """E2E tests for multi-channel outreach."""
 
     def test_linkedin_email_sequence(self):
-        """E2E: LinkedIn + Email sequence executes correctly."""
+            """E2E: LinkedIn + Email sequence executes correctly."""
         sequence = [
             {"channel": "linkedin", "day": 0, "action": "connection_request"},
             {"channel": "linkedin", "day": 3, "action": "follow_up_message"},
@@ -170,7 +172,7 @@ class TestMultiChannelOutreachE2E:
         assert executed[0] == "connection_request"
 
     def test_channel_fallback(self):
-        """E2E: Fallback to alternate channel on failure."""
+            """E2E: Fallback to alternate channel on failure."""
         primary_channel = "linkedin"
         fallback_channel = "email"
 
@@ -185,7 +187,7 @@ class TestMultiChannelOutreachE2E:
         assert used_channel == "email"
 
     def test_cross_channel_deduplication(self):
-        """E2E: Same contact not contacted on multiple channels simultaneously."""
+            """E2E: Same contact not contacted on multiple channels simultaneously."""
         contact_id = "c_001"
         channel_contacts = {
             "linkedin": {"c_001", "c_002"},
@@ -204,7 +206,7 @@ class TestPersonalizationE2E:
     """E2E tests for message personalization."""
 
     def test_dynamic_personalization(self):
-        """E2E: Messages are dynamically personalized."""
+            """E2E: Messages are dynamically personalized."""
         template = """
 Hi {first_name},
 
@@ -228,7 +230,7 @@ Would you be open to a brief conversation?
         assert "Series B" in personalized
 
     def test_personalization_fallbacks(self):
-        """E2E: Fallback values used when data missing."""
+            """E2E: Fallback values used when data missing."""
         template = "Hi {first_name}, I noticed your work at {company}."
         contact = {"first_name": "there", "company": "your company"}  # Fallbacks
 
@@ -236,7 +238,7 @@ Would you be open to a brief conversation?
         assert "there" in personalized
 
     def test_personalization_validation(self):
-        """E2E: Personalized messages are validated."""
+            """E2E: Personalized messages are validated."""
         message = "Hi {first_name}, I noticed {company} recently {recent_news}."
 
         # Check for unresolved placeholders
@@ -252,7 +254,7 @@ class TestComplianceE2E:
     """E2E tests for outreach compliance."""
 
     def test_rate_limiting_enforced(self):
-        """E2E: Rate limits are enforced."""
+            """E2E: Rate limits are enforced."""
         daily_limit = 100
         messages_today = 0
 
@@ -264,7 +266,7 @@ class TestComplianceE2E:
         assert messages_today == daily_limit
 
     def test_opt_out_respected(self):
-        """E2E: Opt-out requests are respected."""
+            """E2E: Opt-out requests are respected."""
         opted_out = {"c_001", "c_003"}
         contacts = ["c_001", "c_002", "c_003", "c_004"]
 
@@ -274,7 +276,7 @@ class TestComplianceE2E:
         assert "c_002" in eligible
 
     def test_cooling_period_enforced(self):
-        """E2E: Cooling period between contacts is enforced."""
+            """E2E: Cooling period between contacts is enforced."""
         last_contact = datetime.now() - timedelta(days=5)
         cooling_period_days = 7
 
@@ -282,7 +284,7 @@ class TestComplianceE2E:
         assert can_contact is False
 
     def test_gdpr_compliance(self):
-        """E2E: GDPR compliance is maintained."""
+            """E2E: GDPR compliance is maintained."""
         contact = {
             "id": "c_001",
             "consent_given": True,

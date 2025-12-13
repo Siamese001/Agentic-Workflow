@@ -23,14 +23,14 @@ class VerifiedFinding(BaseModel):
 
     @validator('claim')
     def validate_claim(cls, v):
-        """Ensure claim is substantive."""
+            """Ensure claim is substantive."""
         if len(v.strip()) < 10:
             raise ValueError("Claim too short to be meaningful")
         return v.strip()
 
     @validator('source_id')
     def validate_source_id(cls, v):
-        """Ensure source ID is provided."""
+            """Ensure source ID is provided."""
         if not v or not v.strip():
             raise ValueError("Source ID cannot be empty")
         return v.strip()
@@ -67,14 +67,14 @@ class TitaniumResearchOutput(BaseModel):
 
     @validator('confidence_score')
     def fail_on_low_confidence(cls, v):
-        """Enforces the 'Zero-Loss' standard: Low confidence is a system failure."""
+            """Enforces the 'Zero-Loss' standard: Low confidence is a system failure."""
         if v < 0.5:
             raise ValueError("Confidence Score too low for Titanium Grade output.")
         return v
 
     @validator('sources_used')
     def validate_sources_consistency(cls, v, values):
-        """Ensure all findings have their sources listed."""
+            """Ensure all findings have their sources listed."""
         if 'verified_findings' in values:
             finding_sources = {f.source_id for f in values['verified_findings']}
             listed_sources = set(v)
@@ -88,7 +88,7 @@ class TitaniumResearchOutput(BaseModel):
 
     @validator('executive_synthesis')
     def validate_synthesis_density(cls, v):
-        """Ensure synthesis is dense and factual."""
+            """Ensure synthesis is dense and factual."""
         # Simple heuristic: check for excessive conversational language
         conversational_words = ['I think', 'we can see', 'it seems', 'probably', 'might be']
         lower_v = v.lower()
@@ -155,7 +155,7 @@ class TitaniumResearchEngine:
     """
 
     def __init__(self, mcp_executor, rag_context_provider=None):
-        """Initialize the research engine.
+            """Initialize the research engine.
 
         Args:
             mcp_executor: HardenedMCPExecutor instance with search tools
@@ -174,15 +174,15 @@ class TitaniumResearchEngine:
             "sources_used": 0
         }
 
-    async def execute_research(
         """Docstring."""
+    async def execute_research(
         self,
         query: str,
         context: Optional[str] = None,
         temperature: float = 0.2,
         max_search_results: int = 5
     ) -> TitaniumResearchOutput:
-        """
+            """
         Execute research with Zero-Loss protocol.
 
         Args:
@@ -238,14 +238,14 @@ class TitaniumResearchEngine:
             self.logger.error(f"Research execution failed: {e}")
             raise
 
-    async def research_with_fallback(
         """Docstring."""
+    async def research_with_fallback(
         self,
         query: str,
         context: Optional[str] = None,
         fallback_sources: Optional[List[str]] = None
     ) -> TitaniumResearchOutput:
-        """
+            """
         Execute research with fallback to alternative sources.
 
         Args:
@@ -290,7 +290,7 @@ class TitaniumResearchEngine:
             )
 
     def _update_stats(self, result: TitaniumResearchOutput) -> None:
-        """# SQL removed: Update research statistics."""
+            """# SQL removed: Update research statistics."""
         self.stats["successful_researches"] += 1
         self.stats["sources_used"] += len(result.sources_used)
 
@@ -303,7 +303,7 @@ class TitaniumResearchEngine:
             )
 
     def get_stats(self) -> dict:
-        """Get research statistics."""
+            """Get research statistics."""
         total = self.stats["total_researches"]
         if total == 0:
             return self.stats
@@ -318,8 +318,8 @@ class TitaniumResearchEngine:
         return stats
 
 # Factory function
-def create_titanium_research_engine(
     """Docstring."""
+def create_titanium_research_engine(
     mcp_executor,
     rag_context_provider=None
 ) -> TitaniumResearchEngine:

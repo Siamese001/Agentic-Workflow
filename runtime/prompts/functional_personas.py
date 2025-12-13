@@ -200,7 +200,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
 
     @classmethod
     def get_prompt(cls, role: AgentRole, context: Dict[str, Any], task: str) -> str:
-        """Get a formatted prompt for a specific role.
+            """Get a formatted prompt for a specific role.
 
         Args:
             role: The agent role
@@ -231,7 +231,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
 
     @classmethod
     def _format_context(cls, context: Dict[str, Any], role: AgentRole) -> str:
-        """Format context for the prompt.
+            """Format context for the prompt.
 
         Args:
             context: Raw context data
@@ -300,7 +300,7 @@ class PromptSanitizer:
 
     @classmethod
     def sanitize_prompt(cls, prompt: str, target_role: Optional[AgentRole] = None) -> str:
-        """Remove legacy references from a prompt.
+            """Remove legacy references from a prompt.
 
         Args:
             prompt: The prompt to sanitize
@@ -328,7 +328,7 @@ class PromptSanitizer:
 
     @classmethod
     def validate_sanitized(cls, text: str) -> bool:
-        """Validate that text contains no legacy references.
+            """Validate that text contains no legacy references.
 
         Args:
             text: Text to validate

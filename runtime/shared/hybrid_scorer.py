@@ -22,19 +22,19 @@ class HybridScoreResult(BaseModel):
 
     @validator('sparse_score', pre=True)
     def validate_sparse_score(cls, v):
-        """Ensure sparse score is properly normalized."""
+            """Ensure sparse score is properly normalized."""
         if isinstance(v, (int, float)):
             return max(0.0, min(1.0, v))
         return v
 
     @property
     def is_boosted(self) -> bool:
-        """Check if result received a boost."""
+            """Check if result received a boost."""
         return self.metadata_boost > 0
 
     @property
     def score_breakdown(self) -> Dict[str, float]:
-        """Get breakdown of score components."""
+            """Get breakdown of score components."""
         return {
             "dense": self.dense_score,
             "sparse": self.sparse_score,
@@ -57,7 +57,7 @@ class HybridScorer:
         max_score: float = 1.0,
         dynamic_alpha: bool = True
     ):
-        """Initialize the hybrid scorer.
+            """Initialize the hybrid scorer.
 
         Args:
             alpha: Weight for dense (vector) scores vs sparse (0.0-1.0)
@@ -82,7 +82,7 @@ class HybridScorer:
                    f"industry_boost={self.industry_boost}, hero_boost={self.hero_boost}")
 
     def _compile_alpha_patterns(self):
-        """Compile regex patterns for dynamic alpha determination."""
+            """Compile regex patterns for dynamic alpha determination."""
         # Entity Heavy patterns (alpha -> 0.3, more keyword weight)
         self.entity_patterns = [
             re.compile(r'[A-Z0-9]{3,}-[0-9]+'),  # Ticket IDs like ABC-123
@@ -118,7 +118,7 @@ class HybridScorer:
         ]
 
     def _determine_dynamic_alpha(self, query: str) -> float:
-        """Determine alpha value dynamically based on query characteristics.
+            """Determine alpha value dynamically based on query characteristics.
 
         Args:
             query: Query string to analyze
@@ -151,15 +151,15 @@ class HybridScorer:
         logger.debug(f"No specific pattern detected, using default alpha=0.6 for: {query[:50]}...")
         return 0.6
 
-    def score_documents(
         """Docstring."""
+    def score_documents(
         self,
         dense_results: List[Dict[str, Any]],
         sparse_results: List[Dict[str, Any]],
         target_industry: Optional[str] = None,
         query: Optional[str] = None
     ) -> List[HybridScoreResult]:
-        """Score documents using hybrid approach.
+            """Score documents using hybrid approach.
 
         Args:
             dense_results: List of dense (vector) search results
@@ -209,7 +209,7 @@ class HybridScorer:
             return []
 
     def _normalize_scores(self, sparse_results: List[Dict[str, Any]]) -> Dict[str, float]:
-        """Normalize sparse scores using Min-Max normalization.
+            """Normalize sparse scores using Min-Max normalization.
 
         Args:
             sparse_results: List of sparse results with unnormalized scores
@@ -266,13 +266,13 @@ class HybridScorer:
             logger.error(f"Error normalizing scores: {str(e)}")
             return {}
 
-    def compute_hybrid(
         """Docstring."""
+    def compute_hybrid(
         self,
         dense_results: List[Dict[str, Any]],
         normalized_sparse: Dict[str, float]
     ) -> List[HybridScoreResult]:
-        """Combine dense and sparse scores using weighted sum.
+            """Combine dense and sparse scores using weighted sum.
 
         Args:
             dense_results: List of dense results
@@ -361,7 +361,7 @@ class HybridScorer:
         hybrid_results: List[HybridScoreResult],
         target_industry: Optional[str] = None
     ) -> List[HybridScoreResult]:
-        """Apply context boosts to hybrid scores.
+            """Apply context boosts to hybrid scores.
 
         Args:
             hybrid_results: List of hybrid score results
@@ -410,7 +410,7 @@ class HybridScorer:
             return hybrid_results
 
     def _matches_industry(self, metadata: Dict[str, Any], target_industry: str) -> bool:
-        """Check if document matches target industry.
+            """Check if document matches target industry.
 
         Args:
             metadata: Document metadata
@@ -480,7 +480,7 @@ class HybridScorer:
             return False
 
     def get_scoring_summary(self, results: List[HybridScoreResult]) -> Dict[str, Any]:
-        """Get summary statistics for scoring results.
+            """Get summary statistics for scoring results.
 
         Args:
             results: List of hybrid score results
@@ -509,8 +509,8 @@ class HybridScorer:
             return {"error": str(e)}
 
 # Factory function for easy instantiation
-def create_hybrid_scorer(
     """Docstring."""
+def create_hybrid_scorer(
     alpha: float = 0.7,
     industry_boost: float = 0.15,
     hero_boost: float = 0.1,
@@ -534,8 +534,8 @@ def create_hybrid_scorer(
         return HybridScorer(alpha=0.3, industry_boost=industry_boost, hero_boost=hero_boost)
 
 # Convenience function for quick scoring
-def score_documents(
     """Docstring."""
+def score_documents(
     dense_results: List[Dict[str, Any]],
     sparse_results: List[Dict[str, Any]],
     target_industry: Optional[str] = None,

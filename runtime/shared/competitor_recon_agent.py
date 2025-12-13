@@ -19,7 +19,7 @@ class CompetitorMove(BaseModel):
 
     @validator('date')
     def validate_date_format(cls, v):
-        """Ensure date is in reasonable format."""
+            """Ensure date is in reasonable format."""
         try:
             # Accept various date formats
             if 'ago' in v.lower():
@@ -42,7 +42,7 @@ class StrategicHook(BaseModel):
 
     @property
     def is_highly_relevant(self) -> bool:
-        """Check if hook is highly relevant."""
+            """Check if hook is highly relevant."""
         return self.relevance_score >= 0.8
 
 class IntelProvider(ABC):
@@ -50,7 +50,7 @@ class IntelProvider(ABC):
 
     @abstractmethod
     def get_competitors(self, target_company: str, industry: str) -> List[str]:
-        """Get list of competitors for target company.
+            """Get list of competitors for target company.
 
         Args:
             target_company: Company to analyze
@@ -63,7 +63,7 @@ class IntelProvider(ABC):
 
     @abstractmethod
     def get_recent_moves(self, competitor: str, months: int = 6) -> List[CompetitorMove]:
-        """Get recent AI/ML moves by competitor.
+            """Get recent AI/ML moves by competitor.
 
         Args:
             competitor: Competitor name
@@ -78,7 +78,7 @@ class MockIntelProvider(IntelProvider):
     """Mock intelligence provider for testing and development."""
 
     def __init__(self):
-        """Initialize mock provider with sample data."""
+            """Initialize mock provider with sample data."""
         self.mock_competitors = {
             "technology": ["OpenAI", "Anthropic", "Google", "Microsoft", "Meta"],
             "finance": ["Stripe", "Square", "PayPal", "Adyen", "Braintree"],
@@ -136,7 +136,7 @@ class MockIntelProvider(IntelProvider):
         }
 
     def get_competitors(self, target_company: str, industry: str) -> List[str]:
-        """Get mock competitors for target company."""
+            """Get mock competitors for target company."""
         industry_lower = industry.lower()
         return self.mock_competitors.get(industry_lower,
             ["Market Leader A",
@@ -144,14 +144,14 @@ class MockIntelProvider(IntelProvider):
             "Market Leader C"])[:3]
 
     def get_recent_moves(self, competitor: str, months: int = 6) -> List[CompetitorMove]:
-        """Get mock recent moves for competitor."""
+            """Get mock recent moves for competitor."""
         return self.mock_moves.get(competitor, [])
 
 class CompetitorReconAgent:
     """Analyzes competitors and generates strategic hooks."""
 
     def __init__(self, intel_provider: Optional[IntelProvider] = None):
-        """Initialize the competitor recon agent.
+            """Initialize the competitor recon agent.
 
         Args:
             intel_provider: Provider for competitive intelligence
@@ -172,14 +172,14 @@ class CompetitorReconAgent:
 
         logger.info("Initialized CompetitorReconAgent")
 
-    def generate_fomo_hook(
         """Docstring."""
+    def generate_fomo_hook(
         self,
         target_company: str,
         industry: str,
         candidate_skills: List[str]
     ) -> Optional[StrategicHook]:
-        """Generate FOMO hook based on competitive intelligence.
+            """Generate FOMO hook based on competitive intelligence.
 
         Args:
             target_company: Target company name
@@ -222,14 +222,14 @@ class CompetitorReconAgent:
             logger.error(f"Error generating FOMO hook: {str(e)}")
             return None
 
-    def get_strategic_ps(
         """Docstring."""
+    def get_strategic_ps(
         self,
         target_company: str,
         industry: str,
         candidate_skills: List[str]
     ) -> Optional[str]:
-        """Get strategic P.S. line for emails.
+            """Get strategic P.S. line for emails.
 
         Args:
             target_company: Target company name
@@ -252,7 +252,7 @@ class CompetitorReconAgent:
             return None
 
     def _identify_competitors(self, target_company: str, industry: str) -> List[str]:
-        """Identify competitors for target company.
+            """Identify competitors for target company.
 
         Args:
             target_company: Company to analyze
@@ -276,7 +276,7 @@ class CompetitorReconAgent:
             return []
 
     def _gather_intel(self, competitor: str) -> List[CompetitorMove]:
-        """Gather intelligence on competitor's recent moves.
+            """Gather intelligence on competitor's recent moves.
 
         Args:
             competitor: Competitor name
@@ -305,7 +305,7 @@ class CompetitorReconAgent:
         moves: List[CompetitorMove],
         skills: List[str]
     ) -> List[Dict[str, Any]]:
-        """Find matches between candidate skills and competitor moves.
+            """Find matches between candidate skills and competitor moves.
 
         Args:
             moves: List of competitive moves
@@ -359,7 +359,7 @@ class CompetitorReconAgent:
         match: Dict[str, Any],
         target_company: str
     ) -> StrategicHook:
-        """Create targeted hook based on skill-feature match.
+            """Create targeted hook based on skill-feature match.
 
         Args:
             match: Skill-feature match data
@@ -397,7 +397,7 @@ class CompetitorReconAgent:
         target_company: str,
         skills: List[str]
     ) -> StrategicHook:
-        """Create speed-focused hook when no direct feature match.
+            """Create speed-focused hook when no direct feature match.
 
         Args:
             move: Competitive move
@@ -428,8 +428,8 @@ class CompetitorReconAgent:
             raise
 
 # Factory function for easy instantiation
-def create_competitor_recon_agent(
     """Docstring."""
+def create_competitor_recon_agent(
     intel_provider: Optional[IntelProvider] = None
 ) -> CompetitorReconAgent:
     """Create a CompetitorReconAgent instance.
@@ -443,8 +443,8 @@ def create_competitor_recon_agent(
     return CompetitorReconAgent(intel_provider)
 
 # Convenience function for quick hook generation
-def generate_competitive_hook(
     """Docstring."""
+def generate_competitive_hook(
     target_company: str,
     industry: str,
     candidate_skills: List[str]

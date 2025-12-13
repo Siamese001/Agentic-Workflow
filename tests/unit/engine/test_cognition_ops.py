@@ -3,6 +3,8 @@ Unit tests for shared_engine_ops/cognition_ops/
 Tests cognition operations including understand_request.
 """
 from typing import Dict
+from enum import Enum
+from dataclasses import dataclass
 
 class IntentType(Enum):
     """TODO: Add docstring."""
@@ -13,8 +15,6 @@ class IntentType(Enum):
     CONFIRMATION = "confirmation"
 
 @dataclass
-    """TODO: Add docstring."""
-
 class ParsedIntent:
     """Docstring."""
     intent_type: IntentType

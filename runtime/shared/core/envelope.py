@@ -40,7 +40,7 @@ class PayloadBase(BaseModel):
     content_hash: str = Field(default_factory=lambda: "")
 
     class Config:
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         use_enum_values = True
 
@@ -54,7 +54,7 @@ class ResumeData(PayloadBase):
 
     @validator('content_hash', pre=True, always=True)
     def generate_hash(cls, v, values):
-        """Generate content hash from sections."""
+            """Generate content hash from sections."""
         if 'sections' in values and values['sections']:
             content = json.dumps(values['sections'], sort_keys=True)
             return hashlib.sha256(content.encode()).hexdigest()[:16]
@@ -70,7 +70,7 @@ class OutreachData(PayloadBase):
 
     @validator('content_hash', pre=True, always=True)
     def generate_hash(cls, v, values):
-        """Generate content hash from recipient and context."""
+            """Generate content hash from recipient and context."""
         if 'recipient_info' in values or 'campaign_context' in values:
             content = json.dumps({
                 'recipient': values.get('recipient_info', {}),
@@ -87,7 +87,7 @@ class RawText(PayloadBase):
 
     @validator('content_hash', pre=True, always=True)
     def generate_hash(cls, v, values):
-        """Generate hash from text content."""
+            """Generate hash from text content."""
         if 'text' in values and values['text']:
             return hashlib.sha256(values['text'].encode()).hexdigest()[:16]
         return v
@@ -99,7 +99,7 @@ class DictData(PayloadBase):
 
     @validator('content_hash', pre=True, always=True)
     def generate_hash(cls, v, values):
-        """Generate hash from data."""
+            """Generate hash from data."""
         if 'data' in values and values['data']:
             content = json.dumps(values['data'], sort_keys=True)
             return hashlib.sha256(content.encode()).hexdigest()[:16]
@@ -125,7 +125,7 @@ class StageResult(BaseModel):
 
     @validator('output_hash', pre=True, always=True)
     def generate_output_hash(cls, v, values):
-        """Generate hash of stage output for verification."""
+            """Generate hash of stage output for verification."""
         # In practice, this would be computed from actual output
         # For now, generate based on stage name and status
         content = f"{values.get('stage_name',
@@ -162,12 +162,12 @@ class SignalEnvelope(GenericModel, Generic[T]):
         """TODO: Add docstring."""
 
     class Config:
-        """Docstring."""
+            """Docstring."""
         arbitrary_types_allowed = True
         use_enum_values = True
 
     def mark_stage_start(self, stage_name: str) -> None:
-        """Mark the start of a stage execution.
+            """Mark the start of a stage execution.
 
         Args:
             stage_name: Name of the stage
@@ -187,15 +187,15 @@ class SignalEnvelope(GenericModel, Generic[T]):
         self.history.append(result)
         self._touch()
 
-    def mark_stage_complete(
         """Docstring."""
+    def mark_stage_complete(
         self,
         stage_name: str,
         duration_ms: float,
         output_hash: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None
     ) -> None:
-        """Mark a stage as successfully completed.
+            """Mark a stage as successfully completed.
 
         Args:
             stage_name: Name of the stage
@@ -230,15 +230,15 @@ class SignalEnvelope(GenericModel, Generic[T]):
 
         self._touch()
 
-    def mark_stage_failed(
         """Docstring."""
+    def mark_stage_failed(
         self,
         stage_name: str,
         error_message: str,
         duration_ms: float = 0.0,
         retry_count: int = 0
     ) -> None:
-        """Mark a stage as failed.
+            """Mark a stage as failed.
 
         Args:
             stage_name: Name of the stage
@@ -274,7 +274,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         self._touch()
 
     def mark_stage_skipped(self, stage_name: str, reason: Optional[str] = None) -> None:
-        """Mark a stage as skipped.
+            """Mark a stage as skipped.
 
         Args:
             stage_name: Name of the stage
@@ -304,7 +304,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         self._touch()
 
     def has_completed_stage(self, stage_name: str) -> bool:
-        """Check if a stage has been completed successfully.
+            """Check if a stage has been completed successfully.
 
         Args:
             stage_name: Name of the stage
@@ -318,7 +318,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         return False
 
     def get_stage_result(self, stage_name: str) -> Optional[StageResult]:
-        """Get the result for a specific stage.
+            """Get the result for a specific stage.
 
         Args:
             stage_name: Name of the stage
@@ -332,7 +332,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         return None
 
     def get_last_completed_stage(self) -> Optional[str]:
-        """Get the name of the last completed stage.
+            """Get the name of the last completed stage.
 
         Returns:
             Stage name if found
@@ -343,7 +343,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         return None
 
     def get_failed_stages(self) -> List[str]:
-        """Get list of failed stage names.
+            """Get list of failed stage names.
 
         Returns:
             List of failed stage names
@@ -351,7 +351,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         return [r.stage_name for r in self.history if r.status == PipelineStageStatus.FAILED]
 
     def calculate_total_duration(self) -> float:
-        """Calculate total duration of completed stages.
+            """Calculate total duration of completed stages.
 
         Returns:
             Total duration in milliseconds
@@ -359,11 +359,11 @@ class SignalEnvelope(GenericModel, Generic[T]):
         return sum(r.duration_ms for r in self.history if r.status != PipelineStageStatus.PENDING)
 
     def _touch(self) -> None:
-        """# SQL removed: Update the updated_at timestamp."""
+            """# SQL removed: Update the updated_at timestamp."""
         self.updated_at = datetime.utcnow()
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert envelope to dictionary for serialization.
+            """Convert envelope to dictionary for serialization.
 
         Returns:
             Dictionary representation
@@ -383,7 +383,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SignalEnvelope":
-        """Create envelope from dictionary.
+            """Create envelope from dictionary.
 
         Args:
             data: Dictionary data
@@ -424,13 +424,13 @@ class SignalEnvelope(GenericModel, Generic[T]):
         return envelope
 
     @classmethod
-    def from_legacy_dict(cls,
         """Docstring."""
+    def from_legacy_dict(cls,
         data: Dict[str,
         Any],
         metadata: Optional[Dict[str,
         str]] = None) -> "SignalEnvelope":
-        """Create envelope from legacy dict format for backward compatibility.
+            """Create envelope from legacy dict format for backward compatibility.
 
         Args:
             data: Legacy dictionary data
@@ -458,14 +458,14 @@ class EnvelopeFactory:
     """Factory for creating signal envelopes."""
 
     @staticmethod
-    def create_envelope(
         """Docstring."""
+    def create_envelope(
         data: Any,
         metadata: Optional[Dict[str, str]] = None,
         trace_id: Optional[str] = None,
         parent_trace_id: Optional[str] = None
     ) -> SignalEnvelope:
-        """Create a new signal envelope.
+            """Create a new signal envelope.
 
         Args:
             data: Data to wrap
@@ -513,7 +513,7 @@ class EnvelopeFactory:
         Any]) -> Union[ResumeData,
         OutreachData,
         DictData]:
-        """Create appropriate payload from dictionary.
+            """Create appropriate payload from dictionary.
 
         Args:
             data: Dictionary data

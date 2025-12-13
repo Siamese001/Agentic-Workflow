@@ -8,6 +8,7 @@ circuit breaking at the provider level, and real-time health monitoring.
 import time
 import logging
 from typing import Any, Dict, List, Optional
+from enum import Enum
 
 
 
@@ -68,7 +69,7 @@ class HardenedLiteLLMRouter:
     """
 
     def __init__(self, providers: List[ProviderConfig]):
-        """Initialize hardened router.
+            """Initialize hardened router.
 
         Args:
             providers: List of provider configurations
@@ -107,7 +108,7 @@ class HardenedLiteLLMRouter:
         )
 
     def _check_circuit(self, provider: ProviderConfig) -> bool:
-        """Check if provider circuit is healthy.
+            """Check if provider circuit is healthy.
 
         Args:
             provider: Provider configuration
@@ -129,7 +130,7 @@ class HardenedLiteLLMRouter:
         return True
 
     def _record_failure(self, provider: ProviderConfig, error: Exception) -> None:
-        """Record provider failure and update circuit breaker.
+            """Record provider failure and update circuit breaker.
 
         Args:
             provider: Provider configuration
@@ -163,7 +164,7 @@ class HardenedLiteLLMRouter:
         provider: ProviderConfig,
         latency_ms: float
     ) -> None:
-        """Record provider success and update metrics.
+            """Record provider success and update metrics.
 
         Args:
             provider: Provider configuration
@@ -191,13 +192,13 @@ class HardenedLiteLLMRouter:
             f"✓ Provider {provider_name} succeeded in {latency_ms:.2f}ms"
         )
 
-    async def completion(
         """Docstring."""
+    async def completion(
         self,
         messages: List[Dict],
         **kwargs
     ) -> Any:
-        """Route completion request to best available provider.
+            """Route completion request to best available provider.
 
         Iterates through priority list until success or total exhaustion.
 
@@ -293,7 +294,7 @@ class HardenedLiteLLMRouter:
         )
 
     def get_provider_health(self) -> Dict[str, Dict[str, Any]]:
-        """Get health status of all providers.
+            """Get health status of all providers.
 
         Returns:
             Dictionary mapping provider names to health status
@@ -319,7 +320,7 @@ class HardenedLiteLLMRouter:
         return health
 
     def get_available_providers(self) -> List[str]:
-        """Get list of currently available (healthy) providers.
+            """Get list of currently available (healthy) providers.
 
         Returns:
             List of provider names with closed circuits
@@ -333,7 +334,7 @@ class HardenedLiteLLMRouter:
         return available
 
     def reset_provider_circuit(self, provider_name: str) -> None:
-        """Manually reset a provider's circuit breaker.
+            """Manually reset a provider's circuit breaker.
 
         Args:
             provider_name: Provider name to reset
@@ -345,7 +346,7 @@ class HardenedLiteLLMRouter:
             logger.warning(f"Unknown provider: {provider_name}")
 
     def reset_all_circuits(self) -> None:
-        """Reset all provider circuit breakers."""
+            """Reset all provider circuit breakers."""
         for circuit in self._circuit_breakers.values():
             circuit.reset()
         logger.info("All provider circuits manually reset")

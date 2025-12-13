@@ -25,14 +25,14 @@ class QualityAssessment(BaseModel):
 
     @validator('flags', pre=True)
     def validate_flags(cls, v):
-        """Ensure flags is a list of strings."""
+            """Ensure flags is a list of strings."""
         if isinstance(v, str):
             return [v]
         return v if isinstance(v, list) else []
 
     @property
     def composite_score(self) -> float:
-        """Calculate composite quality score."""
+            """Calculate composite quality score."""
         # Weighted average of all scores
         weights = {
             "relevance": 0.3,
@@ -48,11 +48,11 @@ class QualityAssessment(BaseModel):
         )
 
     def has_flag(self, flag: str) -> bool:
-        """Check if a specific flag is present."""
+            """Check if a specific flag is present."""
         return flag in self.flags
 
     def add_flag(self, flag: str) -> None:
-        """Add a quality flag."""
+            """Add a quality flag."""
         if flag not in self.flags:
             self.flags.append(flag)
 
@@ -70,7 +70,7 @@ class SignalQualityPipeline:
         specificity_threshold: float = 0.5,
         enable_coherence_check: bool = False
     ):
-        """Initialize the quality pipeline.
+            """Initialize the quality pipeline.
 
         Args:
             relevance_threshold: Minimum relevance score to pass
@@ -131,15 +131,15 @@ class SignalQualityPipeline:
                    f"relevance={relevance_threshold}, authority={authority_threshold}, "
                    f"specificity={specificity_threshold}")
 
-    def evaluate_signal(
         """Docstring."""
+    def evaluate_signal(
         self,
         content: str,
         metadata: Dict[str, str],
         query: str,
         doc_id: Optional[str] = None
     ) -> QualityAssessment:
-        """Evaluate a signal through all quality checks.
+            """Evaluate a signal through all quality checks.
 
         Args:
             content: Document content to evaluate
@@ -220,7 +220,7 @@ class SignalQualityPipeline:
             )
 
     def _check_relevance(self, content: str, query: str) -> float:
-        """Check relevance between content and query using keyword overlap.
+            """Check relevance between content and query using keyword overlap.
 
         Args:
             content: Document content
@@ -258,7 +258,7 @@ class SignalQualityPipeline:
             return 0.0
 
     def _check_authority(self, metadata: Dict[str, str]) -> float:
-        """Check source authority based on metadata.
+            """Check source authority based on metadata.
 
         Args:
             metadata: Document metadata
@@ -283,7 +283,7 @@ class SignalQualityPipeline:
             return 0.2  # Conservative default
 
     def _check_specificity(self, content: str) -> float:
-        """Check content specificity based on presence of metrics.
+            """Check content specificity based on presence of metrics.
 
         Args:
             content: Document content
@@ -319,7 +319,7 @@ class SignalQualityPipeline:
             return 0.1  # Conservative default
 
     def _check_coherence(self, content: str) -> float:
-        """Check content coherence (simplified implementation).
+            """Check content coherence (simplified implementation).
 
         Args:
             content: Document content
@@ -365,7 +365,7 @@ class SignalQualityPipeline:
             return 0.5  # Neutral default
 
     def _normalize_text(self, text: str) -> List[str]:
-        """Normalize text and extract meaningful tokens.
+            """Normalize text and extract meaningful tokens.
 
         Args:
             text: Text to normalize
@@ -388,13 +388,13 @@ class SignalQualityPipeline:
             logger.error(f"Error normalizing text: {str(e)}")
             return []
 
-    def batch_evaluate(
         """Docstring."""
+    def batch_evaluate(
         self,
         documents: List[Tuple[str, Dict[str, str], str]],
         filter_failed: bool = True
     ) -> List[Tuple[Dict[str, str], QualityAssessment]]:
-        """Evaluate multiple documents in batch.
+            """Evaluate multiple documents in batch.
 
         Args:
             documents: List of (content, metadata, query) tuples
@@ -420,8 +420,8 @@ class SignalQualityPipeline:
             return []
 
 # Factory function for easy instantiation
-def create_quality_pipeline(
     """Docstring."""
+def create_quality_pipeline(
     relevance_threshold: float = 0.3,
     authority_threshold: float = 0.4,
     specificity_threshold: float = 0.5,
@@ -453,8 +453,8 @@ def create_quality_pipeline(
     )
 
 # Convenience function for quick filtering
-def filter_high_quality_signals(
     """Docstring."""
+def filter_high_quality_signals(
     documents: List[Tuple[str, Dict[str, str], str]],
     strict_mode: bool = False
 ) -> List[Dict[str, str]]:

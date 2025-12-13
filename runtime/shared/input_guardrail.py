@@ -10,6 +10,8 @@ import re
 import time
 import base64
 import unicodedata
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +50,7 @@ class InputGuardrail:
                  enable_rate_limit: bool = True,
                  strict_mode: bool = False,
                  rate_limit_per_minute: int = 60):
-        """Initialize the input guardrail.
+            """Initialize the input guardrail.
 
         Args:
             enable_injection_detection: Enable prompt injection detection
@@ -85,7 +87,7 @@ class InputGuardrail:
                    f"Rate Limit: {enable_rate_limit}, Strict: {strict_mode}")
 
     def _compile_patterns(self):
-        """Compile regex patterns for fast detection."""
+            """Compile regex patterns for fast detection."""
         # Prompt injection patterns
         self.injection_patterns = [
             # DAN (Do Anything Now) patterns
@@ -166,13 +168,13 @@ class InputGuardrail:
         ]
 
     def _init_semantic_checker(self):
-        """Initialize semantic malicious intent checker."""
+            """Initialize semantic malicious intent checker."""
         # For now, use keyword-based semantic checking
         # In production, this could use a lightweight model
         self.semantic_threshold = 0.7 if not self.strict_mode else 0.5
 
     def scan(self, input_text: str, user_id: Optional[str] = None) -> GuardResult:
-        """Scan input text for security issues.
+            """Scan input text for security issues.
 
         Args:
             input_text: The input text to scan
@@ -267,7 +269,7 @@ class InputGuardrail:
             )
 
     def _check_injection(self, text: str) -> Tuple[bool, List[str]]:
-        """Check for prompt injection patterns.
+            """Check for prompt injection patterns.
 
         Args:
             text: Text to check
@@ -285,7 +287,7 @@ class InputGuardrail:
         return (len(found_patterns) > 0, found_patterns)
 
     def _check_pii(self, text: str) -> Tuple[bool, List[str]]:
-        """Check for PII in the text.
+            """Check for PII in the text.
 
         Args:
             text: Text to check
@@ -303,7 +305,7 @@ class InputGuardrail:
         return (len(found_types) > 0, found_types)
 
     def _redact_pii(self, text: str, pii_types: List[str]) -> str:
-        """Redact PII from text.
+            """Redact PII from text.
 
         Args:
             text: Text to redact
@@ -333,7 +335,7 @@ class InputGuardrail:
         return redacted
 
     def _check_semantic_intent(self, text: str) -> float:
-        """Check for semantic malicious intent.
+            """Check for semantic malicious intent.
 
         Args:
             text: Text to check
@@ -358,7 +360,7 @@ class InputGuardrail:
         return confidence
 
     def _check_rate_limit(self, user_id: str) -> bool:
-        """Check if user has exceeded rate limit.
+            """Check if user has exceeded rate limit.
 
         Args:
             user_id: User identifier
@@ -387,7 +389,7 @@ class InputGuardrail:
         return False
 
     def _check_unicode_attacks(self, text: str) -> Tuple[bool, str]:
-        """Check for Unicode homoglyph attacks.
+            """Check for Unicode homoglyph attacks.
 
         Args:
             text: Text to check
@@ -413,7 +415,7 @@ class InputGuardrail:
         return (len(suspicious_chars) > 0, ', '.join(suspicious_chars[:5]))
 
     def _check_encoded_payloads(self, text: str) -> Tuple[bool, str]:
-        """Check for base64 or other encoded payloads.
+            """Check for base64 or other encoded payloads.
 
         Args:
             text: Text to check
@@ -459,7 +461,7 @@ class InputGuardrail:
         return (False, "")
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get guardrail statistics.
+            """Get guardrail statistics.
 
         Returns:
             Dictionary with stats

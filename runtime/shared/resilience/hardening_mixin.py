@@ -47,12 +47,12 @@ class HardeningMixin:
 
     Usage:
         class MyExecutor(HardeningMixin):
-            """Docstring."""
+                """Docstring."""
             def __init__(self, config: HardeningConfig):
                 super().__init__(config)
 
             async def my_operation(self, *args, **kwargs):
-                """Docstring."""
+                    """Docstring."""
                 return await self.execute_with_hardening(
                     self._raw_operation,
                     *args,
@@ -61,7 +61,7 @@ class HardeningMixin:
     """
 
     def __init__(self, config: HardeningConfig):
-        """Initialize hardening infrastructure.
+            """Initialize hardening infrastructure.
 
         Args:
             config: Hardening configuration
@@ -100,14 +100,14 @@ class HardeningMixin:
             f"circuit_threshold={config.circuit_breaker_threshold}"
         )
 
-    async def execute_with_hardening(
         """Docstring."""
+    async def execute_with_hardening(
         self,
         operation_func: Callable,
         *args,
         **kwargs
     ) -> Any:
-        """
+            """
         Execute operation with full hardening stack.
 
         Flow:
@@ -150,7 +150,7 @@ class HardeningMixin:
         # --- 2. Retry Loop with Exponential Backoff ---
         @self._retry_decorator
         async def _execute_with_retry():
-            """Docstring."""
+                """Docstring."""
             nonlocal tokens_used
 
             try:
@@ -206,7 +206,7 @@ class HardeningMixin:
             raise
 
     def get_health_status(self) -> Dict[str, Any]:
-        """Get health status of the hardened component.
+            """Get health status of the hardened component.
 
         Returns:
             Health status dictionary
@@ -233,6 +233,6 @@ class HardeningMixin:
         return health
 
     def reset_circuit(self) -> None:
-        """Manually reset the circuit breaker."""
+            """Manually reset the circuit breaker."""
         self.circuit_breaker.reset()
         logger.info(f"Circuit breaker manually reset for '{self.config.component_name}'")

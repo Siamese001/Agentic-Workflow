@@ -19,6 +19,7 @@ from pathlib import Path
 import shutil
 import asyncio
 from datetime import datetime
+from dataclasses import dataclass
 
     ReflectionEngine,
     ReflectionConfig,
@@ -84,7 +85,7 @@ class SubatomicHop:
         initial_context: Optional[Dict[str, Any]] = None,
         container: Optional[ServiceContainer] = None
     ):
-        """Initialize the Subatomic Hop.
+            """Initialize the Subatomic Hop.
 
         Args:
             hop_function: The original function to execute
@@ -165,7 +166,7 @@ class SubatomicHop:
         logger.info(f"Initialized SubatomicHop {self.config.hop_id}")
 
     async def run(self, **kwargs) -> Dict[str, Any]:
-        """Execute the hop through all micro-stages.
+            """Execute the hop through all micro-stages.
 
         Args:
             **kwargs: Arguments to pass to the hop function
@@ -217,7 +218,7 @@ class SubatomicHop:
             raise
 
     async def _execute_stage(self, stage: MicroStage, **kwargs) -> None:
-        """Execute a specific micro-stage.
+            """Execute a specific micro-stage.
 
         Args:
             stage: The stage to execute
@@ -280,7 +281,7 @@ class SubatomicHop:
                 await asyncio.sleep(delay)
 
     async def _pre_check(self, **kwargs) -> Dict[str, Any]:
-        """Validate inputs and context."""
+            """Validate inputs and context."""
         logger.debug(f"Pre-check for hop {self.config.hop_id}")
 
         # Check required inputs
@@ -296,7 +297,7 @@ class SubatomicHop:
         return {"valid": True, "inputs": list(kwargs.keys())}
 
     async def _think(self, **kwargs) -> Dict[str, Any]:
-        """Plan the execution (Chain of Thought) with prompt injections."""
+            """Plan the execution (Chain of Thought) with prompt injections."""
         logger.debug(f"Think stage for hop {self.config.hop_id}")
 
         # Create base plan
@@ -368,13 +369,13 @@ class SubatomicHop:
 
         return plan
 
-    async def _apply_stage_injections(self,
         """Docstring."""
+    async def _apply_stage_injections(self,
         stage: MicroStage,
         kwargs: Dict[str,
         Any]) -> Dict[str,
         Any]:
-        """Apply instructional injections appropriate for the stage.
+            """Apply instructional injections appropriate for the stage.
 
         Args:
             stage: Current micro-stage
@@ -498,7 +499,7 @@ class SubatomicHop:
             return kwargs
 
     async def _act(self, **kwargs) -> Dict[str, Any]:
-        """Execute the actual hop function with circuit breaker protection."""
+            """Execute the actual hop function with circuit breaker protection."""
         logger.debug(f"Act stage for hop {self.config.hop_id}")
 
         try:
@@ -508,7 +509,7 @@ class SubatomicHop:
             else:
                 # For sync functions, wrap in async
                 async def sync_wrapper():
-                    """Docstring."""
+                        """Docstring."""
                     return self.hop_function(**kwargs)
                 result = await self.generation_breaker.call(sync_wrapper)
 
@@ -529,7 +530,7 @@ class SubatomicHop:
             raise StageExecutionError(f"Failed to execute hop: {e}")
 
     async def _critique(self, **kwargs) -> Dict[str, Any]:
-        """Review and validate the output using Reflection Engine and Signal Enhancer."""
+            """Review and validate the output using Reflection Engine and Signal Enhancer."""
         logger.debug(f"Critique stage for hop {self.config.hop_id}")
 
         raw_output = self.context.get("raw_output")
@@ -662,7 +663,7 @@ class SubatomicHop:
         return {"validated_output": validated_output}
 
     async def _commit(self, **kwargs) -> Dict[str, Any]:
-        """Write to state/memory with atomic write pattern."""
+            """Write to state/memory with atomic write pattern."""
         logger.debug(f"Commit stage for hop {self.config.hop_id}")
 
         validated_output = self.context.get("validated_output")
@@ -700,7 +701,7 @@ class SubatomicHop:
         return {"committed": True, "result": validated_output}
 
     def _transition_to(self, stage: MicroStage) -> None:
-        """Transition to a new stage and log the event."""
+            """Transition to a new stage and log the event."""
         from_stage = self.current_stage
         self.current_stage = stage
 
@@ -725,7 +726,7 @@ class SubatomicHop:
             )
 
     async def _save_checkpoint(self, checkpoint: MicroCheckpoint) -> None:
-        """Save a checkpoint using the secure checkpoint manager."""
+            """Save a checkpoint using the secure checkpoint manager."""
         if not self.config.enable_checkpoints or not self.checkpoint_manager:
             return
 
@@ -738,7 +739,7 @@ class SubatomicHop:
             # Continue execution - checkpoint failure shouldn't stop the hop
 
     async def _load_checkpoint(self) -> None:
-        """Load the most recent checkpoint using the secure checkpoint manager."""
+            """Load the most recent checkpoint using the secure checkpoint manager."""
         if not self.config.enable_checkpoints or not self.checkpoint_manager:
             return
 
@@ -763,7 +764,7 @@ class SubatomicHop:
             # Continue without checkpoint - start fresh
 
     def get_status(self) -> Dict[str, Any]:
-        """Get current status of the hop."""
+            """Get current status of the hop."""
         return {
             "hop_id": self.config.hop_id,
             "state": self.state.value,
@@ -783,7 +784,7 @@ class SubatomicHop:
         }
 
     def cleanup(self) -> None:
-        """Clean up checkpoints and temporary files."""
+            """Clean up checkpoints and temporary files."""
         if not self.config.enable_checkpoints:
             return
 
@@ -796,15 +797,15 @@ class SubatomicHop:
 
         logger.debug(f"Cleaned up hop {self.config.hop_id}")
 
-    async def request_upstream_change(
         """Docstring."""
+    async def request_upstream_change(
         self,
         upstream_hop_id: str,
         change_request: str,
         reason: str,
         **kwargs
     ):
-        """Request a change from an upstream node.
+            """Request a change from an upstream node.
 
         Args:
             upstream_hop_id: ID of upstream hop
@@ -831,15 +832,15 @@ class SubatomicHop:
             **kwargs
         )
 
-    async def send_negotiation_message(
         """Docstring."""
+    async def send_negotiation_message(
         self,
         to_hop_id: str,
         message_type: str,
         payload: str,
         **kwargs
     ) -> bool:
-        """Send a negotiation message to another hop.
+            """Send a negotiation message to another hop.
 
         Args:
             to_hop_id: ID of target hop
@@ -867,7 +868,7 @@ class SubatomicHop:
         )
 
     def handle_negotiation_request(self, request: Dict[str, Any]) -> None:
-        """Handle a negotiation request from downstream.
+            """Handle a negotiation request from downstream.
 
         Args:
             request: Negotiation request details
@@ -893,8 +894,8 @@ class SubatomicHop:
         logger.info(f"Hop {self.config.hop_id} received negotiation request")
 
 # Factory function for creating subatomic hops
-def create_subatomic_hop(
     """Docstring."""
+def create_subatomic_hop(
     hop_function: Callable,
     config: Optional[SubatomicHopConfig] = None,
     **kwargs
@@ -926,9 +927,9 @@ def subatomic_hop(config: Optional[SubatomicHopConfig] = None):
         Decorated function that returns a SubatomicHop
     """
     def decorator(func: Callable) -> Callable:
-        """Docstring."""
-        def wrapper(*args, **kwargs) -> SubatomicHop:
             """Docstring."""
+        def wrapper(*args, **kwargs) -> SubatomicHop:
+                """Docstring."""
             return create_subatomic_hop(
                 hop_function=func,
                 config=config,

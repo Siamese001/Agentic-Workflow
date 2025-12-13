@@ -4,6 +4,7 @@ Tests scoring operations for ranking and evaluation.
 """
 import pytest
 from typing import Dict
+from dataclasses import dataclass
 
 @dataclass
 class ScoredItem:

@@ -1,6 +1,7 @@
 """Integration tests for Resume Generation + Data layer."""
 import pytest
 from typing import Dict, List
+from dataclasses import dataclass
 
 @dataclass
 class JobPosting:
@@ -27,7 +28,7 @@ class TestRGDataIntegration:
     """Integration tests for RG + data layer."""
 
     def test_job_data_retrieval(self):
-        """Integration: Job data is retrieved correctly."""
+            """Integration: Job data is retrieved correctly."""
         job = JobPosting(
             id="job_001",
             title="Senior Software Engineer",
@@ -40,7 +41,7 @@ class TestRGDataIntegration:
         assert len(job.requirements) >= 1
 
     def test_user_profile_retrieval(self):
-        """Integration: User profile is retrieved correctly."""
+            """Integration: User profile is retrieved correctly."""
         profile = UserProfile(
             id="user_001",
             name="John Doe",
@@ -57,7 +58,7 @@ class TestRGDataIntegration:
         assert len(profile.skills) >= 1
 
     def test_skill_matching_with_job(self):
-        """Integration: Skills are matched with job requirements."""
+            """Integration: Skills are matched with job requirements."""
         user_skills = {"python", "sql", "aws", "docker"}
         job_keywords = {"python", "aws", "kubernetes"}
 
@@ -67,7 +68,7 @@ class TestRGDataIntegration:
         assert match_rate == pytest.approx(0.667, rel=0.01)
 
     def test_experience_data_aggregation(self):
-        """Integration: Experience data is aggregated."""
+            """Integration: Experience data is aggregated."""
         experiences = [
             {"company": "A", "years": 2},
             {"company": "B", "years": 3},
@@ -81,7 +82,7 @@ class TestResumeDataPersistence:
     """Integration tests for resume data persistence."""
 
     def test_save_generated_resume(self):
-        """Integration: Generated resume is saved."""
+            """Integration: Generated resume is saved."""
         storage = {}
 
         resume = {
@@ -96,7 +97,7 @@ class TestResumeDataPersistence:
         assert "resume_001" in storage
 
     def test_retrieve_resume_versions(self):
-        """Integration: Resume versions are retrieved."""
+            """Integration: Resume versions are retrieved."""
         versions = [
             {"id": "resume_001", "version": 1, "created_at": "2024-01-01"},
             {"id": "resume_001", "version": 2, "created_at": "2024-01-15"},
@@ -107,7 +108,7 @@ class TestResumeDataPersistence:
         assert latest["version"] == 3
 
     def test_resume_template_storage(self):
-        """Integration: Resume templates are stored and retrieved."""
+            """Integration: Resume templates are stored and retrieved."""
         templates = {
             "professional": {"sections": ["summary", "experience", "education"]},
             "technical": {"sections": ["summary", "skills", "projects", "experience"]},
@@ -121,7 +122,7 @@ class TestJobDataEnrichment:
     """Integration tests for job data enrichment."""
 
     def test_enrich_job_with_company_data(self):
-        """Integration: Job is enriched with company data."""
+            """Integration: Job is enriched with company data."""
         job = {"title": "Engineer", "company_id": "comp_001"}
         company_data = {
             "comp_001": {"name": "TechCorp", "industry": "Technology", "size": "1000+"},
@@ -136,7 +137,7 @@ class TestJobDataEnrichment:
         assert enriched["company_name"] == "TechCorp"
 
     def test_extract_job_keywords(self):
-        """Integration: Keywords are extracted from job description."""
+            """Integration: Keywords are extracted from job description."""
         description = "Looking for a Python developer with AWS experience and machine learning skill
     s"
 
@@ -148,7 +149,7 @@ class TestJobDataEnrichment:
         assert "aws" in extracted
 
     def test_categorize_job_requirements(self):
-        """Integration: Job requirements are categorized."""
+            """Integration: Job requirements are categorized."""
         requirements = [
             "5+ years Python experience",
             "Bachelor's degree in CS",
@@ -179,7 +180,7 @@ class TestResumeAnalytics:
     """Integration tests for resume analytics."""
 
     def test_track_resume_views(self):
-        """Integration: Resume views are tracked."""
+            """Integration: Resume views are tracked."""
         analytics = {"resume_001": {"views": 0, "downloads": 0}}
 
         # Track view
@@ -189,7 +190,7 @@ class TestResumeAnalytics:
         assert analytics["resume_001"]["views"] == 2
 
     def test_calculate_match_scores(self):
-        """Integration: Match scores are calculated and stored."""
+            """Integration: Match scores are calculated and stored."""
         matches = [
             {"job_id": "job_001", "resume_id": "resume_001", "score": 0.85},
             {"job_id": "job_002", "resume_id": "resume_001", "score": 0.72},
@@ -200,7 +201,7 @@ class TestResumeAnalytics:
         assert best_match["job_id"] == "job_003"
 
     def test_aggregate_improvement_suggestions(self):
-        """Integration: Improvement suggestions are aggregated."""
+            """Integration: Improvement suggestions are aggregated."""
         suggestions = [
             {"type": "keyword", "suggestion": "Add 'kubernetes' to skills"},
             {"type": "quantification", "suggestion": "Add metrics to achievement 3"},

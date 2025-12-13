@@ -15,6 +15,7 @@ import logging
 from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ class RegenerationCheckpoint:
     score: float = 0.0
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for logging."""
+            """Convert to dictionary for logging."""
         return {
             "attempt": self.attempt,
             "timestamp": self.timestamp.isoformat(),
@@ -60,7 +61,7 @@ class RegenerationResult:
     exhausted: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for logging."""
+            """Convert to dictionary for logging."""
         return {
             "success": self.success,
             "attempts": self.attempts,
@@ -85,7 +86,7 @@ class FeedbackLoopOrchestrator:
         adaptive_temperature_config: Optional[Dict[str, Any]] = None,
         message_type_transitions: Optional[Dict[str, Any]] = None,
     ):
-        """Initialize feedback loop orchestrator.
+            """Initialize feedback loop orchestrator.
 
         Args:
             max_attempts: Maximum regeneration attempts (default 5)
@@ -115,15 +116,15 @@ class FeedbackLoopOrchestrator:
             f"max_attempts={max_attempts}, reversion={reversion_enabled}"
         )
 
-    async def execute_with_feedback(
         """Docstring."""
+    async def execute_with_feedback(
         self,
         generator: Callable,
         validator: Callable,
         initial_context: Dict[str, Any],
         k_node_id: str,
     ) -> RegenerationResult:
-        """Execute generation with feedback loop.
+            """Execute generation with feedback loop.
 
         Args:
             generator: Async function that generates content
@@ -246,7 +247,7 @@ class FeedbackLoopOrchestrator:
         )
 
     def _classify_failure(self, validation_result: Any) -> ConstraintFailureType:
-        """Classify failure type based on validation result.
+            """Classify failure type based on validation result.
 
         Args:
             validation_result: ValidationResult from validator
@@ -290,7 +291,7 @@ class FeedbackLoopOrchestrator:
         current_temp: float,
         failure_type: ConstraintFailureType,
     ) -> float:
-        """Adjust temperature based on failure type.
+            """Adjust temperature based on failure type.
 
         Args:
             current_temp: Current temperature
@@ -323,7 +324,7 @@ class FeedbackLoopOrchestrator:
         previous_content: str,
         attempt: int,
     ) -> Dict[str, Any]:
-        """Build context for regeneration with exact failure details.
+            """Build context for regeneration with exact failure details.
 
         Args:
             initial_context: Original context
@@ -363,7 +364,7 @@ class FeedbackLoopOrchestrator:
         return context
 
     def _build_failure_summary(self, failures: List[Any]) -> str:
-        """Build human-readable failure summary for regeneration prompt.
+            """Build human-readable failure summary for regeneration prompt.
 
         Args:
             failures: List of RuleFailure objects
@@ -389,15 +390,15 @@ class FeedbackLoopOrchestrator:
 
         return "\n".join(summary_lines)
 
-    def apply_message_transition(
         """Docstring."""
+    def apply_message_transition(
         self,
         current_route: str,
         target_route: str,
         content: str,
         context: Dict[str, Any],
     ) -> Tuple[str, Dict[str, Any]]:
-        """Apply message type transition logic.
+            """Apply message type transition logic.
 
         Args:
             current_route: Current message route
@@ -440,13 +441,13 @@ class FeedbackLoopOrchestrator:
 
         return content, context
 
-    def generate_failure_report(
         """Docstring."""
+    def generate_failure_report(
         self,
         result: RegenerationResult,
         k_node_id: str,
     ) -> str:
-        """Generate detailed failure report for exhausted attempts.
+            """Generate detailed failure report for exhausted attempts.
 
         Args:
             result: RegenerationResult from execute_with_feedback

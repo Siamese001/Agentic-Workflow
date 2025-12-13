@@ -157,7 +157,7 @@ async def test_context_aware_prompt_truncation():
 
     # Mock truncation logic
     def mock_truncate(prompt: str, max_tokens: int) -> str:
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         # Preserve first 1000 chars (important context)
         return prompt[:1000] + "... [truncated]"
@@ -202,7 +202,7 @@ async def test_agentic_error_recovery_with_state_preservation():
         """TODO: Add docstring."""
 
     def mock_save_state(state):
-        """Docstring."""
+            """Docstring."""
         saved_states.append(state.copy())
 
     orchestrator.save_state = mock_save_state
@@ -258,7 +258,7 @@ async def test_adaptive_retry_with_exponential_backoff():
 
 
     async def mock_execute_with_delay(prompt):
-        """Docstring."""
+            """Docstring."""
         call_times.append(asyncio.get_event_loop().time())
         if len(call_times) < 3:
             raise Exception("Transient failure")
@@ -304,7 +304,7 @@ async def test_context_window_optimization():
 class HardenedOpenAIExecutor:
     """Mock OpenAI executor for testing."""
     async def execute(self, prompt: str, model: str) -> str:
-        """Docstring."""
+            """Docstring."""
         return f"Executed with {model}"
 
     def _truncate_prompt(self, prompt: str, max_tokens: int) -> str:
@@ -319,7 +319,7 @@ class ValidationError(Exception):
 class ContextOptimizer:
     """Mock context optimizer."""
     async def optimize(self, content: str, max_tokens: int) -> str:
-        """Docstring."""
+            """Docstring."""
         # Simple deduplication for testing
         lines = content.split('\n')
         seen = set()

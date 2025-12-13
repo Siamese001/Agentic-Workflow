@@ -2,6 +2,7 @@
 import time
 from typing import Dict, List
 import gc
+from dataclasses import dataclass
 
 @dataclass
 class SoakMetrics:
@@ -17,7 +18,7 @@ class TestMemoryStability:
     """Soak tests for memory stability over extended periods."""
 
     def test_no_memory_leak_simple_operations(self):
-        """Soak: Memory remains stable over many iterations."""
+            """Soak: Memory remains stable over many iterations."""
         initial_objects = len(gc.get_objects())
 
         for _ in range(1000):
@@ -31,7 +32,7 @@ class TestMemoryStability:
         assert growth < 1000
 
     def test_dict_operations_stability(self):
-        """Soak: Dict operations don't leak memory."""
+            """Soak: Dict operations don't leak memory."""
         for _ in range(500):
             d: Dict[str, object] = {}
             for i in range(100):
@@ -41,7 +42,7 @@ class TestMemoryStability:
         # Test passes if no OOM
 
     def test_list_operations_stability(self):
-        """Soak: List operations don't leak memory."""
+            """Soak: List operations don't leak memory."""
         for _ in range(500):
             lst: List[int] = []
             for i in range(100):
@@ -51,7 +52,7 @@ class TestMemoryStability:
         # Test passes if no OOM
 
     def test_string_concatenation_stability(self):
-        """Soak: String operations don't leak memory."""
+            """Soak: String operations don't leak memory."""
         for _ in range(500):
             s = ""
             for i in range(50):
@@ -60,11 +61,11 @@ class TestMemoryStability:
         gc.collect()
 
     def test_object_creation_cleanup(self):
-        """Soak: Objects are properly garbage collected."""
+            """Soak: Objects are properly garbage collected."""
             """TODO: Add docstring."""
 
         class TempObject:
-            """Docstring."""
+                """Docstring."""
             def __init__(self, data: str):
                 self.data = data
 
@@ -78,7 +79,7 @@ class TestLongRunningOperations:
     """Soak tests for long-running operation stability."""
 
     def test_sustained_throughput(self):
-        """Soak: Throughput remains stable over time."""
+            """Soak: Throughput remains stable over time."""
         iterations = 100
         latencies: List[float] = []
 
@@ -94,7 +95,7 @@ class TestLongRunningOperations:
         assert max_latency < avg_latency * 10
 
     def test_error_rate_stability(self):
-        """Soak: Error rate remains low over time."""
+            """Soak: Error rate remains low over time."""
         iterations = 1000
         errors = 0
 
@@ -111,7 +112,7 @@ class TestLongRunningOperations:
         assert error_rate < 0.01  # Less than 1% error rate
 
     def test_resource_cleanup(self):
-        """Soak: Resources are cleaned up properly."""
+            """Soak: Resources are cleaned up properly."""
         for _ in range(100):
             # Simulate resource acquisition and release
             resources = [f"resource_{i}" for i in range(10)]
@@ -122,7 +123,7 @@ class TestLongRunningOperations:
             processed.clear()
 
     def test_cache_eviction_stability(self):
-        """Soak: Cache eviction works correctly over time."""
+            """Soak: Cache eviction works correctly over time."""
         cache: Dict[str, str] = {}
         max_size = 100
 
@@ -138,7 +139,7 @@ class TestLongRunningOperations:
         assert len(cache) <= max_size
 
     def test_connection_pool_stability(self):
-        """Soak: Connection pool remains stable."""
+            """Soak: Connection pool remains stable."""
         pool: List[str] = []
         max_connections = 10
 
@@ -160,7 +161,7 @@ class TestDegradationDetection:
     """Soak tests for detecting performance degradation."""
 
     def test_latency_percentiles_stable(self):
-        """Soak: Latency percentiles remain stable."""
+            """Soak: Latency percentiles remain stable."""
         latencies: List[float] = []
 
         for _ in range(1000):
@@ -176,7 +177,7 @@ class TestDegradationDetection:
         assert p99 < p50 * 20
 
     def test_no_gradual_slowdown(self):
-        """Soak: No gradual performance degradation."""
+            """Soak: No gradual performance degradation."""
         batch_size = 100
         batch_times: List[float] = []
 
@@ -191,7 +192,7 @@ class TestDegradationDetection:
         assert slowdown_ratio < 2.0
 
     def test_consistent_memory_usage(self):
-        """Soak: Memory usage remains consistent."""
+            """Soak: Memory usage remains consistent."""
 
         memory_samples: List[int] = []
 
@@ -207,7 +208,7 @@ class TestDegradationDetection:
         assert growth < 10000
 
     def test_gc_pressure_acceptable(self):
-        """Soak: GC pressure remains acceptable."""
+            """Soak: GC pressure remains acceptable."""
         gc.collect()
         gc.get_count()
 
@@ -218,7 +219,7 @@ class TestDegradationDetection:
         # Test passes if no excessive GC pauses
 
     def test_thread_safety_under_load(self):
-        """Soak: Operations remain thread-safe under load."""
+            """Soak: Operations remain thread-safe under load."""
         counter = {"value": 0}
 
         for _ in range(1000):

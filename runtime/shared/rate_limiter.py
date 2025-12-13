@@ -7,6 +7,8 @@ token bucket, sliding window, and fixed window to protect the system
 import asyncio
 import logging
 import time
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +23,7 @@ class RateLimitExceeded(Exception):
     """Raised when rate limit is exceeded."""
 
     def __init__(self, identifier: str, limit: int, window: int, retry_after: float):
-        """Initialize rate limit exceeded error.
+            """Initialize rate limit exceeded error.
 
         Args:
             identifier: Client identifier
@@ -48,7 +50,7 @@ class RateLimitConfig:
     cleanup_interval: int = 3600  # Cleanup old entries every hour
 
     def __post_init__(self):
-        """Post-initialization validation."""
+            """Post-initialization validation."""
         if self.burst_size is None:
             self.burst_size = self.limit * 2  # Default burst to 2x limit
 
@@ -63,7 +65,7 @@ class ClientState:
     last_refill: float = field(default_factory=time.time)
 
     def reset_window(self) -> None:
-        """Reset the time window."""
+            """Reset the time window."""
         self.window_start = time.time()
         self.request_count = 0
 
@@ -72,7 +74,7 @@ class RateLimiter(ABC):
 
     @abstractmethod
     async def is_allowed(self, identifier: str) -> bool:
-        """Check if request is allowed.
+            """Check if request is allowed.
 
         Args:
             identifier: Client identifier (IP, API key, etc.)
@@ -84,7 +86,7 @@ class RateLimiter(ABC):
 
     @abstractmethod
     async def check_limit(self, identifier: str) -> Tuple[bool, float]:
-        """Check rate limit and get retry after.
+            """Check rate limit and get retry after.
 
         Args:
             identifier: Client identifier
@@ -96,7 +98,7 @@ class RateLimiter(ABC):
 
     @abstractmethod
     def get_stats(self) -> Dict[str, Any]:
-        """Get rate limiter statistics.
+            """Get rate limiter statistics.
 
         Returns:
             Statistics dictionary
@@ -107,7 +109,7 @@ class TokenBucketRateLimiter(RateLimiter):
     """Token bucket rate limiter."""
 
     def __init__(self, config: RateLimitConfig):
-        """Initialize token bucket rate limiter.
+            """Initialize token bucket rate limiter.
 
         Args:
             config: Rate limit configuration
@@ -131,7 +133,7 @@ class TokenBucketRateLimiter(RateLimiter):
         logger.debug(f"Initialized TokenBucketRateLimiter: {config.limit}/{config.window}s")
 
     async def is_allowed(self, identifier: str) -> bool:
-        """Check if request is allowed.
+            """Check if request is allowed.
 
         Args:
             identifier: Client identifier
@@ -143,7 +145,7 @@ class TokenBucketRateLimiter(RateLimiter):
         return allowed
 
     async def check_limit(self, identifier: str) -> Tuple[bool, float]:
-        """Check rate limit and get retry after.
+            """Check rate limit and get retry after.
 
         Args:
             identifier: Client identifier
@@ -188,7 +190,7 @@ class TokenBucketRateLimiter(RateLimiter):
                 return False, retry_after
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get rate limiter statistics.
+            """Get rate limiter statistics.
 
         Returns:
             Statistics dictionary
@@ -206,7 +208,7 @@ class TokenBucketRateLimiter(RateLimiter):
         return stats
 
     async def cleanup(self) -> int:
-        """Clean up inactive clients.
+            """Clean up inactive clients.
 
         Returns:
             Number of clients cleaned up
@@ -229,9 +231,9 @@ class TokenBucketRateLimiter(RateLimiter):
             return len(inactive_clients)
 
     def _start_cleanup(self) -> None:
-        """Start the cleanup task."""
+            """Start the cleanup task."""
         async def cleanup_loop():
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
             while True:
                 try:
@@ -245,7 +247,7 @@ class TokenBucketRateLimiter(RateLimiter):
         self._cleanup_task = asyncio.create_task(cleanup_loop())
 
     async def stop(self) -> None:
-        """Stop the rate limiter."""
+            """Stop the rate limiter."""
         if self._cleanup_task:
             self._cleanup_task.cancel()
             try:
@@ -257,7 +259,7 @@ class SlidingWindowRateLimiter(RateLimiter):
     """Sliding window rate limiter."""
 
     def __init__(self, config: RateLimitConfig):
-        """Initialize sliding window rate limiter.
+            """Initialize sliding window rate limiter.
 
         Args:
             config: Rate limit configuration
@@ -277,7 +279,7 @@ class SlidingWindowRateLimiter(RateLimiter):
         logger.debug(f"Initialized SlidingWindowRateLimiter: {config.limit}/{config.window}s")
 
     async def is_allowed(self, identifier: str) -> bool:
-        """Check if request is allowed.
+            """Check if request is allowed.
 
         Args:
             identifier: Client identifier
@@ -289,7 +291,7 @@ class SlidingWindowRateLimiter(RateLimiter):
         return allowed
 
     async def check_limit(self, identifier: str) -> Tuple[bool, float]:
-        """Check rate limit and get retry after.
+            """Check rate limit and get retry after.
 
         Args:
             identifier: Client identifier
@@ -329,7 +331,7 @@ class SlidingWindowRateLimiter(RateLimiter):
                 return False, max(0, retry_after)
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get rate limiter statistics.
+            """Get rate limiter statistics.
 
         Returns:
             Statistics dictionary
@@ -350,14 +352,14 @@ class RateLimitManager:
     """Manages multiple rate limiters."""
 
     def __init__(self):
-        """Initialize rate limit manager."""
+            """Initialize rate limit manager."""
         self.limiters: Dict[str, RateLimiter] = {}
         self._lock = asyncio.Lock()
 
         logger.info("Initialized RateLimitManager")
 
     async def add_limiter(self, name: str, config: RateLimitConfig) -> RateLimiter:
-        """Add a rate limiter.
+            """Add a rate limiter.
 
         Args:
             name: Limiter name
@@ -383,13 +385,13 @@ class RateLimitManager:
 
             return limiter
 
-    async def check_limit(
         """Docstring."""
+    async def check_limit(
         self,
         limiter_name: str,
         identifier: str
     ) -> Tuple[bool, float]:
-        """Check rate limit.
+            """Check rate limit.
 
         Args:
             limiter_name: Name of rate limiter
@@ -405,7 +407,7 @@ class RateLimitManager:
         return await limiter.check_limit(identifier)
 
     async def is_allowed(self, limiter_name: str, identifier: str) -> bool:
-        """Check if request is allowed.
+            """Check if request is allowed.
 
         Args:
             limiter_name: Name of rate limiter
@@ -421,7 +423,7 @@ class RateLimitManager:
         return await limiter.is_allowed(identifier)
 
     def get_limiter(self, name: str) -> Optional[RateLimiter]:
-        """Get rate limiter by name.
+            """Get rate limiter by name.
 
         Args:
             name: Limiter name
@@ -432,7 +434,7 @@ class RateLimitManager:
         return self.limiters.get(name)
 
     def list_limiters(self) -> List[str]:
-        """List all rate limiter names.
+            """List all rate limiter names.
 
         Returns:
             List of names
@@ -440,7 +442,7 @@ class RateLimitManager:
         return list(self.limiters.keys())
 
     async def remove_limiter(self, name: str) -> bool:
-        """Remove a rate limiter.
+            """Remove a rate limiter.
 
         Args:
             name: Limiter name
@@ -463,7 +465,7 @@ class RateLimitManager:
             return False
 
     async def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
-        """Get statistics for all limiters.
+            """Get statistics for all limiters.
 
         Returns:
             Statistics dictionary
@@ -487,8 +489,8 @@ async def get_rate_limit_manager() -> RateLimitManager:
     return _rate_manager
 
 # Decorators for rate limiting
-def rate_limit(
     """Docstring."""
+def rate_limit(
     limiter_name: str,
     identifier_extractor: Optional[Callable] = None
 ):
@@ -502,12 +504,12 @@ def rate_limit(
         Decorated function
     """
     def decorator(func):
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
         """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             manager = await get_rate_limit_manager()
 
             # Extract identifier
@@ -536,10 +538,10 @@ def rate_limit(
 
 
         def sync_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             # For sync functions, run in thread pool
             async def async_func():
-                """Docstring."""
+                    """Docstring."""
                 return func(*args, **kwargs)
 
             return asyncio.run(async_func())

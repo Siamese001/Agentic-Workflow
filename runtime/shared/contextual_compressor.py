@@ -29,7 +29,7 @@ class ContextualCompressor:
     """
 
     def __init__(self, similarity_threshold: float = 0.1, use_llm: bool = False):
-        """Initialize the Contextual Compressor.
+            """Initialize the Contextual Compressor.
 
         Args:
             similarity_threshold: Minimum Jaccard similarity to keep a sentence
@@ -56,7 +56,7 @@ class ContextualCompressor:
             llm={use_llm}")
 
     def _split_into_sentences(self, text: str) -> List[str]:
-        """Split text into sentences using regex.
+            """Split text into sentences using regex.
 
         Args:
             text: Text to split
@@ -69,7 +69,7 @@ class ContextualCompressor:
         return [s.strip() for s in sentences if s.strip()]
 
     def _calculate_jaccard_similarity(self, text1: str, text2: str) -> float:
-        """Calculate Jaccard similarity between two texts.
+            """Calculate Jaccard similarity between two texts.
 
         Jaccard similarity = |intersection| / |union|
 
@@ -98,7 +98,7 @@ class ContextualCompressor:
         return len(intersection) / len(union)
 
     def _extract_entities(self, text: str) -> Set[str]:
-        """Extract named entities from text using simple patterns.
+            """Extract named entities from text using simple patterns.
 
         Args:
             text: Text to extract entities from
@@ -115,7 +115,7 @@ class ContextualCompressor:
         return entities
 
     def _compress_heuristic(self, chunks: List[str], query: str) -> str:
-        """Compress using heuristic Jaccard similarity.
+            """Compress using heuristic Jaccard similarity.
 
         Args:
             chunks: List of text chunks
@@ -196,7 +196,7 @@ class ContextualCompressor:
         return compressed_text
 
     async def _compress_llm(self, chunks: List[str], query: str) -> str:
-        """Compress using LLM extraction.
+            """Compress using LLM extraction.
 
         Args:
             chunks: List of text chunks
@@ -236,12 +236,12 @@ Extracted sentences:"""
             # Fallback to heuristic
             return self._compress_heuristic(chunks, query)
 
-    def compress(self,
         """Docstring."""
+    def compress(self,
         chunks: List[str],
         query: str,
         use_llm: Optional[bool] = None) -> CompressionResult:
-        """Compress retrieved chunks to extract relevant sentences.
+            """Compress retrieved chunks to extract relevant sentences.
 
         Args:
             chunks: List of retrieved text chunks

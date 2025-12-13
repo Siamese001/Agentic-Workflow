@@ -14,7 +14,7 @@ class ResumeEnhancementOrchestrator:
     """Orchestrates all resume enhancement components."""
 
     def __init__(self):
-        """Initialize resume enhancement orchestrator."""
+            """Initialize resume enhancement orchestrator."""
         self.persona_router: Optional[PersonaRouter] = None
         self.evidence_injector: Optional[EvidenceInjector] = None
         self.recon_agent: Optional[ReconAgent] = None
@@ -25,7 +25,7 @@ class ResumeEnhancementOrchestrator:
         logger.info("Initialized ResumeEnhancementOrchestrator")
 
     async def initialize(self) -> None:
-        """Initialize all components."""
+            """Initialize all components."""
         if self._initialized:
             return
 
@@ -46,7 +46,7 @@ class ResumeEnhancementOrchestrator:
         logger.info("Resume enhancement initialization complete")
 
     async def _setup_event_subscriptions(self) -> None:
-        """Setup event subscriptions for component coordination."""
+            """Setup event subscriptions for component coordination."""
         # Subscribe to resume generation events
         await self.infrastructure.event_bus.subscribe(
             "events.resume_generation_started",
@@ -62,7 +62,7 @@ class ResumeEnhancementOrchestrator:
         logger.info("Setup resume enhancement event subscriptions")
 
     async def _handle_resume_generation_started(self, event: SystemEvent) -> None:
-        """Handle resume generation start event.
+            """Handle resume generation start event.
 
         Args:
             event: Resume generation started event
@@ -119,7 +119,7 @@ class ResumeEnhancementOrchestrator:
             logger.error(f"Failed to handle resume generation started: {e}")
 
     async def _handle_persona_analyzed(self, event: SystemEvent) -> None:
-        """Handle persona analyzed event.
+            """Handle persona analyzed event.
 
         Args:
             event: Persona analyzed event
@@ -137,7 +137,7 @@ class ResumeEnhancementOrchestrator:
             logger.error(f"Failed to handle persona analyzed: {e}")
 
     def _extract_company_from_jd(self, jd_text: str) -> Optional[str]:
-        """Extract company name from job description.
+            """Extract company name from job description.
 
         Args:
             jd_text: Job description text
@@ -166,8 +166,8 @@ class ResumeEnhancementOrchestrator:
 
         return None
 
-    async def generate_enhanced_resume(
         """Docstring."""
+    async def generate_enhanced_resume(
         self,
         job_description: str,
         candidate_history: List[str],
@@ -175,7 +175,7 @@ class ResumeEnhancementOrchestrator:
         evidence_library_path: Optional[str] = None,
         trace_id: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Generate enhanced resume with all enhancements.
+            """Generate enhanced resume with all enhancements.
 
         Args:
             job_description: Job description text
@@ -296,7 +296,7 @@ class ResumeEnhancementOrchestrator:
         persona: ReaderPersona,
         recon_signal: Optional[ReconSignal]
     ) -> int:
-        """Calculate task complexity based on persona and signals.
+            """Calculate task complexity based on persona and signals.
 
         Args:
             persona: Reader persona
@@ -324,7 +324,7 @@ class ResumeEnhancementOrchestrator:
         return min(base_complexity, 10)
 
     async def get_enhancement_stats(self) -> Dict[str, Any]:
-        """Get enhancement statistics.
+            """Get enhancement statistics.
 
         Returns:
             Statistics dictionary
@@ -363,8 +363,8 @@ async def get_resume_enhancement_orchestrator() -> ResumeEnhancementOrchestrator
     return _enhancement_orchestrator
 
 # Convenience function
-async def enhance_resume(
     """Docstring."""
+async def enhance_resume(
     job_description: str,
     candidate_history: List[str],
     resume_bullets: List[str],

@@ -30,7 +30,7 @@ class CritiqueResult(BaseModel):
 
     @validator('confidence_score')
     def validate_confidence(cls, v):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         if not 0.0 <= v <= 1.0:
             raise ValueError('Confidence score must be between 0 and 1')
@@ -67,7 +67,7 @@ class ReflectionEngine:
     """Engine for self-reflection and quality assessment."""
 
     def __init__(self, config: Optional[ReflectionConfig] = None):
-        """Initialize the Reflection Engine.
+            """Initialize the Reflection Engine.
 
         Args:
             config: Optional configuration
@@ -133,14 +133,14 @@ class ReflectionEngine:
 
         logger.info(f"Initialized ReflectionEngine with model: {self.config.llm_model}")
 
-    async def evaluate(
         """Docstring."""
+    async def evaluate(
         self,
         content: Any,
         criteria: List[Union[str, ValidationCriterion]],
         context: Optional[Dict[str, Any]] = None
     ) -> CritiqueResult:
-        """Evaluate content against criteria with circuit breaker protection.
+            """Evaluate content against criteria with circuit breaker protection.
 
         Args:
             content: The content to evaluate
@@ -217,7 +217,7 @@ class ReflectionEngine:
         return result
 
     def _should_use_fast_path(self, criteria: List[ValidationCriterion]) -> bool:
-        """Determine if fast path (regex) can be used."""
+            """Determine if fast path (regex) can be used."""
         # Fast path if all criteria are simple validators
         for criterion in criteria:
             if isinstance(criterion.validator, str):
@@ -231,14 +231,14 @@ class ReflectionEngine:
                 return False
         return True
 
-    async def _fast_path_evaluate(
         """Docstring."""
+    async def _fast_path_evaluate(
         self,
         content: Any,
         criteria: List[ValidationCriterion],
         context: Optional[Dict[str, Any]]
     ) -> CritiqueResult:
-        """Evaluate using fast regex/built-in validators."""
+            """Evaluate using fast regex/built-in validators."""
         results = []
         total_weight = 0
         weighted_score = 0
@@ -277,14 +277,14 @@ class ReflectionEngine:
             validation_type="regex"
         )
 
-    async def _llm_path_evaluate(
         """Docstring."""
+    async def _llm_path_evaluate(
         self,
         content: Any,
         criteria: List[ValidationCriterion],
         context: Optional[Dict[str, Any]]
     ) -> CritiqueResult:
-        """Evaluate using LLM for semantic validation."""
+            """Evaluate using LLM for semantic validation."""
         # Build prompt
         criteria_text = "\n".join([
             f"- {c.name}: {c.description}{' (Required)' if c.is_required else ''}"
@@ -342,7 +342,7 @@ Respond in JSON format:
             )
 
     async def _call_llm(self, prompt: str) -> str:
-        """Call the LLM for evaluation.
+            """Call the LLM for evaluation.
 
         In a real implementation, this would use the actual LLM client.
         For now, returns a mock response.
@@ -374,7 +374,7 @@ Respond in JSON format:
             })
 
     def _validate_regex(self, content: Any, pattern: str) -> bool:
-        """Validate content using regex pattern."""
+            """Validate content using regex pattern."""
         if self._regex_cache and pattern in self._regex_cache:
             compiled = self._regex_cache[pattern]
         else:
@@ -386,7 +386,7 @@ Respond in JSON format:
         return bool(compiled.search(text))
 
     def _validate_json(self, content: Any) -> bool:
-        """Validate that content is valid JSON."""
+            """Validate that content is valid JSON."""
         if isinstance(content, (dict, list)):
             try:
                 json.dumps(content)
@@ -402,7 +402,7 @@ Respond in JSON format:
         return False
 
     def _validate_no_empty_fields(self, content: Any) -> bool:
-        """Validate that dictionary has no empty values."""
+            """Validate that dictionary has no empty values."""
         if not isinstance(content, dict):
             return True  # Not applicable
 
@@ -415,7 +415,7 @@ Respond in JSON format:
         return True
 
     def _validate_keywords(self, content: Any) -> bool:
-        """Validate that content contains required keywords."""
+            """Validate that content contains required keywords."""
         # This is a placeholder - actual keywords would be in context
         text = str(content).lower()
         required_keywords = ["result", "output"]  # Example
@@ -423,7 +423,7 @@ Respond in JSON format:
         return all(keyword in text for keyword in required_keywords)
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get reflection engine statistics."""
+            """Get reflection engine statistics."""
         return {
             **self.stats,
             "config": {
@@ -434,7 +434,7 @@ Respond in JSON format:
         }
 
     def reset_stats(self) -> None:
-        """Reset statistics."""
+            """Reset statistics."""
         self.stats = {
             "total_critiques": 0,
             "fast_path_critiques": 0,
@@ -465,8 +465,8 @@ def get_reflection_engine(**kwargs) -> ReflectionEngine:
     return _reflection_engine
 
 # Convenience functions
-async def evaluate_content(
     """Docstring."""
+async def evaluate_content(
     content: Any,
     criteria: List[Union[str, ValidationCriterion]],
     context: Optional[Dict[str, Any]] = None,

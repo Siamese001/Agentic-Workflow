@@ -27,7 +27,7 @@ class HardenedGeminiExecutor(HardeningMixin):
     """
 
     def __init__(self, config: HardeningConfig, api_key: Optional[str] = None):
-        """Initialize hardened Gemini executor.
+            """Initialize hardened Gemini executor.
 
         Args:
             config: Hardening configuration
@@ -48,14 +48,14 @@ class HardenedGeminiExecutor(HardeningMixin):
             logger.error(f"Failed to initialize Gemini client: {e}")
             raise
 
-    async def _raw_generate_content(
         """Docstring."""
+    async def _raw_generate_content(
         self,
         model: str,
         contents: List[Dict[str, Any]],
         config: Optional[Dict[str, Any]] = None
     ) -> tuple[str, int]:
-        """
+            """
         Low-level operation to be wrapped by HardeningMixin.
 
         This is where pre-flight token governance would be implemented.
@@ -90,8 +90,8 @@ class HardenedGeminiExecutor(HardeningMixin):
             logger.error(f"Gemini API call failed: {e}")
             raise
 
-    async def execute_k_node(
         """Docstring."""
+    async def execute_k_node(
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -100,7 +100,7 @@ class HardenedGeminiExecutor(HardeningMixin):
         temperature: float = 0.7,
         max_tokens: Optional[int] = None
     ) -> str:
-        """
+            """
         High-level entry point that calls the hardened wrapper.
 
         Args:
@@ -150,14 +150,14 @@ class HardenedGeminiExecutor(HardeningMixin):
 
         return content
 
-    async def execute_with_tools(
         """Docstring."""
+    async def execute_with_tools(
         self,
         messages: List[AgentMessage],
         tools: List[Dict[str, Any]],
         model: str = "gemini-2.0-flash-exp"
     ) -> Dict[str, Any]:
-        """
+            """
         Execute with tool calling support.
 
         Args:
@@ -200,8 +200,8 @@ class HardenedGeminiExecutor(HardeningMixin):
             logger.error(f"Tool execution failed: {e}")
             raise
 
-def create_hardened_gemini_executor(
     """Docstring."""
+def create_hardened_gemini_executor(
     component_name: str = "HardenedGeminiExecutor",
     api_key: Optional[str] = None
 ) -> HardenedGeminiExecutor:

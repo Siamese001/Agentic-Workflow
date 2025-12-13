@@ -30,7 +30,7 @@ class SOTALayerTestSuite:
     """Test suite for Phase 3 SOTA Layer components."""
 
     def __init__(self):
-        """Initialize the test suite."""
+            """Initialize the test suite."""
         self.reranker = LateInteractionReranker()
         self.cache = ContrastiveSemanticCache(similarity_threshold=0.92)
 
@@ -69,7 +69,7 @@ class SOTALayerTestSuite:
         ]
 
     def test_late_interaction_reranker(self):
-        """Test the Late Interaction Reranker with various queries."""
+            """Test the Late Interaction Reranker with various queries."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Late Interaction Reranker")
         logger.info("="*60)
@@ -146,7 +146,7 @@ class SOTALayerTestSuite:
                 logger.info(f"     Score {score:.3f}: {doc[:50]}...")
 
     def test_contrastive_semantic_cache(self):
-        """Test the Contrastive Semantic Cache with semantic similarity."""
+            """Test the Contrastive Semantic Cache with semantic similarity."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Contrastive Semantic Cache")
         logger.info("="*60)
@@ -195,7 +195,7 @@ class SOTALayerTestSuite:
             self.cache.clear()
 
     def test_cache_features(self):
-        """Test additional cache features."""
+            """Test additional cache features."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Cache Features")
         logger.info("="*60)
@@ -263,7 +263,7 @@ class SOTALayerTestSuite:
                 os.unlink(temp_file)
 
     def test_integration_scenario(self):
-        """Test both components working together in a realistic scenario."""
+            """Test both components working together in a realistic scenario."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Integration Scenario")
         logger.info("="*60)
@@ -337,7 +337,7 @@ class SOTALayerTestSuite:
             logger.info(f"   ❌ Similar query missed cache")
 
     def test_fallback_modes(self):
-        """Test fallback behavior when dependencies are missing."""
+            """Test fallback behavior when dependencies are missing."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Fallback Modes")
         logger.info("="*60)
@@ -370,7 +370,7 @@ class SOTALayerTestSuite:
         logger.info(f"   Stats: {stats}")
 
     def test_convenience_functions(self):
-        """Test convenience functions for direct usage."""
+            """Test convenience functions for direct usage."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Convenience Functions")
         logger.info("="*60)
@@ -399,7 +399,7 @@ class SOTALayerTestSuite:
             logger.info(f"   Cache not available")
 
     def run_all_tests(self):
-        """Run all tests sequentially."""
+            """Run all tests sequentially."""
         logger.info("🚀 Starting Phase 3 SOTA Layer Test Suite")
         logger.info("="*60)
 

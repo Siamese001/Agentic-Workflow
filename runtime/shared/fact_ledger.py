@@ -32,7 +32,7 @@ class Fact(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary.
+            """Convert to dictionary.
 
         Returns:
             Dictionary representation
@@ -64,7 +64,7 @@ class ClaimExtractor:
     """Extracts entities and values from text claims."""
 
     def __init__(self):
-        """Initialize claim extractor with patterns."""
+            """Initialize claim extractor with patterns."""
         # Patterns for extracting different types of claims
         self.patterns = {
             "percentage": re.compile(r"(\d+(?:\.\d+)?)%|\b(\d+(?:\.\d+)?\s*percent)\b",
@@ -95,13 +95,13 @@ class ClaimExtractor:
             "cost": ["cost", "expense", "budget", "spend"]
         }
 
-    def extract_claim(self,
         """Docstring."""
+    def extract_claim(self,
         text: str) -> Tuple[Optional[str],
         Optional[str],
         Optional[float],
         Optional[str]]:
-        """Extract entity, value, numeric value, and unit from text.
+            """Extract entity, value, numeric value, and unit from text.
 
         Args:
             text: Text to extract from
@@ -161,7 +161,7 @@ class ClaimExtractor:
         return entity, value_str, numeric_value, unit
 
     def _extract_context(self, text: str, keyword: str) -> str:
-        """Extract context around keyword.
+            """Extract context around keyword.
 
         Args:
             text: Full text
@@ -198,7 +198,7 @@ class FactLedger:
     """Ledger of verified facts for consistency checking."""
 
     def __init__(self, tolerance_percent: float = 5.0):
-        """Initialize fact ledger.
+            """Initialize fact ledger.
 
         Args:
             tolerance_percent: Tolerance for numeric value differences
@@ -219,7 +219,7 @@ class FactLedger:
         logger.info(f"Initialized FactLedger with {tolerance_percent}% tolerance")
 
     def load_facts(self, profile_data: Dict[str, Any]) -> None:
-        """Load facts from master profile data.
+            """Load facts from master profile data.
 
         Args:
             profile_data: Master profile dictionary
@@ -247,7 +247,7 @@ class FactLedger:
         logger.info(f"Loaded {loaded_count} facts into ledger")
 
     def _extract_experience_facts(self, experience: List[Dict[str, Any]]) -> int:
-        """Extract facts from experience section.
+            """Extract facts from experience section.
 
         Args:
             experience: List of experience entries
@@ -282,7 +282,7 @@ class FactLedger:
         return count
 
     def _extract_achievement_facts(self, achievements: List[Dict[str, Any]]) -> int:
-        """Extract facts from achievements section.
+            """Extract facts from achievements section.
 
         Args:
             achievements: List of achievement entries
@@ -313,7 +313,7 @@ class FactLedger:
         return count
 
     def _extract_metric_facts(self, metrics: Dict[str, Any]) -> int:
-        """Extract facts from metrics section.
+            """Extract facts from metrics section.
 
         Args:
             metrics: Metrics dictionary
@@ -344,7 +344,7 @@ class FactLedger:
         return count
 
     def _infer_unit_from_key(self, key: str) -> Optional[str]:
-        """Infer unit from metric key.
+            """Infer unit from metric key.
 
         Args:
             key: Metric key
@@ -364,7 +364,7 @@ class FactLedger:
         return None
 
     def _add_fact(self, fact: Fact) -> None:
-        """Add fact to ledger.
+            """Add fact to ledger.
 
         Args:
             fact: Fact to add
@@ -378,7 +378,7 @@ class FactLedger:
         self.entity_index[entity_key].append(fact.id)
 
     def _generate_fact_id(self, category: str, entity: str) -> str:
-        """Generate unique fact ID.
+            """Generate unique fact ID.
 
         Args:
             category: Fact category
@@ -391,7 +391,7 @@ class FactLedger:
         return hashlib.md5(content.encode()).hexdigest()[:16]
 
     def verify_claim(self, claim_text: str) -> VerificationResult:
-        """Verify a claim against the fact ledger.
+            """Verify a claim against the fact ledger.
 
         Args:
             claim_text: Text claim to verify
@@ -485,7 +485,7 @@ class FactLedger:
         )
 
     def _search_facts(self, entity: str) -> List[Fact]:
-        """Search for facts matching an entity.
+            """Search for facts matching an entity.
 
         Args:
             entity: Entity to search for
@@ -512,7 +512,7 @@ class FactLedger:
         return matching_facts
 
     def _calculate_similarity(self, value1: float, value2: float) -> float:
-        """Calculate similarity between two numeric values.
+            """Calculate similarity between two numeric values.
 
         Args:
             value1: First value
@@ -538,7 +538,7 @@ class FactLedger:
             return max(0.0, 1.0 - diff_percent)
 
     def add_fact(self, fact: Fact) -> None:
-        """Add a new fact to the ledger.
+            """Add a new fact to the ledger.
 
         Args:
             fact: Fact to add
@@ -547,7 +547,7 @@ class FactLedger:
         logger.debug(f"Added fact: {fact.entity} = {fact.value}")
 
     def update_fact(self, fact_id: str, updates: Dict[str, Any]) -> bool:
-        """# SQL removed: Update an existing fact.
+            """# SQL removed: Update an existing fact.
 
         Args:
             fact_id: ID of fact to update
@@ -572,7 +572,7 @@ class FactLedger:
         return True
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get ledger statistics.
+            """Get ledger statistics.
 
         Returns:
             Statistics dictionary
@@ -594,7 +594,7 @@ class FactLedger:
         return stats
 
     def export_facts(self) -> List[Dict[str, Any]]:
-        """Export all facts.
+            """Export all facts.
 
         Returns:
             List of fact dictionaries

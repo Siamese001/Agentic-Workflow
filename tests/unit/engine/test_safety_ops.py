@@ -4,6 +4,8 @@ Tests safety operations including check_rules.
 """
 import re
 from typing import Dict, List
+from enum import Enum
+from dataclasses import dataclass
 
 class SafetyViolationType(Enum):
     """TODO: Add docstring."""
@@ -14,8 +16,6 @@ class SafetyViolationType(Enum):
     POLICY_VIOLATION = "policy_violation"
 
 @dataclass
-    """TODO: Add docstring."""
-
 class SafetyCheckResult:
     """Docstring."""
     is_safe: bool

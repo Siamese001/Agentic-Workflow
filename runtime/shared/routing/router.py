@@ -36,7 +36,7 @@ class HardenedRouter:
         configs: Optional[Dict[str, RouteConfig]] = None,
         telemetry: Optional[SystemTelemetry] = None,
     ):
-        """Initialize hardened router.
+            """Initialize hardened router.
 
         Args:
             configs: Optional routing configurations (uses defaults if None)
@@ -52,7 +52,7 @@ class HardenedRouter:
         self._initialize_executors()
 
     def _initialize_executors(self) -> None:
-        """Initialize hardened executors for all providers."""
+            """Initialize hardened executors for all providers."""
         # Collect all unique providers from all configs
         all_providers = set()
         for config in self.configs.values():
@@ -73,7 +73,7 @@ class HardenedRouter:
                 logger.error(f"Failed to initialize executor for {provider}: {e}")
 
     def get_config(self, tier: Union[str, RoutingTier]) -> RouteConfig:
-        """Get routing configuration for a tier.
+            """Get routing configuration for a tier.
 
         Args:
             tier: Tier name or enum
@@ -95,7 +95,7 @@ class HardenedRouter:
         return self.configs[tier_name]
 
     def _is_provider_healthy(self, provider: Provider) -> bool:
-        """Check if a provider's circuit breaker is healthy.
+            """Check if a provider's circuit breaker is healthy.
 
         Args:
             provider: Provider to check
@@ -126,7 +126,7 @@ class HardenedRouter:
         is_fallback: bool,
         reason: Optional[str] = None,
     ) -> None:
-        """Log a routing event for observability.
+            """Log a routing event for observability.
 
         Args:
             tier: Routing tier
@@ -147,8 +147,8 @@ class HardenedRouter:
             },
         )
 
-    async def execute_with_fallback(
         """Docstring."""
+    async def execute_with_fallback(
         self,
         tier: Union[str, RoutingTier],
         prompt: str,
@@ -159,7 +159,7 @@ class HardenedRouter:
         max_tokens: Optional[int] = None,
         **kwargs,
     ) -> AgentResponse:
-        """Execute request with automatic provider fallback.
+            """Execute request with automatic provider fallback.
 
         Implements the "waterfall" logic:
         1. Check primary provider circuit breaker
@@ -260,8 +260,8 @@ class HardenedRouter:
         logger.error(f"All providers down for tier '{tier_name}': {all_providers}")
         raise AllProvidersDownError(tier_name, all_providers)
 
-    async def _execute_on_provider(
         """Docstring."""
+    async def _execute_on_provider(
         self,
         provider: Provider,
         config: RouteConfig,
@@ -272,7 +272,7 @@ class HardenedRouter:
         max_tokens: Optional[int] = None,
         **kwargs,
     ) -> AgentResponse:
-        """Execute request on a specific provider.
+            """Execute request on a specific provider.
 
         Args:
             provider: Provider to execute on
@@ -322,7 +322,7 @@ class HardenedRouter:
         raise RuntimeError(f"Executor for {provider} has no compatible execution method")
 
     def get_provider_health(self) -> Dict[str, Dict[str, Any]]:
-        """Get health status of all providers.
+            """Get health status of all providers.
 
         Returns:
             Dictionary mapping provider names to health status
@@ -343,7 +343,7 @@ class HardenedRouter:
         return health
 
     def reset_all_circuit_breakers(self) -> None:
-        """Reset all circuit breakers (for testing)."""
+            """Reset all circuit breakers (for testing)."""
         for executor in self.executors.values():
             if hasattr(executor, 'reset_circuit_breaker'):
                 executor.reset_circuit_breaker()

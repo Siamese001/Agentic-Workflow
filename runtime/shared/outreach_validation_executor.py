@@ -35,7 +35,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         forbidden_verbs: List[str],
         forbidden_filler_phrases: List[str],
     ):
-        """Initialize outreach validation executor.
+            """Initialize outreach validation executor.
 
         Args:
             validation_gates: Validation gates from config
@@ -66,7 +66,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Execute outreach-specific validation check.
+            """Execute outreach-specific validation check.
 
         Args:
             check: Check identifier
@@ -113,7 +113,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         return super()._execute_check(check, content, k_node_id, context)
 
     def _check_placeholders_lic(self, content: str) -> Optional[RuleFailure]:
-        """Check for placeholders (LIC-QA-001 - CRITICAL).
+            """Check for placeholders (LIC-QA-001 - CRITICAL).
 
         Args:
             content: Content to check
@@ -147,7 +147,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         return None
 
     def _check_forbidden_verbs(self, content: str) -> Optional[RuleFailure]:
-        """Check for forbidden corporate verbs (LIC-QA-008 - MEDIUM).
+            """Check for forbidden corporate verbs (LIC-QA-008 - MEDIUM).
 
         Args:
             content: Content to check
@@ -175,7 +175,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         return None
 
     def _check_filler_phrases(self, content: str) -> Optional[RuleFailure]:
-        """Check for weak filler phrases (LIC-QA-009 - MEDIUM).
+            """Check for weak filler phrases (LIC-QA-009 - MEDIUM).
 
         Args:
             content: Content to check
@@ -207,7 +207,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check metric source binding (LIC-QA-041 - HIGH).
+            """Check metric source binding (LIC-QA-041 - HIGH).
 
         Every metric must map to metric_source_map entry.
 
@@ -259,7 +259,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check metric context validation (LIC-QA-043 - HIGH).
+            """Check metric context validation (LIC-QA-043 - HIGH).
 
         Metrics must have keyword context from RAG.
 
@@ -314,7 +314,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check redundancy guard for EXISTING contacts.
+            """Check redundancy guard for EXISTING contacts.
 
         Jaccard similarity must be ≤0.40 with previous message.
 
@@ -350,7 +350,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check transition phrase presence.
+            """Check transition phrase presence.
 
         Args:
             content: Content to check
@@ -380,7 +380,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check signature immutability.
+            """Check signature immutability.
 
         Signature must be exact 4-line block:
         Regards,
@@ -429,7 +429,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         return None
 
     def _extract_metric_context(self, content: str, metric: str) -> str:
-        """Extract surrounding context for a metric.
+            """Extract surrounding context for a metric.
 
         Args:
             content: Full content
@@ -449,7 +449,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         return ""
 
     def _calculate_jaccard_similarity(self, text1: str, text2: str) -> float:
-        """Calculate Jaccard similarity between two texts.
+            """Calculate Jaccard similarity between two texts.
 
         Args:
             text1: First text

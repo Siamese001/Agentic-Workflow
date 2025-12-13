@@ -40,7 +40,7 @@ class EvidenceInjector:
     """Injects evidence links into resume bullets."""
 
     def __init__(self, max_links_per_bullet: int = 1, max_links_per_resume: int = 5):
-        """Initialize evidence injector.
+            """Initialize evidence injector.
 
         Args:
             max_links_per_bullet: Maximum links to inject per bullet
@@ -55,7 +55,7 @@ class EvidenceInjector:
             {max_links_per_resume}/resume)")
 
     def load_library(self, path: str) -> None:
-        """Load evidence library from file.
+            """Load evidence library from file.
 
         Args:
             path: Path to JSON/YAML file containing evidence
@@ -91,7 +91,7 @@ class EvidenceInjector:
             raise
 
     def inject(self, bullets: List[str]) -> List[str]:
-        """Inject evidence links into resume bullets.
+            """Inject evidence links into resume bullets.
 
         Args:
             bullets: List of resume bullet points
@@ -119,7 +119,7 @@ class EvidenceInjector:
         return injected_bullets
 
     def _inject_into_bullet(self, bullet: str) -> str:
-        """Inject evidence links into a single bullet.
+            """Inject evidence links into a single bullet.
 
         Args:
             bullet: Single resume bullet
@@ -155,7 +155,7 @@ class EvidenceInjector:
         return bullet
 
     def _find_best_matches(self, bullet: str) -> List[Tuple[float, EvidenceItem]]:
-        """Find best matching evidence for a bullet.
+            """Find best matching evidence for a bullet.
 
         Args:
             bullet: Resume bullet text
@@ -179,7 +179,7 @@ class EvidenceInjector:
         return matches[:self.max_links_per_bullet]
 
     def _calculate_similarity(self, bullet: str, evidence: EvidenceItem) -> float:
-        """Calculate similarity between bullet and evidence.
+            """Calculate similarity between bullet and evidence.
 
         Args:
             bullet: Lowercase bullet text
@@ -215,7 +215,7 @@ class EvidenceInjector:
         return min(total_score, 1.0)
 
     def _find_link_phrase(self, bullet: str, evidence: EvidenceItem) -> Optional[str]:
-        """Find the best phrase in bullet to link to evidence.
+            """Find the best phrase in bullet to link to evidence.
 
         Args:
             bullet: Resume bullet text
@@ -258,7 +258,7 @@ class EvidenceInjector:
         return None
 
     def add_evidence(self, evidence: EvidenceItem) -> None:
-        """Add a single evidence item to the library.
+            """Add a single evidence item to the library.
 
         Args:
             evidence: Evidence item to add
@@ -267,7 +267,7 @@ class EvidenceInjector:
         logger.debug(f"Added evidence item: {evidence.id}")
 
     def remove_evidence(self, evidence_id: str) -> bool:
-        """Remove evidence item by ID.
+            """Remove evidence item by ID.
 
         Args:
             evidence_id: ID of evidence to remove
@@ -283,7 +283,7 @@ class EvidenceInjector:
         return False
 
     def get_stats(self) -> Dict[str, any]:
-        """Get injector statistics.
+            """Get injector statistics.
 
         Returns:
             Statistics dictionary

@@ -22,7 +22,7 @@ class TestAgenticLoopIntegration:
         """TODO: Add docstring."""
 
     def reset_state(self):
-        """Docstring."""
+            """Docstring."""
         reset_all_clients()
         reset_sdk_clients()
         yield
@@ -30,7 +30,7 @@ class TestAgenticLoopIntegration:
         reset_sdk_clients()
 
     def test_vector_store_query_flow(self):
-        """Vector search results can be retrieved."""
+            """Vector search results can be retrieved."""
         from runtime.shared.sdk_registry import get_vector_store
 
         with patch("runtime.shared.sdk_registry.get_vector_store") as mock_get_vs:
@@ -65,7 +65,7 @@ class TestAgenticLoopIntegration:
             assert results["ids"][0] == ["d1", "d2"]
 
     def test_multi_provider_fallback_pattern(self):
-        """Multiple providers can be configured for fallback."""
+            """Multiple providers can be configured for fallback."""
         providers = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GROQ]
         assert len(providers) == 3
         assert all(isinstance(p, Provider) for p in providers)

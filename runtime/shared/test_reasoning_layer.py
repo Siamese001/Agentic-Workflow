@@ -25,7 +25,7 @@ class ReasoningLayerTestSuite:
     """Test suite for Phase 2 Reasoning Layer components."""
 
     def __init__(self):
-        """Initialize the test suite."""
+            """Initialize the test suite."""
         self.decomposer = QueryDecomposer()
         self.scorer = HybridScorer(dynamic_alpha=True)
 
@@ -108,7 +108,7 @@ class ReasoningLayerTestSuite:
         ]
 
     async def test_query_decomposer(self):
-        """Test the Query Decomposer with various query types."""
+            """Test the Query Decomposer with various query types."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Query Decomposer")
         logger.info("="*60)
@@ -146,7 +146,7 @@ class ReasoningLayerTestSuite:
                 logger.info(f"     {j}. {sub_query}")
 
     def test_dynamic_hybrid_scorer(self):
-        """Test the Dynamic Hybrid Scorer with different query types."""
+            """Test the Dynamic Hybrid Scorer with different query types."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Dynamic Hybrid Scorer")
         logger.info("="*60)
@@ -179,7 +179,7 @@ class ReasoningLayerTestSuite:
                       f"Sparse={top.sparse_score:.3f}, Boost={top.metadata_boost:.3f}")
 
     async def test_integration_scenario(self):
-        """Test both components working together in a realistic scenario."""
+            """Test both components working together in a realistic scenario."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Integration Scenario")
         logger.info("="*60)
@@ -237,14 +237,14 @@ class ReasoningLayerTestSuite:
             logger.info(f"     {doc_id}: matched {freq} sub-queries")
 
     async def test_async_execution(self):
-        """Test the async execution helper for parallel sub-query processing."""
+            """Test the async execution helper for parallel sub-query processing."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Async Execution Helper")
         logger.info("="*60)
 
         # Create a mock search function
         async def mock_search(query: str, delay: float = 0.1):
-            """Mock async search function."""
+                """Mock async search function."""
             await asyncio.sleep(delay)
             return [{"query": query, "result": f"mock_result_for_{query[:10]}"}]
 
@@ -273,7 +273,7 @@ class ReasoningLayerTestSuite:
                 logger.info(f"   Sub-query {i+1}: {len(result_list)} result(s)")
 
     def test_convenience_functions(self):
-        """Test the convenience functions for direct usage."""
+            """Test the convenience functions for direct usage."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Convenience Functions")
         logger.info("="*60)
@@ -297,7 +297,7 @@ class ReasoningLayerTestSuite:
         logger.info(f"   Results: {len(results)} documents scored")
 
     def run_all_tests(self):
-        """Run all tests sequentially."""
+            """Run all tests sequentially."""
         logger.info("🚀 Starting Phase 2 Reasoning Layer Test Suite")
         logger.info("="*60)
 

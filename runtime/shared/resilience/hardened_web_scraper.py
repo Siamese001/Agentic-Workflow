@@ -16,6 +16,8 @@ import random
 import time
 import aiohttp
 import ssl
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +53,7 @@ class ProxyConfig:
     country: Optional[str] = None
 
     def to_url(self) -> str:
-        """Convert proxy to URL format."""
+            """Convert proxy to URL format."""
         if self.username and self.password:
             auth = f"{self.username}:{self.password}@"
         else:
@@ -102,7 +104,7 @@ class ScrapeResult:
 
     @property
     def success(self) -> bool:
-        """Check if request was successful."""
+            """Check if request was successful."""
         return 200 <= self.status_code < 300 and self.error_message is None
 
 class UserAgentRotator:
@@ -138,11 +140,11 @@ class UserAgentRotator:
         self.current_index = 0
 
     def get_random(self) -> str:
-        """Get a random User-Agent."""
+            """Get a random User-Agent."""
         return random.choice(self.user_agents)
 
     def get_next(self) -> str:
-        """Get next User-Agent in rotation."""
+            """Get next User-Agent in rotation."""
         ua = self.user_agents[self.current_index]
         self.current_index = (self.current_index + 1) % len(self.user_agents)
         return ua
@@ -167,7 +169,7 @@ class ProxyRotator:
             }
 
     async def get_proxy(self) -> Optional[ProxyConfig]:
-        """Get a healthy proxy."""
+            """Get a healthy proxy."""
         async with self._lock:
             if not self.healthy_proxies:
                 # Try to recover failed proxies
@@ -177,7 +179,7 @@ class ProxyRotator:
 
             # Select proxy based on success rate and response time
             def proxy_score(proxy: ProxyConfig) -> float:
-                """Docstring."""
+                    """Docstring."""
                 stats = self.proxy_stats[proxy.to_url()]
                 if stats["successes"] + stats["failures"] == 0:
                     return 1.0
@@ -191,7 +193,7 @@ class ProxyRotator:
             return proxy
 
     async def report_success(self, proxy: ProxyConfig, response_time: float) -> None:
-        """Report successful proxy usage."""
+            """Report successful proxy usage."""
         async with self._lock:
             url = proxy.to_url()
             stats = self.proxy_stats[url]
@@ -208,7 +210,7 @@ class ProxyRotator:
                 )
 
     async def report_failure(self, proxy: ProxyConfig) -> None:
-        """Report failed proxy."""
+            """Report failed proxy."""
         async with self._lock:
             if proxy in self.healthy_proxies:
                 self.healthy_proxies.remove(proxy)
@@ -220,7 +222,7 @@ class ProxyRotator:
                 logger.warning(f"Proxy {url} marked as failed")
 
     async def _recover_failed_proxies(self) -> None:
-        """Attempt to recover failed proxies."""
+            """Attempt to recover failed proxies."""
         recovered = []
 
         for proxy in self.failed_proxies:
@@ -252,7 +254,7 @@ class RateLimiter:
         self._lock = asyncio.Lock()
 
     async def acquire(self) -> None:
-        """Acquire permission to make a request."""
+            """Acquire permission to make a request."""
         if self.strategy == RateLimitStrategy.FIXED:
             await self._fixed_delay()
         elif self.strategy == RateLimitStrategy.ADAPTIVE:
@@ -263,12 +265,12 @@ class RateLimiter:
             await self._token_bucket()
 
     async def _fixed_delay(self) -> None:
-        """Fixed delay between requests."""
+            """Fixed delay between requests."""
         delay = 1.0 / self.requests_per_second
         await asyncio.sleep(delay)
 
     async def _adaptive_delay(self) -> None:
-        """Adaptive delay based on response patterns."""
+            """Adaptive delay based on response patterns."""
         async with self._lock:
             now = time.time()
 
@@ -285,7 +287,7 @@ class RateLimiter:
             await asyncio.sleep(self.adaptive_delay)
 
     async def _exponential_backoff(self) -> None:
-        """Exponential backoff for rate limiting."""
+            """Exponential backoff for rate limiting."""
         async with self._lock:
             now = time.time()
             recent_requests = [t for t in self.request_times if now - t < 1.0]
@@ -300,7 +302,7 @@ class RateLimiter:
             self.request_times.append(now)
 
     async def _token_bucket(self) -> None:
-        """Token bucket algorithm."""
+            """Token bucket algorithm."""
         async with self._lock:
             now = time.time()
 
@@ -338,7 +340,7 @@ class HardenedWebScraper:
         proxies: Optional[List[ProxyConfig]] = None,
         config: Optional[RequestConfig] = None
     ):
-        """Initialize hardened web scraper.
+            """Initialize hardened web scraper.
 
         Args:
             proxies: List of proxy configurations
@@ -374,7 +376,7 @@ class HardenedWebScraper:
         asyncio.create_task(self._initialize_session())
 
     async def _initialize_session(self) -> None:
-        """Initialize aiohttp session."""
+            """Initialize aiohttp session."""
         # Configure SSL context
         ssl_context = ssl.create_default_context()
         if not self.config.verify_ssl:
@@ -395,8 +397,8 @@ class HardenedWebScraper:
             cookie_jar=aiohttp.CookieJar(unsafe=True)
         )
 
-    async def scrape(
         """Docstring."""
+    async def scrape(
         self,
         url: str,
         method: str = "GET",
@@ -405,7 +407,7 @@ class HardenedWebScraper:
         data: Optional[Union[str, Dict]] = None,
         json_data: Optional[Dict] = None
     ) -> ScrapeResult:
-        """Scrape a URL with anti-detection measures.
+            """Scrape a URL with anti-detection measures.
 
         Args:
             url: URL to scrape
@@ -461,8 +463,8 @@ class HardenedWebScraper:
 
         return result
 
-    async def _make_request_with_retry(
         """Docstring."""
+    async def _make_request_with_retry(
         self,
         url: str,
         method: str,
@@ -472,7 +474,7 @@ class HardenedWebScraper:
         json_data: Optional[Dict],
         proxy_url: Optional[str]
     ) -> ScrapeResult:
-        """Make request with retry logic."""
+            """Make request with retry logic."""
         last_error = None
 
         for attempt in range(self.config.max_retries + 1):
@@ -517,8 +519,8 @@ class HardenedWebScraper:
             error_message=last_error or "Max retries exceeded"
         )
 
-    async def _make_single_request(
         """Docstring."""
+    async def _make_single_request(
         self,
         url: str,
         method: str,
@@ -528,7 +530,7 @@ class HardenedWebScraper:
         json_data: Optional[Dict],
         proxy_url: Optional[str]
     ) -> ScrapeResult:
-        """Make a single HTTP request."""
+            """Make a single HTTP request."""
         start_time = time.time()
 
         try:
@@ -570,7 +572,7 @@ class HardenedWebScraper:
             )
 
     def _is_captcha_response(self, result: ScrapeResult) -> bool:
-        """Check if response contains CAPTCHA challenge."""
+            """Check if response contains CAPTCHA challenge."""
         captcha_indicators = [
             "captcha",
             "recaptcha",
@@ -583,7 +585,7 @@ class HardenedWebScraper:
         return any(indicator in content_lower for indicator in captcha_indicators)
 
     async def _handle_captcha(self, result: ScrapeResult) -> bool:
-        """Handle CAPTCHA challenge."""
+            """Handle CAPTCHA challenge."""
         if self.config.captcha_solver == CaptchaSolver.NONE:
             return False
 
@@ -598,7 +600,7 @@ class HardenedWebScraper:
         return True
 
     def _update_stats(self, result: ScrapeResult) -> None:
-        """# SQL removed: Update scraping statistics."""
+            """# SQL removed: Update scraping statistics."""
         self.stats["total_requests"] += 1
 
         if result.success:
@@ -618,14 +620,14 @@ class HardenedWebScraper:
                 result.response_time_ms * 0.1
             )
 
-    async def scrape_multiple(
         """Docstring."""
+    async def scrape_multiple(
         self,
         urls: List[str],
         concurrent_limit: int = 5,
         delay_between_batches: float = 1.0
     ) -> List[ScrapeResult]:
-        """Scrape multiple URLs concurrently.
+            """Scrape multiple URLs concurrently.
 
         Args:
             urls: List of URLs to scrape
@@ -638,7 +640,7 @@ class HardenedWebScraper:
         semaphore = asyncio.Semaphore(concurrent_limit)
 
         async def scrape_with_semaphore(url: str) -> ScrapeResult:
-            """Docstring."""
+                """Docstring."""
             async with semaphore:
                 result = await self.scrape(url)
                 return result
@@ -674,7 +676,7 @@ class HardenedWebScraper:
         return results
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get scraping statistics."""
+            """Get scraping statistics."""
         total = self.stats["total_requests"]
         if total == 0:
             return self.stats
@@ -693,13 +695,13 @@ class HardenedWebScraper:
         return stats
 
     async def close(self) -> None:
-        """Close resources."""
+            """Close resources."""
         if self.session:
             await self.session.close()
 
 # Factory function for creating hardened web scraper
-def create_hardened_web_scraper(
     """Docstring."""
+def create_hardened_web_scraper(
     proxies: Optional[List[ProxyConfig]] = None,
     config: Optional[RequestConfig] = None
 ) -> HardenedWebScraper:

@@ -29,7 +29,7 @@ class SecureCheckpointManager:
         encryption_key: Optional[bytes] = None,
         integrity_key: Optional[bytes] = None
     ):
-        """Initialize the secure checkpoint manager.
+            """Initialize the secure checkpoint manager.
 
         Args:
             hop_id: Unique identifier for the hop
@@ -51,11 +51,11 @@ class SecureCheckpointManager:
         logger.debug(f"Initialized SecureCheckpointManager for hop {hop_id}")
 
     def _generate_key(self) -> bytes:
-        """Generate a cryptographically secure key."""
+            """Generate a cryptographically secure key."""
         return Fernet.generate_key()
 
     def _encrypt_data(self, data: str) -> bytes:
-        """Encrypt data using Fernet symmetric encryption.
+            """Encrypt data using Fernet symmetric encryption.
 
         Args:
             data: String data to encrypt
@@ -66,7 +66,7 @@ class SecureCheckpointManager:
         return self.cipher.encrypt(data.encode())
 
     def _decrypt_data(self, encrypted_data: bytes) -> str:
-        """Decrypt data using Fernet symmetric encryption.
+            """Decrypt data using Fernet symmetric encryption.
 
         Args:
             encrypted_data: Encrypted bytes
@@ -77,7 +77,7 @@ class SecureCheckpointManager:
         return self.cipher.decrypt(encrypted_data).decode()
 
     def _calculate_hmac(self, data: bytes) -> str:
-        """Calculate HMAC-SHA256 for data integrity.
+            """Calculate HMAC-SHA256 for data integrity.
 
         Args:
             data: Data to sign
@@ -92,7 +92,7 @@ class SecureCheckpointManager:
         ).hexdigest()
 
     def _verify_hmac(self, data: bytes, expected_hmac: str) -> bool:
-        """Verify HMAC-SHA256 for data integrity.
+            """Verify HMAC-SHA256 for data integrity.
 
         Args:
             data: Data to verify
@@ -105,7 +105,7 @@ class SecureCheckpointManager:
         return hmac.compare_digest(calculated_hmac, expected_hmac)
 
     async def save_checkpoint(self, checkpoint: MicroCheckpoint) -> None:
-        """Save a checkpoint with encryption and integrity protection.
+            """Save a checkpoint with encryption and integrity protection.
 
         Args:
             checkpoint: Checkpoint data to save
@@ -149,7 +149,7 @@ class SecureCheckpointManager:
             raise IOError(f"Checkpoint save failed: {e}")
 
     async def load_latest_checkpoint(self) -> Optional[MicroCheckpoint]:
-        """Load the most recent checkpoint with integrity validation.
+            """Load the most recent checkpoint with integrity validation.
 
         Returns:
             The latest checkpoint or None if no valid checkpoint found
@@ -186,7 +186,7 @@ class SecureCheckpointManager:
         return None
 
     async def _load_checkpoint_file(self, checkpoint_file: Path) -> Optional[MicroCheckpoint]:
-        """Load and validate a single checkpoint file.
+            """Load and validate a single checkpoint file.
 
         Args:
             checkpoint_file: Path to checkpoint file
@@ -223,7 +223,7 @@ class SecureCheckpointManager:
         return MicroCheckpoint(**checkpoint_dict)
 
     def cleanup_old_checkpoints(self, keep_count: int = 3) -> None:
-        """Clean up old checkpoints, keeping only the most recent ones.
+            """Clean up old checkpoints, keeping only the most recent ones.
 
         Args:
             keep_count: Number of recent checkpoints to keep per stage
@@ -248,7 +248,7 @@ class SecureCheckpointManager:
                 logger.debug(f"Removed old checkpoint: {old_file}")
 
     def quarantine_all_checkpoints(self) -> None:
-        """Quarantine all checkpoints for this hop (emergency measure)."""
+            """Quarantine all checkpoints for this hop (emergency measure)."""
         quarantine_dir = self.checkpoint_dir / "quarantine"
         quarantine_dir.mkdir(exist_ok=True)
 
@@ -265,14 +265,14 @@ class CheckpointManagerFactory:
     _global_key: Optional[bytes] = None
 
     @classmethod
-    def get_manager(
         """Docstring."""
+    def get_manager(
         cls,
         hop_id: str,
         checkpoint_dir: Path,
         use_global_key: bool = True
     ) -> SecureCheckpointManager:
-        """Get or create a checkpoint manager.
+            """Get or create a checkpoint manager.
 
         Args:
             hop_id: Unique hop identifier
@@ -302,7 +302,7 @@ class CheckpointManagerFactory:
 
     @classmethod
     def quarantine_all(cls, checkpoint_dir: Path) -> None:
-        """Quarantine all checkpoints in a directory.
+            """Quarantine all checkpoints in a directory.
 
         Args:
             checkpoint_dir: Directory containing checkpoints

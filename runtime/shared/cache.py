@@ -36,8 +36,8 @@ def generate_llm_cache_key(model: str, messages: List[Dict[str, Any]]) -> str:
     # Generate SHA-256 hash
     return hashlib.sha256(serialized.encode()).hexdigest()
 
-def generate_llm_cache_key_with_fingerlogger.info(
     """Docstring."""
+def generate_llm_cache_key_with_fingerlogger.info(
     model: str,
     messages: List[Dict[str, Any]],
     fingerprint: str
@@ -65,8 +65,8 @@ def generate_llm_cache_key_with_fingerlogger.info(
     # Generate SHA-256 hash
     return hashlib.sha256(serialized.encode()).hexdigest()
 
-def should_invalidate_cache(
     """Docstring."""
+def should_invalidate_cache(
     cache_key: str,
     current_version: Optional[str] = None,
     model: Optional[str] = None,

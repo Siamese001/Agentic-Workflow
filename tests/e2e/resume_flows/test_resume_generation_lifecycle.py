@@ -2,6 +2,8 @@
 import re
 import pytest
 from typing import Dict, List
+from dataclasses import dataclass
+from enum import Enum
 
 class ResumePhase(Enum):
     """TODO: Add docstring."""
@@ -32,7 +34,7 @@ class TestResumeGenerationLifecycleE2E:
     """E2E tests for complete resume generation lifecycle."""
 
     def test_full_generation_lifecycle(self):
-        """E2E: Resume generation progresses through all phases."""
+            """E2E: Resume generation progresses through all phases."""
         state = ResumeGenerationState(
             session_id="sess_001",
             phase=ResumePhase.INPUT_COLLECTION,
@@ -46,7 +48,7 @@ class TestResumeGenerationLifecycleE2E:
         assert state.phase == ResumePhase.COMPLETED
 
     def test_job_to_resume_matching(self):
-        """E2E: Resume is matched to job requirements."""
+            """E2E: Resume is matched to job requirements."""
         state = ResumeGenerationState(
             session_id="sess_002",
             phase=ResumePhase.SKILL_MATCHING,
@@ -74,7 +76,7 @@ class TestResumeGenerationLifecycleE2E:
         assert state.scores["experience_match"] == 1.0
 
     def test_content_generation_all_sections(self):
-        """E2E: All resume sections are generated."""
+            """E2E: All resume sections are generated."""
         state = ResumeGenerationState(
             session_id="sess_003",
             phase=ResumePhase.CONTENT_GENERATION,
@@ -88,7 +90,7 @@ class TestResumeGenerationLifecycleE2E:
         assert all(s in state.generated_content for s in sections)
 
     def test_optimization_improves_score(self):
-        """E2E: Optimization improves resume score."""
+            """E2E: Optimization improves resume score."""
         initial_score = 0.65
 
         # Optimization steps
@@ -107,7 +109,7 @@ class TestResumeGenerationLifecycleE2E:
         assert final_score == pytest.approx(0.82)
 
     def test_multiple_export_formats(self):
-        """E2E: Resume exports to multiple formats."""
+            """E2E: Resume exports to multiple formats."""
         formats = ["pdf", "docx", "txt", "json"]
         exports = {}
 
@@ -121,7 +123,7 @@ class TestResumeCustomizationE2E:
     """E2E tests for resume customization."""
 
     def test_customize_for_different_roles(self):
-        """E2E: Resume is customized for different target roles."""
+            """E2E: Resume is customized for different target roles."""
         base_experience = [
             {"title": "Software Engineer", "achievements": ["Built APIs", "Led team"]},
         ]
@@ -144,7 +146,7 @@ class TestResumeCustomizationE2E:
         assert customized["Solutions Architect"]["emphasis"] == "architecture"
 
     def test_industry_specific_customization(self):
-        """E2E: Resume is customized for different industries."""
+            """E2E: Resume is customized for different industries."""
         industries = ["Technology", "Finance", "Healthcare"]
 
         industry_keywords = {
@@ -158,7 +160,7 @@ class TestResumeCustomizationE2E:
             assert len(keywords) >= 1
 
     def test_experience_level_customization(self):
-        """E2E: Resume format varies by experience level."""
+            """E2E: Resume format varies by experience level."""
         experience_years = 15
 
         if experience_years < 3:
@@ -178,7 +180,7 @@ class TestATSOptimizationE2E:
     """E2E tests for ATS optimization."""
 
     def test_ats_keyword_optimization(self):
-        """E2E: Resume is optimized for ATS keywords."""
+            """E2E: Resume is optimized for ATS keywords."""
         job_keywords = ["python", "machine learning", "data analysis", "sql", "aws"]
         resume_content = "Experienced in Python and SQL for data analysis"
 
@@ -195,7 +197,7 @@ class TestATSOptimizationE2E:
         assert new_match_rate > match_rate
 
     def test_ats_format_compliance(self):
-        """E2E: Resume format is ATS-compliant."""
+            """E2E: Resume format is ATS-compliant."""
         resume = {
             "has_tables": False,
             "has_images": False,
@@ -216,7 +218,7 @@ class TestATSOptimizationE2E:
         assert len(ats_issues) == 0
 
     def test_ats_parsing_simulation(self):
-        """E2E: Resume parses correctly in ATS simulation."""
+            """E2E: Resume parses correctly in ATS simulation."""
         resume_text = """
 John Doe
 Software Engineer
@@ -249,7 +251,7 @@ class TestResumeQualityE2E:
     """E2E tests for resume quality assurance."""
 
     def test_grammar_check(self):
-        """E2E: Grammar is checked in resume content."""
+            """E2E: Grammar is checked in resume content."""
         content = "Led team of engineers to delivered project on time"  # Grammar error
 
         # basic check for shared issues
@@ -260,7 +262,7 @@ class TestResumeQualityE2E:
         assert len(issues) > 0
 
     def test_consistency_check(self):
-        """E2E: Formatting consistency is checked."""
+            """E2E: Formatting consistency is checked."""
         bullets = [
             "• Led team of 5 engineers",
             "- Built scalable systems",  # Inconsistent bullet
@@ -273,7 +275,7 @@ class TestResumeQualityE2E:
         assert is_consistent is False
 
     def test_length_validation(self):
-        """E2E: Resume length is validated."""
+            """E2E: Resume length is validated."""
         content = "A" * 3000  # ~2 pages worth
         words = len(content.split())
 
@@ -284,7 +286,7 @@ class TestResumeQualityE2E:
         assert is_appropriate_length is True
 
     def test_quantification_score(self):
-        """E2E: Achievement quantification is scored."""
+            """E2E: Achievement quantification is scored."""
         achievements = [
             "Led team of 5 engineers",  # Quantified
             "Improved performance by 30%",  # Quantified

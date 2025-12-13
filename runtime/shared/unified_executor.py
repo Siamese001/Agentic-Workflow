@@ -10,6 +10,8 @@ import json
 import logging
 import time
 from datetime import datetime
+from dataclasses import dataclass
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -38,7 +40,7 @@ class ExecutionContext:
 
     @property
     def duration(self) -> Optional[float]:
-        """Get execution duration in seconds."""
+            """Get execution duration in seconds."""
         if self.start_time and self.end_time:
             return (self.end_time - self.start_time).total_seconds()
         return None
@@ -54,7 +56,7 @@ class ExecutionResult:
     metrics: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
+            """Convert to dictionary."""
         return {
             "status": self.status.value,
             "data": self.data,
@@ -70,7 +72,7 @@ class ExecutionStrategy(ABC):
 
     @abstractmethod
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
-        """Execute the operation.
+            """Execute the operation.
 
         Args:
             context: Execution context
@@ -83,14 +85,14 @@ class ExecutionStrategy(ABC):
     @property
     @abstractmethod
     def strategy_name(self) -> str:
-        """Get strategy name."""
+            """Get strategy name."""
         pass
 
 class LLMExecutionStrategy(ExecutionStrategy):
     """Strategy for LLM-based execution."""
 
     def __init__(self, model_name: str = "default"):
-        """Initialize LLM execution strategy.
+            """Initialize LLM execution strategy.
 
         Args:
             model_name: Name of LLM model to use
@@ -105,7 +107,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
         self.resource_manager = get_resource_manager()
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
-        """Execute LLM operation.
+            """Execute LLM operation.
 
         Args:
             context: Execution context
@@ -161,7 +163,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
             )
 
     async def _execute_llm(self, context: ExecutionContext) -> Any:
-        """Execute actual LLM call.
+            """Execute actual LLM call.
 
         Args:
             context: Execution context
@@ -179,7 +181,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
             return self._process_outreach_input(context.input_data)
 
     def _process_resume_input(self, input_data: Any) -> str:
-        """Process resume input.
+            """Process resume input.
 
         Args:
             input_data: Resume input
@@ -196,7 +198,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
         return "Generated resume content"
 
     def _process_outreach_input(self, input_data: Any) -> str:
-        """Process outreach input.
+            """Process outreach input.
 
         Args:
             input_data: Outreach input
@@ -213,7 +215,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
         return "Generated outreach message"
 
     def _estimate_tokens(self, input_data: Any) -> int:
-        """Estimate token count.
+            """Estimate token count.
 
         Args:
             input_data: Input data
@@ -226,14 +228,14 @@ class LLMExecutionStrategy(ExecutionStrategy):
 
     @property
     def strategy_name(self) -> str:
-        """Get strategy name."""
+            """Get strategy name."""
         return f"llm_{self.model_name}"
 
 class APIExecutionStrategy(ExecutionStrategy):
     """Strategy for API-based execution."""
 
     def __init__(self, api_endpoint: str, timeout: float = 30.0):
-        """Initialize API execution strategy.
+            """Initialize API execution strategy.
 
         Args:
             api_endpoint: API endpoint URL
@@ -248,7 +250,7 @@ class APIExecutionStrategy(ExecutionStrategy):
         )
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
-        """Execute API operation.
+            """Execute API operation.
 
         Args:
             context: Execution context
@@ -293,7 +295,7 @@ class APIExecutionStrategy(ExecutionStrategy):
             )
 
     async def _execute_api(self, context: ExecutionContext) -> Any:
-        """Execute actual API call.
+            """Execute actual API call.
 
         Args:
             context: Execution context
@@ -313,14 +315,14 @@ class APIExecutionStrategy(ExecutionStrategy):
 
     @property
     def strategy_name(self) -> str:
-        """Get strategy name."""
+            """Get strategy name."""
         return f"api_{self.api_endpoint}"
 
 class BatchExecutionStrategy(ExecutionStrategy):
     """Strategy for batch execution."""
 
     def __init__(self, batch_size: int = 10, concurrency: int = 5):
-        """Initialize batch execution strategy.
+            """Initialize batch execution strategy.
 
         Args:
             batch_size: Size of each batch
@@ -331,7 +333,7 @@ class BatchExecutionStrategy(ExecutionStrategy):
         self.semaphore = asyncio.Semaphore(concurrency)
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
-        """Execute batch operation.
+            """Execute batch operation.
 
         Args:
             context: Execution context
@@ -378,7 +380,7 @@ class BatchExecutionStrategy(ExecutionStrategy):
             )
 
     async def _process_item(self, item: Any, context: ExecutionContext) -> Any:
-        """Process a single item.
+            """Process a single item.
 
         Args:
             item: Item to process
@@ -398,14 +400,14 @@ class BatchExecutionStrategy(ExecutionStrategy):
 
     @property
     def strategy_name(self) -> str:
-        """Get strategy name."""
+            """Get strategy name."""
         return f"batch_{self.batch_size}"
 
 class UnifiedExecutor:
     """Unified executor for all engines."""
 
     def __init__(self):
-        """Initialize the unified executor."""
+            """Initialize the unified executor."""
         self.strategies = {
             "llm": LLMExecutionStrategy(),
             "api": APIExecutionStrategy("default"),
@@ -422,8 +424,8 @@ class UnifiedExecutor:
 
         logger.info("Initialized UnifiedExecutor")
 
-    async def execute(
         """Docstring."""
+    async def execute(
         self,
         input_data: Any,
         strategy: str,
@@ -431,7 +433,7 @@ class UnifiedExecutor:
         config: Optional[Dict[str, Any]] = None,
         operation_id: Optional[str] = None
     ) -> ExecutionResult:
-        """Execute operation using specified strategy.
+            """Execute operation using specified strategy.
 
         Args:
             input_data: Input data
@@ -484,7 +486,7 @@ class UnifiedExecutor:
         return result
 
     def register_strategy(self, name: str, strategy: ExecutionStrategy) -> None:
-        """Register a custom execution strategy.
+            """Register a custom execution strategy.
 
         Args:
             name: Strategy name
@@ -494,7 +496,7 @@ class UnifiedExecutor:
         logger.info(f"Registered custom strategy: {name}")
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get execution statistics.
+            """Get execution statistics.
 
         Returns:
             Statistics dictionary
@@ -510,7 +512,7 @@ class EngineExecutor:
     """Engine-specific executor with unified backend."""
 
     def __init__(self, engine_type: EngineType):
-        """Initialize engine executor.
+            """Initialize engine executor.
 
         Args:
             engine_type: Type of engine
@@ -525,14 +527,14 @@ class EngineExecutor:
 
         logger.info(f"Initialized {engine_type.value} executor")
 
-    async def generate_content(
         """Docstring."""
+    async def generate_content(
         self,
         input_data: Any,
         content_type: str = "default",
         config: Optional[Dict[str, Any]] = None
     ) -> ExecutionResult:
-        """Generate content using unified executor.
+            """Generate content using unified executor.
 
         Args:
             input_data: Input data
@@ -566,13 +568,13 @@ class EngineExecutor:
 
         return result
 
-    async def process_batch(
         """Docstring."""
+    async def process_batch(
         self,
         items: List[Any],
         config: Optional[Dict[str, Any]] = None
     ) -> ExecutionResult:
-        """Process batch of items.
+            """Process batch of items.
 
         Args:
             items: Items to process
@@ -589,7 +591,7 @@ class EngineExecutor:
         )
 
     def _get_engine_config(self) -> Dict[str, Any]:
-        """Get engine-specific configuration.
+            """Get engine-specific configuration.
 
         Returns:
             Configuration dictionary
@@ -610,7 +612,7 @@ class EngineExecutor:
             }
 
     def _get_format_type(self, content_type: str) -> str:
-        """Get format type for content.
+            """Get format type for content.
 
         Args:
             content_type: Content type
@@ -648,8 +650,8 @@ def get_engine_executor(engine_type: EngineType) -> EngineExecutor:
     return _executors[engine_type]
 
 # Convenience functions
-async def execute_resume_generation(
     """Docstring."""
+async def execute_resume_generation(
     input_data: Any,
     content_type: str = "default",
     config: Optional[Dict[str, Any]] = None
@@ -667,8 +669,8 @@ async def execute_resume_generation(
     executor = get_engine_executor(EngineType.RESUME)
     return await executor.generate_content(input_data, content_type, config)
 
-async def execute_outreach_generation(
     """Docstring."""
+async def execute_outreach_generation(
     input_data: Any,
     content_type: str = "message",
     config: Optional[Dict[str, Any]] = None

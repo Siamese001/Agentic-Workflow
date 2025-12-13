@@ -16,7 +16,7 @@ class TestJobAnalyzerIntegration:
     """Test JobAnalyzer with real LLM calls."""
 
     def setup_method(self):
-        """Set up test fixtures."""
+            """Set up test fixtures."""
         # Skip if no API key
         if not os.getenv("GOOGLE_API_KEY"):
             pytest.skip("GOOGLE_API_KEY not set, skipping integration test")
@@ -24,7 +24,7 @@ class TestJobAnalyzerIntegration:
         self.analyzer = JobAnalyzer()
 
     def test_analyze_job_description(self):
-        """Test job analysis with a real job description."""
+            """Test job analysis with a real job description."""
         job_description = """
         Senior Python Developer
 
@@ -78,7 +78,7 @@ class TestJobAnalyzerIntegration:
         assert len(soft_skills) > 0, "Should extract soft skills"
 
     def test_extract_keywords(self):
-        """Test keyword extraction."""
+            """Test keyword extraction."""
         job_description = "Looking for a Python developer with React, AWS, and Docker experience."
         keywords = self.analyzer.extract_keywords(job_description)
 
@@ -91,7 +91,7 @@ class TestResumeGeneratorIntegration:
     """Test ResumeGenerator with real LLM calls."""
 
     def setup_method(self):
-        """Set up test fixtures."""
+            """Set up test fixtures."""
         # Skip if no API key
         if not os.getenv("GOOGLE_API_KEY"):
             pytest.skip("GOOGLE_API_KEY not set, skipping integration test")
@@ -99,7 +99,7 @@ class TestResumeGeneratorIntegration:
         self.generator = ResumeGenerator()
 
     def test_tailor_resume(self):
-        """Test resume tailoring with real LLM."""
+            """Test resume tailoring with real LLM."""
         resume_data = {
             "summary": "Experienced software developer with 5 years in web development.",
             "experience": [
@@ -147,7 +147,7 @@ class TestResumeGeneratorIntegration:
         assert "Django" in skills, "Django should be added from analysis"
 
     def test_optimize_for_ats(self):
-        """Test ATS optimization."""
+            """Test ATS optimization."""
         resume_data = {
             "summary": "Software developer",
             "experience": [],
@@ -173,7 +173,7 @@ class TestExecuteResumeGenerationIntegration:
     """Test the full execution flow with real LLM calls."""
 
     def setup_method(self):
-        """Set up test fixtures."""
+            """Set up test fixtures."""
         # Skip if no API key
         if not os.getenv("GOOGLE_API_KEY"):
             pytest.skip("GOOGLE_API_KEY not set, skipping integration test")
@@ -181,7 +181,7 @@ class TestExecuteResumeGenerationIntegration:
         self.executor = ExecuteResumeGeneration()
 
     def test_tailor_resume_flow(self):
-        """Test the complete resume tailoring flow."""
+            """Test the complete resume tailoring flow."""
         params = {
             "resume_data": {
                 "summary": "Software developer with experience in web technologies.",
@@ -234,7 +234,7 @@ class TestExecuteResumeGenerationIntegration:
         assert "ats_keywords" in tailored
 
     def test_analyze_job_action(self):
-        """Test the analyze_job action."""
+            """Test the analyze_job action."""
         params = {
             "job_description": "Looking for a Python developer with AWS and Docker experience."
         }
@@ -253,13 +253,13 @@ class TestEndToEndResumeWorkflow:
     """Test complete workflow from job description to tailored resume."""
 
     def setup_method(self):
-        """Set up test fixtures."""
+            """Set up test fixtures."""
         # Skip if no API key
         if not os.getenv("GOOGLE_API_KEY"):
             pytest.skip("GOOGLE_API_KEY not set, skipping integration test")
 
     def test_complete_workflow(self):
-        """Test the complete resume tailoring workflow."""
+            """Test the complete resume tailoring workflow."""
         # Sample job description
         job_description = """
         Senior Software Engineer - FinTech
