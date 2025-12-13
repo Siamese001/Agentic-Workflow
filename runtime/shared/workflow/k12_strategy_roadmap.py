@@ -1,10 +1,11 @@
 """K.12 Strategy Roadmap Agent - 30-60-90 Day Architect."""
 
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from .base_agent import BaseExecutiveAgent
 from .schema_definitions import TechnicalSWOT, StrategyRoadmap
 from .infrastructure_resilience import resilient_execution
+from .prompt_providers import K12PromptProvider
 
 
 class K12StrategyRoadmapAgent(BaseExecutiveAgent):
@@ -14,9 +15,14 @@ class K12StrategyRoadmapAgent(BaseExecutiveAgent):
     executive roadmap using People-Process-Technology framework.
     """
     
-    def __init__(self):
-        """Initialize K.12 agent."""
+    def __init__(self, prompt_provider: Optional[K12PromptProvider] = None):
+        """Initialize K.12 agent.
+        
+        Args:
+            prompt_provider: Optional prompt provider for dynamic prompts
+        """
         super().__init__()
+        self.prompt_provider = prompt_provider or K12PromptProvider()
         self.stats = {"k12_executions": 0}
     
     @resilient_execution(fallback_model="gpt-4o")
@@ -96,18 +102,8 @@ class K12StrategyRoadmapAgent(BaseExecutiveAgent):
         client, model = self._get_client_and_model(config)
         temperature = config.get("infrastructure_config", {}).get("temperature_override", 0.5)
 
-        system_prompt = """
-        You are an incoming Chief of Staff / Head of AI creating a 30-60-90 day plan.
-
-        CRITICAL CONSTRAINTS:
-        - Use People-Process-Technology framework
-        - Each milestone must have measurable success metrics
-        - Identify 2-3 immediate wins (high impact, low effort)
-        - Consider the technical reality from K.11 audit
-        - Align with job description expectations
-
-        Focus on executable initiatives that demonstrate leadership impact.
-        """
+        # Get system prompt from prompt provider
+        system_prompt = self.prompt_provider.get_system_prompt({})
 
         try:
             result = client.chat.completions.create(

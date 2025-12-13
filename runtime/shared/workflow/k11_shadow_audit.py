@@ -6,6 +6,7 @@ from .base_agent import BaseExecutiveAgent
 from .schema_definitions import TechnicalSWOT
 from .research_tools import TavilyResearcher
 from .infrastructure_resilience import resilient_execution
+from .prompt_providers import K11PromptProvider
 
 
 class K11ShadowAuditAgent(BaseExecutiveAgent):
@@ -15,16 +16,18 @@ class K11ShadowAuditAgent(BaseExecutiveAgent):
     interviews to infer technical maturity and debt.
     """
     
-    def __init__(self, data_source_provider=None, researcher: Optional[TavilyResearcher] = None):
+    def __init__(self, data_source_provider=None, researcher: Optional[TavilyResearcher] = None, prompt_provider: Optional[K11PromptProvider] = None):
         """Initialize K.11 agent.
         
         Args:
             data_source_provider: Optional data source provider
             researcher: Optional Tavily researcher for autonomous search
+            prompt_provider: Optional prompt provider for dynamic prompts
         """
         super().__init__()
         self.data_sources = data_source_provider
         self.researcher = researcher
+        self.prompt_provider = prompt_provider or K11PromptProvider()
         self.stats = {"k11_executions": 0}
     
     @resilient_execution(fallback_model="gpt-4o")
@@ -100,19 +103,8 @@ class K11ShadowAuditAgent(BaseExecutiveAgent):
         client, model = self._get_client_and_model(config)
         temperature = config.get("infrastructure_config", {}).get("temperature_override", 0.2)
 
-        system_prompt = f"""
-        You are a Technical Due Diligence Officer performing a 'Shadow Audit' of {company_name}.
-
-        Your mission: Reconstruct the unstated technical reality from public signals.
-
-        Analyze the provided search results to infer:
-        1. Their ACTUAL technology stack (not what marketing claims)
-        2. Technical debt and bottlenecks (read between the lines)
-        3. Real AI/ML maturity vs buzzword compliance
-        4. Strategic opportunities for technical leadership
-
-        Focus on evidence-based insights. Quote your sources.
-        """
+        # Get system prompt from prompt provider
+        system_prompt = self.prompt_provider.get_system_prompt({"company_name": company_name})
 
         try:
             result = client.chat.completions.create(
