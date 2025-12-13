@@ -177,6 +177,28 @@ from .titanium_rag_pipeline import (
     create_titanium_pipeline,
 )
 
+# Titanium Search Tool Integration
+from .titanium_search_tool import (
+    get_titanium_search_tool,
+    get_titanium_search_with_sources,
+    get_pipeline_stats,
+    clear_cache,
+    sync_search,
+    TOOL_REGISTRY,
+)
+
+# Adversarial Defense Layer
+from .input_guardrail import (
+    InputGuardrail,
+    GuardAction,
+    GuardResult,
+    get_input_guardrail,
+    scan_input,
+    STRICT_GUARDRAIL,
+    PERMISSIVE_GUARDRAIL,
+    PII_ONLY_GUARDRAIL,
+)
+
 __all__ = [
     # SDK Registry
     "SDK_REGISTRY",
@@ -299,4 +321,20 @@ __all__ = [
     # Unified Pipeline
     "TitaniumRAGPipeline",
     "create_titanium_pipeline",
+    # Titanium Search Tool Integration
+    "get_titanium_search_tool",
+    "get_titanium_search_with_sources",
+    "get_pipeline_stats",
+    "clear_cache",
+    "sync_search",
+    "TOOL_REGISTRY",
+    # Adversarial Defense Layer
+    "InputGuardrail",
+    "GuardAction",
+    "GuardResult",
+    "get_input_guardrail",
+    "scan_input",
+    "STRICT_GUARDRAIL",
+    "PERMISSIVE_GUARDRAIL",
+    "PII_ONLY_GUARDRAIL",
 ]

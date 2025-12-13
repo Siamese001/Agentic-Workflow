@@ -1,20 +1,47 @@
-"""Titanium RAG Pipeline - Unified Orchestration of All Three Layers.
+"""Titanium RAG Pipeline - State-of-the-Art Retrieval with Precision, Reasoning, and SOTA.
 
-This facade class combines Phase 1 (Precision), Phase 2 (Reasoning), 
-and Phase 3 (SOTA) components into a single, easy-to-use interface.
+This module orchestrates the complete Titanium RAG system with three layers:
+- Phase 1: Precision Layer (Contextual Compression)
+- Phase 2: Reasoning Layer (Query Decomposition & Dynamic Scoring)
+- Phase 3: SOTA Layer (Semantic Cache & Cross-Encoder Reranking)
+
+Enhanced with adversarial defense as the outermost security layer.
 """
 
-import asyncio
 import logging
 import time
-from typing import List, Dict, Any, Optional, Tuple, Union
+from typing import Dict, List, Optional, Any, Callable, Tuple
+from dataclasses import dataclass
 
-from .adaptive_retrieval_gate import AdaptiveRetrievalGate, RetrievalDecision
-from .contextual_compressor import ContextualCompressor, CompressionResult
-from .query_decomposer import QueryDecomposer, DecomposedQuery
-from .hybrid_scorer import HybridScorer, HybridScoreResult
-from .late_interaction_reranker import LateInteractionReranker
-from .contrastive_cache import ContrastiveSemanticCache
+from .precision_layer import (
+    ContextualCompressor,
+    SignalQualityPipeline,
+    CompressionResult,
+    create_compressor,
+    create_signal_pipeline,
+)
+from .reasoning_layer import (
+    QueryDecomposer,
+    DecomposedQuery,
+    HybridScorer,
+    ScoringResult,
+    create_query_decomposer,
+    create_hybrid_scorer,
+)
+from .sota_layer import (
+    ContrastiveSemanticCache,
+    LateInteractionReranker,
+    CacheEntry,
+    RerankResult,
+    create_cache,
+    create_reranker,
+)
+from .input_guardrail import (
+    InputGuardrail,
+    GuardAction,
+    GuardResult,
+    get_input_guardrail,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -41,11 +68,15 @@ class TitaniumRAGPipeline:
         reranker: Optional[LateInteractionReranker] = None,
         cache: Optional[ContrastiveSemanticCache] = None,
         
+        # Security layer
+        input_guardrail: Optional[InputGuardrail] = None,
+        
         # Configuration
         enable_compression: bool = True,
         enable_decomposition: bool = True,
         enable_reranking: bool = True,
         enable_caching: bool = True,
+        enable_security: bool = True,
         max_retrieved_docs: int = 50,
         top_k_final: int = 5
     ):
@@ -58,10 +89,12 @@ class TitaniumRAGPipeline:
             scorer: Dynamic hybrid scorer (Phase 2)
             reranker: Late interaction reranker (Phase 3)
             cache: Contrastive semantic cache (Phase 3)
+            input_guardrail: Security layer for input validation
             enable_compression: Whether to enable compression
             enable_decomposition: Whether to enable query decomposition
             enable_reranking: Whether to enable reranking
             enable_caching: Whether to enable caching
+            enable_security: Whether to enable security scanning
             max_retrieved_docs: Maximum documents to retrieve initially
             top_k_final: Number of top documents to return
         """
@@ -72,6 +105,10 @@ class TitaniumRAGPipeline:
         self.scorer = scorer or HybridScorer(dynamic_alpha=True)
         self.reranker = reranker or LateInteractionReranker()
         self.cache = cache or ContrastiveSemanticCache()
+        
+        # Initialize security layer
+        self.input_guardrail = input_guardrail or (get_input_guardrail() if enable_security else None)
+        self.enable_security = enable_security and self.input_guardrail is not None
         
         # Configuration
         self.enable_compression = enable_compression
@@ -88,10 +125,14 @@ class TitaniumRAGPipeline:
             "cache_hits": 0,
             "decompositions": 0,
             "compressions": 0,
-            "rerankings": 0
+            "rerankings": 0,
+            "security_blocks": 0,
+            "security_warnings": 0,
+            "pii_redactions": 0
         }
         
-        logger.info("Initialized TitaniumRAGPipeline with all 3 phases")
+        logger.info(f"Initialized TitaniumRAGPipeline with all 3 phases + "
+                   f"Security Layer: {self.enable_security}")
     
     async def query(
         self,
@@ -113,6 +154,35 @@ class TitaniumRAGPipeline:
         self.stats["total_queries"] += 1
         
         logger.info(f"Processing query: {query[:50]}...")
+        
+        # Security Layer: Input validation (Phase 0 - Outermost)
+        # ----------------------------------------------------
+        if self.enable_security and self.input_guardrail:
+            guard_result = self.input_guardrail.scan(query, user_id=kwargs.get('user_id'))
+            
+            # Handle security actions
+            if guard_result.action == GuardAction.BLOCK:
+                self.stats["security_blocks"] += 1
+                logger.warning(f"Query blocked by security: {guard_result.reason}")
+                return {
+                    "query": query,
+                    "response": "I cannot process that request due to safety protocols.",
+                    "documents": [],
+                    "metadata": {
+                        "security_action": "BLOCKED",
+                        "security_reason": guard_result.reason,
+                        "security_confidence": guard_result.confidence,
+                        "processing_time": time.time() - start_time
+                    }
+                }
+            elif guard_result.action == GuardAction.WARN:
+                self.stats["security_warnings"] += 1
+                logger.warning(f"Security warning for query: {guard_result.reason}")
+                # Continue but mark as suspicious
+            elif guard_result.action == GuardAction.REDACT:
+                self.stats["pii_redactions"] += 1
+                logger.info(f"PII redacted from query")
+                query = guard_result.sanitized_input or query
         
         # Phase 1: Precision Layer
         # ----------------------
