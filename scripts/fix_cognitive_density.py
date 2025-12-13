@@ -144,18 +144,18 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
     filepath.write_text(shim_content, encoding='utf-8')
     print(f"  Updated {filepath.name} as compatibility shim")
 
-# Files to fix - schemas/ cognitive density violations
+# Files to fix - remaining schemas/ cognitive density violations
 files_to_fix = [
-    "schemas/core_models/golden_state_datasets.py",
-    "schemas/core_models/l4_types.py",
-    "schemas/core_models/models.py",
-    "schemas/pipeline/data_access/get_schema_info.py",
-    "schemas/logic/data_access/check_schema_rules.py",
-    "schemas/logic/data_access/get_schema_info.py",
-    "schemas/logic/synthesis/pick_best_result.py",
-    "schemas/logic/synthesis/state_update.py",
-    "schemas/logic/validation/check_schema_structure.py",
-    "schemas/logic/validation/convert_schema_content.py",
+    "schemas/core_models/golden_state_datasets_impl.py",
+    "schemas/logic/validation/find_schema_diagnostics.py",
+    "schemas/logic/validation/find_schema_problems.py",
+    "schemas/logic/synthesis/pick_best_request/rank_schema_components.py",
+    "schemas/logic/data_access/check_schema_safety/check_schema_policy.py",
+    "schemas/logic/data_access/convert/convert_to_internal_schema.py",
+    "schemas/logic/data_access/get_schema_embedding/match_schema_context.py",
+    "schemas/logic/data_access/get_schema_embedding/retrieve_schema_similarity.py",
+    "schemas/logic/data_access/get_schema_embedding/search_schema_vectors.py",
+    "schemas/logic/data_access/get_schema_request/fetch_schema_history.py",
 ]
 
 root = Path("c:/Git/Agentic-Workflow")
