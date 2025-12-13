@@ -16,4 +16,3 @@ class OperationScope(Enum):
     COMPONENT = 'component'
     REQUEST = 'request'
     CUSTOM = 'custom'
-

@@ -3,7 +3,6 @@
 # from archives.legacy_root_folders.eval.simulation.models import SimScenario  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.eval.simulation.simulator import run_scenario  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 def test_run_scenario_uses_existing_engine(self) -> None:
     """Test that scenario runner properly uses existing engine instance."""
     scenarios = Engine.list()
@@ -21,9 +20,3 @@ def test_run_scenario_uses_existing_engine(self) -> None:
 
     outcome = run_scenario(scenario)
     assert outcome.scenario_id == scenario_id
-
-
-
-
-
-

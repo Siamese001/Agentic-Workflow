@@ -5,20 +5,20 @@ from .firecracker_manager_types import *
 
 class FirecrackerManager:
     """Manager for Firecracker micro-VMs.
-    
+
     Provides:
     - VM lifecycle management
     - Resource isolation
     - Network isolation
     - Automatic cleanup
-    
+
     Simplified implementation for Phase 3.
     Production should use full Firecracker/E2B SDK.
     """
 
     def __init__(self, provider: VMProvider=VMProvider.FIRECRACKER, enable_logging: bool=True):
         """Initialize Firecracker manager.
-        
+
         Args:
             provider: VM provider
             enable_logging: Enable logging
@@ -31,10 +31,10 @@ class FirecrackerManager:
 
     async def create_vm(self, config: VMConfig) -> VMInstance:
         """Create a new micro-VM.
-        
+
         Args:
             config: VM configuration
-            
+
         Returns:
             VMInstance
         """
@@ -64,10 +64,10 @@ class FirecrackerManager:
 
     async def terminate_vm(self, vm_id: str) -> bool:
         """Terminate a micro-VM.
-        
+
         Args:
             vm_id: VM identifier
-            
+
         Returns:
             True if terminated successfully
         """
@@ -94,10 +94,10 @@ class FirecrackerManager:
 
     def get_vm(self, vm_id: str) -> Optional[VMInstance]:
         """Get VM instance.
-        
+
         Args:
             vm_id: VM identifier
-            
+
         Returns:
             VMInstance or None
         """
@@ -105,10 +105,10 @@ class FirecrackerManager:
 
     def list_vms(self, status: Optional[VMStatus]=None) -> List[VMInstance]:
         """List all VMs.
-        
+
         Args:
             status: Optional status filter
-            
+
         Returns:
             List of VM instances
         """
@@ -119,7 +119,7 @@ class FirecrackerManager:
 
     async def cleanup_expired(self) -> int:
         """Cleanup expired VMs.
-        
+
         Returns:
             Number of VMs cleaned up
         """
@@ -135,9 +135,9 @@ class FirecrackerManager:
 
     async def _create_firecracker_vm(self, instance: VMInstance) -> None:
         """Create Firecracker VM.
-        
+
         Simplified stub - production should use Firecracker SDK.
-        
+
         Args:
             instance: VM instance to create
         """
@@ -147,9 +147,9 @@ class FirecrackerManager:
 
     async def _create_e2b_vm(self, instance: VMInstance) -> None:
         """Create E2B VM.
-        
+
         Simplified stub - production should use E2B SDK.
-        
+
         Args:
             instance: VM instance to create
         """
@@ -159,7 +159,7 @@ class FirecrackerManager:
 
     async def _create_docker_vm(self, instance: VMInstance) -> None:
         """Create Docker container as VM fallback.
-        
+
         Args:
             instance: VM instance to create
         """
@@ -191,12 +191,11 @@ class FirecrackerManager:
 
 def create_firecracker_manager(provider: VMProvider=VMProvider.FIRECRACKER) -> FirecrackerManager:
     """Factory function to create Firecracker manager.
-    
+
     Args:
         provider: VM provider
-        
+
     Returns:
         FirecrackerManager instance
     """
     return FirecrackerManager(provider=provider)
-

@@ -40,14 +40,14 @@ def fix_smashed_directories():
                 continue
             if d.name.count("_") >= 3:
                 smashed.append(d)
-    
+
     # Sort by depth (deepest first to avoid parent conflicts)
     smashed.sort(key=lambda p: len(p.parts), reverse=True)
 
     for d in smashed:
         name = d.name
         parts = name.split("_")
-        
+
         # Split into 2 parts: first 2 words + rest
         if len(parts) >= 4:
             new_parent_name = "_".join(parts[:2])
@@ -56,19 +56,19 @@ def fix_smashed_directories():
             # 3 underscores = 4 parts, split 2+2
             new_parent_name = "_".join(parts[:2])
             new_child_name = "_".join(parts[2:])
-        
+
         new_parent = d.parent / new_parent_name
         new_path = new_parent / new_child_name
-        
+
         # Skip if already exists or would create conflict
         if new_path.exists():
 
             continue
-        
+
         try:
             # Create parent if needed
             new_parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Move the directory
             shutil.move(str(d), str(new_path))
 
@@ -83,20 +83,20 @@ def fix_repeated_concept_filenames():
         r"(update.*update|check.*check|state.*state|cost.*cost|policy.*policy|rule.*rule|safety.*safety)",
         re.IGNORECASE,
     )
-    
+
     for f in ROOT.rglob("*.py"):
         if f.name == "__init__.py":
             continue
         if ".git" in f.parts or "__pycache__" in f.parts:
             continue
-        
+
         stem = f.stem
         match = pattern.search(stem)
         if match:
             # Remove the duplicate word
             matched = match.group(1)
             words = matched.split("_")
-            
+
             # Find and remove duplicate
             new_stem = stem
             for word in ["update", "check", "state", "cost", "policy", "rule", "safety"]:
@@ -104,7 +104,7 @@ def fix_repeated_concept_filenames():
                 new_stem = re.sub(rf"({word})_\1", r"\1", new_stem, flags=re.IGNORECASE)
                 # Replace word_X_word with word_X
                 new_stem = re.sub(rf"({word})_(\w+)_\1", r"\1_\2", new_stem, flags=re.IGNORECASE)
-            
+
             if new_stem != stem:
                 new_path = f.parent / f"{new_stem}.py"
                 if not new_path.exists():
@@ -124,10 +124,10 @@ def create_init_files():
                 continue
             if d.name == "__pycache__":
                 continue
-            
+
             has_py = any(child.suffix == ".py" for child in d.iterdir() if child.is_file())
             init_file = d / "__init__.py"
-            
+
             if has_py and not init_file.exists():
                 init_file.write_text('"""Package initialization."""\n')
 
@@ -136,4 +136,3 @@ if __name__ == "__main__":
     fix_smashed_directories()
     fix_repeated_concept_filenames()
     create_init_files()
-

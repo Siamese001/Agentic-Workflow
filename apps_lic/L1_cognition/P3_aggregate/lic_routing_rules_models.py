@@ -47,4 +47,3 @@ class TemperatureConfig:
     escalation_step: float = 0.15
     max_temperature: float = 0.95
     max_creative_retries: int = 3
-

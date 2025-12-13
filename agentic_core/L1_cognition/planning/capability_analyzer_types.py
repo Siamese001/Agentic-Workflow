@@ -64,4 +64,3 @@ class AnalysisReport:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'report_id': self.report_id, 'agent_id': self.agent_id, 'gaps_identified': [g.to_dict() for g in self.gaps_identified], 'recommendations': [r.to_dict() for r in self.recommendations], 'overall_health_score': self.overall_health_score, 'analysis_timestamp': self.analysis_timestamp}
-

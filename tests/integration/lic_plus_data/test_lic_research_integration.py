@@ -49,7 +49,6 @@ class TestLICResearchIntegration:
         campaign = campaigns["camp_001"]
         assert len(campaign["contacts"]) == 3
 
-
 class TestLICMessageIntegration:
     """Integration tests for LIC message generation."""
 
@@ -80,7 +79,6 @@ class TestLICMessageIntegration:
         history.append(message)
 
         assert len(history) == 1
-
 
 class TestLICAnalyticsIntegration:
     """Integration tests for LIC analytics."""

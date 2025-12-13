@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Format Data - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class FormatData:
     """FormatData implementation."""

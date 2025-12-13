@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Aggregate Resume State - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class AggregateResumeState:
     """AggregateResumeState implementation."""

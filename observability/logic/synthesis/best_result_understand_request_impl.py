@@ -6,7 +6,7 @@ from .best_result_understand_request_types import *
 class BestResultUnderstandRequest:
     """
     Main executor class for best result understand request operations.
-    
+
     Provides a robust, type-safe interface for processing data with
     comprehensive error handling and performance monitoring.
     """
@@ -37,11 +37,11 @@ class BestResultUnderstandRequest:
     def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]=None) -> ProcessingResult:
         """
         Main processing method with comprehensive error handling.
-        
+
         Args:
             payload: Input data to process
             context: Optional execution context
-            
+
         Returns:
             ProcessingResult with outcome and metadata
         """
@@ -72,4 +72,3 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         return True
     except Exception:
         return False
-

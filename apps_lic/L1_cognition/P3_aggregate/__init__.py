@@ -6,7 +6,6 @@ Generated: 2025-12-07T13:28:54.073115
 
 from __future__ import annotations
 
-
 __all__: list[str] = [
     # Routing
     "LICRouter",
@@ -24,7 +23,7 @@ __all__: list[str] = [
     "create_router",
     "get_route_config",
     "get_archetype_tone",
-    # Templates
+    
     "ArchetypeTemplateManager",
     "ArchetypeTemplate",
     "CreativeBrief",

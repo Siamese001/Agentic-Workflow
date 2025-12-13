@@ -48,4 +48,3 @@ class ImmutableStagingBuffer:
     def clear(self) -> ImmutableStagingBuffer:
         """Return a new empty buffer."""
         return ImmutableStagingBuffer(version=self.version + 1, timestamp=datetime.utcnow())
-

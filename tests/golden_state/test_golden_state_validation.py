@@ -14,12 +14,10 @@ from apps_shared.core.golden_state_evaluator import (
     load_golden_cases,
 )
 
-
 @pytest.fixture
 def evaluator():
     """Create golden state evaluator."""
     return GoldenStateEvaluator()
-
 
 @pytest.fixture
 def sample_case():
@@ -44,7 +42,6 @@ def sample_case():
         }
     )
 
-
 @pytest.fixture
 def sample_output():
     """Create sample output."""
@@ -56,16 +53,14 @@ def sample_output():
         ],
     )
 
-
 def test_load_golden_cases(evaluator):
     """Test loading golden cases from dataset."""
     assert len(evaluator.golden_cases) > 0
-    
+
     case = evaluator.golden_cases[0]
     assert case.id
     assert case.name
     assert case.mission
-
 
 def test_load_golden_cases_function():
     """Test load_golden_cases function."""
@@ -73,18 +68,16 @@ def test_load_golden_cases_function():
     assert isinstance(cases, list)
     assert len(cases) > 0
 
-
 @pytest.mark.asyncio
 async def test_evaluate_case(evaluator, sample_case, sample_output):
     """Test evaluating a single case."""
     report = await evaluator.evaluate_case(sample_case, sample_output)
-    
+
     assert report.case_id == "TEST001"
     assert report.case_name == "Sample Test"
     assert isinstance(report.passed, bool)
     assert report.judge_result is not None
     assert 0.0 <= report.action_match_score <= 1.0
-
 
 @pytest.mark.asyncio
 async def test_evaluate_case_with_missing_content(evaluator, sample_case):
@@ -94,12 +87,11 @@ async def test_evaluate_case_with_missing_content(evaluator, sample_case):
         actual_output="Short output without required words.",
         actions_taken=[],
     )
-    
+
     report = await evaluator.evaluate_case(sample_case, output)
-    
+
     assert not report.passed
     assert len(report.errors) > 0
-
 
 @pytest.mark.asyncio
 async def test_evaluate_case_with_wrong_actions(evaluator, sample_case):
@@ -111,11 +103,10 @@ async def test_evaluate_case_with_wrong_actions(evaluator, sample_case):
             {"type": "tool_call", "tool": "wrong_tool"}
         ],
     )
-    
-    report = await evaluator.evaluate_case(sample_case, output)
-    
-    assert report.action_match_score < 1.0
 
+    report = await evaluator.evaluate_case(sample_case, output)
+
+    assert report.action_match_score < 1.0
 
 @pytest.mark.asyncio
 async def test_evaluate_all(evaluator):
@@ -128,19 +119,18 @@ async def test_evaluate_all(evaluator):
             actual_output="Mock output for testing purposes with sufficient length.",
             actions_taken=[],
         )
-    
+
     reports = await evaluator.evaluate_all(outputs)
-    
+
     assert len(reports) == 3
     for case_id, report in reports.items():
         assert report.case_id == case_id
-
 
 def test_generate_summary(evaluator, sample_case, sample_output):
     """Test generating evaluation summary."""
     from apps_shared.core.golden_state_evaluator import EvaluationReport
     from observability.golden_state import JudgeEvaluationResult
-    
+
     # Create mock reports
     reports = {
         "TEST001": EvaluationReport(
@@ -171,20 +161,19 @@ def test_generate_summary(evaluator, sample_case, sample_output):
             errors=["Missing content"],
         ),
     }
-    
+
     summary = evaluator.generate_summary(reports)
-    
+
     assert summary["total_cases"] == 2
     assert summary["passed"] == 1
     assert summary["failed"] == 1
     assert summary["pass_rate"] == 0.5
     assert len(summary["failing_cases"]) == 1
 
-
 def test_check_output_constraints(evaluator):
     """Test output constraint checking."""
     errors = []
-    
+
     # Test minimum length
     evaluator._check_output_constraints(
         {"min_length": 100},
@@ -193,7 +182,7 @@ def test_check_output_constraints(evaluator):
     )
     assert len(errors) == 1
     assert "too short" in errors[0]
-    
+
     # Test required content
     errors.clear()
     evaluator._check_output_constraints(
@@ -202,7 +191,7 @@ def test_check_output_constraints(evaluator):
         errors,
     )
     assert len(errors) == 1  # Missing "words"
-    
+
     # Test forbidden content
     errors.clear()
     evaluator._check_output_constraints(
@@ -212,14 +201,13 @@ def test_check_output_constraints(evaluator):
     )
     assert len(errors) == 1
 
-
 def test_evaluate_actions(evaluator):
     """Test action matching evaluation."""
     expected = [
         {"tool": "search"},
         {"tool": "analyze"},
     ]
-    
+
     # Perfect match
     actual = [
         {"tool": "search"},
@@ -227,21 +215,21 @@ def test_evaluate_actions(evaluator):
     ]
     score = evaluator._evaluate_actions(expected, actual)
     assert score == 1.0
-    
+
     # Partial match
     actual = [
         {"tool": "search"},
     ]
     score = evaluator._evaluate_actions(expected, actual)
     assert score == 0.5
-    
+
     # No match
     actual = [
         {"tool": "wrong_tool"},
     ]
     score = evaluator._evaluate_actions(expected, actual)
     assert score == 0.0
-    
+
     # No actions
     score = evaluator._evaluate_actions(expected, [])
     assert score == 0.0

@@ -14,7 +14,6 @@ try:
 except ImportError as e:
     pytest.skip(f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
-
 class TestResumeEngineIntegrity:
     """Test Resume Engine instantiation and basic functionality."""
 
@@ -32,7 +31,7 @@ class TestResumeEngineIntegrity:
         # Valid config
         valid_config = {"enabled": True, "mode": "production"}
         assert validate_config(valid_config) is True
-        
+
         # Invalid config
         invalid_config = {"enabled": True}
         assert validate_config(invalid_config) is False
@@ -55,7 +54,7 @@ class TestResumeEngineIntegrity:
     def test_execute_resume_generation_basic_execution(self):
         """Test basic execution without crashing."""
         executor = ExecuteResumeGeneration()
-        
+
         # Test with dummy data
         action = "generate_resume"
         params = {
@@ -66,15 +65,15 @@ class TestResumeEngineIntegrity:
             },
             "job_description": "Senior Software Engineer position"
         }
-        
+
         result = executor.execute(action, params)
-        
+
         # Should not crash and should return a result
         assert result is not None
         assert hasattr(result, 'success')
         assert hasattr(result, 'output')
         assert hasattr(result, 'details')
-        
+
         # The mock implementation should return success
         assert result.success is True
         assert isinstance(result.output, dict)
@@ -88,7 +87,7 @@ class TestResumeEngineIntegrity:
         assert HopStatus.RUNNING is not None
         assert HopStatus.COMPLETED is not None
         assert HopStatus.FAILED is not None
-        
+
         # Test GateDecision enum
         assert GateDecision.PASS is not None
         assert GateDecision.FAIL is not None
@@ -98,10 +97,10 @@ class TestResumeEngineIntegrity:
     def test_error_handling(self):
         """Test that errors are handled gracefully."""
         executor = ExecuteResumeGeneration()
-        
+
         # Test with invalid parameters that might cause errors
         result = executor.execute("invalid_action", {})
-        
+
         # Should handle errors gracefully
         assert result is not None
         if not result.success:
@@ -111,7 +110,7 @@ class TestResumeEngineIntegrity:
     def test_resume_data_processing(self):
         """Test processing of realistic resume data."""
         executor = ExecuteResumeGeneration()
-        
+
         # Realistic resume data
         resume_data = {
             "personal_info": {
@@ -138,9 +137,9 @@ class TestResumeEngineIntegrity:
             ],
             "skills": ["Python", "JavaScript", "React", "Node.js", "AWS"]
         }
-        
+
         result = executor.execute("process_resume", {"resume_data": resume_data})
-        
+
         # Verify it processes without crashing
         assert result is not None
         assert result.success is True  # Mock implementation should succeed
@@ -148,14 +147,14 @@ class TestResumeEngineIntegrity:
     def test_execution_performance(self):
         """Test that execution completes within reasonable time."""
         executor = ExecuteResumeGeneration()
-        
+
         import time
         start = time.time()
-        
+
         result = executor.execute("test_action", {"test": "data"})
-        
+
         elapsed = time.time() - start
-        
+
         # Should complete quickly (mock implementation)
         assert elapsed < 1.0, f"Execution took {elapsed:.2f}s, expected < 1.0s"
         assert result is not None

@@ -16,4 +16,3 @@ class GateDecision(Enum):
     FAIL = 'FAIL'
     WARN = 'WARN'
     SKIP = 'SKIP'
-

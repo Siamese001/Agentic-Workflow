@@ -124,4 +124,3 @@ def rank_data_components(input_data: Dict[str, object]) -> Dict[str, object]:
     builder = RankDataComponentsPlanFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
-

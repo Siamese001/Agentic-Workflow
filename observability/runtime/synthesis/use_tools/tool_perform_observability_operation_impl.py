@@ -16,7 +16,7 @@ class ObservabilityOperationPerformer:
 
     def register_operation(self, operation_def: ToolOperationDefinition, handler: Callable) -> None:
         """Register an observability operation.
-        
+
         Args:
             operation_def: Operation definition
             handler: Operation handler function
@@ -27,11 +27,11 @@ class ObservabilityOperationPerformer:
 
     def perform_operation(self, context: OperationExecutionContext, inputs: Dict[str, Any]) -> OperationExecutionResult:
         """Perform an observability operation.
-        
+
         Args:
             context: Execution context
             inputs: Operation inputs
-            
+
         Returns:
             OperationExecutionResult: Execution result
         """
@@ -65,11 +65,11 @@ class ObservabilityOperationPerformer:
 
     def perform_operation_stream(self, context: OperationExecutionContext, inputs: Dict[str, Any]) -> object:
         """Perform operation with streaming output.
-        
+
         Args:
             context: Execution context
             inputs: Operation inputs
-            
+
         Returns:
             Iterator: Stream of output chunks
         """
@@ -83,11 +83,11 @@ class ObservabilityOperationPerformer:
 
     def perform_operations_batch(self, contexts: List[OperationExecutionContext], inputs_list: List[Dict[str, Any]]) -> List[OperationExecutionResult]:
         """Perform multiple operations.
-        
+
         Args:
             contexts: List of execution contexts
             inputs_list: List of operation inputs
-            
+
         Returns:
             List[OperationExecutionResult]: Results for all operations
         """
@@ -101,10 +101,10 @@ class ObservabilityOperationPerformer:
 
     def list_operations(self, scope: Optional[OperationScope]=None) -> List[ToolOperationDefinition]:
         """List registered operations.
-        
+
         Args:
             scope: Optional filter by scope
-            
+
         Returns:
             List[ToolOperationDefinition]: Registered operations
         """
@@ -115,10 +115,10 @@ class ObservabilityOperationPerformer:
 
     def get_operation_definition(self, operation_id: str) -> Optional[ToolOperationDefinition]:
         """Get operation definition.
-        
+
         Args:
             operation_id: Operation identifier
-            
+
         Returns:
             Optional[ToolOperationDefinition]: Operation definition
         """
@@ -126,10 +126,10 @@ class ObservabilityOperationPerformer:
 
     def cancel_execution(self, execution_id: str) -> bool:
         """Cancel an active execution.
-        
+
         Args:
             execution_id: Execution identifier
-            
+
         Returns:
             bool: True if cancelled successfully
         """
@@ -142,10 +142,10 @@ class ObservabilityOperationPerformer:
 
     def get_execution_status(self, execution_id: str) -> Optional[Dict[str, Any]]:
         """Get execution status.
-        
+
         Args:
             execution_id: Execution identifier
-            
+
         Returns:
             Optional[Dict]: Execution status
         """
@@ -280,14 +280,14 @@ def create_observability_operation_performer(default_timeout: float=30.0, enable
 
 def tool_perform_observability_operation(operation_id: str, inputs: Dict[str, Any], execution_id: Optional[str]=None, mode: str='synchronous', caller_context: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Perform observability operation.
-    
+
     Args:
         operation_id: Operation identifier
         inputs: Operation inputs
         execution_id: Optional unique execution identifier
         mode: Execution mode
         caller_context: Optional caller context
-        
+
     Returns:
         Dict: Execution result
     """
@@ -295,4 +295,3 @@ def tool_perform_observability_operation(operation_id: str, inputs: Dict[str, An
     context = OperationExecutionContext(execution_id=execution_id or str(uuid.uuid4()), operation_id=operation_id, mode=OperationMode(mode), caller_context=caller_context)
     result = performer.perform_operation(context, inputs)
     return {'execution_id': result.execution_id, 'operation_id': result.operation_id, 'success': result.success, 'output': result.output, 'metrics': result.metrics, 'traces': result.traces, 'artifacts': result.artifacts, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}
-

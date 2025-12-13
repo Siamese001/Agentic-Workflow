@@ -13,7 +13,6 @@ from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class Metric:
     """A single metric."""
@@ -21,7 +20,6 @@ class Metric:
     value: float
     labels: Dict[str, str] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
-
 
 class RuntimeMetricsCollector:
     """Metrics collector for metrics domain."""
@@ -55,15 +53,12 @@ class RuntimeMetricsCollector:
         else:
             self.metrics.clear()
 
-
 # Global instance
 _collector = RuntimeMetricsCollector()
-
 
 def record_metric(name: str, value: float, labels: Optional[Dict[str, str]] = None) -> None:
     """Record a metric to global collector."""
     _collector.record(name, value, labels)
-
 
 def get_metrics(name: Optional[str] = None) -> List[Metric]:
     """Get metrics from global collector."""

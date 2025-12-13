@@ -8,7 +8,6 @@ Writes entities, relations, and events to Neo4jGraphStore
 to support resume timeline analysis and job alignment.
 """
 
-
 from typing import List, Optional
 from datetime import datetime
 
@@ -19,8 +18,6 @@ try:
 except ImportError:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
-
-
 
 async def insert_entity(entity: TemporalEntity) -> None:
     """
@@ -48,7 +45,6 @@ async def insert_entity(entity: TemporalEntity) -> None:
     except (ValueError, TypeError, RuntimeError, KeyError):
         # Log error but don't fail - Neo4j is optional mirror
         ...
-
 
 async def insert_triplet(triplet: TemporalTriplet) -> None:
     """
@@ -79,7 +75,6 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
         # Log error but don't fail - Neo4j is optional mirror
         ...
 
-
 async def insert_event(event: TemporalEvent) -> None:
     """
     Inserts resume temporal event in Neo4j for timeline analysis.
@@ -105,7 +100,6 @@ async def insert_event(event: TemporalEvent) -> None:
         # Log error but don't fail - Neo4j is optional mirror
         ...
 
-
 async def batch_process_invalidation(
     events_to_update: List[TemporalEvent]
 ) -> None:
@@ -119,7 +113,6 @@ async def batch_process_invalidation(
 
     for event in events_to_update:
         await insert_event(event)
-
 
 async def ingest_transcript(
     transcript_id: str,

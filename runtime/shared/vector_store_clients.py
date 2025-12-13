@@ -14,13 +14,11 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-
 class VectorStoreProvider(str, Enum):
     """Vector store provider enumeration."""
     CHROMA = "chromadb"
     QDRANT = "qdrant"
     PINECONE = "pinecone"
-
 
 @dataclass
 class ChromaConfig:
@@ -28,7 +26,6 @@ class ChromaConfig:
     persist_directory: str = "./chroma_db"
     collection_name: str = "default"
     embedding_function: Optional[Any] = None
-
 
 @dataclass
 class QdrantConfig:
@@ -40,7 +37,6 @@ class QdrantConfig:
     collection_name: str = "default"
     vector_size: int = 1536
 
-
 @dataclass
 class PineconeConfig:
     """Configuration for Pinecone."""
@@ -48,10 +44,8 @@ class PineconeConfig:
     environment: str = "us-east-1"
     index_name: str = "default"
 
-
 # Singleton client cache
 _VECTOR_STORES: Dict[str, Any] = {}
-
 
 def get_vector_store(
     provider: VectorStoreProvider,
@@ -59,42 +53,41 @@ def get_vector_store(
     force_new: bool = False,
 ) -> Any:
     """Get or create vector store client (singleton pattern).
-    
+
     Args:
         provider: Vector store provider
         config: Optional provider-specific configuration
         force_new: Force creation of new client
-        
+
     Returns:
         Vector store client instance
-        
+
     Raises:
         ValueError: If provider not supported
         ImportError: If provider SDK not installed
     """
     cache_key = f"{provider.value}"
-    
+
     if force_new or cache_key not in _VECTOR_STORES:
         client = _create_vector_store(provider, config)
         _VECTOR_STORES[cache_key] = client
         logger.info(f"Created {provider.value} vector store client")
-    
-    return _VECTOR_STORES[cache_key]
 
+    return _VECTOR_STORES[cache_key]
 
 def _create_vector_store(
     provider: VectorStoreProvider,
     config: Optional[Any] = None,
 ) -> Any:
     """Create a new vector store client instance.
-    
+
     Args:
         provider: Vector store provider
         config: Optional provider-specific configuration
-        
+
     Returns:
         Vector store client instance
-        
+
     Raises:
         ValueError: If provider not supported
         ImportError: If provider SDK not installed
@@ -106,14 +99,14 @@ def _create_vector_store(
             raise ImportError(
                 "chromadb not installed. Install with: pip install chromadb>=0.5.0"
             )
-        
+
         if config is None:
             config = ChromaConfig()
-        
+
         client = chromadb.PersistentClient(path=config.persist_directory)
         logger.info(f"ChromaDB client created at {config.persist_directory}")
         return client
-    
+
     elif provider == VectorStoreProvider.QDRANT:
         try:
             from qdrant_client import QdrantClient
@@ -121,18 +114,18 @@ def _create_vector_store(
             raise ImportError(
                 "qdrant-client not installed. Install with: pip install qdrant-client>=1.12.0"
             )
-        
+
         if config is None:
             config = QdrantConfig()
-        
+
         if config.url:
             client = QdrantClient(url=config.url, api_key=config.api_key)
         else:
             client = QdrantClient(host=config.host, port=config.port)
-        
+
         logger.info(f"Qdrant client created at {config.url or f'{config.host}:{config.port}'}")
         return client
-    
+
     elif provider == VectorStoreProvider.PINECONE:
         try:
             from pinecone import Pinecone
@@ -140,24 +133,23 @@ def _create_vector_store(
             raise ImportError(
                 "pinecone not installed. Install with: pip install pinecone>=5.0.0"
             )
-        
+
         if config is None:
             config = PineconeConfig()
-        
+
         api_key = config.api_key or os.getenv("PINECONE_API_KEY")
         if not api_key:
             raise ValueError(
                 "Pinecone API key not set. "
                 "Please set PINECONE_API_KEY environment variable."
             )
-        
+
         client = Pinecone(api_key=api_key)
         logger.info(f"Pinecone client created for environment {config.environment}")
         return client
-    
+
     else:
         raise ValueError(f"Unknown vector store provider: {provider}")
-
 
 def create_chroma_collection(
     client: Any,
@@ -166,13 +158,13 @@ def create_chroma_collection(
     metadata: Optional[Dict[str, Any]] = None,
 ) -> Any:
     """Create or get ChromaDB collection.
-    
+
     Args:
         client: ChromaDB client
         collection_name: Name of collection
         embedding_function: Optional embedding function
         metadata: Optional collection metadata
-        
+
     Returns:
         ChromaDB collection
     """
@@ -182,7 +174,6 @@ def create_chroma_collection(
         metadata=metadata,
     )
 
-
 def create_qdrant_collection(
     client: Any,
     collection_name: str,
@@ -190,7 +181,7 @@ def create_qdrant_collection(
     distance: str = "Cosine",
 ) -> None:
     """Create Qdrant collection if not exists.
-    
+
     Args:
         client: Qdrant client
         collection_name: Name of collection
@@ -198,13 +189,13 @@ def create_qdrant_collection(
         distance: Distance metric (Cosine, Euclid, Dot)
     """
     from qdrant_client.models import Distance, VectorParams
-    
+
     distance_map = {
         "Cosine": Distance.COSINE,
         "Euclid": Distance.EUCLID,
         "Dot": Distance.DOT,
     }
-    
+
     try:
         client.create_collection(
             collection_name=collection_name,
@@ -217,7 +208,6 @@ def create_qdrant_collection(
     except Exception as e:
         logger.debug(f"Collection {collection_name} may already exist: {e}")
 
-
 def upsert_vectors_chroma(
     collection: Any,
     ids: List[str],
@@ -226,7 +216,7 @@ def upsert_vectors_chroma(
     metadatas: Optional[List[Dict[str, Any]]] = None,
 ) -> None:
     """Upsert vectors to ChromaDB collection.
-    
+
     Args:
         collection: ChromaDB collection
         ids: List of document IDs
@@ -241,7 +231,6 @@ def upsert_vectors_chroma(
         metadatas=metadatas,
     )
 
-
 def upsert_vectors_qdrant(
     client: Any,
     collection_name: str,
@@ -250,7 +239,7 @@ def upsert_vectors_qdrant(
     payloads: Optional[List[Dict[str, Any]]] = None,
 ) -> None:
     """Upsert vectors to Qdrant collection.
-    
+
     Args:
         client: Qdrant client
         collection_name: Name of collection
@@ -259,7 +248,7 @@ def upsert_vectors_qdrant(
         payloads: Optional list of payload dicts
     """
     from qdrant_client.models import PointStruct
-    
+
     points = [
         PointStruct(
             id=id_,
@@ -272,12 +261,11 @@ def upsert_vectors_qdrant(
             payloads or [{}] * len(ids),
         )
     ]
-    
+
     client.upsert(
         collection_name=collection_name,
         points=points,
     )
-
 
 def search_vectors_chroma(
     collection: Any,
@@ -286,13 +274,13 @@ def search_vectors_chroma(
     where: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Search ChromaDB collection.
-    
+
     Args:
         collection: ChromaDB collection
         query_embeddings: Query embedding vectors
         n_results: Number of results to return
         where: Optional metadata filter
-        
+
     Returns:
         Search results
     """
@@ -302,7 +290,6 @@ def search_vectors_chroma(
         where=where,
     )
 
-
 def search_vectors_qdrant(
     client: Any,
     collection_name: str,
@@ -311,14 +298,14 @@ def search_vectors_qdrant(
     score_threshold: Optional[float] = None,
 ) -> List[Any]:
     """Search Qdrant collection.
-    
+
     Args:
         client: Qdrant client
         collection_name: Name of collection
         query_vector: Query embedding vector
         limit: Number of results to return
         score_threshold: Optional minimum score threshold
-        
+
     Returns:
         Search results
     """
@@ -328,7 +315,6 @@ def search_vectors_qdrant(
         limit=limit,
         score_threshold=score_threshold,
     )
-
 
 def reset_all_vector_stores() -> None:
     """Reset all cached vector store clients (for testing)."""

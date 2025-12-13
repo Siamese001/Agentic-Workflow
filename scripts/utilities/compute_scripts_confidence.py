@@ -13,14 +13,12 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ComputationResult:
     """Result of computation."""
     value: object
     method: str
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class ComputeScriptsConfidence:
     """Computation engine for utilities domain."""
@@ -56,7 +54,6 @@ class ComputeScriptsConfidence:
             mean = sum(values) / len(values)
             return math.sqrt(sum((x - mean) ** 2 for x in values) / len(values))
         return sum(values) / len(values)
-
 
 def compute(values: Sequence[float], operation: str = "mean", config: Optional[Dict] = None) -> ComputationResult:
     """Convenience function for computation."""

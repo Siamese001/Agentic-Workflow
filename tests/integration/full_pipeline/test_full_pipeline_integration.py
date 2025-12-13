@@ -23,7 +23,6 @@ class PipelineState:
     errors: List[str] = field(default_factory=list)
     metrics: Dict[str, float] = field(default_factory=dict)
 
-
 class TestFullPipelineIntegration:
     """Integration tests for full pipeline."""
 
@@ -100,7 +99,6 @@ class TestFullPipelineIntegration:
 
         assert state.metrics["total_latency_ms"] == 300
 
-
 class TestMultiHopPipelineIntegration:
     """Integration tests for multi-hop pipeline."""
 
@@ -154,7 +152,6 @@ class TestMultiHopPipelineIntegration:
 
         assert final_hop["hop_id"] == 3
 
-
 class TestParallelPipelineIntegration:
     """Integration tests for parallel pipeline execution."""
 
@@ -194,7 +191,6 @@ class TestParallelPipelineIntegration:
 
         assert "fast" in completed
         assert "slow" not in completed
-
 
 class TestPipelineRecoveryIntegration:
     """Integration tests for pipeline recovery."""

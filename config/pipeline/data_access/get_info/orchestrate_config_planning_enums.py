@@ -26,4 +26,3 @@ class DeploymentStrategy(Enum):
     ROLLING = 'rolling'
     ATOMIC = 'atomic'
     SHADOW = 'shadow'
-

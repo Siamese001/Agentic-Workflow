@@ -13,7 +13,6 @@ from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ExportResult:
     """Result of export operation."""
@@ -22,7 +21,6 @@ class ExportResult:
     destination: str
     errors: List[str] = None
 
-
 class BaseExporter(ABC):
     """foundation class for exporters."""
 
@@ -30,7 +28,6 @@ class BaseExporter(ABC):
     def export(self, data: object) -> ExportResult:
         """Export data."""
         ...
-
 
 class JsonExporter(BaseExporter):
     """Exporter for tracing domain."""
@@ -66,7 +63,6 @@ class JsonExporter(BaseExporter):
                 destination=self.destination,
                 errors=[str(e)]
             )
-
 
 def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
     """Convenience function for export."""

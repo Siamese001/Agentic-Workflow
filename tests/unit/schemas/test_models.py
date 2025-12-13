@@ -5,7 +5,6 @@ from shared.types.models import GateDecision, ValidationSeverity, HopStatus, Cir
 from shared.configuration.reasoning_config import ReasoningConfig
 # Utils classes don't exist yet, skipping import
 
-
 class TestGateDecision:
     def test_is_enum(self):
         assert issubclass(GateDecision, Enum)

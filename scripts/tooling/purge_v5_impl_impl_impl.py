@@ -166,4 +166,3 @@ def main() -> None:
     log_path = REPO_ROOT / 'subatomic_prefix_purge_log.json'
     with open(log_path, 'w', encoding='utf-8') as f:
         json.dump(log, f, indent=2, default=str)
-

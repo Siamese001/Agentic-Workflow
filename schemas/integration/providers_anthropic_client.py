@@ -9,7 +9,6 @@ from __future__ import annotations
 import os
 from typing import Any, List
 
-
 def run_llm_anthropic(
     model: str,
     prompt: str,
@@ -44,6 +43,3 @@ def run_llm_anthropic(
         if getattr(block, "type", None) == "text":
             parts.append(getattr(block, "text", ""))
     return "\n".join(parts)
-
-
-

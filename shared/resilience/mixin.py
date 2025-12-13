@@ -14,20 +14,18 @@ from .circuit_breaker import CircuitBreaker, get_breaker, CircuitBreakerOpenErro
 from .error_recovery import ErrorRecoveryManager
 from .telemetry import SystemTelemetry, get_telemetry, OperationStatus
 
-
 class TokenLimitError(Exception):
     """Raised when token budget exceeds model limits."""
     pass
 
-
 class HardeningMixin:
     """Mixin that adds military-grade resilience to any executor.
-    
+
     Integrates circuit breaking, retry logic, and structured telemetry.
     Classes should inherit from this mixin and call execute_hardened()
     for external operations.
     """
-    
+
     def __init__(
         self,
         component_name: str,
@@ -40,7 +38,7 @@ class HardeningMixin:
         telemetry: Optional[SystemTelemetry] = None,
     ):
         """Initialize hardening components.
-        
+
         Args:
             component_name: Name for telemetry and circuit breaker
             failure_threshold: Failures before opening circuit
@@ -63,7 +61,7 @@ class HardeningMixin:
             enable_circuit_breaker=True,
         )
         self.telemetry = telemetry or get_telemetry()
-    
+
     async def execute_hardened(
         self,
         operation: str,
@@ -73,16 +71,16 @@ class HardeningMixin:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> Any:
         """Execute an async function with full hardening applied.
-        
+
         Args:
             operation: Operation name for telemetry
             fn: Async function to execute
             validate_token_budget: Optional pre-flight validation
             metadata: Additional telemetry metadata
-            
+
         Returns:
             Result from successful execution
-            
+
         Raises:
             TokenLimitError: If token budget validation fails
             CircuitBreakerOpenError: If circuit breaker is open
@@ -91,10 +89,10 @@ class HardeningMixin:
         # Pre-flight validation
         if validate_token_budget:
             validate_token_budget()
-        
+
         # Record start time
         start_time = time.time()
-        
+
         try:
             # Execute with retry and circuit breaking
             result = await self.error_recovery.invoke_with_retry(
@@ -102,10 +100,10 @@ class HardeningMixin:
                 breaker_name=self.circuit_breaker.name,
                 context=metadata or {},
             )
-            
+
             # Calculate latency
             latency_ms = (time.time() - start_time) * 1000
-            
+
             # Log success
             self.telemetry.log_success(
                 component=self.component_name,
@@ -113,26 +111,26 @@ class HardeningMixin:
                 latency_ms=latency_ms,
                 metadata=metadata,
             )
-            
+
             return result
-            
+
         except CircuitBreakerOpenError as e:
             # Circuit breaker is open
             latency_ms = (time.time() - start_time) * 1000
-            
+
             self.telemetry.log_circuit_breaker(
                 component=self.component_name,
                 breaker_name=e.breaker_name,
                 state="OPEN",
                 metadata=metadata,
             )
-            
+
             raise
-            
+
         except Exception as e:
             # All other errors
             latency_ms = (time.time() - start_time) * 1000
-            
+
             self.telemetry.log_failure(
                 component=self.component_name,
                 operation=operation,
@@ -141,9 +139,9 @@ class HardeningMixin:
                 error_message=str(e),
                 metadata=metadata,
             )
-            
+
             raise
-    
+
     def validate_token_budget_tiktoken(
         self,
         prompt: str,
@@ -151,12 +149,12 @@ class HardeningMixin:
         max_tokens: Optional[int] = None,
     ) -> None:
         """Validate token budget using tiktoken.
-        
+
         Args:
             prompt: Input prompt text
             model: OpenAI model name
             max_tokens: Maximum tokens allowed (model-specific if None)
-            
+
         Raises:
             TokenLimitError: If prompt exceeds token budget
         """
@@ -165,7 +163,7 @@ class HardeningMixin:
         except ImportError as exc:
             # tiktoken not available - skip validation
             return
-        
+
         # Get encoding for model
         try:
             if model.startswith("gpt-4"):
@@ -178,10 +176,10 @@ class HardeningMixin:
         except KeyError:
             # Unknown model - use default
             encoding = tiktoken.get_encoding("cl100k_base")
-        
+
         # Count tokens
         tokens = len(encoding.encode(prompt))
-        
+
         # Model-specific limits
         model_limits = {
             "gpt-4": 8192,
@@ -196,20 +194,20 @@ class HardeningMixin:
             "gpt-4o-2024-08-06": 128000,
             "gpt-4o-mini": 128000,
         }
-        
+
         # Find model limit
         limit = max_tokens or model_limits.get(model, 4096)
-        
+
         # Check if over limit
         if tokens > limit:
             raise TokenLimitError(
                 f"Prompt exceeds token budget: {tokens} > {limit} for model {model}"
             )
-    
+
     def get_circuit_breaker_state(self) -> str:
         """Get current circuit breaker state."""
         return self.circuit_breaker.state.value
-    
+
     def reset_circuit_breaker(self) -> None:
         """Reset circuit breaker to CLOSED state (for testing)."""
         from .circuit_breaker import CircuitBreakerState

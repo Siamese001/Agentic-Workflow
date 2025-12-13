@@ -13,34 +13,25 @@ L5 Agentic Core - Plan Layer - optimize_observability_order
 Implements L1 Cognitive Planning Layer for optimize observability order operations
 """
 
-
 from typing import Dict, List, Optional
-
 
 from dataclasses import field
 
-
 from enum import Enum
-
 
 import logging
 
-
 from abc import ABC, abstractmethod
-
 
 logging.basicConfig(level=logging.INFO)
 
-
 logger = logging.getLogger(__name__)
-
 
 class OptimizeObservabilityOrderPlanType(Enum):
     """L5 Typed enumeration for deterministic behavior"""
     DEFAULT = "default"
     CORE = "core"
     SYSTEM = "system"
-
 
 class OptimizeObservabilityOrderPlanConstraints:
     """L5 Safety constraints - fail-closed behavior"""
@@ -49,7 +40,6 @@ class OptimizeObservabilityOrderPlanConstraints:
     safety_level: str = "strict"
     requires_approval: bool = True
 
-
 class OptimizeObservabilityOrderPlanResult:
     """L5 Result structure with full type safety"""
     success: bool
@@ -57,7 +47,6 @@ class OptimizeObservabilityOrderPlanResult:
     errors: List[str] = field(default_factory=list)
     safety_validated: bool = False
     timestamp: str = ""
-
 
 class OptimizeObservabilityOrderPlanProcessor(ABC):
     """L5 interface foundation - ensures L1 pure planning behavior"""
@@ -71,7 +60,6 @@ class OptimizeObservabilityOrderPlanProcessor(ABC):
     def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
         pass
-
 
 class OptimizeObservabilityOrderPlanImpl(OptimizeObservabilityOrderPlanProcessor):
     """
@@ -140,11 +128,9 @@ class OptimizeObservabilityOrderPlanImpl(OptimizeObservabilityOrderPlanProcessor
         from datetime import datetime
         return datetime.utcnow().isoformat()
 
-
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
     pass
-
 
 class OptimizeObservabilityOrderPlanInterface:
     """L5 Interface - ensures contract compliance"""
@@ -166,7 +152,6 @@ class OptimizeObservabilityOrderPlanInterface:
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f"Execution failed: {e}")
 
-
 class OptimizeObservabilityOrderPlanFactory:
     """L5 builder for creating processors with proper configuration"""
 
@@ -176,7 +161,6 @@ class OptimizeObservabilityOrderPlanFactory:
         constraints = OptimizeObservabilityOrderPlanConstraints(safety_level=safety_level)
         engine = OptimizeObservabilityOrderPlanImpl(constraints)
         return OptimizeObservabilityOrderPlanInterface(engine)
-
 
 def optimize_observability_order(input_data: Dict[str, object]) -> Dict[str, object]:
     """
@@ -194,7 +178,6 @@ def optimize_observability_order(input_data: Dict[str, object]) -> Dict[str, obj
     builder = OptimizeObservabilityOrderPlanFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
-
 
 if __name__ == "__main__":
     # L5 Test execution

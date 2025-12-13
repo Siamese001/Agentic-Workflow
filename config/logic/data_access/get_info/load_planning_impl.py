@@ -13,10 +13,10 @@ class ConfigLoadPlanner:
 
     def plan_load(self, load_request: Dict[str, Any]) -> ConfigLoadResult:
         """Plan configuration data loading operations.
-        
+
         Args:
             load_request: Dictionary containing load requirements and sources
-            
+
         Returns:
             ConfigLoadResult: Complete planning result with load plan
         """
@@ -137,7 +137,7 @@ def create_config_load_planner(enable_validation: bool=True, enable_encryption: 
 
 def plan_config_load(plan_name: str, sources: List[Dict[str, Any]], validation_rules: Optional[List[Dict[str, Any]]]=None, transformations: Optional[List[Dict[str, Any]]]=None, merge_strategy: str='override', config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Plan config data load from simple parameters.
-    
+
     Args:
         plan_name: Name of the load plan
         sources: List of config source definitions
@@ -145,7 +145,7 @@ def plan_config_load(plan_name: str, sources: List[Dict[str, Any]], validation_r
         transformations: Optional list of transformation definitions
         merge_strategy: Strategy for merging configs (override, merge, keep_existing)
         config: Optional planner configuration overrides
-        
+
     Returns:
         Dict: Planning result with load plan and resource requirements
     """
@@ -154,4 +154,3 @@ def plan_config_load(plan_name: str, sources: List[Dict[str, Any]], validation_r
     planner = ConfigLoadPlanner(planner_config)
     result = planner.plan_load(request)
     return {'success': result.success, 'load_plan': {'id': result.load_plan.id, 'name': result.load_plan.name, 'sources': [{'id': s.id, 'name': s.name, 'config_type': s.config_type.value, 'format': s.format.value, 'location': s.location, 'scope': s.scope.value, 'version': s.version, 'encryption': s.encryption, 'credentials': s.credentials} for s in result.load_plan.sources], 'validation_rules': [{'id': r.id, 'field_path': r.field_path, 'rule_type': r.rule_type, 'parameters': r.parameters, 'error_message': r.error_message} for r in result.load_plan.validation_rules], 'transformations': [{'id': t.id, 'name': t.name, 'transformation_type': t.transformation_type, 'source_fields': t.source_fields, 'target_field': t.target_field, 'parameters': t.parameters} for t in result.load_plan.transformations], 'merge_strategy': result.load_plan.merge_strategy, 'enable_validation': result.load_plan.enable_validation, 'enable_encryption': result.load_plan.enable_encryption, 'cache_ttl': result.load_plan.cache_ttl, 'metadata': result.load_plan.metadata} if result.load_plan else None, 'estimated_config_size': result.estimated_config_size, 'validation_count': result.validation_count, 'transformation_count': result.transformation_count, 'load_time_estimate': result.load_time_estimate, 'security_requirements': result.security_requirements, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
-

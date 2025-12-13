@@ -14,4 +14,3 @@ class DedupManifest:
     kept_files: List[Dict] = field(default_factory=list)
     removed_files: List[Dict] = field(default_factory=list)
     errors: List[Dict] = field(default_factory=list)
-

@@ -48,4 +48,3 @@ class SchemaVectorConfig:
     similarity_threshold: float = 0.7
     max_entries: int = 10000
     index_type: str = 'hnsw'
-

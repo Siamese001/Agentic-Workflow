@@ -3,6 +3,10 @@
 from typing import Any, Dict, List, Optional
 
 def collect_test_files() -> List[Path]:
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Collect all test files."""
     return [f for f in TESTS_ROOT.rglob('test_*.py')]
 
@@ -77,29 +81,29 @@ def audit_tests() -> Dict:
 def print_report(report: Dict) -> None:
     """Print formatted audit report."""
     if report['violations']['forbidden_lp_patterns']:
-        print('\n  Forbidden L/P patterns:')
+        logger.info('\n  Forbidden L/P patterns:')
         for v in report['violations']['forbidden_lp_patterns'][:10]:
-            print(f'    - {v}')
+            logger.info(f'    - {v}')
         if len(report['violations']['forbidden_lp_patterns']) > 10:
-            print(f"    ... and {len(report['violations']['forbidden_lp_patterns']) - 10} more")
+            logger.info(f"    ... and {len(report['violations']['forbidden_lp_patterns']) - 10} more")
     if report['violations']['banned_folders']:
-        print('\n  Banned folders:')
+        logger.info('\n  Banned folders:')
         for v in report['violations']['banned_folders']:
-            print(f'    - {v}')
+            logger.info(f'    - {v}')
     if report['violations']['unknown_categories']:
-        print('\n  Unknown categories:')
+        logger.info('\n  Unknown categories:')
         for v in report['violations']['unknown_categories']:
-            print(f'    - {v}')
+            logger.info(f'    - {v}')
     for category in ['unit', 'integration', 'e2e', 'golden', 'perf', 'load']:
         subs = report['coverage'].get(category, {})
         total = sum((len(files) for files in subs.values()))
         for sub, files in sorted(subs.items()):
             if files:
-                print(f'\n    {category}/{sub}: {len(files)} files')
+                logger.info(f'\n    {category}/{sub}: {len(files)} files')
     if report['recommendations']:
-        print('\n  Recommendations:')
+        logger.info('\n  Recommendations:')
         for i, rec in enumerate(report['recommendations'], 1):
-            print(f'    {i}. {rec}')
+            logger.info(f'    {i}. {rec}')
 
 def main() -> None:
     report = audit_tests()
@@ -109,4 +113,3 @@ def main() -> None:
     with open(report_path, 'w', encoding='utf-8') as f:
         json.dump(report, f, indent=2, default=str)
     return report
-

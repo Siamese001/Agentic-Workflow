@@ -1,7 +1,6 @@
 # from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.meta.metacognition.refinement import refine_low_confidence  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 def test_refine_marks_very_low_confidence_as_discarded() -> None:
     hs = [
         Hypothesis(id="h1", agent_id="a1", content="c1", confidence=0.1),
@@ -11,9 +10,3 @@ def test_refine_marks_very_low_confidence_as_discarded() -> None:
     refined = refine_low_confidence(hs, threshold=0.4)
     assert refined[0].content.startswith("[DISCARDED_CANDIDATE]")
     assert "needs further evidence" in refined[1].content
-
-
-
-
-
-

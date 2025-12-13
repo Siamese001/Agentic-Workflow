@@ -15,4 +15,3 @@ class SchemaSimilarityType(Enum):
     SEMANTIC = 'semantic'
     FIELD_OVERLAP = 'field_overlap'
     TYPE_COMPATIBILITY = 'type_compatibility'
-

@@ -47,8 +47,6 @@ def run_e2e_tests():
 
     # Print results
 
-
-
     descriptions = {
         'E2E-01': '10 canonical roots exist',
         'E2E-02': 'SSoT YAMLs exist',
@@ -63,7 +61,6 @@ def run_e2e_tests():
 
     all_pass = all(results.values())
     return 0 if all_pass else 1
-
 
 if __name__ == '__main__':
     raise SystemExit(run_e2e_tests())

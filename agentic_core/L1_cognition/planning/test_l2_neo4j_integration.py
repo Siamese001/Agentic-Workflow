@@ -14,8 +14,6 @@ import os
 # Add project root to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-
-
 class TestNeo4jIntegration:
     """Test Neo4j integration components."""
 
@@ -37,7 +35,7 @@ class TestNeo4jIntegration:
     def test_factual_qa_without_neo4j(self) -> None:
         """Test factual_qa gracefully handles missing Neo4j."""
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import factual_qa  # DEPRECATED: Archive import removed to protect archives from validation edits
-        
+
         with patch('l2.factual_qa._NEO4J_AVAILABLE', False):
             result = factual_qa(
                 "test_company",
@@ -50,7 +48,7 @@ class TestNeo4jIntegration:
     def test_trend_analysis_without_neo4j(self):
         """Test trend_analysis gracefully handles missing Neo4j."""
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import trend_analysis  # DEPRECATED: Archive import removed to protect archives from validation edits
-        
+
         with patch('l2.factual_qa._NEO4J_AVAILABLE', False):
             result = trend_analysis(
                 ["company1", "company2"],
@@ -79,7 +77,7 @@ class TestNeo4jIntegration:
     async def test_kg_writer_without_neo4j(self):
         """Test kg_writer gracefully handles missing Neo4j."""
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_writer import insert_entity, insert_triplet, insert_event  # DEPRECATED: Archive import removed to protect archives from validation edits
-        
+
         # Create test data
         entity = TemporalEntity(
             entity_id="test_entity",
@@ -87,7 +85,7 @@ class TestNeo4jIntegration:
             canonical_id="canonical_1",
             aliases={"Test Corp", "Test Company"},
         )
-        
+
         triplet = TemporalTriplet(
             triplet_id="test_triplet",
             subject="user_1",
@@ -95,13 +93,13 @@ class TestNeo4jIntegration:
             object="test_entity",
             temporal_range=TemporalRange(valid_at=datetime.now(UTC)),
         )
-        
+
         event = TemporalEvent(
             event_id="test_event",
             event_type="invalidation",
             triplet_id="test_triplet",
         )
-        
+
         with patch('l2.kg_writer._NEO4J_AVAILABLE', False):
             # These should not raise exceptions when Neo4j is unavailable
             await insert_entity(entity)
@@ -121,7 +119,7 @@ class TestNeo4jIntegration:
         """Test Neo4jGraphStore gracefully handles missing driver."""
         with patch('graph_store_neo4j.GraphDatabase', None):
 #             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPRECATED: Archive import removed to protect archives from validation edits
-            
+
             with pytest.raises(ImportError, match="Neo4j driver not installed"):
                 Neo4jGraphStore()
 
@@ -139,7 +137,7 @@ class TestNeo4jIntegration:
         """Test that ingestion DAG mirroring methods exist and are callable."""
 #         from archives.legacy_root_folders.orchestration.kg_ingestion_dag import _mirror_entities_to_neo4j, _mirror_triplets_to_neo4j, _mirror_invalidations_to_neo4j, _mirror_complete_transcript_to_neo4j  # DEPRECATED: Archive import removed to protect archives from validation edits
         pass
-        
+
         # These would be callable if imports were available
         # await _mirror_entities_to_neo4j({})
         # await _mirror_triplets_to_neo4j({})
@@ -152,10 +150,10 @@ class TestNeo4jIntegration:
         # Get the project root directory (3 levels up from test file)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
         requirements_path = os.path.join(project_root, "requirements.txt")
-        
+
         with open(requirements_path, "r") as f:
             requirements = f.read()
-        
+
         assert "neo4j>=5.22.0" in requirements
 
     def test_all_modules_import_without_neo4j(self):
@@ -167,7 +165,7 @@ class TestNeo4jIntegration:
             "l2.factual_qa",
             "orchestration.kg_ingestion_dag",
         ]
-        
+
         for module_name in modules_to_test:
             try:
                 __import__(module_name)

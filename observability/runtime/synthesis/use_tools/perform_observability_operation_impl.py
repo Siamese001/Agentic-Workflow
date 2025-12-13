@@ -15,7 +15,7 @@ class ObservabilityOperationAdapter:
 
     def register_handler(self, operation_type: str, handler: Callable) -> None:
         """Register a handler for operation type.
-        
+
         Args:
             operation_type: Type of operation
             handler: Handler function
@@ -25,11 +25,11 @@ class ObservabilityOperationAdapter:
 
     def perform_operation(self, context: OperationContext, parameters: OperationParameters) -> OperationOutcome:
         """Perform observability operation.
-        
+
         Args:
             context: Operation context
             parameters: Operation parameters
-            
+
         Returns:
             OperationOutcome: Result of operation
         """
@@ -56,11 +56,11 @@ class ObservabilityOperationAdapter:
 
     def perform_batch_operations(self, contexts: List[OperationContext], parameters_list: List[OperationParameters]) -> List[OperationOutcome]:
         """Perform multiple operations.
-        
+
         Args:
             contexts: List of operation contexts
             parameters_list: List of operation parameters
-            
+
         Returns:
             List[OperationOutcome]: Results for all operations
         """
@@ -74,11 +74,11 @@ class ObservabilityOperationAdapter:
 
     def perform_aggregated_operation(self, contexts: List[OperationContext], parameters: OperationParameters) -> OperationOutcome:
         """Perform operation with aggregation across multiple contexts.
-        
+
         Args:
             contexts: List of operation contexts
             parameters: Operation parameters
-            
+
         Returns:
             OperationOutcome: Aggregated result
         """
@@ -104,11 +104,11 @@ class ObservabilityOperationAdapter:
 
     def get_operation_history(self, operation_id: Optional[str]=None, time_range: Optional[Tuple[datetime, datetime]]=None) -> List[Dict[str, Any]]:
         """Get history of operations.
-        
+
         Args:
             operation_id: Optional specific operation ID
             time_range: Optional time range filter
-            
+
         Returns:
             List[Dict]: Operation history
         """
@@ -116,10 +116,10 @@ class ObservabilityOperationAdapter:
 
     def clear_cache(self, pattern: Optional[str]=None) -> int:
         """Clear operation cache.
-        
+
         Args:
             pattern: Optional pattern to match cache keys
-            
+
         Returns:
             int: Number of cache entries cleared
         """
@@ -268,7 +268,7 @@ def create_observability_operation_adapter(timeout: float=30.0, retry_attempts: 
 
 def perform_observability_operation(operation_id: str, category: str, scope: str, target: str, operation_type: str, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Perform observability operation.
-    
+
     Args:
         operation_id: Unique operation identifier
         category: Operation category
@@ -276,7 +276,7 @@ def perform_observability_operation(operation_id: str, category: str, scope: str
         target: Target system or component
         operation_type: Type of operation to perform
         config: Optional configuration
-        
+
     Returns:
         Dict: Operation outcome
     """
@@ -285,4 +285,3 @@ def perform_observability_operation(operation_id: str, category: str, scope: str
     parameters = OperationParameters(operation_type=operation_type, config=config or {})
     outcome = adapter.perform_operation(context, parameters)
     return {'operation_id': outcome.operation_id, 'success': outcome.success, 'data': outcome.data, 'count': outcome.count, 'aggregated_values': outcome.aggregated_values, 'error': outcome.error, 'warnings': outcome.warnings, 'execution_time': outcome.execution_time}
-

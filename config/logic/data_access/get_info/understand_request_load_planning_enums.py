@@ -26,4 +26,3 @@ class ConfigScope(Enum):
     SERVICE = 'service'
     MODULE = 'module'
     USER = 'user'
-

@@ -32,4 +32,3 @@ class RuleAction(Enum):
     WARN = 'warn'
     REJECT = 'reject'
     ESCALATE = 'escalate'
-

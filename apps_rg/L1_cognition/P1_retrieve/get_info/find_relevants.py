@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Find Relevant Templates - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class FindRelevantTemplates:
     """FindRelevantTemplates implementation."""

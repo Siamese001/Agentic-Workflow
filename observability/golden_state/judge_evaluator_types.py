@@ -53,4 +53,3 @@ class JudgeEvaluationResult:
     def get_failing_criteria(self) -> List[JudgmentCriterion]:
         """Get criteria that failed."""
         return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]
-

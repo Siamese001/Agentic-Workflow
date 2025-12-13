@@ -5,7 +5,7 @@ from .error_recovery_types import *
 
 class ErrorRecoveryManager:
     """Manages error recovery with retry, backoff, and circuit breaking.
-    
+
     This wraps external tool and API calls to provide:
     - Automatic retry with exponential backoff
     - Circuit breaker integration
@@ -21,10 +21,10 @@ class ErrorRecoveryManager:
 
     def classify_exception(self, exc: Exception) -> ResilienceError:
         """Map a Python exception to a typed resilience error descriptor.
-        
+
         Args:
             exc: The exception to classify
-            
+
         Returns:
             ResilienceError subclass (TransientError or PermanentError)
         """
@@ -43,10 +43,10 @@ class ErrorRecoveryManager:
 
     def calculate_backoff_ms(self, attempt: int) -> int:
         """Calculate backoff delay with exponential growth and jitter.
-        
+
         Args:
             attempt: Current attempt number (1-indexed)
-            
+
         Returns:
             Backoff delay in milliseconds
         """
@@ -58,15 +58,15 @@ class ErrorRecoveryManager:
 
     async def invoke_with_retry(self, fn: Callable[[], Awaitable[Any]], breaker_name: Optional[str]=None, context: Optional[Dict[str, Any]]=None) -> Any:
         """Invoke an awaitable with retry + backoff + optional circuit breaker.
-        
+
         Args:
             fn: Async function to invoke
             breaker_name: Optional circuit breaker name
             context: Optional context for logging
-            
+
         Returns:
             Result from successful invocation
-            
+
         Raises:
             Exception: If all retries exhausted or permanent error
         """
@@ -120,4 +120,3 @@ class ErrorRecoveryManager:
         backoff_ms = self.calculate_backoff_ms(attempt)
         logger.warning('retry_attempt', extra={'error': str(exc), 'error_type': exc.__class__.__name__, 'attempt': attempt, 'max_retries': self.max_retries, 'backoff_ms': backoff_ms, 'context': context})
         await asyncio.sleep(backoff_ms / 1000.0)
-

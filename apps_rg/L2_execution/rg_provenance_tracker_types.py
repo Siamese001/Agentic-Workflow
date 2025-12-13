@@ -48,4 +48,3 @@ class ProvenanceMap:
     technical_count: int = 0
     soft_count: int = 0
     achievement_count: int = 0
-

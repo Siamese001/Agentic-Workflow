@@ -48,4 +48,3 @@ class RGCreativeBrief:
     leadership_competencies: LeadershipCompetenciesBrief = field(default_factory=LeadershipCompetenciesBrief)
     cover_letter: CoverLetterBrief = field(default_factory=CoverLetterBrief)
     optimized_skills: OptimizedSkillsBrief = field(default_factory=OptimizedSkillsBrief)
-

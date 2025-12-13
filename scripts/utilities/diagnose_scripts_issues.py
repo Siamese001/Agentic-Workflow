@@ -13,7 +13,6 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class DiagnosticReport:
     """Diagnostic report."""
@@ -21,7 +20,6 @@ class DiagnosticReport:
     healthy: bool = True
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)
-
 
 class DiagnoseScriptsIssues:
     """Diagnostics engine for utilities domain."""
@@ -46,7 +44,6 @@ class DiagnoseScriptsIssues:
         healthy = len(issues) == 0
 
         return DiagnosticReport(healthy=healthy, issues=issues, metrics=metrics)
-
 
 def diagnose(target: object, config: Optional[Dict] = None) -> DiagnosticReport:
     """Convenience function for diagnostics."""

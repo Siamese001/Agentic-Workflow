@@ -6,7 +6,7 @@ from .achv_bullet_synthesizer_types import *
 class AchvBulletSynthesizer:
     """
     K.5A & K.6A - Achievement Bullet Generator with Provenance
-    
+
     Zero Tolerance Constraints:
     - K.5A (Unify): 3V-3T-1S pattern, 28-33 words each, 7 bullets
     - K.6A (IBM): 2V-3T-1S pattern, 24-30 words each, 6 bullets
@@ -24,11 +24,11 @@ class AchvBulletSynthesizer:
     def generate_bullets(self, experience_data: Dict[str, Any], context: Dict[str, Any]) -> BulletSynthesizerResult:
         """
         Generate achievement bullets with provenance tracking.
-        
+
         Args:
             experience_data: Raw experience data for bullet generation
             context: Additional context (JD, industry, etc.)
-            
+
         Returns:
             BulletSynthesizerResult with bullets and provenance logs
         """
@@ -129,4 +129,3 @@ class AchvBulletSynthesizer:
 def create_achv_bullet_synthesizer(config: Optional[BulletSynthesizerConfig]=None) -> AchvBulletSynthesizer:
     """Factory function to create AchvBulletSynthesizer instance"""
     return AchvBulletSynthesizer(config=config)
-

@@ -14,7 +14,6 @@ from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class Span:
     """A trace span."""
@@ -33,7 +32,6 @@ class Span:
         if self.end_time:
             return (self.end_time - self.start_time) * 1000
         return 0.0
-
 
 class W3cTraceContext:
     """Tracer for tracing domain."""
@@ -81,10 +79,8 @@ class W3cTraceContext:
         """Get all recorded spans."""
         return self.spans
 
-
 # Global tracer
 _tracer = W3cTraceContext()
-
 
 @contextmanager
 def trace(name: str, attributes: Optional[Dict] = None) -> Generator[Span, None, None]:

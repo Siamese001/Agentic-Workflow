@@ -10,7 +10,6 @@ Defines structured outputs for:
 from typing import List, Optional, Literal, Dict, Any
 from pydantic import BaseModel, Field, validator
 
-
 # ===== K.11 SHADOW AUDIT SCHEMAS =====
 
 class TechStackInference(BaseModel):
@@ -37,13 +36,12 @@ class TechStackInference(BaseModel):
         ...,
         description="Assessed maturity of the technology"
     )
-    
+
     @validator('confidence_score')
     def validate_confidence(cls, v):
         if v < 0.3:
             raise ValueError("Confidence score too low for inclusion")
         return v
-
 
 class TechnicalDebtIndicator(BaseModel):
     """Specific signs of technical debt or issues."""
@@ -51,7 +49,6 @@ class TechnicalDebtIndicator(BaseModel):
     issue: str = Field(..., description="Specific issue identified")
     severity: Literal["Low", "Medium", "High", "Critical"] = Field(..., description="Impact severity")
     evidence: str = Field(..., description="Evidence from public sources")
-
 
 class TechnicalSWOT(BaseModel):
     """Technical Strengths, Weaknesses, Opportunities, Threats analysis."""
@@ -86,13 +83,12 @@ class TechnicalSWOT(BaseModel):
         None,
         description="Unique technical advantage they have"
     )
-    
+
     @validator('strategic_opportunity')
     def validate_opportunity(cls, v):
         if not any(word in v.lower() for word in ['improve', 'reduce', 'increase', 'enable', 'transform']):
             raise ValueError("Strategic opportunity must be action-oriented")
         return v
-
 
 # ===== K.12 STRATEGY ROADMAP SCHEMAS =====
 
@@ -121,7 +117,7 @@ class Milestone(BaseModel):
         default="Medium",
         description="Risk level of achieving this milestone"
     )
-    
+
     @validator('success_metric')
     def validate_metric(cls, v):
         # Should contain a number or percentage
@@ -129,14 +125,12 @@ class Milestone(BaseModel):
             raise ValueError("Success metric should be quantifiable")
         return v
 
-
 class QuickWin(BaseModel):
     """Low-hanging fruit for immediate impact."""
     initiative: str = Field(..., description="Quick win initiative")
     impact: Literal["Low", "Medium", "High"] = Field(..., description="Expected impact")
     effort: Literal["Low", "Medium", "High"] = Field(..., description="Effort required")
     timeline_days: int = Field(..., ge=1, le=30, description="Days to complete")
-
 
 class StrategyRoadmap(BaseModel):
     """30-60-90 day executive strategy roadmap."""
@@ -176,19 +170,18 @@ class StrategyRoadmap(BaseModel):
         max_length=300,
         description="What success looks like at 90 days"
     )
-    
+
     @validator('milestones')
     def validate_milestone_distribution(cls, v):
         # Ensure we have milestones for each timeframe
         timeframes = set(m.timeframe for m in v)
         required = {"Day 30", "Day 60", "Day 90"}
-        
+
         missing = required - timeframes
         if missing:
             raise ValueError(f"Missing milestones for: {missing}")
-        
-        return v
 
+        return v
 
 # ===== K.13 INTERVIEWER SIMULATION SCHEMAS =====
 
@@ -199,7 +192,6 @@ class InterviewerArchetype(BaseModel):
     motivations: List[str] = Field(..., description="What drives this interviewer")
     pet_peeves: List[str] = Field(..., description="Things that annoy them")
 
-
 class PredictedQuestion(BaseModel):
     """Predicted interview question with strategic context."""
     question_text: str = Field(
@@ -209,7 +201,7 @@ class PredictedQuestion(BaseModel):
         description="The actual question they might ask"
     )
     question_type: Literal[
-        "Technical", "Behavioral", "Situational", "Leadership", 
+        "Technical", "Behavioral", "Situational", "Leadership",
         "Cultural", "Strategic", "Problem-Solving"
     ] = Field(..., description="Category of question")
     rationale: str = Field(
@@ -233,7 +225,6 @@ class PredictedQuestion(BaseModel):
         description="How likely they are to ask follow-ups"
     )
 
-
 class InterviewerBias(BaseModel):
     """Specific bias or preference of the interviewer."""
     category: Literal["Technical", "Cultural", "Experience", "Education"] = Field(..., description="Type of bias")
@@ -241,14 +232,13 @@ class InterviewerBias(BaseModel):
     aversion: Optional[str] = Field(None, description="What they dislike")
     how_to_leverage: str = Field(..., description="How to use this to your advantage")
 
-
 class InterviewerProfile(BaseModel):
     """Complete profile of the interviewer for simulation."""
     interviewer_name: str = Field(..., description="Name of the interviewer")
     title: str = Field(..., description="Their job title")
     company_tenure: str = Field(..., description="How long at the company")
     dominant_archetype: Literal[
-        "The Builder", "The Academic", "The Politician", 
+        "The Builder", "The Academic", "The Politician",
         "The Operator", "The Visionary", "The Pragmatist"
     ] = Field(..., description="Primary interview style")
     key_biases: List[InterviewerBias] = Field(
@@ -281,7 +271,7 @@ class InterviewerProfile(BaseModel):
         max_items=5,
         description="What would immediately disqualify a candidate"
     )
-    
+
     @validator('kill_chain_questions')
     def validate_question_difficulty(cls, v):
         # Ensure at least 2 "Hard" or "Killer" questions
@@ -290,7 +280,6 @@ class InterviewerProfile(BaseModel):
             raise ValueError("Need at least 2 Hard/Killer questions")
         return v
 
-
 # ===== EXECUTIVE SUMMARY SCHEMA =====
 
 class ExecutiveIntelligenceReport(BaseModel):
@@ -298,19 +287,19 @@ class ExecutiveIntelligenceReport(BaseModel):
     target_company: str = Field(..., description="Company being analyzed")
     position: str = Field(..., description="Position being interviewed for")
     interview_date: Optional[str] = Field(None, description="Scheduled interview date")
-    
+
     # K.11 Results
     technical_swot: TechnicalSWOT = Field(..., description="Technical analysis")
-    
+
     # K.12 Results
     strategy_roadmap: StrategyRoadmap = Field(..., description="90-day plan")
-    
+
     # K.13 Results
     interviewer_profile: Optional[InterviewerProfile] = Field(
         None,
         description="Interviewer simulation (if available)"
     )
-    
+
     # Executive insights
     key_differentiators: List[str] = Field(
         ...,
@@ -324,17 +313,16 @@ class ExecutiveIntelligenceReport(BaseModel):
         max_items=5,
         description="How to address potential concerns"
     )
-    
+
     generated_at: str = Field(
         default_factory=lambda: "2024-12-13",
         description="Generation timestamp"
     )
 
-
 # Registry function
 def get_executive_schema_registry() -> Dict[str, type]:
     """Get registry of executive strategy schemas.
-    
+
     Returns:
         Dictionary mapping schema names to Pydantic classes
     """

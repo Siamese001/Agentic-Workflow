@@ -43,4 +43,3 @@ class EvaluationReport:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'case_id': self.case_id, 'case_name': self.case_name, 'passed': self.passed, 'judge_result': self.judge_result.to_dict(), 'action_match_score': self.action_match_score, 'errors': self.errors}
-

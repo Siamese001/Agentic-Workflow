@@ -207,4 +207,3 @@ class TestLayerBoundaries:
         executor = KGRetrievalExecutor(store)
         result = executor.execute(plan)
         assert isinstance(result, KGRetrievalResult)
-

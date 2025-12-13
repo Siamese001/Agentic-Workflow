@@ -6,12 +6,9 @@ from __future__ import annotations
 
 from typing import Dict
 
-
-
 def test_safety_rules(data: Dict[str, object]) -> Dict[str, object]:
     """Process test safety rules data."""
     return {"status": "processed", "input_keys": list(data.keys())}
-
 
 def get_test_safety_rules_config() -> Dict[str, object]:
     """Get configuration for test_safety_rules."""

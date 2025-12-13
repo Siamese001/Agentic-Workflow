@@ -1,0 +1,410 @@
+
+[1m[4mSubatomic Canon Validator - Agentic Workflow[0m
+[0;36mValidating 50 strict enforcement rules...[0m
+
+[1;33mPhase 1: Code Hygiene (Keys 00-09)[0m
+[0;36mΓä╣ Checking for hardcoded secrets and API keys...[0m
+[0;31mΓ£ù [00] Found 2 potential hardcoded secrets[0m
+    ./apps_shared/rag/retrieval/dependency_injection.py:144
+    ./runtime/shared/resilience/titanium_research_integration.py:332
+[0;36mΓä╣ Checking for TODO/FIXME comments...[0m
+[0;32mΓ£ô [01] No TODO/FIXME comments found[0m
+[0;36mΓä╣ Checking for print statements...[0m
+[0;31mΓ£ù [02] Found 121 print statements[0m
+    ./canon_validator.py:41
+    ./canon_validator.py:47
+    ./canon_validator.py:52
+    ./canon_validator.py:56
+    ./canon_validator.py:1778
+    ... and 116 more
+[0;36mΓä╣ Checking for debugger statements...[0m
+[0;31mΓ£ù [03] Found 1 debugger statements[0m
+    ./scripts/validation/canon_v6_impl_impl_impl_impl.py:102
+[0;36mΓä╣ Checking for empty except blocks...[0m
+[0;31mΓ£ù [04] Found 32 empty except blocks[0m
+    ./agentic_core/L1_cognition/planning/test_l2_neo4j_integration.py:67
+    ./agentic_core/L2_execution/execution/sandbox/firecracker_manager_impl.py:189
+    ./config/init_v6_impl.py:107
+    ./config/policy/init_v6.py:96
+    ./runtime/core/test_dynamic_dag.py:505
+    ... and 27 more
+[0;36mΓä╣ Checking for bare except clauses...[0m
+[0;31mΓ£ù [05] Found 6 bare except clauses[0m
+    ./runtime/shared/resilience/hardened_cache_client.py:603
+    ./runtime/shared/resilience/hardened_cache_client.py:610
+    ./runtime/shared/resilience/hardened_cache_client.py:141
+    ./runtime/shared/resilience/hardened_cache_client.py:648
+    ./runtime/shared/resilience/hardened_cache_client.py:636
+    ... and 1 more
+[0;36mΓä╣ Checking for eval/exec usage...[0m
+[0;32mΓ£ô [06] No eval/exec usage found[0m
+[0;36mΓä╣ Checking for star imports...[0m
+[0;31mΓ£ù [07] Found 715 star imports[0m
+    ./agentic_core/L1_cognition/discovery/agent_registry.py:12
+    ./agentic_core/L1_cognition/discovery/agent_registry.py:13
+    ./agentic_core/L1_cognition/discovery/agent_registry.py:14
+    ./agentic_core/L1_cognition/discovery/agent_registry_impl.py:4
+    ./agentic_core/L1_cognition/discovery/agent_registry_models.py:5
+    ... and 710 more
+[0;36mΓä╣ Checking for relative imports...[0m
+[0;31mΓ£ù [08] Found 4 relative imports[0m
+    ./observability/simulation.py:5
+    ./observability/simulation/simulation.py:5
+    ./runtime/shared/titanium_search_tool.py:112
+    ./runtime/shared/titanium_search_tool.py:218
+[0;36mΓä╣ Checking for unused imports...[0m
+[0;31mΓ£ù [09] Found 2357 unused imports[0m
+    ./canon_validator.py:13
+    ./canon_validator.py:13
+    ./canon_validator.py:13
+    ./__init__.py:22
+    ./08_scripts/cleanup_duplicate_files.py:22
+    ... and 2352 more
+
+[1;33mPhase 2: Code Style (Keys 10-14)[0m
+[0;36mΓä╣ Checking for long lines...[0m
+[0;31mΓ£ù [10] Found 2979 lines > 100 chars[0m
+    ./canon_validator.py:243 (105 chars)
+    ./canon_validator.py:541 (119 chars)
+    ./canon_validator.py:712 (102 chars)
+    ./canon_validator.py:738 (114 chars)
+    ./canon_validator.py:805 (103 chars)
+    ... and 2974 more
+[0;36mΓä╣ Checking for trailing whitespace...[0m
+[0;31mΓ£ù [11] Found 232 lines with trailing whitespace[0m
+    ./canon_validator.py:66
+    ./canon_validator.py:70
+    ./canon_validator.py:77
+    ./canon_validator.py:94
+    ./canon_validator.py:105
+    ... and 227 more
+[0;36mΓä╣ Checking for missing final newline...[0m
+[0;32mΓ£ô [12] All files end with newline[0m
+[0;36mΓä╣ Checking for tab characters...[0m
+[0;32mΓ£ô [13] No tab characters found[0m
+[0;36mΓä╣ Checking for duplicate imports...[0m
+[0;31mΓ£ù [14] Found 143 duplicate imports[0m
+    ./08_scripts/cleanup_duplicate_files.py:326
+    ./agentic_core/L1_cognition/discovery/agent_registry.py:14
+    ./agentic_core/L1_cognition/identity/spiffe_manager.py:13
+    ./agentic_core/L1_cognition/planning/capability_analyzer.py:13
+    ./agentic_core/L1_cognition/planning/capability_analyzer_impl.py:129
+    ... and 138 more
+
+[1;33mPhase 3: Code Structure (Keys 15-20)[0m
+[0;36mΓä╣ Checking for magic numbers...[0m
+[1;33mΓÜá [15] Found 4736 potential magic numbers[0m
+    ./canon_validator.py:1999 (3)
+    ./canon_validator.py:2007 (4)
+    ./canon_validator.py:2014 (5)
+    ./canon_validator.py:2021 (6)
+    ./canon_validator.py:2025 (7)
+    ... and 4731 more
+[0;36mΓä╣ Checking for deep nesting...[0m
+[0;32mΓ£ô [16] No deep nesting found[0m
+[0;36mΓä╣ Checking for large functions...[0m
+[0;31mΓ£ù [17] Found 376 large functions[0m
+    ./canon_validator.py:365 (53 lines)
+    ./canon_validator.py:1541 (57 lines)
+    ./canon_validator.py:1776 (101 lines)
+    ./canon_validator.py:1920 (56 lines)
+    ./canon_validator.py:1977 (74 lines)
+    ... and 371 more
+[0;36mΓä╣ Checking for functions with many parameters...[0m
+[0;31mΓ£ù [18] Found 12 functions with too many parameters[0m
+    ./prompt_governance/prompts_v7_impl.py:156 (9 params)
+    ./runtime/core/prompt_assembler.py:111 (11 params)
+    ./runtime/core/prompt_enhancer.py:54 (9 params)
+    ./runtime/shared/input_guardrail.py:45 (8 params)
+    ./runtime/shared/titanium_rag_pipeline.py:71 (19 params)
+    ... and 7 more
+[0;36mΓä╣ Checking for complex functions...[0m
+[0;31mΓ£ù [19] Found 162 complex functions[0m
+    ./canon_validator.py:166 (complexity: 11)
+    ./canon_validator.py:229 (complexity: 12)
+    ./canon_validator.py:284 (complexity: 11)
+    ./canon_validator.py:311 (complexity: 11)
+    ./canon_validator.py:338 (complexity: 11)
+    ... and 157 more
+[0;36mΓä╣ Checking for large classes...[0m
+[0;31mΓ£ù [20] Found 8 large classes[0m
+    ./apps_rg/L1_cognition/P2_inspect/rg_validation_gates_impl.py:6 (23 methods)
+    ./apps_rg/L1_cognition/planning/resume_planner.py:64 (21 methods)
+    ./config/logic/data_access/convert/convert_to_config_model_impl.py:6 (21 methods)
+    ./observability/runtime/synthesis/use_tools/tool_perform_observability_operation_impl.py:6 (22 methods)
+    ./observability/runtime/synthesis/use_tools/use_observability_execution_impl.py:6 (22 methods)
+    ... and 3 more
+
+[1;33mPhase 4: Documentation & Types (Keys 21-25)[0m
+[0;36mΓä╣ Checking for missing docstrings...[0m
+[0;31mΓ£ù [21] Found 522 missing docstrings[0m
+    ./canon_validator.py:22 Colors
+    ./canon_validator.py:1326 get_depth()
+    ./canon_validator.py:1571 dfs()
+    ./08_scripts/cleanup_duplicate_files.py:44 to_dict()
+    ./08_scripts/cleanup_duplicate_files.py:58 to_dict()
+    ... and 517 more
+[0;36mΓä╣ Checking for missing type hints...[0m
+[0;31mΓ£ù [22] Found 1704 missing type hints[0m
+    ./canon_validator.py:91 check_key_00_no_hardcoded_secrets() - return type
+    ./canon_validator.py:130 check_key_01_no_todo_comments() - return type
+    ./canon_validator.py:166 check_key_02_no_print_statements() - return type
+    ./canon_validator.py:194 check_key_03_no_debugger_statements() - return type
+    ./canon_validator.py:229 check_key_04_no_empty_except_blocks() - return type
+    ... and 1699 more
+[0;36mΓä╣ Checking for unreachable code...[0m
+[0;32mΓ£ô [23] No unreachable code found[0m
+[0;36mΓä╣ Checking for unused variables...[0m
+[0;31mΓ£ù [24] Found 6384 unused variables[0m
+    ./canon_validator.py - YELLOW
+    ./canon_validator.py - RED
+    ./canon_validator.py - UNDERLINE
+    ./canon_validator.py - GREEN
+    ./canon_validator.py - CYAN
+    ... and 6379 more
+[0;36mΓä╣ Checking for global variables...[0m
+[0;31mΓ£ù [25] Found 13750 global variables[0m
+    ./canon_validator.py:35 validation_results
+    ./canon_validator.py:36 failed_checks
+    ./canon_validator.py:60 python_files
+    ./canon_validator.py:61 exclude_dirs
+    ./canon_validator.py:96 secret_patterns
+    ... and 13745 more
+
+[1;33mPhase 5: External Dependencies (Keys 26-30)[0m
+[0;36mΓä╣ Checking for direct SQL queries...[0m
+[0;31mΓ£ù [26] Found 2 direct SQL queries[0m
+    ./tests/unit/apps_rg/test_resume_engine_simple.py:122
+    ./tests/unit/apps_rg/test_resume_logic_mock.py:239
+[0;36mΓä╣ Checking for empty placeholder files...[0m
+[0;31mΓ£ù [27] EMPTY PLACEHOLDER FILES (Size 0 bytes) DETECTED:
+  - ./agentic_core/L3_orchestration/framework/__init__.py
+  - ./apps_lic/L2_execution/core/__init__.py
+  - ./apps_lic/L2_execution/validation/__init__.py
+  - ./apps_lic/L3_orchestration/rag/__init__.py
+  - ./apps_lic/L3_orchestration/safety/__init__.py
+  - ./apps_rg/L2_execution/resume_generation/__init__.py
+  - ./apps_shared/cache/__init__.py
+  - ./config/database/__init__.py
+  - ./config/policy/__init__.py
+  - ./config/security/__init__.py
+  - ./observability/core/__init__.py
+  - ./observability/metrics/__init__.py
+  - ./observability/policies/__init__.py
+  - ./observability/runtime/collectors/__init__.py
+  - ./observability/runtime/spans/__init__.py
+  - ./observability/security/__init__.py
+  - ./observability/simulation/__init__.py
+  - ./shared/core/__init__.py
+  - ./shared/stubs/__init__.py
+  - ./shared/types/__init__.py
+  - ./tests/__init__.py[0m
+[0;36mΓä╣ Checking for hardcoded URLs...[0m
+[1;33mΓÜá [28] Found 11 hardcoded URLs[0m
+    ./examples/k2_5_deep_research_example.py:95
+    ./examples/k2_5_deep_research_example.py:96
+    ./examples/k2_5_deep_research_example.py:97
+    ./examples/k2_5_deep_research_example.py:98
+    ./examples/k2_5_deep_research_example.py:99
+    ... and 6 more
+[0;36mΓä╣ Checking for hardcoded ports...[0m
+[1;33mΓÜá [29] Found 3 hardcoded ports[0m
+    ./runtime/shared/gap_closure_architect.py:222 - port 80
+    ./runtime/shared/core/checkpoint_manager.py:38 - port 6379
+    ./scripts/workflow/review_pending_audit.py:47 - port 80
+[0;36mΓä╣ Checking for time.sleep usage...[0m
+[0;31mΓ£ù [30] Found 11 time.sleep calls[0m
+    ./observability/runtime/synthesis/use_tools/invoke_observability_tool_impl.py:164
+    ./observability/runtime/synthesis/use_tools/perform_observability_operation_impl.py:154
+    ./observability/runtime/synthesis/use_tools/tool_invoke_observability_tool_impl.py:159
+    ./observability/runtime/synthesis/use_tools/tool_invoke_observability_tool_impl.py:151
+    ./runtime/core/resilience/memory_manager.py:376
+    ... and 6 more
+
+[1;33mPhase 6: Concurrency (Keys 31-32)[0m
+[0;36mΓä╣ Checking for threading module usage...[0m
+[0;31mΓ£ù [31] Found 9 threading imports[0m
+    ./runtime/core/quality/feedback_loop.py:16
+    ./runtime/core/resilience/circuit_breaker.py:14
+    ./runtime/core/resilience/memory_manager.py:17
+    ./runtime/core/resilience/rate_limiter.py:14
+    ./runtime/core/resilience/resource_manager.py:15
+    ... and 4 more
+[0;36mΓä╣ Checking for blocking I/O in async functions...[0m
+[0;31mΓ£ù [32] Found 45 blocking I/O in async functions[0m
+    ./agentic_core/L3_orchestration/nervous_system.py:329
+    ./agentic_core/L3_orchestration/nervous_system.py:342
+    ./agentic_core/L3_orchestration/think_act_observe.py:444
+    ./agentic_core/L3_orchestration/think_act_observe.py:458
+    ./runtime/core/subatomic_hop.py:678
+    ... and 40 more
+
+[1;33mPhase 7: Pythonic Patterns (Keys 33-40)[0m
+[0;36mΓä╣ Checking for complex lambda expressions...[0m
+[1;33mΓÜá [33] Found 151 complex lambda expressions[0m
+    ./08_scripts/cleanup_duplicate_files.py:353
+    ./08_scripts/cleanup_duplicate_files.py:357
+    ./08_scripts/cleanup_duplicate_files.py:104
+    ./agentic_core/L2_execution/validators/state_promoter.py:439
+    ./agentic_core/L2_execution/validators/state_promoter.py:449
+    ... and 146 more
+[0;36mΓä╣ Checking for complex list comprehensions...[0m
+[1;33mΓÜá [34] Found 10 complex comprehensions[0m
+    ./observability/logic/logging/log_observability_metrics.py:42
+    ./observability/logic/metrics/collect_metrics.py:46
+    ./observability/logic/metrics/metric_config.py:42
+    ./observability/logic/metrics/metric_registry.py:42
+    ./observability/logic/metrics/runtime_metrics_collector.py:42
+    ... and 5 more
+[0;36mΓä╣ Checking for excessive try-except blocks...[0m
+[1;33mΓÜá [35] Found 4 files with excessive try-except[0m
+    ./apps_shared/rag/hardening/refactor_v6_impl_impl.py - 9 tries in 26 statements
+    ./apps_shared/rag/retrieval/sdk_v5_impl_impl.py - 27 tries in 52 statements
+    ./examples/run_hardened_job.py - 4 tries in 13 statements
+    ./runtime/shared/cache_clients.py - 11 tries in 31 statements
+[0;36mΓä╣ Checking for static-only classes...[0m
+[1;33mΓÜá [36] Found 3 static-only classes[0m
+    ./runtime/core/security/input_sanitizer.py:20 InputSanitizer
+    ./runtime/shared/core/envelope.py:442 EnvelopeFactory
+    ./schemas/integration/l1_result_parser.py:29 ResultParser
+[0;36mΓä╣ Checking for deep inheritance chains...[0m
+[0;32mΓ£ô [37] Inheritance depth is acceptable[0m
+[0;36mΓä╣ Checking for property abuse...[0m
+[0;32mΓ£ô [38] Property usage is reasonable[0m
+[0;36mΓä╣ Checking for dunder method abuse...[0m
+[0;32mΓ£ô [39] Dunder method usage is reasonable[0m
+[0;36mΓä╣ Checking for metaclass usage...[0m
+[0;32mΓ£ô [40] No metaclass usage found[0m
+
+[1;33mPhase 8: Light Canon (Keys 41-47)[0m
+[0;36mΓä╣ Checking directory depth (Light Canon)...[0m
+[0;32mΓ£ô [41] All directories within 3-level limit (max: 3)[0m
+[0;36mΓä╣ Checking for large files...[0m
+[0;31mΓ£ù [42] Found 64 large files[0m
+    ./canon_validator.py (2053 lines)
+    ./apps_lic/L1_cognition/message_planner.py (504 lines)
+    ./apps_lic/L1_cognition/profile_planner.py (506 lines)
+    ./observability/logic/data_access/get_info/load_planning.py (510 lines)
+    ./observability/logic/data_access/get_info/understand_load_planning.py (682 lines)
+    ... and 59 more
+[0;36mΓä╣ Checking for files with many classes...[0m
+[0;31mΓ£ù [43] Found 9 files with many classes[0m
+    ./apps_lic/L2_execution/data_models_models.py (11 classes)
+    ./config/config_models.py (12 classes)
+    ./observability/logic/data_access/get_info/understand_load_planning.py (14 classes)
+    ./runtime/core/shared_models.py (13 classes)
+    ./runtime/shared/models.py (18 classes)
+    ... and 4 more
+[0;36mΓä╣ Checking for circular imports...[0m
+[0;32mΓ£ô [44] No circular imports found[0m
+[0;36mΓä╣ Checking for dead code...[0m
+[1;33mΓÜá [45] Found 4330 potentially unused functions[0m
+    ./canon_validator.py - check_key_27()
+    ./08_scripts/cleanup_duplicate_files.py - delete_identical_duplicates()
+    ./08_scripts/cleanup_duplicate_files.py - scan()
+    ./08_scripts/cleanup_duplicate_files.py - delete_all_duplicates()
+    ./08_scripts/cleanup_duplicate_files.py - create_backup()
+    ... and 4325 more
+[0;36mΓä╣ Checking for duplicate code (simplified)...[0m
+[1;33mΓÜá [46] Found 2650 potentially duplicate functions[0m
+    Duplicate: ./canon_validator.py and ./08_scripts/cleanup_duplicate_files.py
+    Duplicate: ./08_scripts/cleanup_duplicate_files.py and ./08_scripts/cleanup_duplicate_files.py
+    Duplicate: ./08_scripts/cleanup_duplicate_files.py and ./agentic_core/L1_cognition/discovery/agent_registry_models.py
+    Duplicate: ./08_scripts/cleanup_duplicate_files.py and ./agentic_core/L1_cognition/discovery/agent_registry_models.py
+    Duplicate: ./08_scripts/cleanup_duplicate_files.py and ./agentic_core/L1_cognition/discovery/agent_registry_models.py
+    ... and 2645 more
+[0;36mΓä╣ Checking naming conventions...[0m
+[0;31mΓ£ù [47] Found 11 naming convention violations[0m
+    ./apps_shared/rag/hardening/meta_v6_impl_impl_impl_impl.py:5 Class '_DummyCtx' should be PascalCase
+    ./apps_shared/rag/hardening/meta_v6_impl_impl_impl_impl.py:86 Class '_Cfg' should be PascalCase
+    ./apps_shared/rag/retrieval/simulation_metrics.py:3 Class '_DummyOutcome' should be PascalCase
+    ./runtime/shared/k1_routing_agent.py:40 Class 'K1_RoutingAgent' should be PascalCase
+    ./runtime/shared/k3_message_body_agent.py:69 Class 'K3_MessageBodyAgent' should be PascalCase
+    ... and 6 more
+
+[1;33mPhase 9: Universal Laws (Keys 48-50)[0m
+[0;36mΓä╣ Key 48 is reserved - replaced by universal depth law[0m
+[0;32mΓ£ô [48] Reserved key - universal depth law applies[0m
+[0;36mΓä╣ Checking universal depth law (max 5 from root)...[0m
+[0;32mΓ£ô [49] All paths within depth 5 from root (max: 4)[0m
+[0;36mΓä╣ Verifying canon meta-integrity...[0m
+[0;31mΓ£ù [50] Missing canon keys: ['50'][0m
+
+[1m============================================================[0m
+[0;31m[1mΓ£ù CANON VIOLATIONS DETECTED[0m
+[0;31m28 failed, 9 warnings, 14 passed[0m
+
+[1;33mFailed keys: 00, 02, 03, 04, 05, 07, 08, 09, 10, 11, 14, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 30, 31, 32, 42, 43, 47, 50[0m
+
+[0;36mZero tolerance for stubs, debt, or sprawl.[0m
+[0;36mFix all violations before proceeding.[0m
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py
+./observability/logic/inspection/cost_profiler.py:2: SyntaxWarning: invalid escape sequence '\s'
+  _unassigned\support_nomatch\cost_profiler.py

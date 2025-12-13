@@ -13,10 +13,10 @@ class SchemaLoadPlanner:
 
     def plan_load(self, load_request: Dict[str, Any]) -> SchemaLoadResult:
         """Plan schema loading operations.
-        
+
         Args:
             load_request: Dictionary containing schema requirements
-            
+
         Returns:
             SchemaLoadResult: Complete planning result with load plan
         """
@@ -130,7 +130,7 @@ def create_schema_load_planner(enable_validation: bool=True, enable_transforms: 
 
 def plan_schema_load(plan_name: str, schemas: List[Dict[str, Any]], validation_mode: str='strict', validation_rules: Optional[List[Dict[str, Any]]]=None, transforms: Optional[List[Dict[str, Any]]]=None, resolve_dependencies: bool=True, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Plan schema load from simple parameters.
-    
+
     Args:
         plan_name: Name of the load plan
         schemas: List of schema definitions
@@ -139,7 +139,7 @@ def plan_schema_load(plan_name: str, schemas: List[Dict[str, Any]], validation_m
         transforms: Optional list of schema transforms
         resolve_dependencies: Whether to resolve schema dependencies
         config: Optional planner configuration overrides
-        
+
     Returns:
         Dict: Planning result with load plan and resource requirements
     """
@@ -148,4 +148,3 @@ def plan_schema_load(plan_name: str, schemas: List[Dict[str, Any]], validation_m
     planner = SchemaLoadPlanner(planner_config)
     result = planner.plan_load(request)
     return {'success': result.success, 'load_plan': {'id': result.load_plan.id, 'name': result.load_plan.name, 'schemas': [{'name': s.name, 'type': s.type.value, 'version': s.version, 'file_path': s.file_path, 'url': s.url, 'dependencies': s.dependencies, 'scope': s.scope.value} for s in result.load_plan.schemas], 'validation_mode': result.load_plan.validation_mode.value, 'validation_rules': [{'name': r.name, 'type': r.type, 'parameters': r.parameters, 'severity': r.severity, 'message': r.message} for r in result.load_plan.validation_rules], 'transforms': [{'source_type': t.source_type.value, 'target_type': t.target_type.value, 'transform_function': t.transform_function, 'parameters': t.parameters} for t in result.load_plan.transforms], 'resolve_dependencies': result.load_plan.resolve_dependencies, 'enable_caching': result.load_plan.enable_caching, 'cache_ttl': result.load_plan.cache_ttl, 'metadata': result.load_plan.metadata} if result.load_plan else None, 'schema_count': result.schema_count, 'dependency_count': result.dependency_count, 'validation_rule_count': result.validation_rule_count, 'transform_count': result.transform_count, 'load_time_estimate': result.load_time_estimate, 'memory_estimate': result.memory_estimate, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
-

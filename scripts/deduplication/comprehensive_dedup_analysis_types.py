@@ -42,4 +42,3 @@ class DedupReport:
     semantic_duplicates: int = 0
     clusters: List[DuplicateCluster] = field(default_factory=list)
     bytes_recoverable: int = 0
-

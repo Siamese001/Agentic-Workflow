@@ -15,10 +15,10 @@ class SchemaVectorSearcher:
 
     def search_schema_vectors(self, query: SchemaSearchQuery) -> SchemaSearchResult:
         """Search schema vectors based on query.
-        
+
         Args:
             query: Schema search query configuration
-            
+
         Returns:
             SchemaSearchResult: Search results with similarity scores
         """
@@ -46,14 +46,14 @@ class SchemaVectorSearcher:
 
     def add_schema_vector(self, schema_id: str, schema_name: str, schema: Dict[str, Any], vector: Optional[List[float]]=None, metadata: Optional[Dict[str, Any]]=None) -> bool:
         """Add a schema vector to the store.
-        
+
         Args:
             schema_id: Unique schema identifier
             schema_name: Name of the schema
             schema: Schema definition
             vector: Pre-computed vector (optional)
             metadata: Additional metadata
-            
+
         Returns:
             bool: True if added successfully
         """
@@ -77,11 +77,11 @@ class SchemaVectorSearcher:
 
     def find_similar_schemas(self, schema_id: str, top_k: int=10) -> List[Tuple[str, float]]:
         """Find schemas similar to a given schema.
-        
+
         Args:
             schema_id: ID of reference schema
             top_k: Number of similar schemas to return
-            
+
         Returns:
             List of (schema_id, similarity_score) tuples
         """
@@ -95,7 +95,7 @@ class SchemaVectorSearcher:
 
     def get_schema_statistics(self) -> Dict[str, Any]:
         """Get statistics about the schema vector store.
-        
+
         Returns:
             Dict: Store statistics
         """
@@ -274,7 +274,7 @@ def create_schema_vector_searcher(dimension: int=1536, enable_field_vectors: boo
 
 def search_schema_vectors(query_text: Optional[str]=None, query_schema: Optional[Dict[str, Any]]=None, search_mode: str='semantic', similarity_type: str='semantic', top_k: int=10, threshold: float=0.7, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Search schema vectors.
-    
+
     Args:
         query_text: Text query
         query_schema: Schema query
@@ -283,7 +283,7 @@ def search_schema_vectors(query_text: Optional[str]=None, query_schema: Optional
         top_k: Number of results to return
         threshold: Minimum similarity threshold
         config: Optional searcher configuration
-        
+
     Returns:
         Dict: Search results
     """
@@ -292,4 +292,3 @@ def search_schema_vectors(query_text: Optional[str]=None, query_schema: Optional
     query = SchemaSearchQuery(query_text=query_text, query_schema=query_schema, search_mode=SchemaSearchMode(search_mode), similarity_type=SchemaSimilarityType(similarity_type), top_k=top_k, threshold=threshold)
     result = searcher.search_schema_vectors(query)
     return {'entries': [{'schema_id': e.schema_id, 'schema_name': e.schema_name, 'schema_type': e.schema_type, 'field_count': e.field_count, 'complexity_score': e.complexity_score, 'timestamp': e.timestamp.isoformat(), 'metadata': e.metadata} for e in result.entries], 'scores': result.scores, 'field_matches': result.field_matches, 'search_time_ms': result.search_time_ms, 'metadata': result.metadata}
-

@@ -21,19 +21,18 @@ _TITANIUM_PIPELINE: Optional[TitaniumRAGPipeline] = None
 _LEGACY_FALLBACK_ENABLED = True
 _INITIALIZATION_LOCK = asyncio.Lock()
 
-
 async def _initialize_pipeline() -> TitaniumRAGPipeline:
     """Initialize the Titanium pipeline with fallback handling.
-    
+
     Returns:
         Initialized TitaniumRAGPipeline or fallback pipeline
     """
     global _TITANIUM_PIPELINE
-    
+
     async with _INITIALIZATION_LOCK:
         if _TITANIUM_PIPELINE is not None:
             return _TITANIUM_PIPELINE
-        
+
         try:
             logger.info("Initializing Titanium RAG Pipeline...")
             _TITANIUM_PIPELINE = create_titanium_pipeline(
@@ -41,7 +40,7 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
                 max_retrieved_docs=20,
                 top_k_final=5
             )
-            
+
             # Test availability
             component_info = _TITANIUM_PIPELINE.get_component_info()
             logger.info(f"Pipeline initialized successfully:")
@@ -49,9 +48,9 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
             logger.info(f"  - Phase 2 (Reasoning): Available")
             logger.info(f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
                        f"Cache={component_info['phase_3_sota']['cache_available']}")
-            
+
             return _TITANIUM_PIPELINE
-            
+
         except Exception as e:
             logger.error(f"Failed to initialize Titanium pipeline: {e}")
             if _LEGACY_FALLBACK_ENABLED:
@@ -59,13 +58,12 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
                 _TITANIUM_PIPELINE = await _create_fallback_pipeline()
             else:
                 raise RuntimeError("Titanium pipeline initialization failed and fallback disabled")
-    
-    return _TITANIUM_PIPELINE
 
+    return _TITANIUM_PIPELINE
 
 async def _create_fallback_pipeline() -> TitaniumRAGPipeline:
     """Create a minimal fallback pipeline.
-    
+
     Returns:
         Minimal pipeline with basic functionality
     """
@@ -77,7 +75,6 @@ async def _create_fallback_pipeline() -> TitaniumRAGPipeline:
         enable_caching=False
     )
 
-
 async def get_titanium_search_tool(
     query: str,
     context: Optional[str] = None,
@@ -86,26 +83,26 @@ async def get_titanium_search_tool(
 ) -> str:
     """
     The new gold-standard retrieval function for all Agents.
-    
+
     This function provides a simple interface for all agents to access
     the Titanium RAG Pipeline with automatic fallback handling.
-    
+
     Args:
         query: Search query string
         context: Optional context to guide retrieval
         max_results: Maximum number of results to return
         include_metadata: Whether to include source metadata
-        
+
     Returns:
         Formatted string with search results for LLM consumption
     """
     if not query or not query.strip():
         return "No query provided for search."
-    
+
     try:
         # Get or initialize pipeline
         pipeline = await _initialize_pipeline()
-        
+
         # Connect to actual vector stores
         # In production, this would connect to your configured vector stores
         async def actual_retrieval(query: str, max_docs: int = 10):
@@ -113,20 +110,20 @@ async def get_titanium_search_tool(
             try:
                 # Import vector store clients
                 from . import get_vector_store
-                
+
                 # Get primary vector store (e.g., Chroma)
                 vector_store = get_vector_store()
-                
+
                 # Perform semantic search
                 results = await vector_store.similarity_search(
                     query=query,
                     n_results=max_docs
                 )
-                
+
                 # Convert to document format expected by pipeline
                 documents = []
                 metadatas = []
-                
+
                 for i, doc in enumerate(results):
                     documents.append(doc.page_content if hasattr(doc, 'page_content') else str(doc))
                     metadatas.append({
@@ -134,27 +131,27 @@ async def get_titanium_search_tool(
                         'source': getattr(doc, 'metadata', {}).get('source', f'doc_{i}'),
                         'doc_id': f'doc_{i}'
                     })
-                
+
                 return documents, metadatas
-                
+
             except Exception as e:
                 logger.warning(f"Vector store retrieval failed: {e}")
                 # Fallback to empty results
                 return [], []
-        
+
         # Execute the full pipeline (Gate -> Decompose -> Search -> Rerank)
         results = await pipeline.query(
             query=query,
             retrieval_function=actual_retrieval
         )
-        
+
         # Format results for LLM consumption
         if not results or not results.get('documents'):
             return f"No relevant information found for: {query}"
-        
+
         formatted_results = []
         docs = results['documents'][:max_results]
-        
+
         for i, doc in enumerate(docs, 1):
             # Extract text content
             text_content = ""
@@ -164,10 +161,10 @@ async def get_titanium_search_tool(
                 text_content = doc.text
             elif hasattr(doc, 'content'):
                 text_content = doc.content
-            
+
             # Format result
             result = f"[Source {i}]: {text_content}"
-            
+
             # Add metadata if requested
             if include_metadata and hasattr(doc, 'metadata'):
                 metadata = doc.metadata
@@ -175,9 +172,9 @@ async def get_titanium_search_tool(
                     result += f"\n  Source: {metadata['source']}"
                 if 'date' in metadata:
                     result += f"\n  Date: {metadata['date']}"
-            
+
             formatted_results.append(result)
-        
+
         # Add pipeline metadata
         metadata = results.get('metadata', {})
         if metadata.get('cached'):
@@ -186,13 +183,12 @@ async def get_titanium_search_tool(
             formatted_results.append("\n[Query was decomposed for better results]")
         if metadata.get('reranked'):
             formatted_results.append("\n[Results reranked for precision]")
-        
+
         return "\n\n".join(formatted_results)
-        
+
     except Exception as e:
         logger.error(f"Search failed for query '{query}': {e}")
         return f"Search encountered an error. Please try rephrasing your query."
-
 
 async def get_titanium_search_with_sources(
     query: str,
@@ -200,40 +196,40 @@ async def get_titanium_search_with_sources(
 ) -> Dict[str, Any]:
     """
     Get search results with full source information.
-    
+
     This is useful for agents that need to process sources separately
     from the content (e.g., for citation or verification).
-    
+
     Args:
         query: Search query string
         context: Optional context to guide retrieval
-        
+
     Returns:
         Dictionary with results and metadata
     """
     try:
         pipeline = await _initialize_pipeline()
-        
+
         # Use the same actual_retrieval function as get_titanium_search_tool
         async def actual_retrieval(query: str, max_docs: int = 10):
             """Actual retrieval function that connects to vector stores."""
             try:
                 # Import vector store clients
                 from . import get_vector_store
-                
+
                 # Get primary vector store (e.g., Chroma)
                 vector_store = get_vector_store()
-                
+
                 # Perform semantic search
                 results = await vector_store.similarity_search(
                     query=query,
                     n_results=max_docs
                 )
-                
+
                 # Convert to document format expected by pipeline
                 documents = []
                 metadatas = []
-                
+
                 for i, doc in enumerate(results):
                     documents.append(doc.page_content if hasattr(doc, 'page_content') else str(doc))
                     metadatas.append({
@@ -241,19 +237,19 @@ async def get_titanium_search_with_sources(
                         'source': getattr(doc, 'metadata', {}).get('source', f'doc_{i}'),
                         'doc_id': f'doc_{i}'
                     })
-                
+
                 return documents, metadatas
-                
+
             except Exception as e:
                 logger.warning(f"Vector store retrieval failed: {e}")
                 # Fallback to empty results
                 return [], []
-        
+
         results = await pipeline.query(
             query=query,
             retrieval_function=actual_retrieval
         )
-        
+
         # Extract sources
         sources = []
         for doc in results.get('documents', []):
@@ -261,7 +257,7 @@ async def get_titanium_search_with_sources(
                 'content': '',
                 'metadata': {}
             }
-            
+
             if hasattr(doc, 'metadata'):
                 source_info['content'] = doc.metadata.get('text', '')
                 source_info['metadata'] = {k: v for k, v in doc.metadata.items() if k != 'text'}
@@ -269,16 +265,16 @@ async def get_titanium_search_with_sources(
                 source_info['content'] = doc.text
             elif hasattr(doc, 'content'):
                 source_info['content'] = doc.content
-            
+
             sources.append(source_info)
-        
+
         return {
             'query': query,
             'sources': sources,
             'metadata': results.get('metadata', {}),
             'response': results.get('response')
         }
-        
+
     except Exception as e:
         logger.error(f"Search with sources failed: {e}")
         return {
@@ -288,22 +284,21 @@ async def get_titanium_search_with_sources(
             'response': None
         }
 
-
 def get_pipeline_stats() -> Dict[str, Any]:
     """Get statistics about the Titanium pipeline.
-    
+
     Returns:
         Dictionary with pipeline statistics
     """
     global _TITANIUM_PIPELINE
-    
+
     if _TITANIUM_PIPELINE is None:
         return {'status': 'not_initialized'}
-    
+
     try:
         stats = _TITANIUM_PIPELINE.get_stats()
         component_info = _TITANIUM_PIPELINE.get_component_info()
-        
+
         return {
             'status': 'active',
             'statistics': stats,
@@ -312,10 +307,9 @@ def get_pipeline_stats() -> Dict[str, Any]:
     except Exception as e:
         return {'status': 'error', 'error': str(e)}
 
-
 async def clear_cache():
     """Clear the semantic cache.
-    
+
     Useful for testing or when fresh results are needed.
     """
     pipeline = await _initialize_pipeline()
@@ -323,15 +317,14 @@ async def clear_cache():
         pipeline.cache.clear()
         logger.info("Semantic cache cleared")
 
-
 # Convenience function for synchronous contexts
 def sync_search(query: str, context: Optional[str] = None) -> str:
     """Synchronous wrapper for async search function.
-    
+
     Args:
         query: Search query string
         context: Optional context
-        
+
     Returns:
         Search results string
     """
@@ -342,7 +335,7 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
         # Use run_coroutine_threadsafe instead
         import concurrent.futures
         import threading
-        
+
         def run_in_thread():
             new_loop = asyncio.new_event_loop()
             asyncio.set_event_loop(new_loop)
@@ -350,28 +343,26 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
                 return new_loop.run_until_complete(get_titanium_search_tool(query, context))
             finally:
                 new_loop.close()
-        
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future = executor.submit(run_in_thread)
             return future.result(timeout=30)
-            
+
     except RuntimeError:
         # No running loop, safe to create new one
         return asyncio.run(get_titanium_search_tool(query, context))
 
-
 # Legacy compatibility
 async def legacy_search(query: str) -> str:
     """Legacy search function for backward compatibility.
-    
+
     Args:
         query: Search query
-        
+
     Returns:
         Simple search results
     """
     return await get_titanium_search_tool(query, include_metadata=False)
-
 
 # Tool registration for agent frameworks
 TOOL_REGISTRY = {

@@ -5,6 +5,10 @@ from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_
 
 class TestCacheKeyThroughput:
     def test_cache_key_throughput_10k_per_second(self):
+import logging
+
+logger = logging.getLogger(__name__)
+
         """Can generate at least 10k cache keys per second."""
         messages = [{"role": "user", "content": "Test"}]
         iterations = 10000
@@ -24,7 +28,7 @@ class TestCacheKeyThroughput:
 
         start = time.perf_counter()
         for i in range(iterations):
-            generate_llm_cache_key_with_fingerprint(
+            generate_llm_cache_key_with_fingerlogger.info(
                 model="gpt-4o",
                 messages=messages,
                 fingerprint=f"fp_{i}",

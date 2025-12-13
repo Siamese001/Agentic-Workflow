@@ -83,7 +83,7 @@ class CitationMap:
 @dataclass
 class DeepResearchOutput:
     """Output data structure for K.2.5 deep research results.
-    
+
     Contains comprehensive research findings across strategic, technical,
     and organizational dimensions with proper citations.
     """
@@ -99,7 +99,7 @@ class DeepResearchOutput:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert the research output to a dictionary format.
-        
+
         Returns:
             Dictionary representation of the research output
         """

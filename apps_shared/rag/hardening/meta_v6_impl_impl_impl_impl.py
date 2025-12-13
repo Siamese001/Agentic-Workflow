@@ -170,4 +170,3 @@ def test_orchestrate_retrieval_handles_no_hits(monkeypatch: object) -> None:
     rag = orchestrate_retrieval(query='base-query', ctx=ctx, cfg=cfg, hyde_query=None, council_vote=None)
     assert isinstance(rag, RAGResult)
     assert rag.evidence == []
-

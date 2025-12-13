@@ -5,7 +5,7 @@ from .agent_gym_types import *
 
 class AgentGym:
     """Agent Gym for self-evolution and benchmarking.
-    
+
     Features:
     - Offline simulation environment
     - Golden dataset benchmarking
@@ -16,7 +16,7 @@ class AgentGym:
 
     def __init__(self, golden_evaluator: Optional[GoldenStateEvaluator]=None, judge_evaluator: Optional[JudgeEvaluator]=None, enable_logging: bool=True):
         """Initialize Agent Gym.
-        
+
         Args:
             golden_evaluator: Golden state evaluator
             judge_evaluator: Judge evaluator
@@ -33,7 +33,7 @@ class AgentGym:
 
     def register_scenario(self, scenario: TrainingScenario) -> None:
         """Register a training scenario.
-        
+
         Args:
             scenario: Training scenario
         """
@@ -43,11 +43,11 @@ class AgentGym:
 
     async def run_benchmark(self, scenario_id: str, agent_fn: Callable[[str, Dict[str, Any]], Awaitable[Dict[str, Any]]]) -> BenchmarkResult:
         """Run benchmark for a scenario.
-        
+
         Args:
             scenario_id: Scenario identifier
             agent_fn: Agent execution function
-            
+
         Returns:
             BenchmarkResult
         """
@@ -93,12 +93,12 @@ class AgentGym:
 
     async def run_training_session(self, agent_id: str, scenario_ids: List[str], agent_fn: Callable[[str, Dict[str, Any]], Awaitable[Dict[str, Any]]]) -> TrainingSession:
         """Run complete training session.
-        
+
         Args:
             agent_id: Agent identifier
             scenario_ids: List of scenario IDs to run
             agent_fn: Agent execution function
-            
+
         Returns:
             TrainingSession
         """
@@ -123,10 +123,10 @@ class AgentGym:
 
     def get_scenario(self, scenario_id: str) -> Optional[TrainingScenario]:
         """Get a training scenario.
-        
+
         Args:
             scenario_id: Scenario ID
-            
+
         Returns:
             TrainingScenario or None
         """
@@ -134,10 +134,10 @@ class AgentGym:
 
     def list_scenarios(self, scenario_type: Optional[ScenarioType]=None) -> List[TrainingScenario]:
         """List all scenarios.
-        
+
         Args:
             scenario_type: Optional type filter
-            
+
         Returns:
             List of scenarios
         """
@@ -148,10 +148,10 @@ class AgentGym:
 
     def get_session_history(self, agent_id: Optional[str]=None) -> List[TrainingSession]:
         """Get training session history.
-        
+
         Args:
             agent_id: Optional agent ID filter
-            
+
         Returns:
             List of training sessions
         """
@@ -168,11 +168,11 @@ class AgentGym:
 
     def _classify_performance(self, pass_rate: float, avg_score: float) -> PerformanceLevel:
         """Classify performance level.
-        
+
         Args:
             pass_rate: Pass rate (0.0-1.0)
             avg_score: Average score (0.0-1.0)
-            
+
         Returns:
             PerformanceLevel
         """
@@ -190,11 +190,11 @@ class AgentGym:
 
     def _generate_recommendations(self, reports: Dict[str, Any], performance_level: PerformanceLevel) -> List[str]:
         """Generate improvement recommendations.
-        
+
         Args:
             reports: Evaluation reports
             performance_level: Performance level
-            
+
         Returns:
             List of recommendations
         """
@@ -214,10 +214,10 @@ class AgentGym:
 
     def _identify_improvement_areas(self, benchmark_results: List[BenchmarkResult]) -> List[str]:
         """Identify improvement areas from benchmark results.
-        
+
         Args:
             benchmark_results: List of benchmark results
-            
+
         Returns:
             List of improvement areas
         """
@@ -229,12 +229,11 @@ class AgentGym:
 
 def create_agent_gym(golden_evaluator: Optional[GoldenStateEvaluator]=None) -> AgentGym:
     """Factory function to create Agent Gym.
-    
+
     Args:
         golden_evaluator: Optional golden state evaluator
-        
+
     Returns:
         AgentGym instance
     """
     return AgentGym(golden_evaluator=golden_evaluator)
-

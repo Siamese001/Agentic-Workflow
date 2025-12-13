@@ -44,7 +44,6 @@ class TestResumeOptimizationE2E:
         ats_score = sum(1 for v in ats_checks.values() if v) / len(ats_checks)
         assert ats_score == 1.0
 
-
 class TestResumeVersioningE2E:
     """E2E tests for resume versioning."""
 
@@ -78,7 +77,6 @@ class TestResumeVersioningE2E:
         # Rollback
         current = versions[0]
         assert current["content"] == "good"
-
 
 class TestResumeExportE2E:
     """E2E tests for resume export."""

@@ -3,6 +3,10 @@
 SOVEREIGN CODE IS IMMORTAL - Track file deletions AND renames for canon_validator.py Key 00.
 Writes changes to a tracker file that canon_validator reads.
 ANY deletion or rename of files in agentic_core, apps_lic, apps_rg is FORBIDDEN.
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 import os
@@ -69,20 +73,20 @@ def main() -> None:
         renames = [c for c in changes if "|RENAME|" in c]
 
         if deletes:
-            print("\n  Deletes:")
+            logger.info("\n  Deletes:")
             for d in deletes[:3]:
-                print(f"    - {d}")
+                logger.info(f"    - {d}")
             if len(deletes) > 3:
-                print(f"    ... and {len(deletes) - 3} more")
-        
+                logger.info(f"    ... and {len(deletes) - 3} more")
+
         if renames:
-            print("\n  Renames:")
+            logger.info("\n  Renames:")
             for r in renames[:3]:
                 parts = r.split("|")
                 if len(parts) == 2:
-                    print(f"    - {parts[0]} -> {parts[1]}")
+                    logger.info(f"    - {parts[0]} -> {parts[1]}")
             if len(renames) > 3:
-                print(f"    ... and {len(renames) - 3} more")
+                logger.info(f"    ... and {len(renames) - 3} more")
 
     sys.exit(0)
 

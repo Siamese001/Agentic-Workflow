@@ -6,14 +6,12 @@ import pytest
 # from archives.legacy_root_folders.core.routing import RoutingPolicy  # DEPRECATED: Archive import removed to protect archives from validation edits
 from agentic_core.l2_execution.tools.runtime_utils import SandboxConfig
 
-
 def _make_agent(agent_cls: type, card: AgentCard | None = None) -> object:
     routing = RoutingPolicy()
     sandbox = SandboxConfig()
     if card is not None:
         return agent_cls(routing_policy=routing, sandbox=sandbox, agent_card=card, meta_profile=None)
     return agent_cls(routing_policy=routing, sandbox=sandbox, meta_profile=None)
-
 
 def test_all_major_agents_have_agent_card_with_expected_roles() -> None:
     """Test that all major agents have agent cards with expected role definitions."""
@@ -31,7 +29,6 @@ def test_all_major_agents_have_agent_card_with_expected_roles() -> None:
         assert isinstance(agent.agent_card, AgentCard)
         assert agent.agent_card.role == expected_role
         assert agent.agent_card.agent_id == cls.__name__
-
 
 def test_allowed_tools_enforced_by_llm_base_agent_helper() -> None:
     """Test that allowed tools are properly enforced by LLM base agent helper."""
@@ -52,10 +49,3 @@ def test_allowed_tools_enforced_by_llm_base_agent_helper() -> None:
     # Disallowed tool should raise a PermissionError.
     with pytest.raises(PermissionError):
         agent._check_tool_allowed("tool_c")  # type: ignore[attr-defined]
-
-
-
-
-
-
-

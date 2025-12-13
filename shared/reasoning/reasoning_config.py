@@ -15,10 +15,9 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import ClassVar, Optional, Dict, Any, List
 
-
 class ModelProvider(str, Enum):
     """Available model providers."""
-    
+
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE = "google"
@@ -26,11 +25,10 @@ class ModelProvider(str, Enum):
     COHERE = "cohere"
     GROQ = "groq"
 
-
 @dataclass
 class ModelConfig:
     """Configuration for LLM model parameters."""
-    
+
     provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = "gpt-4o"
     temperature: float = 0.7
@@ -41,11 +39,10 @@ class ModelConfig:
     timeout: int = 30
     max_retries: int = 3
 
-
 @dataclass
 class RAGConfig:
     """Configuration for Retrieval-Augmented Generation."""
-    
+
     enabled: bool = True
     vector_store_path: str = "data/vector_store"
     embedding_model: str = "text-embedding-3-large"
@@ -56,11 +53,10 @@ class RAGConfig:
     cache_enabled: bool = True
     cache_ttl: int = 3600
 
-
 @dataclass
 class GovernorConfig:
     """Configuration for governance and safety controls."""
-    
+
     safety_enabled: bool = True
     safety_threshold: float = 0.95
     content_filter_enabled: bool = True
@@ -69,7 +65,6 @@ class GovernorConfig:
     audit_logging_enabled: bool = True
     max_requests_per_minute: int = 100
     allowed_models: List[str] = field(default_factory=lambda: ["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"])
-
 
 @dataclass
 class ReasoningConfig:
@@ -96,7 +91,6 @@ class ReasoningConfig:
     K2_SKILLS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
     K10_COMPETENCIES_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
     DEFAULT: ClassVar[Optional[ReasoningConfig]] = None
-
 
 # Initialize default config
 ReasoningConfig.DEFAULT = ReasoningConfig()
@@ -135,7 +129,7 @@ SAFETY_THRESHOLD = 0.95
 __all__ = [
     "ModelProvider",
     "ModelConfig",
-    "RAGConfig", 
+    "RAGConfig",
     "GovernorConfig",
     "ReasoningConfig",
     "CONFIG",

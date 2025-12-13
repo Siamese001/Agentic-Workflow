@@ -49,21 +49,19 @@ from apps_rg.L3_orchestration.titanium_integration import (
     enhance_system_prompt,
 )
 
-
 logger = logging.getLogger(__name__)
-
 
 class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
     """
     Hardened orchestrator with atomic state management and resilient routing.
-    
+
     Extends RGWorkflowOrchestrator to add:
     1. Atomic state persistence with rollback on failure
     2. Automatic provider fallback via HardenedRouter
     3. Resume capability from checkpoints
     4. Zero data loss guarantees
     """
-    
+
     def __init__(
         self,
         workflow_spec: Optional[WorkflowSpec] = None,
@@ -71,24 +69,24 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         storage_path: Optional[str] = None,
     ) -> None:
         """Initialize the hardened orchestrator.
-        
+
         Args:
             workflow_spec: Workflow specification
             run_base_dir: Base directory for run outputs
             storage_path: Path for atomic state storage
         """
         super().__init__(workflow_spec, run_base_dir)
-        
+
         # Initialize hardened components
         self.state_manager = get_state_manager(storage_path=storage_path)
         self.router = get_resilient_router()
-        
+
         # State tracking
         self.workflow_state: Optional[WorkflowState] = None
         self.resumed_from_checkpoint = False
-        
+
         logger.info("Hardened orchestrator initialized with atomic state management")
-    
+
     def initialize_or_resume_workflow(
         self,
         workflow_id: str,
@@ -96,18 +94,18 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Initialize new workflow or resume from checkpoint.
-        
+
         Args:
             workflow_id: Unique workflow identifier
             total_k_nodes: Total number of K-nodes in workflow
             context: Initial execution context
-            
+
         Returns:
             Updated context with state information
         """
         # Try to resume from checkpoint
         self.workflow_state = self.state_manager.resume_workflow(workflow_id)
-        
+
         if self.workflow_state:
             self.resumed_from_checkpoint = True
             logger.info(
@@ -115,7 +113,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 f"{self.workflow_state.current_k_node}/{total_k_nodes} "
                 f"({self.workflow_state.get_progress_percentage():.1f}% complete)"
             )
-            
+
             # Update context with resumed state
             context["resumed_from_checkpoint"] = True
             context["current_k_node"] = self.workflow_state.current_k_node
@@ -130,14 +128,14 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             )
             self.resumed_from_checkpoint = False
             logger.info(f"Starting new workflow: {workflow_id}")
-            
+
             # Update context
             context["resumed_from_checkpoint"] = False
             context["current_k_node"] = 0
             context["accumulated_context"] = {}
-        
+
         return context
-    
+
     async def execute_hop_with_hardening(
         self,
         hop_id: str,
@@ -146,13 +144,13 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         temperature: Optional[float] = None,
     ) -> HopCheckpoint:
         """Execute a hop with hardened routing and atomic checkpointing.
-        
+
         Args:
             hop_id: ID of the hop to execute
             context: Execution context
             prompt: Prompt for LLM execution
             temperature: Temperature for LLM
-            
+
         Returns:
             HopCheckpoint with execution results
         """
@@ -161,36 +159,36 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             status=HopStatus.RUNNING,
             start_time=datetime.now(),
         )
-        
+
         try:
             # Get reasoning config for this hop
             reasoning_config = get_reasoning_config(hop_id)
             if reasoning_config:
                 temperature = temperature or reasoning_config.temperature
-            
+
             # Inject Titanium RAG tools into context
             context = inject_titanium_tools(context)
-            
+
             # Prepare async Titanium context
             context = await prepare_titanium_context(context)
-            
+
             # Enhance prompt with Titanium search instructions if needed
             if reasoning_config and reasoning_config.rag_type in ["HYBRID", "AGENTIC"]:
                 prompt = enhance_system_prompt(prompt)
-            
+
             # Determine routing tier based on hop requirements
             tier = self._determine_routing_tier(hop_id, reasoning_config)
-            
+
             # Execute with hardened router (includes retry and fallback)
             logger.info(f"Executing hop {hop_id} with tier {tier.value}")
-            
+
             # Execute with resilient routing
             response = await self.router.execute_with_fallback(
                 tier=tier,
                 prompt=prompt,
                 temperature=temperature,
             )
-            
+
             # Update workflow state
             if self.workflow_state:
                 self.workflow_state.add_execution(
@@ -202,36 +200,36 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                     success=True,
                     metadata=response.metadata,
                 )
-                
+
                 # Atomic checkpoint after successful execution
                 self.state_manager.checkpoint(
                     self.workflow_state.workflow_id,
                     self.workflow_state,
                 )
                 logger.info(f"Checkpointed after hop {hop_id}")
-            
+
             # Update checkpoint
             checkpoint.status = HopStatus.COMPLETED
             checkpoint.end_time = datetime.now()
-            
+
             # Store response in context
             context[f"{hop_id}_output"] = response.content
             context[f"{hop_id}_metadata"] = response.metadata
-            
+
             # Update accumulated context
             if self.workflow_state:
                 context["accumulated_context"] = self.workflow_state.accumulated_context
-            
+
             logger.info(f"Hop {hop_id} completed successfully")
-            
+
         except Exception as e:
             # Handle failure
             checkpoint.status = HopStatus.FAILED
             checkpoint.end_time = datetime.now()
             checkpoint.error_message = str(e)
-            
+
             logger.error(f"Hop {hop_id} failed: {e}")
-            
+
             # Update workflow state with failure
             if self.workflow_state:
                 self.workflow_state.add_execution(
@@ -243,7 +241,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                     success=False,
                     error=str(e),
                 )
-                
+
                 # Still checkpoint on failure for transparency
                 try:
                     self.state_manager.checkpoint(
@@ -252,27 +250,27 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                     )
                 except StatePersistenceError as checkpoint_error:
                     logger.error(f"Failed to checkpoint failure state: {checkpoint_error}")
-        
+
         self.hop_checkpoints.append(checkpoint)
         return checkpoint
-    
+
     def _determine_routing_tier(
         self,
         hop_id: str,
         reasoning_config: Optional[ReasoningConfig],
     ) -> RoutingTier:
         """Determine the appropriate routing tier for a hop.
-        
+
         Args:
             hop_id: Hop identifier
             reasoning_config: Reasoning configuration for the hop
-            
+
         Returns:
             RoutingTier to use
         """
         if not reasoning_config:
             return RoutingTier.BALANCED
-        
+
         # Map reasoning config to tier
         if reasoning_config.rag_type == "AGENTIC":
             return RoutingTier.REASONING
@@ -282,30 +280,30 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             return RoutingTier.SPEED
         else:
             return RoutingTier.BALANCED
-    
+
     async def execute_workflow_with_resilience(
         self,
         workflow_id: str,
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Execute workflow with resilience and atomic state management.
-        
+
         Args:
             workflow_id: Unique workflow identifier
             context: Initial execution context
-            
+
         Returns:
             Workflow execution results with state information
         """
         logger.info(f"Starting hardened workflow execution: {workflow_id}")
-        
+
         # Initialize or resume workflow
         total_hops = len(self.spec.hops) if self.spec else 0
         context = self.initialize_or_resume_workflow(workflow_id, total_hops, context)
-        
+
         # Get execution order
         execution_order = self.get_execution_order()
-        
+
         # Filter hops based on checkpoint progress
         if self.resumed_from_checkpoint and self.workflow_state:
             current_k_node = self.workflow_state.current_k_node
@@ -315,7 +313,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 if i >= current_k_node
             ]
             logger.info(f"Skipping {current_k_node} already completed hops")
-        
+
         # Execute remaining hops
         results: Dict[str, Any] = {
             "workflow_id": workflow_id,
@@ -325,15 +323,15 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             "hops_failed": [],
             "checkpoints": [],
         }
-        
+
         for i, hop_id in enumerate(execution_order):
             logger.info(f"Executing hop {hop_id} ({i+1}/{len(execution_order)})")
-            
+
             # Get hop specification
             hop_spec = next((h for h in self.spec.hops if h.id == hop_id), None)
             if not hop_spec:
                 raise HopExecutionError(f"Hop spec not found: {hop_id}")
-            
+
             # Execute hop with hardening
             checkpoint = await self.execute_hop_with_hardening(
                 hop_id,
@@ -341,11 +339,11 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 prompt=context.get("prompt", f"Execute {hop_id}"),
                 temperature=context.get("temperature"),
             )
-            
+
             # Update results
             if checkpoint.status == HopStatus.COMPLETED:
                 results["hops_completed"].append(hop_id)
-                
+
                 # Update workflow state progress
                 if self.workflow_state:
                     # Find the actual position of this hop in the full execution order
@@ -357,14 +355,14 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 results["status"] = "FAILED"
                 results["error"] = checkpoint.error_message
                 break
-        
+
         # Final state update
         if results["status"] != "FAILED":
             results["status"] = "COMPLETED"
             if self.workflow_state:
                 self.workflow_state.status = "completed"
                 self.workflow_state.last_checkpoint_at = datetime.utcnow()
-                
+
                 # Final checkpoint
                 try:
                     self.state_manager.checkpoint(
@@ -373,7 +371,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                     )
                 except StatePersistenceError as e:
                     logger.error(f"Failed to save final checkpoint: {e}")
-        
+
         # Add state information to results
         results["final_state"] = {
             "current_k_node": self.workflow_state.current_k_node if self.workflow_state else 0,
@@ -381,14 +379,13 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             "progress_percentage": self.workflow_state.get_progress_percentage() if self.workflow_state else 0,
             "execution_log_count": len(self.workflow_state.execution_log) if self.workflow_state else 0,
         }
-        
+
         logger.info(
             f"Hardened workflow completed with status: {results['status']} "
             f"(Progress: {results['final_state']['progress_percentage']:.1f}%)"
         )
-        
-        return results
 
+        return results
 
 def create_hardened_orchestrator(
     workflow_spec: Optional[WorkflowSpec] = None,
@@ -396,12 +393,12 @@ def create_hardened_orchestrator(
     storage_path: Optional[str] = None,
 ) -> HardenedWorkflowOrchestrator:
     """Create a hardened orchestrator with atomic state management.
-    
+
     Args:
         workflow_spec: Workflow specification
         run_base_dir: Base directory for run outputs
         storage_path: Path for atomic state storage
-        
+
     Returns:
         HardenedWorkflowOrchestrator instance
     """

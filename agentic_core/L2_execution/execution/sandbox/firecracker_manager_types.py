@@ -49,7 +49,7 @@ class VMInstance:
 
     def is_running(self) -> bool:
         """Check if VM is running.
-        
+
         Returns:
             True if running
         """
@@ -57,10 +57,10 @@ class VMInstance:
 
     def is_expired(self, current_time: Optional[float]=None) -> bool:
         """Check if VM has exceeded timeout.
-        
+
         Args:
             current_time: Current timestamp
-            
+
         Returns:
             True if expired
         """
@@ -71,4 +71,3 @@ class VMInstance:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'vm_id': self.vm_id, 'config': self.config.to_dict(), 'status': self.status.value, 'created_at': self.created_at, 'process_id': self.process_id, 'endpoint': self.endpoint, 'metadata': self.metadata}
-

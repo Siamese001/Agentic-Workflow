@@ -3,6 +3,10 @@
 Process review_pending folder:
 1. Extract unique large files with real code to proper locations
 2. Archive the rest to 06_data/deprecated
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 import shutil
@@ -49,7 +53,7 @@ def _categorize_pending_file(f: Path, seen_hashes: Dict[str, Path]) -> Tuple[Opt
     # Skip exact duplicates
     if h in seen_hashes:
         return None, f
-    
+
     seen_hashes[h] = f
 
     if size > 5000 and has_real_code(f):
@@ -83,10 +87,10 @@ def main() -> None:
 
     for f, size in sorted(large_real_code, key=lambda x: -x[1])[:20]:
         rel = f.relative_to(REVIEW_PENDING)
-        print(f"  - {rel} ({size} bytes)")
-    
+        logger.info(f"  - {rel} ({size} bytes)")
+
     if len(large_real_code) > 20:
-        print(f"  ... and {len(large_real_code) - 20} more")
+        logger.info(f"  ... and {len(large_real_code) - 20} more")
 
     # Find the largest unique file (likely the main Resume Engine)
     if large_real_code:
@@ -95,17 +99,17 @@ def main() -> None:
         # Copy to apps_rg as resume_generation_engine.py
         dest = REPO / '09_apps/apps_rg/resume_generation_engine.py'
         if not dest.exists():
-            print(f"\nCopying largest file to {dest.relative_to(REPO)}")
+            logger.info(f"\nCopying largest file to {dest.relative_to(REPO)}")
             shutil.copy2(largest[0], dest)
         else:
-            print(f"\nDestination already exists: {dest.relative_to(REPO)}")
+            logger.info(f"\nDestination already exists: {dest.relative_to(REPO)}")
 
     # Create archive directory
     archive_path = ARCHIVE_DIR / TIMESTAMP
     archive_path.mkdir(parents=True, exist_ok=True)
 
     # Move entire review_pending to archive
-    print(f"\nMoving {len(list(REVIEW_PENDING.rglob('*')))} items to archive...")
+    logger.info(f"\nMoving {len(list(REVIEW_PENDING.rglob('*')))} items to archive...")
     shutil.move(str(REVIEW_PENDING), str(archive_path / 'review_pending'))
 
     # Count files to move

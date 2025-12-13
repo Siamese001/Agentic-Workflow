@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Track Outreach Generation Cost - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class TrackOutreachGenerationCost:
     """TrackOutreachGenerationCost implementation."""

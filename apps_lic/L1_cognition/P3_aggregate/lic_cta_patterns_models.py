@@ -35,4 +35,3 @@ class DayBufferConfig:
     """Buffer configuration for a specific day."""
     min_buffer_days: int
     suggested_pattern: str
-

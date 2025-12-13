@@ -2,8 +2,8 @@
 """
 Hardened Job Acceptance Test (v2)
 
-This script serves as the "Big Red Button" to verify the entire 
-Titanium architecture works end-to-end. It handles AgentResponse 
+This script serves as the "Big Red Button" to verify the entire
+Titanium architecture works end-to-end. It handles AgentResponse
 objects and fixes Windows Unicode encoding issues.
 """
 
@@ -46,7 +46,7 @@ TEST_CONFIG = {
     "target_role": "Senior AI Engineer",
     "target_company": "Anthropic",
     "job_url": "https://anthropic.com/careers",
-    "routing_tier": RoutingTier.REASONING 
+    "routing_tier": RoutingTier.REASONING
 }
 
 # Create a minimal workflow spec for testing
@@ -57,7 +57,7 @@ def create_test_workflow_spec() -> WorkflowSpec:
         script="echo 'Test hop executed successfully'",
         description="Test hop for acceptance test"
     )
-    
+
     return WorkflowSpec(
         name="Titanium Acceptance Test Workflow",
         version="v2.0",
@@ -69,11 +69,11 @@ async def main():
     logger.info("=" * 60)
     logger.info("🚀 STARTING TITANIUM WORKFLOW ACCEPTANCE TEST v2")
     logger.info("=" * 60)
-    
+
     start_time = time.time()
     orchestrator = None
     state_location = None
-    
+
     try:
         # 1. Initialize Orchestrator
         logger.info("⚡ Initializing HardenedWorkflowOrchestrator...")
@@ -84,7 +84,7 @@ async def main():
             storage_path="./state_storage"
         )
         logger.info("✅ Orchestrator initialized successfully")
-        
+
         # 2. Prepare Context and Initialize Workflow
         logger.info(f"📋 Initializing workflow: {TEST_JOB_ID}")
         context = {
@@ -93,32 +93,32 @@ async def main():
             "job_url": TEST_CONFIG["job_url"],
             "routing_tier": TEST_CONFIG["routing_tier"]
         }
-        
+
         # Initialize or resume workflow (returns updated context)
         updated_context = orchestrator.initialize_or_resume_workflow(
             workflow_id=TEST_JOB_ID,
             total_k_nodes=5,  # Example: 5 K-nodes in the workflow
             context=context
         )
-        
+
         if updated_context.get("resumed_from_checkpoint"):
             logger.info("🔄 Resumed existing workflow")
         else:
             logger.info("🆕 Started new workflow")
-        
+
         # 3. Execute Workflow with Resilience
         logger.info("⚙️ Executing hardened workflow...")
         logger.info(f"Target Role: {TEST_CONFIG['target_role']}")
         logger.info(f"Target Company: {TEST_CONFIG['target_company']}")
-        
+
         result = await orchestrator.execute_workflow_with_resilience(
             workflow_id=TEST_JOB_ID,
             context=updated_context
         )
-        
+
         # 4. Handle Result (Dict format)
         logger.info("📦 Received workflow results")
-        
+
         # Extract final output from result
         if isinstance(result, dict):
             content = result.get("final_output", result)
@@ -126,12 +126,12 @@ async def main():
         else:
             content = result
             metadata = {}
-        
+
         # 5. Display Results
         logger.info("=" * 60)
         logger.info("📄 WORKFLOW RESULTS:")
         logger.info("-" * 60)
-        
+
         if isinstance(content, dict):
             for key, value in content.items():
                 logger.info(f"{key}: {value}")
@@ -143,44 +143,44 @@ async def main():
                 logger.info(f"Content: {content}")
         else:
             logger.info(f"Result: {content}")
-        
+
         # 6. Get State Persistence Location
         if hasattr(orchestrator, 'state_manager') and orchestrator.state_manager:
             state_location = getattr(orchestrator.state_manager, 'storage_path', './state_storage')
         else:
             state_location = "State manager not available"
-        
+
         # 7. Calculate Execution Metrics
         execution_time = time.time() - start_time
-        
+
         # 8. Print Success Criteria
         logger.info("=" * 60)
-        print("[SUCCESS] TITANIUM WORKFLOW COMPLETE")
-        print(f"State persisted to: {state_location}")
-        print("Router Execution: HEALTHY")
+        logger.info("[SUCCESS] TITANIUM WORKFLOW COMPLETE")
+        logger.info(f"State persisted to: {state_location}")
+        logger.info("Router Execution: HEALTHY")
         logger.info(f"⏱️ Total Execution Time: {execution_time:.2f} seconds")
         logger.info("=" * 60)
         logger.info("🎉 ACCEPTANCE TEST PASSED")
         logger.info("=" * 60)
-        
+
         return 0
-        
+
     except Exception as e:
         logger.error("=" * 60)
         logger.error("❌ WORKFLOW FAILED")
         logger.error(f"Error: {type(e).__name__}: {e}")
-        
+
         # Print stack trace for debugging
         import traceback
         logger.error("Stack Trace:")
         logger.error(traceback.format_exc())
-        
+
         logger.error("=" * 60)
         logger.error("💥 ACCEPTANCE TEST FAILED")
         logger.error("=" * 60)
-        
+
         return 1
-    
+
     finally:
         # Cleanup
         if orchestrator:

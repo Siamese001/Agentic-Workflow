@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Embed Message Template - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class EmbedMessageTemplate:
     """EmbedMessageTemplate implementation."""

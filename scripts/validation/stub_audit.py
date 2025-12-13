@@ -4,6 +4,10 @@ STUB/PLACEHOLDER AUDIT
 ======================
 Identifies all stub, placeholder, and empty files in the repository.
 Categorizes them for cleanup or implementation.
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 import scripts.validation.check_canonical_structure
@@ -41,7 +45,7 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
         if len(content) < 20:
             if content in ['pass', '...']:
                 return True, "minimal_stub"
-    
+
         for pattern in STUB_PATTERNS:
             if re.search(pattern, content, re.MULTILINE | re.IGNORECASE):
                 if 'NotImplementedError' in content:
@@ -140,25 +144,25 @@ def print_report(report: Dict) -> None:
     stub_pct = (report['summary']['stub_files'] / report['summary']['total_py_files'] * 100) if report['summary']['total_py_files'] > 0 else 0
 
     for reason, files in sorted(report["by_reason"].items(), key=lambda x: -len(x[1])):
-        print(f"\n    {reason}: {len(files)} files")
+        logger.info(f"\n    {reason}: {len(files)} files")
 
     for folder, stats in sorted(report["by_folder"].items(), key=lambda x: -x[1]["stubs"]):
         total = stats["stubs"] + stats["real"]
         if stats["stubs"] > 0:
             pct = stats["stubs"] / total * 100 if total > 0 else 0
-            print(f"\n    {folder}: {stats['stubs']}/{total} stubs ({pct:.1f}%)")
+            logger.info(f"\n    {folder}: {stats['stubs']}/{total} stubs ({pct:.1f}%)")
 
-    print("\n    Stubs found:")
+    logger.info("\n    Stubs found:")
     for stub in report["stubs"][:20]:
-        print(f"      - {stub}")
-    
+        logger.info(f"      - {stub}")
+
     if len(report["stubs"]) > 20:
-        print(f"      ... and {len(report['stubs']) - 20} more")
-    
+        logger.info(f"      ... and {len(report['stubs']) - 20} more")
+
     if report["recommendations"]:
-        print("\n    Recommendations:")
+        logger.info("\n    Recommendations:")
         for i, rec in enumerate(report["recommendations"][:10], 1):
-            print(f"      {i}. {rec}")
+            logger.info(f"      {i}. {rec}")
 
 def main() -> None:
     """Main entry point for stub audit."""

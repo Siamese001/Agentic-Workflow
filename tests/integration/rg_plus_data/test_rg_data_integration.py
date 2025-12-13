@@ -20,7 +20,6 @@ class UserProfile:
     experience: List[Dict[str, object]]
     education: List[Dict[str, object]]
 
-
 class TestRGDataIntegration:
     """Integration tests for RG + data layer."""
 
@@ -75,7 +74,6 @@ class TestRGDataIntegration:
         total_years = sum(e["years"] for e in experiences)
         assert total_years == 6
 
-
 class TestResumeDataPersistence:
     """Integration tests for resume data persistence."""
 
@@ -115,7 +113,6 @@ class TestResumeDataPersistence:
 
         template = templates.get("technical")
         assert "skills" in template["sections"]
-
 
 class TestJobDataEnrichment:
     """Integration tests for job data enrichment."""
@@ -173,7 +170,6 @@ class TestJobDataEnrichment:
                 categories["certifications"].append(req)
 
         assert len(categories["technical"]) >= 1
-
 
 class TestResumeAnalytics:
     """Integration tests for resume analytics."""

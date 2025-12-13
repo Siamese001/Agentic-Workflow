@@ -53,4 +53,3 @@ class ExecutionResult:
     warnings: List[str] = field(default_factory=list)
     execution_time: float = 0.0
     resource_usage: Dict[str, float] = field(default_factory=dict)
-

@@ -4,7 +4,6 @@ from typing import Any, Dict
 
 from pydantic import BaseModel
 
-
 class SimScenario(BaseModel):
     id: str
     description: str
@@ -12,12 +11,8 @@ class SimScenario(BaseModel):
     execution_profile_name: str
     run_count: int
 
-
 class SimOutcome(BaseModel):
     scenario_id: str
     average_scores: Dict[str, float]
     safety_incidents: int
     agent_conflict_count: int
-
-
-

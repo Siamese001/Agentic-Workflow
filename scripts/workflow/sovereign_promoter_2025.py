@@ -117,7 +117,7 @@ def choose_destination(content: str, filename: str) -> Path:
     for pattern, dest in DESTINATION_RULES:
         if re.search(pattern, lower):
             return Path(dest)
-    
+
     # Defaults
     if filename.lower().endswith(".md"):
         return Path("docs")
@@ -131,7 +131,7 @@ def _should_promote_file(src: Path, score: int, reasons: List[str], is_dirty: bo
     # Rule 1: Force Promote Pattern
     if FORCE_PROMOTE_PATTERN.search(src.name):
         return True, "force-promote:historical"
-    
+
     # Rule 2: High Score (Standard Sovereign Grade)
     elif score >= 7 and not is_dirty:
         return True, f"sovereign-grade:score={score}"
@@ -147,14 +147,14 @@ def _should_promote_file(src: Path, score: int, reasons: List[str], is_dirty: bo
             return True, "legacy-import:dirty (needs cleanup)"
         else:
             return True, f"legacy-import:low-score={score}"
-    
+
     return False, ""
 
 def _should_skip_file(src: Path) -> bool:
     """Check if a file should be skipped."""
     if not src.is_file() or src.suffix not in {".py", ".json", ".md"}:
         return True
-    
+
     # Skip sovereign roots and system folders
     if "scripts" in src.parts or src.parent.name == "scripts":
         return True
@@ -162,33 +162,33 @@ def _should_skip_file(src: Path) -> bool:
         return True
     if any(root in src.parts for root in SOVEREIGN_ROOTS):
         return True
-    
+
     return False
 
 def main() -> None:
     """Main function to promote files from archive or CLI args to sovereign directories."""
     files_to_process = []
-    
+
     # 1. CLI Args
     files_to_process.extend(Path(arg) for arg in sys.argv[1:])
 
     # 2. Staged Files (Archive Code)
     archive_dir = Path("archive_code")
     is_archive_mode = False
-    
+
     # If explicitly running on archive_code content
     if archive_dir.is_dir():
         files_to_process.extend(archive_dir.glob("*.py"))
         files_to_process.extend(archive_dir.glob("*.json"))
         files_to_process.extend(archive_dir.glob("*.md"))
-    
-    processed_paths = set() 
-    
+
+    processed_paths = set()
+
     for src in files_to_process:
         if src in processed_paths:
             continue
         processed_paths.add(src)
-        
+
         if _should_skip_file(src):
             continue
 
@@ -197,13 +197,13 @@ def main() -> None:
 
         content = src.read_text(errors="ignore")
         score, reasons, is_dirty = analyze_file_content(content, src.name)
-        
+
         # --- PROMOTION LOGIC ---
         should_promote, promotion_reason = _should_promote_file(src, score, reasons, is_dirty, is_staged_file)
 
         if not should_promote:
             if is_staged_file:
-                # This branch technically shouldn't be reached due to Rule 4, 
+                # This branch technically shouldn't be reached due to Rule 4,
                 # unless the file is empty/unreadable.
 
                 src.unlink()

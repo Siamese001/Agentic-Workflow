@@ -13,10 +13,10 @@ class ConfigLoadPlanner:
 
     def plan_load(self, load_request: Dict[str, Any]) -> ConfigLoadResult:
         """Plan configuration loading operations.
-        
+
         Args:
             load_request: Dictionary containing configuration loading requirements
-            
+
         Returns:
             ConfigLoadResult: Complete planning result with load plan
         """
@@ -145,7 +145,7 @@ def create_config_load_planner(enable_validation: bool=True, enable_type_checkin
 
 def plan_config_load(plan_name: str, config_type: str, scope: str='project', sections: Optional[List[Dict[str, Any]]]=None, validation_rules: Optional[List[Dict[str, Any]]]=None, validation_level: str='basic', config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Plan config load from simple parameters.
-    
+
     Args:
         plan_name: Name of the load plan
         config_type: Type of configuration
@@ -154,7 +154,7 @@ def plan_config_load(plan_name: str, config_type: str, scope: str='project', sec
         validation_rules: Optional list of validation rules
         validation_level: Level of validation to apply
         config: Optional planner configuration overrides
-        
+
     Returns:
         Dict: Planning result with load plan and resource requirements
     """
@@ -167,4 +167,3 @@ def plan_config_load(plan_name: str, config_type: str, scope: str='project', sec
         """Serialize a ConfigSection to a dictionary for JSON output."""
         return {'name': section.name, 'parameters': [{'key': p.key, 'value': p.value, 'type': p.type, 'required': p.required, 'default_value': p.default_value, 'description': p.description, 'validation_rules': p.validation_rules, 'metadata': p.metadata} for p in section.parameters], 'subsections': [serialize_section(sub) for sub in section.subsections], 'metadata': section.metadata}
     return {'success': result.success, 'load_plan': {'id': result.load_plan.id, 'name': result.load_plan.name, 'config_type': result.load_plan.config_type.value, 'scope': result.load_plan.scope.value, 'sections': [serialize_section(section) for section in result.load_plan.sections], 'validation_rules': [{'name': r.name, 'type': r.type, 'condition': r.condition, 'error_message': r.error_message, 'severity': r.severity, 'metadata': r.metadata} for r in result.load_plan.validation_rules], 'validation_level': result.load_plan.validation_level.value, 'enable_caching': result.load_plan.enable_caching, 'cache_ttl': result.load_plan.cache_ttl, 'metadata': result.load_plan.metadata} if result.load_plan else None, 'parameter_count': result.parameter_count, 'section_count': result.section_count, 'validation_rule_count': result.validation_rule_count, 'load_time_estimate': result.load_time_estimate, 'memory_estimate': result.memory_estimate, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
-

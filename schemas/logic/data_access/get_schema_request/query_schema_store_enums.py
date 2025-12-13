@@ -16,4 +16,3 @@ class SchemaStatus(Enum):
     ACTIVE = 'active'
     DEPRECATED = 'deprecated'
     ARCHIVED = 'archived'
-

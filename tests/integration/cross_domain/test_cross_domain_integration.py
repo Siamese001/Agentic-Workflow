@@ -46,7 +46,6 @@ class TestCrossDomainDataFlow:
         assert "lic_data" in user_context
         assert "rg_data" in user_context
 
-
 class TestSchemaCompatibility:
     """Integration tests for schema compatibility."""
 
@@ -80,7 +79,6 @@ class TestSchemaCompatibility:
 
         assert "id" in v2_data
         assert "description" in v2_data
-
 
 class TestCrossServiceCommunication:
     """Integration tests for cross-provider communication."""

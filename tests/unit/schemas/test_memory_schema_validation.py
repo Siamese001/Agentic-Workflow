@@ -10,7 +10,6 @@ import pytest
 
 from pydantic import BaseModel
 
-
 def _get_schema_version(obj: object) -> str | None:
     """Best-effort function to read a schema_version attribute from a model.
 
@@ -23,7 +22,6 @@ def _get_schema_version(obj: object) -> str | None:
         return getattr(obj, "schema_version", None)
     except (ValueError, TypeError, KeyError):  # pragma: no cover - extreme defensive
         return None
-
 
 def validate_schema_version(
     obj: object,

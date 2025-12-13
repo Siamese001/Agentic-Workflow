@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 """Unit tests for runtime/shared/cache.py"""
 from __future__ import annotations
 from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache, CACHE_KEY_VERSION
@@ -19,8 +23,8 @@ class TestGenerateCacheKey:
 class TestCacheKeyWithFingerprint:
     def test_fingerprint_affects_key(self):
         msgs = [{"role": "user", "content": "Same"}]
-        k1 = generate_llm_cache_key_with_fingerprint(model="gpt-4o", messages=msgs, fingerprint="fp1")
-        k2 = generate_llm_cache_key_with_fingerprint(model="gpt-4o", messages=msgs, fingerprint="fp2")
+        k1 = generate_llm_cache_key_with_fingerlogger.info(model="gpt-4o", messages=msgs, fingerprint="fp1")
+        k2 = generate_llm_cache_key_with_fingerlogger.info(model="gpt-4o", messages=msgs, fingerprint="fp2")
         assert k1 != k2
 
 class TestShouldInvalidateCache:

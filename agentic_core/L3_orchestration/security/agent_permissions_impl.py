@@ -5,7 +5,7 @@ from .agent_permissions_types import *
 
 class AgentPermissionManager:
     """Manages agent permissions with Control Plane integration.
-    
+
     Provides:
     - Identity-based permission management
     - Integration with Phase 1 Control Plane
@@ -15,7 +15,7 @@ class AgentPermissionManager:
 
     def __init__(self, control_plane: Optional[ControlPlane]=None, enable_logging: bool=True):
         """Initialize permission manager.
-        
+
         Args:
             control_plane: Control Plane instance for safety checks
             enable_logging: Enable logging
@@ -30,11 +30,11 @@ class AgentPermissionManager:
 
     def grant_permission(self, identity: AgentIdentity, permission: Permission) -> bool:
         """Grant a permission to an agent.
-        
+
         Args:
             identity: Agent identity
             permission: Permission to grant
-            
+
         Returns:
             True if granted successfully
         """
@@ -51,13 +51,13 @@ class AgentPermissionManager:
 
     def revoke_permission(self, identity: AgentIdentity, scope: PermissionScope, action: PermissionAction, resource: str) -> bool:
         """Revoke a permission from an agent.
-        
+
         Args:
             identity: Agent identity
             scope: Permission scope
             action: Permission action
             resource: Resource
-            
+
         Returns:
             True if revoked successfully
         """
@@ -73,14 +73,14 @@ class AgentPermissionManager:
 
     async def check_permission(self, identity: AgentIdentity, scope: PermissionScope, action: PermissionAction, resource: str, context: Optional[Dict[str, Any]]=None) -> PermissionCheck:
         """Check if agent has permission.
-        
+
         Args:
             identity: Agent identity
             scope: Permission scope
             action: Permission action
             resource: Resource
             context: Optional context for safety check
-            
+
         Returns:
             PermissionCheck result
         """
@@ -110,10 +110,10 @@ class AgentPermissionManager:
 
     def list_permissions(self, identity: AgentIdentity) -> List[Permission]:
         """List all permissions for an agent.
-        
+
         Args:
             identity: Agent identity
-            
+
         Returns:
             List of permissions
         """
@@ -133,12 +133,11 @@ class AgentPermissionManager:
 
 def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> AgentPermissionManager:
     """Factory function to create permission manager.
-    
+
     Args:
         control_plane: Optional Control Plane instance
-        
+
     Returns:
         AgentPermissionManager instance
     """
     return AgentPermissionManager(control_plane=control_plane)
-

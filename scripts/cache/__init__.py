@@ -23,6 +23,6 @@ __author__ = "Agentic-Workflow Team"
 
 __all__: list = [
     "get_info",
-    "get_info_request", 
+    "get_info_request",
     "get_info_embedding",
 ]

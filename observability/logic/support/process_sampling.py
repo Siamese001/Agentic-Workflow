@@ -11,14 +11,12 @@ from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
-
 class SamplingDecision:
     """Sampling decision."""
 
     def __init__(self, sampled: bool, reason: str):
         self.sampled = sampled
         self.reason = reason
-
 
 class SamplingProcessor:
     """Sampler for support domain."""
@@ -50,7 +48,6 @@ class SamplingProcessor:
             if context.get(key) != value:
                 return False
         return True
-
 
 def should_sample(context: Optional[Dict] = None, config: Optional[Dict] = None) -> bool:
     """Check if should sample."""

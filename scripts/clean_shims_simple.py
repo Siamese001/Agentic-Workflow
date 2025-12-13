@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
 Simple script to clean up shim chains by manually specifying the patterns.
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 import os
@@ -9,11 +13,11 @@ from pathlib import Path
 def clean_prompt_governance():
     """Clean up shim chains in prompt_governance."""
     pg_dir = Path("c:/Git/Agentic-Workflow/prompt_governance")
-    
+
     # Update root files to import directly from implementations
     updates = {
         "prompts.py": "prompts_v7_impl",
-        "prompts_final.py": "prompts_v7_impl", 
+        "prompts_final.py": "prompts_v7_impl",
         "prompts_impl.py": "prompts_v7_impl",
         "prompts_v5.py": "prompts_v7_impl",
         "prompts_v6.py": "prompts_v7_impl",
@@ -22,11 +26,11 @@ def clean_prompt_governance():
         "test_v5.py": "test_v7",
         "test_v6.py": "test_v7"
     }
-    
+
     # Files to delete (intermediate shims)
     to_delete = [
         "prompts_final_impl.py",
-        "prompts_final_impl_impl.py", 
+        "prompts_final_impl_impl.py",
         "prompts_final_impl_impl_impl.py",
         "prompts_final_impl_impl_impl_impl.py",
         "prompts_impl_impl.py",
@@ -57,7 +61,7 @@ def clean_prompt_governance():
         "test_v6_impl_impl_impl.py",
         "test_v6_impl_impl_impl_impl.py"
     ]
-    
+
     # Update files
     for filename, import_from in updates.items():
         filepath = pg_dir / filename
@@ -70,39 +74,39 @@ def clean_prompt_governance():
                     lines[i] = f"from .{import_from} import *"
                     break
             filepath.write_text('\n'.join(lines), encoding='utf-8')
-            print(f"Updated {filename}")
-    
+            logger.info(f"Updated {filename}")
+
     # Delete intermediate shims
     for filename in to_delete:
         filepath = pg_dir / filename
         if filepath.exists():
             filepath.unlink()
-            print(f"Deleted {filename}")
-    
-    print(f"\nCleaned prompt_governance: {len(updates)} updated, {len(to_delete)} deleted")
+            logger.info(f"Deleted {filename}")
+
+    logger.info(f"\nCleaned prompt_governance: {len(updates)} updated, {len(to_delete)} deleted")
 
 def clean_other_directories():
     """Check and clean other directories for similar patterns."""
     base = Path("c:/Git/Agentic-Workflow")
-    
+
     # Check each top-level directory
     for item in base.iterdir():
         if item.is_dir() and item.name not in ['.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', '.vscode']:
             # Look for files with _impl patterns
             impl_files = list(item.rglob("*_impl*.py"))
-            
+
             if impl_files:
-                print(f"\nFound {len(impl_files)} _impl files in {item.name}:")
+                logger.info(f"\nFound {len(impl_files)} _impl files in {item.name}:")
                 for f in impl_files[:10]:  # Show first 10
-                    print(f"  - {f.relative_to(base)}")
+                    logger.info(f"  - {f.relative_to(base)}")
                 if len(impl_files) > 10:
-                    print(f"  ... and {len(impl_files) - 10} more")
+                    logger.info(f"  ... and {len(impl_files) - 10} more")
 
 if __name__ == "__main__":
-    print("Cleaning shim chains...")
-    print("=" * 60)
-    
+    logger.info("Cleaning shim chains...")
+    logger.info("=" * 60)
+
     clean_prompt_governance()
     clean_other_directories()
-    
-    print("\nDone!")
+
+    logger.info("\nDone!")

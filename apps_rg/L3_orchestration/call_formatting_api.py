@@ -11,10 +11,6 @@ from shared.result_types import FormatResult
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 class CallFormattingApi:
     """Formatter for resume domain."""
 
@@ -34,7 +30,6 @@ class CallFormattingApi:
         if isinstance(data, str):
             return data.strip()
         return data
-
 
 def format_data(data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
     """Format input data into the required output structure."""

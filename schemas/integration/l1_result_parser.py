@@ -28,7 +28,7 @@ class SafetyResult:
 
 class ResultParser:
     """Pure result parsing - no execution, no orchestration logic."""
-    
+
     @staticmethod
     def parse_strategy_result(llm_response: str) -> StrategyResult:
         """Parse strategy result - pure string parsing only."""
@@ -36,7 +36,7 @@ class ResultParser:
             strategy=llm_response.strip(),
             confidence=0.8
         )
-    
+
     @staticmethod
     def parse_draft_result(llm_response: str) -> DraftResult:
         """Parse draft result - pure string parsing only."""
@@ -44,7 +44,7 @@ class ResultParser:
             sections=["summary", "experience", "skills"],
             content=llm_response.strip()
         )
-    
+
     @staticmethod
     def parse_qa_result(llm_response: str) -> QAResult:
         """Parse QA result - pure string parsing only."""
@@ -52,7 +52,7 @@ class ResultParser:
             findings=llm_response.strip(),
             confidence=0.8
         )
-    
+
     @staticmethod
     def parse_safety_result(llm_response: str) -> SafetyResult:
         """Parse safety result - pure string parsing only."""

@@ -15,4 +15,3 @@ class ToolStatus(Enum):
     INACTIVE = 'inactive'
     ERROR = 'error'
     MAINTENANCE = 'maintenance'
-

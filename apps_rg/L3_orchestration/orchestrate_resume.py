@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Pure orchestration of resume generation using shared atoms."""
 
-
 from typing import Dict, List
 
 from shared.configuration.config import ContentConstraintsConfig
@@ -13,7 +12,6 @@ from shared.types.workflow_types import HopCheckpoint, HopStatus
 from apps_rg.L2_execution.apply_clerk_extraction import ClerkExtractor
 from apps_rg.L2_execution.apply_data_enrichment import DataEnricher
 from apps_rg.L5_safety.validate_jd_enforcement import JDEnforcementValidator
-
 
 class ResumeOrchestrator:
     """Orchestrate the multi-hop resume generation workflow."""
@@ -53,7 +51,6 @@ class ResumeOrchestrator:
         """Record a hop checkpoint."""
         status = HopStatus.COMPLETED if all(r.passed for r in results) else HopStatus.FAILED
         self.hop_checkpoints.append(HopCheckpoint(hop_id=hop_id, status=status))
-
 
 def orchestrate_resume(master_resume: Dict, job_description: str) -> Dict[str, object]:
     """Single public function - pure routing between atoms."""

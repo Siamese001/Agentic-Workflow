@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Update Token Usage - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class UpdateTokenUsage:
     """UpdateTokenUsage implementation."""

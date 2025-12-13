@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Snapshot Resume State - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class SnapshotResumeState:
     """SnapshotResumeState implementation."""

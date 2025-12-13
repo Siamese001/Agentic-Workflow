@@ -3,6 +3,10 @@
 from typing import Any, Dict, List, Optional
 
 def clean_debug_statements(file_path: str) -> None:
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Remove print, pdb, and breakpoint statements from a file"""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -95,7 +99,7 @@ def _find_dirty_files(base_dir: Path) -> list:
                 file_path = Path(root) / file
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                    if 'print(' in content or 'pdb.' in content or 'breakpoint()' in content:
+                    if 'logger.info(' in content or 'pdb.' in content or 'breakpoint()' in content:
                         dirty_files.append(file_path)
     return dirty_files
 
@@ -134,4 +138,3 @@ def main() -> None:
     cleaned_files = _clean_files(dirty_files)
     renamed_files = _rename_to_canonical(base_dir)
     apps_rg_count = len(list(Path('apps_rg').rglob('*.py'))) if Path('apps_rg').exists() else 0
-

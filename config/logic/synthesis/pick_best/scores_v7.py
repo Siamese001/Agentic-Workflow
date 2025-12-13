@@ -92,4 +92,3 @@ def rank_documents(items: List[Dict[str, object]], strategy: str='hybrid') -> Li
     ranked = apply_strategy(items, strategy=strategy)
     ranked.sort(key=lambda x: (int(x.get('rank', 9999999)), x.get('evidence', '')))
     return ranked
-

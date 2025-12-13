@@ -11,10 +11,6 @@ from shared.result_types import RefinementResult
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 class AdjustToneWeights:
     """Refiner for outreach domain."""
 
@@ -37,7 +33,6 @@ class AdjustToneWeights:
                     changes.append(f"{key}: {previous} -> {refined[key]}")
 
         return RefinementResult(original=data, refined=refined, changes=changes)
-
 
 def refine(data: Union[str, Dict], adjustments: Optional[Dict] = None, config: Optional[Dict] = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""

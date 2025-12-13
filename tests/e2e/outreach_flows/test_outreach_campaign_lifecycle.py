@@ -34,7 +34,6 @@ class CampaignState:
     errors: List[str] = field(default_factory=list)
     audit_log: List[Dict] = field(default_factory=list)
 
-
 class TestCampaignLifecycleE2E:
     """E2E tests for complete campaign lifecycle."""
 
@@ -146,7 +145,6 @@ class TestCampaignLifecycleE2E:
         assert reply_rate == 0.15
         assert conversion_rate == 0.02
 
-
 class TestMultiChannelOutreachE2E:
     """E2E tests for multi-channel outreach."""
 
@@ -197,7 +195,6 @@ class TestMultiChannelOutreachE2E:
         duplicates = [c for c in set(all_contacts) if all_contacts.count(c) > 1]
         assert contact_id in duplicates
 
-
 class TestPersonalizationE2E:
     """E2E tests for message personalization."""
 
@@ -245,7 +242,6 @@ Would you be open to a brief conversation?
         unresolved_after = re.findall(r'\{[^}]+\}', personalized)
 
         assert len(unresolved_after) == 0
-
 
 class TestComplianceE2E:
     """E2E tests for outreach compliance."""

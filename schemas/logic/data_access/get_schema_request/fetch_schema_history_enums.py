@@ -10,4 +10,3 @@ class HistoryAction(Enum):
     ARCHIVED = 'archived'
     RESTORED = 'restored'
     CLONED = 'cloned'
-

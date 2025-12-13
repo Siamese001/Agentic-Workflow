@@ -24,4 +24,3 @@ class ValidationSeverity(str, Enum):
     HIGH = 'HIGH'
     MEDIUM = 'MEDIUM'
     INFO = 'INFO'
-

@@ -12,10 +12,6 @@ from shared.result_types import ExecutionResult
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 class DispatchOutreachTools:
     """Executor for outreach domain."""
 
@@ -45,7 +41,6 @@ class DispatchOutreachTools:
         """Perform the action."""
         logger.info(f"Executing {action} with {params}")
         return {"action": action, "params": params, "status": "completed"}
-
 
 def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""

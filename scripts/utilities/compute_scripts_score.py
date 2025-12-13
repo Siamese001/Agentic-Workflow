@@ -12,7 +12,6 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ScoreResult:
     """Result of scoring operation."""
@@ -20,7 +19,6 @@ class ScoreResult:
     confidence: float
     factors: Dict[str, float] = field(default_factory=dict)
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class ComputeScriptsScore:
     """Scoring engine for utilities domain."""
@@ -62,7 +60,6 @@ class ComputeScriptsScore:
     def _compute_confidence(self, factors: Dict[str, float]) -> float:
         """Compute confidence level."""
         return min(1.0, len(factors) / 5)
-
 
 def score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult:
     """Convenience function for scoring."""

@@ -27,4 +27,3 @@ class SchemaScope(Enum):
     CONFIG = 'config'
     DATA = 'data'
     INTERNAL = 'internal'
-

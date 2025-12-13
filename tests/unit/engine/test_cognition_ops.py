@@ -90,7 +90,6 @@ class TestUnderstandRequest:
 
         assert intent.original_text == text
 
-
 class TestQueryFormulation:
     """Tests for query formulation from understood requests."""
 
@@ -130,7 +129,6 @@ class TestQueryFormulation:
         ]
 
         assert len(queries) == 2
-
 
 class TestContextUnderstanding:
     """Tests for context understanding."""

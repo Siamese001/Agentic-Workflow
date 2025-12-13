@@ -104,7 +104,6 @@ class TestContactDataIntegration:
 
         assert "name_required" in errors
 
-
 class TestCompanyDataIntegration:
     """Integration tests for company data flows."""
 
@@ -188,7 +187,6 @@ class TestCompanyDataIntegration:
         filtered = [c for c in companies if c["employees"] >= min_employees]
 
         assert len(filtered) == 2
-
 
 class TestOutreachDataIntegration:
     """Integration tests for outreach + data integration."""

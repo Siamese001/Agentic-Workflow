@@ -196,4 +196,3 @@ def main() -> None:
     log_path = REPO_ROOT / 'subatomic_canon_2025_transform_log.json'
     with open(log_path, 'w', encoding='utf-8') as f:
         json.dump(all_logs, f, indent=2, default=str)
-

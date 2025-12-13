@@ -15,4 +15,3 @@ class CTAStyle(Enum):
     COLLABORATIVE_VALUE = 'collaborative_value'
     TECHNICAL_PEER = 'technical_peer'
     WARM_PROFESSIONAL = 'warm_professional'
-

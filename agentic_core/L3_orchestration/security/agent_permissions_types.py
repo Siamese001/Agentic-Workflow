@@ -30,12 +30,12 @@ class Permission:
 
     def matches(self, scope: PermissionScope, action: PermissionAction, resource: str) -> bool:
         """Check if permission matches request.
-        
+
         Args:
             scope: Requested scope
             action: Requested action
             resource: Requested resource
-            
+
         Returns:
             True if matches
         """
@@ -60,4 +60,3 @@ class PermissionCheck:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'allowed': self.allowed, 'identity': self.identity.to_dict(), 'permission': self.permission.to_dict() if self.permission else None, 'reason': self.reason, 'safety_decision': self.safety_decision.to_dict() if self.safety_decision else None}
-

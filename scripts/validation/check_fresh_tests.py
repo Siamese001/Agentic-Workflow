@@ -4,6 +4,10 @@ Check that every changed .py file has an up-to-date test.
 
 This script enforces test coverage for all sovereign agent code.
 If a source file is newer than its test, the commit is blocked.
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 import sys
@@ -40,7 +44,7 @@ for f in sys.argv[1:]:
     if not test_path.exists():
         # Test missing - warn but don't fail (too many missing tests currently)
         # Uncomment below to enforce:
-        # print(f"TEST MISSING: {test_path}")
+        # logger.info(f"TEST MISSING: {test_path}")
         # exit_code = 1
         continue
 

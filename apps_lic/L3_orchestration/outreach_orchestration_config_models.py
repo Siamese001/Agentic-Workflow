@@ -71,4 +71,3 @@ class ValidationRule:
     enforcement: str
     validation_method: str
     threshold: Optional[float] = None
-

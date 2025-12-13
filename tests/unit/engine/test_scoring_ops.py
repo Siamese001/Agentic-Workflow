@@ -68,7 +68,6 @@ class TestScoreCalculation:
 
         assert score1 == score2
 
-
 class TestScoreComparison:
     """Tests for score comparison operations."""
 
@@ -112,7 +111,6 @@ class TestScoreComparison:
 
         assert ranked[0]["id"] == "2"  # Same score, more recent
 
-
 class TestScoreAggregation:
     """Tests for score aggregation."""
 
@@ -152,7 +150,6 @@ class TestScoreAggregation:
         assert distribution["max"] == 0.9
         assert distribution["mean"] == 0.5
         assert distribution["median"] == 0.5
-
 
 class TestScoreThresholds:
     """Tests for score threshold operations."""

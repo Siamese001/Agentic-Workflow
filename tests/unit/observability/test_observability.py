@@ -79,7 +79,6 @@ class TestStructuredLogging:
         e2 = LogEntry(level=LogLevel.INFO, message="Test", timestamp=ts)
         assert e1.message == e2.message
 
-
 class TestDistributedTracing:
     """Tests for distributed tracing."""
 
@@ -134,7 +133,6 @@ class TestDistributedTracing:
         span_ids = [s.span_id for s in spans]
         assert len(span_ids) == len(set(span_ids))
 
-
 class TestMetricsCollection:
     """Tests for metrics collection."""
 
@@ -175,7 +173,6 @@ class TestMetricsCollection:
         counter2 = 0
         counter2 += 5
         assert counter1 == counter2
-
 
 class TestHealthChecks:
     """Tests for health check functionality."""

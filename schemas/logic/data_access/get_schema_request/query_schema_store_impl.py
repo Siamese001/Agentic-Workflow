@@ -17,10 +17,10 @@ class SchemaStoreQuerier:
 
     def query_schemas(self, query: SchemaQuery) -> SchemaQueryResult:
         """Query schemas based on criteria.
-        
+
         Args:
             query: Schema query configuration
-            
+
         Returns:
             SchemaQueryResult: Query results with schemas and metadata
         """
@@ -44,10 +44,10 @@ class SchemaStoreQuerier:
 
     def get_schema(self, schema_id: str) -> Optional[SchemaEntry]:
         """Get a specific schema by ID.
-        
+
         Args:
             schema_id: ID of schema to retrieve
-            
+
         Returns:
             SchemaEntry: Schema if found, None otherwise
         """
@@ -55,11 +55,11 @@ class SchemaStoreQuerier:
 
     def get_schema_by_name(self, name: str, version: Optional[str]=None) -> Optional[SchemaEntry]:
         """Get schema by name and optionally version.
-        
+
         Args:
             name: Schema name
             version: Optional version (latest if not specified)
-            
+
         Returns:
             SchemaEntry: Schema if found, None otherwise
         """
@@ -78,10 +78,10 @@ class SchemaStoreQuerier:
 
     def get_schema_versions(self, name: str) -> List[SchemaMetadata]:
         """Get all versions of a schema.
-        
+
         Args:
             name: Schema name
-            
+
         Returns:
             List[SchemaMetadata]: Metadata for all versions
         """
@@ -94,10 +94,10 @@ class SchemaStoreQuerier:
 
     def add_schema(self, entry: SchemaEntry) -> bool:
         """Add a schema to the store.
-        
+
         Args:
             entry: Schema entry to add
-            
+
         Returns:
             bool: True if schema was added successfully
         """
@@ -116,10 +116,10 @@ class SchemaStoreQuerier:
 
     def delete_schema(self, schema_id: str) -> bool:
         """Delete a schema from the store.
-        
+
         Args:
             schema_id: ID of schema to delete
-            
+
         Returns:
             bool: True if schema was deleted
         """
@@ -138,7 +138,7 @@ class SchemaStoreQuerier:
 
     def get_statistics(self) -> Dict[str, Any]:
         """Get schema store statistics.
-        
+
         Returns:
             Dict: Statistics about the schema store
         """
@@ -281,7 +281,7 @@ def create_schema_store_querier(storage_path: str='data/schema_store', max_entri
 
 def query_schema_store(name_pattern: Optional[str]=None, schema_type: Optional[str]=None, status: Optional[str]=None, tags: List[str]=None, include_content: bool=True, limit: int=100, offset: int=0, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Query schema store.
-    
+
     Args:
         name_pattern: Pattern to match schema names
         schema_type: Type of schemas to filter by
@@ -291,7 +291,7 @@ def query_schema_store(name_pattern: Optional[str]=None, schema_type: Optional[s
         limit: Maximum number of results
         offset: Number of results to skip
         config: Optional querier configuration
-        
+
     Returns:
         Dict: Query results
     """
@@ -300,4 +300,3 @@ def query_schema_store(name_pattern: Optional[str]=None, schema_type: Optional[s
     query = SchemaQuery(name_pattern=name_pattern, schema_type=SchemaType(schema_type) if schema_type else None, status=SchemaStatus(status) if status else None, tags=tags or [], include_content=include_content, limit=limit, offset=offset)
     result = querier.query_schemas(query)
     return {'entries': [{'metadata': {'id': e.metadata.id, 'name': e.metadata.name, 'version': e.metadata.version, 'schema_type': e.metadata.schema_type.value, 'status': e.metadata.status.value, 'created_at': e.metadata.created_at.isoformat(), 'updated_at': e.metadata.updated_at.isoformat(), 'created_by': e.metadata.created_by, 'description': e.metadata.description, 'tags': e.metadata.tags, 'dependencies': e.metadata.dependencies, 'size_bytes': e.metadata.size_bytes}, 'content': e.content, 'validation_rules': e.validation_rules, 'examples': e.examples} for e in result.entries], 'total_count': result.total_count, 'query': {'name_pattern': result.query.name_pattern, 'schema_type': result.query.schema_type.value if result.query.schema_type else None, 'status': result.query.status.value if result.query.status else None, 'tags': result.query.tags, 'include_content': result.query.include_content, 'limit': result.query.limit, 'offset': result.query.offset}, 'metadata': result.metadata}
-

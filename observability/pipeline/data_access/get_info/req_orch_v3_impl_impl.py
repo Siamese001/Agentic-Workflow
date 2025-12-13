@@ -124,4 +124,3 @@ def orchestrate_observability_planning(input_data: Dict[str, object]) -> Dict[st
     builder = OrchestrateObservabilityPlanningOrchestratorFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
-

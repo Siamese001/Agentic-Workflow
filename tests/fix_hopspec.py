@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 import re
 
 # Read the test file
@@ -23,4 +27,4 @@ content = re.sub(
 with open('tests/integration/test_hardened_orchestrator_comprehensive.py', 'w', encoding='utf-8') as f:
     f.write(content)
 
-print("Fixed all HopSpec instantiations")
+logger.info("Fixed all HopSpec instantiations")

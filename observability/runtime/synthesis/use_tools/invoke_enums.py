@@ -16,4 +16,3 @@ class ToolProtocol(Enum):
     GRPC = 'grpc'
     WEBSOCKET = 'websocket'
     NATIVE = 'native'
-

@@ -3,6 +3,10 @@
 This module provides additional injection patterns specifically designed
 to improve the quality and effectiveness of resume and message outputs
 in the Subatomic Hop system.
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 from typing import List, Dict, Any
@@ -11,7 +15,6 @@ from .prompt_injection_loader import (
     InjectionType,
     InjectionScope
 )
-
 
 def get_resume_injection_patterns() -> List[InjectionPattern]:
     """Get resume-specific injection patterns."""
@@ -30,7 +33,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=9
         ),
-        
+
         # Experience section injections
         InjectionPattern(
             id="resume_impact_statement",
@@ -45,7 +48,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=8
         ),
-        
+
         InjectionPattern(
             id="resume_tech_stack_optimization",
             name="Tech Stack Optimization",
@@ -59,7 +62,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=7
         ),
-        
+
         # Project section injections
         InjectionPattern(
             id="resume_project STAR_method",
@@ -74,7 +77,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=6
         ),
-        
+
         # Education section injections
         InjectionPattern(
             id="resume_education_enhancement",
@@ -89,7 +92,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=5
         ),
-        
+
         # Certification injections
         InjectionPattern(
             id="resume_certification_value",
@@ -105,7 +108,6 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             priority=4
         )
     ]
-
 
 def get_message_injection_patterns() -> List[InjectionPattern]:
     """Get message-specific injection patterns."""
@@ -124,7 +126,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=9
         ),
-        
+
         # Cold email injections
         InjectionPattern(
             id="message_cold_email_opener",
@@ -139,7 +141,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=8
         ),
-        
+
         # Follow-up message injections
         InjectionPattern(
             id="message_follow_up_value",
@@ -154,7 +156,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=7
         ),
-        
+
         # Thank you message injections
         InjectionPattern(
             id="message_interview_thankyou",
@@ -169,7 +171,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=8
         ),
-        
+
         # Networking message injections
         InjectionPattern(
             id="message_networking_approach",
@@ -184,7 +186,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             ),
             priority=6
         ),
-        
+
         # Referral request injections
         InjectionPattern(
             id="message_referral_request",
@@ -200,7 +202,6 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             priority=7
         )
     ]
-
 
 def get_quality_boost_injections() -> List[InjectionPattern]:
     """Get general quality boost injection patterns."""
@@ -218,7 +219,7 @@ def get_quality_boost_injections() -> List[InjectionPattern]:
             ),
             priority=6
         ),
-        
+
         InjectionPattern(
             id="quality_clarity",
             name="Clarity Improver",
@@ -232,7 +233,7 @@ def get_quality_boost_injections() -> List[InjectionPattern]:
             ),
             priority=5
         ),
-        
+
         InjectionPattern(
             id="quality_engagement",
             name="Engagement Booster",
@@ -248,11 +249,10 @@ def get_quality_boost_injections() -> List[InjectionPattern]:
         )
     ]
 
-
 def load_all_extended_patterns() -> Dict[str, InjectionPattern]:
     """Load all extended injection patterns."""
     patterns = {}
-    
+
     # Load all pattern types
     for pattern_list in [
         get_resume_injection_patterns(),
@@ -261,24 +261,23 @@ def load_all_extended_patterns() -> Dict[str, InjectionPattern]:
     ]:
         for pattern in pattern_list:
             patterns[pattern.id] = pattern
-    
-    return patterns
 
+    return patterns
 
 # Usage example for integration with PromptInjectionLoader
 def extend_injection_loader(loader):
     """Extend an existing PromptInjectionLoader with additional patterns."""
     extended_patterns = load_all_extended_patterns()
-    
+
     # Add to loader
     for pattern_id, pattern in extended_patterns.items():
         loader.injections[pattern_id] = pattern
-    
+
     # Save to files
     for pattern in extended_patterns.values():
         file_path = loader.config.injection_dir / f"{pattern.id}.json"
         import json
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(pattern.dict(), f, indent=2)
-    
-    print(f"Added {len(extended_patterns)} extended injection patterns")
+
+    logger.info(f"Added {len(extended_patterns)} extended injection patterns")

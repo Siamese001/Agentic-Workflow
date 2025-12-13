@@ -2,6 +2,10 @@
 """
 Deep comparison of review_pending files vs approved files.
 Determine if any review_pending files have MORE content than approved versions.
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 from pathlib import Path
@@ -72,7 +76,7 @@ def has_real_code(path: Path) -> bool:
         content = path.read_text(encoding='utf-8', errors='ignore')
         if _is_stub_marker(content):
             return False
-        
+
         lines = content.split('\n')
         for i, line in enumerate(lines):
             if line.strip().startswith('def ') or line.strip().startswith('class '):
@@ -85,7 +89,7 @@ def has_real_code(path: Path) -> bool:
 def _build_approved_name_index() -> Dict[str, List[Path]]:
     """Build index of approved files by name."""
     approved_by_name = {}
-    
+
     for folder in APPROVED_FOLDERS:
         folder_path = REPO / folder
         if not folder_path.exists():
@@ -94,27 +98,27 @@ def _build_approved_name_index() -> Dict[str, List[Path]]:
             if 'review_pending' in str(f) or '__pycache__' in str(f):
                 continue
             approved_by_name.setdefault(f.name, []).append(f)
-    
+
     return approved_by_name
 
 def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -> Dict[str, Any]:
     """Categorize a pending file based on comparison with approved versions."""
     pending_real = count_real_lines(f)
     pending_has_code = has_real_code(f)
-    
+
     result = {
         "file": f,
         "pending_real": pending_real,
         "pending_has_code": pending_has_code,
         "category": None
     }
-    
+
     if f.name in approved_by_name:
         # Compare with approved versions
         for approved in approved_by_name[f.name]:
             approved_real = count_real_lines(approved)
             approved_has_code = has_real_code(approved)
-            
+
             if pending_real > approved_real and pending_has_code:
                 result["category"] = "has_more_code"
                 break
@@ -130,7 +134,7 @@ def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -
             result["category"] = "unique_with_code"
         else:
             result["category"] = "unique_stub"
-    
+
     return result
 
 def _categorize_files(pending_files: List[Path], approved_by_name: Dict[str, List[Path]]) -> Dict[str, List[Path]]:
@@ -142,20 +146,20 @@ def _categorize_files(pending_files: List[Path], approved_by_name: Dict[str, Lis
         "unique_with_code": [],
         "unique_stub": []
     }
-    
+
     for f in pending_files:
         category_info = _categorize_pending_file(f, approved_by_name)
         category = category_info["category"]
         if category in categories:
             categories[category].append(f)
-    
+
     return categories
 
 def main() -> None:
     """Main entry point for review pending merge."""
     approved_by_name = _build_approved_name_index()
     pending_files = [f for f in REVIEW_PENDING.rglob('*.py') if '__pycache__' not in str(f)]
-    
+
     categories = _categorize_files(pending_files, approved_by_name)
     pending_has_more_code = categories["has_more_code"]
     pending_is_stub = categories["has_code_vs_stub"]
@@ -164,21 +168,21 @@ def main() -> None:
     pending_unique_stub = categories["unique_stub"]
 
     # Report results
-    print(f"\nFiles with more code than approved versions ({len(pending_has_more_code)}):")
+    logger.info(f"\nFiles with more code than approved versions ({len(pending_has_more_code)}):")
     for f in pending_has_more_code[:20]:
-        print(f"  - {f.relative_to(REVIEW_PENDING)}")
-    
-    print(f"\nStubs replacing real code ({len(pending_is_stub)}):")
+        logger.info(f"  - {f.relative_to(REVIEW_PENDING)}")
+
+    logger.info(f"\nStubs replacing real code ({len(pending_is_stub)}):")
     for f in pending_is_stub[:20]:
-        print(f"  - {f.relative_to(REVIEW_PENDING)}")
-    
-    print(f"\nUnique files with real code ({len(pending_unique_with_code)}):")
+        logger.info(f"  - {f.relative_to(REVIEW_PENDING)}")
+
+    logger.info(f"\nUnique files with real code ({len(pending_unique_with_code)}):")
     for f in pending_unique_with_code[:20]:
-        print(f"  - {f.relative_to(REVIEW_PENDING)}")
-    
-    print(f"\nUnique stub files ({len(pending_unique_stub)}):")
+        logger.info(f"  - {f.relative_to(REVIEW_PENDING)}")
+
+    logger.info(f"\nUnique stub files ({len(pending_unique_stub)}):")
     for f in pending_unique_stub[:20]:
-        print(f"  - {f.relative_to(REVIEW_PENDING)}")
+        logger.info(f"  - {f.relative_to(REVIEW_PENDING)}")
 
     # Final recommendation
 
@@ -187,9 +191,9 @@ def main() -> None:
     needs_review = len(pending_has_more_code) + len(pending_unique_with_code)
 
     if needs_review == 0:
-        print("\n✓ All files can be safely archived!")
+        logger.info("\n✓ All files can be safely archived!")
     else:
-        print(f"\n⚠ {needs_review} files need review before archiving")
+        logger.info(f"\n⚠ {needs_review} files need review before archiving")
 
 if __name__ == '__main__':
     main()

@@ -11,16 +11,19 @@ from apps_rg.L3_orchestration.hardened_orchestrator import create_hardened_orche
 from apps_rg.L3_orchestration.orchestrate_workflow import WorkflowSpec, HopSpec
 from runtime.shared.agent_executor import AgentResponse
 
-
 async def test_first_case():
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Test the first case that's failing."""
-    print("\n=== Test First Case ===")
-    
+    logger.info("\n=== Test First Case ===")
+
     with tempfile.TemporaryDirectory() as temp_dir:
         # Reset singletons
         reset_state_manager()
         reset_router()
-        
+
         # Create workflow spec
         workflow_spec = WorkflowSpec(
             name="Test Resume Generation",
@@ -31,23 +34,23 @@ async def test_first_case():
                 HopSpec(id="K.5", script="test_k5.py", description="Experience Bullets"),
             ],
         )
-        
+
         # Create hardened orchestrator
         orchestrator = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             run_base_dir=temp_dir,
             storage_path=temp_dir,
         )
-        
+
         # Mock the router
         mock_responses = {
             "K.1": "Executive summary with strategic positioning and quantified achievements.",
             "K.4": "Senior Software Engineer | Cloud Architecture | Team Leadership",
             "K.5": "• Led migration of 50+ services to cloud infrastructure, reducing costs by 30%\n• Developed microservices architecture serving 1M+ requests daily",
         }
-        
+
         call_count = {"count": 0}
-        
+
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
             call_count["count"] += 1
             hop_id = ["K.1", "K.4", "K.5"][call_count["count"] - 1]
@@ -61,31 +64,30 @@ async def test_first_case():
                     "tier": tier.value if hasattr(tier, 'value') else str(tier),
                 },
             )
-        
+
         orchestrator.router.execute_with_fallback = mock_execute_with_fallback
-        
+
         # Test 1: New workflow execution
-        print("\n--- New Workflow Execution ---")
+        logger.info("\n--- New Workflow Execution ---")
         workflow_id = "test_workflow_001"
         context = {
             "prompt": "Test prompt",
             "temperature": 0.7,
         }
-        
+
         results = await orchestrator.execute_workflow_with_resilience(
             workflow_id,
             context,
         )
-        
-        print(f"Status: {results['status']}")
-        print(f"Resumed: {results['resumed_from_checkpoint']}")
-        print(f"Hops completed: {len(results['hops_completed'])}")
-        
-        if results['status'] != 'COMPLETED':
-            print(f"ERROR: Expected COMPLETED but got {results['status']}")
-            if 'error' in results:
-                print(f"Error: {results['error']}")
 
+        logger.info(f"Status: {results['status']}")
+        logger.info(f"Resumed: {results['resumed_from_checkpoint']}")
+        logger.info(f"Hops completed: {len(results['hops_completed'])}")
+
+        if results['status'] != 'COMPLETED':
+            logger.info(f"ERROR: Expected COMPLETED but got {results['status']}")
+            if 'error' in results:
+                logger.info(f"Error: {results['error']}")
 
 if __name__ == "__main__":
     asyncio.run(test_first_case())

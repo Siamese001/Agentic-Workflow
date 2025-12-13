@@ -12,14 +12,12 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class FormattedOutput:
     """Result of formatting."""
     data: object
     format_type: str
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class FormatScriptsContext:
     """Formatter for utilities domain."""
@@ -63,7 +61,6 @@ class FormatScriptsContext:
             else:
                 result[new_key] = value
         return result
-
 
 def format_data(data: object, config: Optional[Dict] = None) -> FormattedOutput:
     """Convenience function for formatting."""

@@ -31,4 +31,3 @@ class PermanentError(ResilienceError):
 class RetryExhaustedError(ResilienceError):
     """Error indicating all retry attempts have been exhausted."""
     attempts: int = 0
-

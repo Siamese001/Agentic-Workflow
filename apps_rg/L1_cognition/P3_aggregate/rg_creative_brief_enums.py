@@ -13,4 +13,3 @@ class ProvenanceStrategy(Enum):
     JD_FIT_BASED = 'JD Fit-Based Dynamic Model'
     INTERNAL_FIRST = "Hybrid 'Internal-First' Model: Map -> Adapt -> Gap-Fill"
     TOP_SKILLS = 'Top 12 JD Skills & Cross-Check'
-

@@ -17,7 +17,6 @@ def reset_sdk_clients():
     """Placeholder for reset_sdk_clients function."""
     pass
 
-
 @skip_if_no_keys
 class TestAgenticLoopIntegration:
     @pytest.fixture(autouse=True)
@@ -31,7 +30,7 @@ class TestAgenticLoopIntegration:
     def test_vector_store_query_flow(self):
         """Vector search results can be retrieved."""
         from runtime.shared.sdk_registry import get_vector_store
-        
+
         with patch("runtime.shared.sdk_registry.get_vector_store") as mock_get_vs:
             # Mock vector store instance
             mock_vs = MagicMock()
@@ -48,7 +47,7 @@ class TestAgenticLoopIntegration:
 
             vs = get_vector_store("chromadb")
             coll = vs.get_or_create_collection("test")
-            
+
             # Patch the query method directly on the collection
             coll.query = MagicMock(return_value={
                 "documents": [["Doc 1", "Doc 2"]],
@@ -57,7 +56,7 @@ class TestAgenticLoopIntegration:
                 "metadatas": [[{}, {}]],
                 "embeddings": None
             })
-            
+
             results = coll.query(query_texts=["test query"], n_results=2)
 
             assert len(results["documents"][0]) == 2

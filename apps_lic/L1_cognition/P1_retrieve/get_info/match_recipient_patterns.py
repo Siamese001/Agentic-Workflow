@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Match Recipient Patterns - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class MatchRecipientPatterns:
     """MatchRecipientPatterns implementation."""

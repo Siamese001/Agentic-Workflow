@@ -5,7 +5,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 from runtime.shared.multi_provider_clients import Provider, get_api_key, get_client, reset_all_clients, ProviderConfig, DEFAULT_MAX_RETRIES
 
-
 class TestProviderEnum:
     def test_provider_values(self):
         assert Provider.OPENAI.value == "openai"

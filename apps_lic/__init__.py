@@ -19,7 +19,7 @@ __description__: str = "Core Apps Lic functionality"
 # Core exports
 __all__: List[str] = [
     "__version__",
-    "__author__", 
+    "__author__",
     "__description__",
     "get_module_info",
     "validate_config",
@@ -34,7 +34,7 @@ __all__: List[str] = [
 def get_module_info() -> Dict[str, Union[str, List[str]]]:
     """
     Get comprehensive module information.
-    
+
     Returns:
         Dictionary containing module metadata and capabilities
     """
@@ -49,10 +49,10 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
 def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     """
     Validate module configuration.
-    
+
     Args:
         config: Configuration dictionary to validate
-        
+
     Returns:
         True if configuration is valid, False otherwise
     """
@@ -62,18 +62,18 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
 def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -> Dict[str, Union[str, int, bool]]:
     """
     Create a configured module instance.
-    
+
     Args:
         config: Optional configuration dictionary
-        
+
     Returns:
         Instance configuration dictionary
     """
     default_config = {"enabled": True, "mode": "production"}
     final_config = {**default_config, **(config or {})}
-    
+
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
-        
+
     logger.info(f"Created Apps Lic instance with config: {final_config}")
     return final_config

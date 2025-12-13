@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Embed Resume Sections - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class EmbedResumeSections:
     """EmbedResumeSections implementation."""

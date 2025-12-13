@@ -22,4 +22,3 @@ class AgentStatus(Enum):
     BUSY = 'busy'
     OFFLINE = 'offline'
     MAINTENANCE = 'maintenance'
-

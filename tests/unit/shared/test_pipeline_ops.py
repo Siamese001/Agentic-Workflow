@@ -75,7 +75,6 @@ class TestPipelineDataAccess:
         assert restored is not None
         assert restored["step"] == 2
 
-
 class TestPipelineGuardrails:
     """Tests for pipeline guardrails."""
 
@@ -129,7 +128,6 @@ class TestPipelineGuardrails:
         step3_deps = steps["step3"]["depends_on"]
         can_run_step3 = all(dep in completed for dep in step3_deps)
         assert can_run_step3 is False  # step2 not completed
-
 
 class TestPipelineSynthesis:
     """Tests for pipeline synthesis operations."""
@@ -200,7 +198,6 @@ class TestPipelineSynthesis:
         }
 
         assert final_output["result"] == "p2"
-
 
 class TestPipelineErrorHandling:
     """Tests for pipeline error handling."""

@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 #!/usr/bin/env python3
 """Generate the docstring debt registry for canon_validator.py."""
 
@@ -37,5 +41,4 @@ for f in root.rglob("*.py"):
         pass
 
 for m in sorted(missing):
-    print(m)
-
+    logger.info(m)

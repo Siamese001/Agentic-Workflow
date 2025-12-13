@@ -11,10 +11,6 @@ from shared.result_types import RetrievalResult
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 class FetchUserPreferences:
     """Retrieval engine for resume domain."""
 
@@ -36,7 +32,6 @@ class FetchUserPreferences:
     def _execute_query(self, query: str, filters: Optional[Dict], limit: int) -> List[object]:
         """Execute query."""
         return []
-
 
 def retrieve(query: str, config: Optional[Dict] = None, **kwargs: Dict[str, object]) -> RetrievalResult:
     """Retrieve items."""

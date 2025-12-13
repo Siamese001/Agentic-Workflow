@@ -12,7 +12,6 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class OperationResult:
     """Result of operation."""
@@ -20,7 +19,6 @@ class OperationResult:
     data: object = None
     message: Optional[str] = None
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class ZeroLossMergeEngine:
     """function class for 08_scripts domain."""
@@ -41,7 +39,6 @@ class ZeroLossMergeEngine:
     def _process(self, data: object, **kwargs: Dict[str, object]) -> object:
         """Process data."""
         return data
-
 
 def execute(data: object, config: Optional[Dict] = None, **kwargs: Dict[str, object]) -> OperationResult:
     """Convenience function."""

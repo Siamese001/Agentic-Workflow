@@ -16,4 +16,3 @@ class CompatibilityLevel(Enum):
     COMPATIBLE = 'compatible'
     PARTIALLY_COMPATIBLE = 'partially_compatible'
     INCOMPATIBLE = 'incompatible'
-
