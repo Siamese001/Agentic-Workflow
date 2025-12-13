@@ -139,6 +139,25 @@ from .pre_mortem_agent import (
     PreMortemReport,
 )
 
+# Phase 1 Precision Layer Components
+from .contextual_compressor import (
+    ContextualCompressor,
+    CompressionResult,
+    compress_chunks,
+)
+from .adaptive_retrieval_gate import (
+    AdaptiveRetrievalGate,
+    RetrievalDecision,
+    should_retrieve,
+)
+
+# Phase 2 Reasoning Layer Components
+from .query_decomposer import (
+    QueryDecomposer,
+    DecomposedQuery,
+    decompose_query,
+)
+
 __all__ = [
     # SDK Registry
     "SDK_REGISTRY",
@@ -239,4 +258,15 @@ __all__ = [
     "ImpactLevel",
     "FailureMode",
     "PreMortemReport",
+    # Phase 1 Precision Layer
+    "ContextualCompressor",
+    "CompressionResult",
+    "compress_chunks",
+    "AdaptiveRetrievalGate",
+    "RetrievalDecision",
+    "should_retrieve",
+    # Phase 2 Reasoning Layer
+    "QueryDecomposer",
+    "DecomposedQuery",
+    "decompose_query",
 ]
