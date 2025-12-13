@@ -199,6 +199,27 @@ from .input_guardrail import (
     PII_ONLY_GUARDRAIL,
 )
 
+# Corrective RAG (CRAG) Layer
+from .retrieval_grader import (
+    RetrievalGrader,
+    RetrievalGrade,
+    GradeStatus,
+    WebSearchFallback,
+    get_retrieval_grader,
+    get_web_search_fallback,
+    grade_retrieval,
+    fallback_web_search,
+)
+
+# GraphRAG Fusion Layer
+from .graphrag_fusion import (
+    GraphRAGFusion,
+    FusionResult,
+    QueryType,
+    get_graphrag_fusion,
+    graphrag_query,
+)
+
 __all__ = [
     # SDK Registry
     "SDK_REGISTRY",
@@ -337,4 +358,19 @@ __all__ = [
     "STRICT_GUARDRAIL",
     "PERMISSIVE_GUARDRAIL",
     "PII_ONLY_GUARDRAIL",
+    # Corrective RAG (CRAG) Layer
+    "RetrievalGrader",
+    "RetrievalGrade",
+    "GradeStatus",
+    "WebSearchFallback",
+    "get_retrieval_grader",
+    "get_web_search_fallback",
+    "grade_retrieval",
+    "fallback_web_search",
+    # GraphRAG Fusion Layer
+    "GraphRAGFusion",
+    "FusionResult",
+    "QueryType",
+    "get_graphrag_fusion",
+    "graphrag_query",
 ]
