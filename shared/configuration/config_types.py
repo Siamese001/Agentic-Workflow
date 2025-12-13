@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .config_types_part import *
+from .config_types import *
 from .config_types_part_2 import *
 
 __all__ = ['*']  # Re-export all imported names

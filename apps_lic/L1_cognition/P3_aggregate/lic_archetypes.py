@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .lic_archetypes_enums import *
+from .lic_archetypes_impl import *
 from .lic_archetypes_models import *
 from .lic_archetypes_models_1 import *
 from .lic_archetypes_impl import *

@@ -9,6 +9,6 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .refactoring_l1_phase_a_impl import *
+from .refactoring_l1_phase_a_impl_impl import *
 
 __all__ = ['*']  # Re-export all imported names

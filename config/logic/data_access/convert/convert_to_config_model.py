@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .convert_to_config_model_enums import *
+from .convert_to_config_model_impl import *
 from .convert_to_config_model_models import *
 from .convert_to_config_model_impl import *
 

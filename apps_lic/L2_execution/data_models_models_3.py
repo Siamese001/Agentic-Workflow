@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .data_models_enums import *
+from .data_models_models_3 import *
 
 @dataclass
 class QAReport:

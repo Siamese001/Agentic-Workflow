@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .agent_registry_enums import *
+from .agent_registry_impl import *
 from .agent_registry_models import *
 from .agent_registry_impl import *
 

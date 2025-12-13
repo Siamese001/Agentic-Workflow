@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .titanium_integration_types import *
+from .titanium_integration_impl_impl_impl_impl import *
 from .titanium_integration_impl import *
 
 __all__ = ['*']  # Re-export all imported names

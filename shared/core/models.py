@@ -13,6 +13,6 @@ about the refactoring that was performed to split the original module.
 """
 
 # Re-export all components for backward compatibility
-from .models_types import *
+from .models import *
 
 __all__ = ['*']  # Re-export all imported names

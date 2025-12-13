@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .judge_evaluator_types import *
+from .judge_evaluator_impl import *
 from .judge_evaluator_impl import *
 
 __all__ = ['*']  # Re-export all imported names

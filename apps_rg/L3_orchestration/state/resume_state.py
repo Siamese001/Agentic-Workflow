@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .resume_state_types import *
+from .resume_state_impl_impl_impl_impl import *
 from .resume_state_impl import *
 
 __all__ = ['*']  # Re-export all imported names

@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .kx_nodes_resume_types import *
+from .kx_nodes_resume_impl import *
 from .kx_nodes_resume_impl import *
 
 __all__ = ['*']  # Re-export all imported names

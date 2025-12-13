@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .req_orch_types import *
+from .request_orchestrate_observability_planning_impl_impl import *
 from .request_orchestrate_observability_planning_impl import *
 
 __all__ = ['*']  # Re-export all imported names
