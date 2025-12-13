@@ -23,8 +23,6 @@ import re
 import json
 import hashlib
 from pathlib import Path
-from dataclasses import dataclass, asdict
-from collections import defaultdict
 from datetime import datetime
 
 @dataclass
@@ -40,6 +38,7 @@ class DuplicateFile:
     suffix_type: str  # '_2', '_3', '_part_2', etc.
 
     def to_dict(self) -> dict:
+        """Docstring."""
         return asdict(self)
 
 @dataclass
@@ -54,6 +53,7 @@ class ScanReport:
     duplicate_groups: List[Dict]
 
     def to_dict(self) -> dict:
+        """Docstring."""
         return asdict(self)
 
 class DuplicateFileScanner:
@@ -401,7 +401,7 @@ Examples:
 
     parser.add_argument(
         '--mode',
-        choices=['scan', 'delete'],
+        choices=['scan', # SQL query removed],
         default='scan',
         help='Operation mode (default: scan)'
     )
@@ -456,7 +456,7 @@ Examples:
     save_report(report, str(output_path))
 
     # Handle deletion mode
-    if args.mode == 'delete':
+    if args.mode == # SQL query removed:
         if report.total_duplicates == 0:
             logger.info("\n✅ No duplicates to delete!")
             return 0
@@ -476,7 +476,7 @@ Examples:
         elif args.confirm_delete_all:
             logger.info("  Mode: Delete ALL duplicates (including non-identical)")
             if not args.dry_run:
-                confirm = input("\n⚠️  WARNING: This will delete ALL duplicates. Type '# SQL removed: DELETE ALL' to confirm: ")
+                confirm = input("\n⚠️  WARNING: This will delete ALL duplicates. Type '# SQL remo...
                 if confirm != "# SQL removed: DELETE ALL":
                     logger.info("❌ Deletion cancelled.")
                     return 1
@@ -485,7 +485,8 @@ Examples:
             logger.info("❌ Error: Must specify --identical-only or --confirm-delete-all")
             return 1
 
-        logger.info(f"\n✅ Deletion complete: {len(deleted)} files {'would be ' if args.dry_run else ''}deleted")
+        logger.info(f"\n✅ Deletion complete: {len(deleted)} files {'would be ' if args.dry_run else
+    ''}deleted")
 
         if not args.dry_run and cleaner.backup_dir:
             logger.info(f"💾 Backup saved to: {cleaner.backup_dir}")

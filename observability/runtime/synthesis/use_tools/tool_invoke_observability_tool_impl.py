@@ -24,10 +24,12 @@ class ObservabilityToolInvoker:
         self._registered_tools[tool_spec.tool_id] = tool_spec
         if client:
             self._tool_clients[tool_spec.tool_id] = client
-        self._circuit_breakers[tool_spec.tool_id] = {'failures': 0, 'last_failure': None, 'state': 'closed'}
+        self._circuit_breakers[tool_spec.tool_id] = {'failures': 0, 'last_failure': None, 'state': '
+    closed'}
         self.logger.info(f'Registered tool: {tool_spec.tool_id}')
 
     def invoke_tool(self,
+        """Docstring."""
         context: ToolInvocationContext,
         parameters: Dict[str,
         Any]) -> ToolInvocationResult:
@@ -82,6 +84,7 @@ class ObservabilityToolInvoker:
                 start_time)
 
     def invoke_tool_batch(self,
+        """Docstring."""
         contexts: List[ToolInvocationContext],
         parameters_list: List[Dict[str,
         Any]]) -> List[ToolInvocationResult]:
@@ -103,6 +106,7 @@ class ObservabilityToolInvoker:
         return results
 
     def invoke_tool_stream(self,
+        """Docstring."""
         context: ToolInvocationContext,
         parameters: Dict[str,
         Any]) -> Dict[str,
@@ -190,7 +194,8 @@ class ObservabilityToolInvoker:
                         retrying in {retry_delay}s: {last_error}')
                     await asyncio.sleep(retry_delay)
                 else:
-                    self.logger.error(f'Invocation failed after {attempt + 1} attempts: {last_error}')
+                    self.logger.error(f'Invocation failed after {attempt + 1} attempts: {last_error}
+    ')
         return self._create_error_result(context.invocation_id,
             context.tool_id,
             context.method,
@@ -219,9 +224,11 @@ class ObservabilityToolInvoker:
                 'value': 67.8,
                 'timestamp': datetime.utcnow().isoformat()}]}
         elif tool_spec.category == ToolCategory.LOGGING:
-            response = {'logs': [{'message': f'Log entry for {context.method}', 'level': 'info'}, {'message': f'Another log entry', 'level': 'warning'}]}
+            response = {'logs': [{'message': f'Log entry for {context.method}', 'level': 'info'}, {'
+    message': f'Another log entry', 'level': 'warning'}]}
         elif tool_spec.category == ToolCategory.MONITORING:
-            response = {'status': 'healthy', 'checks': [{'name': 'database', 'status': 'ok'}, {'name': 'redis', 'status': 'ok'}]}
+            response = {'status': 'healthy', 'checks': [{'name': 'database', 'status': 'ok'}, {'name
+    ': 'redis', 'status': 'ok'}]}
         else:
             response = {'message': f'Mock response from {tool_spec.name}'}
         return ToolInvocationResult(invocation_id=context.invocation_id,
@@ -292,7 +299,8 @@ class ObservabilityToolInvoker:
     def _reset_circuit_breaker(self, tool_id: str) -> None:
         """Reset circuit breaker."""
         if tool_id in self._circuit_breakers:
-            self._circuit_breakers[tool_id] = {'failures': 0, 'last_failure': None, 'state': 'closed'}
+            self._circuit_breakers[tool_id] = {'failures': 0, 'last_failure': None, 'state': 'closed
+    '}
 
     def _record_invocation_metrics(self, result: ToolInvocationResult) -> None:
         """Record invocation metrics."""
@@ -366,6 +374,7 @@ class ObservabilityToolInvoker:
         self.register_tool(log_tool)
 
 def create_observability_tool_invoker(default_timeout: float=30.0,
+    """Docstring."""
     max_retries: int=3,
     enable_circuit_breaker: bool=True,
     **kwargs: object) -> ObservabilityToolInvoker:
@@ -377,6 +386,7 @@ def create_observability_tool_invoker(default_timeout: float=30.0,
     return ObservabilityToolInvoker(config)
 
 def tool_invoke_observability_tool(tool_id: str,
+    """Docstring."""
     method: str,
     parameters: Dict[str,
     Any],
@@ -404,4 +414,7 @@ def tool_invoke_observability_tool(tool_id: str,
         caller_id=caller_id,
         timeout=timeout)
     result = invoker.invoke_tool(context, parameters)
-    return {'invocation_id': result.invocation_id, 'tool_id': result.tool_id, 'method': result.method, 'success': result.success, 'response': result.response, 'response_code': result.response_code, 'headers': result.headers, 'metrics': result.metrics, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}
+    return {'invocation_id': result.invocation_id, 'tool_id': result.tool_id, 'method': result.metho
+    d, 'success': result.success, 'response': result.response, 'response_code': result.response_code
+        , 'headers': result.headers, 'metrics': result.metrics, 'error': result.error, 'warnings': r
+            esult.warnings, 'execution_time': result.execution_time}

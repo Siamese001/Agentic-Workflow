@@ -15,8 +15,6 @@ import asyncio
 import time
 from typing import Any, Dict, List, Optional, Tuple, Union
 from datetime import datetime, timedelta
-from dataclasses import dataclass, field
-from enum import Enum
 import json
 
 logger = logging.getLogger(__name__)
@@ -204,6 +202,7 @@ class HardenedEmbeddingService:
         self._cleanup_task = asyncio.create_task(self._periodic_cleanup())
 
     async def embed(
+        """Docstring."""
         self,
         texts: Union[str, List[str]],
         model: str = "text-embedding-ada-002",
@@ -269,6 +268,7 @@ class HardenedEmbeddingService:
             raise
 
     async def embed_batch(
+        """Docstring."""
         self,
         texts: List[str],
         model: str = "text-embedding-ada-002",
@@ -422,6 +422,7 @@ class HardenedEmbeddingService:
         return max(available_providers, key=provider_score)
 
     async def _generate_embeddings(
+        """Docstring."""
         self,
         request: EmbeddingRequest,
         provider: str
@@ -667,6 +668,7 @@ class HardenedEmbeddingService:
 
 # Factory function for creating hardened embedding service
 def create_hardened_embedding_service(
+    """Docstring."""
     providers: Dict[str, Any],
     redis_client: Any = None,
     config: Optional[Dict[str, Any]] = None

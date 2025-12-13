@@ -9,13 +9,10 @@ If validation fails, it triggers a self-correction loop.
 
 import logging
 import json
-from dataclasses import dataclass
-from enum import Enum
 from datetime import datetime
 
 from pydantic import BaseModel, ValidationError
 
-from ...L1_cognition.inference.inference_engine import (
     InferenceEngine, InferenceRequest, InferenceMode
 )
 
@@ -51,7 +48,6 @@ class StatePromoter:
     Validates and promotes content from SoftState to HardState.
 
     The promoter ensures that only validated, schema-compliant content
-    from the LLM's high-temperature scratchpad becomes immutable system state.
     """
 
     def __init__(
@@ -112,6 +108,7 @@ class StatePromoter:
         )
 
     async def promote(
+        """Docstring."""
         self,
         context: SignalContext,
         key: str,
@@ -206,7 +203,8 @@ class StatePromoter:
                         key=key,
                         validation_result=ValidationResult.FAILED,
                         error_message=f"Max correction attempts ({self.max_correction_attempts}) exceeded",
-                            
+
+
                         correction_attempts=correction_attempts,
                         execution_time_ms=execution_time
                     )
@@ -284,6 +282,7 @@ class StatePromoter:
         )
 
     async def _validate_content(
+        """Docstring."""
         self,
         content: Any,
         key: str,
@@ -341,7 +340,8 @@ class StatePromoter:
                                 "critical": rule.is_critical
                             }
                         )
-                        return ValidationResult.FAILED if rule.is_critical else ValidationResult.REQUIRES_CORRECTION
+                        return ValidationResult.FAILED if rule.is_critical else ValidationResult.REQ
+    UIRES_CORRECTION
                 except Exception as e:
                     logger.error(
                         "validation_rule_error",

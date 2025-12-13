@@ -14,8 +14,6 @@ import logging
 import asyncio
 import random
 import time
-from dataclasses import dataclass, field
-from enum import Enum
 import aiohttp
 import ssl
 
@@ -115,13 +113,13 @@ class UserAgentRotator:
             # Chrome
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
                 like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                
+
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
                 like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                
+
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
                 like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                
+
 
             # Firefox
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0",
@@ -131,7 +129,7 @@ class UserAgentRotator:
             # Safari
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML,
                 like Gecko) Version/17.2 Safari/605.1.15",
-                
+
 
             # Edge
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
@@ -179,6 +177,7 @@ class ProxyRotator:
 
             # Select proxy based on success rate and response time
             def proxy_score(proxy: ProxyConfig) -> float:
+                """Docstring."""
                 stats = self.proxy_stats[proxy.to_url()]
                 if stats["successes"] + stats["failures"] == 0:
                     return 1.0
@@ -397,6 +396,7 @@ class HardenedWebScraper:
         )
 
     async def scrape(
+        """Docstring."""
         self,
         url: str,
         method: str = "GET",
@@ -462,6 +462,7 @@ class HardenedWebScraper:
         return result
 
     async def _make_request_with_retry(
+        """Docstring."""
         self,
         url: str,
         method: str,
@@ -517,6 +518,7 @@ class HardenedWebScraper:
         )
 
     async def _make_single_request(
+        """Docstring."""
         self,
         url: str,
         method: str,
@@ -617,6 +619,7 @@ class HardenedWebScraper:
             )
 
     async def scrape_multiple(
+        """Docstring."""
         self,
         urls: List[str],
         concurrent_limit: int = 5,
@@ -635,6 +638,7 @@ class HardenedWebScraper:
         semaphore = asyncio.Semaphore(concurrent_limit)
 
         async def scrape_with_semaphore(url: str) -> ScrapeResult:
+            """Docstring."""
             async with semaphore:
                 result = await self.scrape(url)
                 return result
@@ -695,6 +699,7 @@ class HardenedWebScraper:
 
 # Factory function for creating hardened web scraper
 def create_hardened_web_scraper(
+    """Docstring."""
     proxies: Optional[List[ProxyConfig]] = None,
     config: Optional[RequestConfig] = None
 ) -> HardenedWebScraper:

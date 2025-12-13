@@ -87,6 +87,7 @@ def _extract_verdict_from_event(event: Any) -> tuple[Optional[str], Optional[str
     return (decision, reason)
 
 def arbitrate_safety(safety_result: Any,
+    """Docstring."""
     council_vote: Any,
     policy: Any,
     ctx: Any=None) -> Dict[str,
@@ -110,8 +111,8 @@ def arbitrate_safety(safety_result: Any,
             decision = event_decision
         if event_reason:
             reason = event_reason
-    except Exception:
-        pass
+    except Exception as e:
+    logger.warning(f"Ignored error: {e}")
     return {'decision': decision, 'reason': reason, 'findings': findings_list}
 
 def run_l5(safety_result: Any, council_vote: Any, policy: Any, ctx: Any=None) -> Any:
@@ -130,7 +131,6 @@ def run_l5(safety_result: Any, council_vote: Any, policy: Any, ctx: Any=None) ->
     Returns:
         An event object with 'verdict' and 'reason' attributes
     """
-    from dataclasses import dataclass
 
     @dataclass
     class L5Event:

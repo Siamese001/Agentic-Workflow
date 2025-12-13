@@ -7,7 +7,6 @@ Generated: 2025-12-07T12:07:59.842368
 
 import logging
 from typing import Dict, Optional
-from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +41,7 @@ class SignatureVerifier:
         return data
 
 def execute(data: object,
+    """Docstring."""
     config: Optional[Dict] = None,
     **kwargs: Dict[str,
     object]) -> OperationResult:

@@ -51,12 +51,12 @@ def is_shim_file(file_path: Path) -> bool:
             return True
 
         # Check for simple import structure
-        lines = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith('#')]
+        lines = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith...
         if len(lines) <= 3 and any('from .' in l and 'import *' in l for l in lines):
             return True
 
-    except Exception:
-        pass
+    except Exception as e:
+    logger.warning(f"Ignored error: {e}")
 
     return False
 

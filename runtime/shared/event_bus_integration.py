@@ -8,10 +8,6 @@ circuit breakers, and retry policies.
 import asyncio
 import logging
 
-from .core.event_bus import EventBus, SystemEvent, EventType, get_event_bus
-from .bulkhead_manager import BulkheadManager, TaskPriority, get_bulkhead_manager
-from .circuit_breaker import CircuitBreakerConfig, get_circuit_breaker_registry
-from .dead_letter_queue import get_dead_letter_queue, FailureReason
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +56,7 @@ class HardenedEventBus:
         logger.info("HardenedEventBus initialized")
 
     async def publish(
+        """Docstring."""
         self,
         channel: str,
         event: SystemEvent,
@@ -104,6 +101,7 @@ class HardenedEventBus:
             return False
 
     async def subscribe(
+        """Docstring."""
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
@@ -284,6 +282,7 @@ class HardenedEventBus:
         return hardened_callback
 
     async def _process_event(
+        """Docstring."""
         self,
         callback: Callable[[SystemEvent], Awaitable[None]],
         event: SystemEvent
@@ -320,6 +319,7 @@ async def get_hardened_event_bus() -> HardenedEventBus:
 
 # Event publishing helpers with hardening
 async def publish_hardened_event(
+    """Docstring."""
     event_type: EventType,
     source_component: str,
     payload: Dict[str, Any],
@@ -355,6 +355,7 @@ async def publish_hardened_event(
 
 # Event subscription helpers with hardening
 async def subscribe_to_events(
+    """Docstring."""
     event_type: EventType,
     callback: Callable[[SystemEvent], Awaitable[None]]
 ) -> None:
@@ -371,6 +372,7 @@ async def subscribe_to_events(
 
 # Decorator for hardened event publishing
 def hardened_event_publisher(
+    """Docstring."""
     event_type: EventType,
     priority: TaskPriority = TaskPriority.MEDIUM
 ):
@@ -389,6 +391,7 @@ def hardened_event_publisher(
         """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
+            """Docstring."""
             # Extract trace_id from first argument if it's a SignalEnvelope
             trace_id = None
             if args and hasattr(args[0], 'trace_id'):

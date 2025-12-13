@@ -1,7 +1,6 @@
 """Migration Tools - Utilities for transitioning from K-nodes to functional roles.
 
 This module provides tools to help migrate existing code and configurations
-from the legacy K-node system to the new functional role architecture.
 """
 
 import re
@@ -255,7 +254,8 @@ class KNodeMigrator:
                                     if legacy in item:
                                         value[i] = item.replace(legacy, functional)
                                         changes_made = True
-                                        logger.info(f"Migrated config list item at {current_path}[{i}]")
+                                        logger.info(f"Migrated config list item at {current_path}[{i
+    }]")
 
             migrate_dict(config)
 
@@ -399,7 +399,8 @@ def run_full_migration(root_path: Path, dry_run: bool = False) -> Dict[str, Any]
         logger.info("Migration completed successfully!")
         results["success"] = True
     else:
-        logger.warning(f"Migration incomplete: {results['validation']['remaining_references']} references remain")
+        logger.warning(f"Migration incomplete: {results['validation']['remaining_references']} refer
+    ences remain")
 
     return results
 

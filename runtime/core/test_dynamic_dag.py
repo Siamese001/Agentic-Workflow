@@ -12,7 +12,6 @@ import pytest
     get_dag_manager
 )
 
-from .subatomic_hop import (
     SubatomicHop,
     SubatomicHopConfig,
     HopState,
@@ -223,9 +222,11 @@ class TestDAGManager:
 
         # Register test functions
         def test_function(x):
+            """Docstring."""
             return {"result": x * 2}
 
         def scraper_function(url):
+            """Docstring."""
             return {"scraped": f"Data from {url}"}
 
         self.manager.register_function("test_function", test_function)
@@ -241,6 +242,7 @@ class TestDAGManager:
     def test_function_registration(self):
         """Test function registration."""
         def new_function():
+            """Docstring."""
             return "test"
 
         self.manager.register_function("new_function", new_function)
@@ -382,6 +384,7 @@ class TestMutationIntegration:
 
         # Register functions
         def resume_writer(data):
+            """Docstring."""
             if "job_description" not in data:
                 # Request mutation
                 raise MutationRequired(MutationRequest(
@@ -393,6 +396,7 @@ class TestMutationIntegration:
             return {"resume": f"Resume for {data['job_description']}"}
 
         def jd_scraper(url):
+            """Docstring."""
             return {"job_description": f"Scraped from {url}"}
 
         self.manager.register_function("resume_writer", resume_writer)
@@ -451,6 +455,7 @@ class TestMutationScenarios:
 
         # Register realistic functions
         def resume_generator(profile, job_description):
+            """Docstring."""
             if not job_description:
                 raise MutationRequired(MutationRequest(
                     action="SPAWN_PREDECESSOR",
@@ -461,9 +466,11 @@ class TestMutationScenarios:
             return {"resume": f"Tailored resume for {job_description}"}
 
         def job_scraper(company):
+            """Docstring."""
             return {"job_description": f"Job description for {company}"}
 
         def cover_letter_writer(resume, job_description):
+            """Docstring."""
             if len(job_description) < 50:
                 raise MutationRequired(MutationRequest(
                     action="SPAWN_PREDECESSOR",
@@ -474,6 +481,7 @@ class TestMutationScenarios:
             return {"cover_letter": f"Cover letter based on {job_description}"}
 
         def job_enricher(description):
+            """Docstring."""
             return {"job_description": description + " (enriched with more details)"}
 
         self.manager.register_function("resume_generator", resume_generator)

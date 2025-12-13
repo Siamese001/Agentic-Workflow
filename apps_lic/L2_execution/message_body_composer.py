@@ -1,6 +1,7 @@
 """Message Body Composer Agent - Core Message Generator (K.3)
 
-This agent generates LinkedIn message bodies with strict metric binding and archetype-specific structure.
+This agent generates LinkedIn message bodies with strict metric binding and archetype-specific struc
+    ture.
 Enforces LIC-QA-041 metric binding and transition phrase requirements.
 
 Layer: L2_execution
@@ -18,11 +19,8 @@ Non-responsibilities:
 
 
 import re
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
-from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 @dataclass
 class MessageBodyConfig:
@@ -35,6 +33,7 @@ class MessageBodyConfig:
     """TODO: Add docstring."""
 
 class MessageBodyResult:
+    """Docstring."""
     body: str
     metrics_used: List[str]
     evidence_bindings: Dict[str, str]
@@ -74,6 +73,7 @@ class MessageBodyComposer:
         )
 
     def generate_message_body(
+        """Docstring."""
         self,
         archetype: str,
         resume_evidence: Dict[str, str],
@@ -198,7 +198,8 @@ Would you be open to a brief conversation?"""
 
     def _extract_metrics(self, content: str) -> List[str]:
         """Extract all metrics from content"""
-        metric_pattern = r'\b\d+%|\b\d+x\b|\b\$\d+[KMB]?(?:\.\d+)?[KMB]?\b|\b\d+\+?\b(?=\s+(?:team|people|projects|clients))'
+        metric_pattern = r'\b\d+%|\b\d+x\b|\b\$\d+[KMB]?(?:\.\d+)?[KMB]?\b|\b\d+\+?\b(?=\s+(?:team|p
+    eople|projects|clients))'
         return re.findall(metric_pattern, content)
 
     def _bind_metrics_to_evidence(
@@ -261,6 +262,7 @@ Would you be open to a brief conversation?"""
         )
 
 def create_message_body_composer(
+    """Docstring."""
     config: Optional[MessageBodyConfig] = None
 ) -> MessageBodyComposer:
     """Factory function to create MessageBodyComposer instance"""

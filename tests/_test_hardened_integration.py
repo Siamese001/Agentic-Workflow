@@ -35,11 +35,9 @@ logging.basicConfig(
     reset_router,
     RoutingTier,
 )
-from runtime.shared.agent_executor import AgentResponse
     HardenedWorkflowOrchestrator,
     create_hardened_orchestrator,
 )
-from apps_rg.L3_orchestration.orchestrate_workflow import (
     WorkflowSpec,
     HopSpec,
 )
@@ -87,10 +85,12 @@ async def test_hardened_orchestrator_integration():
         mock_responses = {
             "K.1": "Executive summary with strategic positioning and quantified achievements.",
             "K.4": "Senior Software Engineer | Cloud Architecture | Team Leadership",
-            "K.5": "• Led migration of 50+ services to cloud infrastructure, reducing costs by 30%\n• Developed microservices architecture serving 1M+ requests daily",
+            "K.5": "• Led migration of 50+ services to cloud infrastructure, reducing costs by 30%\n
+    • Developed microservices architecture serving 1M+ requests daily",
         }
 
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
+            """Docstring."""
             # Extract hop_id from the prompt
             if "Execute " in prompt:
                 hop_id = prompt.split("Execute ")[1].split(" ")[0]
@@ -160,7 +160,8 @@ async def test_hardened_orchestrator_integration():
 
         # Verify the state was saved
         saved_state = state_manager.resume_workflow(workflow_id)
-        logger.info(f"  Debug: Saved state current_k_node = {saved_state.current_k_node if saved_state else 'None'}")
+        logger.info(f"  Debug: Saved state current_k_node = {saved_state.current_k_node if saved_sta
+    te else 'None'}")
 
         # Resume workflow
         results2 = await orchestrator2.execute_workflow_with_resilience(
@@ -246,6 +247,7 @@ async def test_failure_recovery():
         call_count = {"count": 0}
 
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
+            """Docstring."""
             call_count["count"] += 1
 
             # Fail on the second call (K.2)
@@ -325,6 +327,7 @@ async def test_circuit_breaker_integration():
 
         # Mock the router to simulate a successful response
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
+            """Docstring."""
             return AgentResponse(
                 content="Response from provider",
                 finish_reason="stop",

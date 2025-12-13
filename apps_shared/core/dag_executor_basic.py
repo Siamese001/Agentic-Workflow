@@ -3,9 +3,10 @@ import asyncio
 
 import pytest
 
-# from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPR...
 
 async def _id_node(ctx: Dict[str, object]) -> Dict[str, object]:
+    """Docstring."""
     return dict(ctx)
 
 def _make_cyclic_graph() -> Graph:

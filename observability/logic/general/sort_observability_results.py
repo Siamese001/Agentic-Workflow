@@ -7,7 +7,6 @@ Generated: 2025-12-07T12:07:59.838335
 
 import logging
 from typing import Any, Dict, List, Optional, TypeVar
-from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +28,7 @@ class SortObservabilityResults:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def optimize(self,
+        """Docstring."""
         items: List[T],
         key: Optional[Callable[[T],
         Any]] = None) -> OptimizationResult:
@@ -41,6 +41,7 @@ class SortObservabilityResults:
             metadata={"count": len(items)})
 
 def optimize(items: List[object],
+    """Docstring."""
     key: Optional[Callable] = None,
     config: Optional[Dict] = None) -> OptimizationResult:
     """Convenience function for optimization."""

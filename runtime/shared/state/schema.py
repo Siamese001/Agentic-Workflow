@@ -7,9 +7,7 @@ Phase 3 - Atomic State Persistence
 """
 
 from datetime import datetime
-from enum import Enum
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
 
 class BackendType(str, Enum):
     """Storage backend types for state persistence."""
@@ -80,6 +78,7 @@ class WorkflowState(BaseModel):
         }
 
     def add_execution(
+        """Docstring."""
         self,
         k_node_index: int,
         k_node_name: str,

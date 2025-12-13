@@ -5,14 +5,8 @@ engines to share insights, learn from each other, and maintain consistent qualit
 """
 
 import logging
-from collections import defaultdict
 from datetime import datetime, timedelta
-from dataclasses import dataclass, field
-from enum import Enum
-import threading
 
-from .signal_infrastructure import EngineType
-from ..core.quality.feedback_loop import (
     FeedbackLoop,
     QualityFeedback,
     FeedbackType
@@ -91,7 +85,6 @@ class FeedbackAggregator:
         self._engine_feedback: Dict[str, List[CrossEngineFeedback]] = defaultdict(list)
 
         # Lock for thread safety
-        self._lock = threading.Lock()
 
     def add_feedback(self, feedback: CrossEngineFeedback) -> None:
         """Add feedback to the aggregator.
@@ -304,7 +297,6 @@ class UnifiedFeedbackSystem:
         self._cross_feedback: List[CrossEngineFeedback] = []
 
         # Thread safety
-        self._lock = threading.Lock()
 
         logger.info("Initialized UnifiedFeedbackSystem")
 
@@ -320,6 +312,7 @@ class UnifiedFeedbackSystem:
             logger.info(f"Registered {engine_type.value} engine feedback loop")
 
     def submit_feedback(
+        """Docstring."""
         self,
         feedback: CrossEngineFeedback
     ) -> str:
@@ -371,7 +364,8 @@ class UnifiedFeedbackSystem:
                     assessment_id=f"cross_{feedback.content_hash}",
                     feedback_type=FeedbackType.AUTOMATIC,
                     timestamp=datetime.now(),
-                    user_comments=f"[Cross-engine from {feedback.source_engine.value}] {feedback.comments}",
+                    user_comments=f"[Cross-engine from {feedback.source_engine.value}] {feedback.com
+    ments}",
                     hop_id=None,
                     stage=None
                 )
@@ -471,7 +465,8 @@ class UnifiedFeedbackSystem:
                 plan["priority_areas"].append({
                     "category": category,
                     "feedback_count": count,
-                    "avg_rating": sum(f.rating for f in engine_feedback if f.category.value == category) / count
+                    "avg_rating": sum(f.rating for f in engine_feedback if f.category.value == categ
+    ory) / count
                 })
 
         # Identify cross-engine opportunities
@@ -486,8 +481,10 @@ class UnifiedFeedbackSystem:
                     "category": category,
                     "source_engines": list(set(f.source_engine.value for f in feedback_list)),
                     "transfer_score": sum(f.transfer_score for f in feedback_list) / len(feedback_list),
-                        
-                    "suggested_actions": list(set(action for f in feedback_list for action in f.suggested_actions))
+
+
+                    "suggested_actions": list(set(action for f in feedback_list for action in f.sugg
+    ested_actions))
                 })
 
         # Generate action items
@@ -496,14 +493,14 @@ class UnifiedFeedbackSystem:
                 "action": f"Address {area['category']} issues",
                 "priority": "high",
                 "estimated_impact": "high",
-                "cross_pollination": area["category"] in [opp["category"] for opp in plan["cross_engine_opportunities"]]
+                "cross_pollination": area["category"] in [opp["category"] for opp in plan["cross_eng
+    ine_opportunities"]]
             })
 
         return plan
 
 # Global unified feedback system
 _unified_system: Optional[UnifiedFeedbackSystem] = None
-_system_lock = threading.Lock()
 
 def get_unified_feedback_system() -> UnifiedFeedbackSystem:
     """Get the global unified feedback system.
@@ -519,6 +516,7 @@ def get_unified_feedback_system() -> UnifiedFeedbackSystem:
 
 # Convenience functions
 def submit_cross_engine_feedback(
+    """Docstring."""
     source_engine: EngineType,
     category: FeedbackCategory,
     content_hash: str,

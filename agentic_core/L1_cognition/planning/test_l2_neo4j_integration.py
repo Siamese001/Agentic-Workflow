@@ -6,7 +6,6 @@ missing Neo4j driver or connection issues.
 """
 
 import pytest
-from unittest.mock import patch
 from datetime import datetime, UTC
 import sys
 import os
@@ -19,22 +18,22 @@ class TestNeo4jIntegration:
 
     def test_graph_query_imports(self) -> None:
         """Test that graph_query module imports correctly."""
-#         from archives.legacy_root_folders.database.graph_query import graph_query  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         from archives.legacy_root_folders.database.graph_query import graph_query  # DEPRECATED...
         pass
 
     def test_graph_query_without_neo4j(self) -> None:
         """Test graph_query gracefully handles missing Neo4j."""
-#         from archives.legacy_root_folders.database.graph_query import graph_query  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         from archives.legacy_root_folders.database.graph_query import graph_query  # DEPRECATED...
         pass
 
     def test_factual_qa_imports(self) -> None:
         """Test that factual_qa module imports correctly."""
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import factual_qa, trend_analysis  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import factual_qa,...
         pass
 
     def test_factual_qa_without_neo4j(self) -> None:
         """Test factual_qa gracefully handles missing Neo4j."""
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import factual_qa  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import factual_qa ...
 
         with patch('l2.factual_qa._NEO4J_AVAILABLE', False):
             result = factual_qa(
@@ -47,7 +46,7 @@ class TestNeo4jIntegration:
 
     def test_trend_analysis_without_neo4j(self):
         """Test trend_analysis gracefully handles missing Neo4j."""
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import trend_analysis  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import trend_analy...
 
         with patch('l2.factual_qa._NEO4J_AVAILABLE', False):
             result = trend_analysis(
@@ -61,8 +60,9 @@ class TestNeo4jIntegration:
     def test_kg_writer_imports(self):
         """Test that kg_writer module imports correctly."""
         try:
-            # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_writer import insert_entity, insert_triplet, insert_event, batch_process_invalidation, ingest_transcript  # DEPRECATED: Archive import removed to protect archives from validation edits
-            insert_entity = insert_triplet = insert_event = batch_process_invalidation = ingest_transcript = lambda *args, **kwargs: None
+            # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_writer import insert_e...
+            insert_entity = insert_triplet = insert_event = batch_process_invalidation = ingest_tran
+    script = lambda *args, **kwargs: None
         except ImportError:
             # Archive imports not available
             pass
@@ -75,7 +75,7 @@ class TestNeo4jIntegration:
     @pytest.mark.asyncio
     async def test_kg_writer_without_neo4j(self):
         """Test kg_writer gracefully handles missing Neo4j."""
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_writer import insert_entity, insert_triplet, insert_event  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_writer import insert_entit...
 
         # Create test data
         entity = TemporalEntity(
@@ -108,7 +108,7 @@ class TestNeo4jIntegration:
     def test_neo4j_graph_store_imports(self):
         """Test that Neo4jGraphStore imports correctly."""
         try:
-#             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPRECATED: Archive import removed to protect archives from validation edits
+#             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore...
             assert Neo4jGraphStore is not None
         except ImportError:
             # Expected if neo4j driver not installed
@@ -117,7 +117,7 @@ class TestNeo4jIntegration:
     def test_neo4j_graph_store_without_driver(self):
         """Test Neo4jGraphStore gracefully handles missing driver."""
         with patch('graph_store_neo4j.GraphDatabase', None):
-#             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPRECATED: Archive import removed to protect archives from validation edits
+#             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore...
 
             with pytest.raises(ImportError, match="Neo4j driver not installed"):
                 Neo4jGraphStore()
@@ -125,7 +125,7 @@ class TestNeo4jIntegration:
     def test_ingestion_dag_imports(self):
         """Test that kg_ingestion_dag imports with Neo4j components."""
         try:
-#             from archives.legacy_root_folders.orchestration.kg_ingestion_dag import UnifiedKGIngestionDAG, IngestionStage, ingest_documents  # DEPRECATED: Archive import removed to protect archives from validation edits
+#             from archives.legacy_root_folders.orchestration.kg_ingestion_dag import UnifiedKGIn...
             pass
             assert True  # Placeholder since archive imports are removed
         except ImportError as e:
@@ -134,7 +134,7 @@ class TestNeo4jIntegration:
     @pytest.mark.asyncio
     async def test_ingestion_dag_mirroring_methods(self):
         """Test that ingestion DAG mirroring methods exist and are callable."""
-#         from archives.legacy_root_folders.orchestration.kg_ingestion_dag import _mirror_entities_to_neo4j, _mirror_triplets_to_neo4j, _mirror_invalidations_to_neo4j, _mirror_complete_transcript_to_neo4j  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         from archives.legacy_root_folders.orchestration.kg_ingestion_dag import _mirror_entitie...
         pass
 
         # These would be callable if imports were available

@@ -1,9 +1,9 @@
 # FILE: tests/contracts/test_typed_contracts.py
 
 
-# from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel  # Archive import removed
+# from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel  # A...
 
-# from archives.legacy_root_folders.meta.schema_validation import validate_schema_version  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.meta.schema_validation import validate_schema_version  # DEPR...
 
 def test_core_models_have_v1_schema_version_defaults() -> None:
     """Test that core models have v1 schema version defaults."""
@@ -67,6 +67,7 @@ def test_validate_schema_version_rejects_mismatched_version() -> None:
         """TODO: Add docstring."""
 
     class DummyModel(BaseModel):
+        """Docstring."""
         schema_version: str = "v2"  # wrong version
 
     m = DummyModel()

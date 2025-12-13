@@ -1,6 +1,5 @@
 """Enum types for tool_use_observability_execution."""
 
-from enum import Enum
 
 class ExecutionType(Enum):
     """Types of tool execution."""

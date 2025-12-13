@@ -9,7 +9,6 @@ appropriate.
 import logging
 import re
 from datetime import datetime, timedelta
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -245,7 +244,7 @@ class MicroHookGenerator:
                         hook = MicroHook(
                             phrase=f"Always great to connect with a fellow {edu.get('school',
                                 'alum')} alum...",
-                                
+
                             trigger_type="alumni",
                             relevance=0.8
                         )
@@ -391,6 +390,7 @@ class WarmthManager:
         logger.info("Initialized WarmthManager with formality mappings")
 
     def determine_warmth(
+        """Docstring."""
         self,
         archetype: str,
         relationship_stage: str,
@@ -480,6 +480,7 @@ class TemperatureEngine:
         logger.info("Initialized TemperatureEngine with all components")
 
     def analyze_temperature(
+        """Docstring."""
         self,
         profile: Dict[str, Any],
         context: Dict[str, Any]
@@ -506,10 +507,12 @@ class TemperatureEngine:
                     'Unknown')},
                     aborting further analysis")
                 return {
-                    "depth_score": {"level": 0, "score": 0.0, "rationale": ["Analysis aborted due to hostile sentiment"]},
+                    "depth_score": {"level": 0, "score": 0.0, "rationale": ["Analysis aborted due to
+    hostile sentiment"]},
                     "top_hooks": [],
                     "sentiment": sentiment_profile.dict(),
-                    "warmth": {"formality_level": 1.0, "strategy_name": "DO NOT CONTACT", "max_emojis": 0},
+                    "warmth": {"formality_level": 1.0, "strategy_name": "DO NOT CONTACT", "max_emoji
+    s": 0},
                     "recommendations": ["DO NOT CONTACT - recipient appears hostile"],
                     "abort": True
                 }
@@ -544,7 +547,8 @@ class TemperatureEngine:
                 "depth_score": {"level": 0, "score": 0.1, "rationale": ["Error"]},
                 "top_hooks": [],
                 "sentiment": {"mood": "NEUTRAL", "risk_level": "LOW", "keywords_detected": []},
-                "warmth": {"formality_level": 0.6, "strategy_name": "Error Default", "max_emojis": 1},
+                "warmth": {"formality_level": 0.6, "strategy_name": "Error Default", "max_emojis": 1
+    },
                 "recommendations": ["Proceed with caution due to analysis error"],
                 "abort": False
             }
@@ -591,6 +595,7 @@ class TemperatureEngine:
 
 # Factory functions for easy instantiation
 def create_temperature_engine(
+    """Docstring."""
     target_keywords: Optional[List[str]] = None,
     my_education: Optional[Dict[str, str]] = None
 ) -> TemperatureEngine:
@@ -598,6 +603,7 @@ def create_temperature_engine(
     return TemperatureEngine(target_keywords, my_education)
 
 def analyze_temperature(
+    """Docstring."""
     profile: Dict[str, Any],
     context: Dict[str, Any]
 ) -> Dict[str, Any]:

@@ -5,8 +5,6 @@ Lightweight workflow engine for modeling task dependencies and conditional branc
 """
 
 import logging
-from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Callable, Awaitable
 
 logger = logging.getLogger(__name__)
@@ -234,6 +232,7 @@ class DAGEngine:
         return sorted_order
 
     async def execute(
+        """Docstring."""
         self,
         executor: Callable[[Task], Awaitable[Any]],
         context: Optional[Dict[str, Any]] = None,
@@ -314,6 +313,7 @@ class DAGEngine:
         return True
 
     async def _execute_single_task(
+        """Docstring."""
         self, task: Task, task_id: str, executor: Callable,
         completed_tasks: Set[str], failed_tasks: List[str], task_results: Dict[str, Any]
     ) -> bool:

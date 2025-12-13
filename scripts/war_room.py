@@ -27,13 +27,11 @@ sys.path.insert(0, str(project_root))
     DataSourceProvider,
     create_executive_orchestrator
 )
-from runtime.shared.workflow.schema_definitions import (
     TechnicalSWOT,
     StrategyRoadmap,
     InterviewerProfile,
     ExecutiveIntelligenceReport
 )
-from runtime.shared.resilience.hardened_brave_search import (
     HardenedBraveSearch,
     create_brave_search_config
 )
@@ -183,6 +181,7 @@ class WarRoom:
             raise
 
     async def execute_strategy_roadmap(
+        """Docstring."""
         self,
         job_description: str,
         technical_swot: TechnicalSWOT
@@ -226,6 +225,7 @@ class WarRoom:
             raise
 
     async def execute_interviewer_simulation(
+        """Docstring."""
         self,
         interviewer_linkedin: str,
         resume_text: str
@@ -268,6 +268,7 @@ class WarRoom:
             raise
 
     def generate_intelligence_report(
+        """Docstring."""
         self,
         company_name: str,
         position: str,
@@ -290,11 +291,13 @@ class WarRoom:
 
         if "k12_roadmap" in self.results:
             roadmap = self.results["k12_roadmap"]
-            differentiators.append(f"Strategic 90-day plan with {len(roadmap.milestones)} specific milestones")
+            differentiators.append(f"Strategic 90-day plan with {len(roadmap.milestones)} specific m
+    ilestones")
 
         if "k11_swot" in self.results:
             swot = self.results["k11_swot"]
-            differentiators.append(f"Deep technical understanding of their {swot.gen_ai_maturity_score}/5 AI maturity")
+            differentiators.append(f"Deep technical understanding of their {swot.gen_ai_maturity_sco
+    re}/5 AI maturity")
 
         # Risk mitigation strategies
         risks = []

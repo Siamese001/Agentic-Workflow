@@ -1,6 +1,5 @@
 """Types and models for error_recovery."""
 
-from enum import Enum
 
 class RecoveryStrategy(Enum):
     """TODO: Add docstring."""

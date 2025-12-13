@@ -8,13 +8,10 @@ enabling recovery from failures without losing progress.
 import asyncio
 import json
 import logging
-from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from enum import Enum
 from pathlib import Path
 
 import aiofiles
-from pydantic import BaseModel
 from redis import asyncio as aioredis
 
 
@@ -216,7 +213,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             path = self._get_checkpoint_path(trace_id)
             if path.exists():
                 await aiofiles.os.remove(path)
-                logger.debug(f"Deleted checkpoint for {trace_id}")
+                logger.debug(f# SQL query removed)
                 return True
             return False
 
@@ -396,7 +393,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
 
             result = await redis.delete(key)
             if result > 0:
-                logger.debug(f"Deleted checkpoint for {trace_id} from Redis")
+                logger.debug(f# SQL query removed)
                 return True
             return False
 
@@ -552,7 +549,7 @@ class CheckpointManager:
         self._stats = {
             "saves": 0,
             "loads": 0,
-            "deletes": 0,
+            # SQL query removed: 0,
             "errors": 0
         }
 
@@ -632,7 +629,7 @@ class CheckpointManager:
         try:
             success = await self.storage.delete(trace_id)
             if success:
-                self._stats["deletes"] += 1
+                self._stats[# SQL query removed] += 1
             return success
 
         except Exception as e:
@@ -641,6 +638,7 @@ class CheckpointManager:
             return False
 
     async def resume_from_checkpoint(
+        """Docstring."""
         self,
         trace_id: str,
         stages: List[str]

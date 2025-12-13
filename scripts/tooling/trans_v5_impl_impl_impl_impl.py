@@ -45,7 +45,7 @@ def flatten_layer(layer_path: Path, layer_name: str) -> Dict[str, List[str]]:
     Flatten a layer by moving all files from P* subdirectories to the layer root.
     Returns a log of operations performed.
     """
-    log = {'moved': [], 'deleted_dirs': [], 'renamed': []}
+    log = {'moved': [], # SQL query removed: [], 'renamed': []}
     if not layer_path.exists():
         return log
     phase_dirs = [d for d in layer_path.iterdir() if d.is_dir() and d.name.startswith('P')]
@@ -60,7 +60,7 @@ def flatten_layer(layer_path: Path, layer_name: str) -> Dict[str, List[str]]:
                 log['renamed'].append(f'{py_file.name} -> {new_path.name}')
     try:
         shutil.rmtree(phase_dir)
-        log['deleted_dirs'].append(str(phase_dir))
+        log[# SQL query removed].append(str(phase_dir))
     except (ValueError, TypeError, KeyError) as e:
         log['errors'].append(f'Failed to delete {phase_dir}: {e}')
     ensure_init_py(layer_path)
@@ -122,15 +122,18 @@ def apply_file_renames(root: Path) -> List[str]:
     return renamed
 
 def update_meta_yaml(yaml_path: Path) -> None:
-    """# SQL removed: Update unified_structure_subatomic_meta.yaml with new cognitive_layer_phase_rules."""
+    """# SQL removed: Update unified_structure_subatomic_meta.yaml with new cognitive_layer_phase...
     content = yaml_path.read_text(encoding='utf-8')
-    new_rules = 'cognitive_layer_phase_rules:\n    L1_cognition:\n      allowed_phases: [P1_retrieve, P2_inspect, P3_aggregate, P4_safety]\n    L2_execution:\n      allowed_phases: []\n    L3_orchestration:\n      allowed_phases: []\n    L4_memory:\n      allowed_phases: [P1_retrieve]\n    L5_safety:\n      allowed_phases: []'
+    new_rules = 'cognitive_layer_phase_rules:\n    L1_cognition:\n      allowed_phases: [P1_retrieve
+    , P2_inspect, P3_aggregate, P4_safety]\n    L2_execution:\n      allowed_phases: []\n    L3_orch
+        estration:\n      allowed_phases: []\n    L4_memory:\n      allowed_phases: [P1_retrieve]\n
+            L5_safety:\n      allowed_phases: []'
     content = re.sub('cognitive_layer_phase_rules:.*?L5_safety:\\s*\\n\\s*allowed_phases:.*?\\]',
         new_rules,
         content,
         flags=re.DOTALL)
     if 'subatomic_canon_2025:' not in content:
-        canon_section = '\n# ---------------------------------------------------------------------\n# 11. SUBATOMIC CANON 2025 — FINAL\n# ---------------------------------------------------------------------\nsubatomic_canon_2025:\n  enforced: true\n  principles_applied:\n    - only_three_agents_have_L1_L5\n    - only_L1_has_phases\n    - L2_L3_L5_flat\n    - L4_retrieval_only\n    - imperative_verb_naming\n    - banned_low_signal_words\n    - natural_depth_no_padding\n    - self_teaching_names\n'
+        canon_section = '\n# --------------------------------------------------------------------...
         content += canon_section
     yaml_path.write_text(content, encoding='utf-8')
 
@@ -171,7 +174,7 @@ def fix_all_imports(root: Path) -> int:
 
 def main() -> None:
     """Main entry point for subatomic canon 2025 transform."""
-    all_logs = {'flattened_layers': {}, 'quarantined_l4': {}, 'deleted_banned': [], 'renamed_files': [], 'fixed_imports': 0}
+    all_logs = {'flattened_layers': {}, 'quarantined_l4': {}, # SQL query removed: [], 'renamed_f...
     for root in COGNITIVE_ROOTS:
         for layer in FLAT_LAYERS:
             layer_path = root / layer
@@ -187,7 +190,7 @@ def main() -> None:
             all_logs['quarantined_l4'][key] = log
     for root in COGNITIVE_ROOTS:
         deleted = delete_banned_folders(root)
-        all_logs['deleted_banned'].extend(deleted)
+        all_logs[# SQL query removed].extend(deleted)
     for root in COGNITIVE_ROOTS:
         renamed = apply_file_renames(root)
         all_logs['renamed_files'].extend(renamed)

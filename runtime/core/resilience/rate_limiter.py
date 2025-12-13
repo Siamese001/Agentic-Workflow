@@ -6,10 +6,7 @@ token bucket, fixed window) to protect against abuse and ensure fair usage.
 
 import logging
 import time
-from collections import deque, defaultdict
-from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
-import threading
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +52,6 @@ class SlidingWindowLimiter:
         """
         self.config = config
         self._windows: Dict[str, deque] = defaultdict(lambda: deque())
-        self._lock = threading.Lock()
 
     def is_allowed(self, identifier: str) -> Tuple[bool, float]:
         """Check if request is allowed.
@@ -101,7 +97,6 @@ class TokenBucketLimiter:
         self.refill_rate = config.refill_rate or (config.max_requests / config.window_seconds)
 
         self._buckets: Dict[str, Tuple[float, int]] = {}  # (last_refill, tokens)
-        self._lock = threading.Lock()
 
     def is_allowed(self, identifier: str) -> Tuple[bool, float]:
         """Check if request is allowed.
@@ -143,7 +138,6 @@ class FixedWindowLimiter:
         """
         self.config = config
         self._counters: Dict[str, Tuple[int, float]] = {}  # (count, window_start)
-        self._lock = threading.Lock()
 
     def is_allowed(self, identifier: str) -> Tuple[bool, float]:
         """Check if request is allowed.
@@ -185,8 +179,8 @@ class RateLimiter:
             name: Limiter name for logging
         """
         self.name = name
-        self._limiters: Dict[str, Tuple[RateLimitConfig, Union[SlidingWindowLimiter, TokenBucketLimiter, FixedWindowLimiter]]] = {}
-        self._lock = threading.Lock()
+        self._limiters: Dict[str, Tuple[RateLimitConfig, Union[SlidingWindowLimiter, TokenBucketLimi
+    ter, FixedWindowLimiter]]] = {}
 
         logger.debug(f"Initialized RateLimiter: {name}")
 
@@ -209,7 +203,8 @@ class RateLimiter:
                 raise ValueError(f"Unknown strategy: {config.strategy}")
 
             self._limiters[limit_name] = (config, limiter)
-            logger.debug(f"Added rate limit {limit_name}: {config.max_requests}/{config.window_seconds}s")
+            logger.debug(f"Added rate limit {limit_name}: {config.max_requests}/{config.window_secon
+    ds}s")
 
     def check_limit(self, identifier: str, limit_name: str) -> Tuple[bool, float]:
         """Check if identifier is under rate limit.
@@ -300,7 +295,6 @@ class RateLimiter:
 
 # Global rate limiter registry
 _limiters: Dict[str, RateLimiter] = {}
-_limiter_lock = threading.Lock()
 
 def get_rate_limiter(name: str = "default") -> RateLimiter:
     """Get or create a rate limiter.
@@ -318,6 +312,7 @@ def get_rate_limiter(name: str = "default") -> RateLimiter:
 
 # Decorator for rate limiting
 def rate_limit(
+    """Docstring."""
     limit_name: str,
     identifier_func: Optional[Callable] = None,
     limiter_name: str = "default"
@@ -338,6 +333,7 @@ def rate_limit(
             """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
+            """Docstring."""
             limiter = get_rate_limiter(limiter_name)
 
             # Extract identifier
@@ -356,6 +352,7 @@ def rate_limit(
 
 
         def sync_wrapper(*args, **kwargs):
+            """Docstring."""
             limiter = get_rate_limiter(limiter_name)
 
             # Extract identifier

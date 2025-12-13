@@ -7,9 +7,11 @@ from pathlib import Path
 from datetime import datetime
 
 ROOT = Path("/workspace")
-BACKUP_DIR = ROOT / "archives" / f"cleanup_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}_finalize"
+BACKUP_DIR = ROOT / "archives" / f"cleanup_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}_finaliz
+    e"
 
 def backup_file(file_path: Path):
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -90,6 +92,7 @@ def rename_orphan(src: Path, dst: Path):
     logger.info(f"  ✓ Renamed: {src.name} → {dst.name}")
 
 def main():
+    """Docstring."""
     logger.info("=" * 50)
     logger.info("Finalizing Duplicate File Cleanup")
     logger.info("=" * 50)

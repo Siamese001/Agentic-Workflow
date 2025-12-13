@@ -5,11 +5,10 @@ and V6 prompt systems to ensure end-to-end security flows work correctly.
 """
 
 import pytest
-from unittest.mock import Mock
 
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionDetector, create_injection_safety_policy
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, Severity, Verdict
-# from archives.legacy_root_folders.infra.di_container import initialize_default_services, inject_dependencies  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionD...
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, Severity,...
+# from archives.legacy_root_folders.infra.di_container import initialize_default_services, inject...
 
 class TestBasicSecurityIntegration:
     """Test basic integration between security components."""
@@ -42,8 +41,8 @@ class TestBasicSecurityIntegration:
 
     def test_di_with_security_components(self) -> None:
         """Test that DI container provides security components."""
-#         from archives.legacy_root_folders.infra.di_container import get_service  # DEPRECATED: Archive import removed to protect archives from validation edits
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         from archives.legacy_root_folders.infra.di_container import get_service  # DEPRECATED: ...
+#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  #...
 
         # Get safety engine via DI
         safety_engine = get_service(SafetyEngine)
@@ -117,7 +116,8 @@ class TestEndToEndSecurityFlow:
 
             # Policy should block
             decision = policy.evaluate(context)
-            assert decision.verdict in [Verdict.BLOCK, Verdict.REVIEW], f"Should block attack: {attack}"
+            assert decision.verdict in [Verdict.BLOCK, Verdict.REVIEW], f"Should block attack: {atta
+    ck}"
 
     def test_safe_content_allowed(self) -> None:
         """Test that safe content is allowed through security checks."""
@@ -142,7 +142,8 @@ class TestEndToEndSecurityFlow:
 
             # Detector should find no critical issues
             findings = detector.detect_injections(content, context)
-            critical_findings = [f for f in findings if f.severity in [Severity.HIGH, Severity.CRITICAL]]
+            critical_findings = [f for f in findings if f.severity in [Severity.HIGH, Severity.CRITI
+    CAL]]
             assert len(critical_findings) == 0, f"Should not flag safe content: {content}"
 
             # Policy should allow

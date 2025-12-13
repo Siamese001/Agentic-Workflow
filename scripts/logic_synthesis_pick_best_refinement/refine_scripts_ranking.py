@@ -29,7 +29,7 @@ This file wraps those behaviors and exposes a stable API.
 
 from typing import Dict, List
 
-# from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive i...
 
 def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
@@ -52,6 +52,7 @@ def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     return _Ranking.hybrid_rank(items)
 
 def apply_strategy(
+    """Docstring."""
     items: List[Dict[str, object]],
     strategy: str = "hybrid",
 ) -> List[Dict[str, object]]:
@@ -122,6 +123,7 @@ def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, 
     return flattened
 
 def rank_documents(
+    """Docstring."""
     items: List[Dict[str, object]],
     strategy: str = "hybrid",
 ) -> List[Dict[str, object]]:

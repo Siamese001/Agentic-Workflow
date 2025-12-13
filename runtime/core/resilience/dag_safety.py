@@ -7,8 +7,6 @@ validation hooks, and protection against partial state corruption.
 import copy
 import logging
 import time
-from dataclasses import dataclass, field
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +46,8 @@ class StateSnapshot:
                 target_graph.nodes[node].update(attrs)
 
         for edge, attrs in self.edge_attributes.items():
-            if edge in target_graph and edge[0] in target_graph and edge[1] in target_graph[edge[0]]:
+            if edge in target_graph and edge[0] in target_graph and edge[1] in target_graph[edge[0]]
+    :
                 target_graph.edges[edge].update(attrs)
 
 class DAGSafetyManager:
@@ -70,6 +69,7 @@ class DAGSafetyManager:
         logger.debug(f"Initialized DAGSafetyManager: {name}")
 
     def add_validation_hook(
+        """Docstring."""
         self,
         phase: MutationPhase,
         hook: Callable[[nx.DiGraph, Dict[str, Any]], None]
@@ -84,6 +84,7 @@ class DAGSafetyManager:
         logger.debug(f"Added validation hook for phase: {phase.value}")
 
     def create_snapshot(
+        """Docstring."""
         self,
         graph: nx.DiGraph,
         external_state: Optional[Dict[str, Any]] = None
@@ -177,6 +178,7 @@ class DAGSafetyManager:
         return mutation_id
 
     def execute_mutation(
+        """Docstring."""
         self,
         graph: nx.DiGraph,
         mutation_func: Callable[[nx.DiGraph], None],
@@ -301,7 +303,8 @@ def validate_depth_consistency_hook(graph: nx.DiGraph, mutation_info: Dict[str, 
         target_depth = depths.get(edge[1], 0)
 
         if target_depth <= source_depth:
-            raise ValueError(f"Depth inconsistency: {edge[0]}({source_depth}) -> {edge[1]}({target_depth})")
+            raise ValueError(f"Depth inconsistency: {edge[0]}({source_depth}) -> {edge[1]}({target_d
+    epth})")
 
 def create_default_safety_manager() -> DAGSafetyManager:
     """Create a safety manager with default hooks.

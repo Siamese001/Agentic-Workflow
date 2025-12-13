@@ -4,7 +4,6 @@ Minimal implementation for test compatibility.
 """
 
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass
 import logging
 
 logger = logging.getLogger(__name__)

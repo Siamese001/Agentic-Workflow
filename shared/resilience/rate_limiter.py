@@ -4,7 +4,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
 import time
-from dataclasses import dataclass, field
 
 class RateLimitExceeded(Exception):
     """Raised when rate limit is exceeded."""
@@ -142,6 +141,7 @@ class RateLimiter:
         self._limiters: Dict[str, TokenBucket | FixedWindow] = {}
 
     def add_token_bucket(
+        """Docstring."""
         self,
         name: str,
         capacity: float,
@@ -160,6 +160,7 @@ class RateLimiter:
         )
 
     def add_fixed_window(
+        """Docstring."""
         self,
         name: str,
         max_requests: int,

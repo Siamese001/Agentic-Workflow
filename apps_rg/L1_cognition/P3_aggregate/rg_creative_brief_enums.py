@@ -1,6 +1,5 @@
 """Enum types for rg_creative_brief."""
 
-from enum import Enum
 
 class VoiceType(Enum):
     """Voice type for content generation."""

@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:28:54.223993
 
 import logging
 from typing import Dict, Optional
-from shared.result_types import ScoreResult
 
 logger = logging.getLogger(__name__)
 

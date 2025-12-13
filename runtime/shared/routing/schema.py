@@ -5,10 +5,8 @@ Defines the structure for routing tiers and provider fallback chains.
 Phase 2 - Resilient Routing Layer
 """
 
-from enum import Enum
 from typing import List, Optional
 
-from runtime.shared.multi_provider_clients import Provider
 
 class RoutingTier(str, Enum):
     """Predefined routing tiers for different use cases."""

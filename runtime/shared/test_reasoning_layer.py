@@ -33,7 +33,8 @@ class ReasoningLayerTestSuite:
         self.sample_dense_results = [
             {"doc_id": "doc1", "score": 0.9, "content": "Our RAG pipeline achieves 50ms latency"},
             {"doc_id": "doc2", "score": 0.8, "content": "Industry benchmarks show 100ms average"},
-            {"doc_id": "doc3", "score": 0.7, "content": "Financial apps require sub-100ms response"},
+            {"doc_id": "doc3", "score": 0.7, "content": "Financial apps require sub-100ms response"}
+    ,
         ]
 
         self.sample_sparse_results = [
@@ -67,7 +68,8 @@ class ReasoningLayerTestSuite:
             },
             # Complex multi-hop
             {
-                "query": "Compare the performance of our RAG pipeline to industry standards for financial apps and identify the root causes of any discrepancies",
+                "query": "Compare the performance of our RAG pipeline to industry standards for fina
+    ncial apps and identify the root causes of any discrepancies",
                 "expected_sub_queries": 4,
                 "complexity_min": 8,
                 "complexity_max": 10
@@ -132,7 +134,8 @@ class ReasoningLayerTestSuite:
                 logger.info(f"   ⚠️  Expected {test_case['expected_sub_queries']},
                     got {len(result.sub_queries)}")
 
-            if test_case['complexity_min'] <= result.complexity_score <= test_case['complexity_max']:
+            if test_case['complexity_min'] <= result.complexity_score <= test_case['complexity_max']
+    :
                 logger.info(f"   ✅ Complexity within expected range")
             else:
                 logger.info(f"   ⚠️  Complexity {result.complexity_score} outside range "
@@ -182,7 +185,8 @@ class ReasoningLayerTestSuite:
         logger.info("="*60)
 
         # Complex executive query
-        executive_query = "Compare our RAG pipeline performance against financial industry benchmarks and identify optimization opportunities"
+        executive_query = "Compare our RAG pipeline performance against financial industry benchmark
+    s and identify optimization opportunities"
 
         logger.info(f"\nExecutive Query: {executive_query}")
         logger.info("-" * 60)
@@ -201,7 +205,8 @@ class ReasoningLayerTestSuite:
 
             # Determine alpha for this sub-query
             alpha = self.scorer._determine_dynamic_alpha(sub_query)
-            logger.info(f"   Alpha: {alpha} ({'keyword-focused' if alpha < 0.5 else 'semantic-focused'})")
+            logger.info(f"   Alpha: {alpha} ({'keyword-focused' if alpha < 0.5 else 'semantic-focuse
+    d'})")
 
             # Score documents
             results = self.scorer.score_documents(
@@ -212,13 +217,15 @@ class ReasoningLayerTestSuite:
 
             if results:
                 top_result = results[0]
-                logger.info(f"   Top match: {top_result.doc_id} (score: {top_result.final_score:.3f})")
+                logger.info(f"   Top match: {top_result.doc_id} (score: {top_result.final_score:.3f}
+    )")
                 all_results.extend(results)
 
         # Step 3: Aggregate and analyze results
         logger.info("\n3. Aggregating results...")
         unique_docs = set(r.doc_id for r in all_results)
-        logger.info(f"   Found {len(all_results)} total results from {len(unique_docs)} unique documents")
+        logger.info(f"   Found {len(all_results)} total results from {len(unique_docs)} unique docum
+    ents")
 
         # Show document frequency
         doc_frequency = {}

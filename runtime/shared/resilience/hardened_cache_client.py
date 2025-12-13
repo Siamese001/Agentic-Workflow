@@ -13,7 +13,6 @@ import logging
 import asyncio
 import time
 import pickle
-from enum import Enum
 from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
@@ -431,6 +430,7 @@ class HardenedCacheClient:
         return None
 
     async def set(
+        """Docstring."""
         self,
         key: str,
         value: Any,
@@ -515,6 +515,7 @@ class HardenedCacheClient:
         return False
 
     async def get_many(self,
+        """Docstring."""
         keys: List[str],
         use_l1: bool = True,
         use_l2: bool = True) -> Dict[str,
@@ -565,6 +566,7 @@ class HardenedCacheClient:
         return results
 
     async def set_many(
+        """Docstring."""
         self,
         mapping: Dict[str, Any],
         ttl_seconds: Optional[int] = None,
@@ -672,7 +674,8 @@ class HardenedCacheClient:
         if tier in [CacheTier.L1_MEMORY, CacheTier.BOTH]:
             await self.l1_cache.clear()
 
-        if tier in [CacheTier.L2_REDIS, CacheTier.BOTH] and self.connection_status == ConnectionStatus.CONNECTED:
+        if tier in [CacheTier.L2_REDIS, CacheTier.BOTH] and self.connection_status == ConnectionStat
+    us.CONNECTED:
             try:
                 await self.redis_client.flushdb()
             except Exception as e:
@@ -685,7 +688,8 @@ class HardenedCacheClient:
         redis_hit_rate = self.metrics["redis_hits"] / total_redis_ops if total_redis_ops > 0 else 0
 
         total_ops = self.metrics["total_operations"]
-        overall_hit_rate = (self.metrics["l1_hits"] + self.metrics["l2_hits"]) / total_ops if total_ops > 0 else 0
+        overall_hit_rate = (self.metrics["l1_hits"] + self.metrics["l2_hits"]) / total_ops if total_
+    ops > 0 else 0
 
         return {
             "connection": {

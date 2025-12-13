@@ -1,6 +1,5 @@
 """Enum types for use_observability_execution."""
 
-from enum import Enum
 
 class ExecutionStrategy(Enum):
     """Strategies for execution."""

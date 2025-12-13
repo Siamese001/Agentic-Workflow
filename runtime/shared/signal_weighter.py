@@ -6,7 +6,6 @@ outreach and resume generation.
 """
 
 import logging
-from pydantic import BaseModel, Field, confloat
 
 logger = logging.getLogger(__name__)
 
@@ -222,7 +221,8 @@ class SignalWeighter:
             }
         }
 
-        logger.info(f"Initialized SignalWeighter with {len(self._archetype_mappings)} archetype mappings")
+        logger.info(f"Initialized SignalWeighter with {len(self._archetype_mappings)} archetype mapp
+    ings")
 
     def get_weights(self, archetype: str, industry: Optional[str] = None) -> SignalWeights:
         """Get weights for a specific archetype and industry.
@@ -261,19 +261,20 @@ class SignalWeighter:
                         adjusted_weights = SignalWeights(
                             technical_depth=min(1.0,
                                 base_weights.technical_depth * modifiers["technical_depth"]),
-                                
+
                             business_impact=min(1.0,
                                 base_weights.business_impact * modifiers["business_impact"]),
-                                
+
                             leadership_scope=min(1.0,
                                 base_weights.leadership_scope * modifiers["leadership_scope"]),
-                                
+
                             cultural_fit=min(1.0,
                                 base_weights.cultural_fit * modifiers["cultural_fit"])
                         )
 
                         logger.debug(
-                            f"Applied industry modifiers for {industry}: {base_weights.as_dict()} -> {adjusted_weights.as_dict()}"
+                            f"Applied industry modifiers for {industry}: {base_weights.as_dict()} ->
+    {adjusted_weights.as_dict()}"
                         )
                         return adjusted_weights
                     except Exception as e:
@@ -288,6 +289,7 @@ class SignalWeighter:
             return self.default_weights
 
     def reweight_score(
+        """Docstring."""
         self,
         original_score: float,
         doc_metadata: Dict[str, Union[str, float]],
@@ -443,6 +445,7 @@ class SignalWeighter:
             return 0.5
 
     def batch_reweight(
+        """Docstring."""
         self,
         documents: List[Dict[str, Union[str, float]]],
         archetype: str,
@@ -489,6 +492,7 @@ def create_signal_weighter(default_weights: Optional[SignalWeights] = None) -> S
 
 # Convenience function for quick reweighting
 def weight_results(
+    """Docstring."""
     documents: List[Dict[str, Union[str, float]]],
     archetype: str,
     industry: Optional[str] = None

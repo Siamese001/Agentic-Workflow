@@ -28,7 +28,6 @@ logging.basicConfig(
 )
 
 # Import state management components
-from runtime.shared.state import (
     WorkflowState,
     AtomicStateManager,
     StatePersistenceError,
@@ -464,7 +463,8 @@ def main():
     logger.info("=" * 60)
 
     if failed == 0:
-        logger.info("🎉 All tests passed! Atomic state persistence with ACID guarantees is working correctly.")
+        logger.info("🎉 All tests passed! Atomic state persistence with ACID guarantees is working co
+    rrectly.")
         logger.info("\n✅ ZERO DATA LOSS GUARANTEE VERIFIED:")
         logger.info("   - Two-phase commit ensures atomicity")
         logger.info("   - Rollback on failure preserves old state")

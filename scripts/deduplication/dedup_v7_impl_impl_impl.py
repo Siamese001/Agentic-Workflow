@@ -3,6 +3,7 @@
 from typing import Any, Dict, List, Optional
 
 def compute_content_hash(content: str) -> str:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -122,7 +123,7 @@ def compute_semantic_hash(imports: List[str], functions: List[str], classes: Lis
 
 def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool:
     """Detect if file is a stub."""
-    fallback_indicators = ['# AUTO-POPULATED', '# FALLBACK', 'pass  # Implementation pending', 'raise NotImplementedError', '"""Generated', 'LEVEL_3_fallback']
+    fallback_indicators = ['# AUTO-POPULATED', '# FALLBACK', 'pass  # Implementation pending', 'r...
     for indicator in fallback_indicators:
         if indicator in content:
             return True
@@ -238,7 +239,8 @@ def find_duplicate_clusters(fingerprints: List[FileFingerprint]) -> List[Duplica
                 cluster_id += 1
     for hash_val, fps in by_semantic.items():
         if len(fps) > 1:
-            significant = [fp for fp in fps if fp.size > 200 and len(fp.functions) + len(fp.classes) > 0]
+            significant = [fp for fp in fps if fp.size > 200 and len(fp.functions) + len(fp.classes)
+    > 0]
             unprocessed = [fp for fp in significant if fp.path not in processed_paths]
             if len(unprocessed) > 1:
                 cluster = DuplicateCluster(cluster_id=f'semantic_{cluster_id}',
@@ -299,7 +301,9 @@ def run_analysis() -> DedupReport:
         exact_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'exact')),
         ast_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'ast')),
         normalized_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'normalized')),
+
         semantic_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'semantic')),
+
         clusters=clusters,
         bytes_recoverable=sum((c.merge_plan.get('bytes_recoverable',
         0) for c in clusters)))
@@ -344,6 +348,7 @@ def save_report(report: DedupReport) -> Path:
         'clusters': [{'cluster_id': c.cluster_id,
         'match_type': c.match_type,
         'canonical_path': str(c.canonical_path.relative_to(REPO_ROOT)) if c.canonical_path else None,
+
         'duplicates': [str(p.relative_to(REPO_ROOT)) for p in c.duplicates],
         'merge_plan': c.merge_plan} for c in report.clusters]}
     output_path = OUTPUT_DIR / f"dedup_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"

@@ -6,101 +6,192 @@ No NEW missing docstrings will be allowed. This list can only shrink.
 """
 
 DOCSTRING_DEBT = {
-    "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:ValidationStep",
+    "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:Validatio
+    nStep",
     "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:fail",
     "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:ok",
-    "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:read_json",
+    "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:read_json
+    ",
     "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:run",
-    "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:run_enhanced",
-    "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:sha256_of",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:A2AContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:A2AMessage",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:ArtifactContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:BulletContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:DraftContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:FeedbackContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:HILContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:JobContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:MetadataContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:PromptContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:QAContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:ResumeContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:SafetyContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:StrategyContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:append",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:get_mcp_client",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:get_model_client",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:is_mcp_enabled",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:model_dump",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py:to_dict",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:A2AContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:A2AMessage",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:ArtifactContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:BulletContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:DraftContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:FeedbackContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:HILContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:JobContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:MetadataContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:PromptContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:QAContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:ResumeContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:SafetyContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:StrategyContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:append",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:get_mcp_client",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:get_model_client",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:is_mcp_enabled",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:model_dump",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.py:to_dict",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/extract_user_intent.py:register",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/extract_user_intent.py:trust_rank",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/extract_user_intent.py:usage_count",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:A2AContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:A2AMessage",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:ArtifactContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:BulletContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:DraftContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:FeedbackContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:HILContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:JobContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:MetadataContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:PromptContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:QAContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:ResumeContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:SafetyContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:StrategyContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:append",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:get_mcp_client",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:get_model_client",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:is_mcp_enabled",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:model_dump",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py:to_dict",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand/retrieve_understand_context.py:to_dict",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:A2AContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:A2AMessage",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:ArtifactContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:BulletContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:DraftContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:FeedbackContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:HILContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:JobContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:MetadataContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:PromptContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:QAContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:ResumeContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:SafetyContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:StrategyContext",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:append",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:get_mcp_client",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:get_model_client",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:is_mcp_enabled",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:model_dump",
-    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:to_dict",
-    "agentic_core/L1_cognition/P2_inspect/convert_content/semantic/apply_semantic_action.py:PIDetectionOutput",
+    "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:run_enhan
+    ced",
+    "agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:sha256_of
+    ",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:A2AContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:A2AMessage",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:ArtifactContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:BulletContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:DraftContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:FeedbackContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:HILContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:JobContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:MetadataContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:PromptContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:QAContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:ResumeContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:SafetyContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:StrategyContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:append",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:get_mcp_client",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:get_model_client",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:is_mcp_enabled",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:model_dump",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning
+    /match_core_context.py:to_dict",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:A2AContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:A2AMessage",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:ArtifactContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:BulletContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:DraftContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:FeedbackContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:HILContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:JobContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:MetadataContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:PromptContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:QAContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:ResumeContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:SafetyContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:StrategyContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:append",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:get_mcp_client",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:get_model_client",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:is_mcp_enabled",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:model_dump",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match_embedding_patterns.
+    py:to_dict",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/extract_user_intent.py:register",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/extract_user_intent.py:trust_rank",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/extract_user_intent.py:usage_count",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:A2AContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:A2AMessage",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:ArtifactContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:BulletContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:DraftContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:FeedbackContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:HILContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:JobContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:MetadataContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:PromptContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:QAContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:ResumeContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:SafetyContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:StrategyContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:append",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:get_mcp_client",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:get_model_client",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:is_mcp_enabled",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:model_dump",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand
+    _request/retrieve_core_context.py:to_dict",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand/retrieve_understand_cont
+    ext.py:to_dict",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:A2A
+    Context",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:A2A
+    Message",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Art
+    ifactContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Bul
+    letContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Dra
+    ftContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Fee
+    dbackContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:HIL
+    Context",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Job
+    Context",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Met
+    adataContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Pro
+    mptContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:QAC
+    ontext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Res
+    umeContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Saf
+    etyContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:Str
+    ategyContext",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:app
+    end",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:get
+    _mcp_client",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:get
+    _model_client",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:is_
+    mcp_enabled",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:mod
+    el_dump",
+    "agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/function/format_utility_data.py:to_
+    dict",
+    "agentic_core/L1_cognition/P2_inspect/convert_content/semantic/apply_semantic_action.py:PIDetect
+    ionOutput",
     "agentic_core/L1_cognition/P2_inspect/convert_content/semantic/apply_semantic_action.py:run",
-    "agentic_core/L1_cognition/P2_inspect/convert_content/semantic/apply_semantic_action.py:run_async",
-    "agentic_core/L1_cognition/P2_inspect/convert_content/semantic/apply_semantic_action.py:sanitize_node",
+    "agentic_core/L1_cognition/P2_inspect/convert_content/semantic/apply_semantic_action.py:run_asyn
+    c",
+    "agentic_core/L1_cognition/P2_inspect/convert_content/semantic/apply_semantic_action.py:sanitize
+    _node",
     "agentic_core/L1_cognition/P3_aggregate/consolidate_core_updates.py",
     "agentic_core/L1_cognition/P3_aggregate/consolidate_core_updates.py:assign_bucket",
     "agentic_core/L1_cognition/P3_aggregate/consolidate_core_updates.py:collect_candidates",
@@ -114,11 +205,16 @@ DOCSTRING_DEBT = {
     "agentic_core/L1_cognition/P3_aggregate/consolidate_core_updates.py:safe_copy",
     "agentic_core/L1_cognition/P3_aggregate/consolidate_core_updates.py:sha256_for_file",
     "agentic_core/L1_cognition/P3_aggregate/consolidate_core_updates.py:write_manifest",
-    "agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/refine.py:test_refine_marks_very_low_confidence_as_discarded",
-    "agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/apply_understand_action.py:PIDetectionOutput",
-    "agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/apply_understand_action.py:run",
-    "agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/apply_understand_action.py:run_async",
-    "agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/apply_understand_action.py:sanitize_node",
+    "agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/refine.py:test_refine_marks_ve
+    ry_low_confidence_as_discarded",
+    "agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/apply_understand_action.py:PID
+    etectionOutput",
+    "agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/apply_understand_action.py:run
+    ",
+    "agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/apply_understand_action.py:run
+    _async",
+    "agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/apply_understand_action.py:san
+    itize_node",
     "agentic_core/L1_cognition/P3_aggregate/sync_status/update/consolidate.py",
     "agentic_core/L1_cognition/P3_aggregate/sync_status/update/consolidate.py:assign_bucket",
     "agentic_core/L1_cognition/P3_aggregate/sync_status/update/consolidate.py:collect_candidates",
@@ -152,18 +248,26 @@ DOCSTRING_DEBT = {
     "agentic_core/L1_cognition/P3_aggregate/sync_status/update/merge.py:is_mcp_enabled",
     "agentic_core/L1_cognition/P3_aggregate/sync_status/update/merge.py:model_dump",
     "agentic_core/L1_cognition/P3_aggregate/sync_status/update/merge.py:to_dict",
-    "agentic_core/L1_cognition/P4_safety/check_rules/policy/apply_policy_action.py:PIDetectionOutput",
+    "agentic_core/L1_cognition/P4_safety/check_rules/policy/apply_policy_action.py:PIDetectionOutput
+    ",
     "agentic_core/L1_cognition/P4_safety/check_rules/policy/apply_policy_action.py:run",
     "agentic_core/L1_cognition/P4_safety/check_rules/policy/apply_policy_action.py:run_async",
     "agentic_core/L1_cognition/P4_safety/check_rules/policy/apply_policy_action.py:sanitize_node",
-    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/apply_core_safety.py:PIDetectionOutput",
+    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/apply_core_safety.py:PIDete
+    ctionOutput",
     "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/apply_core_safety.py:run",
-    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/apply_core_safety.py:run_async",
-    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/apply_core_safety.py:sanitize_node",
-    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/block_jailbreak_attempt.py:PIDetectionOutput",
-    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/block_jailbreak_attempt.py:run",
-    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/block_jailbreak_attempt.py:run_async",
-    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/block_jailbreak_attempt.py:sanitize_node",
+    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/apply_core_safety.py:run_as
+    ync",
+    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/apply_core_safety.py:saniti
+    ze_node",
+    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/block_jailbreak_attempt.py:
+    PIDetectionOutput",
+    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/block_jailbreak_attempt.py:
+    run",
+    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/block_jailbreak_attempt.py:
+    run_async",
+    "agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/block_jailbreak_attempt.py:
+    sanitize_node",
     "agentic_core/L2_execution/apply_execution_action.py:PIDetectionOutput",
     "agentic_core/L2_execution/apply_execution_action.py:run",
     "agentic_core/L2_execution/apply_execution_action.py:run_async",
@@ -216,26 +320,46 @@ DOCSTRING_DEBT = {
     "agentic_core/L3_orchestration/validate_orchestration_output.py:run",
     "agentic_core/L3_orchestration/validate_orchestration_output.py:run_enhanced",
     "agentic_core/L3_orchestration/validate_orchestration_output.py:sha256_of",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:A2AContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:A2AMessage",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:ArtifactContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:BulletContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:DraftContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:FeedbackContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:HILContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:JobContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:MetadataContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:PromptContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:QAContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:ResumeContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:SafetyContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:StrategyContext",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:append",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:get_mcp_client",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:get_model_client",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:is_mcp_enabled",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:model_dump",
-    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py:to_dict",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:A2AContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:A2AMessage",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:ArtifactContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:BulletContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:DraftContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:FeedbackContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:HILContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:JobContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:MetadataContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:PromptContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:QAContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:ResumeContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:SafetyContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:StrategyContext",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:append",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:get_mcp_client",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:get_model_client",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:is_mcp_enabled",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:model_dump",
+    "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/fi
+    nd_core_context.py:to_dict",
     "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/find.py:A2AContext",
     "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/find.py:A2AMessage",
     "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/find.py:ArtifactContext",
@@ -256,25 +380,43 @@ DOCSTRING_DEBT = {
     "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/find.py:is_mcp_enabled",
     "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/find.py:model_dump",
     "agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/find.py:to_dict",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:A2AContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:A2AMessage",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:ArtifactContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:BulletContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:DraftContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:FeedbackContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:HILContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:JobContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:MetadataContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:PromptContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:QAContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:ResumeContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:SafetyContext",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:StrategyContext",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:A2AContex
+    t",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:A2AMessag
+    e",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:ArtifactC
+    ontext",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:BulletCon
+    text",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:DraftCont
+    ext",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:FeedbackC
+    ontext",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:HILContex
+    t",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:JobContex
+    t",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:MetadataC
+    ontext",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:PromptCon
+    text",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:QAContext
+    ",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:ResumeCon
+    text",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:SafetyCon
+    text",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:StrategyC
+    ontext",
     "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:append",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:get_mcp_client",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:get_model_client",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:is_mcp_enabled",
-    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:model_dump",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:get_mcp_c
+    lient",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:get_model
+    _client",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:is_mcp_en
+    abled",
+    "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:model_dum
+    p",
     "agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py:to_dict",
     "agentic_core/L5_safety/apply_safety_action.py:PIDetectionOutput",
     "agentic_core/L5_safety/apply_safety_action.py:run",
@@ -292,33 +434,43 @@ DOCSTRING_DEBT = {
     "agentic_core/L5_safety/validate_safety_output.py:run",
     "agentic_core/L5_safety/validate_safety_output.py:run_enhanced",
     "agentic_core/L5_safety/validate_safety_output.py:sha256_of",
-    "apps_lic/L1_cognition/P1_retrieve/check_outreach_rules/policy_check_safety/check_outreach_policy.py:PolicyDecision",
-    "apps_lic/L1_cognition/P1_retrieve/check_outreach_rules/policy_check_safety/enforce_outreach_boundaries.py:PolicyDecision",
-    "apps_lic/L1_cognition/P1_retrieve/check_outreach_rules/policy_check_safety/validate_outreach_constraints.py:PolicyDecision",
+    "apps_lic/L1_cognition/P1_retrieve/check_outreach_rules/policy_check_safety/check_outreach_polic
+    y.py:PolicyDecision",
+    "apps_lic/L1_cognition/P1_retrieve/check_outreach_rules/policy_check_safety/enforce_outreach_bou
+    ndaries.py:PolicyDecision",
+    "apps_lic/L1_cognition/P1_retrieve/check_outreach_rules/policy_check_safety/validate_outreach_co
+    nstraints.py:PolicyDecision",
     "apps_lic/L1_cognition/P2_inspect/check_message_quality.py:PolicyDecision",
     "apps_lic/L1_cognition/P2_inspect/enforce_tone_guidelines.py:PolicyDecision",
     "apps_lic/L1_cognition/P2_inspect/validate_generated_message.py:PolicyDecision",
     "apps_lic/L1_cognition/P3_aggregate/check_message_compliance.py:PolicyDecision",
     "apps_lic/L1_cognition/P3_aggregate/enforce_message_contracts.py:PolicyDecision",
     "apps_lic/L1_cognition/P3_aggregate/validate_message_schema.py:PolicyDecision",
-    "apps_lic/L1_cognition/P4_safety/check_outreach_rules/policy_check_safety/apply_outreach_safety_policy.py:PolicyDecision",
-    "apps_lic/L1_cognition/P4_safety/check_outreach_rules/policy_check_safety/filter_inappropriate_content.py:PolicyDecision",
-    "apps_lic/L1_cognition/P4_safety/check_outreach_rules/policy_check_safety/validate_ethical_standards.py:PolicyDecision",
+    "apps_lic/L1_cognition/P4_safety/check_outreach_rules/policy_check_safety/apply_outreach_safety_
+    policy.py:PolicyDecision",
+    "apps_lic/L1_cognition/P4_safety/check_outreach_rules/policy_check_safety/filter_inappropriate_c
+    ontent.py:PolicyDecision",
+    "apps_lic/L1_cognition/P4_safety/check_outreach_rules/policy_check_safety/validate_ethical_stand
+    ards.py:PolicyDecision",
     "apps_lic/L2_execution/apply_lic_execution_safety.py:PolicyDecision",
     "apps_lic/L2_execution/enforce_execution_policy.py:PolicyDecision",
     "apps_lic/L3_orchestration/enforce_orchestration_policy.py:PolicyDecision",
     "apps_lic/logic/lic_outreach_fixtures.py:StackInputs",
     "apps_lic/logic/lic_outreach_fixtures.py:run",
-    "apps_rg/L1_cognition/P1_retrieve/check_resume_rules/policy_check_safety/check_resume_policy.py:PolicyDecision",
-    "apps_rg/L1_cognition/P1_retrieve/check_resume_rules/policy_check_safety/enforce_resume_boundaries.py:PolicyDecision",
-    "apps_rg/L1_cognition/P1_retrieve/check_resume_rules/policy_check_safety/validate_resume_constraints.py:PolicyDecision",
+    "apps_rg/L1_cognition/P1_retrieve/check_resume_rules/policy_check_safety/check_resume_policy.py:
+    PolicyDecision",
+    "apps_rg/L1_cognition/P1_retrieve/check_resume_rules/policy_check_safety/enforce_resume_boundari
+    es.py:PolicyDecision",
+    "apps_rg/L1_cognition/P1_retrieve/check_resume_rules/policy_check_safety/validate_resume_constra
+    ints.py:PolicyDecision",
     "apps_rg/L1_cognition/P2_inspect/check_output_quality.py:PolicyDecision",
     "apps_rg/L1_cognition/P2_inspect/enforce_length_limits.py:PolicyDecision",
     "apps_rg/L1_cognition/P2_inspect/validate_generated_content.py:PolicyDecision",
     "apps_rg/L1_cognition/P3_aggregate/check_resume_compliance.py:PolicyDecision",
     "apps_rg/L1_cognition/P3_aggregate/enforce_resume_contracts.py:PolicyDecision",
     "apps_rg/L1_cognition/P3_aggregate/validate_resume_schema.py:PolicyDecision",
-    "apps_rg/L1_cognition/P4_safety/check_resume_rules/policy_check_safety/apply_resume_safety_policy.py:PolicyDecision",
+    "apps_rg/L1_cognition/P4_safety/check_resume_rules/policy_check_safety/apply_resume_safety_polic
+    y.py:PolicyDecision",
     "apps_rg/L2_execution/apply_rg_execution_safety.py:PolicyDecision",
     "apps_rg/L3_orchestration/orchestrate_resume_generation.py:BulletProvenance",
     "apps_rg/L3_orchestration/orchestrate_resume_generation.py:FileRenderer",
@@ -415,19 +567,31 @@ DOCSTRING_DEBT = {
     "tests/unit/apps_lic/test_lic_message_generation_executor.py:dedupe",
     "tests/unit/apps_lic/test_lic_message_generation_executor.py:execute",
     "tests/unit/apps_lic/test_lic_message_generation_executor.py:run",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_build_plan_includes_profile_lookup_jobs",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_compose_appends_reflexion_and_artifacts",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_compose_falls_back_to_baseline_artifacts",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_compose_without_company_uses_baseline_marker",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_derive_wants_falls_back_to_prompt",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_draft_package_with_draft_clones_artifacts",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_record_evidence_supports_cached_strings",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_record_evidence_with_tool_result_uses_stable_ids",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_score_quality_counts_reflexion_bonus",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_build_plan_includes_profile_lo
+    okup_jobs",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_compose_appends_reflexion_and_
+    artifacts",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_compose_falls_back_to_baseline
+    _artifacts",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_compose_without_company_uses_b
+    aseline_marker",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_derive_wants_falls_back_to_pro
+    mpt",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_draft_package_with_draft_clone
+    s_artifacts",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_record_evidence_supports_cache
+    d_strings",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_record_evidence_with_tool_resu
+    lt_uses_stable_ids",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_score_quality_counts_reflexion
+    _bonus",
     "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_select_tool_for_news_queries",
-    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_stable_artifact_id_depends_on_query",
-    "tests/unit/apps_lic/test_lic_outreach_engine_dag.py:test_outreach_stack_blocks_high_risk_prompt",
-    "tests/unit/apps_lic/test_lic_outreach_engine_dag.py:test_outreach_stack_handles_string_draft_from_architect",
+    "tests/unit/apps_lic/test_lic_message_generation_executor.py:test_stable_artifact_id_depends_on_
+    query",
+    "tests/unit/apps_lic/test_lic_outreach_engine_dag.py:test_outreach_stack_blocks_high_risk_prompt
+    ",
+    "tests/unit/apps_lic/test_lic_outreach_engine_dag.py:test_outreach_stack_handles_string_draft_fr
+    om_architect",
     "tests/unit/apps_lic/test_lic_safety_planner.py:test_known_malicious_prompt_remains_blocked",
     "tests/unit/apps_rg/test_rg_resume_builder.py:ResumeSection",
 }

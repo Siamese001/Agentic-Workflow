@@ -101,9 +101,9 @@ def remove_empty_directories(start_path: Path) -> List[str]:
 def cleanup_stubs() -> Dict:
     """Clean up minimal files."""
     log = {
-        "deleted_files": [],
+        # SQL query removed: [],
         "kept_with_content": [],
-        "deleted_directories": [],
+        # SQL query removed: [],
         "errors": [],
     }
 
@@ -126,11 +126,11 @@ def cleanup_stubs() -> Dict:
             else:
                 try:
                     py_file.unlink()
-                    log["deleted_files"].append(rel_path)
+                    log[# SQL query removed].append(rel_path)
                 except (ValueError, TypeError, KeyError) as e:
                     log["errors"].append(f"{rel_path}: {e}")
 
-    log["deleted_directories"] = remove_empty_directories(REPO_ROOT)
+    log[# SQL query removed] = remove_empty_directories(REPO_ROOT)
 
     return log
 
@@ -149,12 +149,12 @@ def main() -> None:
             logger.info(f"  ... and {len(log['errors']) - 5} more")
 
     # Show sample of deleted files
-    logger.info(f"\nDeleted minimal files ({len(log['deleted_files'])}):")
-    for f in log["deleted_files"][:20]:
+    logger.info(f"\nDeleted minimal files ({len(log[# SQL query removed])}):")
+    for f in log[# SQL query removed][:20]:
         logger.info(f"  - {f}")
 
-    if len(log["deleted_files"]) > 20:
-        logger.info(f"  ... and {len(log['deleted_files']) - 20} more")
+    if len(log[# SQL query removed]) > 20:
+        logger.info(f"  ... and {len(log[# SQL query removed]) - 20} more")
 
     # Show kept files
     if log["kept_with_content"]:

@@ -1,7 +1,5 @@
 """Types and models for agent_permissions."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class PermissionScope(Enum):
     """Permission scopes."""
@@ -16,7 +14,7 @@ class PermissionAction(Enum):
     READ = 'read'
     WRITE = 'write'
     EXECUTE = 'execute'
-    DELETE = 'delete'
+    DELETE = # SQL query removed
     ADMIN = 'admin'
 
 @dataclass
@@ -45,7 +43,8 @@ class Permission:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, 'conditions': self.conditions}
+        return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, '
+    conditions': self.conditions}
 
 @dataclass
 class PermissionCheck:

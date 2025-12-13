@@ -1,8 +1,6 @@
 """E2E tests for complete outreach campaign lifecycle."""
 import re
 from typing import Dict, List
-from dataclasses import dataclass, field
-from enum import Enum
 from datetime import datetime, timedelta
 
 class CampaignPhase(Enum):
@@ -22,6 +20,7 @@ class CampaignPhase(Enum):
     """TODO: Add docstring."""
 
 class CampaignMetrics:
+    """Docstring."""
     total_contacts: int = 0
     messages_sent: int = 0
     messages_opened: int = 0
@@ -33,6 +32,7 @@ class CampaignMetrics:
 
 @dataclass
 class CampaignState:
+    """Docstring."""
     campaign_id: str
     phase: CampaignPhase
     metrics: CampaignMetrics
@@ -208,7 +208,8 @@ class TestPersonalizationE2E:
         template = """
 Hi {first_name},
 
-I noticed {company} recently {recent_news}. As {title}, you might be interested in how we helped similar companies {value_prop}.
+I noticed {company} recently {recent_news}. As {title}, you might be interested in how we helped sim
+    ilar companies {value_prop}.
 
 Would you be open to a brief conversation?
 """

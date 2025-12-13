@@ -4,9 +4,7 @@
 # ================================================================================
 
 """Tests for OutreachStack coordination logic."""
-from unittest.mock import patch
 import pytest
-from dataclasses import dataclass
 from typing import Dict, Any
 
 # Mock implementations for testing
@@ -22,6 +20,7 @@ class StackInputs:
     """TODO: Add docstring."""
 
 class StackResult:
+    """Docstring."""
     draft: str
     verdict: type
 
@@ -39,6 +38,7 @@ class ReasoningToggles:
 
 
 class OutreachStack:
+    """Docstring."""
     def __init__(self, toggles: ReasoningToggles):
         self.toggles = toggles
         """TODO: Add docstring."""
@@ -46,6 +46,7 @@ class OutreachStack:
         self.architect = type('architect', (), {'compose': lambda msg: msg})()
 
     def run(self, inputs: StackInputs) -> Dict[str, Any]:
+        """Docstring."""
         return {
             "draft": "Subject: Hi\n\nBody",
             "verdict": type('verdict', (), {'passed': True})()
@@ -67,6 +68,7 @@ def test_outreach_stack_blocks_high_risk_prompt() -> None:
     pass
 
 def test_outreach_stack_handles_string_draft_from_architect() -> None:
+    """Docstring."""
     stack = OutreachStack(ReasoningToggles())
 
     with patch.object(stack.architect, "compose", return_value="Subject: Hi\n\nBody"):

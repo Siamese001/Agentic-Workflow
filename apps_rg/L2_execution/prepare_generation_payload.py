@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:29:00.518651
 
 import logging
 from typing import Union, Dict, Optional
-from shared.result_types import FormatResult
 
 logger = logging.getLogger(__name__)
 

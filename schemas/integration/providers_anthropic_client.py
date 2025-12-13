@@ -9,6 +9,7 @@ import os
 from typing import Any, List
 
 def run_llm_anthropic(
+    """Docstring."""
     model: str,
     prompt: str,
     *,

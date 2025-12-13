@@ -11,8 +11,6 @@ Integrates with:
 
 import logging
 import time
-from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -117,6 +115,7 @@ class CostTracker:
             )
 
     def record_cost(
+        """Docstring."""
         self,
         agent_id: str,
         spiffe_id: str,
@@ -179,6 +178,7 @@ class CostTracker:
             )
 
     def get_metrics(
+        """Docstring."""
         self,
         agent_id: str,
         period_hours: int = 24,
@@ -234,6 +234,7 @@ class CostTracker:
         return metrics
 
     def get_all_metrics(
+        """Docstring."""
         self,
         period_hours: int = 24,
     ) -> List[CostMetrics]:
@@ -255,6 +256,7 @@ class CostTracker:
         return all_metrics
 
     def get_alerts(
+        """Docstring."""
         self,
         agent_id: Optional[str] = None,
         level: Optional[CostAlertLevel] = None,
@@ -363,6 +365,7 @@ class CostTracker:
             )
 
 def create_cost_tracker(
+    """Docstring."""
     default_budget_per_agent: Optional[float] = None,
 ) -> CostTracker:
     """Factory function to create cost tracker.

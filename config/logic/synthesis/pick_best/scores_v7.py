@@ -22,6 +22,7 @@ def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     return _Ranking.hybrid_rank(items)
 
 def apply_strategy(items: List[Dict[str,
+    """Docstring."""
     object]],
     strategy: str='hybrid') -> List[Dict[str,
     object]]:
@@ -78,6 +79,7 @@ def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, 
     return flattened
 
 def rank_documents(items: List[Dict[str,
+    """Docstring."""
     object]],
     strategy: str='hybrid') -> List[Dict[str,
     object]]:

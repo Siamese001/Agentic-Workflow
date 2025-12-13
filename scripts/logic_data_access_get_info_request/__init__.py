@@ -2,8 +2,10 @@
 """
 Get Info Request Module
 
-This module provides information request handling for logic layer within the Agentic-Workflow system.
-It is part of the scripts/logic/data_access/get_info_request component and offers specialized functionality
+This module provides information request handling for logic layer within the Agentic-Workflow system
+    .
+It is part of the scripts/logic/data_access/get_info_request component and offers specialized functi
+    onality
 for efficient data processing and workflow management.
 
 Key Responsibilities:

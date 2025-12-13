@@ -118,7 +118,8 @@ def test_l1_planning_is_pure() -> None:
     """Verify L1 planning functions are pure (no execution)."""
     try:
         import dataclasses
-        for plan_class in [StrategyPlan, DraftPlan, RAGReasoningPlan, HydePlan, SemanticQAPlan, CouncilPlan, SafetyPlan]:
+        for plan_class in [StrategyPlan, DraftPlan, RAGReasoningPlan, HydePlan, SemanticQAPlan, Coun
+    cilPlan, SafetyPlan]:
             if dataclasses.is_dataclass(plan_class):
                 if not plan_class.__dataclass_fields__:
                     continue

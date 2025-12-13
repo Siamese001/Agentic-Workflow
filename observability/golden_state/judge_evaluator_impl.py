@@ -34,6 +34,7 @@ class JudgeEvaluator:
                 'pass_threshold': pass_threshold})
 
     async def evaluate(self,
+        """Docstring."""
         output: str,
         expected: Optional[str]=None,
         context: Optional[Dict[str,
@@ -77,6 +78,7 @@ class JudgeEvaluator:
         return result
 
     async def _evaluate_criterion(self,
+        """Docstring."""
         output: str,
         expected: Optional[str],
         context: Optional[Dict[str,
@@ -129,7 +131,8 @@ class JudgeEvaluator:
         Returns:
             Evaluation prompt
         """
-        prompt_parts = [f'You are an expert evaluator. Evaluate the following output based on {criterion.value}.', '', 'OUTPUT TO EVALUATE:', output, '']
+        prompt_parts = [f'You are an expert evaluator. Evaluate the following output based on {crite
+    rion.value}.', '', 'OUTPUT TO EVALUATE:', output, '']
         if expected:
             prompt_parts.extend(['EXPECTED OUTPUT:', expected, ''])
         if context:
@@ -329,11 +332,13 @@ class JudgeEvaluator:
             Poor: {poor},
             Unacceptable: {unacceptable}']
         if not passed:
-            failing = [v.criterion.value for v in verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]
+            failing = [v.criterion.value for v in verdicts if v.score in {JudgmentScore.POOR, Judgme
+    ntScore.UNACCEPTABLE}]
             summary_parts.append(f"Failing criteria: {', '.join(failing)}")
         return ' | '.join(summary_parts)
 
 def create_judge_evaluator(llm_client: Optional[Callable[[str],
+    """Docstring."""
     Awaitable[str]]]=None,
     pass_threshold: float=0.7) -> JudgeEvaluator:
     """Factory function to create judge evaluator.

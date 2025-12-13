@@ -5,8 +5,6 @@ with graph-based reasoning, context retrieval, and state management.
 """
 
 import logging
-from pydantic import BaseModel, Field
-from neo4j import GraphDatabase
 import json
 
 logger = logging.getLogger(__name__)
@@ -174,6 +172,7 @@ class KnowledgeGraphAgent:
             return GraphContext()
 
     def store_relationship(
+        """Docstring."""
         self,
         subject: str,
         relation: str,
@@ -201,6 +200,7 @@ class KnowledgeGraphAgent:
             return False
 
     def store_relationship_safe(
+        """Docstring."""
         self,
         subject: str,
         relation: str,
@@ -221,7 +221,7 @@ class KnowledgeGraphAgent:
             True if successful
         """
         try:
-            # Generate embeddings for entities (simplified - in production use proper embedding model)
+            # Generate embeddings for entities (simplified - in production use proper embedding m...
             sub_embedding = self._get_embedding(subject)
             obj_embedding = self._get_embedding(object)
 
@@ -329,6 +329,7 @@ class KnowledgeGraphAgent:
             return GraphContext()
 
     def create_reasoning_step(
+        """Docstring."""
         self,
         agent_id: str,
         step_id: str,
@@ -392,6 +393,7 @@ class KnowledgeGraphAgent:
             return False
 
     def find_similar_decisions(
+        """Docstring."""
         self,
         current_state_embedding: List[float],
         limit: int = 3
@@ -446,6 +448,7 @@ class KnowledgeGraphAgent:
             return []
 
     def semantic_search(
+        """Docstring."""
         self,
         query_embedding: List[float],
         top_k: int = 5
@@ -590,6 +593,7 @@ class KnowledgeGraphAgent:
             logger.warning(f"Error ensuring graph projection: {str(e)}")
 
     def find_semantic_match(
+        """Docstring."""
         self,
         entity: str,
         embedding: List[float],
@@ -659,6 +663,7 @@ class KnowledgeGraphAgent:
         return embedding[:1536]
 
     def prune_graph(
+        """Docstring."""
         self,
         confidence_threshold: float = 0.3,
         days_old: int = 30
@@ -688,7 +693,7 @@ class KnowledgeGraphAgent:
                 cutoff_time=days_old * 24 * 60 * 60 * 1000  # Convert to milliseconds
                 )
 
-                stats["relationships_deleted"] = result.single()["deleted"]
+                stats["relationships_deleted"] = result.single()[# SQL query removed]
 
                 # Delete orphaned entities
                 result = session.run("""
@@ -698,7 +703,7 @@ class KnowledgeGraphAgent:
                 RETURN count(e) as deleted
                 """)
 
-                stats["entities_deleted"] = result.single()["deleted"]
+                stats["entities_deleted"] = result.single()[# SQL query removed]
 
                 logger.info(f"Pruned graph: {stats}")
 
@@ -715,6 +720,7 @@ class KnowledgeGraphAgent:
 
 # Factory function
 def create_knowledge_graph_agent(
+    """Docstring."""
     uri: str,
     user: str,
     password: str,

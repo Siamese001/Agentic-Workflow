@@ -101,7 +101,8 @@ class CheckDataPolicyPlanInterface:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
-            return {'success': result.success, 'data': result.data, 'errors': result.errors, 'safety_validated': result.safety_validated, 'timestamp': result.timestamp}
+            return {'success': result.success, 'data': result.data, 'errors': result.errors, 'safety
+    _validated': result.safety_validated, 'timestamp': result.timestamp}
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f'Execution failed: {e}')
 

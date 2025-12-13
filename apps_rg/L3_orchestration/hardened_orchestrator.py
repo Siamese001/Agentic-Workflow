@@ -14,12 +14,10 @@ Phase 4: Titanium RAG Integration - Brain transplant complete
 import logging
 from datetime import datetime
 
-from runtime.shared.state import (
     get_state_manager,
     WorkflowState,
     StatePersistenceError,
 )
-from runtime.shared.routing import (
     get_resilient_router,
     RoutingTier,
 )
@@ -33,7 +31,6 @@ from runtime.shared.routing import (
     HopStatus,
     HopExecutionError,
 )
-from apps_rg.L3_orchestration.resume_orchestration_config import (
     ReasoningConfig,
     get_reasoning_config,
 )
@@ -82,6 +79,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         logger.info("Hardened orchestrator initialized with atomic state management")
 
     def initialize_or_resume_workflow(
+        """Docstring."""
         self,
         workflow_id: str,
         total_k_nodes: int,
@@ -131,6 +129,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         return context
 
     async def execute_hop_with_hardening(
+        """Docstring."""
         self,
         hop_id: str,
         context: Dict[str, Any],
@@ -276,6 +275,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             return RoutingTier.BALANCED
 
     async def execute_workflow_with_resilience(
+        """Docstring."""
         self,
         workflow_id: str,
         context: Dict[str, Any],
@@ -371,9 +371,11 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             "current_k_node": self.workflow_state.current_k_node if self.workflow_state else 0,
             "total_k_nodes": self.workflow_state.total_k_nodes if self.workflow_state else 0,
             "progress_percentage": self.workflow_state.get_progress_percentage() if self.workflow_state else 0,
-                
+
+
             "execution_log_count": len(self.workflow_state.execution_log) if self.workflow_state else 0,
-                
+
+
         }
 
         logger.info(
@@ -384,6 +386,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         return results
 
 def create_hardened_orchestrator(
+    """Docstring."""
     workflow_spec: Optional[WorkflowSpec] = None,
     run_base_dir: str = "./pipeline_runs",
     storage_path: Optional[str] = None,

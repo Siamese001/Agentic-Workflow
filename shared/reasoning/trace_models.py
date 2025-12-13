@@ -6,7 +6,6 @@ Formal data models for separating reasoning from action outputs.
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
 
 class ThinkStep(BaseModel):
     """Represents a thinking/reasoning step.
@@ -28,6 +27,7 @@ class ThinkStep(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigThinkStep:
+        """Docstring."""
         frozen = False
 
 class ActionStep(BaseModel):
@@ -45,6 +45,7 @@ class ActionStep(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigActionStep:
+        """Docstring."""
         frozen = False
 
 class ObservationStep(BaseModel):
@@ -62,6 +63,7 @@ class ObservationStep(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigObservationStep:
+        """Docstring."""
         frozen = False
 
 class ReasoningTraceModel(BaseModel):
@@ -86,6 +88,7 @@ class ReasoningTraceModel(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional trace metadata")
 
     class ConfigReasoningTrace:
+        """Docstring."""
         frozen = False
 
     def add_think(self, thought: str, **kwargs: object) -> None:
@@ -119,6 +122,7 @@ class ReasoningTraceModel(BaseModel):
         return [s for s in self.steps if isinstance(s, ObservationStep)]
 
     def complete(self,
+        """Docstring."""
         final_answer: str,
         success: bool = True,
         error: Optional[str] = None) -> None:

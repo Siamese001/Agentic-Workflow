@@ -1,6 +1,5 @@
 """Enum types for search_schema_vectors."""
 
-from enum import Enum
 
 class SchemaSearchMode(Enum):
     """Search modes for schema vector operations."""

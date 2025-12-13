@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """RAG configuration for resume generation."""
 
-from dataclasses import dataclass, field
 from typing import Dict
 
 @dataclass

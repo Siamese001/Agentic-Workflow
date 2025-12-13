@@ -20,6 +20,7 @@ SOVEREIGN_ROOTS = {
 }
 
 def get_existing_files() -> Set[str]:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)

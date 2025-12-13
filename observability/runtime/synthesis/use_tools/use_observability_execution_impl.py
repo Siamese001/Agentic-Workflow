@@ -27,6 +27,7 @@ class ObservabilityExecutionEngine:
         self.logger.info(f'Registered operation: {operation_type}')
 
     def execute(self,
+        """Docstring."""
         request: ExecutionRequest,
         environment: Optional[ExecutionEnvironment]=None) -> ExecutionResult:
         """Execute an observability operation.
@@ -72,6 +73,7 @@ class ObservabilityExecutionEngine:
                 start_time)
 
     def execute_batch(self,
+        """Docstring."""
         requests: List[ExecutionRequest],
         environment: Optional[ExecutionEnvironment]=None) -> List[ExecutionResult]:
         """Execute multiple operations.
@@ -109,6 +111,7 @@ class ObservabilityExecutionEngine:
         return True
 
     def process_queue(self,
+        """Docstring."""
         environment: Optional[ExecutionEnvironment]=None) -> List[ExecutionResult]:
         """Process queued executions.
 
@@ -119,7 +122,8 @@ class ObservabilityExecutionEngine:
             List[ExecutionResult]: Results for processed executions
         """
         results = []
-        while self._execution_queue and len(self._active_executions) < self.config.max_concurrent_executions:
+        while self._execution_queue and len(self._active_executions) < self.config.max_concurrent_ex
+    ecutions:
             request = self._execution_queue.pop(0)
             result = self.execute(request, environment)
             results.append(result)
@@ -247,7 +251,8 @@ class ObservabilityExecutionEngine:
     def _check_dependencies(self, dependencies: List[str]) -> bool:
         """Check if dependencies are satisfied."""
         for dep in dependencies:
-            found = any((result.request_id == dep and result.success for result in self._execution_history))
+            found = any((result.request_id == dep and result.success for result in self._execution_h
+    istory))
             if not found:
                 return False
         return True
@@ -271,7 +276,8 @@ class ObservabilityExecutionEngine:
 
     def _priority_value(self, priority: ExecutionPriority) -> int:
         """Get numeric value for priority."""
-        priority_map = {ExecutionPriority.LOW: 1, ExecutionPriority.NORMAL: 2, ExecutionPriority.HIGH: 3, ExecutionPriority.CRITICAL: 4}
+        priority_map = {ExecutionPriority.LOW: 1, ExecutionPriority.NORMAL: 2, ExecutionPriority.HIG
+    H: 3, ExecutionPriority.CRITICAL: 4}
         return priority_map.get(priority, 2)
 
     def _track_execution_start(self, request: ExecutionRequest) -> None:
@@ -318,21 +324,28 @@ class ObservabilityExecutionEngine:
         def _log_analysis_handler(context: Dict[str, Any]) -> Dict[str, Any]:
             request = context['request']
             params = request.parameters
-            return {'analysis': {'total_logs': 100, 'error_count': 5, 'warning_count': 10}, 'patterns': [{'type': 'error_spike', 'count': 3}, {'type': 'slow_response', 'count': 7}], 'metrics': {'logs_analyzed': 100, 'processing_time': 0.2}}
+            return {'analysis': {'total_logs': 100, 'error_count': 5, 'warning_count': 10}, 'pattern
+    s': [{'type': 'error_spike', 'count': 3}, {'type': 'slow_response', 'count': 7}], 'metrics': {'l
+        ogs_analyzed': 100, 'processing_time': 0.2}}
 
         def _trace_analysis_handler(context: Dict[str, Any]) -> Dict[str, Any]:
             request = context['request']
             params = request.parameters
-            return {'traces': [{'trace_id': 'trace_1', 'duration': 0.5, 'spans': 5}, {'trace_id': 'trace_2', 'duration': 0.3, 'spans': 3}], 'summary': {'avg_duration': 0.4, 'error_rate': 0.05}, 'metrics': {'traces_analyzed': 2, 'processing_time': 0.15}}
+            return {'traces': [{'trace_id': 'trace_1', 'duration': 0.5, 'spans': 5}, {'trace_id': 't
+    race_2', 'duration': 0.3, 'spans': 3}], 'summary': {'avg_duration': 0.4, 'error_rate': 0.05}, 'm
+        etrics': {'traces_analyzed': 2, 'processing_time': 0.15}}
 
         def _health_check_handler(context: Dict[str, Any]) -> Dict[str, Any]:
-            return {'status': 'healthy', 'checks': [{'name': 'database', 'status': 'ok'}, {'name': 'redis', 'status': 'ok'}, {'name': 'api', 'status': 'ok'}], 'metrics': {'checks_performed': 3, 'processing_time': 0.05}}
+            return {'status': 'healthy', 'checks': [{'name': 'database', 'status': 'ok'}, {'name': '
+    redis', 'status': 'ok'}, {'name': 'api', 'status': 'ok'}], 'metrics': {'checks_performed': 3, 'p
+        rocessing_time': 0.05}}
         self.register_operation('collect_metrics', _metrics_handler)
         self.register_operation('analyze_logs', _log_analysis_handler)
         self.register_operation('analyze_traces', _trace_analysis_handler)
         self.register_operation('health_check', _health_check_handler)
 
 def create_observability_execution_engine(default_timeout: float=30.0,
+    """Docstring."""
     max_concurrent_executions: int=10,
     enable_queueing: bool=True,
     **kwargs: object) -> ObservabilityExecutionEngine:
@@ -344,6 +357,7 @@ def create_observability_execution_engine(default_timeout: float=30.0,
     return ObservabilityExecutionEngine(config)
 
 def use_observability_execution(operation_type: str,
+    """Docstring."""
     parameters: Dict[str,
     Any],
     request_id: Optional[str]=None,
@@ -372,4 +386,8 @@ def use_observability_execution(operation_type: str,
         priority=ExecutionPriority(priority),
         timeout=timeout)
     result = engine.execute(request)
-    return {'request_id': result.request_id, 'operation_type': result.operation_type, 'success': result.success, 'output': result.output, 'exit_code': result.exit_code, 'stdout': result.stdout, 'stderr': result.stderr, 'metrics': result.metrics, 'artifacts': result.artifacts, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time, 'resource_usage': result.resource_usage}
+    return {'request_id': result.request_id, 'operation_type': result.operation_type, 'success': res
+    ult.success, 'output': result.output, 'exit_code': result.exit_code, 'stdout': result.stdout, 's
+        tderr': result.stderr, 'metrics': result.metrics, 'artifacts': result.artifacts, 'error': re
+            sult.error, 'warnings': result.warnings, 'execution_time': result.execution_time, 'resou
+                rce_usage': result.resource_usage}

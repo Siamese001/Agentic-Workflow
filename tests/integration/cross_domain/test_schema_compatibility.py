@@ -1,8 +1,5 @@
 """Integration tests for cross-domain schema compatibility."""
 
-from shared.configuration.reasoning_config import SAFETY_THRESHOLD
-from shared.types.models import ValidationResult, ValidationSeverity, GateDecision
-from runtime.shared.sdk_registry import SDK_REGISTRY, SDKCategory
 
 class TestConfigSchemaCompatibility:
     """TODO: Add docstring."""
@@ -28,6 +25,7 @@ class TestConfigSchemaCompatibility:
     """TODO: Add docstring."""
 
 class TestValidationModelIntegration:
+    """TODO: Add docstring."""
     def test_gate_decision_with_validation_result(self):
         """GateDecision can be used alongside ValidationResult."""
         decisions = list(GateDecision)

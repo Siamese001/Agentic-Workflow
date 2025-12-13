@@ -7,9 +7,7 @@ import tempfile
 from pathlib import Path
 
 from runtime.shared.routing.factory import reset_router
-from apps_rg.L3_orchestration.hardened_orchestrator import create_hardened_orchestrator, HardenedWorkflowOrchestrator
-from runtime.shared.routing.router import HardenedRouter
-from runtime.shared.agent_executor import AgentResponse
+    kflowOrchestrator
 
 @pytest.fixture(autouse=True)
 def reset_singletons():
@@ -98,7 +96,6 @@ class TestResilientRouting:
 
     def test_router_singleton(self):
         """Test that router follows singleton pattern."""
-        from runtime.shared.routing.factory import get_resilient_router
         router1 = get_resilient_router()
         router2 = get_resilient_router()
         assert router1 is router2

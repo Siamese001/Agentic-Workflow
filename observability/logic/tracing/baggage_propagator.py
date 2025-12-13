@@ -44,6 +44,7 @@ class BaggagePropagator:
         return context
 
 def inject_context(context: Dict[str,
+    """Docstring."""
     object],
     carrier: Dict[str,
     str],

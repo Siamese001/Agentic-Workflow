@@ -5,11 +5,9 @@ including cache tracking, state persistence, and performance analysis.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
 import logging
 import json
 from datetime import datetime, timedelta
-from enum import Enum
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -18,8 +16,8 @@ class CacheOperation(Enum):
     """Types of cache operations."""
     READ = "read"
     WRITE = "write"
-    UPDATE = "update"
-    DELETE = "delete"
+    UPDATE = # SQL query removed
+    DELETE = # SQL query removed
     CLEAR = "clear"
     EVICT = "evict"
 
@@ -182,7 +180,8 @@ class ScriptsCacheHistoryLoader:
             CacheStatistics: Current cache statistics
         """
         # Recalculate statistics if needed
-        if not self._statistics.total_operations or len(self._history_cache) != self._statistics.total_operations:
+        if not self._statistics.total_operations or len(self._history_cache) != self._statistics.tot
+    al_operations:
             self._calculate_statistics()
 
         return self._statistics
@@ -423,6 +422,7 @@ class ScriptsCacheHistoryLoader:
         # Update key access counts
         if entry.operation in [CacheOperation.READ, CacheOperation.UPDATE]:
             self._statistics.key_access_counts[entry.key] = self._statistics.key_access_counts.get(entry.key,
+
                 0) + 1
 
         # Update size
@@ -430,7 +430,8 @@ class ScriptsCacheHistoryLoader:
 
         # Update average access time
         if entry.access_time_ms > 0:
-            total_time = self._statistics.average_access_time_ms * (self._statistics.total_operations - 1) + entry.access_time_ms
+            total_time = self._statistics.average_access_time_ms * (self._statistics.total_operation
+    s - 1) + entry.access_time_ms
             self._statistics.average_access_time_ms = total_time / self._statistics.total_operations
 
     def _calculate_statistics(self) -> None:
@@ -514,6 +515,7 @@ class ScriptsCacheHistoryLoader:
 
 # Factory function for easy instantiation
 def create_scripts_cache_history_loader(
+    """Docstring."""
     storage_path: str = "data/scripts_cache_history.json",
     max_entries: int = 50000,
     retention_days: int = 7,
@@ -529,6 +531,7 @@ def create_scripts_cache_history_loader(
 
 # Convenience function for direct usage
 def load_scripts_cache_history(
+    """Docstring."""
     operations: List[str] = None,
     status: Optional[str] = None,
     key_pattern: Optional[str] = None,

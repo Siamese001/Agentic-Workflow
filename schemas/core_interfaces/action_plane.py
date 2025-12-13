@@ -5,9 +5,6 @@ Defines the contract for all tool execution and external interactions.
 L2 Execution: Side effects allowed, but controlled and observable.
 """
 
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
 class ActionCapability(Enum):
@@ -91,6 +88,7 @@ class IActionPlane(ABC):
 
     @abstractmethod
     async def execute_batch(
+        """Docstring."""
         self,
         requests: List[ActionRequest],
         parallel: bool = False,
@@ -108,6 +106,7 @@ class IActionPlane(ABC):
 
     @abstractmethod
     async def validate_action(
+        """Docstring."""
         self,
         request: ActionRequest,
     ) -> Dict[str, Any]:

@@ -34,6 +34,7 @@ class EmailContent(BaseModel):
     tone: str = "professional"
 
     class Config:
+        """Docstring."""
         schema_extra = {
             "example": {
                 "recipient": "hiring@example.com",
@@ -52,6 +53,7 @@ class ExperienceEntry(BaseModel):
     description: str
 
     class Config:
+        """Docstring."""
         schema_extra = {
             "example": {
                 "company": "Tech Corp",
@@ -205,7 +207,8 @@ async def demonstrate_state_promotion():
     context.soft_state.add_draft("email_draft", {
         "recipient": "hiring@example.com",
         "subject": "Application for Senior Developer Position",
-        "body": "Dear Hiring Manager,\n\nI am excited to apply for the Senior Developer position...",
+        "body": "Dear Hiring Manager,\n\nI am excited to apply for the Senior Developer position..."
+    ,
         "tone": "professional"
     })
 

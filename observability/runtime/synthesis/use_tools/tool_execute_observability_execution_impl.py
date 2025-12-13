@@ -26,6 +26,7 @@ class ObservabilityToolExecutor:
         self.logger.info(f'Registered tool: {tool_def.tool_id}')
 
     def execute_tool(self,
+        """Docstring."""
         context: ToolExecutionContext,
         parameters: Dict[str,
         Any]) -> ToolExecutionResult:
@@ -67,6 +68,7 @@ class ObservabilityToolExecutor:
                 start_time)
 
     def execute_tool_stream(self,
+        """Docstring."""
         context: ToolExecutionContext,
         parameters: Dict[str,
         str]) -> Dict[str,
@@ -146,7 +148,8 @@ class ObservabilityToolExecutor:
         parameters: Dict[str,
         str]) -> ToolExecutionResult:
         """Execute tool with context."""
-        exec_env = {'context': context, 'parameters': parameters, 'config': self.config, 'logger': self.logger}
+        exec_env = {'context': context, 'parameters': parameters, 'config': self.config, 'logger': s
+    elf.logger}
         if context.mode == ExecutionMode.SYNCHRONOUS:
             result_data = handler(exec_env)
         elif context.mode == ExecutionMode.ASYNCHRONOUS:
@@ -194,7 +197,8 @@ class ObservabilityToolExecutor:
             if values:
                 final_metrics[f'{key}_avg'] = sum(values) / len(values)
                 final_metrics[f'{key}_total'] = sum(values)
-        return {'output': results, 'metrics': final_metrics, 'artifacts': all_artifacts, 'warnings': all_warnings}
+        return {'output': results, 'metrics': final_metrics, 'artifacts': all_artifacts, 'warnings':
+    all_warnings}
 
     def _validate_parameter_type(self,
         param_name: str,
@@ -216,7 +220,8 @@ class ObservabilityToolExecutor:
             dict)}
         validator = type_validators.get(expected_type)
         if validator and (not validator(value)):
-            type_names = {'string': 'string', 'integer': 'integer', 'float': 'number', 'boolean': 'boolean', 'array': 'array', 'object': 'object'}
+            type_names = {'string': 'string', 'integer': 'integer', 'float': 'number', 'boolean': 'b
+    oolean', 'array': 'array', 'object': 'object'}
             return f"Parameter {param_name} must be {type_names.get(expected_type, 'valid type')}"
         return None
 
@@ -286,7 +291,9 @@ class ObservabilityToolExecutor:
 
         def _trace_handler(exec_env: Dict[str, Any]) -> Dict[str, Any]:
             params = exec_env['parameters']
-            return {'output': {'traces': [{'id': 'trace_1', 'duration': 0.5, 'spans': 5}, {'id': 'trace_2', 'duration': 0.3, 'spans': 3}], 'summary': {'total_traces': 2, 'avg_duration': 0.4}}, 'metrics': {'traces_collected': 2, 'processing_time': 0.1}}
+            return {'output': {'traces': [{'id': 'trace_1', 'duration': 0.5, 'spans': 5}, {'id': 'tr
+    ace_2', 'duration': 0.3, 'spans': 3}], 'summary': {'total_traces': 2, 'avg_duration': 0.4}}, 'me
+        trics': {'traces_collected': 2, 'processing_time': 0.1}}
         metric_tool = ToolDefinition(tool_id='metric_collector',
             tool_type=ToolType.METRIC_COLLECTOR,
             name='Metric Collector',
@@ -342,6 +349,7 @@ class ObservabilityToolExecutor:
         self.register_tool(log_tool, _log_handler)
 
 def create_observability_tool_executor(timeout: float=30.0,
+    """Docstring."""
     retry_count: int=3,
     enable_tracing: bool=True,
     **kwargs: object) -> ObservabilityToolExecutor:
@@ -353,6 +361,7 @@ def create_observability_tool_executor(timeout: float=30.0,
     return ObservabilityToolExecutor(config)
 
 def tool_execute_observability_execution(tool_id: str,
+    """Docstring."""
     execution_id: str,
     parameters: Dict[str,
     Any],
@@ -377,4 +386,6 @@ def tool_execute_observability_execution(tool_id: str,
         mode=ExecutionMode(mode),
         caller_id=caller_id)
     result = executor.execute_tool(context, parameters)
-    return {'execution_id': result.execution_id, 'tool_id': result.tool_id, 'success': result.success, 'output': result.output, 'metrics': result.metrics, 'artifacts': result.artifacts, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}
+    return {'execution_id': result.execution_id, 'tool_id': result.tool_id, 'success': result.succes
+    s, 'output': result.output, 'metrics': result.metrics, 'artifacts': result.artifacts, 'error': r
+        esult.error, 'warnings': result.warnings, 'execution_time': result.execution_time}

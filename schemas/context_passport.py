@@ -7,8 +7,6 @@ mutable LLM-owned scratchpad space.
 """
 
 
-from dataclasses import dataclass, field
-from enum import Enum
 from datetime import datetime
 import uuid
 
@@ -109,7 +107,7 @@ class ThermalConfig:
                 "top_p": self.node_overrides[node_id].get("top_p", self.top_p),
                 "frequency_penalty": self.node_overrides[node_id].get("frequency_penalty",
                     self.frequency_penalty),
-                    
+
                 "presence_penalty": self.node_overrides[node_id].get("presence_penalty",
                     self.presence_penalty)
             }
@@ -175,6 +173,7 @@ class SignalContext(BaseModel):
         self.last_modified = datetime.utcnow()
 
     def add_signed_claim(self,
+        """Docstring."""
         claim: str,
         source: str,
         confidence: float,

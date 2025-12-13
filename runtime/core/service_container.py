@@ -39,6 +39,7 @@ class ServiceContainer:
         self._lifecycle: Dict[Type, str] = {}  # "singleton" or "transient"
 
     def register(
+        """Docstring."""
         self,
         interface: Type[T],
         implementation: Optional[T] = None,
@@ -167,6 +168,7 @@ def get_default_container() -> ServiceContainer:
     return _default_container
 
 def register_default(
+    """Docstring."""
     interface: Type[T],
     implementation: Optional[T] = None,
     factory: Optional[Callable[[], T]] = None,

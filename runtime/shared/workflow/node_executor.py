@@ -1,5 +1,6 @@
 """
-Node Executor - Pipeline-based execution with schema validation, constraints, telemetry, and routing.
+Node Executor - Pipeline-based execution with schema validation, constraints, telemetry, and routing
+    .
 
 Implements a clean pipeline pattern:
 1. Model Router selects appropriate LLM
@@ -13,8 +14,6 @@ import time
 import asyncio
 import json
 from typing import Dict, Any, Optional, Type, List, Union
-from dataclasses import dataclass, field
-from enum import Enum
 from pydantic import BaseModel, ValidationError
 
 logger = logging.getLogger(__name__)
@@ -57,6 +56,7 @@ class SchemaEnforcement:
         self.logger = logging.getLogger("SchemaEnforcement")
 
     def validate_output(
+        """Docstring."""
         self,
         context: NodeExecutionContext,
         raw_output: str
@@ -112,7 +112,8 @@ class SchemaEnforcement:
 
             except ValidationError as e:
                 if attempt == max_retries - 1:
-                    raise ValidationError(f"Schema validation failed after {max_retries} attempts: {e}")
+                    raise ValidationError(f"Schema validation failed after {max_retries} attempts: {
+    e}")
 
                 self.logger.warning(f"Validation attempt {attempt + 1} failed, retrying...")
                 await asyncio.sleep(0.1)  # Brief delay before retry
@@ -158,6 +159,7 @@ class CognitiveConstraints:
         return constraint_block
 
     def apply_constraints_to_prompt(
+        """Docstring."""
         self,
         base_prompt: str,
         node_config: Dict[str, Any]
@@ -195,7 +197,6 @@ class CognitiveTelemetry:
         """Initialize the appropriate tracer."""
         if self.provider == "langsmith":
             try:
-                from langsmith import Client
                 return Client()
             except ImportError:
                 self.logger.warning("LangSmith not available, using mock tracer")
@@ -358,6 +359,7 @@ class MockTracer:
         """TODO: Add docstring."""
 
     def finish(self):
+        """Docstring."""
         pass
 
 class MockSpan:
@@ -373,9 +375,11 @@ class MockSpan:
         """TODO: Add docstring."""
 
     def set_metric(self, key: str, value: Union[int, float]):
+        """Docstring."""
         pass
 
     def finish(self):
+        """Docstring."""
         pass
 
 class NodeExecutor:
@@ -416,7 +420,7 @@ class NodeExecutor:
         try:
             # 1. Model Selection
             selected_model = self.router.select_model(context)
-            self.logger.info(f"Selected model: {selected_model}")
+            self.logger.info(f# SQL query removed)
 
             # 2. Start Telemetry
             self.telemetry.start_span(context)
@@ -475,15 +479,23 @@ class NodeExecutor:
 
         if context.node_id == "K.6_most_recent_experience":
             return json.dumps({
-                "intro_sentence": "Led strategic initiatives that drove measurable business growth through innovative solutions and cross-functional collaboration.",
+                "intro_sentence": "Led strategic initiatives that drove measurable business growth t
+    hrough innovative solutions and cross-functional collaboration.",
                 "bullets": [
-                    "Orchestrated a digital transformation initiative that increased operational efficiency by 35% through automation.",
-                    "Spearheaded the development of a customer analytics platform, resulting in a 25% improvement in retention rates.",
-                    "Managed a cross-functional team of 12 to deliver a cloud migration project 2 months ahead of schedule.",
-                    "Implemented a data-driven decision framework that reduced costs by $2M annually through optimization.",
-                    "Led the integration of AI technologies into core products, enhancing user engagement by 40%.",
-                    "Drove strategic partnerships with key technology vendors, expanding market reach by 30%.",
-                    "Mentored junior developers and established best practices that improved team productivity by 50%."
+                    "Orchestrated a digital transformation initiative that increased operational eff
+    iciency by 35% through automation.",
+                    "Spearheaded the development of a customer analytics platform, resulting in a 25
+    % improvement in retention rates.",
+                    "Managed a cross-functional team of 12 to deliver a cloud migration project 2 mo
+    nths ahead of schedule.",
+                    "Implemented a data-driven decision framework that reduced costs by $2M annually
+    through optimization.",
+                    "Led the integration of AI technologies into core products, enhancing user engag
+    ement by 40%.",
+                    "Drove strategic partnerships with key technology vendors, expanding market reac
+    h by 30%.",
+                    "Mentored junior developers and established best practices that improved team pr
+    oductivity by 50%."
                 ]
             })
 
@@ -491,6 +503,7 @@ class NodeExecutor:
 
 # Factory function
 def create_node_executor(
+    """Docstring."""
     schema_registry: Optional[Dict[str, Type[BaseModel]]] = None,
     telemetry_config: Optional[Dict] = None
 ) -> NodeExecutor:

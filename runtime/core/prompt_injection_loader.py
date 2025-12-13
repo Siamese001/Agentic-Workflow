@@ -7,7 +7,6 @@ and messages.
 
 import json
 import logging
-from .shared_models import (
     InjectionType,
     InjectionScope,
     InjectionPattern,
@@ -93,7 +92,8 @@ class PromptInjectionLoader:
                 variables=injection.variables,
                 scope=InjectionScope(
                     hop_types=injection.scope.hop_types if injection.scope.hop_types else ["*"],
-                    stages=[stage.value for stage in injection.scope.stages] if injection.scope.stages else [],
+                    stages=[stage.value for stage in injection.scope.stages] if injection.scope.stag
+    es else [],
                     contexts=injection.scope.contexts
                 ),
                 priority=injection.priority,
@@ -112,7 +112,8 @@ class PromptInjectionLoader:
                 name="Achievement Quantification",
                 type=InjectionType.RESUME_ENHANCEMENT,
                 description="Adds metrics and quantification to achievements",
-                template="Transform this achievement by adding specific metrics: '{achievement}'. Include numbers, percentages, or measurable impact.",
+                template="Transform this achievement by adding specific metrics: '{achievement}'. In
+    clude numbers, percentages, or measurable impact.",
                 variables=["achievement"],
                 scope=InjectionScope(
                     hop_types=["resume_writer", "experience_formatter"],
@@ -125,7 +126,8 @@ class PromptInjectionLoader:
                 name="Action Verb Enhancement",
                 type=InjectionType.RESUME_ENHANCEMENT,
                 description="Replaces weak verbs with strong action verbs",
-                template="Enhance this responsibility with stronger action verbs: '{responsibility}'. Use verbs like 'orchestrated', 'pioneered', 'revolutionized'.",
+                template="Enhance this responsibility with stronger action verbs: '{responsibility}'
+    . Use verbs like 'orchestrated', 'pioneered', 'revolutionized'.",
                 variables=["responsibility"],
                 scope=InjectionScope(
                     hop_types=["resume_writer", "bullet_formatter"],
@@ -138,7 +140,8 @@ class PromptInjectionLoader:
                 name="Keyword Optimization",
                 type=InjectionType.KEYWORD_OPTIMIZATION,
                 description="Optimizes content with relevant keywords",
-                template="Enhance this content with keywords for {job_title}: '{content}'. Include terms like: {keywords}",
+                template="Enhance this content with keywords for {job_title}: '{content}'. Include t
+    erms like: {keywords}",
                 variables=["content", "job_title", "keywords"],
                 scope=InjectionScope(
                     hop_types=["resume_writer", "summary_generator"],
@@ -152,7 +155,8 @@ class PromptInjectionLoader:
                 name="Message Personalization",
                 type=InjectionType.MESSAGE_PERSONALIZATION,
                 description="Personalizes message based on recipient profile",
-                template="Personalize this message for {recipient_name} at {company}: '{message}'. Reference their {background} and recent {achievement}.",
+                template="Personalize this message for {recipient_name} at {company}: '{message}'. R
+    eference their {background} and recent {achievement}.",
                 variables=["message", "recipient_name", "company", "background", "achievement"],
                 scope=InjectionScope(
                     hop_types=["message_generator", "outreach_writer"],
@@ -165,7 +169,8 @@ class PromptInjectionLoader:
                 name="Tone Adjustment",
                 type=InjectionType.TONE_ADJUSTMENT,
                 description="Adjusts message tone to match context",
-                template="Adjust this message tone to be {tone}: '{message}'. Consider the {relationship} and {purpose}.",
+                template="Adjust this message tone to be {tone}: '{message}'. Consider the {relation
+    ship} and {purpose}.",
                 variables=["message", "tone", "relationship", "purpose"],
                 scope=InjectionScope(
                     hop_types=["message_generator", "email_writer"],
@@ -179,7 +184,8 @@ class PromptInjectionLoader:
                 name="Content Expansion",
                 type=InjectionType.CONTENT_EXPANSION,
                 description="Expands brief content with relevant details",
-                template="Expand this content with relevant details: '{content}'. Add context about {domain} and include {specificity_level} details.",
+                template="Expand this content with relevant details: '{content}'. Add context about
+    {domain} and include {specificity_level} details.",
                 variables=["content", "domain", "specificity_level"],
                 scope=InjectionScope(
                     hop_types=["content_generator", "description_writer"],
@@ -192,7 +198,8 @@ class PromptInjectionLoader:
                 name="Structure Improvement",
                 type=InjectionType.STRUCTURE_IMPROVEMENT,
                 description="Improves content structure and flow",
-                template="Improve the structure of this content: '{content}'. Ensure clear {structure_type} with proper transitions.",
+                template="Improve the structure of this content: '{content}'. Ensure clear {structur
+    e_type} with proper transitions.",
                 variables=["content", "structure_type"],
                 scope=InjectionScope(
                     hop_types=["content_generator", "formatter"],
@@ -212,6 +219,7 @@ class PromptInjectionLoader:
                 json.dump(injection.dict(), f, indent=2)
 
     def find_matching_injections(
+        """Docstring."""
         self,
         hop_type: str,
         stage: str,
@@ -266,7 +274,8 @@ class PromptInjectionLoader:
             )
 
             # Apply threshold (lower for required injections)
-            threshold = 0.3 if injection.id in required_injection_ids else self.config.relevance_threshold
+            threshold = 0.3 if injection.id in required_injection_ids else self.config.relevance_thr
+    eshold
 
             if score >= threshold:
                 # Extract variable values
@@ -383,11 +392,16 @@ class PromptInjectionLoader:
     def _generate_keywords(self, role: str) -> str:
         """Generate relevant keywords for a role."""
         keyword_map = {
-            "software engineer": "Python, JavaScript, React, Node.js, AWS, Git, Agile, REST APIs, Microservices",
-            "product manager": "Product strategy, Roadmapping, User research, Analytics, A/B testing, Stakeholder management",
-            "data scientist": "Machine learning, Python, R, SQL, Statistics, Data visualization, TensorFlow, PyTorch",
-            "marketing manager": "Campaign management, SEO/SEM, Analytics, Content strategy, Social media, ROI analysis",
-            "sales representative": "CRM, Lead generation, Negotiation, Pipeline management, Customer relationship, Closing"
+            "software engineer": "Python, JavaScript, React, Node.js, AWS, Git, Agile, REST APIs, Mi
+    croservices",
+            "product manager": "Product strategy, Roadmapping, User research, Analytics, A/B testing
+    , Stakeholder management",
+            "data scientist": "Machine learning, Python, R, SQL, Statistics, Data visualization, Ten
+    sorFlow, PyTorch",
+            "marketing manager": "Campaign management, SEO/SEM, Analytics, Content strategy, Social
+    media, ROI analysis",
+            "sales representative": "CRM, Lead generation, Negotiation, Pipeline management, Custome
+    r relationship, Closing"
         }
 
         return keyword_map.get(role.lower(),
@@ -398,6 +412,7 @@ class PromptInjectionLoader:
             Innovation")
 
     def apply_injections(
+        """Docstring."""
         self,
         base_prompt: str,
         matches: List[InjectionMatch]
@@ -424,7 +439,6 @@ class PromptInjectionLoader:
 
         # Use prompt assembler for semantic fencing (lazy import)
         try:
-            from .prompt_assembler import assemble_prompt
 
             enhanced = assemble_prompt(
                 role="Assistant",
@@ -454,6 +468,7 @@ class PromptInjectionLoader:
         return enhanced + metadata
 
     def apply_with_semantic_fencing(
+        """Docstring."""
         self,
         role: str,
         objective: str,
@@ -543,6 +558,7 @@ def get_injection_loader(**kwargs) -> PromptInjectionLoader:
 
 # Convenience functions
 def enhance_prompt(
+    """Docstring."""
     base_prompt: str,
     hop_type: str,
     stage: str,

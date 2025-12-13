@@ -1,14 +1,13 @@
-"""Observability Request Understanding Load Planner - Plans data loading for observability request understanding.
+"""Observability Request Understanding Load Planner - Plans data loading for observability request u
+    nderstanding.
 
 This planner manages the loading phase for understanding observability requests,
 including metric parsing, log analysis, and trace extraction.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
 import logging
 from datetime import datetime
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -439,6 +438,7 @@ class ObservabilityLoadPlanner:
 
 # Factory function for easy instantiation
 def create_observability_load_planner(
+    """Docstring."""
     enable_metrics: bool = True,
     enable_logs: bool = True,
     enable_traces: bool = True,
@@ -455,6 +455,7 @@ def create_observability_load_planner(
 
 # Convenience function for direct usage
 def plan_observability_load(
+    """Docstring."""
     plan_name: str,
     request_type: str,
     data_source: str = "prometheus",

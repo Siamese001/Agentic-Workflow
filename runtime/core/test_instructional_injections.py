@@ -5,7 +5,6 @@ and their integration with SubatomicHop stages.
 """
 
 import pytest
-from unittest.mock import Mock, patch
 from pathlib import Path
 
     get_instructional_injections,
@@ -15,14 +14,12 @@ from pathlib import Path
     InstructionalLayer,
     STAGE_MAPPINGS
 )
-from .prompt_injection_loader import (
     PromptInjectionLoader,
     InjectionPattern,
     InjectionMatch,
     InjectionType,
     InjectionScope
 )
-from .subatomic_hop import SubatomicHop, SubatomicHopConfig, MicroStage
 
 class TestInstructionalInjections:
     """Test the 30 instructional injection patterns."""
@@ -60,7 +57,8 @@ class TestInstructionalInjections:
 
         for layer, expected_count in expected.items():
             actual_count = sum(1 for inj in injections if layer in inj.type)
-            assert actual_count == expected_count, f"Layer {layer}: expected {expected_count}, got {actual_count}"
+            assert actual_count == expected_count, f"Layer {layer}: expected {expected_count}, got {
+    actual_count}"
 
     def test_stage_mappings(self):
         """Verify all injections have proper stage mappings."""
@@ -84,7 +82,8 @@ class TestInstructionalInjections:
             ]
 
             for safety_id in safety_required:
-                assert safety_id in required, f"Safety injection {safety_id} not required for {stage}"
+                assert safety_id in required, f"Safety injection {safety_id} not required for {stage
+    }"
 
 class TestPromptInjectionLoaderIntegration:
     """Test integration of instructional injections with PromptInjectionLoader."""
@@ -107,7 +106,8 @@ class TestPromptInjectionLoaderIntegration:
             if inj.type in [t.value for t in InstructionalInjectionType]
         )
 
-        assert instructional_count == 30, f"Expected 30 instructional injections, got {instructional_count}"
+        assert instructional_count == 30, f"Expected 30 instructional injections, got {instructional
+    _count}"
 
     def test_finds_stage_specific_injections(self, loader):
         """Test finding injections for specific stages."""
@@ -169,6 +169,7 @@ class TestSubatomicHopIntegration:
     def mock_hop_function(self):
         """Create a mock hop function."""
         async def mock_func(**kwargs):
+            """Docstring."""
             return {"result": "test", "injections_applied": kwargs.get("instructional_injections")}
         return mock_func
 
@@ -252,6 +253,7 @@ class TestSubatomicHopIntegration:
         stage_injection_map = {}
 
         def track_injections(hop_type, stage, context, content=None):
+            """Docstring."""
             matches = []
 
             # Mock different injections for different stages
@@ -335,14 +337,16 @@ class TestInjectionQuality:
 
             # Check that all declared variables are in template
             for var in variables:
-                assert f"{{{var}}}" in template, f"Variable {var} not found in template for {injection.id}"
+                assert f"{{{var}}}" in template, f"Variable {var} not found in template for {injecti
+    on.id}"
 
     def test_injection_priorities_are_reasonable(self):
         """Verify injection priorities make sense."""
         injections = get_instructional_injections()
 
         # Safety injections should have highest priority
-        safety_injections = [inj for inj in injections if "shielding" in inj.type or "guardrail" in inj.type]
+        safety_injections = [inj for inj in injections if "shielding" in inj.type or "guardrail" in
+    inj.type]
 
         for inj in safety_injections:
             assert inj.priority >= 9, f"Safety injection {inj.id} has low priority {inj.priority}"
@@ -362,12 +366,14 @@ class TestInjectionQuality:
 
         for stage in MicroStage:
             required = get_required_injections(stage)
-            required_types = [inj.type for inj in get_instructional_injections() if inj.id in required]
+            required_types = [inj.type for inj in get_instructional_injections() if inj.id in requir
+    ed]
 
             for critical_type in critical_types:
                 # Should be required in at least one stage
                 found_required = any(critical_type in t for t in required_types)
-                assert found_required, f"Critical injection {critical_type} not required in any stage"
+                assert found_required, f"Critical injection {critical_type} not required in any stag
+    e"
 
 if __name__ == "__main__":
     # Run tests

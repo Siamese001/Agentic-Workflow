@@ -3,7 +3,8 @@
 Get Info Request Module
 
 This module provides pipeline information request operations within the Agentic-Workflow system.
-It is part of the scripts/pipeline/data_access/get_info_request component and offers specialized functionality
+It is part of the scripts/pipeline/data_access/get_info_request component and offers specialized fun
+    ctionality
 for efficient data processing and workflow management.
 
 Key Responsibilities:

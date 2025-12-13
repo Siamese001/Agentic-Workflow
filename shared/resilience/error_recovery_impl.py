@@ -33,8 +33,10 @@ class ErrorRecoveryManager:
         """
         msg = str(exc)
         exc_type = exc.__class__.__name__
-        transient_patterns = ['timeout', 'connection', 'network', 'rate limit', 'throttle', '503', '502', '429']
-        permanent_patterns = ['validation', 'authentication', 'authorization', '404', '400', '401', '403']
+        transient_patterns = ['timeout', 'connection', 'network', 'rate limit', 'throttle', '503', '
+    502', '429']
+        permanent_patterns = ['validation', 'authentication', 'authorization', '404', '400', '401',
+    '403']
         msg_lower = msg.lower()
         for pattern in permanent_patterns:
             if pattern in msg_lower:
@@ -60,6 +62,7 @@ class ErrorRecoveryManager:
         return max(0, base + jitter)
 
     async def invoke_with_retry(self,
+        """Docstring."""
         fn: Callable[[],
         Awaitable[Any]],
         breaker_name: Optional[str]=None,
@@ -125,6 +128,7 @@ class ErrorRecoveryManager:
             logger.info('retry_success', extra={'attempt': attempt, 'context': context})
 
     async def _handle_retry_error(self,
+        """Docstring."""
         exc: Exception,
         breaker: Optional[CircuitBreaker],
         attempt: int,
@@ -147,6 +151,7 @@ class ErrorRecoveryManager:
                 'attempts': attempt,
                 'context': context})
             raise RetryExhaustedError(message=f'Retry exhausted after {attempt} attempts: {str(exc)}',
+
                 code=exc.__class__.__name__,
                 attempts=attempt) from exc
         backoff_ms = self.calculate_backoff_ms(attempt)

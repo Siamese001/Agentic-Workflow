@@ -1,7 +1,6 @@
 """Backward compatibility shim for refactor_impl_impl_impl_impl_impl.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original refactor_impl_impl_impl_impl_impl.py contained 10 top-level definitions which

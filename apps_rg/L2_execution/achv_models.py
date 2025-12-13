@@ -18,6 +18,7 @@ class ProvenancePattern:
     """TODO: Add docstring."""
 
 class BulletProvenanceLog:
+    """Docstring."""
     bullet_text: str
     word_count: int
     provenance_items: Dict[ProvenanceType, List[str]]
@@ -40,6 +41,7 @@ class BulletSynthesizerConfig:
 
     @property
     def min_words(self) -> int:
+        """Docstring."""
         return 28 if self.format_type == BulletFormat.UNIFY else 24
         """TODO: Add docstring."""
 
@@ -54,10 +56,12 @@ class BulletSynthesizerConfig:
         """TODO: Add docstring."""
 
     def bullet_count(self) -> int:
+        """Docstring."""
         return 7 if self.format_type == BulletFormat.UNIFY else 6
 
     @property
     def provenance_pattern(self) -> ProvenancePattern:
+        """Docstring."""
         if self.format_type == BulletFormat.UNIFY:
             return ProvenancePattern(BulletFormat.UNIFY, verb_count=3, tech_count=3, soft_count=1)
         else:
@@ -67,6 +71,7 @@ class BulletSynthesizerConfig:
 
 @dataclass
 class BulletSynthesizerResult:
+    """Docstring."""
     bullets: List[str]
     provenance_logs: List[BulletProvenanceLog]
     qa_report: Dict[str, Any]

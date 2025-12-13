@@ -7,13 +7,8 @@ Phase 1C - Knowledge Extraction Integration
 """
 
 import logging
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from .agent_executor import AgentExecutor, AgentMessage, AgentResponse
-from .kx_nodes import KNodeConfig, ReasoningStrategy, get_kx_registry
-from .observability_clients import create_span, set_span_attribute
-from .vector_store_clients import search_vectors_chroma
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +47,7 @@ class KXNodeExecutor:
         self.registry = get_kx_registry()
 
     def execute_node(
+        """Docstring."""
         self,
         node_key: str,
         context: KXExecutionContext,
@@ -134,7 +130,6 @@ class KXNodeExecutor:
 
         # Search vector store
         try:
-            from .vector_store_clients import create_chroma_collection
 
             collection = create_chroma_collection(
                 context.vector_store,
@@ -255,9 +250,11 @@ class KXNodeExecutor:
         if config.reasoning_strategy == ReasoningStrategy.COT:
             prompt_parts.append("\nUse step-by-step reasoning to generate the content.")
         elif config.reasoning_strategy == ReasoningStrategy.TOT:
-            prompt_parts.append(f"\nExplore {config.tot_branches} different approaches and select the best.")
+            prompt_parts.append(f"\nExplore {config.tot_branches} different approaches and select th
+    e best.")
         elif config.reasoning_strategy == ReasoningStrategy.HYBRID_COT_TOT:
-            prompt_parts.append("\nUse step-by-step reasoning with multiple branches to find the optimal solution.")
+            prompt_parts.append("\nUse step-by-step reasoning with multiple branches to find the opt
+    imal solution.")
 
         return "\n".join(prompt_parts)
 
@@ -377,6 +374,7 @@ class KXNodeExecutor:
             }
 
 def execute_kx_node(
+    """Docstring."""
     node_key: str,
     agent_executor: AgentExecutor,
     source_data: Dict[str, Any],

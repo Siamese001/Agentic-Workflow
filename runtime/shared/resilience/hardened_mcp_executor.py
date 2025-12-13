@@ -16,7 +16,6 @@ import tempfile
 import shutil
 from typing import Any, Dict, List, Optional, Union, Callable
 from pathlib import Path
-from dataclasses import dataclass, field
 from enum import Enum
 import os
 import sys
@@ -194,6 +193,7 @@ class HardenedMCPExecutor:
         }
 
     async def execute_tool(
+        """Docstring."""
         self,
         context: ExecutionContext
     ) -> ExecutionResult:
@@ -270,6 +270,7 @@ class HardenedMCPExecutor:
         return exec_dir
 
     async def _execute_with_monitoring(
+        """Docstring."""
         self,
         context: ExecutionContext,
         exec_dir: Path
@@ -296,7 +297,8 @@ class HardenedMCPExecutor:
                 stdin=asyncio.subprocess.PIPE if context.input_data else None,
                 cwd=context.working_directory or exec_dir,
                 env=env,
-                preexec_fn=self._apply_resource_limits(context.resource_limits) if sys.platform != "win32" else None
+                preexec_fn=self._apply_resource_limits(context.resource_limits) if sys.platform != "
+    win32" else None
             )
 
             # Start monitoring
@@ -315,11 +317,13 @@ class HardenedMCPExecutor:
                 )
 
                 result.exit_code = process.returncode
-                result.status = ExecutionStatus.COMPLETED if process.returncode == 0 else ExecutionStatus.FAILED
+                result.status = ExecutionStatus.COMPLETED if process.returncode == 0 else ExecutionS
+    tatus.FAILED
 
             except asyncio.TimeoutError:
                 # Handle timeout
-                logger.warning(f"Tool {context.tool_name} timed out after {context.timeout_seconds}s")
+                logger.warning(f"Tool {context.tool_name} timed out after {context.timeout_seconds}s
+    ")
 
                 # Try graceful termination
                 if monitor.terminate():
@@ -410,6 +414,7 @@ class HardenedMCPExecutor:
         return output
 
     async def _check_resource_violations(
+        """Docstring."""
         self,
         context: ExecutionContext,
         result: ExecutionResult,
@@ -420,11 +425,13 @@ class HardenedMCPExecutor:
 
         if context.resource_limits.max_memory_mb:
             if usage.get("peak_memory_mb", 0) > context.resource_limits.max_memory_mb:
-                violations.append(f"Memory exceeded: {usage.get('peak_memory_mb'):.1f}MB > {context.resource_limits.max_memory_mb}MB")
+                violations.append(f"Memory exceeded: {usage.get('peak_memory_mb'):.1f}MB > {context.
+    resource_limits.max_memory_mb}MB")
 
         if context.resource_limits.max_cpu_time_seconds:
             if usage.get("cpu_time_seconds", 0) > context.resource_limits.max_cpu_time_seconds:
-                violations.append(f"CPU time exceeded: {usage.get('cpu_time_seconds'):.1f}s > {context.resource_limits.max_cpu_time_seconds}s")
+                violations.append(f"CPU time exceeded: {usage.get('cpu_time_seconds'):.1f}s > {conte
+    xt.resource_limits.max_cpu_time_seconds}s")
 
         if violations:
             logger.warning(f"Resource violations for {context.tool_name}: {'; '.join(violations)}")
@@ -439,6 +446,7 @@ class HardenedMCPExecutor:
             logger.warning(f"Failed to cleanup execution directory {exec_dir}: {e}")
 
     async def execute_with_fallback(
+        """Docstring."""
         self,
         primary_context: ExecutionContext,
         fallback_contexts: List[ExecutionContext]
@@ -497,6 +505,7 @@ class HardenedMCPExecutor:
 
 # Factory function for creating hardened MCP executor
 def create_hardened_mcp_executor(
+    """Docstring."""
     default_timeout: float = 30.0,
     default_resource_limits: Optional[ResourceLimits] = None,
     temp_dir: Optional[Path] = None,

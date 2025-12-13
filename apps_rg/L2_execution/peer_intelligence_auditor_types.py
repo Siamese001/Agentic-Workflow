@@ -1,6 +1,5 @@
 """Types and models for peer_intelligence_auditor."""
 
-from enum import Enum
 
 class KeywordClassification(Enum):
     """TODO: Add docstring."""
@@ -13,6 +12,7 @@ class KeywordClassification(Enum):
     """TODO: Add docstring."""
 
 class RAGHop:
+    """Docstring."""
     hop_number: int
     search_queries: List[str]
     results: List[Dict[str, Any]]
@@ -22,6 +22,7 @@ class RAGHop:
 
 @dataclass
 class KeywordAnalysis:
+    """Docstring."""
     keyword: str
     classification: KeywordClassification
     frequency_score: float
@@ -32,6 +33,7 @@ class KeywordAnalysis:
 
 @dataclass
 class PeerIntelligenceConfig:
+    """Docstring."""
     total_searches: int = 24
     total_hops: int = 3
     searches_per_hop: int = 8
@@ -41,6 +43,7 @@ class PeerIntelligenceConfig:
 
 @dataclass
 class PeerIntelligenceResult:
+    """Docstring."""
     hops: List[RAGHop]
     keyword_analyses: List[KeywordAnalysis]
     table_stakes: List[str]

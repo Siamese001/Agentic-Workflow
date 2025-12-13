@@ -1,6 +1,5 @@
 """Enum types for tool_invoke_observability_tool."""
 
-from enum import Enum
 
 class ToolCategory(Enum):
     """Categories of observability tools."""

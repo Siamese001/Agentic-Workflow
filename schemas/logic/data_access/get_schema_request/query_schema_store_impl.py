@@ -46,7 +46,8 @@ class SchemaStoreQuerier:
                 'storage_path': self.config.storage_path,
                 'total_schemas': len(self._schema_cache),
                 'querier': 'SchemaStoreQuerier'})
-            self.logger.info(f'Schema query completed: {len(entries)} results (total: {total_count})')
+            self.logger.info(f'Schema query completed: {len(entries)} results (total: {total_count})
+    ')
             return result
         except Exception as e:
             self.logger.error(f'Schema query failed: {str(e)}')
@@ -143,7 +144,7 @@ class SchemaStoreQuerier:
             del self._schema_cache[schema_id]
             self._remove_from_indexes(schema_id, entry)
             self._delete_schema_file(schema_id)
-            self.logger.info(f'Deleted schema: {schema_id}')
+            self.logger.info(f# SQL query removed)
             return True
         except Exception as e:
             self.logger.error(f'Failed to delete schema: {str(e)}')
@@ -177,7 +178,7 @@ class SchemaStoreQuerier:
             'size_bytes': e.metadata.size_bytes} for e in sorted_by_size],
             'recently_updated': [{'id': e.metadata.id,
             'name': e.metadata.name,
-            'updated_at': e.metadata.updated_at.isoformat()} for e in recent_schemas],
+            # SQL query removed: e.metadata.updated_at.isoformat()} for e in recent_schemas],
             'index_sizes': {'name_index': len(self._name_index),
             'type_index': len(self._type_index),
             'tag_index': len(self._tag_index)}}
@@ -209,14 +210,16 @@ class SchemaStoreQuerier:
         if query.name_pattern:
             import re
             pattern = re.compile(query.name_pattern, re.IGNORECASE)
-            filtered_ids = [id for id in filtered_ids if pattern.search(self._schema_cache[id].metadata.name)]
+            filtered_ids = [id for id in filtered_ids if pattern.search(self._schema_cache[id].metad
+    ata.name)]
         if query.schema_type:
             if query.schema_type in self._type_index:
                 type_ids = set(self._type_index[query.schema_type])
                 filtered_ids = list(set(filtered_ids) & type_ids)
             else:
                 filtered_ids = []
-        filtered_ids = [id for id in filtered_ids if not query.status or self._schema_cache[id].metadata.status == query.status]
+        filtered_ids = [id for id in filtered_ids if not query.status or self._schema_cache[id].meta
+    data.status == query.status]
         if query.tags:
             matching_ids = set()
             for tag in query.tags:
@@ -224,11 +227,14 @@ class SchemaStoreQuerier:
                     matching_ids.update(self._tag_index[tag])
             filtered_ids = list(set(filtered_ids) & matching_ids)
         if query.created_by:
-            filtered_ids = [id for id in filtered_ids if self._schema_cache[id].metadata.created_by == query.created_by]
+            filtered_ids = [id for id in filtered_ids if self._schema_cache[id].metadata.created_by
+    == query.created_by]
         if query.date_from:
-            filtered_ids = [id for id in filtered_ids if self._schema_cache[id].metadata.created_at >= query.date_from]
+            filtered_ids = [id for id in filtered_ids if self._schema_cache[id].metadata.created_at
+    >= query.date_from]
         if query.date_to:
-            filtered_ids = [id for id in filtered_ids if self._schema_cache[id].metadata.created_at <= query.date_to]
+            filtered_ids = [id for id in filtered_ids if self._schema_cache[id].metadata.created_at
+    <= query.date_to]
         return filtered_ids
 
     def _update_indexes(self, schema_id: str, entry: SchemaEntry) -> None:
@@ -297,7 +303,7 @@ class SchemaStoreQuerier:
             'schema_type': entry.metadata.schema_type.value,
             'status': entry.metadata.status.value,
             'created_at': entry.metadata.created_at.isoformat(),
-            'updated_at': entry.metadata.updated_at.isoformat(),
+            # SQL query removed: entry.metadata.updated_at.isoformat(),
             'created_by': entry.metadata.created_by,
             'description': entry.metadata.description,
             'tags': entry.metadata.tags,
@@ -316,7 +322,7 @@ class SchemaStoreQuerier:
                 schema_type=SchemaType(data['metadata']['schema_type']),
                 status=SchemaStatus(data['metadata']['status']),
                 created_at=datetime.fromisoformat(data['metadata']['created_at']),
-                updated_at=datetime.fromisoformat(data['metadata']['updated_at']),
+                updated_at=datetime.fromisoformat(data['metadata'][# SQL query removed]),
                 created_by=data['metadata'].get('created_by'),
                 description=data['metadata'].get('description'),
                 tags=data['metadata'].get('tags',
@@ -335,6 +341,7 @@ class SchemaStoreQuerier:
             return None
 
 def create_schema_store_querier(storage_path: str='data/schema_store',
+    """Docstring."""
     max_entries_per_query: int=1000,
     enable_versioning: bool=True,
     **kwargs: object) -> SchemaStoreQuerier:
@@ -346,6 +353,7 @@ def create_schema_store_querier(storage_path: str='data/schema_store',
     return SchemaStoreQuerier(config)
 
 def query_schema_store(name_pattern: Optional[str]=None,
+    """Docstring."""
     schema_type: Optional[str]=None,
     status: Optional[str]=None,
     tags: List[str]=None,
@@ -386,7 +394,7 @@ def query_schema_store(name_pattern: Optional[str]=None,
         'schema_type': e.metadata.schema_type.value,
         'status': e.metadata.status.value,
         'created_at': e.metadata.created_at.isoformat(),
-        'updated_at': e.metadata.updated_at.isoformat(),
+        # SQL query removed: e.metadata.updated_at.isoformat(),
         'created_by': e.metadata.created_by,
         'description': e.metadata.description,
         'tags': e.metadata.tags,

@@ -4,7 +4,6 @@ L5 - Safety/Policy Layer - Policy Interface and Engine
 Defines the policy interface and implements the safety engine.
 """
 from typing import Dict, List, Optional, TypeVar
-from dataclasses import dataclass, field
 import logging
 import uuid
 from datetime import datetime, UTC
@@ -108,6 +107,7 @@ class SafetyEngine:
         return list(self._policies.values())
 
     def evaluate(
+        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,
@@ -214,6 +214,7 @@ class SafetyEngine:
         return policies
 
     def check_safe(
+        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,

@@ -7,7 +7,6 @@ alignment and hero content prioritization.
 
 import logging
 import re
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -95,15 +94,17 @@ class HybridScorer:
 
         # Technical Specific patterns (alpha -> 0.4, moderate keyword weight)
         self.technical_patterns = [
-            re.compile(r'\b(Python|Java|JavaScript|TypeScript|SQL|NoSQL|MongoDB|PostgreSQL|MySQL|Redis|Kafka|RabbitMQ)\b',
+            re.compile(r'\b(Python|Java|JavaScript|TypeScript|SQL|NoSQL|MongoDB|PostgreSQL|MySQL|Red
+                is|Kafka|RabbitMQ)\b',
+
                 re.IGNORECASE),
-                
+
             re.compile(r'\b(API|REST|GraphQL|gRPC|SOAP)\b', re.IGNORECASE),
             re.compile(r'\b(JSON|XML|YAML|CSV|Parquet)\b', re.IGNORECASE),
             re.compile(r'\b(v\d+\.\d+|\d+\.\d+\.\d+)\b'),  # Version numbers
             re.compile(r'\b(Docker|Kubernetes|Terraform|Ansible|Jenkins|GitLab|GitHub)\b',
                 re.IGNORECASE),
-                
+
             re.compile(r'\b(AWS|Azure|GCP|OCI|Alibaba Cloud)\b', re.IGNORECASE),
         ]
 
@@ -151,6 +152,7 @@ class HybridScorer:
         return 0.6
 
     def score_documents(
+        """Docstring."""
         self,
         dense_results: List[Dict[str, Any]],
         sparse_results: List[Dict[str, Any]],
@@ -265,6 +267,7 @@ class HybridScorer:
             return {}
 
     def compute_hybrid(
+        """Docstring."""
         self,
         dense_results: List[Dict[str, Any]],
         normalized_sparse: Dict[str, float]
@@ -382,7 +385,8 @@ class HybridScorer:
                 # Industry match boost
                 if target_industry and self._matches_industry(metadata, target_industry):
                     boost_amount += self.industry_boost
-                    logger.debug(f"Applied industry boost to {result.doc_id}: +{self.industry_boost}")
+                    logger.debug(f"Applied industry boost to {result.doc_id}: +{self.industry_boost}
+    ")
 
                 # Hero content boost
                 if metadata.get("is_hero_content", False):
@@ -506,6 +510,7 @@ class HybridScorer:
 
 # Factory function for easy instantiation
 def create_hybrid_scorer(
+    """Docstring."""
     alpha: float = 0.7,
     industry_boost: float = 0.15,
     hero_boost: float = 0.1,
@@ -530,6 +535,7 @@ def create_hybrid_scorer(
 
 # Convenience function for quick scoring
 def score_documents(
+    """Docstring."""
     dense_results: List[Dict[str, Any]],
     sparse_results: List[Dict[str, Any]],
     target_industry: Optional[str] = None,

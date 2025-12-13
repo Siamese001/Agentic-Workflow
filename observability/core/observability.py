@@ -16,11 +16,11 @@ Non-responsibilities:
 # FILE: observability.py
 
 
-# from archives.legacy_root_folders.runtime.observability.spans import *  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.runtime.observability.traces import *  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.runtime.observability.metrics import *  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.runtime.observability.events import *  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.runtime.observability.emitters import *  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.runtime.observability.spans import *  # DEPRECATED: Archive i...
+# from archives.legacy_root_folders.runtime.observability.traces import *  # DEPRECATED: Archive ...
+# from archives.legacy_root_folders.runtime.observability.metrics import *  # DEPRECATED: Archive...
+# from archives.legacy_root_folders.runtime.observability.events import *  # DEPRECATED: Archive ...
+# from archives.legacy_root_folders.runtime.observability.emitters import *  # DEPRECATED: Archiv...
 
 def get_all_events() -> list:
     """Backward-compatible alias for get_events()."""

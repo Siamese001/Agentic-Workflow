@@ -38,6 +38,7 @@ class SPIFFEManager:
                 'default_ttl': default_ttl_seconds})
 
     def create_identity(self,
+        """Docstring."""
         agent_name: str,
         agent_type: IdentityType,
         namespace: str='default',
@@ -112,6 +113,7 @@ class SPIFFEManager:
             reason='Identity verified successfully')
 
     def rotate_credentials(self,
+        """Docstring."""
         spiffe_id: str,
         ttl_seconds: Optional[int]=None) -> Optional[AgentIdentity]:
         """Rotate credentials for an existing identity.
@@ -167,6 +169,7 @@ class SPIFFEManager:
         return self._identities.get(spiffe_id)
 
     def list_identities(self,
+        """Docstring."""
         agent_type: Optional[IdentityType]=None,
         namespace: Optional[str]=None) -> List[AgentIdentity]:
         """List all identities.
@@ -230,6 +233,7 @@ class SPIFFEManager:
         return (public_key, private_key)
 
 def create_spiffe_manager(trust_domain: TrustDomain=TrustDomain.LOCAL,
+    """Docstring."""
     default_ttl_seconds: int=3600) -> SPIFFEManager:
     """Factory function to create SPIFFE manager.
 

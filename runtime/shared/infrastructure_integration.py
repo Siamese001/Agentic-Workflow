@@ -8,11 +8,6 @@ infrastructure, ensuring all components work together seamlessly.
 import asyncio
 import logging
 
-from .event_bus_integration import HardenedEventBus, get_hardened_event_bus
-from .core.model_router import ModelRouter, TaskType, get_model_router
-from .bulkhead_manager import BulkheadManager, TaskPriority, get_bulkhead_manager
-from .circuit_breaker import get_circuit_breaker_registry
-from .dead_letter_queue import get_dead_letter_queue, FailureReason
 from .health_check import HealthCheckRegistry, initialize_system_health_checks
 
 logger = logging.getLogger(__name__)
@@ -77,7 +72,6 @@ class InfrastructureOrchestrator:
 
     async def _register_component_health_checks(self) -> None:
         """Register health checks for new components."""
-        from .health_check import HealthChecker, ComponentType, HealthCheckResult, HealthStatus
 
         # Event bus health check
         class EventBusHealthChecker(HealthChecker):
@@ -89,8 +83,10 @@ class InfrastructureOrchestrator:
                 """TODO: Add docstring."""
 
             async def check_health(self) -> HealthCheckResult:
+                """Docstring."""
                 health = await self.event_bus.health_check()
-                status = HealthStatus.HEALTHY if health["event_bus"]["status"] == "healthy" else HealthStatus.UNHEALTHY
+                status = HealthStatus.HEALTHY if health["event_bus"]["status"] == "healthy" else Hea
+    lthStatus.UNHEALTHY
 
                 return HealthCheckResult(
                     component_name="event_bus",
@@ -105,12 +101,14 @@ class InfrastructureOrchestrator:
 
             @property
             def component_name(self) -> str:
+                """Docstring."""
                 return "event_bus"
                 """TODO: Add docstring."""
 
 
             @property
             def component_type(self) -> ComponentType:
+                """Docstring."""
                 return ComponentType.CUSTOM
 
         # Provenance tracker health check
@@ -119,10 +117,12 @@ class InfrastructureOrchestrator:
                 """TODO: Add docstring."""
 
         class ProvenanceHealthChecker(HealthChecker):
+            """Docstring."""
             def __init__(self, tracker: ProvenanceTracker):
                 self.tracker = tracker
 
             async def check_health(self) -> HealthCheckResult:
+                """Docstring."""
                 health = await self.tracker.health_check()
                 status = HealthStatus(health["status"])
 
@@ -141,6 +141,7 @@ class InfrastructureOrchestrator:
 
             @property
             def component_name(self) -> str:
+                """Docstring."""
                 return "provenance_tracker"
 
             @property
@@ -153,10 +154,12 @@ class InfrastructureOrchestrator:
 
         # Model router health check
         class ModelRouterHealthChecker(HealthChecker):
+            """Docstring."""
             def __init__(self, router: ModelRouter):
                 self.router = router
 
             async def check_health(self) -> HealthCheckResult:
+                """Docstring."""
                 stats = self.router.get_stats()
                 budget_info = stats["budget_info"]
 
@@ -186,15 +189,18 @@ class InfrastructureOrchestrator:
 
             @property
             def component_name(self) -> str:
+                """Docstring."""
                 return "model_router"
 
             @property
             def component_type(self) -> ComponentType:
+                """Docstring."""
                 return ComponentType.CUSTOM
 
         # Register all health checkers
         await self.health_registry.register_checker(EventBusHealthChecker(self.event_bus))
-        await self.health_registry.register_checker(ProvenanceHealthChecker(self.provenance_tracker))
+        await self.health_registry.register_checker(ProvenanceHealthChecker(self.provenance_tracker)
+    )
         await self.health_registry.register_checker(ModelRouterHealthChecker(self.model_router))
 
         logger.info("Registered component health checks")
@@ -293,6 +299,7 @@ class InfrastructureOrchestrator:
             logger.error(f"Failed to handle agent completed event: {e}")
 
     async def execute_with_infrastructure(
+        """Docstring."""
         self,
         task_type: TaskType,
         prompt: str,
@@ -493,6 +500,7 @@ async def get_infrastructure_orchestrator() -> InfrastructureOrchestrator:
 
 # Convenience functions
 async def execute_task(
+    """Docstring."""
     task_type: TaskType,
     prompt: str,
     sources: Optional[List[tuple]] = None,
@@ -534,6 +542,7 @@ async def get_system_status() -> Dict[str, Any]:
 
 # Decorator for automatic infrastructure integration
 def with_infrastructure(
+    """Docstring."""
     task_type: TaskType,
     complexity_score: int = 1,
     priority: TaskPriority = TaskPriority.MEDIUM
@@ -554,6 +563,7 @@ def with_infrastructure(
         """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
+            """Docstring."""
             # Extract prompt and sources
             prompt = kwargs.get("prompt", str(args[0]) if args else "")
             sources = kwargs.get("sources", [])

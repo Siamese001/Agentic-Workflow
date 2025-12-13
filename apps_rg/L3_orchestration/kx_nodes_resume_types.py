@@ -1,8 +1,6 @@
 """Types and models for kx_nodes_resume."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from enum import Enum
 
 class ResumeKNodeType(str, Enum):
     """Resume K.X node type classification."""

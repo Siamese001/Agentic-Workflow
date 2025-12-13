@@ -1,7 +1,6 @@
 """Backward compatibility shim for outreach_orchestration_config.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original outreach_orchestration_config.py contained 12 top-level definitions which

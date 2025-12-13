@@ -5,7 +5,6 @@ Implements ordered fallback chains when primary providers fail.
 """
 
 import logging
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Awaitable
 
@@ -102,6 +101,7 @@ class FallbackManager:
             )
 
     def register_chain(
+        """Docstring."""
         self,
         tool_name: str,
         providers: List[ToolProvider],
@@ -128,6 +128,7 @@ class FallbackManager:
             )
 
     async def execute_with_fallback(
+        """Docstring."""
         self,
         tool_name: str,
         parameters: Dict[str, Any],
@@ -185,6 +186,7 @@ class FallbackManager:
                 "reason": "circuit_breaker_open"})
 
     async def _try_provider(self,
+        """Docstring."""
         tool_name: str,
         provider,
         parameters: Dict,
@@ -252,6 +254,7 @@ class FallbackManager:
         return self._fallback_chains.get(tool_name, [])
 
     def get_available_providers(
+        """Docstring."""
         self,
         tool_name: str,
     ) -> List[ToolProvider]:
@@ -267,6 +270,7 @@ class FallbackManager:
         return [p for p in providers if p.is_available()]
 
 def create_fallback_manager(
+    """Docstring."""
     strategy: FallbackStrategy = FallbackStrategy.SEQUENTIAL,
 ) -> FallbackManager:
     """Factory function to create fallback manager.

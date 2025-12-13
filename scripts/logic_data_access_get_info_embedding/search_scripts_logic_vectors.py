@@ -5,10 +5,8 @@ including semantic search, similarity matching, and context retrieval.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
 import logging
 from datetime import datetime
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +135,7 @@ class ScriptsLogicVectorSearcher:
             )
 
     def add_vector(self,
+        """Docstring."""
         vector_id: str,
         vector: List[float],
         content: str,
@@ -156,7 +155,8 @@ class ScriptsLogicVectorSearcher:
         try:
             # Validate vector dimension
             if len(vector) != self.config.dimension:
-                raise ValueError(f"Vector dimension {len(vector)} != expected {self.config.dimension}")
+                raise ValueError(f"Vector dimension {len(vector)} != expected {self.config.dimension
+    }")
 
             # Store vector and metadata
             self._vectors[vector_id] = np.array(vector)
@@ -189,7 +189,7 @@ class ScriptsLogicVectorSearcher:
             del self._vectors[vector_id]
             del self._metadata[vector_id]
             self._update_index()
-            self.logger.debug(f"Deleted vector {vector_id}")
+            self.logger.debug(f# SQL query removed)
             return True
         return False
 
@@ -311,7 +311,8 @@ class ScriptsLogicVectorSearcher:
                         score=score,
                         metadata=metadata if query.include_metadata else {},
                         vector=self._vectors[vector_id].tolist() if query.include_metadata else None,
-                            
+
+
                         timestamp=datetime.fromisoformat(metadata["timestamp"])
                     )
                     results.append(result)
@@ -378,6 +379,7 @@ class ScriptsLogicVectorSearcher:
 
 # Factory function for easy instantiation
 def create_scripts_logic_vector_searcher(
+    """Docstring."""
     index_name: str = "scripts_logic",
     dimension: int = 1536,
     distance_metric: str = "cosine",
@@ -393,6 +395,7 @@ def create_scripts_logic_vector_searcher(
 
 # Convenience function for direct usage
 def search_scripts_logic_vectors(
+    """Docstring."""
     query_text: str,
     search_mode: str = "semantic",
     top_k: int = 10,

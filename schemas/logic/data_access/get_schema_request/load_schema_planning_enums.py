@@ -1,6 +1,5 @@
 """Enum types for load_schema_planning."""
 
-from enum import Enum
 
 class SchemaType(Enum):
     """Types of schemas."""

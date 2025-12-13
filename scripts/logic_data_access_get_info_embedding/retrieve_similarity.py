@@ -5,10 +5,8 @@ including similarity computation, ranking, and batch processing.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
 import logging
 from datetime import datetime
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +151,8 @@ class SimilarityRetriever:
             )
 
             self.logger.info(
-                f"Similarity computed: {len(final_scores)} results above threshold {request.threshold}"
+                f"Similarity computed: {len(final_scores)} results above threshold {request.threshol
+    d}"
             )
 
             return result
@@ -207,7 +206,9 @@ class SimilarityRetriever:
         return results
 
     def find_similar_vectors(self, query_vector: List[float], vector_dict: Dict[str, List[float]],
-                           metric: Optional[SimilarityMetric] = None, top_k: int = 10) -> List[Tuple[str, float]]:
+        """Docstring."""
+                           metric: Optional[SimilarityMetric] = None, top_k: int = 10) -> List[Tuple
+    [str, float]]:
         """Find most similar vectors from a dictionary.
 
         Args:
@@ -263,6 +264,7 @@ class SimilarityRetriever:
             return 0.0
 
     def compute_pairwise_similarity(self, vectors: List[List[float]],
+        """Docstring."""
                               metric: Optional[SimilarityMetric] = None) -> np.ndarray:
         """Compute pairwise similarity matrix.
 
@@ -358,6 +360,7 @@ class SimilarityRetriever:
 
 # Factory function for easy instantiation
 def create_similarity_retriever(
+    """Docstring."""
     default_metric: str = "cosine",
     normalize_vectors: bool = True,
     batch_size: int = 1000,
@@ -373,6 +376,7 @@ def create_similarity_retriever(
 
 # Convenience function for direct usage
 def retrieve_similarity(
+    """Docstring."""
     query_vector: List[float],
     candidate_vectors: List[List[float]],
     metric: str = "cosine",

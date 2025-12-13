@@ -1,6 +1,5 @@
 """Dataclass models for retrieve_schema_similarity."""
 
-from dataclasses import dataclass, field
 # from .retrieve_schema_similarity_enums import *  # Star import removed
 
 @dataclass

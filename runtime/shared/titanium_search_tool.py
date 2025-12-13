@@ -7,7 +7,6 @@ to ensure all agents benefit from the SOTA retrieval system.
 import asyncio
 import logging
 
-from .titanium_rag_pipeline import (
     TitaniumRAGPipeline,
     create_titanium_pipeline
 )
@@ -45,6 +44,7 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
             logger.info(f"  - Phase 1 (Precision): Available")
             logger.info(f"  - Phase 2 (Reasoning): Available")
             logger.info(f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']},
+
                 "
                        f"Cache={component_info['phase_3_sota']['cache_available']}")
 
@@ -75,6 +75,7 @@ async def _create_fallback_pipeline() -> TitaniumRAGPipeline:
     )
 
 async def get_titanium_search_tool(
+    """Docstring."""
     query: str,
     context: Optional[str] = None,
     max_results: int = 5,
@@ -108,7 +109,6 @@ async def get_titanium_search_tool(
             """Actual retrieval function that connects to vector stores."""
             try:
                 # Import vector store clients
-                from agentic_workflow import get_vector_store
 
                 # Get primary vector store (e.g., Chroma)
                 vector_store = get_vector_store()
@@ -190,6 +190,7 @@ async def get_titanium_search_tool(
         return f"Search encountered an error. Please try rephrasing your query."
 
 async def get_titanium_search_with_sources(
+    """Docstring."""
     query: str,
     context: Optional[str] = None
 ) -> Dict[str, Any]:
@@ -197,7 +198,6 @@ async def get_titanium_search_with_sources(
     Get search results with full source information.
 
     This is useful for agents that need to process sources separately
-    from the content (e.g., for citation or verification).
 
     Args:
         query: Search query string
@@ -333,6 +333,7 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
         # Use run_coroutine_threadsafe instead
 
         def run_in_thread():
+            """Docstring."""
             new_loop = asyncio.new_event_loop()
             asyncio.set_event_loop(new_loop)
             try:
@@ -364,7 +365,8 @@ async def legacy_search(query: str) -> str:
 TOOL_REGISTRY = {
     "titanium_search": {
         "function": get_titanium_search_tool,
-        "description": "Search using the Titanium RAG Pipeline with precision, reasoning, and SOTA ranking",
+        "description": "Search using the Titanium RAG Pipeline with precision, reasoning, and SOTA r
+    anking",
         "parameters": {
             "query": {"type": "string", "required": True},
             "context": {"type": "string", "required": False},

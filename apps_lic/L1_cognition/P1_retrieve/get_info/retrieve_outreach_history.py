@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:28:54.035640
 
 import logging
 from typing import Dict, List, Optional
-from shared.result_types import RetrievalResult
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +19,7 @@ class RetrieveOutreachHistory:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
+        """Docstring."""
         query: str,
         filters: Optional[Dict] = None,
         limit: int = 10) -> RetrievalResult:
@@ -37,6 +37,7 @@ class RetrieveOutreachHistory:
         return []
 
 def retrieve(query: str,
+    """Docstring."""
     config: Optional[Dict] = None,
     **kwargs: Dict[str,
     object]) -> RetrievalResult:

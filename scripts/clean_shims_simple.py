@@ -73,14 +73,14 @@ def clean_prompt_governance():
                     lines[i] = f"from .{import_from} import *"
                     break
             filepath.write_text('\n'.join(lines), encoding='utf-8')
-            logger.info(f"Updated {filename}")
+            logger.info(f# SQL query removed)
 
     # Delete intermediate shims
     for filename in to_delete:
         filepath = pg_dir / filename
         if filepath.exists():
             filepath.unlink()
-            logger.info(f"Deleted {filename}")
+            logger.info(f# SQL query removed)
 
     logger.info(f"\nCleaned prompt_governance: {len(updates)} updated, {len(to_delete)} deleted")
 

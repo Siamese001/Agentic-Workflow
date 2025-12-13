@@ -106,6 +106,7 @@ class MockStateManager:
         logger.info(f"  💾 Checkpointed: {state.current_step}")
 
 async def mock_repair_agent(
+    """Docstring."""
     original_content: str,
     feedback: str,
     instruction: str,
@@ -127,7 +128,6 @@ async def demonstrate_validation_chain():
     logger.info("\n=== DEMONSTRATION: ResilientValidationChain ===\n")
 
     # Import the validation chain components
-    from runtime.shared.resilience.validation_gates import (
         ResilientValidationChain,
         ValidationGate,
         create_standard_gates,
@@ -221,7 +221,6 @@ async def demonstrate_checkpoint_recovery():
     workflow_id = "recovery_demo_001"
 
     # Simulate a previous checkpoint
-    from runtime.shared.resilience.atomic_state_manager import WorkflowState
     checkpoint_state = WorkflowState(
         workflow_id=workflow_id,
         current_step="GATE_PASSED_SyntaxCheck",
@@ -286,7 +285,9 @@ async def demonstrate_oscillation_detection():
 
     # Create executor that always returns the same failure
     class OscillatingExecutor:
+        """Docstring."""
         async def execute_k_node(self, messages: List[Dict], **kwargs) -> str:
+            """Docstring."""
             return json.dumps({
                 "status": "FAIL",
                 "confidence": 0.5,
@@ -335,7 +336,6 @@ async def demonstrate_standard_gates():
     """Demonstrate the standard gate configurations."""
     logger.info("\n=== DEMONSTRATION: Standard Gates ===\n")
 
-    from runtime.shared.resilience.validation_gates import create_standard_gates
 
     # Get standard gates
     gates = create_standard_gates()

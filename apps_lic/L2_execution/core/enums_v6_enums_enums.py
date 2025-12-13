@@ -1,6 +1,5 @@
 """Enum types for enums_v6_enums."""
 
-from enum import Enum
 
 class Route(Enum):
     """Message delivery routes"""

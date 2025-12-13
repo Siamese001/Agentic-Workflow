@@ -10,7 +10,6 @@ import logging
 import re
 from enum import Enum
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -70,15 +69,15 @@ class ClaimExtractor:
         self.patterns = {
             "percentage": re.compile(r"(\d+(?:\.\d+)?)%|\b(\d+(?:\.\d+)?\s*percent)\b",
                 re.IGNORECASE),
-                
+
             "currency": re.compile(r"\$(\d+(?:,
                 \d{3})*(?:\.\d+)?)|(\d+(?:,
                 \d{3})*(?:\.\d+)?)\s*(dollars?|usd)",
                 re.IGNORECASE),
-                
+
             "multiplier": re.compile(r"(\d+(?:\.\d+)?)x|(\d+(?:\.\d+)?)\s*(times|fold)",
                 re.IGNORECASE),
-                
+
             "number": re.compile(r"\b(\d+(?:,\d{3})*(?:\.\d+)?)\b"),
             "year": re.compile(r"\b(20\d{2})\b"),
             "duration": re.compile(r"(\d+(?:\.\d+)?)\s*(years?|months?|weeks?|days?)",
@@ -97,6 +96,7 @@ class ClaimExtractor:
         }
 
     def extract_claim(self,
+        """Docstring."""
         text: str) -> Tuple[Optional[str],
         Optional[str],
         Optional[float],
@@ -567,7 +567,7 @@ class FactLedger:
                 setattr(fact, key, value)
 
         fact.last_verified = datetime.utcnow()
-        logger.debug(f"Updated fact: {fact_id}")
+        logger.debug(f# SQL query removed)
 
         return True
 
@@ -584,7 +584,8 @@ class FactLedger:
         # Calculate verification rate
         if stats["verifications_performed"] > 0:
             stats["verification_rate"] = (
-                (stats["verifications_performed"] - stats["conflicts_detected"] - stats["unverified_claims"]) /
+                (stats["verifications_performed"] - stats["conflicts_detected"] - stats["unverified_
+    claims"]) /
                 stats["verifications_performed"]
             )
         else:

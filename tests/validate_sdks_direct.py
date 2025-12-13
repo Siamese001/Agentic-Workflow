@@ -6,6 +6,7 @@ import os
 import importlib
 
 def check_sdk_import(sdk_name, module_path):
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,6 +23,7 @@ def check_env_var(env_var):
     return os.getenv(env_var) is not None
 
 def main():
+    """Docstring."""
     logger.info("=" * 60)
     logger.info("AGENTIC WORKFLOW - DIRECT SDK VALIDATION")
     logger.info("=" * 60)
@@ -110,13 +112,13 @@ def main():
     try:
         # Import directly
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-        import runtime.shared.mcp_tools as mcp_tools
 
         # Create server
         server = mcp_tools.MCPToolServer("test-server")
 
         # Register a test tool
         def test_function(x: int) -> int:
+            """Docstring."""
             return x * 2
 
         server.register_function(
@@ -147,7 +149,6 @@ def main():
     logger.info("-" * 40)
 
     try:
-        import runtime.shared.multi_provider_clients as mp_clients
 
         providers = mp_clients.get_available_providers()
         logger.info(f"✅ Multi-Provider Client: Operational")

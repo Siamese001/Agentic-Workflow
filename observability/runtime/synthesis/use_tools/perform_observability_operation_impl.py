@@ -24,6 +24,7 @@ class ObservabilityOperationAdapter:
         self.logger.info(f'Registered handler for operation: {operation_type}')
 
     def perform_operation(self,
+        """Docstring."""
         context: OperationContext,
         parameters: OperationParameters) -> OperationOutcome:
         """Perform observability operation.
@@ -59,6 +60,7 @@ class ObservabilityOperationAdapter:
             return self._create_error_outcome(context.operation_id, str(e), start_time)
 
     def perform_batch_operations(self,
+        """Docstring."""
         contexts: List[OperationContext],
         parameters_list: List[OperationParameters]) -> List[OperationOutcome]:
         """Perform multiple operations.
@@ -79,6 +81,7 @@ class ObservabilityOperationAdapter:
         return results
 
     def perform_aggregated_operation(self,
+        """Docstring."""
         contexts: List[OperationContext],
         parameters: OperationParameters) -> OperationOutcome:
         """Perform operation with aggregation across multiple contexts.
@@ -118,6 +121,7 @@ class ObservabilityOperationAdapter:
         return outcome
 
     def get_operation_history(self,
+        """Docstring."""
         operation_id: Optional[str]=None,
         time_range: Optional[Tuple[datetime,
         datetime]]=None) -> List[Dict[str,
@@ -181,7 +185,8 @@ class ObservabilityOperationAdapter:
                         retrying: {last_error}')
                     await asyncio.sleep(2 ** attempt)
                 else:
-                    self.logger.error(f'Operation failed after {attempt + 1} attempts: {last_error}')
+                    self.logger.error(f'Operation failed after {attempt + 1} attempts: {last_error}'
+    )
         return self._create_error_outcome(context.operation_id, last_error, time.time())
 
     def _get_from_cache(self,
@@ -209,7 +214,8 @@ class ObservabilityOperationAdapter:
         context: OperationContext,
         parameters: OperationParameters) -> str:
         """Generate cache key for operation."""
-        key_data = {'operation_type': parameters.operation_type, 'target': context.target, 'scope': context.scope.value, 'config': parameters.config, 'filters': parameters.filters}
+        key_data = {'operation_type': parameters.operation_type, 'target': context.target, 'scope':
+    context.scope.value, 'config': parameters.config, 'filters': parameters.filters}
         return f'obs_op_{hash(json.dumps(key_data, sort_keys=True))}'
 
     def _group_by_type(self, data: List[Any]) -> Dict[str, List[Any]]:
@@ -316,13 +322,15 @@ class ObservabilityOperationAdapter:
         def _trace_query_handler(exec_data: Dict[str, Any]) -> Dict[str, Any]:
             context = exec_data['context']
             trace_id = context.correlation_id
-            return {'data': {'trace_id': trace_id, 'spans': [{'operation': 'span1', 'duration': 0.1}, {'operation': 'span2', 'duration': 0.2}]}, 'count': 1}
+            return {'data': {'trace_id': trace_id, 'spans': [{'operation': 'span1', 'duration': 0.1}
+    , {'operation': 'span2', 'duration': 0.2}]}, 'count': 1}
         self.register_handler('health_check', _health_check_handler)
         self.register_handler('collect_metrics', _metrics_handler)
         self.register_handler('query_logs', _log_query_handler)
         self.register_handler('query_traces', _trace_query_handler)
 
 def create_observability_operation_adapter(timeout: float=30.0,
+    """Docstring."""
     retry_attempts: int=3,
     enable_caching: bool=True,
     **kwargs: object) -> ObservabilityOperationAdapter:
@@ -334,6 +342,7 @@ def create_observability_operation_adapter(timeout: float=30.0,
     return ObservabilityOperationAdapter(config)
 
 def perform_observability_operation(operation_id: str,
+    """Docstring."""
     category: str,
     scope: str,
     target: str,
@@ -361,4 +370,6 @@ def perform_observability_operation(operation_id: str,
         target=target)
     parameters = OperationParameters(operation_type=operation_type, config=config or {})
     outcome = adapter.perform_operation(context, parameters)
-    return {'operation_id': outcome.operation_id, 'success': outcome.success, 'data': outcome.data, 'count': outcome.count, 'aggregated_values': outcome.aggregated_values, 'error': outcome.error, 'warnings': outcome.warnings, 'execution_time': outcome.execution_time}
+    return {'operation_id': outcome.operation_id, 'success': outcome.success, 'data': outcome.data,
+    'count': outcome.count, 'aggregated_values': outcome.aggregated_values, 'error': outcome.error,
+        'warnings': outcome.warnings, 'execution_time': outcome.execution_time}

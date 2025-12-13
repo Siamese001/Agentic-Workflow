@@ -1,7 +1,6 @@
 """Split module 1 for result_types_types."""
 
 from typing import Any, Dict, List, Optional
-from enum import Enum
 
 class ResultStatus(Enum):
     """Status of an operation result."""

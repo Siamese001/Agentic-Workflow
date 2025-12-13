@@ -1,5 +1,4 @@
 
-from pydantic import BaseModel, Field
 
 class BudgetProfile(BaseModel):
     """High-level budget profile for cost/latency envelopes.

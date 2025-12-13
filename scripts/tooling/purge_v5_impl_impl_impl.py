@@ -45,7 +45,7 @@ def _cleanup_remaining_apps_dir(apps_dir: Path, log: Dict[str, List[str]]) -> No
                     shutil.move(str(item), str(dest))
         try:
             shutil.rmtree(apps_dir)
-            log['deleted_dirs'].append(str(apps_dir))
+            log[# SQL query removed].append(str(apps_dir))
         except (ValueError, TypeError, KeyError) as e:
             log['errors'].append(f'Failed to delete {apps_dir}: {e}')
 
@@ -137,7 +137,7 @@ def update_yaml_files() -> None:
         content = content.replace('09_apps/apps_rg', 'apps_rg')
         content = content.replace('09_apps.', '')
         if 'numbered_folder_exception:' not in content:
-            exception_section = '\n# ---------------------------------------------------------------------\n# 12. NUMBERED FOLDER EXCEPTION — ETERNAL LAW\n# ---------------------------------------------------------------------\nnumbered_folder_exception:\n  "06_data":\n    reason: "Pure curated knowledge plane — never imported as code"\n    permanent: true\n'
+            exception_section = '\n# ------------------------------------------------------------...
             content += exception_section
         meta_yaml.write_text(content, encoding='utf-8')
 

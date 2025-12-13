@@ -2,9 +2,7 @@
 import time
 import asyncio
 from typing import Dict, List, Optional
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
 
 class LogLevel(Enum):
     """TODO: Add docstring."""
@@ -19,6 +17,7 @@ class LogLevel(Enum):
     """TODO: Add docstring."""
 
 class LogEntry:
+    """Docstring."""
     level: LogLevel
     message: str
     timestamp: datetime
@@ -28,6 +27,7 @@ class LogEntry:
 
 @dataclass
 class Span:
+    """Docstring."""
     name: str
     trace_id: str
     span_id: str
@@ -60,7 +60,8 @@ class TestStructuredLogging:
 
     def test_log_levels_ordering(self):
         """Nominal: Log levels have correct ordering."""
-        levels = [LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARNING, LogLevel.ERROR, LogLevel.CRITICAL]
+        levels = [LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARNING, LogLevel.ERROR, LogLevel.CRITICAL
+    ]
         assert len(levels) == 5
 
     def test_log_serialization(self):

@@ -8,7 +8,6 @@ Generated: 2025-12-07T13:28:54.247080
 import logging
 import time
 from typing import Dict, Optional
-from shared.result_types import ExecutionResult
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +42,7 @@ class CreateExperienceBullets:
         return {"action": action, "params": params, "status": "completed"}
 
 def execute(action: str,
+    """Docstring."""
     params: Dict[str,
     object],
     config: Optional[Dict] = None) -> ExecutionResult:

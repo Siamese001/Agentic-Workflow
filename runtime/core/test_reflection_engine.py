@@ -3,7 +3,6 @@
 import pytest
 import asyncio
 
-from .reflection_engine import (
     ReflectionEngine,
     ReflectionConfig,
     CritiqueResult,
@@ -161,6 +160,7 @@ class TestSubatomicHopReflection:
     async def test_successful_execution_with_reflection(self):
         """Test successful hop execution with reflection validation."""
         def good_hop(x):
+            """Docstring."""
             return {"result": x * 2, "status": "success"}
 
         hop = SubatomicHop(good_hop, self.config)
@@ -180,6 +180,7 @@ class TestSubatomicHopReflection:
         attempt_count = 0
 
         def flaky_hop(x):
+            """Docstring."""
             nonlocal attempt_count
             attempt_count += 1
 
@@ -200,6 +201,7 @@ class TestSubatomicHopReflection:
     async def test_critique_max_loops_exceeded(self):
         """Test failure when max critique loops exceeded."""
         def always_bad_hop(x):
+            """Docstring."""
             return {"result": None}  # Always fails validation
 
         hop = SubatomicHop(always_bad_hop, self.config)
@@ -214,6 +216,7 @@ class TestSubatomicHopReflection:
     async def test_critique_feedback_incorporation(self):
         """Test that critique feedback is incorporated in retry."""
         def learning_hop(x):
+            """Docstring."""
             plan = hop.context.get("execution_plan", {})
 
             if "feedback" in plan:
@@ -244,6 +247,7 @@ class TestSubatomicHopReflection:
         )
 
         def test_hop(x):
+            """Docstring."""
             return {"output": x}  # Missing 'result' field
 
         hop = SubatomicHop(test_hop, custom_config)
@@ -255,6 +259,7 @@ class TestSubatomicHopReflection:
     async def test_reflection_statistics(self):
         """Test reflection engine statistics during hop execution."""
         def good_hop(x):
+            """Docstring."""
             return {"data": x}
 
         hop = SubatomicHop(good_hop, self.config)

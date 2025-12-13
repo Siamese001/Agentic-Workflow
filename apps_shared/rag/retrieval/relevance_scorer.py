@@ -5,8 +5,6 @@ Calculates relevance of context chunks to current Think-Act-Observe step.
 """
 
 import logging
-from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -87,6 +85,7 @@ class RelevanceScorer:
             )
 
     def score_chunk(
+        """Docstring."""
         self,
         chunk_id: str,
         chunk_content: str,
@@ -133,6 +132,7 @@ class RelevanceScorer:
         )
 
     def score_chunks(
+        """Docstring."""
         self,
         chunks: List[Dict[str, Any]],
         query: str,
@@ -255,6 +255,7 @@ class RelevanceScorer:
         return 0.5  # Default middle score
 
 def create_relevance_scorer(
+    """Docstring."""
     method: RelevanceMethod = RelevanceMethod.HYBRID,
 ) -> RelevanceScorer:
     """Factory function to create relevance scorer.

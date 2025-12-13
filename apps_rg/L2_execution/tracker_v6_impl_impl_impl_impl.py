@@ -10,6 +10,7 @@ class ProvenanceTracker:
         self._provenance_maps = DEFAULT_PROVENANCE_MAPS.copy()
 
     def register_bullet(self,
+        """Docstring."""
         bullet_text: str,
         category: BulletCategory,
         sources: Optional[List[ProvenanceSource]]=None,
@@ -33,7 +34,8 @@ class ProvenanceTracker:
             category=category,
             sources=sources or [])
         if provenance.sources:
-            provenance.confidence_score = sum((s.confidence for s in provenance.sources)) / len(provenance.sources)
+            provenance.confidence_score = sum((s.confidence for s in provenance.sources)) / len(prov
+    enance.sources)
         self._bullets[bullet_id] = provenance
         return bullet_id
 
@@ -43,14 +45,16 @@ class ProvenanceTracker:
             return False
         self._bullets[bullet_id].sources.append(source)
         sources = self._bullets[bullet_id].sources
-        self._bullets[bullet_id].confidence_score = sum((s.confidence for s in sources)) / len(sources)
+        self._bullets[bullet_id].confidence_score = sum((s.confidence for s in sources)) / len(sourc
+    es)
         return True
 
     def log_transformation(self, bullet_id: str, transformation: str) -> bool:
         """Log a transformation applied to a bullet."""
         if bullet_id not in self._bullets:
             return False
-        self._bullets[bullet_id].transformation_log.append(f'{datetime.now().isoformat()}: {transformation}')
+        self._bullets[bullet_id].transformation_log.append(f'{datetime.now().isoformat()}: {transfor
+    mation}')
         return True
 
     def get_bullet(self, bullet_id: str) -> Optional[BulletProvenance]:
@@ -113,6 +117,7 @@ class ProvenanceTracker:
         """Export a complete provenance report."""
         return {'total_bullets': len(self._bullets),
             'by_category': {cat.value: len(self.get_bullets_by_category(cat)) for cat in BulletCategory},
+
             'low_confidence_count': len(self.get_low_confidence_bullets()),
             'ungrounded_count': len(self.get_ungrounded_bullets()),
             'bullets': [{'id': b.bullet_id,
@@ -128,7 +133,8 @@ class ProvenanceTracker:
         return hashlib.md5(hash_input.encode()).hexdigest()[:12]
 
 class BulletSelector:
-    """Selector for choosing bullets based on JD fit and provenance."""
+    """Docstring."""
+    ""# SQL query removed""
 
     def __init__(self, tracker: ProvenanceTracker) -> None:
         """Initialize the selector."""
@@ -207,6 +213,7 @@ def create_bullet_selector(tracker: Optional[ProvenanceTracker]=None) -> BulletS
     return BulletSelector(tracker)
 
 def create_provenance_source(source_type: ProvenanceType,
+    """Docstring."""
     source_text: str,
     source_id: Optional[str]=None,
     confidence: float=1.0) -> ProvenanceSource:

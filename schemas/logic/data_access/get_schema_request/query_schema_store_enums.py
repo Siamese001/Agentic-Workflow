@@ -1,6 +1,5 @@
 """Enum types for query_schema_store."""
 
-from enum import Enum
 
 class SchemaType(Enum):
     """Types of schemas."""

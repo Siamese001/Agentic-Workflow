@@ -17,14 +17,12 @@ Non-responsibilities:
 """
 
 
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
-from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 @dataclass
 class SpecificityProseConfig:
+    """Docstring."""
     paragraph_count: int = 3
     min_words_per_paragraph: int = 85
     max_words_per_paragraph: int = 100
@@ -34,12 +32,14 @@ class SpecificityProseConfig:
 
 @dataclass
 class CompanySpecificDetail:
+    """Docstring."""
     detail: str
     category: str
     source: str
 
 @dataclass
 class SpecificityProseResult:
+    """Docstring."""
     cover_letter: str
     paragraphs: List[str]
     company_specifics: List[CompanySpecificDetail]
@@ -80,6 +80,7 @@ class SpecificityProseEngine:
         )
 
     def generate_cover_letter(
+        """Docstring."""
         self,
         company_research: Dict[str, Any],
         resume_highlights: List[str],
@@ -218,11 +219,20 @@ class SpecificityProseEngine:
         product = company_research.get('product', 'innovative platform')
         mission = company_research.get('mission', 'transform the industry')
 
-        return f"""I am writing to express my strong interest in the Chief Technology Officer position at {company_name}. Your company's {product} represents a compelling opportunity to drive technological innovation at scale, and I am particularly drawn to your mission to {mission}.
+        return f"""I am writing to express my strong interest in the Chief Technology Officer positi
+    on at {company_name}. Your company's {product} represents a compelling opportunity to drive tech
+        nological innovation at scale, and I am particularly drawn to your mission to {mission}.
 
-Throughout my career, I have consistently delivered transformative results in similar high-growth environments. At my previous role, I led a cloud migration initiative that reduced infrastructure costs by 40% while improving system reliability, directly aligning with {company_name}'s focus on operational excellence. I also architected a microservices platform that enabled 3x faster feature deployment, demonstrating the kind of scalable architecture that would support your expansion goals.
+Throughout my career, I have consistently delivered transformative results in similar high-growth en
+    vironments. At my previous role, I led a cloud migration initiative that reduced infrastructure
+        costs by 40% while improving system reliability, directly aligning with {company_name}'s foc
+            us on operational excellence. I also architected a microservices platform that enabled 3
+                x faster feature deployment, demonstrating the kind of scalable architecture that would support your expansion goals.
 
-I would welcome the opportunity to discuss how my experience in building high-performing engineering teams and delivering strategic technology initiatives can contribute to {company_name}'s continued success. Thank you for considering my application, and I look forward to the possibility of contributing to your innovative work in transforming the industry."""
+I would welcome the opportunity to discuss how my experience in building high-performing engineering
+    teams and delivering strategic technology initiatives can contribute to {company_name}'s continu
+        ed success. Thank you for considering my application, and I look forward to the possibility
+            of contributing to your innovative work in transforming the industry."""
 
     def _split_paragraphs(self, text: str) -> List[str]:
         """Split text into paragraphs"""
@@ -241,7 +251,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                 severity='BLOCK',
                 message=f"BLOCKED: Expected {self.config.paragraph_count} paragraphs,
                     got {len(paragraphs)}",
-                    
+
                 details={'expected': self.config.paragraph_count, 'actual': len(paragraphs)}
             )
 
@@ -249,9 +259,11 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         for i, para in enumerate(paragraphs, 1):
             word_count = len(para.split())
             if word_count < self.config.min_words_per_paragraph:
-                violations.append(f"Paragraph {i}: {word_count} words (min {self.config.min_words_per_paragraph})")
+                violations.append(f"Paragraph {i}: {word_count} words (min {self.config.min_words_pe
+    r_paragraph})")
             elif word_count > self.config.max_words_per_paragraph:
-                violations.append(f"Paragraph {i}: {word_count} words (max {self.config.max_words_per_paragraph})")
+                violations.append(f"Paragraph {i}: {word_count} words (max {self.config.max_words_pe
+    r_paragraph})")
 
         if violations:
             return ValidationResult(
@@ -267,7 +279,8 @@ I would welcome the opportunity to discuss how my experience in building high-pe
             passed=True,
             severity='INFO',
             message=f"Paragraph structure valid: {len(paragraphs)} paragraphs with correct word counts",
-                
+
+
             signature=f"PARA:OK:{len(paragraphs)}"
         )
 
@@ -315,8 +328,10 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                 gate_id='VG_COMPANY_SPECIFICS',
                 passed=True,
                 severity='INFO',
-                message=f"Company specifics satisfied: {len(company_specifics)} details (min {self.config.min_company_specifics})",
-                    
+                message=f"Company specifics satisfied: {len(company_specifics)} details (min {self.c
+                    onfig.min_company_specifics})",
+
+
                 signature=f"SPECIFICS:OK:{len(company_specifics)}",
                 details={
                     'count': len(company_specifics),
@@ -328,8 +343,10 @@ I would welcome the opportunity to discuss how my experience in building high-pe
             gate_id='VG_COMPANY_SPECIFICS',
             passed=False,
             severity='BLOCK',
-            message=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details (min {self.config.min_company_specifics})",
-                
+            message=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details (mi
+                n {self.config.min_company_specifics})",
+
+
             details={'count': len(company_specifics),
                 'min_required': self.config.min_company_specifics}
         )
@@ -355,6 +372,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         return generic_ratio > 0.02
 
 def create_specificity_prose_engine(
+    """Docstring."""
     config: Optional[SpecificityProseConfig] = None
 ) -> SpecificityProseEngine:
     """Factory function to create SpecificityProseEngine instance"""

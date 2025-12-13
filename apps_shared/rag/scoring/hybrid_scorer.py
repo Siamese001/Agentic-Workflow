@@ -3,11 +3,9 @@
 Combines multiple scoring strategies for optimal document ranking.
 """
 
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 import math
 import re
-from collections import Counter
 
 @dataclass
 class ScoringWeights:
@@ -66,7 +64,8 @@ class BM25Scorer:
                 self.doc_freqs[term] = self.doc_freqs.get(term, 0) + 1
 
         # Calculate average document length
-        self.avg_doc_length = sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else 0
+        self.avg_doc_length = sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else
+    0
 
         # Store tokenized documents for scoring
         self.documents = all_terms
@@ -223,6 +222,7 @@ class HybridScorer:
         return 0.5
 
     def calculate_hybrid_score(self,
+        """Docstring."""
         vector_score: float,
         keyword_score: float,
         weights: Optional[Dict[str,

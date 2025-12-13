@@ -1,7 +1,6 @@
 """Backward compatibility shim for test_structure_audit.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original test_structure_audit.py contained 8 top-level definitions which

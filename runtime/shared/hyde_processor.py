@@ -6,8 +6,6 @@ search toward the most relevant content for each recipient type.
 """
 
 import logging
-from dataclasses import dataclass, field
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -212,6 +210,7 @@ class HyDEProcessor:
         logger.info(f"Initialized HyDEProcessor with {len(HYDE_TEMPLATES)} templates")
 
     def expand_query(
+        """Docstring."""
         self,
         original_query: str,
         archetype: str,
@@ -283,6 +282,7 @@ class HyDEProcessor:
             )
 
     def generate_hypothetical_doc(
+        """Docstring."""
         self,
         query: str,
         archetype: str,
@@ -422,13 +422,17 @@ class HyDEProcessor:
         """
         # Simple mock based on archetype
         if "CTO" in archetype or "VP" in archetype:
-            return f"Architected scalable {query} solution handling 10M+ requests, reducing latency by 60% through distributed systems design and microservices optimization in {industry}."
+            return f"Architected scalable {query} solution handling 10M+ requests, reducing latency
+    by 60% through distributed systems design and microservices optimization in {industry}."
         elif "CEO" in archetype or "Founder" in archetype:
-            return f"Drove {query} strategy resulting in 200% revenue growth and market expansion, securing $50M in funding while building a 100-person team in {industry}."
+            return f"Drove {query} strategy resulting in 200% revenue growth and market expansion, s
+    ecuring $50M in funding while building a 100-person team in {industry}."
         elif "Recruiter" in archetype:
-            return f"5+ years experience in {query} with proven track record of hiring top talent, full-cycle recruiting, and building high-performing teams in {industry}."
+            return f"5+ years experience in {query} with proven track record of hiring top talent, f
+    ull-cycle recruiting, and building high-performing teams in {industry}."
         else:
-            return f"Delivered impactful {query} solutions achieving measurable business outcomes through technical excellence and strategic thinking in {industry}."
+            return f"Delivered impactful {query} solutions achieving measurable business outcomes th
+    rough technical excellence and strategic thinking in {industry}."
 
     def _keyword_fallback(self, query: str, industry: Optional[str] = None) -> str:
         """Fallback expansion using keyword enhancement.
@@ -463,6 +467,7 @@ class HyDEProcessor:
 
 # Factory function for easy instantiation
 def create_hyde_processor(
+    """Docstring."""
     llm_client: Optional[Any] = None,
     default_industry: str = "Technology",
     max_retries: int = 2
@@ -486,6 +491,7 @@ def create_hyde_processor(
 
 # Convenience function for quick expansion
 def expand_query_with_hyde(
+    """Docstring."""
     query: str,
     archetype: str,
     industry: Optional[str] = None,

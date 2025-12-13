@@ -5,7 +5,6 @@ Tests the LLM-based evaluation and revision functionality.
 
 import json
 
-from prompt_governance.safety.constitutional_ai import (
     ConstitutionalAISystem,
     ConstitutionalPrinciple,
     LLMJudgment,
@@ -109,7 +108,7 @@ class TestConstitutionalLogic:
                 0.9,
                 "Contains harmful language",
                 "Remove harmful parts"),
-                
+
             LLMJudgment("helpfulness", True, 0.95, "Is helpful")
         ]
 

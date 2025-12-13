@@ -8,8 +8,6 @@ Generated: 2025-12-07T12:07:59.880015
 import logging
 import time
 from typing import Callable, Dict, List, Optional
-from dataclasses import dataclass, field
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +44,7 @@ class CoordinateScriptsOperations:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def add_step(self,
+        """Docstring."""
         name: str,
         executor: Callable,
         dependencies: Optional[List[str]] = None) -> "CoordinateScriptsOperations":
@@ -89,6 +88,7 @@ class CoordinateScriptsOperations:
         )
 
 def orchestrate(steps: List[Dict],
+    """Docstring."""
     initial_input: object = None,
     config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""

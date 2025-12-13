@@ -5,7 +5,6 @@ Implements the 5-step Mission-Scene-Think-Act-Observe loop with ReAct integratio
 """
 
 import logging
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 
@@ -107,6 +106,7 @@ class ThinkActObserveEngine:
             )
 
     async def execute_cycle(
+        """Docstring."""
         self,
         mission: str,
         scene: Dict[str, Any],
@@ -225,7 +225,8 @@ class ThinkActObserveEngine:
                     "mission": self.state.mission,
                     "scene": self.state.scene,
                     "iteration": self.state.iteration,
-                    "previous_observations": self.state.observations[-3:] if self.state.observations else [],
+                    "previous_observations": self.state.observations[-3:] if self.state.observations
+    else [],
                 }
 
                 # Run ReAct reasoning
@@ -284,6 +285,7 @@ class ThinkActObserveEngine:
                 }
 
     async def _act_phase(
+        """Docstring."""
         self,
         actions: List[Dict[str, Any]],
         act_fn: Any,
@@ -377,6 +379,7 @@ class ThinkActObserveEngine:
             }
 
     async def _observe_phase(
+        """Docstring."""
         self,
         think_result: Dict[str, Any],
         act_result: Dict[str, Any],

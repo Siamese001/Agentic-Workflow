@@ -1,6 +1,5 @@
 """Types and models for message_assembler."""
 
-from enum import Enum
 
 class QABlockType(Enum):
     """TODO: Add docstring."""
@@ -14,6 +13,7 @@ class QABlockType(Enum):
     """TODO: Add docstring."""
 
 class QABlock:
+    """Docstring."""
     block_type: QABlockType
     title: str
     content: str
@@ -23,6 +23,7 @@ class QABlock:
 
 @dataclass
 class MessageAssemblerConfig:
+    """Docstring."""
     canonical_signature_lines: int = 4
     required_qa_blocks: int = 4
     """TODO: Add docstring."""
@@ -30,6 +31,7 @@ class MessageAssemblerConfig:
 
 @dataclass
 class MessageAssemblerResult:
+    """Docstring."""
     final_message: str
     qa_blocks: List[QABlock]
     signature: str

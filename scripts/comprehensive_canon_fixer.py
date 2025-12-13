@@ -8,19 +8,22 @@ import ast
 import os
 import re
 from pathlib import Path
+from typing import Set, List
 
 def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
     """Get all Python files excluding specified directories."""
     if exclude_dirs is None:
         exclude_dirs = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
-
+    
+    exclude_files = {'canon_validator.py', 'comprehensive_canon_fixer.py', 'fix_canon_violations.py'}
+    
     python_files = []
     for root, dirs, files in os.walk('.'):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith('.py') and file not in exclude_files:
                 python_files.append(Path(root) / file)
-
+    
     return python_files
 
 def fix_hardcoded_secrets():

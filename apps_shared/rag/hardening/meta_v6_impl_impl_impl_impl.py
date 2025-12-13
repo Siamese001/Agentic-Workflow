@@ -99,6 +99,7 @@ def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch: object) -> None
         """TODO: Add docstring."""
 
     class InternalCfg:
+        """Docstring."""
 
         def __init__(self) -> None:
             self.strategy = 'hybrid'

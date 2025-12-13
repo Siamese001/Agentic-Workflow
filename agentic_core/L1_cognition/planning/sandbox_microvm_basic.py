@@ -1,6 +1,6 @@
-# from archives.legacy_root_folders.infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import clear_events, get_all_events  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_root_folders.infra.sandbox.microvm import create_vm, teardown_vm, exec_in_...
+# from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Ar...
+# from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import clear_events, g...
 
 def test_microvm_create_exec_teardown_emits_events(self) -> None:
     """Test that microVM lifecycle operations emit appropriate events."""

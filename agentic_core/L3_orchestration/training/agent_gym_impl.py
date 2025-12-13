@@ -50,6 +50,7 @@ class AgentGym:
                 'test_cases': len(scenario.test_cases)})
 
     async def run_benchmark(self,
+        """Docstring."""
         scenario_id: str,
         agent_fn: Callable[[str,
         Dict[str,
@@ -104,7 +105,8 @@ class AgentGym:
         total_cases = len(test_cases)
         passed_cases = sum((1 for r in reports.values() if r.passed))
         pass_rate = passed_cases / total_cases if total_cases > 0 else 0.0
-        avg_score = sum((r.judge_result.overall_score for r in reports.values())) / total_cases if total_cases > 0 else 0.0
+        avg_score = sum((r.judge_result.overall_score for r in reports.values())) / total_cases if t
+    otal_cases > 0 else 0.0
         performance_level = self._classify_performance(pass_rate, avg_score)
         recommendations = self._generate_recommendations(reports, performance_level)
         result = BenchmarkResult(scenario_id=scenario_id,
@@ -133,6 +135,7 @@ class AgentGym:
                 'test_cases': len(scenario.test_cases)})
 
     async def run_training_session(self,
+        """Docstring."""
         agent_id: str,
         scenario_ids: List[str],
         agent_fn: Callable[[str,
@@ -295,7 +298,8 @@ class AgentGym:
         """
         areas = []
         for result in benchmark_results:
-            if result.performance_level in {PerformanceLevel.NEEDS_IMPROVEMENT, PerformanceLevel.CRITICAL}:
+            if result.performance_level in {PerformanceLevel.NEEDS_IMPROVEMENT, PerformanceLevel.CRI
+    TICAL}:
                 areas.append(f'{result.scenario_id}: {result.performance_level.value}')
         return areas
 

@@ -9,12 +9,8 @@ import asyncio
 import json
 import logging
 import time
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
 from datetime import datetime
 
-from ..core.resilience.circuit_breaker import CircuitBreakerFactory, CircuitOpenError
 
 logger = logging.getLogger(__name__)
 
@@ -427,6 +423,7 @@ class UnifiedExecutor:
         logger.info("Initialized UnifiedExecutor")
 
     async def execute(
+        """Docstring."""
         self,
         input_data: Any,
         strategy: str,
@@ -529,6 +526,7 @@ class EngineExecutor:
         logger.info(f"Initialized {engine_type.value} executor")
 
     async def generate_content(
+        """Docstring."""
         self,
         input_data: Any,
         content_type: str = "default",
@@ -569,6 +567,7 @@ class EngineExecutor:
         return result
 
     async def process_batch(
+        """Docstring."""
         self,
         items: List[Any],
         config: Optional[Dict[str, Any]] = None
@@ -650,6 +649,7 @@ def get_engine_executor(engine_type: EngineType) -> EngineExecutor:
 
 # Convenience functions
 async def execute_resume_generation(
+    """Docstring."""
     input_data: Any,
     content_type: str = "default",
     config: Optional[Dict[str, Any]] = None
@@ -668,6 +668,7 @@ async def execute_resume_generation(
     return await executor.generate_content(input_data, content_type, config)
 
 async def execute_outreach_generation(
+    """Docstring."""
     input_data: Any,
     content_type: str = "message",
     config: Optional[Dict[str, Any]] = None

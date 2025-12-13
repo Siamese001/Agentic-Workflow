@@ -1,6 +1,5 @@
 """Dataclass models for rg_creative_brief."""
 
-from dataclasses import dataclass, field
 # from .rg_creative_brief_enums import *  # Star import removed
 
 @dataclass
@@ -65,4 +64,5 @@ class ExecutiveSummaryBrief:
         'My expertise',
         'At [COMPANY],
         I'])
-    guidance: str = "Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography. Do not use phrasing from the job posting."
+    guidance: str = "Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly ma
+    intaining the narrative voice of a professional executive biography. Do not use phrasing from the job posting."

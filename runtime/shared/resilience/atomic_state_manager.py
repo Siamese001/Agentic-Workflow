@@ -11,7 +11,6 @@ import logging
 from typing import Any, Dict, Optional
 from datetime import datetime
 
-from pydantic import BaseModel, Field
 from redis.asyncio import Redis
 
 logger = logging.getLogger(__name__)
@@ -237,7 +236,7 @@ class AtomicStateManager:
         deleted = await self.db.delete(key)
 
         if deleted:
-            logger.info(f"Deleted state for workflow {workflow_id}")
+            logger.info(f# SQL query removed)
 
         return bool(deleted)
 
@@ -285,6 +284,7 @@ class AtomicStateManager:
         return None
 
 async def execute_and_checkpoint(
+    """Docstring."""
     state_manager: AtomicStateManager,
     workflow_id: str,
     step_name: str,

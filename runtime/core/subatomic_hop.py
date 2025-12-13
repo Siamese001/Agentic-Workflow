@@ -9,21 +9,17 @@ import json
 import logging
 import time
 import uuid
-from .shared_models import (
     MicroStage,
     HopState,
     RetryPolicy,
     MicroCheckpoint,
     StageTransition
 )
-from dataclasses import dataclass, field
 from pathlib import Path
 import shutil
 import asyncio
 from datetime import datetime
 
-from .service_container import ServiceContainer, get_default_container
-from .reflection_engine import (
     ReflectionEngine,
     ReflectionConfig,
     CritiqueResult,
@@ -31,7 +27,6 @@ from .reflection_engine import (
     get_reflection_engine,
     STANDARD_CRITERIA
 )
-from .resilience.circuit_breaker import (
     CircuitBreakerFactory,
     CircuitOpenError,
     CircuitBreakerConfig,
@@ -205,7 +200,8 @@ class SubatomicHop:
 
                 # Check for timeout
                 if time.time() - self.start_time > self.config.max_execution_time:
-                    raise StageExecutionError(f"Hop timeout after {self.config.max_execution_time}s")
+                    raise StageExecutionError(f"Hop timeout after {self.config.max_execution_time}s"
+    )
 
             self.state = HopState.COMPLETED
             self.end_time = time.time()
@@ -320,7 +316,6 @@ class SubatomicHop:
         if self.enable_prompt_injection:
             try:
                 # Lazy import to avoid circular dependency
-                from .prompt_injection_loader import enhance_prompt
 
                 # Determine hop type from function name or context
                 hop_type = self.context.get("hop_type", self.hop_function.__name__)
@@ -374,6 +369,7 @@ class SubatomicHop:
         return plan
 
     async def _apply_stage_injections(self,
+        """Docstring."""
         stage: MicroStage,
         kwargs: Dict[str,
         Any]) -> Dict[str,
@@ -389,7 +385,6 @@ class SubatomicHop:
         """
         try:
             # Lazy import to avoid circular dependency
-            from .prompt_injection_loader import get_injection_loader
 
             # Get injection loader
             loader = get_injection_loader()
@@ -478,9 +473,11 @@ class SubatomicHop:
                         enhanced_kwargs = json.loads(enhanced_prompt)
 
                         # Store injection info
-                        enhanced_kwargs["instructional_injections"] = [m.injection.id for m in matches]
+                        enhanced_kwargs["instructional_injections"] = [m.injection.id for m in match
+    es]
 
-                        logger.debug(f"Applied {len(matches)} instructional injections for stage {stage.value}")
+                        logger.debug(f"Applied {len(matches)} instructional injections for stage {st
+    age.value}")
 
                         return enhanced_kwargs
 
@@ -511,6 +508,7 @@ class SubatomicHop:
             else:
                 # For sync functions, wrap in async
                 async def sync_wrapper():
+                    """Docstring."""
                     return self.hop_function(**kwargs)
                 result = await self.generation_breaker.call(sync_wrapper)
 
@@ -566,11 +564,11 @@ class SubatomicHop:
             self.context["signal_assessment"] = signal_assessment
 
             # Request mutation with quality feedback
-            from .reflection_engine import MutationRequest
             mutation_request = MutationRequest(
                 reason=f"Signal quality {signal_assessment.quality_level.value}. "
                        f"Recommendations: {'; '.join(signal_assessment.recommendations[:3])}",
-                priority="high" if signal_assessment.quality_level == SignalQuality.POOR else "medium",
+                priority="high" if signal_assessment.quality_level == SignalQuality.POOR else "mediu
+    m",
                 context={
                     "quality_score": signal_assessment.composite_score,
                     "flags": signal_assessment.flags,
@@ -598,13 +596,14 @@ class SubatomicHop:
                 timeout=15.0
             )
         except asyncio.TimeoutError:
-            logger.warning(f"Reflection timed out for hop {self.config.hop_id}. Using signal assessment.")
+            logger.warning(f"Reflection timed out for hop {self.config.hop_id}. Using signal assessm
+    ent.")
             # Create a result based on signal assessment
-            from .reflection_engine import CritiqueResult
             critique_result = CritiqueResult(
                 is_valid=signal_assessment.is_acceptable(SignalQuality.MARGINAL),
                 confidence_score=signal_assessment.composite_score,
-                critique_reasoning=f"Reflection timed out. Signal quality: {signal_assessment.quality_level.value}",
+                critique_reasoning=f"Reflection timed out. Signal quality: {signal_assessment.qualit
+    y_level.value}",
                 validation_type="signal_assessment_fallback"
             )
 
@@ -643,7 +642,8 @@ class SubatomicHop:
             # No mutation requested, but validation failed - retry
             if self.critique_loop_count >= self.config.max_critique_retries:
                 logger.error(f"Max critique retries exceeded for hop {self.config.hop_id}")
-                raise QualityGateFailure(f"Validation failed after {self.config.max_critique_retries} attempts")
+                raise QualityGateFailure(f"Validation failed after {self.config.max_critique_retries
+    } attempts")
 
             return {"retry": True}
 
@@ -751,7 +751,8 @@ class SubatomicHop:
                 self.stage_retry_counts[latest_checkpoint.stage] = latest_checkpoint.retry_count
                 self.checkpoints[latest_checkpoint.stage] = latest_checkpoint
 
-                logger.info(f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.value}")
+                logger.info(f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.v
+    alue}")
         except CheckpointIntegrityError as e:
             logger.error(f"Checkpoint integrity validation failed: {e}")
             # Quarantine all checkpoints and start fresh
@@ -796,6 +797,7 @@ class SubatomicHop:
         logger.debug(f"Cleaned up hop {self.config.hop_id}")
 
     async def request_upstream_change(
+        """Docstring."""
         self,
         upstream_hop_id: str,
         change_request: str,
@@ -817,7 +819,6 @@ class SubatomicHop:
             raise RuntimeError("Negotiation not enabled for this hop")
 
         # Lazy import to avoid circular dependency
-        from .node_negotiator import get_node_negotiator, request_upstream_change
 
         if not self.node_negotiator:
             self.node_negotiator = get_node_negotiator()
@@ -831,6 +832,7 @@ class SubatomicHop:
         )
 
     async def send_negotiation_message(
+        """Docstring."""
         self,
         to_hop_id: str,
         message_type: str,
@@ -852,7 +854,6 @@ class SubatomicHop:
             return False
 
         # Lazy import to avoid circular dependency
-        from .node_negotiator import get_node_negotiator
 
         if not self.node_negotiator:
             self.node_negotiator = get_node_negotiator()
@@ -893,6 +894,7 @@ class SubatomicHop:
 
 # Factory function for creating subatomic hops
 def create_subatomic_hop(
+    """Docstring."""
     hop_function: Callable,
     config: Optional[SubatomicHopConfig] = None,
     **kwargs
@@ -924,7 +926,9 @@ def subatomic_hop(config: Optional[SubatomicHopConfig] = None):
         Decorated function that returns a SubatomicHop
     """
     def decorator(func: Callable) -> Callable:
+        """Docstring."""
         def wrapper(*args, **kwargs) -> SubatomicHop:
+            """Docstring."""
             return create_subatomic_hop(
                 hop_function=func,
                 config=config,

@@ -16,9 +16,7 @@ from typing import Dict, Any
 # Import the modules we're testing
 # Note: These imports may need adjustment based on actual module structure
 try:
-    from runtime.shared.state import AtomicStateManager, WorkflowState, BackendType, StatePersistenceError
-    from runtime.shared.routing import HardenedRouter, Provider, RoutingTier, AllProvidersDownError
-    from runtime.shared.resilience import CircuitBreaker, CircuitState, CircuitOpenError
+    eError
 except ImportError as e:
     # Fallback imports for testing
     pytest.skip(f"Skipping hardened infrastructure tests: {e}", allow_module_level=True)
@@ -164,17 +162,20 @@ async def test_router_fallback_with_degraded_providers():
         """TODO: Add docstring."""
 
     async def failing_executor(prompt):
+        """Docstring."""
         raise CircuitOpenError("Service Unavailable")
         """TODO: Add docstring."""
 
 
     async def slow_executor(prompt):
+        """Docstring."""
         await asyncio.sleep(0.1)  # Simulate slowness
         """TODO: Add docstring."""
 
         return "Slow response"
 
     async def working_executor(prompt):
+        """Docstring."""
         return "Quick response"
 
     router.executors = {

@@ -7,7 +7,6 @@ Generated: 2025-12-07T12:07:59.888936
 
 import logging
 from typing import Dict, List, Optional, Sequence
-from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +27,7 @@ class NormalizeScriptsVectors:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def adjust(self,
+        """Docstring."""
         values: Sequence[float],
         method: Optional[str] = None) -> List[AdjustmentResult]:
         """Adjust values."""
@@ -65,6 +65,7 @@ class NormalizeScriptsVectors:
         return [(v - mean) / std if std > 0 else 0.0 for v in values]
 
 def adjust(values: Sequence[float],
+    """Docstring."""
     method: str = "minmax",
     config: Optional[Dict] = None) -> List[AdjustmentResult]:
     """Convenience function for adjustment."""

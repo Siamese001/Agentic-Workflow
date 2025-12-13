@@ -1,6 +1,6 @@
 
-# from archives.legacy_root_folders.meta.retrieval.hybrid_ranker import fuse_and_rank  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.core.models.models import CouncilVote, Evidence, RetrievalConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.meta.retrieval.hybrid_ranker import fuse_and_rank  # DEPRECAT...
+# from archives.legacy_root_folders.core.models.models import CouncilVote, Evidence, RetrievalCon...
 
 def _make_ev(text: str, score: float, source: str) -> Evidence:
     return Evidence(text=text, score=score, source=source, metadata={})

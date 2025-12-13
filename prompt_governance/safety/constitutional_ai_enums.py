@@ -1,6 +1,5 @@
 """Enum types for constitutional_ai."""
 
-from enum import Enum
 
 class RuleType(Enum):
     """Types of constitutional rules."""

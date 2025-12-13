@@ -1,6 +1,5 @@
 import re
 
-from apps_rg.L1_cognition.k2_5_deep_research_models import (
     DeepResearchOutput,
     IntegrityGateResult,
     ValidationRejectionReason,
@@ -99,7 +98,8 @@ class IntegrityGateExecutor:
                     if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
                         result.add_violation(
                             ValidationRejectionReason.FLUFF_LANGUAGE,
-                            f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}...'"
+                            f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}..
+    .'"
                         )
 
     def _check_orphaned_claims(

@@ -1,10 +1,11 @@
 """Performance tests for cache throughput."""
-from __future__ import annotations
 import time
-from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
+    ould_invalidate_cache
 
 class TestCacheKeyThroughput:
+    """Docstring."""
     def test_cache_key_throughput_10k_per_second(self):
+        """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,7 @@ logger = logging.getLogger(__name__)
         assert throughput >= 5000, f"Throughput: {throughput:.0f}/s"
 
 class TestBatchProcessingThroughput:
+    """Docstring."""
     def test_batch_key_generation(self):
         """Batch key generation has no pathological overhead."""
         batch_sizes = [10, 100, 1000]

@@ -16,6 +16,7 @@ def test_core_dependencies() -> None:
         from pydantic import BaseModel, Field
 
         class TestModel(BaseModel):
+            """Docstring."""
             name: str
             value: int = Field(gt=0)
         obj = TestModel(name='test', value=42)
@@ -43,6 +44,7 @@ def test_core_dependencies() -> None:
 
         @retry(stop=stop_after_attempt(1))
         def test_func() -> str:
+            """Docstring."""
             return 'success'
         assert test_func() == 'success'
         record_test_result('tenacity', 'PASS', 'Retry decorator working')
@@ -109,7 +111,8 @@ def test_vector_databases() -> None:
                 record_test_result('chromadb',
                     'WARNING',
                     f'Version: {version},
-                    Basic functionality works but with type inference warning (Python 3.14+ compatibility issue)')
+                    Basic functionality works but with type inference warning (Python 3.14+ compatib
+    ility issue)')
             else:
                 record_test_result('chromadb',
                     'WARNING',

@@ -5,11 +5,9 @@ including operation tracking, state persistence, and historical analysis.
 Follows the functional component pattern with proper logging.
 """
 
-from dataclasses import dataclass, field
 import logging
 import json
 from datetime import datetime, timedelta
-from enum import Enum
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -184,7 +182,7 @@ class ScriptsLogicHistoryLoader:
 
         if len(self._history_cache) < original_length:
             self._save_history()
-            self.logger.debug(f"Deleted history entry: {entry_id}")
+            self.logger.debug(f# SQL query removed)
             return True
 
         return False
@@ -384,6 +382,7 @@ class ScriptsLogicHistoryLoader:
 
 # Factory function for easy instantiation
 def create_scripts_logic_history_loader(
+    """Docstring."""
     storage_path: str = "data/scripts_logic_history.json",
     max_entries: int = 10000,
     retention_days: int = 30,
@@ -399,6 +398,7 @@ def create_scripts_logic_history_loader(
 
 # Convenience function for direct usage
 def load_scripts_logic_history(
+    """Docstring."""
     filter_type: str = "all",
     filter_value: Optional[str] = None,
     sort_by: str = "timestamp_desc",

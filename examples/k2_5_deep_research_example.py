@@ -2,8 +2,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from apps_rg.L1_cognition.k2_5_deep_research_agent import create_k25_research_agent
-from apps_rg.L1_cognition.k2_5_deep_research_models import (
     CitationMap,
     DeepResearchOutput,
     ExecutiveProfile,
@@ -13,11 +11,12 @@ from apps_rg.L1_cognition.k2_5_deep_research_models import (
     TechnicalImplementation,
     TechnicalLayer,
 )
-from apps_rg.L2_execution.integrity_gate_executor import validate_research_output
 
 def create_doordash_benchmark_example() -> DeepResearchOutput:
+    """Docstring."""
     strategic_layer = StrategicLayer(
-        core_thesis="Transition from food delivery to local commerce platform achieving GAAP profitability through efficient growth",
+        core_thesis="Transition from food delivery to local commerce platform achieving GAAP profita
+    bility through efficient growth",
         financial_proof_points=[
             FinancialMetric(
                 metric_name="Q2 2025 Revenue",
@@ -52,22 +51,27 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
         key_technologies=[
             TechnicalImplementation(
                 technology_name="Gated Mixture-of-Experts (MoE) Architecture",
-                implementation_details="Deep learning models for ETA predictions with dynamic model selection based on delivery context (urban vs suburban,
+                implementation_details="Deep learning models for ETA predictions with dynamic model
+                    selection based on delivery context (urban vs suburban,
+
                     weather,
                     traffic)",
-                    
+
                 performance_gain="20% improvement in delivery time accuracy",
                 source_citation="cite_65"
             ),
             TechnicalImplementation(
                 technology_name="Dot Autonomous Delivery Robot",
-                implementation_details="Sidewalk-compatible autonomous vehicle with Level 4 autonomy integrating LiDAR, computer vision, and path planning algorithms",
+                implementation_details="Sidewalk-compatible autonomous vehicle with Level 4 autonomy
+    integrating LiDAR, computer vision, and path planning algorithms",
                 performance_gain="Last-mile delivery cost reduction",
                 source_citation="cite_72"
             ),
         ],
         infrastructure_stack=["Kubernetes", "PyTorch", "Real-time routing engine"],
-        implementation_summary="The MoE architecture enables dynamic model selection reducing computational overhead while maintaining prediction accuracy. Dot robot navigates complex urban environments autonomously."
+        implementation_summary="The MoE architecture enables dynamic model selection reducing comput
+    ational overhead while maintaining prediction accuracy. Dot robot navigates complex urban enviro
+        nments autonomously."
     )
 
     leadership_layer = LeadershipLayer(
@@ -91,7 +95,8 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
                 strategic_focus="Grocery, retail, and convenience store ML models"
             ),
         ],
-        organizational_structure="Labs division under Stanley Tang, Risk function under CFO Ravi Inukonda, ML verticals under Sudeep Das"
+        organizational_structure="Labs division under Stanley Tang, Risk function under CFO Ravi Inu
+    konda, ML verticals under Sudeep Das"
     )
 
     citation_map = CitationMap()
@@ -115,6 +120,7 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
     )
 
 def example_usage():
+    """Docstring."""
     logger.info("=" * 80)
     logger.info("K.2.5 Deep Research Protocol - Example Usage")
     logger.info("=" * 80)
@@ -137,7 +143,8 @@ def example_usage():
     logger.info(f"\nStrategic Thesis: {benchmark.strategic_layer.core_thesis}")
     logger.info(f"\nFinancial Metrics ({len(benchmark.strategic_layer.financial_proof_points)}):")
     for metric in benchmark.strategic_layer.financial_proof_points:
-        logger.info(f"  - {metric.metric_name}: {metric.value} ({metric.yoy_change}) [{metric.source_citation}]")
+        logger.info(f"  - {metric.metric_name}: {metric.value} ({metric.yoy_change}) [{metric.source
+    _citation}]")
 
     logger.info(f"\nKey Technologies ({len(benchmark.technical_layer.key_technologies)}):")
     for tech in benchmark.technical_layer.key_technologies:

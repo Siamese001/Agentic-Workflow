@@ -1,6 +1,5 @@
 """Performance tests for cost estimation consistency."""
 
-from runtime.shared.multi_provider_clients import Provider
 
 class TestCostEstimationConsistency:
     """Tests for token and cost calculation determinism."""

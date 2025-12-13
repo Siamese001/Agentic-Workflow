@@ -3,7 +3,8 @@
 Get Info Request Module
 
 This module provides cached information request handling within the Agentic-Workflow system.
-It is part of the scripts/cache/data_access/get_info_request component and offers specialized functionality
+It is part of the scripts/cache/data_access/get_info_request component and offers specialized functi
+    onality
 for efficient data processing and workflow management.
 
 Key Responsibilities:

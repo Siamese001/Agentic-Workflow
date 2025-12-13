@@ -10,6 +10,7 @@ class ValidationResult:
     """TODO: Add docstring."""
 
 class ValidationSeverity:
+    """TODO: Add docstring."""
     pass
 
 class StagingBufferError(Exception):
@@ -134,11 +135,13 @@ class ValidationContext:
 
     def get_critical_failures(self) -> List[ValidationResult]:
         """Get critical validation failures"""
-        return [r for r in self.validation_results if not r.passed and r.severity == ValidationSeverity.CRITICAL]
+        return [r for r in self.validation_results if not r.passed and r.severity == ValidationSever
+    ity.CRITICAL]
 
     def get_high_failures(self) -> List[ValidationResult]:
         """Get high severity validation failures"""
-        return [r for r in self.validation_results if not r.passed and r.severity == ValidationSeverity.HIGH]
+        return [r for r in self.validation_results if not r.passed and r.severity == ValidationSever
+    ity.HIGH]
 
     def has_critical_failures(self) -> bool:
         """Check if there are any critical failures"""
@@ -173,7 +176,8 @@ class ValidationContext:
 
     def export_results(self) -> List[Dict]:
         """Export validation results as dictionaries"""
-        return [{'rule_id': r.rule_id, 'passed': r.passed, 'severity': r.severity.value, 'message': r.message, 'details': r.details} for r in self.validation_results]
+        return [{'rule_id': r.rule_id, 'passed': r.passed, 'severity': r.severity.value, 'message':
+    r.message, 'details': r.details} for r in self.validation_results]
 
 class RGStateManager:
     """Resume Generation State Manager - compatibility wrapper for runtime layer"""
@@ -186,6 +190,7 @@ class RGStateManager:
         self.logger = logging.getLogger(__name__)
 
     def create_workflow_state(self,
+        """Docstring."""
         workflow_id: str,
         input_parameters: Dict[str,
         object]) -> Dict[str,
@@ -209,9 +214,9 @@ class RGStateManager:
         workflow_state = self.workflow_states[workflow_id]
         workflow_state['current_phase'] = phase
         workflow_state['phase_data'] = data
-        workflow_state['updated_at'] = datetime.now().isoformat()
+        workflow_state[# SQL query removed] = datetime.now().isoformat()
         self.staging_buffer.set(f'{workflow_id}_{phase}', data)
-        self.logger.info(f'Updated workflow state {workflow_id} for phase: {phase}')
+        self.logger.info(f# SQL query removed)
 
     def complete_workflow(self, workflow_id: str) -> Dict[str, object]:
         """Mark workflow as completed and return final state"""

@@ -31,8 +31,10 @@ class AdaptiveRetrievalGate:
         self.patterns = {
             # Conversational patterns that don't need retrieval
             'conversational': re.compile(
-                r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye|yes|no|sure|got it|understood|cool|awesome|great|perfect)$',
-                    
+                r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye|yes|no|sure|got it|understood|
+                    cool|awesome|great|perfect)$',
+
+
                 re.IGNORECASE
             ),
 
@@ -159,6 +161,7 @@ class AdaptiveRetrievalGate:
         return base_score
 
     def should_retrieve(self,
+        """Docstring."""
         query: str,
         history: Optional[List[Dict]] = None) -> RetrievalDecision:
         """Determine if retrieval is needed for the query.
@@ -229,7 +232,8 @@ class AdaptiveRetrievalGate:
         # Additional checks
         if should_retrieve:
             # Check if this might be a clarification
-            if len(query.split()) < 4 and not any(pattern.search(query) for pattern in self.compiled_questions):
+            if len(query.split()) < 4 and not any(pattern.search(query) for pattern in self.compiled
+    _questions):
                 should_retrieve = False
                 reason = "Short query likely a clarification"
                 confidence = 0.7

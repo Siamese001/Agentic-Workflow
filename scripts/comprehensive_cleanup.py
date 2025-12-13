@@ -49,7 +49,7 @@ class RepositoryCleaner:
             lines = [l.strip() for l in content.split('\n') if l.strip()]
 
             # If file has mostly comments and one import, it's likely a shim
-            code_lines = [l for l in lines if not l.startswith('#') and not l.startswith('"""') and not l.startswith("'''")]
+            code_lines = [l for l in lines if not l.startswith('#') and not l.startswith('"""') a...
 
             if len(code_lines) <= 2:
                 # Check if it's just importing from another file
@@ -80,8 +80,8 @@ class RepositoryCleaner:
                 if re.search(pattern, content):
                     return True
 
-        except Exception:
-            pass
+        except Exception as e:
+    logger.warning(f"Ignored error: {e}")
 
         return False
 

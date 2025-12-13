@@ -1,9 +1,9 @@
 """Implementation for subatomic_orchestrator."""
 
 from typing import Any, Dict, List, Optional
-from .subatomic_orchestrator_types import *
 
 class SubatomicOrchestrator:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -97,6 +97,7 @@ logger = logging.getLogger(__name__)
         return self._build_from_bluelogger.info(blueprint, **kwargs)
 
     def build_custom_pipeline(self,
+        """Docstring."""
         roles: List[AgentRole],
         edges: List[Tuple[AgentRole,
         AgentRole]],
@@ -178,7 +179,8 @@ logger = logging.getLogger(__name__)
                 result['research_data'] = {'sources': ['source1', 'source2']}
             elif role == AgentRole.STRATEGIC_PLANNER:
                 result['strategy'] = {'approach': 'analytical', 'framework': 'standard'}
-            elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRAFTER]:
+            elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRA
+    FTER]:
                 result['content'] = {'draft': 'Generated content draft', 'word_count': 500}
             elif role == AgentRole.QUALITY_CRITIC:
                 result['quality_score'] = 0.85
@@ -187,6 +189,7 @@ logger = logging.getLogger(__name__)
         return mock_hop_function
 
     async def execute_graph(self,
+        """Docstring."""
         graph: nx.DiGraph,
         initial_inputs: Dict[str,
         Any],
@@ -249,7 +252,8 @@ logger = logging.getLogger(__name__)
             execution_state['error'] = str(e)
         finally:
             execution_state['end_time'] = datetime.now()
-            execution_state['duration'] = (execution_state['end_time'] - execution_state['start_time']).total_seconds()
+            execution_state['duration'] = (execution_state['end_time'] - execution_state['start_time
+    ']).total_seconds()
             self.execution_history.append(execution_state)
         return execution_state
 
@@ -318,6 +322,7 @@ logger = logging.getLogger(__name__)
             raise
 
     async def _handle_node_failure(self,
+        """Docstring."""
         node: SubatomicHop,
         error: Exception,
         graph: nx.DiGraph) -> None:
@@ -395,6 +400,7 @@ async def execute_resume_workflow(profile_data: Dict[str, Any], **kwargs) -> Dic
     return await orchestrator.execute_graph(graph, initial_inputs={'profile': profile_data})
 
 async def execute_message_workflow(recipient_data: Dict[str,
+    """Docstring."""
     Any],
     message_type: str,
     **kwargs) -> Dict[str,

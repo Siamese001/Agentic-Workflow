@@ -55,4 +55,5 @@ def load_golden_cases() -> List[GoldenCase]:
     return cases
 
 def load_golden_baseline_scores() -> Dict[str, object]:
+    """Docstring."""
     return load_baseline_scores()

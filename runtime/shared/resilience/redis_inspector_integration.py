@@ -518,8 +518,6 @@ class TitaniumOrchestratorMemoryHelper:
 # Example usage
 async def main():
     """Example of Redis Inspector integration usage."""
-    from .hardened_mcp_executor import HardenedMCPExecutor
-    from .hardened_cache_client import HardenedCacheClient
 
     # Initialize components
     cache_client = HardenedCacheClient()

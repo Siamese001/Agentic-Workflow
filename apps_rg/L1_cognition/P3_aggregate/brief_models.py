@@ -1,6 +1,5 @@
 """Dataclass models for rg_creative_brief."""
 
-from dataclasses import dataclass, field
 # from .rg_creative_brief_enums import *  # Star import removed
 
 @dataclass
@@ -11,7 +10,8 @@ class ExperienceBulletsBrief:
         str] = field(default_factory=lambda: {'Unify Consulting': '4V-3T-0S',
         'IBM': '4V-2T-0S'})
     default_provenance_fallback: str = '10V-0A-0S'
-    selection_logic: str = 'Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)'
+    selection_logic: str = 'Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Imp
+    act * 0.3) + (Uniqueness * 0.2)'
     overview_word_count: Dict[str,
         WordCountConstraint] = field(default_factory=lambda: {'k6': WordCountConstraint(25,
         33),
@@ -47,7 +47,9 @@ class CoverLetterBrief:
 class OptimizedSkillsBrief:
     """Creative brief for optimized skills list section."""
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.TOP_SKILLS
-    logic: str = "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list against the master resume's competencies and bullet points. 3. Prioritize and render the final list based on the intersection."
+    logic: str = "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list ag
+    ainst the master resume's competencies and bullet points. 3. Prioritize and render the final lis
+        t based on the intersection."
 
 @dataclass
 class RGCreativeBrief:
@@ -55,6 +57,7 @@ class RGCreativeBrief:
     headline: HeadlineBrief = field(default_factory=HeadlineBrief)
     executive_summary: ExecutiveSummaryBrief = field(default_factory=ExecutiveSummaryBrief)
     experience_bullets: ExperienceBulletsBrief = field(default_factory=ExperienceBulletsBrief)
-    leadership_competencies: LeadershipCompetenciesBrief = field(default_factory=LeadershipCompetenciesBrief)
+    leadership_competencies: LeadershipCompetenciesBrief = field(default_factory=LeadershipCompetenc
+    iesBrief)
     cover_letter: CoverLetterBrief = field(default_factory=CoverLetterBrief)
     optimized_skills: OptimizedSkillsBrief = field(default_factory=OptimizedSkillsBrief)

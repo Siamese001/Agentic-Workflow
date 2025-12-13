@@ -6,8 +6,6 @@ to competitive threats.
 """
 
 import logging
-from abc import ABC, abstractmethod
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -175,6 +173,7 @@ class CompetitorReconAgent:
         logger.info("Initialized CompetitorReconAgent")
 
     def generate_fomo_hook(
+        """Docstring."""
         self,
         target_company: str,
         industry: str,
@@ -224,6 +223,7 @@ class CompetitorReconAgent:
             return None
 
     def get_strategic_ps(
+        """Docstring."""
         self,
         target_company: str,
         industry: str,
@@ -429,6 +429,7 @@ class CompetitorReconAgent:
 
 # Factory function for easy instantiation
 def create_competitor_recon_agent(
+    """Docstring."""
     intel_provider: Optional[IntelProvider] = None
 ) -> CompetitorReconAgent:
     """Create a CompetitorReconAgent instance.
@@ -443,6 +444,7 @@ def create_competitor_recon_agent(
 
 # Convenience function for quick hook generation
 def generate_competitive_hook(
+    """Docstring."""
     target_company: str,
     industry: str,
     candidate_skills: List[str]

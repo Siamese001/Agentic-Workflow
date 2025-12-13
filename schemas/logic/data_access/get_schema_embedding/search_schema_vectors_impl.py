@@ -39,13 +39,15 @@ class SchemaVectorSearcher:
             search_time = (datetime.utcnow() - start_time).total_seconds() * 1000
             search_result = SchemaSearchResult(entries=results,
                 scores=scores,
-                field_matches=field_matches if query.search_mode == SchemaSearchMode.FIELD_BASED else None,
+                field_matches=field_matches if query.search_mode == SchemaSearchMode.FIELD_BASED els
+    e None,
                 search_time_ms=search_time,
                 metadata={'searched_at': datetime.utcnow().isoformat(),
                 'search_mode': query.search_mode.value,
                 'similarity_type': query.similarity_type.value,
                 'total_schemas': len(self._schema_vectors)})
-            self.logger.info(f'Schema vector search completed: {len(results)} results in {search_time:.2f}ms')
+            self.logger.info(f'Schema vector search completed: {len(results)} results in {search_tim
+    e:.2f}ms')
             return search_result
         except Exception as e:
             self.logger.error(f'Schema vector search failed: {str(e)}')
@@ -55,6 +57,7 @@ class SchemaVectorSearcher:
                 metadata={'error': str(e)})
 
     def add_schema_vector(self,
+        """Docstring."""
         schema_id: str,
         schema_name: str,
         schema: Dict[str,
@@ -205,7 +208,8 @@ class SchemaVectorSearcher:
             filtered = [e for e in filtered if e.schema_type == query.schema_type_filter]
         if query.min_field_overlap > 0 and query.query_schema:
             query_fields = set(self._extract_fields(query.query_schema))
-            filtered = [e for e in filtered if len(set(self._extract_fields({'fields': e.metadata})).intersection(query_fields)) >= query.min_field_overlap]
+            filtered = [e for e in filtered if len(set(self._extract_fields({'fields': e.metadata}))
+    .intersection(query_fields)) >= query.min_field_overlap]
         return filtered
 
     def _semantic_search(self,
@@ -295,7 +299,8 @@ class SchemaVectorSearcher:
             for query_field, query_vector in query_field_vectors.items():
                 for entry_field, entry_vector in self._field_index[entry.schema_id].items():
                     similarity = np.dot(query_vector,
-                        entry_vector) / (np.linalg.norm(query_vector) * np.linalg.norm(entry_vector))
+                        entry_vector) / (np.linalg.norm(query_vector) * np.linalg.norm(entry_vector)
+    )
                     if similarity >= query.threshold:
                         field_matches.append({'query_field': query_field,
                             'entry_field': entry_field,
@@ -325,6 +330,7 @@ class SchemaVectorSearcher:
         return vector
 
 def create_schema_vector_searcher(dimension: int=1536,
+    """Docstring."""
     enable_field_vectors: bool=True,
     similarity_threshold: float=0.7,
     **kwargs: object) -> SchemaVectorSearcher:
@@ -336,6 +342,7 @@ def create_schema_vector_searcher(dimension: int=1536,
     return SchemaVectorSearcher(config)
 
 def search_schema_vectors(query_text: Optional[str]=None,
+    """Docstring."""
     query_schema: Optional[Dict[str,
     Any]]=None,
     search_mode: str='semantic',

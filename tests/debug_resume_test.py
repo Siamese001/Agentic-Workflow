@@ -3,14 +3,10 @@
 
 import asyncio
 import tempfile
-from unittest.mock import AsyncMock
 
-from runtime.shared.state import get_state_manager, reset_state_manager
-from apps_rg.L3_orchestration.hardened_orchestrator import create_hardened_orchestrator
-from apps_rg.L3_orchestration.orchestrate_workflow import WorkflowSpec, HopSpec
-from runtime.shared.agent_executor import AgentResponse
 
 async def test_resume_debug():
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -42,6 +38,7 @@ logger = logging.getLogger(__name__)
 
         # Mock router
         async def mock_execute(tier, prompt, **kwargs):
+            """Docstring."""
             return AgentResponse(
                 content="Response",
                 finish_reason="stop",
@@ -60,7 +57,8 @@ logger = logging.getLogger(__name__)
         # Check state
         state_manager = get_state_manager()
         state = state_manager.resume_workflow("debug_test")
-        logger.info(f"State after first run: current_k_node={state.current_k_node if state else 'None'}")
+        logger.info(f"State after first run: current_k_node={state.current_k_node if state else 'Non
+    e'}")
 
         # Create second orchestrator
         logger.info("\n--- Second run (should resume) ---")
@@ -72,7 +70,8 @@ logger = logging.getLogger(__name__)
         orchestrator2.router.execute_with_fallback = mock_execute
 
         # Check if state manager is the same instance
-        logger.info(f"Same state manager instance: {orchestrator1.state_manager is orchestrator2.state_manager}")
+        logger.info(f"Same state manager instance: {orchestrator1.state_manager is orchestrator2.sta
+    te_manager}")
 
         results2 = await orchestrator2.execute_workflow_with_resilience(
             "debug_test",

@@ -18,8 +18,6 @@ Non-responsibilities:
 
 
 import time
-from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
 class FailureType(Enum):
@@ -32,6 +30,7 @@ class FailureType(Enum):
     """TODO: Add docstring."""
 
 class RecoveryAction(Enum):
+    """TODO: Add docstring."""
     INCREASE_TEMP = "INCREASE_TEMP"
     DECREASE_TEMP = "DECREASE_TEMP"
     HARD_HALT = "HARD_HALT"
@@ -41,6 +40,7 @@ class RecoveryAction(Enum):
 
 @dataclass
 class FailureEvent:
+    """TODO: Add docstring."""
     attempt: int
     failure_type: FailureType
     gate_id: str
@@ -52,6 +52,7 @@ class FailureEvent:
 
 @dataclass
 class TemperatureAdjustment:
+    """TODO: Add docstring."""
     from_temp: float
     to_temp: float
     reason: str
@@ -62,6 +63,7 @@ class TemperatureAdjustment:
 
 @dataclass
 class RecoveryResult:
+    """TODO: Add docstring."""
     action: RecoveryAction
     new_temperature: float
     message: str
@@ -102,6 +104,7 @@ class AdaptiveRecoveryLoop:
         self.temperature_history: List[TemperatureAdjustment] = []
 
     def record_failure(
+        """Docstring."""
         self,
         gate_id: str,
         message: str,

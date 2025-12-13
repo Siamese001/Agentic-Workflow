@@ -6,9 +6,6 @@ customization.
 """
 
 import logging
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
 
     SignalAssessment,
     SignalEnhancer,
@@ -134,7 +131,8 @@ class ResumeValidator(DomainValidator):
 
     def _assess_bullet_quality(self, content: str) -> float:
         """Assess bullet point quality."""
-        bullets = [b.strip() for b in content.split('\n') if b.strip().startswith('•') or b.strip().startswith('-')]
+        bullets = [b.strip() for b in content.split('\n') if b.strip().startswith('•') or b.strip().
+    startswith('-')]
         if not bullets:
             return 0.0
 
@@ -259,7 +257,8 @@ class OutreachValidator(DomainValidator):
         if recipient_level == "c_level":
             # Should be very formal
             formal_count = sum(1 for indicator in formal_indicators if indicator in content_lower)
-            informal_count = sum(1 for indicator in informal_indicators if indicator in content_lower)
+            informal_count = sum(1 for indicator in informal_indicators if indicator in content_lowe
+    r)
             return min(1.0, formal_count * 0.3 - informal_count * 0.5)
         else:
             # Can be slightly less formal
@@ -371,6 +370,7 @@ class SharedSignalInfrastructure:
         logger.info("Initialized SharedSignalInfrastructure")
 
     def get_enhancer(
+        """Docstring."""
         self,
         engine_type: EngineType,
         domain_config: DomainConfig
@@ -401,6 +401,7 @@ class SharedSignalInfrastructure:
         return self._enhancers[enhancer_key]
 
     def assess_signal(
+        """Docstring."""
         self,
         content: str,
         engine_type: EngineType,
@@ -444,6 +445,7 @@ class SharedSignalInfrastructure:
         return assessment
 
     def get_feedback_loop(
+        """Docstring."""
         self,
         engine_type: EngineType,
         loop_name: Optional[str] = None
@@ -465,6 +467,7 @@ class SharedSignalInfrastructure:
         return self._feedback_loops[loop_key]
 
     def create_domain_config(
+        """Docstring."""
         self,
         engine_type: EngineType,
         custom_thresholds: Optional[QualityThresholds] = None,
@@ -490,7 +493,8 @@ class SharedSignalInfrastructure:
                 "min_bullet_points": 3,
                 "max_bullet_length": 200
             }
-            custom_metrics = ["achievement_density", "metric_usage", "verb_diversity", "impact_score"]
+            custom_metrics = ["achievement_density", "metric_usage", "verb_diversity", "impact_score
+    "]
         elif engine_type == EngineType.OUTREACH:
             validation_rules = {
                 "require_personalization": True,
@@ -498,7 +502,8 @@ class SharedSignalInfrastructure:
                 "max_length": 500,
                 "min_recipient_references": 2
             }
-            custom_metrics = ["personalization_score", "engagement_potential", "professionalism", "clarity"]
+            custom_metrics = ["personalization_score", "engagement_potential", "professionalism", "c
+    larity"]
         else:
             validation_rules = {}
             custom_metrics = []
@@ -611,6 +616,7 @@ def get_shared_infrastructure() -> SharedSignalInfrastructure:
 
 # Convenience functions for engines
 def assess_resume_signal(
+    """Docstring."""
     content: str,
     context: Optional[Dict[str, Any]] = None,
     strict_mode: bool = True
@@ -639,6 +645,7 @@ def assess_resume_signal(
     return infrastructure.assess_signal(content, EngineType.RESUME, config, context)
 
 def assess_outreach_signal(
+    """Docstring."""
     content: str,
     context: Optional[Dict[str, Any]] = None,
     strict_mode: bool = True

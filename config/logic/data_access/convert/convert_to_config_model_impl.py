@@ -12,6 +12,7 @@ class ConfigModelConverter:
         self._type_converters = self._initialize_type_converters()
 
     def convert_to_model(self,
+        """Docstring."""
         data: Union[str,
         Dict[str,
         Any]],
@@ -50,7 +51,8 @@ class ConfigModelConverter:
                 metadata={'converted_at': datetime.utcnow().isoformat(),
                 'source_format': source_format.value,
                 'conversion_mode': self.config.mode.value})
-            self.logger.info(f'Conversion completed with {len(errors)} errors and {len(warnings)} warnings')
+            self.logger.info(f'Conversion completed with {len(errors)} errors and {len(warnings)} wa
+    rnings')
             return result
         except Exception as e:
             self.logger.error(f'Conversion failed: {str(e)}')
@@ -96,6 +98,7 @@ class ConfigModelConverter:
         return self.convert_to_model(yaml_str, ConfigFormat.YAML, model)
 
     def convert_from_env(self,
+        """Docstring."""
         env_data: Union[str,
         Dict[str,
         str]],
@@ -325,6 +328,7 @@ class ConfigModelConverter:
             dict) else x}
 
 def create_config_model_converter(mode: str='lenient',
+    """Docstring."""
     preserve_unknown: bool=True,
     convert_types: bool=True,
     **kwargs: object) -> ConfigModelConverter:
@@ -336,6 +340,7 @@ def create_config_model_converter(mode: str='lenient',
     return ConfigModelConverter(config)
 
 def convert_to_config_model(data: Union[str,
+    """Docstring."""
     Dict[str,
     Any]],
     model_definition: Dict[str,
@@ -375,4 +380,6 @@ def convert_to_config_model(data: Union[str,
         metadata=model_definition.get('metadata',
         {}))
     result = converter.convert_to_model(data, ConfigFormat(source_format), model)
-    return {'config_model': {'name': result.config_model.name, 'version': result.config_model.version, 'metadata': result.config_model.metadata}, 'converted_data': result.converted_data, 'errors': result.errors, 'warnings': result.warnings, 'metadata': result.metadata}
+    return {'config_model': {'name': result.config_model.name, 'version': result.config_model.versio
+    n, 'metadata': result.config_model.metadata}, 'converted_data': result.converted_data, 'errors':
+        result.errors, 'warnings': result.warnings, 'metadata': result.metadata}

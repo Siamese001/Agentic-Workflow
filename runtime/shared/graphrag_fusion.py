@@ -7,10 +7,8 @@ traversal to enable multi-hop reasoning and relationship-based queries.
 import asyncio
 import logging
 import re
-from dataclasses import dataclass
 from enum import Enum
 
-from .knowledge_graph_agent import KnowledgeGraphAgent, GraphContext
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +50,8 @@ class CypherQueryGenerator:
         self.patterns = {
             # Skills and experience
             "skills_match": r"(?:what|which) skills do (?:i|you|candidate) have (?:for|in|related to) (.+)",
-                
+
+
             "experience_with": r"(?:experience|worked|used) (?:with|on) (.+)",
             "projects_using": r"projects (?:using|with|involving) (.+)",
 
@@ -262,6 +261,7 @@ class GraphRAGFusion:
         logger.info(f"Initialized GraphRAGFusion - Fusion: {enable_fusion}")
 
     async def query(
+        """Docstring."""
         self,
         natural_query: str,
         query_type: Optional[QueryType] = None,
@@ -330,6 +330,7 @@ class GraphRAGFusion:
             return QueryType.VECTOR_ONLY
 
     async def _vector_only_query(
+        """Docstring."""
         self,
         query: str,
         max_results: int
@@ -370,6 +371,7 @@ class GraphRAGFusion:
             )
 
     async def _graph_only_query(
+        """Docstring."""
         self,
         query: str,
         max_results: int
@@ -421,6 +423,7 @@ class GraphRAGFusion:
             return await self._vector_only_query(query, max_results)
 
     async def _fusion_query(
+        """Docstring."""
         self,
         query: str,
         query_type: QueryType,
@@ -569,6 +572,7 @@ def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
 
 # Convenience function
 async def graphrag_query(
+    """Docstring."""
     query: str,
     query_type: Optional[QueryType] = None,
     max_results: int = 5,

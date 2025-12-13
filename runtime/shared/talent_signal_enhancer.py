@@ -7,7 +7,6 @@ AI leadership roles.
 
 import logging
 import re
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +90,8 @@ class TalentSignalEnhancer:
             ]
         }
 
-        logger.info(f"Initialized TalentSignalEnhancer with management experience: {self.has_management_experience}")
+        logger.info(f"Initialized TalentSignalEnhancer with management experience: {self.has_managem
+    ent_experience}")
 
     def enhance_management_bullet(self, bullet_text: str) -> str:
         """Enhance a management bullet with talent signals.
@@ -177,9 +177,11 @@ class TalentSignalEnhancer:
                 return None
 
             # Generate hook
-            hook = f"P.S. I have a specialized network of {role_network} {target_role}s who often follow me to new ventures. I could likely fill your open {target_role} roles within 60 days."
+            hook = f"P.S. I have a specialized network of {role_network} {target_role}s who often fo
+    llow me to new ventures. I could likely fill your open {target_role} roles within 60 days."
 
-            logger.info(f"Generated network hook for {target_role} with network size {role_network}")
+            logger.info(f"Generated network hook for {target_role} with network size {role_network}"
+    )
 
             return hook
 
@@ -405,6 +407,7 @@ def create_talent_signal_enhancer(candidate_background: Dict[str, Any]) -> Talen
 
 # Convenience function for quick enhancement
 def enhance_talent_signals(
+    """Docstring."""
     bullets: List[str],
     candidate_background: Dict[str, Any]
 ) -> Tuple[List[str], Optional[str]]:

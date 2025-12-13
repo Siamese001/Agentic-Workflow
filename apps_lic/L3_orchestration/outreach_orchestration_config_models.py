@@ -1,6 +1,5 @@
 """Dataclass models for outreach_orchestration_config."""
 
-from dataclasses import dataclass, field
 # from .outreach_orchestration_config_enums import *  # Star import removed
 
 @dataclass

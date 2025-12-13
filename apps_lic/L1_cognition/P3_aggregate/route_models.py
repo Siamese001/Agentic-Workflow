@@ -1,6 +1,5 @@
 """Dataclass models for lic_routing_rules."""
 
-from dataclasses import dataclass, field
 # from .lic_routing_rules_enums import *  # Star import removed
 
 @dataclass

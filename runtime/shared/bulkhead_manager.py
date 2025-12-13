@@ -8,11 +8,7 @@ tasks are not blocked by lower-priority ones.
 import asyncio
 import logging
 import time
-from dataclasses import dataclass, field
-from enum import Enum
 
-from .signal_infrastructure import EngineType
-from .circuit_breaker import CircuitBreaker, CircuitBreakerConfig, get_circuit_breaker_registry
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +110,7 @@ class Bulkhead:
         return self.circuit_breaker
 
     async def execute(
+        """Docstring."""
         self,
         coro: Callable,
         *args,
@@ -209,6 +206,7 @@ class Bulkhead:
             self._update_metrics()
 
     async def _execute_with_circuit_breaker(
+        """Docstring."""
         self,
         coro: Callable,
         *args,
@@ -238,6 +236,7 @@ class Bulkhead:
                 raise
 
     async def _execute_with_tracking(
+        """Docstring."""
         self,
         coro: Callable,
         *args,
@@ -404,6 +403,7 @@ class BulkheadManager:
         return False
 
     async def execute(
+        """Docstring."""
         self,
         bulkhead_name: str,
         coro: Callable,
@@ -450,6 +450,7 @@ class BulkheadManager:
             return "OUTREACH_GENERATION"
 
     async def execute_for_engine(
+        """Docstring."""
         self,
         engine_type: EngineType,
         coro: Callable,
@@ -508,7 +509,8 @@ class BulkheadManager:
 
         for name, bulkhead_metrics in metrics["bulkheads"].items():
             logger.info(
-                f"{name}: {bulkhead_metrics.active_tasks}/{bulkhead_metrics.config.max_concurrency} "
+                f"{name}: {bulkhead_metrics.active_tasks}/{bulkhead_metrics.config.max_concurrency}
+    "
                 f"({bulkhead_metrics.utilization_percent:.1f}%) "
                 f"Queue: {bulkhead_metrics.queued_tasks}/{bulkhead_metrics.config.queue_size}"
             )
@@ -530,11 +532,13 @@ class BulkheadManager:
 
             # Check for queue buildup
             if metrics.queued_tasks > metrics.config.queue_size * 0.8:
-                issues.append(f"{name}: Queue buildup ({metrics.queued_tasks}/{metrics.config.queue_size})")
+                issues.append(f"{name}: Queue buildup ({metrics.queued_tasks}/{metrics.config.queue_
+    size})")
 
             # Check for high rejection rate
             if metrics.completed_tasks > 0:
-                rejection_rate = metrics.rejected_tasks / (metrics.completed_tasks + metrics.rejected_tasks)
+                rejection_rate = metrics.rejected_tasks / (metrics.completed_tasks + metrics.rejecte
+    d_tasks)
                 if rejection_rate > 0.1:  # 10% rejection rate
                     issues.append(f"{name}: High rejection rate ({rejection_rate:.1%})")
 
@@ -578,6 +582,7 @@ def with_bulkhead(bulkhead_name: str, timeout: Optional[float] = None):
             """TODO: Add docstring."""
 
         async def wrapper(*args, **kwargs):
+            """Docstring."""
             manager = await get_bulkhead_manager()
             return await manager.execute(bulkhead_name, func, *args, timeout=timeout, **kwargs)
         return wrapper

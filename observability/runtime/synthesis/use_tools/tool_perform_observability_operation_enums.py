@@ -1,6 +1,5 @@
 """Enum types for tool_perform_observability_operation."""
 
-from enum import Enum
 
 class OperationMode(Enum):
     """Modes of operation execution."""

@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:28:54.079448
 
 import logging
 from typing import Union, Dict, Optional
-from shared.result_types import RefinementResult
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +19,7 @@ class RefineMessageRanking:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def refine(self,
+        """Docstring."""
         data: Union[str,
         Dict],
         adjustments: Optional[Dict] = None) -> RefinementResult:
@@ -38,6 +38,7 @@ class RefineMessageRanking:
         return RefinementResult(original=data, refined=refined, changes=changes)
 
 def refine(data: Union[str,
+    """Docstring."""
     Dict],
     adjustments: Optional[Dict] = None,
     config: Optional[Dict] = None) -> RefinementResult:

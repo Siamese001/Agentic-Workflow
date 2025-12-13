@@ -20,7 +20,8 @@ TARGET_DIRECTORIES = {
     "observability/health_metrics.py": "observability/metrics/",
     "observability/observability.py": "observability/core/",
     "observability/repair_policies.py": "observability/policies/",
-    "observability/runtime_observability_agentic_collectors.py": "observability/runtime/collectors/",
+    "observability/runtime_observability_agentic_collectors.py": "observability/runtime/collectors/"
+    ,
     "observability/runtime_observability_agentic_spans.py": "observability/runtime/spans/",
     "observability/runtime_observability_collectors.py": "observability/runtime/collectors/",
     "observability/runtime_observability_spans.py": "observability/runtime/spans/",
@@ -131,7 +132,7 @@ def main() -> None:
     handle_invalid_layers()
 
     # File sprawl fix complete!
-    # Note: You may need to manually update import statements in other files that reference these moved files.
+    # Note: You may need to manually update import statements in other files that reference these...
 
 if __name__ == '__main__':
     main()

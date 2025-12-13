@@ -7,9 +7,6 @@ managing timeouts safely, and ensuring proper cleanup of async resources.
 import asyncio
 import logging
 import time
-from contextlib import asynccontextmanager
-from dataclasses import dataclass, field
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +96,7 @@ class AsyncCoordinator:
         return f"{self.name}_task_{self._task_counter}_{int(time.time() * 1000)}"
 
     async def create_task(
+        """Docstring."""
         self,
         coro: Awaitable,
         timeout: Optional[float] = None,
@@ -150,6 +148,7 @@ class AsyncCoordinator:
         return task_id
 
     async def _run_with_timeout(
+        """Docstring."""
         self,
         coro: Awaitable,
         timeout: Optional[float],
@@ -364,6 +363,7 @@ class AsyncCoordinator:
 
     @asynccontextmanager
     async def managed_task(
+        """Docstring."""
         self,
         coro: Awaitable,
         timeout: Optional[float] = None,
@@ -417,6 +417,7 @@ async def shutdown_all_coordinators() -> None:
 
 # Decorator for managed async functions
 def managed(
+    """Docstring."""
     coordinator_name: str = "default",
     timeout: Optional[float] = None,
     cleanup_callback: Optional[Callable] = None
@@ -437,6 +438,7 @@ def managed(
             """TODO: Add docstring."""
 
         async def wrapper(*args, **kwargs):
+            """Docstring."""
             coordinator = await get_coordinator(coordinator_name)
             async with coordinator.managed_task(
                 func(*args, **kwargs),
@@ -449,6 +451,7 @@ def managed(
 
 # Safe timeout wrapper that prevents orphaned tasks
 async def safe_wait_for(
+    """Docstring."""
     coro: Awaitable,
     timeout: float,
     coordinator_name: str = "timeout_coordinator"
@@ -471,6 +474,7 @@ async def safe_wait_for(
         """TODO: Add docstring."""
 
     async def timeout_wrapper():
+        """Docstring."""
         return await coro
 
     task_id = await coordinator.create_task(timeout_wrapper(), timeout)

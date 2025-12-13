@@ -7,8 +7,8 @@ across all layers to maintain L1-L5 atomicity.
 
 import pytest
 
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapter, PineconeConfig  # Archive import removed
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  # Archive import removed
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapt...
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  # Archive...
 
 class TestSimpleDIContainer:
     """Test cases for dependency injection container."""
@@ -138,7 +138,7 @@ class TestLayerDIIntegration:
 
     def test_pinecone_adapter_di_interface(self) -> None:
         """Test that PineconeAdapter provides DI-compatible interface."""
-#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import Pinec...
 
         config = PineconeConfig(
             api_key = os.getenv("API_KEY"),
@@ -163,7 +163,7 @@ class TestDIAtomicityCompliance:
 
     def test_no_direct_imports_in_l2(self) -> None:
         """Test that L2 doesn't directly import services."""
-#         import archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution  # DEPRECATED: Archive import removed to protect archives from validation edits
+#         import archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution  # DEPRECATED: Ar...
 
         # Should import from DI container, not direct services
         source_lines = []
@@ -188,12 +188,12 @@ class TestDIAtomicityCompliance:
 
         for imp in business_logic_imports:
             # Allow in comments or type hints only
-            lines_with_imp = [line for line in source_lines if imp in line and not line.strip().startswith('#')]
+            lines_with_imp = [line for line in source_lines if imp in line and not line.strip().s...
             assert len(lines_with_imp) == 0, f"Found direct import: {imp}"
 
     def test_no_direct_imports_in_l3(self) -> None:
         """Test that L3 doesn't directly import services."""
-#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l3  # INVALID: Cannot import from path with hyphens
+#         import archives.legacy_resume_gen.Agentic-Workflow-10_9.l3  # INVALID: Cannot import fr...
 
         # Should import from DI container
         source_lines = []

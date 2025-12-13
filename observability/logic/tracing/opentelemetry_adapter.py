@@ -4,7 +4,7 @@
 """Module implementation."""
 
 import sys
-# import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types  # DEPRECATED: Archive import removed to protect archives from validation edits
+# import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types  # DEPRECATED: Archive import...
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -16,9 +16,9 @@ SOURCE_PATH = REPO_ROOT / SOURCE_REL_PATH
 # Embedded canonical source
 EMBEDDED_SOURCES = {
     SOURCE_REL_PATH: """from models import MainGraphState
-from state_adapter_stack import StateAdapterStack
 
 def test_safety_fields_persist_via_patch() -> None:
+    """Docstring."""
     foundation = MainGraphState()
     patch = {
         "safety_report": {"is_safe": True, "findings": []},

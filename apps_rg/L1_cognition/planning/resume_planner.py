@@ -4,10 +4,10 @@ Incorporated from historical agentic_workflow/l1/rg_planner.py to provide
 resume-specific planning capabilities for the 8-node sequential pipeline.
 
 This is the L1 planning layer that coordinates:
-Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification → K4 Rewriting → K5 Skill Mapping → K6 Section Assembly → K7 Formatting → K8 Validation
+Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification → K4 Rewriting → K5 Skill
+    Mapping → K6 Section Assembly → K7 Formatting → K8 Validation
 """
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import logging
 
@@ -94,6 +94,7 @@ class RGPlanner:
         ]
 
     def plan_resume_processing(
+        """Docstring."""
         self,
         *,
         job_input: Dict[str, object],

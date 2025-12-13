@@ -1,7 +1,7 @@
-# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_simulation import Engine  # INVALID: Cannot import from path with hyphens
+# from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_simulation import Engine  # IN...
 
-# from archives.legacy_root_folders.eval.simulation.models import SimScenario  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.eval.simulation.simulator import run_scenario  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.eval.simulation.models import SimScenario  # DEPRECATED: Arch...
+# from archives.legacy_root_folders.eval.simulation.simulator import run_scenario  # DEPRECATED: ...
 
 def test_run_scenario_uses_existing_engine(self) -> None:
     """Test that scenario runner properly uses existing engine instance."""

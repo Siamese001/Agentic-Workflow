@@ -1,6 +1,5 @@
 """Types and models for dedup_merged_files."""
 
-from dataclasses import dataclass, field
 
 @dataclass
 class DedupManifest:

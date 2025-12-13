@@ -21,8 +21,6 @@ import logging
 import sys
 import traceback
 from typing import Dict, List, Optional, Union, Any
-from dataclasses import dataclass, field
-from enum import Enum
 
 import time
 
@@ -67,7 +65,8 @@ class ExecutionContext:
             }
             logger.error(f"Execution failed: {error}")
         else:
-            logger.info(f"Execution completed successfully in {self.end_time - self.start_time:.2f}s")
+            logger.info(f"Execution completed successfully in {self.end_time - self.start_time:.2f}s
+    ")
 
 @dataclass
 class ProcessingResult:
@@ -112,6 +111,7 @@ class FindProblemsDiagnostics:
             raise ValueError(f"Missing required config keys: {missing}")
 
     def process(self,
+        """Docstring."""
                 payload: Union[str, int, float, bool, List, Dict],
                 context: Optional[Dict[str, Any]] = None) -> ProcessingResult:
         """
