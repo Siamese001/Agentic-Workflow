@@ -4,7 +4,6 @@ from typing import Dict, Iterable
 
 # from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
     """Aggregate judge verdicts into simple metrics.
 
@@ -30,6 +29,3 @@ def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
         "fail_count": float(fail_count),
         "total": float(total),
     }
-
-
-

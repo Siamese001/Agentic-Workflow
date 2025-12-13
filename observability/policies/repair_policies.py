@@ -11,7 +11,6 @@ from typing import Any, Dict, List
 
 # from archives.legacy_root_folders.eval.health.failure_detector import FailureSignal  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 @dataclass
 class RepairAction:
     """Single AIS repair action recommendation."""
@@ -19,7 +18,6 @@ class RepairAction:
     kind: str  # e.g. "retry", "downgrade", "replan", "escalate"
     reason: str
     metadata: Dict[str, object]
-
 
 def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
     """Map FailureSignal list into a set of RepairAction recommendations."""
@@ -52,6 +50,3 @@ def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
             )
 
     return actions
-
-
-

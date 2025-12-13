@@ -1,5 +1,4 @@
 
-
 def test_judge_engine_unsafe_on_high_severity() -> None:
     """Test that judge engine marks content unsafe when high severity violations detected."""
     ctx = SafetyContext(input_text="harmful text")
@@ -18,9 +17,3 @@ def test_judge_engine_unsafe_on_high_severity() -> None:
     verdict = evaluate_with_guard_model(ctx, rules_result)
 
     assert verdict.verdict == "unsafe"
-
-
-
-
-
-

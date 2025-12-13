@@ -42,4 +42,3 @@ class SchemaSimilarityConfig:
     default_method: SimilarityMethod = SimilarityMethod.HYBRID
     type_compatibility_matrix: Dict[str, Set[str]] = field(default_factory=lambda: {'string': {'string', 'text'}, 'integer': {'integer', 'number'}, 'number': {'integer', 'number', 'float'}, 'boolean': {'boolean'}, 'array': {'array', 'list'}, 'object': {'object', 'dict'}, 'null': {'null', 'any'}})
     similarity_thresholds: Dict[str, float] = field(default_factory=lambda: {'identical': 0.95, 'compatible': 0.7, 'partially_compatible': 0.4})
-

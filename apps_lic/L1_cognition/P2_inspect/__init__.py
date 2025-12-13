@@ -6,7 +6,6 @@ Generated: 2025-12-07T13:28:54.045984
 
 from __future__ import annotations
 
-
 __all__: list[str] = [
     "LICValidator",
     "create_lic_validator",

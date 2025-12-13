@@ -10,4 +10,3 @@ class ProvenanceType(Enum):
     VERB = 'V'
     TECH = 'T'
     SOFT = 'S'
-

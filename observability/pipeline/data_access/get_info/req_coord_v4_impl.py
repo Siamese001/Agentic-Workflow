@@ -124,4 +124,3 @@ def coordinate_observability_operations(input_data: Dict[str, object]) -> Dict[s
     builder = CoordinateObservabilityOperationsOrchestratorFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
-

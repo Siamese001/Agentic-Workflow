@@ -6,12 +6,9 @@ from __future__ import annotations
 
 from typing import Dict
 
-
-
 def test_lic_research_planner(data: Dict[str, object]) -> Dict[str, object]:
     """Process test lic research planner data."""
     return {"status": "processed", "input_keys": list(data.keys())}
-
 
 def get_test_lic_research_planner_config() -> Dict[str, object]:
     """Get configuration for test_lic_research_planner."""

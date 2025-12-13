@@ -29,11 +29,10 @@ class PlanObject:
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_qa
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_safety
 
-
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_strategy_mode() -> None:
     """Test routing to strategy executor.
-    
+
     This test is skipped until legacy L2 execution functions are implemented.
     When implemented, it should verify that PlanObject with strategy mode
     correctly routes to the strategy executor function.
@@ -41,11 +40,10 @@ def test_route_executor_strategy_mode() -> None:
     # Test routing to strategy executor
     pass
 
-
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_qa_mode() -> None:
     """Test routing to QA executor.
-    
+
     This test is skipped until legacy L2 execution functions are implemented.
     When implemented, it should verify that PlanObject with QA mode
     correctly routes to the QA executor function.
@@ -53,11 +51,10 @@ def test_route_executor_qa_mode() -> None:
     # Test routing to QA executor
     pass
 
-
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_invalid_mode() -> None:
     """Test error handling for invalid mode.
-    
+
     This test is skipped until legacy L2 execution functions are implemented.
     When implemented, it should verify that PlanObject with invalid mode
     raises an OrchestrationError.

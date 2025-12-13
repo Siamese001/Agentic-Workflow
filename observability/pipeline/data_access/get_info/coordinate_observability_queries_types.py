@@ -9,4 +9,3 @@ class CoordinateObservabilityOperationsOrchestratorType(Enum):
     DEFAULT = 'default'
     CORE = 'core'
     SYSTEM = 'system'
-

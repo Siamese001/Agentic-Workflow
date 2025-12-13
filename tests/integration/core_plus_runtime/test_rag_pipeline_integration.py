@@ -13,7 +13,6 @@ try:
 except ImportError:
     RAGProvider = ProviderRegistry = CompanyResearchExecutor = Mock
 
-
 class TestRAGPipelineIntegration:
     """Test RAG pipeline integration contracts"""
 

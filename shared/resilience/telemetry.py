@@ -15,7 +15,6 @@ from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
-
 class OperationStatus(Enum):
     """Status of an operation."""
     SUCCESS = "success"
@@ -23,7 +22,6 @@ class OperationStatus(Enum):
     RETRY = "retry"
     CIRCUIT_OPEN = "circuit_open"
     TIMEOUT = "timeout"
-
 
 @dataclass
 class TelemetryEvent:
@@ -38,18 +36,17 @@ class TelemetryEvent:
     error_message: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
-
 class SystemTelemetry:
     """Centralized telemetry system for resilience components.
-    
+
     Emits structured JSON logs for observability platforms.
     Tracks metrics like latency, error rates, token usage, and circuit breaker events.
     """
-    
+
     def __init__(self, service_name: str = "agentic-workflow"):
         self.service_name = service_name
         self.logger = logging.getLogger(f"{__name__}.{service_name}")
-    
+
     def log_metric(
         self,
         component: str,
@@ -62,7 +59,7 @@ class SystemTelemetry:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Log a telemetry event.
-        
+
         Args:
             component: Component name (e.g., "openai_executor", "anthropic_executor")
             operation: Operation name (e.g., "chat_completion", "embeddings")
@@ -84,7 +81,7 @@ class SystemTelemetry:
             error_message=error_message,
             metadata=metadata or {},
         )
-        
+
         # Convert to structured log format
         log_data = {
             "service": self.service_name,
@@ -94,19 +91,19 @@ class SystemTelemetry:
             "status": event.status.value,
             "latency_ms": event.latency_ms,
         }
-        
+
         if event.token_usage is not None:
             log_data["token_usage"] = event.token_usage
-        
+
         if event.error_type:
             log_data["error_type"] = event.error_type
-        
+
         if event.error_message:
             log_data["error_message"] = event.error_message
-        
+
         if event.metadata:
             log_data["metadata"] = event.metadata
-        
+
         # Log with appropriate level
         if status in [OperationStatus.FAILURE, OperationStatus.CIRCUIT_OPEN]:
             self.logger.error(json.dumps(log_data))
@@ -114,7 +111,7 @@ class SystemTelemetry:
             self.logger.warning(json.dumps(log_data))
         else:
             self.logger.info(json.dumps(log_data))
-    
+
     def log_success(
         self,
         component: str,
@@ -132,7 +129,7 @@ class SystemTelemetry:
             token_usage=token_usage,
             metadata=metadata,
         )
-    
+
     def log_failure(
         self,
         component: str,
@@ -152,7 +149,7 @@ class SystemTelemetry:
             error_message=error_message,
             metadata=metadata,
         )
-    
+
     def log_retry(
         self,
         component: str,
@@ -171,7 +168,7 @@ class SystemTelemetry:
         }
         if metadata:
             retry_metadata.update(metadata)
-        
+
         self.log_metric(
             component=component,
             operation=operation,
@@ -180,7 +177,7 @@ class SystemTelemetry:
             error_type=error_type,
             metadata=retry_metadata,
         )
-    
+
     def log_circuit_breaker(
         self,
         component: str,
@@ -195,7 +192,7 @@ class SystemTelemetry:
         }
         if metadata:
             cb_metadata.update(metadata)
-        
+
         self.log_metric(
             component=component,
             operation="circuit_breaker",
@@ -204,10 +201,8 @@ class SystemTelemetry:
             metadata=cb_metadata,
         )
 
-
 # Global telemetry instance
 _default_telemetry: Optional[SystemTelemetry] = None
-
 
 def get_telemetry() -> SystemTelemetry:
     """Get the default telemetry instance."""
@@ -215,7 +210,6 @@ def get_telemetry() -> SystemTelemetry:
     if _default_telemetry is None:
         _default_telemetry = SystemTelemetry()
     return _default_telemetry
-
 
 def set_telemetry(telemetry: SystemTelemetry) -> None:
     """Set the default telemetry instance."""

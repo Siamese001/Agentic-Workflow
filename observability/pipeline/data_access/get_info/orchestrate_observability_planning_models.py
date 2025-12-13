@@ -54,4 +54,3 @@ class ObservabilityPlanningConfig:
     log_retention_days: int = 30
     metric_retention_days: int = 90
     log_level: str = 'INFO'
-

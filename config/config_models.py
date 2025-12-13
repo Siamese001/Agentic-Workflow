@@ -60,14 +60,14 @@ class PromptsConfig:
     def get_prompt(self, prompt_name: str, section: str='default') -> str:
         """
         Retrieve a prompt template by name and section.
-        
+
         Args:
             prompt_name: Name of the prompt (e.g., "RAG_MISSION_EXTRACTION")
             section: Section key (e.g., "PHASE_1", "PHASE_2", "default")
-            
+
         Returns:
             The prompt template string
-            
+
         Raises:
             KeyError: If prompt or section doesn't exist
         """
@@ -143,7 +143,7 @@ class RAGConfig:
 class ReasoningConfig:
     """
     Configuration for reasoning strategies (CoT, ToT, Self-Consistency, Reflexion).
-    
+
     PHASE 2 CHANGE: Rationalized reasoning parameters.
     - Lowered self_consistency intensity since Inspector handles evaluation
     - CoT/ToT remain strategic for planning, but SC reduced from 8 -> 3 for K1

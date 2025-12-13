@@ -25,13 +25,11 @@ from ...L1_cognition.inference.inference_engine import (
 
 logger = logging.getLogger(__name__)
 
-
 class ValidationResult(str, Enum):
     """Possible validation results."""
     PASSED = "passed"
     FAILED = "failed"
     REQUIRES_CORRECTION = "requires_correction"
-
 
 @dataclass
 class PromotionResult:
@@ -44,7 +42,6 @@ class PromotionResult:
     correction_attempts: int = 0
     execution_time_ms: float = 0.0
 
-
 @dataclass
 class ValidationRule:
     """A validation rule for content promotion."""
@@ -53,15 +50,14 @@ class ValidationRule:
     error_message: str
     is_critical: bool = True
 
-
 class StatePromoter:
     """
     Validates and promotes content from SoftState to HardState.
-    
+
     The promoter ensures that only validated, schema-compliant content
     from the LLM's high-temperature scratchpad becomes immutable system state.
     """
-    
+
     def __init__(
         self,
         max_correction_attempts: int = 3,
@@ -69,7 +65,7 @@ class StatePromoter:
         inference_engine: Optional[InferenceEngine] = None
     ):
         """Initialize state promoter.
-        
+
         Args:
             max_correction_attempts: Maximum attempts at self-correction
             enable_self_correction: Enable automatic self-correction loops
@@ -80,7 +76,7 @@ class StatePromoter:
         self.inference_engine = inference_engine or InferenceEngine()
         self._validation_rules: Dict[str, List[ValidationRule]] = {}
         self._pydantic_schemas: Dict[str, Type[BaseModel]] = {}
-        
+
         logger.info(
             "state_promoter_initialized",
             extra={
@@ -88,10 +84,10 @@ class StatePromoter:
                 "self_correction_enabled": enable_self_correction
             }
         )
-    
+
     def register_validation_rule(self, key: str, rule: ValidationRule) -> None:
         """Register a validation rule for a specific key.
-        
+
         Args:
             key: The content key to validate
             rule: Validation rule to apply
@@ -99,26 +95,26 @@ class StatePromoter:
         if key not in self._validation_rules:
             self._validation_rules[key] = []
         self._validation_rules[key].append(rule)
-        
+
         logger.debug(
             "validation_rule_registered",
             extra={"key": key, "rule": rule.name, "critical": rule.is_critical}
         )
-    
+
     def register_pydantic_schema(self, key: str, schema: Type[BaseModel]) -> None:
         """Register a Pydantic schema for content validation.
-        
+
         Args:
             key: The content key to validate
             schema: Pydantic schema class
         """
         self._pydantic_schemas[key] = schema
-        
+
         logger.debug(
             "pydantic_schema_registered",
             extra={"key": key, "schema": schema.__name__}
         )
-    
+
     async def promote(
         self,
         context: SignalContext,
@@ -127,17 +123,17 @@ class StatePromoter:
     ) -> PromotionResult:
         """
         Promote content from SoftState to HardState after validation.
-        
+
         Args:
             context: Signal context containing states
             key: The key in SoftState to promote
             schema_name: Optional schema name for validation
-            
+
         Returns:
             Promotion result with status and details
         """
         start_time = datetime.utcnow()
-        
+
         # Check if key exists in SoftState
         if key not in context.soft_state.drafts:
             return PromotionResult(
@@ -146,22 +142,22 @@ class StatePromoter:
                 validation_result=ValidationResult.FAILED,
                 error_message=f"Key '{key}' not found in SoftState"
             )
-        
+
         content = context.soft_state.drafts[key]
         correction_attempts = 0
-        
+
         # Validation loop
         while correction_attempts <= self.max_correction_attempts:
             # Validate content
             validation_result = await self._validate_content(
                 content, key, schema_name
             )
-            
+
             if validation_result == ValidationResult.PASSED:
                 # Promote to HardState
                 success = context.promote_soft_to_hard(key, schema_name)
                 execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
-                
+
                 if success:
                     logger.info(
                         "state_promotion_successful",
@@ -171,7 +167,7 @@ class StatePromoter:
                             "attempts": correction_attempts + 1
                         }
                     )
-                    
+
                     return PromotionResult(
                         success=True,
                         key=key,
@@ -180,7 +176,7 @@ class StatePromoter:
                         correction_attempts=correction_attempts,
                         execution_time_ms=execution_time
                     )
-            
+
             elif validation_result == ValidationResult.FAILED:
                 # Critical validation failure, cannot recover
                 execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
@@ -192,7 +188,7 @@ class StatePromoter:
                     correction_attempts=correction_attempts,
                     execution_time_ms=execution_time
                 )
-            
+
             elif validation_result == ValidationResult.REQUIRES_CORRECTION:
                 # Attempt self-correction
                 if not self.enable_self_correction:
@@ -205,7 +201,7 @@ class StatePromoter:
                         correction_attempts=correction_attempts,
                         execution_time_ms=execution_time
                     )
-                
+
                 correction_attempts += 1
                 if correction_attempts > self.max_correction_attempts:
                     execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
@@ -217,12 +213,12 @@ class StatePromoter:
                         correction_attempts=correction_attempts,
                         execution_time_ms=execution_time
                     )
-                
+
                 # Generate correction prompt
                 correction_prompt = self._generate_correction_prompt(
                     content, key, schema_name
                 )
-                
+
                 # Request correction from LLM
                 try:
                     correction_request = InferenceRequest(
@@ -231,9 +227,9 @@ class StatePromoter:
                         mode=InferenceMode.VALIDATION,  # Low temperature for corrections
                         temperature_override=0.1  # Very low temp for precise corrections
                     )
-                    
+
                     result = await self.inference_engine.infer(correction_request)
-                    
+
                     # Update content with correction
                     try:
                         corrected_content = json.loads(result.content)
@@ -249,7 +245,7 @@ class StatePromoter:
                         context.soft_state.record_revision(
                             key, context.soft_state.drafts[key], content
                         )
-                    
+
                     logger.info(
                         "self_correction_attempted",
                         extra={
@@ -258,7 +254,7 @@ class StatePromoter:
                             "attempt": correction_attempts
                         }
                     )
-                    
+
                 except Exception as e:
                     logger.error(
                         "self_correction_failed",
@@ -278,7 +274,7 @@ class StatePromoter:
                         correction_attempts=correction_attempts,
                         execution_time_ms=execution_time
                     )
-        
+
         # Should not reach here
         execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
         return PromotionResult(
@@ -289,7 +285,7 @@ class StatePromoter:
             correction_attempts=correction_attempts,
             execution_time_ms=execution_time
         )
-    
+
     async def _validate_content(
         self,
         content: Any,
@@ -297,12 +293,12 @@ class StatePromoter:
         schema_name: Optional[str] = None
     ) -> ValidationResult:
         """Validate content against registered rules and schemas.
-        
+
         Args:
             content: Content to validate
             key: Content key for rule lookup
             schema_name: Optional schema name for validation
-            
+
         Returns:
             Validation result
         """
@@ -334,7 +330,7 @@ class StatePromoter:
                     }
                 )
                 return ValidationResult.FAILED
-        
+
         # Custom validation rules
         if key in self._validation_rules:
             for rule in self._validation_rules[key]:
@@ -359,9 +355,9 @@ class StatePromoter:
                         }
                     )
                     return ValidationResult.FAILED
-        
+
         return ValidationResult.PASSED
-    
+
     def _generate_correction_prompt(
         self,
         content: Any,
@@ -369,12 +365,12 @@ class StatePromoter:
         schema_name: Optional[str] = None
     ) -> str:
         """Generate a prompt for content correction.
-        
+
         Args:
             content: The invalid content
             key: Content key
             schema_name: Optional schema name
-            
+
         Returns:
             Correction prompt
         """
@@ -387,7 +383,7 @@ Invalid Content:
 {json.dumps(content, indent=2) if isinstance(content, dict) else content}
 
 """
-        
+
         # Add schema information if available
         if key in self._pydantic_schemas:
             schema = self._pydantic_schemas[key]
@@ -396,23 +392,23 @@ Expected Schema (Pydantic model: {schema.__name__}):
 {json.dumps(schema.model_json_schema(), indent=2)}
 
 """
-        
+
         # Add failed validation rules
         if key in self._validation_rules:
             prompt += "\nFailed validation rules:\n"
             for rule in self._validation_rules[key]:
                 prompt += f"- {rule.name}: {rule.error_message}\n"
-        
+
         prompt += """
 Please provide the corrected content as valid JSON only.
 Do not include explanations or additional text.
 """
-        
+
         return prompt
-    
+
     def get_validation_summary(self) -> Dict[str, Any]:
         """Get a summary of registered validations.
-        
+
         Returns:
             Dictionary with validation statistics
         """
@@ -429,13 +425,12 @@ Do not include explanations or additional text.
             "total_schemas": len(self._pydantic_schemas)
         }
 
-
 # Factory functions for common validation patterns
 
 def create_email_validator() -> StatePromoter:
     """Create a StatePromoter configured for email validation."""
     promoter = StatePromoter()
-    
+
     # Email content validation
     promoter.register_validation_rule(
         "email_content",
@@ -446,7 +441,7 @@ def create_email_validator() -> StatePromoter:
             is_critical=True
         )
     )
-    
+
     promoter.register_validation_rule(
         "email_content",
         ValidationRule(
@@ -456,7 +451,7 @@ def create_email_validator() -> StatePromoter:
             is_critical=True
         )
     )
-    
+
     promoter.register_validation_rule(
         "email_content",
         ValidationRule(
@@ -466,14 +461,13 @@ def create_email_validator() -> StatePromoter:
             is_critical=False
         )
     )
-    
-    return promoter
 
+    return promoter
 
 def create_resume_validator() -> StatePromoter:
     """Create a StatePromoter configured for resume validation."""
     promoter = StatePromoter()
-    
+
     # Resume section validation
     promoter.register_validation_rule(
         "experience_section",
@@ -484,7 +478,7 @@ def create_resume_validator() -> StatePromoter:
             is_critical=True
         )
     )
-    
+
     promoter.register_validation_rule(
         "experience_section",
         ValidationRule(
@@ -497,5 +491,5 @@ def create_resume_validator() -> StatePromoter:
             is_critical=True
         )
     )
-    
+
     return promoter

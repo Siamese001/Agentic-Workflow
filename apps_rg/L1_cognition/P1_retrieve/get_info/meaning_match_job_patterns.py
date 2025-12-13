@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Match Job Patterns - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class MatchJobPatterns:
     """MatchJobPatterns implementation."""

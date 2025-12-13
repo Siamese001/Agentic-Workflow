@@ -9,4 +9,3 @@ class ContextMatchType(Enum):
     SEMANTIC = 'semantic'
     STRUCTURAL = 'structural'
     USAGE = 'usage'
-

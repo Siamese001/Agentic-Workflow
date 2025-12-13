@@ -103,4 +103,3 @@ def get_executive_summary_brief() -> ExecutiveSummaryBrief:
 def get_experience_bullets_brief() -> ExperienceBulletsBrief:
     """Get default experience bullets brief."""
     return ExperienceBulletsBrief()
-

@@ -12,10 +12,10 @@ class SchemaContextMatcher:
 
     def match_context(self, request: ContextMatchRequest) -> SchemaContextMatchResult:
         """Match schemas based on contextual information.
-        
+
         Args:
             request: Context match request
-            
+
         Returns:
             SchemaContextMatchResult: Ranked matches with scores
         """
@@ -40,12 +40,12 @@ class SchemaContextMatcher:
 
     def find_similar_contexts(self, schema_context: SchemaContext, context_database: List[SchemaContext], top_k: int=10) -> List[Tuple[str, float]]:
         """Find schemas with similar contexts.
-        
+
         Args:
             schema_context: Query context
             context_database: Database of schema contexts
             top_k: Number of similar contexts to return
-            
+
         Returns:
             List of (schema_id, similarity_score) tuples
         """
@@ -59,11 +59,11 @@ class SchemaContextMatcher:
 
     def update_context(self, schema_id: str, context: SchemaContext) -> bool:
         """Update context information for a schema.
-        
+
         Args:
             schema_id: ID of schema
             context: New context information
-            
+
         Returns:
             bool: True if updated successfully
         """
@@ -242,7 +242,7 @@ def create_schema_context_matcher(domain_weight: float=0.3, purpose_weight: floa
 
 def match_schema_context(query_context: Dict[str, Any], candidate_schemas: List[Tuple[str, Dict[str, Any], Dict[str, Any]]], match_types: List[str]=None, min_score: float=0.5, top_k: int=10, include_explanations: bool=False, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Match schema context.
-    
+
     Args:
         query_context: Query context information
         candidate_schemas: List of (schema_id, schema_def, schema_context) tuples
@@ -251,7 +251,7 @@ def match_schema_context(query_context: Dict[str, Any], candidate_schemas: List[
         top_k: Number of top results to return
         include_explanations: Whether to include match explanations
         config: Optional matcher configuration
-        
+
     Returns:
         Dict: Context match results
     """
@@ -262,4 +262,3 @@ def match_schema_context(query_context: Dict[str, Any], candidate_schemas: List[
     request = ContextMatchRequest(query_context=query_ctx, candidate_schemas=candidates, match_types=[ContextMatchType(t) for t in match_types or list(ContextMatchType)], min_score=min_score, top_k=top_k, include_explanations=include_explanations)
     result = matcher.match_context(request)
     return {'query_context': {'schema_id': result.query_context.schema_id, 'domain': result.query_context.domain, 'purpose': result.query_context.purpose, 'tags': result.query_context.tags, 'usage_patterns': result.query_context.usage_patterns}, 'matches': [{'schema_id': m.schema_id, 'match_score': m.match_score, 'match_details': m.match_details, 'explanation': m.explanation, 'compatibility_score': m.compatibility_score} for m in result.matches], 'total_candidates': result.total_candidates, 'metadata': result.metadata}
-

@@ -23,4 +23,3 @@ class AlertSeverity(Enum):
     MEDIUM = 'medium'
     HIGH = 'high'
     CRITICAL = 'critical'
-

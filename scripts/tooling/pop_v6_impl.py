@@ -139,11 +139,10 @@ def populate_hardened_code(dry_run: bool=True) -> Dict:
         except (ValueError, TypeError, KeyError) as e:
             results['errors'].append({'path': stub_info['path'], 'error': str(e)})
     if dry_run:
-        print('\n[DRY RUN] Would populate the following stub files:')
-        print(f'  - Found {len(stubs_to_populate)} stubs')
+        logger.info('\n[DRY RUN] Would populate the following stub files:')
+        logger.info(f'  - Found {len(stubs_to_populate)} stubs')
         for stub in stubs_to_populate[:5]:
-            print(f"    - {stub['path']}")
+            logger.info(f"    - {stub['path']}")
         if len(stubs_to_populate) > 5:
-            print(f'    ... and {len(stubs_to_populate) - 5} more')
+            logger.info(f'    ... and {len(stubs_to_populate) - 5} more')
     return results
-

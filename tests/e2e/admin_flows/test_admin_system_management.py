@@ -42,7 +42,6 @@ class AuditEntry:
     resource: str
     details: Dict[str, object]
 
-
 class TestSystemMonitoringE2E:
     """E2E tests for system monitoring."""
 
@@ -112,7 +111,6 @@ class TestSystemMonitoringE2E:
         assert total_requests == 370
         assert avg_requests == pytest.approx(123.33, rel=0.01)
 
-
 class TestUserManagementE2E:
     """E2E tests for user management."""
 
@@ -171,7 +169,6 @@ class TestUserManagementE2E:
         assert len(audit_log) == 1
         assert audit_log[0].action == "update_config"
 
-
 class TestConfigurationManagementE2E:
     """E2E tests for configuration management."""
 
@@ -214,7 +211,6 @@ class TestConfigurationManagementE2E:
         assert "d" in diff["added"]
         assert "c" in diff["removed"]
         assert "b" in diff["changed"]
-
 
 @skip_if_no_admin
 class TestMaintenanceModeE2E:

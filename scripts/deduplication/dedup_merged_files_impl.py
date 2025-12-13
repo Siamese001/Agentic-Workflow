@@ -96,4 +96,3 @@ def print_summary(manifest: DedupManifest, dry_run: bool) -> None:
         pass
         pass
         pass
-

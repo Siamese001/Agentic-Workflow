@@ -13,14 +13,12 @@ logger = logging.getLogger(__name__)
 
 T = TypeVar('T')
 
-
 @dataclass
 class OptimizationResult:
     """Result of optimization."""
     items: List[object]
     method: str
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class SortObservabilityResults:
     """Optimizer for standard domain."""
@@ -36,7 +34,6 @@ class SortObservabilityResults:
             return OptimizationResult(items=[], method=self.method)
         optimized = sorted(items, key=key, reverse=True) if key else items
         return OptimizationResult(items=optimized, method=self.method, metadata={"count": len(items)})
-
 
 def optimize(items: List[object], key: Optional[Callable] = None, config: Optional[Dict] = None) -> OptimizationResult:
     """Convenience function for optimization."""

@@ -30,4 +30,3 @@ class CTAFormat(Enum):
     MICRO = 'micro'
     STANDARD = 'standard'
     EXPANDED = 'expanded'
-

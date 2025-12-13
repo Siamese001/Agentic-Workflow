@@ -16,7 +16,7 @@ class ObservabilityToolInvoker:
 
     def register_tool(self, tool_spec: ToolSpecification, client: Optional[Any]=None) -> None:
         """Register an observability tool.
-        
+
         Args:
             tool_spec: Tool specification
             client: Optional client instance
@@ -29,11 +29,11 @@ class ObservabilityToolInvoker:
 
     def invoke_tool(self, context: ToolInvocationContext, parameters: Dict[str, Any]) -> ToolInvocationResult:
         """Invoke an observability tool.
-        
+
         Args:
             context: Invocation context
             parameters: Tool parameters
-            
+
         Returns:
             ToolInvocationResult: Invocation result
         """
@@ -64,11 +64,11 @@ class ObservabilityToolInvoker:
 
     def invoke_tool_batch(self, contexts: List[ToolInvocationContext], parameters_list: List[Dict[str, Any]]) -> List[ToolInvocationResult]:
         """Invoke multiple tools.
-        
+
         Args:
             contexts: List of invocation contexts
             parameters_list: List of parameters
-            
+
         Returns:
             List[ToolInvocationResult]: Results for all invocations
         """
@@ -82,11 +82,11 @@ class ObservabilityToolInvoker:
 
     def invoke_tool_stream(self, context: ToolInvocationContext, parameters: Dict[str, Any]) -> Dict[str, object]:
         """Invoke tool with streaming response.
-        
+
         Args:
             context: Invocation context
             parameters: Tool parameters
-            
+
         Returns:
             Iterator: Stream of response chunks
         """
@@ -98,10 +98,10 @@ class ObservabilityToolInvoker:
 
     def list_tools(self, category: Optional[ToolCategory]=None) -> List[ToolSpecification]:
         """List registered tools.
-        
+
         Args:
             category: Optional filter by category
-            
+
         Returns:
             List[ToolSpecification]: Registered tools
         """
@@ -112,10 +112,10 @@ class ObservabilityToolInvoker:
 
     def get_tool_specification(self, tool_id: str) -> Optional[ToolSpecification]:
         """Get tool specification.
-        
+
         Args:
             tool_id: Tool identifier
-            
+
         Returns:
             Optional[ToolSpecification]: Tool specification
         """
@@ -123,7 +123,7 @@ class ObservabilityToolInvoker:
 
     def reset_circuit_breaker(self, tool_id: str) -> None:
         """Reset circuit breaker for tool.
-        
+
         Args:
             tool_id: Tool identifier
         """
@@ -244,7 +244,7 @@ def create_observability_tool_invoker(default_timeout: float=30.0, max_retries: 
 
 def tool_invoke_observability_tool(tool_id: str, method: str, parameters: Dict[str, Any], invocation_id: Optional[str]=None, caller_id: Optional[str]=None, timeout: float=30.0) -> Dict[str, Any]:
     """Invoke observability tool.
-    
+
     Args:
         tool_id: Tool identifier
         method: Method to invoke
@@ -252,7 +252,7 @@ def tool_invoke_observability_tool(tool_id: str, method: str, parameters: Dict[s
         invocation_id: Optional unique invocation identifier
         caller_id: Optional caller identifier
         timeout: Invocation timeout
-        
+
     Returns:
         Dict: Invocation result
     """
@@ -260,4 +260,3 @@ def tool_invoke_observability_tool(tool_id: str, method: str, parameters: Dict[s
     context = ToolInvocationContext(invocation_id=invocation_id or str(uuid.uuid4()), tool_id=tool_id, method=method, caller_id=caller_id, timeout=timeout)
     result = invoker.invoke_tool(context, parameters)
     return {'invocation_id': result.invocation_id, 'tool_id': result.tool_id, 'method': result.method, 'success': result.success, 'response': result.response, 'response_code': result.response_code, 'headers': result.headers, 'metrics': result.metrics, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}
-

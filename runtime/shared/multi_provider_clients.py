@@ -14,7 +14,6 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-
 class Provider(str, Enum):
     """LLM provider enumeration."""
     OPENAI = "openai"
@@ -25,7 +24,6 @@ class Provider(str, Enum):
     GROQ = "groq"
     TOGETHER = "together"
     FIREWORKS = "fireworks"
-
 
 # Provider environment variable mapping
 PROVIDER_ENV_VARS = {
@@ -39,10 +37,8 @@ PROVIDER_ENV_VARS = {
     Provider.FIREWORKS: "FIREWORKS_API_KEY",
 }
 
-
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_TIMEOUT = 60.0
-
 
 @dataclass
 class ProviderConfig:
@@ -53,56 +49,53 @@ class ProviderConfig:
     organization: Optional[str] = None
     default_model: Optional[str] = None
 
-
 # Singleton client cache
 _CLIENTS: Dict[Provider, Any] = {}
 
-
 def get_api_key(provider: Provider) -> str:
     """Get API key for provider.
-    
+
     Args:
         provider: LLM provider
-        
+
     Returns:
         API key string
-        
+
     Raises:
         ValueError: If API key not found
     """
     env_var = PROVIDER_ENV_VARS.get(provider)
     if not env_var:
         raise ValueError(f"No environment variable defined for provider: {provider}")
-    
+
     api_key = os.getenv(env_var)
     if not api_key:
         raise ValueError(
             f"API key for {provider.value} not set. "
             f"Please set {env_var} environment variable."
         )
-    
-    return api_key
 
+    return api_key
 
 def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) -> Any:
     """Create a new client instance for provider.
-    
+
     Args:
         provider: LLM provider
         config: Optional provider configuration
-        
+
     Returns:
         Client instance
-        
+
     Raises:
         ValueError: If provider not supported or API key missing
         ImportError: If provider SDK not installed
     """
     if config is None:
         config = ProviderConfig()
-    
+
     api_key = get_api_key(provider)
-    
+
     if provider == Provider.OPENAI:
         import openai
         return openai.OpenAI(
@@ -112,7 +105,7 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             base_url=config.base_url,
             organization=config.organization,
         )
-    
+
     elif provider == Provider.ANTHROPIC:
         import anthropic
         return anthropic.Anthropic(
@@ -121,7 +114,7 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             timeout=config.timeout,
             base_url=config.base_url,
         )
-    
+
     elif provider == Provider.GOOGLE:
         # Try new v1beta Interactions API first, fallback to legacy
         try:
@@ -135,43 +128,42 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             import google.generativeai as genai
             genai.configure(api_key=api_key)
             return genai
-    
+
     elif provider == Provider.MISTRAL:
         from mistralai import Mistral
         return Mistral(
             api_key=api_key,
             timeout=int(config.timeout),
         )
-    
+
     elif provider == Provider.COHERE:
         import cohere
         return cohere.Client(
             api_key=api_key,
             timeout=config.timeout,
         )
-    
+
     elif provider == Provider.GROQ:
         from groq import Groq
         return Groq(
             api_key=api_key,
             timeout=config.timeout,
         )
-    
+
     elif provider == Provider.TOGETHER:
         from together import Together
         return Together(
             api_key=api_key,
             timeout=config.timeout,
         )
-    
+
     elif provider == Provider.FIREWORKS:
         import fireworks.client
         fireworks.client.api_key = api_key
         return fireworks.client
-    
+
     else:
         raise ValueError(f"Unsupported provider: {provider}")
-
 
 def get_client(
     provider: Provider,
@@ -179,15 +171,15 @@ def get_client(
     force_new: bool = False,
 ) -> Any:
     """Get or create LLM client for provider (singleton pattern).
-    
+
     Args:
         provider: LLM provider
         config: Optional provider configuration
         force_new: Force creation of new client
-        
+
     Returns:
         Client instance
-        
+
     Raises:
         ValueError: If provider not supported or API key missing
         ImportError: If provider SDK not installed
@@ -196,19 +188,17 @@ def get_client(
         client = _create_client(provider, config)
         _CLIENTS[provider] = client
         logger.info(f"Created {provider.value} client")
-    
-    return _CLIENTS[provider]
 
+    return _CLIENTS[provider]
 
 def reset_all_clients() -> None:
     """Reset all cached clients (for testing)."""
     _CLIENTS.clear()
     logger.debug("Reset all LLM clients")
 
-
 def get_available_providers() -> List[Provider]:
     """Get list of providers that have API keys configured.
-    
+
     Returns:
         List of available providers
     """
@@ -222,7 +212,6 @@ def get_available_providers() -> List[Provider]:
             pass
     return available
 
-
 def get_litellm_completion(
     messages: list[Dict[str, str]],
     model: str = "gpt-4o",
@@ -231,17 +220,17 @@ def get_litellm_completion(
     **kwargs,
 ) -> Any:
     """Get completion using LiteLLM unified interface.
-    
+
     Args:
         messages: List of message dicts
         model: Model identifier (e.g., "gpt-4o", "claude-3-5-sonnet-20241022")
         temperature: Sampling temperature
         max_tokens: Maximum tokens to generate
         **kwargs: Additional provider-specific parameters
-        
+
     Returns:
         Completion response
-        
+
     Raises:
         ImportError: If litellm not installed
     """
@@ -251,7 +240,7 @@ def get_litellm_completion(
         raise ImportError(
             "litellm not installed. Install with: pip install litellm>=1.50.0"
         )
-    
+
     return litellm.completion(
         model=model,
         messages=messages,
@@ -260,20 +249,19 @@ def get_litellm_completion(
         **kwargs,
     )
 
-
 def get_instructor_client(
     provider: Provider,
     config: Optional[ProviderConfig] = None,
 ) -> Any:
     """Get Instructor-wrapped client for structured outputs.
-    
+
     Args:
         provider: LLM provider
         config: Optional provider configuration
-        
+
     Returns:
         Instructor-wrapped client
-        
+
     Raises:
         ImportError: If instructor not installed
     """
@@ -283,9 +271,9 @@ def get_instructor_client(
         raise ImportError(
             "instructor not installed. Install with: pip install instructor>=1.3.0"
         )
-    
+
     base_client = get_client(provider, config)
-    
+
     if provider == Provider.OPENAI:
         return instructor.from_openai(base_client)
     elif provider == Provider.ANTHROPIC:
@@ -294,7 +282,6 @@ def get_instructor_client(
         return instructor.from_groq(base_client)
     else:
         return instructor.patch(base_client)
-
 
 # Default model mappings
 DEFAULT_MODELS = {
@@ -308,13 +295,12 @@ DEFAULT_MODELS = {
     Provider.FIREWORKS: "accounts/fireworks/models/llama-v3p1-70b-instruct",
 }
 
-
 def get_default_model(provider: Provider) -> str:
     """Get default model for provider.
-    
+
     Args:
         provider: LLM provider
-        
+
     Returns:
         Default model identifier
     """

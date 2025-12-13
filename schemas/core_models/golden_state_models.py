@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Literal
 
 from pydantic import BaseModel
 
-
 @dataclass
 class GoldenStateTestCase:
     """Single golden-state test case.
@@ -19,7 +18,6 @@ class GoldenStateTestCase:
     expected_behavior: str
     metadata: Dict[str, object] = field(default_factory=dict)
 
-
 @dataclass
 class JudgeVerdict:
     """LM-as-a-judge style verdict.
@@ -32,7 +30,6 @@ class JudgeVerdict:
     rating: str
     explanation: str
 
-
 @dataclass
 class EvalResult:
     """Result of running a golden test case through the system."""
@@ -42,14 +39,12 @@ class EvalResult:
     raw_output: str
     reasoning_trace: List[Dict[str, object]] = field(default_factory=list)
 
-
 class GoldenCase(BaseModel):
     id: str
     input_text: str
     agent_sequence: List[str]
     expected_keypoints: List[str]
     correctness_criteria: Dict[str, object]
-
 
 class GoldenOutput(BaseModel):
     case_id: str
@@ -58,7 +53,3 @@ class GoldenOutput(BaseModel):
     safety_decisions: Dict[str, object]
     metacognition_summary: Dict[str, object]
     final_verdict: Literal["pass", "fail", "borderline"]
-
-
-
-

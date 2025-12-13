@@ -3,6 +3,10 @@
 from typing import Any, Dict, List, Optional
 
 class TestLLMInvocation:
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Test LLM invocation with mock responses."""
 
     def test_mock_invoke_model_strategy_response(self) -> None:
@@ -33,7 +37,7 @@ class TestSandboxExecution:
         """Test sandbox execution with mock."""
         config = SandboxConfig(timeout=10)
         sandbox = get_sandbox(config)
-        result = sandbox.execute("print('test')")
+        result = sandbox.execute("logger.info('test')")
         assert hasattr(sandbox, 'execute')
 
 class TestWorkflowOrchestration:
@@ -94,4 +98,3 @@ def patch_invoke_model() -> None:
     """Patch invoke_model for all tests in this module."""
     with patch('runtime.runtime_utils.invoke_model', side_effect=mock_invoke_model):
         yield
-

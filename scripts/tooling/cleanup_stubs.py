@@ -4,6 +4,10 @@ STUB CLEANUP SCRIPT
 ===================
 Removes empty minimal files and cleans up stub structures.
 Preserves files with meaningful PENDING content for tracking.
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 import os
@@ -139,27 +143,27 @@ def main() -> None:
     log = cleanup_stubs()
 
     if log["errors"]:
-        print(f"\nErrors encountered ({len(log['errors'])}):")
+        logger.info(f"\nErrors encountered ({len(log['errors'])}):")
         for e in log["errors"][:5]:
-            print(f"  - {e}")
+            logger.info(f"  - {e}")
         if len(log["errors"]) > 5:
-            print(f"  ... and {len(log['errors']) - 5} more")
-    
+            logger.info(f"  ... and {len(log['errors']) - 5} more")
+
     # Show sample of deleted files
-    print(f"\nDeleted minimal files ({len(log['deleted_files'])}):")
+    logger.info(f"\nDeleted minimal files ({len(log['deleted_files'])}):")
     for f in log["deleted_files"][:20]:
-        print(f"  - {f}")
-    
+        logger.info(f"  - {f}")
+
     if len(log["deleted_files"]) > 20:
-        print(f"  ... and {len(log['deleted_files']) - 20} more")
+        logger.info(f"  ... and {len(log['deleted_files']) - 20} more")
 
     # Show kept files
     if log["kept_with_content"]:
-        print(f"\nKept with content ({len(log['kept_with_content'])}):")
+        logger.info(f"\nKept with content ({len(log['kept_with_content'])}):")
         for f in log["kept_with_content"][:10]:
-            print(f"  - {f}")
+            logger.info(f"  - {f}")
         if len(log["kept_with_content"]) > 10:
-            print(f"  ... and {len(log['kept_with_content']) - 10} more")
+            logger.info(f"  ... and {len(log['kept_with_content']) - 10} more")
 
     # Save log
     log_path = REPO_ROOT / "stub_cleanup_log.json"

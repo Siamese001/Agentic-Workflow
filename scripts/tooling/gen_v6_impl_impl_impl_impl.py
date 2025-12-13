@@ -171,4 +171,3 @@ def main() -> None:
         created, skipped = _generate_modules(paths, dest_base, ctx)
         total_created += created
         total_skipped += skipped
-

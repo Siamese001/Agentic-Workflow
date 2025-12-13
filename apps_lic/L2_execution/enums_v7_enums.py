@@ -58,4 +58,3 @@ class FailureClassifier(Enum):
     """
     CREATIVE_FAILURE = 'CREATIVE_FAILURE'
     FACTUAL_FAILURE = 'FACTUAL_FAILURE'
-

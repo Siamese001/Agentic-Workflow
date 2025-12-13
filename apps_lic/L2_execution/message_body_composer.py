@@ -25,12 +25,10 @@ from typing import Any, Dict, List, Optional
 from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
 from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
-
 @dataclass
 class MessageBodyConfig:
     temperature: float = 0.6
     max_attempts: int = 3
-
 
 @dataclass
 class MessageBodyResult:
@@ -42,17 +40,16 @@ class MessageBodyResult:
     success: bool
     attempts: int
 
-
 class MessageBodyComposer:
     """
     K.3 - Core Message Generator
-    
+
     Strict Requirements:
     - Metric Binding (LIC-QA-041): Every metric must link to Resume Evidence ID
     - Micro-Structure: Use archetype-specific transition phrase exactly
     - No unbound metrics allowed (BLOCK immediately)
     """
-    
+
     ARCHETYPE_TRANSITIONS = {
         'C_LEVEL': "Two strategic insights from my experience:",
         'VP_LEVEL': "Two key achievements that align with your priorities:",
@@ -60,7 +57,7 @@ class MessageBodyComposer:
         'MANAGER': "Two specific examples of my impact:",
         'RECRUITER': "Two qualifications that match your requirements:"
     }
-    
+
     def __init__(
         self,
         config: Optional[MessageBodyConfig] = None,
@@ -72,7 +69,7 @@ class MessageBodyComposer:
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
             initial_temperature=self.config.temperature
         )
-        
+
     def generate_message_body(
         self,
         archetype: str,
@@ -81,18 +78,18 @@ class MessageBodyComposer:
     ) -> MessageBodyResult:
         """
         Generate message body with metric binding validation.
-        
+
         Args:
             archetype: Target archetype (C_LEVEL, RECRUITER, etc.)
             resume_evidence: Dict mapping evidence IDs to content
             context: Additional context (JD, company, etc.)
-            
+
         Returns:
             MessageBodyResult with body and validation details
         """
         self.recovery_loop.reset(self.config.temperature)
         validation_results = []
-        
+
         for attempt in range(1, self.config.max_attempts + 1):
             body = self._generate_content(
                 archetype=archetype,
@@ -101,10 +98,10 @@ class MessageBodyComposer:
                 temperature=self.recovery_loop.current_temperature,
                 attempt=attempt
             )
-            
+
             hygiene_result = self.gate_executor.execute_hygiene_scan(body)
             validation_results.append(hygiene_result)
-            
+
             if not hygiene_result.passed:
                 recovery = self.recovery_loop.record_failure(
                     gate_id=hygiene_result.gate_id,
@@ -114,20 +111,20 @@ class MessageBodyComposer:
                 if not recovery.should_retry:
                     break
                 continue
-            
+
             metrics_used = self._extract_metrics(body)
             evidence_bindings = self._bind_metrics_to_evidence(
                 metrics_used,
                 resume_evidence
             )
-            
+
             binding_result = self.gate_executor.execute_metric_binding_gate(
                 content=body,
                 evidence_ids=evidence_bindings,
                 gate_id='VG_METRIC_BINDING'
             )
             validation_results.append(binding_result)
-            
+
             if not binding_result.passed:
                 recovery = self.recovery_loop.record_failure(
                     gate_id=binding_result.gate_id,
@@ -137,10 +134,10 @@ class MessageBodyComposer:
                 if not recovery.should_retry:
                     break
                 continue
-            
+
             transition_result = self._validate_transition_phrase(body, archetype)
             validation_results.append(transition_result)
-            
+
             if not transition_result.passed:
                 recovery = self.recovery_loop.record_failure(
                     gate_id=transition_result.gate_id,
@@ -150,9 +147,9 @@ class MessageBodyComposer:
                 if not recovery.should_retry:
                     break
                 continue
-            
+
             self.gate_executor.results = validation_results
-            
+
             return MessageBodyResult(
                 body=body,
                 metrics_used=metrics_used,
@@ -162,7 +159,7 @@ class MessageBodyComposer:
                 success=True,
                 attempts=attempt
             )
-        
+
         return MessageBodyResult(
             body="",
             metrics_used=[],
@@ -172,7 +169,7 @@ class MessageBodyComposer:
             success=False,
             attempts=self.config.max_attempts
         )
-    
+
     def _generate_content(
         self,
         archetype: str,
@@ -186,7 +183,7 @@ class MessageBodyComposer:
         Placeholder for actual LLM integration.
         """
         transition = self.ARCHETYPE_TRANSITIONS.get(archetype, "Two key points:")
-        
+
         return f"""I noticed your work at {context.get('company', 'your company')}.
 
 {transition}
@@ -195,12 +192,12 @@ class MessageBodyComposer:
 2. Managed $5M budget with 95% efficiency
 
 Would you be open to a brief conversation?"""
-    
+
     def _extract_metrics(self, content: str) -> List[str]:
         """Extract all metrics from content"""
         metric_pattern = r'\b\d+%|\b\d+x\b|\b\$\d+[KMB]?(?:\.\d+)?[KMB]?\b|\b\d+\+?\b(?=\s+(?:team|people|projects|clients))'
         return re.findall(metric_pattern, content)
-    
+
     def _bind_metrics_to_evidence(
         self,
         metrics: List[str],
@@ -211,15 +208,15 @@ Would you be open to a brief conversation?"""
         Returns dict mapping metric to evidence ID.
         """
         bindings = {}
-        
+
         for metric in metrics:
             for evidence_id, evidence_text in resume_evidence.items():
                 if metric in evidence_text:
                     bindings[metric] = evidence_id
                     break
-        
+
         return bindings
-    
+
     def _validate_transition_phrase(
         self,
         content: str,
@@ -230,7 +227,7 @@ Would you be open to a brief conversation?"""
         BLOCKS if phrase is missing or modified.
         """
         expected_phrase = self.ARCHETYPE_TRANSITIONS.get(archetype)
-        
+
         if not expected_phrase:
             return ValidationResult(
                 gate_id='VG_TRANSITION_PHRASE',
@@ -238,7 +235,7 @@ Would you be open to a brief conversation?"""
                 severity='INFO',
                 message=f"No transition phrase required for archetype {archetype}"
             )
-        
+
         if expected_phrase in content:
             return ValidationResult(
                 gate_id='VG_TRANSITION_PHRASE',
@@ -247,7 +244,7 @@ Would you be open to a brief conversation?"""
                 message=f"Transition phrase verified: '{expected_phrase}'",
                 signature=f"TRANS:OK:{hash(expected_phrase) % 10000}"
             )
-        
+
         return ValidationResult(
             gate_id='VG_TRANSITION_PHRASE',
             passed=False,
@@ -259,7 +256,6 @@ Would you be open to a brief conversation?"""
                 'content_preview': content[:200]
             }
         )
-
 
 def create_message_body_composer(
     config: Optional[MessageBodyConfig] = None

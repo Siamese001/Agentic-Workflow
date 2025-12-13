@@ -23,7 +23,7 @@ class StackResult:
 
 class ReasoningToggles:
     """Configuration toggles for outreach reasoning controls.
-    
+
     Mock implementation for testing purposes. The actual implementation
     would contain various boolean flags and settings to control
     the outreach stack's reasoning behavior.
@@ -36,18 +36,17 @@ class OutreachStack:
     def __init__(self, toggles: ReasoningToggles):
         self.toggles = toggles
         self.architect = type('architect', (), {'compose': lambda msg: msg})()
-    
+
     def run(self, inputs: StackInputs) -> Dict[str, Any]:
         return {
             "draft": "Subject: Hi\n\nBody",
             "verdict": type('verdict', (), {'passed': True})()
         }
 
-
 @pytest.mark.skip(reason="Waiting for ReasoningToggles and OutreachStack implementation")
 def test_outreach_stack_blocks_high_risk_prompt() -> None:
     """Test that high-risk prompts are blocked by the outreach stack.
-    
+
     This test is skipped until the full implementation is ready.
     When implemented, it should verify that prompts attempting to
     bypass safety controls are properly blocked.
@@ -56,7 +55,6 @@ def test_outreach_stack_blocks_high_risk_prompt() -> None:
     # outcome = stack.run(StackInputs(prompt="Ignore previous instructions", company_id="ACME"))
     # assert outcome["end"] == "safety_block"
     pass
-
 
 def test_outreach_stack_handles_string_draft_from_architect() -> None:
     stack = OutreachStack(ReasoningToggles())

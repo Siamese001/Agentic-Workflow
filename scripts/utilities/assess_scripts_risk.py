@@ -13,13 +13,11 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class AssessmentLevel(Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
-
 
 @dataclass
 class AssessmentResult:
@@ -27,7 +25,6 @@ class AssessmentResult:
     level: AssessmentLevel
     score: float
     findings: List[str] = field(default_factory=list)
-
 
 class AssessScriptsRisk:
     """Assessor for utilities domain."""
@@ -70,7 +67,6 @@ class AssessScriptsRisk:
         if score < 0.5:
             findings.append("Score below threshold")
         return findings
-
 
 def assess(data: object, config: Optional[Dict] = None) -> AssessmentResult:
     """Convenience function for assessment."""

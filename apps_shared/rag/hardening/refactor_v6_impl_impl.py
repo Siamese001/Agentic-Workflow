@@ -144,4 +144,3 @@ def run_all_tests() -> None:
         return True
     else:
         return False
-

@@ -10,4 +10,3 @@ class ToolCallBudget:
     minimum: int = 0
     maximum: int = 20
     guidance: Dict[str, str] = field(default_factory=dict)
-

@@ -7,7 +7,7 @@ class LLMClient:
 
     def __init__(self, model: str='gpt-4'):
         """Initialize LLM client.
-        
+
         Args:
             model: Model name to use
         """
@@ -15,11 +15,11 @@ class LLMClient:
 
     def judge_content(self, content: str, principle: ConstitutionalPrinciple) -> LLMJudgment:
         """Judge content against a constitutional principle.
-        
+
         Args:
             content: Content to judge
             principle: Principle to judge against
-            
+
         Returns:
             LLM judgment
         """
@@ -30,10 +30,10 @@ class LLMClient:
 
     def generate(self, prompt: str) -> str:
         """Generate a response for the given prompt.
-        
+
         Args:
             prompt: Input prompt
-            
+
         Returns:
             JSON string response with compliance information
         """
@@ -48,7 +48,7 @@ class MockLLMClient(LLMClient):
 
     def __init__(self, model: str='gpt-4', responses: Optional[Dict[str, LLMJudgment]]=None):
         """Initialize mock LLM client.
-        
+
         Args:
             model: Model name to use
             responses: Predefined responses for testing
@@ -59,11 +59,11 @@ class MockLLMClient(LLMClient):
 
     def judge_content(self, content: str, principle: ConstitutionalPrinciple) -> LLMJudgment:
         """Judge content against a constitutional principle.
-        
+
         Args:
             content: Content to judge
             principle: Principle to judge against
-            
+
         Returns:
             LLM judgment
         """
@@ -80,10 +80,10 @@ class MockLLMClient(LLMClient):
 
     def generate(self, prompt: str) -> str:
         """Generate a response for the given prompt.
-        
+
         Args:
             prompt: Input prompt
-            
+
         Returns:
             JSON string response with compliance information
         """
@@ -103,7 +103,7 @@ class RuleEngine:
 
     def add_rule(self, rule: ConstitutionalRule) -> None:
         """Add a rule to the engine.
-        
+
         Args:
             rule: Rule to add
         """
@@ -116,10 +116,10 @@ class RuleEngine:
 
     def evaluate(self, content: str) -> List[ViolationReport]:
         """Evaluate content against all rules.
-        
+
         Args:
             content: Content to evaluate
-            
+
         Returns:
             List of violation reports
         """
@@ -132,11 +132,11 @@ class RuleEngine:
 
     def _check_rule(self, content: str, rule: ConstitutionalRule) -> Optional[ViolationReport]:
         """Check a single rule against content.
-        
+
         Args:
             content: Content to check
             rule: Rule to check
-            
+
         Returns:
             Violation report if rule is violated
         """
@@ -163,11 +163,11 @@ class RuleEngine:
 
     def _determine_violation_type(self, rule: ConstitutionalRule, confidence: float) -> ViolationType:
         """Determine violation type based on rule and confidence.
-        
+
         Args:
             rule: The violated rule
             confidence: Confidence score (0-1)
-            
+
         Returns:
             Type of violation
         """
@@ -185,7 +185,7 @@ class ContentValidator:
 
     def __init__(self, rule_engine: Optional[RuleEngine]=None):
         """Initialize content validator.
-        
+
         Args:
             rule_engine: Optional rule engine
         """
@@ -194,11 +194,11 @@ class ContentValidator:
 
     def validate(self, content: str, context: Optional[Dict[str, Any]]=None) -> ConstitutionalReviewResult:
         """Validate content against constitutional rules.
-        
+
         Args:
             content: Content to validate
             context: Optional validation context
-            
+
         Returns:
             Review result with violations
         """
@@ -209,10 +209,10 @@ class ContentValidator:
 
     def _calculate_score(self, violations: List[ViolationReport]) -> float:
         """Calculate approval score based on violations.
-        
+
         Args:
             violations: List of violations
-            
+
         Returns:
             Score between 0 and 1
         """
@@ -233,7 +233,7 @@ class ConstitutionalAISystem:
 
     def __init__(self, validator: Optional[ContentValidator]=None, auto_load_rules: bool=True, llm_client: Optional[LLMClient]=None):
         """Initialize constitutional AI system.
-        
+
         Args:
             validator: Optional content validator
             auto_load_rules: Whether to auto-load default rules
@@ -255,11 +255,11 @@ class ConstitutionalAISystem:
 
     def review_content(self, content: str, context: Optional[Dict[str, Any]]=None) -> ConstitutionalReviewResult:
         """Review content for constitutional compliance.
-        
+
         Args:
             content: Content to review
             context: Optional review context
-            
+
         Returns:
             Review result
         """
@@ -269,11 +269,11 @@ class ConstitutionalAISystem:
 
     def evaluate_compliance(self, content: str, principle_ids: List[str]) -> List[LLMJudgment]:
         """Evaluate content compliance against specific principles.
-        
+
         Args:
             content: Content to evaluate
             principle_ids: List of principle IDs to check
-            
+
         Returns:
             List of judgments
         """
@@ -306,11 +306,11 @@ class ConstitutionalAISystem:
 
     def critique_and_revise(self, content: str, judgments: List[LLMJudgment]) -> tuple[str, List[str]]:
         """Critique and revise content based on judgments.
-        
+
         Args:
             content: Original content
             judgments: List of judgments
-            
+
         Returns:
             Tuple of (revised_content, list_of_changes)
         """
@@ -349,7 +349,7 @@ class ConstitutionalAISystem:
 
     def get_review_stats(self) -> Dict[str, Any]:
         """Get statistics about content reviews.
-        
+
         Returns:
             Review statistics
         """
@@ -362,10 +362,10 @@ class ConstitutionalAISystem:
 
 def create_constitutional_ai_system(config: Optional[Dict[str, Any]]=None) -> ConstitutionalAISystem:
     """Create a constitutional AI system.
-    
+
     Args:
         config: Optional configuration
-        
+
     Returns:
         ConstitutionalAISystem instance
     """
@@ -373,14 +373,13 @@ def create_constitutional_ai_system(config: Optional[Dict[str, Any]]=None) -> Co
 
 def review_content(content: str, context: Optional[Dict[str, Any]]=None) -> ConstitutionalReviewResult:
     """Review content for constitutional compliance.
-    
+
     Args:
         content: Content to review
         context: Optional review context
-        
+
     Returns:
         Review result
     """
     system = create_constitutional_ai_system()
     return system.review_content(content, context)
-

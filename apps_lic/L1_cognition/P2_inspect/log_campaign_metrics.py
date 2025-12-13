@@ -11,10 +11,6 @@ from shared.result_types import DiagnosticReport
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 class LogCampaignMetrics:
     """Diagnostics for outreach domain."""
 
@@ -36,7 +32,6 @@ class LogCampaignMetrics:
 
         metrics["type"] = type(target).__name__
         return DiagnosticReport(healthy=len(issues) == 0, issues=issues, metrics=metrics)
-
 
 def diagnose(target: Union[str, Dict], config: Optional[Dict] = None) -> DiagnosticReport:
     """Run diagnostics."""

@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Enforce Orchestration Policy - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class EnforceOrchestrationPolicy:
     """EnforceOrchestrationPolicy implementation."""

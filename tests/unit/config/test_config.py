@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from tests.conftest import PROJECT_ROOT, CACHE_DIR, LOGS_DIR, DEFAULT_MAX_RETRIES
 from shared.configuration.reasoning_config import (
-    SAFETY_THRESHOLD, 
-    CONFIG, 
+    SAFETY_THRESHOLD,
+    CONFIG,
     C2,
     ReasoningConfig as Config,
     ModelConfig,
@@ -19,7 +19,6 @@ DEFAULT_GENERATION_TEMPERATURE = 0.7
 DEFAULT_SYNTHESIS_TEMPERATURE = 0.3
 DATA_DIR = PROJECT_ROOT / "data"
 OUTPUT_DIR = PROJECT_ROOT / "output"
-
 
 class TestConstants:
     def test_max_retries_positive(self):

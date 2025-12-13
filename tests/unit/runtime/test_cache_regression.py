@@ -3,6 +3,10 @@ from __future__ import annotations
 from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
 
 class TestCacheKeyCollisionRegression:
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Regression tests for cache key collision bugs."""
 
     def test_no_collision_different_models(self):
@@ -89,17 +93,17 @@ class TestFingerprintRegression:
         fingerprints = ["fp1", "fp2", "fp3", "FP1", "fp1 ", " fp1"]
 
         keys = [
-            generate_llm_cache_key_with_fingerprint(
+            generate_llm_cache_key_with_fingerlogger.info(
                 model="gpt-4o", messages=messages, fingerprint=fp
             )
             for fp in fingerprints
         ]
         assert len(keys) == len(set(keys)), "Fingerprint collision detected"
 
-    def test_empty_fingerprint(self):
+    def test_empty_fingerlogger.info(self):
         """Empty fingerprint produces valid key."""
         messages = [{"role": "user", "content": "Test"}]
-        key = generate_llm_cache_key_with_fingerprint(
+        key = generate_llm_cache_key_with_fingerlogger.info(
             model="gpt-4o", messages=messages, fingerprint=""
         )
         assert isinstance(key, str)

@@ -296,4 +296,3 @@ def list_available_templates() -> List[str]:
     List all available prompt template keys from the JSON file.
     """
     return list(PROMPT_TEMPLATES.keys())
-

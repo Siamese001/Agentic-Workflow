@@ -13,18 +13,16 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class WordCountConstraints:
     """Word count constraints for a section."""
     min_words: int
     max_words: int
-    
+
     @classmethod
     def from_list(cls, word_range: List[int]) -> "WordCountConstraints":
         """Create from a list like [120, 140]."""
         return cls(min_words=word_range[0], max_words=word_range[1])
-
 
 @dataclass
 class KNodeConfig:
@@ -43,11 +41,10 @@ class KNodeConfig:
     self_consistency: int = 8
     reflexion: bool = False
     max_reflexion_loops: int = 3
-    
+
     def __post_init__(self) -> None:
         if self.input_dependencies is None:
             self.input_dependencies = []
-
 
 @dataclass
 class CreativeBriefConfig:
@@ -64,14 +61,13 @@ class CreativeBriefConfig:
     competency_word_count: WordCountConstraints
     cover_letter_para_word_count: WordCountConstraints
 
-
 class WorkflowLoader:
     """Loads and provides access to workflow configuration from JSON."""
-    
+
     def __init__(self, workflow_path: Optional[Union[str, Path]] = None):
         """
         Initialize WorkflowLoader.
-        
+
         Args:
             workflow_path: Path to workflow JSON file. Defaults to active_workflow.json.
         """
@@ -79,10 +75,10 @@ class WorkflowLoader:
             workflow_path = Path(__file__).parent / "active_workflow.json"
         else:
             workflow_path = Path(workflow_path)
-            
+
         self.workflow_path = workflow_path
         self._workflow_data: Optional[Dict[str, Any]] = None
-        
+
         # Cache for parsed configurations
         self._cached_metadata: Optional[Dict[str, Any]] = None
         self._cached_knode_configs: Optional[Dict[str, KNodeConfig]] = None
@@ -96,9 +92,9 @@ class WorkflowLoader:
         self._cached_task_pipeline: Optional[List[Dict[str, Any]]] = None
         self._cached_context_config: Optional[Dict[str, Any]] = None
         self._cached_reasoning_config: Optional[Dict[str, Any]] = None
-        
+
         self._load_workflow()
-    
+
     def _load_workflow(self) -> None:
         """Load the workflow JSON from disk."""
         try:
@@ -114,7 +110,7 @@ class WorkflowLoader:
         except Exception as e:
             logger.error(f"Failed to load workflow from {self.workflow_path}: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
-    
+
     def _get_fallback_workflow(self) -> Dict[str, Any]:
         """Get minimal fallback workflow configuration."""
         return {
@@ -167,46 +163,46 @@ class WorkflowLoader:
                 }
             }
         }
-    
+
     def get_version(self) -> str:
         """Get the workflow version."""
         return self._workflow_data.get("metadata", {}).get("version", "unknown")
-    
+
     def get_metadata(self) -> Dict[str, Any]:
         """Get the metadata section."""
         if self._cached_metadata is None:
             self._cached_metadata = self._workflow_data.get("metadata", {})
         return self._cached_metadata
-    
+
     def get_role_config(self) -> Dict[str, Any]:
         """Get the role configuration (section 1)."""
         if self._cached_role_config is None:
             self._cached_role_config = self._workflow_data.get("1.role", {})
         return self._cached_role_config
-    
+
     def get_task_pipeline(self) -> List[Dict[str, Any]]:
         """Get the task pipeline phases."""
         if self._cached_task_pipeline is None:
             self._cached_task_pipeline = self._workflow_data.get("2.task", {}).get("pipeline", [])
         return self._cached_task_pipeline
-    
+
     def get_context_config(self) -> Dict[str, Any]:
         """Get the context management configuration."""
         if self._cached_context_config is None:
             self._cached_context_config = self._workflow_data.get("3.context", {})
         return self._cached_context_config
-    
+
     def get_reasoning_config(self) -> Dict[str, Any]:
         """Get the reasoning configuration."""
         if self._cached_reasoning_config is None:
             self._cached_reasoning_config = self._workflow_data.get("4.reasoning", {})
         return self._cached_reasoning_config
-    
+
     def get_creative_brief(self) -> CreativeBriefConfig:
         """Extract and return the creative brief configuration."""
         if self._cached_creative_brief is None:
             brief = self.get_reasoning_config().get("creative_brief", {})
-            
+
             self._cached_creative_brief = CreativeBriefConfig(
                 headline_word_count=WordCountConstraints.from_list(
                     brief.get("headline", {}).get("word_count", [8, 12])
@@ -237,13 +233,13 @@ class WorkflowLoader:
                 )
             )
         return self._cached_creative_brief
-    
+
     def get_knode_configs(self) -> Dict[str, KNodeConfig]:
         """Get all K-node configurations."""
         if self._cached_knode_configs is None:
             configs = {}
             hardcoded = self.get_reasoning_config().get("hardcoded_config", {})
-            
+
             for key, value in hardcoded.items():
                 if key.startswith("K.") and isinstance(value, dict):
                     configs[key] = KNodeConfig(
@@ -262,15 +258,15 @@ class WorkflowLoader:
                         reflexion=value.get("reflexion", False),
                         max_reflexion_loops=value.get("max_reflexion_loops", 3)
                     )
-            
+
             self._cached_knode_configs = configs
         return self._cached_knode_configs
-    
+
     def get_knode_config(self, node_id: str) -> Optional[KNodeConfig]:
         """Get a specific K-node configuration."""
         configs = self.get_knode_configs()
         return configs.get(node_id)
-    
+
     def get_validation_rules(self) -> Dict[str, Any]:
         """Get validation rules and thresholds."""
         if self._cached_validation_rules is None:
@@ -279,33 +275,33 @@ class WorkflowLoader:
             creative_brief = reasoning.get("creative_brief", {})
             self._cached_validation_rules = creative_brief.get("deduplication_matrix", {}).get("thresholds", {})
         return self._cached_validation_rules
-    
+
     def get_pre_flight_tests(self) -> List[Dict[str, Any]]:
         """Get pre-flight validation tests."""
         if self._cached_pre_flight_tests is None:
             self._cached_pre_flight_tests = self._workflow_data.get("pre_flight_engine_validation", {}).get("tests", [])
         return self._cached_pre_flight_tests
-    
+
     def get_file_complexity_thresholds(self) -> Dict[str, int]:
         """Get file complexity gate thresholds."""
         if self._cached_file_complexity_thresholds is None:
             context = self.get_context_config()
             self._cached_file_complexity_thresholds = context.get("pre_flight_file_complexity_gate", {}).get("thresholds", {})
         return self._cached_file_complexity_thresholds
-    
+
     def get_required_files(self) -> List[str]:
         """Get list of required files."""
         if self._cached_required_files is None:
             context = self.get_context_config()
             self._cached_required_files = context.get("pre_flight_file_manifest_check", {}).get("required_file_manifest", [])
         return self._cached_required_files
-    
+
     def get_enforcement_rules(self) -> List[str]:
         """Get critical enforcement rules."""
         if self._cached_enforcement_rules is None:
             self._cached_enforcement_rules = self.get_metadata().get("critical_rules_added", [])
         return self._cached_enforcement_rules
-    
+
     def reload(self) -> None:
         """Reload the workflow from disk and clear all caches."""
         # Clear all cached values
@@ -321,11 +317,10 @@ class WorkflowLoader:
         self._cached_task_pipeline = None
         self._cached_context_config = None
         self._cached_reasoning_config = None
-        
+
         # Reload from disk
         self._load_workflow()
         logger.info("Workflow reloaded from disk with cleared caches")
-
 
 # Convenience function for creating a loader
 def create_workflow_loader(workflow_path: Optional[Union[str, Path]] = None) -> WorkflowLoader:

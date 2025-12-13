@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Merge Generation History - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class MergeGenerationHistory:
     """MergeGenerationHistory implementation."""

@@ -25,13 +25,11 @@ from typing import Any, Dict, List, Optional
 from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
 from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
-
 @dataclass
 class SectionIntegratorConfig:
     max_similarity_threshold: float = 0.75
     temperature: float = 0.6
     max_attempts: int = 3
-
 
 @dataclass
 class SectionIntegratorResult:
@@ -42,20 +40,19 @@ class SectionIntegratorResult:
     success: bool
     attempts: int
 
-
 class SectionScopeIntegrator:
     """
     K.5B & K.6B - Overview Synthesis Agent
-    
+
     Anti-Prefix Constraint:
     - BLOCKS if overview begins with redundant role prefixes
     - Examples: "As Title at Company", "In my role as", "Working as"
-    
+
     Deduplication Constraint:
     - MUST ensure overview is <75% similar to master baseline
     - STRICT LESS THAN policy (not ≤)
     """
-    
+
     FORBIDDEN_PREFIXES = [
         r'^As\s+\w+\s+at\s+',
         r'^In\s+my\s+role\s+as\s+',
@@ -67,7 +64,7 @@ class SectionScopeIntegrator:
         r'^In\s+this\s+position,?\s+',
         r'^In\s+this\s+role,?\s+'
     ]
-    
+
     def __init__(
         self,
         config: Optional[SectionIntegratorConfig] = None,
@@ -79,7 +76,7 @@ class SectionScopeIntegrator:
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
             initial_temperature=self.config.temperature
         )
-        
+
     def generate_overview(
         self,
         bullets: List[str],
@@ -88,18 +85,18 @@ class SectionScopeIntegrator:
     ) -> SectionIntegratorResult:
         """
         Generate section overview with anti-prefix and deduplication validation.
-        
+
         Args:
             bullets: Generated achievement bullets
             master_baseline: Master baseline for similarity comparison
             context: Additional context (role, company, etc.)
-            
+
         Returns:
             SectionIntegratorResult with overview and validation details
         """
         self.recovery_loop.reset(self.config.temperature)
         validation_results = []
-        
+
         for attempt in range(1, self.config.max_attempts + 1):
             overview = self._generate_content(
                 bullets=bullets,
@@ -107,10 +104,10 @@ class SectionScopeIntegrator:
                 temperature=self.recovery_loop.current_temperature,
                 attempt=attempt
             )
-            
+
             hygiene_result = self.gate_executor.execute_hygiene_scan(overview)
             validation_results.append(hygiene_result)
-            
+
             if not hygiene_result.passed:
                 recovery = self.recovery_loop.record_failure(
                     gate_id=hygiene_result.gate_id,
@@ -120,10 +117,10 @@ class SectionScopeIntegrator:
                 if not recovery.should_retry:
                     break
                 continue
-            
+
             prefix_result = self._validate_no_redundant_prefix(overview)
             validation_results.append(prefix_result)
-            
+
             if not prefix_result.passed:
                 recovery = self.recovery_loop.record_failure(
                     gate_id=prefix_result.gate_id,
@@ -133,12 +130,12 @@ class SectionScopeIntegrator:
                 if not recovery.should_retry:
                     break
                 continue
-            
+
             similarity_score = self._calculate_similarity(overview, master_baseline)
-            
+
             dedup_result = self._validate_deduplication(overview, similarity_score)
             validation_results.append(dedup_result)
-            
+
             if not dedup_result.passed:
                 recovery = self.recovery_loop.record_failure(
                     gate_id=dedup_result.gate_id,
@@ -148,9 +145,9 @@ class SectionScopeIntegrator:
                 if not recovery.should_retry:
                     break
                 continue
-            
+
             self.gate_executor.results = validation_results
-            
+
             return SectionIntegratorResult(
                 overview=overview,
                 similarity_score=similarity_score,
@@ -159,7 +156,7 @@ class SectionScopeIntegrator:
                 success=True,
                 attempts=attempt
             )
-        
+
         return SectionIntegratorResult(
             overview="",
             similarity_score=1.0,
@@ -168,7 +165,7 @@ class SectionScopeIntegrator:
             success=False,
             attempts=self.config.max_attempts
         )
-    
+
     def _generate_content(
         self,
         bullets: List[str],
@@ -181,7 +178,7 @@ class SectionScopeIntegrator:
         Placeholder for actual LLM integration.
         """
         return "Directed strategic technology initiatives across cloud infrastructure and data engineering, delivering scalable solutions that drove measurable business impact and operational excellence."
-    
+
     def _validate_no_redundant_prefix(self, overview: str) -> ValidationResult:
         """
         Validate overview does not begin with redundant role prefix.
@@ -201,7 +198,7 @@ class SectionScopeIntegrator:
                         'overview_preview': overview[:100]
                     }
                 )
-        
+
         return ValidationResult(
             gate_id='VG_OVERVIEW_ANTI_PREFIX',
             passed=True,
@@ -209,7 +206,7 @@ class SectionScopeIntegrator:
             message="No redundant prefix detected",
             signature=f"ANTIPREFIX:OK"
         )
-    
+
     def _calculate_similarity(self, text1: str, text2: str) -> float:
         """
         Calculate similarity score between two texts.
@@ -217,15 +214,15 @@ class SectionScopeIntegrator:
         """
         words1 = set(re.findall(r'\b\w+\b', text1.lower()))
         words2 = set(re.findall(r'\b\w+\b', text2.lower()))
-        
+
         if not words1 or not words2:
             return 0.0
-        
+
         overlap = len(words1 & words2)
         union = len(words1 | words2)
-        
+
         return overlap / union if union > 0 else 0.0
-    
+
     def _validate_deduplication(
         self,
         overview: str,
@@ -244,7 +241,7 @@ class SectionScopeIntegrator:
                 signature=f"DEDUP:OK:{int(similarity_score*100)}",
                 details={'similarity_score': similarity_score, 'threshold': self.config.max_similarity_threshold}
             )
-        
+
         return ValidationResult(
             gate_id='VG_OVERVIEW_DEDUPLICATION',
             passed=False,
@@ -256,7 +253,6 @@ class SectionScopeIntegrator:
                 'policy': 'STRICT_LESS_THAN'
             }
         )
-
 
 def create_section_scope_integrator(
     config: Optional[SectionIntegratorConfig] = None

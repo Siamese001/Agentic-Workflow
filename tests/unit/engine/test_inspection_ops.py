@@ -74,7 +74,6 @@ class TestContentInspection:
 
         assert len(issues) == 2
 
-
 class TestStructureInspection:
     """Tests for structure inspection."""
 
@@ -122,7 +121,6 @@ class TestStructureInspection:
 
         assert len(issues) == 1
 
-
 class TestMetricsCalculation:
     """Tests for metrics calculation during inspection."""
 
@@ -162,7 +160,6 @@ class TestMetricsCalculation:
         format_consistency = formats.count(formats[0]) / len(formats)
 
         assert format_consistency == pytest.approx(0.667, rel=0.01)
-
 
 class TestIssueDetection:
     """Tests for issue detection during inspection."""

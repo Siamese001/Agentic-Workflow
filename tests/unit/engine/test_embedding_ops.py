@@ -46,7 +46,6 @@ class TestComputeEmbeddings:
 
         assert embedding1 != embedding2
 
-
 class TestCalculateSimilarity:
     """Tests for similarity calculation."""
 
@@ -100,7 +99,6 @@ class TestCalculateSimilarity:
 
             assert -1.0 <= similarity <= 1.0
 
-
 class TestSearchVectors:
     """Tests for vector search operations."""
 
@@ -146,7 +144,6 @@ class TestSearchVectors:
         results = []  # No vectors to search
         assert results == []
 
-
 class TestNormalizeVectors:
     """Tests for vector normalization."""
 
@@ -182,7 +179,6 @@ class TestNormalizeVectors:
             normalized = [x / magnitude for x in vector]
 
         assert normalized == [0.0, 0.0, 0.0]
-
 
 class TestMatchContext:
     """Tests for context matching operations."""

@@ -76,7 +76,6 @@ class TestInputSanitization:
         normalized = unicodedata.normalize('NFC', input_text)
         assert len(normalized) > 0
 
-
 class TestPromptInjectionDetection:
     """Tests for prompt injection detection."""
 
@@ -142,7 +141,6 @@ class TestPromptInjectionDetection:
         is_injection = any(re.search(p, clean_prompt.lower()) for p in injection_patterns)
         assert is_injection is False
 
-
 class TestPIIDetection:
     """Tests for PII detection."""
 
@@ -198,7 +196,6 @@ class TestPIIDetection:
         has_pii = any(re.search(p, text) for p in pii_patterns)
         assert has_pii is False
 
-
 class TestAccessControl:
     """Tests for access control."""
 
@@ -239,7 +236,6 @@ class TestAccessControl:
 
         is_owner = resource["owner_id"] == requesting_user
         assert is_owner is True
-
 
 class TestSecurityAudit:
     """Tests for security audit logging."""

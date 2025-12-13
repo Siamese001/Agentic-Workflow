@@ -9,4 +9,3 @@ class OrchestrateObservabilityPlanningOrchestratorType(Enum):
     DEFAULT = 'default'
     CORE = 'core'
     SYSTEM = 'system'
-

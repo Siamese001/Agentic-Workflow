@@ -2,15 +2,11 @@
 # -*- coding: utf-8 -*-
 """Enforce Length Limits - atomic execution layer."""
 
-
 from typing import Dict
-
-
 
 def enforce_length_limits(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce length limits data."""
     return {"status": "processed", "input_keys": list(data.keys())}
-
 
 def get_enforce_length_limits_config() -> Dict[str, object]:
     """Get configuration for enforce_length_limits."""

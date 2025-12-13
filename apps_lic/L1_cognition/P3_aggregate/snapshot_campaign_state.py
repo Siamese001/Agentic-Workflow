@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Snapshot Campaign State - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class SnapshotCampaignState:
     """SnapshotCampaignState implementation."""

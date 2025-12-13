@@ -10,7 +10,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-
 class CognitiveCapability(Enum):
     """Capabilities provided by the cognitive plane."""
     PLANNING = "planning"
@@ -19,7 +18,6 @@ class CognitiveCapability(Enum):
     SELF_REFLECTION = "self_reflection"
     TASK_DECOMPOSITION = "task_decomposition"
     STRATEGY_SELECTION = "strategy_selection"
-
 
 @dataclass
 class PlanningRequest:
@@ -30,7 +28,7 @@ class PlanningRequest:
     capabilities_required: List[CognitiveCapability] = field(default_factory=list)
     max_steps: int = 10
     reasoning_mode: str = "react"
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -42,7 +40,6 @@ class PlanningRequest:
             "reasoning_mode": self.reasoning_mode,
         }
 
-
 @dataclass
 class PlanningResult:
     """Result from cognitive planning."""
@@ -52,7 +49,7 @@ class PlanningResult:
     confidence: float = 0.0
     metadata: Dict[str, Any] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -64,32 +61,31 @@ class PlanningResult:
             "errors": self.errors,
         }
 
-
 class ICognitivePlane(ABC):
     """Interface for the Cognitive Plane (Brain).
-    
+
     The cognitive plane is responsible for:
     - Planning: Breaking down tasks into actionable steps
     - Reasoning: Applying logic and inference
     - Decision Making: Choosing between alternatives
     - Self-Reflection: Evaluating own performance
-    
+
     L1 Constraint: All methods must be pure (no side effects).
     Outputs are plans and decisions, not actions.
     """
-    
+
     @abstractmethod
     async def plan(self, request: PlanningRequest) -> PlanningResult:
         """Generate a plan for the given task.
-        
+
         Args:
             request: Planning request with task and context
-            
+
         Returns:
             PlanningResult with step-by-step plan
         """
         pass
-    
+
     @abstractmethod
     async def reason(
         self,
@@ -98,17 +94,17 @@ class ICognitivePlane(ABC):
         mode: str = "react",
     ) -> Dict[str, Any]:
         """Apply reasoning to a query.
-        
+
         Args:
             query: The question or problem to reason about
             context: Contextual information
             mode: Reasoning mode (react, cot, shotgun, tot)
-            
+
         Returns:
             Reasoning result with conclusion and trace
         """
         pass
-    
+
     @abstractmethod
     async def decide(
         self,
@@ -116,16 +112,16 @@ class ICognitivePlane(ABC):
         criteria: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Make a decision between options.
-        
+
         Args:
             options: List of possible choices
             criteria: Decision criteria and weights
-            
+
         Returns:
             Selected option with justification
         """
         pass
-    
+
     @abstractmethod
     async def reflect(
         self,
@@ -133,20 +129,20 @@ class ICognitivePlane(ABC):
         outcome: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Reflect on execution to identify improvements.
-        
+
         Args:
             execution_trace: History of actions taken
             outcome: Final result achieved
-            
+
         Returns:
             Reflection with lessons learned and improvements
         """
         pass
-    
+
     @abstractmethod
     def get_capabilities(self) -> List[CognitiveCapability]:
         """Get list of supported cognitive capabilities.
-        
+
         Returns:
             List of capabilities this plane supports
         """

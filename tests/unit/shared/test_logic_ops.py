@@ -67,7 +67,6 @@ class TestLogicDataAccess:
         sorted_items = sorted(items, key=lambda x: x["score"], reverse=True)
         assert sorted_items[0]["name"] == "Alice"
 
-
 class TestLogicGuardrails:
     """Tests for logic guardrails."""
 
@@ -106,7 +105,6 @@ class TestLogicGuardrails:
         elapsed_seconds = 25
         is_timed_out = elapsed_seconds > max_timeout_seconds
         assert is_timed_out is False
-
 
 class TestLogicSynthesis:
     """Tests for logic synthesis operations."""
@@ -159,7 +157,6 @@ class TestLogicSynthesis:
                 seen_ids.add(r["id"])
                 unique.append(r)
         assert len(unique) == 2
-
 
 class TestLogicValidation:
     """Tests for logic validation operations."""

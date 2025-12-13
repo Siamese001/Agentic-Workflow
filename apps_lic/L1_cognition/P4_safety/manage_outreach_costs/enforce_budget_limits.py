@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Enforce Budget Limits - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class EnforceBudgetLimits:
     """EnforceBudgetLimits implementation."""

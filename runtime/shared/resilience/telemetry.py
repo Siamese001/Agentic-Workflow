@@ -14,7 +14,6 @@ from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class OperationMetrics:
     """Metrics for a single operation."""
@@ -25,7 +24,7 @@ class OperationMetrics:
     success: bool = True
     error: Optional[str] = None
     timestamp: float = field(default_factory=time.time)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for logging."""
         return {
@@ -39,15 +38,14 @@ class OperationMetrics:
             "datetime": datetime.fromtimestamp(self.timestamp).isoformat()
         }
 
-
 class SystemTelemetry:
     """
     Centralized telemetry system for hardening infrastructure.
-    
+
     Tracks operation metrics, aggregates statistics, and provides
     structured logging for monitoring and debugging.
     """
-    
+
     def __init__(self):
         """Initialize telemetry system."""
         self._metrics: List[OperationMetrics] = []
@@ -61,9 +59,9 @@ class SystemTelemetry:
                 "errors": []
             }
         )
-        
+
         logger.info("SystemTelemetry initialized")
-    
+
     def log_operation(
         self,
         component: str,
@@ -73,7 +71,7 @@ class SystemTelemetry:
         error: Optional[str] = None
     ) -> None:
         """Log an operation with metrics.
-        
+
         Args:
             component: Component name (e.g., "HardenedGeminiExecutor")
             operation: Operation name (e.g., "execute_k_node")
@@ -83,7 +81,7 @@ class SystemTelemetry:
         """
         duration_ms = duration * 1000
         success = error is None
-        
+
         # Create metrics entry
         metrics = OperationMetrics(
             component=component,
@@ -93,16 +91,16 @@ class SystemTelemetry:
             success=success,
             error=error
         )
-        
+
         # Store metrics
         self._metrics.append(metrics)
-        
+
         # Update component statistics
         stats = self._component_stats[component]
         stats["total_operations"] += 1
         stats["total_duration_ms"] += duration_ms
         stats["total_tokens"] += tokens
-        
+
         if success:
             stats["successful_operations"] += 1
             logger.info(
@@ -119,22 +117,22 @@ class SystemTelemetry:
             logger.error(
                 f"✗ {component}.{operation} failed after {duration_ms:.2f}ms: {error}"
             )
-        
+
         # Keep only last 10000 metrics to prevent memory bloat
         if len(self._metrics) > 10000:
             self._metrics = self._metrics[-10000:]
-    
+
     def get_component_stats(self, component: str) -> Dict[str, Any]:
         """Get statistics for a specific component.
-        
+
         Args:
             component: Component name
-            
+
         Returns:
             Statistics dictionary
         """
         stats = self._component_stats[component]
-        
+
         # Calculate derived metrics
         total_ops = stats["total_operations"]
         success_rate = (
@@ -145,7 +143,7 @@ class SystemTelemetry:
             stats["total_duration_ms"] / total_ops
             if total_ops > 0 else 0.0
         )
-        
+
         return {
             "component": component,
             "total_operations": total_ops,
@@ -157,10 +155,10 @@ class SystemTelemetry:
             "total_tokens": stats["total_tokens"],
             "recent_errors": stats["errors"][-5:]  # Last 5 errors
         }
-    
+
     def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
         """Get statistics for all components.
-        
+
         Returns:
             Dictionary mapping component names to their statistics
         """
@@ -168,27 +166,27 @@ class SystemTelemetry:
             component: self.get_component_stats(component)
             for component in self._component_stats.keys()
         }
-    
+
     def get_recent_metrics(self, limit: int = 100) -> List[Dict[str, Any]]:
         """Get recent operation metrics.
-        
+
         Args:
             limit: Maximum number of metrics to return
-            
+
         Returns:
             List of metrics dictionaries
         """
         return [m.to_dict() for m in self._metrics[-limit:]]
-    
+
     def clear_metrics(self) -> None:
         """Clear all stored metrics and statistics."""
         self._metrics.clear()
         self._component_stats.clear()
         logger.info("SystemTelemetry metrics cleared")
-    
+
     def export_metrics(self) -> Dict[str, Any]:
         """Export all metrics and statistics.
-        
+
         Returns:
             Complete telemetry data
         """
@@ -198,14 +196,12 @@ class SystemTelemetry:
             "export_timestamp": datetime.now().isoformat()
         }
 
-
 # Global telemetry instance
 _TELEMETRY: Optional[SystemTelemetry] = None
 
-
 def get_telemetry() -> SystemTelemetry:
     """Get or create global telemetry instance.
-    
+
     Returns:
         SystemTelemetry instance
     """

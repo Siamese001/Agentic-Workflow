@@ -26,7 +26,6 @@ class ResumeGenerationState:
     scores: Dict[str, float] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
 
-
 class TestResumeGenerationLifecycleE2E:
     """E2E tests for complete resume generation lifecycle."""
 
@@ -116,7 +115,6 @@ class TestResumeGenerationLifecycleE2E:
         assert len(exports) == 4
         assert all(fmt in exports for fmt in formats)
 
-
 class TestResumeCustomizationE2E:
     """E2E tests for resume customization."""
 
@@ -173,7 +171,6 @@ class TestResumeCustomizationE2E:
 
         assert format_type == "senior"
         assert "leadership" in sections_order
-
 
 class TestATSOptimizationE2E:
     """E2E tests for ATS optimization."""
@@ -245,7 +242,6 @@ Python, Java, AWS, Docker
             sections_found.append("skills")
 
         assert len(sections_found) == 3
-
 
 class TestResumeQualityE2E:
     """E2E tests for resume quality assurance."""

@@ -29,24 +29,24 @@ class SchemaPlanningOrchestrator:
     def execute(self, schema_request: Dict[str, Any]) -> SchemaPlanningResult:
         """Execute the schema planning orchestration."""
         self.logger.info(f"Starting schema planning for: {schema_request.get('operation', 'unknown')}")
-        
+
         try:
             self._validate_request(schema_request)
-            
+
             validated_schemas = []
             if self.config.enable_validation:
                 validated_schemas = self._validate_schemas(schema_request)
-            
+
             transformation_plans = []
             if self.config.enable_transformation:
                 transformation_plans = self._plan_transformations(schema_request, validated_schemas)
-            
+
             compatibility_report = {}
             if self.config.enable_compatibility_check:
                 compatibility_report = self._check_compatibility(validated_schemas)
-            
+
             validation_errors = self._collect_validation_errors(schema_request)
-            
+
             result = SchemaPlanningResult(
                 success=len(validation_errors) == 0,
                 validated_schemas=validated_schemas,
@@ -61,10 +61,10 @@ class SchemaPlanningOrchestrator:
                     "orchestrator": "SchemaPlanningOrchestrator"
                 }
             )
-            
+
             self.logger.info(f"Successfully planned schemas: {len(validated_schemas)} validated, {len(transformation_plans)} transformations")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Schema planning failed: {str(e)}")
             return SchemaPlanningResult(
@@ -89,7 +89,7 @@ class SchemaPlanningOrchestrator:
         """Validate and parse schemas from request."""
         schemas = []
         raw_schemas = request.get("schemas", [])
-        
+
         for raw_schema in raw_schemas:
             if isinstance(raw_schema, dict):
                 schema = SchemaDefinition(
@@ -102,14 +102,14 @@ class SchemaPlanningOrchestrator:
                     tags=raw_schema.get("tags", [])
                 )
                 schemas.append(schema)
-        
+
         return schemas
 
     def _plan_transformations(self, request: Dict[str, Any], schemas: List[SchemaDefinition]) -> List[TransformationPlan]:
         """Plan schema transformations based on request."""
         plans = []
         transformations = request.get("transformations", [])
-        
+
         for transform in transformations:
             plan = TransformationPlan(
                 transformation_type=TransformationType(transform.get("type", "format_conversion")),
@@ -119,7 +119,7 @@ class SchemaPlanningOrchestrator:
                 dependencies=transform.get("dependencies", [])
             )
             plans.append(plan)
-        
+
         return plans
 
     def _check_compatibility(self, schemas: List[SchemaDefinition]) -> Dict[str, Any]:
@@ -129,7 +129,7 @@ class SchemaPlanningOrchestrator:
             "issues": [],
             "warnings": []
         }
-        
+
         if len(schemas) > 1:
             for i, schema1 in enumerate(schemas):
                 for schema2 in schemas[i+1:]:
@@ -137,23 +137,23 @@ class SchemaPlanningOrchestrator:
                         report["warnings"].append(
                             f"Schema type mismatch: {schema1.name} ({schema1.schema_type}) vs {schema2.name} ({schema2.schema_type})"
                         )
-        
+
         return report
 
     def _collect_validation_errors(self, request: Dict[str, Any]) -> List[str]:
         """Collect validation errors from schemas."""
         errors = []
         schemas = request.get("schemas", [])
-        
+
         for schema in schemas:
             if not isinstance(schema, dict):
                 errors.append("Invalid schema format")
                 continue
-            
+
             if "name" not in schema:
                 errors.append("Schema missing name")
-            
+
             if "type" not in schema:
                 errors.append("Schema missing type")
-        
+
         return errors

@@ -27,4 +27,3 @@ class MemoryStats:
     collection_name: str
     document_count: int
     persist_directory: str
-

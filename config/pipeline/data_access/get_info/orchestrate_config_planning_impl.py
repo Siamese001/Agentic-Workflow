@@ -13,10 +13,10 @@ class ConfigPlanningOrchestrator:
 
     def execute(self, config_request: Dict[str, Any]) -> ConfigPlanningResult:
         """Execute the config planning orchestration.
-        
+
         Args:
             config_request: Dictionary containing configuration requirements
-            
+
         Returns:
             ConfigPlanningResult: Complete planning result with validated configs and deployment plan
         """
@@ -97,14 +97,14 @@ def create_config_planning_orchestrator(enable_validation: bool=True, enable_ver
 
 def plan_config_deployment(service: str, environment: str, configs: List[Dict[str, Any]], deployment: Optional[Dict[str, Any]]=None, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Plan configuration deployment from simple parameters.
-    
+
     Args:
         service: Name of the service
         environment: Target environment
         configs: List of configuration definitions
         deployment: Optional deployment configuration
         config: Optional orchestrator configuration overrides
-        
+
     Returns:
         Dict: Planning result with validated configs and deployment plan
     """
@@ -113,4 +113,3 @@ def plan_config_deployment(service: str, environment: str, configs: List[Dict[st
     orchestrator = ConfigPlanningOrchestrator(orchestrator_config)
     result = orchestrator.execute(request)
     return {'success': result.success, 'validated_configs': [{'name': c.name, 'format': c.format.value, 'environment': c.environment.value, 'content': c.content, 'version': c.version, 'namespace': c.namespace, 'description': c.description, 'tags': c.tags} for c in result.validated_configs], 'deployment_plan': {'strategy': result.deployment_plan.strategy.value, 'target_environments': [e.value for e in result.deployment_plan.target_environments], 'rollout_percentage': result.deployment_plan.rollout_percentage, 'validation_steps': result.deployment_plan.validation_steps, 'rollback_plan': result.deployment_plan.rollback_plan, 'dependencies': result.deployment_plan.dependencies} if result.deployment_plan else None, 'validation_errors': result.validation_errors, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
-

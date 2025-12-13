@@ -19,7 +19,6 @@ class RuntimeContext:
     state: Dict[str, object] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
 
-
 class TestCoreRuntimeIntegration:
     """Integration tests for core + runtime."""
 
@@ -73,7 +72,6 @@ class TestCoreRuntimeIntegration:
         # All state preserved
         assert len(ctx.state) == 3
 
-
 class TestSDKIntegration:
     """Integration tests for SDK clients."""
 
@@ -125,7 +123,6 @@ class TestSDKIntegration:
 
         assert response == "response_from_anthropic"
 
-
 class TestObservabilityIntegration:
     """Integration tests for observability."""
 
@@ -171,7 +168,6 @@ class TestObservabilityIntegration:
 
         assert len(logs) == 2
         assert logs[0]["request_id"] == "req_001"
-
 
 class TestSecurityIntegration:
     """Integration tests for security controls."""

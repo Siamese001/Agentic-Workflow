@@ -17,7 +17,7 @@ class ObservabilityToolExecutor:
 
     def register_tool(self, tool_def: ToolDefinition, implementation: Callable) -> None:
         """Register an observability tool.
-        
+
         Args:
             tool_def: Tool definition
             implementation: Tool implementation function
@@ -29,10 +29,10 @@ class ObservabilityToolExecutor:
 
     def execute_tool(self, request: ToolExecutionRequest) -> ToolExecutionResult:
         """Execute an observability tool.
-        
+
         Args:
             request: Tool execution request
-            
+
         Returns:
             ToolExecutionResult: Execution result
         """
@@ -63,10 +63,10 @@ class ObservabilityToolExecutor:
 
     def execute_tool_stream(self, request: ToolExecutionRequest) -> object:
         """Execute tool with streaming output.
-        
+
         Args:
             request: Tool execution request
-            
+
         Returns:
             Iterator: Stream of output chunks
         """
@@ -80,10 +80,10 @@ class ObservabilityToolExecutor:
 
     def execute_tools_batch(self, requests: List[ToolExecutionRequest]) -> List[ToolExecutionResult]:
         """Execute multiple tools.
-        
+
         Args:
             requests: List of execution requests
-            
+
         Returns:
             List[ToolExecutionResult]: Results for all executions
         """
@@ -95,10 +95,10 @@ class ObservabilityToolExecutor:
 
     def list_tools(self, status: Optional[ToolStatus]=None) -> List[ToolDefinition]:
         """List registered tools.
-        
+
         Args:
             status: Optional filter by status
-            
+
         Returns:
             List[ToolDefinition]: Registered tools
         """
@@ -109,10 +109,10 @@ class ObservabilityToolExecutor:
 
     def get_tool_definition(self, tool_id: str) -> Optional[ToolDefinition]:
         """Get tool definition.
-        
+
         Args:
             tool_id: Tool identifier
-            
+
         Returns:
             Optional[ToolDefinition]: Tool definition
         """
@@ -120,10 +120,10 @@ class ObservabilityToolExecutor:
 
     def get_tool_status(self, tool_id: str) -> Optional[ToolStatus]:
         """Get tool status.
-        
+
         Args:
             tool_id: Tool identifier
-            
+
         Returns:
             Optional[ToolStatus]: Tool status
         """
@@ -131,7 +131,7 @@ class ObservabilityToolExecutor:
 
     def set_tool_status(self, tool_id: str, status: ToolStatus) -> None:
         """Set tool status.
-        
+
         Args:
             tool_id: Tool identifier
             status: New status
@@ -142,10 +142,10 @@ class ObservabilityToolExecutor:
 
     def cancel_execution(self, execution_id: str) -> bool:
         """Cancel an active execution.
-        
+
         Args:
             execution_id: Execution identifier
-            
+
         Returns:
             bool: True if cancelled successfully
         """
@@ -158,10 +158,10 @@ class ObservabilityToolExecutor:
 
     def get_execution_status(self, execution_id: str) -> Optional[Dict[str, Any]]:
         """Get execution status.
-        
+
         Args:
             execution_id: Execution identifier
-            
+
         Returns:
             Optional[Dict]: Execution status
         """
@@ -257,7 +257,7 @@ def create_observability_tool_executor(default_timeout: float=30.0, max_retries:
 
 def tool_use_observability_execution(tool_id: str, command: str, parameters: Dict[str, Any], execution_id: Optional[str]=None, execution_type: str='sync', timeout: float=30.0) -> Dict[str, Any]:
     """Execute observability tool.
-    
+
     Args:
         tool_id: Tool identifier
         command: Command to execute
@@ -265,7 +265,7 @@ def tool_use_observability_execution(tool_id: str, command: str, parameters: Dic
         execution_id: Optional unique execution identifier
         execution_type: Type of execution
         timeout: Execution timeout
-        
+
     Returns:
         Dict: Execution result
     """
@@ -273,4 +273,3 @@ def tool_use_observability_execution(tool_id: str, command: str, parameters: Dic
     request = ToolExecutionRequest(execution_id=execution_id or str(uuid.uuid4()), tool_id=tool_id, command=command, parameters=parameters, execution_type=ExecutionType(execution_type), timeout=timeout)
     result = executor.execute_tool(request)
     return {'execution_id': result.execution_id, 'tool_id': result.tool_id, 'command': result.command, 'success': result.success, 'output': result.output, 'exit_code': result.exit_code, 'stdout': result.stdout, 'stderr': result.stderr, 'metrics': result.metrics, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}
-

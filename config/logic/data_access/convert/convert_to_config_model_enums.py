@@ -14,4 +14,3 @@ class ConversionMode(Enum):
     STRICT = 'strict'
     LENIENT = 'lenient'
     VALIDATE_ONLY = 'validate_only'
-

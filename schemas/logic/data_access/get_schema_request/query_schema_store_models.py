@@ -62,4 +62,3 @@ class SchemaStoreConfig:
     enable_indexing: bool = True
     backup_enabled: bool = True
     backup_interval_hours: int = 24
-

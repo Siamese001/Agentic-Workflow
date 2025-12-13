@@ -4,11 +4,15 @@ from typing import Any, Dict, List, Optional
 from .subatomic_orchestrator_types import *
 
 class SubatomicOrchestrator:
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Orchestrator that builds and executes dynamic DAGs of functional agents."""
 
     def __init__(self, registry: Optional[AgentRegistry]=None):
         """Initialize the orchestrator.
-        
+
         Args:
             registry: Optional agent registry (uses global if not provided)
         """
@@ -21,17 +25,17 @@ class SubatomicOrchestrator:
 
     def _define_standard_workflows(self) -> None:
         """Define standard workflow blueprints."""
-        self.resume_blueprint = WorkflowBlueprint(name='Resume Generation', description='Generate optimized resumes from profile data', roles=[AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER, AgentRole.RESUME_BUILDER, AgentRole.QUALITY_CRITIC], edges=[(AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER), (AgentRole.STRATEGIC_PLANNER, AgentRole.RESUME_BUILDER), (AgentRole.RESUME_BUILDER, AgentRole.QUALITY_CRITIC)], mutation_hooks={AgentRole.QUALITY_CRITIC: [(MutationAction.SPAWN_PREDECESSOR, AgentRole.CONTEXT_GATHERER), (MutationAction.SPAWN_PREDECESSOR, AgentRole.FACT_CHECKER)]})
-        self.message_blueprint = WorkflowBlueprint(name='Message Outreach', description='Create personalized outreach messages', roles=[AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER, AgentRole.MESSAGE_CRAFTER, AgentRole.QUALITY_CRITIC, AgentRole.PROTOCOL_ENFORCER], edges=[(AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER), (AgentRole.STRATEGIC_PLANNER, AgentRole.MESSAGE_CRAFTER), (AgentRole.MESSAGE_CRAFTER, AgentRole.QUALITY_CRITIC), (AgentRole.QUALITY_CRITIC, AgentRole.PROTOCOL_ENFORCER)], mutation_hooks={AgentRole.QUALITY_CRITIC: [(MutationAction.SPAWN_PREDECESSOR, AgentRole.PERSONALIZER)]})
-        self.content_blueprint = WorkflowBlueprint(name='Content Creation', description='General content creation pipeline', roles=[AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER, AgentRole.CONTENT_DRAFTER, AgentRole.QUALITY_CRITIC], edges=[(AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER), (AgentRole.STRATEGIC_PLANNER, AgentRole.CONTENT_DRAFTER), (AgentRole.CONTENT_DRAFTER, AgentRole.QUALITY_CRITIC)], parallel_groups=[[AgentRole.CONTEXT_GATHERER, AgentRole.INSIGHT_ANALYZER]])
+        self.resume_blueprint = WorkflowBluelogger.info(name='Resume Generation', description='Generate optimized resumes from profile data', roles=[AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER, AgentRole.RESUME_BUILDER, AgentRole.QUALITY_CRITIC], edges=[(AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER), (AgentRole.STRATEGIC_PLANNER, AgentRole.RESUME_BUILDER), (AgentRole.RESUME_BUILDER, AgentRole.QUALITY_CRITIC)], mutation_hooks={AgentRole.QUALITY_CRITIC: [(MutationAction.SPAWN_PREDECESSOR, AgentRole.CONTEXT_GATHERER), (MutationAction.SPAWN_PREDECESSOR, AgentRole.FACT_CHECKER)]})
+        self.message_blueprint = WorkflowBluelogger.info(name='Message Outreach', description='Create personalized outreach messages', roles=[AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER, AgentRole.MESSAGE_CRAFTER, AgentRole.QUALITY_CRITIC, AgentRole.PROTOCOL_ENFORCER], edges=[(AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER), (AgentRole.STRATEGIC_PLANNER, AgentRole.MESSAGE_CRAFTER), (AgentRole.MESSAGE_CRAFTER, AgentRole.QUALITY_CRITIC), (AgentRole.QUALITY_CRITIC, AgentRole.PROTOCOL_ENFORCER)], mutation_hooks={AgentRole.QUALITY_CRITIC: [(MutationAction.SPAWN_PREDECESSOR, AgentRole.PERSONALIZER)]})
+        self.content_blueprint = WorkflowBluelogger.info(name='Content Creation', description='General content creation pipeline', roles=[AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER, AgentRole.CONTENT_DRAFTER, AgentRole.QUALITY_CRITIC], edges=[(AgentRole.CONTEXT_GATHERER, AgentRole.STRATEGIC_PLANNER), (AgentRole.STRATEGIC_PLANNER, AgentRole.CONTENT_DRAFTER), (AgentRole.CONTENT_DRAFTER, AgentRole.QUALITY_CRITIC)], parallel_groups=[[AgentRole.CONTEXT_GATHERER, AgentRole.INSIGHT_ANALYZER]])
 
     def build_standard_pipeline(self, workflow_type: WorkflowType, **kwargs) -> nx.DiGraph:
         """Build a standard workflow pipeline.
-        
+
         Args:
             workflow_type: Type of workflow to build
             **kwargs: Additional parameters
-            
+
         Returns:
             NetworkX DiGraph representing the workflow
         """
@@ -46,29 +50,29 @@ class SubatomicOrchestrator:
             blueprint = self.content_blueprint
         else:
             raise ValueError(f'Unknown workflow type: {workflow_type}')
-        return self._build_from_blueprint(blueprint, **kwargs)
+        return self._build_from_bluelogger.info(blueprint, **kwargs)
 
     def build_custom_pipeline(self, roles: List[AgentRole], edges: List[Tuple[AgentRole, AgentRole]], **kwargs) -> nx.DiGraph:
         """Build a custom workflow pipeline.
-        
+
         Args:
             roles: List of roles to include
             edges: Edges between roles
             **kwargs: Additional parameters
-            
+
         Returns:
             NetworkX DiGraph representing the workflow
         """
-        blueprint = WorkflowBlueprint(name='Custom Workflow', description='User-defined custom workflow', roles=roles, edges=edges)
-        return self._build_from_blueprint(blueprint, **kwargs)
+        blueprint = WorkflowBluelogger.info(name='Custom Workflow', description='User-defined custom workflow', roles=roles, edges=edges)
+        return self._build_from_bluelogger.info(blueprint, **kwargs)
 
-    def _build_from_blueprint(self, blueprint: WorkflowBlueprint, **kwargs) -> nx.DiGraph:
+    def _build_from_bluelogger.info(self, blueprint: WorkflowBlueprint, **kwargs) -> nx.DiGraph:
         """Build a graph from a workflow blueprint.
-        
+
         Args:
             blueprint: Workflow blueprint
             **kwargs: Additional parameters
-            
+
         Returns:
             NetworkX DiGraph
         """
@@ -98,11 +102,11 @@ class SubatomicOrchestrator:
 
     def _get_hop_function(self, role: AgentRole, **kwargs) -> callable:
         """Get the hop function for a role.
-        
+
         Args:
             role: Agent role
             **kwargs: Additional parameters
-            
+
         Returns:
             Hop function
         """
@@ -125,12 +129,12 @@ class SubatomicOrchestrator:
 
     async def execute_graph(self, graph: nx.DiGraph, initial_inputs: Dict[str, Any], **kwargs) -> Dict[str, Any]:
         """Execute a workflow graph.
-        
+
         Args:
             graph: The workflow graph to execute
             initial_inputs: Initial inputs for the graph
             **kwargs: Additional parameters
-            
+
         Returns:
             Execution results
         """
@@ -179,11 +183,11 @@ class SubatomicOrchestrator:
 
     def _get_ready_nodes(self, graph: nx.DiGraph, completed_nodes: Set[SubatomicHop]) -> List[SubatomicHop]:
         """Get nodes that are ready to execute.
-        
+
         Args:
             graph: The workflow graph
             completed_nodes: Set of completed nodes
-            
+
         Returns:
             List of ready nodes
         """
@@ -198,13 +202,13 @@ class SubatomicOrchestrator:
 
     def _get_node_inputs(self, graph: nx.DiGraph, node: SubatomicHop, results: Dict[SubatomicHop, Any], initial_inputs: Dict[str, Any]) -> Dict[str, Any]:
         """Get inputs for a node.
-        
+
         Args:
             graph: The workflow graph
             node: The node to get inputs for
             results: Results from completed nodes
             initial_inputs: Initial graph inputs
-            
+
         Returns:
             Node inputs
         """
@@ -217,11 +221,11 @@ class SubatomicOrchestrator:
 
     async def _execute_node(self, node: SubatomicHop, inputs: Dict[str, Any]) -> Any:
         """Execute a single node.
-        
+
         Args:
             node: The node to execute
             inputs: Node inputs
-            
+
         Returns:
             Node result
         """
@@ -234,7 +238,7 @@ class SubatomicOrchestrator:
 
     async def _handle_node_failure(self, node: SubatomicHop, error: Exception, graph: nx.DiGraph) -> None:
         """Handle node failure with potential mutations.
-        
+
         Args:
             node: The failed node
             error: The error that occurred
@@ -258,7 +262,7 @@ class SubatomicOrchestrator:
 
     def get_execution_stats(self) -> Dict[str, Any]:
         """Get execution statistics.
-        
+
         Returns:
             Execution statistics
         """
@@ -272,7 +276,7 @@ class SubatomicOrchestrator:
 
 def get_orchestrator() -> SubatomicOrchestrator:
     """Get the global orchestrator instance.
-    
+
     Returns:
         SubatomicOrchestrator instance
     """
@@ -283,11 +287,11 @@ def get_orchestrator() -> SubatomicOrchestrator:
 
 async def execute_resume_workflow(profile_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
     """Execute the resume generation workflow.
-    
+
     Args:
         profile_data: User profile data
         **kwargs: Additional parameters
-        
+
     Returns:
         Execution results
     """
@@ -297,16 +301,15 @@ async def execute_resume_workflow(profile_data: Dict[str, Any], **kwargs) -> Dic
 
 async def execute_message_workflow(recipient_data: Dict[str, Any], message_type: str, **kwargs) -> Dict[str, Any]:
     """Execute the message outreach workflow.
-    
+
     Args:
         recipient_data: Recipient profile data
         message_type: Type of message to create
         **kwargs: Additional parameters
-        
+
     Returns:
         Execution results
     """
     orchestrator = get_orchestrator()
     graph = orchestrator.build_standard_pipeline(WorkflowType.MESSAGE_OUTREACH, context={'recipient': recipient_data, 'type': message_type}, **kwargs)
     return await orchestrator.execute_graph(graph, initial_inputs={'recipient': recipient_data, 'type': message_type})
-

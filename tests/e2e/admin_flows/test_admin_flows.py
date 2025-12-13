@@ -57,7 +57,6 @@ class TestAdminUserManagement:
         audit_log.append(action)
         assert len(audit_log) == 1
 
-
 class TestAdminConfigManagement:
     """E2E tests for admin configuration management."""
 
@@ -93,7 +92,6 @@ class TestAdminConfigManagement:
         config = {"setting1": "value1", "setting2": "value2"}
         exported = str(config)
         assert "setting1" in exported
-
 
 class TestAdminMonitoring:
     """E2E tests for admin monitoring flows."""

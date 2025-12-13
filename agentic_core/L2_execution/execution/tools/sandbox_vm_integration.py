@@ -1,7 +1,6 @@
 # from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.infra.sandbox.vm_manager import run_in_ephemeral_vm  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 def test_tool_like_call_runs_in_vm_boundary():
     # In this codebase tools are not first-class, but this test ensures
     # that the sandbox entrypoint can be used as a tool middleware shim.
@@ -10,9 +9,3 @@ def test_tool_like_call_runs_in_vm_boundary():
 
     assert result.success is True
     assert "middleware" in result.stdout
-
-
-
-
-
-

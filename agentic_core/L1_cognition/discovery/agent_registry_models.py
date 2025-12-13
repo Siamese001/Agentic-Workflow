@@ -31,7 +31,7 @@ class ToolPermission:
 @dataclass
 class AgentCard:
     """Agent Card for discovery and collaboration.
-    
+
     Modernized version of legacy Agent Card system.
     Integrates with SPIFFE identity and MCP contracts.
     """
@@ -51,10 +51,10 @@ class AgentCard:
 
     def has_capability(self, capability: AgentCapability) -> bool:
         """Check if agent has a capability.
-        
+
         Args:
             capability: Capability to check
-            
+
         Returns:
             True if agent has capability
         """
@@ -62,11 +62,11 @@ class AgentCard:
 
     def can_use_tool(self, tool_name: str, operation: str) -> bool:
         """Check if agent can use a tool.
-        
+
         Args:
             tool_name: Name of tool
             operation: Operation to perform
-            
+
         Returns:
             True if allowed
         """
@@ -77,7 +77,7 @@ class AgentCard:
 
     def is_available(self) -> bool:
         """Check if agent is available.
-        
+
         Returns:
             True if agent is active or idle
         """
@@ -93,4 +93,3 @@ class RegistrationResult:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'success': self.success, 'agent_card': self.agent_card.to_dict() if self.agent_card else None, 'reason': self.reason}
-

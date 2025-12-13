@@ -9,4 +9,3 @@ class RankDataComponentsPlanType(Enum):
     DEFAULT = 'default'
     CORE = 'core'
     SYSTEM = 'system'
-

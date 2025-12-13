@@ -77,7 +77,6 @@ class TestToolRegistration:
         assert len(available) == 2
         assert "search" in available
 
-
 class TestToolExecution:
     """Tests for tool execution."""
 
@@ -139,7 +138,6 @@ class TestToolExecution:
         assert success is True
         assert attempts == 2
 
-
 class TestToolParameterValidation:
     """Tests for tool parameter validation."""
 
@@ -182,7 +180,6 @@ class TestToolParameterValidation:
                     violations.append(f"{param} out of range")
 
         assert len(violations) == 1
-
 
 class TestToolStatusCheck:
     """Tests for tool status checking."""

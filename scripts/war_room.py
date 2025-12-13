@@ -46,18 +46,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger("WarRoom")
 
-
 class WarRoom:
     """
     War Room execution environment for executive strategy agents.
-    
+
     Provides a controlled environment to run expensive intelligence
     gathering operations with proper logging and output formatting.
     """
-    
+
     def __init__(self, brave_api_key: Optional[str] = None):
         """Initialize the War Room.
-        
+
         Args:
             brave_api_key: Optional Brave Search API key
         """
@@ -70,43 +69,43 @@ class WarRoom:
                 logger.info("Brave Search initialized for external data gathering")
             except Exception as e:
                 logger.warning(f"Failed to initialize Brave Search: {e}")
-        
+
         # Initialize data source provider
         self.data_sources = DataSourceProvider(search_tool)
-        
+
         # Initialize executive orchestrator
         self.orchestrator = create_executive_orchestrator(
             brave_search_tool=search_tool,
             data_source_provider=self.data_sources
         )
-        
+
         # Load workflow configuration
         self.workflow_config = self._load_workflow_config()
-        
+
         # Execution context
         self.session_id = f"war_room_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         self.results = {}
-        
+
         logger.info(f"War Room initialized with session ID: {self.session_id}")
-    
+
     def _load_workflow_config(self) -> Dict[str, Any]:
         """Load workflow configuration.
-        
+
         Returns:
             Workflow configuration dictionary
         """
         config_path = project_root / "Job_Workflow_v24.9.json"
-        
+
         if config_path.exists():
             with open(config_path, 'r') as f:
                 return json.load(f)
         else:
             logger.warning("Workflow config not found, using defaults")
             return self._get_default_config()
-    
+
     def _get_default_config(self) -> Dict[str, Any]:
         """Get default configuration for executive agents.
-        
+
         Returns:
             Default configuration
         """
@@ -153,121 +152,121 @@ class WarRoom:
                 }
             }
         }
-    
+
     async def execute_shadow_audit(self, company_name: str) -> TechnicalSWOT:
         """Execute K.11 Shadow Audit.
-        
+
         Args:
             company_name: Target company name
-            
+
         Returns:
             Technical SWOT analysis
         """
         logger.info(f"🕵️  Running K.11 Shadow Audit for {company_name}...")
-        
+
         config = self.workflow_config["4.reasoning"]["K.11_shadow_audit"]
-        
+
         try:
             swot = await self.orchestrator.execute_k11_shadow_audit(
                 company_name=company_name,
                 config=config
             )
-            
+
             self.results["k11_swot"] = swot
-            
+
             logger.info(f"⚠️  Identified {len(swot.suspected_bottlenecks)} bottlenecks")
             logger.info(f"🎯 Strategic Opportunity: {swot.strategic_opportunity[:100]}...")
-            
+
             return swot
-            
+
         except Exception as e:
             logger.error(f"K.11 execution failed: {e}")
             raise
-    
+
     async def execute_strategy_roadmap(
         self,
         job_description: str,
         technical_swot: TechnicalSWOT
     ) -> StrategyRoadmap:
         """Execute K.12 Strategy Roadmap.
-        
+
         Args:
             job_description: Job description text
             technical_swot: Results from shadow audit
-            
+
         Returns:
             30-60-90 day strategy roadmap
         """
         logger.info("🗺️  Generating K.12 Strategy Roadmap...")
-        
+
         config = self.workflow_config["4.reasoning"]["K.12_strategy_roadmap"]
-        
+
         try:
             roadmap = await self.orchestrator.execute_k12_strategy(
                 job_description=job_description,
                 technical_swot=technical_swot,
                 config=config
             )
-            
+
             self.results["k12_roadmap"] = roadmap
-            
+
             logger.info("✅ Strategy Generated")
             logger.info(f"📅 {len(roadmap.milestones)} milestones planned")
             logger.info(f"⚡ {len(roadmap.immediate_wins)} immediate wins identified")
-            
+
             # Show immediate wins
             logger.info("\nImmediate Wins:")
             for win in roadmap.immediate_wins:
                 logger.info(f"  • {win['initiative']} (Impact: {win['impact']}, Effort: {win['effort']})")
-            
+
             return roadmap
-            
+
         except Exception as e:
             logger.error(f"K.12 execution failed: {e}")
             raise
-    
+
     async def execute_interviewer_simulation(
         self,
         interviewer_linkedin: str,
         resume_text: str
     ) -> InterviewerProfile:
         """Execute K.13 Interviewer Simulation.
-        
+
         Args:
             interviewer_linkedin: LinkedIn profile URL
             resume_text: Candidate resume text
-            
+
         Returns:
             Interviewer profile with predicted questions
         """
         logger.info("🎭 Running K.13 Interviewer Simulation...")
-        
+
         config = self.workflow_config["4.reasoning"]["K.13_interviewer_sim"]
-        
+
         try:
             profile = await self.orchestrator.execute_k13_simulation(
                 interviewer_linkedin=interviewer_linkedin,
                 resume_text=resume_text,
                 config=config
             )
-            
+
             self.results["k13_interviewer"] = profile
-            
+
             logger.info(f"👤 Interviewer Archetype: {profile.dominant_archetype}")
             logger.info(f"❓ {len(profile.kill_chain_questions)} predicted questions")
-            
+
             # Show hardest questions
             logger.info("\nToughest Questions to Prepare For:")
             for i, question in enumerate(profile.kill_chain_questions[:3], 1):
                 logger.info(f"\n{i}. {question['question_text']}")
                 logger.info(f"   Recommended Angle: {question['recommended_angle']}")
-            
+
             return profile
-            
+
         except Exception as e:
             logger.error(f"K.13 execution failed: {e}")
             raise
-    
+
     def generate_intelligence_report(
         self,
         company_name: str,
@@ -275,39 +274,39 @@ class WarRoom:
         interview_date: Optional[str] = None
     ) -> ExecutiveIntelligenceReport:
         """Generate comprehensive intelligence report.
-        
+
         Args:
             company_name: Target company
             position: Position being interviewed for
             interview_date: Scheduled interview date
-            
+
         Returns:
             Complete intelligence report
         """
         logger.info("📊 Generating Executive Intelligence Report...")
-        
+
         # Compile key differentiators
         differentiators = []
-        
+
         if "k12_roadmap" in self.results:
             roadmap = self.results["k12_roadmap"]
             differentiators.append(f"Strategic 90-day plan with {len(roadmap.milestones)} specific milestones")
-        
+
         if "k11_swot" in self.results:
             swot = self.results["k11_swot"]
             differentiators.append(f"Deep technical understanding of their {swot.gen_ai_maturity_score}/5 AI maturity")
-        
+
         # Risk mitigation strategies
         risks = []
         if "k11_swot" in self.results:
             swot = self.results["k11_swot"]
             for bottleneck in swot.suspected_bottlenecks[:2]:
                 risks.append(f"Address {bottleneck.lower()} with phased approach")
-        
+
         if "k13_interviewer" in self.results:
             profile = self.results["k13_interviewer"]
             risks.append(f"Align with {profile.dominant_archetype} interview style")
-        
+
         # Create report
         report = ExecutiveIntelligenceReport(
             target_company=company_name,
@@ -320,59 +319,58 @@ class WarRoom:
             risk_mitigation=risks,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
-        
+
         return report
-    
+
     def save_results(self, output_dir: Path) -> None:
         """Save all results to files.
-        
+
         Args:
             output_dir: Directory to save results
         """
         output_dir.mkdir(exist_ok=True)
-        
+
         # Save individual results
         for key, result in self.results.items():
             filename = f"{self.session_id}_{key}.json"
             filepath = output_dir / filename
-            
+
             if hasattr(result, 'model_dump'):
                 data = result.model_dump()
             else:
                 data = result
-            
+
             with open(filepath, 'w') as f:
                 json.dump(data, f, indent=2)
-            
+
             logger.info(f"Saved {filename}")
-        
+
         # Save combined report
         if all(k in self.results for k in ["k11_swot", "k12_roadmap"]):
             report = self.generate_intelligence_report(
                 company_name="Target Corp",  # Would be passed in
                 position="Senior Role"
             )
-            
+
             report_file = output_dir / f"{self.session_id}_intelligence_report.json"
             with open(report_file, 'w') as f:
                 json.dump(report.model_dump(), f, indent=2)
-            
+
             logger.info(f"Saved intelligence_report.json")
-    
+
     def print_summary(self) -> None:
         """Print execution summary."""
         stats = self.orchestrator.get_statistics()
-        
-        print("\n" + "="*60)
-        print("WAR ROOM EXECUTION SUMMARY")
-        print("="*60)
-        print(f"Session ID: {self.session_id}")
-        print(f"K.11 Executions: {stats['k11_executions']}")
-        print(f"K.12 Executions: {stats['k12_executions']}")
-        print(f"K.13 Executions: {stats['k13_executions']}")
-        print(f"Estimated Cost: ${stats['total_cost_estimate']:.2f}")
-        print("="*60)
 
+        logger.info("\n" + "="*60)
+        logger.info("WAR ROOM EXECUTION SUMMARY")
+        logger.info("="*60)
+        logger.info(f"Session ID: {self.session_id}")
+        logger.info(f"K.11 Executions: {stats['k11_executions']}")
+        logger.info(f"K.12 Executions: {stats['k12_executions']}")
+        logger.info(f"K.13 Executions: {stats['k13_executions']}")
+        logger.info(f"Estimated Cost: ${stats['total_cost_estimate']:.2f}")
+        logger.info("="*60)
 
 async def main():
     """Main execution function."""
@@ -385,15 +383,15 @@ async def main():
     parser.add_argument("--resume-text", help="Resume text directly")
     parser.add_argument("--output-dir", default="./war_room_output", help="Output directory")
     parser.add_argument("--brave-key", help="Brave Search API key (or set BRAVE_API_KEY env var)")
-    
+
     args = parser.parse_args()
-    
+
     # Get API key
     brave_key = args.brave_key or os.getenv("BRAVE_API_KEY")
-    
+
     # Initialize War Room
     war_room = WarRoom(brave_api_key=brave_key)
-    
+
     try:
         # Get job description
         jd_text = None
@@ -405,14 +403,14 @@ async def main():
         else:
             logger.error("Job description required (--jd-file or --jd-text)")
             return
-        
+
         # Execute K.11 Shadow Audit
-        print("\n🚀 Starting War Room Execution...")
+        logger.info("\n🚀 Starting War Room Execution...")
         swot = await war_room.execute_shadow_audit(args.company)
-        
+
         # Execute K.12 Strategy Roadmap
         roadmap = await war_room.execute_strategy_roadmap(jd_text, swot)
-        
+
         # Execute K.13 Interviewer Simulation (if provided)
         if args.interviewer:
             resume_text = None
@@ -423,26 +421,25 @@ async def main():
                 resume_text = args.resume_text
             else:
                 logger.warning("No resume provided for interviewer simulation")
-            
+
             if resume_text:
                 profile = await war_room.execute_interviewer_simulation(
                     args.interviewer,
                     resume_text
                 )
-        
+
         # Save results
         output_dir = Path(args.output_dir)
         war_room.save_results(output_dir)
-        
+
         # Print summary
         war_room.print_summary()
-        
-        print(f"\n✅ War Room complete! Results saved to: {output_dir}")
-        
+
+        logger.info(f"\n✅ War Room complete! Results saved to: {output_dir}")
+
     except Exception as e:
         logger.error(f"War Room execution failed: {e}")
         raise
-
 
 if __name__ == "__main__":
     asyncio.run(main())

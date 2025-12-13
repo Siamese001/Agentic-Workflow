@@ -124,4 +124,3 @@ def format_observability_context(input_data: Dict[str, object]) -> Dict[str, obj
     builder = FormatObservabilityContextPlanFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
-

@@ -14,13 +14,11 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class StepStatus(Enum):
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
-
 
 @dataclass
 class StepResult:
@@ -31,14 +29,12 @@ class StepResult:
     error: Optional[str] = None
     duration_ms: float = 0.0
 
-
 @dataclass
 class OrchestrationResult:
     """Result of orchestration."""
     success: bool
     steps: List[StepResult] = field(default_factory=list)
     final_output: object = None
-
 
 class CoordinateScriptsOperations:
     """Orchestrator for utilities domain."""
@@ -87,7 +83,6 @@ class CoordinateScriptsOperations:
             steps=results,
             final_output=context["outputs"].get(self.steps[-1]["name"]) if self.steps else None
         )
-
 
 def orchestrate(steps: List[Dict], initial_input: object = None, config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""

@@ -2,15 +2,11 @@
 # -*- coding: utf-8 -*-
 """Validate Generated Content - atomic execution layer."""
 
-
 from typing import Dict
-
-
 
 def validate_generated_content(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate generated content data."""
     return {"status": "processed", "input_keys": list(data.keys())}
-
 
 def get_validate_generated_content_config() -> Dict[str, object]:
     """Get configuration for validate_generated_content."""

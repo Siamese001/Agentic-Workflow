@@ -120,7 +120,7 @@ from .kx_executor import (
 )
 
 # Uber High Signal Agents
-# Temporarily commented out due to missing models import
+
 # from .architecture_visualizer_agent import (
 #     ArchitectureVisualizerAgent,
 #     DiagramType,

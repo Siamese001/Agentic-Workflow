@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Serialize Outreach Context - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class SerializeOutreachContext:
     """SerializeOutreachContext implementation."""

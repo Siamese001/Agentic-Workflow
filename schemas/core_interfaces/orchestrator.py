@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Optional
 from .cognitive_plane import ICognitivePlane, PlanningRequest
 from .action_plane import IActionPlane, ActionRequest
 
-
 class ExecutionPhase(Enum):
     """Phases of execution in the orchestration cycle."""
     MISSION = "mission"
@@ -23,7 +22,6 @@ class ExecutionPhase(Enum):
     OBSERVE = "observe"
     REFLECT = "reflect"
 
-
 @dataclass
 class OrchestratorConfig:
     """Configuration for the orchestrator."""
@@ -32,7 +30,7 @@ class OrchestratorConfig:
     enable_tracing: bool = True
     enable_safety_checks: bool = True
     timeout_seconds: int = 300
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -43,7 +41,6 @@ class OrchestratorConfig:
             "timeout_seconds": self.timeout_seconds,
         }
 
-
 @dataclass
 class ExecutionContext:
     """Context for orchestrated execution."""
@@ -52,7 +49,7 @@ class ExecutionContext:
     state: Dict[str, Any] = field(default_factory=dict)
     history: List[Dict[str, Any]] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -62,7 +59,6 @@ class ExecutionContext:
             "history": self.history,
             "metadata": self.metadata,
         }
-
 
 @dataclass
 class ExecutionResult:
@@ -74,7 +70,7 @@ class ExecutionResult:
     iterations: int = 0
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -87,22 +83,21 @@ class ExecutionResult:
             "metadata": self.metadata,
         }
 
-
 class IOrchestrator(ABC):
     """Interface for the Orchestrator (Nervous System).
-    
+
     The orchestrator coordinates between cognitive and action planes:
     - Manages the Think-Act-Observe cycle
     - Enforces architectural boundaries
     - Provides observability and tracing
     - Handles state persistence
-    
+
     L3 Constraint: Orchestrator is the ONLY component that can:
     - Call both cognitive and action planes
     - Manage execution state
     - Control the execution loop
     """
-    
+
     @abstractmethod
     def __init__(
         self,
@@ -111,26 +106,26 @@ class IOrchestrator(ABC):
         config: Optional[OrchestratorConfig] = None,
     ):
         """Initialize orchestrator with planes.
-        
+
         Args:
             cognitive_plane: The brain (planning/reasoning)
             action_plane: The hands (tool execution)
             config: Orchestrator configuration
         """
         pass
-    
+
     @abstractmethod
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
         """Execute a mission through the Think-Act-Observe cycle.
-        
+
         Args:
             context: Execution context with mission and scene
-            
+
         Returns:
             ExecutionResult with output and trace
         """
         pass
-    
+
     @abstractmethod
     async def execute_step(
         self,
@@ -138,28 +133,28 @@ class IOrchestrator(ABC):
         context: ExecutionContext,
     ) -> Dict[str, Any]:
         """Execute a single phase of the cycle.
-        
+
         Args:
             phase: Which phase to execute
             context: Current execution context
-            
+
         Returns:
             Phase result
         """
         pass
-    
+
     @abstractmethod
     async def think(self, context: ExecutionContext) -> Dict[str, Any]:
         """Execute the THINK phase (cognitive planning).
-        
+
         Args:
             context: Current execution context
-            
+
         Returns:
             Planning result with next actions
         """
         pass
-    
+
     @abstractmethod
     async def act(
         self,
@@ -167,16 +162,16 @@ class IOrchestrator(ABC):
         context: ExecutionContext,
     ) -> List[Dict[str, Any]]:
         """Execute the ACT phase (action execution).
-        
+
         Args:
             actions: Actions to execute
             context: Current execution context
-            
+
         Returns:
             List of action results
         """
         pass
-    
+
     @abstractmethod
     async def observe(
         self,
@@ -184,50 +179,50 @@ class IOrchestrator(ABC):
         context: ExecutionContext,
     ) -> Dict[str, Any]:
         """Execute the OBSERVE phase (result interpretation).
-        
+
         Args:
             action_results: Results from actions
             context: Current execution context
-            
+
         Returns:
             Observations and state updates
         """
         pass
-    
+
     @abstractmethod
     async def should_continue(self, context: ExecutionContext) -> bool:
         """Determine if execution should continue.
-        
+
         Args:
             context: Current execution context
-            
+
         Returns:
             True if should continue, False if done
         """
         pass
-    
+
     @abstractmethod
     def get_state(self) -> Dict[str, Any]:
         """Get current orchestrator state.
-        
+
         Returns:
             Current state snapshot
         """
         pass
-    
+
     @abstractmethod
     async def save_state(self, path: str) -> None:
         """Save orchestrator state to disk.
-        
+
         Args:
             path: Path to save state
         """
         pass
-    
+
     @abstractmethod
     async def load_state(self, path: str) -> None:
         """Load orchestrator state from disk.
-        
+
         Args:
             path: Path to load state from
         """

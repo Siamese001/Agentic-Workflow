@@ -64,7 +64,6 @@ class TestCacheDataAccess:
         is_valid = datetime.now() < cache_entry["expires_at"]
         assert is_valid is True
 
-
 class TestCacheGuardrails:
     """Tests for cache guardrails and safety checks."""
 
@@ -112,7 +111,6 @@ class TestCacheGuardrails:
             cache["counter"] += 1
 
         assert cache["counter"] == 100
-
 
 class TestCacheInvalidation:
     """Tests for cache invalidation logic."""

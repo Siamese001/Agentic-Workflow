@@ -3,6 +3,10 @@
 from typing import Any, Dict, List, Optional
 
 def analyze_file_content(content: str, filename: str) -> tuple[int, list[str], bool]:
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Simple scoring logic - returns (score, reasons, is_dirty)"""
     score = 5
     reasons = []
@@ -61,32 +65,32 @@ def _should_skip_file(src: Path, archive_dir: Path) -> Optional[str]:
 def _scan_archive_directory(archive_dir: Path) -> List[Path]:
     """Scan archive directory for files to process."""
     if not archive_dir.is_dir():
-        print('❌ archive_code directory not found!')
+        logger.info('❌ archive_code directory not found!')
         return []
     py_files = list(archive_dir.glob('*.py'))
     json_files = list(archive_dir.glob('*.json'))
     md_files = list(archive_dir.glob('*.md'))
     files = py_files + json_files + md_files
-    print(f'📁 Found {len(py_files)} .py files, {len(json_files)} .json files, {len(md_files)} .md files')
-    print(f'📊 Total files to process: {len(files)}')
+    logger.info(f'📁 Found {len(py_files)} .py files, {len(json_files)} .json files, {len(md_files)} .md files')
+    logger.info(f'📊 Total files to process: {len(files)}')
     return files
 
 def _process_single_file(src: Path, archive_dir: Path, promoted_files: List, rejected_files: List) -> None:
     """Process a single file for promotion."""
-    print(f'\n🔎 Processing: {src.name}')
+    logger.info(f'\n🔎 Processing: {src.name}')
     skip_reason = _should_skip_file(src, archive_dir)
     if skip_reason:
-        print(f'  ⏭️  Skipped: {skip_reason}')
+        logger.info(f'  ⏭️  Skipped: {skip_reason}')
         return
     is_staged_file = archive_dir.resolve() in src.resolve().parents or src.parent.name == 'archive_code'
     content = src.read_text(errors='ignore')
     score, reasons, is_dirty = analyze_file_content(content, src.name)
-    print(f'  📈 Score: {score}/10')
-    print(f"  📝 Reasons: {', '.join(reasons)}")
-    print(f'  🧹 Dirty: {is_dirty}')
+    logger.info(f'  📈 Score: {score}/10')
+    logger.info(f"  📝 Reasons: {', '.join(reasons)}")
+    logger.info(f'  🧹 Dirty: {is_dirty}')
     should_promote, promotion_reason = _should_promote_file(src, score, reasons, is_dirty, is_staged_file)
     if not should_promote:
-        print(f'  ❌ REJECTED')
+        logger.info(f'  ❌ REJECTED')
         rejected_files.append(src.name)
         return
     _execute_promotion(src, content, promotion_reason, promoted_files)
@@ -96,8 +100,8 @@ def _execute_promotion(src: Path, content: str, promotion_reason: str, promoted_
     dest_dir = choose_destination(content, src.name)
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest_path = dest_dir / src.name
-    print(f'  ✅ PROMOTED to: {dest_dir}')
-    print(f'  📋 Reason: {promotion_reason}')
+    logger.info(f'  ✅ PROMOTED to: {dest_dir}')
+    logger.info(f'  📋 Reason: {promotion_reason}')
     for parent in [dest_dir] + list(dest_dir.parents):
         if parent.name in SOVEREIGN_ROOTS:
             break
@@ -114,27 +118,27 @@ def _execute_promotion(src: Path, content: str, promotion_reason: str, promoted_
 
 def _print_summary(promoted_files: List, rejected_files: List, archive_dir: Path) -> None:
     """Print promotion summary."""
-    print('\n' + '=' * 60)
-    print('📊 PROMOTION SUMMARY')
-    print('=' * 60)
-    print(f'✅ Files Promoted: {len(promoted_files)}')
-    print(f'❌ Files Rejected: {len(rejected_files)}')
+    logger.info('\n' + '=' * 60)
+    logger.info('📊 PROMOTION SUMMARY')
+    logger.info('=' * 60)
+    logger.info(f'✅ Files Promoted: {len(promoted_files)}')
+    logger.info(f'❌ Files Rejected: {len(rejected_files)}')
     if promoted_files:
-        print('\n✅ PROMOTED FILES:')
+        logger.info('\n✅ PROMOTED FILES:')
         for name, dest, reason in promoted_files:
-            print(f'  • {name} → {dest} ({reason})')
+            logger.info(f'  • {name} → {dest} ({reason})')
     if rejected_files:
-        print('\n❌ REJECTED FILES:')
+        logger.info('\n❌ REJECTED FILES:')
         for name in rejected_files:
-            print(f'  • {name}')
+            logger.info(f'  • {name}')
     if archive_dir.is_dir() and (not list(archive_dir.iterdir())):
         archive_dir.rmdir()
-        print(f'\n🧹 Cleaned up empty archive_code directory')
+        logger.info(f'\n🧹 Cleaned up empty archive_code directory')
 
 def main() -> None:
     """Main function to promote files from archive_code to appropriate directories."""
     archive_dir = Path('archive_code')
-    print(f'🔍 Scanning archive_code directory: {archive_dir}')
+    logger.info(f'🔍 Scanning archive_code directory: {archive_dir}')
     files_to_process = _scan_archive_directory(archive_dir)
     if not files_to_process:
         return
@@ -147,4 +151,3 @@ def main() -> None:
         processed_paths.add(src)
         _process_single_file(src, archive_dir, promoted_files, rejected_files)
     _print_summary(promoted_files, rejected_files, archive_dir)
-

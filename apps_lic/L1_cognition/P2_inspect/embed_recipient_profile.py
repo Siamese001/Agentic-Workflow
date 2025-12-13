@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Embed Recipient Profile - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class EmbedRecipientProfile:
     """EmbedRecipientProfile implementation."""

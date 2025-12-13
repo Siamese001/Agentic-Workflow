@@ -12,10 +12,10 @@ class ObservabilityPlanningOrchestrator:
 
     def execute(self, observability_request: Dict[str, Any]) -> ObservabilityPlanningResult:
         """Execute the observability planning orchestration.
-        
+
         Args:
             observability_request: Dictionary containing observability requirements
-            
+
         Returns:
             ObservabilityPlanningResult: Complete planning result with observability setup
         """
@@ -211,12 +211,12 @@ def create_observability_planning_orchestrator(enable_metrics: bool=True, enable
 
 def plan_observability(service_name: str, service_type: str, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Plan observability setup from simple parameters.
-    
+
     Args:
         service_name: Name of the service
         service_type: Type of service (api, worker, batch, etc.)
         config: Optional configuration overrides
-        
+
     Returns:
         Dict: Planning result with observability configuration
     """
@@ -242,4 +242,3 @@ def orchestrate_observability_planning(input_data: Dict[str, object]) -> Dict[st
     builder = OrchestrateObservabilityPlanningOrchestratorFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
-

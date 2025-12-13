@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Aggregate Campaign State - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class AggregateCampaignState:
     """AggregateCampaignState implementation."""

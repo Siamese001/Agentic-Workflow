@@ -1,7 +1,6 @@
 # from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard  # TODO: Fix invalid module name
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard  
 # from archives.legacy_root_folders.core.models.models import AgentRole  # DEPRECATED: Archive import removed to protect archives from validation edits
-
 
 def test_agent_registry_register_and_lookup() -> None:
     registry = AgentRegistry()
@@ -18,7 +17,6 @@ def test_agent_registry_register_and_lookup() -> None:
     planners = registry.find_agents_by_type("planner")
     assert a1 in planners
 
-
 def test_agent_registry_find_by_capability() -> None:
     registry = AgentRegistry()
 
@@ -30,10 +28,3 @@ def test_agent_registry_find_by_capability() -> None:
 
     writers = registry.find_agents_by_capability("write")
     assert a1 in writers
-
-
-
-
-
-
-

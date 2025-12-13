@@ -49,4 +49,3 @@ class ViolationReport:
     content: str
     suggestion: str
     confidence: float
-

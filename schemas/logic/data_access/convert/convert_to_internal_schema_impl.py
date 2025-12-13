@@ -98,11 +98,11 @@ class InternalSchemaConverter:
 
     def auto_generate_mappings(self, external_schema: Dict[str, object], internal_schema: InternalSchema) -> List[FieldMapping]:
         """Automatically generate field mappings between schemas.
-        
+
         Args:
             external_schema: External schema definition
             internal_schema: Internal schema definition
-            
+
         Returns:
             List[FieldMapping]: Generated field mappings
         """
@@ -122,13 +122,13 @@ class InternalSchemaConverter:
 
     def convert_batch(self, external_data_list: List[Dict[str, object]], external_schema: Optional[Dict[str, object]]=None, internal_schema: InternalSchema=None, field_mappings: List[FieldMapping]=None) -> List[ConversionResult]:
         """Convert multiple external data items.
-        
+
         Args:
             external_data_list: List of external data items
             external_schema: Optional external schema
             internal_schema: Internal schema
             field_mappings: Field mappings to use
-            
+
         Returns:
             List[ConversionResult]: Results for each item
         """
@@ -254,14 +254,14 @@ def create_internal_schema_converter(strategy: str='lenient', preserve_unknown: 
 
 def convert_to_internal_schema(external_data: Dict[str, Any], internal_schema_def: Dict[str, Any], field_mappings: Optional[List[Dict[str, Any]]]=None, external_schema: Optional[Dict[str, Any]]=None, strategy: str='lenient') -> Dict[str, Any]:
     """Convert data to internal schema format.
-    
+
     Args:
         external_data: External data to convert
         internal_schema_def: Internal schema definition
         field_mappings: Optional field mappings
         external_schema: Optional external schema
         strategy: Conversion strategy
-        
+
     Returns:
         Dict: Conversion result
     """
@@ -275,4 +275,3 @@ def convert_to_internal_schema(external_data: Dict[str, Any], internal_schema_de
         mappings = converter.auto_generate_mappings(external_schema, internal_schema)
     result = converter.convert_to_internal(external_data, external_schema, internal_schema, mappings)
     return {'internal_schema': {'name': result.internal_schema.name, 'version': result.internal_schema.version, 'namespace': result.internal_schema.namespace}, 'converted_data': result.converted_data, 'field_mappings': [{'external_path': m.external_path, 'internal_path': m.internal_path, 'type_conversion': m.type_conversion, 'required': m.required} for m in result.field_mappings], 'errors': result.errors, 'warnings': result.warnings, 'metadata': result.metadata}
-

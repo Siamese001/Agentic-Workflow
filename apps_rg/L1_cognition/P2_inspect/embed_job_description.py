@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Embed Job Description - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class EmbedJobDescription:
     """EmbedJobDescription implementation."""

@@ -53,4 +53,3 @@ class ToolExecutionResult:
     error: Optional[str] = None
     warnings: List[str] = field(default_factory=list)
     execution_time: float = 0.0
-

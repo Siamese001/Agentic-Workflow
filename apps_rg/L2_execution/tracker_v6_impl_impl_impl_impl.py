@@ -193,4 +193,3 @@ def create_provenance_source(source_type: ProvenanceType, source_text: str, sour
     if source_id is None:
         source_id = hashlib.md5(source_text.encode()).hexdigest()[:8]
     return ProvenanceSource(source_type=source_type, source_id=source_id, source_text=source_text, confidence=confidence, timestamp=datetime.now())
-

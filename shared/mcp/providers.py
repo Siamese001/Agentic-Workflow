@@ -6,7 +6,6 @@ Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 from enum import Enum
 from typing import Dict, Optional
 
-
 class ProviderType(Enum):
     """Supported MCP provider types."""
     STUB = "stub"
@@ -20,7 +19,6 @@ class ProviderType(Enum):
     HTTP = "http"
     CUSTOM = "custom"
 
-
 DEFAULT_PROVIDER_MODULES: Dict[str, str] = {
     "stub": None,
     "redis": "redis",
@@ -32,7 +30,6 @@ DEFAULT_PROVIDER_MODULES: Dict[str, str] = {
     "google": "google.generativeai",
     "http": "httpx",
 }
-
 
 DEFAULT_PROVIDER_CLASSES: Dict[str, str] = {
     "stub": "MCPClientStub",
@@ -46,30 +43,27 @@ DEFAULT_PROVIDER_CLASSES: Dict[str, str] = {
     "http": "Client",
 }
 
-
 def get_default_module(provider: str) -> Optional[str]:
     """Get default module name for a provider.
-    
+
     Args:
         provider: Provider type string
-        
+
     Returns:
         Module name or None if stub
     """
     return DEFAULT_PROVIDER_MODULES.get(provider.lower())
 
-
 def get_default_class(provider: str) -> Optional[str]:
     """Get default class name for a provider.
-    
+
     Args:
         provider: Provider type string
-        
+
     Returns:
         Class name or None
     """
     return DEFAULT_PROVIDER_CLASSES.get(provider.lower())
-
 
 def register_provider(
     provider: str,
@@ -77,7 +71,7 @@ def register_provider(
     class_name: str,
 ) -> None:
     """Register a custom provider mapping.
-    
+
     Args:
         provider: Provider identifier
         module: Python module path

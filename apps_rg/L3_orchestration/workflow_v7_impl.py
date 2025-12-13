@@ -256,4 +256,3 @@ def load_workflow_spec(spec_path: Path) -> WorkflowSpec:
     orchestrator = RGWorkflowOrchestrator()
     orchestrator.load_spec_from_file(spec_path)
     return orchestrator.spec
-

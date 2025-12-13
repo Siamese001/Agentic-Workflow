@@ -213,4 +213,3 @@ def main() -> None:
         json.dump(results, f, indent=2)
     failed = sum((1 for r in results if r['test_results'] == 'FAIL'))
     return 1 if failed > 0 else 0
-

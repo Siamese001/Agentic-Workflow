@@ -18,7 +18,6 @@ class Workflow:
     data: Dict[str, object] = field(default_factory=dict)
     checkpoints: List[Dict] = field(default_factory=list)
 
-
 class TestWorkflowStateIntegration:
     """Integration tests for workflow state."""
 
@@ -71,7 +70,6 @@ class TestWorkflowStateIntegration:
 
         assert wf2.data["value"] == 2  # Unchanged
 
-
 class TestWorkflowPersistenceIntegration:
     """Integration tests for workflow persistence."""
 
@@ -102,7 +100,6 @@ class TestWorkflowPersistenceIntegration:
         storage["wf_001"].state = WorkflowState.COMPLETED
 
         assert storage["wf_001"].state == WorkflowState.COMPLETED
-
 
 class TestWorkflowOrchestrationIntegration:
     """Integration tests for workflow orchestration."""

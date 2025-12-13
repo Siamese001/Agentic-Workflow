@@ -68,7 +68,6 @@ class TestPromptTemplateManagement:
         )
         assert v1.version != v2.version
 
-
 class TestPromptValidation:
     """Tests for prompt validation."""
 
@@ -106,7 +105,6 @@ class TestPromptValidation:
         required_sections = ["Context", "Task"]
         has_all = all(section in prompt for section in required_sections)
         assert has_all is True
-
 
 class TestPromptComposition:
     """Tests for prompt composition."""
@@ -154,7 +152,6 @@ class TestPromptComposition:
         c1 = template.format(name="World")
         c2 = template.format(name="World")
         assert c1 == c2
-
 
 class TestPromptSanitization:
     """Tests for prompt sanitization."""

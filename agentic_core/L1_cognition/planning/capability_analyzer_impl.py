@@ -5,7 +5,7 @@ from .capability_analyzer_types import *
 
 class CapabilityAnalyzer:
     """Analyzes capability gaps and generates improvement recommendations.
-    
+
     Features:
     - Failure pattern analysis
     - Capability gap identification
@@ -16,7 +16,7 @@ class CapabilityAnalyzer:
 
     def __init__(self, enable_logging: bool=True):
         """Initialize capability analyzer.
-        
+
         Args:
             enable_logging: Enable logging
         """
@@ -28,11 +28,11 @@ class CapabilityAnalyzer:
 
     def analyze_failures(self, agent_id: str, failure_reports: List[Dict[str, Any]]) -> List[CapabilityGap]:
         """Analyze failure reports to identify capability gaps.
-        
+
         Args:
             agent_id: Agent identifier
             failure_reports: List of failure reports
-            
+
         Returns:
             List of identified capability gaps
         """
@@ -51,11 +51,11 @@ class CapabilityAnalyzer:
 
     def generate_recommendations(self, agent_id: str, gaps: List[CapabilityGap]) -> List[Recommendation]:
         """Generate improvement recommendations for capability gaps.
-        
+
         Args:
             agent_id: Agent identifier
             gaps: Identified capability gaps
-            
+
         Returns:
             List of recommendations
         """
@@ -73,11 +73,11 @@ class CapabilityAnalyzer:
 
     def create_analysis_report(self, agent_id: str, failure_reports: List[Dict[str, Any]]) -> AnalysisReport:
         """Create complete capability gap analysis report.
-        
+
         Args:
             agent_id: Agent identifier
             failure_reports: List of failure reports
-            
+
         Returns:
             AnalysisReport
         """
@@ -90,10 +90,10 @@ class CapabilityAnalyzer:
 
     def _identify_failure_patterns(self, failure_reports: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
         """Identify common failure patterns.
-        
+
         Args:
             failure_reports: List of failure reports
-            
+
         Returns:
             Dict mapping pattern type to failures
         """
@@ -117,12 +117,12 @@ class CapabilityAnalyzer:
 
     def _create_gap_from_pattern(self, agent_id: str, pattern_type: str, failures: List[Dict[str, Any]]) -> Optional[CapabilityGap]:
         """Create capability gap from failure pattern.
-        
+
         Args:
             agent_id: Agent identifier
             pattern_type: Pattern type
             failures: Failures matching pattern
-            
+
         Returns:
             CapabilityGap or None
         """
@@ -139,10 +139,10 @@ class CapabilityAnalyzer:
 
     def _generate_recommendations_for_gap(self, gap: CapabilityGap) -> List[Recommendation]:
         """Generate recommendations for a specific gap.
-        
+
         Args:
             gap: Capability gap
-            
+
         Returns:
             List of recommendations
         """
@@ -164,10 +164,10 @@ class CapabilityAnalyzer:
 
     def _calculate_health_score(self, gaps: List[CapabilityGap]) -> float:
         """Calculate overall health score.
-        
+
         Args:
             gaps: List of capability gaps
-            
+
         Returns:
             Health score (0.0-1.0)
         """
@@ -180,9 +180,8 @@ class CapabilityAnalyzer:
 
 def create_capability_analyzer() -> CapabilityAnalyzer:
     """Factory function to create capability analyzer.
-    
+
     Returns:
         CapabilityAnalyzer instance
     """
     return CapabilityAnalyzer()
-

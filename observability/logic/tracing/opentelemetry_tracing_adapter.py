@@ -24,7 +24,6 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-
 class SpanType(Enum):
     """Types of execution spans."""
     ORCHESTRATOR = "orchestrator"
@@ -34,7 +33,6 @@ class SpanType(Enum):
     DAG_NODE = "dag_node"
     REASONING = "reasoning"
 
-
 @dataclass
 class SpanMetadata:
     """Metadata attached to a span."""
@@ -42,7 +40,7 @@ class SpanMetadata:
     component: str
     layer: str
     attributes: Dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for span attributes."""
         return {
@@ -51,7 +49,6 @@ class SpanMetadata:
             "layer": self.layer,
             **self.attributes,
         }
-
 
 @dataclass
 class CostMetrics:
@@ -62,7 +59,7 @@ class CostMetrics:
     estimated_cost_usd: float = 0.0
     model: str = "unknown"
     latency_ms: float = 0.0
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -74,7 +71,6 @@ class CostMetrics:
             "llm.latency_ms": self.latency_ms,
         }
 
-
 @dataclass
 class ResilienceMetrics:
     """Resilience metrics for action execution."""
@@ -83,7 +79,7 @@ class ResilienceMetrics:
     rate_limit_status: str = "OK"
     backoff_ms: float = 0.0
     success: bool = True
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -94,23 +90,22 @@ class ResilienceMetrics:
             "resilience.success": self.success,
         }
 
-
 class OpenTelemetryTracingAdapter:
     """Full OpenTelemetry tracing adapter for agentic execution.
-    
+
     Provides hierarchical tracing:
     - Orchestrator span (root) - Full agent run
     - Cognitive spans - Think/reasoning phases
     - Action spans - Tool execution phases
     - Tool spans - Individual tool calls
     - DAG node spans - Workflow task execution
-    
+
     Integrates with Phase 1 components:
     - TokenBudget for cost tracking
     - ErrorRecoveryManager for resilience metrics
     - ReActEngine for reasoning traces
     """
-    
+
     def __init__(
         self,
         service_name: str = "agentic-workflow",
@@ -118,7 +113,7 @@ class OpenTelemetryTracingAdapter:
         enable_logging: bool = True,
     ):
         """Initialize tracing adapter.
-        
+
         Args:
             service_name: Name of the service for tracing
             enable_console_export: Export spans to console
@@ -126,21 +121,21 @@ class OpenTelemetryTracingAdapter:
         """
         self.service_name = service_name
         self.enable_logging = enable_logging
-        
+
         if OTEL_AVAILABLE:
             # Create tracer provider
             resource = Resource.create({"service.name": service_name})
             provider = TracerProvider(resource=resource)
-            
+
             # Add console exporter if enabled
             if enable_console_export:
                 processor = BatchSpanProcessor(ConsoleSpanExporter())
                 provider.add_span_processor(processor)
-            
+
             trace.set_tracer_provider(provider)
             self.tracer = trace.get_tracer(__name__)
             self._enabled = True
-            
+
             if self.enable_logging:
                 logger.info(
                     "opentelemetry_initialized",
@@ -149,13 +144,13 @@ class OpenTelemetryTracingAdapter:
         else:
             self.tracer = None
             self._enabled = False
-            
+
             if self.enable_logging:
                 logger.warning(
                     "opentelemetry_not_available",
                     extra={"message": "Install opentelemetry-api and opentelemetry-sdk"}
                 )
-    
+
     @contextmanager
     def trace_orchestrator(
         self,
@@ -163,11 +158,11 @@ class OpenTelemetryTracingAdapter:
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """Trace orchestrator execution (L3 - Root span).
-        
+
         Args:
             mission: Mission being executed
             metadata: Additional metadata
-            
+
         Yields:
             Span context
         """
@@ -180,13 +175,13 @@ class OpenTelemetryTracingAdapter:
                 **(metadata or {}),
             }
         )
-        
+
         with self._create_span(
             name="orchestrator.execute",
             metadata=span_metadata,
         ) as span:
             yield span
-    
+
     @contextmanager
     def trace_cognitive(
         self,
@@ -196,13 +191,13 @@ class OpenTelemetryTracingAdapter:
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """Trace cognitive plane execution (L1 - Think phase).
-        
+
         Args:
             task: Task being planned
             reasoning_mode: Reasoning mode (react, cot, etc.)
             cost_metrics: Token and cost metrics
             metadata: Additional metadata
-            
+
         Yields:
             Span context
         """
@@ -211,24 +206,24 @@ class OpenTelemetryTracingAdapter:
             "reasoning.mode": reasoning_mode,
             **(metadata or {}),
         }
-        
+
         # Add cost metrics if provided
         if cost_metrics:
             attributes.update(cost_metrics.to_dict())
-        
+
         span_metadata = SpanMetadata(
             span_type=SpanType.COGNITIVE,
             component="CognitivePlane",
             layer="L1_Cognition",
             attributes=attributes,
         )
-        
+
         with self._create_span(
             name="cognitive.think",
             metadata=span_metadata,
         ) as span:
             yield span
-    
+
     @contextmanager
     def trace_action(
         self,
@@ -237,12 +232,12 @@ class OpenTelemetryTracingAdapter:
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """Trace action plane execution (L2 - Act phase).
-        
+
         Args:
             action_count: Number of actions being executed
             resilience_metrics: Resilience metrics
             metadata: Additional metadata
-            
+
         Yields:
             Span context
         """
@@ -250,24 +245,24 @@ class OpenTelemetryTracingAdapter:
             "action.count": action_count,
             **(metadata or {}),
         }
-        
+
         # Add resilience metrics if provided
         if resilience_metrics:
             attributes.update(resilience_metrics.to_dict())
-        
+
         span_metadata = SpanMetadata(
             span_type=SpanType.ACTION,
             component="ActionPlane",
             layer="L2_Execution",
             attributes=attributes,
         )
-        
+
         with self._create_span(
             name="action.execute",
             metadata=span_metadata,
         ) as span:
             yield span
-    
+
     @contextmanager
     def trace_tool(
         self,
@@ -277,13 +272,13 @@ class OpenTelemetryTracingAdapter:
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """Trace individual tool execution (L2 - Leaf span).
-        
+
         Args:
             tool_name: Name of the tool
             parameters: Tool parameters
             resilience_metrics: Resilience metrics
             metadata: Additional metadata
-            
+
         Yields:
             Span context
         """
@@ -292,24 +287,24 @@ class OpenTelemetryTracingAdapter:
             "tool.parameters": str(parameters or {}),
             **(metadata or {}),
         }
-        
+
         # Add resilience metrics if provided
         if resilience_metrics:
             attributes.update(resilience_metrics.to_dict())
-        
+
         span_metadata = SpanMetadata(
             span_type=SpanType.TOOL,
             component=f"Tool.{tool_name}",
             layer="L2_Execution",
             attributes=attributes,
         )
-        
+
         with self._create_span(
             name=f"tool.{tool_name}",
             metadata=span_metadata,
         ) as span:
             yield span
-    
+
     @contextmanager
     def trace_dag_node(
         self,
@@ -319,13 +314,13 @@ class OpenTelemetryTracingAdapter:
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """Trace DAG node execution (Pillar 4).
-        
+
         Args:
             task_id: Task ID
             task_type: Task type
             dependencies: Task dependencies
             metadata: Additional metadata
-            
+
         Yields:
             Span context
         """
@@ -340,13 +335,13 @@ class OpenTelemetryTracingAdapter:
                 **(metadata or {}),
             }
         )
-        
+
         with self._create_span(
             name=f"dag.task.{task_id}",
             metadata=span_metadata,
         ) as span:
             yield span
-    
+
     @contextmanager
     def trace_reasoning(
         self,
@@ -355,12 +350,12 @@ class OpenTelemetryTracingAdapter:
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """Trace reasoning step (ReAct integration).
-        
+
         Args:
             step_number: Step number in reasoning trace
             step_type: Type of step (think, action, observation)
             metadata: Additional metadata
-            
+
         Yields:
             Span context
         """
@@ -374,13 +369,13 @@ class OpenTelemetryTracingAdapter:
                 **(metadata or {}),
             }
         )
-        
+
         with self._create_span(
             name=f"reasoning.step.{step_number}",
             metadata=span_metadata,
         ) as span:
             yield span
-    
+
     @contextmanager
     def _create_span(
         self,
@@ -388,11 +383,11 @@ class OpenTelemetryTracingAdapter:
         metadata: SpanMetadata,
     ):
         """Create a span with metadata.
-        
+
         Args:
             name: Span name
             metadata: Span metadata
-            
+
         Yields:
             Span or None if tracing disabled
         """
@@ -400,20 +395,20 @@ class OpenTelemetryTracingAdapter:
             # Tracing disabled, yield None
             yield None
             return
-        
+
         start_time = time.time()
-        
+
         with self.tracer.start_as_current_span(name) as span:
             # Set attributes
             for key, value in metadata.to_dict().items():
                 span.set_attribute(key, value)
-            
+
             try:
                 yield span
-                
+
                 # Mark as successful
                 span.set_status(Status(StatusCode.OK))
-                
+
                 if self.enable_logging:
                     logger.debug(
                         "span_completed",
@@ -423,12 +418,12 @@ class OpenTelemetryTracingAdapter:
                             "duration_ms": (time.time() - start_time) * 1000,
                         }
                     )
-            
+
             except Exception as e:
                 # Mark as failed
                 span.set_status(Status(StatusCode.ERROR, str(e)))
                 span.record_exception(e)
-                
+
                 if self.enable_logging:
                     logger.error(
                         "span_failed",
@@ -438,12 +433,12 @@ class OpenTelemetryTracingAdapter:
                         },
                         exc_info=True,
                     )
-                
+
                 raise
-    
+
     def add_event(self, span: Any, name: str, attributes: Optional[Dict[str, Any]] = None):
         """Add an event to a span.
-        
+
         Args:
             span: Span to add event to
             name: Event name
@@ -451,10 +446,10 @@ class OpenTelemetryTracingAdapter:
         """
         if span and self._enabled:
             span.add_event(name, attributes=attributes or {})
-    
+
     def set_attribute(self, span: Any, key: str, value: Any):
         """Set an attribute on a span.
-        
+
         Args:
             span: Span to set attribute on
             key: Attribute key
@@ -462,43 +457,40 @@ class OpenTelemetryTracingAdapter:
         """
         if span and self._enabled:
             span.set_attribute(key, value)
-    
+
     def is_enabled(self) -> bool:
         """Check if tracing is enabled.
-        
+
         Returns:
             True if tracing is enabled
         """
         return self._enabled
 
-
 # Global tracer instance
 _global_tracer: Optional[OpenTelemetryTracingAdapter] = None
-
 
 def get_tracer(
     service_name: str = "agentic-workflow",
     enable_console_export: bool = False,
 ) -> OpenTelemetryTracingAdapter:
     """Get or create global tracer instance.
-    
+
     Args:
         service_name: Service name
         enable_console_export: Enable console export
-        
+
     Returns:
         OpenTelemetryTracingAdapter instance
     """
     global _global_tracer
-    
+
     if _global_tracer is None:
         _global_tracer = OpenTelemetryTracingAdapter(
             service_name=service_name,
             enable_console_export=enable_console_export,
         )
-    
-    return _global_tracer
 
+    return _global_tracer
 
 def reset_tracer():
     """Reset global tracer instance."""

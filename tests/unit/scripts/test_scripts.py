@@ -48,7 +48,6 @@ class TestScriptUtilities:
         assert value == "test_value"
         del os.environ["TEST_VAR"]
 
-
 class TestPathOperations:
     """Tests for path manipulation."""
 
@@ -81,7 +80,6 @@ class TestPathOperations:
         """Nominal: Path existence check."""
         path = Path(".")
         assert path.exists() is True
-
 
 class TestConfigurationLoading:
     """Tests for configuration loading."""
@@ -118,7 +116,6 @@ class TestConfigurationLoading:
         value = os.environ.get("LIST_VAR", "").split(",")
         assert value == ["a", "b", "c"]
         del os.environ["LIST_VAR"]
-
 
 class TestErrorHandling:
     """Tests for script error handling."""

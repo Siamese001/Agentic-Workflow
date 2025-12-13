@@ -67,4 +67,3 @@ class StateSnapshot(Generic[T]):
         if self.transition:
             data['transition'] = {'operation': self.transition.operation.value, 'path': str(self.transition.path), 'value': self.transition.value}
         return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
-

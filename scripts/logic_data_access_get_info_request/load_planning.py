@@ -13,14 +13,12 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class LoadStrategy(Enum):
     """Strategies for loading data."""
     BATCH_LOAD = "batch_load"
     STREAMING_LOAD = "streaming_load"
     INCREMENTAL_LOAD = "incremental_load"
     FULL_REFRESH = "full_refresh"
-
 
 class DataSourceType(Enum):
     """Types of data sources."""
@@ -30,7 +28,6 @@ class DataSourceType(Enum):
     STREAM = "stream"
     CLOUD_STORAGE = "cloud_storage"
 
-
 class DataFormat(Enum):
     """Supported data formats."""
     JSON = "json"
@@ -38,7 +35,6 @@ class DataFormat(Enum):
     PARQUET = "parquet"
     XML = "xml"
     BINARY = "binary"
-
 
 @dataclass
 class LoadSource:
@@ -51,7 +47,6 @@ class LoadSource:
     credentials: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
 class LoadTransformation:
     """Definition of a data transformation during load."""
@@ -60,7 +55,6 @@ class LoadTransformation:
     transformation_type: str  # filter, map, reduce, aggregate
     parameters: Dict[str, Any] = field(default_factory=dict)
     conditions: List[str] = field(default_factory=list)
-
 
 @dataclass
 class LoadPlan:
@@ -77,7 +71,6 @@ class LoadPlan:
     timeout_seconds: int = 300
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
 class LoadPlanningConfig:
     """Configuration for load planning operations."""
@@ -87,7 +80,6 @@ class LoadPlanningConfig:
     max_sources_per_plan: int = 10
     default_batch_size: int = 1000
     log_level: str = "INFO"
-
 
 @dataclass
 class LoadPlanningResult:
@@ -101,7 +93,6 @@ class LoadPlanningResult:
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 class ScriptsLoadPlanner:
     """Planner for scripts data loading operations."""
 
@@ -112,37 +103,37 @@ class ScriptsLoadPlanner:
 
     def plan_load(self, load_request: Dict[str, Any]) -> LoadPlanningResult:
         """Plan data loading operations.
-        
+
         Args:
             load_request: Dictionary containing load requirements and sources
-            
+
         Returns:
             LoadPlanningResult: Complete planning result with load plan
         """
         self.logger.info(f"Starting load planning for: {load_request.get('plan_name', 'unknown')}")
-        
+
         try:
             # Validate input request
             self._validate_request(load_request)
-            
+
             # Parse load sources
             sources = self._parse_sources(load_request)
-            
+
             # Parse transformations
             transformations = self._parse_transformations(load_request)
-            
+
             # Create load plan
             load_plan = self._create_load_plan(load_request, sources, transformations)
-            
+
             # Estimate duration
             estimated_duration = self._estimate_load_duration(load_plan)
-            
+
             # Estimate data volume
             data_volume = self._estimate_data_volume(load_plan)
-            
+
             # Calculate resource requirements
             resource_requirements = self._calculate_resource_requirements(load_plan)
-            
+
             result = LoadPlanningResult(
                 success=True,
                 load_plan=load_plan,
@@ -156,10 +147,10 @@ class ScriptsLoadPlanner:
                     "planner": "ScriptsLoadPlanner"
                 }
             )
-            
+
             self.logger.info(f"Successfully planned load: {len(sources)} sources, {estimated_duration}s estimated")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Load planning failed: {str(e)}")
             return LoadPlanningResult(
@@ -175,10 +166,10 @@ class ScriptsLoadPlanner:
         """Validate load planning request."""
         if not request:
             raise ValueError("Load planning request cannot be empty")
-        
+
         if "plan_name" not in request:
             raise ValueError("Plan name is required in load planning request")
-        
+
         if "sources" not in request:
             raise ValueError("Sources are required in load planning request")
 
@@ -186,7 +177,7 @@ class ScriptsLoadPlanner:
         """Parse load sources from request."""
         sources = []
         raw_sources = request.get("sources", [])
-        
+
         for raw_source in raw_sources:
             if isinstance(raw_source, dict):
                 # Map strings to enums
@@ -197,7 +188,7 @@ class ScriptsLoadPlanner:
                     "stream": DataSourceType.STREAM,
                     "cloud_storage": DataSourceType.CLOUD_STORAGE
                 }
-                
+
                 format_mapping = {
                     "json": DataFormat.JSON,
                     "csv": DataFormat.CSV,
@@ -205,7 +196,7 @@ class ScriptsLoadPlanner:
                     "xml": DataFormat.XML,
                     "binary": DataFormat.BINARY
                 }
-                
+
                 source = LoadSource(
                     id=raw_source.get("id", f"source_{len(sources)}"),
                     name=raw_source.get("name", "unnamed"),
@@ -222,21 +213,21 @@ class ScriptsLoadPlanner:
                     metadata=raw_source.get("metadata", {})
                 )
                 sources.append(source)
-        
+
         # Validate source count
         if len(sources) > self.config.max_sources_per_plan:
             raise ValueError(
                 f"Number of sources ({len(sources)}) exceeds maximum "
                 f"({self.config.max_sources_per_plan})"
             )
-        
+
         return sources
 
     def _parse_transformations(self, request: Dict[str, Any]) -> List[LoadTransformation]:
         """Parse load transformations from request."""
         transformations = []
         raw_transformations = request.get("transformations", [])
-        
+
         for raw_transform in raw_transformations:
             if isinstance(raw_transform, dict):
                 transformation = LoadTransformation(
@@ -247,13 +238,13 @@ class ScriptsLoadPlanner:
                     conditions=raw_transform.get("conditions", [])
                 )
                 transformations.append(transformation)
-        
+
         return transformations
 
     def _create_load_plan(
-        self, 
-        request: Dict[str, Any], 
-        sources: List[LoadSource], 
+        self,
+        request: Dict[str, Any],
+        sources: List[LoadSource],
         transformations: List[LoadTransformation]
     ) -> LoadPlan:
         """Create load plan from request, sources, and transformations."""
@@ -264,12 +255,12 @@ class ScriptsLoadPlanner:
             "incremental_load": LoadStrategy.INCREMENTAL_LOAD,
             "full_refresh": LoadStrategy.FULL_REFRESH
         }
-        
+
         load_strategy = strategy_mapping.get(
             request.get("load_strategy", "batch_load"),
             LoadStrategy.BATCH_LOAD
         )
-        
+
         return LoadPlan(
             id=request.get("plan_id", f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"),
             name=request.get("plan_name", "unnamed_plan"),
@@ -287,27 +278,27 @@ class ScriptsLoadPlanner:
     def _estimate_load_duration(self, plan: LoadPlan) -> int:
         """Estimate load duration in seconds."""
         base_duration = 10  # Base setup time
-        
+
         # Add time based on number of sources
         source_duration = len(plan.sources) * 30
-        
+
         # Add time based on transformations
         transform_duration = len(plan.transformations) * 15
-        
+
         # Add time based on batch size (inverse relationship)
         batch_factor = max(1, 1000 / plan.batch_size)
-        
+
         # Add time based on parallel workers (inverse relationship)
         parallel_factor = max(0.5, 1 / plan.parallel_workers)
-        
+
         total_duration = (base_duration + source_duration + transform_duration) * batch_factor * parallel_factor
-        
+
         return int(total_duration)
 
     def _estimate_data_volume(self, plan: LoadPlan) -> int:
         """Estimate data volume in bytes."""
         total_volume = 0
-        
+
         for source in plan.sources:
             # Simple estimation based on source type and format
             if source.source_type == DataSourceType.FILE_SYSTEM:
@@ -321,7 +312,7 @@ class ScriptsLoadPlanner:
                 total_volume += 5 * 1024 * 1024  # 5MB estimate
             elif source.source_type == DataSourceType.API:
                 total_volume += 1024 * 1024  # 1MB estimate
-            
+
         return total_volume
 
     def _calculate_resource_requirements(self, plan: LoadPlan) -> Dict[str, Any]:
@@ -332,25 +323,24 @@ class ScriptsLoadPlanner:
             "disk_mb": self._estimate_data_volume(plan) // (1024 * 1024),
             "network_bandwidth": 0
         }
-        
+
         # Adjust based on parallel workers
         requirements["cpu_cores"] = plan.parallel_workers
         requirements["memory_mb"] = 512 * plan.parallel_workers
-        
+
         # Adjust based on data volume
         if requirements["disk_mb"] > 1000:
             requirements["memory_mb"] = min(requirements["memory_mb"], 2048)
-        
+
         # Network requirements for remote sources
         remote_sources = [
-            s for s in plan.sources 
+            s for s in plan.sources
             if s.source_type in [DataSourceType.API, DataSourceType.CLOUD_STORAGE, DataSourceType.DATABASE]
         ]
         if remote_sources:
             requirements["network_bandwidth"] = len(remote_sources) * 10  # 10 Mbps per remote source
-        
-        return requirements
 
+        return requirements
 
 # Factory function for easy instantiation
 def create_scripts_load_planner(
@@ -365,7 +355,6 @@ def create_scripts_load_planner(
     )
     return ScriptsLoadPlanner(config)
 
-
 # Convenience function for direct usage
 def plan_scripts_load(
     plan_name: str,
@@ -375,14 +364,14 @@ def plan_scripts_load(
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Plan scripts data load from simple parameters.
-    
+
     Args:
         plan_name: Name of the load plan
         sources: List of data source definitions
         load_strategy: Load strategy (batch_load, streaming_load, incremental_load, full_refresh)
         transformations: Optional list of transformation definitions
         config: Optional planner configuration overrides
-        
+
     Returns:
         Dict: Planning result with load plan and resource requirements
     """
@@ -393,12 +382,12 @@ def plan_scripts_load(
         "load_strategy": load_strategy,
         "transformations": transformations or []
     }
-    
+
     # Create planner and execute
     planner_config = LoadPlanningConfig(**config) if config else None
     planner = ScriptsLoadPlanner(planner_config)
     result = planner.plan_load(request)
-    
+
     # Convert result to dict for JSON serialization
     return {
         "success": result.success,

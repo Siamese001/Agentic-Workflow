@@ -8,4 +8,3 @@ class RecipientArchetype(Enum):
     EXECUTIVE = 'EXECUTIVE'
     SENIOR_TA = 'SENIOR_TA'
     RECRUITER = 'RECRUITER'
-

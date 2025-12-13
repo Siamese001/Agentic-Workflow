@@ -36,37 +36,36 @@ from .schema_definitions import (
 
 logger = logging.getLogger(__name__)
 
-
 class DataSourceProvider:
     """Interface for external data sources used by executive agents."""
-    
+
     def __init__(self, brave_search_tool=None):
         """Initialize with optional search tool.
-        
+
         Args:
             brave_search_tool: Optional HardenedBraveSearch instance
         """
         self.brave_search = brave_search_tool
         self.logger = logging.getLogger("DataSourceProvider")
-    
+
     async def search_engineering_blog(self, company_name: str) -> str:
         """Search for company's engineering blog posts.
-        
+
         Args:
             company_name: Company to search for
-            
+
         Returns:
             Aggregated blog content
         """
         if not self.brave_search:
             return f"[MOCK] Engineering blog content for {company_name}: Recent posts mention migration to microservices..."
-        
+
         queries = [
             f"{company_name} engineering blog",
             f"{company_name} technical blog architecture",
             f"{company_name} engineering posts 2023 2024"
         ]
-        
+
         results = []
         for query in queries:
             try:
@@ -76,86 +75,85 @@ class DataSourceProvider:
                         results.append(f"Title: {item['title']}\nSnippet: {item['description']}")
             except Exception as e:
                 self.logger.error(f"Search failed for {query}: {e}")
-        
+
         return "\n\n".join(results) if results else f"No engineering blog found for {company_name}"
-    
+
     async def scan_github_organization(self, company_name: str) -> str:
         """Scan company's GitHub for tech insights.
-        
+
         Args:
             company_name: Company to scan
-            
+
         Returns:
             Technology insights from GitHub
         """
         if not self.brave_search:
             return f"[MOCK] GitHub scan for {company_name}: Primary repos use Python, React, Kubernetes..."
-        
+
         query = f"site:github.com {company_name} organization repositories"
-        
+
         try:
             search_result = await self.brave_search.execute_search(query, count=5)
-            
+
             if search_result.get("results"):
                 insights = []
                 for item in search_result["results"]:
                     insights.append(f"Repo: {item['title']}\n{item['description']}")
                 return "\n\n".join(insights)
-            
+
         except Exception as e:
             self.logger.error(f"GitHub scan failed: {e}")
-        
+
         return f"No GitHub organization found for {company_name}"
-    
+
     async def get_interviewer_profile(self, linkedin_url: str) -> str:
         """Get interviewer's professional background.
-        
+
         Args:
             linkedin_url: LinkedIn profile URL
-            
+
         Returns:
             Professional background and interests
         """
         if not self.brave_search:
             return "[MOCK] Interviewer profile: 15 years at company, technical background, loves system design..."
-        
+
         # Extract name from URL if possible
         name = linkedin_url.split('/')[-1] if linkedin_url else "unknown"
-        
+
         query = f'"{name}" {linkedin_url} background experience interests'
-        
+
         try:
             search_result = await self.brave_search.execute_search(query, count=3)
-            
+
             if search_result.get("results"):
                 profile_info = []
                 for item in search_result["results"]:
                     profile_info.append(item['description'])
                 return " ".join(profile_info)
-            
+
         except Exception as e:
             self.logger.error(f"Profile search failed: {e}")
-        
-        return f"Limited profile information available for {name}"
 
+        return f"Limited profile information available for {name}"
 
 class ExecutiveAgentOrchestrator:
     """
     Orchestrates executive strategy agents with structured output.
-    
+
     Uses Instructor for reliable structured output and integrates
     with the hardened infrastructure for resilience.
     """
-    
+
     def __init__(self, data_source_provider: Optional[DataSourceProvider] = None):
         """Initialize the orchestrator.
-        
+
         Args:
             data_source_provider: Optional data source provider
         """
         self.data_sources = data_source_provider or DataSourceProvider()
         self.schema_registry = get_executive_schema_registry()
-        
+
         # Initialize LLM clients with Instructor if available
         if INSTRUCTOR_AVAILABLE:
             self._initialize_clients()
@@ -163,7 +161,7 @@ class ExecutiveAgentOrchestrator:
             self.openai_client = None
             self.anthropic_client = None
             logger.warning("Running in mock mode - install instructor for full functionality")
-        
+
         # Statistics
         self.stats = {
             "k11_executions": 0,
@@ -172,9 +170,9 @@ class ExecutiveAgentOrchestrator:
             "total_cost_estimate": 0.0,
             "total_tokens_used": 0
         }
-        
+
         self.logger = logging.getLogger("ExecutiveAgentOrchestrator")
-    
+
     def _initialize_clients(self):
         """Initialize LLM clients with Instructor patching."""
         try:
@@ -182,35 +180,35 @@ class ExecutiveAgentOrchestrator:
             openai_key = os.getenv("OPENAI_API_KEY")
             if openai_key:
                 self.openai_client = instructor.patch(OpenAI(api_key=openai_key))
-            
+
             # Initialize Anthropic client
             anthropic_key = os.getenv("ANTHROPIC_API_KEY")
             if anthropic_key:
                 self.anthropic_client = instructor.from_anthropic(Anthropic(api_key=anthropic_key))
-            
+
             if not self.openai_client and not self.anthropic_client:
                 raise ValueError("No API keys found for OpenAI or Anthropic")
-                
+
         except Exception as e:
             self.logger.error(f"Failed to initialize clients: {e}")
             self.openai_client = None
             self.anthropic_client = None
-    
+
     def _get_client_and_model(self, node_config: Dict[str, Any]):
         """Get appropriate client and model based on configuration.
-        
+
         Args:
             node_config: Node configuration with infrastructure settings
-            
+
         Returns:
             Tuple of (client, model_name)
         """
         infra = node_config.get("infrastructure_config", {})
         model = infra.get("primary_model", "gpt-4o")
-        
+
         if not INSTRUCTOR_AVAILABLE:
             return None, model
-        
+
         # Route to appropriate client
         if "claude" in model.lower() and self.anthropic_client:
             return self.anthropic_client, model
@@ -218,7 +216,7 @@ class ExecutiveAgentOrchestrator:
             return self.openai_client, model
         else:
             raise ValueError(f"No client available for model: {model}")
-    
+
     async def execute_k11_shadow_audit(
         self,
         company_name: str,
@@ -226,33 +224,33 @@ class ExecutiveAgentOrchestrator:
     ) -> TechnicalSWOT:
         """
         K.11: Technical Due Diligence (Shadow Audit)
-        
+
         Analyzes target company's engineering blog, GitHub, and leadership
         interviews to infer technical maturity and debt.
-        
+
         Args:
             company_name: Target company name
             config: Node configuration
-            
+
         Returns:
             TechnicalSWOT analysis
         """
         self.logger.info(f"Executing K.11 Shadow Audit for {company_name}")
         self.stats["k11_executions"] += 1
-        
+
         # Gather external data
         blog_content = await self.data_sources.search_engineering_blog(company_name)
         github_insights = await self.data_sources.scan_github_organization(company_name)
-        
+
         # Combine search context
         search_context = f"""
         Engineering Blog Analysis:
         {blog_content}
-        
+
         GitHub Organization Insights:
         {github_insights}
         """
-        
+
         if not INSTRUCTOR_AVAILABLE:
             # Return mock response
             return TechnicalSWOT(
@@ -287,31 +285,31 @@ class ExecutiveAgentOrchestrator:
                 gen_ai_maturity_score=2,
                 strategic_opportunity="Lead migration to modern MLOps stack with automated CI/CD"
             )
-        
+
         # Execute with structured output
         client, model = self._get_client_and_model(config)
         temperature = config["infrastructure_config"].get("temperature_override", 0.2)
-        
+
         system_prompt = f"""
         You are a Technical Due Diligence Officer performing a 'Shadow Audit' of {company_name}.
-        
+
         Your mission: Reconstruct the unstated technical reality from public signals.
-        
+
         Analyze the provided search results to infer:
         1. Their ACTUAL technology stack (not what marketing claims)
         2. Technical debt and bottlenecks (read between the lines)
         3. Real AI/ML maturity vs buzzword compliance
         4. The ONE strategic opportunity a new leader could champion
-        
+
         Be skeptical but professional. Look for:
         - Migration posts that reveal legacy systems
         - Job requirements that show current stack
         - GitHub activity that indicates engineering practices
         - Blog posts that hint at challenges
-        
+
         Your analysis will help a candidate prepare for a senior technical leadership role.
         """
-        
+
         try:
             result = client.chat.completions.create(
                 model=model,
@@ -323,14 +321,14 @@ class ExecutiveAgentOrchestrator:
                 temperature=temperature,
                 max_tokens=2000
             )
-            
+
             self.logger.info(f"K.11 completed successfully for {company_name}")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"K.11 execution failed: {e}")
             raise
-    
+
     async def execute_k12_strategy(
         self,
         job_description: str,
@@ -339,21 +337,21 @@ class ExecutiveAgentOrchestrator:
     ) -> StrategyRoadmap:
         """
         K.12: 30-60-90 Day Strategy Architect
-        
+
         Synthesizes identified gaps and technical reality into a tactical
         executive roadmap using People-Process-Technology framework.
-        
+
         Args:
             job_description: Job description text
             technical_swot: Results from K.11 analysis
             config: Node configuration
-            
+
         Returns:
             StrategyRoadmap with 30-60-90 day plan
         """
         self.logger.info("Executing K.12 Strategy Roadmap")
         self.stats["k12_executions"] += 1
-        
+
         if not INSTRUCTOR_AVAILABLE:
             # Return mock response
             return StrategyRoadmap(
@@ -406,38 +404,38 @@ class ExecutiveAgentOrchestrator:
                 key_stakeholders=["CTO", "VP Engineering", "Product Lead", "Engineering Managers"],
                 success_criteria="90% deployment success rate, 40% reduction in incident response time"
             )
-        
+
         # Execute with structured output
         client, model = self._get_client_and_model(config)
         temperature = config["infrastructure_config"].get("temperature_override", 0.5)
-        
+
         system_prompt = """
         You are an incoming Chief of Staff / Head of AI creating a 30-60-90 day plan.
-        
+
         CRITICAL CONSTRAINTS:
         1. Use the People-Process-Technology framework
         2. Address the bottlenecks identified in the Technical SWOT
         3. Focus on quick wins that build credibility
         4. Each milestone must have measurable success metrics
         5. Plan must be realistic for a new leader
-        
+
         Your roadmap will demonstrate strategic thinking and execution capability
         to secure the role and hit the ground running.
         """
-        
+
         user_content = f"""
         Job Description (Key Requirements):
         {job_description[:2000]}...
-        
+
         Technical Audit Findings:
         Bottlenecks: {technical_swot.suspected_bottlenecks}
         Strategic Opportunity: {technical_swot.strategic_opportunity}
         AI Maturity: {technical_swot.gen_ai_maturity_score}/5
         Current Stack: {[stack.tool_name for stack in technical_swot.current_stack]}
-        
+
         Create a compelling 30-60-90 day plan that addresses these realities.
         """
-        
+
         try:
             result = client.chat.completions.create(
                 model=model,
@@ -449,14 +447,14 @@ class ExecutiveAgentOrchestrator:
                 temperature=temperature,
                 max_tokens=3000
             )
-            
+
             self.logger.info("K.12 completed successfully")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"K.12 execution failed: {e}")
             raise
-    
+
     async def execute_k13_simulation(
         self,
         interviewer_linkedin: str,
@@ -465,24 +463,24 @@ class ExecutiveAgentOrchestrator:
     ) -> InterviewerProfile:
         """
         K.13: Oppositional Interview Simulation
-        
+
         Simulates the specific interviewer's questioning style based on
         their public digital footprint and background.
-        
+
         Args:
             interviewer_linkedin: LinkedIn profile URL
             resume_text: Candidate's resume text
             config: Node configuration
-            
+
         Returns:
             InterviewerProfile with predicted questions
         """
         self.logger.info("Executing K.13 Interviewer Simulation")
         self.stats["k13_executions"] += 1
-        
+
         # Get interviewer background
         interviewer_data = await self.data_sources.get_interviewer_profile(interviewer_linkedin)
-        
+
         if not INSTRUCTOR_AVAILABLE:
             # Return mock response
             return InterviewerProfile(
@@ -512,39 +510,39 @@ class ExecutiveAgentOrchestrator:
                 decision_factors=["Technical depth", "Leadership experience", "Culture fit"],
                 red_flags=["Arrogance", "Blaming others", "No concrete examples"]
             )
-        
+
         # Execute with structured output
         client, model = self._get_client_and_model(config)
         temperature = config["infrastructure_config"].get("temperature_override", 0.7)
-        
+
         system_prompt = """
         You are a Psychological Profiler for Executive Search.
-        
+
         Your task: Analyze the interviewer's background to predict their interview style.
-        
+
         Identify:
         1. Their dominant archetype (Builder, Academic, Politician, etc.)
         2. Key biases and preferences
         3. The 5 hardest questions they will ask
         4. How to strategically answer each question
-        
+
         This is NOT about helping someone fake their personality.
         It's about understanding the interviewer to communicate effectively.
-        
+
         Be insightful but ethical. Focus on communication strategies, not deception.
         """
-        
+
         user_content = f"""
         Interviewer Background:
         {interviewer_data}
-        
+
         Candidate Resume (Key Points):
         {resume_text[:2000]}...
-        
+
         Analyze the interviewer and predict their questioning approach.
         Focus on questions that test the candidate's fit for THIS specific role.
         """
-        
+
         try:
             result = client.chat.completions.create(
                 model=model,
@@ -556,28 +554,27 @@ class ExecutiveAgentOrchestrator:
                 temperature=temperature,
                 max_tokens=2500
             )
-            
+
             self.logger.info("K.13 completed successfully")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"K.13 execution failed: {e}")
             raise
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get execution statistics.
-        
+
         Returns:
             Dictionary with execution stats
         """
         return self.stats.copy()
-    
+
     def reset_statistics(self) -> None:
         """Reset all statistics."""
         for key in self.stats:
             if isinstance(self.stats[key], (int, float)):
                 self.stats[key] = 0
-
 
 # Factory function
 def create_executive_orchestrator(
@@ -585,15 +582,15 @@ def create_executive_orchestrator(
     data_source_provider: Optional[DataSourceProvider] = None
 ) -> ExecutiveAgentOrchestrator:
     """Create a configured executive agent orchestrator.
-    
+
     Args:
         brave_search_tool: Optional Brave Search tool
         data_source_provider: Optional custom data source provider
-        
+
     Returns:
         ExecutiveAgentOrchestrator instance
     """
     if data_source_provider is None:
         data_source_provider = DataSourceProvider(brave_search_tool)
-    
+
     return ExecutiveAgentOrchestrator(data_source_provider)
