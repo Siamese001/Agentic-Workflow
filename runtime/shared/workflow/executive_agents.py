@@ -11,21 +11,26 @@ Uses Instructor for structured output and integrates with hardened infrastructur
 
 import os
 import logging
+from typing import Optional, Dict, Any
 
 try:
     import instructor
     from openai import OpenAI
     from anthropic import Anthropic
+    from tavily import TavilyClient
     INSTRUCTOR_AVAILABLE = True
 except ImportError:
     INSTRUCTOR_AVAILABLE = False
-    logging.warning("Instructor not available. Executive agents will use mock responses.")
+    logging.warning("Instructor/Tavily not available. Executive agents will use mock responses.")
 
+from .schema_definitions import (
     TechnicalSWOT,
     StrategyRoadmap,
     InterviewerProfile,
     get_executive_schema_registry
 )
+from .research_tools import TavilyResearcher
+from .infrastructure_resilience import resilient_execution
 # Import hardened infrastructure
 # from ..resilience.hardened_openai_executor import HardenedOpenAIExecutor
 # from ..resilience.hardened_brave_search import HardenedBraveSearch
@@ -35,14 +40,24 @@ logger = logging.getLogger(__name__)
 class DataSourceProvider:
     """Interface for external data sources used by executive agents."""
 
-    def __init__(self, brave_search_tool=None):
-        """Initialize with optional search tool.
+    def __init__(self, brave_search_tool=None, tavily_api_key=None):
+        """Initialize with optional search tools.
 
         Args:
             brave_search_tool: Optional HardenedBraveSearch instance
+            tavily_api_key: Optional Tavily API key for automated search
         """
         self.brave_search = brave_search_tool
-        self.logger = logging.getLogger("DataSourceProvider")
+        self.tavily_client = None
+        if tavily_api_key and INSTRUCTOR_AVAILABLE:
+            try:
+                self.tavily_client = TavilyClient(api_key=tavily_api_key)
+                self.logger = logging.getLogger("DataSourceProvider")
+                self.logger.info("Tavily client initialized successfully")
+            except Exception as e:
+                logging.warning(f"Failed to initialize Tavily client: {e}")
+        else:
+            self.logger = logging.getLogger("DataSourceProvider")
 
     async def search_engineering_blog(self, company_name: str) -> str:
         """Search for company's engineering blog posts.
@@ -54,8 +69,7 @@ class DataSourceProvider:
             Aggregated blog content
         """
         if not self.brave_search:
-            return f"[MOCK] Engineering blog content for {company_name}: Recent posts mention migrat
-    ion to microservices..."
+            return f"[MOCK] Engineering blog content for {company_name}: Recent posts mention migration to microservices..."
 
         queries = [
             f"{company_name} engineering blog",
@@ -85,8 +99,7 @@ class DataSourceProvider:
             Technology insights from GitHub
         """
         if not self.brave_search:
-            return f"[MOCK] GitHub scan for {company_name}: Primary repos use Python, React, Kuberne
-    tes..."
+            return f"[MOCK] GitHub scan for {company_name}: Primary repos use Python, React, Kubernetes..."
 
         query = f"site:github.com {company_name} organization repositories"
 
@@ -114,8 +127,7 @@ class DataSourceProvider:
             Professional background and interests
         """
         if not self.brave_search:
-            return "[MOCK] Interviewer profile: 15 years at company, technical background, loves sys
-    tem design..."
+            return "[MOCK] Interviewer profile: 15 years at company, technical background, loves system design..."
 
         # Extract name from URL if possible
         name = linkedin_url.split('/')[-1] if linkedin_url else "unknown"
@@ -135,6 +147,64 @@ class DataSourceProvider:
             self.logger.error(f"Profile search failed: {e}")
 
         return f"Limited profile information available for {name}"
+    
+    def automated_company_research(self, company_name: str) -> str:
+        """Perform automated research using Tavily API.
+        
+        Args:
+            company_name: Company to research
+            
+        Returns:
+            Aggregated research findings from multiple sources
+        """
+        if not self.tavily_client:
+            return f"[MOCK] Automated research for {company_name}: Engineering blog mentions microservices migration, GitHub shows Python/React/Kubernetes stack..."
+        
+        try:
+            # Define search queries for different aspects
+            queries = [
+                f"{company_name} engineering blog technical architecture",
+                f"{company_name} technology stack engineering culture",
+                f"{company_name} GitHub repositories open source",
+                f"{company_name} CTO engineering interview technical challenges",
+                f"{company_name} engineering blog scalability performance"
+            ]
+            
+            research_results = []
+            
+            for query in queries:
+                try:
+                    # Perform advanced search with context
+                    result = self.tavily_client.search(
+                        query=query,
+                        search_depth="advanced",
+                        include_raw_content=True,
+                        max_results=3
+                    )
+                    
+                    # Extract relevant content
+                    for item in result.get("results", []):
+                        content = f"Source: {item.get('title', 'Unknown')}\n"
+                        content += f"URL: {item.get('url', 'N/A')}\n"
+                        content += f"Content: {item.get('content', item.get('snippet', ''))}\n"
+                        research_results.append(content)
+                        
+                except Exception as e:
+                    self.logger.warning(f"Search failed for query '{query}': {e}")
+                    continue
+            
+            if research_results:
+                # Join and limit content size
+                combined = "\n\n".join(research_results)
+                if len(combined) > 10000:  # Limit to 10k chars
+                    combined = combined[:10000] + "\n\n[Content truncated...]"
+                return combined
+            else:
+                return f"No research results found for {company_name}"
+                
+        except Exception as e:
+            self.logger.error(f"Automated research failed: {e}")
+            return f"Research error for {company_name}: {str(e)}"
 
 class ExecutiveAgentOrchestrator:
     """
@@ -150,8 +220,17 @@ class ExecutiveAgentOrchestrator:
         Args:
             data_source_provider: Optional data source provider
         """
-        self.data_sources = data_source_provider or DataSourceProvider()
+        # Initialize data sources with Tavily API key if available
+        tavily_api_key = os.getenv("TAVILY_API_KEY")
+        self.data_sources = data_source_provider or DataSourceProvider(tavily_api_key=tavily_api_key)
         self.schema_registry = get_executive_schema_registry()
+        
+        # Initialize autonomous researcher
+        if tavily_api_key:
+            self.researcher = TavilyResearcher(api_key=tavily_api_key)
+        else:
+            self.researcher = None
+            logger.warning("TAVILY_API_KEY not set - autonomous research disabled")
 
         # Initialize LLM clients with Instructor if available
         if INSTRUCTOR_AVAILABLE:
@@ -216,11 +295,12 @@ class ExecutiveAgentOrchestrator:
         else:
             raise ValueError(f"No client available for model: {model}")
 
+    @resilient_execution(fallback_model="gpt-4o")
     async def execute_k11_shadow_audit(
-        """Docstring."""
         self,
         company_name: str,
-        config: Dict[str, Any]
+        search_context: str = None,
+        config: Dict[str, Any] = None
     ) -> TechnicalSWOT:
         """
         K.11: Technical Due Diligence (Shadow Audit)
@@ -230,6 +310,7 @@ class ExecutiveAgentOrchestrator:
 
         Args:
             company_name: Target company name
+            search_context: Optional manual search context (if None, will use automated search)
             config: Node configuration
 
         Returns:
@@ -238,18 +319,17 @@ class ExecutiveAgentOrchestrator:
         self.logger.info(f"Executing K.11 Shadow Audit for {company_name}")
         self.stats["k11_executions"] += 1
 
-        # Gather external data
-        blog_content = await self.data_sources.search_engineering_blog(company_name)
-        github_insights = await self.data_sources.scan_github_organization(company_name)
-
-        # Combine search context
-        search_context = f"""
-        Engineering Blog Analysis:
-        {blog_content}
-
-        GitHub Organization Insights:
-        {github_insights}
-        """
+        # Use automated search if no manual context provided
+        if search_context is None:
+            # Check if auto-research is enabled in config
+            if config and config.get("auto_research", {}).get("enabled", False) and self.researcher:
+                self.logger.info("Using autonomous TavilyResearcher for deep search")
+                search_context = self.researcher.execute_shadow_audit_search(company_name)
+            else:
+                self.logger.info("Using fallback automated search via DataSourceProvider")
+                search_context = self.data_sources.automated_company_research(company_name)
+        else:
+            self.logger.info("Using manually provided search context")
 
         if not INSTRUCTOR_AVAILABLE:
             # Return mock response
@@ -287,8 +367,10 @@ class ExecutiveAgentOrchestrator:
             )
 
         # Execute with structured output
+        if config is None:
+            config = {}
         client, model = self._get_client_and_model(config)
-        temperature = config["infrastructure_config"].get("temperature_override", 0.2)
+        temperature = config.get("infrastructure_config", {}).get("temperature_override", 0.2)
 
         system_prompt = f"""
         You are a Technical Due Diligence Officer performing a 'Shadow Audit' of {company_name}.
@@ -330,12 +412,12 @@ class ExecutiveAgentOrchestrator:
             raise
 
     async def execute_k12_strategy(
-        """Docstring."""
         self,
         job_description: str,
         technical_swot: TechnicalSWOT,
         config: Dict[str, Any]
     ) -> StrategyRoadmap:
+        """Docstring."""
         """
         K.12: 30-60-90 Day Strategy Architect
 
@@ -356,16 +438,13 @@ class ExecutiveAgentOrchestrator:
         if not INSTRUCTOR_AVAILABLE:
             # Return mock response
             return StrategyRoadmap(
-                executive_summary="Transform engineering organization to deliver scalable AI-powered
-    solutions while improving developer productivity and system reliability.",
-                primary_objective="Establish modern MLOps infrastructure and high-performing enginee
-    ring culture",
+                executive_summary="Transform engineering organization to deliver scalable AI-powered solutions while improving developer productivity and system reliability.",
+                primary_objective="Establish modern MLOps infrastructure and high-performing engineering culture",
                 milestones=[
                     {
                         "timeframe": "Day 30",
                         "focus_area": "People",
-                        "initiative": "Conduct team assessments and establish 1:1s with all engineer
-    s",
+                        "initiative": "Conduct team assessments and establish 1:1s with all engineers",
                         "success_metric": "100% team assessment completion",
                         "risk_level": "Low"
                     },
@@ -406,8 +485,7 @@ class ExecutiveAgentOrchestrator:
                     }
                 ],
                 key_stakeholders=["CTO", "VP Engineering", "Product Lead", "Engineering Managers"],
-                success_criteria="90% deployment success rate, 40% reduction in incident response ti
-    me"
+                success_criteria="90% deployment success rate, 40% reduction in incident response time"
             )
 
         # Execute with structured output
@@ -461,12 +539,12 @@ class ExecutiveAgentOrchestrator:
             raise
 
     async def execute_k13_simulation(
-        """Docstring."""
         self,
         interviewer_linkedin: str,
         resume_text: str,
         config: Dict[str, Any]
     ) -> InterviewerProfile:
+        """Docstring."""
         """
         K.13: Oppositional Interview Simulation
 
@@ -504,8 +582,7 @@ class ExecutiveAgentOrchestrator:
                 ],
                 kill_chain_questions=[
                     {
-                        "question_text": "Tell me about a time you had to make a difficult technical
-    trade-off",
+                        "question_text": "Tell me about a time you had to make a difficult technical trade-off",
                         "question_type": "Technical",
                         "rationale": "Wants to see technical judgment and decision-making",
                         "recommended_angle": "Focus on systematic evaluation and business impact",
@@ -513,8 +590,7 @@ class ExecutiveAgentOrchestrator:
                         "follow_up_likelihood": "High"
                     }
                 ],
-                conversation_starters=["Tell me about your background", "What brings you here today?
-    "],
+                conversation_starters=["Tell me about your background", "What brings you here today?"],
                 decision_factors=["Technical depth", "Leadership experience", "Culture fit"],
                 red_flags=["Arrogance", "Blaming others", "No concrete examples"]
             )
@@ -586,10 +662,10 @@ class ExecutiveAgentOrchestrator:
 
 # Factory function
 def create_executive_orchestrator(
-    """Docstring."""
     brave_search_tool=None,
     data_source_provider: Optional[DataSourceProvider] = None
 ) -> ExecutiveAgentOrchestrator:
+    """Docstring."""
     """Create a configured executive agent orchestrator.
 
     Args:

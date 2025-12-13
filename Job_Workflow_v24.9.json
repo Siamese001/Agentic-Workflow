@@ -2997,7 +2997,8 @@
         "compute_tier": "HIGH_REASONING",
         "primary_model": "claude-3-5-sonnet-20241022",
         "temperature_override": 0.2,
-        "timeout_ms": 90000
+        "timeout_ms": 90000,
+        "max_retries": 3
       },
       "agentic_goal": "Reconstruct the unstated technical reality of the target company.",
       "schema_enforcement": {
@@ -3013,7 +3014,11 @@
       ],
       "execution_mode": "manual_only",
       "cost_estimate_usd": 2.50,
-      "prerequisites": ["BRAVE_API_KEY"]
+      "prerequisites": ["BRAVE_API_KEY"],
+      "auto_research": {
+        "enabled": true,
+        "description": "Use autonomous TavilyResearcher for deep intelligence gathering"
+      }
     },
     "K.12_strategy_roadmap": {
       "node_id": "K.12",
