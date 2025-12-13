@@ -7,6 +7,7 @@ Phase 1C - SDK Integration Layer
 """
 
 # SDK Registry
+from .sdk_registry import (
     SDK_REGISTRY,
     SDKCategory,
     SDKEntry,
@@ -18,6 +19,7 @@ Phase 1C - SDK Integration Layer
 )
 
 # Multi-Provider LLM Clients
+from .multi_provider_clients import (
     DEFAULT_MAX_RETRIES,
     DEFAULT_MODELS,
     Provider,
