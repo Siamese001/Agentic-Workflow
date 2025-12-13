@@ -1,8 +1,6 @@
 """Types and models for comprehensive_dedup_analysis."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from enum import Enum
 
 @dataclass
 class FileFingerprint:

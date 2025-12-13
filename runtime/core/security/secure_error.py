@@ -8,7 +8,6 @@ reporting mechanisms.
 import logging
 import re
 import traceback
-from typing import Any, Dict, List, Optional, Type, Union
 from functools import wraps
 import inspect
 
@@ -17,7 +16,11 @@ logger = logging.getLogger(__name__)
 class SecureError(Exception):
     """Base class for secure errors with sanitized messages."""
 
-    def __init__(self, message: str, error_code: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+    def __init__(self,
+        message: str,
+        error_code: Optional[str] = None,
+        context: Optional[Dict[str,
+        Any]] = None):
         """Initialize secure error.
 
         Args:
@@ -66,7 +69,9 @@ class ErrorSanitizer:
     # Patterns to detect and redact sensitive information
     SENSITIVE_PATTERNS = [
         # File paths with sensitive directories
-        (r'(/[a-zA-Z0-9_-]+)*(?:/(?:home|users|Documents|Desktop|Downloads)[/][^/\s]+)', '/REDACTED_PATH'),
+        (r'(/[a-zA-Z0-9_-]+)*(?:/(?:home|users|Documents|Desktop|Downloads)[/][^/\s]+)',
+            '/REDACTED_PATH'),
+            
         # Environment variables
         (r'\$[A-Z_][A-Z0-9_]*', '$REDACTED'),
         # Passwords and secrets in connection strings
@@ -90,7 +95,9 @@ class ErrorSanitizer:
         # Local variable values in stack traces
         (r'(?<=\s)[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*<[^>]*>', 'variable=<REDACTED>'),
         # File paths in stack traces
-        (r'File\s+"([^"]*(?:home|users|Documents|Desktop|Downloads)[^"]*)"', 'File "<REDACTED_PATH>"'),
+        (r'File\s+"([^"]*(?:home|users|Documents|Desktop|Downloads)[^"]*)"',
+            'File "<REDACTED_PATH>"'),
+            
         # Argument values in function calls
         (r'(?<=\()\s*[^)]*(?:password|secret|token|key)[^)]*(?=\))', 'REDACTED_ARGS'),
     ]
@@ -202,7 +209,11 @@ def secure_exception(
         Decorated function
     """
     def decorator(func):
+        """TODO: Add docstring."""
+
         @wraps(func)
+            """TODO: Add docstring."""
+
         async def async_wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
@@ -230,6 +241,8 @@ def secure_exception(
                     error_type, e, error_code, context
                 )
                 raise secure_error
+
+            """TODO: Add docstring."""
 
         @wraps(func)
         def sync_wrapper(*args, **kwargs):

@@ -7,7 +7,6 @@ Provides unified defense system for prompt generation and output processing.
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Callable
 
 from .pii_scrubber import PIIScrubber, PIIResult
 from .bias_auditor import BiasAuditor, BiasResult
@@ -141,17 +140,37 @@ class ControlPlane:
 
         pii_result, sanitized_content, pii_blocked = self._check_pii(content, warnings, errors)
         if pii_blocked:
-            return self._create_block_decision(pii_result=pii_result, warnings=warnings, errors=errors)
+            return self._create_block_decision(pii_result=pii_result,
+                warnings=warnings,
+                errors=errors)
 
         bias_result, bias_blocked = self._check_bias(sanitized_content, warnings, errors)
         if bias_blocked:
-            return self._create_block_decision(pii_result=pii_result, bias_result=bias_result, warnings=warnings, errors=errors)
+            return self._create_block_decision(pii_result=pii_result,
+                bias_result=bias_result,
+                warnings=warnings,
+                errors=errors)
 
-        constitutional_result, const_blocked = self._check_constitutional(sanitized_content, context, warnings, errors)
+        constitutional_result,
+            const_blocked = self._check_constitutional(sanitized_content,
+            context,
+            warnings,
+            errors)
         if const_blocked:
-            return self._create_block_decision(pii_result=pii_result, bias_result=bias_result, constitutional_result=constitutional_result, warnings=warnings, errors=errors)
+            return self._create_block_decision(pii_result=pii_result,
+                bias_result=bias_result,
+                constitutional_result=constitutional_result,
+                warnings=warnings,
+                errors=errors)
 
-        return self._create_final_decision(content, sanitized_content, pii_result, bias_result, constitutional_result, warnings, errors, is_input)
+        return self._create_final_decision(content,
+            sanitized_content,
+            pii_result,
+            bias_result,
+            constitutional_result,
+            warnings,
+            errors,
+            is_input)
 
     def _check_pii(self, content: str, warnings: List[str], errors: List[str]) -> tuple:
         """Check for PII."""
@@ -181,7 +200,11 @@ class ControlPlane:
                 return bias_result, True
         return bias_result, False
 
-    def _check_constitutional(self, content: str, context: Optional[Dict], warnings: List[str], errors: List[str]) -> tuple:
+    def _check_constitutional(self,
+        content: str,
+        context: Optional[Dict],
+        warnings: List[str],
+        errors: List[str]) -> tuple:
         """Check constitutional compliance."""
         if not self.policy.enable_constitutional_review:
             return None, False
@@ -194,7 +217,15 @@ class ControlPlane:
                 return constitutional_result, True
         return constitutional_result, False
 
-    def _create_final_decision(self, content: str, sanitized_content: str, pii_result: Optional[object], bias_result: Optional[object], constitutional_result: Optional[object], warnings: List[str], errors: List[str], is_input: bool) -> PolicyDecision:
+    def _create_final_decision(self,
+        content: str,
+        sanitized_content: str,
+        pii_result: Optional[object],
+        bias_result: Optional[object],
+        constitutional_result: Optional[object],
+        warnings: List[str],
+        errors: List[str],
+        is_input: bool) -> PolicyDecision:
         """Create final policy decision."""
         action = PolicyAction.BLOCK if errors else (PolicyAction.SANITIZE if sanitized_content != content else (PolicyAction.WARN if warnings else PolicyAction.ALLOW))
         is_safe = not errors
@@ -208,7 +239,15 @@ class ControlPlane:
         )
 
         if self.enable_logging:
-            logger.info("control_plane_decision", extra={"action": action.value, "is_safe": is_safe, "is_input": is_input, "has_pii": pii_result.has_pii() if pii_result else False, "has_bias": bias_result.has_bias if bias_result else False, "is_compliant": constitutional_result.is_compliant if constitutional_result else True, "warning_count": len(warnings), "error_count": len(errors)})
+            logger.info("control_plane_decision",
+                extra={"action": action.value,
+                "is_safe": is_safe,
+                "is_input": is_input,
+                "has_pii": pii_result.has_pii() if pii_result else False,
+                "has_bias": bias_result.has_bias if bias_result else False,
+                "is_compliant": constitutional_result.is_compliant if constitutional_result else True,
+                "warning_count": len(warnings),
+                "error_count": len(errors)})
 
         return decision
 

@@ -1,7 +1,7 @@
 """Implementation for load_schema_planning."""
 
 from typing import Any, Dict, List, Optional
-from .load_schema_planning_types import *
+# from .load_schema_planning_types import *  # Star import removed
 
 class SchemaLoadPlanner:
     """Planner for schema loading operations."""
@@ -20,26 +20,45 @@ class SchemaLoadPlanner:
         Returns:
             SchemaLoadResult: Complete planning result with load plan
         """
-        self.logger.info(f"Starting schema load planning for: {load_request.get('plan_name', 'unknown')}")
+        self.logger.info(f"Starting schema load planning for: {load_request.get('plan_name',
+            'unknown')}")
         try:
             self._validate_request(load_request)
             schemas = self._parse_schemas(load_request)
             validation_mode = self._parse_validation_mode(load_request)
             validation_rules = self._parse_validation_rules(load_request) if self.config.enable_validation else []
             transforms = self._parse_transforms(load_request) if self.config.enable_transforms else []
-            load_plan = self._create_load_plan(load_request, schemas, validation_mode, validation_rules, transforms)
+            load_plan = self._create_load_plan(load_request,
+                schemas,
+                validation_mode,
+                validation_rules,
+                transforms)
             schema_count = len(schemas)
             dependency_count = sum((len(s.dependencies) for s in schemas))
             validation_rule_count = len(validation_rules)
             transform_count = len(transforms)
             load_time = self._estimate_load_time(load_plan)
             memory_estimate = self._estimate_memory_usage(load_plan)
-            result = SchemaLoadResult(success=True, load_plan=load_plan, schema_count=schema_count, dependency_count=dependency_count, validation_rule_count=validation_rule_count, transform_count=transform_count, load_time_estimate=load_time, memory_estimate=memory_estimate, metadata={'planned_at': datetime.utcnow().isoformat(), 'plan_name': load_request.get('plan_name'), 'planner': 'SchemaLoadPlanner'})
-            self.logger.info(f'Successfully planned schema load: {schema_count} schemas, {dependency_count} dependencies')
+            result = SchemaLoadResult(success=True,
+                load_plan=load_plan,
+                schema_count=schema_count,
+                dependency_count=dependency_count,
+                validation_rule_count=validation_rule_count,
+                transform_count=transform_count,
+                load_time_estimate=load_time,
+                memory_estimate=memory_estimate,
+                metadata={'planned_at': datetime.utcnow().isoformat(),
+                'plan_name': load_request.get('plan_name'),
+                'planner': 'SchemaLoadPlanner'})
+            self.logger.info(f'Successfully planned schema load: {schema_count} schemas,
+                {dependency_count} dependencies')
             return result
         except Exception as e:
             self.logger.error(f'Schema load planning failed: {str(e)}')
-            return SchemaLoadResult(success=False, errors=[str(e)], metadata={'failed_at': datetime.utcnow().isoformat(), 'planner': 'SchemaLoadPlanner'})
+            return SchemaLoadResult(success=False,
+                errors=[str(e)],
+                metadata={'failed_at': datetime.utcnow().isoformat(),
+                'planner': 'SchemaLoadPlanner'})
 
     def _validate_request(self, request: Dict[str, Any]) -> None:
         """Validate schema load planning request."""
@@ -62,7 +81,18 @@ class SchemaLoadPlanner:
                 if 'scope' in raw_schema:
                     scope_mapping = {'request': SchemaScope.REQUEST, 'response': SchemaScope.RESPONSE, 'event': SchemaScope.EVENT, 'config': SchemaScope.CONFIG, 'data': SchemaScope.DATA, 'internal': SchemaScope.INTERNAL}
                     scope = scope_mapping.get(raw_schema.get('scope'), SchemaScope.DATA)
-                schema = SchemaDefinition(name=raw_schema.get('name', 'unnamed'), type=schema_type, version=raw_schema.get('version', '1.0'), content=raw_schema.get('content', ''), file_path=raw_schema.get('file_path'), url=raw_schema.get('url'), dependencies=raw_schema.get('dependencies', []), scope=scope)
+                schema = SchemaDefinition(name=raw_schema.get('name',
+                    'unnamed'),
+                    type=schema_type,
+                    version=raw_schema.get('version',
+                    '1.0'),
+                    content=raw_schema.get('content',
+                    ''),
+                    file_path=raw_schema.get('file_path'),
+                    url=raw_schema.get('url'),
+                    dependencies=raw_schema.get('dependencies',
+                    []),
+                    scope=scope)
                 schemas.append(schema)
         if len(schemas) > self.config.max_schemas_per_plan:
             raise ValueError(f'Number of schemas ({len(schemas)}) exceeds maximum ({self.config.max_schemas_per_plan})')
@@ -83,7 +113,15 @@ class SchemaLoadPlanner:
         raw_rules = request.get('validation_rules', [])
         for raw_rule in raw_rules:
             if isinstance(raw_rule, dict):
-                rule = ValidationRule(name=raw_rule.get('name', 'unnamed'), type=raw_rule.get('type', 'required'), parameters=raw_rule.get('parameters', {}), severity=raw_rule.get('severity', 'error'), message=raw_rule.get('message'))
+                rule = ValidationRule(name=raw_rule.get('name',
+                    'unnamed'),
+                    type=raw_rule.get('type',
+                    'required'),
+                    parameters=raw_rule.get('parameters',
+                    {}),
+                    severity=raw_rule.get('severity',
+                    'error'),
+                    message=raw_rule.get('message'))
                 rules.append(rule)
         return rules
 
@@ -94,20 +132,51 @@ class SchemaLoadPlanner:
         type_mapping = {'json': SchemaType.JSON, 'xml': SchemaType.XML, 'yaml': SchemaType.YAML, 'protobuf': SchemaType.PROTOBUF, 'avro': SchemaType.AVRO, 'openapi': SchemaType.OPENAPI, 'graphql': SchemaType.GRAPHQL}
         for raw_transform in raw_transforms:
             if isinstance(raw_transform, dict):
-                transform = SchemaTransform(source_type=type_mapping.get(raw_transform.get('source_type', 'json'), SchemaType.JSON), target_type=type_mapping.get(raw_transform.get('target_type', 'json'), SchemaType.JSON), transform_function=raw_transform.get('transform_function', ''), parameters=raw_transform.get('parameters', {}))
+                transform = SchemaTransform(source_type=type_mapping.get(raw_transform.get('source_type',
+                    'json'),
+                    SchemaType.JSON),
+                    target_type=type_mapping.get(raw_transform.get('target_type',
+                    'json'),
+                    SchemaType.JSON),
+                    transform_function=raw_transform.get('transform_function',
+                    ''),
+                    parameters=raw_transform.get('parameters',
+                    {}))
                 transforms.append(transform)
         return transforms
 
-    def _create_load_plan(self, request: Dict[str, Any], schemas: List[SchemaDefinition], validation_mode: ValidationMode, validation_rules: List[ValidationRule], transforms: List[SchemaTransform]) -> SchemaLoadPlan:
+    def _create_load_plan(self,
+        request: Dict[str,
+        Any],
+        schemas: List[SchemaDefinition],
+        validation_mode: ValidationMode,
+        validation_rules: List[ValidationRule],
+        transforms: List[SchemaTransform]) -> SchemaLoadPlan:
         """Create schema load plan from parsed components."""
-        return SchemaLoadPlan(id=request.get('plan_id', f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"), name=request.get('plan_name', 'unnamed_plan'), schemas=schemas, validation_mode=validation_mode, validation_rules=validation_rules, transforms=transforms, resolve_dependencies=request.get('resolve_dependencies', True), enable_caching=request.get('enable_caching', True), cache_ttl=request.get('cache_ttl', 3600), metadata=request.get('metadata', {}))
+        return SchemaLoadPlan(id=request.get('plan_id',
+            f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"),
+            name=request.get('plan_name',
+            'unnamed_plan'),
+            schemas=schemas,
+            validation_mode=validation_mode,
+            validation_rules=validation_rules,
+            transforms=transforms,
+            resolve_dependencies=request.get('resolve_dependencies',
+            True),
+            enable_caching=request.get('enable_caching',
+            True),
+            cache_ttl=request.get('cache_ttl',
+            3600),
+            metadata=request.get('metadata',
+            {}))
 
     def _estimate_load_time(self, plan: SchemaLoadPlan) -> int:
         """Estimate load time in seconds."""
         base_time = 5
         schema_time = len(plan.schemas) * 0.5
         validation_multiplier = {ValidationMode.STRICT: 2.0, ValidationMode.LENIENT: 1.0, ValidationMode.SYNTAX_ONLY: 0.5, ValidationMode.DISABLED: 0.1}
-        validation_time = len(plan.validation_rules) * 0.2 * validation_multiplier.get(plan.validation_mode, 1.0)
+        validation_time = len(plan.validation_rules) * 0.2 * validation_multiplier.get(plan.validation_mode,
+            1.0)
         transform_time = len(plan.transforms) * 1.0
         dep_time = sum((len(s.dependencies) for s in plan.schemas)) * 0.1 if plan.resolve_dependencies else 0
         total_time = base_time + schema_time + validation_time + transform_time + dep_time
@@ -123,12 +192,28 @@ class SchemaLoadPlanner:
         total_memory_bytes = base_memory * 1024 * 1024 + schema_memory + validation_memory + transform_memory + dep_memory
         return total_memory_bytes // (1024 * 1024)
 
-def create_schema_load_planner(enable_validation: bool=True, enable_transforms: bool=True, **kwargs: Dict[str, object]) -> SchemaLoadPlanner:
+def create_schema_load_planner(enable_validation: bool=True,
+    enable_transforms: bool=True,
+    **kwargs: Dict[str,
+    object]) -> SchemaLoadPlanner:
     """Create a configured schema load planner."""
-    config = SchemaLoadConfig(enable_validation=enable_validation, enable_transforms=enable_transforms, **kwargs)
+    config = SchemaLoadConfig(enable_validation=enable_validation,
+        enable_transforms=enable_transforms,
+        **kwargs)
     return SchemaLoadPlanner(config)
 
-def plan_schema_load(plan_name: str, schemas: List[Dict[str, Any]], validation_mode: str='strict', validation_rules: Optional[List[Dict[str, Any]]]=None, transforms: Optional[List[Dict[str, Any]]]=None, resolve_dependencies: bool=True, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
+def plan_schema_load(plan_name: str,
+    schemas: List[Dict[str,
+    Any]],
+    validation_mode: str='strict',
+    validation_rules: Optional[List[Dict[str,
+    Any]]]=None,
+    transforms: Optional[List[Dict[str,
+    Any]]]=None,
+    resolve_dependencies: bool=True,
+    config: Optional[Dict[str,
+    Any]]=None) -> Dict[str,
+    Any]:
     """Plan schema load from simple parameters.
 
     Args:

@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .models_types import *
-from .models_types_part_2 import *
+# from .models_types import *  # Star import removed
+# from .models_types_part_2 import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

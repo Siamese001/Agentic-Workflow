@@ -1,7 +1,6 @@
 """Implementation for kx_nodes_resume."""
 
-from typing import Any, Dict, List, Optional
-from .kx_nodes_resume_types import *
+# from .kx_nodes_resume_types import *  # Star import removed
 
 def get_resume_kx_dag() -> Dict[str, ResumeKNode]:
     """Get the complete resume K.X node DAG.

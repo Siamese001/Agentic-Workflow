@@ -69,7 +69,12 @@ def _build_approved_indexes() -> Tuple[Dict[str, List[Path]], Dict[str, List[Pat
 
     return approved_hashes, approved_names
 
-def _analyze_pending_file(f: Path, approved_hashes: Dict[str, List[Path]], approved_names: Dict[str, List[Path]]) -> Dict[str, Any]:
+def _analyze_pending_file(f: Path,
+    approved_hashes: Dict[str,
+    List[Path]],
+    approved_names: Dict[str,
+    List[Path]]) -> Dict[str,
+    Any]:
     """Analyze a single pending file for duplicates."""
     result = {
         "file": f,
@@ -90,7 +95,11 @@ def _analyze_pending_file(f: Path, approved_hashes: Dict[str, List[Path]], appro
 
     return result
 
-def _process_pending_files(pending_files: List[Path], approved_hashes: Dict, approved_names: Dict) -> Tuple[List, List, List]:
+def _process_pending_files(pending_files: List[Path],
+    approved_hashes: Dict,
+    approved_names: Dict) -> Tuple[List,
+    List,
+    List]:
     """Process pending files and categorize them."""
     duplicates = []
     unique_files = []

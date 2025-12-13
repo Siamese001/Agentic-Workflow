@@ -1,7 +1,6 @@
 """Types and models for subatomic_orchestrator."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class WorkflowType(Enum):
@@ -19,5 +18,7 @@ class WorkflowBlueprint:
     description: str
     roles: List[AgentRole]
     edges: List[Tuple[AgentRole, AgentRole]]
-    mutation_hooks: Dict[AgentRole, List[Tuple[MutationAction, AgentRole]]] = field(default_factory=dict)
+    mutation_hooks: Dict[AgentRole,
+        List[Tuple[MutationAction,
+        AgentRole]]] = field(default_factory=dict)
     parallel_groups: List[List[AgentRole]] = field(default_factory=list)

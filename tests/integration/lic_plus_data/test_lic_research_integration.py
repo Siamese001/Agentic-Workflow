@@ -1,5 +1,4 @@
 """Integration tests for LIC research + data layer."""
-from __future__ import annotations
 import pytest
 
 class TestLICResearchIntegration:

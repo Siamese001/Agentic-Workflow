@@ -9,16 +9,12 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Type, Union
-import json
 
-from ..core.quality.signal_enhancer import (
     SignalAssessment,
     SignalEnhancer,
     QualityThresholds,
     SignalQuality
 )
-from ..core.quality.feedback_loop import (
     FeedbackLoop,
     QualityFeedback,
     FeedbackType
@@ -118,7 +114,6 @@ class ResumeValidator(DomainValidator):
 
     def _has_metrics(self, content: str) -> bool:
         """Check if content includes metrics."""
-        import re
         metric_patterns = [
             r"\d+%",
             r"\$\d+(?:,\d{3})*(?:\.\d+)?",

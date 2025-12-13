@@ -3,10 +3,8 @@
 # High-signal content preserved below — zero-loss migration
 # ================================================================================
 
-from __future__ import annotations
 
 from typing import Iterable, Type
-import pytest
 
 from pydantic import BaseModel
 

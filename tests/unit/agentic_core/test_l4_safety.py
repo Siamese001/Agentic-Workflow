@@ -1,7 +1,5 @@
 """Unit tests for L4_memory/P4_safety - memory safety operations."""
-from __future__ import annotations
 import re
-import scripts.validation.check_canonical_structure
 
 class TestMemorySafety:
     """Tests for memory safety operations."""

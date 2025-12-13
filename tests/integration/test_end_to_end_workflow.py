@@ -12,7 +12,6 @@ Phase 1C - SDK Integration Layer
 
 import os
 import pytest
-from typing import Any, Dict
 
 from runtime.shared import (
     AgentMessage,
@@ -146,7 +145,8 @@ class TestAgentExecution:
         )
 
         messages = [
-            AgentMessage(role="user", content="What is the capital of France? Answer with just the city name.")
+            AgentMessage(role="user",
+                content="What is the capital of France? Answer with just the city name.")
         ]
 
         response = context.agent_executor.execute(
@@ -178,7 +178,11 @@ class TestWorkflowOrchestration:
         )
 
         def hop1(context):
+            """TODO: Add docstring."""
+
             context.set_output("result", "hop1_output")
+
+            """TODO: Add docstring."""
 
         def hop2(context):
             input_val = context.get_input("result")

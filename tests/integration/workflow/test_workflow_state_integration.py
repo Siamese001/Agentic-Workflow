@@ -1,10 +1,11 @@
 """Integration tests for workflow state management."""
-from __future__ import annotations
 from typing import Dict, List
 from dataclasses import dataclass, field
 from enum import Enum
 
 class WorkflowState(Enum):
+    """TODO: Add docstring."""
+
     CREATED = "created"
     RUNNING = "running"
     PAUSED = "paused"
@@ -12,6 +13,8 @@ class WorkflowState(Enum):
     FAILED = "failed"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class Workflow:
     id: str
     state: WorkflowState

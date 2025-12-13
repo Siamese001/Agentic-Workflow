@@ -19,7 +19,10 @@ class FetchUserPreferences:
         self.cache: Dict[str, object] = {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def retrieve(self, query: str, filters: Optional[Dict] = None, limit: int = 10) -> RetrievalResult:
+    def retrieve(self,
+        query: str,
+        filters: Optional[Dict] = None,
+        limit: int = 10) -> RetrievalResult:
         """Retrieve items."""
         cache_key = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:
@@ -33,6 +36,9 @@ class FetchUserPreferences:
         """Execute query."""
         return []
 
-def retrieve(query: str, config: Optional[Dict] = None, **kwargs: Dict[str, object]) -> RetrievalResult:
+def retrieve(query: str,
+    config: Optional[Dict] = None,
+    **kwargs: Dict[str,
+    object]) -> RetrievalResult:
     """Retrieve items."""
     return FetchUserPreferences(config).retrieve(query, **kwargs)

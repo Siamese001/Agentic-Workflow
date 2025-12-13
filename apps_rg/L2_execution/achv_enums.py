@@ -3,8 +3,12 @@
 from enum import Enum
 
 class BulletFormat(Enum):
+    """TODO: Add docstring."""
+
     UNIFY = 'UNIFY'
     IBM = 'IBM'
+
+    """TODO: Add docstring."""
 
 class ProvenanceType(Enum):
     VERB = 'V'

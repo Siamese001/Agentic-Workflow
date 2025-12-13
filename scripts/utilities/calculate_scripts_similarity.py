@@ -5,7 +5,6 @@ Domain: utilities
 Generated: 2025-12-07T12:07:59.872036
 """
 
-from __future__ import annotations
 import logging
 import math
 from typing import Dict, List, Optional, Sequence
@@ -55,6 +54,8 @@ class CalculateScriptsSimilarity:
             return math.sqrt(sum((x - mean) ** 2 for x in values) / len(values))
         return sum(values) / len(values)
 
-def compute(values: Sequence[float], operation: str = "mean", config: Optional[Dict] = None) -> ComputationResult:
+def compute(values: Sequence[float],
+    operation: str = "mean",
+    config: Optional[Dict] = None) -> ComputationResult:
     """Convenience function for computation."""
     return CalculateScriptsSimilarity(config).compute(values, operation)

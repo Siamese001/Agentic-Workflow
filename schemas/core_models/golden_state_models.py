@@ -1,7 +1,5 @@
-from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal
 
 from pydantic import BaseModel
 
@@ -40,11 +38,15 @@ class EvalResult:
     reasoning_trace: List[Dict[str, object]] = field(default_factory=list)
 
 class GoldenCase(BaseModel):
+    """TODO: Add docstring."""
+
     id: str
     input_text: str
     agent_sequence: List[str]
     expected_keypoints: List[str]
     correctness_criteria: Dict[str, object]
+
+    """TODO: Add docstring."""
 
 class GoldenOutput(BaseModel):
     case_id: str

@@ -8,11 +8,8 @@ import logging
 from enum import Enum
 from typing import Dict, Any, Optional, List, Callable
 from dataclasses import dataclass, field
-from pathlib import Path
 
 from ..core.subatomic_hop import SubatomicHop, SubatomicHopConfig
-from ..core.dynamic_dag_manager import HopSpec
-from ..shared.validation_gates import ValidationGateRegistry
 
 logger = logging.getLogger(__name__)
 

@@ -4,7 +4,6 @@ L1 Cognition package initialization.
 Provides core functionality and exports for the L1 Cognition module.
 """
 
-from __future__ import annotations
 
 import logging
 from typing import Dict, List, Optional, Union
@@ -54,7 +53,13 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     required_keys = ["enabled", "mode"]
     return all(key in config for key in required_keys)
 
-def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -> Dict[str, Union[str, int, bool]]:
+def create_instance(config: Optional[Dict[str,
+    Union[str,
+    int,
+    bool]]] = None) -> Dict[str,
+    Union[str,
+    int,
+    bool]]:
     """
     Create a configured module instance.
 

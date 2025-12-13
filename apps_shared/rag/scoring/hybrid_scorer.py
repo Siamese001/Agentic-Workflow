@@ -8,7 +8,6 @@ from typing import Any, Dict, List, Optional
 import math
 import re
 from collections import Counter
-from datetime import datetime, timedelta
 
 @dataclass
 class ScoringWeights:
@@ -223,7 +222,13 @@ class HybridScorer:
         # Default to neutral score
         return 0.5
 
-    def calculate_hybrid_score(self, vector_score: float, keyword_score: float, weights: Optional[Dict[str, float]] = None, metadata: Optional[Dict[str, Any]] = None) -> float:
+    def calculate_hybrid_score(self,
+        vector_score: float,
+        keyword_score: float,
+        weights: Optional[Dict[str,
+        float]] = None,
+        metadata: Optional[Dict[str,
+        Any]] = None) -> float:
         """Calculate hybrid score from vector and keyword scores.
 
         Args:
@@ -257,7 +262,10 @@ class HybridScorer:
 
         return score
 
-    def _normalize_score(self, score: float, min_score: float = 0.0, max_score: float = 1.0) -> float:
+    def _normalize_score(self,
+        score: float,
+        min_score: float = 0.0,
+        max_score: float = 1.0) -> float:
         """Normalize score to [0, 1] range.
 
         Args:

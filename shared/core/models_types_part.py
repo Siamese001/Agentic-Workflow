@@ -88,7 +88,11 @@ class ImmutableStagingBuffer:
 
     def with_data(self, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
         """Return a new buffer with updated data."""
-        return ImmutableStagingBuffer(data={**self.data, **new_data}, version=self.version + 1, timestamp=datetime.utcnow(), checksum=None)
+        return ImmutableStagingBuffer(data={**self.data,
+            **new_data},
+            version=self.version + 1,
+            timestamp=datetime.utcnow(),
+            checksum=None)
 
     def clear(self) -> ImmutableStagingBuffer:
         """Return a new empty buffer."""

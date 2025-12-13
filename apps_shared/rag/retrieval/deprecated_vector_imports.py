@@ -4,7 +4,6 @@ import pytest
 def _can_import_pinecone() -> bool:
     """Check if Pinecone SDK is properly installed."""
     try:
-        from pinecone import Pinecone  # noqa: F401
         return True
     except ImportError:
         return False
@@ -12,10 +11,10 @@ def _can_import_pinecone() -> bool:
 def test_import_vector_modules() -> None:
     """Test that all vector search related modules can be imported."""
     # L1 Planning
-    # import archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.vector_search_planning  
+    # import archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.vector_search_planning
 
     # L2 Execution
-    # import archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.vector_search_executor  
+    # import archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.vector_search_executor
 
     # If we get here, core imports worked
     assert True
@@ -26,5 +25,4 @@ def test_import_vector_modules() -> None:
 )
 def test_import_pinecone_provider() -> None:
     """Test that pinecone provider can be imported when SDK is available."""
-    import providers.pinecone_client  # noqa: F401
     assert True

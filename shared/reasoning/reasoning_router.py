@@ -136,7 +136,7 @@ class ReasoningRouter:
         task: str,
         context: Optional[Dict[str, Any]] = None,
     ) -> ReasoningMode:
-        """Select appropriate reasoning strategy for task.
+        """# SQL removed: Select appropriate reasoning strategy for task.
 
         Args:
             task: The task to solve

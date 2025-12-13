@@ -81,6 +81,7 @@ def fix_repeated_concept_filenames():
 
     pattern = re.compile(
         r"(update.*update|check.*check|state.*state|cost.*cost|policy.*policy|rule.*rule|safety.*safety)",
+            
         re.IGNORECASE,
     )
 

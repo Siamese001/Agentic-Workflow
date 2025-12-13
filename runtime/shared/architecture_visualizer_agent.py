@@ -6,7 +6,6 @@ Mermaid.js diagrams, providing visual proof of system design competency.
 
 import logging
 import re
-from typing import Dict, List, Optional, Tuple, Any
 from enum import Enum
 from pydantic import BaseModel, Field, validator
 
@@ -91,7 +90,10 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             "event": r'\b(event|message|trigger|signal)\b'
         }
 
-    async def _extract_system_components(self, text: str) -> Tuple[List[DiagramNode], List[Tuple[str, str]]]:
+    async def _extract_system_components(self,
+        text: str) -> Tuple[List[DiagramNode],
+        List[Tuple[str,
+        str]]]:
         """Extract system components and relationships from text.
 
         Args:
@@ -194,7 +196,9 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             lines.insert(1, "    subgraph Data Plane")
             data_nodes = [n for n in nodes if n.node_type in ["database", "queue"]]
             for i, node in enumerate(data_nodes):
-                lines.insert(2 + i, f"        {node.id}{self.shape_mappings.get(node.node_type, self.shape_mappings['default']).format(label=node.label)}")
+                lines.insert(2 + i,
+                    f"        {node.id}{self.shape_mappings.get(node.node_type,
+                    self.shape_mappings['default']).format(label=node.label)}")
             lines.insert(2 + len(data_nodes), "    end")
 
         return "\n".join(lines)
@@ -221,7 +225,8 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
 
             # Check complexity
             if len(nodes) > self.max_nodes:
-                logger.warning(f"System too complex ({len(nodes)} nodes), generating high-level diagram")
+                logger.warning(f"System too complex ({len(nodes)} nodes),
+                    generating high-level diagram")
                 # Simplify to high-level components only
                 nodes = nodes[:self.max_nodes]
                 relationships = relationships[:self.max_nodes]

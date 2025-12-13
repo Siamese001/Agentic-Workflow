@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .rg_provenance_tracker_impl_impl_impl import *
-from .rg_provenance_tracker_impl import *
+# from .rg_provenance_tracker_impl_impl_impl import *  # Star import removed
+# from .rg_provenance_tracker_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

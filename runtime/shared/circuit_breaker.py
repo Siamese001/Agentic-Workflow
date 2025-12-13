@@ -7,9 +7,6 @@ stop calling failing services and allow them time to recover.
 import asyncio
 import logging
 import time
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
@@ -290,6 +287,7 @@ class CircuitBreaker:
             "failure_count": self.failure_count,
             "success_count": self.success_count,
             "last_failure_time": self.last_failure_time.isoformat() if self.last_failure_time else None,
+                
             "last_state_change": self.last_state_change.isoformat(),
             "current_failure_rate": self._get_current_failure_rate()
         })
@@ -422,9 +420,17 @@ def circuit_breaker(
         Decorated function
     """
     def decorator(func):
+        """TODO: Add docstring."""
+
+            """TODO: Add docstring."""
+
         async def async_wrapper(*args, **kwargs):
             registry = await get_circuit_breaker_registry()
             return await registry.call_through(name, func, *args, config=config, **kwargs)
+            """TODO: Add docstring."""
+
+
+                """TODO: Add docstring."""
 
         def sync_wrapper(*args, **kwargs):
             # For sync functions, run in thread pool

@@ -10,7 +10,6 @@ import logging
 import time
 from enum import Enum
 from typing import Callable, Any, Optional, Dict
-from dataclasses import dataclass, field
 import threading
 
 logger = logging.getLogger(__name__)
@@ -342,6 +341,10 @@ def with_circuit_breaker(
         Decorated function
     """
     def decorator(func):
+        """TODO: Add docstring."""
+
+            """TODO: Add docstring."""
+
         async def wrapper(*args, **kwargs):
             breaker = get_circuit_breaker(breaker_name, config)
             return await breaker.call(func, *args, **kwargs)

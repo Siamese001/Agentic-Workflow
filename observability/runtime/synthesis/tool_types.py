@@ -1,7 +1,6 @@
 """Types and models for tools_use_a_tool."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class ExecutionStatus(Enum):
@@ -34,7 +33,9 @@ class ExecutionContext:
         self.end_time = time.time()
         self.status = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
         if error:
-            self.error_details = {'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
+            self.error_details = {'type': type(error).__name__,
+                'message': str(error),
+                'traceback': traceback.format_exc()}
             logger.error(f'Execution failed: {error}')
         else:
             logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')

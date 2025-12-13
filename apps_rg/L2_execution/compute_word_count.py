@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Text counting functions for resume generation."""
 
-import scripts.validation.check_canonical_structure
 from typing import List
 
 def count_words_ms_word_style(text: str) -> int:

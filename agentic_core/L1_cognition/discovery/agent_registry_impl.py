@@ -1,7 +1,7 @@
 """Implementation for agent_registry."""
 
 from typing import Any, Dict, List, Optional
-from .agent_registry_types import *
+# from .agent_registry_types import *  # Star import removed
 
 class AgentRegistry:
     """Registry for agent discovery and collaboration.
@@ -21,7 +21,8 @@ class AgentRegistry:
         """
         self.enable_logging = enable_logging
         self._agents: Dict[str, AgentCard] = {}
-        self._capability_index: Dict[AgentCapability, Set[str]] = {cap: set() for cap in AgentCapability}
+        self._capability_index: Dict[AgentCapability,
+            Set[str]] = {cap: set() for cap in AgentCapability}
         if self.enable_logging:
             logger.info('agent_registry_initialized')
 
@@ -43,8 +44,13 @@ class AgentRegistry:
         for capability in agent_card.capabilities:
             self._capability_index[capability].add(spiffe_id)
         if self.enable_logging:
-            logger.info('agent_registered', extra={'spiffe_id': spiffe_id, 'name': agent_card.name, 'capabilities': [c.value for c in agent_card.capabilities]})
-        return RegistrationResult(success=True, agent_card=agent_card, reason='Agent registered successfully')
+            logger.info('agent_registered',
+                extra={'spiffe_id': spiffe_id,
+                'name': agent_card.name,
+                'capabilities': [c.value for c in agent_card.capabilities]})
+        return RegistrationResult(success=True,
+            agent_card=agent_card,
+            reason='Agent registered successfully')
 
     def deregister(self, spiffe_id: str) -> bool:
         """Deregister an agent.
@@ -76,7 +82,9 @@ class AgentRegistry:
         """
         return self._agents.get(spiffe_id)
 
-    def find_by_capability(self, capability: AgentCapability, status: Optional[AgentStatus]=None) -> List[AgentCard]:
+    def find_by_capability(self,
+        capability: AgentCapability,
+        status: Optional[AgentStatus]=None) -> List[AgentCard]:
         """Find agents by capability.
 
         Args:
@@ -102,7 +110,8 @@ class AgentRegistry:
         Returns:
             List of matching agent cards
         """
-        return [agent for agent in self._agents.values() if agent.can_use_tool(tool_name, operation)]
+        return [agent for agent in self._agents.values() if agent.can_use_tool(tool_name,
+            operation)]
 
     def find_available(self, capabilities: Optional[List[AgentCapability]]=None) -> List[AgentCard]:
         """Find available agents.
@@ -119,7 +128,7 @@ class AgentRegistry:
         return agents
 
     def update_status(self, spiffe_id: str, status: AgentStatus) -> bool:
-        """Update agent status.
+        """# SQL removed: Update agent status.
 
         Args:
             spiffe_id: SPIFFE ID
@@ -134,7 +143,10 @@ class AgentRegistry:
         old_status = agent_card.status
         agent_card.status = status
         if self.enable_logging:
-            logger.info('agent_status_updated', extra={'spiffe_id': spiffe_id, 'old_status': old_status.value, 'new_status': status.value})
+            logger.info('agent_status_updated',
+                extra={'spiffe_id': spiffe_id,
+                'old_status': old_status.value,
+                'new_status': status.value})
         return True
 
     def list_all(self) -> List[AgentCard]:
@@ -159,7 +171,9 @@ class AgentRegistry:
         for capability in AgentCapability:
             count = len(self._capability_index[capability])
             capability_counts[capability.value] = count
-        return {'total_agents': len(self._agents), 'status_counts': status_counts, 'capability_counts': capability_counts}
+        return {'total_agents': len(self._agents),
+            'status_counts': status_counts,
+            'capability_counts': capability_counts}
 
 def create_agent_registry() -> AgentRegistry:
     """Factory function to create agent registry.

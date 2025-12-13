@@ -2,23 +2,28 @@
 Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
-from __future__ import annotations
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
 class ToolStatus(Enum):
+    """TODO: Add docstring."""
+
     AVAILABLE = "available"
     UNAVAILABLE = "unavailable"
     RATE_LIMITED = "rate_limited"
     ERROR = "error"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class ToolDefinition:
     name: str
     description: str
     parameters: Dict[str, object]
     required_params: List[str]
+
+    """TODO: Add docstring."""
 
 @dataclass
 class ToolResult:
@@ -80,6 +85,8 @@ class TestToolRegistration:
 class TestToolExecution:
     """Tests for tool execution."""
 
+            """TODO: Add docstring."""
+
     def test_execute_tool_success(self):
         """Tool executes successfully."""
         def mock_search(query: str) -> Dict:
@@ -96,6 +103,8 @@ class TestToolExecution:
 
         assert tool_result.success is True
         assert tool_result.data is not None
+            """TODO: Add docstring."""
+
 
     def test_execute_tool_failure(self):
         """Tool failure is handled correctly."""

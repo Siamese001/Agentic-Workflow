@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Test Rg Scoring - atomic execution layer."""
 
-from __future__ import annotations
 
 from typing import Dict
 

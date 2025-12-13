@@ -7,10 +7,8 @@ from the legacy K-node system to the new functional role architecture.
 import re
 import json
 import logging
-from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 
-from .agent_capabilities import AgentRole, LEGACY_MAPPING, LegacyCodeError
 
 logger = logging.getLogger(__name__)
 
@@ -235,6 +233,8 @@ class KNodeMigrator:
 
             # Recursively migrate
             def migrate_dict(d: Dict, path: str = "") -> None:
+                """TODO: Add docstring."""
+
                 nonlocal changes_made
 
                 for key, value in d.items():

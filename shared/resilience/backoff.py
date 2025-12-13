@@ -6,7 +6,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
 
 class BackoffStrategy(ABC):
     """Abstract base for backoff strategies."""

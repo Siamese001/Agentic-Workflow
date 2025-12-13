@@ -13,7 +13,6 @@ import logging
 from typing import Dict, Any
 
 # Import the components
-from .hardened_brave_search import (
     HardenedBraveSearch,
     create_brave_search_config,
     SearchMissError,

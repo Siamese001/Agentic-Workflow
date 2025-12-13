@@ -2,12 +2,13 @@
 Unit tests for shared/pipeline_ops/
 Tests pipeline operations including data access, guardrails, and synthesis.
 """
-from __future__ import annotations
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
 class PipelineStatus(Enum):
+    """TODO: Add docstring."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -15,12 +16,16 @@ class PipelineStatus(Enum):
     CANCELLED = "cancelled"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class PipelineStep:
     name: str
     status: PipelineStatus = PipelineStatus.PENDING
     input_data: Optional[Dict] = None
     output_data: Optional[Dict] = None
     error: Optional[str] = None
+
+    """TODO: Add docstring."""
 
 @dataclass
 class Pipeline:
@@ -55,6 +60,8 @@ class TestPipelineDataAccess:
 
     def test_pipeline_checkpoint_save(self):
         """Pipeline checkpoints are saved correctly."""
+            """TODO: Add docstring."""
+
         checkpoints: Dict[str, Dict] = {}
 
         def save_checkpoint(pipeline_id: str, step_name: str, data: Dict):

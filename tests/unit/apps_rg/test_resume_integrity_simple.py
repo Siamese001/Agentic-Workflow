@@ -4,7 +4,6 @@ Verify that the Resume Engine classes can be instantiated and run without crashi
 """
 
 import pytest
-from typing import Dict, Any
 
 # Test imports from apps_rg module - only test what actually exists
 try:

@@ -10,10 +10,7 @@ in the hardened infrastructure components including:
 
 import pytest
 import asyncio
-import os
 import json
-from pathlib import Path
-from unittest.mock import patch, MagicMock, AsyncMock
 from typing import Dict, Any
 
 # Import the modules we're testing
@@ -135,6 +132,8 @@ async def test_atomic_state_concurrent_writes(tmp_path):
 
     # Simulate concurrent writes
     async def write_state(workflow_id: str, node_id: int):
+        """TODO: Add docstring."""
+
         state = WorkflowState(workflow_id=workflow_id, current_k_node=node_id)
         await manager.checkpoint(workflow_id, state)
 
@@ -162,11 +161,17 @@ async def test_router_fallback_with_degraded_providers():
     router = HardenedRouter()
 
     # Mock executors with different behaviors
+        """TODO: Add docstring."""
+
     async def failing_executor(prompt):
         raise CircuitOpenError("Service Unavailable")
+        """TODO: Add docstring."""
+
 
     async def slow_executor(prompt):
         await asyncio.sleep(0.1)  # Simulate slowness
+        """TODO: Add docstring."""
+
         return "Slow response"
 
     async def working_executor(prompt):

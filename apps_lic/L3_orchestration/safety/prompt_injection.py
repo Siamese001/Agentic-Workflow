@@ -7,7 +7,6 @@ Part of the safety guardrail system for agentic workflows.
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple
 import logging
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +102,8 @@ def detect_injection(prompt: str) -> InjectionResult:
     # Extract detected patterns
     detected_patterns = []
     if score > 0:
-        detected_patterns = [f"DETECTED: {pattern}" for pattern in rationale.split(": ")[1].split(", ")]
+        detected_patterns = [f"DETECTED: {pattern}" for pattern in rationale.split(": ")[1].split(",
+            ")]
 
     logger.debug(f"Injection detection result: is_injection={is_injection}, severity={severity}")
 

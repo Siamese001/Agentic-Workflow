@@ -1,6 +1,5 @@
 """Implementation for manage_v6."""
 
-from typing import Any, Dict, List, Optional
 
 class FormatObservabilityContextPlanConstraints:
     """L5 Safety constraints - fail-closed behavior"""
@@ -46,14 +45,22 @@ class FormatObservabilityContextPlanImpl(FormatObservabilityContextPlanProcessor
         self._validate_input(input_data)
         if not self.validate_safety(input_data):
             raise SecurityError('Input failed L5 safety validation')
-        result = FormatObservabilityContextPlanResult(success=True, data={'processed': True, 'input': input_data}, safety_validated=True, timestamp=self._get_timestamp())
+        result = FormatObservabilityContextPlanResult(success=True,
+            data={'processed': True,
+            'input': input_data},
+            safety_validated=True,
+            timestamp=self._get_timestamp())
         self.logger.info(f'Successfully processed: {result.success}')
         return result
 
     def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
-            dangerous_patterns = ['<script>', 'javascript:', '# SECURITY: ast.literal_eval(', '# SECURITY: pass  # exec disabled: ', '__import__']
+            dangerous_patterns = ['<script>',
+                'javascript:',
+                '# SECURITY: ast.literal_eval(',
+                '# SECURITY: pass  # exec disabled: ',
+                '__import__']
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:

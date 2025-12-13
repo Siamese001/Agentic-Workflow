@@ -1,11 +1,11 @@
 """Types and models for dedup_merged_files."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from enum import Enum
 
 @dataclass
 class DedupManifest:
+    """TODO: Add docstring."""
+
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     total_scanned: int = 0
     duplicate_groups: int = 0

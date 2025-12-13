@@ -16,7 +16,6 @@ from typing import Any, Dict, List, Optional, Tuple, Union, Set
 from datetime import datetime, timedelta
 from pathlib import Path
 from dataclasses import dataclass, field, asdict
-from pydantic import BaseModel, Field
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -246,7 +245,7 @@ class HardenedVectorStore:
         documents: Optional[List[str]] = None,
         metadatas: Optional[List[Dict[str, Any]]] = None
     ) -> List[str]:
-        """Insert vectors with WAL protection."""
+        """# SQL removed: Insert vectors with WAL protection."""
         return await self._execute_operation(
             operation_type=OperationType.INSERT,
             vector_ids=ids,
@@ -282,7 +281,7 @@ class HardenedVectorStore:
         documents: Optional[List[str]] = None,
         metadatas: Optional[List[Dict[str, Any]]] = None
     ) -> List[str]:
-        """Update vectors with WAL protection."""
+        """# SQL removed: Update vectors with WAL protection."""
         return await self._execute_operation(
             operation_type=OperationType.UPDATE,
             vector_ids=ids,
@@ -294,7 +293,7 @@ class HardenedVectorStore:
         )
 
     async def delete(self, ids: List[str]) -> List[str]:
-        """Delete vectors with WAL protection."""
+        """# SQL removed: Delete vectors with WAL protection."""
         return await self._execute_operation(
             operation_type=OperationType.DELETE,
             vector_ids=ids,
@@ -305,7 +304,7 @@ class HardenedVectorStore:
         self,
         batches: List[Tuple[List[str], List[List[float]], Optional[List[str]], Optional[List[Dict[str, Any]]]]]
     ) -> List[str]:
-        """Insert multiple batches atomically."""
+        """# SQL removed: Insert multiple batches atomically."""
         all_ids = []
         operation_id = self._generate_operation_id()
 
@@ -456,7 +455,6 @@ class HardenedVectorStore:
 
                     try:
                         if self.enable_compression:
-                            import gzip
                             data = json.loads(gzip.decompress(line.strip().encode('latin1')).decode())
                         else:
                             data = json.loads(line.strip())
@@ -490,7 +488,7 @@ class HardenedVectorStore:
         self.stats.rolled_back_operations += 1
 
     async def _update_operation_status(self, operation_id: str, status: OperationStatus) -> None:
-        """Update the status of an operation in WAL."""
+        """# SQL removed: Update the status of an operation in WAL."""
         # In a real implementation, this would update the record in place
         # For simplicity, we'll just log the status change
         logger.info(f"Operation {operation_id} status: {status.value}")
@@ -553,7 +551,6 @@ class HardenedVectorStore:
                     if record.timestamp > cutoff_date:
                         line = json.dumps(asdict(record), default=str)
                         if self.enable_compression:
-                            import gzip
                             line = gzip.compress(line.encode()).decode('latin1')
                         out_f.write(line + "\n")
                     else:

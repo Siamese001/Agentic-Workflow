@@ -164,7 +164,7 @@ def cache_get(
         return None
 
 def cache_delete(client: Any, key: str) -> bool:
-    """Delete a key from Redis cache.
+    """# SQL removed: Delete a key from Redis cache.
 
     Args:
         client: Redis client
@@ -270,7 +270,7 @@ def cache_set_many(
         return False
 
 def cache_clear_pattern(client: Any, pattern: str) -> int:
-    """Delete all keys matching a pattern.
+    """# SQL removed: Delete all keys matching a pattern.
 
     Args:
         client: Redis client

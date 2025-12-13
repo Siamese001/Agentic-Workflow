@@ -332,7 +332,6 @@ Generate the corrected message body:
         Returns:
             Number of bullets
         """
-        import re
         # Count patterns like "•", "-", "*"
         bullets = re.findall(r'[\n•\-\*]\s+', body)
         return len(bullets)

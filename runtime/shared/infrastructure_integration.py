@@ -7,18 +7,13 @@ infrastructure, ensuring all components work together seamlessly.
 
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional, Callable, Awaitable
 
-from .core.event_bus import EventType, SystemEvent, get_event_bus
 from .event_bus_integration import HardenedEventBus, get_hardened_event_bus
-from .core.provenance_tracker import ProvenanceTracker, get_provenance_tracker, ProvenanceContext
 from .core.model_router import ModelRouter, TaskType, get_model_router
 from .bulkhead_manager import BulkheadManager, TaskPriority, get_bulkhead_manager
 from .circuit_breaker import get_circuit_breaker_registry
-from .retry_policy import get_retry_executor
 from .dead_letter_queue import get_dead_letter_queue, FailureReason
 from .health_check import HealthCheckRegistry, initialize_system_health_checks
-from .rate_limiter import get_rate_limit_manager
 
 logger = logging.getLogger(__name__)
 
@@ -86,8 +81,12 @@ class InfrastructureOrchestrator:
 
         # Event bus health check
         class EventBusHealthChecker(HealthChecker):
+            """TODO: Add docstring."""
+
             def __init__(self, event_bus: HardenedEventBus):
                 self.event_bus = event_bus
+
+                """TODO: Add docstring."""
 
             async def check_health(self) -> HealthCheckResult:
                 health = await self.event_bus.health_check()
@@ -102,15 +101,23 @@ class InfrastructureOrchestrator:
                     metrics=health
                 )
 
+                """TODO: Add docstring."""
+
             @property
             def component_name(self) -> str:
                 return "event_bus"
+                """TODO: Add docstring."""
+
 
             @property
             def component_type(self) -> ComponentType:
                 return ComponentType.CUSTOM
 
         # Provenance tracker health check
+            """TODO: Add docstring."""
+
+                """TODO: Add docstring."""
+
         class ProvenanceHealthChecker(HealthChecker):
             def __init__(self, tracker: ProvenanceTracker):
                 self.tracker = tracker
@@ -124,9 +131,13 @@ class InfrastructureOrchestrator:
                     component_type=ComponentType.CUSTOM,
                     status=status,
                     message=f"Provenance tracker is {health['status']}",
+                """TODO: Add docstring."""
+
                     timestamp=None,
                     metrics=health
                 )
+                """TODO: Add docstring."""
+
 
             @property
             def component_name(self) -> str:
@@ -134,7 +145,11 @@ class InfrastructureOrchestrator:
 
             @property
             def component_type(self) -> ComponentType:
+                """TODO: Add docstring."""
+
                 return ComponentType.CUSTOM
+
+            """TODO: Add docstring."""
 
         # Model router health check
         class ModelRouterHealthChecker(HealthChecker):
@@ -157,9 +172,13 @@ class InfrastructureOrchestrator:
                     message = "Model router operating normally"
 
                 return HealthCheckResult(
+                """TODO: Add docstring."""
+
                     component_name="model_router",
                     component_type=ComponentType.CUSTOM,
                     status=status,
+                """TODO: Add docstring."""
+
                     message=message,
                     timestamp=None,
                     metrics=stats
@@ -528,8 +547,12 @@ def with_infrastructure(
 
     Returns:
         Decorated function
+            """TODO: Add docstring."""
+
     """
     def decorator(func):
+        """TODO: Add docstring."""
+
         async def async_wrapper(*args, **kwargs):
             # Extract prompt and sources
             prompt = kwargs.get("prompt", str(args[0]) if args else "")

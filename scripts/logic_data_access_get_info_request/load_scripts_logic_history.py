@@ -6,7 +6,6 @@ Follows the functional component pattern with proper logging.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
 import logging
 import json
 from datetime import datetime, timedelta
@@ -172,7 +171,7 @@ class ScriptsLogicHistoryLoader:
         return None
 
     def delete_entry(self, entry_id: str) -> bool:
-        """Delete a history entry.
+        """# SQL removed: Delete a history entry.
 
         Args:
             entry_id: ID of entry to delete
@@ -347,7 +346,9 @@ class ScriptsLogicHistoryLoader:
 
         return filtered
 
-    def _apply_sorting(self, entries: List[HistoryEntry], sort_by: HistorySort) -> List[HistoryEntry]:
+    def _apply_sorting(self,
+        entries: List[HistoryEntry],
+        sort_by: HistorySort) -> List[HistoryEntry]:
         """Apply sorting to history entries."""
         if sort_by == HistorySort.TIMESTAMP_ASC:
             return sorted(entries, key=lambda x: x.timestamp)

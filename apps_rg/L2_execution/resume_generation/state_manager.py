@@ -5,7 +5,6 @@
 import json
 import os
 from dataclasses import asdict
-from typing import Any, Dict, List, Optional
 
 class StateSerializer:
     """
@@ -384,6 +383,6 @@ class ManifestManager:
         Args:
             manifest_data: The manifest dictionary to save
         """
-        
+
         with open(self.manifest_path, 'w', encoding='utf-8') as f:
             json.dump(manifest_data, f, indent=2, ensure_ascii=False)

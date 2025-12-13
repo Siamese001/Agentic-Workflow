@@ -1,7 +1,7 @@
 """Implementation for tool_invoke_observability_tool."""
 
 from typing import Any, Dict, List, Optional
-from .tool_invoke_observability_tool_types import *
+# from .tool_invoke_observability_tool_types import *  # Star import removed
 
 class ObservabilityToolInvoker:
     """Main invoker for observability tools."""
@@ -27,7 +27,10 @@ class ObservabilityToolInvoker:
         self._circuit_breakers[tool_spec.tool_id] = {'failures': 0, 'last_failure': None, 'state': 'closed'}
         self.logger.info(f'Registered tool: {tool_spec.tool_id}')
 
-    def invoke_tool(self, context: ToolInvocationContext, parameters: Dict[str, Any]) -> ToolInvocationResult:
+    def invoke_tool(self,
+        context: ToolInvocationContext,
+        parameters: Dict[str,
+        Any]) -> ToolInvocationResult:
         """Invoke an observability tool.
 
         Args:
@@ -41,13 +44,25 @@ class ObservabilityToolInvoker:
         start_time = time.time()
         try:
             if context.tool_id not in self._registered_tools:
-                return self._create_error_result(context.invocation_id, context.tool_id, context.method, f'Tool not registered: {context.tool_id}', start_time)
+                return self._create_error_result(context.invocation_id,
+                    context.tool_id,
+                    context.method,
+                    f'Tool not registered: {context.tool_id}',
+                    start_time)
             if not self._check_circuit_breaker(context.tool_id):
-                return self._create_error_result(context.invocation_id, context.tool_id, context.method, 'Circuit breaker is open', start_time)
+                return self._create_error_result(context.invocation_id,
+                    context.tool_id,
+                    context.method,
+                    'Circuit breaker is open',
+                    start_time)
             tool_spec = self._registered_tools[context.tool_id]
             validation_errors = self._validate_parameters(parameters, tool_spec, context.method)
             if validation_errors:
-                return self._create_error_result(context.invocation_id, context.tool_id, context.method, f'Parameter validation failed: {validation_errors}', start_time)
+                return self._create_error_result(context.invocation_id,
+                    context.tool_id,
+                    context.method,
+                    f'Parameter validation failed: {validation_errors}',
+                    start_time)
             result = self._execute_with_retry(context, parameters)
             if result.success:
                 self._reset_circuit_breaker(context.tool_id)
@@ -60,9 +75,16 @@ class ObservabilityToolInvoker:
         except Exception as e:
             self.logger.error(f'Tool invocation failed: {str(e)}')
             self._record_failure(context.tool_id)
-            return self._create_error_result(context.invocation_id, context.tool_id, context.method, str(e), start_time)
+            return self._create_error_result(context.invocation_id,
+                context.tool_id,
+                context.method,
+                str(e),
+                start_time)
 
-    def invoke_tool_batch(self, contexts: List[ToolInvocationContext], parameters_list: List[Dict[str, Any]]) -> List[ToolInvocationResult]:
+    def invoke_tool_batch(self,
+        contexts: List[ToolInvocationContext],
+        parameters_list: List[Dict[str,
+        Any]]) -> List[ToolInvocationResult]:
         """Invoke multiple tools.
 
         Args:
@@ -80,7 +102,11 @@ class ObservabilityToolInvoker:
             results.append(result)
         return results
 
-    def invoke_tool_stream(self, context: ToolInvocationContext, parameters: Dict[str, Any]) -> Dict[str, object]:
+    def invoke_tool_stream(self,
+        context: ToolInvocationContext,
+        parameters: Dict[str,
+        Any]) -> Dict[str,
+        object]:
         """Invoke tool with streaming response.
 
         Args:
@@ -131,7 +157,10 @@ class ObservabilityToolInvoker:
             self._reset_circuit_breaker(tool_id)
             self.logger.info(f'Reset circuit breaker for tool: {tool_id}')
 
-    def _execute_with_retry(self, context: ToolInvocationContext, parameters: Dict[str, Any]) -> ToolInvocationResult:
+    def _execute_with_retry(self,
+        context: ToolInvocationContext,
+        parameters: Dict[str,
+        Any]) -> ToolInvocationResult:
         """Execute tool invocation with retry logic."""
         last_error = None
         max_retries = context.retry_policy.get('max_retries', self.config.max_retries)
@@ -140,36 +169,75 @@ class ObservabilityToolInvoker:
                 client = self._tool_clients.get(context.tool_id)
                 if client:
                     response = client.invoke(context.method, parameters)
-                    return ToolInvocationResult(invocation_id=context.invocation_id, tool_id=context.tool_id, method=context.method, success=True, response=response.get('data'), response_code=response.get('status_code', 200), headers=response.get('headers', {}), metrics=response.get('metrics', {}))
+                    return ToolInvocationResult(invocation_id=context.invocation_id,
+                        tool_id=context.tool_id,
+                        method=context.method,
+                        success=True,
+                        response=response.get('data'),
+                        response_code=response.get('status_code',
+                        200),
+                        headers=response.get('headers',
+                        {}),
+                        metrics=response.get('metrics',
+                        {}))
                 else:
                     return self._simulate_invocation(context, parameters)
             except Exception as e:
                 last_error = str(e)
                 if attempt < max_retries:
                     retry_delay = context.retry_policy.get('delay', 2 ** attempt)
-                    self.logger.warning(f'Invocation attempt {attempt + 1} failed, retrying in {retry_delay}s: {last_error}')
-                    time.sleep(retry_delay)
+                    self.logger.warning(f'Invocation attempt {attempt + 1} failed,
+                        retrying in {retry_delay}s: {last_error}')
+                    await asyncio.sleep(retry_delay)
                 else:
                     self.logger.error(f'Invocation failed after {attempt + 1} attempts: {last_error}')
-        return self._create_error_result(context.invocation_id, context.tool_id, context.method, last_error, time.time())
+        return self._create_error_result(context.invocation_id,
+            context.tool_id,
+            context.method,
+            last_error,
+            time.time())
 
-    def _simulate_invocation(self, context: ToolInvocationContext, parameters: Dict[str, Any]) -> ToolInvocationResult:
+    def _simulate_invocation(self,
+        context: ToolInvocationContext,
+        parameters: Dict[str,
+        Any]) -> ToolInvocationResult:
         """Simulate tool invocation."""
         tool_spec = self._registered_tools[context.tool_id]
-        time.sleep(0.1)
+        await asyncio.sleep(0.1)
         if tool_spec.category == ToolCategory.TRACING:
-            response = {'trace_id': parameters.get('trace_id', str(uuid.uuid4())), 'spans': [{'operation': 'span1', 'duration': 0.1}, {'operation': 'span2', 'duration': 0.2}]}
+            response = {'trace_id': parameters.get('trace_id',
+                str(uuid.uuid4())),
+                'spans': [{'operation': 'span1',
+                'duration': 0.1},
+                {'operation': 'span2',
+                'duration': 0.2}]}
         elif tool_spec.category == ToolCategory.METRICS:
-            response = {'metrics': [{'name': 'cpu_usage', 'value': 45.2, 'timestamp': datetime.utcnow().isoformat()}, {'name': 'memory_usage', 'value': 67.8, 'timestamp': datetime.utcnow().isoformat()}]}
+            response = {'metrics': [{'name': 'cpu_usage',
+                'value': 45.2,
+                'timestamp': datetime.utcnow().isoformat()},
+                {'name': 'memory_usage',
+                'value': 67.8,
+                'timestamp': datetime.utcnow().isoformat()}]}
         elif tool_spec.category == ToolCategory.LOGGING:
             response = {'logs': [{'message': f'Log entry for {context.method}', 'level': 'info'}, {'message': f'Another log entry', 'level': 'warning'}]}
         elif tool_spec.category == ToolCategory.MONITORING:
             response = {'status': 'healthy', 'checks': [{'name': 'database', 'status': 'ok'}, {'name': 'redis', 'status': 'ok'}]}
         else:
             response = {'message': f'Mock response from {tool_spec.name}'}
-        return ToolInvocationResult(invocation_id=context.invocation_id, tool_id=context.tool_id, method=context.method, success=True, response=response, response_code=200, headers={'content-type': 'application/json'}, metrics={'processing_time': 0.1})
+        return ToolInvocationResult(invocation_id=context.invocation_id,
+            tool_id=context.tool_id,
+            method=context.method,
+            success=True,
+            response=response,
+            response_code=200,
+            headers={'content-type': 'application/json'},
+            metrics={'processing_time': 0.1})
 
-    def _validate_parameters(self, parameters: Dict[str, Any], tool_spec: ToolSpecification, method: str) -> List[str]:
+    def _validate_parameters(self,
+        parameters: Dict[str,
+        Any],
+        tool_spec: ToolSpecification,
+        method: str) -> List[str]:
         """Validate tool parameters."""
         errors = []
         method_schema = tool_spec.parameters_schema.get(method, {})
@@ -185,7 +253,13 @@ class ObservabilityToolInvoker:
 
     def _check_type(self, value: object, expected_type: str) -> bool:
         """Check value type."""
-        type_map = {'string': str, 'integer': int, 'float': (int, float), 'boolean': bool, 'array': list, 'object': dict}
+        type_map = {'string': str,
+            'integer': int,
+            'float': (int,
+            float),
+            'boolean': bool,
+            'array': list,
+            'object': dict}
         expected_python_type = type_map.get(expected_type)
         if expected_python_type:
             return isinstance(value, expected_python_type)
@@ -224,25 +298,92 @@ class ObservabilityToolInvoker:
         """Record invocation metrics."""
         pass
 
-    def _create_error_result(self, invocation_id: str, tool_id: str, method: str, error: str, start_time: float) -> ToolInvocationResult:
+    def _create_error_result(self,
+        invocation_id: str,
+        tool_id: str,
+        method: str,
+        error: str,
+        start_time: float) -> ToolInvocationResult:
         """Create error result."""
-        return ToolInvocationResult(invocation_id=invocation_id, tool_id=tool_id, method=method, success=False, error=error, execution_time=time.time() - start_time)
+        return ToolInvocationResult(invocation_id=invocation_id,
+            tool_id=tool_id,
+            method=method,
+            success=False,
+            error=error,
+            execution_time=time.time() - start_time)
 
     def _initialize_tools(self) -> None:
         """Initialize built-in tools."""
-        trace_tool = ToolSpecification(tool_id='trace_collector', name='Trace Collector', version='1.0', category=ToolCategory.TRACING, protocol=ToolProtocol.NATIVE, endpoint='internal://trace_collector', methods=['collect', 'analyze', 'query'], parameters_schema={'collect': {'trace_id': {'type': 'string', 'required': False}, 'service': {'type': 'string', 'required': False}}, 'analyze': {'trace_data': {'type': 'object', 'required': True}}})
-        metric_tool = ToolSpecification(tool_id='metric_collector', name='Metric Collector', version='1.0', category=ToolCategory.METRICS, protocol=ToolProtocol.NATIVE, endpoint='internal://metric_collector', methods=['collect', 'query', 'aggregate'], parameters_schema={'collect': {'metric_names': {'type': 'array', 'required': False}, 'time_range': {'type': 'object', 'required': False}}, 'query': {'query': {'type': 'string', 'required': True}}})
-        log_tool = ToolSpecification(tool_id='log_analyzer', name='Log Analyzer', version='1.0', category=ToolCategory.LOGGING, protocol=ToolProtocol.NATIVE, endpoint='internal://log_analyzer', methods=['analyze', 'filter', 'search'], parameters_schema={'analyze': {'log_source': {'type': 'string', 'required': True}, 'time_range': {'type': 'object', 'required': False}}, 'filter': {'level': {'type': 'string', 'required': False}, 'pattern': {'type': 'string', 'required': False}}})
+        trace_tool = ToolSpecification(tool_id='trace_collector',
+            name='Trace Collector',
+            version='1.0',
+            category=ToolCategory.TRACING,
+            protocol=ToolProtocol.NATIVE,
+            endpoint='internal://trace_collector',
+            methods=['collect',
+            'analyze',
+            'query'],
+            parameters_schema={'collect': {'trace_id': {'type': 'string',
+            'required': False},
+            'service': {'type': 'string',
+            'required': False}},
+            'analyze': {'trace_data': {'type': 'object',
+            'required': True}}})
+        metric_tool = ToolSpecification(tool_id='metric_collector',
+            name='Metric Collector',
+            version='1.0',
+            category=ToolCategory.METRICS,
+            protocol=ToolProtocol.NATIVE,
+            endpoint='internal://metric_collector',
+            methods=['collect',
+            'query',
+            'aggregate'],
+            parameters_schema={'collect': {'metric_names': {'type': 'array',
+            'required': False},
+            'time_range': {'type': 'object',
+            'required': False}},
+            'query': {'query': {'type': 'string',
+            'required': True}}})
+        log_tool = ToolSpecification(tool_id='log_analyzer',
+            name='Log Analyzer',
+            version='1.0',
+            category=ToolCategory.LOGGING,
+            protocol=ToolProtocol.NATIVE,
+            endpoint='internal://log_analyzer',
+            methods=['analyze',
+            'filter',
+            'search'],
+            parameters_schema={'analyze': {'log_source': {'type': 'string',
+            'required': True},
+            'time_range': {'type': 'object',
+            'required': False}},
+            'filter': {'level': {'type': 'string',
+            'required': False},
+            'pattern': {'type': 'string',
+            'required': False}}})
         self.register_tool(trace_tool)
         self.register_tool(metric_tool)
         self.register_tool(log_tool)
 
-def create_observability_tool_invoker(default_timeout: float=30.0, max_retries: int=3, enable_circuit_breaker: bool=True, **kwargs: object) -> ObservabilityToolInvoker:
+def create_observability_tool_invoker(default_timeout: float=30.0,
+    max_retries: int=3,
+    enable_circuit_breaker: bool=True,
+    **kwargs: object) -> ObservabilityToolInvoker:
     """Create a configured observability tool invoker."""
-    config = ToolInvocationConfig(default_timeout=default_timeout, max_retries=max_retries, enable_circuit_breaker=enable_circuit_breaker, **kwargs)
+    config = ToolInvocationConfig(default_timeout=default_timeout,
+        max_retries=max_retries,
+        enable_circuit_breaker=enable_circuit_breaker,
+        **kwargs)
     return ObservabilityToolInvoker(config)
 
-def tool_invoke_observability_tool(tool_id: str, method: str, parameters: Dict[str, Any], invocation_id: Optional[str]=None, caller_id: Optional[str]=None, timeout: float=30.0) -> Dict[str, Any]:
+def tool_invoke_observability_tool(tool_id: str,
+    method: str,
+    parameters: Dict[str,
+    Any],
+    invocation_id: Optional[str]=None,
+    caller_id: Optional[str]=None,
+    timeout: float=30.0) -> Dict[str,
+    Any]:
     """Invoke observability tool.
 
     Args:
@@ -257,6 +398,10 @@ def tool_invoke_observability_tool(tool_id: str, method: str, parameters: Dict[s
         Dict: Invocation result
     """
     invoker = create_observability_tool_invoker()
-    context = ToolInvocationContext(invocation_id=invocation_id or str(uuid.uuid4()), tool_id=tool_id, method=method, caller_id=caller_id, timeout=timeout)
+    context = ToolInvocationContext(invocation_id=invocation_id or str(uuid.uuid4()),
+        tool_id=tool_id,
+        method=method,
+        caller_id=caller_id,
+        timeout=timeout)
     result = invoker.invoke_tool(context, parameters)
     return {'invocation_id': result.invocation_id, 'tool_id': result.tool_id, 'method': result.method, 'success': result.success, 'response': result.response, 'response_code': result.response_code, 'headers': result.headers, 'metrics': result.metrics, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}

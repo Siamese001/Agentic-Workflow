@@ -1,7 +1,7 @@
 """Implementation for use_observability_execution."""
 
 from typing import Any, Dict, List, Optional
-from .use_observability_execution_types import *
+# from .use_observability_execution_types import *  # Star import removed
 
 class ObservabilityExecutionEngine:
     """Main engine for observability execution."""
@@ -26,7 +26,9 @@ class ObservabilityExecutionEngine:
         self._operation_handlers[operation_type] = handler
         self.logger.info(f'Registered operation: {operation_type}')
 
-    def execute(self, request: ExecutionRequest, environment: Optional[ExecutionEnvironment]=None) -> ExecutionResult:
+    def execute(self,
+        request: ExecutionRequest,
+        environment: Optional[ExecutionEnvironment]=None) -> ExecutionResult:
         """Execute an observability operation.
 
         Args:
@@ -40,9 +42,15 @@ class ObservabilityExecutionEngine:
         start_time = time.time()
         try:
             if request.operation_type not in self._operation_handlers:
-                return self._create_error_result(request.request_id, request.operation_type, f'Operation not registered: {request.operation_type}', start_time)
+                return self._create_error_result(request.request_id,
+                    request.operation_type,
+                    f'Operation not registered: {request.operation_type}',
+                    start_time)
             if not self._check_dependencies(request.dependencies):
-                return self._create_error_result(request.request_id, request.operation_type, 'Dependencies not satisfied', start_time)
+                return self._create_error_result(request.request_id,
+                    request.operation_type,
+                    'Dependencies not satisfied',
+                    start_time)
             if request.strategy == ExecutionStrategy.IMMEDIATE:
                 result = self._execute_immediate(request, environment)
             elif request.strategy == ExecutionStrategy.QUEUED:
@@ -58,9 +66,14 @@ class ObservabilityExecutionEngine:
             return result
         except Exception as e:
             self.logger.error(f'Execution failed: {str(e)}')
-            return self._create_error_result(request.request_id, request.operation_type, str(e), start_time)
+            return self._create_error_result(request.request_id,
+                request.operation_type,
+                str(e),
+                start_time)
 
-    def execute_batch(self, requests: List[ExecutionRequest], environment: Optional[ExecutionEnvironment]=None) -> List[ExecutionResult]:
+    def execute_batch(self,
+        requests: List[ExecutionRequest],
+        environment: Optional[ExecutionEnvironment]=None) -> List[ExecutionResult]:
         """Execute multiple operations.
 
         Args:
@@ -71,7 +84,9 @@ class ObservabilityExecutionEngine:
             List[ExecutionResult]: Results for all executions
         """
         results = []
-        sorted_requests = sorted(requests, key=lambda r: self._priority_value(r.priority), reverse=True)
+        sorted_requests = sorted(requests,
+            key=lambda r: self._priority_value(r.priority),
+            reverse=True)
         for request in sorted_requests:
             result = self.execute(request, environment)
             results.append(result)
@@ -93,7 +108,8 @@ class ObservabilityExecutionEngine:
         self.logger.info(f'Queued execution: {request.request_id}')
         return True
 
-    def process_queue(self, environment: Optional[ExecutionEnvironment]=None) -> List[ExecutionResult]:
+    def process_queue(self,
+        environment: Optional[ExecutionEnvironment]=None) -> List[ExecutionResult]:
         """Process queued executions.
 
         Args:
@@ -163,35 +179,51 @@ class ObservabilityExecutionEngine:
             return self._execution_history[-limit:]
         return self._execution_history
 
-    def _execute_immediate(self, request: ExecutionRequest, environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+    def _execute_immediate(self,
+        request: ExecutionRequest,
+        environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
         """Execute immediately."""
         return self._execute_with_handler(request, environment)
 
-    def _execute_queued(self, request: ExecutionRequest, environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+    def _execute_queued(self,
+        request: ExecutionRequest,
+        environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
         """Execute from queue."""
         result = self._execute_with_handler(request, environment)
         result.metrics['queue_time'] = 0.1
         return result
 
-    def _execute_scheduled(self, request: ExecutionRequest, environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+    def _execute_scheduled(self,
+        request: ExecutionRequest,
+        environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
         """Execute scheduled execution."""
         scheduled_time = request.metadata.get('scheduled_time')
         if scheduled_time:
             scheduled_dt = datetime.fromisoformat(scheduled_time)
             if datetime.utcnow() < scheduled_dt:
-                return self._create_error_result(request.request_id, request.operation_type, 'Scheduled time not reached', time.time())
+                return self._create_error_result(request.request_id,
+                    request.operation_type,
+                    'Scheduled time not reached',
+                    time.time())
         return self._execute_with_handler(request, environment)
 
-    def _execute_conditional(self, request: ExecutionRequest, environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+    def _execute_conditional(self,
+        request: ExecutionRequest,
+        environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
         """Execute based on conditions."""
         conditions = request.metadata.get('conditions', {})
         for condition, expected_value in conditions.items():
             actual_value = self._evaluate_condition(condition, environment)
             if actual_value != expected_value:
-                return self._create_error_result(request.request_id, request.operation_type, f'Condition not met: {condition}', time.time())
+                return self._create_error_result(request.request_id,
+                    request.operation_type,
+                    f'Condition not met: {condition}',
+                    time.time())
         return self._execute_with_handler(request, environment)
 
-    def _execute_with_handler(self, request: ExecutionRequest, environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
+    def _execute_with_handler(self,
+        request: ExecutionRequest,
+        environment: Optional[ExecutionEnvironment]) -> ExecutionResult:
         """Execute with registered handler."""
         handler = self._operation_handlers[request.operation_type]
         self._track_execution_start(request)
@@ -201,7 +233,14 @@ class ObservabilityExecutionEngine:
             metrics = output.get('metrics', {}) if isinstance(output, dict) else {}
             artifacts = output.get('artifacts', []) if isinstance(output, dict) else []
             resource_usage = output.get('resource_usage', {}) if isinstance(output, dict) else {}
-            return ExecutionResult(request_id=request.request_id, operation_type=request.operation_type, success=True, output=output, exit_code=0, metrics=metrics, artifacts=artifacts, resource_usage=resource_usage)
+            return ExecutionResult(request_id=request.request_id,
+                operation_type=request.operation_type,
+                success=True,
+                output=output,
+                exit_code=0,
+                metrics=metrics,
+                artifacts=artifacts,
+                resource_usage=resource_usage)
         finally:
             self._track_execution_complete(request)
 
@@ -213,7 +252,9 @@ class ObservabilityExecutionEngine:
                 return False
         return True
 
-    def _evaluate_condition(self, condition: str, environment: Optional[ExecutionEnvironment]) -> object:
+    def _evaluate_condition(self,
+        condition: str,
+        environment: Optional[ExecutionEnvironment]) -> object:
         """Evaluate a condition."""
         if environment:
             if condition.startswith('env.'):
@@ -235,7 +276,10 @@ class ObservabilityExecutionEngine:
 
     def _track_execution_start(self, request: ExecutionRequest) -> None:
         """Track execution start."""
-        self._active_executions[request.request_id] = {'operation_type': request.operation_type, 'start_time': time.time(), 'status': 'running', 'cancelled': False}
+        self._active_executions[request.request_id] = {'operation_type': request.operation_type,
+            'start_time': time.time(),
+            'status': 'running',
+            'cancelled': False}
 
     def _track_execution_complete(self, request: ExecutionRequest) -> None:
         """Track execution completion."""
@@ -245,9 +289,18 @@ class ObservabilityExecutionEngine:
             execution['status'] = 'completed'
             del self._active_executions[request.request_id]
 
-    def _create_error_result(self, request_id: str, operation_type: str, error: str, start_time: float) -> ExecutionResult:
+    def _create_error_result(self,
+        request_id: str,
+        operation_type: str,
+        error: str,
+        start_time: float) -> ExecutionResult:
         """Create error result."""
-        return ExecutionResult(request_id=request_id, operation_type=operation_type, success=False, error=error, exit_code=1, execution_time=time.time() - start_time)
+        return ExecutionResult(request_id=request_id,
+            operation_type=operation_type,
+            success=False,
+            error=error,
+            exit_code=1,
+            execution_time=time.time() - start_time)
 
     def _initialize_handlers(self) -> None:
         """Initialize built-in handlers."""
@@ -255,7 +308,12 @@ class ObservabilityExecutionEngine:
         def _metrics_handler(context: Dict[str, Any]) -> Dict[str, Any]:
             request = context['request']
             params = request.parameters
-            return {'metrics': {'cpu_usage': 45.2, 'memory_usage': 67.8, 'disk_usage': 23.5}, 'collected_at': datetime.utcnow().isoformat(), 'metrics': {'metrics_count': 3, 'processing_time': 0.1}}
+            return {'metrics': {'cpu_usage': 45.2,
+                'memory_usage': 67.8,
+                'disk_usage': 23.5},
+                'collected_at': datetime.utcnow().isoformat(),
+                'metrics': {'metrics_count': 3,
+                'processing_time': 0.1}}
 
         def _log_analysis_handler(context: Dict[str, Any]) -> Dict[str, Any]:
             request = context['request']
@@ -274,12 +332,25 @@ class ObservabilityExecutionEngine:
         self.register_operation('analyze_traces', _trace_analysis_handler)
         self.register_operation('health_check', _health_check_handler)
 
-def create_observability_execution_engine(default_timeout: float=30.0, max_concurrent_executions: int=10, enable_queueing: bool=True, **kwargs: object) -> ObservabilityExecutionEngine:
+def create_observability_execution_engine(default_timeout: float=30.0,
+    max_concurrent_executions: int=10,
+    enable_queueing: bool=True,
+    **kwargs: object) -> ObservabilityExecutionEngine:
     """Create a configured observability execution engine."""
-    config = ExecutionConfig(default_timeout=default_timeout, max_concurrent_executions=max_concurrent_executions, enable_queueing=enable_queueing, **kwargs)
+    config = ExecutionConfig(default_timeout=default_timeout,
+        max_concurrent_executions=max_concurrent_executions,
+        enable_queueing=enable_queueing,
+        **kwargs)
     return ObservabilityExecutionEngine(config)
 
-def use_observability_execution(operation_type: str, parameters: Dict[str, Any], request_id: Optional[str]=None, strategy: str='immediate', priority: str='normal', timeout: float=30.0) -> Dict[str, Any]:
+def use_observability_execution(operation_type: str,
+    parameters: Dict[str,
+    Any],
+    request_id: Optional[str]=None,
+    strategy: str='immediate',
+    priority: str='normal',
+    timeout: float=30.0) -> Dict[str,
+    Any]:
     """Execute observability operation.
 
     Args:
@@ -294,6 +365,11 @@ def use_observability_execution(operation_type: str, parameters: Dict[str, Any],
         Dict: Execution result
     """
     engine = create_observability_execution_engine()
-    request = ExecutionRequest(request_id=request_id or str(uuid.uuid4()), operation_type=operation_type, parameters=parameters, strategy=ExecutionStrategy(strategy), priority=ExecutionPriority(priority), timeout=timeout)
+    request = ExecutionRequest(request_id=request_id or str(uuid.uuid4()),
+        operation_type=operation_type,
+        parameters=parameters,
+        strategy=ExecutionStrategy(strategy),
+        priority=ExecutionPriority(priority),
+        timeout=timeout)
     result = engine.execute(request)
     return {'request_id': result.request_id, 'operation_type': result.operation_type, 'success': result.success, 'output': result.output, 'exit_code': result.exit_code, 'stdout': result.stdout, 'stderr': result.stderr, 'metrics': result.metrics, 'artifacts': result.artifacts, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time, 'resource_usage': result.resource_usage}

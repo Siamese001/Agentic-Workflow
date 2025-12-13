@@ -19,7 +19,6 @@ architecture for agentic AI operations with the following taxonomy:
 Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
 """
 
-from __future__ import annotations
 
 __version__ = "7.0.0"
 __author__ = "Agentic Workflow Team"

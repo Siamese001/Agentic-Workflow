@@ -1,8 +1,7 @@
 """Dataclass models for lic_archetypes."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from .lic_archetypes_enums import *
+# from .lic_archetypes_enums import *  # Star import removed
 
 @dataclass
 class SubjectLineBrief:

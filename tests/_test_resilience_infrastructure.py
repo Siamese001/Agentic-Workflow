@@ -13,13 +13,10 @@ Usage:
 """
 
 import asyncio
-import json
 import logging
 import os
 import sys
 import time
-from typing import Any
-from unittest.mock import Mock, patch
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +28,6 @@ logging.basicConfig(
 )
 
 # Import resilience components
-from shared.resilience import (
     CircuitBreaker,
     CircuitBreakerState,
     CircuitBreakerOpenError,
@@ -125,7 +121,7 @@ async def test_circuit_breaker():
 
     # Wait for recovery timeout
     logger.info("Waiting for recovery timeout...")
-    time.sleep(2.1)
+    await asyncio.sleep(2.1)
 
     # Should transition to half-open
     assert breaker.can_execute()

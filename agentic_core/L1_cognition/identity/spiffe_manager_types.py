@@ -94,4 +94,7 @@ class IdentityVerificationResult:
         Returns:
             Dictionary representation
         """
-        return {'valid': self.valid, 'identity': self.identity.to_dict() if self.identity else None, 'reason': self.reason, 'verified_at': self.verified_at}
+        return {'valid': self.valid,
+            'identity': self.identity.to_dict() if self.identity else None,
+            'reason': self.reason,
+            'verified_at': self.verified_at}

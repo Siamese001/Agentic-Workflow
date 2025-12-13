@@ -2,7 +2,6 @@
 Shared pytest configuration and fixtures for all tests.
 """
 
-import os
 import pytest
 import asyncio
 from pathlib import Path

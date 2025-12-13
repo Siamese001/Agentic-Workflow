@@ -6,7 +6,6 @@ Follows the functional component pattern with proper logging.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
 import logging
 import json
 from datetime import datetime, timedelta
@@ -106,7 +105,8 @@ class ScriptsCacheHistoryLoader:
         Returns:
             CacheHistoryResult: Query results with entries and metadata
         """
-        self.logger.info(f"Loading cache history with filters: operations={len(query.operations)}, status={query.status}")
+        self.logger.info(f"Loading cache history with filters: operations={len(query.operations)},
+            status={query.status}")
 
         try:
             # Apply filters
@@ -397,7 +397,7 @@ class ScriptsCacheHistoryLoader:
         return filtered
 
     def _update_statistics(self, entry: CacheHistoryEntry) -> None:
-        """Update statistics with new entry."""
+        """# SQL removed: Update statistics with new entry."""
         if not self.config.enable_statistics:
             return
 
@@ -417,11 +417,13 @@ class ScriptsCacheHistoryLoader:
 
         # Update operation counts
         op_name = entry.operation.value
-        self._statistics.operation_counts[op_name] = self._statistics.operation_counts.get(op_name, 0) + 1
+        self._statistics.operation_counts[op_name] = self._statistics.operation_counts.get(op_name,
+            0) + 1
 
         # Update key access counts
         if entry.operation in [CacheOperation.READ, CacheOperation.UPDATE]:
-            self._statistics.key_access_counts[entry.key] = self._statistics.key_access_counts.get(entry.key, 0) + 1
+            self._statistics.key_access_counts[entry.key] = self._statistics.key_access_counts.get(entry.key,
+                0) + 1
 
         # Update size
         self._statistics.total_size_bytes += entry.size_bytes
@@ -491,7 +493,13 @@ class ScriptsCacheHistoryLoader:
 
         with open(file_path, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow(['id', 'operation', 'status', 'key', 'timestamp', 'size_bytes', 'access_time_ms'])
+            writer.writerow(['id',
+                'operation',
+                'status',
+                'key',
+                'timestamp',
+                'size_bytes',
+                'access_time_ms'])
 
             for e in self._history_cache:
                 writer.writerow([

@@ -1,8 +1,10 @@
 # from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard  
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
 # from archives.legacy_root_folders.core.models.models import AgentRole  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 def test_agent_registry_register_and_lookup() -> None:
+    """TODO: Add docstring."""
+
     registry = AgentRegistry()
 
     a1 = AgentCard(agent_id="planner-1", role=AgentRole.PLANNER)
@@ -17,11 +19,19 @@ def test_agent_registry_register_and_lookup() -> None:
     planners = registry.find_agents_by_type("planner")
     assert a1 in planners
 
+    """TODO: Add docstring."""
+
 def test_agent_registry_find_by_capability() -> None:
     registry = AgentRegistry()
 
-    a1 = AgentCard(agent_id="agent-a", role=AgentRole.EXECUTION, capabilities=["write"], agent_type="drafter")
-    a2 = AgentCard(agent_id="agent-b", role=AgentRole.EXECUTION, capabilities=["review"], agent_type="qa")
+    a1 = AgentCard(agent_id="agent-a",
+        role=AgentRole.EXECUTION,
+        capabilities=["write"],
+        agent_type="drafter")
+    a2 = AgentCard(agent_id="agent-b",
+        role=AgentRole.EXECUTION,
+        capabilities=["review"],
+        agent_type="qa")
 
     registry.register_agent(a1)
     registry.register_agent(a2)

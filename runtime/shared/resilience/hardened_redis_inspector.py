@@ -9,7 +9,6 @@ Implements a secure Redis inspection tool with:
 """
 
 import logging
-import json
 from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field, validator
 from enum import Enum
@@ -32,7 +31,9 @@ class RedisInspectionInput(BaseModel):
     """Input schema for the Redis Inspector tool."""
     command: RedisCommand = Field(..., description="The read-only operation to perform.")
     key: str = Field(..., description="The target key (must match allowed prefixes).")
-    args: Optional[List[str]] = Field(None, description="Additional arguments (e.g., start/end for LRANGE).")
+    args: Optional[List[str]] = Field(None,
+        description="Additional arguments (e.g.,
+        start/end for LRANGE).")
 
     @validator('key')
     def validate_key_format(cls, v):
@@ -309,7 +310,8 @@ class HardenedRedisInspector:
             results["recent_checkpoints"] = checkpoints
 
             # Check current step
-            current_step = await self.execute_inspection("GET", f"workflow:{workflow_id}:current_step")
+            current_step = await self.execute_inspection("GET",
+                f"workflow:{workflow_id}:current_step")
             results["current_step"] = current_step
 
         return results
@@ -410,7 +412,16 @@ def create_redis_inspector_config(cache_client) -> 'ToolConfig':
         parameters={
             "command": {
                 "type": "string",
-                "description": "Redis command (GET, HGETALL, LLEN, LRANGE, EXISTS, SCARD, SMEMBERS, ZCARD, TYPE)",
+                "description": "Redis command (GET,
+                    HGETALL,
+                    LLEN,
+                    LRANGE,
+                    EXISTS,
+                    SCARD,
+                    SMEMBERS,
+                    ZCARD,
+                    TYPE)",
+                    
                 "required": True
             },
             "key": {

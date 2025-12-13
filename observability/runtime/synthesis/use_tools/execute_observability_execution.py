@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .execute_observability_execution_impl import *
-from .execute_observability_execution_impl import *
+# from .execute_observability_execution_impl import *  # Star import removed
+# from .execute_observability_execution_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

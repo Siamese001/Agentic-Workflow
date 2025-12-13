@@ -6,11 +6,8 @@ while allowing for domain-specific customizations.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
-import json
 
 from .signal_infrastructure import EngineType, DomainConfig
-from ..core.quality.signal_enhancer import QualityThresholds, SignalQuality
 
 class StandardType(Enum):
     """Types of quality standards."""
@@ -422,6 +419,7 @@ class CrossEngineQualityStandards:
             },
             "excellence_gate": {
                 "required_standards": list(profile.base_standards | profile.preferred_standards | profile.excellence_standards),
+                    
                 "min_score": 0.9,
                 "description": "Excellence quality level"
             }

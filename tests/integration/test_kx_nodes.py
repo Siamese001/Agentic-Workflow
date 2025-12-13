@@ -8,7 +8,6 @@ Phase 1C - Knowledge Extraction Integration
 
 import os
 import pytest
-from typing import Dict, Any
 
 from runtime.shared import (
     KNodeType,

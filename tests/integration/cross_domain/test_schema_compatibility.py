@@ -1,11 +1,12 @@
 """Integration tests for cross-domain schema compatibility."""
-from __future__ import annotations
 
 from shared.configuration.reasoning_config import SAFETY_THRESHOLD
 from shared.types.models import ValidationResult, ValidationSeverity, GateDecision
 from runtime.shared.sdk_registry import SDK_REGISTRY, SDKCategory
 
 class TestConfigSchemaCompatibility:
+    """TODO: Add docstring."""
+
     def test_config_safety_threshold_matches_models(self):
         """Config SAFETY_THRESHOLD is usable with validation models."""
         assert 0 <= SAFETY_THRESHOLD <= 1
@@ -23,6 +24,8 @@ class TestConfigSchemaCompatibility:
         for name, entry in SDK_REGISTRY.items():
             assert isinstance(entry.category, SDKCategory)
             assert entry.name == name
+
+    """TODO: Add docstring."""
 
 class TestValidationModelIntegration:
     def test_gate_decision_with_validation_result(self):

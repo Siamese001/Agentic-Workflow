@@ -11,8 +11,6 @@ This file demonstrates how to:
 import asyncio
 import logging
 import os
-from typing import Dict, Any, List, Optional, Type, Union
-from enum import Enum
 
 from .hardened_openai_executor import (
     HardenedOpenAIExecutor,
@@ -149,7 +147,7 @@ class MultiProviderExecutor:
         raise RuntimeError("All providers failed to execute request")
 
     def _update_provider_stats(self, provider: Provider, success: bool) -> None:
-        """Update provider-specific statistics.
+        """# SQL removed: Update provider-specific statistics.
 
         Args:
             provider: Provider that was used
@@ -295,6 +293,8 @@ class OpenAIExecutorIntegration:
         from pydantic import BaseModel, Field
 
         class EntityExtraction(BaseModel):
+            """TODO: Add docstring."""
+
             entities: Dict[str, List[str]] = Field(
                 ...,
                 description="Extracted entities by type"

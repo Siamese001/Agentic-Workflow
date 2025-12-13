@@ -4,7 +4,6 @@ Resume Generator - LLM-powered resume tailoring.
 Rewrites and optimizes resume content based on job analysis results.
 """
 
-import json
 import logging
 from typing import Dict, List, Optional, Any
 
@@ -15,7 +14,12 @@ logger = logging.getLogger(__name__)
 class ResumeGenerator:
     """Generates tailored resumes using LLM based on job analysis."""
 
-    def __init__(self, llm_client: Optional[Any] = None, provider: Optional[Provider] = None, creative_brief: Optional[Any] = None, validation_rules: Optional[Dict[str, Any]] = None):
+    def __init__(self,
+        llm_client: Optional[Any] = None,
+        provider: Optional[Provider] = None,
+        creative_brief: Optional[Any] = None,
+        validation_rules: Optional[Dict[str,
+        Any]] = None):
         """
         Initialize ResumeGenerator.
 
@@ -31,7 +35,12 @@ class ResumeGenerator:
         if self.llm_client is None:
             raise ValueError(f"Failed to initialize LLM client for provider {self.provider}")
 
-    def generate(self, resume_data: Dict[str, Any], analysis_results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate(self,
+        resume_data: Dict[str,
+        Any],
+        analysis_results: Dict[str,
+        Any]) -> Dict[str,
+        Any]:
         """
         Generate a tailored resume based on job analysis.
 
@@ -114,7 +123,12 @@ Return ONLY the rewritten summary, no additional text."""
             logger.error(f"Error tailoring summary: {e}")
             return original_summary
 
-    def _tailor_experience(self, experience_list: List[Dict[str, Any]], analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _tailor_experience(self,
+        experience_list: List[Dict[str,
+        Any]],
+        analysis: Dict[str,
+        Any]) -> List[Dict[str,
+        Any]]:
         """Tailor experience section to highlight relevant achievements."""
         tailored_experience = []
 
@@ -186,7 +200,10 @@ Return ONLY the rewritten summary, no additional text."""
 
         return final_skills[:15]  # Limit to 15 skills
 
-    def _tailor_bullets(self, bullets: List[str], target_skills: List[str], job_responsibilities: List[str]) -> List[str]:
+    def _tailor_bullets(self,
+        bullets: List[str],
+        target_skills: List[str],
+        job_responsibilities: List[str]) -> List[str]:
         """Tailor bullet points to emphasize target skills."""
         tailored_bullets = []
 
@@ -256,7 +273,6 @@ Return ONLY the rewritten description, no additional text."""
 
     def _generate_with_gemini(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using Google Gemini."""
-        import google.generativeai as genai
 
         model = genai.GenerativeModel('gemini-1.5-flash')
         generation_config = genai.types.GenerationConfig(temperature=temperature)
@@ -272,7 +288,12 @@ Return ONLY the rewritten description, no additional text."""
             response = self.llm_client.complete(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
 
-    def optimize_for_ats(self, resume_data: Dict[str, Any], analysis: Dict[str, Any]) -> Dict[str, Any]:
+    def optimize_for_ats(self,
+        resume_data: Dict[str,
+        Any],
+        analysis: Dict[str,
+        Any]) -> Dict[str,
+        Any]:
         """
         Optimize resume for Applicant Tracking Systems (ATS).
 

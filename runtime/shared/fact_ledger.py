@@ -6,12 +6,9 @@ conflicting claims across different outputs.
 """
 
 import hashlib
-import json
 import logging
 import re
-from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel, Field
 
@@ -71,12 +68,21 @@ class ClaimExtractor:
         """Initialize claim extractor with patterns."""
         # Patterns for extracting different types of claims
         self.patterns = {
-            "percentage": re.compile(r"(\d+(?:\.\d+)?)%|\b(\d+(?:\.\d+)?\s*percent)\b", re.IGNORECASE),
-            "currency": re.compile(r"\$(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(dollars?|usd)", re.IGNORECASE),
-            "multiplier": re.compile(r"(\d+(?:\.\d+)?)x|(\d+(?:\.\d+)?)\s*(times|fold)", re.IGNORECASE),
+            "percentage": re.compile(r"(\d+(?:\.\d+)?)%|\b(\d+(?:\.\d+)?\s*percent)\b",
+                re.IGNORECASE),
+                
+            "currency": re.compile(r"\$(\d+(?:,
+                \d{3})*(?:\.\d+)?)|(\d+(?:,
+                \d{3})*(?:\.\d+)?)\s*(dollars?|usd)",
+                re.IGNORECASE),
+                
+            "multiplier": re.compile(r"(\d+(?:\.\d+)?)x|(\d+(?:\.\d+)?)\s*(times|fold)",
+                re.IGNORECASE),
+                
             "number": re.compile(r"\b(\d+(?:,\d{3})*(?:\.\d+)?)\b"),
             "year": re.compile(r"\b(20\d{2})\b"),
-            "duration": re.compile(r"(\d+(?:\.\d+)?)\s*(years?|months?|weeks?|days?)", re.IGNORECASE)
+            "duration": re.compile(r"(\d+(?:\.\d+)?)\s*(years?|months?|weeks?|days?)",
+                re.IGNORECASE)
         }
 
         # Entity keywords
@@ -90,7 +96,11 @@ class ClaimExtractor:
             "cost": ["cost", "expense", "budget", "spend"]
         }
 
-    def extract_claim(self, text: str) -> Tuple[Optional[str], Optional[str], Optional[float], Optional[str]]:
+    def extract_claim(self,
+        text: str) -> Tuple[Optional[str],
+        Optional[str],
+        Optional[float],
+        Optional[str]]:
         """Extract entity, value, numeric value, and unit from text.
 
         Args:
@@ -537,7 +547,7 @@ class FactLedger:
         logger.debug(f"Added fact: {fact.entity} = {fact.value}")
 
     def update_fact(self, fact_id: str, updates: Dict[str, Any]) -> bool:
-        """Update an existing fact.
+        """# SQL removed: Update an existing fact.
 
         Args:
             fact_id: ID of fact to update

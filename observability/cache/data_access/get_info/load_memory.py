@@ -1,4 +1,3 @@
-import ast
 """
 07_observability/cache_ops/data_access/get_info/understand_request/retrieve_observability_memory.py
 AUTO-HARDENED BY ZERO-LOSS MERGE ENGINE
@@ -97,7 +96,11 @@ class OptimizeObservabilityOrderPlanImpl(OptimizeObservabilityOrderPlanProcessor
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "# SECURITY: ast.literal_eval(", "# SECURITY: pass  # exec disabled: ", "__import__"]
+            dangerous_patterns = ["<script>",
+                "javascript:",
+                "# SECURITY: ast.literal_eval(",
+                "# SECURITY: pass  # exec disabled: ",
+                "__import__"]
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:

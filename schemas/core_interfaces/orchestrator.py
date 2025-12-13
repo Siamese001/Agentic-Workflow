@@ -10,7 +10,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from .cognitive_plane import ICognitivePlane, PlanningRequest
 from .action_plane import IActionPlane, ActionRequest
 
 class ExecutionPhase(Enum):

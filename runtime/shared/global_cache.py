@@ -6,15 +6,11 @@ everywhere through semantic similarity matching.
 """
 
 import hashlib
-import json
 import logging
 import time
 from collections import OrderedDict
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
-import numpy as np
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -39,7 +35,7 @@ class CacheEntry(BaseModel):
         return time.time() > (self.created_at + self.ttl)
 
     def touch(self) -> None:
-        """Update last accessed time."""
+        """# SQL removed: Update last accessed time."""
         self.last_accessed = time.time()
         self.hit_count += 1
 
@@ -339,7 +335,9 @@ class GlobalCache:
             "total_misses": 0
         }
 
-        logger.info(f"Initialized GlobalCache (L1: {l1_size}, L2: {l2_size}, threshold: {semantic_threshold})")
+        logger.info(f"Initialized GlobalCache (L1: {l1_size},
+            L2: {l2_size},
+            threshold: {semantic_threshold})")
 
     def get(self, key: str) -> Optional[Any]:
         """Get value by exact key.

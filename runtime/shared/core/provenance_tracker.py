@@ -8,11 +8,8 @@ import asyncio
 import json
 import logging
 import time
-from dataclasses import dataclass, field
-from datetime import datetime
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -55,6 +52,8 @@ class ArtifactLineage(BaseModel):
     verified_citations: List[str] = Field(default_factory=list)
 
     class Config:
+        """TODO: Add docstring."""
+
         json_encoders = {
             # Handle any special encoding if needed
         }
@@ -557,6 +556,10 @@ def provenance_tracked(
     Returns:
         Decorated function
     """
+        """TODO: Add docstring."""
+
+            """TODO: Add docstring."""
+
     def decorator(func):
         async def async_wrapper(*args, **kwargs):
             # Extract trace_id

@@ -1,8 +1,6 @@
 """Types and models for golden_state_evaluator."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from enum import Enum
 
 @dataclass
 class GoldenCase:
@@ -19,7 +17,14 @@ class GoldenCase:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'GoldenCase':
         """Create from dictionary."""
-        return cls(id=data['id'], name=data['name'], category=data['category'], mission=data['mission'], scene=data['scene'], expected_output=data['expected_output'], expected_actions=data['expected_actions'], quality_criteria=data['quality_criteria'])
+        return cls(id=data['id'],
+            name=data['name'],
+            category=data['category'],
+            mission=data['mission'],
+            scene=data['scene'],
+            expected_output=data['expected_output'],
+            expected_actions=data['expected_actions'],
+            quality_criteria=data['quality_criteria'])
 
 @dataclass
 class GoldenOutput:
@@ -42,4 +47,9 @@ class EvaluationReport:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'case_id': self.case_id, 'case_name': self.case_name, 'passed': self.passed, 'judge_result': self.judge_result.to_dict(), 'action_match_score': self.action_match_score, 'errors': self.errors}
+        return {'case_id': self.case_id,
+            'case_name': self.case_name,
+            'passed': self.passed,
+            'judge_result': self.judge_result.to_dict(),
+            'action_match_score': self.action_match_score,
+            'errors': self.errors}

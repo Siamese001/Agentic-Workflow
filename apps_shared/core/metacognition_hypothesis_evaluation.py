@@ -2,6 +2,8 @@
 # from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 def test_evaluate_penalizes_no_evidence() -> None:
+    """TODO: Add docstring."""
+
     h = Hypothesis(
         id="h1",
         agent_id="a1",
@@ -12,6 +14,8 @@ def test_evaluate_penalizes_no_evidence() -> None:
 
     evaluated = evaluate_hypotheses([h])[0]
     assert evaluated.confidence < 1.0
+
+    """TODO: Add docstring."""
 
 def test_evaluate_clamps_confidence_range() -> None:
     h = Hypothesis(

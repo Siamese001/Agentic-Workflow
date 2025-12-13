@@ -6,11 +6,8 @@ work before passing it downstream, preventing hallucination cascades.
 
 import json
 import logging
-import logging
 import time
-from enum import Enum
 from typing import Dict, Any, Optional, List, Union, Callable
-from abc import ABC, abstractmethod
 
 from .resilience.circuit_breaker import (
     CircuitBreakerFactory,
@@ -35,6 +32,8 @@ class CritiqueResult(BaseModel):
 
     @validator('confidence_score')
     def validate_confidence(cls, v):
+        """TODO: Add docstring."""
+
         if not 0.0 <= v <= 1.0:
             raise ValueError('Confidence score must be between 0 and 1')
         return v

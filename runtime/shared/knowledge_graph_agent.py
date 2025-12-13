@@ -5,12 +5,9 @@ with graph-based reasoning, context retrieval, and state management.
 """
 
 import logging
-from typing import Dict, List, Optional, Any, Union
 from pydantic import BaseModel, Field
 from neo4j import GraphDatabase
 import json
-import numpy as np
-from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 

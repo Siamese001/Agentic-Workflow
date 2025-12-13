@@ -7,14 +7,12 @@ ambiguity and demonstrate proper adherence.
 
 import json
 import logging
-from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from pathlib import Path
 from enum import Enum
 from pydantic import BaseModel, Field
 
 from .prompt_injection_loader import InjectionPattern
-from .instructional_injections import get_instructional_injections
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +125,11 @@ class FewShotRegistry(BaseModel):
         context_lower = context.lower()
 
         # Check for engineering keywords
-        if any(word in context_lower for word in ["engineer", "developer", "technical", "code", "software"]):
+        if any(word in context_lower for word in ["engineer",
+            "developer",
+            "technical",
+            "code",
+            "software"]):
             return ContextType.ENGINEERING
 
         # Check for sales keywords
@@ -135,7 +137,11 @@ class FewShotRegistry(BaseModel):
             return ContextType.SALES
 
         # Check for executive keywords
-        if any(word in context_lower for word in ["executive", "ceo", "cto", "leadership", "strategic"]):
+        if any(word in context_lower for word in ["executive",
+            "ceo",
+            "cto",
+            "leadership",
+            "strategic"]):
             return ContextType.EXECUTIVE
 
         # Check for marketing keywords
@@ -273,7 +279,10 @@ def _initialize_default_examples() -> None:
         instruction_id="evidence_binding",
         context_tag=ContextType.ENGINEERING,
         bad_example="The system is fast and efficient.",
-        good_example="The system achieved 99.9% uptime (Source: monitoring logs, Q3 2023) and reduced latency by 40% (Source: performance report, page 5).",
+        good_example="The system achieved 99.9% uptime (Source: monitoring logs,
+            Q3 2023) and reduced latency by 40% (Source: performance report,
+            page 5).",
+            
         explanation="Provides specific evidence with sources for all claims",
         metrics={"evidence_count": 2, "source_citations": 2, "specificity": 9}
     ))
@@ -283,7 +292,15 @@ def _initialize_default_examples() -> None:
         instruction_id="multi_branch_thinking",
         context_tag=ContextType.EXECUTIVE,
         bad_example="We should do option A.",
-        good_example="Option A: Market expansion (Cost: $5M, ROI: 25%, Risk: Medium)\nOption B: Product development (Cost: $3M, ROI: 40%, Risk: High)\nOption C: Strategic acquisition (Cost: $10M, ROI: 15%, Risk: Low)\n\nRecommendation: Start with Option B for highest ROI, then consider Option A.",
+        good_example="Option A: Market expansion (Cost: $5M,
+            ROI: 25%,
+            Risk: Medium)\nOption B: Product development (Cost: $3M,
+            ROI: 40%,
+            Risk: High)\nOption C: Strategic acquisition (Cost: $10M,
+            ROI: 15%,
+            Risk: Low)\n\nRecommendation: Start with Option B for highest ROI,
+            then consider Option A.",
+            
         explanation="Explores multiple options with costs, risks, and recommendations",
         metrics={"branches_explored": 3, "has_metrics": True, "risk_analysis": True}
     ))

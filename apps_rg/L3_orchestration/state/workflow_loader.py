@@ -102,13 +102,15 @@ class WorkflowLoader:
                 self._workflow_data = json.load(f)
             logger.info(f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
         except FileNotFoundError:
-            logger.warning(f"Workflow file not found at {self.workflow_path}, using fallback defaults")
+            logger.warning(f"Workflow file not found at {self.workflow_path},
+                using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON in workflow file: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except Exception as e:
-            logger.error(f"Failed to load workflow from {self.workflow_path}: {e}, using fallback defaults")
+            logger.error(f"Failed to load workflow from {self.workflow_path}: {e},
+                using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
 
     def _get_fallback_workflow(self) -> Dict[str, Any]:
@@ -211,7 +213,10 @@ class WorkflowLoader:
                 executive_summary_word_count=WordCountConstraints.from_list(
                     brief.get("executive_summary", {}).get("word_count", [120, 140])
                 ),
-                executive_summary_voice=brief.get("executive_summary", {}).get("voice", "third_person_implied"),
+                executive_summary_voice=brief.get("executive_summary",
+                    {}).get("voice",
+                    "third_person_implied"),
+                    
                 forbidden_patterns=brief.get("executive_summary", {}).get("forbidden_patterns", []),
                 unify_bullet_word_count=WordCountConstraints.from_list(
                     brief.get("experience_bullets", {}).get("unify_bullet_word_count", [28, 33])
@@ -273,27 +278,35 @@ class WorkflowLoader:
             reasoning = self.get_reasoning_config()
             # Check creative_brief first (where deduplication_matrix is located)
             creative_brief = reasoning.get("creative_brief", {})
-            self._cached_validation_rules = creative_brief.get("deduplication_matrix", {}).get("thresholds", {})
+            self._cached_validation_rules = creative_brief.get("deduplication_matrix",
+                {}).get("thresholds",
+                {})
         return self._cached_validation_rules
 
     def get_pre_flight_tests(self) -> List[Dict[str, Any]]:
         """Get pre-flight validation tests."""
         if self._cached_pre_flight_tests is None:
-            self._cached_pre_flight_tests = self._workflow_data.get("pre_flight_engine_validation", {}).get("tests", [])
+            self._cached_pre_flight_tests = self._workflow_data.get("pre_flight_engine_validation",
+                {}).get("tests",
+                [])
         return self._cached_pre_flight_tests
 
     def get_file_complexity_thresholds(self) -> Dict[str, int]:
         """Get file complexity gate thresholds."""
         if self._cached_file_complexity_thresholds is None:
             context = self.get_context_config()
-            self._cached_file_complexity_thresholds = context.get("pre_flight_file_complexity_gate", {}).get("thresholds", {})
+            self._cached_file_complexity_thresholds = context.get("pre_flight_file_complexity_gate",
+                {}).get("thresholds",
+                {})
         return self._cached_file_complexity_thresholds
 
     def get_required_files(self) -> List[str]:
         """Get list of required files."""
         if self._cached_required_files is None:
             context = self.get_context_config()
-            self._cached_required_files = context.get("pre_flight_file_manifest_check", {}).get("required_file_manifest", [])
+            self._cached_required_files = context.get("pre_flight_file_manifest_check",
+                {}).get("required_file_manifest",
+                [])
         return self._cached_required_files
 
     def get_enforcement_rules(self) -> List[str]:

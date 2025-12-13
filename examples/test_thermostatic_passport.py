@@ -11,25 +11,19 @@ logger = logging.getLogger(__name__)
 
 import asyncio
 import json
-from datetime import datetime
 
 # Import the thermostatic passport components
-from agentic_core.schemas.context_passport import (
     SignalContext, HardState, SoftState, ThermalConfig,
     ThermalProfile, create_brainstorm_context, create_formatting_context
 )
-from agentic_core.L1_cognition.inference.inference_engine import (
     InferenceEngine, InferenceRequest, InferenceMode,
     creative_inference, validation_inference
 )
-from agentic_core.L2_execution.validators.state_promoter import (
     StatePromoter, PromotionResult, create_email_validator
 )
-from agentic_core.L1_cognition.inference.signal_anchoring import (
     SignalAnchor, anchor_resume_content, create_resume_anchor
 )
 from pydantic import BaseModel, EmailStr
-from typing import List, Optional
 
 # Define Pydantic schemas for validation
 class EmailContent(BaseModel):

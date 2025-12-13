@@ -1,5 +1,4 @@
 """Unit tests for L3_orchestration/P3_aggregate - workflow result aggregation."""
-from __future__ import annotations
 
 class TestWorkflowResultAggregation:
     """Tests for aggregating workflow results."""

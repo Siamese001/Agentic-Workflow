@@ -210,7 +210,6 @@ async def demonstrate_checkpoint_recovery():
     """Demonstrate recovery from checkpoint after failure."""
     logger.info("\n=== DEMONSTRATION: Checkpoint Recovery ===\n")
 
-    from runtime.shared.resilience.validation_gates import (
         ResilientValidationChain,
         ValidationGate,
         ChainFailureError
@@ -280,7 +279,6 @@ async def demonstrate_oscillation_detection():
     """Demonstrate oscillation detection in repair loops."""
     logger.info("\n=== DEMONSTRATION: Oscillation Detection ===\n")
 
-    from runtime.shared.resilience.validation_gates import (
         ResilientValidationChain,
         ValidationGate,
         ChainFailureError

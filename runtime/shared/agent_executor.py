@@ -282,7 +282,6 @@ class AgentExecutor:
         **kwargs,
     ) -> AgentResponse:
         """Execute using Google GenAI v1beta Interactions API with retry."""
-        from tenacity import retry, stop_after_attempt, wait_exponential
 
         @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
         def _execute_with_retry():
@@ -295,7 +294,8 @@ class AgentExecutor:
                     if msg["role"] == "system":
                         # System prompt becomes first user message with model acknowledgment
                         input_messages.append({"role": "user", "content": msg["content"]})
-                        input_messages.append({"role": "model", "content": "Understood. I am ready."})
+                        input_messages.append({"role": "model",
+                            "content": "Understood. I am ready."})
                     else:
                         input_messages.append({
                             "role": msg["role"],
@@ -437,7 +437,10 @@ class AgentExecutor:
         """
         # Special handling for Google GenAI with Interactions API
         if self.config.provider == Provider.GOOGLE:
-            return self._execute_google_structured(messages, response_model, system_prompt, **kwargs)
+            return self._execute_google_structured(messages,
+                response_model,
+                system_prompt,
+                **kwargs)
 
         # Use Instructor for other providers
         instructor_client = get_instructor_client(self.config.provider)

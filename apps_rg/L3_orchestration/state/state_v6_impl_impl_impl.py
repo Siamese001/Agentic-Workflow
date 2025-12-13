@@ -3,7 +3,11 @@
 from typing import Any, Dict, List, Optional
 
 class ValidationResult:
+    """TODO: Add docstring."""
+
     pass
+
+    """TODO: Add docstring."""
 
 class ValidationSeverity:
     pass
@@ -84,9 +88,12 @@ class TextSanitizer:
             if isinstance(content, str):
                 staged_output[section_key] = self.sanitize_text(content)
             elif isinstance(content, dict):
-                staged_output[section_key] = {k: self.sanitize_text(v) if isinstance(v, str) else v for k, v in content.items()}
+                staged_output[section_key] = {k: self.sanitize_text(v) if isinstance(v,
+                    str) else v for k,
+                    v in content.items()}
             elif isinstance(content, list):
-                staged_output[section_key] = [self.sanitize_text(item) if isinstance(item, str) else item for item in content]
+                staged_output[section_key] = [self.sanitize_text(item) if isinstance(item,
+                    str) else item for item in content]
             else:
                 staged_output[section_key] = content
         return staged_output
@@ -101,7 +108,10 @@ class TextSanitizer:
 
     def _unify_structure(self, section_key: str, content: Any) -> Dict:
         """Unify content structure for staging"""
-        return {'section': section_key, 'content': content, 'sanitized': True, 'timestamp': datetime.now().isoformat()}
+        return {'section': section_key,
+            'content': content,
+            'sanitized': True,
+            'timestamp': datetime.now().isoformat()}
 
 class ValidationContext:
     """Validation context for managing validation state and results"""
@@ -147,7 +157,14 @@ class ValidationContext:
         for result in self.validation_results:
             severity = result.severity.value
             severity_counts[severity] = severity_counts.get(severity, 0) + 1
-        return {'total_validations': total, 'passed': passed, 'failed': failed, 'success_rate': passed / total if total > 0 else 0.0, 'severity_breakdown': severity_counts, 'critical_failures': len(self.get_critical_failures()), 'high_failures': len(self.get_high_failures()), 'validation_duration': (datetime.now() - self.start_time).total_seconds()}
+        return {'total_validations': total,
+            'passed': passed,
+            'failed': failed,
+            'success_rate': passed / total if total > 0 else 0.0,
+            'severity_breakdown': severity_counts,
+            'critical_failures': len(self.get_critical_failures()),
+            'high_failures': len(self.get_high_failures()),
+            'validation_duration': (datetime.now() - self.start_time).total_seconds()}
 
     def clear_results(self) -> None:
         """Clear all validation results"""
@@ -168,16 +185,25 @@ class RGStateManager:
         self.workflow_states = {}
         self.logger = logging.getLogger(__name__)
 
-    def create_workflow_state(self, workflow_id: str, input_parameters: Dict[str, object]) -> Dict[str, object]:
+    def create_workflow_state(self,
+        workflow_id: str,
+        input_parameters: Dict[str,
+        object]) -> Dict[str,
+        object]:
         """Create a new workflow state"""
-        workflow_state = {'workflow_id': workflow_id, 'input_parameters': input_parameters, 'status': 'created', 'created_at': datetime.now().isoformat(), 'staging_buffer': self.staging_buffer, 'validation_context': self.validation_context}
+        workflow_state = {'workflow_id': workflow_id,
+            'input_parameters': input_parameters,
+            'status': 'created',
+            'created_at': datetime.now().isoformat(),
+            'staging_buffer': self.staging_buffer,
+            'validation_context': self.validation_context}
         self.workflow_states[workflow_id] = workflow_state
         self.staging_buffer.set(f'workflow_{workflow_id}', workflow_state)
         self.logger.info(f'Created workflow state: {workflow_id}')
         return workflow_state
 
     def update_workflow_state(self, workflow_id: str, phase: str, data: Any) -> None:
-        """Update workflow state with new phase data"""
+        """# SQL removed: Update workflow state with new phase data"""
         if workflow_id not in self.workflow_states:
             raise ValueError(f'Workflow {workflow_id} not found')
         workflow_state = self.workflow_states[workflow_id]

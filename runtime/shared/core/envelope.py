@@ -8,11 +8,9 @@ import hashlib
 import json
 import logging
 import uuid
-from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
-from dataclasses import dataclass, field
 
 from pydantic import BaseModel, Field, validator
 from pydantic.generics import GenericModel
@@ -44,6 +42,8 @@ class PayloadBase(BaseModel):
     content_hash: str = Field(default_factory=lambda: "")
 
     class Config:
+        """TODO: Add docstring."""
+
         use_enum_values = True
 
 class ResumeData(PayloadBase):
@@ -130,7 +130,10 @@ class StageResult(BaseModel):
         """Generate hash of stage output for verification."""
         # In practice, this would be computed from actual output
         # For now, generate based on stage name and status
-        content = f"{values.get('stage_name', '')}:{values.get('status', '')}:{values.get('duration_ms', 0)}"
+        content = f"{values.get('stage_name',
+            '')}:{values.get('status',
+            '')}:{values.get('duration_ms',
+            0)}"
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
 class SignalEnvelope(GenericModel, Generic[T]):
@@ -157,6 +160,8 @@ class SignalEnvelope(GenericModel, Generic[T]):
     # Error state
     has_errors: bool = False
     error_count: int = 0
+
+        """TODO: Add docstring."""
 
     class Config:
         arbitrary_types_allowed = True
@@ -206,6 +211,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     status=PipelineStageStatus.SUCCESS,
                     duration_ms=duration_ms,
                     output_hash=output_hash or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
+                        
                     metadata=metadata or {}
                 )
                 break
@@ -216,6 +222,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
                 status=PipelineStageStatus.SUCCESS,
                 duration_ms=duration_ms,
                 output_hash=output_hash or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
+                    
                 metadata=metadata or {}
             ))
 
@@ -349,7 +356,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         return sum(r.duration_ms for r in self.history if r.status != PipelineStageStatus.PENDING)
 
     def _touch(self) -> None:
-        """Update the updated_at timestamp."""
+        """# SQL removed: Update the updated_at timestamp."""
         self.updated_at = datetime.utcnow()
 
     def to_dict(self) -> Dict[str, Any]:
@@ -414,7 +421,11 @@ class SignalEnvelope(GenericModel, Generic[T]):
         return envelope
 
     @classmethod
-    def from_legacy_dict(cls, data: Dict[str, Any], metadata: Optional[Dict[str, str]] = None) -> "SignalEnvelope":
+    def from_legacy_dict(cls,
+        data: Dict[str,
+        Any],
+        metadata: Optional[Dict[str,
+        str]] = None) -> "SignalEnvelope":
         """Create envelope from legacy dict format for backward compatibility.
 
         Args:
@@ -493,7 +504,10 @@ class EnvelopeFactory:
         return envelope
 
     @staticmethod
-    def _create_payload_from_dict(data: Dict[str, Any]) -> Union[ResumeData, OutreachData, DictData]:
+    def _create_payload_from_dict(data: Dict[str,
+        Any]) -> Union[ResumeData,
+        OutreachData,
+        DictData]:
         """Create appropriate payload from dictionary.
 
         Args:

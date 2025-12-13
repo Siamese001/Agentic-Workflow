@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 """
 
-from __future__ import annotations
 
 import hashlib
 import json
@@ -35,12 +34,16 @@ from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 @dataclass
 class ExecutionArtifact:
+    """TODO: Add docstring."""
+
     artifact_type: str
     content: str
     metadata: Dict[str, Any]
     timestamp: float = field(default_factory=time.time)
 
 @dataclass
+    """TODO: Add docstring."""
+
 class ExecutionTrace:
     run_sha: str
     start_time: float
@@ -134,7 +137,9 @@ class ExecutionOrchestrator:
                 {
                     'gate_id': r.gate_id,
                     'message': r.message,
-                    'severity': r.severity.value if hasattr(r.severity, 'value') else str(r.severity),
+                    'severity': r.severity.value if hasattr(r.severity,
+                        'value') else str(r.severity),
+                        
                     'details': r.details,
                     'timestamp': time.time()
                 }

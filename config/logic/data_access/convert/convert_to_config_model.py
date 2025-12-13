@@ -9,8 +9,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .convert_to_config_model_impl import *
-from .convert_to_config_model_models import *
-from .convert_to_config_model_impl import *
+# from .convert_to_config_model_impl import *  # Star import removed
+# from .convert_to_config_model_models import *  # Star import removed
+# from .convert_to_config_model_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

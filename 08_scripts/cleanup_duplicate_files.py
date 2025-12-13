@@ -19,12 +19,10 @@ logger = logging.getLogger(__name__)
 
 """
 
-import os
 import re
 import json
 import hashlib
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass, asdict
 from collections import defaultdict
 from datetime import datetime
@@ -323,7 +321,6 @@ class DuplicateFileCleaner:
                     if self.backup_dir:
                         backup_path = self.backup_dir / duplicate.duplicate_path
                         backup_path.parent.mkdir(parents=True, exist_ok=True)
-                        import shutil
                         shutil.copy2(duplicate_path, backup_path)
 
                     # Delete the file
@@ -347,7 +344,8 @@ def print_report(report: ScanReport):
     logger.info(f"  Total duplicates found: {report.total_duplicates}")
     logger.info(f"  Identical to original:  {report.identical_duplicates}")
     logger.info(f"  Different from original: {report.different_duplicates}")
-    logger.info(f"  Wasted space (identical): {report.total_wasted_bytes:,} bytes ({report.total_wasted_bytes / 1024:.2f} KB)")
+    logger.info(f"  Wasted space (identical): {report.total_wasted_bytes:,
+        } bytes ({report.total_wasted_bytes / 1024:.2f} KB)")
 
     logger.info(f"\n🏷️  Duplicates by suffix type:")
     for suffix, count in sorted(report.duplicates_by_suffix.items(), key=lambda x: -x[1]):
@@ -478,8 +476,8 @@ Examples:
         elif args.confirm_delete_all:
             logger.info("  Mode: Delete ALL duplicates (including non-identical)")
             if not args.dry_run:
-                confirm = input("\n⚠️  WARNING: This will delete ALL duplicates. Type 'DELETE ALL' to confirm: ")
-                if confirm != "DELETE ALL":
+                confirm = input("\n⚠️  WARNING: This will delete ALL duplicates. Type '# SQL removed: DELETE ALL' to confirm: ")
+                if confirm != "# SQL removed: DELETE ALL":
                     logger.info("❌ Deletion cancelled.")
                     return 1
             deleted = cleaner.delete_all_duplicates(dry_run=args.dry_run)

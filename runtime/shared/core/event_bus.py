@@ -11,9 +11,7 @@ import logging
 import time
 import uuid
 from abc import ABC, abstractmethod
-from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set, Awaitable
 
 from pydantic import BaseModel, Field
 
@@ -65,6 +63,8 @@ class SystemEvent(BaseModel):
     causation_id: Optional[str] = None   # The event that caused this one
 
     class Config:
+        """TODO: Add docstring."""
+
         frozen = True  # Events are immutable
 
     def to_dict(self) -> Dict[str, Any]:
@@ -377,7 +377,6 @@ class RedisEventBus(EventBus):
     async def connect(self) -> None:
         """Connect to Redis."""
         try:
-            import redis.asyncio as redis
 
             # Create Redis client with connection pooling
             self.redis = redis.from_url(
@@ -714,6 +713,10 @@ def event_publisher(
     Returns:
         Decorated function
     """
+        """TODO: Add docstring."""
+
+            """TODO: Add docstring."""
+
     def decorator(func):
         async def async_wrapper(*args, **kwargs):
             # Extract trace_id from first argument if it's a SignalEnvelope

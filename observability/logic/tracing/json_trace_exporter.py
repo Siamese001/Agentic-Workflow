@@ -43,7 +43,11 @@ class JsonTraceExporter:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     @contextmanager
-    def start_span(self, name: str, attributes: Optional[Dict] = None) -> Generator[Span, None, None]:
+    def start_span(self,
+        name: str,
+        attributes: Optional[Dict] = None) -> Generator[Span,
+        None,
+        None]:
         """Start a new span."""
         trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None

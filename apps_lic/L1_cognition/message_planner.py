@@ -192,7 +192,11 @@ class MessagePlanner:
         outreach_context = outreach_context or {}
 
         # 1. Plan sections with archetype-specific content
-        sections = self._plan_sections(content, archetype, persona_plan, grounding_plan, fusion_plan)
+        sections = self._plan_sections(content,
+            archetype,
+            persona_plan,
+            grounding_plan,
+            fusion_plan)
 
         # 2. Calculate temperature schedule for archetype
         temperature_schedule = self._calculate_temperature_schedule(archetype)
@@ -257,7 +261,9 @@ class MessagePlanner:
                 optional_elements=template["optional_elements"],
                 style_guidelines=template["style_guidelines"],
                 word_count_target=template["word_count_target"],
-                temperature_adjustment=self.temperature_adjustments.get(archetype, {}).get(section_name, 0.0)
+                temperature_adjustment=self.temperature_adjustments.get(archetype,
+                    {}).get(section_name,
+                    0.0)
             )
 
             # Apply persona-based refinements
@@ -279,7 +285,10 @@ class MessagePlanner:
 
         return sections
 
-    def _apply_persona_refinements(self, section: MessageSection, persona_plan: object, archetype: str) -> MessageSection:
+    def _apply_persona_refinements(self,
+        section: MessageSection,
+        persona_plan: object,
+        archetype: str) -> MessageSection:
         """Apply persona-based refinements to section."""
         # Adjust based on persona parameters
         if hasattr(persona_plan, 'detail_level'):
@@ -298,7 +307,9 @@ class MessagePlanner:
 
         return section
 
-    def _apply_grounding_constraints(self, section: MessageSection, grounding_plan: object) -> MessageSection:
+    def _apply_grounding_constraints(self,
+        section: MessageSection,
+        grounding_plan: object) -> MessageSection:
         """Apply grounding-based constraints to section."""
         if hasattr(grounding_plan, 'risk_flags') and grounding_plan.risk_flags:
             # Add constraint to avoid risky claims
@@ -315,11 +326,15 @@ class MessagePlanner:
 
         return section
 
-    def _apply_fusion_strategy(self, section: MessageSection, fusion_plan: object, section_name: str) -> MessageSection:
+    def _apply_fusion_strategy(self,
+        section: MessageSection,
+        fusion_plan: object,
+        section_name: str) -> MessageSection:
         """Apply fusion-based content strategy to section."""
         if hasattr(fusion_plan, 'sections'):
             # Find corresponding fusion section
-            fusion_section = next((s for s in fusion_plan.sections if s.section_type == section_name), None)
+            fusion_section = next((s for s in fusion_plan.sections if s.section_type == section_name),
+                None)
             if fusion_section:
                 section.metadata["fusion_guidance"] = fusion_section.tone_guidance
                 section.metadata["fusion_value_props"] = fusion_section.value_proposition_ids
@@ -387,7 +402,10 @@ class MessagePlanner:
 
         return schedule
 
-    def _determine_constraints(self, content: MessageContent, archetype: str, grounding_plan: Optional[Any] = None) -> List[str]:
+    def _determine_constraints(self,
+        content: MessageContent,
+        archetype: str,
+        grounding_plan: Optional[Any] = None) -> List[str]:
         """Determine archetype-specific constraints."""
         base_constraints = self.constraint_mappings.get(archetype, []).copy()
 
@@ -432,7 +450,11 @@ class MessagePlanner:
 
         return base_order
 
-    def _calculate_confidence_score(self, sections: Dict[str, MessageSection], content: MessageContent, archetype: str) -> float:
+    def _calculate_confidence_score(self,
+        sections: Dict[str,
+        MessageSection],
+        content: MessageContent,
+        archetype: str) -> float:
         """Calculate overall confidence score for message plan."""
         base_score = 0.7
 

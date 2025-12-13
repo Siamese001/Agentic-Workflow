@@ -8,20 +8,15 @@ enabling recovery from failures without losing progress.
 import asyncio
 import json
 import logging
-import os
-import time
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type, Union
 
 import aiofiles
-import aiofiles.os
 from pydantic import BaseModel
 from redis import asyncio as aioredis
 
-from .envelope import SignalEnvelope, StageResult
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +66,7 @@ class CheckpointStorageBackend(ABC):
 
     @abstractmethod
     async def delete(self, trace_id: str) -> bool:
-        """Delete envelope checkpoint.
+        """# SQL removed: Delete envelope checkpoint.
 
         Args:
             trace_id: Trace ID of envelope
@@ -209,7 +204,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             return None
 
     async def delete(self, trace_id: str) -> bool:
-        """Delete checkpoint file.
+        """# SQL removed: Delete checkpoint file.
 
         Args:
             trace_id: Trace ID
@@ -387,7 +382,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             return None
 
     async def delete(self, trace_id: str) -> bool:
-        """Delete checkpoint from Redis.
+        """# SQL removed: Delete checkpoint from Redis.
 
         Args:
             trace_id: Trace ID
@@ -495,7 +490,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
             return self.checkpoints.get(trace_id)
 
     async def delete(self, trace_id: str) -> bool:
-        """Delete checkpoint from memory.
+        """# SQL removed: Delete checkpoint from memory.
 
         Args:
             trace_id: Trace ID
@@ -626,7 +621,7 @@ class CheckpointManager:
             return None
 
     async def delete_checkpoint(self, trace_id: str) -> bool:
-        """Delete envelope checkpoint.
+        """# SQL removed: Delete envelope checkpoint.
 
         Args:
             trace_id: Trace ID of envelope

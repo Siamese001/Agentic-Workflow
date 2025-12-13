@@ -7,7 +7,6 @@ alignment and hero content prioritization.
 
 import logging
 import re
-from typing import Dict, List, Optional, Tuple, Any, Union
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
@@ -96,11 +95,15 @@ class HybridScorer:
 
         # Technical Specific patterns (alpha -> 0.4, moderate keyword weight)
         self.technical_patterns = [
-            re.compile(r'\b(Python|Java|JavaScript|TypeScript|SQL|NoSQL|MongoDB|PostgreSQL|MySQL|Redis|Kafka|RabbitMQ)\b', re.IGNORECASE),
+            re.compile(r'\b(Python|Java|JavaScript|TypeScript|SQL|NoSQL|MongoDB|PostgreSQL|MySQL|Redis|Kafka|RabbitMQ)\b',
+                re.IGNORECASE),
+                
             re.compile(r'\b(API|REST|GraphQL|gRPC|SOAP)\b', re.IGNORECASE),
             re.compile(r'\b(JSON|XML|YAML|CSV|Parquet)\b', re.IGNORECASE),
             re.compile(r'\b(v\d+\.\d+|\d+\.\d+\.\d+)\b'),  # Version numbers
-            re.compile(r'\b(Docker|Kubernetes|Terraform|Ansible|Jenkins|GitLab|GitHub)\b', re.IGNORECASE),
+            re.compile(r'\b(Docker|Kubernetes|Terraform|Ansible|Jenkins|GitLab|GitHub)\b',
+                re.IGNORECASE),
+                
             re.compile(r'\b(AWS|Azure|GCP|OCI|Alibaba Cloud)\b', re.IGNORECASE),
         ]
 

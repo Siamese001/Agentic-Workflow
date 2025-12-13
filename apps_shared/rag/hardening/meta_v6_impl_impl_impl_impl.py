@@ -1,8 +1,9 @@
 """Implementation for meta_v6_impl_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
-class _DummyCtx:
+class InternalDummyCtx:
+    """TODO: Add docstring."""
+
 
     def __init__(self, workflow_id: str='wf-test') -> None:
         self.workflow_id = workflow_id
@@ -33,7 +34,11 @@ def test_orchestrate_retrieval_combines_bm25_and_dense_hits(monkeypatch: object)
     monkeypatch.setattr(m, 'end_span', lambda *a, **k: None, raising=True)
     cfg = RetrievalConfig(max_hits=10)
     ctx = _DummyCtx()
-    rag: RAGResult = orchestrate_retrieval(query='base-query', ctx=ctx, cfg=cfg, hyde_query=None, council_vote=None)
+    rag: RAGResult = orchestrate_retrieval(query='base-query',
+        ctx=ctx,
+        cfg=cfg,
+        hyde_query=None,
+        council_vote=None)
     texts = {e.text for e in rag.evidence}
     assert 'bm25-doc' in texts
     assert 'dense-doc' in texts
@@ -60,7 +65,15 @@ def test_orchestrate_retrieval_sets_used_hyde_flag(monkeypatch: object) -> None:
     monkeypatch.setattr(m, 'end_span', lambda *a, **k: None, raising=True)
     cfg = RetrievalConfig(max_hits=5)
     ctx = _DummyCtx()
-    rag = orchestrate_retrieval(query='base-query', ctx=ctx, cfg=cfg, hyde_query='hyde-query', council_vote=CouncilVote(members=1, selected_id='hyde_test', scores={'hyde_test': 1.0}, ties=[], reason='Testing HYDE flag'))
+    rag = orchestrate_retrieval(query='base-query',
+        ctx=ctx,
+        cfg=cfg,
+        hyde_query='hyde-query',
+        council_vote=CouncilVote(members=1,
+        selected_id='hyde_test',
+        scores={'hyde_test': 1.0},
+        ties=[],
+        reason='Testing HYDE flag'))
     assert rag.used_hyde is True
 
 def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch: object) -> None:
@@ -83,7 +96,9 @@ def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch: object) -> None
     monkeypatch.setattr(m, 'start_span', lambda *a, **k: types.SimpleNamespace(), raising=True)
     monkeypatch.setattr(m, 'end_span', lambda *a, **k: None, raising=True)
 
-    class _Cfg:
+        """TODO: Add docstring."""
+
+    class InternalCfg:
 
         def __init__(self) -> None:
             self.strategy = 'hybrid'
@@ -91,7 +106,11 @@ def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch: object) -> None
             self.chroma = types.SimpleNamespace(enabled=True, collection_name='test_collection')
     cfg = _Cfg()
     ctx = _DummyCtx()
-    rag = orchestrate_retrieval(query='base-query', ctx=ctx, cfg=cfg, hyde_query=None, council_vote=None)
+    rag = orchestrate_retrieval(query='base-query',
+        ctx=ctx,
+        cfg=cfg,
+        hyde_query=None,
+        council_vote=None)
     texts = {e.text for e in rag.evidence}
     assert 'chroma-doc' in texts
 
@@ -108,7 +127,11 @@ def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch: object) 
         return []
     captured = {}
 
-    def _fake_fuse(lex_results: List[Evidence], dense_results: List[Evidence], cfg: RetrievalConfig, council_vote: Optional[object], used_hyde: bool) -> RAGResult:
+    def _fake_fuse(lex_results: List[Evidence],
+        dense_results: List[Evidence],
+        cfg: RetrievalConfig,
+        council_vote: Optional[object],
+        used_hyde: bool) -> RAGResult:
         captured['council'] = council_vote
         return RAGResult(evidence=list(lex_results) + list(dense_results), used_hyde=used_hyde)
     monkeypatch.setattr(m, '_run_bm25', _fake_bm25, raising=True)
@@ -122,8 +145,16 @@ def test_orchestrate_retrieval_passes_council_vote_to_fuse(monkeypatch: object) 
     monkeypatch.setattr(m, 'end_span', lambda *a, **k: None, raising=True)
     cfg = RetrievalConfig(max_hits=5)
     ctx = _DummyCtx()
-    council = CouncilVote(members=3, selected_id='id-1', scores={'id-1': 1.0}, ties=[], reason='Test vote for id-1')
-    rag = orchestrate_retrieval(query='base-query', ctx=ctx, cfg=cfg, hyde_query=None, council_vote=council)
+    council = CouncilVote(members=3,
+        selected_id='id-1',
+        scores={'id-1': 1.0},
+        ties=[],
+        reason='Test vote for id-1')
+    rag = orchestrate_retrieval(query='base-query',
+        ctx=ctx,
+        cfg=cfg,
+        hyde_query=None,
+        council_vote=council)
     assert isinstance(rag, RAGResult)
     assert captured['council'] is council
 
@@ -148,7 +179,11 @@ def test_orchestrate_retrieval_isolates_bm25_failure(monkeypatch: object) -> Non
     monkeypatch.setattr(m, 'end_span', lambda *a, **k: None, raising=True)
     cfg = RetrievalConfig(max_hits=5)
     ctx = _DummyCtx()
-    rag = orchestrate_retrieval(query='base-query', ctx=ctx, cfg=cfg, hyde_query=None, council_vote=None)
+    rag = orchestrate_retrieval(query='base-query',
+        ctx=ctx,
+        cfg=cfg,
+        hyde_query=None,
+        council_vote=None)
     texts = {e.text for e in rag.evidence}
     assert 'dense-only' in texts
 
@@ -167,6 +202,10 @@ def test_orchestrate_retrieval_handles_no_hits(monkeypatch: object) -> None:
     monkeypatch.setattr(m, 'end_span', lambda *a, **k: None, raising=True)
     cfg = RetrievalConfig(max_hits=5)
     ctx = _DummyCtx()
-    rag = orchestrate_retrieval(query='base-query', ctx=ctx, cfg=cfg, hyde_query=None, council_vote=None)
+    rag = orchestrate_retrieval(query='base-query',
+        ctx=ctx,
+        cfg=cfg,
+        hyde_query=None,
+        council_vote=None)
     assert isinstance(rag, RAGResult)
     assert rag.evidence == []

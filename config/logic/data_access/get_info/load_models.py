@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .understand_request_load_planning_enums import *
+# from .understand_request_load_planning_enums import *  # Star import removed
 
 @dataclass
 class ConfigLoadResult:

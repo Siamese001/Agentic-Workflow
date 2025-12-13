@@ -146,7 +146,9 @@ def fix_naming_conventions():
     logger.info("Fixing naming conventions...")
 
     violations = {
-        'runtime/shared/executive_title_composer.py': ('Executive_Title_Composer', 'ExecutiveTitleComposer'),
+        'runtime/shared/executive_title_composer.py': ('Executive_Title_Composer',
+            'ExecutiveTitleComposer'),
+            
         'runtime/shared/gap_closure_architect.py': ('Gap_Closure_Architect', 'GapClosureArchitect'),
     }
 

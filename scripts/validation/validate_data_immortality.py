@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 """
 
 import sys
-import os
 
 def main() -> None:
     """Check if any files being committed are in data/ directories."""

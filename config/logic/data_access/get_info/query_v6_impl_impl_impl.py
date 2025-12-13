@@ -1,6 +1,5 @@
 """Implementation for query_v6_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 class StoredPrompt:
     """

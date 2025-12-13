@@ -1,6 +1,8 @@
 # from archives.legacy_root_folders.infra.sandbox.fs_template import build_ephemeral_rootfs  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 def test_build_ephemeral_rootfs_shape() -> None:
+    """TODO: Add docstring."""
+
     fs = build_ephemeral_rootfs()
 
     assert fs.get("tmpfs") is True

@@ -1,5 +1,4 @@
 """Unit tests for L2_execution/P4_safety - execution safety checks."""
-from __future__ import annotations
 import re
 
 class TestExecutionSafetyChecks:
@@ -38,7 +37,6 @@ class TestExecutionSafetyChecks:
 
     def test_sanitize_tool_output(self):
         """Nominal: Tool output is sanitized."""
-        import scripts.validation.check_canonical_structure
         output = "Result: <script>alert('xss')</script>"
         sanitized = re.sub(r'<[^>]+>', '', output)
         assert "<script>" not in sanitized

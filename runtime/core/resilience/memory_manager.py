@@ -8,10 +8,9 @@ import gc
 import logging
 import sys
 import time
+import asyncio
 import tracemalloc
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
-from dataclasses import dataclass, field
 from enum import Enum
 import psutil
 import threading
@@ -329,12 +328,14 @@ class MemoryManager:
         # Check item count limit
         while (self._stats["item_count"] >= self.limits.max_context_items and
                self._context):
-            self.prune_context(PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size)
+            self.prune_context(PruningStrategy.LRU,
+                target_size=self.limits.max_context_size - required_size)
 
         # Check size limit
         while (self._stats["total_size"] + required_size > self.limits.max_context_size and
                self._context):
-            self.prune_context(PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size)
+            self.prune_context(PruningStrategy.LRU,
+                target_size=self.limits.max_context_size - required_size)
 
     def _check_memory_limits(self) -> None:
         """Check if process memory limits are exceeded."""
@@ -373,7 +374,7 @@ class MemoryManager:
         while self._monitoring:
             try:
                 self._check_memory_limits()
-                time.sleep(interval_seconds)
+                await asyncio.sleep(interval_seconds)
             except Exception as e:
                 logger.error(f"Memory monitoring error: {e}")
 
@@ -433,7 +434,8 @@ Memory Percent: {stats.get('process_memory_percent', 0):.1f}%
 _managers: Dict[str, MemoryManager] = {}
 _manager_lock = threading.Lock()
 
-def get_memory_manager(name: str = "default", limits: Optional[MemoryLimits] = None) -> MemoryManager:
+def get_memory_manager(name: str = "default",
+    limits: Optional[MemoryLimits] = None) -> MemoryManager:
     """Get or create a memory manager.
 
     Args:

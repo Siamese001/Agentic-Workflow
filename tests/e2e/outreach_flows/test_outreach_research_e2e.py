@@ -1,5 +1,4 @@
 """E2E tests for outreach research flows."""
-from __future__ import annotations
 
 class TestContactResearchE2E:
     """E2E tests for contact research."""

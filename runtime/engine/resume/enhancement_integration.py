@@ -6,7 +6,6 @@ resume generation capabilities.
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Tuple
 
 from .persona_router import PersonaRouter, ReaderPersona, get_persona_router
 from .evidence_injector import EvidenceInjector, get_evidence_injector

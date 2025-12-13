@@ -1,5 +1,4 @@
 """E2E tests for resume optimization flows."""
-from __future__ import annotations
 
 class TestResumeOptimizationE2E:
     """E2E tests for resume optimization."""

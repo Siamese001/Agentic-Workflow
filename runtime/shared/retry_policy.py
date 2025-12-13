@@ -8,11 +8,8 @@ import asyncio
 import logging
 import random
 import time
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Type, Union
 
 logger = logging.getLogger(__name__)
 
@@ -246,7 +243,8 @@ class RetryPolicy:
                     break
 
                 # Wait before retry
-                logger.warning(f"Function failed on attempt {attempt + 1}, retrying in {delay:.2f}s: {e}")
+                logger.warning(f"Function failed on attempt {attempt + 1},
+                    retrying in {delay:.2f}s: {e}")
 
                 if delay > 0:
                     await asyncio.sleep(delay)
@@ -271,7 +269,7 @@ class RetryPolicy:
         )
 
     def _update_stats(self, attempts: int, success: bool) -> None:
-        """Update retry statistics.
+        """# SQL removed: Update retry statistics.
 
         Args:
             attempts: Number of attempts

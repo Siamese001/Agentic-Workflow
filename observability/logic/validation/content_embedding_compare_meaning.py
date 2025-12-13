@@ -16,7 +16,6 @@ Version: 1.0.0
 Compliance: Subatomic Canon 2026
 """
 
-from __future__ import annotations
 
 import logging
 import sys

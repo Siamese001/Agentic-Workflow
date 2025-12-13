@@ -5,7 +5,6 @@ Integration tests for golden state evaluation.
 """
 
 import pytest
-from pathlib import Path
 
 from apps_shared.core.golden_state_evaluator import (
     GoldenStateEvaluator,

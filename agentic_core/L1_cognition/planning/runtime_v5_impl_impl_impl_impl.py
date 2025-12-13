@@ -45,14 +45,25 @@ class TestWorkflowOrchestration:
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.ctx = ExecutionContext(job=JobInput(title='Software Engineer', role_type='engineering', seniority='mid', posting_text='Looking for a software engineer'), resume=ResumeInput(name='John Doe', email='john@example.com', sections={}), user_id='test_user')
+        self.ctx = ExecutionContext(job=JobInput(title='Software Engineer',
+            role_type='engineering',
+            seniority='mid',
+            posting_text='Looking for a software engineer'),
+            resume=ResumeInput(name='John Doe',
+            email='john@example.com',
+            sections={}),
+            user_id='test_user')
 
     @patch('l2.execute_workflow_plans')
     def test_l2_execute_with_mock_llm(self, mock_execute: Mock) -> None:
         """Test L2 execution with mock LLM responses."""
         mock_strategy = Mock()
         mock_strategy.branches = [Mock(description='Test strategy')]
-        mock_execute.return_value = L2ResultBundle(strategy=mock_strategy, rag=Mock(), drafting=Mock(), qa=Mock(), safety=Mock())
+        mock_execute.return_value = L2ResultBundle(strategy=mock_strategy,
+            rag=Mock(),
+            drafting=Mock(),
+            qa=Mock(),
+            safety=Mock())
         plans = [Mock()]
         result = execute_workflow_plans(plans, self.ctx)
         assert isinstance(result, L2ResultBundle)
@@ -64,7 +75,11 @@ class TestWorkflowOrchestration:
         from orchestration.run_dag import run_dag
         mock_strategy = Mock()
         mock_strategy.branches = [Mock(description='Test strategy branch text')]
-        mock_orchestrate.return_value = L2ResultBundle(strategy=mock_strategy, rag=Mock(), drafting=Mock(), qa=Mock(), safety=Mock())
+        mock_orchestrate.return_value = L2ResultBundle(strategy=mock_strategy,
+            rag=Mock(),
+            drafting=Mock(),
+            qa=Mock(),
+            safety=Mock())
         plans = [Mock()]
         dag = run_dag(plans, self.ctx)
         assert dag.final_state_patch['strategy_text'] == 'Test strategy branch text'
@@ -77,8 +92,18 @@ class TestIntegrationWithAdapters:
     def test_pinecone_adapter_integration(self) -> None:
         """Test Pinecone adapter integration."""
         mock_adapter = Mock()
-        mock_adapter.query_by_text.return_value = [Mock(id='doc1', score=0.9, metadata={'text': 'test'})]
-        ctx = ExecutionContext(job=JobInput(title='Test', role_type='test', seniority='test', posting_text='test'), resume=ResumeInput(name='Test', email='test@example.com', sections={}), user_id='test_user', pinecone_adapter=mock_adapter)
+        mock_adapter.query_by_text.return_value = [Mock(id='doc1',
+            score=0.9,
+            metadata={'text': 'test'})]
+        ctx = ExecutionContext(job=JobInput(title='Test',
+            role_type='test',
+            seniority='test',
+            posting_text='test'),
+            resume=ResumeInput(name='Test',
+            email='test@example.com',
+            sections={}),
+            user_id='test_user',
+            pinecone_adapter=mock_adapter)
         assert ctx.pinecone_adapter is mock_adapter
 
     def test_execution_context_validation(self) -> None:

@@ -48,7 +48,9 @@ logger = logging.getLogger(__name__)
         content = "Same content"
 
         key1 = generate_llm_cache_key(model=model, messages=[{"role": "user", "content": content}])
-        key2 = generate_llm_cache_key(model=model, messages=[{"role": "assistant", "content": content}])
+        key2 = generate_llm_cache_key(model=model,
+            messages=[{"role": "assistant",
+            "content": content}])
 
         assert key1 != key2, "Role should affect cache key"
 

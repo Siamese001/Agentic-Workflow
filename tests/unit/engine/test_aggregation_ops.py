@@ -2,13 +2,14 @@
 Unit tests for shared_engine_ops/aggregation_ops/
 Tests aggregation operations including pick_best_result.
 """
-from __future__ import annotations
 import pytest
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 @dataclass
 class ScoredResult:
+    """TODO: Add docstring."""
+
     id: str
     content: str
     score: float

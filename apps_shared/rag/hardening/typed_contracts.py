@@ -1,6 +1,5 @@
 # FILE: tests/contracts/test_typed_contracts.py
 
-from __future__ import annotations
 
 # from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel  # Archive import removed
 
@@ -50,6 +49,8 @@ def test_core_models_have_v1_schema_version_defaults() -> None:
     assert l2_result.schema_version == "v1"
 
 def test_validate_schema_version_accepts_matching_models() -> None:
+    """TODO: Add docstring."""
+
     bundle = WorkflowPlanBundle(
         strategy=StrategyPlan(),
         rag=RAGPlan(),
@@ -63,6 +64,8 @@ def test_validate_schema_version_accepts_matching_models() -> None:
 
 def test_validate_schema_version_rejects_mismatched_version() -> None:
     """Test that validate_schema_version rejects mismatched versions."""
+        """TODO: Add docstring."""
+
     class DummyModel(BaseModel):
         schema_version: str = "v2"  # wrong version
 

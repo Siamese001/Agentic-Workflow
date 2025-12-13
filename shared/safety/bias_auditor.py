@@ -218,7 +218,8 @@ class BiasAuditor:
             BiasType.APPEARANCE: "Remove appearance-based descriptors",
         }
 
-        recommendations = [bias_recommendations.get(bt, "") for bt in bias_types if bt in bias_recommendations]
+        recommendations = [bias_recommendations.get(bt,
+            "") for bt in bias_types if bt in bias_recommendations]
 
         if not recommendations:
             recommendations.append("Content appears neutral and inclusive")

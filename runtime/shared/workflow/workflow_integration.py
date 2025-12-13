@@ -9,12 +9,9 @@ Shows how to:
 """
 
 import asyncio
-import json
 import logging
-from typing import Dict, Any, List, Optional
 from datetime import datetime
 
-from .node_executor import (
     NodeExecutor,
     NodeExecutionContext,
     create_node_executor
@@ -82,7 +79,12 @@ class WorkflowOrchestrator:
 
         self.logger = logging.getLogger("WorkflowOrchestrator")
 
-    async def execute_workflow(self, workflow_config: Dict[str, Any], input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_workflow(self,
+        workflow_config: Dict[str,
+        Any],
+        input_data: Dict[str,
+        Any]) -> Dict[str,
+        Any]:
         """Execute a complete workflow with all enhancements.
 
         Args:
@@ -133,7 +135,7 @@ class WorkflowOrchestrator:
         }
 
     def _update_stats(self, context: NodeExecutionContext):
-        """Update execution statistics.
+        """# SQL removed: Update execution statistics.
 
         Args:
             context: Node execution context
@@ -162,7 +164,8 @@ class WorkflowOrchestrator:
         self.logger.info(f"Session: {self.session_id}")
         self.logger.info(f"Nodes Executed: {self.stats['nodes_executed']}")
         self.logger.info(f"Total Cost: ${self.stats['total_cost_usd']:.4f}")
-        self.logger.info(f"Avg Latency: {self.stats['total_latency_ms'] / max(1, self.stats['nodes_executed']):.0f}ms")
+        self.logger.info(f"Avg Latency: {self.stats['total_latency_ms'] / max(1,
+            self.stats['nodes_executed']):.0f}ms")
         self.logger.info(f"Schema Violations: {self.stats['schema_violations']}")
         self.logger.info(f"Model Usage: {self.stats['model_usage']}")
 
@@ -206,7 +209,8 @@ def create_sample_workflow_config() -> Dict[str, Any]:
                         "Do not mention salary expectations or availability"
                     ],
                     "hallucination_guard": [
-                        "Do not invent metrics (e.g., '20% growth') if not explicitly in the input context"
+                        "Do not invent metrics (e.g.,
+                            '20% growth') if not explicitly in the input context"
                     ]
                 },
                 "schema_enforcement": {

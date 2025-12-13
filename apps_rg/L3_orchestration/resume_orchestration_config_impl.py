@@ -1,7 +1,6 @@
 """Implementation for resume_orchestration_config."""
 
-from typing import Any, Dict, List, Optional
-from .resume_orchestration_config_types import *
+# from .resume_orchestration_config_types import *  # Star import removed
 
 def get_word_count_constraint(k_node: str) -> Optional[WordCountConstraint]:
     """Get word count constraint for a K-node.

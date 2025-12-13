@@ -9,14 +9,11 @@ import asyncio
 import logging
 import time
 import uuid
-from enum import Enum
 from typing import Dict, Any, Optional, List, Callable
-from dataclasses import dataclass, field
 from datetime import datetime
 from pydantic import BaseModel, Field, validator
 
 from .subatomic_hop import SubatomicHop, HopState, MicroStage
-from .dynamic_dag_manager import DAGManager
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +30,8 @@ class NegotiationMessage(BaseModel):
 
     @validator('message_type')
     def validate_message_type(cls, v):
+        """TODO: Add docstring."""
+
         allowed = ["CLARIFICATION_REQUEST", "CHANGE_REQUEST", "REJECTION"]
         if v not in allowed:
             raise ValueError(f"message_type must be one of {allowed}")

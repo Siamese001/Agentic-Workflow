@@ -7,8 +7,6 @@ reducing noise and improving signal density in the RAG pipeline.
 import logging
 import re
 import time
-from typing import List, Dict, Set, Optional, Tuple
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +16,10 @@ class CompressionResult(BaseModel):
     original_length: int = Field(..., description="Original text length in characters")
     compressed_length: int = Field(..., description="Compressed text length in characters")
     compressed_text: str = Field(..., description="Compressed text content")
-    compression_ratio: float = Field(..., ge=0.0, le=1.0, description="Compression ratio (compressed/original)")
+    compression_ratio: float = Field(...,
+        ge=0.0,
+        le=1.0,
+        description="Compression ratio (compressed/original)")
 
 class ContextualCompressor:
     """Compresses retrieved chunks to extract only relevant sentences.
@@ -51,7 +52,8 @@ class ContextualCompressor:
             'date': r'\b(\d{4}|\d{1,2}/\d{1,2}/\d{2,4})\b'
         }
 
-        logger.info(f"Initialized ContextualCompressor: threshold={similarity_threshold}, llm={use_llm}")
+        logger.info(f"Initialized ContextualCompressor: threshold={similarity_threshold},
+            llm={use_llm}")
 
     def _split_into_sentences(self, text: str) -> List[str]:
         """Split text into sentences using regex.
@@ -234,7 +236,10 @@ Extracted sentences:"""
             # Fallback to heuristic
             return self._compress_heuristic(chunks, query)
 
-    def compress(self, chunks: List[str], query: str, use_llm: Optional[bool] = None) -> CompressionResult:
+    def compress(self,
+        chunks: List[str],
+        query: str,
+        use_llm: Optional[bool] = None) -> CompressionResult:
         """Compress retrieved chunks to extract relevant sentences.
 
         Args:

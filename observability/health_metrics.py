@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 """AIS health metrics helpers.
 

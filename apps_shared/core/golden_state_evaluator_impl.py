@@ -1,7 +1,7 @@
 """Implementation for golden_state_evaluator."""
 
 from typing import Any, Dict, List, Optional
-from .golden_state_evaluator_types import *
+# from .golden_state_evaluator_types import *  # Star import removed
 
 class GoldenStateEvaluator:
     """Evaluator for golden state test cases.
@@ -10,7 +10,10 @@ class GoldenStateEvaluator:
     Uses JudgeEvaluator for quality assessment.
     """
 
-    def __init__(self, dataset_path: Optional[Path]=None, judge_evaluator: Optional[JudgeEvaluator]=None, enable_logging: bool=True):
+    def __init__(self,
+        dataset_path: Optional[Path]=None,
+        judge_evaluator: Optional[JudgeEvaluator]=None,
+        enable_logging: bool=True):
         """Initialize evaluator.
 
         Args:
@@ -57,16 +60,33 @@ class GoldenStateEvaluator:
             expected_str = ', '.join(expected_output['contains'])
         else:
             expected_str = str(expected_output) if expected_output else None
-        judge_result = await self.judge_evaluator.evaluate(output=output.actual_output, expected=expected_str, context={'task': case.mission, 'category': case.category})
-        action_match_score = self._evaluate_actions(expected=case.expected_actions, actual=output.actions_taken)
+        judge_result = await self.judge_evaluator.evaluate(output=output.actual_output,
+            expected=expected_str,
+            context={'task': case.mission,
+            'category': case.category})
+        action_match_score = self._evaluate_actions(expected=case.expected_actions,
+            actual=output.actions_taken)
         self._check_output_constraints(case.expected_output, output.actual_output, errors)
         passed = judge_result.passed and action_match_score >= 0.5 and (len(errors) == 0)
-        report = EvaluationReport(case_id=case.id, case_name=case.name, passed=passed, judge_result=judge_result, action_match_score=action_match_score, errors=errors)
+        report = EvaluationReport(case_id=case.id,
+            case_name=case.name,
+            passed=passed,
+            judge_result=judge_result,
+            action_match_score=action_match_score,
+            errors=errors)
         if self.enable_logging:
-            logger.info('case_evaluated', extra={'case_id': case.id, 'passed': passed, 'judge_score': judge_result.overall_score, 'action_score': action_match_score})
+            logger.info('case_evaluated',
+                extra={'case_id': case.id,
+                'passed': passed,
+                'judge_score': judge_result.overall_score,
+                'action_score': action_match_score})
         return report
 
-    def _evaluate_actions(self, expected: List[Dict[str, Any]], actual: List[Dict[str, Any]]) -> float:
+    def _evaluate_actions(self,
+        expected: List[Dict[str,
+        Any]],
+        actual: List[Dict[str,
+        Any]]) -> float:
         """Evaluate action matching.
 
         Args:
@@ -88,7 +108,11 @@ class GoldenStateEvaluator:
         score = matches / len(expected_tools)
         return score
 
-    def _check_output_constraints(self, expected: Dict[str, Any], actual: str, errors: List[str]) -> None:
+    def _check_output_constraints(self,
+        expected: Dict[str,
+        Any],
+        actual: str,
+        errors: List[str]) -> None:
         """Check output constraints.
 
         Args:
@@ -144,7 +168,9 @@ class GoldenStateEvaluator:
         pass_rate = passed / total if total > 0 else 0.0
         avg_judge_score = sum((r.judge_result.overall_score for r in reports.values())) / total if total > 0 else 0.0
         avg_action_score = sum((r.action_match_score for r in reports.values())) / total if total > 0 else 0.0
-        failing_cases = [{'id': r.case_id, 'name': r.case_name, 'errors': r.errors} for r in reports.values() if not r.passed]
+        failing_cases = [{'id': r.case_id,
+            'name': r.case_name,
+            'errors': r.errors} for r in reports.values() if not r.passed]
         return {'total_cases': total, 'passed': passed, 'failed': failed, 'pass_rate': pass_rate, 'avg_judge_score': avg_judge_score, 'avg_action_score': avg_action_score, 'failing_cases': failing_cases}
 
 def load_golden_cases(dataset_path: Optional[Path]=None) -> List[GoldenCase]:

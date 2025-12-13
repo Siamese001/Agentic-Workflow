@@ -10,7 +10,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
-from datetime import datetime
 
 from .signal_infrastructure import EngineType
 
@@ -160,7 +159,11 @@ class ResumeBulletFormatter(FormatterStrategy):
         bullets = []
         for sentence in sentences:
             # Ensure it starts with action verb
-            if not any(sentence.startswith(verb) for verb in ["Led", "Managed", "Developed", "Created", "Implemented"]):
+            if not any(sentence.startswith(verb) for verb in ["Led",
+                "Managed",
+                "Developed",
+                "Created",
+                "Implemented"]):
                 sentence = "• " + sentence
             elif not sentence.startswith('•'):
                 sentence = "• " + sentence
@@ -391,7 +394,9 @@ class OutreachMessageFormatter(FormatterStrategy):
         """
         # Ensure proper greeting
         if not any(greeting in text.lower() for greeting in ["dear", "hi ", "hello"]):
-            text = "Dear " + (config.get("recipient_name", "Hiring Manager") if config else "Hiring Manager") + ",\n\n" + text
+            text = "Dear " + (config.get("recipient_name",
+                "Hiring Manager") if config else "Hiring Manager") + ",
+                \n\n" + text
 
         # Ensure proper closing
         if not any(closing in text.lower() for closing in ["sincerely", "regards", "best"]):

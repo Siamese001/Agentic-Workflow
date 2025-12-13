@@ -5,9 +5,7 @@ Tests core components without complex workflow specifications.
 import pytest
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
 
-from runtime.shared.state import get_state_manager, reset_state_manager
 from runtime.shared.routing.factory import reset_router
 from apps_rg.L3_orchestration.hardened_orchestrator import create_hardened_orchestrator, HardenedWorkflowOrchestrator
 from runtime.shared.routing.router import HardenedRouter
@@ -107,7 +105,6 @@ class TestResilientRouting:
 
     def test_router_reset(self):
         """Test that router can be reset."""
-        from runtime.shared.routing.factory import get_resilient_router
         router1 = get_resilient_router()
         reset_router()
         router2 = get_resilient_router()

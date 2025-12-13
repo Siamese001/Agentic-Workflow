@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Test Apply Tests Safety - atomic execution layer."""
 
-from __future__ import annotations
 
 from typing import Dict
 

@@ -1,7 +1,6 @@
 """Implementation for dedup_merged_files."""
 
-from typing import Any, Dict, List, Optional
-from .dedup_merged_files_types import *
+# from .dedup_merged_files_types import *  # Star import removed
 
 def compute_hash(filepath: Path) -> None:
     """Compute SHA256 hash of file."""
@@ -61,11 +60,17 @@ def execute_dedup(dry_run: bool=False) -> DedupManifest:
         ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
     for file_hash, files in duplicates.items():
         canonical, to_remove = select_canonical(files)
-        manifest.kept_files.append({'path': str(canonical.relative_to(REPO_ROOT)), 'hash': file_hash[:16], 'size': canonical.stat().st_size, 'duplicates_removed': len(to_remove)})
+        manifest.kept_files.append({'path': str(canonical.relative_to(REPO_ROOT)),
+            'hash': file_hash[:16],
+            'size': canonical.stat().st_size,
+            'duplicates_removed': len(to_remove)})
         for dup_file in to_remove:
             rel_path = dup_file.relative_to(REPO_ROOT)
             file_size = dup_file.stat().st_size
-            manifest.removed_files.append({'path': str(rel_path), 'hash': file_hash[:16], 'size': file_size, 'canonical': str(canonical.relative_to(REPO_ROOT))})
+            manifest.removed_files.append({'path': str(rel_path),
+                'hash': file_hash[:16],
+                'size': file_size,
+                'canonical': str(canonical.relative_to(REPO_ROOT))})
             manifest.bytes_saved += file_size
             manifest.files_removed += 1
             if not dry_run:
@@ -77,7 +82,16 @@ def execute_dedup(dry_run: bool=False) -> DedupManifest:
                     manifest.errors.append({'path': str(rel_path), 'error': str(e)})
     MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(MANIFEST_PATH, 'w') as f:
-        json.dump({'timestamp': manifest.timestamp, 'total_scanned': manifest.total_scanned, 'duplicate_groups': manifest.duplicate_groups, 'files_removed': manifest.files_removed, 'bytes_saved': manifest.bytes_saved, 'kept_files': manifest.kept_files, 'removed_files': manifest.removed_files, 'errors': manifest.errors}, f, indent=2)
+        json.dump({'timestamp': manifest.timestamp,
+            'total_scanned': manifest.total_scanned,
+            'duplicate_groups': manifest.duplicate_groups,
+            'files_removed': manifest.files_removed,
+            'bytes_saved': manifest.bytes_saved,
+            'kept_files': manifest.kept_files,
+            'removed_files': manifest.removed_files,
+            'errors': manifest.errors},
+            f,
+            indent=2)
     return manifest
 
 def print_summary(manifest: DedupManifest, dry_run: bool) -> None:

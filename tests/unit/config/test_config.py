@@ -1,8 +1,6 @@
 """Unit tests for runtime/shared/config.py"""
-from __future__ import annotations
 from pathlib import Path
 from tests.conftest import PROJECT_ROOT, CACHE_DIR, LOGS_DIR, DEFAULT_MAX_RETRIES
-from shared.configuration.reasoning_config import (
     SAFETY_THRESHOLD,
     CONFIG,
     C2,

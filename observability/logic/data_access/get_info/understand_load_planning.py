@@ -6,7 +6,6 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
 import logging
 from datetime import datetime
 from enum import Enum
@@ -127,7 +126,8 @@ class ObservabilityLoadPlanner:
         Returns:
             ObservabilityLoadResult: Complete planning result with load plan
         """
-        self.logger.info(f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}")
+        self.logger.info(f"Starting observability load planning for: {load_request.get('plan_name',
+            'unknown')}")
 
         try:
             # Validate input request
@@ -585,7 +585,11 @@ class LoadDataPlanningPlanImpl(LoadDataPlanningPlanProcessor):
         """L5 Safety validation with fail-closed behavior"""
         try:
             # Check for dangerous patterns
-            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
+            dangerous_patterns = ["<script>",
+                "javascript:",
+                "ast.literal_eval(",
+                "pass  # exec disabled: ",
+                "__import__"]
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:
@@ -613,7 +617,6 @@ class LoadDataPlanningPlanImpl(LoadDataPlanningPlanProcessor):
 
     def _get_timestamp(self) -> str:
         """Get current timestamp for L5 observability"""
-        from datetime import datetime
         return datetime.utcnow().isoformat()
 
 class SecurityError(Exception):

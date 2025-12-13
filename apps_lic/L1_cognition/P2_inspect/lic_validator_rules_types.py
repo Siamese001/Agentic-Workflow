@@ -1,7 +1,6 @@
 """Types and models for lic_validator_rules."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class ValidationSeverity(Enum):

@@ -42,6 +42,9 @@ class InvokeGenerationService:
         logger.info(f"Executing {action} with {params}")
         return {"action": action, "params": params, "status": "completed"}
 
-def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:
+def execute(action: str,
+    params: Dict[str,
+    object],
+    config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return InvokeGenerationService(config).execute(action, params)

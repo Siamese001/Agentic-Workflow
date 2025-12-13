@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .constitutional_ai_types_part import *
-from .constitutional_ai_types_part_2 import *
+# from .constitutional_ai_types_part import *  # Star import removed
+# from .constitutional_ai_types_part_2 import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

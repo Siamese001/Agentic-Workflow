@@ -19,7 +19,10 @@ class AdjustSectionWeights:
         self.weights = self.config.get("weights", {})
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def refine(self, data: Union[str, Dict], adjustments: Optional[Dict] = None) -> RefinementResult:
+    def refine(self,
+        data: Union[str,
+        Dict],
+        adjustments: Optional[Dict] = None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""
         changes = []
         refined = data
@@ -34,6 +37,9 @@ class AdjustSectionWeights:
 
         return RefinementResult(original=data, refined=refined, changes=changes)
 
-def refine(data: Union[str, Dict], adjustments: Optional[Dict] = None, config: Optional[Dict] = None) -> RefinementResult:
+def refine(data: Union[str,
+    Dict],
+    adjustments: Optional[Dict] = None,
+    config: Optional[Dict] = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return AdjustSectionWeights(config).refine(data, adjustments)

@@ -8,7 +8,6 @@ the Resume Engine cites the most current and verified truth.
 import logging
 import re
 from datetime import datetime
-from typing import Dict, List, Optional, Set, Tuple, Any, Union
 from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
@@ -157,7 +156,8 @@ class EvidenceRanker:
                     )
 
                     # Calculate final score
-                    corroboration_normalized = min(1.0, corroboration_count / 3.0)  # Normalize to 0-1
+                    corroboration_normalized = min(1.0,
+                        corroboration_count / 3.0)  # Normalize to 0-1
                     final_score = (
                         semantic_score * self.semantic_weight +
                         freshness_score * self.freshness_weight +
@@ -194,14 +194,19 @@ class EvidenceRanker:
             # Sort by final score descending
             ranked_signals.sort(key=lambda x: x.final_score, reverse=True)
 
-            logger.info(f"Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}")
+            logger.info(f"Ranked {len(signals)} signals,
+                top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}")
             return ranked_signals
 
         except Exception as e:
             logger.error(f"Error in rank_evidence: {str(e)}")
             return []
 
-    def _score_freshness(self, content: str, metadata: Dict[str, str]) -> Tuple[float, Optional[int]]:
+    def _score_freshness(self,
+        content: str,
+        metadata: Dict[str,
+        str]) -> Tuple[float,
+        Optional[int]]:
         """Score content based on freshness (recency).
 
         Args:
@@ -419,8 +424,12 @@ class EvidenceRanker:
                 "recent_count": recent_count,
                 "corroborated_count": corroborated_count,
                 "avg_freshness": sum(e.freshness_score for e in ranked_evidence) / len(ranked_evidence),
+                    
                 "avg_corroboration": sum(e.corroboration_count for e in ranked_evidence) / len(ranked_evidence),
-                "year_range": (min(years_detected), max(years_detected)) if years_detected else None,
+                    
+                "year_range": (min(years_detected),
+                    max(years_detected)) if years_detected else None,
+                    
                 "avg_year": avg_year,
                 "top_score": ranked_evidence[0].final_score,
                 "bottom_score": ranked_evidence[-1].final_score

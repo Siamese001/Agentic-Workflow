@@ -9,8 +9,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .use_observability_execution_impl import *
-from .use_observability_execution_models import *
-from .use_observability_execution_impl import *
+# from .use_observability_execution_impl import *  # Star import removed
+# from .use_observability_execution_models import *  # Star import removed
+# from .use_observability_execution_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

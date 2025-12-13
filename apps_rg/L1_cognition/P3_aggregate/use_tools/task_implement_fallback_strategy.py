@@ -6,7 +6,6 @@ Generated: 2025-12-07T13:28:54.251269
 """
 
 import logging
-import time
 from typing import Dict, Optional
 from shared.result_types import RetryResult
 
@@ -34,7 +33,12 @@ class ImplementFallbackStrategy:
                 pass  # rate limit delay removed)
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
-    def fallback(self, primary: Callable, fallback: Callable, *args, **kwargs: Dict[str, object]) -> object:
+    def fallback(self,
+        primary: Callable,
+        fallback: Callable,
+        *args,
+        **kwargs: Dict[str,
+        object]) -> object:
         """Execute with fallback."""
         result = self.execute(primary, *args, **kwargs)
         if result.success:

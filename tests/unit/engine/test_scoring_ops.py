@@ -2,13 +2,14 @@
 Unit tests for shared_engine_ops/scoring_ops/
 Tests scoring operations for ranking and evaluation.
 """
-from __future__ import annotations
 import pytest
 from typing import Dict
 from dataclasses import dataclass
 
 @dataclass
 class ScoredItem:
+    """TODO: Add docstring."""
+
     id: str
     raw_score: float
     normalized_score: float
