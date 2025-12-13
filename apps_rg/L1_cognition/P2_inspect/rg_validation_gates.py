@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .rg_validation_gates_types import *
+from .rg_validation_gates_impl import *
 from .rg_validation_gates_impl import *
 
 __all__ = ['*']  # Re-export all imported names

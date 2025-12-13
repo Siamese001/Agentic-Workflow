@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .invoke_observability_tool_enums import *
+from .invoke_observability_tool_impl import *
 from .invoke_observability_tool_models import *
 from .invoke_observability_tool_impl import *
 

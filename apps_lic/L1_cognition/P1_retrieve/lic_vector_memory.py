@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .lic_vector_memory_types import *
+from .lic_vector_memory_impl import *
 from .lic_vector_memory_impl import *
 
 __all__ = ['*']  # Re-export all imported names

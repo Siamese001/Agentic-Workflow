@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .route_classifier_types import *
+from .route_classifier_impl import *
 from .route_classifier_impl import *
 
 __all__ = ['*']  # Re-export all imported names

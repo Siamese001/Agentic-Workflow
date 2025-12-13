@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .achv_bullet_synthesizer_types import *
+from .achv_bullet_synthesizer_impl import *
 from .achv_bullet_synthesizer_impl import *
 
 __all__ = ['*']  # Re-export all imported names
