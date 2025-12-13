@@ -40,15 +40,12 @@ class WarRoom:
         
         company_name = Prompt.ask("Target Company Name")
         
-        # In a fully automated version, you'd use a Search Tool (SerpAPI/Tavily) here.
-        # For now, we paste context to allow "Human-in-the-Loop" high-quality input.
-        self.console.print("[yellow]Paste search context (Engineering Blogs, StackShare, Job Postings). Press Ctrl+D (Linux/Mac) or Ctrl+Z (Windows) when done:[/yellow]")
-        search_context = sys.stdin.read()
+        self.console.print(f"[green]🕵️  Using autonomous deep search for {company_name}...[/green]")
 
         with self.console.status(f"[bold green]Running Shadow Audit on {company_name}..."):
             swot = self.orchestrator.execute_k11_shadow_audit(
                 company_name=company_name,
-                search_context=search_context,
+                search_context=None,  # Always use autonomous search now
                 config=self.config.get("K.11_shadow_audit", {})
             )
         
