@@ -9,6 +9,7 @@ Phase 1C - SDK Integration Layer
 import logging
 import os
 from typing import Any, Dict, Optional
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +36,7 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> None:
 
     try:
         from opentelemetry import trace
-        from opentelemetry.sdk.trace import TracerProvider
-            BatchSpanProcessor,
-            ConsoleSpanExporter,
-        )
+        from opentelemetry.sdk.trace import TracerProvider, BatchSpanProcessor, ConsoleSpanExporter
         from opentelemetry.sdk.resources import Resource
     except ImportError:
         logger.warning(
@@ -73,8 +71,7 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> None:
     # Add OTLP exporter if enabled
     if config.enable_otlp_export and config.endpoint:
         try:
-                OTLPSpanExporter,
-            )
+            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 
             otlp_exporter = OTLPSpanExporter(endpoint=config.endpoint)
             _TRACER_PROVIDER.add_span_processor(
@@ -109,7 +106,6 @@ def get_tracer() -> Any:
     return _TRACER
 
 def create_span(
-    """Docstring."""
     name: str,
     attributes: Optional[Dict[str, Any]] = None,
 ) -> Any:
@@ -137,7 +133,6 @@ def create_span(
     return span
 
 def add_span_event(
-    """Docstring."""
     event_name: str,
     attributes: Optional[Dict[str, Any]] = None,
 ) -> None:
@@ -186,7 +181,6 @@ def record_exception(exception: Exception) -> None:
         logger.debug(f"Failed to record exception: {e}")
 
 def setup_structured_logging(
-    """Docstring."""
     service_name: str = "agentic-workflow",
     log_level: str = "INFO",
 ) -> None:

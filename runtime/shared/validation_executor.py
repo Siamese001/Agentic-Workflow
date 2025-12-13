@@ -16,6 +16,7 @@ import re
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 from sklearn.metrics.pairwise import cosine_similarity
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class ValidationResult:
 
     @property
     def passed(self) -> bool:
-        """Check if validation passed."""
+            """Check if validation passed."""
         return self.status == ValidationStatus.PASS
 
 class ValidationGateExecutor:
@@ -75,7 +76,7 @@ class ValidationGateExecutor:
         differentiator_distribution: Optional[Dict[str, int]] = None,
         similarity_thresholds: Optional[Dict[str, float]] = None,
     ):
-        """Initialize validation gate executor.
+            """Initialize validation gate executor.
 
         Args:
             validation_gates: List of ValidationGate objects from config
@@ -90,8 +91,8 @@ class ValidationGateExecutor:
 
         logger.info(f"Initialized ValidationGateExecutor with {len(self.validation_gates)} gates")
 
-    def execute_gate(
         """Docstring."""
+    def execute_gate(
         self,
         gate_id: str,
         content: str,
@@ -99,7 +100,7 @@ class ValidationGateExecutor:
         execution_point: str,
         context: Optional[Dict[str, Any]] = None,
     ) -> ValidationResult:
-        """Execute a single validation gate.
+            """Execute a single validation gate.
 
         Args:
             gate_id: Validation gate ID
@@ -173,15 +174,15 @@ class ValidationGateExecutor:
             message=gate.halt_message if failures else None,
         )
 
-    def execute_all_gates(
         """Docstring."""
+    def execute_all_gates(
         self,
         execution_point: str,
         content: str,
         k_node_id: str,
         context: Optional[Dict[str, Any]] = None,
     ) -> List[ValidationResult]:
-        """Execute all gates for a specific execution point.
+            """Execute all gates for a specific execution point.
 
         Args:
             execution_point: Execution point (e.g., "POST_K8_GENERATION")
@@ -215,7 +216,7 @@ class ValidationGateExecutor:
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Execute a single validation check.
+            """Execute a single validation check.
 
         Args:
             check: Check identifier
@@ -269,7 +270,7 @@ class ValidationGateExecutor:
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check word count with scope support.
+            """Check word count with scope support.
 
         Handles scopes: total, per_bullet, per_segment, per_competency, per_paragraph
         """
@@ -331,7 +332,7 @@ class ValidationGateExecutor:
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check character count."""
+            """Check character count."""
         # K.4 headline has char limits
         if "K.4" in k_node_id or "headline" in check.lower():
             char_count = len(content)
@@ -365,7 +366,7 @@ class ValidationGateExecutor:
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check differentiator distribution or gap coverage."""
+            """Check differentiator distribution or gap coverage."""
         # Gap coverage check (for K.8)
         if "gap_coverage" in check.lower():
             jd_keyword_gap = context.get("JD_Keyword_Gap", [])
@@ -426,7 +427,7 @@ class ValidationGateExecutor:
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check similarity/deduplication."""
+            """Check similarity/deduplication."""
         # Extract threshold from check name
         threshold = 0.50  # default
         if "50" in check:
@@ -494,7 +495,7 @@ class ValidationGateExecutor:
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check for placeholders."""
+            """Check for placeholders."""
         placeholder_patterns = [
             r'\[NAME\]', r'\[COMPANY\]', r'\{name\}', r'\{company\}',
             r'<NAME>', r'<COMPANY>', r'PLACEHOLDER', r'TODO',
@@ -525,7 +526,7 @@ class ValidationGateExecutor:
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check claim grounding and hallucination."""
+            """Check claim grounding and hallucination."""
         # Extract claims (simple sentence splitting)
         claims = [s.strip() for s in content.split('.') if s.strip()]
 
@@ -566,7 +567,7 @@ class ValidationGateExecutor:
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check word count variance (for K.8 competencies)."""
+            """Check word count variance (for K.8 competencies)."""
         # Extract competencies
         competencies = self._segment_competencies(content)
 
@@ -602,7 +603,7 @@ class ValidationGateExecutor:
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check plausibility (authentic vs synthetic)."""
+            """Check plausibility (authentic vs synthetic)."""
         base_pool = context.get("Base_Competency_Pool", [])
         if not base_pool:
             logger.warning("No Base_Competency_Pool in context for plausibility check")
@@ -637,7 +638,7 @@ class ValidationGateExecutor:
         return None
 
     def _determine_action(self, on_fail: str, failures: List[RuleFailure]) -> ValidationAction:
-        """Determine action based on on_fail policy."""
+            """Determine action based on on_fail policy."""
         if on_fail == "HALT":
             return ValidationAction.HALT
         elif on_fail == "REGENERATE":
@@ -656,29 +657,29 @@ class ValidationGateExecutor:
             return ValidationAction.REGENERATE
 
     def _segment_bullets(self, content: str) -> List[str]:
-        """Segment content into bullets."""
+            """Segment content into bullets."""
         # Split by bullet markers or newlines
         bullets = re.split(r'[\n•\-\*]\s*', content)
         return [b.strip() for b in bullets if b.strip()]
 
     def _segment_by_delimiter(self, content: str, delimiter: str) -> List[str]:
-        """Segment content by delimiter."""
+            """Segment content by delimiter."""
         segments = content.split(delimiter)
         return [s.strip() for s in segments if s.strip()]
 
     def _segment_competencies(self, content: str) -> List[str]:
-        """Segment content into competencies."""
+            """Segment content into competencies."""
         # Assume competencies are numbered or separated by newlines
         competencies = re.split(r'\n\d+\.\s*|\n\n', content)
         return [c.strip() for c in competencies if c.strip() and len(c.split()) > 5]
 
     def _segment_paragraphs(self, content: str) -> List[str]:
-        """Segment content into paragraphs."""
+            """Segment content into paragraphs."""
         paragraphs = content.split('\n\n')
         return [p.strip() for p in paragraphs if p.strip()]
 
     def _calculate_similarity(self, text1: str, text2: str) -> float:
-        """Calculate cosine similarity between two texts."""
+            """Calculate cosine similarity between two texts."""
         if not text1 or not text2:
             return 0.0
 
@@ -692,7 +693,7 @@ class ValidationGateExecutor:
             return 0.0
 
     def _extract_covered_keywords(self, content: str, keywords: List[str]) -> Set[str]:
-        """Extract keywords that are covered in content."""
+            """Extract keywords that are covered in content."""
         content_lower = content.lower()
         covered = set()
 

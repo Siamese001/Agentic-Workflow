@@ -27,7 +27,7 @@ class TestDAGMutator:
     """Test suite for DAGMutator class."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.config = DAGConfig(max_depth=5, max_fan_out=3)
         self.mutator = DAGMutator(self.config)
         self.graph = nx.DiGraph()
@@ -40,13 +40,13 @@ class TestDAGMutator:
         self.graph.add_edge("node2", "node3")
 
     def test_initialization(self):
-        """Test DAGMutator initialization."""
+            """Test DAGMutator initialization."""
         assert self.mutator.config.max_depth == 5
         assert self.mutator.config.max_fan_out == 3
         assert len(self.mutator.mutation_history) == 0
 
     def test_spawn_predecessor_success(self):
-        """Test successful predecessor spawning."""
+            """Test successful predecessor spawning."""
         hop_spec = HopSpec(hop_function="test_function", hop_id="new_node")
 
         mutation = DAGMutation(
@@ -68,7 +68,7 @@ class TestDAGMutator:
         assert nx.is_directed_acyclic_graph(self.graph)
 
     def test_spawn_successor_success(self):
-        """Test successful successor spawning."""
+            """Test successful successor spawning."""
         hop_spec = HopSpec(hop_function="test_function", hop_id="new_node")
 
         mutation = DAGMutation(
@@ -90,7 +90,7 @@ class TestDAGMutator:
         assert nx.is_directed_acyclic_graph(self.graph)
 
     def test_skip_successor_success(self):
-        """Test successful successor skipping."""
+            """Test successful successor skipping."""
         mutation = DAGMutation(
             action=MutationAction.SKIP_SUCCESSOR,
             target_hop_id="node2",
@@ -108,7 +108,7 @@ class TestDAGMutator:
         assert nx.is_directed_acyclic_graph(self.graph)
 
     def test_replace_node_success(self):
-        """Test successful node replacement."""
+            """Test successful node replacement."""
         hop_spec = HopSpec(hop_function="new_function", hop_id="replacement")
 
         mutation = DAGMutation(
@@ -131,7 +131,7 @@ class TestDAGMutator:
         assert nx.is_directed_acyclic_graph(self.graph)
 
     def test_depth_constraint_violation(self):
-        """Test that depth constraints are enforced."""
+            """Test that depth constraints are enforced."""
         # Create a node at max depth
         self.graph.add_node("deep_node", depth=4)
 
@@ -151,7 +151,7 @@ class TestDAGMutator:
         assert "exceed max depth" in result.message.lower()
 
     def test_fan_out_constraint_violation(self):
-        """Test that fan-out constraints are enforced."""
+            """Test that fan-out constraints are enforced."""
         # Add many successors to node1
         for i in range(3):
             self.graph.add_node(f"successor_{i}", depth=1)
@@ -173,7 +173,7 @@ class TestDAGMutator:
         assert "exceed max fan-out" in result.message.lower()
 
     def test_cycle_detection(self):
-        """Test that cycles are prevented."""
+            """Test that cycles are prevented."""
         # Create a cycle-inducing mutation
         hop_spec = HopSpec(hop_function="test_function", hop_id="cycle_node")
 
@@ -194,7 +194,7 @@ class TestDAGMutator:
         assert not result.success or "cycle" in result.message.lower()
 
     def test_mutation_history(self):
-        """Test mutation history tracking."""
+            """Test mutation history tracking."""
         hop_spec = HopSpec(hop_function="test_function")
 
         mutation = DAGMutation(
@@ -216,33 +216,33 @@ class TestDAGManager:
     """Test suite for DAGManager class."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.config = DAGConfig(max_depth=5)
         self.manager = DAGManager(self.config)
 
         # Register test functions
         def test_function(x):
-            """Docstring."""
+                """Docstring."""
             return {"result": x * 2}
 
         def scraper_function(url):
-            """Docstring."""
+                """Docstring."""
             return {"scraped": f"Data from {url}"}
 
         self.manager.register_function("test_function", test_function)
         self.manager.register_function("scraper_function", scraper_function)
 
     def test_initialization(self):
-        """Test DAGManager initialization."""
+            """Test DAGManager initialization."""
         assert self.manager.config.max_depth == 5
         assert isinstance(self.manager.graph, nx.DiGraph)
         assert len(self.manager.execution_queue) == 0
         assert len(self.manager.function_registry) == 2
 
     def test_function_registration(self):
-        """Test function registration."""
+            """Test function registration."""
         def new_function():
-            """Docstring."""
+                """Docstring."""
             return "test"
 
         self.manager.register_function("new_function", new_function)
@@ -251,7 +251,7 @@ class TestDAGManager:
         assert self.manager.function_registry["new_function"] == new_function
 
     def test_add_node(self):
-        """Test adding nodes to DAG."""
+            """Test adding nodes to DAG."""
         config = SubatomicHopConfig(hop_id="test_hop")
         hop = SubatomicHop(lambda x: x, config)
 
@@ -262,7 +262,7 @@ class TestDAGManager:
         assert "test_hop" in self.manager.execution_queue
 
     def test_add_node_with_predecessors(self):
-        """Test adding nodes with predecessors."""
+            """Test adding nodes with predecessors."""
         config1 = SubatomicHopConfig(hop_id="hop1")
         config2 = SubatomicHopConfig(hop_id="hop2")
 
@@ -276,7 +276,7 @@ class TestDAGManager:
         assert "hop2" not in self.manager.execution_queue  # Has predecessor
 
     def test_create_mutation_request(self):
-        """Test creating mutation requests."""
+            """Test creating mutation requests."""
         mutation = self.manager.create_mutation_request(
             action=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="target",
@@ -292,7 +292,7 @@ class TestDAGManager:
         assert mutation.new_hop_spec.parameters["url"] == "http://example.com"
 
     def test_request_mutation_success(self):
-        """Test successful mutation request."""
+            """Test successful mutation request."""
         # Add initial node
         config = SubatomicHopConfig(hop_id="target")
         hop = SubatomicHop(lambda x: x, config)
@@ -315,7 +315,7 @@ class TestDAGManager:
         assert "scraper_function" in self.manager.execution_queue
 
     def test_pause_and_resume_node(self):
-        """Test pausing and resuming nodes."""
+            """Test pausing and resuming nodes."""
         config = SubatomicHopConfig(hop_id="test_hop")
         hop = SubatomicHop(lambda x: x, config)
         self.manager.add_node(hop)
@@ -330,7 +330,7 @@ class TestDAGManager:
         assert "test_hop" in self.manager.execution_queue
 
     def test_get_next_node(self):
-        """Test getting next node from queue."""
+            """Test getting next node from queue."""
         config = SubatomicHopConfig(hop_id="test_hop")
         hop = SubatomicHop(lambda x: x, config)
         self.manager.add_node(hop)
@@ -344,7 +344,7 @@ class TestDAGManager:
         assert next_hop is None
 
     def test_graph_statistics(self):
-        """Test graph statistics."""
+            """Test graph statistics."""
         config1 = SubatomicHopConfig(hop_id="hop1")
         config2 = SubatomicHopConfig(hop_id="hop2")
 
@@ -362,7 +362,7 @@ class TestDAGManager:
         assert stats["registered_functions"] == 2
 
     def test_visualize_graph(self):
-        """Test graph visualization data."""
+            """Test graph visualization data."""
         config = SubatomicHopConfig(hop_id="test_hop")
         hop = SubatomicHop(lambda x: x, config)
         self.manager.add_node(hop)
@@ -378,13 +378,13 @@ class TestMutationIntegration:
     """Test suite for mutation integration with SubatomicHop."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.config = DAGConfig(max_depth=5)
         self.manager = DAGManager(self.config)
 
         # Register functions
         def resume_writer(data):
-            """Docstring."""
+                """Docstring."""
             if "job_description" not in data:
                 # Request mutation
                 raise MutationRequired(MutationRequest(
@@ -396,7 +396,7 @@ class TestMutationIntegration:
             return {"resume": f"Resume for {data['job_description']}"}
 
         def jd_scraper(url):
-            """Docstring."""
+                """Docstring."""
             return {"job_description": f"Scraped from {url}"}
 
         self.manager.register_function("resume_writer", resume_writer)
@@ -404,7 +404,7 @@ class TestMutationIntegration:
 
     @pytest.mark.asyncio
     async def test_mutation_during_execution(self):
-        """Test mutation triggered during hop execution."""
+            """Test mutation triggered during hop execution."""
         # Add initial node
         config = SubatomicHopConfig(hop_id="writer")
         writer_hop = SubatomicHop(
@@ -439,7 +439,7 @@ class TestMutationIntegration:
             assert writer_hop.state == HopState.PAUSED
 
     def test_global_dag_manager(self):
-        """Test global DAG manager instance."""
+            """Test global DAG manager instance."""
         manager1 = get_dag_manager()
         manager2 = get_dag_manager()
 
@@ -450,12 +450,12 @@ class TestMutationScenarios:
     """Test realistic mutation scenarios."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.manager = DAGManager()
 
         # Register realistic functions
         def resume_generator(profile, job_description):
-            """Docstring."""
+                """Docstring."""
             if not job_description:
                 raise MutationRequired(MutationRequest(
                     action="SPAWN_PREDECESSOR",
@@ -466,11 +466,11 @@ class TestMutationScenarios:
             return {"resume": f"Tailored resume for {job_description}"}
 
         def job_scraper(company):
-            """Docstring."""
+                """Docstring."""
             return {"job_description": f"Job description for {company}"}
 
         def cover_letter_writer(resume, job_description):
-            """Docstring."""
+                """Docstring."""
             if len(job_description) < 50:
                 raise MutationRequired(MutationRequest(
                     action="SPAWN_PREDECESSOR",
@@ -481,7 +481,7 @@ class TestMutationScenarios:
             return {"cover_letter": f"Cover letter based on {job_description}"}
 
         def job_enricher(description):
-            """Docstring."""
+                """Docstring."""
             return {"job_description": description + " (enriched with more details)"}
 
         self.manager.register_function("resume_generator", resume_generator)
@@ -491,7 +491,7 @@ class TestMutationScenarios:
 
     @pytest.mark.asyncio
     async def test_resume_generation_pipeline(self):
-        """Test resume generation with missing job description."""
+            """Test resume generation with missing job description."""
         # Create initial pipeline
         resume_config = SubatomicHopConfig(hop_id="resume")
         resume_hop = SubatomicHop(
@@ -527,7 +527,7 @@ class TestMutationScenarios:
 
     @pytest.mark.asyncio
     async def test_nested_mutations(self):
-        """Test multiple mutations in sequence."""
+            """Test multiple mutations in sequence."""
         # Create pipeline: cover_letter -> resume
         resume_config = SubatomicHopConfig(hop_id="resume")
         resume_hop = SubatomicHop(

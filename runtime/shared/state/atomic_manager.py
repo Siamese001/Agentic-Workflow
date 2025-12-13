@@ -36,7 +36,7 @@ class AtomicStateManager:
         storage_path: Optional[str] = None,
         telemetry: Optional[SystemTelemetry] = None,
     ):
-        """Initialize atomic state manager.
+            """Initialize atomic state manager.
 
         Args:
             backend: Storage backend type (FILE, REDIS, SQLITE)
@@ -60,13 +60,13 @@ class AtomicStateManager:
         else:
             raise ValueError(f"Unknown backend type: {backend}")
 
-    def checkpoint(
         """Docstring."""
+    def checkpoint(
         self,
         workflow_id: str,
         new_state: WorkflowState,
     ) -> CheckpointMetadata:
-        """Atomically checkpoint workflow state using two-phase commit.
+            """Atomically checkpoint workflow state using two-phase commit.
 
         This method guarantees that either:
         - The new state is fully committed and becomes active, OR
@@ -173,7 +173,7 @@ class AtomicStateManager:
             raise StatePersistenceError(f"Failed to commit state for {workflow_id}: {e}") from e
 
     def resume_workflow(self, workflow_id: str) -> Optional[WorkflowState]:
-        """Resume workflow from last valid checkpoint.
+            """Resume workflow from last valid checkpoint.
 
         Args:
             workflow_id: Unique workflow identifier
@@ -185,7 +185,7 @@ class AtomicStateManager:
         return self._load_state(workflow_id)
 
     def get_active_checkpoint(self, workflow_id: str) -> Optional[WorkflowState]:
-        """Get the current active checkpoint for a workflow.
+            """Get the current active checkpoint for a workflow.
 
         Args:
             workflow_id: Unique workflow identifier
@@ -196,7 +196,7 @@ class AtomicStateManager:
         return self._load_state(workflow_id)
 
     def delete_checkpoint(self, workflow_id: str) -> bool:
-        """# SQL removed: Delete checkpoint for a workflow.
+            """# SQL removed: Delete checkpoint for a workflow.
 
         Args:
             workflow_id: Unique workflow identifier
@@ -214,7 +214,7 @@ class AtomicStateManager:
             return False
 
     def list_checkpoints(self) -> Dict[str, WorkflowState]:
-        """List all available checkpoints.
+            """List all available checkpoints.
 
         Returns:
             Dictionary mapping workflow_id to WorkflowState
@@ -240,7 +240,7 @@ class AtomicStateManager:
     # Backend-specific methods
 
     def _get_active_key(self, workflow_id: str) -> str:
-        """Get the active storage key for a workflow."""
+            """Get the active storage key for a workflow."""
         if self.backend == BackendType.FILE:
             return str(self.storage_path / f"{workflow_id}.json")
         elif self.backend == BackendType.REDIS:
@@ -251,7 +251,7 @@ class AtomicStateManager:
             raise ValueError(f"Unknown backend: {self.backend}")
 
     def _get_shadow_key(self, workflow_id: str) -> str:
-        """Get the shadow storage key for a workflow."""
+            """Get the shadow storage key for a workflow."""
         if self.backend == BackendType.FILE:
             return str(self.storage_path / f"{workflow_id}_shadow.json")
         elif self.backend == BackendType.REDIS:
@@ -262,7 +262,7 @@ class AtomicStateManager:
             raise ValueError(f"Unknown backend: {self.backend}")
 
     def _write_to_backend(self, key: str, state: WorkflowState) -> None:
-        """Write state to backend storage.
+            """Write state to backend storage.
 
         Args:
             key: Storage key
@@ -288,7 +288,7 @@ class AtomicStateManager:
             raise NotImplementedError("SQLite backend not yet implemented")
 
     def _atomic_swap(self, shadow_key: str, active_key: str) -> None:
-        """Atomically swap shadow state with active state.
+            """Atomically swap shadow state with active state.
 
         This is the critical operation that ensures atomicity.
         os.replace() is atomic on both POSIX and Windows.
@@ -310,7 +310,7 @@ class AtomicStateManager:
             raise NotImplementedError("SQLite backend not yet implemented")
 
     def _load_state(self, workflow_id: str) -> Optional[WorkflowState]:
-        """Load state from backend storage.
+            """Load state from backend storage.
 
         Args:
             workflow_id: Unique workflow identifier
@@ -347,7 +347,7 @@ class AtomicStateManager:
             raise StatePersistenceError(f"Failed to load state: {e}") from e
 
     def _delete_from_backend(self, key: str) -> None:
-        """# SQL removed: Delete state from backend storage.
+            """# SQL removed: Delete state from backend storage.
 
         Args:
             key: Storage key

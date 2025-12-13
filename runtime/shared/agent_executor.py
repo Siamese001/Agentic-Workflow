@@ -8,7 +8,8 @@ Phase 1C - SDK Integration Layer
 
 import logging
 from typing import Any, Dict, List, Optional
-
+from dataclasses import dataclass, field
+from .multi_provider_clients import (
     Provider,
     get_client,
     get_instructor_client,
@@ -67,7 +68,6 @@ class AgentExecutor:
         return self._client
 
     def execute(
-        """Docstring."""
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -99,13 +99,12 @@ class AgentExecutor:
                     record_exception(e)
                     raise
         else:
-            return self._execute_internal(messages, system_prompt, tools, **kwargs)
+            return self._execute_internal(messages, system_prompt, **kwargs)
 
     def _execute_internal(
         self,
         messages: List[AgentMessage],
-        system_prompt: Optional[str],
-        tools: Optional[List[Dict[str, Any]]],
+        system_prompt: Optional[str] = None,
         **kwargs,
     ) -> AgentResponse:
         """Internal execution logic."""
@@ -345,7 +344,7 @@ class AgentExecutor:
 
     def _execute_google_legacy(
         self,
-        genai_module,
+        client,
         messages: List[Dict[str, str]],
         model: str,
         **kwargs,
@@ -414,7 +413,6 @@ class AgentExecutor:
         return get_default_model(self.config.provider)
 
     def execute_structured(
-        """Docstring."""
         self,
         messages: List[AgentMessage],
         response_model: Any,
@@ -496,8 +494,7 @@ class AgentExecutor:
             # Try to get schema from response_model if it has one
             schema = getattr(response_model, 'json_schema', None)
             if not schema:
-                raise ValueError("response_model must be a Pydantic BaseModel or have json_schema me
-    thod")
+                raise ValueError("response_model must be a Pydantic BaseModel or have json_schema method")
 
         # Prepare input for interactions.create
         input_messages = []
@@ -518,8 +515,7 @@ class AgentExecutor:
         if input_messages:
             last_msg = input_messages[-1]
             if last_msg["role"] == "user":
-                last_msg["content"] += "\n\nIMPORTANT: Respond with valid JSON that matches the requ
-    ired schema."
+                last_msg["content"] += "\n\nIMPORTANT: Respond with valid JSON that matches the required schema."
 
         # Execute the interaction with JSON schema
         response = client.interactions.create(
@@ -552,8 +548,8 @@ class AgentExecutor:
             logger.error(f"Raw content: {content}")
             raise ValueError(f"Invalid JSON response from model: {e}")
 
+
 def create_agent_executor(
-    """Docstring."""
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
     temperature: float = 0.7,

@@ -9,6 +9,7 @@ appropriate.
 import logging
 import re
 from datetime import datetime, timedelta
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class DepthScore(BaseModel):
 
     @property
     def is_deep(self) -> bool:
-        """Check if this represents deep personalization."""
+            """Check if this represents deep personalization."""
         return self.level >= 2
 
 class MicroHook(BaseModel):
@@ -45,7 +46,7 @@ class MicroHook(BaseModel):
 
     @property
     def is_highly_relevant(self) -> bool:
-        """Check if hook is highly relevant."""
+            """Check if hook is highly relevant."""
         return self.relevance >= 0.8
 
 class SentimentProfile(BaseModel):
@@ -57,7 +58,7 @@ class SentimentProfile(BaseModel):
 
     @property
     def is_safe_to_contact(self) -> bool:
-        """Check if it's safe to contact based on sentiment."""
+            """Check if it's safe to contact based on sentiment."""
         return self.risk_level != RiskLevel.CRITICAL
 
 class WarmthSetting(BaseModel):
@@ -70,7 +71,7 @@ class DepthScorer:
     """Calculates personalization depth based on profile information."""
 
     def __init__(self, target_keywords: Optional[List[str]] = None):
-        """Initialize the depth scorer.
+            """Initialize the depth scorer.
 
         Args:
             target_keywords: Keywords to match against profile
@@ -82,7 +83,7 @@ class DepthScorer:
         logger.info(f"Initialized DepthScorer with {len(self.target_keywords)} keywords")
 
     def calculate_depth(self, profile: Dict[str, Any]) -> DepthScore:
-        """Calculate personalization depth from profile.
+            """Calculate personalization depth from profile.
 
         Args:
             profile: Recipient profile dictionary
@@ -173,7 +174,7 @@ class MicroHookGenerator:
     """Generates unique bridge phrases to kill template fatigue."""
 
     def __init__(self, my_education: Optional[Dict[str, str]] = None):
-        """Initialize the hook generator.
+            """Initialize the hook generator.
 
         Args:
             my_education: My education background for alumni matching
@@ -182,7 +183,7 @@ class MicroHookGenerator:
         logger.info("Initialized MicroHookGenerator")
 
     def generate_hooks(self, profile: Dict[str, Any]) -> List[MicroHook]:
-        """Generate micro-hooks based on profile triggers.
+            """Generate micro-hooks based on profile triggers.
 
         Args:
             profile: Recipient profile dictionary
@@ -280,7 +281,7 @@ class SentimentAnalyzer:
     """Analyzes recipient text to prevent tone-deafness."""
 
     def __init__(self):
-        """Initialize the sentiment analyzer."""
+            """Initialize the sentiment analyzer."""
         # Word dictionaries for sentiment analysis
         self.optimistic_words = {
             "hiring", "growth", "excited", "happy", "launch", "celebrate",
@@ -302,7 +303,7 @@ class SentimentAnalyzer:
         logger.info("Initialized SentimentAnalyzer with word dictionaries")
 
     def assess_sentiment(self, text_samples: List[str]) -> SentimentProfile:
-        """Assess sentiment from text samples.
+            """Assess sentiment from text samples.
 
         Args:
             text_samples: List of text samples to analyze
@@ -371,7 +372,7 @@ class WarmthManager:
     """Manages contextual warmth and formality adjustments."""
 
     def __init__(self):
-        """Initialize the warmth manager."""
+            """Initialize the warmth manager."""
         # Base formality levels by archetype
         self.base_formality = {
             "founder": 0.4,
@@ -389,14 +390,14 @@ class WarmthManager:
 
         logger.info("Initialized WarmthManager with formality mappings")
 
-    def determine_warmth(
         """Docstring."""
+    def determine_warmth(
         self,
         archetype: str,
         relationship_stage: str,
         sentiment: SentimentMood
     ) -> WarmthSetting:
-        """Determine warmth settings based on context.
+            """Determine warmth settings based on context.
 
         Args:
             archetype: Recipient's job archetype
@@ -466,7 +467,7 @@ class TemperatureEngine:
         target_keywords: Optional[List[str]] = None,
         my_education: Optional[Dict[str, str]] = None
     ):
-        """Initialize the temperature engine.
+            """Initialize the temperature engine.
 
         Args:
             target_keywords: Keywords for depth scoring
@@ -479,13 +480,13 @@ class TemperatureEngine:
 
         logger.info("Initialized TemperatureEngine with all components")
 
-    def analyze_temperature(
         """Docstring."""
+    def analyze_temperature(
         self,
         profile: Dict[str, Any],
         context: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Analyze all temperature aspects for a recipient.
+            """Analyze all temperature aspects for a recipient.
 
         Args:
             profile: Recipient profile dictionary
@@ -559,7 +560,7 @@ class TemperatureEngine:
         sentiment: SentimentProfile,
         warmth: WarmthSetting
     ) -> List[str]:
-        """Generate recommendations based on analysis.
+            """Generate recommendations based on analysis.
 
         Args:
             depth: Depth score result
@@ -594,16 +595,16 @@ class TemperatureEngine:
         return recommendations
 
 # Factory functions for easy instantiation
-def create_temperature_engine(
     """Docstring."""
+def create_temperature_engine(
     target_keywords: Optional[List[str]] = None,
     my_education: Optional[Dict[str, str]] = None
 ) -> TemperatureEngine:
     """Create a TemperatureEngine instance."""
     return TemperatureEngine(target_keywords, my_education)
 
-def analyze_temperature(
     """Docstring."""
+def analyze_temperature(
     profile: Dict[str, Any],
     context: Dict[str, Any]
 ) -> Dict[str, Any]:

@@ -10,6 +10,7 @@ import re
 from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, ValidationError, validator
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ class InputValidationError(Exception):
     """Raised when input validation fails."""
 
     def __init__(self, field: str, message: str, value: Any = None):
-        """Initialize validation error.
+            """Initialize validation error.
 
         Args:
             field: Field that failed validation
@@ -63,7 +64,7 @@ class InputValidator:
     """Validates input data against schema and rules."""
 
     def __init__(self, name: str = "default"):
-        """Initialize the validator.
+            """Initialize the validator.
 
         Args:
             name: Validator name for logging
@@ -75,7 +76,7 @@ class InputValidator:
         logger.debug(f"Initialized InputValidator: {name}")
 
     def add_rule(self, field: str, rule: ValidationRule) -> None:
-        """Add a validation rule.
+            """Add a validation rule.
 
         Args:
             field: Field name
@@ -85,7 +86,7 @@ class InputValidator:
         logger.debug(f"Added validation rule for field: {field}")
 
     def add_schema(self, schema_name: str, schema: Dict[str, Any]) -> None:
-        """Add a JSON schema.
+            """Add a JSON schema.
 
         Args:
             schema_name: Name for the schema
@@ -95,7 +96,7 @@ class InputValidator:
         logger.debug(f"Added schema: {schema_name}")
 
     def validate(self, data: Dict[str, Any], strict: bool = True) -> Dict[str, Any]:
-        """Validate input data.
+            """Validate input data.
 
         Args:
             data: Input data to validate
@@ -146,7 +147,7 @@ class InputValidator:
         return validated
 
     def _validate_field(self, field: str, value: Any, rule: ValidationRule) -> Any:
-        """Validate a single field.
+            """Validate a single field.
 
         Args:
             field: Field name
@@ -217,7 +218,7 @@ class InputValidator:
         return validated_value
 
     def _validate_type(self, value: Any, rule: ValidationRule) -> Any:
-        """Validate value type.
+            """Validate value type.
 
         Args:
             value: Value to validate
@@ -289,7 +290,7 @@ class InputValidator:
             raise InputValidationError("type", f"Invalid type conversion: {e}")
 
     def _validate_json_schema(self, value: Any, schema: Dict[str, Any]) -> None:
-        """Validate JSON against schema.
+            """Validate JSON against schema.
 
         Args:
             value: JSON value
@@ -323,7 +324,7 @@ class InputValidator:
                     validator.validate({prop: value[prop]}, strict=False)
 
     def _validate_dict_schema(self, value: Dict[str, Any], schema: Dict[str, Any]) -> None:
-        """Validate dictionary against schema.
+            """Validate dictionary against schema.
 
         Args:
             value: Dictionary value
@@ -340,7 +341,7 @@ class InputValidator:
                     raise InputValidationError(key, f"Expected {expected_type.__name__}")
 
     def _get_validation_type_from_schema(self, schema: Dict[str, Any]) -> ValidationType:
-        """Get validation type from schema.
+            """Get validation type from schema.
 
         Args:
             schema: Schema definition
@@ -359,7 +360,7 @@ class InputValidator:
         return type_map.get(schema.get("type", "string"), ValidationType.STRING)
 
     def _sanitize_value(self, value: Any, rule: ValidationRule) -> Any:
-        """Sanitize a value.
+            """Sanitize a value.
 
         Args:
             value: Value to sanitize
@@ -451,7 +452,7 @@ class ValidatedInput(BaseModel):
     """Base model for validated input."""
 
     class Config:
-        """Docstring."""
+            """Docstring."""
         # Validate assignment
         validate_assignment = True
         # Use enum values
@@ -461,7 +462,7 @@ class ValidatedInput(BaseModel):
 
     @validator('*')
     def sanitize_strings(cls, v):
-        """Sanitize string fields."""
+            """Sanitize string fields."""
         if isinstance(v, str):
             # Remove control characters
             v = ''.join(char for char in v if ord(char) >= 32 or char in '\n\r\t')
@@ -471,15 +472,15 @@ class ValidatedInput(BaseModel):
 
     @validator('*')
     def check_size(cls, v):
-        """Check size limits."""
+            """Check size limits."""
         if isinstance(v, str) and len(v) > 10000:
             raise ValueError("String too long")
         if isinstance(v, (list, dict)) and len(v) > 1000:
             raise ValueError("Collection too large")
         return v
 
-def validate_with_pydantic(data: Dict[str,
     """Docstring."""
+def validate_with_pydantic(data: Dict[str,
     Any],
     model_class: Type[ValidatedInput]) -> ValidatedInput:
     """Validate data using Pydantic model.

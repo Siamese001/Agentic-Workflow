@@ -5,6 +5,7 @@ into a single, cohesive system for robust prompt enhancement.
 """
 
 import logging
+from dataclasses import dataclass
 
     CognitiveContractManager,
     get_contract_manager,
@@ -28,7 +29,7 @@ class PromptEnhancer:
     """Unified prompt enhancement system orchestrating all strategies."""
 
     def __init__(self, config: Optional[EnhancementConfig] = None):
-        """Initialize the prompt enhancer.
+            """Initialize the prompt enhancer.
 
         Args:
             config: Optional enhancement configuration
@@ -43,8 +44,8 @@ class PromptEnhancer:
 
         logger.info(f"Initialized PromptEnhancer with config: {self.config}")
 
-    def enhance_prompt(
         """Docstring."""
+    def enhance_prompt(
         self,
         base_prompt: str,
         hop_type: str = "default",
@@ -56,7 +57,7 @@ class PromptEnhancer:
         output_schema: Optional[Dict[str, Any]] = None,
         enforce_contract: Optional[bool] = None
     ) -> Tuple[str, Dict[str, Any]]:
-        """Enhance a prompt using all configured strategies.
+            """Enhance a prompt using all configured strategies.
 
         Args:
             base_prompt: The original prompt to enhance
@@ -174,7 +175,7 @@ class PromptEnhancer:
         return enhanced, metadata
 
     def _build_constraints(self, matches: List[InjectionMatch]) -> List[str]:
-        """Build constraint list from injection matches.
+            """Build constraint list from injection matches.
 
         Args:
             matches: List of injection matches
@@ -195,13 +196,13 @@ class PromptEnhancer:
 
         return constraints
 
-    def process_response(
         """Docstring."""
+    def process_response(
         self,
         response: str,
         contract_id: Optional[str] = None
     ) -> Tuple[str, Dict[str, Any]]:
-        """Process a response, validating against any contracts.
+            """Process a response, validating against any contracts.
 
         Args:
             response: The agent's response
@@ -244,15 +245,15 @@ class PromptEnhancer:
 
         return response, result
 
-    def create_enhanced_template(
         """Docstring."""
+    def create_enhanced_template(
         self,
         role: str,
         objective: str,
         hop_type: str,
         stages: List[str]
     ) -> Dict[str, str]:
-        """Create enhanced prompts for multiple stages.
+            """Create enhanced prompts for multiple stages.
 
         Args:
             role: Agent role
@@ -278,7 +279,7 @@ class PromptEnhancer:
         return prompts
 
     def get_enhancement_stats(self) -> Dict[str, Any]:
-        """Get statistics about the enhancement system.
+            """Get statistics about the enhancement system.
 
         Returns:
             Enhancement statistics
@@ -320,8 +321,8 @@ def get_prompt_enhancer(config: Optional[EnhancementConfig] = None) -> PromptEnh
     return _prompt_enhancer
 
 # Backward compatibility function
-def enhance_prompt(
     """Docstring."""
+def enhance_prompt(
     base_prompt: str,
     hop_type: str = "default",
     stage: str = "THINK",
@@ -359,8 +360,8 @@ def enhance_prompt(
     return enhanced
 
 # Advanced enhancement with full features
-def enhance_prompt_advanced(
     """Docstring."""
+def enhance_prompt_advanced(
     base_prompt: str,
     hop_type: str = "default",
     stage: str = "THINK",

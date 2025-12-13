@@ -23,7 +23,7 @@ class TestKXNodeRegistry:
     """Test K.X node registry functionality."""
 
     def test_registry_initialization(self):
-        """Test K.X node registry initializes correctly."""
+            """Test K.X node registry initializes correctly."""
         registry = get_kx_registry()
 
         assert registry is not None
@@ -31,7 +31,7 @@ class TestKXNodeRegistry:
         assert len(registry.list_outreach_nodes()) > 0
 
     def test_resume_nodes_loaded(self):
-        """Test all resume engine K.X nodes are loaded."""
+            """Test all resume engine K.X nodes are loaded."""
         registry = get_kx_registry()
         resume_nodes = registry.list_resume_nodes()
 
@@ -50,7 +50,7 @@ class TestKXNodeRegistry:
             assert node_key in resume_nodes, f"Missing resume node: {node_key}"
 
     def test_outreach_nodes_loaded(self):
-        """Test all outreach engine K.X nodes are loaded."""
+            """Test all outreach engine K.X nodes are loaded."""
         registry = get_kx_registry()
         outreach_nodes = registry.list_outreach_nodes()
 
@@ -67,7 +67,7 @@ class TestKXNodeRegistry:
             assert node_key in outreach_nodes, f"Missing outreach node: {node_key}"
 
     def test_get_resume_node(self):
-        """Test retrieving resume K.X node configuration."""
+            """Test retrieving resume K.X node configuration."""
         config = get_resume_kx_node("K.1_Executive_Summary")
 
         assert config is not None
@@ -79,7 +79,7 @@ class TestKXNodeRegistry:
         assert config.max_words == 150
 
     def test_get_outreach_node(self):
-        """Test retrieving outreach K.X node configuration."""
+            """Test retrieving outreach K.X node configuration."""
         config = get_outreach_kx_node("K.3_Message_Body")
 
         assert config is not None
@@ -90,7 +90,7 @@ class TestKXNodeRegistry:
         assert config.max_chars == 800
 
     def test_connection_request_variant(self):
-        """Test connection request variant nodes."""
+            """Test connection request variant nodes."""
         config = get_outreach_kx_node("CONNECTION_REQ_K.3_COMPRESSED", connection_request=True)
 
         assert config is not None
@@ -99,7 +99,7 @@ class TestKXNodeRegistry:
         assert "compressed" in config.metadata.get("mode", "")
 
     def test_nodes_by_type(self):
-        """Test filtering nodes by type."""
+            """Test filtering nodes by type."""
         registry = get_kx_registry()
 
         header_nodes = registry.get_nodes_by_type(KNodeType.RESUME_HEADER)
@@ -115,7 +115,7 @@ class TestKXNodeConfiguration:
     """Test K.X node configuration details."""
 
     def test_rag_configuration(self):
-        """Test RAG configuration in K.X nodes."""
+            """Test RAG configuration in K.X nodes."""
         config = get_resume_kx_node("K.2_Unify_Bullets")
 
         assert config.rag_config is not None
@@ -126,7 +126,7 @@ class TestKXNodeConfiguration:
         assert config.rag_config.source_weighting.get("podcast_appearance", 0) == 1.5
 
     def test_decoding_parameters(self):
-        """Test decoding parameters in K.X nodes."""
+            """Test decoding parameters in K.X nodes."""
         config = get_resume_kx_node("K.1_Executive_Summary")
 
         assert config.decoding_params is not None
@@ -136,7 +136,7 @@ class TestKXNodeConfiguration:
         assert 0 <= config.decoding_params.top_p <= 1.0
 
     def test_reasoning_strategies(self):
-        """Test different reasoning strategies."""
+            """Test different reasoning strategies."""
         cot_config = get_resume_kx_node("K.0_Name")
         assert cot_config.reasoning_strategy == ReasoningStrategy.COT
 
@@ -147,7 +147,7 @@ class TestKXNodeConfiguration:
         assert hybrid_config.self_consistency_runs == 3
 
     def test_validation_rules(self):
-        """Test validation rules configuration."""
+            """Test validation rules configuration."""
         config = get_resume_kx_node("K.2_Unify_Bullets")
 
         assert len(config.validation_rules) > 0
@@ -156,7 +156,7 @@ class TestKXNodeConfiguration:
         assert "redundancy_check" in config.validation_rules
 
     def test_constraints(self):
-        """Test content constraints."""
+            """Test content constraints."""
         summary_config = get_resume_kx_node("K.1_Executive_Summary")
         assert summary_config.max_words == 150
         assert summary_config.max_chars is None
@@ -176,7 +176,7 @@ class TestKXNodeExecution:
         reason="OPENAI_API_KEY not set"
     )
     def test_execute_resume_node(self):
-        """Test executing a resume K.X node."""
+            """Test executing a resume K.X node."""
         executor = create_agent_executor(
             provider=Provider.OPENAI,
             temperature=0.3,
@@ -213,7 +213,7 @@ class TestKXNodeExecution:
         reason="OPENAI_API_KEY not set"
     )
     def test_execute_outreach_node(self):
-        """Test executing an outreach K.X node."""
+            """Test executing an outreach K.X node."""
         executor = create_agent_executor(
             provider=Provider.OPENAI,
             temperature=0.2,
@@ -241,7 +241,7 @@ class TestKXNodeExecution:
         assert len(result.content.split()) <= 30  # Max words constraint
 
     def test_validation_execution(self):
-        """Test validation rules are executed."""
+            """Test validation rules are executed."""
         executor = create_agent_executor(
             provider=Provider.OPENAI,
             enable_tracing=False,
@@ -273,7 +273,7 @@ class TestKXNodeMetadata:
     """Test K.X node metadata and configuration."""
 
     def test_resume_node_metadata(self):
-        """Test resume node metadata."""
+            """Test resume node metadata."""
         config = get_resume_kx_node("K.1_Executive_Summary")
 
         assert config.metadata.get("section") == "summary"
@@ -281,7 +281,7 @@ class TestKXNodeMetadata:
         assert config.metadata.get("priority") == "high"
 
     def test_outreach_node_metadata(self):
-        """Test outreach node metadata."""
+            """Test outreach node metadata."""
         config = get_outreach_kx_node("K.1_Message_Type_Routing")
 
         assert config.metadata.get("routing_decision") is True
@@ -289,7 +289,7 @@ class TestKXNodeMetadata:
         assert len(config.metadata["message_types"]) >= 4
 
     def test_connection_request_metadata(self):
-        """Test connection request variant metadata."""
+            """Test connection request variant metadata."""
         config = get_outreach_kx_node("CONNECTION_REQ_K.3_COMPRESSED", connection_request=True)
 
         assert config.metadata.get("mode") == "compressed"
@@ -304,7 +304,7 @@ class TestKXNodeCustomization:
     """Test custom K.X node registration."""
 
     def test_register_custom_resume_node(self):
-        """Test registering a custom resume node."""
+            """Test registering a custom resume node."""
 
         registry = get_kx_registry()
 
@@ -325,7 +325,7 @@ class TestKXNodeCustomization:
         assert retrieved.element == "Custom Section"
 
     def test_register_custom_outreach_node(self):
-        """Test registering a custom outreach node."""
+            """Test registering a custom outreach node."""
 
         registry = get_kx_registry()
 

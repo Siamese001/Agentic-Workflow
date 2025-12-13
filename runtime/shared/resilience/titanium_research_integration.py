@@ -29,7 +29,7 @@ class TitaniumResearchIntegration:
     """
 
     def __init__(self, brave_api_key: str, vector_store=None):
-        """Initialize the integration.
+            """Initialize the integration.
 
         Args:
             brave_api_key: API key for Brave Search
@@ -48,14 +48,14 @@ class TitaniumResearchIntegration:
         }
 
     async def initialize(self, mcp_executor):
-        """Initialize the research engine with MCP executor.
+            """Initialize the research engine with MCP executor.
 
         Args:
             mcp_executor: Configured HardenedMCPExecutor with search tools
         """
         # Create RAG context provider
         async def rag_context_provider(query: str) -> str:
-            """Retrieve relevant context from vector store."""
+                """Retrieve relevant context from vector store."""
             if not self.vector_store:
                 return "No internal context available."
 
@@ -90,15 +90,15 @@ class TitaniumResearchIntegration:
 
         logger.info("Titanium Research integration initialized")
 
-    async def research_financials(
         """Docstring."""
+    async def research_financials(
         self,
         company: str,
         quarter: str,
         year: str,
         metrics: List[str]
     ) -> TitaniumResearchOutput:
-        """
+            """
         Research financial metrics with Zero-Loss protocol.
 
         Args:
@@ -145,14 +145,14 @@ class TitaniumResearchIntegration:
             logger.error(f"Financial research failed for {company}: {e}")
             raise
 
-    async def research_market_trends(
         """Docstring."""
+    async def research_market_trends(
         self,
         industry: str,
         time_period: str,
         specific_topics: List[str]
     ) -> TitaniumResearchOutput:
-        """
+            """
         Research market trends with comprehensive coverage.
 
         Args:
@@ -184,14 +184,14 @@ class TitaniumResearchIntegration:
         self._update_quality_metrics(result)
         return result
 
-    async def research_with_cross_validation(
         """Docstring."""
+    async def research_with_cross_validation(
         self,
         query: str,
         sources: List[str],
         validation_threshold: float = 0.8
     ) -> TitaniumResearchOutput:
-        """
+            """
         Research with multiple source cross-validation.
 
         Args:
@@ -229,7 +229,7 @@ class TitaniumResearchIntegration:
         result: TitaniumResearchOutput,
         required_metrics: List[str]
     ) -> None:
-        """Validate financial research output completeness."""
+            """Validate financial research output completeness."""
         # Check if all required metrics are covered
         covered_metrics = set()
 
@@ -257,7 +257,7 @@ class TitaniumResearchIntegration:
         result: TitaniumResearchOutput,
         preferred_sources: List[str]
     ) -> None:
-        """Check if findings use preferred sources."""
+            """Check if findings use preferred sources."""
         source_domains = set()
 
         for source in result.sources_used:
@@ -279,7 +279,7 @@ class TitaniumResearchIntegration:
             logger.info(f"Preferred sources not used: {missing}")
 
     def _update_quality_metrics(self, result: TitaniumResearchOutput) -> None:
-        """# SQL removed: Update quality metrics."""
+            """# SQL removed: Update quality metrics."""
         self.quality_metrics["total_queries"] += 1
 
         # Check Zero-Loss compliance
@@ -303,7 +303,7 @@ class TitaniumResearchIntegration:
         )
 
     def get_quality_report(self) -> Dict[str, Any]:
-        """Get comprehensive quality report."""
+            """Get comprehensive quality report."""
         total = self.quality_metrics["total_queries"]
 
         if total == 0:

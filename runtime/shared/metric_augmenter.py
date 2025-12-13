@@ -7,6 +7,7 @@ metrics (Revenue, OpEx, Retention).
 
 import logging
 import re
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ class BusinessImpact(BaseModel):
 
     @validator('value_statement')
     def validate_conservative_language(cls, v):
-        """Ensure conservative language is used."""
+            """Ensure conservative language is used."""
         conservative_words = ["estimated", "projected", "enabling", "potential", "up to"]
         if not any(word in v.lower() for word in conservative_words):
             logger.warning("Business impact should use conservative language")
@@ -43,14 +44,14 @@ class AugmentedBullet(BaseModel):
 
     @property
     def is_augmented(self) -> bool:
-        """Check if bullet was augmented with business impact."""
+            """Check if bullet was augmented with business impact."""
         return self.business_impact is not None
 
 class MetricAugmenter:
     """Translates technical metrics into business impact statements."""
 
     def __init__(self, industry: str = "technology"):
-        """Initialize the metric augmenter.
+            """Initialize the metric augmenter.
 
         Args:
             industry: Target industry for impact estimation
@@ -120,7 +121,7 @@ class MetricAugmenter:
         logger.info(f"Initialized MetricAugmenter for {industry} industry")
 
     def augment_bullet(self, bullet_text: str) -> AugmentedBullet:
-        """Augment a single bullet with business impact.
+            """Augment a single bullet with business impact.
 
         Args:
             bullet_text: Original bullet text
@@ -180,7 +181,7 @@ class MetricAugmenter:
             )
 
     def _select_highest_impact_metric(self, metrics: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """# SQL removed: Select the metric with highest business impact.
+            """# SQL removed: Select the metric with highest business impact.
 
         Args:
             metrics: List of detected metrics
@@ -213,7 +214,7 @@ class MetricAugmenter:
         return sorted_metrics[0] if sorted_metrics else metrics[0]
 
     def augment_batch(self, bullets: List[str]) -> List[AugmentedBullet]:
-        """Augment multiple bullets at once.
+            """Augment multiple bullets at once.
 
         Args:
             bullets: List of bullet texts
@@ -247,7 +248,7 @@ class MetricAugmenter:
             ) for b in bullets if isinstance(b, str)]
 
     def _detect_metrics(self, text: str) -> List[Dict[str, Any]]:
-        """Detect ALL technical metrics in text.
+            """Detect ALL technical metrics in text.
 
         Args:
             text: Text to scan for metrics
@@ -343,7 +344,7 @@ class MetricAugmenter:
         metric_value: str,
         context: str
     ) -> Optional[BusinessImpact]:
-        """Estimate business impact for a metric.
+            """Estimate business impact for a metric.
 
         Args:
             metric_type: Type of technical metric
@@ -436,7 +437,7 @@ class MetricAugmenter:
             return None
 
     def _extract_number(self, value_str: str) -> Optional[float]:
-        """Extract numeric value from string.
+            """Extract numeric value from string.
 
         Args:
             value_str: String containing number
@@ -458,7 +459,7 @@ class MetricAugmenter:
             return None
 
     def _create_augmented_text(self, original: str, impact: BusinessImpact) -> str:
-        """Create final augmented text with business impact.
+            """Create final augmented text with business impact.
 
         Args:
             original: Original bullet text
@@ -484,8 +485,8 @@ class MetricAugmenter:
             return original
 
 # Factory function for easy instantiation
-def create_metric_augmenter(
     """Docstring."""
+def create_metric_augmenter(
     industry: str = "technology"
 ) -> MetricAugmenter:
     """Create a MetricAugmenter instance.
@@ -499,8 +500,8 @@ def create_metric_augmenter(
     return MetricAugmenter(industry=industry)
 
 # Convenience function for quick augmentation
-def augment_metrics(
     """Docstring."""
+def augment_metrics(
     bullets: List[str],
     industry: str = "technology"
 ) -> List[str]:

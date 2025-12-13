@@ -22,6 +22,7 @@ import re
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
+from dataclasses import dataclass
 
 class ValidationSeverity(Enum):
     """TODO: Add docstring."""
@@ -78,7 +79,7 @@ class CryptographicSignature:
     signature: str
 
     def verify(self, content: str) -> bool:
-        """Docstring."""
+            """Docstring."""
         computed_hash = hashlib.sha256(content.encode()).hexdigest()
         return computed_hash == self.content_hash
 
@@ -114,19 +115,19 @@ class IntegrityGateExecutor:
         self.results: List[ValidationResult] = []
 
     def load_resume_config(self, config_path: Path) -> None:
-        """Load validation rules from resume_orchestration_config.py"""
+            """Load validation rules from resume_orchestration_config.py"""
         pass
 
     def load_outreach_config(self, config_path: Path) -> None:
-        """Load validation rules from outreach_orchestration_config.py"""
+            """Load validation rules from outreach_orchestration_config.py"""
         pass
 
     def register_rule(self, rule: ValidationRule) -> None:
-        """Register a validation rule"""
+            """Register a validation rule"""
         self.rules[rule.gate_id] = rule
 
     def execute_hygiene_scan(self, content: str) -> ValidationResult:
-        """
+            """
         H16.1 Hygiene Scan - Hard-coded scan for forbidden Unicode.
         BLOCKS immediately on detection.
         """
@@ -160,15 +161,15 @@ class IntegrityGateExecutor:
             signature=self._generate_signature('VG_HYGIENE_UNICODE', content)
         )
 
-    def execute_word_count_gate(
         """Docstring."""
+    def execute_word_count_gate(
         self,
         content: str,
         min_words: int,
         max_words: int,
         gate_id: str = 'VG_MANDATORY_WORD_COUNT_COMPLIANCE'
     ) -> ValidationResult:
-        """
+            """
         Execute word count validation with cryptographic signature.
         BLOCKS if count is outside range.
         """
@@ -193,14 +194,14 @@ class IntegrityGateExecutor:
             details={'word_count': word_count, 'min': min_words, 'max': max_words}
         )
 
-    def execute_industry_first_gate(
         """Docstring."""
+    def execute_industry_first_gate(
         self,
         headline: str,
         valid_industries: Set[str],
         gate_id: str = 'VG_INDUSTRY_FIRST_COMPLIANCE'
     ) -> ValidationResult:
-        """
+            """
         Execute industry-first validation for headlines.
         BLOCKS if first segment is not a valid industry/sector.
         """
@@ -235,14 +236,14 @@ class IntegrityGateExecutor:
             details={'first_segment': first_segment, 'valid_industries': list(valid_industries)}
         )
 
-    def execute_grounding_check(
         """Docstring."""
+    def execute_grounding_check(
         self,
         content: str,
         evidence_pool: List[str],
         gate_id: str = 'VG_SUMMARY_GROUNDING_CHECK'
     ) -> ValidationResult:
-        """
+            """
         Execute grounding validation - all claims must be in evidence pool.
         BLOCKS if ungrounded claims detected.
         """
@@ -279,14 +280,14 @@ class IntegrityGateExecutor:
             signature=self._generate_signature(gate_id, content)
         )
 
-    def execute_metric_binding_gate(
         """Docstring."""
+    def execute_metric_binding_gate(
         self,
         content: str,
         evidence_ids: Dict[str, str],
         gate_id: str = 'VG_METRIC_BINDING'
     ) -> ValidationResult:
-        """
+            """
         Execute metric binding validation (LIC-QA-041).
         BLOCKS if any metric is unbound to evidence.
         """
@@ -317,7 +318,7 @@ class IntegrityGateExecutor:
         )
 
     def can_write_file(self) -> tuple[bool, List[str]]:
-        """
+            """
         Check if file writing is allowed based on mandatory gate results.
         Returns (can_write, blocking_reasons)
         """
@@ -336,7 +337,7 @@ class IntegrityGateExecutor:
         return len(blocking_reasons) == 0, blocking_reasons
 
     def get_audit_report(self) -> Dict[str, Any]:
-        """Generate audit report of all validation results"""
+            """Generate audit report of all validation results"""
         return {
             'total_gates': len(self.results),
             'passed': sum(1 for r in self.results if r.passed),
@@ -358,7 +359,7 @@ class IntegrityGateExecutor:
         }
 
     def _generate_signature(self, gate_id: str, content: str) -> str:
-        """Generate cryptographic signature for validated content"""
+            """Generate cryptographic signature for validated content"""
         import time
         content_hash = hashlib.sha256(content.encode()).hexdigest()
         timestamp = str(int(time.time()))
@@ -367,7 +368,7 @@ class IntegrityGateExecutor:
         return f"{gate_id}:{signature[:16]}"
 
     def _semantic_overlap(self, text1: str, text2: str) -> float:
-        """Simple semantic overlap heuristic (word overlap ratio)"""
+            """Simple semantic overlap heuristic (word overlap ratio)"""
         words1 = set(text1.lower().split())
         words2 = set(text2.lower().split())
 

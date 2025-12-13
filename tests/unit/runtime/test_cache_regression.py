@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
     """Regression tests for cache key collision bugs."""
 
     def test_no_collision_different_models(self):
-        """Different models never produce same cache key."""
+            """Different models never produce same cache key."""
         models = ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
         messages = [{"role": "user", "content": "Hello"}]
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
         assert len(keys) == len(set(keys)), "Cache key collision detected"
 
     def test_no_collision_different_messages(self):
-        """Different messages never produce same cache key."""
+            """Different messages never produce same cache key."""
         model = "gpt-4o"
         message_variants = [
             [{"role": "user", "content": "Hello"}],
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
         assert len(keys) == len(set(keys)), "Cache key collision detected"
 
     def test_no_collision_message_order(self):
-        """Message order affects cache key."""
+            """Message order affects cache key."""
         model = "gpt-4o"
         msg1 = {"role": "user", "content": "First"}
         msg2 = {"role": "assistant", "content": "Second"}
@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
         assert key1 != key2, "Message order should affect cache key"
 
     def test_no_collision_role_change(self):
-        """Role changes affect cache key."""
+            """Role changes affect cache key."""
         model = "gpt-4o"
         content = "Same content"
 
@@ -58,20 +58,20 @@ class TestCacheKeyEdgeCases:
     """Edge case tests for cache key generation."""
 
     def test_empty_messages_list(self):
-        """Empty messages list produces valid key."""
+            """Empty messages list produces valid key."""
         key = generate_llm_cache_key(model="gpt-4o", messages=[])
         assert isinstance(key, str)
         assert len(key) > 0
 
     def test_unicode_content(self):
-        """Unicode content is handled correctly."""
+            """Unicode content is handled correctly."""
         messages = [{"role": "user", "content": "Hello 世界 🌍"}]
         key = generate_llm_cache_key(model="gpt-4o", messages=messages)
         assert isinstance(key, str)
         assert len(key) > 0
 
     def test_very_long_content(self):
-        """Very long content produces valid key."""
+            """Very long content produces valid key."""
         long_content = "x" * 100000
         messages = [{"role": "user", "content": long_content}]
         key = generate_llm_cache_key(model="gpt-4o", messages=messages)
@@ -80,7 +80,7 @@ class TestCacheKeyEdgeCases:
         assert len(key) < 1000
 
     def test_special_characters_in_content(self):
-        """Special characters don't break key generation."""
+            """Special characters don't break key generation."""
         special_content = "Test\n\t\r\0\"'\\/<>{}[]|"
         messages = [{"role": "user", "content": special_content}]
         key = generate_llm_cache_key(model="gpt-4o", messages=messages)
@@ -90,7 +90,7 @@ class TestFingerprintRegression:
     """Regression tests for fingerprinted cache keys."""
 
     def test_fingerprint_isolation(self):
-        """Different fingerprints always produce different keys."""
+            """Different fingerprints always produce different keys."""
         messages = [{"role": "user", "content": "Test"}]
         fingerprints = ["fp1", "fp2", "fp3", "FP1", "fp1 ", " fp1"]
 
@@ -103,7 +103,7 @@ class TestFingerprintRegression:
         assert len(keys) == len(set(keys)), "Fingerprint collision detected"
 
     def test_empty_fingerlogger.info(self):
-        """Empty fingerprint produces valid key."""
+            """Empty fingerprint produces valid key."""
         messages = [{"role": "user", "content": "Test"}]
         key = generate_llm_cache_key_with_fingerlogger.info(
             model="gpt-4o", messages=messages, fingerprint=""

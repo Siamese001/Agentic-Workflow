@@ -28,7 +28,7 @@ class WorkflowState(BaseModel):
         description="SHA256 hash of the data_payload for consistency validation.")
 
     class Config:
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         json_encoders = {
             datetime: lambda v: v.isoformat()
@@ -54,7 +54,7 @@ class AtomicStateManager:
     """
 
     def __init__(self, redis_client: Redis):
-        """Initialize atomic state manager.
+            """Initialize atomic state manager.
 
         Args:
             redis_client: Connected Redis async client
@@ -67,7 +67,7 @@ class AtomicStateManager:
         logger.info("AtomicStateManager initialized with Redis backend")
 
     def _generate_checksum(self, data: Dict[str, Any]) -> str:
-        """Calculate SHA256 checksum of data payload.
+            """Calculate SHA256 checksum of data payload.
 
         Args:
             data: Data payload to hash
@@ -80,7 +80,7 @@ class AtomicStateManager:
         return hashlib.sha256(data_string.encode('utf-8')).hexdigest()
 
     async def load_state(self, workflow_id: str) -> Optional[WorkflowState]:
-        """Read and validate the current state from the store.
+            """Read and validate the current state from the store.
 
         Args:
             workflow_id: Workflow identifier
@@ -132,7 +132,7 @@ class AtomicStateManager:
             raise IOError(f"Failed to validate state for {workflow_id}: {e}")
 
     async def commit_state(self, new_state: WorkflowState) -> None:
-        """Commit the new state using a transactional lock mechanism.
+            """Commit the new state using a transactional lock mechanism.
 
         Implements ACID properties:
         - Atomicity: Redis pipeline ensures atomic execution
@@ -201,7 +201,7 @@ class AtomicStateManager:
             )
 
     async def rollback_to_last_checkpoint(self, workflow_id: str) -> None:
-        """Rollback to the last valid checkpoint.
+            """Rollback to the last valid checkpoint.
 
         In this implementation, we delete the potentially corrupted state,
         forcing the workflow to restart from the last known good state
@@ -224,7 +224,7 @@ class AtomicStateManager:
             )
 
     async def delete_state(self, workflow_id: str) -> bool:
-        """# SQL removed: Delete workflow state.
+            """# SQL removed: Delete workflow state.
 
         Args:
             workflow_id: Workflow identifier
@@ -241,7 +241,7 @@ class AtomicStateManager:
         return bool(deleted)
 
     async def list_workflows(self, pattern: str = "*") -> list[str]:
-        """List all workflow IDs matching pattern.
+            """List all workflow IDs matching pattern.
 
         Args:
             pattern: Redis key pattern (default: all workflows)
@@ -260,7 +260,7 @@ class AtomicStateManager:
         return keys
 
     async def get_state_info(self, workflow_id: str) -> Optional[Dict[str, Any]]:
-        """Get state information without full validation.
+            """Get state information without full validation.
 
         Args:
             workflow_id: Workflow identifier
@@ -283,8 +283,8 @@ class AtomicStateManager:
 
         return None
 
-async def execute_and_checkpoint(
     """Docstring."""
+async def execute_and_checkpoint(
     state_manager: AtomicStateManager,
     workflow_id: str,
     step_name: str,

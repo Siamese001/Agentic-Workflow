@@ -2,6 +2,8 @@
 import pytest
 from typing import Dict, List
 from datetime import datetime, timedelta
+from dataclasses import dataclass
+from enum import Enum
 
 # Skip E2E tests if no admin credentials are present - DISABLED FOR FINAL VALIDATION
 # skip_if_no_admin = pytest.mark.skipif(
@@ -53,7 +55,7 @@ class TestSystemMonitoringE2E:
     """E2E tests for system monitoring."""
 
     def test_health_check_all_components(self):
-        """E2E: Health check covers all system components."""
+            """E2E: Health check covers all system components."""
         components = ["api", "database", "cache", "queue", "storage"]
         health_results = {}
 
@@ -68,7 +70,7 @@ class TestSystemMonitoringE2E:
         assert all_healthy
 
     def test_metrics_collection(self):
-        """E2E: System metrics are collected."""
+            """E2E: System metrics are collected."""
         health = SystemHealth(
             status=SystemStatus.HEALTHY,
             cpu_percent=45.0,
@@ -83,7 +85,7 @@ class TestSystemMonitoringE2E:
         assert health.error_rate < 0.05
 
     def test_alert_triggering(self):
-        """E2E: Alerts are triggered on threshold breach."""
+            """E2E: Alerts are triggered on threshold breach."""
         thresholds = {
             "cpu_percent": 80,
             "memory_percent": 90,
@@ -105,7 +107,7 @@ class TestSystemMonitoringE2E:
         assert alerts[0]["metric"] == "cpu_percent"
 
     def test_dashboard_data_aggregation(self):
-        """E2E: Dashboard data is aggregated correctly."""
+            """E2E: Dashboard data is aggregated correctly."""
         time_series = [
             {"timestamp": "2024-01-01T00:00", "requests": 100},
             {"timestamp": "2024-01-01T01:00", "requests": 150},
@@ -122,7 +124,7 @@ class TestUserManagementE2E:
     """E2E tests for user management."""
 
     def test_create_user_with_role(self):
-        """E2E: User is created with appropriate role."""
+            """E2E: User is created with appropriate role."""
         user = {
             "id": "user_001",
             "email": "admin@example.com",
@@ -133,7 +135,7 @@ class TestUserManagementE2E:
         assert user["role"] == UserRole.ADMIN
 
     def test_role_permission_enforcement(self):
-        """E2E: Role permissions are enforced."""
+            """E2E: Role permissions are enforced."""
         role_permissions = {
             UserRole.ADMIN: {"read", "write", # SQL query removed, "admin"},
             UserRole.OPERATOR: {"read", "write"},
@@ -147,7 +149,7 @@ class TestUserManagementE2E:
         assert has_permission is False
 
     def test_user_session_management(self):
-        """E2E: User sessions are managed correctly."""
+            """E2E: User sessions are managed correctly."""
         sessions = {
             "user_001": {
                 "session_id": "sess_abc",
@@ -161,7 +163,7 @@ class TestUserManagementE2E:
         assert is_valid
 
     def test_audit_logging(self):
-        """E2E: User actions are audit logged."""
+            """E2E: User actions are audit logged."""
         audit_log: List[AuditEntry] = []
 
         entry = AuditEntry(
@@ -180,7 +182,7 @@ class TestConfigurationManagementE2E:
     """E2E tests for configuration management."""
 
     def test_config_update_with_validation(self):
-        """E2E: Config updates are validated."""
+            """E2E: Config updates are validated."""
 
         update = {"max_connections": 200, "timeout_seconds": -5}  # Invalid timeout
 
@@ -191,7 +193,7 @@ class TestConfigurationManagementE2E:
         assert len(errors) == 1
 
     def test_config_rollback(self):
-        """E2E: Config can be rolled back."""
+            """E2E: Config can be rolled back."""
         config_history = [
             {"version": 1, "max_connections": 100},
             {"version": 2, "max_connections": 200},
@@ -205,7 +207,7 @@ class TestConfigurationManagementE2E:
         assert current_config["max_connections"] == 200
 
     def test_config_diff_generation(self):
-        """E2E: Config diff is generated."""
+            """E2E: Config diff is generated."""
         old_config = {"a": 1, "b": 2, "c": 3}
         new_config = {"a": 1, "b": 5, "d": 4}
 
@@ -225,7 +227,7 @@ class TestMaintenanceModeE2E:
     """E2E tests for maintenance mode."""
 
     def test_enter_maintenance_mode(self):
-        """E2E: System enters maintenance mode."""
+            """E2E: System enters maintenance mode."""
         system = {"status": SystemStatus.HEALTHY}
 
         # Enter maintenance
@@ -235,7 +237,7 @@ class TestMaintenanceModeE2E:
         assert system["status"] == SystemStatus.MAINTENANCE
 
     def test_maintenance_mode_blocks_requests(self):
-        """E2E: Maintenance mode blocks non-admin requests."""
+            """E2E: Maintenance mode blocks non-admin requests."""
         system_status = SystemStatus.MAINTENANCE
         user_role = UserRole.VIEWER
 
@@ -243,7 +245,7 @@ class TestMaintenanceModeE2E:
         assert can_access is False
 
     def test_exit_maintenance_mode(self):
-        """E2E: System exits maintenance mode."""
+            """E2E: System exits maintenance mode."""
         system = {"status": SystemStatus.MAINTENANCE}
 
         # Run health checks
@@ -256,7 +258,7 @@ class TestMaintenanceModeE2E:
         assert system["status"] == SystemStatus.HEALTHY
 
     def test_scheduled_maintenance_window(self):
-        """E2E: Maintenance window is scheduled."""
+            """E2E: Maintenance window is scheduled."""
         maintenance = {
             "scheduled_start": datetime.now() + timedelta(hours=2),
             "scheduled_end": datetime.now() + timedelta(hours=4),

@@ -23,7 +23,7 @@ class TestSubatomicHop:
     """Test suite for SubatomicHop implementation."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
         self.config = SubatomicHopConfig(
             checkpoint_dir=Path(self.temp_dir),
@@ -37,12 +37,12 @@ class TestSubatomicHop:
         self.failing_hop = lambda: 1 / 0  # Will raise ZeroDivisionError
 
     def teardown_method(self):
-        """Cleanup test fixtures."""
+            """Cleanup test fixtures."""
         import shutil
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_initialization(self):
-        """Test SubatomicHop initialization."""
+            """Test SubatomicHop initialization."""
         hop = SubatomicHop(self.simple_hop, self.config)
 
         assert hop.config.hop_id is not None
@@ -53,7 +53,7 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_successful_execution(self):
-        """Test successful execution through all stages."""
+            """Test successful execution through all stages."""
         hop = SubatomicHop(self.simple_hop, self.config)
 
         result = await hop.run(x=5)
@@ -71,7 +71,7 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_async_function_execution(self):
-        """Test execution with async hop function."""
+            """Test execution with async hop function."""
         hop = SubatomicHop(self.async_hop, self.config)
 
         result = await hop.run()
@@ -81,12 +81,12 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_input_validation_failure(self):
-        """Test pre-check validation failure."""
+            """Test pre-check validation failure."""
         hop = SubatomicHop(self.simple_hop, self.config)
 
         # Override pre-check to fail
         async def failing_pre_check(**kwargs):
-            """Docstring."""
+                """Docstring."""
             raise InputValidationError("Missing required input")
 
         hop._pre_check = failing_pre_check
@@ -98,7 +98,7 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_stage_retry_mechanism(self):
-        """Test retry mechanism for failing stages."""
+            """Test retry mechanism for failing stages."""
         retry_config = RetryPolicy(max_retries=2, retry_delay=0.1)
         config = SubatomicHopConfig(
             checkpoint_dir=Path(self.temp_dir),
@@ -108,7 +108,7 @@ class TestSubatomicHop:
         call_count = 0
 
         async def flaky_act(**kwargs):
-            """Docstring."""
+                """Docstring."""
             nonlocal call_count
             call_count += 1
             if call_count < 2:
@@ -125,7 +125,7 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_checkpoint_save_and_resume(self):
-        """Test checkpoint saving and resuming."""
+            """Test checkpoint saving and resuming."""
         hop = SubatomicHop(self.simple_hop, self.config)
 
         # Execute through THINK stage
@@ -144,7 +144,7 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_critique_quality_gate(self):
-        """Test critique stage quality gate."""
+            """Test critique stage quality gate."""
         hop = SubatomicHop(self.simple_hop, self.config)
 
         # Set up context with invalid output
@@ -156,7 +156,7 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_atomic_commit(self):
-        """Test atomic commit pattern."""
+            """Test atomic commit pattern."""
         hop = SubatomicHop(self.simple_hop, self.config)
         hop.context["validated_output"] = {"test": "data"}
 
@@ -175,7 +175,7 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_observability_logging(self):
-        """Test observability and logging."""
+            """Test observability and logging."""
         hop = SubatomicHop(self.simple_hop, self.config)
 
         with patch('logging.Logger.info') as mock_log:
@@ -189,7 +189,7 @@ class TestSubatomicHop:
             assert any("STAGE_TRANSITION" in str(call) for call in log_calls)
 
     def test_get_status(self):
-        """Test status reporting."""
+            """Test status reporting."""
         hop = SubatomicHop(self.simple_hop, self.config)
 
         status = hop.get_status()
@@ -202,7 +202,7 @@ class TestSubatomicHop:
         assert status["state"] == HopState.PENDING.value
 
     def test_cleanup(self):
-        """Test checkpoint cleanup."""
+            """Test checkpoint cleanup."""
         hop = SubatomicHop(self.simple_hop, self.config)
 
         # Create some checkpoint files
@@ -216,7 +216,7 @@ class TestSubatomicHop:
         assert not checkpoint_file.exists()
 
     def test_factory_function(self):
-        """Test the create_subatomic_hop factory function."""
+            """Test the create_subatomic_hop factory function."""
         hop = create_subatomic_hop(
             self.simple_hop,
             config=self.config,
@@ -228,10 +228,10 @@ class TestSubatomicHop:
         assert hop.context["extra_context"] == "test"
 
     def test_decorator_pattern(self):
-        """Test the subatomic_hop decorator."""
+            """Test the subatomic_hop decorator."""
         @subatomic_hop(config=self.config)
         def decorated_hop(x):
-            """Docstring."""
+                """Docstring."""
             return {"result": x * 3}
 
         hop = decorated_hop(x=4)
@@ -241,14 +241,14 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_timeout_protection(self):
-        """Test execution timeout protection."""
+            """Test execution timeout protection."""
         config = SubatomicHopConfig(
             checkpoint_dir=Path(self.temp_dir),
             max_execution_time=0.1  # Very short timeout
         )
 
         async def slow_hop():
-            """Docstring."""
+                """Docstring."""
             await asyncio.sleep(0.2)  # Longer than timeout
             return {"result": "too_slow"}
 
@@ -259,7 +259,7 @@ class TestSubatomicHop:
 
     @pytest.mark.asyncio
     async def test_exponential_backoff(self):
-        """Test exponential backoff in retries."""
+            """Test exponential backoff in retries."""
         retry_config = RetryPolicy(
             max_retries=3,
             retry_delay=0.1,
@@ -273,7 +273,7 @@ class TestSubatomicHop:
         attempt_times = []
 
         async def failing_act(**kwargs):
-            """Docstring."""
+                """Docstring."""
             attempt_times.append(time.time())
             if len(attempt_times) < 3:
                 raise StageExecutionError("Fail")
@@ -297,7 +297,7 @@ class TestSubatomicHopIntegration:
     """Integration tests for SubatomicHop with realistic scenarios."""
 
     def setup_method(self):
-        """Setup integration test fixtures."""
+            """Setup integration test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
         self.config = SubatomicHopConfig(
             checkpoint_dir=Path(self.temp_dir),
@@ -306,14 +306,14 @@ class TestSubatomicHopIntegration:
         )
 
     def teardown_method(self):
-        """Cleanup integration test fixtures."""
+            """Cleanup integration test fixtures."""
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @pytest.mark.asyncio
     async def test_data_processing_pipeline(self):
-        """Test SubatomicHop in a data processing scenario."""
+            """Test SubatomicHop in a data processing scenario."""
         def process_data(data: List[dict]) -> dict:
-            """Process a list of records."""
+                """Process a list of records."""
             if not data:
                 raise ValueError("No data provided")
 
@@ -343,11 +343,11 @@ class TestSubatomicHopIntegration:
 
     @pytest.mark.asyncio
     async def test_error_recovery_with_checkpoints(self):
-        """Test error recovery using checkpoints."""
+            """Test error recovery using checkpoints."""
         execution_count = 0
 
         def unreliable_hop(x: int) -> dict:
-            """Docstring."""
+                """Docstring."""
             nonlocal execution_count
             execution_count += 1
 

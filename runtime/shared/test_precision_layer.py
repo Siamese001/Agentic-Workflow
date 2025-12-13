@@ -25,7 +25,7 @@ class PrecisionLayerTestSuite:
     """Test suite for Phase 1 Precision Layer components."""
 
     def __init__(self):
-        """Initialize the test suite."""
+            """Initialize the test suite."""
         self.compressor = ContextualCompressor(similarity_threshold=0.1)
         self.gate = AdaptiveRetrievalGate()
 
@@ -74,7 +74,7 @@ class PrecisionLayerTestSuite:
         ]
 
     def test_contextual_compressor(self):
-        """Test the Contextual Compressor with various queries."""
+            """Test the Contextual Compressor with various queries."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Contextual Compressor")
         logger.info("="*60)
@@ -135,7 +135,7 @@ class PrecisionLayerTestSuite:
             logger.info(f"   Preview: {preview}")
 
     def test_adaptive_retrieval_gate(self):
-        """Test the Adaptive Retrieval Gate with various queries."""
+            """Test the Adaptive Retrieval Gate with various queries."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Adaptive Retrieval Gate")
         logger.info("="*60)
@@ -172,7 +172,7 @@ class PrecisionLayerTestSuite:
         logger.info(f"Gate Accuracy: {accuracy:.1%} ({correct_decisions}/{total_tests})")
 
     def test_integration_scenario(self):
-        """Test both components working together in a realistic scenario."""
+            """Test both components working together in a realistic scenario."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Integration Scenario")
         logger.info("="*60)
@@ -239,7 +239,7 @@ class PrecisionLayerTestSuite:
         logger.info(f"Average gate decision time: {avg_gate_time*1000:.2f}ms")
 
     def test_convenience_functions(self):
-        """Test the convenience functions for direct usage."""
+            """Test the convenience functions for direct usage."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Convenience Functions")
         logger.info("="*60)
@@ -268,7 +268,7 @@ class PrecisionLayerTestSuite:
             logger.info(f"   '{query}' -> {result}")
 
     def run_all_tests(self):
-        """Run all tests sequentially."""
+            """Run all tests sequentially."""
         logger.info("🚀 Starting Phase 1 Precision Layer Test Suite")
         logger.info("="*60)
 

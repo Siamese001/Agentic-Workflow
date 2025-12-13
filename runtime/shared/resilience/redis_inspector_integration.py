@@ -29,7 +29,7 @@ class RedisInspectorIntegration:
     """
 
     def __init__(self, cache_client, mcp_executor):
-        """Initialize the integration.
+            """Initialize the integration.
 
         Args:
             cache_client: HardenedCacheClient instance
@@ -45,13 +45,13 @@ class RedisInspectorIntegration:
         self.logger = logging.getLogger("RedisInspectorIntegration")
 
     def _register_with_mcp(self) -> None:
-        """Register the inspector tool with MCP executor."""
+            """Register the inspector tool with MCP executor."""
         config = create_redis_inspector_config(self.cache_client)
         self.mcp_executor.register_tool(config)
         self.logger.info("Redis Inspector registered with MCP executor")
 
     async def check_workflow_health(self, workflow_id: str) -> Dict[str, Any]:
-        """
+            """
         Comprehensive workflow health check.
 
         Args:
@@ -139,7 +139,7 @@ class RedisInspectorIntegration:
             return health_report
 
     async def monitor_queue_performance(self) -> Dict[str, Any]:
-        """
+            """
         Monitor queue performance and bottlenecks.
 
         Returns:
@@ -205,7 +205,7 @@ class RedisInspectorIntegration:
         return performance_report
 
     async def debug_memory_leaks(self) -> Dict[str, Any]:
-        """
+            """
         Debug potential memory leaks in Redis.
 
         Returns:
@@ -301,7 +301,7 @@ class RedisInspectorIntegration:
             return leak_report
 
     async def validate_system_state(self) -> Dict[str, Any]:
-        """
+            """
         Validate overall system state and health.
 
         Returns:
@@ -353,7 +353,7 @@ class RedisInspectorIntegration:
         return validation_report
 
     def get_inspector_stats(self) -> Dict[str, Any]:
-        """Get Redis Inspector statistics."""
+            """Get Redis Inspector statistics."""
         return self.inspector.get_stats()
 
 # Example usage in orchestrator
@@ -365,12 +365,12 @@ class TitaniumOrchestratorMemoryHelper:
     """
 
     def __init__(self, mcp_executor):
-        """Initialize with MCP executor."""
+            """Initialize with MCP executor."""
         self.mcp_executor = mcp_executor
         self.logger = logging.getLogger("OrchestratorMemoryHelper")
 
     async def should_dispatch_new_job(self, queue: str = "high_priority") -> bool:
-        """Check if system can handle new job dispatch.
+            """Check if system can handle new job dispatch.
 
         Args:
             queue: Queue name to check
@@ -415,7 +415,7 @@ class TitaniumOrchestratorMemoryHelper:
             return False
 
     async def verify_prerequisites(self, workflow_id: str, step_name: str) -> bool:
-        """Verify that prerequisites are met for workflow step.
+            """Verify that prerequisites are met for workflow step.
 
         Args:
             workflow_id: Workflow ID
@@ -456,7 +456,7 @@ class TitaniumOrchestratorMemoryHelper:
             return False
 
     async def diagnose_stalled_workflow(self, workflow_id: str) -> Dict[str, Any]:
-        """Diagnose why a workflow might be stalled.
+            """Diagnose why a workflow might be stalled.
 
         Args:
             workflow_id: Workflow ID to diagnose

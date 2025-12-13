@@ -1,5 +1,6 @@
 """Integration tests for LinkedIn outreach + data layer integration."""
 from typing import Dict, List, Optional
+from dataclasses import dataclass
 
 @dataclass
 class ContactData:
@@ -27,7 +28,7 @@ class TestContactDataIntegration:
     """Integration tests for contact data flows."""
 
     def test_contact_load_and_enrich(self):
-        """Integration: Contact is loaded and enriched."""
+            """Integration: Contact is loaded and enriched."""
         # Load raw contact
         raw_contact = {"id": "c1", "name": "John Doe", "company": "Acme"}
 
@@ -45,7 +46,7 @@ class TestContactDataIntegration:
         assert enriched.title == "CTO"
 
     def test_contact_company_linking(self):
-        """Integration: Contact is linked to company data."""
+            """Integration: Contact is linked to company data."""
         contact = ContactData(id="c1", name="John", company="Acme", title="CTO")
         company = CompanyData(
             id="comp_1",
@@ -64,7 +65,7 @@ class TestContactDataIntegration:
         assert linked["contact"].company == linked["company"].name
 
     def test_batch_contact_processing(self):
-        """Integration: Batch of contacts is processed."""
+            """Integration: Batch of contacts is processed."""
         raw_contacts = [
             {"id": f"c{i}", "name": f"Contact {i}", "company": f"Company {i}"}
             for i in range(10)
@@ -78,7 +79,7 @@ class TestContactDataIntegration:
         assert len(processed) == 10
 
     def test_contact_deduplication(self):
-        """Integration: Duplicate contacts are deduplicated."""
+            """Integration: Duplicate contacts are deduplicated."""
         contacts = [
             ContactData(id="c1", name="John", company="Acme", title="CTO"),
             ContactData(id="c2", name="John", company="Acme", title="CTO"),  # Duplicate
@@ -96,7 +97,7 @@ class TestContactDataIntegration:
         assert len(unique) == 2
 
     def test_contact_validation(self):
-        """Integration: Contact data is validated."""
+            """Integration: Contact data is validated."""
         contact = ContactData(id="c1", name="", company="Acme", title="CTO")
 
         errors = []
@@ -111,7 +112,7 @@ class TestCompanyDataIntegration:
     """Integration tests for company data flows."""
 
     def test_company_research_aggregation(self):
-        """Integration: Company research is aggregated."""
+            """Integration: Company research is aggregated."""
         sources = {
             "linkedin": {"industry": "Technology", "size": "500+"},
             "crunchbase": {"funding": "$50M", "founded": 2015},
@@ -130,7 +131,7 @@ class TestCompanyDataIntegration:
         assert len(aggregated.recent_news) == 2
 
     def test_company_news_freshness(self):
-        """Integration: Company news is fresh."""
+            """Integration: Company news is fresh."""
         from datetime import datetime, timedelta
 
         news_items = [
@@ -147,7 +148,7 @@ class TestCompanyDataIntegration:
         assert len(fresh_news) == 1
 
     def test_company_contact_association(self):
-        """Integration: Company is associated with contacts."""
+            """Integration: Company is associated with contacts."""
         company = CompanyData(
             id="comp_1",
             name="Acme",
@@ -165,7 +166,7 @@ class TestCompanyDataIntegration:
         assert len(company_contacts) == 2
 
     def test_industry_classification(self):
-        """Integration: Companies are classified by industry."""
+            """Integration: Companies are classified by industry."""
         companies = [
             CompanyData(id="1", name="A", industry="Technology", size="100+", recent_news=[]),
             CompanyData(id="2", name="B", industry="Finance", size="500+", recent_news=[]),
@@ -179,7 +180,7 @@ class TestCompanyDataIntegration:
         assert len(by_industry["Technology"]) == 2
 
     def test_company_size_filtering(self):
-        """Integration: Companies are filtered by size."""
+            """Integration: Companies are filtered by size."""
         companies = [
             {"name": "Small Co", "employees": 50},
             {"name": "Medium Co", "employees": 200},
@@ -195,7 +196,7 @@ class TestOutreachDataIntegration:
     """Integration tests for outreach + data integration."""
 
     def test_personalization_data_merge(self):
-        """Integration: Personalization data is merged."""
+            """Integration: Personalization data is merged."""
         contact = {"name": "John", "company": "Acme"}
         company = {"industry": "Technology", "recent_news": "Product launch"}
 
@@ -208,7 +209,7 @@ class TestOutreachDataIntegration:
         assert personalization["talking_point"] == "Product launch"
 
     def test_campaign_contact_assignment(self):
-        """Integration: Contacts are assigned to campaigns."""
+            """Integration: Contacts are assigned to campaigns."""
         campaign = {"id": "camp_1", "name": "Q4 Outreach", "contacts": []}
         contacts = [
             ContactData(id="c1", name="John", company="Acme", title="CTO"),
@@ -220,7 +221,7 @@ class TestOutreachDataIntegration:
         assert len(campaign["contacts"]) == 2
 
     def test_outreach_history_tracking(self):
-        """Integration: Outreach history is tracked."""
+            """Integration: Outreach history is tracked."""
         history = [
             {"contact_id": "c1", "action": "sent", "date": "2024-01-01"},
             {"contact_id": "c1", "action": "opened", "date": "2024-01-02"},
@@ -231,7 +232,7 @@ class TestOutreachDataIntegration:
         assert len(contact_history) == 3
 
     def test_response_data_capture(self):
-        """Integration: Response data is captured."""
+            """Integration: Response data is captured."""
         response = {
             "contact_id": "c1",
             "message": "Thanks for reaching out!",
@@ -242,7 +243,7 @@ class TestOutreachDataIntegration:
         assert response["sentiment"] == "positive"
 
     def test_conversion_tracking(self):
-        """Integration: Conversions are tracked."""
+            """Integration: Conversions are tracked."""
         funnel = {
             "sent": 100,
             "opened": 45,

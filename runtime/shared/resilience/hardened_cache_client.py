@@ -14,6 +14,8 @@ import asyncio
 import time
 import pickle
 from collections import OrderedDict
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -74,13 +76,13 @@ class CacheEntry:
     size_bytes: int = 0
 
     def is_expired(self) -> bool:
-        """Check if entry is expired."""
+            """Check if entry is expired."""
         if self.ttl_seconds is None:
             return False
         return (datetime.now() - self.created_at).total_seconds() > self.ttl_seconds
 
     def touch(self) -> None:
-        """# SQL removed: Update access statistics."""
+            """# SQL removed: Update access statistics."""
         self.last_accessed = datetime.now()
         self.access_count += 1
 
@@ -102,7 +104,7 @@ class L1MemoryCache:
         }
 
     async def get(self, key: str) -> Optional[Any]:
-        """Get value from L1 cache."""
+            """Get value from L1 cache."""
         async with self._lock:
             entry = self._cache.get(key)
 
@@ -123,7 +125,7 @@ class L1MemoryCache:
             return entry.value
 
     async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> None:
-        """Set value in L1 cache."""
+            """Set value in L1 cache."""
         async with self._lock:
             now = datetime.now()
 
@@ -159,12 +161,12 @@ class L1MemoryCache:
             self._stats["size_bytes"] += size_bytes - old_size
 
     async def delete(self, key: str) -> bool:
-        """# SQL removed: Delete key from L1 cache."""
+            """# SQL removed: Delete key from L1 cache."""
         async with self._lock:
             return await self._remove_entry(key)
 
     async def clear(self) -> None:
-        """Clear all entries from L1 cache."""
+            """Clear all entries from L1 cache."""
         async with self._lock:
             self._cache.clear()
             self._access_order.clear()
@@ -172,7 +174,7 @@ class L1MemoryCache:
             self._stats["size_bytes"] = 0
 
     async def _remove_entry(self, key: str) -> bool:
-        """Remove entry and update stats."""
+            """Remove entry and update stats."""
         if key in self._cache:
             entry = self._cache.pop(key)
             self._access_order.pop(key, None)
@@ -182,7 +184,7 @@ class L1MemoryCache:
         return False
 
     async def _evict(self) -> None:
-        """Evict entries based on policy."""
+            """Evict entries based on policy."""
         if not self._cache:
             return
 
@@ -205,14 +207,14 @@ class L1MemoryCache:
             self._stats["evictions"] += 1
 
     def _update_access_order(self, key: str) -> None:
-        """# SQL removed: Update access order for LRU."""
+            """# SQL removed: Update access order for LRU."""
         if self.eviction_policy == "lru":
             self._access_order.move_to_end(key)
         elif self.eviction_policy == "lfu":
             self._access_frequency[key] = self._access_frequency.get(key, 0) + 1
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get L1 cache statistics."""
+            """Get L1 cache statistics."""
         total_requests = self._stats["hits"] + self._stats["misses"]
         hit_rate = self._stats["hits"] / total_requests if total_requests > 0 else 0
 
@@ -235,7 +237,7 @@ class CircuitBreaker:
         self._lock = asyncio.Lock()
 
     async def call(self, func: Callable, *args, **kwargs):
-        """Execute function with circuit breaker protection."""
+            """Execute function with circuit breaker protection."""
         async with self._lock:
             if self.state == "open":
                 if time.time() - self.last_failure_time > self.timeout:
@@ -264,7 +266,7 @@ class CircuitBreaker:
             raise
 
     def get_state(self) -> Dict[str, Any]:
-        """Get circuit breaker state."""
+            """Get circuit breaker state."""
         return {
             "state": self.state,
             "failure_count": self.failure_count,
@@ -286,7 +288,7 @@ class HardenedCacheClient:
     """
 
     def __init__(self, config: CacheConfig):
-        """Initialize hardened cache client.
+            """Initialize hardened cache client.
 
         Args:
             config: Cache configuration
@@ -328,11 +330,11 @@ class HardenedCacheClient:
         asyncio.create_task(self._initialize())
 
     async def _initialize(self) -> None:
-        """Initialize Redis connection pool."""
+            """Initialize Redis connection pool."""
         await self._connect()
 
     async def _connect(self) -> None:
-        """Connect to Redis with connection pooling."""
+            """Connect to Redis with connection pooling."""
         try:
 
             self.connection_pool = redis.ConnectionPool(
@@ -362,7 +364,7 @@ class HardenedCacheClient:
             await self._schedule_reconnect()
 
     async def _schedule_reconnect(self) -> None:
-        """Schedule reconnection attempt."""
+            """Schedule reconnection attempt."""
         if self.reconnect_task and not self.reconnect_task.done():
             return
 
@@ -385,12 +387,12 @@ class HardenedCacheClient:
         self.reconnect_task = asyncio.create_task(self._reconnect_after_delay(delay))
 
     async def _reconnect_after_delay(self, delay: float) -> None:
-        """Reconnect after delay."""
+            """Reconnect after delay."""
         await asyncio.sleep(delay)
         await self._connect()
 
     async def get(self, key: str, use_l1: bool = True, use_l2: bool = True) -> Optional[Any]:
-        """Get value from cache (L1 then L2).
+            """Get value from cache (L1 then L2).
 
         Args:
             key: Cache key
@@ -429,8 +431,8 @@ class HardenedCacheClient:
 
         return None
 
-    async def set(
         """Docstring."""
+    async def set(
         self,
         key: str,
         value: Any,
@@ -439,7 +441,7 @@ class HardenedCacheClient:
         use_l2: bool = True,
         write_behind: bool = False
     ) -> None:
-        """Set value in cache (L1 and L2).
+            """Set value in cache (L1 and L2).
 
         Args:
             key: Cache key
@@ -469,7 +471,7 @@ class HardenedCacheClient:
                     self.metrics["redis_errors"] += 1
 
     async def delete(self, key: str, use_l1: bool = True, use_l2: bool = True) -> bool:
-        """# SQL removed: Delete key from cache.
+            """# SQL removed: Delete key from cache.
 
         Args:
             key: Cache key
@@ -500,7 +502,7 @@ class HardenedCacheClient:
         return deleted
 
     async def exists(self, key: str) -> bool:
-        """Check if key exists in cache."""
+            """Check if key exists in cache."""
         # Check L1 first
         if await self.l1_cache.get(key) is not None:
             return True
@@ -514,13 +516,13 @@ class HardenedCacheClient:
 
         return False
 
-    async def get_many(self,
         """Docstring."""
+    async def get_many(self,
         keys: List[str],
         use_l1: bool = True,
         use_l2: bool = True) -> Dict[str,
         Any]:
-        """Get multiple values from cache.
+            """Get multiple values from cache.
 
         Args:
             keys: List of cache keys
@@ -565,15 +567,15 @@ class HardenedCacheClient:
 
         return results
 
-    async def set_many(
         """Docstring."""
+    async def set_many(
         self,
         mapping: Dict[str, Any],
         ttl_seconds: Optional[int] = None,
         use_l1: bool = True,
         use_l2: bool = True
     ) -> None:
-        """Set multiple values in cache.
+            """Set multiple values in cache.
 
         Args:
             mapping: Dictionary of key-value pairs
@@ -595,7 +597,7 @@ class HardenedCacheClient:
                 self.metrics["redis_errors"] += 1
 
     async def _get_from_redis(self, key: str) -> Optional[Any]:
-        """Get value from Redis."""
+            """Get value from Redis."""
         value = await self.redis_client.get(key)
         if value is None:
             return None
@@ -606,7 +608,7 @@ class HardenedCacheClient:
             return value.decode('utf-8')
 
     async def _set_to_redis(self, key: str, value: Any, ttl_seconds: Optional[int]) -> None:
-        """Set value in Redis."""
+            """Set value in Redis."""
         try:
             serialized = pickle.dumps(value)
         except Exception:
@@ -618,16 +620,16 @@ class HardenedCacheClient:
             await self.redis_client.set(key, serialized)
 
     async def _delete_from_redis(self, key: str) -> bool:
-        """# SQL removed: Delete key from Redis."""
+            """# SQL removed: Delete key from Redis."""
         result = await self.redis_client.delete(key)
         return result > 0
 
     async def _exists_in_redis(self, key: str) -> bool:
-        """Check if key exists in Redis."""
+            """Check if key exists in Redis."""
         return await self.redis_client.exists(key) > 0
 
     async def _mget_from_redis(self, keys: List[str]) -> Dict[str, Any]:
-        """Get multiple values from Redis."""
+            """Get multiple values from Redis."""
         values = await self.redis_client.mget(keys)
         results = {}
 
@@ -641,7 +643,7 @@ class HardenedCacheClient:
         return results
 
     async def _mset_to_redis(self, mapping: Dict[str, Any], ttl_seconds: Optional[int]) -> None:
-        """Set multiple values in Redis."""
+            """Set multiple values in Redis."""
         pipe = self.redis_client.pipeline()
 
         for key, value in mapping.items():
@@ -658,7 +660,7 @@ class HardenedCacheClient:
         await pipe.execute()
 
     async def _write_behind(self, key: str, value: Any, ttl_seconds: Optional[int]) -> None:
-        """Write-behind to Redis."""
+            """Write-behind to Redis."""
         try:
             await self._set_to_redis(key, value, ttl_seconds)
         except Exception as e:
@@ -666,7 +668,7 @@ class HardenedCacheClient:
             self.metrics["redis_errors"] += 1
 
     async def clear(self, tier: CacheTier = CacheTier.BOTH) -> None:
-        """Clear cache tier(s).
+            """Clear cache tier(s).
 
         Args:
             tier: Which tier to clear
@@ -682,7 +684,7 @@ class HardenedCacheClient:
                 logger.error(f"Failed to clear Redis: {e}")
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get comprehensive cache statistics."""
+            """Get comprehensive cache statistics."""
         # Calculate hit rates
         total_redis_ops = self.metrics["redis_hits"] + self.metrics["redis_misses"]
         redis_hit_rate = self.metrics["redis_hits"] / total_redis_ops if total_redis_ops > 0 else 0
@@ -707,7 +709,7 @@ class HardenedCacheClient:
         }
 
     async def health_check(self) -> Dict[str, Any]:
-        """Perform health check."""
+            """Perform health check."""
         health = {
             "status": "healthy",
             "checks": {}
@@ -743,7 +745,7 @@ class HardenedCacheClient:
         return health
 
     async def close(self) -> None:
-        """Close connections and cleanup."""
+            """Close connections and cleanup."""
         if self.reconnect_task and not self.reconnect_task.done():
             self.reconnect_task.cancel()
 

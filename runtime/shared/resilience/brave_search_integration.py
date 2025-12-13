@@ -31,7 +31,7 @@ class BraveSearchIntegration:
     """
 
     def __init__(self, api_key: str):
-        """Initialize the integration.
+            """Initialize the integration.
 
         Args:
             api_key: Brave Search API key from environment
@@ -41,10 +41,10 @@ class BraveSearchIntegration:
         self.mcp_executor = None  # Will be initialized later
 
     async def initialize_executor(self):
-        """Initialize the MCP executor with Brave Search registered."""
+            """Initialize the MCP executor with Brave Search registered."""
         # Create fallback function
         async def search_fallback(error: str, query: str, **kwargs) -> Dict[str, Any]:
-            """Fallback when external search fails."""
+                """Fallback when external search fails."""
             logger.warning(f"External search failed for '{query}': {error}")
 
             # In a real implementation, you might:
@@ -79,7 +79,7 @@ class BraveSearchIntegration:
         logger.info("Brave Search tool registered with MCP executor")
 
     async def research_query(self, query: str, max_results: int = 5) -> Dict[str, Any]:
-        """
+            """
         Execute a research query using the integrated search tool.
 
         Args:
@@ -115,7 +115,7 @@ class BraveSearchIntegration:
             raise
 
     async def multi_query_research(self, queries: list[str]) -> Dict[str, Any]:
-        """
+            """
         Execute multiple research queries concurrently.
 
         Args:
@@ -156,7 +156,7 @@ class BraveSearchIntegration:
         return combined
 
     def get_search_stats(self) -> Dict[str, Any]:
-        """Get comprehensive search statistics."""
+            """Get comprehensive search statistics."""
         search_stats = self.search_tool.get_stats()
 
         if self.mcp_executor:
@@ -177,7 +177,7 @@ class K25DeepResearchNode:
     """
 
     def __init__(self, brave_api_key: str):
-        """Initialize the research node.
+            """Initialize the research node.
 
         Args:
             brave_api_key: API key for Brave Search
@@ -186,12 +186,12 @@ class K25DeepResearchNode:
         self.logger = logging.getLogger("K25Research")
 
     async def initialize(self):
-        """Initialize the search integration."""
+            """Initialize the search integration."""
         await self.search_integration.initialize_executor()
         self.logger.info("K.2.5 Deep Research node initialized")
 
     async def research_topic(self, topic: str, depth: int = 2) -> Dict[str, Any]:
-        """
+            """
         Research a topic with configurable depth.
 
         Args:
@@ -244,7 +244,7 @@ class K25DeepResearchNode:
             raise
 
     def _process_findings(self, results: list[Dict[str, Any]]) -> list[Dict[str, Any]]:
-        """Process and structure search findings."""
+            """Process and structure search findings."""
         processed = []
 
         for result in results:
@@ -267,7 +267,7 @@ class K25DeepResearchNode:
         return processed
 
     def _calculate_relevance(self, query: str, result: Dict[str, Any]) -> float:
-        """Calculate relevance score for a result."""
+            """Calculate relevance score for a result."""
         # Simple relevance calculation based on title and description
         title = result.get("title", "").lower()
         description = result.get("description", "").lower()

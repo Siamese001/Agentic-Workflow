@@ -10,6 +10,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
+from enum import Enum
 
 import aiofiles
 from redis import asyncio as aioredis
@@ -39,7 +40,7 @@ class CheckpointStorageBackend(ABC):
 
     @abstractmethod
     async def save(self, envelope: SignalEnvelope) -> bool:
-        """Save envelope checkpoint.
+            """Save envelope checkpoint.
 
         Args:
             envelope: Signal envelope to save
@@ -51,7 +52,7 @@ class CheckpointStorageBackend(ABC):
 
     @abstractmethod
     async def load(self, trace_id: str) -> Optional[SignalEnvelope]:
-        """Load envelope checkpoint.
+            """Load envelope checkpoint.
 
         Args:
             trace_id: Trace ID of envelope
@@ -63,7 +64,7 @@ class CheckpointStorageBackend(ABC):
 
     @abstractmethod
     async def delete(self, trace_id: str) -> bool:
-        """# SQL removed: Delete envelope checkpoint.
+            """# SQL removed: Delete envelope checkpoint.
 
         Args:
             trace_id: Trace ID of envelope
@@ -75,7 +76,7 @@ class CheckpointStorageBackend(ABC):
 
     @abstractmethod
     async def list_checkpoints(self, limit: int = 100) -> List[str]:
-        """List available checkpoint trace IDs.
+            """List available checkpoint trace IDs.
 
         Args:
             limit: Maximum number to return
@@ -87,7 +88,7 @@ class CheckpointStorageBackend(ABC):
 
     @abstractmethod
     async def cleanup(self, older_than: timedelta) -> int:
-        """Clean up old checkpoints.
+            """Clean up old checkpoints.
 
         Args:
             older_than: Age threshold for cleanup
@@ -101,7 +102,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
     """File-based checkpoint storage."""
 
     def __init__(self, storage_path: str, compression: bool = True):
-        """Initialize file storage.
+            """Initialize file storage.
 
         Args:
             storage_path: Directory to store checkpoints
@@ -112,11 +113,11 @@ class FileCheckpointStorage(CheckpointStorageBackend):
         self._ensure_directory()
 
     def _ensure_directory(self) -> None:
-        """Ensure storage directory exists."""
+            """Ensure storage directory exists."""
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
     def _get_checkpoint_path(self, trace_id: str) -> Path:
-        """Get file path for checkpoint.
+            """Get file path for checkpoint.
 
         Args:
             trace_id: Trace ID
@@ -131,7 +132,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
         return subdir / f"{trace_id}.json"
 
     async def save(self, envelope: SignalEnvelope) -> bool:
-        """Save envelope to file.
+            """Save envelope to file.
 
         Args:
             envelope: Signal envelope to save
@@ -170,7 +171,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             return False
 
     async def load(self, trace_id: str) -> Optional[SignalEnvelope]:
-        """Load envelope from file.
+            """Load envelope from file.
 
         Args:
             trace_id: Trace ID
@@ -201,7 +202,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             return None
 
     async def delete(self, trace_id: str) -> bool:
-        """# SQL removed: Delete checkpoint file.
+            """# SQL removed: Delete checkpoint file.
 
         Args:
             trace_id: Trace ID
@@ -222,7 +223,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             return False
 
     async def list_checkpoints(self, limit: int = 100) -> List[str]:
-        """List available checkpoints.
+            """List available checkpoints.
 
         Args:
             limit: Maximum number to return
@@ -250,7 +251,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             return []
 
     async def cleanup(self, older_than: timedelta) -> int:
-        """Clean up old checkpoint files.
+            """Clean up old checkpoint files.
 
         Args:
             older_than: Age threshold
@@ -282,7 +283,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
     """Redis-based checkpoint storage."""
 
     def __init__(self, redis_url: str, prefix: str, ttl_seconds: int = 3600):
-        """Initialize Redis storage.
+            """Initialize Redis storage.
 
         Args:
             redis_url: Redis connection URL
@@ -295,7 +296,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
         self._redis: Optional[aioredis.Redis] = None
 
     async def _get_redis(self) -> aioredis.Redis:
-        """Get Redis connection.
+            """Get Redis connection.
 
         Returns:
             Redis client
@@ -305,7 +306,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
         return self._redis
 
     def _get_key(self, trace_id: str) -> str:
-        """Get Redis key for checkpoint.
+            """Get Redis key for checkpoint.
 
         Args:
             trace_id: Trace ID
@@ -316,7 +317,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
         return f"{self.prefix}:{trace_id}"
 
     async def save(self, envelope: SignalEnvelope) -> bool:
-        """Save envelope to Redis.
+            """Save envelope to Redis.
 
         Args:
             envelope: Signal envelope to save
@@ -349,7 +350,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             return False
 
     async def load(self, trace_id: str) -> Optional[SignalEnvelope]:
-        """Load envelope from Redis.
+            """Load envelope from Redis.
 
         Args:
             trace_id: Trace ID
@@ -379,7 +380,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             return None
 
     async def delete(self, trace_id: str) -> bool:
-        """# SQL removed: Delete checkpoint from Redis.
+            """# SQL removed: Delete checkpoint from Redis.
 
         Args:
             trace_id: Trace ID
@@ -402,7 +403,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             return False
 
     async def list_checkpoints(self, limit: int = 100) -> List[str]:
-        """List available checkpoints in Redis.
+            """List available checkpoints in Redis.
 
         Args:
             limit: Maximum number to return
@@ -432,7 +433,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             return []
 
     async def cleanup(self, older_than: timedelta) -> int:
-        """Redis handles cleanup automatically via TTL.
+            """Redis handles cleanup automatically via TTL.
 
         Args:
             older_than: Age threshold (ignored for Redis)
@@ -446,7 +447,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
     """In-memory checkpoint storage for testing."""
 
     def __init__(self, max_size: int = 100):
-        """Initialize memory storage.
+            """Initialize memory storage.
 
         Args:
             max_size: Maximum number of checkpoints to store
@@ -456,7 +457,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
         self._lock = asyncio.Lock()
 
     async def save(self, envelope: SignalEnvelope) -> bool:
-        """Save envelope to memory.
+            """Save envelope to memory.
 
         Args:
             envelope: Signal envelope to save
@@ -475,7 +476,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
             return True
 
     async def load(self, trace_id: str) -> Optional[SignalEnvelope]:
-        """Load envelope from memory.
+            """Load envelope from memory.
 
         Args:
             trace_id: Trace ID
@@ -487,7 +488,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
             return self.checkpoints.get(trace_id)
 
     async def delete(self, trace_id: str) -> bool:
-        """# SQL removed: Delete checkpoint from memory.
+            """# SQL removed: Delete checkpoint from memory.
 
         Args:
             trace_id: Trace ID
@@ -502,7 +503,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
             return False
 
     async def list_checkpoints(self, limit: int = 100) -> List[str]:
-        """List checkpoints in memory.
+            """List checkpoints in memory.
 
         Args:
             limit: Maximum number to return
@@ -514,7 +515,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
             return list(self.checkpoints.keys())[:limit]
 
     async def cleanup(self, older_than: timedelta) -> int:
-        """Clean up old checkpoints.
+            """Clean up old checkpoints.
 
         Args:
             older_than: Age threshold
@@ -539,7 +540,7 @@ class CheckpointManager:
     """Manages pipeline checkpoints for fault tolerance."""
 
     def __init__(self, config: CheckpointConfig):
-        """Initialize checkpoint manager.
+            """Initialize checkpoint manager.
 
         Args:
             config: Checkpoint configuration
@@ -556,7 +557,7 @@ class CheckpointManager:
         logger.info(f"Initialized CheckpointManager with {config.storage_type} storage")
 
     def _create_storage(self) -> CheckpointStorageBackend:
-        """Create storage backend based on config.
+            """Create storage backend based on config.
 
         Returns:
             Storage backend instance
@@ -576,7 +577,7 @@ class CheckpointManager:
             return MemoryCheckpointStorage(self.config.max_checkpoints)
 
     async def save_checkpoint(self, envelope: SignalEnvelope) -> bool:
-        """Save envelope checkpoint.
+            """Save envelope checkpoint.
 
         Args:
             envelope: Signal envelope to save
@@ -598,7 +599,7 @@ class CheckpointManager:
             return False
 
     async def load_checkpoint(self, trace_id: str) -> Optional[SignalEnvelope]:
-        """Load envelope checkpoint.
+            """Load envelope checkpoint.
 
         Args:
             trace_id: Trace ID of envelope
@@ -618,7 +619,7 @@ class CheckpointManager:
             return None
 
     async def delete_checkpoint(self, trace_id: str) -> bool:
-        """# SQL removed: Delete envelope checkpoint.
+            """# SQL removed: Delete envelope checkpoint.
 
         Args:
             trace_id: Trace ID of envelope
@@ -637,13 +638,13 @@ class CheckpointManager:
             self._stats["errors"] += 1
             return False
 
-    async def resume_from_checkpoint(
         """Docstring."""
+    async def resume_from_checkpoint(
         self,
         trace_id: str,
         stages: List[str]
     ) -> Optional[SignalEnvelope]:
-        """Resume pipeline from checkpoint.
+            """Resume pipeline from checkpoint.
 
         Args:
             trace_id: Trace ID to resume
@@ -664,7 +665,7 @@ class CheckpointManager:
         return envelope
 
     async def cleanup_old_checkpoints(self, older_than: Optional[timedelta] = None) -> int:
-        """Clean up old checkpoints.
+            """Clean up old checkpoints.
 
         Args:
             older_than: Age threshold (uses config default if None)
@@ -678,7 +679,7 @@ class CheckpointManager:
         return await self.storage.cleanup(older_than)
 
     def get_stats(self) -> Dict[str, int]:
-        """Get checkpoint statistics.
+            """Get checkpoint statistics.
 
         Returns:
             Statistics dictionary
@@ -686,7 +687,7 @@ class CheckpointManager:
         return self._stats.copy()
 
     async def health_check(self) -> Dict[str, Any]:
-        """Check health of checkpoint system.
+            """Check health of checkpoint system.
 
         Returns:
             Health status

@@ -23,7 +23,7 @@ class TestNodeNegotiator:
     """Test suite for NodeNegotiator class."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.config = NegotiationConfig(
             max_rounds=2,
             max_message_length=500,
@@ -32,7 +32,7 @@ class TestNodeNegotiator:
         self.negotiator = NodeNegotiator(self.config)
 
     def test_initialization(self):
-        """Test NodeNegotiator initialization."""
+            """Test NodeNegotiator initialization."""
         assert self.negotiator.config.max_rounds == 2
         assert len(self.negotiator.active_negotiations) == 0
         assert len(self.negotiator.message_handlers) == 3
@@ -40,7 +40,7 @@ class TestNodeNegotiator:
 
     @pytest.mark.asyncio
     async def test_send_feedback_success(self):
-        """Test successful feedback sending."""
+            """Test successful feedback sending."""
         config = SubatomicHopConfig(hop_id="sender")
         sender_hop = SubatomicHop(lambda x: x, config)
 
@@ -66,7 +66,7 @@ class TestNodeNegotiator:
 
     @pytest.mark.asyncio
     async def test_send_feedback_too_long(self):
-        """Test feedback rejection for too long message."""
+            """Test feedback rejection for too long message."""
         config = SubatomicHopConfig(hop_id="sender")
         sender_hop = SubatomicHop(lambda x: x, config)
 
@@ -84,7 +84,7 @@ class TestNodeNegotiator:
 
     @pytest.mark.asyncio
     async def test_request_change_success(self):
-        """Test successful change request."""
+            """Test successful change request."""
         config = SubatomicHopConfig(hop_id="downstream")
         downstream_hop = SubatomicHop(lambda x: x, config)
 
@@ -101,7 +101,7 @@ class TestNodeNegotiator:
 
     @pytest.mark.asyncio
     async def test_handle_clarification(self):
-        """Test clarification message handling."""
+            """Test clarification message handling."""
         message = NegotiationMessage(
             from_hop="node1",
             to_hop="node2",
@@ -122,7 +122,7 @@ class TestNodeNegotiator:
 
     @pytest.mark.asyncio
     async def test_handle_change_request(self):
-        """Test change request handling."""
+            """Test change request handling."""
         message = NegotiationMessage(
             from_hop="downstream",
             to_hop="upstream",
@@ -149,7 +149,7 @@ class TestNodeNegotiator:
         assert "negotiation_request" in mock_hop.context
 
     def test_get_or_create_round(self):
-        """Test round creation and retrieval."""
+            """Test round creation and retrieval."""
         # First call creates new round
         round_id1 = self.negotiator._get_or_create_round("node1", "node2")
         assert round_id1 in self.negotiator.active_negotiations
@@ -163,7 +163,7 @@ class TestNodeNegotiator:
         assert round_id3 != round_id1
 
     def test_check_resolution(self):
-        """Test negotiation resolution checking."""
+            """Test negotiation resolution checking."""
         negotiation = NegotiationRound(
             round_id="test",
             participants=["node1", "node2"]
@@ -195,7 +195,7 @@ class TestNodeNegotiator:
         assert self.negotiator._check_resolution(negotiation)
 
     def test_negotiation_history(self):
-        """Test negotiation history tracking."""
+            """Test negotiation history tracking."""
         # Add some completed negotiations
         for i in range(3):
             negotiation = NegotiationRound(
@@ -213,7 +213,7 @@ class TestNodeNegotiator:
         assert limited_history[0].round_id == "round_1"
 
     def test_statistics_tracking(self):
-        """Test statistics tracking."""
+            """Test statistics tracking."""
         initial_stats = self.negotiator.get_stats()
         assert initial_stats["total_negotiations"] == 0
         assert initial_stats["successful_negotiations"] == 0
@@ -222,14 +222,14 @@ class TestSubatomicHopNegotiation:
     """Test suite for SubatomicHop negotiation capabilities."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.config = SubatomicHopConfig(hop_id="test_hop")
         self.hop = SubatomicHop(lambda x: x, self.config)
         self.hop.negotiation_enabled = True
 
     @pytest.mark.asyncio
     async def test_request_upstream_change(self):
-        """Test requesting upstream change."""
+            """Test requesting upstream change."""
         result = await self.hop.request_upstream_change(
             upstream_hop_id="upstream_node",
             change_request="Add more context",
@@ -241,7 +241,7 @@ class TestSubatomicHopNegotiation:
 
     @pytest.mark.asyncio
     async def test_send_negotiation_message(self):
-        """Test sending negotiation message."""
+            """Test sending negotiation message."""
         result = await self.hop.send_negotiation_message(
             to_hop_id="target_node",
             message_type="CLARIFICATION_REQUEST",
@@ -251,7 +251,7 @@ class TestSubatomicHopNegotiation:
         assert result is True
 
     def test_handle_negotiation_request(self):
-        """Test handling negotiation request."""
+            """Test handling negotiation request."""
         request = {
             "from_hop": "downstream_node",
             "request": "Please make output shorter"
@@ -265,7 +265,7 @@ class TestSubatomicHopNegotiation:
         assert len(self.hop.context["negotiation_log"]) == 1
 
     def test_negotiation_disabled(self):
-        """Test behavior when negotiation is disabled."""
+            """Test behavior when negotiation is disabled."""
         self.hop.negotiation_enabled = False
 
         # Should raise error
@@ -288,7 +288,7 @@ class TestNegotiationIntegration:
     """Integration tests for negotiation system."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.negotiator = get_node_negotiator()
 
         # Create test hops
@@ -296,11 +296,11 @@ class TestNegotiationIntegration:
         self.downstream_config = SubatomicHopConfig(hop_id="downstream")
 
         def upstream_func(data):
-            """Docstring."""
+                """Docstring."""
             return {"summary": data.get("text", "")[:100]}  # Truncate
 
         def downstream_func(data):
-            """Docstring."""
+                """Docstring."""
             summary = data.get("summary", "")
             if len(summary) < 50:
                 # Request more detail
@@ -315,7 +315,7 @@ class TestNegotiationIntegration:
 
     @pytest.mark.asyncio
     async def test_negotiation_flow(self):
-        """Test complete negotiation flow."""
+            """Test complete negotiation flow."""
         # Downstream requests change
         result = await self.downstream_hop.request_upstream_change(
             upstream_hop_id="upstream",
@@ -330,7 +330,7 @@ class TestNegotiationIntegration:
 
     @pytest.mark.asyncio
     async def test_multiple_negotiation_rounds(self):
-        """Test negotiation with multiple rounds."""
+            """Test negotiation with multiple rounds."""
         # First request
         await self.downstream_hop.send_negotiation_message(
             to_hop_id="upstream",
@@ -352,7 +352,7 @@ class TestNegotiationIntegration:
 
     @pytest.mark.asyncio
     async def test_negotiation_timeout(self):
-        """Test negotiation timeout handling."""
+            """Test negotiation timeout handling."""
         config = NegotiationConfig(response_timeout=0.1)  # Very short timeout
         negotiator = NodeNegotiator(config)
 
@@ -372,17 +372,17 @@ class TestNegotiationScenarios:
 
     @pytest.mark.asyncio
     async def test_resume_length_negotiation(self):
-        """Test negotiation over resume length."""
+            """Test negotiation over resume length."""
         # Create hops for resume generation and review
         def generate_resume(profile):
-            """Docstring."""
+                """Docstring."""
             return {
                 "resume": f"Resume for {profile['name']}",
                 "length": 100
             }
 
         def review_resume(resume_data):
-            """Docstring."""
+                """Docstring."""
             if resume_data["length"] < 200:
                 # Request longer resume
                 negotiator = get_node_negotiator()
@@ -415,13 +415,13 @@ class TestNegotiationScenarios:
 
     @pytest.mark.asyncio
     async def test_format_negotiation(self):
-        """Test negotiation over output format."""
+            """Test negotiation over output format."""
         def data_processor(data):
-            """Docstring."""
+                """Docstring."""
             return {"result": str(data)}
 
         def data_consumer(processed_data):
-            """Docstring."""
+                """Docstring."""
             result = processed_data.get("result", "")
             if not result.startswith("{"):
                 # Request JSON format

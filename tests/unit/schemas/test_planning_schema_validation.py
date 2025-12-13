@@ -3,8 +3,8 @@
 # High-signal content preserved below — zero-loss migration
 # ================================================================================
 
-
-
+from typing import Iterable, Type
+from pydantic import BaseModel
 
 def _get_schema_version(obj: object) -> str | None:
     """Best-effort function to read a schema_version attribute from a model.
@@ -20,7 +20,6 @@ def _get_schema_version(obj: object) -> str | None:
         return None
 
 def validate_schema_version(
-    """Docstring."""
     obj: object,
     expected_versions: Iterable[str] = ("v1",),
     model_type: Type[BaseModel] | None = None,

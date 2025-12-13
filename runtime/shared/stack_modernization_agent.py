@@ -18,7 +18,7 @@ class LegacyDiagnostic(BaseModel):
 
     @property
     def is_highly_legacy(self) -> bool:
-        """Check if stack is highly legacy."""
+            """Check if stack is highly legacy."""
         return self.modernization_score >= 0.7
 
 class MigrationThesis(BaseModel):
@@ -30,14 +30,14 @@ class MigrationThesis(BaseModel):
 
     @property
     def is_transformative(self) -> bool:
-        """Check if thesis represents significant transformation."""
+            """Check if thesis represents significant transformation."""
         return len(self.bridge_strategy) > 100
 
 class StackModernizationAgent:
     """Diagnoses legacy stacks and prescribes modernization strategies."""
 
     def __init__(self):
-        """Initialize the stack modernization agent."""
+            """Initialize the stack modernization agent."""
         # Legacy technology markers
         self.legacy_markers = {
             "infrastructure": {
@@ -135,7 +135,7 @@ class StackModernizationAgent:
         logger.info("Initialized StackModernizationAgent")
 
     def diagnose_stack(self, job_description: str) -> LegacyDiagnostic:
-        """Diagnose legacy technology signals in job description.
+            """Diagnose legacy technology signals in job description.
 
         Args:
             job_description: Job description text
@@ -181,7 +181,7 @@ class StackModernizationAgent:
             )
 
     def generate_thesis(self, diagnostic: LegacyDiagnostic) -> MigrationThesis:
-        """Generate migration thesis based on diagnostic.
+            """Generate migration thesis based on diagnostic.
 
         Args:
             diagnostic: Legacy diagnostic
@@ -225,7 +225,7 @@ class StackModernizationAgent:
             )
 
     def generate_migration_hook(self, thesis: MigrationThesis, legacy_tech: str) -> str:
-        """Generate targeted opening hook for applications.
+            """Generate targeted opening hook for applications.
 
         Args:
             thesis: Migration thesis
@@ -254,7 +254,7 @@ class StackModernizationAgent:
             return "I have experience leading successful technology modernizations."
 
     def rewrite_resume_summary(self, thesis: MigrationThesis) -> str:
-        """Rewrite resume summary to highlight transformation expertise.
+            """Rewrite resume summary to highlight transformation expertise.
 
         Args:
             thesis: Migration thesis to incorporate
@@ -289,7 +289,7 @@ class StackModernizationAgent:
         playbook: Dict[str, str],
         diagnostic: LegacyDiagnostic
     ) -> MigrationThesis:
-        """Create thesis from transformation playbook.
+            """Create thesis from transformation playbook.
 
         Args:
             playbook: Transformation playbook

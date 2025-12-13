@@ -1,5 +1,7 @@
 """Integration tests for full pipeline execution."""
 from typing import Dict, List, Optional
+from dataclasses import dataclass
+from enum import Enum
 
 class PipelineStage(Enum):
     """TODO: Add docstring."""
@@ -29,7 +31,7 @@ class TestFullPipelineIntegration:
     """Integration tests for full pipeline."""
 
     def test_pipeline_executes_all_stages(self):
-        """Integration: Pipeline executes all stages in order."""
+            """Integration: Pipeline executes all stages in order."""
         state = PipelineState(
             pipeline_id="pipe_001",
             stage=PipelineStage.INPUT,
@@ -45,7 +47,7 @@ class TestFullPipelineIntegration:
         assert len(state.intermediate_results) == len(stages)
 
     def test_data_flows_through_pipeline(self):
-        """Integration: Data flows correctly through pipeline."""
+            """Integration: Data flows correctly through pipeline."""
         state = PipelineState(
             pipeline_id="pipe_002",
             stage=PipelineStage.INPUT,
@@ -72,7 +74,7 @@ class TestFullPipelineIntegration:
         assert state.final_output["query"] == "find documents about AI"
 
     def test_pipeline_handles_errors(self):
-        """Integration: Pipeline handles errors gracefully."""
+            """Integration: Pipeline handles errors gracefully."""
         state = PipelineState(
             pipeline_id="pipe_003",
             stage=PipelineStage.EXECUTION,
@@ -88,7 +90,7 @@ class TestFullPipelineIntegration:
         assert len(state.errors) > 0
 
     def test_pipeline_metrics_collected(self):
-        """Integration: Pipeline metrics are collected."""
+            """Integration: Pipeline metrics are collected."""
         state = PipelineState(
             pipeline_id="pipe_004",
             stage=PipelineStage.INPUT,
@@ -105,7 +107,7 @@ class TestMultiHopPipelineIntegration:
     """Integration tests for multi-hop pipeline."""
 
     def test_multi_hop_execution(self):
-        """Integration: Multi-hop pipeline executes correctly."""
+            """Integration: Multi-hop pipeline executes correctly."""
         hops = [
             {"hop_id": 1, "query": "initial query"},
             {"hop_id": 2, "query": "refined query based on hop 1"},
@@ -120,7 +122,7 @@ class TestMultiHopPipelineIntegration:
         assert len(results) == 3
 
     def test_hop_results_aggregation(self):
-        """Integration: Hop results are aggregated."""
+            """Integration: Hop results are aggregated."""
         hop_results = [
             {"hop_id": 1, "documents": ["doc1", "doc2"]},
             {"hop_id": 2, "documents": ["doc3"]},
@@ -137,7 +139,7 @@ class TestMultiHopPipelineIntegration:
         assert len(unique_documents) == 5
 
     def test_hop_early_termination(self):
-        """Integration: Pipeline terminates early when threshold met."""
+            """Integration: Pipeline terminates early when threshold met."""
         threshold = 0.9
 
         hop_results = [
@@ -158,7 +160,7 @@ class TestParallelPipelineIntegration:
     """Integration tests for parallel pipeline execution."""
 
     def test_parallel_branch_execution(self):
-        """Integration: Parallel branches execute correctly."""
+            """Integration: Parallel branches execute correctly."""
         branches = ["search_web", "search_db", "search_cache"]
 
         results = {}
@@ -168,7 +170,7 @@ class TestParallelPipelineIntegration:
         assert all(r["status"] == "completed" for r in results.values())
 
     def test_parallel_results_merge(self):
-        """Integration: Parallel results are merged."""
+            """Integration: Parallel results are merged."""
         branch_results = {
             "web": ["web1", "web2"],
             "db": ["db1"],
@@ -182,7 +184,7 @@ class TestParallelPipelineIntegration:
         assert len(merged) == 6
 
     def test_parallel_timeout_handling(self):
-        """Integration: Parallel execution handles timeouts."""
+            """Integration: Parallel execution handles timeouts."""
         branches = {
             "fast": {"completed": True, "latency_ms": 50},
             "slow": {"completed": False, "latency_ms": 5000},  # Timed out
@@ -198,7 +200,7 @@ class TestPipelineRecoveryIntegration:
     """Integration tests for pipeline recovery."""
 
     def test_checkpoint_save_restore(self):
-        """Integration: Pipeline checkpoints are saved and restored."""
+            """Integration: Pipeline checkpoints are saved and restored."""
         checkpoints = {}
 
         # Save checkpoint
@@ -211,7 +213,7 @@ class TestPipelineRecoveryIntegration:
         assert restored["progress"] == 50
 
     def test_retry_from_checkpoint(self):
-        """Integration: Pipeline retries from checkpoint."""
+            """Integration: Pipeline retries from checkpoint."""
         checkpoint = {"stage": "execution", "completed_items": 5, "total_items": 10}
 
         # Resume from checkpoint
@@ -223,7 +225,7 @@ class TestPipelineRecoveryIntegration:
         assert checkpoint["completed_items"] == 10
 
     def test_partial_failure_recovery(self):
-        """Integration: Pipeline recovers from partial failures."""
+            """Integration: Pipeline recovers from partial failures."""
         items = [{"id": i, "status": "pending"} for i in range(10)]
 
         # Process with some failures

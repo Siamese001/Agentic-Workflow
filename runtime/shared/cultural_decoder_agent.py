@@ -5,6 +5,7 @@ to align with the target company's specific cultural DNA and dialect.
 """
 
 import logging
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ class CompanyDNA(BaseModel):
 
     @validator('core_values')
     def validate_values(cls, v):
-        """Ensure values are properly formatted."""
+            """Ensure values are properly formatted."""
         return [val.strip().title() for val in v if val.strip()]
 
 class CulturallyAlignedContent(BaseModel):
@@ -51,7 +52,7 @@ class SimpleAgentBase:
     """Simple base class for standalone agents."""
 
     def __init__(self, name: str, model_name: str = "gpt-4"):
-        """Initialize the agent.
+            """Initialize the agent.
 
         Args:
             name: Agent name for logging
@@ -65,7 +66,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
     """Agent that adapts content to match company culture."""
 
     def __init__(self, model_name: str = "gpt-4"):
-        """Initialize the Cultural Decoder Agent.
+            """Initialize the Cultural Decoder Agent.
 
         Args:
             model_name: LLM model to use for cultural adaptation
@@ -184,7 +185,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
         )
 
     def _load_dna(self, company_name: str, about_text: Optional[str] = None) -> CompanyDNA:
-        """Load company DNA, either from pre-loaded profiles or by inference.
+            """Load company DNA, either from pre-loaded profiles or by inference.
 
         Args:
             company_name: Name of the target company
@@ -209,7 +210,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
         return self._infer_dna_from_text(company_name, about_text)
 
     async def _infer_dna_from_text(self, company_name: str, about_text: str) -> CompanyDNA:
-        """Infer company DNA from About page text.
+            """Infer company DNA from About page text.
 
         Args:
             company_name: Name of the company
@@ -250,14 +251,14 @@ class CulturalDecoderAgent(SimpleAgentBase):
             logger.error(f"Failed to infer DNA: {e}")
             return self.default_dna
 
-    async def rewrite_for_culture(
         """Docstring."""
+    async def rewrite_for_culture(
         self,
         original_text: str,
         company_dna: CompanyDNA,
         text_type: str = "resume"
     ) -> CulturallyAlignedContent:
-        """Rewrite text to align with company culture.
+            """Rewrite text to align with company culture.
 
         Args:
             original_text: Original text to rewrite
@@ -327,7 +328,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
             )
 
     def audit_fit(self, text: str, company_name: str) -> Dict[str, Any]:
-        """Audit text for cultural alignment with target company.
+            """Audit text for cultural alignment with target company.
 
         Args:
             text: Text to audit
@@ -392,7 +393,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
         }
 
     def _calculate_alignment_score(self, text: str, dna: CompanyDNA) -> float:
-        """Calculate how well text aligns with company DNA.
+            """Calculate how well text aligns with company DNA.
 
         Args:
             text: Text to evaluate
@@ -424,7 +425,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
         return max(0.0, min(1.0, score))
 
     def _get_grade(self, score: float) -> str:
-        """Convert alignment score to grade.
+            """Convert alignment score to grade.
 
         Args:
             score: Alignment score (0-1)
@@ -444,7 +445,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
             return "F"
 
     async def _call_llm(self, prompt: str, temperature: float = 0.3) -> LLMResponse:
-        """Call the LLM with the given prompt.
+            """Call the LLM with the given prompt.
 
         Args:
             prompt: Prompt to send to LLM
@@ -468,7 +469,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
             )
 
             class LLMResponseImpl:
-                """Docstring."""
+                    """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 
@@ -478,7 +479,7 @@ class CulturalDecoderAgent(SimpleAgentBase):
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
-                """Docstring."""
+                    """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 

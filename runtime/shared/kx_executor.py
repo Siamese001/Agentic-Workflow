@@ -8,6 +8,7 @@ Phase 1C - Knowledge Extraction Integration
 
 import logging
 from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
 
 
 logger = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class KXNodeExecutor:
     """Executor for K.X knowledge extraction nodes."""
 
     def __init__(self, agent_executor: AgentExecutor):
-        """Initialize K.X node executor.
+            """Initialize K.X node executor.
 
         Args:
             agent_executor: Agent executor for LLM calls
@@ -46,14 +47,14 @@ class KXNodeExecutor:
         self.agent_executor = agent_executor
         self.registry = get_kx_registry()
 
-    def execute_node(
         """Docstring."""
+    def execute_node(
         self,
         node_key: str,
         context: KXExecutionContext,
         system_prompt: Optional[str] = None,
     ) -> KXExecutionResult:
-        """Execute a K.X node.
+            """Execute a K.X node.
 
         Args:
             node_key: K.X node key
@@ -110,7 +111,7 @@ class KXNodeExecutor:
         config: KNodeConfig,
         context: KXExecutionContext,
     ) -> List[Dict[str, Any]]:
-        """Execute RAG retrieval for K.X node.
+            """Execute RAG retrieval for K.X node.
 
         Args:
             config: Node configuration
@@ -175,7 +176,7 @@ class KXNodeExecutor:
         context: KXExecutionContext,
         rag_sources: List[Dict[str, Any]],
     ) -> List[AgentMessage]:
-        """Build messages for agent execution.
+            """Build messages for agent execution.
 
         Args:
             config: Node configuration
@@ -211,7 +212,7 @@ class KXNodeExecutor:
         config: KNodeConfig,
         context: KXExecutionContext,
     ) -> str:
-        """Build generation prompt for K.X node.
+            """Build generation prompt for K.X node.
 
         Args:
             config: Node configuration
@@ -263,7 +264,7 @@ class KXNodeExecutor:
         config: KNodeConfig,
         context: KXExecutionContext,
     ) -> str:
-        """Build system prompt for K.X node.
+            """Build system prompt for K.X node.
 
         Args:
             config: Node configuration
@@ -283,7 +284,7 @@ class KXNodeExecutor:
         return " ".join(prompts)
 
     def _extract_reasoning_trace(self, response: AgentResponse) -> Optional[str]:
-        """Extract reasoning trace from response.
+            """Extract reasoning trace from response.
 
         Args:
             response: Agent response
@@ -300,7 +301,7 @@ class KXNodeExecutor:
         content: str,
         context: KXExecutionContext,
     ) -> List[Dict[str, Any]]:
-        """Validate generated output against rules.
+            """Validate generated output against rules.
 
         Args:
             config: Node configuration
@@ -325,7 +326,7 @@ class KXNodeExecutor:
         config: KNodeConfig,
         context: KXExecutionContext,
     ) -> Dict[str, Any]:
-        """Apply a single validation rule.
+            """Apply a single validation rule.
 
         Args:
             rule: Validation rule name
@@ -373,8 +374,8 @@ class KXNodeExecutor:
                 "message": f"Validation rule '{rule}' not implemented (assumed pass)",
             }
 
-def execute_kx_node(
     """Docstring."""
+def execute_kx_node(
     node_key: str,
     agent_executor: AgentExecutor,
     source_data: Dict[str, Any],

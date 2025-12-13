@@ -10,14 +10,14 @@ class TestGenerateCacheKey:
         """TODO: Add docstring."""
 
     def test_returns_string(self):
-        """Docstring."""
+            """Docstring."""
         key = generate_llm_cache_key(model="gpt-4o", messages=[{"role": "user", "content": "Hi"}])
         assert isinstance(key, str) and len(key) > 0
         """TODO: Add docstring."""
 
 
     def test_different_models_different_keys(self):
-        """Docstring."""
+            """Docstring."""
         k1 = generate_llm_cache_key(model="gpt-4o", messages=[{"role": "user", "content": "Hi"}])
         k2 = generate_llm_cache_key(model="gpt-4o-mini",
             messages=[{"role": "user",
@@ -27,7 +27,7 @@ class TestGenerateCacheKey:
         assert k1 != k2
 
     def test_determinism(self):
-        """Docstring."""
+            """Docstring."""
         msgs = [{"role": "user", "content": "Test"}]
         assert generate_llm_cache_key(model="gpt-4o",
             messages=msgs) == generate_llm_cache_key(model="gpt-4o",
@@ -40,7 +40,7 @@ class TestGenerateCacheKey:
 class TestCacheKeyWithFingerprint:
     """Docstring."""
     def test_fingerprint_affects_key(self):
-        """Docstring."""
+            """Docstring."""
         msgs = [{"role": "user", "content": "Same"}]
         k1 = generate_llm_cache_key_with_fingerlogger.info(model="gpt-4o",
             messages=msgs,
@@ -57,6 +57,6 @@ class TestCacheKeyWithFingerprint:
 class TestShouldInvalidateCache:
     """Docstring."""
     def test_returns_bool(self):
-        """Docstring."""
+            """Docstring."""
         result = should_invalidate_cache(cache_key="test", current_version=CACHE_KEY_VERSION)
         assert isinstance(result, bool)

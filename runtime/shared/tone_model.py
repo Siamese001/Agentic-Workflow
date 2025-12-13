@@ -7,6 +7,7 @@ voice to match, preventing the "Generic AI" voice.
 
 import logging
 import re
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ class StyleProfile(BaseModel):
         description="Confidence in analysis")
 
     class Config:
-        """Pydantic configuration."""
+            """Pydantic configuration."""
         validate_assignment = True
 
 class GenerationConfig(BaseModel):
@@ -57,14 +58,14 @@ class GenerationConfig(BaseModel):
 
     @validator('temperature_setting')
     def clamp_temperature(cls, v):
-        """Ensure temperature is within valid range."""
+            """Ensure temperature is within valid range."""
         return max(0.1, min(1.0, v))
 
 class ToneAnalyzer:
     """Analyzes communication style from content samples."""
 
     def __init__(self, min_sample_length: int = 50):
-        """Initialize the tone analyzer.
+            """Initialize the tone analyzer.
 
         Args:
             min_sample_length: Minimum characters for valid analysis
@@ -102,7 +103,7 @@ class ToneAnalyzer:
         logger.info(f"Initialized ToneAnalyzer with min_sample_length={min_sample_length}")
 
     def analyze_style(self, content_samples: List[str]) -> StyleProfile:
-        """Analyze communication style from content samples.
+            """Analyze communication style from content samples.
 
         Args:
             content_samples: List of text samples to analyze
@@ -162,7 +163,7 @@ class ToneAnalyzer:
             return self._get_neutral_profile()
 
     def _get_neutral_profile(self) -> StyleProfile:
-        """Get a neutral/default style profile."""
+            """Get a neutral/default style profile."""
         return StyleProfile(
             primary_tone=ToneType.AUTHORITATIVE,
             formality_level=0.7,
@@ -173,7 +174,7 @@ class ToneAnalyzer:
         )
 
     def _calculate_metrics(self, text: str) -> Dict[str, float]:
-        """Calculate basic text metrics.
+            """Calculate basic text metrics.
 
         Args:
             text: Text to analyze
@@ -217,7 +218,7 @@ class ToneAnalyzer:
     nce": 0.0}
 
     def _detect_primary_tone(self, text: str, metrics: Dict[str, float]) -> ToneType:
-        """Detect the primary tone from text and metrics.
+            """Detect the primary tone from text and metrics.
 
         Args:
             text: Text to analyze
@@ -258,7 +259,7 @@ class ToneAnalyzer:
             return ToneType.AUTHORITATIVE
 
     def _calculate_formality(self, text: str, metrics: Dict[str, float]) -> float:
-        """Calculate formality level (0.0 = casual, 1.0 = academic).
+            """Calculate formality level (0.0 = casual, 1.0 = academic).
 
         Args:
             text: Text to analyze
@@ -295,7 +296,7 @@ class ToneAnalyzer:
             return 0.7  # Default to semi-formal
 
     def _calculate_emoji_frequency(self, text: str) -> float:
-        """Calculate emoji usage frequency.
+            """Calculate emoji usage frequency.
 
         Args:
             text: Text to analyze
@@ -331,7 +332,7 @@ class ToneAnalyzer:
             return 0.1
 
     def _calculate_vocabulary_complexity(self, text: str) -> float:
-        """Calculate vocabulary complexity.
+            """Calculate vocabulary complexity.
 
         Args:
             text: Text to analyze
@@ -364,7 +365,7 @@ class ToneAdapter:
     """Adapts messages to match target tone profile."""
 
     def __init__(self):
-        """Initialize the tone adapter."""
+            """Initialize the tone adapter."""
         # Adaptation rules for different tones
         self.adaptation_rules = {
             ToneType.DIRECT: {
@@ -400,7 +401,7 @@ class ToneAdapter:
         logger.info("Initialized ToneAdapter with adaptation rules")
 
     def adapt_message(self, draft: str, target_profile: StyleProfile) -> str:
-        """Adapt a draft message to match the target tone profile.
+            """Adapt a draft message to match the target tone profile.
 
         Args:
             draft: Original draft message
@@ -457,7 +458,7 @@ class ToneAdapter:
             return draft
 
     def _shorten_sentences(self, text: str) -> str:
-        """Shorten sentences for more direct communication."""
+            """Shorten sentences for more direct communication."""
         try:
             sentences = re.split(r'[.!?]+', text)
             shortened = []
@@ -482,7 +483,7 @@ class ToneAdapter:
             return text
 
     def _lengthen_sentences(self, text: str) -> str:
-        """Lengthen sentences for more analytical communication."""
+            """Lengthen sentences for more analytical communication."""
         try:
             # Add connecting phrases between short sentences
             connectors = ["which means that", "indicating that", "suggesting that"]
@@ -502,7 +503,7 @@ class ToneModel:
     """Main tone model that combines analysis and configuration."""
 
     def __init__(self):
-        """Initialize the tone model."""
+            """Initialize the tone model."""
         self.analyzer = ToneAnalyzer()
         self.adapter = ToneAdapter()
 
@@ -553,12 +554,12 @@ class ToneModel:
 
         logger.info("Initialized ToneModel with all components")
 
-    def analyze_and_configure(self,
         """Docstring."""
+    def analyze_and_configure(self,
         content_samples: List[str],
         archetype: Optional[str] = None) -> Tuple[StyleProfile,
         GenerationConfig]:
-        """Analyze content and generate configuration.
+            """Analyze content and generate configuration.
 
         Args:
             content_samples: Content samples to analyze
@@ -597,7 +598,7 @@ class ToneModel:
                 self.config_templates[ToneType.AUTHORITATIVE]
 
     def _adjust_for_archetype(self, config: GenerationConfig, archetype: str) -> GenerationConfig:
-        """Adjust configuration based on recipient archetype.
+            """Adjust configuration based on recipient archetype.
 
         Args:
             config: Base configuration

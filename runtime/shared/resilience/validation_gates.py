@@ -9,6 +9,7 @@ import logging
 import asyncio
 from typing import Any, Dict, List, Optional, Callable, Awaitable
 from datetime import datetime
+from dataclasses import dataclass
 
 
 logger = logging.getLogger(__name__)
@@ -65,7 +66,7 @@ class GateHistory(BaseModel):
     last_failure_reasons: List[str] = Field(default_factory=list)
 
     def is_oscillating(self, threshold: int = 3) -> bool:
-        """Check if repair is oscillating between failure states."""
+            """Check if repair is oscillating between failure states."""
         if len(self.last_failure_reasons) < threshold:
             return False
 
@@ -94,7 +95,7 @@ class ResilientValidationChain:
         state_manager: AtomicStateManager,
         workflow_id: str
     ):
-        """Initialize validation chain.
+            """Initialize validation chain.
 
         Args:
             executor: Hardened executor for running validation and repair
@@ -113,7 +114,7 @@ class ResilientValidationChain:
         self.metrics = ValidationMetrics()
 
     async def _run_sentinel(self, content: str, gate: ValidationGate) -> SentinelDecision:
-        """Execute the Sentinel K-Node for a specific gate.
+            """Execute the Sentinel K-Node for a specific gate.
 
         Args:
             content: Content to validate
@@ -189,15 +190,15 @@ class ResilientValidationChain:
                 retry_suggestion="Retry with simpler content"
             )
 
-    async def _attempt_repair(
         """Docstring."""
+    async def _attempt_repair(
         self,
         content: str,
         decision: SentinelDecision,
         gate: ValidationGate,
         repair_agent_func: Callable[[str, str, str, str], Awaitable[str]]
     ) -> str:
-        """Attempt to repair content based on Sentinel feedback.
+            """Attempt to repair content based on Sentinel feedback.
 
         Args:
             content: Original content
@@ -239,14 +240,14 @@ class ResilientValidationChain:
             self.logger.error(f"Repair attempt failed: {e}")
             raise
 
-    async def _checkpoint_gate_success(
         """Docstring."""
+    async def _checkpoint_gate_success(
         self,
         gate: ValidationGate,
         content: str,
         repair_attempts: int
     ) -> None:
-        """Atomically checkpoint after successful gate completion.
+            """Atomically checkpoint after successful gate completion.
 
         Args:
             gate: The gate that was passed
@@ -277,7 +278,7 @@ class ResilientValidationChain:
         self.logger.info(f"✅ Checkpointed after gate {gate.gate_name}")
 
     async def _load_checkpoint(self) -> Optional[Dict[str, Any]]:
-        """Load last checkpoint to resume from failure.
+            """Load last checkpoint to resume from failure.
 
         Returns:
             Checkpoint data or None if no checkpoint exists
@@ -291,14 +292,14 @@ class ResilientValidationChain:
 
         return None
 
-    async def execute_chain(
         """Docstring."""
+    async def execute_chain(
         self,
         initial_content: str,
         gates: List[ValidationGate],
         repair_agent_func: Callable[[str, str, str, str], Awaitable[str]]
     ) -> str:
-        """
+            """
         Execute the full validation pipeline.
 
         Args:
@@ -456,7 +457,7 @@ class ResilientValidationChain:
         return current_content
 
     def get_chain_status(self) -> Dict[str, Any]:
-        """Get status of the validation chain.
+            """Get status of the validation chain.
 
         Returns:
             Status dictionary with gate histories and statistics
@@ -483,7 +484,7 @@ class ResilientValidationChain:
         }
 
     def get_metrics(self) -> ValidationMetrics:
-        """Get the validation metrics object.
+            """Get the validation metrics object.
 
         Returns:
             ValidationMetrics instance with all collected metrics
@@ -525,8 +526,8 @@ def create_standard_gates() -> List[ValidationGate]:
     ]
 
 # Example repair agent function signature
-async def default_repair_agent(
     """Docstring."""
+async def default_repair_agent(
     original_content: str,
     feedback: str,
     instruction: str,
@@ -566,7 +567,7 @@ async def default_repair_agent(
             {instruction}
 
             Please provide the fixed content:
-            """
+                """
         }
     ]
 

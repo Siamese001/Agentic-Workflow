@@ -19,6 +19,7 @@ from pathlib import Path
 from enum import Enum
 import os
 import sys
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ class ResourceLimits:
     max_processes: Optional[int] = None  # Number of processes
 
     def to_rlimits(self) -> Dict[str, int]:
-        """Convert to resource limit format for subprocess."""
+            """Convert to resource limit format for subprocess."""
         import resource
 
         limits = {}
@@ -109,7 +110,7 @@ class ProcessMonitor:
         self.cpu_times_start = self.process.cpu_times()
 
     def update(self) -> Dict[str, float]:
-        """# SQL removed: Update resource usage metrics."""
+            """# SQL removed: Update resource usage metrics."""
         try:
             # Memory usage
             memory_info = self.process.memory_info()
@@ -133,7 +134,7 @@ class ProcessMonitor:
             return {}
 
     def terminate(self) -> bool:
-        """Terminate the process gracefully."""
+            """Terminate the process gracefully."""
         try:
             self.process.terminate()
             return True
@@ -141,7 +142,7 @@ class ProcessMonitor:
             return False
 
     def kill(self) -> bool:
-        """Force kill the process."""
+            """Force kill the process."""
         try:
             self.process.kill()
             return True
@@ -167,7 +168,7 @@ class HardenedMCPExecutor:
         temp_dir: Optional[Path] = None,
         enable_sandbox: bool = True
     ):
-        """Initialize hardened MCP executor.
+            """Initialize hardened MCP executor.
 
         Args:
             default_timeout: Default timeout for tool execution
@@ -192,12 +193,12 @@ class HardenedMCPExecutor:
             "killed_executions": 0
         }
 
-    async def execute_tool(
         """Docstring."""
+    async def execute_tool(
         self,
         context: ExecutionContext
     ) -> ExecutionResult:
-        """Execute a tool with hardening.
+            """Execute a tool with hardening.
 
         Args:
             context: Execution context with tool details
@@ -234,7 +235,7 @@ class HardenedMCPExecutor:
             await self._cleanup_execution_dir(exec_dir)
 
     async def _validate_context(self, context: ExecutionContext) -> None:
-        """Validate execution context."""
+            """Validate execution context."""
         if not context.tool_path.exists():
             raise ValueError(f"Tool not found: {context.tool_path}")
 
@@ -249,7 +250,7 @@ class HardenedMCPExecutor:
                     raise ValueError(f"Dangerous command detected: {arg}")
 
     async def _prepare_execution_dir(self, context: ExecutionContext) -> Path:
-        """Prepare isolated execution directory."""
+            """Prepare isolated execution directory."""
         import uuid
 
         exec_id = str(uuid.uuid4())[:8]
@@ -269,13 +270,13 @@ class HardenedMCPExecutor:
 
         return exec_dir
 
-    async def _execute_with_monitoring(
         """Docstring."""
+    async def _execute_with_monitoring(
         self,
         context: ExecutionContext,
         exec_dir: Path
     ) -> ExecutionResult:
-        """Execute tool with monitoring."""
+            """Execute tool with monitoring."""
         start_time = time.time()
         result = ExecutionResult(status=ExecutionStatus.PENDING)
 
@@ -368,9 +369,9 @@ class HardenedMCPExecutor:
         return result
 
     def _apply_resource_limits(self, limits: ResourceLimits) -> Callable:
-        """Apply resource limits to subprocess."""
+            """Apply resource limits to subprocess."""
         def limit_function():
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
 
             rlimits = limits.to_rlimits()
@@ -383,7 +384,7 @@ class HardenedMCPExecutor:
         return limit_function
 
     def _apply_sandbox_env(self, env: Dict[str, str]) -> Dict[str, str]:
-        """Apply sandbox environment variables."""
+            """Apply sandbox environment variables."""
         sandbox_env = env.copy()
 
         # Restrict PATH
@@ -397,7 +398,7 @@ class HardenedMCPExecutor:
         return sandbox_env
 
     def _sanitize_output(self, output: str) -> str:
-        """Sanitize tool output."""
+            """Sanitize tool output."""
         if not output:
             return ""
 
@@ -413,14 +414,14 @@ class HardenedMCPExecutor:
 
         return output
 
-    async def _check_resource_violations(
         """Docstring."""
+    async def _check_resource_violations(
         self,
         context: ExecutionContext,
         result: ExecutionResult,
         usage: Dict[str, float]
     ) -> None:
-        """Check for resource limit violations."""
+            """Check for resource limit violations."""
         violations = []
 
         if context.resource_limits.max_memory_mb:
@@ -438,20 +439,20 @@ class HardenedMCPExecutor:
             result.error_message = "; ".join(violations)
 
     async def _cleanup_execution_dir(self, exec_dir: Path) -> None:
-        """Clean up execution directory."""
+            """Clean up execution directory."""
         try:
             if exec_dir.exists():
                 shutil.rmtree(exec_dir)
         except Exception as e:
             logger.warning(f"Failed to cleanup execution directory {exec_dir}: {e}")
 
-    async def execute_with_fallback(
         """Docstring."""
+    async def execute_with_fallback(
         self,
         primary_context: ExecutionContext,
         fallback_contexts: List[ExecutionContext]
     ) -> ExecutionResult:
-        """Execute tool with fallback options.
+            """Execute tool with fallback options.
 
         Args:
             primary_context: Primary execution context
@@ -479,7 +480,7 @@ class HardenedMCPExecutor:
         raise RuntimeError(f"All execution attempts failed for {primary_context.tool_name}")
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get execution statistics."""
+            """Get execution statistics."""
         total = self.stats["total_executions"]
         if total == 0:
             return self.stats
@@ -492,7 +493,7 @@ class HardenedMCPExecutor:
         return stats
 
     async def cleanup(self) -> None:
-        """Clean up resources."""
+            """Clean up resources."""
         # Clean up any remaining execution directories
         try:
             for item in self.temp_dir.iterdir():
@@ -504,8 +505,8 @@ class HardenedMCPExecutor:
             logger.warning(f"Failed to cleanup temp directories: {e}")
 
 # Factory function for creating hardened MCP executor
-def create_hardened_mcp_executor(
     """Docstring."""
+def create_hardened_mcp_executor(
     default_timeout: float = 30.0,
     default_resource_limits: Optional[ResourceLimits] = None,
     temp_dir: Optional[Path] = None,

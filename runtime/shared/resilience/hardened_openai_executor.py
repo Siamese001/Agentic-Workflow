@@ -13,6 +13,7 @@ import json
 import tiktoken
 from typing import List, Optional, Dict, Type, Any, Union
 from openai import AsyncOpenAI, APIError, RateLimitError
+from enum import Enum
 
 # Import hardening infrastructure
 # from .hardening_mixin import HardeningMixin, HardeningConfig
@@ -33,12 +34,12 @@ class HardeningMixin:
     """Base mixin providing hardening capabilities."""
 
     def __init__(self, hardening_config):
-        """Initialize with hardening configuration."""
+            """Initialize with hardening configuration."""
         self.hardening_config = hardening_config
         self.logger = logging.getLogger(self.__class__.__name__)
 
     async def execute_with_hardening(self, func, *args, **kwargs):
-        """Execute function with circuit breaker and retry logic."""
+            """Execute function with circuit breaker and retry logic."""
         # This would be implemented in the actual HardeningMixin
         # For now, we'll simulate the basic functionality
         return await func(*args, **kwargs)
@@ -69,7 +70,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         model: str = "gpt-4o",
         base_url: Optional[str] = None
     ):
-        """Initialize the OpenAI executor.
+            """Initialize the OpenAI executor.
 
         Args:
             hardening_config: Hardening configuration
@@ -117,7 +118,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         }
 
     def _count_tokens(self, text: str) -> int:
-        """Accurate pre-flight cost calculation.
+            """Accurate pre-flight cost calculation.
 
         Args:
             text: Text to count tokens for
@@ -133,7 +134,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
             return len(text) // 4
 
     def _estimate_cost(self, input_tokens: int, output_tokens: int) -> float:
-        """Estimate cost in USD.
+            """Estimate cost in USD.
 
         Args:
             input_tokens: Number of input tokens
@@ -157,13 +158,13 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         return input_cost + output_cost
 
-    async def _raw_chat_completion(
         """Docstring."""
+    async def _raw_chat_completion(
         self,
         messages: List[Dict[str, str]],
         **kwargs
     ) -> tuple[str, int]:
-        """The low-level operation wrapped by HardeningMixin.
+            """The low-level operation wrapped by HardeningMixin.
 
         Args:
             messages: OpenAI message format
@@ -196,8 +197,8 @@ class HardenedOpenAIExecutor(HardeningMixin):
             self.logger.error(f"Unexpected error in chat completion: {e}")
             raise
 
-    async def execute_k_node(
         """Docstring."""
+    async def execute_k_node(
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -205,7 +206,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         temperature: float = 0.7,
         max_tokens: Optional[int] = None
     ) -> Any:
-        """
+            """
         Executes a node with OpenAI backing.
         Isomorphic to HardenedGeminiExecutor.execute_k_node.
 
@@ -322,15 +323,15 @@ class HardenedOpenAIExecutor(HardeningMixin):
             self.logger.error(f"Execute K node failed: {e}")
             raise
 
-    async def execute_with_fallback(
         """Docstring."""
+    async def execute_with_fallback(
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
         response_schema: Optional[Type[BaseModel]] = None,
         fallback_text: Optional[str] = None
     ) -> Any:
-        """
+            """
         Execute with fallback on structured output failures.
 
         Args:
@@ -378,7 +379,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
             raise
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get executor statistics."""
+            """Get executor statistics."""
         total = self.stats["total_requests"]
         if total == 0:
             return self.stats
@@ -398,7 +399,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         return stats
 
     def reset_stats(self) -> None:
-        """Reset all statistics."""
+            """Reset all statistics."""
         for key in self.stats:
             if isinstance(self.stats[key], (int, float)):
                 self.stats[key] = 0
@@ -411,8 +412,8 @@ class Provider(Enum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
 
-def create_hardened_executor(
     """Docstring."""
+def create_hardened_executor(
     provider: Provider,
     config: HardeningConfig,
     **kwargs
@@ -459,8 +460,8 @@ def create_hardened_executor(
         raise ValueError(f"Unknown provider: {provider}")
 
 # Factory function
-def create_openai_executor(
     """Docstring."""
+def create_openai_executor(
     api_key: str,
     model: str = "gpt-4o",
     hardening_config: Optional[HardeningConfig] = None

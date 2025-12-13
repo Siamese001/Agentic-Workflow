@@ -1,6 +1,8 @@
 """Integration tests for agentic_core + runtime integration."""
 import re
 from typing import Dict, List, Optional
+from dataclasses import dataclass
+from enum import Enum
 
 class LayerType(Enum):
     """TODO: Add docstring."""
@@ -25,7 +27,7 @@ class TestCoreRuntimeIntegration:
     """Integration tests for core + runtime."""
 
     def test_runtime_context_flows_through_layers(self):
-        """Integration: Runtime context flows through all layers."""
+            """Integration: Runtime context flows through all layers."""
         ctx = RuntimeContext(
             request_id="req_001",
             config={"timeout": 30, "max_retries": 3},
@@ -38,7 +40,7 @@ class TestCoreRuntimeIntegration:
         assert all(layer.value in ctx.state for layer in layers)
 
     def test_config_propagation_to_agents(self):
-        """Integration: Config propagates to all agents."""
+            """Integration: Config propagates to all agents."""
         config = {
             "llm": {"model": "gpt-4o", "temperature": 0.7},
             "vector_store": {"type": "chromadb"},
@@ -53,7 +55,7 @@ class TestCoreRuntimeIntegration:
             assert "llm" in layer_config
 
     def test_error_propagation_from_core_to_runtime(self):
-        """Integration: Errors propagate from core to runtime."""
+            """Integration: Errors propagate from core to runtime."""
         ctx = RuntimeContext(request_id="req_003", config={})
 
         # Simulate error in L2
@@ -64,7 +66,7 @@ class TestCoreRuntimeIntegration:
         assert "L2_execution" in ctx.errors[0]
 
     def test_state_accumulation_across_layers(self):
-        """Integration: State accumulates across layers."""
+            """Integration: State accumulates across layers."""
         ctx = RuntimeContext(request_id="req_004", config={})
 
         ctx.state["L1_cognition"] = {"intent": "search"}
@@ -78,7 +80,7 @@ class TestSDKIntegration:
     """Integration tests for SDK clients."""
 
     def test_llm_client_initialization(self):
-        """Integration: LLM client initializes with config."""
+            """Integration: LLM client initializes with config."""
         config = {"provider": "openai", "model": "gpt-4o", "api_key": "test"}
 
         # Simulated client init
@@ -86,7 +88,7 @@ class TestSDKIntegration:
         assert client["provider"] == "openai"
 
     def test_vector_store_connection(self):
-        """Integration: Vector store connects successfully."""
+            """Integration: Vector store connects successfully."""
         config = {"type": "chromadb", "collection": "test_collection"}
 
         # Simulated connection
@@ -94,7 +96,7 @@ class TestSDKIntegration:
         assert connection["connected"]
 
     def test_cache_client_operations(self):
-        """Integration: Cache client performs operations."""
+            """Integration: Cache client performs operations."""
         cache = {}
 
         # Set
@@ -109,13 +111,13 @@ class TestSDKIntegration:
         assert "key_1" not in cache
 
     def test_multi_provider_fallback(self):
-        """Integration: Multi-provider fallback works."""
+            """Integration: Multi-provider fallback works."""
         providers = ["openai", "anthropic", "groq"]
             """TODO: Add docstring."""
 
 
         def try_provider(provider: str) -> Optional[str]:
-            """Docstring."""
+                """Docstring."""
             if provider == "openai":
                 return None  # Simulate failure
             return f"response_from_{provider}"
@@ -132,13 +134,13 @@ class TestObservabilityIntegration:
     """Integration tests for observability."""
 
     def test_tracing_spans_created(self):
-        """Integration: Tracing spans are created for operations."""
+            """Integration: Tracing spans are created for operations."""
             """TODO: Add docstring."""
 
         spans = []
 
         def create_span(name: str, parent: Optional[str] = None):
-            """Docstring."""
+                """Docstring."""
             span = {"name": name, "parent": parent, "id": f"span_{len(spans)}"}
             spans.append(span)
             return span
@@ -151,7 +153,7 @@ class TestObservabilityIntegration:
         assert spans[1]["parent"] == root["id"]
 
     def test_metrics_collection(self):
-        """Integration: Metrics are collected."""
+            """Integration: Metrics are collected."""
         metrics = {
             "request_count": 0,
             "error_count": 0,
@@ -165,13 +167,13 @@ class TestObservabilityIntegration:
         assert metrics["request_count"] == 1
 
     def test_logging_structured(self):
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
         """Integration: Logs are structured."""
         logs = []
 
         def log(level: str, message: str, **kwargs: object):
-            """Docstring."""
+                """Docstring."""
             logs.append({"level": level, "message": message, **kwargs})
 
         log("INFO", "Request started", request_id="req_001")
@@ -184,7 +186,7 @@ class TestSecurityIntegration:
     """Integration tests for security controls."""
 
     def test_safety_check_integration(self):
-        """Integration: Safety checks integrate with core."""
+            """Integration: Safety checks integrate with core."""
 
         safety_result = {
             "passed": True,
@@ -195,7 +197,7 @@ class TestSecurityIntegration:
         assert safety_result["passed"]
 
     def test_pii_filtering_in_pipeline(self):
-        """Integration: PII filtering works in pipeline."""
+            """Integration: PII filtering works in pipeline."""
         input_text = "Contact john@example.com for details"
 
         filtered = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[EMAIL]', input_text)
@@ -204,7 +206,7 @@ class TestSecurityIntegration:
         assert "[EMAIL]" in filtered
 
     def test_rate_limiting_integration(self):
-        """Integration: Rate limiting integrates with runtime."""
+            """Integration: Rate limiting integrates with runtime."""
         rate_limit = {"max_requests": 100, "window_seconds": 60}
         current_count = 50
 

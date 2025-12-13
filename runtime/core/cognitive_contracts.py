@@ -9,6 +9,7 @@ import json
 import logging
 import re
 from enum import Enum
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class CognitiveContractValidator:
     """Validates cognitive contracts and ensures compliance."""
 
     def __init__(self):
-        """Initialize the validator."""
+            """Initialize the validator."""
         self.required_plan_elements = [
             "constraints_acknowledged",
             "strategy",
@@ -67,7 +68,7 @@ class CognitiveContractValidator:
         ]
 
     def parse_plan(self, response: str) -> Optional[Plan]:
-        """Parse a PLAN block from agent response.
+            """Parse a PLAN block from agent response.
 
         Args:
             response: The agent's response
@@ -142,7 +143,7 @@ class CognitiveContractValidator:
         return plan
 
     def parse_content(self, response: str) -> Optional[str]:
-        """Parse a CONTENT block from agent response.
+            """Parse a CONTENT block from agent response.
 
         Args:
             response: The agent's response
@@ -163,7 +164,7 @@ class CognitiveContractValidator:
         return None
 
     def validate_plan(self, plan: Plan, constraints: List[Constraint]) -> List[str]:
-        """Validate that the plan acknowledges all constraints.
+            """Validate that the plan acknowledges all constraints.
 
         Args:
             plan: The parsed plan
@@ -198,7 +199,7 @@ class CognitiveContractValidator:
         return errors
 
     def validate_consistency(self, plan: Plan, content: str) -> List[str]:
-        """Validate that content is consistent with the plan.
+            """Validate that content is consistent with the plan.
 
         Args:
             plan: The validated plan
@@ -243,17 +244,17 @@ class CognitiveContractManager:
     """Manages cognitive contracts for agent executions."""
 
     def __init__(self):
-        """Initialize the contract manager."""
+            """Initialize the contract manager."""
         self.validator = CognitiveContractValidator()
         self.active_contracts: Dict[str, CognitiveContract] = {}
 
-    def create_contract(
         """Docstring."""
+    def create_contract(
         self,
         contract_id: str,
         constraints: List[Constraint]
     ) -> CognitiveContract:
-        """Create a new cognitive contract.
+            """Create a new cognitive contract.
 
         Args:
             contract_id: Unique identifier
@@ -272,13 +273,13 @@ class CognitiveContractManager:
 
         return contract
 
-    def wrap_with_contract_requirement(
         """Docstring."""
+    def wrap_with_contract_requirement(
         self,
         base_prompt: str,
         constraints: List[Constraint]
     ) -> str:
-        """Wrap a prompt with contract requirements.
+            """Wrap a prompt with contract requirements.
 
         Args:
             base_prompt: The original prompt
@@ -330,13 +331,13 @@ CONSTRAINTS TO ACKNOWLEDGE:
 
         return contract_wrapper
 
-    def process_response(
         """Docstring."""
+    def process_response(
         self,
         contract_id: str,
         response: str
     ) -> Tuple[str, Dict[str, Any]]:
-        """Process an agent response against its contract.
+            """Process an agent response against its contract.
 
         Args:
             contract_id: Contract identifier
@@ -404,7 +405,7 @@ CONSTRAINTS TO ACKNOWLEDGE:
             raise
 
     def get_contract_status(self, contract_id: str) -> Optional[Dict[str, Any]]:
-        """Get the status of a contract.
+            """Get the status of a contract.
 
         Args:
             contract_id: Contract identifier
@@ -477,8 +478,8 @@ def create_constraints_from_directives(directives: List[str]) -> List[Constraint
 
     return constraints
 
-def enforce_cognitive_contract(
     """Docstring."""
+def enforce_cognitive_contract(
     prompt: str,
     directives: List[str],
     contract_id: Optional[str] = None

@@ -31,7 +31,7 @@ class BriefSection(BaseModel):
 
     @validator('content')
     def validate_content_length(cls, v):
-        """Ensure content is concise."""
+            """Ensure content is concise."""
         if len(v.split()) > 50:
             logger.warning("BriefSection content too long, should be 2-3 sentences")
         return v
@@ -48,7 +48,7 @@ class ExecutiveBrief(BaseModel):
 
     @property
     def is_high_confidence(self) -> bool:
-        """Check if brief has high overall confidence."""
+            """Check if brief has high overall confidence."""
         avg_confidence = (self.observation.confidence +
                          self.insight.confidence +
                          self.proposition.confidence) / 3
@@ -61,7 +61,7 @@ class ExecutiveBriefAgent:
     """
 
     def __init__(self, candidate_name: str, candidate_background: Dict[str, Any]):
-        """Initialize the executive brief agent.
+            """Initialize the executive brief agent.
 
         Args:
             candidate_name: Name of the job candidate
@@ -131,12 +131,12 @@ class ExecutiveBriefAgent:
             }
         }
 
-    async def _research_company_with_titanium(self,
         """Docstring."""
+    async def _research_company_with_titanium(self,
         company_name: str,
         industry: str) -> Dict[str,
         Any]:
-        """Research company using Titanium RAG Pipeline for enhanced insights.
+            """Research company using Titanium RAG Pipeline for enhanced insights.
 
         Args:
             company_name: Name of the target company
@@ -193,15 +193,15 @@ class ExecutiveBriefAgent:
             logger.error(f"Error in Titanium research: {e}")
             return {"name": company_name, "industry": industry}
 
-    async def generate_brief_with_titanium(
         """Docstring."""
+    async def generate_brief_with_titanium(
         self,
         company_name: str,
         industry: str,
         job_description: str,
         recipient_name: Optional[str] = None
     ) -> ExecutiveBrief:
-        """Generate executive brief using Titanium RAG for enhanced research.
+            """Generate executive brief using Titanium RAG for enhanced research.
 
         Args:
             company_name: Target company name
@@ -228,14 +228,14 @@ class ExecutiveBriefAgent:
                 recipient_name
             )
 
-    def generate_brief(
         """Docstring."""
+    def generate_brief(
         self,
         company_data: Dict[str, Any],
         job_description: str,
         recipient_name: Optional[str] = None
     ) -> ExecutiveBrief:
-        """Generate a complete executive brief.
+            """Generate a complete executive brief.
 
         Args:
             company_data: Company information (news, 10-K, etc.)
@@ -277,7 +277,7 @@ class ExecutiveBriefAgent:
         Any],
         job_description: str) -> Dict[str,
         Any]:
-        """Assemble strategic context from company data and JD.
+            """Assemble strategic context from company data and JD.
 
         Args:
             company_data: Company information
@@ -380,7 +380,7 @@ class ExecutiveBriefAgent:
             }
 
     def _generate_observation(self, context: Dict[str, Any]) -> BriefSection:
-        """Generate the observation section.
+            """Generate the observation section.
 
         Args:
             context: Strategic context
@@ -442,7 +442,7 @@ class ExecutiveBriefAgent:
             )
 
     def _apply_tone_enforcement(self, content: str) -> str:
-        """Apply tone enforcement to remove fluff and be direct.
+            """Apply tone enforcement to remove fluff and be direct.
 
         Args:
             content: Original content
@@ -473,7 +473,7 @@ class ExecutiveBriefAgent:
             return content
 
     def _generate_insight(self, context: Dict[str, Any], observation: BriefSection) -> BriefSection:
-        """Generate the insight section.
+            """Generate the insight section.
 
         Args:
             context: Strategic context
@@ -516,7 +516,7 @@ class ExecutiveBriefAgent:
             )
 
     def _generate_proposition(self, context: Dict[str, Any], insight: BriefSection) -> BriefSection:
-        """Generate the proposition section.
+            """Generate the proposition section.
 
         Args:
             context: Strategic context
@@ -556,7 +556,7 @@ class ExecutiveBriefAgent:
             )
 
     def _generate_fallback_brief(self, company_data: Dict[str, Any]) -> ExecutiveBrief:
-        """Generate a safe fallback brief when errors occur.
+            """Generate a safe fallback brief when errors occur.
 
         Args:
             company_data: Partial company data
@@ -589,7 +589,7 @@ class ExecutiveBriefAgent:
         )
 
     def render_markdown(self, brief: ExecutiveBrief) -> str:
-        """Render the brief as a professional Markdown memo.
+            """Render the brief as a professional Markdown memo.
 
         Args:
             brief: ExecutiveBrief to render
@@ -661,8 +661,8 @@ From: {self.candidate_name}
 """
 
 # Factory function for easy instantiation
-def create_executive_brief_agent(
     """Docstring."""
+def create_executive_brief_agent(
     candidate_name: str,
     candidate_background: Dict[str, Any]
 ) -> ExecutiveBriefAgent:
@@ -678,8 +678,8 @@ def create_executive_brief_agent(
     return ExecutiveBriefAgent(candidate_name, candidate_background)
 
 # Convenience function for quick brief generation
-def generate_executive_brief(
     """Docstring."""
+def generate_executive_brief(
     candidate_name: str,
     candidate_background: Dict[str, Any],
     company_data: Dict[str, Any],

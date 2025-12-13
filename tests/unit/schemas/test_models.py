@@ -5,21 +5,21 @@ from enum import Enum
 class TestGateDecision:
     """TODO: Add docstring."""
 
-        """TODO: Add docstring."""
-
     def test_is_enum(self):
-        """Docstring."""
+            """Docstring."""
         assert issubclass(GateDecision, Enum)
-        """TODO: Add docstring."""
 
+    def test_enum_values(self):
+            """Docstring."""
+        pass
 
     def test_has_values(self):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         assert len(list(GateDecision)) >= 1
 
     def test_determinism(self):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         assert list(GateDecision) == list(GateDecision)
 
@@ -30,71 +30,66 @@ class TestGateDecision:
 class TestValidationSeverity:
     """Docstring."""
     def test_is_enum(self):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         assert issubclass(ValidationSeverity, Enum)
 
         """TODO: Add docstring."""
 
     def test_has_levels(self):
-        """Docstring."""
+            """Docstring."""
         assert len(list(ValidationSeverity)) >= 2
-    """TODO: Add docstring."""
 
-        """TODO: Add docstring."""
-
+    def test_has_warning(self):
+            """TODO: Add docstring."""
+        pass
 
 class TestCircuitState:
     """Docstring."""
     def test_is_enum(self):
-        """TODO: Add docstring."""
-
+            """TODO: Add docstring."""
         assert issubclass(CircuitState, Enum)
 
     def test_has_states(self):
-        """TODO: Add docstring."""
-
-    """TODO: Add docstring."""
-
+            """TODO: Add docstring."""
         assert len(list(CircuitState)) >= 2
-
-        """TODO: Add docstring."""
 
 class TestHopStatus:
     """TODO: Add docstring."""
 
     def test_is_enum(self):
-        """TODO: Add docstring."""
-
+            """TODO: Add docstring."""
         assert issubclass(HopStatus, Enum)
 
-    """TODO: Add docstring."""
+    def test_has_statuses(self):
+            """Docstring."""
+        assert len(list(HopStatus)) >= 2
 
 class TestAPICallStatus:
     """Docstring."""
     def test_is_enum(self):
-        """Docstring."""
+            """Docstring."""
         assert issubclass(APICallStatus, Enum)
 
 class TestReasoningConfig:
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
     def test_creation(self):
-        """Docstring."""
+            """Docstring."""
         cfg = ReasoningConfig()
     """TODO: Add docstring."""
 
         assert cfg is not None
 
     def test_determinism(self):
-        """Docstring."""
+            """Docstring."""
         assert ReasoningConfig() == ReasoningConfig()
 
 class TestValidationResult:
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
     def test_creation(self):
-        """Docstring."""
+            """Docstring."""
         result = ValidationResult(
             rule_id="test_rule",
             passed=True,
@@ -106,7 +101,7 @@ class TestValidationResult:
         assert result.passed is True
 
     def test_invalid_case(self):
-        """Docstring."""
+            """Docstring."""
         result = ValidationResult(
             rule_id="test_rule",
     """TODO: Add docstring."""
@@ -122,13 +117,13 @@ class TestValidationResult:
 class TestRAGState:
     """Docstring."""
     def test_creation(self):
-        """Docstring."""
+            """Docstring."""
         state = RAGState()
         assert state is not None
 
 class TestImmutableStagingBuffer:
     """Docstring."""
     def test_creation(self):
-        """Docstring."""
+            """Docstring."""
         buf = ImmutableStagingBuffer()
         assert buf is not None

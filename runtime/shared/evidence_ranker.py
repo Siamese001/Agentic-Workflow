@@ -26,7 +26,7 @@ class RankedEvidence(BaseModel):
 
     @validator('year_detected')
     def validate_year(cls, v):
-        """Validate year is within reasonable range."""
+            """Validate year is within reasonable range."""
         if v is not None:
             current_year = datetime.now().year
             if v < 2000 or v > current_year + 1:
@@ -36,7 +36,7 @@ class RankedEvidence(BaseModel):
 
     @property
     def is_recent(self) -> bool:
-        """Check if evidence is from the last 2 years."""
+            """Check if evidence is from the last 2 years."""
         if self.year_detected is None:
             return False
         current_year = datetime.now().year
@@ -44,7 +44,7 @@ class RankedEvidence(BaseModel):
 
     @property
     def is_corroborated(self) -> bool:
-        """Check if evidence has multiple sources."""
+            """Check if evidence has multiple sources."""
         return self.corroboration_count >= 2
 
 class EvidenceRanker:
@@ -61,7 +61,7 @@ class EvidenceRanker:
         semantic_weight: float = 0.4,
         current_year: Optional[int] = None
     ):
-        """Initialize the evidence ranker.
+            """Initialize the evidence ranker.
 
         Args:
             freshness_weight: Weight for freshness in final score
@@ -100,13 +100,13 @@ class EvidenceRanker:
                    f"corroboration={self.corroboration_weight:.2f}, "
                    f"semantic={self.semantic_weight:.2f}")
 
-    def rank_evidence(
         """Docstring."""
+    def rank_evidence(
         self,
         signals: List[Dict[str, Any]],
         current_year: Optional[int] = None
     ) -> List[RankedEvidence]:
-        """Rank evidence based on freshness and corroboration.
+            """Rank evidence based on freshness and corroboration.
 
         Args:
             signals: List of signal dictionaries with 'content', 'score', and 'metadata'
@@ -208,7 +208,7 @@ class EvidenceRanker:
         metadata: Dict[str,
         str]) -> Tuple[float,
         Optional[int]]:
-        """Score content based on freshness (recency).
+            """Score content based on freshness (recency).
 
         Args:
             content: Document content
@@ -262,7 +262,7 @@ class EvidenceRanker:
             return 0.5, None
 
     def _extract_year(self, text: str) -> Optional[int]:
-        """Extract a 4-digit year from text.
+            """Extract a 4-digit year from text.
 
         Args:
             text: Text to search for year
@@ -292,7 +292,7 @@ class EvidenceRanker:
         all_entities: Dict[str, List[str]],
         all_signals: List[Dict[str, Any]]
     ) -> Tuple[int, List[str]]:
-        """Count how many other signals corroborate this one.
+            """Count how many other signals corroborate this one.
 
         Args:
             content: Content to check for corroboration
@@ -329,7 +329,7 @@ class EvidenceRanker:
             return 0, []
 
     def _extract_all_entities(self, signals: List[Dict[str, Any]]) -> Dict[str, List[str]]:
-        """Extract entities from all signals for corroboration checking.
+            """Extract entities from all signals for corroboration checking.
 
         Args:
             signals: List of all signals
@@ -356,7 +356,7 @@ class EvidenceRanker:
             return {}
 
     def _extract_entities(self, content: str) -> List[str]:
-        """Extract key entities from content.
+            """Extract key entities from content.
 
         Args:
             content: Text to extract entities from
@@ -403,7 +403,7 @@ class EvidenceRanker:
             return []
 
     def get_ranking_summary(self, ranked_evidence: List[RankedEvidence]) -> Dict[str, Any]:
-        """Get a summary of the ranking results.
+            """Get a summary of the ranking results.
 
         Args:
             ranked_evidence: List of ranked evidence
@@ -443,8 +443,8 @@ class EvidenceRanker:
             return {"error": str(e)}
 
 # Factory function for easy instantiation
-def create_evidence_ranker(
     """Docstring."""
+def create_evidence_ranker(
     freshness_weight: float = 0.4,
     corroboration_weight: float = 0.2,
     semantic_weight: float = 0.4,
@@ -469,8 +469,8 @@ def create_evidence_ranker(
     )
 
 # Convenience function for quick ranking
-def rank_evidence(
     """Docstring."""
+def rank_evidence(
     signals: List[Dict[str, Any]],
     prioritize_freshness: bool = True,
     current_year: Optional[int] = None

@@ -25,7 +25,7 @@ class TestReflectionEngine:
     """Test suite for ReflectionEngine."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.config = ReflectionConfig(
             use_fast_model=True,
             max_critique_loops=3,
@@ -34,7 +34,7 @@ class TestReflectionEngine:
         self.engine = ReflectionEngine(self.config)
 
     def test_initialization(self):
-        """Test ReflectionEngine initialization."""
+            """Test ReflectionEngine initialization."""
         assert self.engine.config.max_critique_loops == 3
         assert self.engine.config.confidence_threshold == 0.7
         assert len(self.engine.builtin_criteria) > 0
@@ -42,7 +42,7 @@ class TestReflectionEngine:
 
     @pytest.mark.asyncio
     async def test_fast_path_validation(self):
-        """Test fast path validation with regex patterns."""
+            """Test fast path validation with regex patterns."""
         content = {"result": "success", "data": [1, 2, 3]}
         criteria = ["json_valid", "no_empty_fields"]
 
@@ -54,7 +54,7 @@ class TestReflectionEngine:
 
     @pytest.mark.asyncio
     async def test_fast_path_failure(self):
-        """Test fast path validation failure."""
+            """Test fast path validation failure."""
         content = {"result": None, "data": ""}  # Empty values
         criteria = ["json_valid", "no_empty_fields"]
 
@@ -66,7 +66,7 @@ class TestReflectionEngine:
 
     @pytest.mark.asyncio
     async def test_llm_path_validation(self):
-        """Test LLM path validation for semantic criteria."""
+            """Test LLM path validation for semantic criteria."""
         content = "This is some text content"
         custom_criteria = [
             ValidationCriterion(
@@ -83,7 +83,7 @@ class TestReflectionEngine:
 
     @pytest.mark.asyncio
     async def test_mixed_criteria(self):
-        """Test evaluation with mixed criteria types."""
+            """Test evaluation with mixed criteria types."""
         content = {"status": "ok", "message": "All good"}
         criteria = [
             "json_valid",  # Built-in
@@ -100,7 +100,7 @@ class TestReflectionEngine:
         assert result.confidence_score > 0
 
     def test_statistics_tracking(self):
-        """Test statistics tracking."""
+            """Test statistics tracking."""
         initial_stats = self.engine.get_stats()
         assert initial_stats["total_critiques"] == 0
 
@@ -111,7 +111,7 @@ class TestReflectionEngine:
 
     @pytest.mark.asyncio
     async def test_regex_validation(self):
-        """Test regex pattern validation."""
+            """Test regex pattern validation."""
         content = "Contact us at support@example.com"
 
         # Email regex pattern
@@ -128,7 +128,7 @@ class TestReflectionEngine:
 
     @pytest.mark.asyncio
     async def test_confidence_threshold(self):
-        """Test confidence threshold enforcement."""
+            """Test confidence threshold enforcement."""
         # Set high threshold
         config = ReflectionConfig(confidence_threshold=0.9)
         engine = ReflectionEngine(config)
@@ -146,7 +146,7 @@ class TestSubatomicHopReflection:
     """Test suite for SubatomicHop with Reflection Engine integration."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+            """Setup test fixtures."""
         self.reflection_config = HopReflectionConfig(
             max_critique_loops=2,
             confidence_threshold=0.7
@@ -158,9 +158,9 @@ class TestSubatomicHopReflection:
 
     @pytest.mark.asyncio
     async def test_successful_execution_with_reflection(self):
-        """Test successful hop execution with reflection validation."""
+            """Test successful hop execution with reflection validation."""
         def good_hop(x):
-            """Docstring."""
+                """Docstring."""
             return {"result": x * 2, "status": "success"}
 
         hop = SubatomicHop(good_hop, self.config)
@@ -176,11 +176,11 @@ class TestSubatomicHopReflection:
 
     @pytest.mark.asyncio
     async def test_critique_failure_and_retry(self):
-        """Test hop execution with critique failure and retry."""
+            """Test hop execution with critique failure and retry."""
         attempt_count = 0
 
         def flaky_hop(x):
-            """Docstring."""
+                """Docstring."""
             nonlocal attempt_count
             attempt_count += 1
 
@@ -199,9 +199,9 @@ class TestSubatomicHopReflection:
 
     @pytest.mark.asyncio
     async def test_critique_max_loops_exceeded(self):
-        """Test failure when max critique loops exceeded."""
+            """Test failure when max critique loops exceeded."""
         def always_bad_hop(x):
-            """Docstring."""
+                """Docstring."""
             return {"result": None}  # Always fails validation
 
         hop = SubatomicHop(always_bad_hop, self.config)
@@ -214,9 +214,9 @@ class TestSubatomicHopReflection:
 
     @pytest.mark.asyncio
     async def test_critique_feedback_incorporation(self):
-        """Test that critique feedback is incorporated in retry."""
+            """Test that critique feedback is incorporated in retry."""
         def learning_hop(x):
-            """Docstring."""
+                """Docstring."""
             plan = hop.context.get("execution_plan", {})
 
             if "feedback" in plan:
@@ -234,7 +234,7 @@ class TestSubatomicHopReflection:
 
     @pytest.mark.asyncio
     async def test_custom_validation_criteria(self):
-        """Test hop with custom validation criteria."""
+            """Test hop with custom validation criteria."""
         custom_config = SubatomicHopConfig(
             reflection_config=self.reflection_config,
             critique_criteria=[
@@ -247,7 +247,7 @@ class TestSubatomicHopReflection:
         )
 
         def test_hop(x):
-            """Docstring."""
+                """Docstring."""
             return {"output": x}  # Missing 'result' field
 
         hop = SubatomicHop(test_hop, custom_config)
@@ -257,9 +257,9 @@ class TestSubatomicHopReflection:
 
     @pytest.mark.asyncio
     async def test_reflection_statistics(self):
-        """Test reflection engine statistics during hop execution."""
+            """Test reflection engine statistics during hop execution."""
         def good_hop(x):
-            """Docstring."""
+                """Docstring."""
             return {"data": x}
 
         hop = SubatomicHop(good_hop, self.config)
@@ -275,7 +275,7 @@ class TestReflectionIntegration:
 
     @pytest.mark.asyncio
     async def test_global_reflection_engine(self):
-        """Test global reflection engine instance."""
+            """Test global reflection engine instance."""
         engine1 = get_reflection_engine()
         engine2 = get_reflection_engine()
 
@@ -284,7 +284,7 @@ class TestReflectionIntegration:
 
     @pytest.mark.asyncio
     async def test_convenience_function(self):
-        """Test convenience evaluation function."""
+            """Test convenience evaluation function."""
         content = {"test": "data"}
         result = await evaluate_content(
             content,
@@ -296,7 +296,7 @@ class TestReflectionIntegration:
         assert result.is_valid is True
 
     def test_predefined_criteria_sets(self):
-        """Test predefined criteria sets."""
+            """Test predefined criteria sets."""
         assert len(STANDARD_CRITERIA) > 0
         assert len(STRICT_CRITERIA) > len(STANDARD_CRITERIA)
         assert "json_valid" in STANDARD_CRITERIA
@@ -308,7 +308,7 @@ class TestReflectionPerformance:
 
     @pytest.mark.asyncio
     async def test_fast_path_performance(self):
-        """Test that fast path is indeed fast."""
+            """Test that fast path is indeed fast."""
         engine = ReflectionEngine()
         content = {"data": "test" * 100}
 
@@ -322,7 +322,7 @@ class TestReflectionPerformance:
 
     @pytest.mark.asyncio
     async def test_concurrent_evaluations(self):
-        """Test concurrent reflection evaluations."""
+            """Test concurrent reflection evaluations."""
         engine = ReflectionEngine()
 
         tasks = []

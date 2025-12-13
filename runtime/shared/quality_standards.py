@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+from enum import Enum
 """Cross-Engine Quality Standards - Unified quality benchmarks.
 
 This module defines unified quality standards that apply across all engines
@@ -34,7 +36,7 @@ class QualityStandard:
     validation_rules: List[str] = field(default_factory=list)
 
     def evaluate(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
-        """Evaluate content against this standard.
+            """Evaluate content against this standard.
 
         Args:
             content: Content to evaluate
@@ -58,7 +60,7 @@ class EngineQualityProfile:
     domain_weights: Dict[str, float]
 
     def get_standards_for_level(self, level: StandardType) -> Set[str]:
-        """Get standards for a quality level.
+            """Get standards for a quality level.
 
         Args:
             level: Quality level
@@ -77,7 +79,7 @@ class CrossEngineQualityStandards:
     """Manages quality standards across all engines."""
 
     def __init__(self):
-        """Initialize the quality standards manager."""
+            """Initialize the quality standards manager."""
         self._standards: Dict[str, QualityStandard] = {}
         self._profiles: Dict[EngineType, EngineQualityProfile] = {}
 
@@ -90,7 +92,7 @@ class CrossEngineQualityStandards:
         logger.info("Initialized CrossEngineQualityStandards")
 
     def _initialize_base_standards(self) -> None:
-        """Initialize base quality standards."""
+            """Initialize base quality standards."""
 
         # Accuracy standards
         self._standards["factual_accuracy"] = QualityStandard(
@@ -240,7 +242,7 @@ class CrossEngineQualityStandards:
         )
 
     def _initialize_engine_profiles(self) -> None:
-        """Initialize quality profiles for each engine."""
+            """Initialize quality profiles for each engine."""
 
         # Resume engine profile
         self._profiles[EngineType.RESUME] = EngineQualityProfile(
@@ -310,7 +312,7 @@ class CrossEngineQualityStandards:
         )
 
     def get_standard(self, name: str) -> Optional[QualityStandard]:
-        """Get a quality standard by name.
+            """Get a quality standard by name.
 
         Args:
             name: Standard name
@@ -321,7 +323,7 @@ class CrossEngineQualityStandards:
         return self._standards.get(name)
 
     def get_engine_profile(self, engine_type: EngineType) -> Optional[EngineQualityProfile]:
-        """Get quality profile for an engine.
+            """Get quality profile for an engine.
 
         Args:
             engine_type: Type of engine
@@ -331,15 +333,15 @@ class CrossEngineQualityStandards:
         """
         return self._profiles.get(engine_type)
 
-    def evaluate_against_standards(
         """Docstring."""
+    def evaluate_against_standards(
         self,
         content: str,
         engine_type: EngineType,
         quality_level: StandardType = StandardType.BASE,
         context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """Evaluate content against engine-specific standards.
+            """Evaluate content against engine-specific standards.
 
         Args:
             content: Content to evaluate
@@ -392,7 +394,7 @@ class CrossEngineQualityStandards:
         return results
 
     def get_quality_gates(self, engine_type: EngineType) -> Dict[str, Dict[str, Any]]:
-        """Get quality gates for an engine.
+            """Get quality gates for an engine.
 
         Args:
             engine_type: Type of engine
@@ -425,13 +427,13 @@ class CrossEngineQualityStandards:
             }
         }
 
-    def create_domain_config_from_standards(
         """Docstring."""
+    def create_domain_config_from_standards(
         self,
         engine_type: EngineType,
         quality_level: StandardType = StandardType.PREFERRED
     ) -> DomainConfig:
-        """Create domain config based on quality standards.
+            """Create domain config based on quality standards.
 
         Args:
             engine_type: Type of engine
@@ -478,7 +480,7 @@ class CrossEngineQualityStandards:
         )
 
     def export_standards(self) -> Dict[str, Any]:
-        """Export all standards for documentation.
+            """Export all standards for documentation.
 
         Returns:
             Standards export
@@ -520,8 +522,8 @@ def get_quality_standards() -> CrossEngineQualityStandards:
     return _standards
 
 # Convenience functions
-def evaluate_content_quality(
     """Docstring."""
+def evaluate_content_quality(
     content: str,
     engine_type: EngineType,
     quality_level: StandardType = StandardType.BASE,

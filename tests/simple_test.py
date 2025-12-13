@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
         call_count = {"count": 0}
 
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
-            """Docstring."""
+                """Docstring."""
             call_count["count"] += 1
             hop_id = ["K.1", "K.4", "K.5"][call_count["count"] - 1]
             return AgentResponse(

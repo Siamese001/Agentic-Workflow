@@ -14,7 +14,7 @@ class TestSharedInfrastructure:
     """Test shared infrastructure components"""
 
     def test_integrity_gate_executor_hygiene_scan(self):
-        """Test H16.1 Hygiene Scan blocks forbidden Unicode"""
+            """Test H16.1 Hygiene Scan blocks forbidden Unicode"""
         executor = create_integrity_gate_executor()
 
         clean_content = "This is clean content."
@@ -29,7 +29,7 @@ class TestSharedInfrastructure:
         assert 'EM_DASH' in str(result.details)
 
     def test_integrity_gate_executor_word_count(self):
-        """Test word count gate with cryptographic signature"""
+            """Test word count gate with cryptographic signature"""
         executor = create_integrity_gate_executor()
 
         content = " ".join(["word"] * 125)
@@ -43,7 +43,7 @@ class TestSharedInfrastructure:
         assert result.severity.value == 'BLOCK'
 
     def test_adaptive_recovery_creative_failure(self):
-        """Test temperature escalation for creative failures"""
+            """Test temperature escalation for creative failures"""
         recovery = create_adaptive_recovery_loop(initial_temperature=0.5)
 
         result = recovery.record_failure(
@@ -57,7 +57,7 @@ class TestSharedInfrastructure:
         assert result.action.value == 'INCREASE_TEMP'
 
     def test_adaptive_recovery_mechanical_failure(self):
-        """Test temperature escalation for mechanical failures"""
+            """Test temperature escalation for mechanical failures"""
         recovery = create_adaptive_recovery_loop(initial_temperature=0.5)
 
         result = recovery.record_failure(
@@ -70,7 +70,7 @@ class TestSharedInfrastructure:
         assert result.new_temperature == 0.55
 
     def test_adaptive_recovery_hard_halt(self):
-        """Test HARD_HALT after max attempts"""
+            """Test HARD_HALT after max attempts"""
         recovery = create_adaptive_recovery_loop(initial_temperature=0.5)
 
         for i in range(3):
@@ -84,7 +84,7 @@ class TestSharedInfrastructure:
         assert result.should_retry is False
 
     def test_execution_orchestrator_silent_mode(self):
-        """Test silent execution mode blocks conversational filler"""
+            """Test silent execution mode blocks conversational filler"""
         orchestrator = create_execution_orchestrator(silent_mode=True)
 
         run_sha = orchestrator.start_execution({'test': 'context'})
@@ -101,7 +101,7 @@ class TestResumeEngine:
     """Test Resume Engine agents"""
 
     def test_strategist_biowriter_word_count(self):
-        """Test K.1 - Executive Summary word count enforcement"""
+            """Test K.1 - Executive Summary word count enforcement"""
         biowriter = create_strategist_biowriter()
 
         bullet_pool = [
@@ -116,7 +116,7 @@ class TestResumeEngine:
             assert 118 <= result.word_count <= 135
 
     def test_executive_title_composer_industry_first(self):
-        """Test K.4 - Industry-first validation"""
+            """Test K.4 - Industry-first validation"""
         composer = create_executive_title_composer()
 
         result = composer.generate_headline({'industry': 'FinTech', 'role': 'CTO'})
@@ -127,7 +127,7 @@ class TestResumeEngine:
             assert result.char_count <= 90
 
     def test_achv_bullet_synthesizer_provenance_unify(self):
-        """Test K.5A - 3V-3T-1S provenance pattern"""
+            """Test K.5A - 3V-3T-1S provenance pattern"""
         config = BulletSynthesizerConfig(format_type=BulletFormat.UNIFY)
         synthesizer = create_achv_bullet_synthesizer(config=config)
 
@@ -143,7 +143,7 @@ class TestResumeEngine:
             assert result.qa_report['expected_pattern'] == '3V-3T-1S'
 
     def test_achv_bullet_synthesizer_provenance_ibm(self):
-        """Test K.6A - 2V-3T-1S provenance pattern"""
+            """Test K.6A - 2V-3T-1S provenance pattern"""
         config = BulletSynthesizerConfig(format_type=BulletFormat.IBM)
         synthesizer = create_achv_bullet_synthesizer(config=config)
 
@@ -158,7 +158,7 @@ class TestResumeEngine:
             assert result.qa_report['expected_pattern'] == '2V-3T-1S'
 
     def test_section_scope_integrator_anti_prefix(self):
-        """Test K.5B/K.6B - Anti-prefix validation"""
+            """Test K.5B/K.6B - Anti-prefix validation"""
         integrator = create_section_scope_integrator()
 
         bullets = ["Led initiative", "Managed team"]
@@ -171,7 +171,7 @@ class TestResumeEngine:
             assert result.similarity_score < 0.75
 
     def test_peer_intelligence_auditor_rag_intensity(self):
-        """Test K.2.5 - 24 searches across 3 hops"""
+            """Test K.2.5 - 24 searches across 3 hops"""
         auditor = create_peer_intelligence_auditor()
 
         jd_keywords = [f'keyword{i}' for i in range(24)]
@@ -187,7 +187,7 @@ class TestResumeEngine:
         assert len(result.differentiators) >= 0
 
     def test_specificity_prose_engine_company_specifics(self):
-        """Test K.10 - ≥4 company-specific details"""
+            """Test K.10 - ≥4 company-specific details"""
         engine = create_specificity_prose_engine()
 
         company_research = {
@@ -211,7 +211,7 @@ class TestOutreachEngine:
     """Test Outreach Engine agents"""
 
     def test_route_classifier_cxo_precedence(self):
-        """Test K.1 - CXO precedence enforcement"""
+            """Test K.1 - CXO precedence enforcement"""
         classifier = create_route_classifier()
 
         profile = {
@@ -226,7 +226,7 @@ class TestOutreachEngine:
         assert result.archetype.value in ['C_LEVEL', 'VP_LEVEL']
 
     def test_route_classifier_premium_gate(self):
-        """Test K.1 - Premium gate blocks non-premium InMails"""
+            """Test K.1 - Premium gate blocks non-premium InMails"""
         classifier = create_route_classifier()
 
         profile = {
@@ -241,7 +241,7 @@ class TestOutreachEngine:
         assert result.route.value != 'INMAIL'
 
     def test_message_body_composer_metric_binding(self):
-        """Test K.3 - LIC-QA-041 metric binding"""
+            """Test K.3 - LIC-QA-041 metric binding"""
         composer = create_message_body_composer()
 
         evidence = {
@@ -260,7 +260,7 @@ class TestOutreachEngine:
             assert len(result.evidence_bindings) >= 0
 
     def test_action_call_generator_connection_req_limit(self):
-        """Test K.5 - CONNECTION_REQ ≤300 char limit"""
+            """Test K.5 - CONNECTION_REQ ≤300 char limit"""
         generator = create_action_call_generator()
 
         result = generator.generate_cta(
@@ -275,7 +275,7 @@ class TestOutreachEngine:
             assert result.is_time_bound or result.is_specific
 
     def test_action_call_generator_short_new_range(self):
-        """Test K.5 - SHORT_NEW 360-380 char range"""
+            """Test K.5 - SHORT_NEW 360-380 char range"""
         generator = create_action_call_generator()
 
         result = generator.generate_cta(
@@ -289,7 +289,7 @@ class TestOutreachEngine:
             assert 360 <= result.char_count <= 380
 
     def test_message_assembler_qa_block_order(self):
-        """Test K.7 - Exact QA block order"""
+            """Test K.7 - Exact QA block order"""
         assembler = create_message_assembler()
 
         qa_data = {
@@ -320,7 +320,7 @@ class TestOutreachEngine:
         assert result.qa_blocks[3].block_type.value == 'EVIDENCE_PACK'
 
     def test_message_assembler_signature_immutability(self):
-        """Test K.7 - Canonical 4-line signature"""
+            """Test K.7 - Canonical 4-line signature"""
         assembler = create_message_assembler()
 
         sender_info = {
@@ -345,7 +345,7 @@ class TestEndToEndIntegration:
     """End-to-end integration tests"""
 
     def test_resume_generation_pipeline(self):
-        """Test complete Resume generation pipeline"""
+            """Test complete Resume generation pipeline"""
         orchestrator = create_execution_orchestrator(silent_mode=True)
         run_sha = orchestrator.start_execution({'pipeline': 'resume'})
 
@@ -372,7 +372,7 @@ class TestEndToEndIntegration:
         assert len(trace.artifacts) >= 0
 
     def test_outreach_generation_pipeline(self):
-        """Test complete Outreach generation pipeline"""
+            """Test complete Outreach generation pipeline"""
         orchestrator = create_execution_orchestrator(silent_mode=True)
         run_sha = orchestrator.start_execution({'pipeline': 'outreach'})
 

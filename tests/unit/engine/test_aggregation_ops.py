@@ -4,6 +4,7 @@ Tests aggregation operations including pick_best_result.
 """
 import pytest
 from typing import Dict, List, Optional
+from dataclasses import dataclass
 
 @dataclass
 class ScoredResult:

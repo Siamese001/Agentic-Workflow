@@ -10,6 +10,7 @@ import logging
 import time
 from typing import Dict, List, Optional, Tuple, Any
 from enum import Enum
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class RetrievalGrader:
                  confidence_threshold: float = 0.7,
                  use_fast_model: bool = True,
                  max_docs_to_grade: int = 10):
-        """Initialize the retrieval grader.
+            """Initialize the retrieval grader.
 
         Args:
             relevance_threshold: Minimum ratio of relevant docs required
@@ -68,12 +69,12 @@ class RetrievalGrader:
         logger.info(f"Initialized RetrievalGrader - Threshold: {relevance_threshold}, "
                    f"Confidence: {confidence_threshold}, Fast Model: {use_fast_model}")
 
-    async def grade_documents(self,
         """Docstring."""
+    async def grade_documents(self,
                             query: str,
                             documents: List[str],
                             document_ids: Optional[List[str]] = None) -> RetrievalGrade:
-        """Grade documents for relevance to the query.
+            """Grade documents for relevance to the query.
 
         Args:
             query: The original query
@@ -146,7 +147,7 @@ class RetrievalGrader:
         )
 
     async def _grade_single_document(self, query: str, document: str) -> Tuple[bool, float]:
-        """Grade a single document for relevance.
+            """Grade a single document for relevance.
 
         Args:
             query: The query
@@ -192,7 +193,7 @@ class RetrievalGrader:
         return is_relevant, confidence
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get grader statistics.
+            """Get grader statistics.
 
         Returns:
             Dictionary with stats
@@ -220,7 +221,7 @@ class WebSearchFallback:
                  search_provider: str = "tavily",
                  max_results: int = 5,
                  timeout: float = 5.0):
-        """Initialize web search fallback.
+            """Initialize web search fallback.
 
         Args:
             search_provider: Web search provider (tavily, serper, etc.)
@@ -235,7 +236,7 @@ class WebSearchFallback:
         logger.info(f"Initialized WebSearchFallback with {search_provider}")
 
     async def search(self, query: str) -> Dict[str, Any]:
-        """Perform web search for the query.
+            """Perform web search for the query.
 
         Args:
             query: Search query

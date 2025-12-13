@@ -19,7 +19,7 @@ class HardenedEventBus:
         event_bus: Optional[EventBus] = None,
         bulkhead_manager: Optional[BulkheadManager] = None
     ):
-        """Initialize hardened event bus.
+            """Initialize hardened event bus.
 
         Args:
             event_bus: Event bus instance
@@ -37,7 +37,7 @@ class HardenedEventBus:
         logger.info("Initialized HardenedEventBus")
 
     async def initialize(self) -> None:
-        """Initialize all components."""
+            """Initialize all components."""
         if not self.event_bus:
             self.event_bus = await get_event_bus()
 
@@ -55,14 +55,14 @@ class HardenedEventBus:
 
         logger.info("HardenedEventBus initialized")
 
-    async def publish(
         """Docstring."""
+    async def publish(
         self,
         channel: str,
         event: SystemEvent,
         priority: TaskPriority = TaskPriority.MEDIUM
     ) -> bool:
-        """Publish an event with hardened protection.
+            """Publish an event with hardened protection.
 
         Args:
             channel: Channel name
@@ -100,13 +100,13 @@ class HardenedEventBus:
             logger.error(f"Failed to publish event {event.id}: {e}")
             return False
 
-    async def subscribe(
         """Docstring."""
+    async def subscribe(
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
-        """Subscribe to events with hardened protection.
+            """Subscribe to events with hardened protection.
 
         Args:
             channel: Channel name
@@ -121,7 +121,7 @@ class HardenedEventBus:
         logger.info(f"Subscribed to channel {channel} with hardened processing")
 
     async def unsubscribe(self, channel: str) -> None:
-        """Unsubscribe from events.
+            """Unsubscribe from events.
 
         Args:
             channel: Channel name
@@ -130,14 +130,14 @@ class HardenedEventBus:
         logger.info(f"Unsubscribed from channel {channel}")
 
     async def close(self) -> None:
-        """Close the hardened event bus."""
+            """Close the hardened event bus."""
         if self.event_bus:
             await self.event_bus.close()
 
         logger.info("HardenedEventBus closed")
 
     async def health_check(self) -> Dict[str, Any]:
-        """Check health of hardened event bus.
+            """Check health of hardened event bus.
 
         Returns:
             Health status
@@ -156,7 +156,7 @@ class HardenedEventBus:
         }
 
     async def _register_bulkheads(self) -> None:
-        """Register bulkheads for event operations."""
+            """Register bulkheads for event operations."""
         # Bulkhead for publishing events
         await self.bulkhead_manager.create_bulkhead(
             "event_publish",
@@ -176,7 +176,7 @@ class HardenedEventBus:
         logger.debug("Registered event bus bulkheads")
 
     async def _register_circuit_breakers(self) -> None:
-        """Register circuit breakers for event operations."""
+            """Register circuit breakers for event operations."""
         registry = await get_circuit_breaker_registry()
 
         # Circuit breaker for publishing
@@ -202,7 +202,7 @@ class HardenedEventBus:
         logger.debug("Registered event bus circuit breakers")
 
     async def _register_retry_policies(self) -> None:
-        """Register retry policies for event operations."""
+            """Register retry policies for event operations."""
         executor = await get_retry_executor()
 
         # Retry policy for publishing
@@ -228,7 +228,7 @@ class HardenedEventBus:
         logger.debug("Registered event bus retry policies")
 
     async def _publish_with_retry(self, channel: str, event: SystemEvent) -> None:
-        """Publish event with retry policy.
+            """Publish event with retry policy.
 
         Args:
             channel: Channel name
@@ -246,7 +246,7 @@ class HardenedEventBus:
         self,
         callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> Callable[[SystemEvent], Awaitable[None]]:
-        """Wrap callback with hardened processing.
+            """Wrap callback with hardened processing.
 
         Args:
             callback: Original callback
@@ -255,7 +255,7 @@ class HardenedEventBus:
             Hardened callback
         """
         async def hardened_callback(event: SystemEvent) -> None:
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
             try:
                 # Execute through bulkhead
@@ -281,13 +281,13 @@ class HardenedEventBus:
 
         return hardened_callback
 
-    async def _process_event(
         """Docstring."""
+    async def _process_event(
         self,
         callback: Callable[[SystemEvent], Awaitable[None]],
         event: SystemEvent
     ) -> None:
-        """Process event with retry policy.
+            """Process event with retry policy.
 
         Args:
             callback: Event callback
@@ -318,8 +318,8 @@ async def get_hardened_event_bus() -> HardenedEventBus:
     return _hardened_bus
 
 # Event publishing helpers with hardening
-async def publish_hardened_event(
     """Docstring."""
+async def publish_hardened_event(
     event_type: EventType,
     source_component: str,
     payload: Dict[str, Any],
@@ -354,8 +354,8 @@ async def publish_hardened_event(
     return await bus.publish(channel, event, priority)
 
 # Event subscription helpers with hardening
-async def subscribe_to_events(
     """Docstring."""
+async def subscribe_to_events(
     event_type: EventType,
     callback: Callable[[SystemEvent], Awaitable[None]]
 ) -> None:
@@ -371,8 +371,8 @@ async def subscribe_to_events(
     await bus.subscribe(channel, callback)
 
 # Decorator for hardened event publishing
-def hardened_event_publisher(
     """Docstring."""
+def hardened_event_publisher(
     event_type: EventType,
     priority: TaskPriority = TaskPriority.MEDIUM
 ):
@@ -386,12 +386,12 @@ def hardened_event_publisher(
         Decorated function
     """
     def decorator(func):
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
         """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             # Extract trace_id from first argument if it's a SignalEnvelope
             trace_id = None
             if args and hasattr(args[0], 'trace_id'):

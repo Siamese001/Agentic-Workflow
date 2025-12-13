@@ -20,7 +20,7 @@ class SecureError(Exception):
         error_code: Optional[str] = None,
         context: Optional[Dict[str,
         Any]] = None):
-        """Initialize secure error.
+            """Initialize secure error.
 
         Args:
             message: Sanitized error message
@@ -33,7 +33,7 @@ class SecureError(Exception):
         self.timestamp = None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert error to dictionary for safe serialization.
+            """Convert error to dictionary for safe serialization.
 
         Returns:
             Dictionary with error details
@@ -103,7 +103,7 @@ class ErrorSanitizer:
 
     @classmethod
     def sanitize_message(cls, message: str) -> str:
-        """Sanitize an error message.
+            """Sanitize an error message.
 
         Args:
             message: Original error message
@@ -128,7 +128,7 @@ class ErrorSanitizer:
 
     @classmethod
     def sanitize_stack_trace(cls, tb_str: str) -> str:
-        """Sanitize a stack trace.
+            """Sanitize a stack trace.
 
         Args:
             tb_str: Stack trace string
@@ -148,15 +148,15 @@ class ErrorSanitizer:
         return sanitized
 
     @classmethod
-    def create_secure_error(
         """Docstring."""
+    def create_secure_error(
         cls,
         error_type: Type[SecureError],
         original_error: Exception,
         error_code: Optional[str] = None,
         add_context: Optional[Dict[str, Any]] = None
     ) -> SecureError:
-        """Create a secure error from an original exception.
+            """Create a secure error from an original exception.
 
         Args:
             error_type: Type of secure error to create
@@ -193,8 +193,8 @@ class ErrorSanitizer:
 
         return secure_error
 
-def secure_exception(
     """Docstring."""
+def secure_exception(
     error_type: Type[SecureError] = SecurityError,
     error_code: Optional[str] = None,
     sanitize_args: bool = True
@@ -210,13 +210,13 @@ def secure_exception(
         Decorated function
     """
     def decorator(func):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         @wraps(func)
             """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             try:
                 return await func(*args, **kwargs)
             except SecureError:
@@ -248,7 +248,7 @@ def secure_exception(
 
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             try:
                 return func(*args, **kwargs)
             except SecureError:
@@ -288,21 +288,21 @@ class SecureErrorHandler:
     """Handles errors securely throughout the application."""
 
     def __init__(self, logger_name: str = "secure_errors"):
-        """Initialize the error handler.
+            """Initialize the error handler.
 
         Args:
             logger_name: Name for the secure logger
         """
         self.logger = logging.getLogger(logger_name)
 
-    def handle_error(
         """Docstring."""
+    def handle_error(
         self,
         error: Exception,
         context: Optional[Dict[str, Any]] = None,
         include_stack: bool = False
     ) -> SecureError:
-        """Handle an error securely.
+            """Handle an error securely.
 
         Args:
             error: The error to handle
@@ -340,15 +340,15 @@ class SecureErrorHandler:
 
         return secure_error
 
-    def raise_secure(
         """Docstring."""
+    def raise_secure(
         self,
         error_type: Type[SecureError],
         message: str,
         error_code: Optional[str] = None,
         context: Optional[Dict[str, Any]] = None
     ) -> None:
-        """Raise a secure error.
+            """Raise a secure error.
 
         Args:
             error_type: Type of error to raise
@@ -364,8 +364,8 @@ class SecureErrorHandler:
 # Global error handler instance
 default_error_handler = SecureErrorHandler()
 
-def handle_secure_error(
     """Docstring."""
+def handle_secure_error(
     error: Exception,
     context: Optional[Dict[str, Any]] = None
 ) -> SecureError:

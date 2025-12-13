@@ -90,7 +90,7 @@ async def test_hardened_orchestrator_integration():
         }
 
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
-            """Docstring."""
+                """Docstring."""
             # Extract hop_id from the prompt
             if "Execute " in prompt:
                 hop_id = prompt.split("Execute ")[1].split(" ")[0]
@@ -247,7 +247,7 @@ async def test_failure_recovery():
         call_count = {"count": 0}
 
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
-            """Docstring."""
+                """Docstring."""
             call_count["count"] += 1
 
             # Fail on the second call (K.2)
@@ -327,7 +327,7 @@ async def test_circuit_breaker_integration():
 
         # Mock the router to simulate a successful response
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
-            """Docstring."""
+                """Docstring."""
             return AgentResponse(
                 content="Response from provider",
                 finish_reason="stop",

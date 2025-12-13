@@ -31,7 +31,7 @@ def main():
 
     # Test OpenAI
     def test_openai():
-        """Docstring."""
+            """Docstring."""
         from openai import OpenAI
         client = OpenAI()
         response = client.models.list()
@@ -41,7 +41,7 @@ def main():
 
     # Test Anthropic
     def test_anthropic():
-        """Docstring."""
+            """Docstring."""
         from anthropic import Anthropic
         client = Anthropic()
         # Just test client creation (no API call needed)
@@ -51,7 +51,7 @@ def main():
 
     # Test Google
     def test_google():
-        """Docstring."""
+            """Docstring."""
         import google.generativeai as genai
         genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
         models = genai.list_models()
@@ -61,7 +61,7 @@ def main():
 
     # Test Pinecone
     def test_pinecone():
-        """Docstring."""
+            """Docstring."""
         from pinecone import Pinecone
         client = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
         indexes = client.list_indexes()
@@ -71,7 +71,7 @@ def main():
 
     # Test ChromaDB
     def test_chromadb():
-        """Docstring."""
+            """Docstring."""
         import chromadb
         client = chromadb.Client()
         collection = client.create_collection("test")
@@ -81,7 +81,7 @@ def main():
 
     # Test Redis
     def test_redis():
-        """Docstring."""
+            """Docstring."""
         import redis
         client = redis.Redis(host='localhost', port=6379, decode_responses=True)
         client.ping()
@@ -91,7 +91,7 @@ def main():
 
     # Test LiteLLM
     def test_litellm():
-        """Docstring."""
+            """Docstring."""
         import litellm
         # Just test import
         return True
@@ -100,7 +100,7 @@ def main():
 
     # Test Instructor
     def test_instructor():
-        """Docstring."""
+            """Docstring."""
         import instructor
         return True
 
@@ -108,7 +108,7 @@ def main():
 
     # Test MCP
     def test_mcp():
-        """Docstring."""
+            """Docstring."""
         import mcp
         return True
 
@@ -116,7 +116,7 @@ def main():
 
     # Test FastMCP
     def test_fastmcp():
-        """Docstring."""
+            """Docstring."""
         import fastmcp
         return True
 

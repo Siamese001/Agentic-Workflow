@@ -6,6 +6,8 @@ engines to share insights, learn from each other, and maintain consistent qualit
 
 import logging
 from datetime import datetime, timedelta
+from dataclasses import dataclass
+from enum import Enum
 
     FeedbackLoop,
     QualityFeedback,
@@ -55,7 +57,7 @@ class CrossEngineFeedback:
     context: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for storage."""
+            """Convert to dictionary for storage."""
         return {
             "feedback_id": self.feedback_id,
             "source_engine": self.source_engine.value,
@@ -78,7 +80,7 @@ class FeedbackAggregator:
     """Aggregates and analyzes feedback across engines."""
 
     def __init__(self):
-        """Initialize the aggregator."""
+            """Initialize the aggregator."""
         self._feedback: List[CrossEngineFeedback] = []
         self._category_counts: Dict[str, int] = defaultdict(int)
         self._dimension_impact: Dict[str, List[int]] = defaultdict(list)
@@ -87,7 +89,7 @@ class FeedbackAggregator:
         # Lock for thread safety
 
     def add_feedback(self, feedback: CrossEngineFeedback) -> None:
-        """Add feedback to the aggregator.
+            """Add feedback to the aggregator.
 
         Args:
             feedback: Feedback to add
@@ -104,7 +106,7 @@ class FeedbackAggregator:
                 self._dimension_impact[dimension.value].append(feedback.rating)
 
     def get_insights(self, days: int = 30) -> Dict[str, Any]:
-        """Get aggregated insights.
+            """Get aggregated insights.
 
         Args:
             days: Number of days to analyze
@@ -132,7 +134,7 @@ class FeedbackAggregator:
             return insights
 
     def _analyze_categories(self, feedback: List[CrossEngineFeedback]) -> Dict[str, Any]:
-        """Analyze feedback by category.
+            """Analyze feedback by category.
 
         Args:
             feedback: Feedback list
@@ -160,7 +162,7 @@ class FeedbackAggregator:
         return result
 
     def _analyze_dimensions(self, feedback: List[CrossEngineFeedback]) -> Dict[str, Any]:
-        """Analyze feedback by quality dimensions.
+            """Analyze feedback by quality dimensions.
 
         Args:
             feedback: Feedback list
@@ -185,7 +187,7 @@ class FeedbackAggregator:
         return result
 
     def _compare_engines(self, feedback: List[CrossEngineFeedback]) -> Dict[str, Any]:
-        """Compare feedback between engines.
+            """Compare feedback between engines.
 
         Args:
             feedback: Feedback list
@@ -217,7 +219,7 @@ class FeedbackAggregator:
     def _find_transferable_insights(self,
         feedback: List[CrossEngineFeedback]) -> List[Dict[str,
         Any]]:
-        """Find insights that can be transferred between engines.
+            """Find insights that can be transferred between engines.
 
         Args:
             feedback: Feedback list
@@ -245,7 +247,7 @@ class FeedbackAggregator:
         return sorted(insights, key=lambda x: x["transfer_score"], reverse=True)
 
     def _generate_recommendations(self, feedback: List[CrossEngineFeedback]) -> List[str]:
-        """Generate recommendations based on feedback.
+            """Generate recommendations based on feedback.
 
         Args:
             feedback: Feedback list
@@ -291,7 +293,7 @@ class UnifiedFeedbackSystem:
     """Manages unified feedback across all engines."""
 
     def __init__(self):
-        """Initialize the unified feedback system."""
+            """Initialize the unified feedback system."""
         self.aggregator = FeedbackAggregator()
         self.engine_loops: Dict[EngineType, FeedbackLoop] = {}
         self._cross_feedback: List[CrossEngineFeedback] = []
@@ -301,7 +303,7 @@ class UnifiedFeedbackSystem:
         logger.info("Initialized UnifiedFeedbackSystem")
 
     def register_engine(self, engine_type: EngineType, feedback_loop: FeedbackLoop) -> None:
-        """Register an engine's feedback loop.
+            """Register an engine's feedback loop.
 
         Args:
             engine_type: Type of engine
@@ -311,12 +313,12 @@ class UnifiedFeedbackSystem:
             self.engine_loops[engine_type] = feedback_loop
             logger.info(f"Registered {engine_type.value} engine feedback loop")
 
-    def submit_feedback(
         """Docstring."""
+    def submit_feedback(
         self,
         feedback: CrossEngineFeedback
     ) -> str:
-        """Submit feedback to the unified system.
+            """Submit feedback to the unified system.
 
         Args:
             feedback: Feedback to submit
@@ -352,7 +354,7 @@ class UnifiedFeedbackSystem:
             return feedback.feedback_id
 
     def _share_with_other_engines(self, feedback: CrossEngineFeedback) -> None:
-        """Share transferable feedback with other engines.
+            """Share transferable feedback with other engines.
 
         Args:
             feedback: Feedback to share
@@ -373,7 +375,7 @@ class UnifiedFeedbackSystem:
                 loop.add_feedback(adapted_feedback)
 
     def get_cross_engine_insights(self, days: int = 30) -> Dict[str, Any]:
-        """Get insights across all engines.
+            """Get insights across all engines.
 
         Args:
             days: Number of days to analyze
@@ -396,7 +398,7 @@ class UnifiedFeedbackSystem:
         return base_insights
 
     def _analyze_correlations(self) -> Dict[str, float]:
-        """Analyze correlations between engines.
+            """Analyze correlations between engines.
 
         Returns:
             Correlation data
@@ -410,7 +412,7 @@ class UnifiedFeedbackSystem:
         }
 
     def export_feedback_data(self, engine_type: Optional[EngineType] = None) -> Dict[str, Any]:
-        """Export feedback data for analysis.
+            """Export feedback data for analysis.
 
         Args:
             engine_type: Specific engine to export (None for all)
@@ -430,7 +432,7 @@ class UnifiedFeedbackSystem:
         return data
 
     def create_improvement_plan(self, engine_type: EngineType) -> Dict[str, Any]:
-        """Create improvement plan for an engine based on feedback.
+            """Create improvement plan for an engine based on feedback.
 
         Args:
             engine_type: Type of engine
@@ -515,8 +517,8 @@ def get_unified_feedback_system() -> UnifiedFeedbackSystem:
     return _unified_system
 
 # Convenience functions
-def submit_cross_engine_feedback(
     """Docstring."""
+def submit_cross_engine_feedback(
     source_engine: EngineType,
     category: FeedbackCategory,
     content_hash: str,

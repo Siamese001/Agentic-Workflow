@@ -74,7 +74,7 @@ class HardenedWebScraper(HardeningMixin):
         }
 
     def _get_tactical_headers(self) -> Dict[str, str]:
-        """Generates a random browser fingerprint."""
+            """Generates a random browser fingerprint."""
         return {
             "User-Agent": random.choice(COMMON_USER_AGENTS),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -91,13 +91,13 @@ class HardenedWebScraper(HardeningMixin):
         }
 
     def _get_proxy(self) -> Optional[str]:
-        """Selects a proxy from the pool if available."""
+            """Selects a proxy from the pool if available."""
         if self.scraper_config.proxy_pool:
             return random.choice(self.scraper_config.proxy_pool)
         return None
 
     async def _raw_fetch(self, url: str) -> httpx.Response:
-        """Low-level fetch wrapped by HardeningMixin."""
+            """Low-level fetch wrapped by HardeningMixin."""
 
         # 1. Apply Tactical Delay (Sleep + Jitter)
         jitter_val = random.uniform(0, self.scraper_config.jitter)
@@ -158,7 +158,7 @@ class HardenedWebScraper(HardeningMixin):
             return response
 
     async def scrape_url(self, url: str) -> ScrapeResult:
-        """
+            """
         The Hardened Scraping Pipeline.
         """
         self.stats["total_requests"] += 1
@@ -224,11 +224,11 @@ class HardenedWebScraper(HardeningMixin):
             self.logger.error(f"Error: {e}")
             raise
 
-    async def scrape_multiple(self,
         """Docstring."""
+    async def scrape_multiple(self,
         urls: List[str],
         delay_between_requests: Optional[float] = None) -> List[ScrapeResult]:
-        """
+            """
         Scrape multiple URLs with adaptive delays.
 
         Args:
@@ -270,7 +270,7 @@ class HardenedWebScraper(HardeningMixin):
         return results
 
     def get_stats(self) -> Dict[str, any]:
-        """Get scraping statistics."""
+            """Get scraping statistics."""
         total = self.stats["total_requests"]
         if total == 0:
             return self.stats
@@ -283,27 +283,27 @@ class HardenedWebScraper(HardeningMixin):
         return stats
 
     def reset_delay(self) -> None:
-        """Reset the adaptive delay to base value."""
+            """Reset the adaptive delay to base value."""
         self.current_delay = self.scraper_config.base_delay
         self.logger.info(f"Reset delay to {self.current_delay:.2f}s")
 
     def add_proxy(self, proxy_url: str) -> None:
-        """Add a new proxy to the pool."""
+            """Add a new proxy to the pool."""
         if proxy_url not in self.scraper_config.proxy_pool:
             self.scraper_config.proxy_pool.append(proxy_url)
             self.logger.info(f"Added proxy to pool: {proxy_url.split('@')[-1] if '@' in proxy_url el
     se proxy_url}")
 
     def remove_proxy(self, proxy_url: str) -> None:
-        """Remove a proxy from the pool."""
+            """Remove a proxy from the pool."""
         if proxy_url in self.scraper_config.proxy_pool:
             self.scraper_config.proxy_pool.remove(proxy_url)
             self.logger.info(f"Removed proxy from pool: {proxy_url.split('@')[-1] if '@' in proxy_ur
     l else proxy_url}")
 
 # Factory function for creating hardened web scraper
-def create_hardened_web_scraper(
     """Docstring."""
+def create_hardened_web_scraper(
     hardening_config: 'HardeningConfig',
     proxy_pool: Optional[List[str]] = None,
     base_delay: float = 1.0,

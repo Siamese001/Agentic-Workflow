@@ -27,7 +27,7 @@ class ServiceContainer:
     """
 
     def __init__(self, name: str = "default"):
-        """Initialize the container.
+            """Initialize the container.
 
         Args:
             name: Optional name for the container (useful for debugging)
@@ -38,15 +38,15 @@ class ServiceContainer:
         self._singletons: Dict[Type, Any] = {}
         self._lifecycle: Dict[Type, str] = {}  # "singleton" or "transient"
 
-    def register(
         """Docstring."""
+    def register(
         self,
         interface: Type[T],
         implementation: Optional[T] = None,
         factory: Optional[Callable[[], T]] = None,
         lifecycle: str = "singleton"
     ) -> None:
-        """Register a service in the container.
+            """Register a service in the container.
 
         Args:
             interface: The type/class to register
@@ -77,7 +77,7 @@ class ServiceContainer:
         logger.debug(f"Registered {interface.__name__} in container '{self.name}'")
 
     def resolve(self, interface: Type[T]) -> T:
-        """Resolve a service from the container.
+            """Resolve a service from the container.
 
         Args:
             interface: The type/class to resolve
@@ -127,7 +127,7 @@ class ServiceContainer:
         raise ServiceNotFoundError(f"Could not resolve {interface.__name__}")
 
     def is_registered(self, interface: Type) -> bool:
-        """Check if a service is registered.
+            """Check if a service is registered.
 
         Args:
             interface: The type/class to check
@@ -138,7 +138,7 @@ class ServiceContainer:
         return interface in self._lifecycle
 
     def clear(self) -> None:
-        """Clear all registered services."""
+            """Clear all registered services."""
         self._services.clear()
         self._factories.clear()
         self._singletons.clear()
@@ -146,7 +146,7 @@ class ServiceContainer:
         logger.debug(f"Cleared all services from container '{self.name}'")
 
     def list_services(self) -> Dict[Type, str]:
-        """List all registered services and their lifecycles.
+            """List all registered services and their lifecycles.
 
         Returns:
             Dictionary mapping types to lifecycle names
@@ -167,8 +167,8 @@ def get_default_container() -> ServiceContainer:
         _default_container = ServiceContainer("default")
     return _default_container
 
-def register_default(
     """Docstring."""
+def register_default(
     interface: Type[T],
     implementation: Optional[T] = None,
     factory: Optional[Callable[[], T]] = None,

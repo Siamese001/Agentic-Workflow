@@ -49,7 +49,7 @@ class MockAPI:
         self.last_call_time = None
 
     async def call(self, should_fail=False):
-        """Simulate API call with optional failures."""
+            """Simulate API call with optional failures."""
         self.call_count += 1
 
         # Simulate rate limit
@@ -84,9 +84,9 @@ class TestExecutor(HardeningMixin):
         self.mock_api = mock_api
 
     async def execute_with_hardening(self, should_fail=False):
-        """Execute mock API call with hardening."""
+            """Execute mock API call with hardening."""
         async def _api_call():
-            """Docstring."""
+                """Docstring."""
             return await self.mock_api.call(should_fail)
 
         return await self.execute_hardened(
@@ -186,9 +186,9 @@ async def test_telemetry():
     logged_events = []
 
     class TestTelemetry(SystemTelemetry):
-        """Docstring."""
-        def log_metric(self, *args, **kwargs):
             """Docstring."""
+        def log_metric(self, *args, **kwargs):
+                """Docstring."""
             # Capture events for testing
             event = {
                 "component": kwargs.get("component"),

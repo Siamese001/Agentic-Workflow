@@ -192,8 +192,6 @@ class TestMatchContext:
             {"id": "ctx2", "embedding": [0.1, 0.9], "text": "Irrelevant context"},
         ]
 
-            """TODO: Add docstring."""
-
         def similarity(v1, v2):
             """Docstring."""
             dot = sum(a * b for a, b in zip(v1, v2))

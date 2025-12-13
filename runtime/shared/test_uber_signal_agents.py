@@ -30,7 +30,7 @@ class UberSignalTestSuite:
     """Test suite for the three Uber High Signal agents."""
 
     def __init__(self):
-        """Initialize the test suite with all three agents."""
+            """Initialize the test suite with all three agents."""
         self.architecture_agent = ArchitectureVisualizerAgent()
         self.cultural_agent = CulturalDecoderAgent()
         self.pre_mortem_agent = PreMortemAgent()
@@ -68,7 +68,7 @@ class UberSignalTestSuite:
         """
 
     async def test_architecture_visualizer(self):
-        """Test the Architecture Visualizer Agent."""
+            """Test the Architecture Visualizer Agent."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Architecture Visualizer Agent")
         logger.info("="*60)
@@ -107,7 +107,7 @@ class UberSignalTestSuite:
             logger.error(f"❌ Architecture Visualizer test failed: {e}")
 
     async def test_cultural_decoder(self):
-        """Test the Cultural Decoder Agent."""
+            """Test the Cultural Decoder Agent."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Cultural Decoder Agent")
         logger.info("="*60)
@@ -153,7 +153,7 @@ class UberSignalTestSuite:
             logger.error(f"❌ Cultural Decoder test failed: {e}")
 
     async def test_pre_mortem_agent(self):
-        """Test the Pre-Mortem Agent."""
+            """Test the Pre-Mortem Agent."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Pre-Mortem Agent")
         logger.info("="*60)
@@ -194,7 +194,7 @@ class UberSignalTestSuite:
             logger.error(f"❌ Pre-Mortem Agent test failed: {e}")
 
     async def test_integration_scenario(self):
-        """Test all three agents working together on a complete scenario."""
+            """Test all three agents working together on a complete scenario."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Integrated Scenario")
         logger.info("="*60)
@@ -273,7 +273,7 @@ class UberSignalTestSuite:
             logger.error(f"❌ Integration test failed: {e}")
 
     async def run_all_tests(self):
-        """Run all tests sequentially."""
+            """Run all tests sequentially."""
         logger.info("🚀 Starting Uber High Signal Agents Test Suite")
         logger.info("="*60)
 

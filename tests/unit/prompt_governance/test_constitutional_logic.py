@@ -16,12 +16,12 @@ class TestConstitutionalLogic:
     """Test suite for Constitutional AI logic expansion."""
 
     def setup_method(self):
-        """Set up test fixtures."""
+            """Set up test fixtures."""
         self.mock_llm = Mock(spec=LLMClient)
         self.system = ConstitutionalAISystem(auto_load_rules=False, llm_client=self.mock_llm)
 
     def test_evaluate_compliance_with_safe_content(self):
-        """Test that safe content is correctly identified as compliant."""
+            """Test that safe content is correctly identified as compliant."""
         # Mock LLM response for safe content
         safe_response = json.dumps({
             "is_compliant": True,
@@ -41,7 +41,7 @@ class TestConstitutionalLogic:
         assert judgments[1].principle_id == "helpfulness"
 
     def test_evaluate_compliance_with_harmful_content(self):
-        """Test that harmful content is correctly identified as non-compliant."""
+            """Test that harmful content is correctly identified as non-compliant."""
         # Mock LLM response for harmful content
         harmful_response = json.dumps({
             "is_compliant": False,
@@ -61,7 +61,7 @@ class TestConstitutionalLogic:
         assert "harmful" in judgments[0].reasoning.lower()
 
     def test_evaluate_compliance_with_json_parse_error(self):
-        """Test fallback behavior when LLM response is not valid JSON."""
+            """Test fallback behavior when LLM response is not valid JSON."""
         # Mock invalid JSON response
         invalid_response = "This is not valid JSON but mentions compliant content"
         self.mock_llm.generate.return_value = invalid_response
@@ -75,7 +75,7 @@ class TestConstitutionalLogic:
         assert judgments[0].confidence == 0.5  # Low confidence for text parsing
 
     def test_evaluate_compliance_with_llm_error(self):
-        """Test graceful handling when LLM call fails."""
+            """Test graceful handling when LLM call fails."""
         # Mock LLM exception
         self.mock_llm.generate.side_effect = Exception("LLM service unavailable")
 
@@ -88,7 +88,7 @@ class TestConstitutionalLogic:
         assert "Evaluation failed" in judgments[0].reasoning
 
     def test_critique_and_revise_with_no_violations(self):
-        """Test that compliant content is returned unchanged."""
+            """Test that compliant content is returned unchanged."""
         judgments = [
             LLMJudgment("harmlessness", True, 0.95, "Safe content"),
             LLMJudgment("helpfulness", True, 0.9, "Helpful content")
@@ -101,7 +101,7 @@ class TestConstitutionalLogic:
         assert changes == []  # No changes made
 
     def test_critique_and_revise_with_violations(self):
-        """Test that non-compliant content is revised."""
+            """Test that non-compliant content is revised."""
         judgments = [
             LLMJudgment("harmlessness",
                 False,
@@ -125,7 +125,7 @@ class TestConstitutionalLogic:
         assert "harmful language" in changes[0]
 
     def test_critique_and_revise_with_revision_error(self):
-        """Test graceful handling when revision fails."""
+            """Test graceful handling when revision fails."""
         judgments = [
             LLMJudgment("harmlessness", False, 0.9, "Contains harmful language")
         ]
@@ -140,7 +140,7 @@ class TestConstitutionalLogic:
         assert "Revision failed" in changes[0]
 
     def test_default_principles_loaded(self):
-        """Test that default principles are properly loaded."""
+            """Test that default principles are properly loaded."""
         system = ConstitutionalAISystem(auto_load_rules=False)
 
         assert len(system.principles) == 4
@@ -156,7 +156,7 @@ class TestConstitutionalLogic:
         assert "{content}" in harmlessness.evaluation_prompt
 
     def test_system_statistics_tracking(self):
-        """Test that system statistics are properly updated."""
+            """Test that system statistics are properly updated."""
         # Mock safe response
         safe_response = json.dumps({
             "is_compliant": True,
@@ -176,7 +176,7 @@ class TestConstitutionalLogic:
         assert self.system.system_stats['principles_loaded'] == 4
 
     def test_custom_principle_evaluation(self):
-        """Test evaluation with custom principle."""
+            """Test evaluation with custom principle."""
         custom_principle = ConstitutionalPrinciple(
             id="custom",
             name="Custom Principle",
@@ -205,7 +205,7 @@ class TestMockLLMClient:
     """Test the MockLLMClient implementation."""
 
     def test_mock_client_safe_content(self):
-        """Test MockLLMClient with safe content."""
+            """Test MockLLMClient with safe content."""
         client = MockLLMClient()
 
         response = client.generate("This is safe content about cooking")
@@ -216,7 +216,7 @@ class TestMockLLMClient:
         assert "compliant" in data["reasoning"]
 
     def test_mock_client_harmful_content(self):
-        """Test MockLLMClient with harmful content."""
+            """Test MockLLMClient with harmful content."""
         client = MockLLMClient()
 
         # Use the same format as the actual evaluation prompts

@@ -5,6 +5,7 @@ and archetype-appropriate phrasing.
 """
 
 import logging
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class K5CTAAgent(Agent):
         route: str,
         archetype: str,
     ):
-        """Initialize K.5 CTA agent.
+            """Initialize K.5 CTA agent.
 
         Args:
             config: Reasoning configuration
@@ -93,7 +94,7 @@ class K5CTAAgent(Agent):
         )
 
     async def execute(self, context: Dict[str, Any]) -> K5Output:
-        """Execute K.5 CTA generation.
+            """Execute K.5 CTA generation.
 
         Args:
             context: Execution context with:
@@ -157,7 +158,7 @@ class K5CTAAgent(Agent):
         timeframe: str,
         prior_topic: str,
     ) -> str:
-        """Build initial CTA generation prompt.
+            """Build initial CTA generation prompt.
 
         Args:
             topic: Discussion topic
@@ -227,7 +228,7 @@ Generate the CTA now (single sentence, {word_limit} words max):
         context: Dict[str, Any],
         feedback: str,
     ) -> str:
-        """Build regeneration prompt with validation feedback.
+            """Build regeneration prompt with validation feedback.
 
         Args:
             context: Original context

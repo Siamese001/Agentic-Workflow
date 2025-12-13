@@ -13,12 +13,12 @@ class TestJobAnalyzerMocked:
     """Test JobAnalyzer with mocked LLM responses."""
 
     def setup_method(self):
-        """Set up test fixtures with mocked client."""
+            """Set up test fixtures with mocked client."""
         self.mock_client = Mock()
         self.analyzer = JobAnalyzer(llm_client=self.mock_client)
 
     def test_analyze_job_description_success(self):
-        """Test successful job analysis with mocked response."""
+            """Test successful job analysis with mocked response."""
         # Mock the Gemini response
         mock_response = Mock()
         mock_response.text = '''{
@@ -55,7 +55,7 @@ class TestJobAnalyzerMocked:
             assert len(result["soft_skills"]) == 3
 
     def test_analyze_job_description_json_error(self):
-        """Test handling of invalid JSON response."""
+            """Test handling of invalid JSON response."""
         # Mock invalid JSON response
         mock_response = Mock()
         mock_response.text = "This is not valid JSON"
@@ -71,7 +71,7 @@ class TestJobAnalyzerMocked:
             assert result["soft_skills"] == []
 
     def test_extract_keywords(self):
-        """Test keyword extraction functionality."""
+            """Test keyword extraction functionality."""
         job_description = "Looking for a Python developer with React, AWS, and Docker experience."
         keywords = self.analyzer.extract_keywords(job_description)
 
@@ -84,15 +84,15 @@ class TestResumeGeneratorMocked:
     """Test ResumeGenerator with mocked LLM responses."""
 
     def setup_method(self):
-        """Set up test fixtures with mocked client."""
+            """Set up test fixtures with mocked client."""
         self.mock_client = Mock()
         self.generator = ResumeGenerator(llm_client=self.mock_client)
 
     def test_tailor_resume_success(self):
-        """Test successful resume tailoring."""
+            """Test successful resume tailoring."""
         # Mock the LLM responses for different prompts
         def mock_generate(prompt, generation_config=None):
-            """Docstring."""
+                """Docstring."""
             response = Mock()
             if "summary" in prompt.lower():
                 response.text = "Senior Python Developer with 5+ years of experience building scalab
@@ -159,7 +159,7 @@ class TestResumeGeneratorMocked:
             assert metadata["target_hard_skills"] == analysis["hard_skills"]
 
     def test_optimize_for_ats(self):
-        """Test ATS optimization."""
+            """Test ATS optimization."""
         resume_data = {
             "summary": "Software developer",
             "professional_summary": "Experienced developer",  # Should be renamed
@@ -190,7 +190,7 @@ class TestExecuteResumeGenerationMocked:
     """Test ExecuteResumeGeneration with mocked dependencies."""
 
     def setup_method(self):
-        """Set up test fixtures."""
+            """Set up test fixtures."""
         self.mock_client = Mock()
 
         # Mock the analyzer and generator classes
@@ -210,7 +210,7 @@ class TestExecuteResumeGenerationMocked:
             self.executor = ExecuteResumeGeneration(config={"llm_client": self.mock_client})
 
     def test_tailor_resume_flow(self):
-        """Test the complete resume tailoring flow."""
+            """Test the complete resume tailoring flow."""
         # Mock the analyzer response
         self.mock_analyzer.analyze.return_value = {
             "hard_skills": ["Python", "Django", "AWS"],
@@ -259,7 +259,7 @@ class TestExecuteResumeGenerationMocked:
         self.mock_generator.optimize_for_ats.assert_called_once()
 
     def test_analyze_job_action(self):
-        """Test the analyze_job action."""
+            """Test the analyze_job action."""
         self.mock_analyzer.analyze.return_value = {
             "hard_skills": ["Python"],
             "soft_skills": ["Communication"],
@@ -276,7 +276,7 @@ class TestExecuteResumeGenerationMocked:
         self.mock_analyzer.analyze.assert_called_once_with("Test job")
 
     def test_missing_parameters(self):
-        """Test error handling for missing parameters."""
+            """Test error handling for missing parameters."""
         # Test missing job description
         result = self.executor.execute("analyze_job", {})
         assert result.is_success() is False
@@ -291,7 +291,7 @@ class TestResumeEngineIntegration:
     """Test integration between components."""
 
     def test_full_workflow_with_mocks(self):
-        """Test full workflow with all components mocked."""
+            """Test full workflow with all components mocked."""
         # Create mock responses
         mock_analysis = {
             "hard_skills": ["Python", "Django", "PostgreSQL", "AWS", "Docker"],
@@ -338,7 +338,7 @@ class TestResumeEngineIntegration:
 
             # Mock resume generation
             def mock_generate_response(prompt, generation_config=None):
-                """Docstring."""
+                    """Docstring."""
                 response = Mock()
                 if "summary" in prompt.lower():
                     response.text = mock_tailored["summary"]
@@ -348,7 +348,7 @@ class TestResumeEngineIntegration:
 
             # Set up side_effect to handle multiple calls
             def mock_generate_content(prompt, generation_config=None):
-                """Docstring."""
+                    """Docstring."""
                 # Check if this is a job analysis call (contains "Analyze the following job")
                 if "Analyze the following job" in prompt:
                     return mock_job_response

@@ -8,6 +8,8 @@ import asyncio
 import logging
 import time
 from typing import Any, Callable, Dict, List, Optional
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +46,7 @@ class CircuitBreaker:
     """Circuit breaker implementation."""
 
     def __init__(self, name: str, config: Optional[CircuitBreakerConfig] = None):
-        """Initialize circuit breaker.
+            """Initialize circuit breaker.
 
         Args:
             name: Circuit breaker name
@@ -75,7 +77,7 @@ class CircuitBreaker:
         logger.debug(f"Initialized CircuitBreaker: {name}")
 
     async def call(self, func: Callable, *args, **kwargs) -> Any:
-        """Execute function through circuit breaker.
+            """Execute function through circuit breaker.
 
         Args:
             func: Function to call
@@ -115,7 +117,7 @@ class CircuitBreaker:
             raise
 
     def can_execute(self) -> bool:
-        """Check if execution is allowed.
+            """Check if execution is allowed.
 
         Returns:
             True if can execute
@@ -139,7 +141,7 @@ class CircuitBreaker:
         return False
 
     def record_success(self, duration_ms: float) -> None:
-        """Record a successful execution.
+            """Record a successful execution.
 
         Args:
             duration_ms: Execution duration
@@ -165,7 +167,7 @@ class CircuitBreaker:
             self.failure_count = 0  # Reset on success
 
     def record_failure(self, error: Exception, duration_ms: float) -> None:
-        """Record a failed execution.
+            """Record a failed execution.
 
         Args:
             error: Exception that occurred
@@ -196,7 +198,7 @@ class CircuitBreaker:
                 self._open_circuit(f"Failure threshold reached: {self.failure_count}")
 
     def _add_to_history(self, result: RequestResult) -> None:
-        """Add result to sliding window.
+            """Add result to sliding window.
 
         Args:
             result: Request result
@@ -208,7 +210,7 @@ class CircuitBreaker:
             self.request_history = self.request_history[-self.config.sliding_window_size:]
 
     def _should_open_circuit(self) -> bool:
-        """Check if circuit should open.
+            """Check if circuit should open.
 
         Returns:
             True if should open
@@ -231,7 +233,7 @@ class CircuitBreaker:
         return False
 
     def _should_attempt_reset(self) -> bool:
-        """Check if should attempt reset from open to half-open.
+            """Check if should attempt reset from open to half-open.
 
         Returns:
             True if should attempt reset
@@ -243,7 +245,7 @@ class CircuitBreaker:
         return time_since_failure.total_seconds() >= self.config.timeout
 
     def _open_circuit(self, reason: str) -> None:
-        """Open the circuit.
+            """Open the circuit.
 
         Args:
             reason: Reason for opening
@@ -254,7 +256,7 @@ class CircuitBreaker:
         logger.warning(f"Circuit '{self.name}' OPENED: {reason}")
 
     def _close_circuit(self) -> None:
-        """Close the circuit."""
+            """Close the circuit."""
         self.state = CircuitState.CLOSED
         self.last_state_change = datetime.utcnow()
         self.failure_count = 0
@@ -263,7 +265,7 @@ class CircuitBreaker:
         logger.info(f"Circuit '{self.name}' CLOSED")
 
     def force_open(self, reason: str = "Manual override") -> None:
-        """Force circuit open.
+            """Force circuit open.
 
         Args:
             reason: Reason for forcing open
@@ -271,11 +273,11 @@ class CircuitBreaker:
         self._open_circuit(reason)
 
     def force_close(self) -> None:
-        """Force circuit closed."""
+            """Force circuit closed."""
         self._close_circuit()
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get circuit breaker statistics.
+            """Get circuit breaker statistics.
 
         Returns:
             Statistics dictionary
@@ -294,7 +296,7 @@ class CircuitBreaker:
         return stats
 
     def _get_current_failure_rate(self) -> float:
-        """Get current failure rate.
+            """Get current failure rate.
 
         Returns:
             Failure rate (0.0 to 1.0)
@@ -306,7 +308,7 @@ class CircuitBreaker:
         return failures / len(self.request_history)
 
     def reset_stats(self) -> None:
-        """Reset statistics."""
+            """Reset statistics."""
         self._stats = {
             "total_requests": 0,
             "successful_requests": 0,
@@ -320,17 +322,17 @@ class CircuitBreakerRegistry:
     """Registry for managing multiple circuit breakers."""
 
     def __init__(self):
-        """Initialize registry."""
+            """Initialize registry."""
         self.circuit_breakers: Dict[str, CircuitBreaker] = {}
         self._lock = asyncio.Lock()
 
-    async def get_circuit_breaker(
         """Docstring."""
+    async def get_circuit_breaker(
         self,
         name: str,
         config: Optional[CircuitBreakerConfig] = None
     ) -> CircuitBreaker:
-        """Get or create circuit breaker.
+            """Get or create circuit breaker.
 
         Args:
             name: Circuit breaker name
@@ -344,8 +346,8 @@ class CircuitBreakerRegistry:
                 self.circuit_breakers[name] = CircuitBreaker(name, config)
             return self.circuit_breakers[name]
 
-    async def call_through(
         """Docstring."""
+    async def call_through(
         self,
         circuit_name: str,
         func: Callable,
@@ -353,7 +355,7 @@ class CircuitBreakerRegistry:
         config: Optional[CircuitBreakerConfig] = None,
         **kwargs
     ) -> Any:
-        """Call function through circuit breaker.
+            """Call function through circuit breaker.
 
         Args:
             circuit_name: Name of circuit breaker
@@ -369,7 +371,7 @@ class CircuitBreakerRegistry:
         return await breaker.call(func, *args, **kwargs)
 
     def list_circuit_breakers(self) -> List[str]:
-        """List all circuit breaker names.
+            """List all circuit breaker names.
 
         Returns:
             List of names
@@ -377,7 +379,7 @@ class CircuitBreakerRegistry:
         return list(self.circuit_breakers.keys())
 
     def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
-        """Get stats for all circuit breakers.
+            """Get stats for all circuit breakers.
 
         Returns:
             Stats dictionary
@@ -385,7 +387,7 @@ class CircuitBreakerRegistry:
         return {name: cb.get_stats() for name, cb in self.circuit_breakers.items()}
 
     async def reset_all(self) -> None:
-        """Reset all circuit breakers."""
+            """Reset all circuit breakers."""
         async with self._lock:
             for cb in self.circuit_breakers.values():
                 cb.force_close()
@@ -408,8 +410,8 @@ async def get_circuit_breaker_registry() -> CircuitBreakerRegistry:
     return _registry
 
 # Decorators
-def circuit_breaker(
     """Docstring."""
+def circuit_breaker(
     name: str,
     config: Optional[CircuitBreakerConfig] = None
 ):
@@ -423,12 +425,12 @@ def circuit_breaker(
         Decorated function
     """
     def decorator(func):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
             """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             registry = await get_circuit_breaker_registry()
             return await registry.call_through(name, func, *args, config=config, **kwargs)
             """TODO: Add docstring."""
@@ -437,10 +439,10 @@ def circuit_breaker(
                 """TODO: Add docstring."""
 
         def sync_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             # For sync functions, run in thread pool
             async def async_func():
-                """Docstring."""
+                    """Docstring."""
                 return func(*args, **kwargs)
 
             return asyncio.run(async_func())

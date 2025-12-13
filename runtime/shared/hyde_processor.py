@@ -6,6 +6,8 @@ search toward the most relevant content for each recipient type.
 """
 
 import logging
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +31,7 @@ class HyDEDocument:
 
     @property
     def is_valid(self) -> bool:
-        """Check if the generated document meets quality criteria."""
+            """Check if the generated document meets quality criteria."""
         return (
             len(self.content.strip()) > 20 and  # Minimum length
             self.word_count > 10 and  # Minimum word count
@@ -166,7 +168,7 @@ class HyDEProcessor:
         max_retries: int = 2,
         fallback_enabled: bool = True
     ):
-        """Initialize the HyDE processor.
+            """Initialize the HyDE processor.
 
         Args:
             llm_client: LLM client for document generation
@@ -209,14 +211,14 @@ class HyDEProcessor:
 
         logger.info(f"Initialized HyDEProcessor with {len(HYDE_TEMPLATES)} templates")
 
-    def expand_query(
         """Docstring."""
+    def expand_query(
         self,
         original_query: str,
         archetype: str,
         industry: Optional[str] = None
     ) -> HyDEResult:
-        """Expand query using archetype-aware HyDE.
+            """Expand query using archetype-aware HyDE.
 
         Args:
             original_query: Original search query
@@ -281,14 +283,14 @@ class HyDEProcessor:
                 error_message=str(e)
             )
 
-    def generate_hypothetical_doc(
         """Docstring."""
+    def generate_hypothetical_doc(
         self,
         query: str,
         archetype: str,
         industry: str
     ) -> Optional[HyDEDocument]:
-        """Generate a hypothetical document for query expansion.
+            """Generate a hypothetical document for query expansion.
 
         Args:
             query: Original query keywords
@@ -337,7 +339,7 @@ class HyDEProcessor:
         return None
 
     def _construct_prompt(self, query: str, archetype: str, industry: str) -> str:
-        """Construct the prompt for hypothetical document generation.
+            """Construct the prompt for hypothetical document generation.
 
         Args:
             query: Original query
@@ -362,7 +364,7 @@ class HyDEProcessor:
         return prompt
 
     def _normalize_archetype(self, archetype: str) -> str:
-        """Normalize archetype string to match template keys.
+            """Normalize archetype string to match template keys.
 
         Args:
             archetype: Raw archetype string
@@ -389,7 +391,7 @@ class HyDEProcessor:
         return "DEFAULT"
 
     def _call_llm(self, prompt: str) -> Optional[str]:
-        """Call the LLM client for document generation.
+            """Call the LLM client for document generation.
 
         Args:
             prompt: Generation prompt
@@ -410,7 +412,7 @@ class HyDEProcessor:
             return None
 
     def _mock_generation(self, query: str, archetype: str, industry: str) -> str:
-        """Mock document generation for testing.
+            """Mock document generation for testing.
 
         Args:
             query: Original query
@@ -435,7 +437,7 @@ class HyDEProcessor:
     rough technical excellence and strategic thinking in {industry}."
 
     def _keyword_fallback(self, query: str, industry: Optional[str] = None) -> str:
-        """Fallback expansion using keyword enhancement.
+            """Fallback expansion using keyword enhancement.
 
         Args:
             query: Original query
@@ -466,8 +468,8 @@ class HyDEProcessor:
         return "\n\n".join(expanded_parts)
 
 # Factory function for easy instantiation
-def create_hyde_processor(
     """Docstring."""
+def create_hyde_processor(
     llm_client: Optional[Any] = None,
     default_industry: str = "Technology",
     max_retries: int = 2
@@ -490,8 +492,8 @@ def create_hyde_processor(
     )
 
 # Convenience function for quick expansion
-def expand_query_with_hyde(
     """Docstring."""
+def expand_query_with_hyde(
     query: str,
     archetype: str,
     industry: Optional[str] = None,

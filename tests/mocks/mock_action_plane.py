@@ -24,7 +24,7 @@ class MockActionPlane(IActionPlane):
         predefined_results: Dict[str, Any] = None,
         fail_on_tools: List[str] = None,
     ):
-        """Initialize mock action plane.
+            """Initialize mock action plane.
 
         Args:
             predefined_results: Optional dict of tool_name -> result
@@ -41,7 +41,7 @@ class MockActionPlane(IActionPlane):
         ]
 
     async def execute(self, request: ActionRequest) -> ActionResult:
-        """Execute a mock action.
+            """Execute a mock action.
 
         Args:
             request: Action request
@@ -79,13 +79,13 @@ class MockActionPlane(IActionPlane):
             execution_time_ms=10.0,
         )
 
-    async def execute_batch(
         """Docstring."""
+    async def execute_batch(
         self,
         requests: List[ActionRequest],
         parallel: bool = False,
     ) -> List[ActionResult]:
-        """Execute multiple mock actions.
+            """Execute multiple mock actions.
 
         Args:
             requests: List of action requests
@@ -107,12 +107,12 @@ class MockActionPlane(IActionPlane):
 
         return results
 
-    async def validate_action(
         """Docstring."""
+    async def validate_action(
         self,
         request: ActionRequest,
     ) -> Dict[str, Any]:
-        """Validate a mock action.
+            """Validate a mock action.
 
         Args:
             request: Action request to validate
@@ -134,7 +134,7 @@ class MockActionPlane(IActionPlane):
         }
 
     def get_available_tools(self) -> List[str]:
-        """Get list of mock tools.
+            """Get list of mock tools.
 
         Returns:
             List of available tool names
@@ -142,7 +142,7 @@ class MockActionPlane(IActionPlane):
         return self.available_tools.copy()
 
     def get_tool_schema(self, tool_name: str) -> Dict[str, Any]:
-        """Get mock tool schema.
+            """Get mock tool schema.
 
         Args:
             tool_name: Name of the tool
@@ -161,7 +161,7 @@ class MockActionPlane(IActionPlane):
         }
 
     def get_capabilities(self) -> List[ActionCapability]:
-        """Get mock capabilities.
+            """Get mock capabilities.
 
         Returns:
             All action capabilities
@@ -169,5 +169,5 @@ class MockActionPlane(IActionPlane):
         return list(ActionCapability)
 
     def reset(self) -> None:
-        """Reset mock state."""
+            """Reset mock state."""
         self.call_history.clear()

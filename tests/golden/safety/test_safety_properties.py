@@ -7,13 +7,13 @@ class TestSafetyThresholdProperties:
         """TODO: Add docstring."""
 
     def test_threshold_in_valid_range(self):
-        """Docstring."""
+            """Docstring."""
         assert 0.0 <= SAFETY_THRESHOLD <= 1.0
         """TODO: Add docstring."""
 
 
     def test_threshold_determinism(self):
-        """Docstring."""
+            """Docstring."""
         # SAFETY_THRESHOLD should be deterministic
         assert SAFETY_THRESHOLD == 0.95
         """TODO: Add docstring."""
@@ -26,13 +26,13 @@ class TestSafetyThresholdProperties:
 class TestGateDecisionProperties:
     """Docstring."""
     def test_gate_decision_has_values(self):
-        """Docstring."""
+            """Docstring."""
         assert len(list(GateDecision)) >= 2
         """TODO: Add docstring."""
 
 
     def test_gate_decision_iteration_stable(self):
-        """Docstring."""
+            """Docstring."""
         assert list(GateDecision) == list(GateDecision)
         """TODO: Add docstring."""
 
@@ -42,10 +42,10 @@ class TestGateDecisionProperties:
 class TestValidationSeverityOrdering:
     """Docstring."""
     def test_severity_has_levels(self):
-        """Docstring."""
+            """Docstring."""
         severities = list(ValidationSeverity)
         assert len(severities) >= 2
 
     def test_severity_determinism(self):
-        """Docstring."""
+            """Docstring."""
         assert list(ValidationSeverity) == list(ValidationSeverity)

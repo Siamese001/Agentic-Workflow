@@ -9,6 +9,7 @@ import json
 import logging
 from pathlib import Path
 from enum import Enum
+from dataclasses import dataclass
 
 
 logger = logging.getLogger(__name__)
@@ -38,11 +39,11 @@ class FewShotRegistry(BaseModel):
     context_mappings: Dict[str, ContextType] = Field(default_factory=dict)
 
     class Config:
-        """Docstring."""
+            """Docstring."""
         arbitrary_types_allowed = True
 
     def add_example(self, example: FewShotExample) -> None:
-        """Add an example to the registry.
+            """Add an example to the registry.
 
         Args:
             example: The example to add
@@ -53,14 +54,14 @@ class FewShotRegistry(BaseModel):
         self.examples[example.instruction_id].append(example)
         logger.debug(f"Added example for {example.instruction_id} ({example.context_tag.value})")
 
-    def get_examples(
         """Docstring."""
+    def get_examples(
         self,
         instruction_id: str,
         context: str = "general",
         max_examples: int = 3
     ) -> str:
-        """Get formatted examples for an instruction.
+            """Get formatted examples for an instruction.
 
         Args:
             instruction_id: The instruction to get examples for
@@ -113,7 +114,7 @@ class FewShotRegistry(BaseModel):
         return formatted
 
     def _infer_context(self, context: str) -> ContextType:
-        """Infer context type from context string.
+            """Infer context type from context string.
 
         Args:
             context: Context description
@@ -154,7 +155,7 @@ class FewShotRegistry(BaseModel):
         return ContextType.GENERAL
 
     def load_from_directory(self, directory: Path) -> None:
-        """Load examples from JSON files in a directory.
+            """Load examples from JSON files in a directory.
 
         Args:
             directory: Directory containing example files
@@ -187,7 +188,7 @@ class FewShotRegistry(BaseModel):
                 logger.error(f"Failed to load examples from {file_path}: {e}")
 
     def save_to_directory(self, directory: Path) -> None:
-        """Save examples to JSON files.
+            """Save examples to JSON files.
 
         Args:
             directory: Directory to save examples to
@@ -310,8 +311,8 @@ def _initialize_default_examples() -> None:
 
     logger.info(f"Initialized {len(registry.examples)} default few-shot examples")
 
-def get_examples_for_injection(
     """Docstring."""
+def get_examples_for_injection(
     instruction_id: str,
     context: str = "general",
     max_examples: int = 3
@@ -329,8 +330,8 @@ def get_examples_for_injection(
     registry = get_few_shot_registry()
     return registry.get_examples(instruction_id, context, max_examples)
 
-def enhance_with_examples(
     """Docstring."""
+def enhance_with_examples(
     base_prompt: str,
     injections: List[InjectionPattern],
     context: str = "general"
@@ -356,8 +357,8 @@ def enhance_with_examples(
 
     return enhanced
 
-def create_custom_example(
     """Docstring."""
+def create_custom_example(
     instruction_id: str,
     context_tag: str,
     bad_example: str,

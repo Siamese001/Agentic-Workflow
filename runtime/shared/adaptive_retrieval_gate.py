@@ -26,7 +26,7 @@ class AdaptiveRetrievalGate:
     """
 
     def __init__(self):
-        """Initialize the Adaptive Retrieval Gate."""
+            """Initialize the Adaptive Retrieval Gate."""
         # Compile regex patterns for efficiency
         self.patterns = {
             # Conversational patterns that don't need retrieval
@@ -83,7 +83,7 @@ class AdaptiveRetrievalGate:
         logger.info("Initialized AdaptiveRetrievalGate")
 
     def _classify_query_type(self, query: str) -> str:
-        """Classify the type of query.
+            """Classify the type of query.
 
         Args:
             query: Query string to classify
@@ -121,7 +121,7 @@ class AdaptiveRetrievalGate:
         return "COMPLEX"
 
     def _calculate_complexity_score(self, query: str, query_type: str) -> float:
-        """Calculate complexity score for the query.
+            """Calculate complexity score for the query.
 
         Args:
             query: Query string
@@ -160,11 +160,11 @@ class AdaptiveRetrievalGate:
 
         return base_score
 
-    def should_retrieve(self,
         """Docstring."""
+    def should_retrieve(self,
         query: str,
         history: Optional[List[Dict]] = None) -> RetrievalDecision:
-        """Determine if retrieval is needed for the query.
+            """Determine if retrieval is needed for the query.
 
         Args:
             query: Query string to evaluate
@@ -250,7 +250,7 @@ class AdaptiveRetrievalGate:
         )
 
     def get_statistics(self, decisions: List[RetrievalDecision]) -> Dict[str, float]:
-        """Calculate statistics from a list of retrieval decisions.
+            """Calculate statistics from a list of retrieval decisions.
 
         Args:
             decisions: List of RetrievalDecision objects

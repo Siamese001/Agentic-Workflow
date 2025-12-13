@@ -7,6 +7,7 @@ address security, privacy, and evaluation frameworks.
 
 import logging
 import re
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class RiskProfile(BaseModel):
 
     @property
     def is_high_risk(self) -> bool:
-        """Check if this is a high-risk profile."""
+            """Check if this is a high-risk profile."""
         return self.industry_sensitivity == IndustrySensitivity.HIGH
 
 class SafetyProtocol(BaseModel):
@@ -40,7 +41,7 @@ class SafetyProtocol(BaseModel):
 
     @property
     def is_comprehensive(self) -> bool:
-        """Check if protocol covers all major areas."""
+            """Check if protocol covers all major areas."""
         return all([
             self.validation_strategy,
             self.data_privacy_approach,
@@ -51,7 +52,7 @@ class GovernanceShieldAgent:
     """Audits and upgrades content for risk maturity."""
 
     def __init__(self):
-        """Initialize the governance shield agent."""
+            """Initialize the governance shield agent."""
         # Naive claim patterns to detect and replace
         self.naive_patterns = {
             "absolute_accuracy": [
@@ -118,7 +119,7 @@ class GovernanceShieldAgent:
         logger.info("Initialized GovernanceShieldAgent")
 
     def sanitize_claims(self, content: str) -> str:
-        """Sanitize naive claims with mature, risk-aware language.
+            """Sanitize naive claims with mature, risk-aware language.
 
         Args:
             content: Content to sanitize
@@ -158,7 +159,7 @@ class GovernanceShieldAgent:
             return content
 
     def generate_safety_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
-        """Generate safety protocol based on risk profile.
+            """Generate safety protocol based on risk profile.
 
         Args:
             risk_profile: Risk profile for target company
@@ -181,7 +182,7 @@ class GovernanceShieldAgent:
             )
 
     def audit_outreach(self, email_draft: str) -> str:
-        """Audit final email draft for compliance.
+            """Audit final email draft for compliance.
 
         Args:
             email_draft: Email content to audit
@@ -205,7 +206,7 @@ class GovernanceShieldAgent:
             return email_draft
 
     def scan_risk_level(self, industry: str, job_description: str) -> RiskProfile:
-        """Scan industry and JD to determine risk level.
+            """Scan industry and JD to determine risk level.
 
         Args:
             industry: Target company industry
@@ -273,7 +274,7 @@ class GovernanceShieldAgent:
             )
 
     def _critical_fix_zero_hallucinations(self, content: str) -> str:
-        """Critical fix for zero hallucination claims.
+            """Critical fix for zero hallucination claims.
 
         Args:
             content: Content with critical violation
@@ -299,7 +300,7 @@ class GovernanceShieldAgent:
         return content
 
     def _fix_privacy_language(self, content: str) -> str:
-        """Fix privacy-related language issues.
+            """Fix privacy-related language issues.
 
         Args:
             content: Content to fix
@@ -321,7 +322,7 @@ class GovernanceShieldAgent:
         return content
 
     def _generate_high_risk_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
-        """Generate protocol for high-risk industries.
+            """Generate protocol for high-risk industries.
 
         Args:
             risk_profile: High-risk profile
@@ -348,7 +349,7 @@ class GovernanceShieldAgent:
         )
 
     def _generate_standard_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
-        """Generate protocol for standard risk industries.
+            """Generate protocol for standard risk industries.
 
         Args:
             risk_profile: Standard risk profile

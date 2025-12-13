@@ -12,6 +12,7 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import logging
 import os
+from dataclasses import dataclass
 
 
 logger = logging.getLogger(__name__)
@@ -57,7 +58,7 @@ class HardenedOpenAIConfig:
 
     @property
     def max_context_tokens(self) -> int:
-        """Get maximum context tokens for the model."""
+            """Get maximum context tokens for the model."""
         return self.MODEL_LIMITS.get(self.model, 4096)
 
 class HardenedOpenAIExecutor(HardeningMixin):
@@ -72,7 +73,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         config: Optional[HardenedOpenAIConfig] = None,
         telemetry: Optional[SystemTelemetry] = None,
     ):
-        """Initialize hardened OpenAI executor.
+            """Initialize hardened OpenAI executor.
 
         Args:
             config: Optional configuration
@@ -94,7 +95,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         self._setup_client()
 
     def _setup_client(self) -> None:
-        """Setup OpenAI client."""
+            """Setup OpenAI client."""
         try:
             import openai
         except ImportError as exc:
@@ -112,7 +113,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         )
 
     def _validate_token_budget(self, prompt: str) -> None:
-        """Validate token budget before API call.
+            """Validate token budget before API call.
 
         Args:
             prompt: Input prompt text
@@ -131,7 +132,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
     ) -> List[Dict[str, str]]:
-        """Build OpenAI message format.
+            """Build OpenAI message format.
 
         Args:
             messages: Agent messages
@@ -158,8 +159,8 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         return openai_messages
 
-    async def run_llm(
         """Docstring."""
+    async def run_llm(
         self,
         prompt: str,
         *,
@@ -168,7 +169,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         system_prompt: Optional[str] = None,
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
-        """Run OpenAI completion with hardening.
+            """Run OpenAI completion with hardening.
 
         Args:
             prompt: Input prompt (used if messages not provided)
@@ -193,7 +194,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         # Define async operation
         async def _completion():
-            """Docstring."""
+                """Docstring."""
             response = self._client.chat.completions.create(
                 model=self.config.model,
                 messages=openai_messages,
@@ -218,8 +219,8 @@ class HardenedOpenAIExecutor(HardeningMixin):
             },
         )
 
-    async def run_llm_with_response(
         """Docstring."""
+    async def run_llm_with_response(
         self,
         prompt: str,
         *,
@@ -228,7 +229,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         system_prompt: Optional[str] = None,
         messages: Optional[List[AgentMessage]] = None,
     ) -> AgentResponse:
-        """Run OpenAI completion with full response metadata.
+            """Run OpenAI completion with full response metadata.
 
         Args:
             prompt: Input prompt (used if messages not provided)
@@ -253,7 +254,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         # Define async operation with response capture
         async def _completion():
-            """Docstring."""
+                """Docstring."""
             response = self._client.chat.completions.create(
                 model=self.config.model,
                 messages=openai_messages,
@@ -296,8 +297,8 @@ class HardenedOpenAIExecutor(HardeningMixin):
             finish_reason=raw_response.choices[0].finish_reason if raw_response.choices else None,
         )
 
-    def run_llm_sync(
         """Docstring."""
+    def run_llm_sync(
         self,
         prompt: str,
         *,
@@ -306,7 +307,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         system_prompt: Optional[str] = None,
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
-        """Synchronous version of run_llm.
+            """Synchronous version of run_llm.
 
         Args:
             prompt: Input prompt
@@ -339,8 +340,8 @@ class HardenedOpenAIExecutor(HardeningMixin):
             )
 
 # Factory function for backward compatibility
-def create_hardened_openai_executor(
     """Docstring."""
+def create_hardened_openai_executor(
     model: str = "gpt-4o-2024-08-06",
     temperature: float = 0.7,
     **kwargs

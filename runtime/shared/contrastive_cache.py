@@ -25,7 +25,7 @@ class CacheEntry(BaseModel):
 
     @validator('embedding')
     def validate_embedding(cls, v):
-        """Ensure embedding is a list of floats."""
+            """Ensure embedding is a list of floats."""
         if not isinstance(v, list):
             raise ValueError("Embedding must be a list")
         if len(v) == 0:
@@ -48,7 +48,7 @@ class ContrastiveSemanticCache:
         lazy_load: bool = True,
         ttl_seconds: Optional[int] = None
     ):
-        """Initialize the Contrastive Semantic Cache.
+            """Initialize the Contrastive Semantic Cache.
 
         Args:
             model_name: Name of the sentence transformer model
@@ -85,7 +85,7 @@ class ContrastiveSemanticCache:
 
     @property
     def is_available(self) -> bool:
-        """Check if the cache is available (model loaded or can be loaded)."""
+            """Check if the cache is available (model loaded or can be loaded)."""
         if self._model_loaded:
             return not self._fallback_mode
         if self._fallback_mode:
@@ -100,7 +100,7 @@ class ContrastiveSemanticCache:
             return False
 
     def _load_model(self) -> bool:
-        """Load the sentence transformer model.
+            """Load the sentence transformer model.
 
         Returns:
             True if model loaded successfully, False if in fallback mode
@@ -138,7 +138,7 @@ class ContrastiveSemanticCache:
             return False
 
     def _encode_query(self, query: str) -> Optional[np.ndarray]:
-        """Encode a query into an embedding vector.
+            """Encode a query into an embedding vector.
 
         Args:
             query: Query string to encode
@@ -173,7 +173,7 @@ class ContrastiveSemanticCache:
             return None
 
     def _update_embedding_matrix(self):
-        """# SQL removed: Update the embedding matrix from cache entries."""
+            """# SQL removed: Update the embedding matrix from cache entries."""
         if not self._cache:
             self._embedding_matrix = None
             return
@@ -186,7 +186,7 @@ class ContrastiveSemanticCache:
             self._embedding_matrix = None
 
     def _calculate_similarity(self, query_embedding: np.ndarray) -> np.ndarray:
-        """Calculate cosine similarity between query and all cached embeddings.
+            """Calculate cosine similarity between query and all cached embeddings.
 
         Args:
             query_embedding: Query embedding vector
@@ -214,7 +214,7 @@ class ContrastiveSemanticCache:
             return np.array([])
 
     def _evict_if_needed(self):
-        """Evict entries if cache exceeds max_entries."""
+            """Evict entries if cache exceeds max_entries."""
         if len(self._cache) <= self.max_entries:
             return
 
@@ -229,7 +229,7 @@ class ContrastiveSemanticCache:
         logger.info(f"Evicted {evict_count} old cache entries")
 
     def _is_expired(self, entry: CacheEntry) -> bool:
-        """Check if a cache entry has expired.
+            """Check if a cache entry has expired.
 
         Args:
             entry: Cache entry to check
@@ -244,7 +244,7 @@ class ContrastiveSemanticCache:
         return age > self.ttl_seconds
 
     def get(self, query: str, threshold: Optional[float] = None) -> Optional[str]:
-        """Get cached response for a semantically similar query.
+            """Get cached response for a semantically similar query.
 
         Args:
             query: Query string to look up
@@ -307,7 +307,7 @@ class ContrastiveSemanticCache:
             return None
 
     def put(self, query: str, response: str, force: bool = False) -> bool:
-        """Store a query-response pair in the cache.
+            """Store a query-response pair in the cache.
 
         Args:
             query: Query string
@@ -353,13 +353,13 @@ class ContrastiveSemanticCache:
         return True
 
     def clear(self):
-        """Clear all cache entries."""
+            """Clear all cache entries."""
         self._cache.clear()
         self._embedding_matrix = None
         logger.info("Cache cleared")
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get cache statistics.
+            """Get cache statistics.
 
         Returns:
             Dictionary with cache statistics
@@ -380,7 +380,7 @@ class ContrastiveSemanticCache:
         }
 
     def export_cache(self, filepath: str):
-        """Export cache to JSON file.
+            """Export cache to JSON file.
 
         Args:
             filepath: Path to save the cache
@@ -405,7 +405,7 @@ class ContrastiveSemanticCache:
             logger.error(f"Failed to export cache: {e}")
 
     def import_cache(self, filepath: str, clear_existing: bool = False):
-        """Import cache from JSON file.
+            """Import cache from JSON file.
 
         Args:
             filepath: Path to load cache from
@@ -449,23 +449,23 @@ class NullCache:
     """Fallback cache that never stores or retrieves anything."""
 
     def __init__(self, *args, **kwargs):
-        """Initialize the null cache."""
+            """Initialize the null cache."""
         logger.warning("Using NullCache - no caching will be performed")
 
     def get(self, query: str, threshold: Optional[float] = None) -> Optional[str]:
-        """Always return None (cache miss)."""
+            """Always return None (cache miss)."""
         return None
 
     def put(self, query: str, response: str, force: bool = False) -> bool:
-        """Never store anything."""
+            """Never store anything."""
         return False
 
     def clear(self):
-        """No-op."""
+            """No-op."""
         pass
 
     def get_stats(self) -> Dict[str, Any]:
-        """Return empty stats."""
+            """Return empty stats."""
         return {
             "entries": 0,
             "hits": 0,
