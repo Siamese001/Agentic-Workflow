@@ -5,8 +5,10 @@ Integrates:
 - AtomicStateManager for zero-loss state checkpointing
 - HardenedRouter for automatic provider fallback
 - Circuit breakers and retry logic for resilience
+- Titanium RAG Pipeline for SOTA retrieval
 
 Phase 3: Final Integration - Wiring hardened components into main orchestrator
+Phase 4: Titanium RAG Integration - Brain transplant complete
 """
 
 import logging
@@ -39,6 +41,12 @@ from apps_rg.L3_orchestration.orchestrate_workflow import (
 from apps_rg.L3_orchestration.resume_orchestration_config import (
     ReasoningConfig,
     get_reasoning_config,
+)
+from apps_rg.L3_orchestration.titanium_integration import (
+    inject_titanium_tools,
+    prepare_titanium_context,
+    log_titanium_usage,
+    enhance_system_prompt,
 )
 
 
@@ -159,6 +167,16 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             reasoning_config = get_reasoning_config(hop_id)
             if reasoning_config:
                 temperature = temperature or reasoning_config.temperature
+            
+            # Inject Titanium RAG tools into context
+            context = inject_titanium_tools(context)
+            
+            # Prepare async Titanium context
+            context = await prepare_titanium_context(context)
+            
+            # Enhance prompt with Titanium search instructions if needed
+            if reasoning_config and reasoning_config.rag_type in ["HYBRID", "AGENTIC"]:
+                prompt = enhance_system_prompt(prompt)
             
             # Determine routing tier based on hop requirements
             tier = self._determine_routing_tier(hop_id, reasoning_config)
