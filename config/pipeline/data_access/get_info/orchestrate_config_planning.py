@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .orchestrate_config_planning_enums import *
+from .orchestrate_config_planning_impl import *
 from .orchestrate_config_planning_models import *
 from .orchestrate_config_planning_models_1 import *
 from .orchestrate_config_planning_impl import *

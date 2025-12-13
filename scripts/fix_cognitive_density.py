@@ -144,18 +144,18 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
     filepath.write_text(shim_content, encoding='utf-8')
     print(f"  Updated {filepath.name} as compatibility shim")
 
-# Files to fix - continuing agentic_core + scripts cognitive density violations (very large scripts)
+# Files to fix - continuing agentic_core + prompt_governance + config cognitive density violations
 files_to_fix = [
-    "agentic_core/L1_cognition/planning/runtime_v5_impl_impl.py",
-    "scripts/deduplication/dedup_v7_impl_impl.py",
-    "scripts/setup/pop_v6_impl_impl_impl_impl.py",
-    "scripts/tooling/fix_v6_impl_impl_impl_impl.py",
-    "scripts/tooling/gen_v6_impl_impl_impl.py",
-    "scripts/tooling/pop_v6.py",
-    "scripts/tooling/purge_v5_impl_impl.py",
-    "scripts/tooling/trans_v5_impl_impl_impl.py",
-    "scripts/validation/audit_v6_impl_impl_impl_impl.py",
-    "scripts/validation/canon_v6_impl_impl_impl.py",
+    "agentic_core/L1_cognition/planning/runtime_v5_impl_impl_impl.py",
+    "prompt_governance/prompts_v7.py",
+    "prompt_governance/test_v6_impl_impl_impl_impl.py",
+    "prompt_governance/safety/const_v6.py",
+    "config/init_v6.py",
+    "config/policy/init_v5_impl_impl_impl_impl.py",
+    "config/logic/synthesis/pick_best/refine_v6_impl_impl_impl.py",
+    "config/logic/synthesis/pick_best/scores_v6_impl_impl_impl_impl.py",
+    "config/logic/data_access/get_info/query_v6_impl_impl.py",
+    "config/logic/data_access/get_info/store_v5_impl.py",
 ]
 
 root = Path("c:/Git/Agentic-Workflow")

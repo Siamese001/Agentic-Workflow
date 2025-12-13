@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .search_schema_vectors_enums import *
+from .search_schema_vectors_impl import *
 from .search_schema_vectors_models import *
 from .search_schema_vectors_impl import *
 

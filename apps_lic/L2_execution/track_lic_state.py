@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .track_lic_state_types import *
+from .track_lic_state_impl import *
 from .track_lic_state_impl import *
 
 __all__ = ['*']  # Re-export all imported names

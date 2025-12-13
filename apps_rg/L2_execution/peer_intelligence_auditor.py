@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .peer_intelligence_auditor_types import *
+from .peer_intelligence_auditor_impl import *
 from .peer_intelligence_auditor_impl import *
 
 __all__ = ['*']  # Re-export all imported names

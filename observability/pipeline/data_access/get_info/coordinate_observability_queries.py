@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .coordinate_observability_queries_types import *
+from .coordinate_observability_queries_impl_impl_impl import *
 from .coordinate_observability_queries_impl import *
 
 __all__ = ['*']  # Re-export all imported names

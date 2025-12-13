@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .lic_cta_patterns_enums import *
+from .lic_cta_patterns_impl import *
 from .lic_cta_patterns_models import *
 from .lic_cta_patterns_impl import *
 

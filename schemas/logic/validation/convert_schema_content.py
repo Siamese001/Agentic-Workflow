@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .convert_schema_content_types import *
+from .convert_schema_content_impl import *
 from .convert_schema_content_impl import *
 
 __all__ = ['*']  # Re-export all imported names

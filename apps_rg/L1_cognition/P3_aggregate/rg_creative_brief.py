@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .rg_creative_brief_enums import *
+from .rg_creative_brief_impl_impl_impl import *
 from .rg_creative_brief_models import *
 from .rg_creative_brief_models_1 import *
 from .brief_models_2 import *

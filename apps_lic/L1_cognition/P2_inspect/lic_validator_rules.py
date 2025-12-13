@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .lic_validator_rules_types import *
+from .lic_validator_rules_impl import *
 from .lic_validator_rules_impl import *
 
 __all__ = ['*']  # Re-export all imported names

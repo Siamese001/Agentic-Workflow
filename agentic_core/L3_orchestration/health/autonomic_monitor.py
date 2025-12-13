@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .autonomic_monitor_types import *
+from .autonomic_monitor_impl import *
 from .autonomic_monitor_impl import *
 
 __all__ = ['*']  # Re-export all imported names

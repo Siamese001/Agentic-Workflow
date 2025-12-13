@@ -9,6 +9,6 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .enums_v4 import *
+from .enums_final_enums_enums import *
 
 __all__ = ['*']  # Re-export all imported names
