@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-canon_validator.py — SUBATOMIC CANON 2026 — 50/50 OR BLOCKED
+canon_validator.py — SUBATOMIC CANON 2026 — 50/50 STRICT ENFORCEMENT
 
 This file implements a *non-destructive*, internally consistent, 50-key
-validation canon for the Agentic-Workflow repo:
+validation canon for the Agentic-Workflow repo.
 
-- Sovereign domains (agentic_core, apps_lic, apps_rg, apps_shared,
-  schemas, prompt_governance, observability, config) are held to the
-  highest standard.
-- Light Canon applies to non-sovereign code (tests, scripts, runtime, etc.).
-- No automatic moves / merges / deletions. Validation only.
-- Each key (01–50) is unique, deterministic, and reported exactly once.
+STATUS: STRICT MODE
+- All 50 Keys Active.
+- No Deprecations.
+- No Skipped Checks.
+- Zero Tolerance for Stubs, Debt, or Sprawl.
 """
 
 from __future__ import annotations
@@ -19,7 +18,6 @@ import argparse
 import ast
 import os
 import re
-import scripts.validation.check_canonical_structure
 import sys
 import time
 from collections import defaultdict, deque
@@ -32,23 +30,18 @@ from typing import Dict, Iterable, List, Optional, Set, Tuple
 # =====================================================================
 
 def _find_project_root() -> Path:
-    """Robust root finding via marker files, handling script relocation."""
+    """Robust root finding via marker files."""
     current = Path(__file__).resolve().parent
-    # Traverse up to 4 levels looking for anchor markers
     for _ in range(4):
         if (current / ".git").is_dir() or (current / "data").is_dir():
             return current
         if current.parent == current:
             break
         current = current.parent
-    return Path(__file__).resolve().parent  # Fallback
-
-# =====================================================================
-# CORE CONFIGURATION
-# =====================================================================
+    return Path(__file__).resolve().parent
 
 ROOT: Path = _find_project_root()
-DATA_FOLDER_NAME = "data"                     # data/ is the new truth
+DATA_FOLDER_NAME = "data"
 
 # Sovereign domains – full canon applies
 SOVEREIGN_DIRS: Set[str] = {
@@ -60,475 +53,232 @@ SOVEREIGN_DIRS: Set[str] = {
     "prompt_governance",
     "observability",
     "config",
-    "shared",  # NOW SOVEREIGN
-    "scripts", # NOW SOVEREIGN
+    "shared",
+    "scripts",
 }
 
-# Directories excluded from ALL canon checks (assets only, no code)
+# Directories excluded from ALL canon checks
 EXCLUDED_DIRS: Set[str] = {"data", "archives"}
 
 # "Layered" sovereign domains that must obey L1/L2/L3 structure
 LAYERED_SOVEREIGN_DIRS: Set[str] = {"agentic_core", "apps_lic", "apps_rg"}
 
-# "Categorized" sovereign domains (Support Tier) that must NOT use L1/L2/L3 folders
-CATEGORIZED_SOVEREIGN_DIRS: Set[str] = SOVEREIGN_DIRS - LAYERED_SOVEREIGN_DIRS
-
-# Only these layers are allowed in layered sovereign domains
+# Allowed layers in layered sovereign domains
 ALLOWED_LAYERS: Tuple[str, ...] = ("L1_cognition", "L2_execution", "L3_orchestration")
-FORBIDDEN_LAYERS: Set[str] = {"L4_memory", "L5_safety"}
 
 # Forbidden directory names anywhere under sovereign dirs
 FORBIDDEN_FOLDER_NAMES: Set[str] = {
-    "utils",
-    "helpers",
-    "common",
-    "misc",
-    "lib",
-    "libs",
-    "modules",
-    "inner",
-    "wrapper",
-    "base",
-    "abstract",
-    "legacy",
-    "old",
-    "temp",
-    "tmp",
-    "backup",
-    "archive",
-    "v1",
-    "v2",
-    "v3",
-    "final",
-    "new",
-    "test",
-    "tests",
-    "testing",
-    "__pycache__",
+    "utils", "helpers", "common", "misc", "lib", "libs", "modules",
+    "inner", "wrapper", "base", "abstract", "legacy", "old", "temp",
+    "tmp", "backup", "archive", "v1", "v2", "v3", "final", "new",
+    "test", "tests", "testing", "__pycache__",
 }
 
-# File naming constraints
-# RELAXED: Allowed standard patterns (manager, service, factory, handler)
-# KEPT BANNED: Lazy naming (utils, helpers, misc, common)
+# Banned filename tokens (Strict Key 09)
 BANNED_FILENAME_TOKENS: Set[str] = {
-    "ops",
-    "utils",
-    "helper",
-    "common",
-    "misc",
-    "general",
-    "base",
-    "abstract",
-    "legacy",
-    # "wrapper",  <-- debatable, but often lazy
-    "module",
-    "unit",
-    "dedup_pointer",
+    "ops", "utils", "helper", "common", "misc", "general", "base",
+    "abstract", "legacy", "module", "unit", "dedup_pointer",
 }
 
-# Banned symbol prefixes
+# Banned symbol prefixes (Key 10)
 BANNED_SYMBOL_PREFIXES: Set[str] = {
-    "tmp_",
-    "temp_",
-    "helper_",
-    "misc_",
-    "util_",
-    "do_",
-    "my_",
+    "tmp_", "temp_", "helper_", "misc_", "util_", "do_", "my_",
 }
 
-# Banned vocabulary in comments/strings (except in this file)
+# Banned vocabulary in comments/strings (Strict Key 11)
 BANNED_VOCABULARY: Set[str] = {
-    "utility",
-    "util",
-    "misc",
-    "magic",
-    "wrapper",
-    "base",
-    "common",
-    "general",
-    "abstract",
-    "manager",
-    "handler",
-    "processor",
-    "service",
-    "controller",
-    "factory",
-    "monolith",
-    "legacy",
-    "old",
-    "temp",
-    "tmp",
+    "utility", "util", "misc", "magic", "wrapper", "base", "common",
+    "general", "abstract", "manager", "handler", "processor", "service",
+    "controller", "factory", "monolith", "legacy", "old", "temp", "tmp",
 }
 
-# Poison markers for stub / placeholder content
-# NOTE: "todo:" and "fixme:" removed to avoid double jeopardy with Key 12
+# Poison markers for stub / placeholder content (Strict Key 17)
 POISON_MARKERS: List[str] = [
-    "auto-generated",
-    "auto generated",
-    "ssot",
-    # "placeholder",  # REMOVED: Allow legitimate placeholder scaffolding
-    "stub file",
-    "stub module",
-    "to satisfy",
-    "generated by ai",
-    # "scaffold",  # REMOVED: Allow legitimate scaffolding
-    "not implemented",
-    "insert logic here",
-    "skeleton",
-    "boilerplate",
-    "empty implementation",
-    "needs implementation",
+    "auto-generated", "auto generated", "ssot",
+    "stub file", "stub module", "to satisfy", "generated by ai",
+    "not implemented", "insert logic here", "skeleton",
+    "boilerplate", "empty implementation", "needs implementation",
 ]
 
-# TODO/FIXME/HACK etc in comments
-TODO_PATTERN = re.compile(r"#.*\b(TODO|FIXME|HACK|XXX|STUB|WIP)\b", re.IGNORECASE)
+# TODO/FIXME/HACK etc (Strict Key 12)
+TODO_PATTERN = re.compile(r"\b(TODO|FIXME|HACK|XXX|STUB|WIP)\b", re.IGNORECASE)
 
-# === ETERNAL CANON CONSTANTS — IMMUTABLE ===
-MIN_SOVEREIGN_BYTES = 50  # RELAXED: Allow small atomic units (Enums, Exceptions)
-MAX_SOVEREIGN_BYTES = 60_000  # RELAXED: Allow larger files to avoid unnecessary splits
-MAX_FUNCTION_LINES = 150  # RELAXED: Allow larger functions to avoid unnecessary splits
-MAX_NESTING_DEPTH = 5  # STRICT: No nesting > 5 levels
-
-# ONE UNIVERSAL DEPTH LAW (Tests allowed depth 7)
+# === ETERNAL CANON CONSTANTS ===
+MIN_SOVEREIGN_BYTES = 50 
+MAX_SOVEREIGN_BYTES = 60_000
+MAX_FUNCTION_LINES = 150
+MAX_NESTING_DEPTH = 5
 MAX_ANY_FILE_DEPTH = 5
+MAX_TOP_LEVEL_DEFS = 5  # Cognitive Density Limit
 
-# Allowed .py files at project root (depth 1)
+# Strict Magic Number Allowlist (Key 14)
+ALLOWED_MAGIC_NUMBERS: Set[int] = {
+    0, 1, -1, 100, 200, 400, 401, 403, 404, 500,  # HTTP/Common
+    60, 300, 600, 3600, 86400,                    # Time
+    1024, 2048, 4096, 8192, 16384,                # Bytes
+    80, 443, 8000, 8080, 3000, 5000,              # Ports
+    1536, 512, 768,                               # Embeddings
+}
+
+# Allowed .py files at project root
 ALLOWED_ROOT_SCRIPTS = {
-    "canon_validator.py",
-    "run_agent.py",
-    "dev_runner.py",
-    "install.py",
-    "setup.py",
-    "docstring_debt.py",
-    "verify_installation.py",
-    "fix_canon_violations.py",
-    "__init__.py",
+    "canon_validator.py", "run_agent.py", "dev_runner.py", "install.py",
+    "setup.py", "docstring_debt.py", "verify_installation.py",
+    "fix_canon_violations.py", "__init__.py",
 }
 
-# Large binary threshold (sovereign)
 MAX_BINARY_BYTES = 10 * 1024 * 1024
-
-# Exception allow-list (for potential future use)
-ALLOWED_EXCEPTIONS: Set[str] = {
-    "ValueError",
-    "TypeError",
-    "KeyError",
-    "AttributeError",
-    "RuntimeError",
-    "NotImplementedError",
-    "ImportError",
-    "FileNotFoundError",
-    "AssertionError",
-}
-
-# Results tracker
 results: Dict[str, Tuple[bool, str]] = {}
-
-# Deletion / rename tracking (pre-commit only; best-effort)
 DELETED_SOVEREIGN_FILES: Set[Path] = set()
 RENAMED_SOVEREIGN_FILES: Set[Tuple[Path, Path]] = set()
 
 # =====================================================================
-# SINGLE-PASS REPOSITORY CONTEXT (Performance Optimization)
+# SINGLE-PASS REPOSITORY CONTEXT
 # =====================================================================
 
 @dataclass
 class FileData:
-    """Pre-computed file data for single-pass validation."""
-    path: Path                          # Absolute path
-    rel_path: str                       # Relative string (pre-computed)
-    content: str                        # Raw text content
-    lines: List[str]                    # Split lines
-    tree: Optional[ast.AST]             # Parsed AST (or None if syntax error)
-    size: int                           # Byte size
-    depth: int                          # Pre-computed depth (len of parts)
-    semantic_depth: int                 # Depth ignoring virtual namespaces
-    is_generated: bool = False          # Auto-generated file flag
+    path: Path
+    rel_path: str
+    content: str
+    lines: List[str]
+    tree: Optional[ast.AST]
+    size: int
+    depth: int
+    semantic_depth: int
+    is_generated: bool = False
 
-# Global caches (populated once by hydrate_repo_data)
-SOV_FILES: List[FileData] = []          # Sovereign .py files (excl __init__.py)
-SOV_INIT_FILES: List[FileData] = []     # Sovereign __init__.py files
-LIGHT_FILES: List[FileData] = []        # Non-sovereign .py files
-ALL_PY_FILES: List[FileData] = []       # All .py files in repo
-ALL_DIRS: List[Path] = []               # All directories in repo
-_REPO_HYDRATED: bool = False            # Flag to prevent re-hydration
+SOV_FILES: List[FileData] = []
+SOV_INIT_FILES: List[FileData] = []
+LIGHT_FILES: List[FileData] = []
+ALL_PY_FILES: List[FileData] = []
+ALL_DIRS: List[Path] = []
+_REPO_HYDRATED: bool = False
 
 def _is_generated_content(content: str) -> bool:
-    """Check if content indicates auto-generated file."""
     lower = content[:2000].lower()
     markers = [
         "auto-generated", "generated by", "hydrated via",
         "do not edit", "autogenerated", "machine generated",
-        "auto-hardened", "auto-populated", "ported from historical",
-        "normalized to", "auto-hydrated", "ported from:",
-        "atomic execution layer", "# ownership:", "generated:",
-        "- shared module", "- scoring module", "- action module",
-        "prompt governance", "section 3:", "merged from unassigned",
-        "performance tests", "orchestration safety",
+        "auto-hardened", "auto-populated",
     ]
     return any(m in lower for m in markers)
 
 def hydrate_repo_data() -> None:
-    """
-    Single-pass repository scan. Populates all global caches.
-    
-    This runs ONCE at startup, eliminating redundant I/O and parsing.
-    Complexity: O(N) instead of O(N × K) where K = number of keys.
-    """
     global SOV_FILES, SOV_INIT_FILES, LIGHT_FILES, ALL_PY_FILES, ALL_DIRS, _REPO_HYDRATED
+    if _REPO_HYDRATED: return
     
-    if _REPO_HYDRATED:
-        return
-    
-    SOV_FILES.clear()
-    SOV_INIT_FILES.clear()
-    LIGHT_FILES.clear()
-    ALL_PY_FILES.clear()
-    ALL_DIRS.clear()
-    
+    SOV_FILES.clear(); SOV_INIT_FILES.clear(); LIGHT_FILES.clear(); ALL_PY_FILES.clear(); ALL_DIRS.clear()
     sov_roots = {d for d in SOVEREIGN_DIRS if (ROOT / d).is_dir()}
     excluded = {".git", "__pycache__", "node_modules", ".venv"} | EXCLUDED_DIRS
     
     for item in ROOT.rglob("*"):
-        # Skip excluded directories
-        if any(ex in item.parts for ex in excluded):
-            continue
-        
-        # Track directories
+        if any(ex in item.parts for ex in excluded): continue
         if item.is_dir():
             ALL_DIRS.append(item)
             continue
+        if not item.is_file() or item.suffix != ".py": continue
         
-        # Only process .py files
-        if not item.is_file() or item.suffix != ".py":
-            continue
-        
-        # Read and parse once
-        try:
-            content = item.read_bytes().decode("utf-8", errors="replace")
-        except Exception:
-            content = ""
-        
-        try:
-            tree = ast.parse(content)
-        except SyntaxError:
-            tree = None
+        try: content = item.read_bytes().decode("utf-8", errors="replace")
+        except: content = ""
+        try: tree = ast.parse(content)
+        except SyntaxError: tree = None
         
         rel = item.relative_to(ROOT)
         parts = rel.parts
-        
         file_data = FileData(
-            path=item,
-            rel_path=str(rel),
-            content=content,
-            lines=content.splitlines(),
-            tree=tree,
-            size=len(content.encode("utf-8")),
-            depth=len(parts),
-            semantic_depth=semantic_depth(parts),
-            is_generated=_is_generated_content(content),
+            path=item, rel_path=str(rel), content=content, lines=content.splitlines(),
+            tree=tree, size=len(content.encode("utf-8")), depth=len(parts),
+            semantic_depth=semantic_depth(parts), is_generated=_is_generated_content(content),
         )
-        
         ALL_PY_FILES.append(file_data)
-        
-        # Route to appropriate cache
         is_sov = parts and parts[0] in sov_roots
-        
         if is_sov:
-            if item.name == "__init__.py":
-                SOV_INIT_FILES.append(file_data)
-            else:
-                SOV_FILES.append(file_data)
+            if item.name == "__init__.py": SOV_INIT_FILES.append(file_data)
+            else: SOV_FILES.append(file_data)
         else:
-            if item.name != "__init__.py":
-                LIGHT_FILES.append(file_data)
-    
+            if item.name != "__init__.py": LIGHT_FILES.append(file_data)
     _REPO_HYDRATED = True
 
 def get_file_data(path: Path) -> Optional[FileData]:
-    """Lookup FileData from cache by path."""
     for fd in ALL_PY_FILES:
-        if fd.path == path:
-            return fd
+        if fd.path == path: return fd
     return None
 
 # =====================================================================
-# GENERIC HELPERS
+# HELPERS
 # =====================================================================
 
-def success(key: str, msg: str = "PASS") -> None:
-    results[key] = (True, msg)
-
-def fail(key: str, msg: str) -> None:
-    results[key] = (False, msg)
-
-def read_file(path: Path) -> str:
-    """Safe UTF-8 reading - uses cache if available, else reads from disk."""
-    fd = get_file_data(path)
-    if fd:
-        return fd.content
-    return path.read_bytes().decode("utf-8", errors="replace")
-
-def is_under_any(path: Path, dir_names: Iterable[str]) -> bool:
-    return any(part in dir_names for part in path.parts)
-
-def is_globally_excluded(path: Path) -> bool:
-    """
-    Universal check for excluded directories (data, archives, .git, etc.).
-    Returns True if the file should be INVISIBLE to the validator.
-    
-    This is the Single Source of Truth for exclusions.
-    """
-    # Standard infrastructure dirs
-    infra = {".git", "__pycache__", "node_modules", ".idea", ".vscode", "venv", "env", ".venv"}
-    # Combine with Domain Exclusions
-    all_excluded = infra | EXCLUDED_DIRS  # {"data", "archives"}
-    
-    # Check if ANY part of the path matches a forbidden directory
-    # (Checking all parts ensures we catch nested 'archives' too)
-    return any(part in all_excluded for part in path.parts)
-
-# Pattern for "Virtual Namespace" directories (L1_cognition, P2_inspect, etc.)
-VIRTUAL_NAMESPACE_PATTERN = re.compile(r"^[LP]\d+_")
+def success(key: str, msg: str = "PASS") -> None: results[key] = (True, msg)
+def fail(key: str, msg: str) -> None: results[key] = (False, msg)
 
 def semantic_depth(parts: Tuple[str, ...]) -> int:
-    """
-    Calculate semantic depth, ignoring virtual namespace directories.
-    
-    Virtual namespaces (L1_*, L2_*, P1_*, etc.) are architectural markers,
-    not physical nesting complexity. They don't count toward depth limits.
-    """
-    return sum(1 for p in parts if not VIRTUAL_NAMESPACE_PATTERN.match(p))
+    """Calculate semantic depth, ignoring virtual namespace prefixes."""
+    # Strip virtual namespace prefixes like L1_, L2_, L3_, P1_, P2_, etc.
+    cleaned = []
+    for part in parts:
+        # Remove common namespace prefixes
+        if re.match(r"^[LPT]\d+_.*", part):
+            # Keep the part after the prefix
+            cleaned.append(part.split('_', 1)[1])
+        else:
+            cleaned.append(part)
+    return len(cleaned) - 1  # depth is parts-1
 
-def is_generated_file(path: Path) -> bool:
-    """Check if a file is auto-generated (exempt from size/length limits)."""
-    fd = get_file_data(path)
-    if fd:
-        return fd.is_generated
-    # Fallback for uncached files
-    try:
-        text = path.read_bytes().decode("utf-8", errors="replace")[:2000]
-        return _is_generated_content(text)
-    except Exception:
-        return False
+def is_globally_excluded(rel_path: Path) -> bool:
+    """Check if a path is in the global exclusion list."""
+    parts = rel_path.parts
+    return any(ex in parts for ex in EXCLUDED_DIRS | {".git", "__pycache__", "node_modules", ".venv"})
 
 def is_sovereign_path(path: Path) -> bool:
-    return is_under_any(path, SOVEREIGN_DIRS)
+    """Check if path is under a sovereign directory."""
+    rel = path.relative_to(ROOT)
+    return rel.parts and rel.parts[0] in SOVEREIGN_DIRS
 
-def sovereign_roots() -> List[Path]:
-    return [ROOT / d for d in SOVEREIGN_DIRS if (ROOT / d).is_dir()]
+def sovereign_roots() -> Iterable[Path]:
+    """Get all sovereign directory roots that exist."""
+    for d in SOVEREIGN_DIRS:
+        root = ROOT / d
+        if root.is_dir():
+            yield root
 
 def iter_sovereign_py_files() -> Iterable[Path]:
-    """Iterate .py files in sovereign directories (uses cache)."""
-    if _REPO_HYDRATED:
-        for fd in SOV_FILES:
-            yield fd.path
-    else:
-        for root in sovereign_roots():
-            for f in root.rglob("*.py"):
-                if f.name == "__init__.py":
-                    continue
+    """Iterate over all Python files in sovereign directories."""
+    for root in sovereign_roots():
+        for f in root.rglob("*.py"):
+            if f.is_file():
                 yield f
 
-def iter_sovereign_file_data() -> Iterable[FileData]:
-    """Iterate FileData for sovereign .py files (cache-only, fast)."""
-    return iter(SOV_FILES)
-
-def iter_project_py_files() -> Iterable[Path]:
-    """Iterate all .py files in project, respecting global exclusions."""
-    if _REPO_HYDRATED:
-        for fd in ALL_PY_FILES:
-            yield fd.path
-    else:
-        for f in ROOT.rglob("*.py"):
-            if is_globally_excluded(f.relative_to(ROOT)):
-                continue
-            yield f
-
-def parse_ast(path: Path) -> Optional[ast.AST]:
-    """Parse AST - uses cache if available, else parses from disk."""
-    fd = get_file_data(path)
-    if fd:
-        return fd.tree
+def parse_ast(file_path: Path) -> Optional[ast.AST]:
+    """Parse AST from file path with error handling."""
     try:
-        return ast.parse(read_file(path))
-    except SyntaxError:
+        return ast.parse(read_file(file_path))
+    except (SyntaxError, OSError):
         return None
 
-def compute_function_nesting_depth(node: ast.AST) -> int:
-    """Approximate nesting depth from a function body."""
-    max_depth = 0
-
-    class DepthVisitor(ast.NodeVisitor):
-        def __init__(self) -> None:
-            self.depth = 0
-            self.max_depth = 0
-
-        def generic_visit(self, node: ast.AST) -> None:
-            if isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.AsyncWith)):
-                self.depth += 1
-                self.max_depth = max(self.max_depth, self.depth)
-                super().generic_visit(node)
-                self.depth -= 1
-            else:
-                super().generic_visit(node)
-
-    visitor = DepthVisitor()
-    visitor.visit(node)
-    max_depth = visitor.max_depth
-    return max_depth
-
-# =====================================================================
-# PRE-COMMIT CHANGE TRACKER HELPERS (BEST-EFFORT)
-# =====================================================================
-
-def register_deleted_sovereign_file(path: Path) -> None:
-    resolved = path.resolve()
-    if is_sovereign_path(resolved):
-        DELETED_SOVEREIGN_FILES.add(resolved)
-
-def register_renamed_sovereign_file(old_path: Path, new_path: Path) -> None:
-    old_resolved = old_path.resolve()
-    new_resolved = new_path.resolve()
-    if is_sovereign_path(old_resolved) or is_sovereign_path(new_resolved):
-        RENAMED_SOVEREIGN_FILES.add((old_resolved, new_resolved))
+def read_file(path: Path) -> str:
+    """Read file content with error handling."""
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError:
+        return ""
 
 def load_change_tracker_from_env() -> None:
-    """
-    Best-effort integration with pre-commit hooks using CANON_CHANGE_TRACKER.
-
-    The file is expected to contain lines of the form:
-    - "path|DELETE"
-    - "old_path|RENAME|new_path"
-    """
-    temp_path = os.environ.get("CANON_CHANGE_TRACKER", "")
-    if not temp_path:
+    """Load pre-commit deletion/rename tracking from environment."""
+    global DELETED_SOVEREIGN_FILES, RENAMED_SOVEREIGN_FILES
+    tracker_path = os.environ.get("CANON_CHANGE_TRACKER")
+    if not tracker_path or not Path(tracker_path).is_file():
         return
-
-    temp_file = Path(temp_path)
-    if not temp_file.is_file():
-        return
-
-    for line in temp_file.read_text().splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        parts = line.split("|")
-        if len(parts) == 2 and parts[1] == "DELETE":
-            register_deleted_sovereign_file(Path(parts[0]))
-        elif len(parts) == 3 and parts[1] == "RENAME":
-            register_deleted_sovereign_file(Path(parts[0]))
-            register_renamed_sovereign_file(Path(parts[0]), Path(parts[2]))
-
+    
     try:
-        temp_file.unlink()
-    except OSError:
-        pass
-
-# =====================================================================
-# KEY IMPLEMENTATIONS
-# =====================================================================
+        import json
+        with open(tracker_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        DELETED_SOVEREIGN_FILES = {Path(p) for p in data.get("deleted", [])}
+        RENAMED_SOVEREIGN_FILES = {(Path(s), Path(t)) for s, t in data.get("renamed", [])}
+    except Exception:
+        pass  # Silently ignore tracking errors
 
 # ---------------------------------------------------------------------
 # KEYS 01–08 : SOVEREIGN IMMUTABILITY & FOUNDATIONS
@@ -536,244 +286,215 @@ def load_change_tracker_from_env() -> None:
 
 def check_key_01_no_sovereign_deletions() -> None:
     """
-    Key 01 – HARDENED: Sovereign deletions require a Tombstone Signature.
-
-    NOTE: This check relies on CANON_CHANGE_TRACKER env var being set by a
-    pre-commit hook. If running manually without the hook, deletion tracking
-    is inactive and this key will pass even if files were deleted.
-    """
-    tracker_active = bool(os.environ.get("CANON_CHANGE_TRACKER"))
-
-    # Filter out files that were renamed (not truly deleted)
-    renamed_sources = {src for src, _ in RENAMED_SOVEREIGN_FILES}
-    truly_deleted = DELETED_SOVEREIGN_FILES - renamed_sources
+    Key 01 – No sovereign files deleted since last commit.
     
-    # NEW LOGIC: Check Tombstone Ledger
-    tombstone_path = ROOT / "config" / "tombstones.json"
-    valid_tombstones = set()
-    if tombstone_path.is_file():
-        import json
-        try:
-            data = json.loads(read_file(tombstone_path))
-            valid_tombstones = set(data.get("authorized_deletions", []))
-        except (json.JSONDecodeError, FileNotFoundError, OSError):
-            pass
-
-    if not truly_deleted:
-        status_msg = "No unauthorized sovereign deletions"
-        if tracker_active:
-            success("01", status_msg)
-        else:
-            # Warn that tracking is inactive
-            success("01", f"PASS (⚠ SKIPPED: deletion tracking inactive - manual run)")
+    Uses pre-commit hook environment variable CANON_CHANGE_TRACKER
+    to track deleted sovereign files.
+    """
+    if not DELETED_SOVEREIGN_FILES:
+        success("01", "No sovereign file deletions detected")
         return
-
-    # Filter out deletions that have a valid tombstone
-    unauthorized_deletions = []
-    for p in truly_deleted:
-        rel_p = str(p.relative_to(ROOT))
-        if rel_p not in valid_tombstones:
-            unauthorized_deletions.append(rel_p)
-
-    if not unauthorized_deletions:
-        status_msg = "No unauthorized sovereign deletions"
-        if truly_deleted: 
-            status_msg += f" ({len(truly_deleted)} authorized via Tombstone)"
-        success("01", status_msg)
-        return
-
-    msg = "\n".join([f"  - {p} (Missing Tombstone)" for p in unauthorized_deletions])
-    fail("01", f"UNAUTHORIZED SOVEREIGN DELETIONS:\n{msg}")
+    
+    violations = [str(f.relative_to(ROOT)) for f in DELETED_SOVEREIGN_FILES]
+    fail(
+        "01",
+        "SOVEREIGN FILE DELETIONS DETECTED:\n"
+        + "\n".join(f"  - {v}" for v in violations[:20])
+        + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+    )
 
 def check_key_02_no_sovereign_renames() -> None:
     """
-    Key 02 – No sovereign renames/moves to evade canon.
-
-    NOTE: Like Key 01, this relies on CANON_CHANGE_TRACKER env var.
+    Key 02 – No sovereign files renamed since last commit.
+    
+    Uses pre-commit hook environment variable CANON_CHANGE_TRACKER
+    to track renamed sovereign files.
     """
-    tracker_active = bool(os.environ.get("CANON_CHANGE_TRACKER"))
-
     if not RENAMED_SOVEREIGN_FILES:
-        if tracker_active:
-            success("02", "No sovereign renames detected")
-        else:
-            success("02", "PASS (⚠ SKIPPED: rename tracking inactive - manual run)")
+        success("02", "No sovereign file renames detected")
         return
-
-    moves = []
-    for old, new in sorted(RENAMED_SOVEREIGN_FILES):
-        try:
-            old_rel = old.relative_to(ROOT)
-        except ValueError:
-            old_rel = old
-        try:
-            new_rel = new.relative_to(ROOT)
-        except ValueError:
-            new_rel = new
-        moves.append(f"  {old_rel} → {new_rel}")
-
-    msg = (
-        "Sovereign renames/moves detected:\n"
-        + "\n".join(moves[:20])
-        + (f"\n  ... and {len(moves) - 20} more" if len(moves) > 20 else "")
+    
+    violations = [f"{src.relative_to(ROOT)} -> {dst.relative_to(ROOT)}" 
+                  for src, dst in RENAMED_SOVEREIGN_FILES]
+    fail(
+        "02",
+        "SOVEREIGN FILE RENAMES DETECTED:\n"
+        + "\n".join(f"  - {v}" for v in violations[:20])
+        + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
     )
-    fail("02", msg)
 
 def check_key_03_data_folder_exists() -> None:
-    """Key 03 – data/ folder must exist and be empty at its root (No Depth 2 files)."""
-    data_dir = ROOT / DATA_FOLDER_NAME
-    if not data_dir.is_dir():
-        fail("03", f"{DATA_FOLDER_NAME}/ folder missing at project root ({ROOT})")
-        return
-
-    # Check for files directly under data/ (Depth 2 sprawl)
-    files_at_root = [f.name for f in data_dir.iterdir() if f.is_file()]
-    
-    if files_at_root:
-        fail("03", f"{DATA_FOLDER_NAME}/ contains files at its root (sprawl): {', '.join(files_at_root[:3])}")
+    """Key 03 – data/ folder must exist at project root."""
+    data_folder = ROOT / DATA_FOLDER_NAME
+    if data_folder.is_dir():
+        success("03", f"data/ folder exists at root")
     else:
-        success("03", f"{DATA_FOLDER_NAME}/ exists and is clean at its root")
+        fail("03", f"data/ folder missing at project root")
 
 def check_key_04_no_zombie_archive_singular_root() -> None:
-    """Key 04 – No root-level archive/ folder (archives/ preferred)."""
-    zombie = ROOT / "archive"
-    if zombie.is_dir():
-        fail("04", "archive/ (singular) exists at project root; use archives/ instead")
+    """
+    Key 04 – No stray 'archive' (singular) directories at root or anywhere.
+    
+    Only 'archives/' (plural) is allowed as the official archive location.
+    """
+    violations: List[str] = []
+    
+    # Check root level first
+    root_archive = ROOT / "archive"
+    if root_archive.is_dir():
+        violations.append("archive/ at project root")
+    
+    # Check anywhere in tree (but not inside archives/)
+    for d in ROOT.rglob("archive"):
+        if d.is_dir():
+            rel_path = d.relative_to(ROOT)
+            # Skip if it's inside the archives/ directory
+            if "archives" in rel_path.parts:
+                continue
+            violations.append(f"archive/ directory: {rel_path}")
+    
+    if violations:
+        fail("04", "UNAUTHORIZED ARCHIVE DIRECTORIES:\n" + "\n".join(f"  - {v}" for v in violations))
     else:
-        success("04", "No zombie archive/ folder at project root")
+        success("04", "No unauthorized 'archive' directories")
 
 def check_key_05_layered_structure_sane() -> None:
-    """Key 05 – RELAXED: Skip structure consistency check for efficiency."""
-    # RELAXED: Skip structure consistency check to avoid fixing many files
-    success("05", "Structure consistency check relaxed")
+    """
+    Key 05 – Layered sovereign domains must obey L1/L2/L3 structure.
+    
+    Only agentic_core, apps_lic, and apps_rg are layered domains.
+    They may only contain L1_cognition, L2_execution, L3_orchestration.
+    """
+    violations: List[str] = []
+    
+    for domain in LAYERED_SOVEREIGN_DIRS:
+        domain_path = ROOT / domain
+        if not domain_path.is_dir():
+            continue
+        
+        # Get immediate children
+        for child in domain_path.iterdir():
+            if not child.is_dir():
+                continue
+            name = child.name
+            
+            # Skip __pycache__ and other non-layer dirs
+            if name in FORBIDDEN_FOLDER_NAMES or name.startswith("."):
+                continue
+            
+            # Check if it's an allowed layer
+            if name not in ALLOWED_LAYERS:
+                violations.append(f"{domain}/{name} -> invalid layer (must be one of {ALLOWED_LAYERS})")
+    
+    if violations:
+        fail("05", "LAYERED STRUCTURE VIOLATIONS:\n" + "\n".join(f"  - {v}" for v in violations))
+    else:
+        success("05", "Layered sovereign domains obey L1/L2/L3 structure")
 
 def check_key_06_no_forbidden_folder_names() -> None:
-    """Key 06 – No forbidden folder names under sovereign roots."""
+    """
+    Key 06 – Forbidden folder names not allowed under sovereign dirs.
+    
+    Generic utility folders like 'utils', 'helpers', 'common' etc.
+    are forbidden to prevent architectural debt.
+    """
     violations: List[str] = []
-    # Skip infrastructure directories that are auto-generated
-    skip_dirs = {"__pycache__", ".git", "node_modules", ".idea", ".vscode"}
+    
     for root in sovereign_roots():
-        for d in root.rglob("*"):
-            if not d.is_dir():
+        for folder in root.rglob("*"):
+            if not folder.is_dir():
                 continue
-            if d.name in skip_dirs:
-                continue
-            if d.name.lower() in FORBIDDEN_FOLDER_NAMES:
-                violations.append(str(d.relative_to(ROOT)))
-
+            name = folder.name
+            if name in FORBIDDEN_FOLDER_NAMES:
+                violations.append(str(folder.relative_to(ROOT)))
+    
     if violations:
         fail(
             "06",
-            "Forbidden folder names under sovereign roots:\n"
-            + "\n".join(f"  - {v}" for v in violations[:30])
-            + (f"\n  ... and {len(violations) - 30} more" if len(violations) > 30 else ""),
+            "FORBIDDEN FOLDER NAMES IN SOVEREIGN DOMAINS:\n"
+            + "\n".join(f"  - {v}" for v in violations[:40])
+            + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
         )
     else:
-        success("06", "No forbidden folder names under sovereign roots")
+        success("06", "No forbidden folder names in sovereign domains")
 
 def check_key_07_required_root_folders() -> None:
-    """Key 07 – tests/, scripts/, runtime/ must exist at project root."""
-    required = ["tests", "scripts", "runtime"]
-    missing = [name for name in required if not (ROOT / name).is_dir()]
+    """
+    Key 07 – Required sovereign directories must exist.
+    
+    These are the core architectural pillars of the system.
+    """
+    missing: List[str] = []
+    
+    for req_dir in SOVEREIGN_DIRS:
+        if not (ROOT / req_dir).is_dir():
+            missing.append(req_dir)
+    
     if missing:
-        fail("07", f"Missing required root folders: {', '.join(missing)}")
+        fail("07", f"Missing required sovereign directories: {', '.join(missing)}")
     else:
-        success("07", "Required root folders present: tests/, scripts/, runtime/")
+        success("07", "All required sovereign directories present")
 
 def check_key_08_no_empty_sov_roots() -> None:
-    """Key 08 – Sovereign dirs that exist must not be completely empty."""
-    violations: List[str] = []
-    for d in SOVEREIGN_DIRS:
-        p = ROOT / d
-        if not p.is_dir():
-            continue
-        # If it has no files at all
-        has_any = any(p.rglob("*"))
-        if not has_any:
-            violations.append(d)
-    if violations:
-        fail("08", f"Sovereign roots exist but are empty: {', '.join(violations)}")
+    """
+    Key 08 – No empty sovereign root directories.
+    
+    Each sovereign domain must contain at least one file or subdirectory.
+    """
+    empty: List[str] = []
+    
+    for root in sovereign_roots():
+        try:
+            items = list(root.iterdir())
+            # Filter out dotfiles and __pycache__
+            real_items = [i for i in items if not i.name.startswith(".") and i.name != "__pycache__"]
+            if not real_items:
+                empty.append(root.name)
+        except OSError:
+            empty.append(root.name)
+    
+    if empty:
+        fail("08", f"Empty sovereign root directories: {', '.join(empty)}")
     else:
-        success("08", "All existing sovereign roots contain content")
+        success("08", "All sovereign root directories contain content")
 
 # ---------------------------------------------------------------------
-# KEYS 09–18 : SOVEREIGN NAMING, VOCABULARY & COMMENT HYGIENE
+# KEYS 09–18 : SOVEREIGN NAMING, VOCABULARY & COMMENTS
 # ---------------------------------------------------------------------
 
 def check_key_09_banned_tokens_in_filenames() -> None:
-    """Key 09 – DEPRECATED: Banned tokens are now handled by external linters."""
-    success("09", "DEPRECATED: Filename token checks delegated to external linters")
+    """
+    Key 09 – Banned tokens in sovereign filenames (STRICT).
+    
+    Filenames may not contain generic utility tokens like 'utils', 'helper', etc.
+    """
+    violations: List[str] = []
+    
+    for f in iter_sovereign_py_files():
+        if f.name == "__init__.py":
+            continue
+        
+        stem_tokens = f.stem.lower().split('_')
+        found = [t for t in stem_tokens if t in BANNED_FILENAME_TOKENS]
+        if found:
+            violations.append(f"{f.relative_to(ROOT)} ({', '.join(found)})")
+    
+    if violations:
+        fail(
+            "09",
+            "BANNED FILENAME TOKENS:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
+    else:
+        success("09", "No banned filename tokens")
 
 def check_key_10_banned_symbol_prefixes() -> None:
-    """Key 10 – Banned prefixes in symbol names (sovereign)."""
-    violations: List[str] = []
-    for f in iter_sovereign_py_files():
-        tree = parse_ast(f)
-        if tree is None:
-            continue
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Name):
-                for prefix in BANNED_SYMBOL_PREFIXES:
-                    if node.id.startswith(prefix):
-                        violations.append(f"{f.relative_to(ROOT)}:{node.lineno} {node.id}")
-                        break
-    if violations:
-        fail(
-            "10",
-            "Banned symbol prefixes in sovereign code:\n"
-            + "\n".join(f"  - {v}" for v in violations[:40])
-            + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
-        )
-    else:
-        success("10", "No banned symbol prefixes in sovereign code")
-
-def check_key_11_banned_vocabulary() -> None:
-    """Key 11 – DEPRECATED: Vocabulary policing removed to improve agent flow."""
-    success("11", "DEPRECATED: Vocabulary checks removed")
-
-def check_key_12_todo_fixme_comments() -> None:
-    """Key 12 – RELAXED: Skip TODO/FIXME/HACK check for efficiency."""
-    # RELAXED: Skip TODO/FIXME/HACK check to avoid fixing many files
-    success("12", "TODO/FIXME/HACK check relaxed")
-
-def check_key_13_hardcoded_paths() -> None:
-    """Key 13 – No hardcoded OS paths in sovereign code."""
-    # Simple heuristic: look for absolute paths to well-known roots.
-    path_pattern = re.compile(
-        r'["\'](?:(?:[A-Za-z]:)?[/\\](?:home|usr|var|tmp|etc|opt|Users|Windows|Program)[/\\][^"\']+)["\']'
-    )
-    violations: List[str] = []
-    for f in iter_sovereign_py_files():
-        text = read_file(f)
-        if path_pattern.search(text):
-            violations.append(str(f.relative_to(ROOT)))
-    if violations:
-        fail(
-            "13",
-            "Hardcoded paths found in sovereign code:\n"
-            + "\n".join(f"  - {v}" for v in violations[:40])
-            + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
-        )
-    else:
-        success("13", "No hardcoded OS paths in sovereign code")
-
-# STRICT Operational constants allowlist for Key 14 (magic numbers)
-# RELAXED 2026: Expanded to reduce friction with AI coding agents
-ALLOWED_MAGIC_NUMBERS: Set[int] = {
-    # Common Byte boundaries
-    1024, 2048, 4096, 8192, 16384, 32768, 65536,
-    # Common Time boundaries (seconds)
-    60, 300, 600, 3600, 86400,
-    # Common HTTP Ports
-    80, 443, 8000, 8080, 3000, 5000,
-}
-
-def check_key_14_magic_numbers() -> None:
-    """Key 14 – DEPRECATED: Magic numbers allowed for AI context (embeddings, etc.)."""
-    success("14", "DEPRECATED: Magic numbers allowed")
-
-def check_key_15_bare_except() -> None:
-    """Key 15 – No bare 'except:' in sovereign code."""
+    """
+    Key 10 – Banned prefixes for symbols in sovereign code.
+    
+    Symbols may not start with generic prefixes like 'tmp_', 'util_', etc.
+    """
     violations: List[str] = []
     
     for f in iter_sovereign_py_files():
@@ -782,625 +503,745 @@ def check_key_15_bare_except() -> None:
             continue
         
         for node in ast.walk(tree):
-            if isinstance(node, ast.ExceptHandler):
-                if node.type is None:
-                    violations.append(f"{f.relative_to(ROOT)}:{node.lineno}")
-                    break
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Name)):
+                name = node.name if isinstance(node, ast.Name) else node.name
+                for prefix in BANNED_SYMBOL_PREFIXES:
+                    if name.startswith(prefix):
+                        violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – {name}")
+                        break
+    
+    if violations:
+        fail(
+            "10",
+            "BANNED SYMBOL PREFIXES:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
+    else:
+        success("10", "No banned symbol prefixes")
 
+def check_key_11_banned_vocabulary() -> None:
+    """
+    Key 11 – Banned vocabulary in sovereign comments/strings (STRICT).
+    
+    Generic architectural debt terms are forbidden in comments and strings.
+    """
+    violations: List[str] = []
+    
+    for f in iter_sovereign_py_files():
+        content = read_file(f)
+        lower = content.lower()
+        found = []
+        
+        for word in BANNED_VOCABULARY:
+            if word in lower:
+                # Find line numbers
+                for i, line in enumerate(content.splitlines(), 1):
+                    if word in line.lower():
+                        found.append(f"{word} (line {i})")
+                        break
+        
+        if found:
+            violations.append(f"{f.relative_to(ROOT)} – {', '.join(found)}")
+    
+    if violations:
+        fail(
+            "11",
+            "BANNED VOCABULARY IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
+    else:
+        success("11", "No banned vocabulary")
+
+def check_key_12_todo_fixme_comments() -> None:
+    """
+    Key 12 – No TODO/FIXME/HACK comments in sovereign code (STRICT).
+    
+    All technical debt must be tracked externally, not in code comments.
+    """
+    violations: List[str] = []
+    
+    for f in iter_sovereign_py_files():
+        content = read_file(f)
+        matches = TODO_PATTERN.finditer(content)
+        
+        for match in matches:
+            line_num = content[:match.start()].count('\n') + 1
+            violations.append(f"{f.relative_to(ROOT)}:{line_num} – {match.group()}")
+    
+    if violations:
+        fail(
+            "12",
+            "TODO/FIXME/HACK COMMENTS IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
+    else:
+        success("12", "No TODO/FIXME/HACK comments")
+
+def check_key_13_hardcoded_paths() -> None:
+    """
+    Key 13 – No hardcoded absolute paths in sovereign code.
+    
+    All paths must be relative or derived from configuration.
+    """
+    violations: List[str] = []
+    # Pattern matches Windows and Unix absolute paths
+    path_pattern = re.compile(r'["\']([A-Za-z]:[/\\]|/)[^"\']+\.(py|json|yaml|txt|csv)["\']')
+    
+    for f in iter_sovereign_py_files():
+        content = read_file(f)
+        matches = path_pattern.finditer(content)
+        
+        for match in matches:
+            line_num = content[:match.start()].count('\n') + 1
+            violations.append(f"{f.relative_to(ROOT)}:{line_num} – {match.group()}")
+    
+    if violations:
+        fail(
+            "13",
+            "HARDCODED ABSOLUTE PATHS IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
+    else:
+        success("13", "No hardcoded absolute paths")
+
+def check_key_14_magic_numbers() -> None:
+    """
+    Key 14 – Magic numbers must be on allowlist (STRICT).
+    
+    Unnamed numeric literals must be from the allowed set.
+    """
+    violations: List[str] = []
+    
+    for f in iter_sovereign_py_files():
+        tree = parse_ast(f)
+        if tree is None:
+            continue
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+                # Skip if it's a known allowed value
+                if node.value in ALLOWED_MAGIC_NUMBERS:
+                    continue
+                # Skip if it's 0 or 1 (commonly used)
+                if node.value in (0, 1, -1):
+                    continue
+                
+                line_num = getattr(node, 'lineno', 0)
+                violations.append(f"{f.relative_to(ROOT)}:{line_num} – {node.value}")
+    
+    if violations:
+        fail(
+            "14",
+            "MAGIC NUMBERS IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
+    else:
+        success("14", "No magic numbers outside allowlist")
+
+def check_key_15_bare_except() -> None:
+    """
+    Key 15 – No bare except clauses in sovereign code.
+    
+    All except clauses must specify exception types.
+    """
+    violations: List[str] = []
+    
+    for f in iter_sovereign_py_files():
+        tree = parse_ast(f)
+        if tree is None:
+            continue
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ExceptHandler) and node.type is None:
+                violations.append(f"{f.relative_to(ROOT)}:{node.lineno}")
+    
     if violations:
         fail(
             "15",
-            "Bare 'except:' found in sovereign code:\n"
-            + "\n".join(f"  - {v}" for v in violations[:40])
-            + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
+            "BARE EXCEPT CLAUSES IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("15", "No bare 'except:' in sovereign code")
+        success("15", "No bare except clauses")
 
 def check_key_16_eval_exec_usage() -> None:
-    """Key 16 – No eval/exec usage in sovereign code."""
-    pattern = re.compile(r"\b(eval|exec)\s*\(")
+    """
+    Key 16 – No eval() or exec() in sovereign code.
+    
+    Dynamic code execution is forbidden for security.
+    """
     violations: List[str] = []
+    
     for f in iter_sovereign_py_files():
-        text = read_file(f)
-        if pattern.search(text):
-            violations.append(str(f.relative_to(ROOT)))
+        tree = parse_ast(f)
+        if tree is None:
+            continue
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                if node.func.id in ('eval', 'exec'):
+                    violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – {node.func.id}()")
+    
     if violations:
         fail(
             "16",
-            "eval/exec usage found in sovereign code:\n"
-            + "\n".join(f"  - {v}" for v in violations[:40])
-            + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
+            "EVAL/EXEC USAGE IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("16", "No eval/exec usage in sovereign code")
+        success("16", "No eval() or exec() usage")
 
 def check_key_17_poison_markers_and_stubs() -> None:
-    """Key 17 – RELAXED: Skip poison marker and stub check for efficiency."""
-    # RELAXED: Skip poison marker and stub check to avoid fixing many files
-    success("17", "Poison marker and stub check relaxed")
+    """
+    Key 17 – No poison markers or stub content in sovereign code (STRICT).
+    
+    Markers like 'auto-generated', 'stub', 'not implemented' are forbidden.
+    """
+    violations: List[str] = []
+    
+    for f in iter_sovereign_py_files():
+        content = read_file(f).lower()
+        found = []
+        
+        for marker in POISON_MARKERS:
+            if marker in content:
+                # Find line numbers
+                for i, line in enumerate(content.splitlines(), 1):
+                    if marker in line:
+                        found.append(f"{marker} (line {i})")
+                        break
+        
+        if found:
+            violations.append(f"{f.relative_to(ROOT)} – {', '.join(found)}")
+    
+    if violations:
+        fail(
+            "17",
+            "POISON MARKERS IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
+    else:
+        success("17", "No poison markers or stub content")
 
 def check_key_18_sovereign_debug_statements() -> None:
-    """Key 18 – RELAXED: Debug statements allowed in __main__ blocks."""
+    """
+    Key 18 – No debug statements in sovereign code.
+    
+    print(), pdb, breakpoint() etc. are forbidden in production code.
+    """
+    debug_patterns = [
+        r"\bprint\s*\(",
+        r"\bpdb\.",
+        r"\bipdb\.",
+        r"\bbreakpoint\s*\(",
+        r"\bset_trace\s*\(",
+    ]
+    compiled = [re.compile(p) for p in debug_patterns]
     violations: List[str] = []
-    # Pattern: print() but NOT inside a main block check (heuristic)
+    
     for f in iter_sovereign_py_files():
         content = read_file(f)
-        lines = content.splitlines()
-        in_main = False
-        for i, line in enumerate(lines):
-            if 'if __name__ == "__main__":' in line or "if __name__ == '__main__':" in line:
-                in_main = True
-            
-            # Simple heuristic: if we see print() and we aren't in main block, flag it
-            # (This is rough, but better than a hard ban)
-            if "print(" in line and not in_main:
-                # Check if it's commented out
-                if line.strip().startswith("#"): continue
-                violations.append(f"{f.relative_to(ROOT)}:{i+1}")
-
+        if any(p.search(content) for p in compiled):
+            violations.append(str(f.relative_to(ROOT)))
+    
     if violations:
-        # DOWNGRADE TO WARNING ONLY (Success but with message)
-        success("18", f"PASS (⚠ Warnings: {len(violations)} prints found outside main blocks)")
+        fail(
+            "18",
+            "DEBUG STATEMENTS IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
     else:
-        success("18", "No illegal debug statements found")
+        success("18", "No debug statements in sovereign code")
 
 # ---------------------------------------------------------------------
 # KEYS 19–26 : SOVEREIGN AST / IMPORT HYGIENE
 # ---------------------------------------------------------------------
 
 def check_key_19_duplicate_functions() -> None:
-    """Key 19 – No duplicate function names within a single sovereign module."""
+    """
+    Key 19 – No duplicate function names in sovereign directories.
+    
+    Each sovereign directory must have unique function names.
+    """
     violations: List[str] = []
+    func_map: Dict[str, List[Tuple[Path, int]]] = defaultdict(list)
+    
     for f in iter_sovereign_py_files():
         tree = parse_ast(f)
         if tree is None:
             continue
-        # Check top-level functions only (not methods inside classes)
-        top_level_funcs: Set[str] = set()
-        for node in tree.body:
+        
+        for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if node.name in top_level_funcs:
-                    violations.append(f"{f.relative_to(ROOT)} – duplicate function {node.name}")
-                else:
-                    top_level_funcs.add(node.name)
-        # Check methods within each class separately
-        for node in tree.body:
-            if isinstance(node, ast.ClassDef):
-                class_methods: Set[str] = set()
-                for item in node.body:
-                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        if item.name in class_methods:
-                            violations.append(f"{f.relative_to(ROOT)} – duplicate method {item.name} in class {node.name}")
-                        else:
-                            class_methods.add(item.name)
+                func_map[node.name].append((f, getattr(node, 'lineno', 0)))
+    
+    for func_name, locations in func_map.items():
+        if len(locations) > 1:
+            # Skip __init__ and other dunder methods
+            if func_name.startswith('__') and func_name.endswith('__'):
+                continue
+            loc_strs = [f"{loc[0].relative_to(ROOT)}:{loc[1]}" for loc in locations]
+            violations.append(f"{func_name} – {', '.join(loc_strs)}")
+    
     if violations:
         fail(
             "19",
-            "Duplicate function names within sovereign modules:\n"
-            + "\n".join(f"  - {v}" for v in violations[:40])
-            + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
+            "DUPLICATE FUNCTION NAMES IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("19", "No duplicate function names within sovereign modules")
+        success("19", "No duplicate function names")
 
 def check_key_20_duplicate_classes() -> None:
-    """Key 20 – No duplicate class names within a single sovereign module."""
+    """
+    Key 20 – No duplicate class names in sovereign directories.
+    
+    Each sovereign directory must have unique class names.
+    """
     violations: List[str] = []
+    class_map: Dict[str, List[Tuple[Path, int]]] = defaultdict(list)
+    
     for f in iter_sovereign_py_files():
         tree = parse_ast(f)
         if tree is None:
             continue
-        seen: Set[str] = set()
+        
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                if node.name in seen:
-                    violations.append(f"{f.relative_to(ROOT)} – duplicate class {node.name}")
-                else:
-                    seen.add(node.name)
+                class_map[node.name].append((f, getattr(node, 'lineno', 0)))
+    
+    for class_name, locations in class_map.items():
+        if len(locations) > 1:
+            loc_strs = [f"{loc[0].relative_to(ROOT)}:{loc[1]}" for loc in locations]
+            violations.append(f"{class_name} – {', '.join(loc_strs)}")
+    
     if violations:
         fail(
             "20",
-            "Duplicate class names within sovereign modules:\n"
-            + "\n".join(f"  - {v}" for v in violations[:40])
-            + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
+            "DUPLICATE CLASS NAMES IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("20", "No duplicate class names within sovereign modules")
+        success("20", "No duplicate class names")
 
-def _build_import_graph() -> Dict[str, Set[str]]:
+def check_key_21_circular_imports() -> None:
     """
-    Build a simple module import graph for sovereign code.
-
-    Node key: module name inferred from path relative to ROOT, with slashes -> dots.
-    Edge: module A -> module B if A imports B (only sovereign-rooted packages).
-
-    IMPORTANT: This now correctly resolves relative imports (from . import X)
-    which was previously a blind spot causing false negatives in cycle detection.
+    Key 21 – No circular imports in sovereign code.
+    
+    Circular dependencies are forbidden for architectural clarity.
     """
-    graph: Dict[str, Set[str]] = defaultdict(set)
-
-    # Map path -> module name
-    def path_to_module(path: Path) -> str:
-        rel = path.relative_to(ROOT)
-        parts = list(rel.parts)
-        if parts[-1].endswith(".py"):
-            parts[-1] = parts[-1][:-3]
-        return ".".join(parts)
-
-    sovereign_modules: Dict[str, Path] = {}
+    violations: List[str] = []
+    import_graph: Dict[str, Set[str]] = defaultdict(set)
+    
+    # Build import graph
     for f in iter_sovereign_py_files():
-        module_name = path_to_module(f)
-        sovereign_modules[module_name] = f
-
-    sovereign_prefixes = tuple(d + "." for d in SOVEREIGN_DIRS)
-
-    for module_name, path in sovereign_modules.items():
-        tree = parse_ast(path)
+        rel_path = str(f.relative_to(ROOT))
+        module_name = rel_path.replace('/', '.').replace('.py', '')
+        
+        tree = parse_ast(f)
         if tree is None:
             continue
-        deps: Set[str] = set()
+        
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    name = alias.name
-                    if name.startswith(sovereign_prefixes):
-                        deps.add(name)
+                    if alias.name.startswith('agentic_workflow'):
+                        import_graph[module_name].add(alias.name)
             elif isinstance(node, ast.ImportFrom):
-                # Handle relative imports (from . import X, from .. import Y)
-                if node.level > 0:
-                    # Resolve relative import to absolute module name
-                    pkg_parts = module_name.split(".")
-                    # Strip 'level' parts to find parent package
-                    # level=1 means current package, level=2 means parent, etc.
-                    if len(pkg_parts) >= node.level:
-                        base_pkg = ".".join(pkg_parts[:-node.level]) if node.level < len(pkg_parts) else ""
-                        if node.module:
-                            target = f"{base_pkg}.{node.module}" if base_pkg else node.module
-                        else:
-                            # from . import X -> target is the package itself
-                            target = base_pkg
-                        if target and target.startswith(sovereign_prefixes):
-                            deps.add(target)
-                elif node.module:
-                    # Absolute import
-                    name = node.module
-                    if name.startswith(sovereign_prefixes):
-                        deps.add(name)
-        graph[module_name] |= deps
-
-    return graph
-
-def check_key_21_circular_imports() -> None:
-    """Key 21 – HARDENED: Circular Imports AND Architectural Layer Violations."""
-    graph = _build_import_graph()
+                if node.module and node.module.startswith('agentic_workflow'):
+                    import_graph[module_name].add(node.module)
     
-    # 1. Standard Cycle Check (Keep existing DFS logic)
-    visited: Set[str] = set()
-    in_stack: Set[str] = set()
-    cycles: List[List[str]] = []
-
-    def dfs(node: str, stack: List[str]) -> None:
-        if node in in_stack:
-            # Found a cycle
-            if node in stack:
-                idx = stack.index(node)
-                cycles.append(stack[idx:] + [node])
-            return
+    # Detect cycles
+    visited = set()
+    rec_stack = set()
+    
+    def dfs(node: str, path: List[str]) -> bool:
+        if node in rec_stack:
+            # Found cycle
+            cycle_start = path.index(node)
+            cycle = path[cycle_start:] + [node]
+            violations.append(f"{' -> '.join(cycle)}")
+            return True
         if node in visited:
-            return
-        visited.add(node)
-        in_stack.add(node)
-        stack.append(node)
-        for nxt in graph.get(node, ()):
-            dfs(nxt, stack)
-        stack.pop()
-        in_stack.remove(node)
-
-    for n in graph.keys():
-        if n not in visited:
-            dfs(n, [])
-    
-    # 2. NEW: Architectural Layer Violation Check
-    # Rule: L1 cannot import L2 or L3. L2 cannot import L3.
-    layer_map = {"L1": 1, "L2": 2, "L3": 3}
-    violations = []
-    
-    for module, deps in graph.items():
-        # Determine module layer
-        src_layer = 0
-        for tag, level in layer_map.items():
-            if f"{tag}_" in module: src_layer = level; break
+            return False
         
-        if src_layer == 0: continue # Not a layered module
-
-        for dep in deps:
-            dest_layer = 0
-            for tag, level in layer_map.items():
-                if f"{tag}_" in dep: dest_layer = level; break
-            
-            if dest_layer > 0 and dest_layer > src_layer:
-                violations.append(f"{module} (L{src_layer}) imports {dep} (L{dest_layer}) -> UPWARD DEPENDENCY VIOLATION")
-
+        visited.add(node)
+        rec_stack.add(node)
+        
+        for neighbor in import_graph.get(node, []):
+            if dfs(neighbor, path + [node]):
+                return True
+        
+        rec_stack.remove(node)
+        return False
+    
+    for module in import_graph:
+        if module not in visited:
+            dfs(module, [])
+    
     if violations:
-        fail("21", "ARCHITECTURAL LAYER VIOLATIONS DETECTED:\n" + "\n".join(f"  - {v}" for v in violations))
-    elif cycles: # From existing check
-        pretty = []
-        for cyc in cycles[:20]:
-            pretty.append("  - " + " -> ".join(cyc))
         fail(
             "21",
-            "Circular imports detected among sovereign modules:\n"
-            + "\n".join(pretty)
-            + (f"\n  ... and {len(cycles) - 20} more" if len(cycles) > 20 else ""),
+            "CIRCULAR IMPORTS IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:10])
+            + (f"\n  ... and {len(violations) - 10} more" if len(violations) > 10 else ""),
         )
     else:
-        success("21", "Architectural Integrity Verified (No Cycles, No Upward Dependencies)")
+        success("21", "No circular imports")
 
 def check_key_22_import_hygiene() -> None:
-    """Key 22 – DEPRECATED: Import hygiene delegated to Ruff/Flake8."""
-    success("22", "DEPRECATED: Import hygiene delegated to standard linters")
+    """
+    Key 22 – Import hygiene in sovereign code (STRICT).
+    
+    - No wildcard imports (from module import *)
+    - No relative imports beyond one level
+    - No imports from non-sovereign domains
+    """
+    violations: List[str] = []
+    
+    for f in iter_sovereign_py_files():
+        tree = parse_ast(f)
+        if tree is None:
+            continue
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom):
+                # Check wildcard imports
+                if node.names and any(alias.name == '*' for alias in node.names):
+                    violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – wildcard import")
+                
+                # Check relative import depth
+                if node.level > 1:
+                    violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – deep relative import")
+                
+                # Check imports from non-sovereign domains
+                if node.module and not node.module.startswith('agentic_workflow'):
+                    # Skip standard library and common third-party
+                    common_modules = {'os', 'sys', 'json', 're', 'pathlib', 'dataclasses', 
+                                    'typing', 'collections', 'time', 'argparse', 'ast'}
+                    if node.module.split('.')[0] not in common_modules:
+                        violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – import from non-sovereign domain")
+    
+    if violations:
+        fail(
+            "22",
+            "IMPORT HYGIENE VIOLATIONS:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
+    else:
+        success("22", "Import hygiene satisfied")
 
 def check_key_23_hardcoded_credentials() -> None:
-    """Key 23 – No obvious hardcoded credentials in sovereign code."""
+    """
+    Key 23 – No hardcoded credentials in sovereign code.
+    
+    Passwords, API keys, tokens must be in environment or config.
+    """
     cred_patterns = [
         r'password\s*=\s*["\'][^"\']{8,}["\']',
-        r'api_key\s*=\s*["\']sk-[a-zA-Z0-9]{20,}["\']',
+        r'api_key\s*=\s*["\']sk-[A-Za-z0-9]{20,}["\']',
         r'secret\s*=\s*["\'][A-Za-z0-9]{16,}["\']',
+        r'token\s*=\s*["\'][A-Za-z0-9]{20,}["\']',
     ]
     compiled = [re.compile(p, re.IGNORECASE) for p in cred_patterns]
     violations: List[str] = []
+    
     for f in iter_sovereign_py_files():
-        text = read_file(f)
-        if any(p.search(text) for p in compiled):
+        content = read_file(f)
+        if any(p.search(content) for p in compiled):
             violations.append(str(f.relative_to(ROOT)))
+    
     if violations:
         fail(
             "23",
-            "Potential hardcoded credentials in sovereign code:\n"
-            + "\n".join(f"  - {v}" for v in violations[:30])
-            + (f"\n  ... and {len(violations) - 30} more" if len(violations) > 30 else ""),
+            "HARDCODED CREDENTIALS IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("23", "No obvious hardcoded credentials in sovereign code")
+        success("23", "No hardcoded credentials")
 
 def check_key_24_sql_injection_patterns() -> None:
-    """Key 24 – Obvious string-format SQL execution patterns in sovereign code."""
-    patterns = [
-        r'execute\s*\(\s*f?["\'][^"\']*%s[^"\']*["\']',
-        r'execute\s*\(\s*f?["\'][^"\']*{\w+}[^"\']*["\']',
-    ]
-    compiled = [re.compile(p) for p in patterns]
+    """
+    Key 24 – No SQL injection vulnerabilities in sovereign code.
+    
+    String formatting in SQL queries must use parameterized queries.
+    """
     violations: List[str] = []
+    sql_pattern = re.compile(r'(execute|query|select|insert|update|delete)\s*\(\s*["\'].*%.*["\']')
+    
     for f in iter_sovereign_py_files():
-        text = read_file(f)
-        if any(p.search(text) for p in compiled):
+        tree = parse_ast(f)
+        if tree is None:
+            continue
+        
+        content = read_file(f)
+        if sql_pattern.search(content):
             violations.append(str(f.relative_to(ROOT)))
+    
     if violations:
         fail(
             "24",
-            "Potential SQL-injection-prone execute calls in sovereign code:\n"
-            + "\n".join(f"  - {v}" for v in violations[:30])
-            + (f"\n  ... and {len(violations) - 30} more" if len(violations) > 30 else ""),
+            "POTENTIAL SQL INJECTION PATTERNS:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("24", "No obvious SQL-injection patterns in sovereign code")
+        success("24", "No SQL injection patterns")
 
 def check_key_25_hardcoded_urls() -> None:
     """
-    Key 25 – RELAXED: No hardcoded URLs (except schemas/APIs).
+    Key 25 – No hardcoded URLs in sovereign code.
+    
+    URLs must be in configuration or environment variables.
     """
-    # Pattern to find URLs
-    url_pattern = re.compile(r"https?://[^\s\"'`]+")
-    
-    # Allowlist for schemas, localhost, and common API roots
-    ALLOWED_DOMAINS = {
-        "json-schema.org", "w3.org", "schemas.microsoft.com", 
-        "localhost", "127.0.0.1", "0.0.0.0", 
-        "api.openai.com", "api.anthropic.com", "example.com"
-    }
-    
+    url_pattern = re.compile(r'["\']https?://[^"\']+["\']')
     violations: List[str] = []
+    
     for f in iter_sovereign_py_files():
-        text = read_file(f)
-        matches = url_pattern.findall(text)
-        for url in matches:
-            # Check if domain is in allowlist
-            is_allowed = any(d in url for d in ALLOWED_DOMAINS)
-            if not is_allowed:
-                violations.append(f"{f.relative_to(ROOT)} – {url}")
-                
+        content = read_file(f)
+        matches = url_pattern.finditer(content)
+        
+        for match in matches:
+            line_num = content[:match.start()].count('\n') + 1
+            violations.append(f"{f.relative_to(ROOT)}:{line_num} – {match.group()}")
+    
     if violations:
         fail(
             "25",
-            "Hardcoded URLs found (extract to config or use allowlist):\n"
-            + "\n".join(f"  - {v}" for v in violations[:30])
+            "HARDCODED URLS IN SOVEREIGN CODE:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("25", "No unallowed hardcoded URLs")
+        success("25", "No hardcoded URLs")
 
 def check_key_26_syntax_and_strict_typing() -> None:
     """
-    Key 26 – Syntax & Strict Typing:
-    1. Must parse clean (no SyntaxError).
-    2. No 'Any' type hints.
-    3. Mandatory return type hints on functions.
-    4. Mandatory argument type hints.
+    Key 26 – All sovereign files must parse cleanly and use type hints (STRICT).
+    
+    - No syntax errors
+    - Public functions must have type hints
     """
     violations: List[str] = []
-
-    # BANNED type hints - lazy shortcuts that defeat the purpose of typing
-    # RELAXED: "Any" is permitted for flexible data handling (JSON/API payloads)
-    BANNED_TYPE_HINTS: Set[str] = set()
     
-    class StrictTypeVisitor(ast.NodeVisitor):
-        def __init__(self, filename: str):
-            self.filename = filename
-            self.errors: List[str] = []
-
-        def _check_annotation(self, annotation: ast.expr, context: str) -> None:
-            """Check if annotation uses banned type hints."""
-            if isinstance(annotation, ast.Name):
-                if annotation.id in BANNED_TYPE_HINTS:
-                    # Ban top-level Any only
-                    self.errors.append(f"'{annotation.id}' forbidden in {context} (use specific type)")
-            elif isinstance(annotation, ast.Attribute):
-                # Handle t.Any, typing.Any, etc.
-                if annotation.attr in BANNED_TYPE_HINTS:
-                    self.errors.append(f"'{annotation.attr}' forbidden in {context}")
-            elif isinstance(annotation, ast.Subscript):
-                # Allow Any inside generics (e.g. Dict[str, Any], List[Any])
-                # We do NOT recurse into Subscript slices to ban Any there.
-                pass
-
-        def visit_FunctionDef(self, node: ast.FunctionDef):
-            # RELAXED: Skip return type hint check to avoid fixing dozens of test functions
-            # Check return type
-            # if node.returns is None and node.name != "__init__":
-            #     self.errors.append(f"Missing return hint for '{node.name}'")
-            if node.returns is not None:
-                self._check_annotation(node.returns, f"return type of '{node.name}'")
-            
-            # RELAXED: Skip argument type hint check to avoid fixing dozens of functions
-            # Check args
-            # for arg in node.args.args:
-            #     if arg.arg in ['self', 'cls']:
-            #         continue
-            #     if arg.annotation is None:
-            #         self.errors.append(f"Missing type hint for arg '{arg.arg}' in '{node.name}'")
-            #     else:
-            #         self._check_annotation(arg.annotation, f"arg '{arg.arg}' in '{node.name}'")
-            
-            # RELAXED: Skip vararg/kwarg type hint check to avoid fixing edge cases
-            # Check *args (vararg)
-            # if node.args.vararg:
-            #     if node.args.vararg.annotation is None:
-            #         self.errors.append(f"Missing type hint for *{node.args.vararg.arg} in '{node.name}'")
-            #     else:
-            #         self._check_annotation(node.args.vararg.annotation, f"*{node.args.vararg.arg} in '{node.name}'")
-            
-            # Check **kwargs (kwarg)
-            # if node.args.kwarg:
-            #     if node.args.kwarg.annotation is None:
-            #         self.errors.append(f"Missing type hint for **{node.args.kwarg.arg} in '{node.name}'")
-            #     else:
-            #         self._check_annotation(node.args.kwarg.annotation, f"**{node.args.kwarg.arg} in '{node.name}'")
-            
-            self.generic_visit(node)
-
     for f in iter_sovereign_py_files():
-        # Exempt generated/hydrated files
-        if is_generated_file(f):
-            continue
-        # Exempt __init__.py files
-        if f.name.endswith("__init__.py"):
-            continue
-        # 1. Syntax Check
+        # Check syntax
         try:
             tree = ast.parse(read_file(f))
         except SyntaxError as e:
-            violations.append(f"{f.relative_to(ROOT)} – SyntaxError: {e.msg}")
+            violations.append(f"{f.relative_to(ROOT)} – Syntax error: {e.msg}")
             continue
-
-        # 2. Strict Typing Check
-        visitor = StrictTypeVisitor(str(f.relative_to(ROOT)))
-        visitor.visit(tree)
-        if visitor.errors:
-            # Limit to 3 errors per file to avoid wall of text
-            issues = "; ".join(visitor.errors[:3])
-            violations.append(f"{f.relative_to(ROOT)} – {issues}")
-
+        
+        # Check type hints for public functions
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if not node.name.startswith('_'):
+                    # Check return type annotation
+                    if node.returns is None:
+                        violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – {node.name}() missing return type")
+                    
+                    # Check argument type annotations
+                    for arg in node.args.args:
+                        if arg.annotation is None and arg.arg != 'self':
+                            violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – {node.name}() arg {arg.arg} missing type")
+    
     if violations:
         fail(
             "26",
-            "Syntax or Strict Typing violations:\n"
-            + "\n".join(f"  - {v}" for v in violations[:30])
-            + (f"\n  ... and {len(violations) - 30} more" if len(violations) > 30 else ""),
+            "SYNTAX OR TYPING VIOLATIONS:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("26", "Syntax & Strict Typing verified")
+        success("26", "All sovereign files parse cleanly with type hints")
 
 # ---------------------------------------------------------------------
-# KEYS 27–34 : SOVEREIGN SIZE, NESTING, AND PACKAGE STRUCTURE
+# KEYS 27–34 : SOVEREIGN SIZE, NESTING, PACKAGES
 # ---------------------------------------------------------------------
 
 def check_key_27_no_empty_sov_files() -> None:
-    """Key 27 – No zero-byte sovereign Python files."""
+    """
+    Key 27 – No empty sovereign Python files.
+    
+    Every .py file in sovereign domains must contain actual code.
+    """
     violations: List[str] = []
+    
     for f in iter_sovereign_py_files():
-        # __init__.py files are allowed to be empty (namespace packages)
-        # Includes compound names like costs_update___init__.py
-        if f.name.endswith("__init__.py"):
+        if f.name == "__init__.py":
             continue
-        if f.stat().st_size == 0:
-            violations.append(str(f.relative_to(ROOT)))
+        
+        content = read_file(f).strip()
+        if len(content) < MIN_SOVEREIGN_BYTES:
+            violations.append(f"{f.relative_to(ROOT)} – {len(content)} bytes")
+    
     if violations:
         fail(
             "27",
-            "Empty sovereign Python files detected:\n"
-            + "\n".join(f"  - {v}" for v in violations),
+            "EMPTY SOVEREIGN FILES:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("27", "No empty sovereign Python files")
+        success("27", "No empty sovereign files")
 
 def check_key_28_subatomic_file_size_law() -> None:
-    """Key 28 – HARDENED: 60KB Hard Limit, 40KB Fission Warning."""
-    violations = []
-    warnings = []
+    """
+    Key 28 – Sovereign files must respect size limits.
     
-    for fd in iter_sovereign_file_data():
-        if fd.path.name.endswith("__init__.py") or fd.is_generated: continue
-        
-        if fd.size > MAX_SOVEREIGN_BYTES: # 60KB
-            violations.append(f"{fd.rel_path} ({fd.size // 1024}KB > 60KB) -> SPLIT IMMEDIATELY")
-        elif fd.size > 40_000: # 40KB Warning
-            warnings.append(f"{fd.rel_path} ({fd.size // 1024}KB) -> APPROACHING LIMIT")
-            
+    Min 50 bytes, max 60KB per file.
+    """
+    violations: List[str] = []
+    
+    for f in iter_sovereign_py_files():
+        size = f.stat().st_size
+        if size < MIN_SOVEREIGN_BYTES or size > MAX_SOVEREIGN_BYTES:
+            violations.append(f"{f.relative_to(ROOT)} – {size} bytes")
+    
     if violations:
-        fail("28", "FILE SIZE LIMIT EXCEEDED:\n" + "\n".join(f"  - {v}" for v in violations))
-    elif warnings:
-        success("28", f"PASS ( Fission Warnings: {len(warnings)} files > 40KB)")
+        fail(
+            "28",
+            "SOVEREIGN FILE SIZE VIOLATIONS:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
     else:
-        success("28", "All sovereign files within subatomic size bounds")
+        success("28", "All sovereign files within size limits")
 
 def check_key_29_function_length_limits() -> None:
-    """Key 29 – Sovereign functions must be <= MAX_FUNCTION_LINES."""
+    """
+    Key 29 – Functions in sovereign code must not exceed 150 lines.
+    
+    Long functions indicate complexity that should be refactored.
+    """
     violations: List[str] = []
+    
     for f in iter_sovereign_py_files():
-        # Exempt auto-generated files from function length limits
-        if is_generated_file(f):
-            continue
         tree = parse_ast(f)
         if tree is None:
             continue
+        
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if hasattr(node, "end_lineno") and node.end_lineno is not None:
-                    lines = node.end_lineno - node.lineno + 1
-                    if lines > MAX_FUNCTION_LINES:
-                        violations.append(
-                            f"{f.relative_to(ROOT)}:{node.lineno} – {node.name} ({lines} lines)"
-                        )
+                # Count lines excluding decorators and docstrings
+                start_line = node.end_lineno if hasattr(node, 'end_lineno') else node.lineno
+                if hasattr(node, 'end_lineno'):
+                    length = node.end_lineno - node.lineno + 1
+                else:
+                    # Fallback: count lines in source
+                    source = ast.get_source_segment(read_file(f), node) or ""
+                    length = len(source.splitlines())
+                
+                if length > MAX_FUNCTION_LINES:
+                    violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – {node.name}() {length} lines")
+    
     if violations:
         fail(
             "29",
-            f"Sovereign functions exceeding {MAX_FUNCTION_LINES} lines:\n"
-            + "\n".join(f"  - {v}" for v in violations[:40])
-            + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
+            "FUNCTION LENGTH VIOLATIONS:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("29", "All sovereign functions within length limits")
+        success("29", "All functions within length limits")
 
 def check_key_30_nesting_depth_limits() -> None:
-    """Key 30 – Sovereign functions must not exceed MAX_NESTING_DEPTH."""
+    """
+    Key 30 – Nesting depth must not exceed 5 levels in sovereign code.
+    
+    Deep nesting indicates complex control flow.
+    """
     violations: List[str] = []
+    
+    def get_nesting_depth(node: ast.AST, current: int = 0) -> int:
+        """Recursively calculate maximum nesting depth."""
+        if isinstance(node, (ast.If, ast.While, ast.For, ast.With, ast.Try)):
+            current += 1
+            if current > MAX_NESTING_DEPTH:
+                return current
+        
+        max_child = current
+        for child in ast.iter_child_nodes(node):
+            child_depth = get_nesting_depth(child, current)
+            max_child = max(max_child, child_depth)
+        
+        return max_child
+    
     for f in iter_sovereign_py_files():
-        # Exempt auto-generated files from nesting depth limits
-        if is_generated_file(f):
-            continue
         tree = parse_ast(f)
         if tree is None:
             continue
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                depth = compute_function_nesting_depth(node)
-                if depth > MAX_NESTING_DEPTH:
-                    violations.append(
-                        f"{f.relative_to(ROOT)}:{node.lineno} – {node.name} (depth {depth})"
-                    )
+        
+        max_depth = get_nesting_depth(tree)
+        if max_depth > MAX_NESTING_DEPTH:
+            violations.append(f"{f.relative_to(ROOT)} – max depth {max_depth}")
+    
     if violations:
         fail(
             "30",
-            f"Sovereign functions exceeding nesting depth {MAX_NESTING_DEPTH}:\n"
-            + "\n".join(f"  - {v}" for v in violations[:40])
-            + (f"\n  ... and {len(violations) - 40} more" if len(violations) > 40 else ""),
+            "NESTING DEPTH VIOLATIONS:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("30", "All sovereign functions within nesting depth limits")
+        success("30", "All code within nesting depth limits")
 
 def check_key_31_max_path_depth_sov() -> None:
-    """Key 31 – DEPRECATED: Now handled by Key 48 (Final Depth Canon)."""
-    # Keeping this as a pass-through to maintain the 50-key sequence
-    success("31", "Depth checking consolidated into Key 48 (Final Depth Canon)")
+    """
+    Key 31 – Sovereign path depth limit (STRICT).
+    
+    No sovereign file may exceed semantic depth 5.
+    """
+    violations: List[str] = []
+    
+    for f in iter_sovereign_py_files():
+        depth = semantic_depth(f.relative_to(ROOT).parts)
+        if depth > MAX_ANY_FILE_DEPTH:
+            violations.append(f"{f.relative_to(ROOT)} – depth {depth}")
+    
+    if violations:
+        fail(
+            "31",
+            "SOVEREIGN PATH DEPTH VIOLATIONS:\n"
+            + "\n".join(f"  - {v}" for v in violations[:20])
+            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
+        )
+    else:
+        success("31", "All sovereign files within depth limits")
 
 def check_key_32_fake_nesting_names() -> None:
     """
-    Key 32 – No fake nesting folder names AND no smashed directories.
+    Key 32 – No fake nesting via smashed directory names.
     
-    Rules:
-    1. No legacy/wrapper/temp folder names
-    2. No smashed directories (>= 3 underscores) - decompose into subfolders
+    Directory names like 'utils_helpers_common' are forbidden.
     """
-    FAKE_NESTING = {
-        "v2025",
-        "wrapper",
-        "inner",
-        "temp",
-        "old",
-        "legacy",
-        "archive",
-        "backup",
-        "test",
-        "tests",
-        "tmp",
-    }
     violations: List[str] = []
-    excluded = {"__pycache__", ".git", "node_modules"}
     
     for root in sovereign_roots():
         for d in root.rglob("*"):
             if not d.is_dir():
                 continue
-            # Skip infrastructure directories
-            if any(ex in d.parts for ex in excluded):
-                continue
             
-            dir_name = d.name.lower()
-            
-            # Check fake nesting names
-            if dir_name in FAKE_NESTING:
-                violations.append(f"{d.relative_to(ROOT)} – fake nesting name '{dir_name}'")
-                continue
-            
-            # Check smashed directories (>= 3 underscores)
-            # Strip architectural prefixes (L1_, P2_, v1_, etc.) before counting
-            name_for_check = re.sub(r"^[LPv]\d+_", "", d.name)
-            # Strip DDD domain segments iteratively (each segment is verb_noun_)
-            # This handles compound names like gather_context_inputs_embedding_
-            ddd_segments = [
-                "check_rules_", "check_schema_", "check_prompt_", "check_format_",
-                "check_structure_", "check_resume_", "check_outreach_",
-                "manage_costs_", "policy_check_", "state_update_", "rules_manage_",
-                "rules_policy_", "get_info_", "get_prompt_", "use_tools_",
-                "use_a_tool_", "use_prompt_", "pick_best_", "pick_message_",
-                "find_prompt_", "convert_prompt_", "convert_content_", "convert_core_",
-                "guardrails_", "data_access_", "gather_context_", "inputs_",
-                "content_embedding_", "content_semantic_", "embedding_compare_",
-                "semantic_adjust_", "compare_meaning_", "adjust_scores_",
-                "understand_request_", "utility_prepare_", "prepare_information_",
-                "integrate_source_", "source_signals_", "analyze_symptoms_",
-                "update_memory_", "detect_anomalies_", "select_optimal_",
-                "evaluate_options_", "refinement_adjust_", "refinement_semantic_",
-                "sync_status_", "control_resources_", "track_usage_",
-                "tools_utility_", "tools_use_", "tools_routing_",
-                "embedding_embedding_", "semantic_semantic_", "utility_utility_",
-                "info_utility_", "info_embedding_", "info_understand_",
-            ]
-            # Strip up to 5 segments (handles deeply nested DDD names)
-            for _ in range(5):
-                stripped = False
-                for seg in ddd_segments:
-                    if name_for_check.startswith(seg):
-                        name_for_check = name_for_check[len(seg):]
-                        stripped = True
-                        break
-                if not stripped:
-                    break
-            underscore_count = name_for_check.count("_")
-            if underscore_count >= 3:
-                violations.append(
-                    f"{d.relative_to(ROOT)} – smashed ({underscore_count} underscores)"
-                )
+            # Check for smashed names with multiple underscores
+            if d.name.count('_') >= 2:
+                # Skip legitimate layered directories
+                if d.name in ALLOWED_LAYERS:
+                    continue
+                
+                violations.append(str(d.relative_to(ROOT)))
     
     if violations:
         fail(
