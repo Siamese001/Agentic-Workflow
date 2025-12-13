@@ -9,7 +9,7 @@ Phase 1C - Knowledge Extraction Integration
 
 import logging
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -448,13 +448,12 @@ class KXNodeRegistry:
         """
         return self._resume_nodes.get(node_key)
 
-        """Docstring."""
     def get_outreach_node(
         self,
         node_key: str,
         connection_request: bool = False
     ) -> Optional[KNodeConfig]:
-            """Get outreach engine K.X node configuration.
+        """Get outreach engine K.X node configuration.
 
         Args:
             node_key: Node key (e.g., "K.3_Message_Body")
@@ -468,7 +467,7 @@ class KXNodeRegistry:
         return self._outreach_nodes.get(node_key)
 
     def list_resume_nodes(self) -> List[str]:
-            """List all resume engine K.X node keys.
+        """List all resume engine K.X node keys.
 
         Returns:
             List of node keys
@@ -476,7 +475,7 @@ class KXNodeRegistry:
         return list(self._resume_nodes.keys())
 
     def list_outreach_nodes(self) -> List[str]:
-            """List all outreach engine K.X node keys.
+        """List all outreach engine K.X node keys.
 
         Returns:
             List of node keys
@@ -484,7 +483,7 @@ class KXNodeRegistry:
         return list(self._outreach_nodes.keys())
 
     def get_nodes_by_type(self, node_type: KNodeType) -> Dict[str, KNodeConfig]:
-            """Get all nodes of a specific type.
+        """Get all nodes of a specific type.
 
         Args:
             node_type: Node type to filter by
@@ -498,14 +497,13 @@ class KXNodeRegistry:
             if config.node_type == node_type
         }
 
-        """Docstring."""
     def register_custom_node(
         self,
         node_key: str,
         config: KNodeConfig,
         engine: str = "resume"
     ) -> None:
-            """Register a custom K.X node.
+        """Register a custom K.X node.
 
         Args:
             node_key: Unique node key

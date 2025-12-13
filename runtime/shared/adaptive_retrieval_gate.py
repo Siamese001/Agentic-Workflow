@@ -7,6 +7,7 @@ requires retrieval from the vector database or can be handled from context.
 import logging
 import re
 from typing import List, Dict, Optional
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -26,15 +27,12 @@ class AdaptiveRetrievalGate:
     """
 
     def __init__(self):
-            """Initialize the Adaptive Retrieval Gate."""
+        """Initialize the Adaptive Retrieval Gate."""
         # Compile regex patterns for efficiency
         self.patterns = {
             # Conversational patterns that don't need retrieval
             'conversational': re.compile(
-                r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye|yes|no|sure|got it|understood|
-                    cool|awesome|great|perfect)$',
-
-
+                r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye|yes|no|sure|got it|understood|cool|awesome|great|perfect)$',
                 re.IGNORECASE
             ),
 
@@ -83,7 +81,7 @@ class AdaptiveRetrievalGate:
         logger.info("Initialized AdaptiveRetrievalGate")
 
     def _classify_query_type(self, query: str) -> str:
-            """Classify the type of query.
+        """Classify the type of query.
 
         Args:
             query: Query string to classify
@@ -121,7 +119,7 @@ class AdaptiveRetrievalGate:
         return "COMPLEX"
 
     def _calculate_complexity_score(self, query: str, query_type: str) -> float:
-            """Calculate complexity score for the query.
+        """Calculate complexity score for the query.
 
         Args:
             query: Query string
@@ -156,15 +154,14 @@ class AdaptiveRetrievalGate:
         # Adjust based on complex keywords presence
         complex_count = sum(1 for keyword in self.complex_keywords if keyword in query.lower())
         if complex_count > 0:
-            base_score = min(1.0, base_score + 0.1 * min(complex_count, 2))
+            base_score = min(1.0, base_score + 0.1 * min(complex_count, 3))  # Changed from 2 to 3
 
         return base_score
 
-        """Docstring."""
     def should_retrieve(self,
         query: str,
         history: Optional[List[Dict]] = None) -> RetrievalDecision:
-            """Determine if retrieval is needed for the query.
+        """Determine if retrieval is needed for the query.
 
         Args:
             query: Query string to evaluate
@@ -232,8 +229,7 @@ class AdaptiveRetrievalGate:
         # Additional checks
         if should_retrieve:
             # Check if this might be a clarification
-            if len(query.split()) < 4 and not any(pattern.search(query) for pattern in self.compiled
-    _questions):
+            if len(query.split()) < 4 and not any(pattern.search(query) for pattern in self.compiled_questions):
                 should_retrieve = False
                 reason = "Short query likely a clarification"
                 confidence = 0.7
@@ -250,7 +246,7 @@ class AdaptiveRetrievalGate:
         )
 
     def get_statistics(self, decisions: List[RetrievalDecision]) -> Dict[str, float]:
-            """Calculate statistics from a list of retrieval decisions.
+        """Calculate statistics from a list of retrieval decisions.
 
         Args:
             decisions: List of RetrievalDecision objects

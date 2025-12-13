@@ -17,7 +17,7 @@ class LateInteractionReranker:
     """
 
     def __init__(self, model_name: str = "ms-marco-MiniLM-L-6-v2", lazy_load: bool = True):
-            """Initialize the Late Interaction Reranker.
+        """Initialize the Late Interaction Reranker.
 
         Args:
             model_name: Name of the cross-encoder model to use
@@ -33,7 +33,7 @@ class LateInteractionReranker:
 
     @property
     def is_available(self) -> bool:
-            """Check if the reranker is available (model loaded or can be loaded)."""
+        """Check if the reranker is available (model loaded or can be loaded)."""
         if self._model_loaded:
             return not self._fallback_mode
         if self._fallback_mode:
@@ -47,7 +47,7 @@ class LateInteractionReranker:
             return False
 
     def _load_model(self) -> bool:
-            """Load the cross-encoder model.
+        """Load the cross-encoder model.
 
         Returns:
             True if model loaded successfully, False if in fallback mode
@@ -92,7 +92,7 @@ class LateInteractionReranker:
         top_k: Optional[int] = None,
         batch_size: int = 32
     ) -> List[str]:
-            """Rerank documents based on query relevance.
+        """Rerank documents based on query relevance.
 
         Args:
             query: Query string
@@ -178,7 +178,7 @@ class LateInteractionReranker:
         top_k: Optional[int] = None,
         batch_size: int = 32
     ) -> List[Tuple[str, float]]:
-            """Rerank documents and return with scores.
+        """Rerank documents and return with scores.
 
         Args:
             query: Query string
@@ -230,7 +230,7 @@ class LateInteractionReranker:
             return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
 
     def get_model_info(self) -> dict:
-            """Get information about the loaded model.
+        """Get information about the loaded model.
 
         Returns:
             Dictionary with model information
@@ -254,7 +254,7 @@ class LateInteractionReranker:
                         "num_labels": getattr(self._model.config, 'num_labels', 'unknown')
                     })
             except Exception as e:
-    logger.warning(f"Ignored error: {e}")
+                logger.warning(f"Ignored error: {e}")
 
         return info
 
@@ -285,11 +285,11 @@ class PassThroughReranker:
     """Fallback reranker that returns documents in original order."""
 
     def __init__(self, *args, **kwargs):
-            """Initialize the pass-through reranker."""
+        """Initialize the pass-through reranker."""
         logger.warning("Using PassThroughReranker - no actual reranking will be performed")
 
     def rerank(self, query: str, documents: List[str], top_k: Optional[int] = None) -> List[str]:
-            """Return documents in original order."""
+        """Return documents in original order."""
         return documents[:top_k] if top_k else documents
 
         """Docstring."""
