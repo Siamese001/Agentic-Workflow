@@ -29,8 +29,11 @@ def split_file_by_type(filepath: Path) -> None:
             if any(base.id == 'Enum' for base in node.bases if isinstance(base, ast.Name)):
                 enums.append(node)
             # Check if it has @dataclass decorator
-            elif any(d.id == 'dataclass' or (isinstance(d, ast.Call) and d.func.id == 'dataclass') 
-                    for d in node.decorator_list if isinstance(d, (ast.Name, ast.Call)) and hasattr(d if isinstance(d, ast.Name) else d.func, 'id')):
+            elif any(
+                (isinstance(d, ast.Name) and d.id == 'dataclass') or
+                (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == 'dataclass')
+                for d in node.decorator_list
+            ):
                 dataclasses.append(node)
             else:
                 classes.append(node)
@@ -141,18 +144,18 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
     filepath.write_text(shim_content, encoding='utf-8')
     print(f"  Updated {filepath.name} as compatibility shim")
 
-# Files to fix - apps_lic cognitive density violations
+# Files to fix - schemas/ cognitive density violations
 files_to_fix = [
-    "apps_lic/L2_execution/campaign_rag.py",
-    "apps_lic/L2_execution/data_models.py",
-    "apps_lic/L2_execution/lic_code_interpreter.py",
-    "apps_lic/L2_execution/message_assembler.py",
-    "apps_lic/L2_execution/route_classifier.py",
-    "apps_lic/L2_execution/track_lic_state.py",
-    "apps_lic/L3_orchestration/kx_nodes_outreach.py",
-    "apps_lic/L3_orchestration/outreach_orchestration_config.py",
-    "apps_lic/L3_orchestration/rag/campaign_rag.py",
-    "apps_lic/L3_orchestration/safety/campaign_guardrails.py",
+    "schemas/core_models/golden_state_datasets.py",
+    "schemas/core_models/l4_types.py",
+    "schemas/core_models/models.py",
+    "schemas/pipeline/data_access/get_schema_info.py",
+    "schemas/logic/data_access/check_schema_rules.py",
+    "schemas/logic/data_access/get_schema_info.py",
+    "schemas/logic/synthesis/pick_best_result.py",
+    "schemas/logic/synthesis/state_update.py",
+    "schemas/logic/validation/check_schema_structure.py",
+    "schemas/logic/validation/convert_schema_content.py",
 ]
 
 root = Path("c:/Git/Agentic-Workflow")
