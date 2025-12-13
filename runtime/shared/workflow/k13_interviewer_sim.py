@@ -1,10 +1,11 @@
 """K.13 Interviewer Simulation Agent - Oppositional Preparation."""
 
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from .base_agent import BaseExecutiveAgent
 from .schema_definitions import InterviewerProfile
 from .infrastructure_resilience import resilient_execution
+from .prompt_providers import K13PromptProvider
 
 
 class K13InterviewerSimulationAgent(BaseExecutiveAgent):
@@ -14,14 +15,16 @@ class K13InterviewerSimulationAgent(BaseExecutiveAgent):
     their public digital footprint and background.
     """
     
-    def __init__(self, data_source_provider=None):
+    def __init__(self, data_source_provider=None, prompt_provider: Optional[K13PromptProvider] = None):
         """Initialize K.13 agent.
         
         Args:
             data_source_provider: Optional data source provider for profile research
+            prompt_provider: Optional prompt provider for dynamic prompts
         """
         super().__init__()
         self.data_sources = data_source_provider
+        self.prompt_provider = prompt_provider or K13PromptProvider()
         self.stats = {"k13_executions": 0}
     
     @resilient_execution(fallback_model="gpt-4o")
@@ -83,20 +86,8 @@ class K13InterviewerSimulationAgent(BaseExecutiveAgent):
         client, model = self._get_client_and_model(config)
         temperature = config.get("infrastructure_config", {}).get("temperature_override", 0.7)
 
-        system_prompt = """
-        You are a Psychological Profiler for Executive Search.
-
-        Your mission: Analyze the interviewer's background and predict their questioning style, biases, and decision criteria.
-
-        Focus on:
-        1. Technical vs behavioral balance
-        2. Hidden biases and preferences
-        3. Likely "kill chain" questions that derail candidates
-        4. Optimal response strategies
-        5. Red flags to avoid
-
-        Use the LinkedIn profile and resume to create a tactical interview preparation guide.
-        """
+        # Get system prompt from prompt provider
+        system_prompt = self.prompt_provider.get_system_prompt({})
 
         try:
             result = client.chat.completions.create(

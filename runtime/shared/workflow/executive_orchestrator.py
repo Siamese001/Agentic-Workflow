@@ -9,6 +9,7 @@ from .k12_strategy_roadmap import K12StrategyRoadmapAgent
 from .k13_interviewer_sim import K13InterviewerSimulationAgent
 from .research_tools import TavilyResearcher
 from .schema_definitions import get_executive_schema_registry
+from .prompt_providers import PromptProviderFactory
 
 
 class ExecutiveAgentOrchestrator:
@@ -18,11 +19,12 @@ class ExecutiveAgentOrchestrator:
     their implementation details.
     """
 
-    def __init__(self, data_source_provider: Optional[DataSourceProvider] = None):
+    def __init__(self, data_source_provider: Optional[DataSourceProvider] = None, workflow_config: Optional[Dict[str, Any]] = None):
         """Initialize the orchestrator.
 
         Args:
             data_source_provider: Optional data source provider
+            workflow_config: Optional workflow configuration for prompt providers
         """
         # Initialize data sources with Tavily API key if available
         tavily_api_key = os.getenv("TAVILY_API_KEY")
@@ -36,14 +38,21 @@ class ExecutiveAgentOrchestrator:
             self.researcher = None
             logging.warning("TAVILY_API_KEY not set - autonomous research disabled")
 
-        # Initialize agents
+        # Initialize prompt providers from workflow config
+        prompt_providers = PromptProviderFactory.from_workflow_config(workflow_config or {})
+        
+        # Initialize agents with their respective prompt providers
         self.k11_agent = K11ShadowAuditAgent(
             data_source_provider=self.data_sources,
-            researcher=self.researcher
+            researcher=self.researcher,
+            prompt_provider=prompt_providers.get("k11")
         )
-        self.k12_agent = K12StrategyRoadmapAgent()
+        self.k12_agent = K12StrategyRoadmapAgent(
+            prompt_provider=prompt_providers.get("k12")
+        )
         self.k13_agent = K13InterviewerSimulationAgent(
-            data_source_provider=self.data_sources
+            data_source_provider=self.data_sources,
+            prompt_provider=prompt_providers.get("k13")
         )
 
         self.logger = logging.getLogger("ExecutiveAgentOrchestrator")
