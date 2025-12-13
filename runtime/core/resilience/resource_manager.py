@@ -321,7 +321,7 @@ class ResourceManager:
             # Cleanup on failure
             try:
                 await aiofiles.os.remove(temp_path)
-            except:
+            except Exception:
                 pass
             raise
         finally:
