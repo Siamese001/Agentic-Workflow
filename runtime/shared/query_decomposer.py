@@ -7,6 +7,8 @@ that can be answered by the retrieval system.
 import asyncio
 import logging
 import re
+from typing import List, Any
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +22,7 @@ class DecomposedQuery(BaseModel):
 
     @validator('sub_queries')
     def validate_sub_queries(cls, v):
-            """Ensure sub-queries are valid."""
+        """Ensure sub-queries are valid."""
         if not v:
             raise ValueError("At least one sub-query is required")
         if len(v) > 4:
@@ -31,7 +33,7 @@ class SimpleAgentBase:
     """Simple base class for standalone agents."""
 
     def __init__(self, name: str, model_name: str = "gpt-4"):
-            """Initialize the agent.
+        """Initialize the agent.
 
         Args:
             name: Agent name for logging
@@ -49,7 +51,7 @@ class QueryDecomposer(SimpleAgentBase):
     """
 
     def __init__(self, model_name: str = "gpt-4", max_sub_queries: int = 4):
-            """Initialize the Query Decomposer.
+        """Initialize the Query Decomposer.
 
         Args:
             model_name: LLM model to use for decomposition
@@ -81,7 +83,7 @@ class QueryDecomposer(SimpleAgentBase):
         }
 
     def _calculate_complexity_score(self, query: str) -> int:
-            """Calculate complexity score for a query (1-10).
+        """Calculate complexity score for a query (1-10).
 
         Args:
             query: Query to analyze
@@ -112,7 +114,7 @@ class QueryDecomposer(SimpleAgentBase):
         return min(score, 10)
 
     async def _call_llm(self, prompt: str, temperature: float = 0.3) -> Any:
-            """Call the LLM with the given prompt.
+        """Call the LLM with the given prompt.
 
         Args:
             prompt: Prompt to send to LLM
@@ -136,9 +138,9 @@ class QueryDecomposer(SimpleAgentBase):
             )
 
             class LLMResponseImpl:
-                    """Docstring."""
-                def __init__(self, content: str):
-                    self.content = content
+                """Docstring."""
+            def __init__(self, content: str):
+                self.content = content
 
             return LLMResponseImpl(response.content[0].text)
 
@@ -146,14 +148,14 @@ class QueryDecomposer(SimpleAgentBase):
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
-                    """Docstring."""
-                def __init__(self, content: str):
-                    self.content = content
+                """Docstring."""
+            def __init__(self, content: str):
+                self.content = content
 
             return LLMResponseImpl('{"sub_queries": ["query"], "reasoning": "fallback"}')
 
     async def decompose(self, query: str) -> DecomposedQuery:
-            """Decompose a complex query into sub-queries.
+        """Decompose a complex query into sub-queries.
 
         Args:
             query: Complex query to decompose
@@ -164,8 +166,7 @@ class QueryDecomposer(SimpleAgentBase):
         # Heuristic check: if gate says simple, skip LLM
         if self.gate:
             decision = self.gate.should_retrieve(query)
-            if decision.query_type in ["CONVERSATIONAL", "FACTUAL"] and not decision.should_retrieve
-    :
+            if decision.query_type in ["CONVERSATIONAL", "FACTUAL"] and not decision.should_retrieve:
                 logger.info(f"Simple query detected, skipping decomposition: {query}")
                 return DecomposedQuery(
                     original_query=query,
@@ -224,8 +225,7 @@ Output: {{
             # Validate and limit sub-queries
             sub_queries = result.get("sub_queries", [query])
             if len(sub_queries) > self.max_sub_queries:
-                logger.warning(f"LLM generated too many sub-queries ({len(sub_queries)}),
-                    truncating")
+                logger.warning(f"LLM generated too many sub-queries ({len(sub_queries)}), truncating")
                 sub_queries = sub_queries[:self.max_sub_queries]
 
             # Ensure at least one sub-query
@@ -258,7 +258,7 @@ Output: {{
         search_function: callable,
         **kwargs
     ) -> List[Any]:
-            """Execute search for all sub-queries in parallel.
+        """Execute search for all sub-queries in parallel.
 
         Args:
             decomposed_query: Result from decompose() method
@@ -289,8 +289,7 @@ Output: {{
                 else:
                     processed_results.append(result)
 
-            logger.info(f"Completed execution: {sum(len(r) for r in processed_results)} total result
-    s")
+            logger.info(f"Completed execution: {sum(len(r) for r in processed_results)} total results")
             return processed_results
 
         except Exception as e:
