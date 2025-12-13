@@ -14,10 +14,10 @@ class SchemaHistoryFetcher:
 
     def fetch_history(self, query: SchemaHistoryQuery) -> SchemaHistoryResult:
         """Fetch schema history based on query.
-        
+
         Args:
             query: History query configuration
-            
+
         Returns:
             SchemaHistoryResult: Query results with change records
         """
@@ -46,10 +46,10 @@ class SchemaHistoryFetcher:
 
     def add_change_record(self, record: SchemaChangeRecord) -> bool:
         """Add a change record to history.
-        
+
         Args:
             record: Change record to add
-            
+
         Returns:
             bool: True if record was added successfully
         """
@@ -70,10 +70,10 @@ class SchemaHistoryFetcher:
 
     def get_evolution_summary(self, schema_id: str) -> Optional[SchemaEvolutionSummary]:
         """Get evolution summary for a schema.
-        
+
         Args:
             schema_id: ID of schema
-            
+
         Returns:
             SchemaEvolutionSummary: Evolution summary if found
         """
@@ -95,10 +95,10 @@ class SchemaHistoryFetcher:
 
     def get_version_timeline(self, schema_id: str) -> List[Tuple[str, datetime, str]]:
         """Get timeline of versions for a schema.
-        
+
         Args:
             schema_id: ID of schema
-            
+
         Returns:
             List of (version, timestamp, action) tuples
         """
@@ -114,7 +114,7 @@ class SchemaHistoryFetcher:
 
     def get_contributor_stats(self) -> Dict[str, Dict[str, Any]]:
         """Get statistics for all contributors.
-        
+
         Returns:
             Dict: Contributor statistics
         """
@@ -135,7 +135,7 @@ class SchemaHistoryFetcher:
 
     def cleanup_old_records(self) -> int:
         """Clean up old records based on retention policy.
-        
+
         Returns:
             int: Number of records cleaned up
         """
@@ -220,7 +220,7 @@ def create_schema_history_fetcher(storage_path: str='data/schema_history', max_r
 
 def fetch_schema_history(schema_id: Optional[str]=None, actions: List[str]=None, changed_by: Optional[str]=None, date_from: Optional[datetime]=None, date_to: Optional[datetime]=None, include_changes: bool=True, limit: int=100, offset: int=0, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Fetch schema history.
-    
+
     Args:
         schema_id: ID of schema to fetch history for
         actions: List of actions to filter by
@@ -231,7 +231,7 @@ def fetch_schema_history(schema_id: Optional[str]=None, actions: List[str]=None,
         limit: Maximum number of records
         offset: Number of records to skip
         config: Optional fetcher configuration
-        
+
     Returns:
         Dict: History results
     """
@@ -240,4 +240,3 @@ def fetch_schema_history(schema_id: Optional[str]=None, actions: List[str]=None,
     query = SchemaHistoryQuery(schema_id=schema_id, actions=[HistoryAction(action) for action in actions or []], changed_by=changed_by, date_from=date_from, date_to=date_to, include_changes=include_changes, limit=limit, offset=offset)
     result = fetcher.fetch_history(query)
     return {'records': [{'id': r.id, 'schema_id': r.schema_id, 'action': r.action.value, 'timestamp': r.timestamp.isoformat(), 'version_from': r.version_from, 'version_to': r.version_to, 'changed_by': r.changed_by, 'change_summary': r.change_summary, 'changes': r.changes, 'metadata': r.metadata} for r in result.records], 'total_count': result.total_count, 'query': {'schema_id': result.query.schema_id, 'actions': [a.value for a in result.query.actions], 'changed_by': result.query.changed_by, 'include_changes': result.query.include_changes, 'limit': result.query.limit, 'offset': result.query.offset}, 'metadata': result.metadata}
-

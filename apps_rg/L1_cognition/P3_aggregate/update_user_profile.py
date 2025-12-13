@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Update User Profile - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class UpdateUserProfile:
     """UpdateUserProfile implementation."""

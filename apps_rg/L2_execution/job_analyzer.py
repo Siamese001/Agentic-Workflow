@@ -12,14 +12,13 @@ from runtime.shared.multi_provider_clients import get_client, Provider
 
 logger = logging.getLogger(__name__)
 
-
 class JobAnalyzer:
     """Analyzes job descriptions using LLM to extract key information."""
-    
+
     def __init__(self, llm_client: Optional[Any] = None, provider: Optional[Provider] = None, workflow_config: Optional[Any] = None):
         """
         Initialize JobAnalyzer.
-        
+
         Args:
             llm_client: Optional pre-configured LLM client
             provider: Provider to use if client not supplied (defaults to Google/Gemini)
@@ -27,17 +26,17 @@ class JobAnalyzer:
         self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)
         self.provider = provider or Provider.GOOGLE
         self.workflow_config = workflow_config  # Store K-node configuration
-        
+
         if self.llm_client is None:
             raise ValueError(f"Failed to initialize LLM client for provider {self.provider}")
-    
+
     def analyze(self, job_description: str) -> Dict[str, Any]:
         """
         Analyze a job description to extract key information.
-        
+
         Args:
             job_description: Raw job description text
-            
+
         Returns:
             Dictionary containing:
             - hard_skills: List of required hard skills
@@ -48,23 +47,23 @@ class JobAnalyzer:
             - north_star_metric: Key success metric for the role
         """
         prompt = self._build_analysis_prompt(job_description)
-        
+
         try:
             # Use workflow configuration for temperature if available
             temperature = 0.7
             if self.workflow_config and hasattr(self.workflow_config, 'temp'):
                 temperature = self.workflow_config.temp
-            
+
             # Generate analysis using Gemini
             if self.provider == Provider.GOOGLE:
                 response = self._generate_with_gemini(prompt, temperature)
             else:
                 # Fallback for other providers
                 response = self._generate_with_generic_client(prompt, temperature)
-            
+
             # Parse and return structured results
             return self._parse_analysis_response(response)
-            
+
         except Exception as e:
             logger.error(f"Error analyzing job description: {e}")
             # Return fallback structure
@@ -77,10 +76,10 @@ class JobAnalyzer:
                 "north_star_metric": "unknown",
                 "error": str(e)
             }
-    
+
     def _build_analysis_prompt(self, job_description: str) -> str:
         """Build the prompt for job analysis."""
-        return f"""Analyze the following job description and extract key information. 
+        return f"""Analyze the following job description and extract key information.
 
 JOB DESCRIPTION:
 {job_description}
@@ -97,19 +96,19 @@ Please extract and return a JSON object with the following structure:
 
 Focus on the most important skills and requirements. Be specific and concise.
 Return ONLY the JSON object, no additional text."""
-    
+
     def _generate_with_gemini(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using Google Gemini."""
         import google.generativeai as genai
-        
+
         # Configure model
         model = genai.GenerativeModel('gemini-1.5-flash')
-        
+
         # Generate response with temperature from workflow
         generation_config = genai.types.GenerationConfig(temperature=temperature)
         response = model.generate_content(prompt, generation_config=generation_config)
         return response.text
-    
+
     def _generate_with_generic_client(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using generic client interface."""
         # Fallback for other providers
@@ -120,7 +119,7 @@ Return ONLY the JSON object, no additional text."""
             # Try completion interface
             response = self.llm_client.complete(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
-    
+
     def _parse_analysis_response(self, response: str) -> Dict[str, Any]:
         """Parse the LLM response into structured data."""
         try:
@@ -131,10 +130,10 @@ Return ONLY the JSON object, no additional text."""
             if cleaned.endswith('```'):
                 cleaned = cleaned[:-3]
             cleaned = cleaned.strip()
-            
+
             # Parse JSON
             parsed = json.loads(cleaned)
-            
+
             # Validate and set defaults
             result = {
                 "hard_skills": parsed.get("hard_skills", [])[:5],  # Limit to 5
@@ -144,9 +143,9 @@ Return ONLY the JSON object, no additional text."""
                 "cultural_indicators": parsed.get("cultural_indicators", [])[:5],
                 "north_star_metric": parsed.get("north_star_metric", "unknown")
             }
-            
+
             return result
-            
+
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse JSON response: {e}")
             logger.debug(f"Response content: {response}")
@@ -160,21 +159,21 @@ Return ONLY the JSON object, no additional text."""
                 "north_star_metric": "unknown",
                 "error": f"JSON parsing failed: {e}"
             }
-    
+
     def extract_keywords(self, job_description: str, max_keywords: int = 20) -> List[str]:
         """
         Extract important keywords from job description.
-        
+
         Args:
             job_description: Raw job description text
             max_keywords: Maximum number of keywords to return
-            
+
         Returns:
             List of relevant keywords
         """
         # Simple keyword extraction as fallback
         import re
-        
+
         # Common tech/role keywords to look for
         common_keywords = {
             'python', 'java', 'javascript', 'react', 'node', 'aws', 'azure', 'gcp',
@@ -184,15 +183,15 @@ Return ONLY the JSON object, no additional text."""
             'ci/cd', 'testing', 'unit testing', 'integration', 'frontend', 'backend',
             'full stack', 'mobile', 'ios', 'android', 'web', 'cloud', 'security'
         }
-        
+
         # Find matches in text
         text_lower = job_description.lower()
         found_keywords = []
-        
+
         for keyword in common_keywords:
             if keyword in text_lower:
                 found_keywords.append(keyword)
                 if len(found_keywords) >= max_keywords:
                     break
-        
+
         return found_keywords

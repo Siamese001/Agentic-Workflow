@@ -11,9 +11,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Union, Any
 import json
 
-
 logger = logging.getLogger(__name__)
-
 
 class ExpansionStrategy(str, Enum):
     """Strategies for query expansion."""
@@ -22,18 +20,17 @@ class ExpansionStrategy(str, Enum):
     KEYWORD_BOOST = "keyword_boost"
     HYBRID = "hybrid"
 
-
 @dataclass
 class HyDEDocument:
     """A hypothetical document generated for query expansion."""
-    
+
     content: str
     archetype: str
     industry: str
     strategy: ExpansionStrategy
     word_count: int
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     @property
     def is_valid(self) -> bool:
         """Check if the generated document meets quality criteria."""
@@ -43,18 +40,16 @@ class HyDEDocument:
             not self.content.lower().startswith(("i cannot", "i'm unable", "as an ai"))
         )
 
-
 @dataclass
 class HyDEResult:
     """Result of HyDE processing."""
-    
+
     original_query: str
     expanded_query: str
     hypothetical_doc: Optional[HyDEDocument]
     success: bool
     fallback_used: bool = False
     error_message: Optional[str] = None
-
 
 # Archetype-specific prompt templates
 HYDE_TEMPLATES = {
@@ -88,7 +83,7 @@ HYDE_TEMPLATES = {
         "technical strategy, architecture decisions, and organizational impact using "
         "{keywords}. Include scale, complexity, and business outcomes. Keep it 50-75 words."
     ),
-    
+
     # Executive Leadership
     "CEO": (
         "Write a bullet point describing a strategic business outcome in {industry}. "
@@ -111,7 +106,7 @@ HYDE_TEMPLATES = {
         "strategy, user growth, retention, and market success using {keywords}. "
         "Include KPIs and business impact. Keep it 50-75 words."
     ),
-    
+
     # Product & Design
     "VP Product": (
         "Write a product leadership achievement in {industry}. Focus on product "
@@ -123,7 +118,7 @@ HYDE_TEMPLATES = {
         "delivery, user feedback, and business impact using {keywords}. "
         "Include specific metrics and stakeholder value. Keep it 50-75 words."
     ),
-    
+
     # Talent & HR
     "Recruiter": (
         "Write a resume summary for a candidate in {industry} matching these skills: "
@@ -140,7 +135,7 @@ HYDE_TEMPLATES = {
         "retention programs, policy improvements, and culture initiatives using "
         "{keywords}. Include HR metrics. Keep it 50-75 words."
     ),
-    
+
     # Sales & Marketing
     "VP Sales": (
         "Write a sales leadership achievement in {industry}. Focus on revenue growth, "
@@ -152,7 +147,7 @@ HYDE_TEMPLATES = {
         "client relationships, and solution selling using {keywords}. "
         "Include specific sales metrics. Keep it 50-75 words."
     ),
-    
+
     # Default template
     "DEFAULT": (
         "Write a detailed resume bullet point demonstrating expertise in {keywords} "
@@ -161,14 +156,13 @@ HYDE_TEMPLATES = {
     )
 }
 
-
 class HyDEProcessor:
     """Archetype-aware HyDE processor for query expansion.
-    
+
     This processor generates hypothetical documents tailored to specific recipient
     archetypes to improve vector search recall and relevance.
     """
-    
+
     def __init__(
         self,
         llm_client: Optional[Any] = None,
@@ -177,7 +171,7 @@ class HyDEProcessor:
         fallback_enabled: bool = True
     ):
         """Initialize the HyDE processor.
-        
+
         Args:
             llm_client: LLM client for document generation
             default_industry: Default industry if not specified
@@ -188,7 +182,7 @@ class HyDEProcessor:
         self.default_industry = default_industry
         self.max_retries = max_retries
         self.fallback_enabled = fallback_enabled
-        
+
         # Archetype normalization map
         self.archetype_aliases = {
             # Technical aliases
@@ -197,28 +191,28 @@ class HyDEProcessor:
             "head of engineering": "CTO",
             "tech lead": "Staff Engineer",
             "senior engineer": "Staff Engineer",
-            
+
             # Executive aliases
             "president": "CEO",
             "managing director": "CEO",
             "co-founder": "Founder",
-            
+
             # Product aliases
             "head of product": "VP Product",
             "product lead": "Product Manager",
-            
+
             # Talent aliases
             "talent partner": "Recruiter",
             "sourcer": "Recruiter",
             "hr business partner": "HR Manager",
-            
+
             # Sales aliases
             "sales director": "VP Sales",
             "business development": "Account Executive"
         }
-        
+
         logger.info(f"Initialized HyDEProcessor with {len(HYDE_TEMPLATES)} templates")
-    
+
     def expand_query(
         self,
         original_query: str,
@@ -226,12 +220,12 @@ class HyDEProcessor:
         industry: Optional[str] = None
     ) -> HyDEResult:
         """Expand query using archetype-aware HyDE.
-        
+
         Args:
             original_query: Original search query
             archetype: Target recipient archetype
             industry: Industry context
-            
+
         Returns:
             HyDEResult with expanded query and metadata
         """
@@ -240,11 +234,11 @@ class HyDEProcessor:
             hypothetical_doc = self.generate_hypothetical_doc(
                 original_query, archetype, industry or self.default_industry
             )
-            
+
             if hypothetical_doc and hypothetical_doc.is_valid:
                 # Combine with original query
                 expanded_query = f"{original_query}\n\n{hypothetical_doc.content}"
-                
+
                 return HyDEResult(
                     original_query=original_query,
                     expanded_query=expanded_query,
@@ -273,13 +267,13 @@ class HyDEProcessor:
                         fallback_used=False,
                         error_message="Generated document invalid and fallback disabled"
                     )
-                    
+
         except Exception as e:
             logger.error(f"HyDE expansion failed: {str(e)}")
-            
+
             # Emergency fallback
             fallback_query = self._keyword_fallback(original_query, industry) if self.fallback_enabled else original_query
-            
+
             return HyDEResult(
                 original_query=original_query,
                 expanded_query=fallback_query,
@@ -288,7 +282,7 @@ class HyDEProcessor:
                 fallback_used=self.fallback_enabled,
                 error_message=str(e)
             )
-    
+
     def generate_hypothetical_doc(
         self,
         query: str,
@@ -296,18 +290,18 @@ class HyDEProcessor:
         industry: str
     ) -> Optional[HyDEDocument]:
         """Generate a hypothetical document for query expansion.
-        
+
         Args:
             query: Original query keywords
             archetype: Target archetype
             industry: Industry context
-            
+
         Returns:
             HyDEDocument or None if generation fails
         """
         # Construct the prompt
         prompt = self._construct_prompt(query, archetype, industry)
-        
+
         # Attempt generation with retries
         for attempt in range(self.max_retries + 1):
             try:
@@ -317,7 +311,7 @@ class HyDEProcessor:
                 else:
                     # Mock generation for testing
                     content = self._mock_generation(query, archetype, industry)
-                
+
                 if content:
                     # Create document
                     doc = HyDEDocument(
@@ -328,85 +322,85 @@ class HyDEProcessor:
                         word_count=len(content.split()),
                         metadata={"attempt": attempt + 1}
                     )
-                    
+
                     if doc.is_valid:
                         logger.debug(f"Generated valid HyDE document for {archetype}")
                         return doc
                     else:
                         logger.warning(f"Generated invalid document on attempt {attempt + 1}")
-                
+
             except Exception as e:
                 logger.warning(f"Generation attempt {attempt + 1} failed: {str(e)}")
                 if attempt == self.max_retries:
                     break
-        
+
         logger.error(f"Failed to generate valid document after {self.max_retries + 1} attempts")
         return None
-    
+
     def _construct_prompt(self, query: str, archetype: str, industry: str) -> str:
         """Construct the prompt for hypothetical document generation.
-        
+
         Args:
             query: Original query
             archetype: Target archetype
             industry: Industry context
-            
+
         Returns:
             Formatted prompt string
         """
         # Normalize archetype
         normalized_archetype = self._normalize_archetype(archetype)
-        
+
         # Get template
         template = HYDE_TEMPLATES.get(normalized_archetype, HYDE_TEMPLATES["DEFAULT"])
-        
+
         # Fill placeholders
         prompt = template.format(
             keywords=query,
             industry=industry
         )
-        
+
         return prompt
-    
+
     def _normalize_archetype(self, archetype: str) -> str:
         """Normalize archetype string to match template keys.
-        
+
         Args:
             archetype: Raw archetype string
-            
+
         Returns:
             Normalized archetype key
         """
         # Direct match
         if archetype in HYDE_TEMPLATES:
             return archetype
-        
+
         # Check aliases
         archetype_lower = archetype.lower()
         for alias, target in self.archetype_aliases.items():
             if alias in archetype_lower or archetype_lower in alias:
                 return target
-        
+
         # Fuzzy matching for partial matches
         for key in HYDE_TEMPLATES:
             if key.lower() in archetype_lower or archetype_lower in key.lower():
                 return key
-        
+
         # Default
         return "DEFAULT"
-    
+
     def _call_llm(self, prompt: str) -> Optional[str]:
         """Call the LLM client for document generation.
-        
+
         Args:
             prompt: Generation prompt
-            
+
         Returns:
             Generated content or None
         """
         if not self.llm_client:
             return None
-        
+
         try:
             # This would be implemented with actual LLM client
             # For now, return None to trigger fallback
@@ -415,15 +409,15 @@ class HyDEProcessor:
         except Exception as e:
             logger.error(f"LLM call failed: {str(e)}")
             return None
-    
+
     def _mock_generation(self, query: str, archetype: str, industry: str) -> str:
         """Mock document generation for testing.
-        
+
         Args:
             query: Original query
             archetype: Target archetype
             industry: Industry context
-            
+
         Returns:
             Mock generated content
         """
@@ -436,14 +430,14 @@ class HyDEProcessor:
             return f"5+ years experience in {query} with proven track record of hiring top talent, full-cycle recruiting, and building high-performing teams in {industry}."
         else:
             return f"Delivered impactful {query} solutions achieving measurable business outcomes through technical excellence and strategic thinking in {industry}."
-    
+
     def _keyword_fallback(self, query: str, industry: Optional[str] = None) -> str:
         """Fallback expansion using keyword enhancement.
-        
+
         Args:
             query: Original query
             industry: Industry context
-            
+
         Returns:
             Expanded query with keywords
         """
@@ -455,19 +449,18 @@ class HyDEProcessor:
             "retail": ["sales", "customer", "ecommerce", "merchandise", "retail"],
             "consulting": ["strategy", "advisory", "management", "consulting", "solutions"]
         }
-        
+
         # Add industry keywords
         expanded_parts = [query]
-        
+
         if industry and industry.lower() in industry_keywords:
             keywords = industry_keywords[industry.lower()]
             expanded_parts.append(" ".join(keywords[:3]))  # Add top 3 keywords
-        
+
         # Add generic professional keywords
         expanded_parts.append("achievement results impact metrics")
-        
-        return "\n\n".join(expanded_parts)
 
+        return "\n\n".join(expanded_parts)
 
 # Factory function for easy instantiation
 def create_hyde_processor(
@@ -476,12 +469,12 @@ def create_hyde_processor(
     max_retries: int = 2
 ) -> HyDEProcessor:
     """Create a HyDEProcessor instance.
-    
+
     Args:
         llm_client: LLM client for generation
         default_industry: Default industry context
         max_retries: Maximum retry attempts
-        
+
     Returns:
         Configured HyDEProcessor instance
     """
@@ -492,7 +485,6 @@ def create_hyde_processor(
         fallback_enabled=True
     )
 
-
 # Convenience function for quick expansion
 def expand_query_with_hyde(
     query: str,
@@ -501,13 +493,13 @@ def expand_query_with_hyde(
     llm_client: Optional[Any] = None
 ) -> str:
     """Quickly expand a query using HyDE.
-    
+
     Args:
         query: Original query
         archetype: Target archetype
         industry: Industry context
         llm_client: LLM client
-        
+
     Returns:
         Expanded query string
     """

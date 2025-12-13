@@ -12,4 +12,3 @@ class ConstitutionalReviewResult:
     compliance_score: float
     recommendations: List[str]
     reviewed_at: float
-

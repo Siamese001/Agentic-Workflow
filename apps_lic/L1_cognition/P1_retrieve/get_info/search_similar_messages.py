@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Search Similar Messages - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class SearchSimilarMessages:
     """SearchSimilarMessages implementation."""

@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Search Similar Resumes - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class SearchSimilarResumes:
     """SearchSimilarResumes implementation."""

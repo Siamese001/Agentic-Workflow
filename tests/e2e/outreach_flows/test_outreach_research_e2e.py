@@ -37,7 +37,6 @@ class TestContactResearchE2E:
 
         assert len(aggregated) == 4
 
-
 class TestMessageGenerationE2E:
     """E2E tests for message generation."""
 

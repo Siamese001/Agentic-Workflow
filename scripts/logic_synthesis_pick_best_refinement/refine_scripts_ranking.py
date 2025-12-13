@@ -26,15 +26,11 @@ The actual ranking algorithms are delegated to runtime_utils.Ranking.
 This file wraps those behaviors and exposes a stable API.
 """
 
-
 from __future__ import annotations
-
 
 from typing import Dict, List
 
-
 # from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive import removed to protect archives from validation edits
-
 
 def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
@@ -44,20 +40,17 @@ def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     return _Ranking.bm25_rank(items)
 
-
 def dense(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Deterministic dense-score ranking (SHA-based pseudo-embedding).
     """
     return _Ranking.dense_rank(items)
 
-
 def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Combined ranking (BM25 + dense).
     """
     return _Ranking.hybrid_rank(items)
-
 
 def apply_strategy(
     items: List[Dict[str, object]],
@@ -92,7 +85,6 @@ def apply_strategy(
         out.append(new_item)
 
     return out
-
 
 def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, object]]:
     """
@@ -129,7 +121,6 @@ def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, 
         item["rank"] = idx + 1
 
     return flattened
-
 
 def rank_documents(
     items: List[Dict[str, object]],

@@ -85,7 +85,6 @@ class TestPickBestResult:
         assert best.metadata is not None
         assert best.metadata["author"] == "system"
 
-
 class TestResultAggregation:
     """Tests for result aggregation operations."""
 
@@ -145,7 +144,6 @@ class TestResultAggregation:
         weighted_avg = weighted_sum / total_weight
 
         assert weighted_avg == pytest.approx(81.0)
-
 
 class TestResultRanking:
     """Tests for result ranking operations."""

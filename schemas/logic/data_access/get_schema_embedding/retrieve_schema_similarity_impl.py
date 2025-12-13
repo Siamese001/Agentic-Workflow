@@ -12,10 +12,10 @@ class SchemaSimilarityRetriever:
 
     def retrieve_similarity(self, request: SchemaSimilarityRequest) -> SchemaSimilarityResult:
         """Retrieve similarity between two schemas.
-        
+
         Args:
             request: Similarity computation request
-            
+
         Returns:
             SchemaSimilarityResult: Detailed similarity analysis
         """
@@ -47,12 +47,12 @@ class SchemaSimilarityRetriever:
 
     def batch_similarity(self, source_schema: Dict[str, Any], target_schemas: List[Dict[str, Any]], method: Optional[SimilarityMethod]=None) -> List[SchemaSimilarityResult]:
         """Compute similarity against multiple target schemas.
-        
+
         Args:
             source_schema: Source schema to compare
             target_schemas: List of target schemas
             method: Similarity method to use
-            
+
         Returns:
             List[SchemaSimilarityResult]: Results for each target schema
         """
@@ -68,12 +68,12 @@ class SchemaSimilarityRetriever:
 
     def find_compatible_schemas(self, schema: Dict[str, Any], schema_candidates: List[Tuple[str, Dict[str, Any]]], min_compatibility: CompatibilityLevel=CompatibilityLevel.PARTIALLY_COMPATIBLE) -> List[Tuple[str, SchemaSimilarityResult]]:
         """Find schemas compatible with a given schema.
-        
+
         Args:
             schema: Reference schema
             schema_candidates: List of (schema_id, schema) tuples
             min_compatibility: Minimum compatibility level
-            
+
         Returns:
             List of (schema_id, similarity_result) tuples
         """
@@ -250,7 +250,7 @@ def create_schema_similarity_retriever(default_method: str='hybrid', **kwargs: o
 
 def retrieve_schema_similarity(source_schema: Dict[str, Any], target_schema: Dict[str, Any], method: str='hybrid', include_field_details: bool=False, weight_structural: float=0.4, weight_semantic: float=0.3, weight_overlap: float=0.3, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Retrieve schema similarity.
-    
+
     Args:
         source_schema: Source schema
         target_schema: Target schema
@@ -260,7 +260,7 @@ def retrieve_schema_similarity(source_schema: Dict[str, Any], target_schema: Dic
         weight_semantic: Weight for semantic similarity
         weight_overlap: Weight for field overlap similarity
         config: Optional retriever configuration
-        
+
     Returns:
         Dict: Similarity results
     """
@@ -269,4 +269,3 @@ def retrieve_schema_similarity(source_schema: Dict[str, Any], target_schema: Dic
     request = SchemaSimilarityRequest(source_schema=source_schema, target_schema=target_schema, method=SimilarityMethod(method), include_field_details=include_field_details, weight_structural=weight_structural, weight_semantic=weight_semantic, weight_overlap=weight_overlap)
     result = retriever.retrieve_similarity(request)
     return {'similarity_score': result.similarity_score, 'compatibility_level': result.compatibility_level.value, 'field_matches': [{'field_name': m.field_name, 'source_type': m.source_type, 'target_type': m.target_type, 'type_match': m.type_match, 'semantic_similarity': m.semantic_similarity, 'confidence': m.confidence} for m in result.field_matches], 'missing_fields': result.missing_fields, 'extra_fields': result.extra_fields, 'type_conflicts': result.type_conflicts, 'metadata': result.metadata}
-

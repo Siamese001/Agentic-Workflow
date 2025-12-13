@@ -5,14 +5,14 @@ from .judge_evaluator_types import *
 
 class JudgeEvaluator:
     """LM-as-a-Judge evaluator for output quality assessment.
-    
+
     Uses an LLM to evaluate agent outputs against quality criteria.
     Integrates with golden state datasets for validation.
     """
 
     def __init__(self, llm_client: Optional[Callable[[str], Awaitable[str]]]=None, criteria: Optional[List[JudgmentCriterion]]=None, pass_threshold: float=0.7, enable_logging: bool=True):
         """Initialize judge evaluator.
-        
+
         Args:
             llm_client: Async function to call LLM for judgment
             criteria: Criteria to evaluate (default: all)
@@ -28,12 +28,12 @@ class JudgeEvaluator:
 
     async def evaluate(self, output: str, expected: Optional[str]=None, context: Optional[Dict[str, Any]]=None) -> JudgeEvaluationResult:
         """Evaluate output quality.
-        
+
         Args:
             output: Agent output to evaluate
             expected: Optional expected/golden output
             context: Optional context (task, inputs, etc.)
-            
+
         Returns:
             JudgeEvaluationResult with verdicts
         """
@@ -53,13 +53,13 @@ class JudgeEvaluator:
 
     async def _evaluate_criterion(self, output: str, expected: Optional[str], context: Optional[Dict[str, Any]], criterion: JudgmentCriterion) -> JudgeVerdict:
         """Evaluate a single criterion.
-        
+
         Args:
             output: Output to evaluate
             expected: Expected output
             context: Context
             criterion: Criterion to evaluate
-            
+
         Returns:
             JudgeVerdict for this criterion
         """
@@ -78,13 +78,13 @@ class JudgeEvaluator:
 
     def _build_evaluation_prompt(self, output: str, expected: Optional[str], context: Optional[Dict[str, Any]], criterion: JudgmentCriterion) -> str:
         """Build evaluation prompt for LLM.
-        
+
         Args:
             output: Output to evaluate
             expected: Expected output
             context: Context
             criterion: Criterion
-            
+
         Returns:
             Evaluation prompt
         """
@@ -100,11 +100,11 @@ class JudgeEvaluator:
 
     def _parse_llm_response(self, response: str, criterion: JudgmentCriterion) -> JudgeVerdict:
         """Parse LLM response into verdict.
-        
+
         Args:
             response: LLM response
             criterion: Criterion evaluated
-            
+
         Returns:
             JudgeVerdict
         """
@@ -164,12 +164,12 @@ class JudgeEvaluator:
 
     def _heuristic_evaluation(self, output: str, expected: Optional[str], criterion: JudgmentCriterion) -> JudgeVerdict:
         """Heuristic evaluation when LLM unavailable.
-        
+
         Args:
             output: Output to evaluate
             expected: Expected output
             criterion: Criterion
-            
+
         Returns:
             JudgeVerdict based on heuristics
         """
@@ -217,12 +217,12 @@ class JudgeEvaluator:
 
     def _generate_summary(self, verdicts: List[JudgeVerdict], overall_score: float, passed: bool) -> str:
         """Generate evaluation summary.
-        
+
         Args:
             verdicts: All verdicts
             overall_score: Overall score
             passed: Whether evaluation passed
-            
+
         Returns:
             Summary string
         """
@@ -240,13 +240,12 @@ class JudgeEvaluator:
 
 def create_judge_evaluator(llm_client: Optional[Callable[[str], Awaitable[str]]]=None, pass_threshold: float=0.7) -> JudgeEvaluator:
     """Factory function to create judge evaluator.
-    
+
     Args:
         llm_client: LLM client function
         pass_threshold: Pass threshold
-        
+
     Returns:
         JudgeEvaluator instance
     """
     return JudgeEvaluator(llm_client=llm_client, pass_threshold=pass_threshold)
-

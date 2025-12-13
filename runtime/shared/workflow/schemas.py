@@ -9,26 +9,24 @@ from pydantic import BaseModel, Field, validator, constr
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
-
 # K.1: Company and Job Title Extraction
 class K1CompanyJobTitle(BaseModel):
     """Schema for K.1 node - Company and job title extraction."""
     company_name: str = Field(..., description="Exact company name from the job posting")
     job_title: str = Field(..., description="Exact job title from the posting")
     location: Optional[str] = Field(None, description="Job location if specified")
-    
+
     @validator('company_name')
     def validate_company(cls, v):
         if len(v.strip()) < 2:
             raise ValueError("Company name too short")
         return v.strip()
-    
+
     @validator('job_title')
     def validate_title(cls, v):
         if len(v.strip()) < 3:
             raise ValueError("Job title too short")
         return v.strip()
-
 
 # K.2: Skills Analysis
 class K2SkillsAnalysis(BaseModel):
@@ -49,14 +47,13 @@ class K2SkillsAnalysis(BaseModel):
         ...,
         description="Skills grouped by category (technical, soft, tools, etc.)"
     )
-    
+
     @validator('required_skills')
     def validate_required_skills(cls, v):
         cleaned = [skill.strip() for skill in v if skill.strip()]
         if len(cleaned) < 5:
             raise ValueError("At least 5 required skills needed")
         return cleaned
-
 
 # K.3: Experience Requirements
 class K3ExperienceRequirements(BaseModel):
@@ -73,14 +70,13 @@ class K3ExperienceRequirements(BaseModel):
         ...,
         description="Required industry experience"
     )
-    
+
     @validator('seniority_level')
     def validate_seniority(cls, v):
         valid_levels = ["Entry", "Mid", "Senior", "Lead", "Principal", "Executive"]
         if v not in valid_levels:
             raise ValueError(f"Invalid seniority level. Must be one of: {valid_levels}")
         return v
-
 
 # K.4: Responsibilities Analysis
 class K4Responsibilities(BaseModel):
@@ -101,14 +97,13 @@ class K4Responsibilities(BaseModel):
         None,
         description="Leadership or management scope if applicable"
     )
-    
+
     @validator('primary_responsibilities')
     def validate_primary(cls, v):
         for resp in v:
             if len(resp.strip()) < 10:
                 raise ValueError("Responsibility descriptions too short")
         return v
-
 
 # K.5: Executive Summary
 class K5ExecutiveSummary(BaseModel):
@@ -127,13 +122,12 @@ class K5ExecutiveSummary(BaseModel):
         ...,
         description="Clear value proposition statement"
     )
-    
+
     @validator('summary_text')
     def validate_no_markdown(cls, v):
         if '#' in v or '*' in v or '`' in v:
             raise ValueError("Summary should not contain markdown formatting")
         return v.strip()
-
 
 # K.6: Most Recent Experience
 class K6MostRecentExperience(BaseModel):
@@ -148,7 +142,7 @@ class K6MostRecentExperience(BaseModel):
         max_items=7,
         description="Exactly 7 achievement bullets, 25-35 words each"
     )
-    
+
     @validator('bullets')
     def validate_bullets(cls, v):
         for i, bullet in enumerate(v):
@@ -158,13 +152,12 @@ class K6MostRecentExperience(BaseModel):
             if not bullet.endswith('.'):
                 raise ValueError(f"Bullet {i+1} must end with a period")
         return v
-    
+
     @validator('intro_sentence')
     def validate_intro(cls, v):
         if not v[0].isupper():
             raise ValueError("Intro sentence must start with capital letter")
         return v.strip()
-
 
 # K.7: Technical Skills Section
 class K7TechnicalSkills(BaseModel):
@@ -189,7 +182,7 @@ class K7TechnicalSkills(BaseModel):
         min_items=1,
         description="Cloud platforms experience"
     )
-    
+
     @validator('programming_languages')
     def validate_languages(cls, v):
         # Remove duplicates and empty entries
@@ -197,7 +190,6 @@ class K7TechnicalSkills(BaseModel):
         if len(cleaned) < 3:
             raise ValueError("At least 3 programming languages required")
         return cleaned
-
 
 # K.8: Project Experience
 class K8ProjectExperience(BaseModel):
@@ -216,14 +208,13 @@ class K8ProjectExperience(BaseModel):
         min_items=3,
         description="Technologies used in the project"
     )
-    
+
     @validator('achievements')
     def validate_achievements(cls, v):
         for achievement in v:
             if len(achievement.strip()) < 15:
                 raise ValueError("Achievement descriptions too short")
         return v
-
 
 # K.9: Education and Certifications
 class K9EducationCertifications(BaseModel):
@@ -241,13 +232,12 @@ class K9EducationCertifications(BaseModel):
         max_items=10,
         description="Professional certifications"
     )
-    
+
     @validator('institution')
     def validate_institution(cls, v):
         if len(v.strip()) < 3:
             raise ValueError("Institution name too short")
         return v.strip()
-
 
 # K.10: Additional Information
 class K10AdditionalInfo(BaseModel):
@@ -273,11 +263,10 @@ class K10AdditionalInfo(BaseModel):
         description="Availability information"
     )
 
-
 # Registry function to get all schemas
 def get_schema_registry() -> Dict[str, type]:
     """Get a registry of all available schemas.
-    
+
     Returns:
         Dictionary mapping schema names to Pydantic model classes
     """

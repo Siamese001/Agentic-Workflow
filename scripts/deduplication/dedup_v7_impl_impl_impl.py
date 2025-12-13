@@ -3,6 +3,10 @@
 from typing import Any, Dict, List, Optional
 
 def compute_content_hash(content: str) -> str:
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Compute SHA256 hash of content."""
     return hashlib.sha256(content.encode('utf-8', errors='replace')).hexdigest()
 
@@ -125,13 +129,13 @@ def fingerprint_file(filepath: Path) -> FileFingerprint:
     try:
         content = filepath.read_text(encoding='utf-8', errors='ignore')
     except Exception as e:
-        return FileFingerprint(path=filepath, content_hash='', ast_hash='', normalized_hash='', semantic_hash='', size=0, line_count=0, imports=[], functions=[], classes=[], is_stub=False, parse_error=str(e))
+        return FileFingerlogger.info(path=filepath, content_hash='', ast_hash='', normalized_hash='', semantic_hash='', size=0, line_count=0, imports=[], functions=[], classes=[], is_stub=False, parse_error=str(e))
     content_hash = compute_content_hash(content)
     ast_hash, ast_error = compute_ast_hash(content)
     normalized_hash = compute_normalized_hash(content)
     imports, functions, classes = extract_semantic_elements(content)
     semantic_hash = compute_semantic_hash(imports, functions, classes)
-    return FileFingerprint(path=filepath, content_hash=content_hash, ast_hash=ast_hash, normalized_hash=normalized_hash, semantic_hash=semantic_hash, size=filepath.stat().st_size, line_count=content.count('\n') + 1, imports=imports, functions=functions, classes=classes, is_stub=is_stub_file(content, functions, classes), parse_error=ast_error)
+    return FileFingerlogger.info(path=filepath, content_hash=content_hash, ast_hash=ast_hash, normalized_hash=normalized_hash, semantic_hash=semantic_hash, size=filepath.stat().st_size, line_count=content.count('\n') + 1, imports=imports, functions=functions, classes=classes, is_stub=is_stub_file(content, functions, classes), parse_error=ast_error)
 
 def collect_fingerprints() -> List[FileFingerprint]:
     """Collect fingerprints for all Python files."""
@@ -276,4 +280,3 @@ def save_report(report: DedupReport) -> Path:
     with open(output_path, 'w') as f:
         json.dump(report_data, f, indent=2)
     return output_path
-

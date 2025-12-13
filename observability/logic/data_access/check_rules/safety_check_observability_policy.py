@@ -7,36 +7,23 @@ L5 safety and policy engine for resume job alignment workflows.
 Defines policy interface and implements safety engine for resume enhancement.
 """
 
-
-
-
 from typing import Dict, List, Optional, TypeVar
-
 
 from dataclasses import field
 
-
 import logging
-
 
 import uuid
 
-
 from datetime import datetime, UTC
 
-
-
-
 logger = logging.getLogger(__name__)
-
 
 class PolicyConfigurationError(Exception):
     """Raised when resume workflow policy configuration is invalid."""
     ...
 
-
 T = TypeVar('T')
-
 
 class PolicyResult:
     """Result of evaluating resume workflow policies for enhancement."""
@@ -77,7 +64,6 @@ class PolicyResult:
             'decisions': [d.to_dict() for d in self.decisions],
             'metadata': self.metadata
         }
-
 
 class SafetyEngine:
     """

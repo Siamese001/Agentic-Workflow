@@ -6,12 +6,9 @@ from __future__ import annotations
 
 from typing import Dict
 
-
-
 def test_workflow_orchestration(data: Dict[str, object]) -> Dict[str, object]:
     """Process test workflow orchestration data."""
     return {"status": "processed", "input_keys": list(data.keys())}
-
 
 def get_test_workflow_orchestration_config() -> Dict[str, object]:
     """Get configuration for test_workflow_orchestration."""

@@ -2,6 +2,10 @@
 """
 Comprehensive YAML compliance scanner.
 Compares actual folder structure against unified_structure_subatomic.yaml.
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 import yaml
@@ -91,9 +95,9 @@ def main() -> None:
         if missing and domain not in SKIP_DOMAINS:
             all_missing.extend([(domain, folder, f) for f in sorted(missing)])
             for f in sorted(missing)[:3]:
-                print(f"  - {f}")
+                logger.info(f"  - {f}")
             if len(missing) > 3:
-                print(f"  ... and {len(missing) - 3} more")
+                logger.info(f"  ... and {len(missing) - 3} more")
 
     overall = (1 - total_missing / total_yaml) * 100 if total_yaml else 100
 
@@ -103,14 +107,14 @@ def main() -> None:
         for domain, folder, path in all_missing:
             by_domain.setdefault(domain, []).append(path)
         for domain, paths in sorted(by_domain.items()):
-            print(f"\n{domain}:")
+            logger.info(f"\n{domain}:")
             for path in paths[:5]:
-                print(f"  - {path}")
+                logger.info(f"  - {path}")
             if len(paths) > 5:
-                print(f"  ... and {len(paths) - 5} more")
+                logger.info(f"  ... and {len(paths) - 5} more")
 
     else:
-        print("\n✓ All required files present!")
+        logger.info("\n✓ All required files present!")
 
 if __name__ == '__main__':
     main()

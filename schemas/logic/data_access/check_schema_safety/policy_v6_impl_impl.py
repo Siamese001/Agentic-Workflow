@@ -124,4 +124,3 @@ def check_data_policy(input_data: Dict[str, object]) -> Dict[str, object]:
     builder = CheckDataPolicyPlanFactory()
     engine = builder.create_processor()
     return engine.execute(input_data)
-

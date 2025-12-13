@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Serialize Generation Context - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class SerializeGenerationContext:
     """SerializeGenerationContext implementation."""

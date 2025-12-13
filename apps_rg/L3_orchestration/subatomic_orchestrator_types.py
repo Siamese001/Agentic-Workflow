@@ -21,4 +21,3 @@ class WorkflowBlueprint:
     edges: List[Tuple[AgentRole, AgentRole]]
     mutation_hooks: Dict[AgentRole, List[Tuple[MutationAction, AgentRole]]] = field(default_factory=dict)
     parallel_groups: List[List[AgentRole]] = field(default_factory=list)
-

@@ -13,4 +13,3 @@ class ValidationRejectionReason(str, Enum):
     ORPHANED_CLAIMS = 'orphaned_claims'
     MISSING_CITATIONS = 'missing_citations'
     INSUFFICIENT_DEPTH = 'insufficient_depth'
-

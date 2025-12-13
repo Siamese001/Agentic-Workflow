@@ -40,4 +40,3 @@ class HopCheckpoint:
     completed_at: Optional[str] = None
     error: Optional[str] = None
     output: Optional[Dict[str, object]] = None
-

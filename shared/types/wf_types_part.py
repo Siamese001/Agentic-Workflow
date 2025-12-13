@@ -12,4 +12,3 @@ class RetrievalSource:
     confidence: float = 0.0
     status: str = 'UNKNOWN'
     specific_source: Optional[str] = None
-

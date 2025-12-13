@@ -15,4 +15,3 @@ class ExecutionPriority(Enum):
     NORMAL = 'normal'
     HIGH = 'high'
     CRITICAL = 'critical'
-

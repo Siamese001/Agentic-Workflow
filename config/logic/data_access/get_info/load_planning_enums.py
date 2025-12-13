@@ -25,4 +25,3 @@ class ConfigScope(Enum):
     ENVIRONMENT = 'environment'
     SERVICE = 'service'
     INSTANCE = 'instance'
-

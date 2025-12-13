@@ -32,11 +32,11 @@ def plan_schema_operations(
         "schemas": schemas,
         "transformations": transformations or []
     }
-    
+
     orchestrator_config = SchemaPlanningConfig(**config) if config else None
     orchestrator = SchemaPlanningOrchestrator(orchestrator_config)
     result = orchestrator.execute(request)
-    
+
     return {
         "success": result.success,
         "validated_schemas": [

@@ -5,9 +5,13 @@ from pathlib import Path
 from typing import List
 
 def fix_micro_fragments():
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Fix micro-fragment shim files by adding proper content."""
     root = Path("c:/Git/Agentic-Workflow")
-    
+
     micro_fragments = [
         "shared/result_types.py",
         "shared/configuration/config.py",
@@ -20,7 +24,7 @@ def fix_micro_fragments():
         "shared/types/models.py",
         "shared/types/workflow_types.py",
     ]
-    
+
     for file_path in micro_fragments:
         full_path = root / file_path
         if full_path.exists():
@@ -47,12 +51,12 @@ from .{stem}_types import *
 __all__ = ['*']  # Re-export all imported names
 '''
                 full_path.write_text(new_content, encoding='utf-8')
-                print(f"Fixed micro-fragment: {file_path}")
+                logger.info(f"Fixed micro-fragment: {file_path}")
 
 def split_large_types_files():
     """Split remaining _types files with >5 definitions."""
     root = Path("c:/Git/Agentic-Workflow")
-    
+
     large_files = [
         "shared/result_types_types.py",
         "shared/configuration/config_types.py",
@@ -65,54 +69,54 @@ def split_large_types_files():
         "shared/types/models_types.py",
         "shared/types/workflow_types_types.py",
     ]
-    
+
     for file_path in large_files:
         full_path = root / file_path
         if full_path.exists():
             try:
                 tree = ast.parse(full_path.read_text(encoding='utf-8'))
                 defs = [n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef))]
-                
+
                 if len(defs) > 5:
-                    print(f"Splitting {file_path}: {len(defs)} defs")
-                    
+                    logger.info(f"Splitting {file_path}: {len(defs)} defs")
+
                     # Split into chunks of 5
                     parent_dir = full_path.parent
                     stem = full_path.stem
-                    
+
                     for i in range(0, len(defs), 5):
                         chunk = defs[i:i+5]
                         suffix = "" if i == 0 else f"_{i//5 + 1}"
-                        
+
                         chunk_content = f'"""Split module {i//5 + 1} for {stem}."""\n\n'
                         chunk_content += "from dataclasses import dataclass, field\n"
                         chunk_content += "from typing import Any, Dict, List, Optional\n"
                         chunk_content += "from enum import Enum\n\n"
-                        
+
                         for node in chunk:
                             chunk_content += ast.unparse(node) + "\n\n"
-                        
+
                         chunk_file = parent_dir / f"{stem}_part{suffix}.py"
                         chunk_file.write_text(chunk_content, encoding='utf-8')
-                        print(f"  Created {chunk_file.name}")
-                    
+                        logger.info(f"  Created {chunk_file.name}")
+
                     # Update original to re-export
                     shim_content = f'"""Re-export split modules for {stem}."""\n\n'
                     for i in range(0, len(defs), 5):
                         suffix = "" if i == 0 else f"_{i//5 + 1}"
                         shim_content += f"from .{stem}_part{suffix} import *\n"
-                    
+
                     full_path.write_text(shim_content, encoding='utf-8')
-                    print(f"  Updated {full_path.name} as re-export shim")
-                    
+                    logger.info(f"  Updated {full_path.name} as re-export shim")
+
             except Exception as e:
-                print(f"Error processing {file_path}: {e}")
+                logger.info(f"Error processing {file_path}: {e}")
 
 if __name__ == "__main__":
-    print("Fixing micro-fragments...")
+    logger.info("Fixing micro-fragments...")
     fix_micro_fragments()
-    
-    print("\nSplitting large _types files...")
+
+    logger.info("\nSplitting large _types files...")
     split_large_types_files()
-    
-    print("\nDone! Re-run canon_validator.py to verify.")
+
+    logger.info("\nDone! Re-run canon_validator.py to verify.")

@@ -8,14 +8,12 @@ Data enrichment for resume generation HOP-2.
 Enriches bullet pool with canonical verbs and deduplication.
 """
 
-
 from typing import Dict, List, Optional, Tuple
 
 from shared.types.models import ValidationResult, ValidationSeverity
 
 from apps_rg.L2_execution.apply_verb_canonicalization import VerbCanonicalizer
 from apps_rg.L5_safety.check_duplicate_content import DuplicateDetector
-
 
 class DataEnricher:
     """HOP-2: Enrich bullet pool with canonical verbs, deduplication, etc."""

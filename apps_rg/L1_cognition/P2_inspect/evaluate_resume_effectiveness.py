@@ -11,10 +11,6 @@ from shared.result_types import ScoreResult
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 class EvaluateResumeEffectiveness:
     """Scorer for resume domain."""
 
@@ -51,7 +47,6 @@ class EvaluateResumeEffectiveness:
     def _compute_confidence(self, factors: Dict[str, float]) -> float:
         """Compute confidence."""
         return min(1.0, len(factors) / 5)
-
 
 def compute_score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult:
     """Compute relevance score based on input parameters."""

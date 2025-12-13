@@ -33,4 +33,3 @@ class KeywordExtractionResult:
     keywords: List[str]
     source_text_length: int
     top_n: int
-

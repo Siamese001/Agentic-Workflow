@@ -5,14 +5,14 @@ from .constitutional_ai_types import *
 
 class ConstitutionalAISystem:
     """Constitutional AI System for Safety and Alignment.
-    
+
     Provides rule-based validation, ethical guidelines,
     and content compliance checking.
     """
 
     def __init__(self, enable_logging: bool=True):
         """Initialize Constitutional AI system.
-        
+
         Args:
             enable_logging: Enable logging of violations
         """
@@ -23,7 +23,7 @@ class ConstitutionalAISystem:
 
     def add_rule(self, rule: ConstitutionalRule) -> None:
         """Add a constitutional rule.
-        
+
         Args:
             rule: Rule to add
         """
@@ -34,7 +34,7 @@ class ConstitutionalAISystem:
 
     def remove_rule(self, rule_id: str) -> None:
         """Remove a constitutional rule.
-        
+
         Args:
             rule_id: ID of rule to remove
         """
@@ -47,11 +47,11 @@ class ConstitutionalAISystem:
 
     def review_content(self, content: str, context: Optional[Dict[str, any]]=None) -> ConstitutionalReviewResult:
         """Review content against constitutional rules.
-        
+
         Args:
             content: Content to review
             context: Optional context for evaluation
-            
+
         Returns:
             ConstitutionalReviewResult with violations and recommendations
         """
@@ -67,11 +67,11 @@ class ConstitutionalAISystem:
 
     def _check_compliance(self, content: str, context: Optional[Dict[str, any]]=None) -> List[ViolationReport]:
         """Check content against all rules.
-        
+
         Args:
             content: Content to check
             context: Optional context
-            
+
         Returns:
             List of violations
         """
@@ -85,12 +85,12 @@ class ConstitutionalAISystem:
 
     def _check_rule(self, content: str, rule: ConstitutionalRule, context: Optional[Dict[str, any]]=None) -> List[ViolationReport]:
         """Check content against a specific rule.
-        
+
         Args:
             content: Content to check
             rule: Rule to apply
             context: Optional context
-            
+
         Returns:
             List of violations for this rule
         """
@@ -107,10 +107,10 @@ class ConstitutionalAISystem:
 
     def _calculate_compliance_score(self, violations: List[ViolationReport]) -> float:
         """Calculate compliance score based on violations.
-        
+
         Args:
             violations: List of violations
-            
+
         Returns:
             Compliance score (0.0-1.0)
         """
@@ -123,10 +123,10 @@ class ConstitutionalAISystem:
 
     def _generate_recommendations(self, violations: List[ViolationReport]) -> List[str]:
         """Generate recommendations based on violations.
-        
+
         Args:
             violations: List of violations
-            
+
         Returns:
             List of recommendations
         """
@@ -156,14 +156,13 @@ class ConstitutionalAISystem:
 
 def review_content(content: str, context: Optional[Dict[str, any]]=None) -> ConstitutionalReviewResult:
     """Convenience function to review content.
-    
+
     Args:
         content: Content to review
         context: Optional context
-        
+
     Returns:
         ConstitutionalReviewResult
     """
     system = ConstitutionalAISystem()
     return system.review_content(content, context)
-

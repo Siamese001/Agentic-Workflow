@@ -15,4 +15,3 @@ class ResponseFormat(Enum):
     PROTOBUF = 'protobuf'
     XML = 'xml'
     BINARY = 'binary'
-

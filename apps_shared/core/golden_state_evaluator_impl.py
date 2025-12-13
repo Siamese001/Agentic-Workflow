@@ -5,14 +5,14 @@ from .golden_state_evaluator_types import *
 
 class GoldenStateEvaluator:
     """Evaluator for golden state test cases.
-    
+
     Loads golden test cases and evaluates agent outputs against them.
     Uses JudgeEvaluator for quality assessment.
     """
 
     def __init__(self, dataset_path: Optional[Path]=None, judge_evaluator: Optional[JudgeEvaluator]=None, enable_logging: bool=True):
         """Initialize evaluator.
-        
+
         Args:
             dataset_path: Path to golden dataset JSON
             judge_evaluator: Judge evaluator instance
@@ -43,11 +43,11 @@ class GoldenStateEvaluator:
 
     async def evaluate_case(self, case: GoldenCase, output: GoldenOutput) -> EvaluationReport:
         """Evaluate output against golden case.
-        
+
         Args:
             case: Golden test case
             output: Agent output
-            
+
         Returns:
             EvaluationReport with results
         """
@@ -68,11 +68,11 @@ class GoldenStateEvaluator:
 
     def _evaluate_actions(self, expected: List[Dict[str, Any]], actual: List[Dict[str, Any]]) -> float:
         """Evaluate action matching.
-        
+
         Args:
             expected: Expected actions
             actual: Actual actions taken
-            
+
         Returns:
             Match score (0.0-1.0)
         """
@@ -90,7 +90,7 @@ class GoldenStateEvaluator:
 
     def _check_output_constraints(self, expected: Dict[str, Any], actual: str, errors: List[str]) -> None:
         """Check output constraints.
-        
+
         Args:
             expected: Expected output constraints
             actual: Actual output
@@ -115,10 +115,10 @@ class GoldenStateEvaluator:
 
     async def evaluate_all(self, outputs: Dict[str, GoldenOutput]) -> Dict[str, EvaluationReport]:
         """Evaluate all golden cases.
-        
+
         Args:
             outputs: Dict of case_id -> GoldenOutput
-            
+
         Returns:
             Dict of case_id -> EvaluationReport
         """
@@ -131,10 +131,10 @@ class GoldenStateEvaluator:
 
     def generate_summary(self, reports: Dict[str, EvaluationReport]) -> Dict[str, Any]:
         """Generate summary of evaluation results.
-        
+
         Args:
             reports: Evaluation reports
-            
+
         Returns:
             Summary dict
         """
@@ -149,10 +149,10 @@ class GoldenStateEvaluator:
 
 def load_golden_cases(dataset_path: Optional[Path]=None) -> List[GoldenCase]:
     """Load golden test cases.
-    
+
     Args:
         dataset_path: Path to dataset JSON
-        
+
     Returns:
         List of GoldenCase objects
     """
@@ -161,14 +161,13 @@ def load_golden_cases(dataset_path: Optional[Path]=None) -> List[GoldenCase]:
 
 async def evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> EvaluationReport:
     """Evaluate a single case output.
-    
+
     Args:
         case: Golden test case
         output: Agent output
-        
+
     Returns:
         EvaluationReport
     """
     evaluator = GoldenStateEvaluator()
     return await evaluator.evaluate_case(case, output)
-

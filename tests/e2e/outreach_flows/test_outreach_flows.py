@@ -79,7 +79,6 @@ class TestOutreachCampaignCreation:
         has_duplicates = len(contacts) != len(unique)
         assert has_duplicates is True
 
-
 class TestContactResearch:
     """E2E tests for contact research flows."""
 
@@ -130,7 +129,6 @@ class TestContactResearch:
         c_level = [c for c in contacts if c["title"].startswith("C")]
         assert len(c_level) == 2
 
-
 class TestMessageGeneration:
     """E2E tests for message generation flows."""
 
@@ -167,7 +165,6 @@ class TestMessageGeneration:
         message = template.format(name="John", company="Acme", topic="AI")
         has_unreplaced = any(t in message for t in tokens)
         assert has_unreplaced is False
-
 
 class TestOutreachTracking:
     """E2E tests for outreach tracking flows."""

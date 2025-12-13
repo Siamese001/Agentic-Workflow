@@ -13,12 +13,12 @@ class ConfigModelConverter:
 
     def convert_to_model(self, data: Union[str, Dict[str, Any]], source_format: ConfigFormat, model: ConfigModel) -> ConversionResult:
         """Convert data to configuration model.
-        
+
         Args:
             data: Input data to convert
             source_format: Format of input data
             model: Target configuration model
-            
+
         Returns:
             ConversionResult: Conversion result with validated data
         """
@@ -47,11 +47,11 @@ class ConfigModelConverter:
 
     def convert_from_dict(self, data: Dict[str, Any], model: ConfigModel) -> ConversionResult:
         """Convert dictionary to configuration model.
-        
+
         Args:
             data: Dictionary data to convert
             model: Target configuration model
-            
+
         Returns:
             ConversionResult: Conversion result
         """
@@ -59,11 +59,11 @@ class ConfigModelConverter:
 
     def convert_from_json(self, json_str: str, model: ConfigModel) -> ConversionResult:
         """Convert JSON string to configuration model.
-        
+
         Args:
             json_str: JSON string to convert
             model: Target configuration model
-            
+
         Returns:
             ConversionResult: Conversion result
         """
@@ -71,11 +71,11 @@ class ConfigModelConverter:
 
     def convert_from_yaml(self, yaml_str: str, model: ConfigModel) -> ConversionResult:
         """Convert YAML string to configuration model.
-        
+
         Args:
             yaml_str: YAML string to convert
             model: Target configuration model
-            
+
         Returns:
             ConversionResult: Conversion result
         """
@@ -83,11 +83,11 @@ class ConfigModelConverter:
 
     def convert_from_env(self, env_data: Union[str, Dict[str, str]], model: ConfigModel) -> ConversionResult:
         """Convert environment variables to configuration model.
-        
+
         Args:
             env_data: Environment variables (string or dict)
             model: Target configuration model
-            
+
         Returns:
             ConversionResult: Conversion result
         """
@@ -95,11 +95,11 @@ class ConfigModelConverter:
 
     def export_to_dict(self, model: ConfigModel, include_defaults: bool=True) -> Dict[str, Any]:
         """Export configuration model to dictionary.
-        
+
         Args:
             model: Configuration model to export
             include_defaults: Whether to include default values
-            
+
         Returns:
             Dict: Exported configuration
         """
@@ -111,12 +111,12 @@ class ConfigModelConverter:
 
     def export_to_json(self, model: ConfigModel, include_defaults: bool=True, indent: int=2) -> str:
         """Export configuration model to JSON string.
-        
+
         Args:
             model: Configuration model to export
             include_defaults: Whether to include default values
             indent: JSON indentation
-            
+
         Returns:
             str: JSON string
         """
@@ -125,11 +125,11 @@ class ConfigModelConverter:
 
     def export_to_yaml(self, model: ConfigModel, include_defaults: bool=True) -> str:
         """Export configuration model to YAML string.
-        
+
         Args:
             model: Configuration model to export
             include_defaults: Whether to include default values
-            
+
         Returns:
             str: YAML string
         """
@@ -281,13 +281,13 @@ def create_config_model_converter(mode: str='lenient', preserve_unknown: bool=Tr
 
 def convert_to_config_model(data: Union[str, Dict[str, Any]], model_definition: Dict[str, Any], source_format: str='dict', mode: str='lenient') -> Dict[str, Any]:
     """Convert data to configuration model.
-    
+
     Args:
         data: Input data to convert
         model_definition: Configuration model definition
         source_format: Format of input data
         mode: Conversion mode
-        
+
     Returns:
         Dict: Conversion result
     """
@@ -298,4 +298,3 @@ def convert_to_config_model(data: Union[str, Dict[str, Any]], model_definition: 
     model = ConfigModel(name=model_definition.get('name', 'unnamed'), version=model_definition.get('version', '1.0'), fields=fields, metadata=model_definition.get('metadata', {}))
     result = converter.convert_to_model(data, ConfigFormat(source_format), model)
     return {'config_model': {'name': result.config_model.name, 'version': result.config_model.version, 'metadata': result.config_model.metadata}, 'converted_data': result.converted_data, 'errors': result.errors, 'warnings': result.warnings, 'metadata': result.metadata}
-

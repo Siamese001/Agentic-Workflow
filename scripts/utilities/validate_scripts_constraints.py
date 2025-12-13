@@ -13,12 +13,10 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
 class ValidationSeverity(Enum):
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
-
 
 @dataclass
 class ValidationFinding:
@@ -27,7 +25,6 @@ class ValidationFinding:
     message: str
     severity: ValidationSeverity
     path: Optional[str] = None
-
 
 @dataclass
 class ValidationResult:
@@ -38,7 +35,6 @@ class ValidationResult:
     @property
     def errors(self) -> List[ValidationFinding]:
         return [f for f in self.findings if f.severity == ValidationSeverity.ERROR]
-
 
 class ValidateScriptsConstraints:
     """Validator for utilities domain."""
@@ -84,7 +80,6 @@ class ValidateScriptsConstraints:
                         path=field
                     ))
         return findings
-
 
 def validate(data: object, schema: Optional[Dict] = None, config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""

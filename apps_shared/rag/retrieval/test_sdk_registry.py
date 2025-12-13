@@ -2,7 +2,6 @@
 from unittest.mock import MagicMock, patch
 import pytest
 
-
 class TestSDKRegistry:
     """TestSDKRegistry implementation."""
     def test_contains_core_sdks(self) -> None:

@@ -8,11 +8,7 @@ Provides storage functionality for compiled prompts and templates
 to ensure consistent resume improvement and job alignment.
 """
 
-
 from typing import Dict, List, Optional
-
-
-
 
 class StoredPrompt:
     """
@@ -26,7 +22,6 @@ class StoredPrompt:
     context_schema: Optional[Dict[str, object]] = None
     version: str = "1.0"
     created_at: Optional[str] = None
-
 
 class PromptStore:
     """
@@ -59,25 +54,20 @@ class PromptStore:
             return True
         return False
 
-
 default_store = PromptStore()
-
 
 def get_store() -> PromptStore:
     """Gets the default resume generation prompt store instance."""
     return default_store
-
 
 def store_prompt(prompt_id: str, content: str, **kwargs: Dict[str, object]) -> str:
     """Convenience function to store resume generation prompt."""
     prompt = StoredPrompt(id=prompt_id, content=content, **kwargs)
     return default_store.store(prompt)
 
-
 def retrieve_prompt(prompt_id: str) -> Optional[StoredPrompt]:
     """Convenience function to retrieve resume generation prompt."""
     return default_store.retrieve(prompt_id)
-
 
 def get_prompt_version(prompt_id: str) -> Optional[str]:
     """Gets the version of a stored resume generation prompt."""

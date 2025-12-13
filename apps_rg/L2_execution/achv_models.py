@@ -26,7 +26,7 @@ class BulletProvenanceLog:
 @dataclass
 class BulletSynthesizerConfig:
     """Configuration for bullet point synthesis.
-    
+
     Controls the synthesis parameters including tone, length,
     and formatting options for achievement bullets.
     """
@@ -62,4 +62,3 @@ class BulletSynthesizerResult:
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
-

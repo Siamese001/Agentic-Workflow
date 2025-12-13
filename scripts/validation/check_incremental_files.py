@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 import sys
 
 # --- USER-PROVIDED INPUTS ---
@@ -42,7 +46,7 @@ SOVEREIGN_EXCLUSION_LIST = [
     'route-phase-group.py',
 ]
 
-# List 2: Basenames of all Python files in the archive folder: 
+# List 2: Basenames of all Python files in the archive folder:
 # C:\Git\Agentic-Workflow\archives\engines\legacy_engines (the files we want to check and potentially copy).
 # Format: ['Legacy_Engine.py', 'old_util.py', ...]
 ARCHIVE_SOURCE_LIST = [
@@ -97,17 +101,17 @@ for archive_file in ARCHIVE_SOURCE_LIST:
 # --- Reporting ---
 
 if net_incremental_files:
-    print(f"\nFound {len(net_incremental_files)} net incremental files:")
+    logger.info(f"\nFound {len(net_incremental_files)} net incremental files:")
     for filename in net_incremental_files:
-        print(f"  - {filename}")
-    
+        logger.info(f"  - {filename}")
+
 else:
-    print("No net incremental files found")
+    logger.info("No net incremental files found")
 
 if duplicates_found:
-    print("\nDuplicate files found:")
+    logger.info("\nDuplicate files found:")
     for filename in duplicates_found:
-        print(f"  - {filename}")
+        logger.info(f"  - {filename}")
 
 # Exit cleanly
 sys.exit(0)

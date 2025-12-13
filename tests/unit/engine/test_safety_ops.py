@@ -93,7 +93,6 @@ class TestCheckRules:
         assert result.is_safe is True
         assert len(result.violations) == 0
 
-
 class TestRiskScoring:
     """Tests for risk score calculation."""
 
@@ -127,7 +126,6 @@ class TestRiskScoring:
             raw_score = num_violations * 0.2
             bounded_score = min(1.0, max(0.0, raw_score))
             assert 0.0 <= bounded_score <= 1.0
-
 
 class TestPolicyEnforcement:
     """Tests for policy enforcement."""
@@ -164,7 +162,6 @@ class TestPolicyEnforcement:
 
         should_block = risk_score >= 0.7 and not has_override
         assert should_block is False
-
 
 class TestSafetyAudit:
     """Tests for safety audit logging."""

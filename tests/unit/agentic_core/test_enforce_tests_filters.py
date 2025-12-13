@@ -6,12 +6,9 @@ from __future__ import annotations
 
 from typing import Dict
 
-
-
 def test_enforce_tests_filters(data: Dict[str, object]) -> Dict[str, object]:
     """Process test enforce tests filters data."""
     return {"status": "processed", "input_keys": list(data.keys())}
-
 
 def get_test_enforce_tests_filters_config() -> Dict[str, object]:
     """Get configuration for test_enforce_tests_filters."""

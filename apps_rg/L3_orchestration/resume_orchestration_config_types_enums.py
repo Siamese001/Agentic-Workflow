@@ -19,4 +19,3 @@ class ValidationSeverity(str, Enum):
     INFO = 'INFO'
     WARN = 'WARN'
     CRITICAL = 'CRITICAL'
-

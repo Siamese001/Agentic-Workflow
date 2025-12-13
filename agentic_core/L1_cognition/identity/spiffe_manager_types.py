@@ -21,7 +21,7 @@ class TrustDomain(Enum):
 @dataclass
 class AgentIdentity:
     """Cryptographically-verified agent identity.
-    
+
     Based on SPIFFE ID format: spiffe://trust-domain/path
     """
     spiffe_id: str
@@ -36,7 +36,7 @@ class AgentIdentity:
 
     def is_expired(self) -> bool:
         """Check if identity has expired.
-        
+
         Returns:
             True if expired
         """
@@ -44,7 +44,7 @@ class AgentIdentity:
 
     def is_valid(self) -> bool:
         """Check if identity is valid.
-        
+
         Returns:
             True if valid (not expired and has required fields)
         """
@@ -52,7 +52,7 @@ class AgentIdentity:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary (excludes private key).
-        
+
         Returns:
             Dictionary representation
         """
@@ -60,7 +60,7 @@ class AgentIdentity:
 
     def get_namespace(self) -> str:
         """Extract namespace from SPIFFE ID.
-        
+
         Returns:
             Namespace portion of SPIFFE ID
         """
@@ -71,7 +71,7 @@ class AgentIdentity:
 
     def get_agent_name(self) -> str:
         """Extract agent name from SPIFFE ID.
-        
+
         Returns:
             Agent name portion of SPIFFE ID
         """
@@ -90,9 +90,8 @@ class IdentityVerificationResult:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary.
-        
+
         Returns:
             Dictionary representation
         """
         return {'valid': self.valid, 'identity': self.identity.to_dict() if self.identity else None, 'reason': self.reason, 'verified_at': self.verified_at}
-

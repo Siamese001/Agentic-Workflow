@@ -7,10 +7,8 @@ from typing import Any, Dict, Optional
 # from archives.legacy_root_folders.core.models.models import TelemetryEvent  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.runtime.observability.collectors import append_event, push_span, pop_span  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 def _now_ms() -> int:
     return int(time.time() * 1000)
-
 
 def start_span(name: str, ctx: Optional[Dict[str, object]] = None) -> Dict[str, object]:
     """Create a uniquely identified span and record the start time."""
@@ -39,7 +37,6 @@ def start_span(name: str, ctx: Optional[Dict[str, object]] = None) -> Dict[str, 
 
     return record
 
-
 def end_span(span_record: Dict[str, object]) -> None:
     """Close a previously-started span; no-op if unknown."""
 
@@ -65,6 +62,3 @@ def end_span(span_record: Dict[str, object]) -> None:
             },
         )
     )
-
-
-

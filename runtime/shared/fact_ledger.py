@@ -17,13 +17,11 @@ from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
-
 class FactStatus(str, Enum):
     """Status of fact verification."""
     VERIFIED = "VERIFIED"
     CONFLICT = "CONFLICT"
     UNVERIFIED = "UNVERIFIED"
-
 
 class Fact(BaseModel):
     """Verified fact from master profile."""
@@ -36,10 +34,10 @@ class Fact(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     last_verified: datetime = Field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary.
-        
+
         Returns:
             Dictionary representation
         """
@@ -55,7 +53,6 @@ class Fact(BaseModel):
             "metadata": self.metadata
         }
 
-
 class VerificationResult(BaseModel):
     """Result of fact verification."""
     status: FactStatus
@@ -67,10 +64,9 @@ class VerificationResult(BaseModel):
     confidence: float = Field(default=0.0, ge=0.0, le=1.0)
     explanation: Optional[str] = None
 
-
 class ClaimExtractor:
     """Extracts entities and values from text claims."""
-    
+
     def __init__(self):
         """Initialize claim extractor with patterns."""
         # Patterns for extracting different types of claims
@@ -82,7 +78,7 @@ class ClaimExtractor:
             "year": re.compile(r"\b(20\d{2})\b"),
             "duration": re.compile(r"(\d+(?:\.\d+)?)\s*(years?|months?|weeks?|days?)", re.IGNORECASE)
         }
-        
+
         # Entity keywords
         self.entity_keywords = {
             "revenue": ["revenue", "sales", "income", "turnover"],
@@ -93,18 +89,18 @@ class ClaimExtractor:
             "latency": ["latency", "response time", "delay"],
             "cost": ["cost", "expense", "budget", "spend"]
         }
-    
+
     def extract_claim(self, text: str) -> Tuple[Optional[str], Optional[str], Optional[float], Optional[str]]:
         """Extract entity, value, numeric value, and unit from text.
-        
+
         Args:
             text: Text to extract from
-            
+
         Returns:
             Tuple of (entity, value_str, numeric_value, unit)
         """
         text_lower = text.lower()
-        
+
         # Extract entity
         entity = None
         for entity_type, keywords in self.entity_keywords.items():
@@ -114,12 +110,12 @@ class ClaimExtractor:
                     break
             if entity:
                 break
-        
+
         # Extract value and unit
         value_str = None
         numeric_value = None
         unit = None
-        
+
         # Try each pattern
         for pattern_name, pattern in self.patterns.items():
             match = pattern.search(text)
@@ -131,7 +127,7 @@ class ClaimExtractor:
                         clean_num = re.sub(r"[^\d.]", "", group)
                         try:
                             numeric_value = float(clean_num)
-                            
+
                             # Determine unit
                             if pattern_name == "percentage":
                                 unit = "%"
@@ -145,22 +141,22 @@ class ClaimExtractor:
                             else:
                                 unit = pattern_name
                                 value_str = group
-                            
+
                             break
                         except ValueError:
                             continue
                 if value_str:
                     break
-        
+
         return entity, value_str, numeric_value, unit
-    
+
     def _extract_context(self, text: str, keyword: str) -> str:
         """Extract context around keyword.
-        
+
         Args:
             text: Full text
             keyword: Keyword to find context for
-            
+
         Returns:
             Context string
         """
@@ -168,11 +164,11 @@ class ClaimExtractor:
         idx = text.lower().find(keyword)
         if idx == -1:
             return ""
-        
+
         # Extract words around keyword
         words = text.split()
         context_words = []
-        
+
         # Look for words that might specify the entity
         for i, word in enumerate(words):
             if keyword.lower() in word.lower():
@@ -181,20 +177,19 @@ class ClaimExtractor:
                 end = min(len(words), i + 3)
                 context_words = words[start:end]
                 break
-        
+
         # Clean and join
         context = " ".join(context_words)
         context = re.sub(r"[^\w\s]", "", context)
-        
-        return context.title()
 
+        return context.title()
 
 class FactLedger:
     """Ledger of verified facts for consistency checking."""
-    
+
     def __init__(self, tolerance_percent: float = 5.0):
         """Initialize fact ledger.
-        
+
         Args:
             tolerance_percent: Tolerance for numeric value differences
         """
@@ -202,7 +197,7 @@ class FactLedger:
         self.facts: Dict[str, Fact] = {}
         self.entity_index: Dict[str, List[str]] = {}
         self.extractor = ClaimExtractor()
-        
+
         # Statistics
         self._stats = {
             "facts_loaded": 0,
@@ -210,56 +205,56 @@ class FactLedger:
             "conflicts_detected": 0,
             "unverified_claims": 0
         }
-        
+
         logger.info(f"Initialized FactLedger with {tolerance_percent}% tolerance")
-    
+
     def load_facts(self, profile_data: Dict[str, Any]) -> None:
         """Load facts from master profile data.
-        
+
         Args:
             profile_data: Master profile dictionary
         """
         loaded_count = 0
-        
+
         # Extract facts from different sections
         if "experience" in profile_data:
             loaded_count += self._extract_experience_facts(profile_data["experience"])
-        
+
         if "achievements" in profile_data:
             loaded_count += self._extract_achievement_facts(profile_data["achievements"])
-        
+
         if "metrics" in profile_data:
             loaded_count += self._extract_metric_facts(profile_data["metrics"])
-        
+
         # Extract any explicit facts
         if "facts" in profile_data:
             for fact_data in profile_data["facts"]:
                 fact = Fact(**fact_data)
                 self._add_fact(fact)
                 loaded_count += 1
-        
+
         self._stats["facts_loaded"] = loaded_count
         logger.info(f"Loaded {loaded_count} facts into ledger")
-    
+
     def _extract_experience_facts(self, experience: List[Dict[str, Any]]) -> int:
         """Extract facts from experience section.
-        
+
         Args:
             experience: List of experience entries
-            
+
         Returns:
             Number of facts extracted
         """
         count = 0
-        
+
         for exp in experience:
             company = exp.get("company", "Unknown")
             title = exp.get("title", "Unknown")
-            
+
             # Extract metrics from bullets
             for bullet in exp.get("bullets", []):
                 entity, value_str, numeric_value, unit = self.extractor.extract_claim(bullet)
-                
+
                 if entity and numeric_value is not None:
                     fact = Fact(
                         id=self._generate_fact_id(company, entity),
@@ -273,24 +268,24 @@ class FactLedger:
                     )
                     self._add_fact(fact)
                     count += 1
-        
+
         return count
-    
+
     def _extract_achievement_facts(self, achievements: List[Dict[str, Any]]) -> int:
         """Extract facts from achievements section.
-        
+
         Args:
             achievements: List of achievement entries
-            
+
         Returns:
             Number of facts extracted
         """
         count = 0
-        
+
         for achievement in achievements:
             description = achievement.get("description", "")
             entity, value_str, numeric_value, unit = self.extractor.extract_claim(description)
-            
+
             if entity and numeric_value is not None:
                 fact = Fact(
                     id=self._generate_fact_id("achievement", entity),
@@ -304,25 +299,25 @@ class FactLedger:
                 )
                 self._add_fact(fact)
                 count += 1
-        
+
         return count
-    
+
     def _extract_metric_facts(self, metrics: Dict[str, Any]) -> int:
         """Extract facts from metrics section.
-        
+
         Args:
             metrics: Metrics dictionary
-            
+
         Returns:
             Number of facts extracted
         """
         count = 0
-        
+
         for key, value in metrics.items():
             if isinstance(value, (int, float)):
                 # Determine unit based on key
                 unit = self._infer_unit_from_key(key)
-                
+
                 fact = Fact(
                     id=self._generate_fact_id("metric", key),
                     entity=key.replace("_", " ").title(),
@@ -335,70 +330,70 @@ class FactLedger:
                 )
                 self._add_fact(fact)
                 count += 1
-        
+
         return count
-    
+
     def _infer_unit_from_key(self, key: str) -> Optional[str]:
         """Infer unit from metric key.
-        
+
         Args:
             key: Metric key
-            
+
         Returns:
             Inferred unit
         """
         key_lower = key.lower()
-        
+
         if "percent" in key_lower or "rate" in key_lower:
             return "%"
         elif "dollar" in key_lower or "revenue" in key_lower or "cost" in key_lower:
             return "$"
         elif "time" in key_lower or "latency" in key_lower:
             return "ms"
-        
+
         return None
-    
+
     def _add_fact(self, fact: Fact) -> None:
         """Add fact to ledger.
-        
+
         Args:
             fact: Fact to add
         """
         self.facts[fact.id] = fact
-        
+
         # Update entity index
         entity_key = fact.entity.lower()
         if entity_key not in self.entity_index:
             self.entity_index[entity_key] = []
         self.entity_index[entity_key].append(fact.id)
-    
+
     def _generate_fact_id(self, category: str, entity: str) -> str:
         """Generate unique fact ID.
-        
+
         Args:
             category: Fact category
             entity: Entity description
-            
+
         Returns:
             Unique fact ID
         """
         content = f"{category}:{entity}"
         return hashlib.md5(content.encode()).hexdigest()[:16]
-    
+
     def verify_claim(self, claim_text: str) -> VerificationResult:
         """Verify a claim against the fact ledger.
-        
+
         Args:
             claim_text: Text claim to verify
-            
+
         Returns:
             Verification result
         """
         self._stats["verifications_performed"] += 1
-        
+
         # Extract claim components
         entity, value_str, numeric_value, unit = self.extractor.extract_claim(claim_text)
-        
+
         if not entity or numeric_value is None:
             # Could not extract a verifiable claim
             return VerificationResult(
@@ -407,10 +402,10 @@ class FactLedger:
                 confidence=0.0,
                 explanation="No verifiable numeric claim found"
             )
-        
+
         # Search for matching facts
         matching_facts = self._search_facts(entity)
-        
+
         if not matching_facts:
             # No matching facts found
             self._stats["unverified_claims"] += 1
@@ -422,23 +417,23 @@ class FactLedger:
                 confidence=0.0,
                 explanation=f"No verified fact found for entity: {entity}"
             )
-        
+
         # Check for conflicts
         best_match = None
         best_score = 0.0
-        
+
         for fact in matching_facts:
             # Check if units match
             if unit and fact.unit and unit != fact.unit:
                 continue
-            
+
             # Calculate similarity score
             score = self._calculate_similarity(numeric_value, fact.numeric_value)
-            
+
             if score > best_score:
                 best_score = score
                 best_match = fact
-        
+
         if not best_match:
             self._stats["unverified_claims"] += 1
             return VerificationResult(
@@ -449,7 +444,7 @@ class FactLedger:
                 confidence=0.0,
                 explanation="No matching facts with compatible units"
             )
-        
+
         # Determine verification status
         if best_score >= 0.95:  # Very close match
             status = FactStatus.VERIFIED
@@ -462,12 +457,12 @@ class FactLedger:
             # Minor difference - could be rounding
             status = FactStatus.VERIFIED
             explanation = f"Claim approximately matches verified fact: {best_match.value}"
-        
+
         # Generate correction suggestion if needed
         correction = None
         if status == FactStatus.CONFLICT:
             correction = f"Consider using verified value: {best_match.value}"
-        
+
         return VerificationResult(
             status=status,
             original_claim=claim_text,
@@ -478,24 +473,24 @@ class FactLedger:
             confidence=best_score,
             explanation=explanation
         )
-    
+
     def _search_facts(self, entity: str) -> List[Fact]:
         """Search for facts matching an entity.
-        
+
         Args:
             entity: Entity to search for
-            
+
         Returns:
             List of matching facts
         """
         entity_lower = entity.lower()
         matching_facts = []
-        
+
         # Direct match
         if entity_lower in self.entity_index:
             for fact_id in self.entity_index[entity_lower]:
                 matching_facts.append(self.facts[fact_id])
-        
+
         # Partial match
         for fact_entity, fact_ids in self.entity_index.items():
             if entity_lower in fact_entity or fact_entity in entity_lower:
@@ -503,79 +498,79 @@ class FactLedger:
                     fact = self.facts[fact_id]
                     if fact not in matching_facts:
                         matching_facts.append(fact)
-        
+
         return matching_facts
-    
+
     def _calculate_similarity(self, value1: float, value2: float) -> float:
         """Calculate similarity between two numeric values.
-        
+
         Args:
             value1: First value
             value2: Second value
-            
+
         Returns:
             Similarity score (0.0 to 1.0)
         """
         if value1 == value2:
             return 1.0
-        
+
         # Calculate percentage difference
         avg_value = (value1 + value2) / 2
         if avg_value == 0:
             return 0.0
-        
+
         diff_percent = abs(value1 - value2) / avg_value
-        
+
         # Convert to similarity score
         if diff_percent <= (self.tolerance_percent / 100):
             return 1.0 - (diff_percent / (self.tolerance_percent / 100))
         else:
             return max(0.0, 1.0 - diff_percent)
-    
+
     def add_fact(self, fact: Fact) -> None:
         """Add a new fact to the ledger.
-        
+
         Args:
             fact: Fact to add
         """
         self._add_fact(fact)
         logger.debug(f"Added fact: {fact.entity} = {fact.value}")
-    
+
     def update_fact(self, fact_id: str, updates: Dict[str, Any]) -> bool:
         """Update an existing fact.
-        
+
         Args:
             fact_id: ID of fact to update
             updates: Updates to apply
-            
+
         Returns:
             True if updated
         """
         if fact_id not in self.facts:
             return False
-        
+
         fact = self.facts[fact_id]
-        
+
         # Apply updates
         for key, value in updates.items():
             if hasattr(fact, key):
                 setattr(fact, key, value)
-        
+
         fact.last_verified = datetime.utcnow()
         logger.debug(f"Updated fact: {fact_id}")
-        
+
         return True
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get ledger statistics.
-        
+
         Returns:
             Statistics dictionary
         """
         stats = self._stats.copy()
         stats["total_facts"] = len(self.facts)
         stats["entities_indexed"] = len(self.entity_index)
-        
+
         # Calculate verification rate
         if stats["verifications_performed"] > 0:
             stats["verification_rate"] = (
@@ -584,25 +579,23 @@ class FactLedger:
             )
         else:
             stats["verification_rate"] = 0.0
-        
+
         return stats
-    
+
     def export_facts(self) -> List[Dict[str, Any]]:
         """Export all facts.
-        
+
         Returns:
             List of fact dictionaries
         """
         return [fact.to_dict() for fact in self.facts.values()]
 
-
 # Global ledger instance
 _fact_ledger: Optional[FactLedger] = None
 
-
 def get_fact_ledger() -> FactLedger:
     """Get global fact ledger instance.
-    
+
     Returns:
         FactLedger instance
     """
@@ -611,24 +604,22 @@ def get_fact_ledger() -> FactLedger:
         _fact_ledger = FactLedger()
     return _fact_ledger
 
-
 # Convenience functions
 def verify_claim(claim_text: str) -> VerificationResult:
     """Verify a claim against the fact ledger.
-    
+
     Args:
         claim_text: Claim to verify
-        
+
     Returns:
         Verification result
     """
     ledger = get_fact_ledger()
     return ledger.verify_claim(claim_text)
 
-
 def load_profile_facts(profile_data: Dict[str, Any]) -> None:
     """Load facts from profile data.
-    
+
     Args:
         profile_data: Profile dictionary
     """

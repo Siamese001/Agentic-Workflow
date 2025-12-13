@@ -57,4 +57,3 @@ class ConfigLoadConfig:
     max_parameters_per_config: int = 500
     default_validation_level: str = 'basic'
     log_level: str = 'INFO'
-

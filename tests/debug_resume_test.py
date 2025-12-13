@@ -10,15 +10,18 @@ from apps_rg.L3_orchestration.hardened_orchestrator import create_hardened_orche
 from apps_rg.L3_orchestration.orchestrate_workflow import WorkflowSpec, HopSpec
 from runtime.shared.agent_executor import AgentResponse
 
-
 async def test_resume_debug():
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Debug the resume functionality."""
-    print("\n=== Debug Resume Test ===")
-    
+    logger.info("\n=== Debug Resume Test ===")
+
     with tempfile.TemporaryDirectory() as temp_dir:
         # Reset singletons
         reset_state_manager()
-        
+
         # Create workflow spec
         workflow_spec = WorkflowSpec(
             name="Debug Test",
@@ -28,15 +31,15 @@ async def test_resume_debug():
                 HopSpec(id="K.2", script="test.py", description="Step 2"),
             ],
         )
-        
+
         # Create first orchestrator and run to completion
-        print("\n--- First run ---")
+        logger.info("\n--- First run ---")
         orchestrator1 = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             run_base_dir=temp_dir,
             storage_path=temp_dir,
         )
-        
+
         # Mock router
         async def mock_execute(tier, prompt, **kwargs):
             return AgentResponse(
@@ -44,40 +47,39 @@ async def test_resume_debug():
                 finish_reason="stop",
                 metadata={"provider": "openai"},
             )
-        
+
         orchestrator1.router.execute_with_fallback = mock_execute
-        
+
         results1 = await orchestrator1.execute_workflow_with_resilience(
             "debug_test",
             {"prompt": "Test"},
         )
-        print(f"First run status: {results1['status']}")
-        print(f"First run resumed: {results1['resumed_from_checkpoint']}")
-        
+        logger.info(f"First run status: {results1['status']}")
+        logger.info(f"First run resumed: {results1['resumed_from_checkpoint']}")
+
         # Check state
         state_manager = get_state_manager()
         state = state_manager.resume_workflow("debug_test")
-        print(f"State after first run: current_k_node={state.current_k_node if state else 'None'}")
-        
+        logger.info(f"State after first run: current_k_node={state.current_k_node if state else 'None'}")
+
         # Create second orchestrator
-        print("\n--- Second run (should resume) ---")
+        logger.info("\n--- Second run (should resume) ---")
         orchestrator2 = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             run_base_dir=temp_dir,
             storage_path=temp_dir,
         )
         orchestrator2.router.execute_with_fallback = mock_execute
-        
+
         # Check if state manager is the same instance
-        print(f"Same state manager instance: {orchestrator1.state_manager is orchestrator2.state_manager}")
-        
+        logger.info(f"Same state manager instance: {orchestrator1.state_manager is orchestrator2.state_manager}")
+
         results2 = await orchestrator2.execute_workflow_with_resilience(
             "debug_test",
             {"prompt": "Test"},
         )
-        print(f"Second run status: {results2['status']}")
-        print(f"Second run resumed: {results2['resumed_from_checkpoint']}")
-
+        logger.info(f"Second run status: {results2['status']}")
+        logger.info(f"Second run resumed: {results2['resumed_from_checkpoint']}")
 
 if __name__ == "__main__":
     asyncio.run(test_resume_debug())

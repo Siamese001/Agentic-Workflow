@@ -3,6 +3,10 @@
 from typing import Any, Dict, List, Optional
 
 def flatten_unit_tests() -> List[str]:
+import logging
+
+logger = logging.getLogger(__name__)
+
     """
     Flatten unit tests by removing L/P folder nesting.
     Move all tests from unit/domain/L*/P*/ to unit/domain/
@@ -43,7 +47,7 @@ def _remove_lp_dirs_in_domain(domain_dir: Path) -> List[str]:
                         shutil.rmtree(lp_dir)
                         removed.append(str(lp_dir.relative_to(TESTS_ROOT)))
                 except (ValueError, TypeError, KeyError) as e:
-                    print(f'Error removing {lp_dir}: {e}')
+                    logger.info(f'Error removing {lp_dir}: {e}')
     return removed
 
 def _clean_empty_dirs(unit_dir: Path) -> List[str]:
@@ -61,7 +65,7 @@ def _clean_empty_dirs(unit_dir: Path) -> List[str]:
                     shutil.rmtree(current)
                     removed.append(str(current.relative_to(TESTS_ROOT)))
             except (ValueError, TypeError, KeyError) as e:
-                print(f'Error removing {current}: {e}')
+                logger.info(f'Error removing {current}: {e}')
     return removed
 
 def remove_empty_lp_dirs() -> List[str]:
@@ -122,15 +126,14 @@ def main() -> None:
     log = {'flattened': [], 'removed_dirs': [], 'moved_logic': [], 'init_files_created': 0}
     log['flattened'] = flatten_unit_tests()
     for item in log['flattened'][:5]:
-        print(f'  - {item}')
+        logger.info(f'  - {item}')
     if len(log['flattened']) > 5:
-        print(f"  ... and {len(log['flattened']) - 5} more")
+        logger.info(f"  ... and {len(log['flattened']) - 5} more")
     log['removed_dirs'] = remove_empty_lp_dirs()
     log['moved_logic'] = move_logic_tests()
     for item in log['moved_logic']:
-        print(f'  - {item}')
+        logger.info(f'  - {item}')
     log['init_files_created'] = ensure_init_files()
     log_path = REPO_ROOT / 'fix_test_structure_log.json'
     with open(log_path, 'w', encoding='utf-8') as f:
         json.dump(log, f, indent=2)
-

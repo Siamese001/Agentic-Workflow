@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Compute Personalization Match - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class ComputePersonalizationMatch:
     """ComputePersonalizationMatch implementation."""

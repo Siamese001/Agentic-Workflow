@@ -17,6 +17,10 @@ The script will:
 
 Author: Agentic-Workflow Team
 Version: 1.0.0
+import logging
+
+logger = logging.getLogger(__name__)
+
 """
 
 import sys
@@ -26,31 +30,31 @@ from typing import List
 def create_test_files(modules: List[str]) -> int:
     """
     Create test files for the given modules.
-    
+
     Args:
         modules: List of module paths to create tests for
-        
+
     Returns:
         Number of test files created
     """
     created_count = 0
-    
+
     for module_path in modules:
         source_path = Path(module_path)
-        
+
         # Skip if source doesn't exist
         if not source_path.exists():
-            print(f"Warning: {source_path} not found")
+            logger.info(f"Warning: {source_path} not found")
             continue
-        
+
         # Create test file path
         relative_path = source_path.relative_to(".")
         test_path = Path("tests") / relative_path.with_name(f"test_{source_path.name}")
-        
+
         # Create test file if it doesn't exist
         if not test_path.exists():
             test_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Generate basic test template
             test_content = f'''# -*- coding: utf-8 -*-
 """
@@ -81,36 +85,36 @@ def test_{source_path.stem}_edge_cases():
 
 class Test{source_path.stem.title().replace("_", "")}:
     """Test class for {source_path.stem} functionality."""
-    
+
     def setup_method(self):
         """Setup test environment."""
         pass
-    
+
     def teardown_method(self):
         """Cleanup after tests."""
         pass
-    
+
     def test_initialization(self):
         """Test proper initialization."""
         pass
 '''
-            
+
             test_path.write_text(test_content)
             created_count += 1
-            print(f"Created {test_path}")
+            logger.info(f"Created {test_path}")
         else:
-            print(f"Skipped existing {test_path}")
-    
+            logger.info(f"Skipped existing {test_path}")
+
     return created_count
 
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
-        print("Usage: python auto_create_test.py <module1> <module2> ...")
+        logger.info("Usage: python auto_create_test.py <module1> <module2> ...")
         sys.exit(1)
-    
+
     created = create_test_files(sys.argv[1:])
-    print(f"\nCreated {created} test files")
+    logger.info(f"\nCreated {created} test files")
 
 if __name__ == "__main__":
     main()

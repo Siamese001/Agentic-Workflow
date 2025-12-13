@@ -6,7 +6,6 @@ from __future__ import annotations
 
 # from archives.legacy_root_folders.meta.schema_validation import validate_schema_version  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 def test_core_models_have_v1_schema_version_defaults() -> None:
     """Test that core models have v1 schema version defaults."""
     # Simple models with safe defaults can be instantiated without args.
@@ -50,7 +49,6 @@ def test_core_models_have_v1_schema_version_defaults() -> None:
     )
     assert l2_result.schema_version == "v1"
 
-
 def test_validate_schema_version_accepts_matching_models() -> None:
     bundle = WorkflowPlanBundle(
         strategy=StrategyPlan(),
@@ -62,7 +60,6 @@ def test_validate_schema_version_accepts_matching_models() -> None:
 
     # Should not raise for matching version.
     validate_schema_version(bundle, model_type=WorkflowPlanBundle)
-
 
 def test_validate_schema_version_rejects_mismatched_version() -> None:
     """Test that validate_schema_version rejects mismatched versions."""
@@ -78,10 +75,3 @@ def test_validate_schema_version_rejects_mismatched_version() -> None:
         raise AssertionError(
             "validate_schema_version did not reject mismatched version"
         )
-
-
-
-
-
-
-

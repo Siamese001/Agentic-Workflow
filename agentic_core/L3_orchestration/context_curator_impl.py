@@ -5,7 +5,7 @@ from .context_curator_types import *
 
 class ContextCurator:
     """Curates and manages the context window dynamically.
-    
+
     Features:
     - Pin core instructions and safety policies
     - Relevance-based chunk swapping
@@ -16,7 +16,7 @@ class ContextCurator:
 
     def __init__(self, max_tokens: int=8000, reserved_tokens: int=1000, enable_logging: bool=True):
         """Initialize context curator.
-        
+
         Args:
             max_tokens: Maximum context window size
             reserved_tokens: Tokens reserved for output
@@ -33,11 +33,11 @@ class ContextCurator:
 
     def add_chunk(self, chunk: ContextChunk, auto_pin: bool=False) -> bool:
         """Add a context chunk.
-        
+
         Args:
             chunk: Context chunk to add
             auto_pin: Automatically pin if critical
-            
+
         Returns:
             True if added successfully
         """
@@ -59,10 +59,10 @@ class ContextCurator:
 
     def remove_chunk(self, chunk_id: str) -> bool:
         """Remove a context chunk.
-        
+
         Args:
             chunk_id: ID of chunk to remove
-            
+
         Returns:
             True if removed successfully
         """
@@ -82,10 +82,10 @@ class ContextCurator:
 
     def pin_chunk(self, chunk_id: str) -> bool:
         """Pin a chunk to prevent removal.
-        
+
         Args:
             chunk_id: ID of chunk to pin
-            
+
         Returns:
             True if pinned successfully
         """
@@ -100,10 +100,10 @@ class ContextCurator:
 
     def unpin_chunk(self, chunk_id: str) -> bool:
         """Unpin a chunk.
-        
+
         Args:
             chunk_id: ID of chunk to unpin
-            
+
         Returns:
             True if unpinned successfully
         """
@@ -118,11 +118,11 @@ class ContextCurator:
 
     def update_relevance(self, chunk_id: str, relevance_score: float) -> bool:
         """Update relevance score for a chunk.
-        
+
         Args:
             chunk_id: ID of chunk
             relevance_score: New relevance score (0.0-1.0)
-            
+
         Returns:
             True if updated successfully
         """
@@ -134,11 +134,11 @@ class ContextCurator:
 
     def prune_by_relevance(self, min_relevance: float=0.3, keep_count: int=5) -> int:
         """Prune low-relevance chunks.
-        
+
         Args:
             min_relevance: Minimum relevance to keep
             keep_count: Minimum chunks to keep
-            
+
         Returns:
             Number of chunks pruned
         """
@@ -157,7 +157,7 @@ class ContextCurator:
 
     def get_context_window(self) -> ContextWindow:
         """Get current context window.
-        
+
         Returns:
             ContextWindow with all chunks
         """
@@ -168,7 +168,7 @@ class ContextCurator:
 
     def get_formatted_context(self) -> str:
         """Get formatted context string.
-        
+
         Returns:
             Formatted context for LLM
         """
@@ -189,7 +189,7 @@ class ContextCurator:
 
     def _calculate_total_tokens(self) -> int:
         """Calculate total tokens in context.
-        
+
         Returns:
             Total token count
         """
@@ -197,10 +197,10 @@ class ContextCurator:
 
     def _make_space(self, required_tokens: int) -> bool:
         """Make space by removing low-priority chunks.
-        
+
         Args:
             required_tokens: Tokens needed
-            
+
         Returns:
             True if space was made
         """
@@ -221,13 +221,12 @@ class ContextCurator:
 
 def create_context_curator(max_tokens: int=8000, reserved_tokens: int=1000) -> ContextCurator:
     """Factory function to create context curator.
-    
+
     Args:
         max_tokens: Maximum context window size
         reserved_tokens: Tokens reserved for output
-        
+
     Returns:
         ContextCurator instance
     """
     return ContextCurator(max_tokens=max_tokens, reserved_tokens=reserved_tokens)
-

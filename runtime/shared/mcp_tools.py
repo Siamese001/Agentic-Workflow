@@ -12,7 +12,6 @@ from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class MCPTool:
     """MCP tool definition."""
@@ -21,10 +20,10 @@ class MCPTool:
     parameters: Dict[str, Any]
     handler: Callable
     requires_approval: bool = False
-    
+
     def to_openai_format(self) -> Dict[str, Any]:
         """Convert to OpenAI function calling format.
-        
+
         Returns:
             OpenAI-compatible tool definition
         """
@@ -36,10 +35,10 @@ class MCPTool:
                 "parameters": self.parameters,
             },
         }
-    
+
     def to_anthropic_format(self) -> Dict[str, Any]:
         """Convert to Anthropic tool format.
-        
+
         Returns:
             Anthropic-compatible tool definition
         """
@@ -48,7 +47,6 @@ class MCPTool:
             "description": self.description,
             "input_schema": self.parameters,
         }
-
 
 @dataclass
 class MCPToolResult:
@@ -59,29 +57,28 @@ class MCPToolResult:
     error: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 class MCPToolServer:
     """MCP tool server for managing and executing tools."""
-    
+
     def __init__(self, name: str = "agentic-workflow-tools"):
         """Initialize MCP tool server.
-        
+
         Args:
             name: Server name
         """
         self.name = name
         self._tools: Dict[str, MCPTool] = {}
         logger.info(f"MCP tool server initialized: {name}")
-    
+
     def register_tool(self, tool: MCPTool) -> None:
         """Register a tool.
-        
+
         Args:
             tool: MCP tool to register
         """
         self._tools[tool.name] = tool
         logger.info(f"Registered MCP tool: {tool.name}")
-    
+
     def register_function(
         self,
         name: str,
@@ -91,7 +88,7 @@ class MCPToolServer:
         requires_approval: bool = False,
     ) -> None:
         """Register a function as an MCP tool.
-        
+
         Args:
             name: Tool name
             description: Tool description
@@ -107,64 +104,64 @@ class MCPToolServer:
             requires_approval=requires_approval,
         )
         self.register_tool(tool)
-    
+
     def get_tool(self, name: str) -> Optional[MCPTool]:
         """Get a tool by name.
-        
+
         Args:
             name: Tool name
-            
+
         Returns:
             MCPTool or None if not found
         """
         return self._tools.get(name)
-    
+
     def list_tools(self) -> List[str]:
         """List all registered tool names.
-        
+
         Returns:
             List of tool names
         """
         return list(self._tools.keys())
-    
+
     def get_tools_for_provider(
         self,
         provider: str = "openai",
     ) -> List[Dict[str, Any]]:
         """Get tools in provider-specific format.
-        
+
         Args:
             provider: Provider name (openai, anthropic)
-            
+
         Returns:
             List of tool definitions
         """
         tools = []
-        
+
         for tool in self._tools.values():
             if provider == "anthropic":
                 tools.append(tool.to_anthropic_format())
             else:
                 tools.append(tool.to_openai_format())
-        
+
         return tools
-    
+
     def execute_tool(
         self,
         name: str,
         arguments: Dict[str, Any],
     ) -> MCPToolResult:
         """Execute a tool.
-        
+
         Args:
             name: Tool name
             arguments: Tool arguments
-            
+
         Returns:
             MCPToolResult with execution result
         """
         tool = self.get_tool(name)
-        
+
         if not tool:
             return MCPToolResult(
                 tool_name=name,
@@ -172,19 +169,19 @@ class MCPToolServer:
                 result=None,
                 error=f"Tool not found: {name}",
             )
-        
+
         try:
             result = tool.handler(**arguments)
-            
+
             return MCPToolResult(
                 tool_name=name,
                 success=True,
                 result=result,
             )
-        
+
         except Exception as e:
             logger.error(f"Tool execution failed for {name}: {e}")
-            
+
             return MCPToolResult(
                 tool_name=name,
                 success=False,
@@ -192,31 +189,28 @@ class MCPToolServer:
                 error=str(e),
             )
 
-
 # Global MCP tool server instance
 _MCP_SERVER: Optional[MCPToolServer] = None
 
-
 def get_mcp_server(name: str = "agentic-workflow-tools") -> MCPToolServer:
     """Get or create global MCP tool server.
-    
+
     Args:
         name: Server name
-        
+
     Returns:
         MCPToolServer instance
     """
     global _MCP_SERVER
-    
+
     if _MCP_SERVER is None:
         _MCP_SERVER = MCPToolServer(name)
-    
-    return _MCP_SERVER
 
+    return _MCP_SERVER
 
 def register_default_tools(server: MCPToolServer) -> None:
     """Register default MCP tools.
-    
+
     Args:
         server: MCP tool server
     """
@@ -229,12 +223,12 @@ def register_default_tools(server: MCPToolServer) -> None:
             "multiply": lambda x, y: x * y,
             "divide": lambda x, y: x / y if y != 0 else float('inf'),
         }
-        
+
         if operation not in operations:
             raise ValueError(f"Unknown operation: {operation}")
-        
+
         return operations[operation](a, b)
-    
+
     server.register_function(
         name="calculator",
         description="Perform basic arithmetic operations (add, subtract, multiply, divide)",
@@ -259,20 +253,20 @@ def register_default_tools(server: MCPToolServer) -> None:
         },
         handler=calculator,
     )
-    
+
     # Text analysis tool
     def analyze_text(text: str) -> Dict[str, Any]:
         """Analyze text and return statistics."""
         words = text.split()
         sentences = text.split('.')
-        
+
         return {
             "character_count": len(text),
             "word_count": len(words),
             "sentence_count": len([s for s in sentences if s.strip()]),
             "average_word_length": sum(len(w) for w in words) / len(words) if words else 0,
         }
-    
+
     server.register_function(
         name="analyze_text",
         description="Analyze text and return statistics (character count, word count, etc.)",
@@ -288,60 +282,58 @@ def register_default_tools(server: MCPToolServer) -> None:
         },
         handler=analyze_text,
     )
-    
-    logger.info("Registered default MCP tools")
 
+    logger.info("Registered default MCP tools")
 
 def create_mcp_server(
     name: str = "agentic-workflow-tools",
     register_defaults: bool = True,
 ) -> MCPToolServer:
     """Factory function to create MCP tool server.
-    
+
     Args:
         name: Server name
         register_defaults: Whether to register default tools
-        
+
     Returns:
         MCPToolServer instance
     """
     server = MCPToolServer(name)
-    
+
     if register_defaults:
         register_default_tools(server)
-    
-    return server
 
+    return server
 
 def execute_tool_calls(
     server: MCPToolServer,
     tool_calls: List[Dict[str, Any]],
 ) -> List[MCPToolResult]:
     """Execute multiple tool calls.
-    
+
     Args:
         server: MCP tool server
         tool_calls: List of tool call definitions
-        
+
     Returns:
         List of MCPToolResult
     """
     results = []
-    
+
     for tool_call in tool_calls:
         if "function" in tool_call:
             function = tool_call["function"]
             name = function.get("name")
             arguments = function.get("arguments", {})
-            
+
             if isinstance(arguments, str):
                 import json
                 try:
                     arguments = json.loads(arguments)
                 except json.JSONDecodeError:
                     arguments = {}
-            
+
             result = server.execute_tool(name, arguments)
             results.append(result)
-    
+
     return results

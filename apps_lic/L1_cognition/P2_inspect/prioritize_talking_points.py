@@ -11,10 +11,6 @@ from shared.result_types import OperationResult
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 class PrioritizeTalkingPoints:
     """Operations executor for outreach domain."""
 
@@ -34,7 +30,6 @@ class PrioritizeTalkingPoints:
     def _execute(self, data: Union[str, Dict], context: Optional[Dict]) -> object:
         """Execute processing."""
         return data
-
 
 def process(data: Union[str, Dict], config: Optional[Dict] = None) -> OperationResult:
     """Process input data through the transformation pipeline."""

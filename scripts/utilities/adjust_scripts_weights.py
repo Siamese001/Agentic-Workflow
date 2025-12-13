@@ -12,14 +12,12 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class AdjustmentResult:
     """Result of adjustment."""
     original: object
     adjusted: object
     method: str
-
 
 class AdjustScriptsWeights:
     """Adjuster for utilities domain."""
@@ -60,7 +58,6 @@ class AdjustScriptsWeights:
         mean = sum(values) / len(values)
         std = math.sqrt(sum((x - mean) ** 2 for x in values) / len(values))
         return [(v - mean) / std if std > 0 else 0.0 for v in values]
-
 
 def adjust(values: Sequence[float], method: str = "minmax", config: Optional[Dict] = None) -> List[AdjustmentResult]:
     """Convenience function for adjustment."""

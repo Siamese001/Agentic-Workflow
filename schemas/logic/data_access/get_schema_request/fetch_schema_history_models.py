@@ -61,4 +61,3 @@ class SchemaHistoryConfig:
     retention_days: int = 365
     enable_diff_tracking: bool = True
     backup_enabled: bool = True
-

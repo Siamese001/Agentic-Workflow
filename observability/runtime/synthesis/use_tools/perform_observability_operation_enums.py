@@ -17,4 +17,3 @@ class OperationScope(Enum):
     SERVICE = 'service'
     REQUEST = 'request'
     CUSTOM = 'custom'
-

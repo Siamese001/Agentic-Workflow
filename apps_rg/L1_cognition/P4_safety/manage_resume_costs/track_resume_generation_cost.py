@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 """Track Resume Generation Cost - atomic implementation."""
 
-
 from typing import Dict
-
-
 
 class TrackResumeGenerationCost:
     """TrackResumeGenerationCost implementation."""

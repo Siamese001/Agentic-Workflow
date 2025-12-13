@@ -17,13 +17,13 @@ class TitaniumSearchWrapper:
 
     def search(self, query: str, context: Optional[str]=None, max_results: int=5, include_metadata: bool=False) -> str:
         """Synchronous search wrapper.
-        
+
         Args:
             query: Search query
             context: Optional context
             max_results: Maximum results
             include_metadata: Include source metadata
-            
+
         Returns:
             Formatted search results
         """
@@ -32,11 +32,11 @@ class TitaniumSearchWrapper:
 
     def search_with_sources(self, query: str, context: Optional[str]=None) -> Dict[str, Any]:
         """Synchronous search with sources wrapper.
-        
+
         Args:
             query: Search query
             context: Optional context
-            
+
         Returns:
             Dictionary with sources and metadata
         """
@@ -61,11 +61,11 @@ class TitaniumAwareAgent:
 
     def search_knowledge(self, query: str, context: Optional[str]=None) -> str:
         """Search knowledge base using Titanium pipeline.
-        
+
         Args:
             query: Search query
             context: Optional context
-            
+
         Returns:
             Formatted search results
         """
@@ -73,11 +73,11 @@ class TitaniumAwareAgent:
 
     def get_relevant_sources(self, query: str, context: Optional[str]=None) -> List[Dict[str, Any]]:
         """Get relevant sources with full metadata.
-        
+
         Args:
             query: Search query
             context: Optional context
-            
+
         Returns:
             List of sources with metadata
         """
@@ -90,10 +90,10 @@ def get_titanium_wrapper() -> TitaniumSearchWrapper:
 
 def inject_titanium_tools(context: Dict[str, Any]) -> Dict[str, Any]:
     """Inject Titanium search tools into agent context.
-    
+
     Args:
         context: Agent execution context
-        
+
     Returns:
         Updated context with Titanium tools
     """
@@ -108,10 +108,10 @@ def inject_titanium_tools(context: Dict[str, Any]) -> Dict[str, Any]:
 
 def with_titanium_search(agent_class):
     """Decorator to add Titanium search capabilities to any agent.
-    
+
     Args:
         agent_class: Agent class to enhance
-        
+
     Returns:
         Enhanced agent class with Titanium search
     """
@@ -124,10 +124,10 @@ def with_titanium_search(agent_class):
 
 def enhance_system_prompt(system_prompt: str) -> str:
     """Enhance system prompt with Titanium search instructions.
-    
+
     Args:
         system_prompt: Original system prompt
-        
+
     Returns:
         Enhanced system prompt
     """
@@ -135,10 +135,10 @@ def enhance_system_prompt(system_prompt: str) -> str:
 
 async def prepare_titanium_context(context: Dict[str, Any]) -> Dict[str, Any]:
     """Prepare context with Titanium search for async execution.
-    
+
     Args:
         context: Original context
-        
+
     Returns:
         Context enhanced with Titanium search capabilities
     """
@@ -149,7 +149,7 @@ async def prepare_titanium_context(context: Dict[str, Any]) -> Dict[str, Any]:
 
 def log_titanium_usage(hop_id: str, query: str, results: Dict[str, Any]):
     """Log Titanium search usage for monitoring.
-    
+
     Args:
         hop_id: Hop identifier
         query: Search query
@@ -165,4 +165,3 @@ def log_titanium_usage(hop_id: str, query: str, results: Dict[str, Any]):
     if stats.get('status') == 'active':
         stats_data = stats.get('statistics', {})
         logger.info(f"  Pipeline Stats - Total: {stats_data.get('total_queries', 0)}, Cache Hit Rate: {stats_data.get('cache_hit_rate', 0):.1%}")
-

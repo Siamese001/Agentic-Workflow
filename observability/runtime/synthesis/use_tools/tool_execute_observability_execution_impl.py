@@ -16,7 +16,7 @@ class ObservabilityToolExecutor:
 
     def register_tool(self, tool_def: ToolDefinition, handler: Callable) -> None:
         """Register a new observability tool.
-        
+
         Args:
             tool_def: Tool definition
             handler: Tool execution handler
@@ -27,11 +27,11 @@ class ObservabilityToolExecutor:
 
     def execute_tool(self, context: ToolExecutionContext, parameters: Dict[str, Any]) -> ToolExecutionResult:
         """Execute an observability tool.
-        
+
         Args:
             context: Execution context
             parameters: Tool parameters
-            
+
         Returns:
             ToolExecutionResult: Execution result
         """
@@ -56,11 +56,11 @@ class ObservabilityToolExecutor:
 
     def execute_tool_stream(self, context: ToolExecutionContext, parameters: Dict[str, str]) -> Dict[str, object]:
         """Execute tool in streaming mode.
-        
+
         Args:
             context: Execution context
             parameters: Tool parameters
-            
+
         Returns:
             Iterator: Stream of results
         """
@@ -74,10 +74,10 @@ class ObservabilityToolExecutor:
 
     def list_tools(self, tool_type: Optional[ToolType]=None) -> List[ToolDefinition]:
         """List registered tools.
-        
+
         Args:
             tool_type: Optional filter by tool type
-            
+
         Returns:
             List[ToolDefinition]: Registered tools
         """
@@ -88,10 +88,10 @@ class ObservabilityToolExecutor:
 
     def get_tool_info(self, tool_id: str) -> Optional[ToolDefinition]:
         """Get tool information.
-        
+
         Args:
             tool_id: Tool identifier
-            
+
         Returns:
             Optional[ToolDefinition]: Tool definition
         """
@@ -99,10 +99,10 @@ class ObservabilityToolExecutor:
 
     def cancel_execution(self, execution_id: str) -> bool:
         """Cancel an active execution.
-        
+
         Args:
             execution_id: Execution identifier
-            
+
         Returns:
             bool: True if cancelled successfully
         """
@@ -115,10 +115,10 @@ class ObservabilityToolExecutor:
 
     def get_execution_status(self, execution_id: str) -> Optional[Dict[str, str]]:
         """Get status of execution.
-        
+
         Args:
             execution_id: Execution identifier
-            
+
         Returns:
             Optional[Dict]: Execution status
         """
@@ -237,14 +237,14 @@ def create_observability_tool_executor(timeout: float=30.0, retry_count: int=3, 
 
 def tool_execute_observability_execution(tool_id: str, execution_id: str, parameters: Dict[str, Any], mode: str='synchronous', caller_id: Optional[str]=None) -> Dict[str, Any]:
     """Execute observability tool.
-    
+
     Args:
         tool_id: Tool identifier
         execution_id: Unique execution identifier
         parameters: Tool parameters
         mode: Execution mode
         caller_id: Optional caller identifier
-        
+
     Returns:
         Dict: Execution result
     """
@@ -252,4 +252,3 @@ def tool_execute_observability_execution(tool_id: str, execution_id: str, parame
     context = ToolExecutionContext(execution_id=execution_id, tool_id=tool_id, mode=ExecutionMode(mode), caller_id=caller_id)
     result = executor.execute_tool(context, parameters)
     return {'execution_id': result.execution_id, 'tool_id': result.tool_id, 'success': result.success, 'output': result.output, 'metrics': result.metrics, 'artifacts': result.artifacts, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}
-

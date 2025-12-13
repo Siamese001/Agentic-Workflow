@@ -77,4 +77,3 @@ class ValidationGate:
     checks: List[str] = field(default_factory=list)
     on_fail: str = 'HALT'
     halt_message: Optional[str] = None
-

@@ -47,4 +47,3 @@ class HealthAlert:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'alert_id': self.alert_id, 'agent_id': self.agent_id, 'severity': self.severity.value, 'message': self.message, 'metrics': self.metrics.to_dict(), 'recommended_actions': self.recommended_actions, 'timestamp': self.timestamp}
-

@@ -29,13 +29,13 @@ def main():
 
     core_packages = [
         "openai",
-        "anthropic", 
+        "anthropic",
         "google.generativeai",
         "google.cloud.aiplatform",
         "mistralai",
         "cohere"
     ]
-    
+
     core_success = sum(test_import(pkg) for pkg in core_packages)
 
     # Vector Databases
@@ -46,7 +46,7 @@ def main():
         "qdrant_client",
         "lancedb"
     ]
-    
+
     vector_success = sum(test_import(pkg) for pkg in vector_packages)
 
     # Caching & Redis
@@ -56,20 +56,20 @@ def main():
         "redisvl",
         "redis_om"
     ]
-    
+
     cache_success = sum(test_import(pkg) for pkg in cache_packages)
 
     # Data Processing & ML
 
     ml_packages = [
         "pandas",
-        "pyarrow", 
+        "pyarrow",
         "sentence_transformers",
         "faiss",
         "instructor",
         "pydantic"
     ]
-    
+
     ml_success = sum(test_import(pkg) for pkg in ml_packages)
 
     # Safety & Guardrails
@@ -78,21 +78,21 @@ def main():
         "guardrails",
         "llm_guard"
     ]
-    
+
     safety_success = sum(test_import(pkg) for pkg in safety_packages)
 
     # Observability & Utilities
 
     util_packages = [
         "opentelemetry.api",
-        "opentelemetry.sdk", 
+        "opentelemetry.sdk",
         "structlog",
         "httpx",
         "tenacity",
         "rich",
         "typer"
     ]
-    
+
     util_success = sum(test_import(pkg) for pkg in util_packages)
 
     # Summary

@@ -3,16 +3,9 @@
 
 """Stack-specific agent implementations for v10.7."""
 
-
-
-
 # from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.prompting import PromptEngineerAgent  # INVALID: Cannot import from path with hyphens
 
 # from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.rag import RAG_SearchAgent  # INVALID: Cannot import from path with hyphens
-
-
-
-
 
 __all__ = [
     # Models

@@ -60,7 +60,6 @@ class TestRuntimeDataAccess:
         assert config.get("max_retries") == 3
         assert config.get("nonexistent", "default") == "default"
 
-
 class TestRuntimeGuardrails:
     """Tests for runtime guardrails."""
 
@@ -111,7 +110,6 @@ class TestRuntimeGuardrails:
 
         should_open = circuit_breaker["failure_count"] >= circuit_breaker["failure_threshold"]
         assert should_open is False
-
 
 class TestRuntimeSynthesis:
     """Tests for runtime synthesis operations."""
@@ -171,7 +169,6 @@ class TestRuntimeSynthesis:
 
         assert "metadata" in enriched
         assert "timestamp" in enriched["metadata"]
-
 
 class TestRuntimeValidation:
     """Tests for runtime validation operations."""

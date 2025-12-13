@@ -9,4 +9,3 @@ class FormatObservabilityContextPlanType(Enum):
     DEFAULT = 'default'
     CORE = 'core'
     SYSTEM = 'system'
-

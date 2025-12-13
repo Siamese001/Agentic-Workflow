@@ -15,4 +15,3 @@ class ConversionStrategy(Enum):
     LENIENT = 'lenient'
     MAP_ONLY = 'map_only'
     VALIDATE_ONLY = 'validate_only'
-

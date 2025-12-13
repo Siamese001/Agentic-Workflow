@@ -30,4 +30,3 @@ class MessageAssemblerResult:
     validation_results: List[ValidationResult]
     success: bool
     metadata: Dict[str, Any]
-

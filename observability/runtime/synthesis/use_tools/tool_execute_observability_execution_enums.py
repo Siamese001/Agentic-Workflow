@@ -16,4 +16,3 @@ class ExecutionMode(Enum):
     ASYNCHRONOUS = 'asynchronous'
     STREAMING = 'streaming'
     BATCH = 'batch'
-

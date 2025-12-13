@@ -53,4 +53,3 @@ class SchemaContextConfig:
     structural_weight: float = 0.15
     usage_weight: float = 0.1
     similarity_threshold: float = 0.5
-

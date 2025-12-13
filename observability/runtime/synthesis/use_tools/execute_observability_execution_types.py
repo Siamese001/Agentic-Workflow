@@ -51,4 +51,3 @@ class ObservabilityConfig:
     enable_metrics: bool = True
     enable_logging: bool = True
     sampling_rate: float = 1.0
-

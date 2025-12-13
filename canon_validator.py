@@ -12,6 +12,12 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Set, Tuple, Optional
 
+# Fix Windows console encoding
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 # ANSI color codes for terminal output
 class Colors:
     RED = '\033[0;31m'
@@ -54,7 +60,8 @@ def get_python_files(root_dir: str = ".") -> List[str]:
     python_files = []
     exclude_dirs = {
         ".git", "__pycache__", ".pytest_cache", ".tox", "venv", "env",
-        ".venv", ".env", "node_modules", ".idea", ".vscode", "dist", "build"
+        ".venv", ".env", "node_modules", ".idea", ".vscode", "dist", "build",
+        "archives", "data"
     }
     
     for root, dirs, files in os.walk(root_dir):
@@ -1449,13 +1456,17 @@ def check_key_41_no_deep_directories():
     }
     
     for root, dirs, files in os.walk('.'):
-        # Skip hidden and non-source dirs
-        dirs[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
+        # Skip hidden, non-source, archives, and data dirs
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in {'__pycache__', 'archives', 'data'}]
         
         # Calculate depth
         parts = Path(root).parts
+        if not parts:
+            continue  # Skip empty paths
         if parts[0] == '.':
             parts = parts[1:]
+        if not parts:
+            continue  # Skip if only had '.'
         
         # Check if in sovereign directory
         if parts and parts[0] in sovereign_dirs:

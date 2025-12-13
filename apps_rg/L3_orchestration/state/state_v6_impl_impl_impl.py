@@ -209,4 +209,3 @@ class RGStateManager:
             if validation_context:
                 return validation_context.get_validation_summary()
         return None
-

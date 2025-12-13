@@ -6,7 +6,7 @@ from .peer_intelligence_auditor_types import *
 class PeerIntelligenceAuditor:
     """
     K.2.5 - Multi-Hop RAG Analysis Agent
-    
+
     RAG Intensity Constraint:
     - MUST run 24 searches across 3 hops (8 searches per hop)
     - Classify JD keywords into table-stakes vs differentiator
@@ -20,11 +20,11 @@ class PeerIntelligenceAuditor:
     def analyze_competitive_landscape(self, jd_keywords: List[str], context: Dict[str, Any]) -> PeerIntelligenceResult:
         """
         Execute multi-hop competitive analysis.
-        
+
         Args:
             jd_keywords: Keywords extracted from job description
             context: Additional context (industry, role, company)
-            
+
         Returns:
             PeerIntelligenceResult with classified keywords and differentiators
         """
@@ -85,7 +85,7 @@ class PeerIntelligenceAuditor:
     def _classify_keywords(self, jd_keywords: List[str], hops: List[RAGHop]) -> List[KeywordAnalysis]:
         """
         Classify keywords into table-stakes vs differentiators.
-        
+
         Logic:
         - High frequency across hops = table-stakes
         - Low frequency but high relevance = differentiator
@@ -123,4 +123,3 @@ class PeerIntelligenceAuditor:
 def create_peer_intelligence_auditor(config: Optional[PeerIntelligenceConfig]=None) -> PeerIntelligenceAuditor:
     """Factory function to create PeerIntelligenceAuditor instance"""
     return PeerIntelligenceAuditor(config=config)
-

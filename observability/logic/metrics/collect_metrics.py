@@ -12,14 +12,12 @@ from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class CollectedItem:
     """A collected item."""
     source: str
     data: Any
     timestamp: float = field(default_factory=lambda: __import__("time").time())
-
 
 class BaseCollector:
     """Collector for metrics domain."""
@@ -56,15 +54,12 @@ class BaseCollector:
             self.items.clear()
         return items
 
-
 # Global collector
 _collector = BaseCollector()
-
 
 def collect(source: str, data: object) -> None:
     """Collect data to global collector."""
     _collector.collect(source, data)
-
 
 def get_collected(source: Optional[str] = None) -> List[CollectedItem]:
     """Get items from global collector."""

@@ -16,7 +16,7 @@ class ObservabilityToolInvoker:
 
     def register_tool(self, tool_name: str, endpoint: ToolEndpoint, handler: Optional[Callable]=None) -> None:
         """Register a tool endpoint.
-        
+
         Args:
             tool_name: Name of the tool
             endpoint: Tool endpoint definition
@@ -29,10 +29,10 @@ class ObservabilityToolInvoker:
 
     def invoke_tool(self, request: InvocationRequest) -> InvocationResponse:
         """Invoke an observability tool.
-        
+
         Args:
             request: Invocation request
-            
+
         Returns:
             InvocationResponse: Tool response
         """
@@ -67,10 +67,10 @@ class ObservabilityToolInvoker:
 
     def invoke_batch(self, requests: List[InvocationRequest]) -> List[InvocationResponse]:
         """Invoke multiple tools.
-        
+
         Args:
             requests: List of invocation requests
-            
+
         Returns:
             List[InvocationResponse]: Responses for all requests
         """
@@ -82,10 +82,10 @@ class ObservabilityToolInvoker:
 
     def invoke_stream(self, request: InvocationRequest) -> Dict[str, object]:
         """Invoke tool with streaming response.
-        
+
         Args:
             request: Invocation request
-            
+
         Returns:
             Iterator: Stream of response chunks
         """
@@ -99,10 +99,10 @@ class ObservabilityToolInvoker:
 
     def get_tool_status(self, tool_name: str) -> Optional[Dict[str, Any]]:
         """Get tool status.
-        
+
         Args:
             tool_name: Name of tool
-            
+
         Returns:
             Optional[Dict]: Tool status information
         """
@@ -113,10 +113,10 @@ class ObservabilityToolInvoker:
 
     def clear_cache(self, pattern: Optional[str]=None) -> int:
         """Clear invocation cache.
-        
+
         Args:
             pattern: Optional pattern to match cache keys
-            
+
         Returns:
             int: Number of cache entries cleared
         """
@@ -238,7 +238,7 @@ def create_observability_tool_invoker(default_timeout: float=30.0, retry_attempt
 
 def invoke_observability_tool(invocation_id: str, tool_name: str, method: str, parameters: Dict[str, Any], invocation_type: str='direct', response_format: str='json') -> Dict[str, Any]:
     """Invoke observability tool.
-    
+
     Args:
         invocation_id: Unique invocation identifier
         tool_name: Name of tool to invoke
@@ -246,7 +246,7 @@ def invoke_observability_tool(invocation_id: str, tool_name: str, method: str, p
         parameters: Tool parameters
         invocation_type: Type of invocation
         response_format: Expected response format
-        
+
     Returns:
         Dict: Invocation response
     """
@@ -254,4 +254,3 @@ def invoke_observability_tool(invocation_id: str, tool_name: str, method: str, p
     request = InvocationRequest(invocation_id=invocation_id, tool_name=tool_name, method=method, parameters=parameters, invocation_type=InvocationType(invocation_type), response_format=ResponseFormat(response_format))
     response = invoker.invoke_tool(request)
     return {'invocation_id': response.invocation_id, 'tool_name': response.tool_name, 'success': response.success, 'data': response.data, 'headers': response.headers, 'status_code': response.status_code, 'error': response.error, 'warnings': response.warnings, 'execution_time': response.execution_time}
-

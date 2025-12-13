@@ -5,6 +5,10 @@ from pathlib import Path
 from typing import List, Tuple
 
 def count_top_level_defs(filepath: Path) -> int:
+import logging
+
+logger = logging.getLogger(__name__)
+
     """Count top-level definitions in a Python file."""
     try:
         tree = ast.parse(filepath.read_text(encoding='utf-8'))
@@ -16,13 +20,13 @@ def split_file_by_type(filepath: Path) -> None:
     """Split a file into submodules by grouping enums, dataclasses, classes, and functions."""
     content = filepath.read_text(encoding='utf-8')
     tree = ast.parse(content)
-    
+
     # Group definitions by type
     enums = []
     dataclasses = []
     classes = []
     functions = []
-    
+
     for node in tree.body:
         if isinstance(node, ast.ClassDef):
             # Check if it's an Enum
@@ -39,34 +43,34 @@ def split_file_by_type(filepath: Path) -> None:
                 classes.append(node)
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             functions.append(node)
-    
+
     total_defs = len(enums) + len(dataclasses) + len(classes) + len(functions)
-    
+
     if total_defs <= 5:
         return  # No need to split
-    
-    print(f"Splitting {filepath.name}: {total_defs} defs ({len(enums)} enums, {len(dataclasses)} dataclasses, {len(classes)} classes, {len(functions)} functions)")
-    
+
+    logger.info(f"Splitting {filepath.name}: {total_defs} defs ({len(enums)} enums, {len(dataclasses)} dataclasses, {len(classes)} classes, {len(functions)} functions)")
+
     # Create submodules
     parent_dir = filepath.parent
     stem = filepath.stem
-    
+
     # Create types module (enums + dataclasses), split if >5 defs
     if enums or dataclasses:
         total_types = len(enums) + len(dataclasses)
-        
+
         if total_types <= 5:
             types_content = f'"""Types and models for {stem}."""\n\n'
             types_content += "from dataclasses import dataclass, field\n"
             types_content += "from typing import Any, Dict, List, Optional\n"
             types_content += "from enum import Enum\n\n"
-            
+
             for node in enums + dataclasses:
                 types_content += ast.unparse(node) + "\n\n"
-            
+
             types_file = parent_dir / f"{stem}_types.py"
             types_file.write_text(types_content, encoding='utf-8')
-            print(f"  Created {types_file.name}")
+            logger.info(f"  Created {types_file.name}")
         else:
             # Split into enums and dataclasses separately
             if enums:
@@ -76,8 +80,8 @@ def split_file_by_type(filepath: Path) -> None:
                     enums_content += ast.unparse(node) + "\n\n"
                 enums_file = parent_dir / f"{stem}_enums.py"
                 enums_file.write_text(enums_content, encoding='utf-8')
-                print(f"  Created {enums_file.name}")
-            
+                logger.info(f"  Created {enums_file.name}")
+
             if dataclasses:
                 # Split dataclasses into chunks of 5
                 for i in range(0, len(dataclasses), 5):
@@ -93,8 +97,8 @@ def split_file_by_type(filepath: Path) -> None:
                         dc_content += ast.unparse(node) + "\n\n"
                     dc_file = parent_dir / f"{stem}_models{suffix}.py"
                     dc_file.write_text(dc_content, encoding='utf-8')
-                    print(f"  Created {dc_file.name}")
-    
+                    logger.info(f"  Created {dc_file.name}")
+
     # Create implementation module (classes + functions)
     if classes or functions:
         impl_content = f'"""Implementation for {stem}."""\n\n'
@@ -102,14 +106,14 @@ def split_file_by_type(filepath: Path) -> None:
         if enums or dataclasses:
             impl_content += f"from .{stem}_types import *\n"
         impl_content += "\n"
-        
+
         for node in classes + functions:
             impl_content += ast.unparse(node) + "\n\n"
-        
+
         impl_file = parent_dir / f"{stem}_impl.py"
         impl_file.write_text(impl_content, encoding='utf-8')
-        print(f"  Created {impl_file.name}")
-    
+        logger.info(f"  Created {impl_file.name}")
+
     # Update original file to re-export with sufficient content
     shim_content = f"""\"\"\"Backward compatibility shim for {stem}.
 
@@ -123,7 +127,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 
 # Re-export all components for backward compatibility
 """
-    
+
     if enums and dataclasses and len(enums) + len(dataclasses) > 5:
         # Split case
         if enums:
@@ -135,14 +139,14 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
                 shim_content += f"from .{stem}_models_{i} import *\n"
     elif enums or dataclasses:
         shim_content += f"from .{stem}_types import *\n"
-    
+
     if classes or functions:
         shim_content += f"from .{stem}_impl import *\n"
-    
+
     shim_content += "\n__all__ = ['*']  # Re-export all imported names\n"
-    
+
     filepath.write_text(shim_content, encoding='utf-8')
-    print(f"  Updated {filepath.name} as compatibility shim")
+    logger.info(f"  Updated {filepath.name} as compatibility shim")
 
 # Files to fix - continuing agentic_core + prompt_governance + config cognitive density violations
 files_to_fix = [
@@ -167,4 +171,4 @@ for file_path in files_to_fix:
         if defs > 5:
             split_file_by_type(full_path)
 
-print("\nDone! Re-run canon_validator.py to verify.")
+logger.info("\nDone! Re-run canon_validator.py to verify.")

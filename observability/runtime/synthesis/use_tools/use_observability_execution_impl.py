@@ -18,7 +18,7 @@ class ObservabilityExecutionEngine:
 
     def register_operation(self, operation_type: str, handler: Callable) -> None:
         """Register an operation handler.
-        
+
         Args:
             operation_type: Type of operation
             handler: Handler function
@@ -28,11 +28,11 @@ class ObservabilityExecutionEngine:
 
     def execute(self, request: ExecutionRequest, environment: Optional[ExecutionEnvironment]=None) -> ExecutionResult:
         """Execute an observability operation.
-        
+
         Args:
             request: Execution request
             environment: Optional execution environment
-            
+
         Returns:
             ExecutionResult: Execution result
         """
@@ -62,11 +62,11 @@ class ObservabilityExecutionEngine:
 
     def execute_batch(self, requests: List[ExecutionRequest], environment: Optional[ExecutionEnvironment]=None) -> List[ExecutionResult]:
         """Execute multiple operations.
-        
+
         Args:
             requests: List of execution requests
             environment: Optional execution environment
-            
+
         Returns:
             List[ExecutionResult]: Results for all executions
         """
@@ -79,10 +79,10 @@ class ObservabilityExecutionEngine:
 
     def queue_execution(self, request: ExecutionRequest) -> bool:
         """Queue an execution request.
-        
+
         Args:
             request: Execution request
-            
+
         Returns:
             bool: True if queued successfully
         """
@@ -95,10 +95,10 @@ class ObservabilityExecutionEngine:
 
     def process_queue(self, environment: Optional[ExecutionEnvironment]=None) -> List[ExecutionResult]:
         """Process queued executions.
-        
+
         Args:
             environment: Optional execution environment
-            
+
         Returns:
             List[ExecutionResult]: Results for processed executions
         """
@@ -111,10 +111,10 @@ class ObservabilityExecutionEngine:
 
     def get_execution_status(self, request_id: str) -> Optional[Dict[str, Any]]:
         """Get execution status.
-        
+
         Args:
             request_id: Request identifier
-            
+
         Returns:
             Optional[Dict]: Execution status
         """
@@ -122,10 +122,10 @@ class ObservabilityExecutionEngine:
 
     def cancel_execution(self, request_id: str) -> bool:
         """Cancel an active execution.
-        
+
         Args:
             request_id: Request identifier
-            
+
         Returns:
             bool: True if cancelled successfully
         """
@@ -143,7 +143,7 @@ class ObservabilityExecutionEngine:
 
     def register_environment(self, environment: ExecutionEnvironment) -> None:
         """Register an execution environment.
-        
+
         Args:
             environment: Execution environment
         """
@@ -152,10 +152,10 @@ class ObservabilityExecutionEngine:
 
     def get_execution_history(self, limit: Optional[int]=None) -> List[ExecutionResult]:
         """Get execution history.
-        
+
         Args:
             limit: Optional limit on number of results
-            
+
         Returns:
             List[ExecutionResult]: Execution history
         """
@@ -281,7 +281,7 @@ def create_observability_execution_engine(default_timeout: float=30.0, max_concu
 
 def use_observability_execution(operation_type: str, parameters: Dict[str, Any], request_id: Optional[str]=None, strategy: str='immediate', priority: str='normal', timeout: float=30.0) -> Dict[str, Any]:
     """Execute observability operation.
-    
+
     Args:
         operation_type: Type of operation
         parameters: Operation parameters
@@ -289,7 +289,7 @@ def use_observability_execution(operation_type: str, parameters: Dict[str, Any],
         strategy: Execution strategy
         priority: Execution priority
         timeout: Execution timeout
-        
+
     Returns:
         Dict: Execution result
     """
@@ -297,4 +297,3 @@ def use_observability_execution(operation_type: str, parameters: Dict[str, Any],
     request = ExecutionRequest(request_id=request_id or str(uuid.uuid4()), operation_type=operation_type, parameters=parameters, strategy=ExecutionStrategy(strategy), priority=ExecutionPriority(priority), timeout=timeout)
     result = engine.execute(request)
     return {'request_id': result.request_id, 'operation_type': result.operation_type, 'success': result.success, 'output': result.output, 'exit_code': result.exit_code, 'stdout': result.stdout, 'stderr': result.stderr, 'metrics': result.metrics, 'artifacts': result.artifacts, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time, 'resource_usage': result.resource_usage}
-

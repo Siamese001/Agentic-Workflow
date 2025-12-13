@@ -23,7 +23,7 @@ class ExecutionResult:
 class Validation:
     """
     Executor for shared validation operations.
-    
+
     Ensures consistent handling of configuration context and error boundaries
     across the sovereign domain.
     """
@@ -35,11 +35,11 @@ class Validation:
     def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict] = None) -> ExecutionResult:
         """
         Execute the primary logic for this module.
-        
+
         Args:
             payload: The input data to process
             context: Optional execution context
-            
+
         Returns:
             ExecutionResult indicating success or failure
         """
@@ -63,7 +63,7 @@ class Validation:
             "warnings": [],
             "validated_data": data
         }
-        
+
         # Perform validation based on data type
         if isinstance(data, dict):
             validation_result = self._validate_dict(data, validation_result)
@@ -75,26 +75,26 @@ class Validation:
             validation_result = self._validate_number(data, validation_result)
         elif isinstance(data, bool):
             validation_result = self._validate_boolean(data, validation_result)
-        
+
         # Add context information if provided
         if context:
             validation_result["context"] = {
                 "validation_context": context,
                 "validation_timestamp": self._get_timestamp()
             }
-        
+
         return validation_result
-    
+
     def _validate_dict(self, data: Dict, result: Dict) -> Dict:
         """Validate dictionary data."""
         required_fields = self.config.get("required_fields", [])
-        
+
         # Check required fields
         for field in required_fields:
             if field not in data:
                 result["errors"].append(f"Missing required field: {field}")
                 result["is_valid"] = False
-        
+
         # Check field types
         field_types = self.config.get("field_types", {})
         for field, expected_type in field_types.items():
@@ -105,23 +105,23 @@ class Validation:
                         f"got {type(data[field]).__name__}"
                     )
                     result["is_valid"] = False
-        
+
         return result
-    
+
     def _validate_list(self, data: List, result: Dict) -> Dict:
         """Validate list data."""
         max_length = self.config.get("max_list_length", 100)
         min_length = self.config.get("min_list_length", 0)
-        
+
         # Check length constraints
         if len(data) > max_length:
             result["errors"].append(f"List exceeds maximum length of {max_length}")
             result["is_valid"] = False
-        
+
         if len(data) < min_length:
             result["errors"].append(f"List below minimum length of {min_length}")
             result["is_valid"] = False
-        
+
         # Check item types if homogeneous
         item_type = self.config.get("list_item_type")
         if item_type:
@@ -132,23 +132,23 @@ class Validation:
                         f"got {type(item).__name__}"
                     )
                     result["is_valid"] = False
-        
+
         return result
-    
+
     def _validate_string(self, data: str, result: Dict) -> Dict:
         """Validate string data."""
         max_length = self.config.get("max_string_length", 1000)
         min_length = self.config.get("min_string_length", 0)
-        
+
         # Check length constraints
         if len(data) > max_length:
             result["errors"].append(f"String exceeds maximum length of {max_length}")
             result["is_valid"] = False
-        
+
         if len(data) < min_length:
             result["errors"].append(f"String below minimum length of {min_length}")
             result["is_valid"] = False
-        
+
         # Check pattern if specified
         pattern = self.config.get("string_pattern")
         if pattern:
@@ -156,31 +156,31 @@ class Validation:
             if not re.match(pattern, data):
                 result["errors"].append(f"String does not match required pattern: {pattern}")
                 result["is_valid"] = False
-        
+
         return result
-    
+
     def _validate_number(self, data: Union[int, float], result: Dict) -> Dict:
         """Validate numeric data."""
         min_value = self.config.get("min_value")
         max_value = self.config.get("max_value")
-        
+
         # Check value constraints
         if min_value is not None and data < min_value:
             result["errors"].append(f"Value {data} is below minimum {min_value}")
             result["is_valid"] = False
-        
+
         if max_value is not None and data > max_value:
             result["errors"].append(f"Value {data} is above maximum {max_value}")
             result["is_valid"] = False
-        
+
         return result
-    
+
     def _validate_boolean(self, data: bool, result: Dict) -> Dict:
         """Validate boolean data."""
         # Boolean values are inherently valid
         # Add any specific boolean validation rules here
         return result
-    
+
     def _get_timestamp(self) -> str:
         """Get current timestamp for validation context."""
         from datetime import datetime

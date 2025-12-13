@@ -24,7 +24,6 @@ class APIResponse:
     headers: Dict[str, str]
     body: Dict[str, object]
 
-
 class TestAPIEndpointIntegration:
     """Integration tests for API endpoints."""
 
@@ -87,7 +86,6 @@ class TestAPIEndpointIntegration:
 
         assert response.body["status"] == "cancelled"
 
-
 class TestAPIAuthenticationIntegration:
     """Integration tests for API authentication."""
 
@@ -123,7 +121,6 @@ class TestAPIAuthenticationIntegration:
 
         is_valid = provided_key in valid_keys
         assert is_valid is False
-
 
 class TestAPIRateLimitingIntegration:
     """Integration tests for API rate limiting."""
@@ -164,7 +161,6 @@ class TestAPIRateLimitingIntegration:
 
         is_reset = datetime.now() > window_start + window_duration
         assert is_reset
-
 
 class TestAPIErrorHandlingIntegration:
     """Integration tests for API error handling."""
@@ -222,7 +218,6 @@ class TestAPIErrorHandlingIntegration:
         )
 
         assert response.headers["X-Request-ID"] == response.body["error"]["request_id"]
-
 
 class TestAPIVersioningIntegration:
     """Integration tests for API versioning."""

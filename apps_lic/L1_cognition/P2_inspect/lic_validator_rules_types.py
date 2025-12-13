@@ -47,4 +47,3 @@ class ClaimConfidenceConfig:
     max_source_boost: float = 0.3
     no_source_penalty: float = 0.5
     min_claim_words: int = 3
-

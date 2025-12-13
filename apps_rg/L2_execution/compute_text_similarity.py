@@ -8,7 +8,6 @@ Text similarity computation using TF-IDF cosine similarity.
 Provides core similarity calculation with sklearn alternative path.
 """
 
-
 import math
 from typing import List, Tuple
 
@@ -19,7 +18,6 @@ try:
     SKLEARN_AVAILABLE = True
 except ImportError:
     SKLEARN_AVAILABLE = False
-
 
 class TextSimilarityCalculator:
     """Calculate TF-IDF cosine similarity between texts."""

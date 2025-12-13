@@ -29,14 +29,14 @@ class ProcessingError(Exception):
 def process_data(data: Dict[str, object], config: Optional[Dict[str, object]] = None) -> Dict[str, object]:
     """
     Process data with optional configuration.
-    
+
     Args:
         data: Input data to process
         config: Optional configuration parameters
-        
+
     Returns:
         Processed data
-        
+
     Raises:
         ProcessingError: If processing fails
     """
@@ -60,7 +60,7 @@ def format_output(output_data: object) -> str:
 # Export public API
 __all__ = [
     "process_data",
-    "validate_input", 
+    "validate_input",
     "format_output",
     "ProcessingError",
 ]

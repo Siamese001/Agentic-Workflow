@@ -71,7 +71,6 @@ class TestMemoryStability:
 
         gc.collect()
 
-
 class TestLongRunningOperations:
     """Soak tests for long-running operation stability."""
 
@@ -153,7 +152,6 @@ class TestLongRunningOperations:
                 pool.append(conn)
 
         assert len(pool) <= max_connections
-
 
 class TestDegradationDetection:
     """Soak tests for detecting performance degradation."""

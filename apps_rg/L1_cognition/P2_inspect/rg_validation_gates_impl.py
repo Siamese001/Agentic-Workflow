@@ -280,4 +280,3 @@ def run_gate(gate_id: str, content: object, context: Optional[Dict[str, object]]
     """Run a specific validation gate."""
     gates = RGValidationGates()
     return gates.run_gate(gate_id, content, context)
-

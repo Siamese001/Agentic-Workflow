@@ -2,9 +2,7 @@ from pathlib import Path
 
 import pytest
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
 
 @pytest.mark.skip(reason="Provider SDK isolation will be enforced in later refactor phases.")
 def test_only_providers_contain_provider_sdks() -> None:
@@ -15,9 +13,3 @@ def test_only_providers_contain_provider_sdks() -> None:
     """
 
     assert True
-
-
-
-
-
-

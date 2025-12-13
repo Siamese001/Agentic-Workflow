@@ -21,18 +21,12 @@ from __future__ import annotations
 # from archives.legacy_root_folders.runtime.observability.traces import *  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.runtime.observability.metrics import *  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 def get_all_events() -> list:
     """Backward-compatible alias for get_events()."""
 
     return get_events()
 
-
 def clear_events() -> None:  # type: ignore[override]
     """Backward-compatible alias for collectors.clear_events()."""
 
     _clear_events_impl()
-
-
-
-

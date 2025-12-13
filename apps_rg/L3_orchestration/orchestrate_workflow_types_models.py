@@ -41,4 +41,3 @@ class WorkflowSpec:
     name: str
     version: str
     hops: List[HopSpec]
-

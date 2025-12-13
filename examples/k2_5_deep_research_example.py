@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 from apps_rg.L1_cognition.k2_5_deep_research_agent import create_k25_research_agent
 from apps_rg.L1_cognition.k2_5_deep_research_models import (
     CitationMap,
@@ -10,7 +14,6 @@ from apps_rg.L1_cognition.k2_5_deep_research_models import (
     TechnicalLayer,
 )
 from apps_rg.L2_execution.integrity_gate_executor import validate_research_output
-
 
 def create_doordash_benchmark_example() -> DeepResearchOutput:
     strategic_layer = StrategicLayer(
@@ -44,7 +47,7 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
             "Logistics efficiency optimization"
         ]
     )
-    
+
     technical_layer = TechnicalLayer(
         key_technologies=[
             TechnicalImplementation(
@@ -63,7 +66,7 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
         infrastructure_stack=["Kubernetes", "PyTorch", "Real-time routing engine"],
         implementation_summary="The MoE architecture enables dynamic model selection reducing computational overhead while maintaining prediction accuracy. Dot robot navigates complex urban environments autonomously."
     )
-    
+
     leadership_layer = LeadershipLayer(
         key_executives=[
             ExecutiveProfile(
@@ -87,14 +90,14 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
         ],
         organizational_structure="Labs division under Stanley Tang, Risk function under CFO Ravi Inukonda, ML verticals under Sudeep Das"
     )
-    
+
     citation_map = CitationMap()
     citation_map.add_citation("cite_17", "https://investors.doordash.com/financials/quarterly-results/default.aspx")
     citation_map.add_citation("cite_25", "https://www.linkedin.com/in/sudeep-das")
     citation_map.add_citation("cite_26", "https://investors.doordash.com/governance/leadership-and-governance/default.aspx")
     citation_map.add_citation("cite_65", "https://doordash.engineering/2024/11/improving-eta-predictions-mixture-of-experts/")
     citation_map.add_citation("cite_72", "https://techcrunch.com/2024/08/doordash-serve-robotics-autonomous-delivery/")
-    
+
     return DeepResearchOutput(
         company_name="DoorDash",
         strategic_layer=strategic_layer,
@@ -104,75 +107,73 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
         research_timestamp="2025-12-12T20:39:00Z"
     )
 
-
 def example_usage():
-    print("=" * 80)
-    print("K.2.5 Deep Research Protocol - Example Usage")
-    print("=" * 80)
-    
+    logger.info("=" * 80)
+    logger.info("K.2.5 Deep Research Protocol - Example Usage")
+    logger.info("=" * 80)
+
     agent = create_k25_research_agent(
         company_name="DoorDash",
         company_url="https://www.doordash.com"
     )
-    
-    print("\n[1] Generated Research Prompt:")
-    print("-" * 80)
+
+    logger.info("\n[1] Generated Research Prompt:")
+    logger.info("-" * 80)
     prompt = agent.generate_research_prompt()
-    print(prompt[:500] + "...\n")
-    
-    print("\n[2] DoorDash Benchmark Example:")
-    print("-" * 80)
+    logger.info(prompt[:500] + "...\n")
+
+    logger.info("\n[2] DoorDash Benchmark Example:")
+    logger.info("-" * 80)
     benchmark = create_doordash_benchmark_example()
-    
-    print(f"\nCompany: {benchmark.company_name}")
-    print(f"\nStrategic Thesis: {benchmark.strategic_layer.core_thesis}")
-    print(f"\nFinancial Metrics ({len(benchmark.strategic_layer.financial_proof_points)}):")
+
+    logger.info(f"\nCompany: {benchmark.company_name}")
+    logger.info(f"\nStrategic Thesis: {benchmark.strategic_layer.core_thesis}")
+    logger.info(f"\nFinancial Metrics ({len(benchmark.strategic_layer.financial_proof_points)}):")
     for metric in benchmark.strategic_layer.financial_proof_points:
-        print(f"  - {metric.metric_name}: {metric.value} ({metric.yoy_change}) [{metric.source_citation}]")
-    
-    print(f"\nKey Technologies ({len(benchmark.technical_layer.key_technologies)}):")
+        logger.info(f"  - {metric.metric_name}: {metric.value} ({metric.yoy_change}) [{metric.source_citation}]")
+
+    logger.info(f"\nKey Technologies ({len(benchmark.technical_layer.key_technologies)}):")
     for tech in benchmark.technical_layer.key_technologies:
-        print(f"  - {tech.technology_name}")
-        print(f"    Performance: {tech.performance_gain}")
-        print(f"    Citation: {tech.source_citation}")
-    
-    print(f"\nKey Executives ({len(benchmark.leadership_layer.key_executives)}):")
+        logger.info(f"  - {tech.technology_name}")
+        logger.info(f"    Performance: {tech.performance_gain}")
+        logger.info(f"    Citation: {tech.source_citation}")
+
+    logger.info(f"\nKey Executives ({len(benchmark.leadership_layer.key_executives)}):")
     for exec in benchmark.leadership_layer.key_executives:
-        print(f"  - {exec.name} ({exec.title})")
-        print(f"    Ownership: {exec.ownership}")
-    
-    print(f"\nCitations ({len(benchmark.citation_map.citations)}):")
+        logger.info(f"  - {exec.name} ({exec.title})")
+        logger.info(f"    Ownership: {exec.ownership}")
+
+    logger.info(f"\nCitations ({len(benchmark.citation_map.citations)}):")
     for cite_id, url in benchmark.citation_map.citations.items():
-        print(f"  [{cite_id}]: {url}")
-    
-    print("\n[3] Integrity Gate Validation:")
-    print("-" * 80)
+        logger.info(f"  [{cite_id}]: {url}")
+
+    logger.info("\n[3] Integrity Gate Validation:")
+    logger.info("-" * 80)
     integrity_result = validate_research_output(benchmark)
-    
-    print(f"Passed: {integrity_result.passed}")
-    print(f"Depth Score: {integrity_result.depth_score:.2f}")
-    
+
+    logger.info(f"Passed: {integrity_result.passed}")
+    logger.info(f"Depth Score: {integrity_result.depth_score:.2f}")
+
     if integrity_result.rejection_reasons:
-        print(f"\nRejection Reasons:")
+        logger.info(f"\nRejection Reasons:")
         for reason in integrity_result.rejection_reasons:
-            print(f"  - {reason.value}")
-        print(f"\nDetailed Violations:")
+            logger.info(f"  - {reason.value}")
+        logger.info(f"\nDetailed Violations:")
         for violation in integrity_result.detailed_violations:
-            print(f"  - {violation}")
+            logger.info(f"  - {violation}")
     else:
-        print("\n✓ All integrity checks passed!")
-        print(f"✓ Depth score {integrity_result.depth_score:.2f} exceeds minimum 0.7")
-    
-    print("\n[4] JSON Output:")
-    print("-" * 80)
+        logger.info("\n✓ All integrity checks passed!")
+        logger.info(f"✓ Depth score {integrity_result.depth_score:.2f} exceeds minimum 0.7")
+
+    logger.info("\n[4] JSON Output:")
+    logger.info("-" * 80)
     import json
     output_dict = benchmark.to_dict()
-    print(json.dumps(output_dict, indent=2)[:1000] + "...\n")
-    
-    print("=" * 80)
-    print("Example Complete")
-    print("=" * 80)
+    logger.info(json.dumps(output_dict, indent=2)[:1000] + "...\n")
 
+    logger.info("=" * 80)
+    logger.info("Example Complete")
+    logger.info("=" * 80)
 
 if __name__ == "__main__":
     example_usage()

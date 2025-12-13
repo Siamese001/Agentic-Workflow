@@ -14,7 +14,6 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-
 class KNodeType(str, Enum):
     """K.X node type classification."""
     RESUME_HEADER = "resume_header"
@@ -22,7 +21,6 @@ class KNodeType(str, Enum):
     OUTREACH_ROUTING = "outreach_routing"
     OUTREACH_CONTENT = "outreach_content"
     OUTREACH_CTA = "outreach_cta"
-
 
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
@@ -33,7 +31,6 @@ class ReasoningStrategy(str, Enum):
     REFLEXION = "reflexion"
     SOCRATIC = "socratic"
 
-
 @dataclass
 class RAGConfig:
     """RAG configuration for K.X node."""
@@ -42,7 +39,7 @@ class RAGConfig:
     max_retrievers: int = 6
     hops: int = 2
     source_weighting: Dict[str, float] = field(default_factory=dict)
-    
+
     def __post_init__(self):
         """Initialize default source weighting."""
         if not self.source_weighting:
@@ -57,7 +54,6 @@ class RAGConfig:
                 "generic_bio": 0.5,
             }
 
-
 @dataclass
 class DecodingParams:
     """Decoding parameters for LLM generation."""
@@ -67,7 +63,6 @@ class DecodingParams:
     min_p: float = 0.04
     repetition_penalty: float = 1.1
     max_tokens: Optional[int] = None
-
 
 @dataclass
 class KNodeConfig:
@@ -88,14 +83,13 @@ class KNodeConfig:
     structure_template: Optional[str] = None
     validation_rules: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def __post_init__(self):
         """Initialize default configurations."""
         if self.rag_config is None:
             self.rag_config = RAGConfig()
         if self.decoding_params is None:
             self.decoding_params = DecodingParams()
-
 
 # Resume Engine K.X Nodes (K.0 - K.11)
 RESUME_KX_NODES = {
@@ -282,7 +276,6 @@ RESUME_KX_NODES = {
     ),
 }
 
-
 # Outreach Engine K.X Nodes (K.1 - K.7)
 OUTREACH_KX_NODES = {
     "K.1_Message_Type_Routing": KNodeConfig(
@@ -384,7 +377,6 @@ OUTREACH_KX_NODES = {
     ),
 }
 
-
 # Special Outreach Nodes for Connection Requests
 OUTREACH_CONNECTION_REQ_NODES = {
     "CONNECTION_REQ_K.3_COMPRESSED": KNodeConfig(
@@ -435,68 +427,67 @@ OUTREACH_CONNECTION_REQ_NODES = {
     ),
 }
 
-
 class KXNodeRegistry:
     """Registry for managing K.X knowledge extraction nodes."""
-    
+
     def __init__(self):
         """Initialize K.X node registry."""
         self._resume_nodes = RESUME_KX_NODES.copy()
         self._outreach_nodes = OUTREACH_KX_NODES.copy()
         self._connection_req_nodes = OUTREACH_CONNECTION_REQ_NODES.copy()
         logger.info("K.X node registry initialized")
-    
+
     def get_resume_node(self, node_key: str) -> Optional[KNodeConfig]:
         """Get resume engine K.X node configuration.
-        
+
         Args:
             node_key: Node key (e.g., "K.1_Executive_Summary")
-            
+
         Returns:
             KNodeConfig or None if not found
         """
         return self._resume_nodes.get(node_key)
-    
+
     def get_outreach_node(
         self,
         node_key: str,
         connection_request: bool = False
     ) -> Optional[KNodeConfig]:
         """Get outreach engine K.X node configuration.
-        
+
         Args:
             node_key: Node key (e.g., "K.3_Message_Body")
             connection_request: Use connection request variant if True
-            
+
         Returns:
             KNodeConfig or None if not found
         """
         if connection_request and node_key in self._connection_req_nodes:
             return self._connection_req_nodes[node_key]
         return self._outreach_nodes.get(node_key)
-    
+
     def list_resume_nodes(self) -> List[str]:
         """List all resume engine K.X node keys.
-        
+
         Returns:
             List of node keys
         """
         return list(self._resume_nodes.keys())
-    
+
     def list_outreach_nodes(self) -> List[str]:
         """List all outreach engine K.X node keys.
-        
+
         Returns:
             List of node keys
         """
         return list(self._outreach_nodes.keys())
-    
+
     def get_nodes_by_type(self, node_type: KNodeType) -> Dict[str, KNodeConfig]:
         """Get all nodes of a specific type.
-        
+
         Args:
             node_type: Node type to filter by
-            
+
         Returns:
             Dictionary of matching nodes
         """
@@ -505,7 +496,7 @@ class KXNodeRegistry:
             key: config for key, config in all_nodes.items()
             if config.node_type == node_type
         }
-    
+
     def register_custom_node(
         self,
         node_key: str,
@@ -513,7 +504,7 @@ class KXNodeRegistry:
         engine: str = "resume"
     ) -> None:
         """Register a custom K.X node.
-        
+
         Args:
             node_key: Unique node key
             config: Node configuration
@@ -525,51 +516,47 @@ class KXNodeRegistry:
             self._outreach_nodes[node_key] = config
         else:
             raise ValueError(f"Unknown engine type: {engine}")
-        
-        logger.info(f"Registered custom K.X node: {node_key} ({engine})")
 
+        logger.info(f"Registered custom K.X node: {node_key} ({engine})")
 
 # Global K.X node registry instance
 _KX_REGISTRY: Optional[KXNodeRegistry] = None
 
-
 def get_kx_registry() -> KXNodeRegistry:
     """Get or create global K.X node registry.
-    
+
     Returns:
         KXNodeRegistry instance
     """
     global _KX_REGISTRY
-    
+
     if _KX_REGISTRY is None:
         _KX_REGISTRY = KXNodeRegistry()
-    
-    return _KX_REGISTRY
 
+    return _KX_REGISTRY
 
 def get_resume_kx_node(node_key: str) -> Optional[KNodeConfig]:
     """Get resume engine K.X node configuration.
-    
+
     Args:
         node_key: Node key (e.g., "K.1_Executive_Summary")
-        
+
     Returns:
         KNodeConfig or None if not found
     """
     registry = get_kx_registry()
     return registry.get_resume_node(node_key)
 
-
 def get_outreach_kx_node(
     node_key: str,
     connection_request: bool = False
 ) -> Optional[KNodeConfig]:
     """Get outreach engine K.X node configuration.
-    
+
     Args:
         node_key: Node key (e.g., "K.3_Message_Body")
         connection_request: Use connection request variant if True
-        
+
     Returns:
         KNodeConfig or None if not found
     """

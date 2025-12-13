@@ -5,7 +5,7 @@ from .agent_registry_types import *
 
 class AgentRegistry:
     """Registry for agent discovery and collaboration.
-    
+
     Provides:
     - Agent registration and deregistration
     - Capability-based discovery
@@ -15,7 +15,7 @@ class AgentRegistry:
 
     def __init__(self, enable_logging: bool=True):
         """Initialize agent registry.
-        
+
         Args:
             enable_logging: Enable logging
         """
@@ -27,10 +27,10 @@ class AgentRegistry:
 
     def register(self, agent_card: AgentCard) -> RegistrationResult:
         """Register an agent.
-        
+
         Args:
             agent_card: Agent card to register
-            
+
         Returns:
             RegistrationResult
         """
@@ -48,10 +48,10 @@ class AgentRegistry:
 
     def deregister(self, spiffe_id: str) -> bool:
         """Deregister an agent.
-        
+
         Args:
             spiffe_id: SPIFFE ID of agent
-            
+
         Returns:
             True if deregistered successfully
         """
@@ -67,10 +67,10 @@ class AgentRegistry:
 
     def get_agent(self, spiffe_id: str) -> Optional[AgentCard]:
         """Get an agent card by SPIFFE ID.
-        
+
         Args:
             spiffe_id: SPIFFE ID
-            
+
         Returns:
             AgentCard or None
         """
@@ -78,11 +78,11 @@ class AgentRegistry:
 
     def find_by_capability(self, capability: AgentCapability, status: Optional[AgentStatus]=None) -> List[AgentCard]:
         """Find agents by capability.
-        
+
         Args:
             capability: Required capability
             status: Optional status filter
-            
+
         Returns:
             List of matching agent cards
         """
@@ -94,11 +94,11 @@ class AgentRegistry:
 
     def find_by_tool(self, tool_name: str, operation: str) -> List[AgentCard]:
         """Find agents that can use a tool.
-        
+
         Args:
             tool_name: Tool name
             operation: Required operation
-            
+
         Returns:
             List of matching agent cards
         """
@@ -106,10 +106,10 @@ class AgentRegistry:
 
     def find_available(self, capabilities: Optional[List[AgentCapability]]=None) -> List[AgentCard]:
         """Find available agents.
-        
+
         Args:
             capabilities: Optional capability requirements
-            
+
         Returns:
             List of available agent cards
         """
@@ -120,11 +120,11 @@ class AgentRegistry:
 
     def update_status(self, spiffe_id: str, status: AgentStatus) -> bool:
         """Update agent status.
-        
+
         Args:
             spiffe_id: SPIFFE ID
             status: New status
-            
+
         Returns:
             True if updated successfully
         """
@@ -139,7 +139,7 @@ class AgentRegistry:
 
     def list_all(self) -> List[AgentCard]:
         """List all registered agents.
-        
+
         Returns:
             List of all agent cards
         """
@@ -147,7 +147,7 @@ class AgentRegistry:
 
     def get_stats(self) -> Dict[str, Any]:
         """Get registry statistics.
-        
+
         Returns:
             Statistics dictionary
         """
@@ -163,9 +163,8 @@ class AgentRegistry:
 
 def create_agent_registry() -> AgentRegistry:
     """Factory function to create agent registry.
-    
+
     Returns:
         AgentRegistry instance
     """
     return AgentRegistry()
-

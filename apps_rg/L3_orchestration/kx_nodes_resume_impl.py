@@ -5,7 +5,7 @@ from .kx_nodes_resume_types import *
 
 def get_resume_kx_dag() -> Dict[str, ResumeKNode]:
     """Get the complete resume K.X node DAG.
-    
+
     Returns:
         Dictionary of resume K.X nodes with dependencies
     """
@@ -13,7 +13,7 @@ def get_resume_kx_dag() -> Dict[str, ResumeKNode]:
 
 def get_resume_execution_order() -> List[str]:
     """Get topological execution order for resume K.X nodes.
-    
+
     Returns:
         List of node keys in execution order
     """
@@ -40,12 +40,11 @@ def get_resume_execution_order() -> List[str]:
 
 def get_resume_kx_node(node_key: str) -> Optional[ResumeKNode]:
     """Get resume K.X node by key.
-    
+
     Args:
         node_key: Node key (e.g., "K.1_Executive_Summary")
-        
+
     Returns:
         ResumeKNode or None if not found
     """
     return RESUME_KX_DAG.get(node_key)
-

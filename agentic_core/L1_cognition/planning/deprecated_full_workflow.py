@@ -10,10 +10,9 @@ from datetime import datetime
 
 # from archives.legacy_root_folders.core.models.models import ExecutionContext, JobInput, ResumeInput, WorkflowConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 class TestEndToEndWorkflow:
     """Test complete end-to-end workflow execution."""
-    
+
     def test_full_workflow_with_all_components(self) -> None:
         """Test complete workflow with strategy, RAG, drafting, QA, and safety."""
         ctx = ExecutionContext(
@@ -30,11 +29,11 @@ class TestEndToEndWorkflow:
             ),
             user_id="test_user",
         )
-        
+
         # Mock all external dependencies
         with patch('l2.execute_workflow_plans') as mock_execute:
             with patch('runtime.runtime_utils.invoke_model') as mock_llm:
-                
+
                 # Mock LLM responses
                 mock_llm.side_effect = [
                     "Generated strategy for senior software engineer",
@@ -42,12 +41,12 @@ class TestEndToEndWorkflow:
                     "QA evaluation passed",
                     "Safety check passed"
                 ]
-                
+
                 # Mock L2 execution
 #                 from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # INVALID: Cannot import from path with hyphens
                 mock_strategy = Mock()
                 mock_strategy.branches = [Mock(description="Senior engineer strategy")]
-                
+
                 mock_execute.return_value = L2ResultBundle(
                     strategy=mock_strategy,
                     rag=Mock(),
@@ -55,16 +54,16 @@ class TestEndToEndWorkflow:
                     qa=Mock(),
                     safety=Mock(),
                 )
-                
+
                 # Execute workflow
                 from orchestration.run_dag import run_dag
                 plans = [Mock()]
                 result = run_dag(plans, ctx)
-                
+
                 # Verify workflow completed
                 assert result is not None
                 assert result.final_state_patch["strategy_text"] is not None
-    
+
     def test_workflow_with_different_job_types(self) -> None:
         """Test workflow with different job types and roles."""
         job_types = [
@@ -72,7 +71,7 @@ class TestEndToEndWorkflow:
             ("Product Manager", "product", "mid"),
             ("UX Designer", "design", "junior"),
         ]
-        
+
         for title, role_type, seniority in job_types:
             ctx = ExecutionContext(
                 job=JobInput(
@@ -88,12 +87,12 @@ class TestEndToEndWorkflow:
                 ),
                 user_id="test_user",
             )
-            
+
             # Verify context is properly created
             assert ctx.job.title == title
             assert ctx.job.role_type == role_type
             assert ctx.job.seniority == seniority
-    
+
     def test_workflow_error_handling(self) -> None:
         """Test workflow error handling and recovery."""
         ctx = ExecutionContext(
@@ -101,21 +100,20 @@ class TestEndToEndWorkflow:
             resume=ResumeInput(name="Test", email="test@example.com", sections={}),
             user_id="test_user",
         )
-        
+
         # Test with failing L2 execution
         with patch('l2.execute_workflow_plans') as mock_execute:
             mock_execute.side_effect = Exception("L2 execution failed")
-            
+
             from orchestration.run_dag import run_dag
-            
+
             with pytest.raises(Exception):
                 plans = [Mock()]
                 run_dag(plans, ctx)
 
-
 class TestWorkflowConfiguration:
     """Test workflow configuration and customization."""
-    
+
     def test_workflow_config_customization(self) -> None:
         """Test workflow configuration options."""
         config = WorkflowConfig(
@@ -124,12 +122,12 @@ class TestWorkflowConfiguration:
             enable_safety=True,
             max_drafts=3
         )
-        
+
         assert config.enable_rag is True
         assert config.enable_qa is True
         assert config.enable_safety is True
         assert config.max_drafts == 3
-    
+
     def test_workflow_with_custom_config(self) -> None:
         """Test workflow execution with custom configuration."""
         config = WorkflowConfig(
@@ -138,37 +136,36 @@ class TestWorkflowConfiguration:
             enable_safety=True,
             max_drafts=1
         )
-        
+
         ctx = ExecutionContext(
             job=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
             resume=ResumeInput(name="Test", email="test@example.com", sections={}),
             user_id="test_user",
             config=config
         )
-        
+
         # Verify config is applied
         assert ctx.config.enable_rag is False
         assert ctx.config.max_drafts == 1
 
-
 class TestWorkflowPerformance:
     """Test workflow performance and optimization."""
-    
+
     def test_workflow_execution_time(self) -> None:
         """Test workflow execution time is reasonable."""
         import time
-        
+
         ctx = ExecutionContext(
             job=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
             resume=ResumeInput(name="Test", email="test@example.com", sections={}),
             user_id="test_user",
         )
-        
+
         with patch('l2.execute_workflow_plans') as mock_execute:
 #             from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # INVALID: Cannot import from path with hyphens
             mock_strategy = Mock()
             mock_strategy.branches = [Mock(description="Test strategy")]
-            
+
             mock_execute.return_value = L2ResultBundle(
                 strategy=mock_strategy,
                 rag=Mock(),
@@ -176,19 +173,18 @@ class TestWorkflowPerformance:
                 qa=Mock(),
                 safety=Mock(),
             )
-            
+
             start_time = time.time()
-            
+
             from orchestration.run_dag import run_dag
             plans = [Mock()]
             result = run_dag(plans, ctx)
-            
+
             execution_time = time.time() - start_time
-            
+
             # Should complete in reasonable time (mocked execution)
             assert execution_time < 5.0
             assert result is not None
-
 
 if __name__ == "__main__":
     pytest.main([__file__])

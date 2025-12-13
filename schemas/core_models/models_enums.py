@@ -29,4 +29,3 @@ class APICallStatus(Enum):
     FAILED = auto()
     TIMEOUT = auto()
     RATE_LIMITED = auto()
-

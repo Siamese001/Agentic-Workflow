@@ -5,20 +5,20 @@ from .spiffe_manager_types import *
 
 class SPIFFEManager:
     """Manager for SPIFFE-based agent identities.
-    
+
     Provides:
     - Identity generation with cryptographic keys
     - Identity verification
     - Automatic credential rotation
     - Trust domain management
-    
+
     Simplified implementation for Phase 3.
     Production systems should use full SPIFFE/SPIRE infrastructure.
     """
 
     def __init__(self, trust_domain: TrustDomain=TrustDomain.LOCAL, default_ttl_seconds: int=3600, enable_logging: bool=True):
         """Initialize SPIFFE manager.
-        
+
         Args:
             trust_domain: Default trust domain
             default_ttl_seconds: Default identity TTL
@@ -34,7 +34,7 @@ class SPIFFEManager:
 
     def create_identity(self, agent_name: str, agent_type: IdentityType, namespace: str='default', capabilities: Optional[List[str]]=None, ttl_seconds: Optional[int]=None, metadata: Optional[Dict[str, Any]]=None) -> AgentIdentity:
         """Create a new agent identity.
-        
+
         Args:
             agent_name: Name of the agent
             agent_type: Type of agent
@@ -42,7 +42,7 @@ class SPIFFEManager:
             capabilities: List of capabilities
             ttl_seconds: Time-to-live in seconds
             metadata: Additional metadata
-            
+
         Returns:
             AgentIdentity with cryptographic credentials
         """
@@ -58,11 +58,11 @@ class SPIFFEManager:
 
     def verify_identity(self, spiffe_id: str, public_key: str) -> IdentityVerificationResult:
         """Verify an agent identity.
-        
+
         Args:
             spiffe_id: SPIFFE ID to verify
             public_key: Public key to verify
-            
+
         Returns:
             IdentityVerificationResult
         """
@@ -81,11 +81,11 @@ class SPIFFEManager:
 
     def rotate_credentials(self, spiffe_id: str, ttl_seconds: Optional[int]=None) -> Optional[AgentIdentity]:
         """Rotate credentials for an existing identity.
-        
+
         Args:
             spiffe_id: SPIFFE ID to rotate
             ttl_seconds: New TTL
-            
+
         Returns:
             Updated AgentIdentity or None if not found
         """
@@ -105,10 +105,10 @@ class SPIFFEManager:
 
     def revoke_identity(self, spiffe_id: str) -> bool:
         """Revoke an agent identity.
-        
+
         Args:
             spiffe_id: SPIFFE ID to revoke
-            
+
         Returns:
             True if revoked successfully
         """
@@ -121,10 +121,10 @@ class SPIFFEManager:
 
     def get_identity(self, spiffe_id: str) -> Optional[AgentIdentity]:
         """Get an identity by SPIFFE ID.
-        
+
         Args:
             spiffe_id: SPIFFE ID
-            
+
         Returns:
             AgentIdentity or None
         """
@@ -132,11 +132,11 @@ class SPIFFEManager:
 
     def list_identities(self, agent_type: Optional[IdentityType]=None, namespace: Optional[str]=None) -> List[AgentIdentity]:
         """List all identities.
-        
+
         Args:
             agent_type: Filter by agent type
             namespace: Filter by namespace
-            
+
         Returns:
             List of AgentIdentity objects
         """
@@ -149,7 +149,7 @@ class SPIFFEManager:
 
     def cleanup_expired(self) -> int:
         """Remove expired identities.
-        
+
         Returns:
             Number of identities removed
         """
@@ -162,12 +162,12 @@ class SPIFFEManager:
 
     def _generate_spiffe_id(self, trust_domain: TrustDomain, namespace: str, agent_name: str) -> str:
         """Generate a SPIFFE ID.
-        
+
         Args:
             trust_domain: Trust domain
             namespace: Namespace
             agent_name: Agent name
-            
+
         Returns:
             SPIFFE ID string
         """
@@ -175,10 +175,10 @@ class SPIFFEManager:
 
     def _generate_key_pair(self) -> tuple[str, str]:
         """Generate a cryptographic key pair.
-        
+
         Simplified implementation using SHA-256 hashing.
         Production should use RSA/ECDSA key generation.
-        
+
         Returns:
             Tuple of (public_key, private_key)
         """
@@ -189,13 +189,12 @@ class SPIFFEManager:
 
 def create_spiffe_manager(trust_domain: TrustDomain=TrustDomain.LOCAL, default_ttl_seconds: int=3600) -> SPIFFEManager:
     """Factory function to create SPIFFE manager.
-    
+
     Args:
         trust_domain: Trust domain
         default_ttl_seconds: Default TTL
-        
+
     Returns:
         SPIFFEManager instance
     """
     return SPIFFEManager(trust_domain=trust_domain, default_ttl_seconds=default_ttl_seconds)
-

@@ -144,4 +144,3 @@ def populate_hardened_code(dry_run: bool=True) -> Dict:
     if dry_run:
         pass
     return results
-

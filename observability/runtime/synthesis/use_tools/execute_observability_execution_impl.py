@@ -16,7 +16,7 @@ class ObservabilityExecutionAdapter:
 
     def register_handler(self, operation_type: ObservabilityType, handler: Callable) -> None:
         """Register a handler for observability operation type.
-        
+
         Args:
             operation_type: Type of operation
             handler: Handler function
@@ -26,10 +26,10 @@ class ObservabilityExecutionAdapter:
 
     def execute(self, request: ObservabilityRequest) -> ObservabilityResult:
         """Execute observability operation.
-        
+
         Args:
             request: Observability operation request
-            
+
         Returns:
             ObservabilityResult: Result with observability data
         """
@@ -55,10 +55,10 @@ class ObservabilityExecutionAdapter:
 
     def execute_batch(self, requests: List[ObservabilityRequest]) -> List[ObservabilityResult]:
         """Execute multiple observability operations.
-        
+
         Args:
             requests: List of operation requests
-            
+
         Returns:
             List[ObservabilityResult]: Results for all operations
         """
@@ -70,10 +70,10 @@ class ObservabilityExecutionAdapter:
 
     def get_trace(self, trace_id: str) -> Optional[Dict[str, Any]]:
         """Get trace information.
-        
+
         Args:
             trace_id: ID of trace
-            
+
         Returns:
             Optional[Dict]: Trace data
         """
@@ -81,11 +81,11 @@ class ObservabilityExecutionAdapter:
 
     def get_metrics(self, metric_name: str, time_range: Optional[Tuple[float, float]]=None) -> List[float]:
         """Get metrics data.
-        
+
         Args:
             metric_name: Name of metric
             time_range: Optional time range filter
-            
+
         Returns:
             List[float]: Metric values
         """
@@ -96,10 +96,10 @@ class ObservabilityExecutionAdapter:
 
     def clear_traces(self, older_than: Optional[float]=None) -> int:
         """Clear old traces.
-        
+
         Args:
             older_than: Clear traces older than this time (seconds)
-            
+
         Returns:
             int: Number of traces cleared
         """
@@ -200,14 +200,14 @@ def create_observability_execution_adapter(default_timeout: float=10.0, enable_t
 
 def execute_observability_execution(request_id: str, operation_type: str, target: str, parameters: Dict[str, Any], execution_level: str='basic') -> Dict[str, Any]:
     """Execute observability operation.
-    
+
     Args:
         request_id: Unique request identifier
         operation_type: Type of observability operation
         target: Target component or system
         parameters: Operation parameters
         execution_level: Level of execution detail
-        
+
     Returns:
         Dict: Observability result
     """
@@ -215,4 +215,3 @@ def execute_observability_execution(request_id: str, operation_type: str, target
     request = ObservabilityRequest(request_id=request_id, operation_type=ObservabilityType(operation_type), target=target, parameters=parameters, execution_level=ExecutionLevel(execution_level))
     result = adapter.execute(request)
     return {'request_id': result.request_id, 'operation_type': result.operation_type.value, 'success': result.success, 'data': result.data, 'metrics': result.metrics, 'traces': result.traces, 'error': result.error, 'execution_time': result.execution_time, 'metadata': result.metadata}
-

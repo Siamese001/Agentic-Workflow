@@ -2,7 +2,6 @@
 # from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import clear_events, get_all_events  # INVALID: Cannot import from path with hyphens
 
-
 def test_sandbox_observability_events_include_vm_id(self) -> None:
     clear_events()
 
@@ -15,9 +14,3 @@ def test_sandbox_observability_events_include_vm_id(self) -> None:
     vm_ids = {e.attributes.get("vm_id") for e in events if isinstance(getattr(e, "attributes", None), dict)}
     # Some events may not carry vm_id; ensure at least one does.
     assert vm.id in vm_ids
-
-
-
-
-
-

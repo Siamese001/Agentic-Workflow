@@ -1,11 +1,9 @@
 # from archives.legacy_root_folders.eval.simulation.metrics import compute_collaboration_score, compute_conflict_index  # DEPRECATED: Archive import removed to protect archives from validation edits
 
-
 class _DummyOutcome:
     def __init__(self, score: float, conflicts: int) -> None:
         self.outcome = {"golden_eval_score": score, "correction_iterations": conflicts}
         self.agent_conflict_count = conflicts
-
 
 def test_compute_collaboration_score_and_conflict_index() -> None:
     outputs = [
@@ -18,9 +16,3 @@ def test_compute_collaboration_score_and_conflict_index() -> None:
 
     assert isinstance(collab, float)
     assert isinstance(conflict, float)
-
-
-
-
-
-

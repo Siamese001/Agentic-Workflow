@@ -2,7 +2,6 @@
 # from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import clear_events, get_all_events  # INVALID: Cannot import from path with hyphens
 
-
 def test_microvm_create_exec_teardown_emits_events(self) -> None:
     """Test that microVM lifecycle operations emit appropriate events."""
     clear_events()
@@ -21,9 +20,3 @@ def test_microvm_create_exec_teardown_emits_events(self) -> None:
     assert "sandbox_start" in names
     assert "sandbox_stop" in names
     assert "sandbox_tool_complete" in names
-
-
-
-
-
-

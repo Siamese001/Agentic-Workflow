@@ -12,10 +12,6 @@ from shared.result_types import RetryResult
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 class HandleServiceErrors:
     """Retry executor for outreach domain."""
 
@@ -44,7 +40,6 @@ class HandleServiceErrors:
         if result.success:
             return result.result
         return fallback(*args, **kwargs)
-
 
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""

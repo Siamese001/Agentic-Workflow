@@ -9,4 +9,3 @@ class CheckDataPolicyPlanType(Enum):
     DEFAULT = 'default'
     CORE = 'core'
     SYSTEM = 'system'
-

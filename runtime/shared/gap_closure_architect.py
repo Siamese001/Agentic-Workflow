@@ -3,7 +3,7 @@
 This agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,
 enforcing Industry-First ranking and 24-30 word descriptions.
 
-Sub-Atomic Agent Name: Gap_Closure_Architect
+Sub-Atomic Agent Name: GapClosureArchitect
 Legacy K-Node: K.9 (K.8 in some versions)
 """
 
@@ -12,9 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Set
 from runtime.shared.agent_base import Agent, ReasoningConfig
 
-
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class CompetencyItem:
@@ -24,7 +22,6 @@ class CompetencyItem:
     word_count: int
     gap_keywords_covered: List[str]
     industry_first_ranking: int
-
 
 @dataclass
 class CompetenciesOutput:
@@ -38,24 +35,23 @@ class CompetenciesOutput:
     industry_first_compliant: bool
     metadata: Dict[str, Any]
 
-
-class Gap_Closure_Architect(Agent):
+class GapClosureArchitect(Agent):
     """Gap Closure Architect agent for leadership competencies.
-    
+
     This agent generates competencies with strict constraints:
     - Count: Exactly 6 competencies (ZERO TOLERANCE)
     - Word count: 24-30 words per description (ZERO TOLERANCE)
     - Gap coverage: ≥85% of JD keywords NOT in K.4/K.5/K.6/K.7 (CRITICAL)
     - Industry-First ranking: Competencies ranked by industry relevance
     - Variance: Max std dev ≤3 words across descriptions
-    
+
     Validation Gates:
     - VG_K8_COMPETENCY_WORD_COUNT_COMPLIANCE (24-30 words each)
     - VG_K8_GAP_COVERAGE_CHECK (≥85%)
     - VG_K8_REDUNDANCY_CHECK (dedup vs K.5)
     - VG_K8_PLAUSIBILITY_CHECK (≥2 authentic)
     """
-    
+
     def __init__(
         self,
         config: ReasoningConfig,
@@ -65,7 +61,7 @@ class Gap_Closure_Architect(Agent):
         gap_coverage_minimum: float = 0.85,
     ):
         """Initialize Gap Closure Architect.
-        
+
         Args:
             config: Reasoning configuration
             competency_count: Number of competencies (default 6)
@@ -78,21 +74,21 @@ class Gap_Closure_Architect(Agent):
             k_node_id="K.9",
             element="Leadership Competencies (Gap-Filling)"
         )
-        
+
         self.competency_count = competency_count
         self.word_count_min = word_count_min
         self.word_count_max = word_count_max
         self.gap_coverage_minimum = gap_coverage_minimum
-        
+
         logger.info(
-            f"Gap_Closure_Architect initialized: "
+            f"GapClosureArchitect initialized: "
             f"count={competency_count}, words={word_count_min}-{word_count_max}, "
             f"gap_coverage≥{gap_coverage_minimum:.0%}"
         )
-    
+
     async def execute(self, context: Dict[str, Any]) -> CompetenciesOutput:
         """Execute competency generation with gap filling.
-        
+
         Args:
             context: Execution context with:
                 - JD_Keyword_Gap: List[str] - Keywords NOT in K.4/K.5/K.6/K.7
@@ -103,22 +99,22 @@ class Gap_Closure_Architect(Agent):
                 - K6_K7_Bullets: List[str] - For deduplication
                 - target_industry: str - For Industry-First ranking
                 - regeneration_feedback: Optional[str]
-                
+
         Returns:
             CompetenciesOutput with 6 competencies and gap coverage
         """
-        logger.info("Executing Gap_Closure_Architect (≥85% Gap Coverage)")
-        
+        logger.info("Executing GapClosureArchitect (≥85% Gap Coverage)")
+
         # Extract context
         jd_keyword_gap = context.get("JD_Keyword_Gap", [])
         authentic_phrasing = context.get("Authentic_Phrasing", [])
         base_competency_pool = context.get("Base_Competency_Pool", [])
         target_industry = context.get("target_industry", "Technology")
         regeneration_feedback = context.get("regeneration_feedback")
-        
+
         if not jd_keyword_gap:
             logger.warning("No JD_Keyword_Gap provided - cannot calculate gap coverage")
-        
+
         # Build prompt
         if regeneration_feedback:
             prompt = self._build_regeneration_prompt(context, regeneration_feedback)
@@ -126,13 +122,13 @@ class Gap_Closure_Architect(Agent):
             prompt = self._build_initial_prompt(
                 jd_keyword_gap, authentic_phrasing, base_competency_pool, target_industry
             )
-        
+
         # Generate competencies
         response = await self._call_llm(prompt)
-        
+
         # Parse competencies
         competencies = self._parse_competencies(response)
-        
+
         # Ensure exactly 6 competencies
         if len(competencies) != self.competency_count:
             logger.warning(
@@ -148,15 +144,15 @@ class Gap_Closure_Architect(Agent):
                     industry_first_ranking=len(competencies) + 1,
                 ))
             competencies = competencies[:self.competency_count]
-        
+
         # Calculate gap coverage
         covered_keywords = self._calculate_gap_coverage(competencies, jd_keyword_gap)
         gap_coverage = len(covered_keywords) / len(jd_keyword_gap) if jd_keyword_gap else 0.0
         missing_keywords = list(set(jd_keyword_gap) - covered_keywords)
-        
+
         # Check Industry-First compliance
         industry_first_compliant = self._check_industry_first_ranking(competencies, target_industry)
-        
+
         # Build output
         output = CompetenciesOutput(
             competencies=competencies,
@@ -173,19 +169,19 @@ class Gap_Closure_Architect(Agent):
                 "word_count_range": f"{self.word_count_min}-{self.word_count_max}",
             },
         )
-        
+
         logger.info(
-            f"Gap_Closure_Architect complete: {len(competencies)} competencies, "
+            f"GapClosureArchitect complete: {len(competencies)} competencies, "
             f"gap_coverage={gap_coverage:.1%}, Industry-First={industry_first_compliant}"
         )
-        
+
         if gap_coverage < self.gap_coverage_minimum:
             logger.error(
                 f"GAP COVERAGE VIOLATION: {gap_coverage:.1%} < {self.gap_coverage_minimum:.1%}"
             )
-        
+
         return output
-    
+
     def _build_initial_prompt(
         self,
         jd_keyword_gap: List[str],
@@ -194,13 +190,13 @@ class Gap_Closure_Architect(Agent):
         target_industry: str,
     ) -> str:
         """Build initial generation prompt with gap coverage enforcement.
-        
+
         Args:
             jd_keyword_gap: Keywords to cover
             authentic_phrasing: Authentic phrasing patterns
             base_competency_pool: Base competencies
             target_industry: Target industry
-            
+
         Returns:
             Formatted prompt
         """
@@ -238,25 +234,25 @@ FORMAT:
 
 Generate the {self.competency_count} competencies now (≥{self.gap_coverage_minimum:.0%} gap coverage):
 """
-        
+
         return prompt
-    
+
     def _build_regeneration_prompt(
         self,
         context: Dict[str, Any],
         feedback: str,
     ) -> str:
         """Build regeneration prompt with validation feedback.
-        
+
         Args:
             context: Original context
             feedback: Validation feedback
-            
+
         Returns:
             Regeneration prompt
         """
         previous_competencies = context.get("previous_competencies", [])
-        
+
         prompt = f"""REGENERATION REQUIRED
 
 {feedback}
@@ -277,29 +273,29 @@ Ensure ALL competencies meet {self.word_count_min}-{self.word_count_max} word co
 
 Generate the corrected competencies:
 """
-        
+
         return prompt
-    
+
     def _parse_competencies(self, response: str) -> List[CompetencyItem]:
         """Parse competencies from LLM response.
-        
+
         Args:
             response: LLM response
-            
+
         Returns:
             List of CompetencyItem objects
         """
         import re
-        
+
         competencies = []
-        
+
         # Split by numbered items
         items = re.split(r'\n\d+\.\s+', response)
-        
+
         for i, item in enumerate(items):
             if not item.strip():
                 continue
-            
+
             # Split title and description by colon
             parts = item.split(':', 1)
             if len(parts) == 2:
@@ -308,12 +304,12 @@ Generate the corrected competencies:
             else:
                 title = f"Competency {i+1}"
                 description = item.strip()
-            
+
             word_count = len(description.split())
-            
+
             # Extract gap keywords from title
             gap_keywords = self._extract_gap_keywords(title)
-            
+
             competencies.append(CompetencyItem(
                 title=title,
                 description=description,
@@ -321,15 +317,15 @@ Generate the corrected competencies:
                 gap_keywords_covered=gap_keywords,
                 industry_first_ranking=i + 1,
             ))
-        
+
         return competencies
-    
+
     def _extract_gap_keywords(self, text: str) -> List[str]:
         """Extract gap keywords from text.
-        
+
         Args:
             text: Text to extract from
-            
+
         Returns:
             List of found keywords
         """
@@ -339,53 +335,53 @@ Generate the corrected competencies:
             "machine learning", "AI", "cloud", "scalability",
             "distributed systems", "microservices", "kubernetes",
         ]
-        
+
         text_lower = text.lower()
         for keyword in common_keywords:
             if keyword.lower() in text_lower:
                 keywords.append(keyword)
-        
+
         return keywords
-    
+
     def _calculate_gap_coverage(
         self,
         competencies: List[CompetencyItem],
         jd_keyword_gap: List[str],
     ) -> Set[str]:
         """Calculate gap coverage.
-        
+
         Args:
             competencies: Generated competencies
             jd_keyword_gap: Keywords to cover
-            
+
         Returns:
             Set of covered keywords
         """
         covered = set()
-        
+
         # Combine all competency text
         all_text = " ".join(
             f"{c.title} {c.description}" for c in competencies
         ).lower()
-        
+
         # Check which gap keywords are covered
         for keyword in jd_keyword_gap:
             if keyword.lower() in all_text:
                 covered.add(keyword)
-        
+
         return covered
-    
+
     def _check_industry_first_ranking(
         self,
         competencies: List[CompetencyItem],
         target_industry: str,
     ) -> bool:
         """Check if competencies follow Industry-First ranking.
-        
+
         Args:
             competencies: Generated competencies
             target_industry: Target industry
-            
+
         Returns:
             True if Industry-First compliant
         """
@@ -393,5 +389,5 @@ Generate the corrected competencies:
         if competencies:
             first_comp_text = f"{competencies[0].title} {competencies[0].description}".lower()
             return target_industry.lower() in first_comp_text
-        
+
         return False

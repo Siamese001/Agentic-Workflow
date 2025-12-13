@@ -24,19 +24,19 @@ class OrchestrateDataPlanningOrchestratorImpl:
     def process(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """Process input following L5 architecture principles."""
         self.logger.info(f"Processing {input_data}")
-        
+
         self._validate_input(input_data)
-        
+
         if not self.validate_safety(input_data):
             raise SecurityError("Input failed L5 safety validation")
-        
+
         result = {
             "success": True,
             "data": {"processed": True, "input": input_data},
             "safety_validated": True,
             "timestamp": self._get_timestamp()
         }
-        
+
         self.logger.info(f"Successfully processed: {result['success']}")
         return result
 
@@ -49,11 +49,11 @@ class OrchestrateDataPlanningOrchestratorImpl:
                 if pattern in data_str:
                     self.logger.error(f"Dangerous pattern detected: {pattern}")
                     return False
-            
+
             if len(str(data)) > 1000000:
                 self.logger.error("Data exceeds size limit")
                 return False
-            
+
             self.logger.info("Data passed L5 safety validation")
             return True
         except (ValueError, TypeError, RuntimeError, KeyError) as e:

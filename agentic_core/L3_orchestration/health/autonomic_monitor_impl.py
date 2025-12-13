@@ -5,7 +5,7 @@ from .autonomic_monitor_types import *
 
 class AutonomicMonitor:
     """Autonomic immune system for agent health monitoring.
-    
+
     Features:
     - Runtime metrics monitoring
     - Degradation detection
@@ -16,7 +16,7 @@ class AutonomicMonitor:
 
     def __init__(self, success_rate_threshold: float=0.8, error_rate_threshold: float=0.2, response_time_threshold_ms: float=5000.0, enable_logging: bool=True):
         """Initialize autonomic monitor.
-        
+
         Args:
             success_rate_threshold: Minimum acceptable success rate
             error_rate_threshold: Maximum acceptable error rate
@@ -35,7 +35,7 @@ class AutonomicMonitor:
 
     def record_metrics(self, metrics: HealthMetrics) -> None:
         """Record health metrics for an agent.
-        
+
         Args:
             metrics: Health metrics
         """
@@ -51,10 +51,10 @@ class AutonomicMonitor:
 
     def check_health(self, agent_id: str) -> HealthStatus:
         """Check health status of an agent.
-        
+
         Args:
             agent_id: Agent identifier
-            
+
         Returns:
             HealthStatus
         """
@@ -73,11 +73,11 @@ class AutonomicMonitor:
 
     def get_metrics(self, agent_id: str, limit: int=10) -> List[HealthMetrics]:
         """Get recent metrics for an agent.
-        
+
         Args:
             agent_id: Agent identifier
             limit: Number of recent metrics to return
-            
+
         Returns:
             List of HealthMetrics
         """
@@ -86,11 +86,11 @@ class AutonomicMonitor:
 
     def get_alerts(self, agent_id: Optional[str]=None, severity: Optional[AlertSeverity]=None) -> List[HealthAlert]:
         """Get health alerts.
-        
+
         Args:
             agent_id: Optional agent ID filter
             severity: Optional severity filter
-            
+
         Returns:
             List of HealthAlert
         """
@@ -103,7 +103,7 @@ class AutonomicMonitor:
 
     def register_alert_callback(self, callback: Callable[[HealthAlert], None]) -> None:
         """Register callback for health alerts.
-        
+
         Args:
             callback: Callback function
         """
@@ -111,7 +111,7 @@ class AutonomicMonitor:
 
     def _trigger_alert(self, metrics: HealthMetrics, status: HealthStatus) -> None:
         """Trigger health alert.
-        
+
         Args:
             metrics: Current metrics
             status: Health status
@@ -139,11 +139,11 @@ class AutonomicMonitor:
 
     def _generate_recommendations(self, metrics: HealthMetrics, status: HealthStatus) -> List[str]:
         """Generate improvement recommendations.
-        
+
         Args:
             metrics: Current metrics
             status: Health status
-            
+
         Returns:
             List of recommendations
         """
@@ -162,13 +162,12 @@ class AutonomicMonitor:
 
 def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_threshold: float=0.2) -> AutonomicMonitor:
     """Factory function to create autonomic monitor.
-    
+
     Args:
         success_rate_threshold: Success rate threshold
         error_rate_threshold: Error rate threshold
-        
+
     Returns:
         AutonomicMonitor instance
     """
     return AutonomicMonitor(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)
-

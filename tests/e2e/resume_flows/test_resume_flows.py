@@ -84,7 +84,6 @@ class TestResumeGeneration:
         assert sections[0] == ResumeSection.SUMMARY
         assert sections[1] == ResumeSection.EXPERIENCE
 
-
 class TestResumeOptimization:
     """E2E tests for resume optimization flows."""
 
@@ -129,7 +128,6 @@ class TestResumeOptimization:
         resume_words = 800
         is_appropriate_length = resume_words <= max_words
         assert is_appropriate_length is True
-
 
 class TestJobMatching:
     """E2E tests for job matching flows."""
@@ -177,7 +175,6 @@ class TestJobMatching:
         ]
         ranked = sorted(jobs, key=lambda j: j["score"], reverse=True)
         assert ranked[0]["title"] == "Job B"
-
 
 class TestResumeExport:
     """E2E tests for resume export flows."""

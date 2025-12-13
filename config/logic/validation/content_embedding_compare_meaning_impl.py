@@ -6,7 +6,7 @@ from .content_embedding_compare_meaning_types import *
 class ContentEmbeddingCompareMeaning:
     """
     Main executor class for content embedding compare meaning operations.
-    
+
     Provides a robust, type-safe interface for processing data with
     comprehensive error handling and performance monitoring.
     """
@@ -37,11 +37,11 @@ class ContentEmbeddingCompareMeaning:
     def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]=None) -> ProcessingResult:
         """
         Main processing method with comprehensive error handling.
-        
+
         Args:
             payload: Input data to process
             context: Optional execution context
-            
+
         Returns:
             ProcessingResult with outcome and metadata
         """
@@ -72,4 +72,3 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         return True
     except Exception:
         return False
-

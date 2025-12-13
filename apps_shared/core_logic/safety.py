@@ -7,14 +7,12 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class Result:
     """Operation result."""
     success: bool
     data: object = None
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class Safety:
     """executor for shared operations."""
@@ -33,7 +31,6 @@ class Safety:
     def _execute(self, data: object, context: Optional[Dict]) -> object:
         """Execute processing."""
         return data
-
 
 def process(data: object, config: Optional[Dict] = None) -> Result:
     """Process data."""

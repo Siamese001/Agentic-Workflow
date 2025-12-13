@@ -5,13 +5,13 @@ from typing import Any, Dict, List, Optional
 def safety_gate(result: Any) -> bool:
     """
     Check if a safety result allows the operation to proceed.
-    
+
     This is a simple adapter that checks if there are any blocking findings
     in the safety result. Used by tests and runtime to make go/no-go decisions.
-    
+
     Args:
         result: A SafetyResult-like object with a 'findings' attribute
-        
+
     Returns:
         bool: True if the operation is safe to proceed, False if blocked
     """
@@ -66,20 +66,20 @@ def _map_verdict_to_decision(verdict: Any) -> str:
 def arbitrate_safety(safety_result: Any, council_vote: Any, policy: Any, ctx: Any=None) -> Dict[str, object]:
     """
     Arbitrate between safety findings and council votes to produce a decision.
-    
+
     This adapter maps safety findings to archived decision format expected by tests.
-    
+
     Decision mapping:
     - high/critical severity -> "block"
     - medium severity -> "replan"
     - low/no findings -> "allow"
-    
+
     Args:
         safety_result: SafetyResult with findings
         council_vote: CouncilVote (currently unused in decision logic)
         policy: SafetyPolicy (currently unused in decision logic)
         ctx: Optional execution context
-        
+
     Returns:
         dict: {"decision": str, "reason": str, "findings": list}
     """
@@ -111,16 +111,16 @@ def arbitrate_safety(safety_result: Any, council_vote: Any, policy: Any, ctx: An
 def run_l5(safety_result: Any, council_vote: Any, policy: Any, ctx: Any=None) -> Any:
     """
     Run L5 policy evaluation and return a verdict event.
-    
+
     This is a thin adapter that converts safety results into a policy decision
     event with verdict and reason fields.
-    
+
     Args:
         safety_result: SafetyResult with findings
         council_vote: CouncilVote (for future use)
         policy: SafetyPolicy to apply
         ctx: Optional execution context
-        
+
     Returns:
         An event object with 'verdict' and 'reason' attributes
     """
@@ -146,4 +146,3 @@ def run_l5(safety_result: Any, council_vote: Any, policy: Any, ctx: Any=None) ->
                     verdict = Verdict.REVIEW
                     reason = f"Review required: {getattr(finding, 'message', 'potential issue')}"
     return L5Event(verdict=verdict, reason=reason)
-

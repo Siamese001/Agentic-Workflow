@@ -13,7 +13,6 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class ManagedResource:
     """A managed resource."""
@@ -23,7 +22,6 @@ class ManagedResource:
     data: object = None
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
-
 @dataclass
 class ManagementResult:
     """Result of management operation."""
@@ -31,7 +29,6 @@ class ManagementResult:
     operation: str
     resource: Optional[ManagedResource] = None
     message: Optional[str] = None
-
 
 class ManageScriptsParameters:
     """coordinator for utilities domain."""
@@ -67,7 +64,6 @@ class ManageScriptsParameters:
     def get(self, resource_id: str) -> Optional[ManagedResource]:
         """Get resource."""
         return self.resources.get(resource_id)
-
 
 def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> ManagementResult:
     """Convenience function for management."""

@@ -94,7 +94,7 @@ def execute_dedup(dry_run: bool = True) -> Dict:
                     # Replace original with pointer
                     pointer_path = nc_path.with_suffix('.py.dedup_pointer.json')
                     pointer_path.write_text(pointer_content)
-                    
+
                     nc_path.unlink()
 
                     results['pointers_created'] += 1
@@ -117,7 +117,7 @@ def execute_dedup(dry_run: bool = True) -> Dict:
         pass  #f"  - Process {len(report['clusters'])} clusters")
         pass  #f"  - Archive {results['files_archived']} files")
         pass  #f"  - Create {results['pointers_created']} pointers")
-    
+
     return results
 
 if __name__ == "__main__":
@@ -132,4 +132,3 @@ if __name__ == "__main__":
     results_path.parent.mkdir(parents=True, exist_ok=True)
     with open(results_path, "w") as f:
         json.dump(results, f, indent=2)
-

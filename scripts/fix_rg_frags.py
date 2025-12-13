@@ -20,6 +20,10 @@ for file_path in micro_fragments:
         content = full_path.read_text(encoding='utf-8')
         if len(content) < 200:
             stem = full_path.stem
+import logging
+
+logger = logging.getLogger(__name__)
+
             new_content = f'''"""Backward compatibility shim for {stem}.
 
 This module maintains backward compatibility by re-exporting all components
@@ -42,6 +46,6 @@ from .{stem}_impl import *
 __all__ = ['*']  # Re-export all imported names
 '''
             full_path.write_text(new_content, encoding='utf-8')
-            print(f"Fixed micro-fragment: {file_path}")
+            logger.info(f"Fixed micro-fragment: {file_path}")
 
-print("\nDone! Now fixing remaining cognitive density violations...")
+logger.info("\nDone! Now fixing remaining cognitive density violations...")
