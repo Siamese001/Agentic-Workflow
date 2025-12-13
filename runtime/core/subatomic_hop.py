@@ -16,6 +16,16 @@ from pathlib import Path
 import shutil
 import asyncio
 from pydantic import BaseModel, Field, validator
+from datetime import datetime
+
+from .reflection_engine import (
+    ReflectionEngine,
+    ReflectionConfig,
+    CritiqueResult,
+    MutationRequest,
+    get_reflection_engine,
+    STANDARD_CRITERIA
+)
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +97,13 @@ class QualityGateFailure(Exception):
     pass
 
 
+class MutationRequired(Exception):
+    """Raised when a DAG mutation is required."""
+    def __init__(self, mutation_request: MutationRequest):
+        self.mutation_request = mutation_request
+        super().__init__(f"Mutation required: {mutation_request.reason}")
+
+
 @dataclass
 class SubatomicHopConfig:
     """Configuration for a Subatomic Hop."""
@@ -96,6 +113,8 @@ class SubatomicHopConfig:
     enable_checkpoints: bool = True
     enable_observability: bool = True
     max_execution_time: float = 300.0  # 5 minutes default
+    reflection_config: Optional[ReflectionConfig] = None
+    critique_criteria: List[str] = field(default_factory=lambda: STANDARD_CRITERIA)
 
 
 class SubatomicHop:
@@ -118,6 +137,11 @@ class SubatomicHop:
         self.config = config or SubatomicHopConfig()
         self.context = initial_context or {}
         
+        # Initialize reflection engine
+        self.reflection_engine = get_reflection_engine(
+            **self.config.reflection_config.dict() if self.config.reflection_config else {}
+        )
+        
         # State management
         self.current_stage: Optional[MicroStage] = None
         self.state: HopState = HopState.PENDING
@@ -130,6 +154,19 @@ class SubatomicHop:
         self.stage_retry_counts: Dict[MicroStage, int] = {
             stage: 0 for stage in MicroStage
         }
+        
+        # Critique loop tracking
+        self.critique_loop_count = 0
+        
+        # DAG mutation support
+        self.dag_manager: Optional[DAGManager] = None
+        
+        # Negotiation support
+        self.node_negotiator: Optional[Any] = None
+        self.negotiation_enabled: bool = True
+        
+        # Prompt injection support
+        self.enable_prompt_injection: bool = True
         
         # Ensure checkpoint directory exists
         self.config.checkpoint_dir.mkdir(parents=True, exist_ok=True)
@@ -201,6 +238,10 @@ class SubatomicHop:
         
         while retry_count <= max_retries:
             try:
+                # Apply instructional injections for this stage
+                if self.enable_prompt_injection:
+                    kwargs = await self._apply_stage_injections(stage, kwargs)
+                
                 # Execute stage logic
                 if stage == MicroStage.PRE_CHECK:
                     result = await self._pre_check(**kwargs)
@@ -215,15 +256,16 @@ class SubatomicHop:
                 else:
                     raise ValueError(f"Unknown stage: {stage}")
                 
-                # Save checkpoint
+                # Create checkpoint
                 checkpoint = MicroCheckpoint(
-                    hop_id=self.config.hop_id,
                     stage=stage,
                     partial_result=result,
-                    context=self.context.copy(),
-                    retry_count=retry_count
+                    metadata=self.context.copy(),
+                    timestamp=time.time()
                 )
+                
                 await self._save_checkpoint(checkpoint)
+                self.checkpoints[stage] = checkpoint
                 
                 # Stage completed successfully
                 break
@@ -232,21 +274,9 @@ class SubatomicHop:
                 retry_count += 1
                 self.stage_retry_counts[stage] = retry_count
                 
-                if retry_count > max_retries or stage not in self.config.retry_policy.retryable_stages:
-                    # Save error checkpoint
-                    error_checkpoint = MicroCheckpoint(
-                        hop_id=self.config.hop_id,
-                        stage=stage,
-                        error=str(e),
-                        context=self.context.copy(),
-                        retry_count=retry_count - 1
-                    )
-                    await self._save_checkpoint(error_checkpoint)
-                    
-                    if isinstance(e, (InputValidationError, QualityGateFailure)):
-                        raise
-                    else:
-                        raise StageExecutionError(f"Stage {stage} failed after {max_retries} retries: {e}")
+                if retry_count > max_retries:
+                    logger.error(f"Stage {stage} failed after {max_retries} retries: {e}")
+                    raise StageExecutionError(f"Stage {stage} failed: {e}") from e
                 
                 # Apply retry delay
                 delay = self.config.retry_policy.retry_delay
@@ -273,21 +303,158 @@ class SubatomicHop:
         return {"valid": True, "inputs": list(kwargs.keys())}
     
     async def _think(self, **kwargs) -> Dict[str, Any]:
-        """Plan the execution (Chain of Thought)."""
+        """Plan the execution (Chain of Thought) with prompt injections."""
         logger.debug(f"Think stage for hop {self.config.hop_id}")
         
-        # For now, just prepare the execution plan
-        # In a full implementation, this would use an LLM for planning
+        # Create base plan
         plan = {
             "action": "execute_hop_function",
             "parameters": kwargs,
             "expected_output_type": "dict"
         }
         
+        # Check if we have critique feedback to incorporate
+        if "critique_feedback" in self.context:
+            plan["feedback"] = self.context["critique_feedback"]
+            plan["retry_attempt"] = self.critique_loop_count
+            logger.info(f"Incorporating critique feedback: {self.context['critique_feedback']}")
+        
+        # Apply prompt injections if enabled
+        if self.enable_prompt_injection:
+            try:
+                # Lazy import to avoid circular dependency
+                from .prompt_injection_loader import enhance_prompt
+                
+                # Determine hop type from function name or context
+                hop_type = self.context.get("hop_type", self.hop_function.__name__)
+                
+                # Create injection context
+                injection_context = {
+                    **kwargs,
+                    **self.context,
+                    "hop_id": self.config.hop_id,
+                    "stage": "THINK"
+                }
+                
+                # Extract content if available
+                content = None
+                if "input" in kwargs:
+                    content = str(kwargs["input"])
+                elif "data" in kwargs:
+                    content = str(kwargs["data"])
+                
+                # Enhance plan with injections
+                plan_str = json.dumps(plan, indent=2)
+                enhanced_plan_str = enhance_prompt(
+                    base_prompt=plan_str,
+                    hop_type=hop_type,
+                    stage="THINK",
+                    context=injection_context,
+                    content=content
+                )
+                
+                # Parse back to dict (keeping original structure)
+                try:
+                    # Extract just the plan part (before injection metadata)
+                    enhanced_plan_str = enhanced_plan_str.split("\n\n[INJECTIONS_APPLIED:")[0]
+                    plan = json.loads(enhanced_plan_str)
+                    
+                    # Store injection info for logging
+                    plan["prompt_injections_applied"] = True
+                    
+                except json.JSONDecodeError:
+                    # Fallback to original plan if parsing fails
+                    logger.warning("Failed to parse enhanced plan, using original")
+                
+                logger.debug(f"Applied prompt injections for hop type: {hop_type}")
+                
+            except Exception as e:
+                logger.error(f"Failed to apply prompt injections: {e}")
+        
         # Store plan in context for ACT stage
         self.context["execution_plan"] = plan
         
         return plan
+    
+    async def _apply_stage_injections(self, stage: MicroStage, kwargs: Dict[str, Any]) -> Dict[str, Any]:
+        """Apply instructional injections appropriate for the stage.
+        
+        Args:
+            stage: Current micro-stage
+            kwargs: Current arguments
+            
+        Returns:
+            Enhanced arguments with injections applied
+        """
+        try:
+            # Lazy import to avoid circular dependency
+            from .prompt_injection_loader import get_injection_loader
+            
+            # Get injection loader
+            loader = get_injection_loader()
+            
+            # Determine hop type from function name or context
+            hop_type = self.context.get("hop_type", self.hop_function.__name__)
+            
+            # Create injection context
+            injection_context = {
+                **kwargs,
+                **self.context,
+                "hop_id": self.config.hop_id,
+                "stage": stage.value
+            }
+            
+            # Extract content if available
+            content = None
+            if "input" in kwargs:
+                content = str(kwargs["input"])
+            elif "data" in kwargs:
+                content = str(kwargs["data"])
+            elif "raw_output" in self.context:
+                content = str(self.context["raw_output"])
+            
+            # Find matching injections for this stage
+            matches = loader.find_matching_injections(
+                hop_type=hop_type,
+                stage=stage.value,
+                context=injection_context,
+                content=content
+            )
+            
+            if matches:
+                # Create a prompt from current kwargs
+                base_prompt = json.dumps(kwargs, indent=2)
+                
+                # Apply injections
+                enhanced_prompt = loader.apply_injections(base_prompt, matches)
+                
+                # Parse back (for stages that use structured prompts)
+                try:
+                    # Extract just the prompt part (before injection metadata)
+                    enhanced_prompt = enhanced_prompt.split("\n\n[INJECTIONS_APPLIED:")[0]
+                    enhanced_kwargs = json.loads(enhanced_prompt)
+                    
+                    # Store injection info
+                    enhanced_kwargs["instructional_injections"] = [m.injection.id for m in matches]
+                    
+                    logger.debug(f"Applied {len(matches)} instructional injections for stage {stage.value}")
+                    
+                    return enhanced_kwargs
+                    
+                except json.JSONDecodeError:
+                    # If parsing fails, add injections as context
+                    kwargs["instructional_injections"] = {
+                        "applied": True,
+                        "count": len(matches),
+                        "types": [m.injection.type for m in matches]
+                    }
+                    logger.warning("Failed to parse enhanced kwargs, keeping original with injection metadata")
+            
+            return kwargs
+            
+        except Exception as e:
+            logger.error(f"Failed to apply stage injections: {e}")
+            return kwargs
     
     async def _act(self, **kwargs) -> Dict[str, Any]:
         """Execute the actual hop function."""
@@ -305,7 +472,7 @@ class SubatomicHop:
         return {"output": result}
     
     async def _critique(self, **kwargs) -> Dict[str, Any]:
-        """Review and validate the output."""
+        """Review and validate the output using Reflection Engine."""
         logger.debug(f"Critique stage for hop {self.config.hop_id}")
         
         raw_output = self.context.get("raw_output")
@@ -314,17 +481,58 @@ class SubatomicHop:
         if raw_output is None:
             raise QualityGateFailure("No output produced")
         
-        # Validate output type
-        if not isinstance(raw_output, (dict, list, str)):
-            raise QualityGateFailure(f"Invalid output type: {type(raw_output)}")
+        # Use Reflection Engine for validation
+        critique_result = await self.reflection_engine.evaluate(
+            content=raw_output,
+            criteria=self.config.critique_criteria,
+            context={
+                "hop_id": self.config.hop_id,
+                "stage": "CRITIQUE",
+                "retry_count": self.critique_loop_count
+            }
+        )
+        
+        # Check if validation passed
+        if not critique_result.is_valid:
+            self.critique_loop_count += 1
+            
+            # Check if a mutation is requested
+            if critique_result.mutation_request:
+                logger.info(f"Mutation requested: {critique_result.mutation_request.reason}")
+                
+                # Pause current hop
+                self.state = HopState.PAUSED
+                
+                # Raise MutationRequired to trigger DAG mutation
+                raise MutationRequired(critique_result.mutation_request)
+            
+            # Check if we've exceeded max critique loops
+            if self.critique_loop_count > self.reflection_engine.config.max_critique_loops:
+                raise QualityGateFailure(
+                    f"Failed quality validation after {self.critique_loop_count} attempts. "
+                    f"Last error: {critique_result.critique_reasoning}"
+                )
+            
+            # Inject suggested fix into context for retry
+            if critique_result.suggested_fix:
+                self.context["critique_feedback"] = critique_result.suggested_fix
+                logger.warning(f"Critique failed, retrying with feedback: {critique_result.suggested_fix}")
+            
+            # Raise to trigger retry
+            raise QualityGateFailure(
+                f"Quality validation failed: {critique_result.critique_reasoning}"
+            )
         
         # Store validated output
         self.context["validated_output"] = raw_output
+        self.context["critique_result"] = critique_result.dict()
         
         return {
             "is_valid": True,
             "output_type": type(raw_output).__name__,
-            "size": len(str(raw_output))
+            "size": len(str(raw_output)),
+            "confidence": critique_result.confidence_score,
+            "critique_loops": self.critique_loop_count
         }
     
     async def _commit(self, **kwargs) -> Dict[str, Any]:
@@ -468,6 +676,102 @@ class SubatomicHop:
                 logger.warning(f"Failed to cleanup {checkpoint_file}: {e}")
         
         logger.debug(f"Cleaned up hop {self.config.hop_id}")
+    
+    async def request_upstream_change(
+        self,
+        upstream_hop_id: str,
+        change_request: str,
+        reason: str,
+        **kwargs
+    ):
+        """Request a change from an upstream node.
+        
+        Args:
+            upstream_hop_id: ID of upstream hop
+            change_request: What to change
+            reason: Why change is needed
+            **kwargs: Additional context
+            
+        Returns:
+            NegotiationResult
+        """
+        if not self.negotiation_enabled:
+            raise RuntimeError("Negotiation not enabled for this hop")
+        
+        # Lazy import to avoid circular dependency
+        from .node_negotiator import get_node_negotiator, request_upstream_change
+        
+        if not self.node_negotiator:
+            self.node_negotiator = get_node_negotiator()
+        
+        return await request_upstream_change(
+            downstream_hop=self,
+            upstream_hop_id=upstream_hop_id,
+            change_request=change_request,
+            reason=reason,
+            **kwargs
+        )
+    
+    async def send_negotiation_message(
+        self,
+        to_hop_id: str,
+        message_type: str,
+        payload: str,
+        **kwargs
+    ) -> bool:
+        """Send a negotiation message to another hop.
+        
+        Args:
+            to_hop_id: ID of target hop
+            message_type: Type of message
+            payload: Message content
+            **kwargs: Additional context
+            
+        Returns:
+            True if sent successfully
+        """
+        if not self.negotiation_enabled:
+            return False
+        
+        # Lazy import to avoid circular dependency
+        from .node_negotiator import get_node_negotiator
+        
+        if not self.node_negotiator:
+            self.node_negotiator = get_node_negotiator()
+        
+        return await self.node_negotiator.send_feedback(
+            from_hop=self,
+            to_hop_id=to_hop_id,
+            message_type=message_type,
+            payload=payload,
+            context=kwargs
+        )
+    
+    def handle_negotiation_request(self, request: Dict[str, Any]) -> None:
+        """Handle a negotiation request from downstream.
+        
+        Args:
+            request: Negotiation request details
+        """
+        if not self.negotiation_enabled:
+            logger.warning(f"Ignoring negotiation request on {self.config.hop_id}")
+            return
+        
+        # Store request in context
+        self.context["negotiation_request"] = request
+        
+        # Log negotiation
+        if "negotiation_log" not in self.context:
+            self.context["negotiation_log"] = []
+        
+        self.context["negotiation_log"].append({
+            "timestamp": datetime.now().isoformat(),
+            "type": "RECEIVED",
+            "from": request.get("from_hop"),
+            "message": request.get("request")
+        })
+        
+        logger.info(f"Hop {self.config.hop_id} received negotiation request")
 
 
 # Factory function for creating subatomic hops
