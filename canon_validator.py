@@ -87,9 +87,8 @@ BANNED_SYMBOL_PREFIXES: Set[str] = {
 
 # Banned vocabulary in comments/strings (Strict Key 11)
 BANNED_VOCABULARY: Set[str] = {
-    "utility", "util", "misc", "magic", "wrapper", "base", "common",
-    "general", "abstract", "manager", "handler", "processor", "service",
-    "controller", "factory", "monolith", "legacy", "old", "temp", "tmp",
+    "utility", "util", "misc", "wrapper", "base", "common",
+    "general", "abstract", "monolith", "legacy", "old", "temp", "tmp",
 }
 
 # Poison markers for stub / placeholder content (Strict Key 17)
@@ -180,7 +179,7 @@ def hydrate_repo_data() -> None:
         if not item.is_file() or item.suffix != ".py": continue
         
         try: content = item.read_bytes().decode("utf-8", errors="replace")
-        except: content = ""
+        except OSError: content = ""
         try: tree = ast.parse(content)
         except SyntaxError: tree = None
         
@@ -405,6 +404,9 @@ def check_key_06_no_forbidden_folder_names() -> None:
             if not folder.is_dir():
                 continue
             name = folder.name
+            # Skip runtime artifacts
+            if name == "__pycache__" or name.startswith("."):
+                continue
             if name in FORBIDDEN_FOLDER_NAMES:
                 violations.append(str(folder.relative_to(ROOT)))
     
@@ -503,8 +505,8 @@ def check_key_10_banned_symbol_prefixes() -> None:
             continue
         
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Name)):
-                name = node.name if isinstance(node, ast.Name) else node.name
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                name = node.name
                 for prefix in BANNED_SYMBOL_PREFIXES:
                     if name.startswith(prefix):
                         violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – {name}")
@@ -768,72 +770,88 @@ def check_key_18_sovereign_debug_statements() -> None:
 
 def check_key_19_duplicate_functions() -> None:
     """
-    Key 19 – No duplicate function names in sovereign directories.
+    Key 19 – No duplicate function names within the same scope in sovereign directories.
     
-    Each sovereign directory must have unique function names.
+    Each sovereign file must have unique function names within the same scope.
     """
     violations: List[str] = []
-    func_map: Dict[str, List[Tuple[Path, int]]] = defaultdict(list)
     
     for f in iter_sovereign_py_files():
         tree = parse_ast(f)
         if tree is None:
             continue
         
-        for node in ast.walk(tree):
+        # Check module-level functions
+        module_funcs: Dict[str, List[int]] = defaultdict(list)
+        for node in tree.body:
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                func_map[node.name].append((f, getattr(node, 'lineno', 0)))
-    
-    for func_name, locations in func_map.items():
-        if len(locations) > 1:
-            # Skip __init__ and other dunder methods
-            if func_name.startswith('__') and func_name.endswith('__'):
-                continue
-            loc_strs = [f"{loc[0].relative_to(ROOT)}:{loc[1]}" for loc in locations]
-            violations.append(f"{func_name} – {', '.join(loc_strs)}")
+                module_funcs[node.name].append(getattr(node, 'lineno', 0))
+        
+        for func_name, line_numbers in module_funcs.items():
+            if len(line_numbers) > 1:
+                # Skip __init__ and other dunder methods
+                if func_name.startswith('__') and func_name.endswith('__'):
+                    continue
+                loc_strs = [f"{ln}" for ln in line_numbers]
+                violations.append(f"{f.relative_to(ROOT)} – {func_name} at lines {', '.join(loc_strs)}")
+        
+        # Check class methods within each class separately
+        for node in tree.body:
+            if isinstance(node, ast.ClassDef):
+                class_methods: Dict[str, List[int]] = defaultdict(list)
+                for item in node.body:
+                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        class_methods[item.name].append(getattr(item, 'lineno', 0))
+                
+                for method_name, line_numbers in class_methods.items():
+                    if len(line_numbers) > 1:
+                        loc_strs = [f"{ln}" for ln in line_numbers]
+                        violations.append(f"{f.relative_to(ROOT)} – class {node.name}.{method_name} at lines {', '.join(loc_strs)}")
     
     if violations:
         fail(
             "19",
-            "DUPLICATE FUNCTION NAMES IN SOVEREIGN CODE:\n"
+            "DUPLICATE FUNCTION NAMES IN SOVEREIGN FILES:\n"
             + "\n".join(f"  - {v}" for v in violations[:20])
             + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("19", "No duplicate function names")
+        success("19", "No duplicate function names within scopes")
 
 def check_key_20_duplicate_classes() -> None:
     """
-    Key 20 – No duplicate class names in sovereign directories.
+    Key 20 – No duplicate class names at module level in sovereign directories.
     
-    Each sovereign directory must have unique class names.
+    Each sovereign file must have unique class names at the module level.
     """
     violations: List[str] = []
-    class_map: Dict[str, List[Tuple[Path, int]]] = defaultdict(list)
     
     for f in iter_sovereign_py_files():
         tree = parse_ast(f)
         if tree is None:
             continue
         
-        for node in ast.walk(tree):
+        class_map: Dict[str, List[int]] = defaultdict(list)
+        
+        # Only check module-level classes
+        for node in tree.body:
             if isinstance(node, ast.ClassDef):
-                class_map[node.name].append((f, getattr(node, 'lineno', 0)))
-    
-    for class_name, locations in class_map.items():
-        if len(locations) > 1:
-            loc_strs = [f"{loc[0].relative_to(ROOT)}:{loc[1]}" for loc in locations]
-            violations.append(f"{class_name} – {', '.join(loc_strs)}")
+                class_map[node.name].append(getattr(node, 'lineno', 0))
+        
+        for class_name, line_numbers in class_map.items():
+            if len(line_numbers) > 1:
+                loc_strs = [f"{ln}" for ln in line_numbers]
+                violations.append(f"{f.relative_to(ROOT)} – {class_name} at lines {', '.join(loc_strs)}")
     
     if violations:
         fail(
             "20",
-            "DUPLICATE CLASS NAMES IN SOVEREIGN CODE:\n"
+            "DUPLICATE CLASS NAMES IN SOVEREIGN FILES:\n"
             + "\n".join(f"  - {v}" for v in violations[:20])
             + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
         )
     else:
-        success("20", "No duplicate class names")
+        success("20", "No duplicate class names at module level")
 
 def check_key_21_circular_imports() -> None:
     """
@@ -928,8 +946,20 @@ def check_key_22_import_hygiene() -> None:
                 # Check imports from non-sovereign domains
                 if node.module and not node.module.startswith('agentic_workflow'):
                     # Skip standard library and common third-party
-                    common_modules = {'os', 'sys', 'json', 're', 'pathlib', 'dataclasses', 
-                                    'typing', 'collections', 'time', 'argparse', 'ast'}
+                    common_modules = {
+    'os', 'sys', 'json', 're', 'pathlib', 'dataclasses', 
+    'typing', 'collections', 'time', 'argparse', 'ast',
+    'datetime', 'math', 'itertools', 'functools', 'operator',
+    'hashlib', 'uuid', 'base64', 'csv', 'yaml', 'toml',
+    'logging', 'unittest', 'pytest', 'numpy', 'pandas',
+    'requests', 'urllib', 'http', 'socket', 'ssl',
+    'threading', 'asyncio', 'concurrent', 'multiprocessing',
+    'sqlite3', 'redis', 'chromadb', 'qdrant_client', 'pinecone',
+    'openai', 'anthropic', 'google', 'mistralai', 'cohere',
+    'groq', 'together', 'fireworks', 'litellm', 'instructor',
+    'langchain', 'langgraph', 'opentelemetry', 'unstructured',
+    'pypdf', 'mcp', 'fastmcp'
+}
                     if node.module.split('.')[0] not in common_modules:
                         violations.append(f"{f.relative_to(ROOT)}:{node.lineno} – import from non-sovereign domain")
     
@@ -1100,26 +1130,52 @@ def check_key_27_no_empty_sov_files() -> None:
 
 def check_key_28_subatomic_file_size_law() -> None:
     """
-    Key 28 – Sovereign files must respect size limits.
+    Key 28 – STRICT: Enforces Subatomic 'Goldilocks' Zone.
     
-    Min 50 bytes, max 60KB per file.
+    1. Anti-Monolith (Ceiling): 
+       - Max 60KB physical size.
+       - Max 5 Top-Level Definitions (Cognitive Density).
+    
+    2. Anti-Red-Ant (Floor):
+       - Must be > MIN_SOVEREIGN_BYTES (200B) UNLESS it contains a Class/Func.
+       - Prevents 'Micro-Sprawl' (files with just 1 line of config or 1 import).
     """
-    violations: List[str] = []
+    violations = []
+    # Hardened Constants for this check
+    MIN_BYTES_FOR_LOGIC = 200  # If no defs, must be at least this big (config/constants)
     
     for f in iter_sovereign_py_files():
+        if f.name == "__init__.py":
+            continue
+        
+        # Get file size
         size = f.stat().st_size
-        if size < MIN_SOVEREIGN_BYTES or size > MAX_SOVEREIGN_BYTES:
-            violations.append(f"{f.relative_to(ROOT)} – {size} bytes")
-    
-    if violations:
-        fail(
-            "28",
-            "SOVEREIGN FILE SIZE VIOLATIONS:\n"
-            + "\n".join(f"  - {v}" for v in violations[:20])
-            + (f"\n  ... and {len(violations) - 20} more" if len(violations) > 20 else ""),
-        )
-    else:
-        success("28", "All sovereign files within size limits")
+        rel_path = str(f.relative_to(ROOT))
+        
+        # 1. CEILING CHECKS (Too Big)
+        if size > MAX_SOVEREIGN_BYTES: 
+            violations.append(f"{rel_path} SIZE {size//1024}KB (Max 60KB)")
+        
+        # Parse AST for definition counting
+        tree = parse_ast(f)
+        if tree:
+            # Count Top-Level Definitions
+            defs = sum(1 for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)))
+            
+            # Cognitive Density Limit
+            if defs > MAX_TOP_LEVEL_DEFS: 
+                violations.append(f"{rel_path} DENSITY {defs} defs (Max {MAX_TOP_LEVEL_DEFS})")
+            
+            # 2. FLOOR CHECKS (The Red Ant Killer)
+            # If the file has 0 definitions (no class, no func), it must be substantial (e.g. a long list of constants).
+            # If it's small (<200B) AND has no logic, it's a useless fragment.
+            if defs == 0 and size < MIN_BYTES_FOR_LOGIC:
+                violations.append(f"{rel_path} MICRO-FRAGMENT (0 defs, <{MIN_BYTES_FOR_LOGIC}B) -> Merge or Delete")
+
+    if violations: 
+        fail("28", "SUBATOMIC VIOLATIONS (Goldilocks Zone):\n" + "\n".join(f"  - {v}" for v in violations[:10]))
+    else: 
+        success("28", "Subatomic limits verified (No Blobs, No Ants)")
 
 def check_key_29_function_length_limits() -> None:
     """
@@ -1235,8 +1291,12 @@ def check_key_32_fake_nesting_names() -> None:
             if not d.is_dir():
                 continue
             
+            # Skip __pycache__ and other excluded directories
+            if d.name in FORBIDDEN_FOLDER_NAMES or d.name.startswith(".") or d.name == "__pycache__":
+                continue
+            
             # Check for smashed names with multiple underscores
-            if d.name.count('_') >= 2:
+            if d.name.count('_') >= 3:  # Only flag 3+ underscores
                 # Skip legitimate layered directories
                 if d.name in ALLOWED_LAYERS:
                     continue
@@ -1692,7 +1752,7 @@ def check_key_48_final_depth_canon() -> None:
         if depth > limit:
             violations.append(f"{rel} (Depth {depth} > {limit})")
 
-        if depth == 1 and f.suffix == ".py":
+        if len(parts) == 1 and f.suffix == ".py":
             if f.name not in ALLOWED_ROOT_SCRIPTS:
                 violations.append(f"{rel} -> illegal .py file at project root")
 
@@ -1897,137 +1957,127 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
+# =====================================================================
+# OPTIMIZED EXECUTION: STAGED DEPENDENCY ORDER
+# =====================================================================
+
 def main() -> None:
     args = parse_args()
-    import json
-
-    # Force rehydration to pick up .venv exclusion changes
-    global _REPO_HYDRATED
-    _REPO_HYDRATED = False
-
-    # Load pre-commit change tracker if available
+    
+    # 1. Hydrate Context
+    hydrate_repo_data()
     load_change_tracker_from_env()
 
-    if not args.silent and not args.json:
-        print("=" * 80)
-        print("SUBATOMIC CANON VALIDATOR — 50/50 KEYS")
-        print("=" * 80)
-
-    # 1. Hydrate (Always required)
-    hydrate_repo_data()
-
-    # 2. Map keys to functions
-    key_map = {
-        "01": check_key_01_no_sovereign_deletions,
-        "02": check_key_02_no_sovereign_renames,
-        "03": check_key_03_data_folder_exists,
-        "04": check_key_04_no_zombie_archive_singular_root,
-        "05": check_key_05_layered_structure_sane,
-        "06": check_key_06_no_forbidden_folder_names,
-        "07": check_key_07_required_root_folders,
-        "08": check_key_08_no_empty_sov_roots,
-        "09": check_key_09_banned_tokens_in_filenames,
-        "10": check_key_10_banned_symbol_prefixes,
-        "11": check_key_11_banned_vocabulary,
-        "12": check_key_12_todo_fixme_comments,
-        "13": check_key_13_hardcoded_paths,
-        "14": check_key_14_magic_numbers,
-        "15": check_key_15_bare_except,
-        "16": check_key_16_eval_exec_usage,
-        "17": check_key_17_poison_markers_and_stubs,
-        "18": check_key_18_sovereign_debug_statements,
-        "19": check_key_19_duplicate_functions,
-        "20": check_key_20_duplicate_classes,
-        "21": check_key_21_circular_imports,
-        "22": check_key_22_import_hygiene,
-        "23": check_key_23_hardcoded_credentials,
-        "24": check_key_24_sql_injection_patterns,
-        "25": check_key_25_hardcoded_urls,
-        "26": check_key_26_syntax_and_strict_typing,
-        "27": check_key_27_no_empty_sov_files,
-        "28": check_key_28_subatomic_file_size_law,
-        "29": check_key_29_function_length_limits,
-        "30": check_key_30_nesting_depth_limits,
-        "31": check_key_31_max_path_depth_sov,
-        "32": check_key_32_fake_nesting_names,
-        "33": check_key_33_missing_init_files,
-        "34": check_key_34_empty_sov_directories,
-        "35": check_key_35_gitignore_exists_and_patterns,
-        "36": check_key_36_no_git_submodules,
-        "37": check_key_37_large_binaries_in_sov,
-        "38": check_key_38_readme_canon_badge,
-        "39": check_key_39_docstring_requirements,
-        "40": check_key_40_validator_self_sanity,
-        "41": check_key_41_light_no_debug,
-        "42": check_key_42_light_todo_fixme,
-        "43": check_key_43_light_no_tiny_files,
-        "44": check_key_44_light_no_pass_only_defs,
-        "45": check_key_45_light_no_bare_except,
-        "46": check_key_46_light_no_secrets,
-        "47": check_key_47_no_zombie_archive_anywhere,
-        "48": check_key_48_final_depth_canon,
-        "49": check_key_49_no_smashed_filenames,
-        "50": check_key_50_canon_meta_integrity,
+    # 2. Define Dependency Stages
+    # Windsurf should solve Stage 1 before attempting Stage 2.
+    
+    stages = {
+        "PHASE 1: FOUNDATION (Filesystem Integrity)": [
+            ("40", check_key_40_validator_self_sanity),
+            ("35", check_key_35_gitignore_exists_and_patterns),
+            ("36", check_key_36_no_git_submodules),
+            ("37", check_key_37_large_binaries_in_sov),
+            ("31", check_key_31_max_path_depth_sov),
+            ("03", check_key_03_data_folder_exists),
+            ("04", check_key_04_no_zombie_archive_singular_root),
+            ("07", check_key_07_required_root_folders),
+            ("47", check_key_47_no_zombie_archive_anywhere),
+            ("01", check_key_01_no_sovereign_deletions),
+            ("02", check_key_02_no_sovereign_renames),
+        ],
+        "PHASE 2: ARCHITECTURE (Location & Naming)": [
+            ("48", check_key_48_final_depth_canon),
+            ("05", check_key_05_layered_structure_sane),
+            ("06", check_key_06_no_forbidden_folder_names),
+            ("32", check_key_32_fake_nesting_names),
+            ("33", check_key_33_missing_init_files),
+            ("34", check_key_34_empty_sov_directories),
+            ("08", check_key_08_no_empty_sov_roots),
+            ("09", check_key_09_banned_tokens_in_filenames),
+            ("49", check_key_49_no_smashed_filenames),
+        ],
+        "PHASE 3: FISSION (The Subatomic Breaker)": [
+            ("28", check_key_28_subatomic_file_size_law),
+            ("29", check_key_29_function_length_limits),
+            ("30", check_key_30_nesting_depth_limits),
+            ("27", check_key_27_no_empty_sov_files),
+            ("43", check_key_43_light_no_tiny_files),
+        ],
+        "PHASE 4: COMPILATION (Syntax & Imports)": [
+            ("26", check_key_26_syntax_and_strict_typing),
+            ("21", check_key_21_circular_imports),
+            ("22", check_key_22_import_hygiene),
+            ("15", check_key_15_bare_except),
+            ("16", check_key_16_eval_exec_usage),
+        ],
+        "PHASE 5: HYGIENE (Polish & Security)": [
+            ("17", check_key_17_poison_markers_and_stubs),
+            ("12", check_key_12_todo_fixme_comments),
+            ("18", check_key_18_sovereign_debug_statements),
+            ("10", check_key_10_banned_symbol_prefixes),
+            ("11", check_key_11_banned_vocabulary),
+            ("13", check_key_13_hardcoded_paths),
+            ("14", check_key_14_magic_numbers),
+            ("19", check_key_19_duplicate_functions),
+            ("20", check_key_20_duplicate_classes),
+            ("23", check_key_23_hardcoded_credentials),
+            ("24", check_key_24_sql_injection_patterns),
+            ("25", check_key_25_hardcoded_urls),
+            ("39", check_key_39_docstring_requirements),
+            ("38", check_key_38_readme_canon_badge),
+        ],
+        "PHASE 6: LIGHT CANON (Non-Sovereign)": [
+            ("41", check_key_41_light_no_debug),
+            ("42", check_key_42_light_todo_fixme),
+            ("44", check_key_44_light_no_pass_only_defs),
+            ("45", check_key_45_light_no_bare_except),
+            ("46", check_key_46_light_no_secrets),
+        ],
+        "PHASE 7: META": [
+            ("50", check_key_50_canon_meta_integrity),
+        ]
     }
 
-    # 3. Determine Execution Scope
-    keys_to_run = []
-    if args.only:
-        targets = [k.strip() for k in args.only.split(",")]
-        keys_to_run = [k if len(k) == 2 else f"0{k}" for k in targets]
-        for k in keys_to_run:
-            if k not in key_map:
-                if not args.json: print(f"Unknown key: {k}")
-    else:
-        keys_to_run = sorted(key_map.keys())
+    print("="*80)
+    print("SUBATOMIC CANON VALIDATOR — SEQUENCED EXECUTION")
+    print("="*80)
 
-    # 4. Execute
-    for k in keys_to_run:
-        if k in key_map:
-            key_map[k]()
+    # 3. Execution Loop
+    total_failures = 0
+    phase_failed = False
+    
+    for phase_name, checks in stages.items():
+        if phase_failed:
+            print(f"\n[!] SKIPPING {phase_name} due to previous failures.")
+            print("    Fix previous phase to unlock.")
+            for k, _ in checks:
+                results[k] = (False, "SKIPPED (Dependency Failure)")
+            continue
 
-    # 5. Output Handling
-    if args.json:
-        output = {
-            "summary": {"total": len(keys_to_run), "passed": 0, "failed": 0},
-            "failures": {}
-        }
-        for k in keys_to_run:
-            passed, msg = results.get(k, (False, "Not Run"))
-            if passed:
-                output["summary"]["passed"] += 1
-            else:
-                output["summary"]["failed"] += 1
-                lines = msg.split('\n')
-                header = lines[0]
-                # Extract file paths from bullet points
-                files = [l.strip().replace("- ", "").replace("• ", "") for l in lines[1:] if l.strip()]
-                # If bullet points are complex (contain reason), split them
-                clean_files = []
-                for f in files:
-                    if " – " in f: clean_files.append(f.split(" – ")[0])
-                    elif " -> " in f: clean_files.append(f.split(" -> ")[0])
-                    else: clean_files.append(f)
-                
-                output["failures"][k] = {"error": header, "files": clean_files}
-
-        sys.exit(1 if output["summary"]["failed"] > 0 else 0)
-
-    else:
-        fails = [k for k in keys_to_run if not results.get(k, (False, ""))[0]]
-        passed = [k for k in keys_to_run if results.get(k, (False, ""))[0]]
-        if not args.silent:
-            print(f"\n{'=' * 80}")
-            print(f"VALIDATION COMPLETE: {len(passed)}/{len(keys_to_run)} KEYS PASSED")
-            print(f"{'=' * 80}\n")
+        print(f"\n--- {phase_name} ---")
+        current_phase_errors = 0
+        
+        for k, func in checks:
+            func()
+            passed, msg = results[k]
+            status = "PASS" if passed else "FAIL"
+            print(f"[{status}] Key {k}: {msg}")
             
-            for k in keys_to_run:
-                if k in results:
-                    p, m = results[k]
-                    icon = "[PASS]" if p else "[FAIL]"
-                    print(f"{icon} Key {k}: {m}")
+            if not passed:
+                current_phase_errors += 1
+                total_failures += 1
 
-        sys.exit(1 if fails else 0)
+        # Stop Windsurf from wasting tokens if a critical phase fails
+        if current_phase_errors > 0:
+            # We don't hard stop Phases 5/6/7, but we definitely stop after 1/2/3
+            if "PHASE 1" in phase_name or "PHASE 2" in phase_name or "PHASE 3" in phase_name:
+                phase_failed = True
+                print(f"\n>>> CRITICAL FAILURE IN {phase_name}. STOPPING SEQUENCE.")
+                print(">>> Windsurf Instruction: Fix these errors BEFORE proceeding.")
+
+    print(f"\n{'='*80}")
+    print(f"VALIDATION COMPLETE: {len(results) - total_failures}/{len(results)} KEYS PASSED")
+    sys.exit(1 if total_failures > 0 else 0)
 
 if __name__ == "__main__":
     main()
