@@ -10,8 +10,6 @@ Tests for tool routing that maps PlanObject to L2 execution functions.
 Currently depends on legacy execution functions that need implementation.
 """
 
-from __future__ import annotations
-from typing import Dict, Callable, Awaitable
 import pytest
 
 # Mock exceptions since they're zombie file dependencies
@@ -21,6 +19,8 @@ class OrchestrationError(Exception):
 
 # Mock PlanObject since it's a zombie file dependency
 class PlanObject:
+    """TODO: Add docstring."""
+
     def __init__(self, mode: str = None):
         self.mode = mode
 

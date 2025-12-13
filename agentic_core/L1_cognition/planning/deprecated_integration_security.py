@@ -6,10 +6,9 @@ and V6 prompt systems to ensure end-to-end security flows work correctly.
 
 import pytest
 from unittest.mock import Mock
-from datetime import datetime
 
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionDetector, create_injection_safety_policy  
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, Severity, Verdict  
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionDetector, create_injection_safety_policy
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, Severity, Verdict
 # from archives.legacy_root_folders.infra.di_container import initialize_default_services, inject_dependencies  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 class TestBasicSecurityIntegration:

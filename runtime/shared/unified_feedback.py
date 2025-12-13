@@ -4,17 +4,14 @@ This module provides a unified feedback system that allows both resume and outre
 engines to share insights, learn from each other, and maintain consistent quality.
 """
 
-import json
 import logging
 from collections import defaultdict
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
 import threading
 
 from .signal_infrastructure import EngineType
-from .quality_standards import StandardType, QualityDimension
 from ..core.quality.feedback_loop import (
     FeedbackLoop,
     QualityFeedback,
@@ -224,7 +221,9 @@ class FeedbackAggregator:
 
         return result
 
-    def _find_transferable_insights(self, feedback: List[CrossEngineFeedback]) -> List[Dict[str, Any]]:
+    def _find_transferable_insights(self,
+        feedback: List[CrossEngineFeedback]) -> List[Dict[str,
+        Any]]:
         """Find insights that can be transferred between engines.
 
         Args:
@@ -487,6 +486,7 @@ class UnifiedFeedbackSystem:
                     "category": category,
                     "source_engines": list(set(f.source_engine.value for f in feedback_list)),
                     "transfer_score": sum(f.transfer_score for f in feedback_list) / len(feedback_list),
+                        
                     "suggested_actions": list(set(action for f in feedback_list for action in f.suggested_actions))
                 })
 

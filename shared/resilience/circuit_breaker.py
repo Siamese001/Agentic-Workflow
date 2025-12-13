@@ -7,9 +7,10 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Optional
 
 class CircuitBreakerState(Enum):
+    """TODO: Add docstring."""
+
     CLOSED = "CLOSED"
     OPEN = "OPEN"
     HALF_OPEN = "HALF_OPEN"

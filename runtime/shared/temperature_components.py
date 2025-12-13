@@ -10,8 +10,6 @@ import logging
 import re
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +53,8 @@ class SentimentProfile(BaseModel):
     """Profile of recipient's sentiment."""
     mood: SentimentMood = Field(..., description="Detected mood")
     risk_level: RiskLevel = Field(..., description="Associated risk level")
-    keywords_detected: List[str] = Field(default_factory=list, description="Keywords that determined mood")
+    keywords_detected: List[str] = Field(default_factory=list,
+        description="Keywords that determined mood")
 
     @property
     def is_safe_to_contact(self) -> bool:
@@ -135,7 +134,8 @@ class DepthScorer:
                                         recent_count += 1
                             except (ValueError, AttributeError):
                                 continue
-                    elif isinstance(post, str) and len(post) > 20:  # Assume recent if non-empty string
+                    elif isinstance(post,
+                        str) and len(post) > 20:  # Assume recent if non-empty string
                         recent_count += 1
 
                 if recent_count > 0:
@@ -243,7 +243,9 @@ class MicroHookGenerator:
 
                     if my_school and their_school and my_school in their_school:
                         hook = MicroHook(
-                            phrase=f"Always great to connect with a fellow {edu.get('school', 'alum')} alum...",
+                            phrase=f"Always great to connect with a fellow {edu.get('school',
+                                'alum')} alum...",
+                                
                             trigger_type="alumni",
                             relevance=0.8
                         )
@@ -500,7 +502,9 @@ class TemperatureEngine:
             # Early sentiment check - exit if hostile
             sentiment_profile = self.sentiment_analyzer.assess_sentiment(text_samples)
             if sentiment_profile.risk_level == RiskLevel.CRITICAL:
-                logger.warning(f"Hostile sentiment detected for {profile.get('name', 'Unknown')}, aborting further analysis")
+                logger.warning(f"Hostile sentiment detected for {profile.get('name',
+                    'Unknown')},
+                    aborting further analysis")
                 return {
                     "depth_score": {"level": 0, "score": 0.0, "rationale": ["Analysis aborted due to hostile sentiment"]},
                     "top_hooks": [],

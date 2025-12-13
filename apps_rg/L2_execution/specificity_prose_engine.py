@@ -16,9 +16,7 @@ Non-responsibilities:
 - Headline composition
 """
 
-from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
@@ -241,7 +239,9 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                 gate_id='VG_PARAGRAPH_STRUCTURE',
                 passed=False,
                 severity='BLOCK',
-                message=f"BLOCKED: Expected {self.config.paragraph_count} paragraphs, got {len(paragraphs)}",
+                message=f"BLOCKED: Expected {self.config.paragraph_count} paragraphs,
+                    got {len(paragraphs)}",
+                    
                 details={'expected': self.config.paragraph_count, 'actual': len(paragraphs)}
             )
 
@@ -267,6 +267,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
             passed=True,
             severity='INFO',
             message=f"Paragraph structure valid: {len(paragraphs)} paragraphs with correct word counts",
+                
             signature=f"PARA:OK:{len(paragraphs)}"
         )
 
@@ -315,6 +316,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                 passed=True,
                 severity='INFO',
                 message=f"Company specifics satisfied: {len(company_specifics)} details (min {self.config.min_company_specifics})",
+                    
                 signature=f"SPECIFICS:OK:{len(company_specifics)}",
                 details={
                     'count': len(company_specifics),
@@ -327,7 +329,9 @@ I would welcome the opportunity to discuss how my experience in building high-pe
             passed=False,
             severity='BLOCK',
             message=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details (min {self.config.min_company_specifics})",
-            details={'count': len(company_specifics), 'min_required': self.config.min_company_specifics}
+                
+            details={'count': len(company_specifics),
+                'min_required': self.config.min_company_specifics}
         )
 
     def _execute_find_replace_test(

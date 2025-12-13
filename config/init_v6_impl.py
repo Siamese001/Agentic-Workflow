@@ -1,6 +1,5 @@
 """Implementation for init_v6."""
 
-from typing import Any, Dict, List, Optional
 
 def safety_gate(result: Any) -> bool:
     """
@@ -40,7 +39,18 @@ def _process_finding(finding: Any) -> tuple[Optional[str], Dict[str, object]]:
     """Process a single finding and return (severity_str, finding_dict)."""
     severity = getattr(finding, 'severity', None)
     severity_str = _extract_severity_string(severity)
-    finding_dict = {'check_id': getattr(finding, 'id', 'unknown'), 'category': getattr(finding, 'type', getattr(finding, 'category', 'unknown')), 'severity': severity_str, 'message': getattr(finding, 'message', '')}
+    finding_dict = {'check_id': getattr(finding,
+        'id',
+        'unknown'),
+        'category': getattr(finding,
+        'type',
+        getattr(finding,
+        'category',
+        'unknown')),
+        'severity': severity_str,
+        'message': getattr(finding,
+        'message',
+        '')}
     return (severity_str, finding_dict)
 
 def _determine_max_severity(findings: list) -> tuple[Optional[str], list]:
@@ -63,7 +73,11 @@ def _map_verdict_to_decision(verdict: Any) -> str:
     verdict_map = {'block': 'block', 'review': 'replan', 'allow': 'allow'}
     return verdict_map.get(verdict_str, 'allow')
 
-def arbitrate_safety(safety_result: Any, council_vote: Any, policy: Any, ctx: Any=None) -> Dict[str, object]:
+def arbitrate_safety(safety_result: Any,
+    council_vote: Any,
+    policy: Any,
+    ctx: Any=None) -> Dict[str,
+    object]:
     """
     Arbitrate between safety findings and council votes to produce a decision.
 
@@ -128,6 +142,8 @@ def run_l5(safety_result: Any, council_vote: Any, policy: Any, ctx: Any=None) ->
 
     @dataclass
     class L5Event:
+        """TODO: Add docstring."""
+
         verdict: Optional[Verdict] = None
         reason: Optional[str] = None
     verdict = Verdict.ALLOW

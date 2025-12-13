@@ -16,7 +16,6 @@ Non-responsibilities:
 - Final assembly
 """
 
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass
@@ -27,10 +26,14 @@ from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 @dataclass
 class MessageBodyConfig:
+    """TODO: Add docstring."""
+
     temperature: float = 0.6
     max_attempts: int = 3
 
 @dataclass
+    """TODO: Add docstring."""
+
 class MessageBodyResult:
     body: str
     metrics_used: List[str]

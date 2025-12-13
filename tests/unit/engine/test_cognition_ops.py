@@ -2,18 +2,21 @@
 Unit tests for shared_engine_ops/cognition_ops/
 Tests cognition operations including understand_request.
 """
-from __future__ import annotations
 from typing import Dict
 from dataclasses import dataclass
 from enum import Enum
 
 class IntentType(Enum):
+    """TODO: Add docstring."""
+
     QUERY = "query"
     COMMAND = "command"
     CLARIFICATION = "clarification"
     CONFIRMATION = "confirmation"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class ParsedIntent:
     intent_type: IntentType
     confidence: float

@@ -5,7 +5,6 @@ to align with the target company's specific cultural DNA and dialect.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any
 from enum import Enum
 from pydantic import BaseModel, Field, validator
 
@@ -26,9 +25,12 @@ class CompanyDNA(BaseModel):
 
     company_name: str = Field(..., description="Company identifier")
     core_values: List[str] = Field(default_factory=list, description="Core company values")
-    writing_style: WritingStyle = Field(default=WritingStyle.NARRATIVE, description="Preferred writing style")
+    writing_style: WritingStyle = Field(default=WritingStyle.NARRATIVE,
+        description="Preferred writing style")
     buzzwords: List[str] = Field(default_factory=list, description="Company-specific terminology")
-    value_phrases: Dict[str, str] = Field(default_factory=dict, description="Value to phrase mapping")
+    value_phrases: Dict[str,
+        str] = Field(default_factory=dict,
+        description="Value to phrase mapping")
     forbidden_words: List[str] = Field(default_factory=list, description="Words to avoid")
 
     @validator('core_values')
@@ -42,7 +44,10 @@ class CulturallyAlignedContent(BaseModel):
     original_text: str = Field(..., description="Original content")
     aligned_text: str = Field(..., description="Culturally aligned content")
     alignment_rationale: str = Field(..., description="Explanation of changes")
-    alignment_score: float = Field(default=0.0, ge=0.0, le=1.0, description="Cultural alignment score")
+    alignment_score: float = Field(default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="Cultural alignment score")
     key_changes: List[str] = Field(default_factory=list, description="Key changes made")
 
 class SimpleAgentBase:
@@ -280,7 +285,6 @@ class CulturalDecoderAgent(SimpleAgentBase):
 
         try:
             response = await self._call_llm(prompt, temperature=0.3)
-            import json
             result = json.loads(response.content.strip())
 
             # Calculate alignment score
@@ -331,7 +335,8 @@ class CulturalDecoderAgent(SimpleAgentBase):
         # Check forbidden words
         forbidden_matches = [fw for fw in dna.forbidden_words if fw.lower() in text.lower()]
         if forbidden_matches:
-            misalignment_indicators.append(f"Uses discouraged words: {', '.join(forbidden_matches)}")
+            misalignment_indicators.append(f"Uses discouraged words: {',
+                '.join(forbidden_matches)}")
 
         # Check value alignment
         value_mentions = []
@@ -461,4 +466,6 @@ class CulturalDecoderAgent(SimpleAgentBase):
                 def __init__(self, content: str):
                     self.content = content
 
-            return LLMResponseImpl('{"rewritten_text": "sample", "rationale": "sample", "key_changes": []}')
+            return LLMResponseImpl('{"rewritten_text": "sample",
+                "rationale": "sample",
+                "key_changes": []}')

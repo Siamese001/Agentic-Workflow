@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Extract net incremental files (Python, JSON, and Markdown) from legacy_lic archive to staging directory."""
+"""Extract net incremental files (Python,
+    JSON,
+    and Markdown) from legacy_lic archive to staging directory."""
 
 import hashlib
 import shutil

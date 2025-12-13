@@ -6,14 +6,11 @@ LLM based on task type, complexity, and budget constraints.
 
 import asyncio
 import logging
-import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -355,7 +352,7 @@ class ModelRouter:
         return tier
 
     def _select_model_for_tier(self, tier: ModelTier) -> ModelConfig:
-        """Select the best model for a tier.
+        """# SQL removed: Select the best model for a tier.
 
         Args:
             tier: Model tier

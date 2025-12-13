@@ -1,15 +1,17 @@
-from __future__ import annotations
 
-from typing import Any, Dict
 
 from pydantic import BaseModel
 
 class SimScenario(BaseModel):
+    """TODO: Add docstring."""
+
     id: str
     description: str
     initial_context: Dict[str, object]
     execution_profile_name: str
     run_count: int
+
+    """TODO: Add docstring."""
 
 class SimOutcome(BaseModel):
     scenario_id: str

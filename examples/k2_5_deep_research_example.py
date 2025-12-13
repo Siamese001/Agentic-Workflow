@@ -52,7 +52,10 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
         key_technologies=[
             TechnicalImplementation(
                 technology_name="Gated Mixture-of-Experts (MoE) Architecture",
-                implementation_details="Deep learning models for ETA predictions with dynamic model selection based on delivery context (urban vs suburban, weather, traffic)",
+                implementation_details="Deep learning models for ETA predictions with dynamic model selection based on delivery context (urban vs suburban,
+                    weather,
+                    traffic)",
+                    
                 performance_gain="20% improvement in delivery time accuracy",
                 source_citation="cite_65"
             ),
@@ -92,11 +95,15 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
     )
 
     citation_map = CitationMap()
-    citation_map.add_citation("cite_17", "https://investors.doordash.com/financials/quarterly-results/default.aspx")
+    citation_map.add_citation("cite_17",
+        "https://investors.doordash.com/financials/quarterly-results/default.aspx")
     citation_map.add_citation("cite_25", "https://www.linkedin.com/in/sudeep-das")
-    citation_map.add_citation("cite_26", "https://investors.doordash.com/governance/leadership-and-governance/default.aspx")
-    citation_map.add_citation("cite_65", "https://doordash.engineering/2024/11/improving-eta-predictions-mixture-of-experts/")
-    citation_map.add_citation("cite_72", "https://techcrunch.com/2024/08/doordash-serve-robotics-autonomous-delivery/")
+    citation_map.add_citation("cite_26",
+        "https://investors.doordash.com/governance/leadership-and-governance/default.aspx")
+    citation_map.add_citation("cite_65",
+        "https://doordash.engineering/2024/11/improving-eta-predictions-mixture-of-experts/")
+    citation_map.add_citation("cite_72",
+        "https://techcrunch.com/2024/08/doordash-serve-robotics-autonomous-delivery/")
 
     return DeepResearchOutput(
         company_name="DoorDash",

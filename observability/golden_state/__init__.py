@@ -4,7 +4,6 @@ Phase 2 - Pillar 12: Testing (Golden State)
 Validation foundation with golden datasets and evaluators.
 """
 
-from .judge_evaluator import (
     JudgeEvaluator,
     JudgeVerdict,
     JudgeEvaluationResult,

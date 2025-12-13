@@ -12,14 +12,9 @@ import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
 from datetime import datetime
 
 from ..core.resilience.circuit_breaker import CircuitBreakerFactory, CircuitOpenError
-from ..core.resilience.rate_limiter import RateLimiter, get_rate_limiter
-from ..core.resilience.resource_manager import ResourceManager, get_resource_manager
-from .signal_infrastructure import EngineType, DomainConfig, get_shared_infrastructure
-from .unified_formatter import UnifiedFormatter, FormatResult, get_unified_formatter
 
 logger = logging.getLogger(__name__)
 
@@ -352,7 +347,8 @@ class BatchExecutionStrategy(ExecutionStrategy):
 
         try:
             # Get input items
-            items = context.input_data if isinstance(context.input_data, list) else [context.input_data]
+            items = context.input_data if isinstance(context.input_data,
+                list) else [context.input_data]
 
             # Process in batches
             results = []

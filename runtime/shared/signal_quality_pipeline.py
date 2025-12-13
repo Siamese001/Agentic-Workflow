@@ -7,7 +7,6 @@ unverifiable content is filtered out to ensure only high-signal content is used.
 
 import logging
 import re
-from typing import Dict, List, Optional, Set, Tuple, Any, Union
 from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
@@ -18,7 +17,9 @@ class QualityAssessment(BaseModel):
     is_pass: bool = Field(..., description="Overall pass/fail decision")
     relevance_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Relevance to query")
     authority_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Source authority")
-    specificity_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Metric specificity")
+    specificity_score: confloat(ge=0.0,
+        le=1.0) = Field(default=0.0,
+        description="Metric specificity")
     coherence_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Content coherence")
     flags: List[str] = Field(default_factory=list, description="Quality flags/warnings")
     doc_id: Optional[str] = Field(None, description="Document identifier for logging")

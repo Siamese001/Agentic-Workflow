@@ -1,7 +1,6 @@
 """Types and models for agent_gym."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class ScenarioType(Enum):
@@ -33,7 +32,13 @@ class TrainingScenario:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'id': self.id, 'name': self.name, 'scenario_type': self.scenario_type.value, 'description': self.description, 'test_case_count': len(self.test_cases), 'success_threshold': self.success_threshold, 'metadata': self.metadata}
+        return {'id': self.id,
+            'name': self.name,
+            'scenario_type': self.scenario_type.value,
+            'description': self.description,
+            'test_case_count': len(self.test_cases),
+            'success_threshold': self.success_threshold,
+            'metadata': self.metadata}
 
 @dataclass
 class BenchmarkResult:
@@ -69,4 +74,14 @@ class TrainingSession:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'session_id': self.session_id, 'agent_id': self.agent_id, 'scenarios_run': self.scenarios_run, 'overall_pass_rate': self.overall_pass_rate, 'overall_score': self.overall_score, 'performance_level': self.performance_level.value, 'started_at': self.started_at, 'completed_at': self.completed_at, 'duration_seconds': self.completed_at - self.started_at, 'benchmark_results': [r.to_dict() for r in self.benchmark_results], 'improvement_areas': self.improvement_areas}
+        return {'session_id': self.session_id,
+            'agent_id': self.agent_id,
+            'scenarios_run': self.scenarios_run,
+            'overall_pass_rate': self.overall_pass_rate,
+            'overall_score': self.overall_score,
+            'performance_level': self.performance_level.value,
+            'started_at': self.started_at,
+            'completed_at': self.completed_at,
+            'duration_seconds': self.completed_at - self.started_at,
+            'benchmark_results': [r.to_dict() for r in self.benchmark_results],
+            'improvement_areas': self.improvement_areas}

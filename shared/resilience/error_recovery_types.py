@@ -1,10 +1,10 @@
 """Types and models for error_recovery."""
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class RecoveryStrategy(Enum):
+    """TODO: Add docstring."""
+
     RETRY = 'retry'
     FAIL_FAST = 'fail_fast'
     ESCALATE = 'escalate'

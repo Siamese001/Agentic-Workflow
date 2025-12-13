@@ -11,7 +11,6 @@ K1-K7 execution pipeline for profile-driven message generation.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import logging
-import scripts.validation.check_canonical_structure
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +118,9 @@ class ProfilePlanner:
         # 4. Analyze company characteristics
         company_size = self._analyze_company_size(recipient_profile, signals)
         industry_focus = self._classify_industry(recipient_profile, signals)
-        decision_authority = self._assess_decision_authority(seniority_level, company_size, inferred_archetype)
+        decision_authority = self._assess_decision_authority(seniority_level,
+            company_size,
+            inferred_archetype)
 
         # 5. Apply explicit overrides
         overrides = outreach_context.get("overrides", {})
@@ -127,7 +128,9 @@ class ProfilePlanner:
         final_seniority = overrides.get("seniority", seniority_level)
 
         # 6. Calculate confidence score
-        confidence_score = self._calculate_confidence_score(signals, final_archetype, final_seniority)
+        confidence_score = self._calculate_confidence_score(signals,
+            final_archetype,
+            final_seniority)
 
         # 7. Build metadata
         metadata = {
@@ -301,11 +304,19 @@ class ProfilePlanner:
         skills_text = " ".join(skills).lower()
 
         technical_count = sum(1 for skill in skills if any(
-            kw in skill.lower() for kw in ["software", "programming", "data", "engineering", "technical"]
+            kw in skill.lower() for kw in ["software",
+                "programming",
+                "data",
+                "engineering",
+                "technical"]
         ))
 
         business_count = sum(1 for skill in skills if any(
-            kw in skill.lower() for kw in ["management", "business", "strategy", "sales", "marketing"]
+            kw in skill.lower() for kw in ["management",
+                "business",
+                "strategy",
+                "sales",
+                "marketing"]
         ))
 
         if technical_count > business_count:
@@ -408,7 +419,10 @@ class ProfilePlanner:
 
         return "IC"  # Default
 
-    def _analyze_company_size(self, profile: Dict[str, object], signals: List[ProfileSignal]) -> str:
+    def _analyze_company_size(self,
+        profile: Dict[str,
+        object],
+        signals: List[ProfileSignal]) -> str:
         """Analyze company size from profile and signals."""
         # Check for explicit company size signal
         size_signal = next((s for s in signals if s.signal_type == "company_size"), None)
@@ -449,7 +463,10 @@ class ProfilePlanner:
         else:
             return "low"
 
-    def _calculate_confidence_score(self, signals: List[ProfileSignal], archetype: str, seniority: str) -> float:
+    def _calculate_confidence_score(self,
+        signals: List[ProfileSignal],
+        archetype: str,
+        seniority: str) -> float:
         """Calculate overall confidence score."""
         if not signals:
             return 0.0

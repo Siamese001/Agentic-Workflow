@@ -150,7 +150,6 @@ def add_span_event(
         attributes: Optional event attributes
     """
     try:
-        from opentelemetry import trace
 
         current_span = trace.get_current_span()
         if current_span:
@@ -166,7 +165,6 @@ def set_span_attribute(key: str, value: Any) -> None:
         value: Attribute value
     """
     try:
-        from opentelemetry import trace
 
         current_span = trace.get_current_span()
         if current_span:
@@ -181,7 +179,6 @@ def record_exception(exception: Exception) -> None:
         exception: Exception to record
     """
     try:
-        from opentelemetry import trace
 
         current_span = trace.get_current_span()
         if current_span:
@@ -244,7 +241,6 @@ def get_structured_logger(name: str) -> Any:
         Structured logger
     """
     try:
-        import structlog
         return structlog.get_logger(name)
     except ImportError:
         return logging.getLogger(name)

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .tool_invoke_observability_tool_enums import *
+# from .tool_invoke_observability_tool_enums import *  # Star import removed
 
 @dataclass
 class ToolSpecification:

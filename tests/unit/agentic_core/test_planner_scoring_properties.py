@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Test Planner Scoring Properties - atomic implementation."""
 
-from __future__ import annotations
 
 from typing import Dict
 

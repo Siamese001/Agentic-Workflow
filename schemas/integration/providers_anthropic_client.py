@@ -4,7 +4,6 @@ This module is the ONLY place where the Anthropic SDK is imported.
 It exposes a narrow run_llm interface used by runtime_utils.
 """
 
-from __future__ import annotations
 
 import os
 from typing import Any, List
@@ -20,7 +19,6 @@ def run_llm_anthropic(
     """Run an Anthropic message completion and return the response text."""
 
     try:
-        import data.sdks_mcps.reference_clients.minimal_anthropic
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError("anthropic package not installed") from exc
 

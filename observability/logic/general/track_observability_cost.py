@@ -30,7 +30,9 @@ class TrackObservabilityCost:
         """Execute operation."""
         try:
             result = self._process(data, **kwargs)
-            return OperationResult(success=True, data=result, metadata={"input_type": type(data).__name__})
+            return OperationResult(success=True,
+                data=result,
+                metadata={"input_type": type(data).__name__})
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.error(f"Operation failed: {e}")
             return OperationResult(success=False, message=str(e))
@@ -39,6 +41,9 @@ class TrackObservabilityCost:
         """Process data."""
         return data
 
-def execute(data: object, config: Optional[Dict] = None, **kwargs: Dict[str, object]) -> OperationResult:
+def execute(data: object,
+    config: Optional[Dict] = None,
+    **kwargs: Dict[str,
+    object]) -> OperationResult:
     """Convenience function."""
     return TrackObservabilityCost(config).execute(data, **kwargs)

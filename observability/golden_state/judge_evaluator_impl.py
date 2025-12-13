@@ -1,7 +1,7 @@
 """Implementation for judge_evaluator."""
 
 from typing import Any, Dict, List, Optional
-from .judge_evaluator_types import *
+# from .judge_evaluator_types import *  # Star import removed
 
 class JudgeEvaluator:
     """LM-as-a-Judge evaluator for output quality assessment.
@@ -10,7 +10,12 @@ class JudgeEvaluator:
     Integrates with golden state datasets for validation.
     """
 
-    def __init__(self, llm_client: Optional[Callable[[str], Awaitable[str]]]=None, criteria: Optional[List[JudgmentCriterion]]=None, pass_threshold: float=0.7, enable_logging: bool=True):
+    def __init__(self,
+        llm_client: Optional[Callable[[str],
+        Awaitable[str]]]=None,
+        criteria: Optional[List[JudgmentCriterion]]=None,
+        pass_threshold: float=0.7,
+        enable_logging: bool=True):
         """Initialize judge evaluator.
 
         Args:
@@ -24,9 +29,15 @@ class JudgeEvaluator:
         self.pass_threshold = pass_threshold
         self.enable_logging = enable_logging
         if self.enable_logging:
-            logger.info('judge_evaluator_initialized', extra={'criteria_count': len(self.criteria), 'pass_threshold': pass_threshold})
+            logger.info('judge_evaluator_initialized',
+                extra={'criteria_count': len(self.criteria),
+                'pass_threshold': pass_threshold})
 
-    async def evaluate(self, output: str, expected: Optional[str]=None, context: Optional[Dict[str, Any]]=None) -> JudgeEvaluationResult:
+    async def evaluate(self,
+        output: str,
+        expected: Optional[str]=None,
+        context: Optional[Dict[str,
+        Any]]=None) -> JudgeEvaluationResult:
         """Evaluate output quality.
 
         Args:
@@ -38,20 +49,39 @@ class JudgeEvaluator:
             JudgeEvaluationResult with verdicts
         """
         if self.enable_logging:
-            logger.info('evaluation_started', extra={'output_length': len(output), 'has_expected': expected is not None})
+            logger.info('evaluation_started',
+                extra={'output_length': len(output),
+                'has_expected': expected is not None})
         verdicts: List[JudgeVerdict] = []
         for criterion in self.criteria:
-            verdict = await self._evaluate_criterion(output=output, expected=expected, context=context, criterion=criterion)
+            verdict = await self._evaluate_criterion(output=output,
+                expected=expected,
+                context=context,
+                criterion=criterion)
             verdicts.append(verdict)
         overall_score = sum((v.score_value for v in verdicts)) / len(verdicts)
         passed = overall_score >= self.pass_threshold
         summary = self._generate_summary(verdicts, overall_score, passed)
-        result = JudgeEvaluationResult(overall_score=overall_score, verdicts=verdicts, passed=passed, threshold=self.pass_threshold, summary=summary, metadata={'criteria_count': len(self.criteria), 'output_length': len(output)})
+        result = JudgeEvaluationResult(overall_score=overall_score,
+            verdicts=verdicts,
+            passed=passed,
+            threshold=self.pass_threshold,
+            summary=summary,
+            metadata={'criteria_count': len(self.criteria),
+            'output_length': len(output)})
         if self.enable_logging:
-            logger.info('evaluation_completed', extra={'overall_score': overall_score, 'passed': passed, 'failing_criteria': [c.value for c in result.get_failing_criteria()]})
+            logger.info('evaluation_completed',
+                extra={'overall_score': overall_score,
+                'passed': passed,
+                'failing_criteria': [c.value for c in result.get_failing_criteria()]})
         return result
 
-    async def _evaluate_criterion(self, output: str, expected: Optional[str], context: Optional[Dict[str, Any]], criterion: JudgmentCriterion) -> JudgeVerdict:
+    async def _evaluate_criterion(self,
+        output: str,
+        expected: Optional[str],
+        context: Optional[Dict[str,
+        Any]],
+        criterion: JudgmentCriterion) -> JudgeVerdict:
         """Evaluate a single criterion.
 
         Args:
@@ -63,20 +93,31 @@ class JudgeEvaluator:
         Returns:
             JudgeVerdict for this criterion
         """
-        prompt = self._build_evaluation_prompt(output=output, expected=expected, context=context, criterion=criterion)
+        prompt = self._build_evaluation_prompt(output=output,
+            expected=expected,
+            context=context,
+            criterion=criterion)
         if self.llm_client:
             try:
                 response = await self.llm_client(prompt)
                 verdict = self._parse_llm_response(response, criterion)
             except Exception as e:
                 if self.enable_logging:
-                    logger.error('llm_evaluation_failed', extra={'criterion': criterion.value, 'error': str(e)}, exc_info=True)
+                    logger.error('llm_evaluation_failed',
+                        extra={'criterion': criterion.value,
+                        'error': str(e)},
+                        exc_info=True)
                 verdict = self._heuristic_evaluation(output, expected, criterion)
         else:
             verdict = self._heuristic_evaluation(output, expected, criterion)
         return verdict
 
-    def _build_evaluation_prompt(self, output: str, expected: Optional[str], context: Optional[Dict[str, Any]], criterion: JudgmentCriterion) -> str:
+    def _build_evaluation_prompt(self,
+        output: str,
+        expected: Optional[str],
+        context: Optional[Dict[str,
+        Any]],
+        criterion: JudgmentCriterion) -> str:
         """Build evaluation prompt for LLM.
 
         Args:
@@ -95,7 +136,18 @@ class JudgeEvaluator:
             task = context.get('task', '')
             if task:
                 prompt_parts.extend(['TASK:', task, ''])
-        prompt_parts.extend([f"Evaluate the output's {criterion.value} on a scale of 0.0 to 1.0.", 'Provide:', '1. Score (0.0-1.0)', '2. Reasoning for the score', '3. Specific evidence from the output', '4. Suggestions for improvement', '', 'Format your response as:', 'SCORE: <number>', 'REASONING: <explanation>', 'EVIDENCE: <bullet points>', 'SUGGESTIONS: <bullet points>'])
+        prompt_parts.extend([f"Evaluate the output's {criterion.value} on a scale of 0.0 to 1.0.",
+            'Provide:',
+            '1. Score (0.0-1.0)',
+            '2. Reasoning for the score',
+            '3. Specific evidence from the output',
+            '4. Suggestions for improvement',
+            '',
+            'Format your response as:',
+            'SCORE: <number>',
+            'REASONING: <explanation>',
+            'EVIDENCE: <bullet points>',
+            'SUGGESTIONS: <bullet points>'])
         return '\n'.join(prompt_parts)
 
     def _parse_llm_response(self, response: str, criterion: JudgmentCriterion) -> JudgeVerdict:
@@ -113,10 +165,23 @@ class JudgeEvaluator:
         current_section = None
         for line in lines:
             line = line.strip()
-            score_value, reasoning, current_section = self._parse_line(line, score_value, reasoning, current_section, evidence, suggestions)
+            score_value,
+                reasoning,
+                current_section = self._parse_line(line,
+                score_value,
+                reasoning,
+                current_section,
+                evidence,
+                suggestions)
         return self._create_verdict(score_value, reasoning, evidence, suggestions, criterion)
 
-    def _parse_line(self, line: str, score_value: float, reasoning: str, current_section: Optional[str], evidence: List[str], suggestions: List[str]) -> tuple:
+    def _parse_line(self,
+        line: str,
+        score_value: float,
+        reasoning: str,
+        current_section: Optional[str],
+        evidence: List[str],
+        suggestions: List[str]) -> tuple:
         """Parse a single line."""
         if line.startswith('SCORE:'):
             return (self._parse_score(line, score_value), reasoning, current_section)
@@ -140,7 +205,11 @@ class JudgeEvaluator:
         except (ValueError, IndexError):
             return default
 
-    def _parse_list_item(self, line: str, section: Optional[str], evidence: List[str], suggestions: List[str]) -> None:
+    def _parse_list_item(self,
+        line: str,
+        section: Optional[str],
+        evidence: List[str],
+        suggestions: List[str]) -> None:
         """Parse list item into appropriate list."""
         item = line.lstrip('-•').strip()
         if section == 'evidence':
@@ -148,7 +217,12 @@ class JudgeEvaluator:
         elif section == 'suggestions':
             suggestions.append(item)
 
-    def _create_verdict(self, score_value: float, reasoning: str, evidence: List[str], suggestions: List[str], criterion: JudgmentCriterion) -> JudgeVerdict:
+    def _create_verdict(self,
+        score_value: float,
+        reasoning: str,
+        evidence: List[str],
+        suggestions: List[str],
+        criterion: JudgmentCriterion) -> JudgeVerdict:
         """Create verdict from parsed data."""
         if score_value >= 0.9:
             score = JudgmentScore.EXCELLENT
@@ -160,9 +234,17 @@ class JudgeEvaluator:
             score = JudgmentScore.POOR
         else:
             score = JudgmentScore.UNACCEPTABLE
-        return JudgeVerdict(criterion=criterion, score=score, score_value=score_value, reasoning=reasoning or 'No reasoning provided', evidence=evidence, suggestions=suggestions)
+        return JudgeVerdict(criterion=criterion,
+            score=score,
+            score_value=score_value,
+            reasoning=reasoning or 'No reasoning provided',
+            evidence=evidence,
+            suggestions=suggestions)
 
-    def _heuristic_evaluation(self, output: str, expected: Optional[str], criterion: JudgmentCriterion) -> JudgeVerdict:
+    def _heuristic_evaluation(self,
+        output: str,
+        expected: Optional[str],
+        criterion: JudgmentCriterion) -> JudgeVerdict:
         """Heuristic evaluation when LLM unavailable.
 
         Args:
@@ -213,9 +295,17 @@ class JudgeEvaluator:
             score = JudgmentScore.POOR
         else:
             score = JudgmentScore.UNACCEPTABLE
-        return JudgeVerdict(criterion=criterion, score=score, score_value=score_value, reasoning=reasoning, evidence=evidence, suggestions=suggestions)
+        return JudgeVerdict(criterion=criterion,
+            score=score,
+            score_value=score_value,
+            reasoning=reasoning,
+            evidence=evidence,
+            suggestions=suggestions)
 
-    def _generate_summary(self, verdicts: List[JudgeVerdict], overall_score: float, passed: bool) -> str:
+    def _generate_summary(self,
+        verdicts: List[JudgeVerdict],
+        overall_score: float,
+        passed: bool) -> str:
         """Generate evaluation summary.
 
         Args:
@@ -232,13 +322,20 @@ class JudgeEvaluator:
         acceptable = sum((1 for v in verdicts if v.score == JudgmentScore.ACCEPTABLE))
         poor = sum((1 for v in verdicts if v.score == JudgmentScore.POOR))
         unacceptable = sum((1 for v in verdicts if v.score == JudgmentScore.UNACCEPTABLE))
-        summary_parts = [f'Evaluation {status} (Score: {overall_score:.2f})', f'Excellent: {excellent}, Good: {good}, Acceptable: {acceptable}, Poor: {poor}, Unacceptable: {unacceptable}']
+        summary_parts = [f'Evaluation {status} (Score: {overall_score:.2f})',
+            f'Excellent: {excellent},
+            Good: {good},
+            Acceptable: {acceptable},
+            Poor: {poor},
+            Unacceptable: {unacceptable}']
         if not passed:
             failing = [v.criterion.value for v in verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]
             summary_parts.append(f"Failing criteria: {', '.join(failing)}")
         return ' | '.join(summary_parts)
 
-def create_judge_evaluator(llm_client: Optional[Callable[[str], Awaitable[str]]]=None, pass_threshold: float=0.7) -> JudgeEvaluator:
+def create_judge_evaluator(llm_client: Optional[Callable[[str],
+    Awaitable[str]]]=None,
+    pass_threshold: float=0.7) -> JudgeEvaluator:
     """Factory function to create judge evaluator.
 
     Args:

@@ -6,8 +6,6 @@ to ensure all agents benefit from the SOTA retrieval system.
 
 import asyncio
 import logging
-from typing import Dict, List, Optional, Any
-from functools import lru_cache
 
 from .titanium_rag_pipeline import (
     TitaniumRAGPipeline,
@@ -46,7 +44,8 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
             logger.info(f"Pipeline initialized successfully:")
             logger.info(f"  - Phase 1 (Precision): Available")
             logger.info(f"  - Phase 2 (Reasoning): Available")
-            logger.info(f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
+            logger.info(f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']},
+                "
                        f"Cache={component_info['phase_3_sota']['cache_available']}")
 
             return _TITANIUM_PIPELINE
@@ -109,7 +108,7 @@ async def get_titanium_search_tool(
             """Actual retrieval function that connects to vector stores."""
             try:
                 # Import vector store clients
-                from . import get_vector_store
+                from agentic_workflow import get_vector_store
 
                 # Get primary vector store (e.g., Chroma)
                 vector_store = get_vector_store()
@@ -215,7 +214,6 @@ async def get_titanium_search_with_sources(
             """Actual retrieval function that connects to vector stores."""
             try:
                 # Import vector store clients
-                from . import get_vector_store
 
                 # Get primary vector store (e.g., Chroma)
                 vector_store = get_vector_store()
@@ -333,8 +331,6 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
         loop = asyncio.get_running_loop()
         # If we're in an async context, we can't use run_until_complete
         # Use run_coroutine_threadsafe instead
-        import concurrent.futures
-        import threading
 
         def run_in_thread():
             new_loop = asyncio.new_event_loop()

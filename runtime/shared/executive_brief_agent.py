@@ -9,14 +9,12 @@ Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Any, Union
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
-    from .titanium_search_tool import get_titanium_search_tool, get_titanium_search_with_sources
     TITANIUM_AVAILABLE = True
     logger.info("ExecutiveBriefAgent: Titanium RAG Pipeline available")
 except ImportError as e:
@@ -26,7 +24,9 @@ except ImportError as e:
 class BriefSection(BaseModel):
     """A single section of an executive brief."""
 
-    heading: str = Field(..., description="Section heading (e.g., 'Observation: High Inference Costs')")
+    heading: str = Field(...,
+        description="Section heading (e.g.,
+        'Observation: High Inference Costs')")
     content: str = Field(..., description="Section content (2-3 sentences)")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in this section")
 
@@ -133,7 +133,10 @@ class ExecutiveBriefAgent:
             }
         }
 
-    async def _research_company_with_titanium(self, company_name: str, industry: str) -> Dict[str, Any]:
+    async def _research_company_with_titanium(self,
+        company_name: str,
+        industry: str) -> Dict[str,
+        Any]:
         """Research company using Titanium RAG Pipeline for enhanced insights.
 
         Args:
@@ -268,7 +271,11 @@ class ExecutiveBriefAgent:
             # Return safe fallback
             return self._generate_fallback_brief(company_data)
 
-    def _assemble_context(self, company_data: Dict[str, Any], job_description: str) -> Dict[str, Any]:
+    def _assemble_context(self,
+        company_data: Dict[str,
+        Any],
+        job_description: str) -> Dict[str,
+        Any]:
         """Assemble strategic context from company data and JD.
 
         Args:

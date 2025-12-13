@@ -4,21 +4,14 @@ This module combines Semantic Fencing, Cognitive Contracts, and Few-Shot Registr
 into a single, cohesive system for robust prompt enhancement.
 """
 
-import json
 import logging
-from typing import Dict, List, Any, Optional, Union, Tuple
 from dataclasses import dataclass
-from pathlib import Path
 
-from .prompt_assembler import PromptAssembler, get_prompt_assembler
-from .prompt_injection_loader import PromptInjectionLoader, get_injection_loader, InjectionMatch
-from .cognitive_contracts import (
     CognitiveContractManager,
     get_contract_manager,
     create_constraints_from_directives,
     enforce_cognitive_contract
 )
-from .few_shot_registry import get_few_shot_registry, enhance_with_examples
 
 logger = logging.getLogger(__name__)
 

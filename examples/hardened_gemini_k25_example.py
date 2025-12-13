@@ -10,7 +10,6 @@ This example demonstrates the titanium-grade features:
 import asyncio
 import json
 import logging
-from typing import List
 
 from agentic_workflow.runtime.shared import (
     create_hardened_gemini_executor,
@@ -50,7 +49,8 @@ async def demonstrate_hardened_k25():
         )
     ]
 
-    system_prompt = """You are the Deep Research Core (K.2.5), an elite competitive intelligence analyst.
+    system_prompt = """You are the Deep Research Core (K.2.5),
+        an elite competitive intelligence analyst.
 
 Your mission is to produce multi-layered intelligence reports that combine:
 1. Strategic Layer: Market positioning, competitive moats, growth vectors

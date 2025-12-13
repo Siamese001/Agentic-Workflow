@@ -8,7 +8,6 @@ voice to match, preventing the "Generic AI" voice.
 import logging
 import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any, Union
 from pydantic import BaseModel, Field, validator, confloat
 
 logger = logging.getLogger(__name__)
@@ -26,11 +25,23 @@ class StyleProfile(BaseModel):
     """Profile defining a communication style."""
 
     primary_tone: ToneType = Field(..., description="Primary tone type")
-    formality_level: confloat(ge=0.0, le=1.0) = Field(default=0.7, description="Formality level (0=Casual, 1=Academic)")
-    emoji_frequency: confloat(ge=0.0, le=1.0) = Field(default=0.2, description="Emoji usage frequency")
-    sentence_length_avg: int = Field(default=15, ge=5, le=50, description="Target words per sentence")
-    vocabulary_complexity: confloat(ge=0.0, le=1.0) = Field(default=0.5, description="Vocabulary complexity")
-    confidence_level: confloat(ge=0.0, le=1.0) = Field(default=0.8, description="Confidence in analysis")
+    formality_level: confloat(ge=0.0,
+        le=1.0) = Field(default=0.7,
+        description="Formality level (0=Casual,
+        1=Academic)")
+    emoji_frequency: confloat(ge=0.0,
+        le=1.0) = Field(default=0.2,
+        description="Emoji usage frequency")
+    sentence_length_avg: int = Field(default=15,
+        ge=5,
+        le=50,
+        description="Target words per sentence")
+    vocabulary_complexity: confloat(ge=0.0,
+        le=1.0) = Field(default=0.5,
+        description="Vocabulary complexity")
+    confidence_level: confloat(ge=0.0,
+        le=1.0) = Field(default=0.8,
+        description="Confidence in analysis")
 
     class Config:
         """Pydantic configuration."""
@@ -42,7 +53,8 @@ class GenerationConfig(BaseModel):
     system_prompt_fragment: str = Field(..., description="Instruction to inject into prompts")
     temperature_setting: confloat(ge=0.1, le=1.0) = Field(..., description="LLM temperature")
     banned_phrases: List[str] = Field(default_factory=list, description="Phrases to avoid")
-    preferred_transitions: List[str] = Field(default_factory=list, description="Preferred transition words")
+    preferred_transitions: List[str] = Field(default_factory=list,
+        description="Preferred transition words")
     max_sentence_length: int = Field(default=25, ge=5, le=100, description="Max words per sentence")
 
     @validator('temperature_setting')
@@ -111,7 +123,8 @@ class ToneAnalyzer:
             combined_text = combined_text.strip()
 
             if len(combined_text) < self.min_sample_length:
-                logger.warning(f"Insufficient content length ({len(combined_text)}), returning neutral profile")
+                logger.warning(f"Insufficient content length ({len(combined_text)}),
+                    returning neutral profile")
                 return self._get_neutral_profile()
 
             # Calculate metrics
@@ -533,7 +546,10 @@ class ToneModel:
 
         logger.info("Initialized ToneModel with all components")
 
-    def analyze_and_configure(self, content_samples: List[str], archetype: Optional[str] = None) -> Tuple[StyleProfile, GenerationConfig]:
+    def analyze_and_configure(self,
+        content_samples: List[str],
+        archetype: Optional[str] = None) -> Tuple[StyleProfile,
+        GenerationConfig]:
         """Analyze content and generate configuration.
 
         Args:
@@ -548,7 +564,8 @@ class ToneModel:
             profile = self.analyzer.analyze_style(content_samples)
 
             # Get base configuration
-            config = self.config_templates.get(profile.primary_tone, self.config_templates[ToneType.AUTHORITATIVE])
+            config = self.config_templates.get(profile.primary_tone,
+                self.config_templates[ToneType.AUTHORITATIVE])
 
             # Adjust based on formality
             if profile.formality_level > 0.8:
@@ -567,7 +584,8 @@ class ToneModel:
         except Exception as e:
             logger.error(f"Error in analyze_and_configure: {str(e)}")
             # Return safe defaults
-            return self.analyzer._get_neutral_profile(), self.config_templates[ToneType.AUTHORITATIVE]
+            return self.analyzer._get_neutral_profile(),
+                self.config_templates[ToneType.AUTHORITATIVE]
 
     def _adjust_for_archetype(self, config: GenerationConfig, archetype: str) -> GenerationConfig:
         """Adjust configuration based on recipient archetype.

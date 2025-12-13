@@ -13,10 +13,7 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
 
-from shared.resilience.mixin import HardeningMixin, TokenLimitError
-from shared.resilience.telemetry import SystemTelemetry, get_telemetry
 from runtime.shared.agent_executor import AgentMessage, AgentResponse
 
 logger = logging.getLogger(__name__)
@@ -323,7 +320,6 @@ class HardenedOpenAIExecutor(HardeningMixin):
         loop = asyncio.get_event_loop()
         if loop.is_running():
             # If already in event loop, use run_in_executor
-            import concurrent.futures
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(

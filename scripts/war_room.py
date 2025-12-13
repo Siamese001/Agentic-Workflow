@@ -23,7 +23,6 @@ from typing import Dict, Any, Optional
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from runtime.shared.workflow.executive_agents import (
     ExecutiveAgentOrchestrator,
     DataSourceProvider,
     create_executive_orchestrator
@@ -217,7 +216,8 @@ class WarRoom:
             # Show immediate wins
             logger.info("\nImmediate Wins:")
             for win in roadmap.immediate_wins:
-                logger.info(f"  • {win['initiative']} (Impact: {win['impact']}, Effort: {win['effort']})")
+                logger.info(f"  • {win['initiative']} (Impact: {win['impact']},
+                    Effort: {win['effort']})")
 
             return roadmap
 

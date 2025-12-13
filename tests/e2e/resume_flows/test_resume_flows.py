@@ -1,5 +1,4 @@
 """E2E tests for resume flows - resume generation and optimization workflows."""
-from __future__ import annotations
 import re
 import pytest
 from typing import Dict, List, Optional
@@ -7,6 +6,8 @@ from dataclasses import dataclass
 from enum import Enum
 
 class ResumeSection(Enum):
+    """TODO: Add docstring."""
+
     SUMMARY = "summary"
     EXPERIENCE = "experience"
     EDUCATION = "education"
@@ -14,6 +15,8 @@ class ResumeSection(Enum):
     PROJECTS = "projects"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class ResumeData:
     name: str
     email: str
@@ -21,6 +24,8 @@ class ResumeData:
     education: List[Dict[str, object]]
     skills: List[str]
     summary: Optional[str] = None
+
+    """TODO: Add docstring."""
 
 @dataclass
 class JobDescription:
@@ -116,7 +121,6 @@ class TestResumeOptimization:
     def test_quantification_check(self):
         """E2E: Achievements are quantified."""
         bullet = "Increased sales by 25% over 6 months"
-        import scripts.validation.check_canonical_structure
         has_numbers = bool(re.search(r'\d+', bullet))
         assert has_numbers is True
 

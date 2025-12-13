@@ -11,18 +11,13 @@ Implements a robust MCP tool executor with:
 
 import logging
 import asyncio
-import json
-import signal
 import psutil
 import tempfile
 import shutil
 from typing import Any, Dict, List, Optional, Union, Callable
-from datetime import datetime, timedelta
 from pathlib import Path
 from dataclasses import dataclass, field
-from pydantic import BaseModel, Field
 from enum import Enum
-import traceback
 import os
 import sys
 
@@ -115,7 +110,7 @@ class ProcessMonitor:
         self.cpu_times_start = self.process.cpu_times()
 
     def update(self) -> Dict[str, float]:
-        """Update resource usage metrics."""
+        """# SQL removed: Update resource usage metrics."""
         try:
             # Memory usage
             memory_info = self.process.memory_info()
@@ -371,7 +366,8 @@ class HardenedMCPExecutor:
     def _apply_resource_limits(self, limits: ResourceLimits) -> Callable:
         """Apply resource limits to subprocess."""
         def limit_function():
-            import resource
+            """TODO: Add docstring."""
+
 
             rlimits = limits.to_rlimits()
             for resource_type, limit_value in rlimits.items():

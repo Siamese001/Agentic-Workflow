@@ -1,11 +1,12 @@
 """E2E tests for outreach flows - LinkedIn outreach campaign workflows."""
-from __future__ import annotations
 from typing import List, Optional
 from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime
 
 class OutreachStatus(Enum):
+    """TODO: Add docstring."""
+
     DRAFT = "draft"
     SCHEDULED = "scheduled"
     SENT = "sent"
@@ -13,12 +14,16 @@ class OutreachStatus(Enum):
     CONVERTED = "converted"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class OutreachCampaign:
     id: str
     name: str
     target_contacts: List[str]
     message_template: str
     status: OutreachStatus = OutreachStatus.DRAFT
+
+    """TODO: Add docstring."""
 
 @dataclass
 class Contact:

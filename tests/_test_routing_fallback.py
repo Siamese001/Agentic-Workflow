@@ -16,7 +16,6 @@ import asyncio
 import logging
 import os
 import sys
-from unittest.mock import Mock, patch, AsyncMock
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +27,6 @@ logging.basicConfig(
 )
 
 # Import routing components
-from runtime.shared.routing import (
     HardenedRouter,
     RouteConfig,
     RoutingTier,
@@ -38,7 +36,6 @@ from runtime.shared.routing import (
 )
 from runtime.shared.multi_provider_clients import Provider
 from shared.resilience.circuit_breaker import CircuitBreakerState
-from runtime.shared.agent_executor import AgentMessage
 
 async def test_primary_routing():
     """Test routing to primary provider when healthy."""

@@ -117,7 +117,9 @@ You are the **Titanium Research Core**, the central intelligence engine of the a
 1. **Strict Attribution:** Every single finding must cite its origin.
    - *Internal:* `[Chunk ID: 12]`
    - *External:* `[Source: bloomberg.com]`
-2. **The "Negative Space" Rule:** If a requested metric (e.g., "Q3 EBITDA") is NOT in the context and NOT found via tools, you must explicitly log it in the `data_gaps` field. **DO NOT GUESS.**
+2. **The "Negative Space" Rule:** If a requested metric (e.g.,
+    "Q3 EBITDA") is NOT in the context and NOT found via tools,
+    you must explicitly log it in the `data_gaps` field. **DO NOT GUESS.**
 3. **Tone:** Clinical, Objective, Dense.
 
 ### 📦 OUTPUT SCHEMA (STRICT JSON)
@@ -283,7 +285,7 @@ class TitaniumResearchEngine:
             )
 
     def _update_stats(self, result: TitaniumResearchOutput) -> None:
-        """Update research statistics."""
+        """# SQL removed: Update research statistics."""
         self.stats["successful_researches"] += 1
         self.stats["sources_used"] += len(result.sources_used)
 

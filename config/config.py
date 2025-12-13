@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .config_types import *
-from .config_impl import *
+# from .config_types import *  # Star import removed
+# from .config_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

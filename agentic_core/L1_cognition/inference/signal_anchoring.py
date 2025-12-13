@@ -6,12 +6,9 @@ source attribution and confidence scores, preventing hallucinations while
 allowing maximum creativity in narrative construction.
 """
 
-from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
-from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
 import hashlib
@@ -164,6 +161,7 @@ class ClaimExtractor:
             "skill": [
                 r"(?:skilled in|proficient in|expertise in|experience with)\s+([^.\n]+)",
                 r"(?:python|java|javascript|sql|aws|docker|kubernetes)\s+(?:developer|engineer|specialist)",
+                    
                 r"(\d+)\+?\s*years?\s+(?:of\s+)?experience\s+(?:in|with|as)\s+([^.\n]+)"
             ],
             "experience": [
@@ -183,7 +181,9 @@ class ClaimExtractor:
             ],
             "metric": [
                 r"(\d+%|\d+\s*(?:percent|percentage))\s+(?:increase|decrease|reduction|improvement)",
+                    
                 r"(\d+(?:\.\d+)?)\s*(?:million|billion|thousand|k|m|b)\s+(?:revenue|sales|users|customers)",
+                    
                 r"managed\s+(?:a\s+)?team\s+of\s+(\d+)"
             ],
             "fact": [

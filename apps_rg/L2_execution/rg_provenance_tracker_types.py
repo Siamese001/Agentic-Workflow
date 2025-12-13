@@ -1,7 +1,6 @@
 """Types and models for rg_provenance_tracker."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class ProvenanceType(Enum):

@@ -7,7 +7,6 @@ that can be inherited by any component requiring fault tolerance.
 
 import time
 import logging
-from typing import Any, Callable, Optional, Dict
 from pydantic import BaseModel, Field
 
 from tenacity import (
@@ -19,7 +18,6 @@ from tenacity import (
 )
 
 from .circuit_breaker import CircuitBreaker, CircuitBreakerError
-from .telemetry import SystemTelemetry, get_telemetry
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +27,16 @@ class HardeningConfig(BaseModel):
     max_retries: int = Field(5, ge=1, description="Max retry attempts for transient errors.")
     wait_min_ms: int = Field(1000, ge=1, description="Minimum backoff wait time in milliseconds.")
     wait_max_ms: int = Field(60000, ge=1, description="Maximum backoff wait time in milliseconds.")
-    circuit_breaker_threshold: int = Field(5, ge=1, description="Failure count to trip the circuit.")
-    circuit_reset_timeout: int = Field(60, ge=1, description="Seconds before attempting circuit recovery.")
-    safety_threshold_ratio: float = Field(0.8, ge=0.0, le=1.0, description="Pre-flight token safety ratio.")
+    circuit_breaker_threshold: int = Field(5,
+        ge=1,
+        description="Failure count to trip the circuit.")
+    circuit_reset_timeout: int = Field(60,
+        ge=1,
+        description="Seconds before attempting circuit recovery.")
+    safety_threshold_ratio: float = Field(0.8,
+        ge=0.0,
+        le=1.0,
+        description="Pre-flight token safety ratio.")
     enable_telemetry: bool = Field(True, description="Enable telemetry logging.")
 
 class HardeningMixin:

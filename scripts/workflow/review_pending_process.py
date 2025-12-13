@@ -45,7 +45,11 @@ def has_real_code(path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
-def _categorize_pending_file(f: Path, seen_hashes: Dict[str, Path]) -> Tuple[Optional[Tuple[Path, int]], Optional[Path]]:
+def _categorize_pending_file(f: Path,
+    seen_hashes: Dict[str,
+    Path]) -> Tuple[Optional[Tuple[Path,
+    int]],
+    Optional[Path]]:
     """Categorize a pending file as large real code or small/stub."""
     size = f.stat().st_size
     h = get_file_hash(f)

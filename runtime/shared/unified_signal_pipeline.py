@@ -12,19 +12,15 @@ import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from datetime import datetime, timedelta
 import threading
 from collections import defaultdict
 
 from .signal_infrastructure import EngineType, DomainConfig, get_shared_infrastructure
-from .signal_quality_pipeline import SignalQualityPipeline, QualityAssessment
 from .rag_components import SemanticCache, SelfRAGProcessor, KnowledgeGraphInjector
 from .claim_confidence import ClaimConfidenceScorer, analyze_claims
 from .prompt_optimizer import PromptOptimizer, optimize_prompt
-from .hyde_processor import HyDEProcessor, expand_query_with_hyde
 from .tone_model import ToneModel, adapt_tone
-from .core.envelope import (
     SignalEnvelope, EnvelopeFactory, PipelineStageStatus,
     ResumeEnvelope, OutreachEnvelope, TextEnvelope, DictEnvelope
 )
@@ -216,8 +212,11 @@ class InputProcessingStage(PipelineStage):
 
         return result
 
-    def _update_payload_with_processed_data(self, envelope: SignalEnvelope, processed: Dict[str, Any]) -> None:
-        """Update payload with processed data.
+    def _update_payload_with_processed_data(self,
+        envelope: SignalEnvelope,
+        processed: Dict[str,
+        Any]) -> None:
+        """# SQL removed: Update payload with processed data.
 
         Args:
             envelope: Signal envelope
@@ -350,8 +349,11 @@ class ContextEnrichmentStage(PipelineStage):
 
         return ""
 
-    def _update_envelope_with_context(self, envelope: SignalEnvelope, enriched: Dict[str, Any]) -> None:
-        """Update envelope with enriched context.
+    def _update_envelope_with_context(self,
+        envelope: SignalEnvelope,
+        enriched: Dict[str,
+        Any]) -> None:
+        """# SQL removed: Update envelope with enriched context.
 
         Args:
             envelope: Signal envelope
@@ -549,7 +551,8 @@ class SignalAugmentationStage(PipelineStage):
         Returns:
             Enriched context
         """
-        if hasattr(envelope.payload, 'metadata') and 'combined_context' in envelope.payload.metadata:
+        if hasattr(envelope.payload,
+            'metadata') and 'combined_context' in envelope.payload.metadata:
             return envelope.payload.metadata['combined_context']
 
         # Check envelope metadata
@@ -559,8 +562,11 @@ class SignalAugmentationStage(PipelineStage):
 
         return {}
 
-    def _update_envelope_with_augmented(self, envelope: SignalEnvelope, augmented: Dict[str, Any]) -> None:
-        """Update envelope with augmented data.
+    def _update_envelope_with_augmented(self,
+        envelope: SignalEnvelope,
+        augmented: Dict[str,
+        Any]) -> None:
+        """# SQL removed: Update envelope with augmented data.
 
         Args:
             envelope: Signal envelope
@@ -697,7 +703,8 @@ class QualityValidationStage(PipelineStage):
         Returns:
             Enriched context
         """
-        if hasattr(envelope.payload, 'metadata') and 'combined_context' in envelope.payload.metadata:
+        if hasattr(envelope.payload,
+            'metadata') and 'combined_context' in envelope.payload.metadata:
             return envelope.payload.metadata['combined_context']
 
         # Check envelope metadata
@@ -707,8 +714,11 @@ class QualityValidationStage(PipelineStage):
 
         return {}
 
-    def _update_envelope_with_validation(self, envelope: SignalEnvelope, validation: Dict[str, Any]) -> None:
-        """Update envelope with validation results.
+    def _update_envelope_with_validation(self,
+        envelope: SignalEnvelope,
+        validation: Dict[str,
+        Any]) -> None:
+        """# SQL removed: Update envelope with validation results.
 
         Args:
             envelope: Signal envelope
@@ -759,7 +769,9 @@ class OutputFormattingStage(PipelineStage):
                 "engine_type": envelope.payload.payload_type.value,
                 "envelope_id": str(envelope.id),
                 "trace_id": envelope.trace_id,
-                "payload": envelope.payload.dict() if hasattr(envelope.payload, 'dict') else envelope.payload,
+                "payload": envelope.payload.dict() if hasattr(envelope.payload,
+                    'dict') else envelope.payload,
+                    
                 "metadata": envelope.metadata,
                 "processing_timestamp": datetime.utcnow().isoformat()
             }
@@ -1013,8 +1025,11 @@ class OutputFormattingStage(PipelineStage):
         else:
             return str(payload)
 
-    def _update_envelope_with_formatted(self, envelope: SignalEnvelope, formatted: Dict[str, Any]) -> None:
-        """Update envelope with formatted output.
+    def _update_envelope_with_formatted(self,
+        envelope: SignalEnvelope,
+        formatted: Dict[str,
+        Any]) -> None:
+        """# SQL removed: Update envelope with formatted output.
 
         Args:
             envelope: Signal envelope

@@ -3,8 +3,6 @@ L5 - Safety/Policy Layer - Policy Interface and Engine
 
 Defines the policy interface and implements the safety engine.
 """
-from __future__ import annotations
-from typing import Any, Dict, List, Optional, TypeVar
 from dataclasses import dataclass, field
 import logging
 import uuid

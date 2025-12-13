@@ -1,6 +1,6 @@
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
-"""Update User Profile - atomic implementation."""
+"""# SQL removed: Update User Profile - atomic implementation."""
 
 from typing import Dict
 

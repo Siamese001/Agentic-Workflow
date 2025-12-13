@@ -5,7 +5,9 @@ logger = logging.getLogger(__name__)
 import re
 
 # Read the test file
-with open('tests/integration/test_hardened_orchestrator_comprehensive.py', 'r', encoding='utf-8') as f:
+with open('tests/integration/test_hardened_orchestrator_comprehensive.py',
+    'r',
+    encoding='utf-8') as f:
     content = f.read()
 
 # Replace all HopSpec instantiations with name= to use script= and description=
@@ -24,7 +26,9 @@ content = re.sub(
 )
 
 # Write back
-with open('tests/integration/test_hardened_orchestrator_comprehensive.py', 'w', encoding='utf-8') as f:
+with open('tests/integration/test_hardened_orchestrator_comprehensive.py',
+    'w',
+    encoding='utf-8') as f:
     f.write(content)
 
 logger.info("Fixed all HopSpec instantiations")

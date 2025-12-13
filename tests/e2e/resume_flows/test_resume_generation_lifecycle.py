@@ -1,5 +1,4 @@
 """E2E tests for complete resume generation lifecycle."""
-from __future__ import annotations
 import re
 import pytest
 from typing import Dict, List
@@ -7,6 +6,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 class ResumePhase(Enum):
+    """TODO: Add docstring."""
+
     INPUT_COLLECTION = "input_collection"
     JOB_ANALYSIS = "job_analysis"
     SKILL_MATCHING = "skill_matching"
@@ -17,6 +18,8 @@ class ResumePhase(Enum):
     COMPLETED = "completed"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class ResumeGenerationState:
     session_id: str
     phase: ResumePhase
@@ -290,7 +293,6 @@ class TestResumeQualityE2E:
             "Managed projects",  # Not quantified
         ]
 
-        import scripts.validation.check_canonical_structure
         quantified = [a for a in achievements if re.search(r'\d+', a)]
         quantification_rate = len(quantified) / len(achievements)
 

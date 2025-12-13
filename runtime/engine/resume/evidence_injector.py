@@ -52,7 +52,8 @@ class EvidenceInjector:
         self.evidence_library: List[EvidenceItem] = []
         self._links_used = 0
 
-        logger.info(f"Initialized EvidenceInjector (max {max_links_per_bullet}/bullet, {max_links_per_resume}/resume)")
+        logger.info(f"Initialized EvidenceInjector (max {max_links_per_bullet}/bullet,
+            {max_links_per_resume}/resume)")
 
     def load_library(self, path: str) -> None:
         """Load evidence library from file.

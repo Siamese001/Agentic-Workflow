@@ -1,5 +1,4 @@
 import re
-from typing import List, Set
 
 from apps_rg.L1_cognition.k2_5_deep_research_models import (
     DeepResearchOutput,
@@ -191,6 +190,8 @@ class IntegrityGateExecutor:
         return bool(re.search(number_pattern, value))
 
 def validate_research_output(
+    """TODO: Add docstring."""
+
     research_output: DeepResearchOutput,
     min_depth_score: float = 0.7
 ) -> IntegrityGateResult:

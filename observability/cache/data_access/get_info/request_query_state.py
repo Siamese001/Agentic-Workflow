@@ -20,7 +20,6 @@ from enum import Enum
 
 import logging
 
-import scripts.validation.check_canonical_structure
 
 from abc import ABC, abstractmethod
 
@@ -232,16 +231,23 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
     def _calculate_depth(self, obj: object, current_depth: int = 0) -> int:
         """Calculate nesting depth"""
         if isinstance(obj, dict):
-            return max([self._calculate_depth(v, current_depth + 1) for v in obj.values()], default=current_depth)
+            return max([self._calculate_depth(v,
+                current_depth + 1) for v in obj.values()],
+                default=current_depth)
         elif isinstance(obj, list):
-            return max([self._calculate_depth(item, current_depth + 1) for item in obj], default=current_depth)
+            return max([self._calculate_depth(item,
+                current_depth + 1) for item in obj],
+                default=current_depth)
         else:
             return current_depth
 
     def _initialize_safety_rules(self) -> List[Dict[str, object]]:
         """Initialize L5 safety rules"""
         return [
-            {"name": "no_injection", "pattern": r"(union|select|insert|update|delete|drop)", "severity": "high"},
+            {"name": "no_injection",
+                "pattern": r"(union|select|insert|update|delete|drop)",
+                "severity": "high"},
+                
             {"name": "no_scripts", "pattern": r"<script", "severity": "high"},
             {"name": "no_eval", "pattern": r"eval\s*\(", "severity": "high"},
             {"name": "size_limit", "max_size": 1000000, "severity": "medium"}

@@ -1,8 +1,6 @@
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
-from apps_rg.L1_cognition.k2_5_deep_research_models import (
     CitationMap,
     DeepResearchOutput,
     ExecutiveProfile,

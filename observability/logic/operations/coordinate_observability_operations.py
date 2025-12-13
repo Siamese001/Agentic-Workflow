@@ -44,7 +44,10 @@ class CoordinateObservabilityOperations:
         self.steps: List[Dict] = []
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def add_step(self, name: str, executor: Callable, dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
+    def add_step(self,
+        name: str,
+        executor: Callable,
+        dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
         """Add a step to orchestration."""
         self.steps.append({"name": name, "executor": executor, "dependencies": dependencies or []})
         return self
@@ -84,7 +87,9 @@ class CoordinateObservabilityOperations:
             final_output=context["outputs"].get(self.steps[-1]["name"]) if self.steps else None
         )
 
-def orchestrate(steps: List[Dict], initial_input: object = None, config: Optional[Dict] = None) -> OrchestrationResult:
+def orchestrate(steps: List[Dict],
+    initial_input: object = None,
+    config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     orch = CoordinateObservabilityOperations(config)
     for step in steps:

@@ -7,7 +7,6 @@ to prevent PII, secrets, or sensitive user data from being written to logs.
 import json
 import logging
 import re
-from typing import Any, Dict, List, Optional, Union
 from pathlib import Path
 
 # Patterns for sensitive data detection
@@ -21,7 +20,9 @@ SENSITIVE_PATTERNS = [
     # Credit card numbers
     r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b',
     # API keys (common patterns)
-    r'(?:api[_-]?key|apikey|api[_-]?secret|secret[_-]?key|token)[\s:=]+["\']?[A-Za-z0-9+/]{20,}["\']?',
+    r'(?:api[_-]?key|apikey|api[_-]?secret|secret[_-]?key|token)[\s:=]+["\']?[A-Za-z0-9+/]{20,
+        }["\']?',
+        
     # Passwords
     r'(?:password|passwd|pwd)[\s:=]+["\']?[^\s"\']{6,}["\']?',
     # URLs with potential sensitive data
@@ -159,7 +160,10 @@ class SecureLoggerAdapter:
     def _sanitize(self, message: str) -> str:
         """Quick sanitize for common patterns."""
         # Quick redaction for obvious sensitive data
-        if any(keyword in message.lower() for keyword in ['password', 'secret', 'token', 'api_key']):
+        if any(keyword in message.lower() for keyword in ['password',
+            'secret',
+            'token',
+            'api_key']):
             return f"{message[:50]}... [REDACTED]"
         return message
 

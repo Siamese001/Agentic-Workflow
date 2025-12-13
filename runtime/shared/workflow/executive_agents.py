@@ -11,9 +11,6 @@ Uses Instructor for structured output and integrates with hardened infrastructur
 
 import os
 import logging
-import json
-from typing import Dict, Any, Optional, List, Union
-from datetime import datetime
 
 try:
     import instructor

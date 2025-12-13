@@ -44,7 +44,20 @@ def get_test_category(path: Path) -> Tuple[str, str]:
 
 def audit_tests() -> Dict:
     """Run full audit of test structure."""
-    report = {'summary': {'total_test_files': 0, 'total_test_dirs': 0, 'yaml_compliant': 0, 'violations': 0}, 'violations': {'forbidden_lp_patterns': [], 'banned_folders': [], 'unknown_categories': []}, 'coverage': {'unit': defaultdict(list), 'integration': defaultdict(list), 'e2e': defaultdict(list), 'golden': defaultdict(list), 'perf': defaultdict(list), 'load': defaultdict(list)}, 'recommendations': []}
+    report = {'summary': {'total_test_files': 0,
+        'total_test_dirs': 0,
+        'yaml_compliant': 0,
+        'violations': 0},
+        'violations': {'forbidden_lp_patterns': [],
+        'banned_folders': [],
+        'unknown_categories': []},
+        'coverage': {'unit': defaultdict(list),
+        'integration': defaultdict(list),
+        'e2e': defaultdict(list),
+        'golden': defaultdict(list),
+        'perf': defaultdict(list),
+        'load': defaultdict(list)},
+        'recommendations': []}
     test_files = collect_test_files()
     test_dirs = collect_test_dirs()
     report['summary']['total_test_files'] = len(test_files)
@@ -54,7 +67,8 @@ def audit_tests() -> Dict:
         category, subcategory = get_test_category(test_file)
         lp_violations = check_forbidden_patterns(test_file)
         if lp_violations:
-            report['violations']['forbidden_lp_patterns'].append({'file': rel_path, 'patterns': lp_violations})
+            report['violations']['forbidden_lp_patterns'].append({'file': rel_path,
+                'patterns': lp_violations})
             report['summary']['violations'] += 1
         banned = check_banned_folders(test_file)
         if banned:
@@ -66,16 +80,20 @@ def audit_tests() -> Dict:
             report['summary']['yaml_compliant'] += 1
         elif category and category not in ['__pycache__']:
             if category not in [v['category'] for v in report['violations']['unknown_categories']]:
-                report['violations']['unknown_categories'].append({'category': category, 'file': rel_path})
+                report['violations']['unknown_categories'].append({'category': category,
+                    'file': rel_path})
     if report['violations']['forbidden_lp_patterns']:
-        report['recommendations'].append('CRITICAL: Remove L1-L5/P1-P4 folder mirroring in unit tests. Tests should be organized by domain (agentic_core, apps_lic, etc.) not by cognitive layer.')
+        report['recommendations'].append('CRITICAL: Remove L1-L5/P1-P4 folder mirroring in unit tests. Tests should be organized by domain (agentic_core,
+            apps_lic,
+            etc.) not by cognitive layer.')
     if report['violations']['banned_folders']:
         report['recommendations'].append(f'Remove banned folders: {BANNED_FOLDERS}. Move tests to appropriate YAML-defined categories.')
     for category, expected_subs in YAML_TAXONOMY.items():
         actual_subs = set(report['coverage'].get(category, {}).keys())
         missing = set(expected_subs) - actual_subs
         if missing:
-            report['recommendations'].append(f"Missing test coverage in {category}/: {', '.join(missing)}")
+            report['recommendations'].append(f"Missing test coverage in {category}/: {',
+                '.join(missing)}")
     return report
 
 def print_report(report: Dict) -> None:

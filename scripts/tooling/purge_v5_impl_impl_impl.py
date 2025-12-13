@@ -1,6 +1,5 @@
 """Implementation for purge_v5_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 def rename_top_level_folders() -> List[str]:
     """Rename all numbered folders to their clean names."""
@@ -76,13 +75,23 @@ def fix_imports_in_file(file_path: Path) -> bool:
             if not old_path:
                 continue
             if new_path:
-                content = re.sub(f'\\bfrom\\s+{re.escape(old_path)}\\.(\\S+)', f'from {new_path}.\\1', content)
-                content = re.sub(f'\\bfrom\\s+{re.escape(old_path)}\\b', f'from {new_path}', content)
-                content = re.sub(f'\\bimport\\s+{re.escape(old_path)}\\.(\\S+)', f'import {new_path}.\\1', content)
-                content = re.sub(f'\\bimport\\s+{re.escape(old_path)}\\b', f'import {new_path}', content)
+                content = re.sub(f'\\bfrom\\s+{re.escape(old_path)}\\.(\\S+)',
+                    f'from {new_path}.\\1',
+                    content)
+                content = re.sub(f'\\bfrom\\s+{re.escape(old_path)}\\b',
+                    f'from {new_path}',
+                    content)
+                content = re.sub(f'\\bimport\\s+{re.escape(old_path)}\\.(\\S+)',
+                    f'import {new_path}.\\1',
+                    content)
+                content = re.sub(f'\\bimport\\s+{re.escape(old_path)}\\b',
+                    f'import {new_path}',
+                    content)
             else:
                 content = re.sub(f'\\bfrom\\s+{re.escape(old_path)}\\.(\\S+)', 'from \\1', content)
-                content = re.sub(f'\\bimport\\s+{re.escape(old_path)}\\.(\\S+)', 'import \\1', content)
+                content = re.sub(f'\\bimport\\s+{re.escape(old_path)}\\.(\\S+)',
+                    'import \\1',
+                    content)
         for old_path, new_path in IMPORT_RENAMES.items():
             if old_path and new_path:
                 content = content.replace(f'"{old_path}/', f'"{new_path}/')
@@ -107,7 +116,7 @@ def fix_all_imports() -> int:
     return fixed_count
 
 def update_yaml_files() -> None:
-    """Update both YAML SSoT files with new folder names."""
+    """# SQL removed: Update both YAML SSoT files with new folder names."""
     main_yaml = REPO_ROOT / 'unified_structure_subatomic.yaml'
     if main_yaml.exists():
         content = main_yaml.read_text(encoding='utf-8')
@@ -116,7 +125,8 @@ def update_yaml_files() -> None:
         content = content.replace('09_apps/apps_lic', 'apps_lic')
         content = content.replace('09_apps/apps_rg', 'apps_rg')
         content = content.replace('09_apps.', '')
-        content = content.replace('09_apps:', '# 09_apps removed - apps_lic and apps_rg are now top-level')
+        content = content.replace('09_apps:',
+            '# 09_apps removed - apps_lic and apps_rg are now top-level')
         main_yaml.write_text(content, encoding='utf-8')
     meta_yaml = REPO_ROOT / 'unified_structure_subatomic_meta.yaml'
     if meta_yaml.exists():
@@ -132,7 +142,7 @@ def update_yaml_files() -> None:
         meta_yaml.write_text(content, encoding='utf-8')
 
 def update_workspace_file() -> None:
-    """Update the VS Code workspace file."""
+    """# SQL removed: Update the VS Code workspace file."""
     workspace_file = REPO_ROOT / 'Agentic.code-workspace'
     if workspace_file.exists():
         content = workspace_file.read_text(encoding='utf-8')
@@ -142,7 +152,7 @@ def update_workspace_file() -> None:
         workspace_file.write_text(content, encoding='utf-8')
 
 def update_ssot_validator() -> None:
-    """Update the SSOT validator script."""
+    """# SQL removed: Update the SSOT validator script."""
     validator = REPO_ROOT / 'SSOT_validator.py'
     if validator.exists():
         content = validator.read_text(encoding='utf-8')

@@ -12,13 +12,11 @@ logger = logging.getLogger(__name__)
 """
 
 import time
-import json
+import asyncio
 import tempfile
 import os
-from typing import List, Dict, Any
 
 # Import the SOTA layer components
-from runtime.shared import (
     LateInteractionReranker,
     PassThroughReranker,
     rerank_documents,
@@ -97,7 +95,8 @@ class SOTALayerTestSuite:
 
         # Check if reranker is available
         if not self.reranker.is_available:
-            logger.info("\n⚠️  Reranker not available (missing dependencies), testing fallback mode")
+            logger.info("\n⚠️  Reranker not available (missing dependencies),
+                testing fallback mode")
             # Test fallback mode
             result = self.reranker.rerank("test query", self.sample_docs[:3])
             logger.info(f"✅ Fallback mode returned {len(result)} documents")
@@ -216,7 +215,7 @@ class SOTALayerTestSuite:
 
         # Wait for expiry
         logger.info("   Waiting 2 seconds for TTL expiry...")
-        time.sleep(2)
+        await asyncio.sleep(2)
 
         result = ttl_cache.get("test")
         logger.info(f"   After TTL expiry: {'Found' if result else 'Not found'}")

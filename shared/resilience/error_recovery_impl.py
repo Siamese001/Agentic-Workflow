@@ -1,7 +1,6 @@
 """Implementation for error_recovery."""
 
-from typing import Any, Dict, List, Optional
-from .error_recovery_types import *
+# from .error_recovery_types import *  # Star import removed
 
 class ErrorRecoveryManager:
     """Manages error recovery with retry, backoff, and circuit breaking.
@@ -13,7 +12,11 @@ class ErrorRecoveryManager:
     - Observability hooks
     """
 
-    def __init__(self, max_retries: int=3, base_backoff_ms: int=200, jitter_ms: int=100, enable_circuit_breaker: bool=True):
+    def __init__(self,
+        max_retries: int=3,
+        base_backoff_ms: int=200,
+        jitter_ms: int=100,
+        enable_circuit_breaker: bool=True):
         self.max_retries = max_retries
         self.base_backoff_ms = base_backoff_ms
         self.jitter_ms = jitter_ms
@@ -56,7 +59,12 @@ class ErrorRecoveryManager:
         jitter = random.randint(-self.jitter_ms, self.jitter_ms)
         return max(0, base + jitter)
 
-    async def invoke_with_retry(self, fn: Callable[[], Awaitable[Any]], breaker_name: Optional[str]=None, context: Optional[Dict[str, Any]]=None) -> Any:
+    async def invoke_with_retry(self,
+        fn: Callable[[],
+        Awaitable[Any]],
+        breaker_name: Optional[str]=None,
+        context: Optional[Dict[str,
+        Any]]=None) -> Any:
         """Invoke an awaitable with retry + backoff + optional circuit breaker.
 
         Args:
@@ -93,30 +101,60 @@ class ErrorRecoveryManager:
             return get_breaker(breaker_name)
         return None
 
-    def _check_circuit_breaker(self, breaker: Optional[CircuitBreaker], attempt: int, context: Optional[Dict]) -> None:
+    def _check_circuit_breaker(self,
+        breaker: Optional[CircuitBreaker],
+        attempt: int,
+        context: Optional[Dict]) -> None:
         """Check if circuit breaker allows execution."""
         if breaker and (not breaker.can_execute()):
-            logger.warning('circuit_breaker_open', extra={'breaker_name': breaker.name, 'breaker_state': breaker.state.value, 'attempt': attempt, 'context': context})
+            logger.warning('circuit_breaker_open',
+                extra={'breaker_name': breaker.name,
+                'breaker_state': breaker.state.value,
+                'attempt': attempt,
+                'context': context})
             raise CircuitBreakerOpenError(f"Circuit breaker '{breaker.name}' is open", breaker.name)
 
-    def _handle_success(self, breaker: Optional[CircuitBreaker], attempt: int, context: Optional[Dict]) -> None:
+    def _handle_success(self,
+        breaker: Optional[CircuitBreaker],
+        attempt: int,
+        context: Optional[Dict]) -> None:
         """Handle successful execution."""
         if breaker:
             breaker.record_success()
         if attempt > 1:
             logger.info('retry_success', extra={'attempt': attempt, 'context': context})
 
-    async def _handle_retry_error(self, exc: Exception, breaker: Optional[CircuitBreaker], attempt: int, context: Optional[Dict]) -> None:
+    async def _handle_retry_error(self,
+        exc: Exception,
+        breaker: Optional[CircuitBreaker],
+        attempt: int,
+        context: Optional[Dict]) -> None:
         """Handle retry error."""
         typed_error = self.classify_exception(exc)
         if breaker and isinstance(typed_error, TransientError):
             breaker.record_failure()
         if isinstance(typed_error, PermanentError):
-            logger.error('permanent_error', extra={'error': str(exc), 'error_type': exc.__class__.__name__, 'attempt': attempt, 'context': context})
+            logger.error('permanent_error',
+                extra={'error': str(exc),
+                'error_type': exc.__class__.__name__,
+                'attempt': attempt,
+                'context': context})
             raise
         if attempt > self.max_retries:
-            logger.error('retry_exhausted', extra={'error': str(exc), 'error_type': exc.__class__.__name__, 'attempts': attempt, 'context': context})
-            raise RetryExhaustedError(message=f'Retry exhausted after {attempt} attempts: {str(exc)}', code=exc.__class__.__name__, attempts=attempt) from exc
+            logger.error('retry_exhausted',
+                extra={'error': str(exc),
+                'error_type': exc.__class__.__name__,
+                'attempts': attempt,
+                'context': context})
+            raise RetryExhaustedError(message=f'Retry exhausted after {attempt} attempts: {str(exc)}',
+                code=exc.__class__.__name__,
+                attempts=attempt) from exc
         backoff_ms = self.calculate_backoff_ms(attempt)
-        logger.warning('retry_attempt', extra={'error': str(exc), 'error_type': exc.__class__.__name__, 'attempt': attempt, 'max_retries': self.max_retries, 'backoff_ms': backoff_ms, 'context': context})
+        logger.warning('retry_attempt',
+            extra={'error': str(exc),
+            'error_type': exc.__class__.__name__,
+            'attempt': attempt,
+            'max_retries': self.max_retries,
+            'backoff_ms': backoff_ms,
+            'context': context})
         await asyncio.sleep(backoff_ms / 1000.0)

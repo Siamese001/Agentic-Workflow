@@ -3,9 +3,7 @@
 Tests the Resume Engine functionality with mocked LLM responses to avoid API calls.
 """
 
-import pytest
 from unittest.mock import Mock, patch
-from typing import Dict, Any
 
 # Import the classes we're testing
 from apps_rg.L2_execution.job_analyzer import JobAnalyzer
@@ -194,7 +192,8 @@ class TestExecuteResumeGenerationMocked:
         self.mock_analyzer = Mock()
         self.mock_generator = Mock()
 
-        with patch('apps_rg.L2_execution.execute_resume_generation.JobAnalyzer') as mock_analyzer_class, \
+        with patch('apps_rg.L2_execution.execute_resume_generation.JobAnalyzer') as mock_analyzer_class,
+            \
              patch('apps_rg.L2_execution.execute_resume_generation.ResumeGenerator') as mock_generator_class:
 
             mock_analyzer_class.return_value = self.mock_analyzer

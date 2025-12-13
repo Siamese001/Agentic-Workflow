@@ -4,8 +4,6 @@ Tests atomic state management, resilient routing, circuit breaker, and recovery.
 """
 import pytest
 import tempfile
-from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
 
 from runtime.shared.state import get_state_manager, reset_state_manager
 from runtime.shared.routing.factory import reset_router
@@ -34,6 +32,8 @@ def mock_execute_with_fallback():
     """Mock the execute_with_fallback method."""
     with patch.object(HardenedRouter, 'execute_with_fallback') as mock:
         def side_effect(prompt, **kwargs):
+            """TODO: Add docstring."""
+
             return AgentResponse(
                 content=f"Mock response for: {prompt[:50]}",
                 finish_reason="stop",
@@ -388,7 +388,9 @@ class TestErrorRecovery:
         with patch.object(HardenedRouter, 'execute_with_fallback') as mock:
             mock.side_effect = [
                 Exception("Transient failure"),
-                AgentResponse(content="Success after retry", finish_reason="stop", usage={"total_tokens": 100})
+                AgentResponse(content="Success after retry",
+                    finish_reason="stop",
+                    usage={"total_tokens": 100})
             ]
 
             result = orchestrator.execute_workflow({})

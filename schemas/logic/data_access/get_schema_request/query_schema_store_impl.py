@@ -1,7 +1,7 @@
 """Implementation for query_schema_store."""
 
 from typing import Any, Dict, List, Optional
-from .query_schema_store_types import *
+# from .query_schema_store_types import *  # Star import removed
 
 class SchemaStoreQuerier:
     """Main class for querying schema store."""
@@ -24,7 +24,8 @@ class SchemaStoreQuerier:
         Returns:
             SchemaQueryResult: Query results with schemas and metadata
         """
-        self.logger.info(f'Querying schemas with criteria: type={query.schema_type}, status={query.status}')
+        self.logger.info(f'Querying schemas with criteria: type={query.schema_type},
+            status={query.status}')
         try:
             filtered_ids = self._apply_filters(query)
             filtered_ids.sort(key=lambda x: self._schema_cache[x].metadata.updated_at, reverse=True)
@@ -33,14 +34,26 @@ class SchemaStoreQuerier:
             entries = []
             for schema_id in paginated_ids:
                 entry = self._schema_cache[schema_id]
-                filtered_entry = SchemaEntry(metadata=entry.metadata, content=entry.content if query.include_content else {}, validation_rules=entry.validation_rules if query.include_validation else None, examples=entry.examples if query.include_examples else None)
+                filtered_entry = SchemaEntry(metadata=entry.metadata,
+                    content=entry.content if query.include_content else {},
+                    validation_rules=entry.validation_rules if query.include_validation else None,
+                    examples=entry.examples if query.include_examples else None)
                 entries.append(filtered_entry)
-            result = SchemaQueryResult(entries=entries, total_count=total_count, query=query, metadata={'queried_at': datetime.utcnow().isoformat(), 'storage_path': self.config.storage_path, 'total_schemas': len(self._schema_cache), 'querier': 'SchemaStoreQuerier'})
+            result = SchemaQueryResult(entries=entries,
+                total_count=total_count,
+                query=query,
+                metadata={'queried_at': datetime.utcnow().isoformat(),
+                'storage_path': self.config.storage_path,
+                'total_schemas': len(self._schema_cache),
+                'querier': 'SchemaStoreQuerier'})
             self.logger.info(f'Schema query completed: {len(entries)} results (total: {total_count})')
             return result
         except Exception as e:
             self.logger.error(f'Schema query failed: {str(e)}')
-            return SchemaQueryResult(entries=[], total_count=0, query=query, metadata={'error': str(e)})
+            return SchemaQueryResult(entries=[],
+                total_count=0,
+                query=query,
+                metadata={'error': str(e)})
 
     def get_schema(self, schema_id: str) -> Optional[SchemaEntry]:
         """Get a specific schema by ID.
@@ -115,7 +128,7 @@ class SchemaStoreQuerier:
             return False
 
     def delete_schema(self, schema_id: str) -> bool:
-        """Delete a schema from the store.
+        """# SQL removed: Delete a schema from the store.
 
         Args:
             schema_id: ID of schema to delete
@@ -150,9 +163,24 @@ class SchemaStoreQuerier:
         for entry in self._schema_cache.values():
             status = entry.metadata.status.value
             status_counts[status] = status_counts.get(status, 0) + 1
-        sorted_by_size = sorted(self._schema_cache.values(), key=lambda x: x.metadata.size_bytes, reverse=True)[:5]
-        recent_schemas = sorted(self._schema_cache.values(), key=lambda x: x.metadata.updated_at, reverse=True)[:5]
-        return {'total_schemas': len(self._schema_cache), 'type_distribution': type_counts, 'status_distribution': status_counts, 'largest_schemas': [{'id': e.metadata.id, 'name': e.metadata.name, 'size_bytes': e.metadata.size_bytes} for e in sorted_by_size], 'recently_updated': [{'id': e.metadata.id, 'name': e.metadata.name, 'updated_at': e.metadata.updated_at.isoformat()} for e in recent_schemas], 'index_sizes': {'name_index': len(self._name_index), 'type_index': len(self._type_index), 'tag_index': len(self._tag_index)}}
+        sorted_by_size = sorted(self._schema_cache.values(),
+            key=lambda x: x.metadata.size_bytes,
+            reverse=True)[:5]
+        recent_schemas = sorted(self._schema_cache.values(),
+            key=lambda x: x.metadata.updated_at,
+            reverse=True)[:5]
+        return {'total_schemas': len(self._schema_cache),
+            'type_distribution': type_counts,
+            'status_distribution': status_counts,
+            'largest_schemas': [{'id': e.metadata.id,
+            'name': e.metadata.name,
+            'size_bytes': e.metadata.size_bytes} for e in sorted_by_size],
+            'recently_updated': [{'id': e.metadata.id,
+            'name': e.metadata.name,
+            'updated_at': e.metadata.updated_at.isoformat()} for e in recent_schemas],
+            'index_sizes': {'name_index': len(self._name_index),
+            'type_index': len(self._type_index),
+            'tag_index': len(self._tag_index)}}
 
     def _load_schemas(self) -> None:
         """Load all schemas from storage."""
@@ -204,7 +232,7 @@ class SchemaStoreQuerier:
         return filtered_ids
 
     def _update_indexes(self, schema_id: str, entry: SchemaEntry) -> None:
-        """Update indexes for a schema."""
+        """# SQL removed: Update indexes for a schema."""
         name = entry.metadata.name
         if name not in self._name_index:
             self._name_index[name] = []
@@ -252,7 +280,7 @@ class SchemaStoreQuerier:
             self.logger.error(f'Failed to save schema: {str(e)}')
 
     def _delete_schema_file(self, schema_id: str) -> None:
-        """Delete schema file from disk."""
+        """# SQL removed: Delete schema file from disk."""
         try:
             storage_path = Path(self.config.storage_path)
             schema_file = storage_path / f'{schema_id}.json'
@@ -263,23 +291,70 @@ class SchemaStoreQuerier:
 
     def _schema_entry_to_json(self, entry: SchemaEntry) -> Dict[str, Any]:
         """Convert SchemaEntry to JSON-serializable dict."""
-        return {'metadata': {'id': entry.metadata.id, 'name': entry.metadata.name, 'version': entry.metadata.version, 'schema_type': entry.metadata.schema_type.value, 'status': entry.metadata.status.value, 'created_at': entry.metadata.created_at.isoformat(), 'updated_at': entry.metadata.updated_at.isoformat(), 'created_by': entry.metadata.created_by, 'description': entry.metadata.description, 'tags': entry.metadata.tags, 'dependencies': entry.metadata.dependencies, 'size_bytes': entry.metadata.size_bytes}, 'content': entry.content, 'validation_rules': entry.validation_rules, 'examples': entry.examples}
+        return {'metadata': {'id': entry.metadata.id,
+            'name': entry.metadata.name,
+            'version': entry.metadata.version,
+            'schema_type': entry.metadata.schema_type.value,
+            'status': entry.metadata.status.value,
+            'created_at': entry.metadata.created_at.isoformat(),
+            'updated_at': entry.metadata.updated_at.isoformat(),
+            'created_by': entry.metadata.created_by,
+            'description': entry.metadata.description,
+            'tags': entry.metadata.tags,
+            'dependencies': entry.metadata.dependencies,
+            'size_bytes': entry.metadata.size_bytes},
+            'content': entry.content,
+            'validation_rules': entry.validation_rules,
+            'examples': entry.examples}
 
     def _json_to_schema_entry(self, data: Dict[str, Any]) -> Optional[SchemaEntry]:
         """Convert JSON dict to SchemaEntry."""
         try:
-            metadata = SchemaMetadata(id=data['metadata']['id'], name=data['metadata']['name'], version=data['metadata']['version'], schema_type=SchemaType(data['metadata']['schema_type']), status=SchemaStatus(data['metadata']['status']), created_at=datetime.fromisoformat(data['metadata']['created_at']), updated_at=datetime.fromisoformat(data['metadata']['updated_at']), created_by=data['metadata'].get('created_by'), description=data['metadata'].get('description'), tags=data['metadata'].get('tags', []), dependencies=data['metadata'].get('dependencies', []), size_bytes=data['metadata'].get('size_bytes', 0))
-            return SchemaEntry(metadata=metadata, content=data.get('content', {}), validation_rules=data.get('validation_rules'), examples=data.get('examples'))
+            metadata = SchemaMetadata(id=data['metadata']['id'],
+                name=data['metadata']['name'],
+                version=data['metadata']['version'],
+                schema_type=SchemaType(data['metadata']['schema_type']),
+                status=SchemaStatus(data['metadata']['status']),
+                created_at=datetime.fromisoformat(data['metadata']['created_at']),
+                updated_at=datetime.fromisoformat(data['metadata']['updated_at']),
+                created_by=data['metadata'].get('created_by'),
+                description=data['metadata'].get('description'),
+                tags=data['metadata'].get('tags',
+                []),
+                dependencies=data['metadata'].get('dependencies',
+                []),
+                size_bytes=data['metadata'].get('size_bytes',
+                0))
+            return SchemaEntry(metadata=metadata,
+                content=data.get('content',
+                {}),
+                validation_rules=data.get('validation_rules'),
+                examples=data.get('examples'))
         except Exception as e:
             self.logger.error(f'Failed to convert JSON to SchemaEntry: {str(e)}')
             return None
 
-def create_schema_store_querier(storage_path: str='data/schema_store', max_entries_per_query: int=1000, enable_versioning: bool=True, **kwargs: object) -> SchemaStoreQuerier:
+def create_schema_store_querier(storage_path: str='data/schema_store',
+    max_entries_per_query: int=1000,
+    enable_versioning: bool=True,
+    **kwargs: object) -> SchemaStoreQuerier:
     """Create a configured schema store querier."""
-    config = SchemaStoreConfig(storage_path=storage_path, max_entries_per_query=max_entries_per_query, enable_versioning=enable_versioning, **kwargs)
+    config = SchemaStoreConfig(storage_path=storage_path,
+        max_entries_per_query=max_entries_per_query,
+        enable_versioning=enable_versioning,
+        **kwargs)
     return SchemaStoreQuerier(config)
 
-def query_schema_store(name_pattern: Optional[str]=None, schema_type: Optional[str]=None, status: Optional[str]=None, tags: List[str]=None, include_content: bool=True, limit: int=100, offset: int=0, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
+def query_schema_store(name_pattern: Optional[str]=None,
+    schema_type: Optional[str]=None,
+    status: Optional[str]=None,
+    tags: List[str]=None,
+    include_content: bool=True,
+    limit: int=100,
+    offset: int=0,
+    config: Optional[Dict[str,
+    Any]]=None) -> Dict[str,
+    Any]:
     """Query schema store.
 
     Args:
@@ -297,6 +372,35 @@ def query_schema_store(name_pattern: Optional[str]=None, schema_type: Optional[s
     """
     querier_config = SchemaStoreConfig(**config or {})
     querier = SchemaStoreQuerier(querier_config)
-    query = SchemaQuery(name_pattern=name_pattern, schema_type=SchemaType(schema_type) if schema_type else None, status=SchemaStatus(status) if status else None, tags=tags or [], include_content=include_content, limit=limit, offset=offset)
+    query = SchemaQuery(name_pattern=name_pattern,
+        schema_type=SchemaType(schema_type) if schema_type else None,
+        status=SchemaStatus(status) if status else None,
+        tags=tags or [],
+        include_content=include_content,
+        limit=limit,
+        offset=offset)
     result = querier.query_schemas(query)
-    return {'entries': [{'metadata': {'id': e.metadata.id, 'name': e.metadata.name, 'version': e.metadata.version, 'schema_type': e.metadata.schema_type.value, 'status': e.metadata.status.value, 'created_at': e.metadata.created_at.isoformat(), 'updated_at': e.metadata.updated_at.isoformat(), 'created_by': e.metadata.created_by, 'description': e.metadata.description, 'tags': e.metadata.tags, 'dependencies': e.metadata.dependencies, 'size_bytes': e.metadata.size_bytes}, 'content': e.content, 'validation_rules': e.validation_rules, 'examples': e.examples} for e in result.entries], 'total_count': result.total_count, 'query': {'name_pattern': result.query.name_pattern, 'schema_type': result.query.schema_type.value if result.query.schema_type else None, 'status': result.query.status.value if result.query.status else None, 'tags': result.query.tags, 'include_content': result.query.include_content, 'limit': result.query.limit, 'offset': result.query.offset}, 'metadata': result.metadata}
+    return {'entries': [{'metadata': {'id': e.metadata.id,
+        'name': e.metadata.name,
+        'version': e.metadata.version,
+        'schema_type': e.metadata.schema_type.value,
+        'status': e.metadata.status.value,
+        'created_at': e.metadata.created_at.isoformat(),
+        'updated_at': e.metadata.updated_at.isoformat(),
+        'created_by': e.metadata.created_by,
+        'description': e.metadata.description,
+        'tags': e.metadata.tags,
+        'dependencies': e.metadata.dependencies,
+        'size_bytes': e.metadata.size_bytes},
+        'content': e.content,
+        'validation_rules': e.validation_rules,
+        'examples': e.examples} for e in result.entries],
+        'total_count': result.total_count,
+        'query': {'name_pattern': result.query.name_pattern,
+        'schema_type': result.query.schema_type.value if result.query.schema_type else None,
+        'status': result.query.status.value if result.query.status else None,
+        'tags': result.query.tags,
+        'include_content': result.query.include_content,
+        'limit': result.query.limit,
+        'offset': result.query.offset},
+        'metadata': result.metadata}

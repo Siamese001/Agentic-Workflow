@@ -7,7 +7,6 @@ traversal to enable multi-hop reasoning and relationship-based queries.
 import asyncio
 import logging
 import re
-from typing import Dict, List, Optional, Tuple, Any, Union
 from dataclasses import dataclass
 from enum import Enum
 
@@ -53,6 +52,7 @@ class CypherQueryGenerator:
         self.patterns = {
             # Skills and experience
             "skills_match": r"(?:what|which) skills do (?:i|you|candidate) have (?:for|in|related to) (.+)",
+                
             "experience_with": r"(?:experience|worked|used) (?:with|on) (.+)",
             "projects_using": r"projects (?:using|with|involving) (.+)",
 

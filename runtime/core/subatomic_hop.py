@@ -16,12 +16,10 @@ from .shared_models import (
     MicroCheckpoint,
     StageTransition
 )
-from typing import Dict, Any, Optional, Callable, List, Union
 from dataclasses import dataclass, field
 from pathlib import Path
 import shutil
 import asyncio
-from pydantic import BaseModel, Field, validator
 from datetime import datetime
 
 from .service_container import ServiceContainer, get_default_container
@@ -39,12 +37,10 @@ from .resilience.circuit_breaker import (
     CircuitBreakerConfig,
     CriticalServiceFailure
 )
-from .security.secure_checkpoint import (
     SecureCheckpointManager,
     CheckpointManagerFactory,
     CheckpointIntegrityError
 )
-from .quality.signal_enhancer import (
     SignalEnhancer,
     SignalQuality,
     QualityThresholds,
@@ -283,7 +279,8 @@ class SubatomicHop:
                 if self.config.retry_policy.exponential_backoff:
                     delay *= (2 ** (retry_count - 1))
 
-                logger.warning(f"Stage {stage} failed, retry {retry_count}/{max_retries} in {delay}s: {e}")
+                logger.warning(f"Stage {stage} failed,
+                    retry {retry_count}/{max_retries} in {delay}s: {e}")
                 await asyncio.sleep(delay)
 
     async def _pre_check(self, **kwargs) -> Dict[str, Any]:
@@ -376,7 +373,11 @@ class SubatomicHop:
 
         return plan
 
-    async def _apply_stage_injections(self, stage: MicroStage, kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    async def _apply_stage_injections(self,
+        stage: MicroStage,
+        kwargs: Dict[str,
+        Any]) -> Dict[str,
+        Any]:
         """Apply instructional injections appropriate for the stage.
 
         Args:
@@ -490,7 +491,8 @@ class SubatomicHop:
                             "count": len(matches),
                             "types": [m.injection.type for m in matches]
                         }
-                        logger.warning("Failed to parse enhanced kwargs, keeping original with injection metadata")
+                        logger.warning("Failed to parse enhanced kwargs,
+                            keeping original with injection metadata")
 
             return kwargs
 

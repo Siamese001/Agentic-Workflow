@@ -1,22 +1,26 @@
 """Integration tests for API layer."""
-from __future__ import annotations
 from typing import Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
-from shared.core.exceptions import HopExecutionError, ValidationError, APIError, CircuitBreakerOpenError
 
 class HTTPMethod(Enum):
+    """TODO: Add docstring."""
+
     GET = "GET"
     POST = "POST"
     PUT = "PUT"
     DELETE = "DELETE"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class APIRequest:
     method: HTTPMethod
     path: str
     headers: Dict[str, str]
     body: Optional[Dict[str, object]] = None
+
+    """TODO: Add docstring."""
 
 @dataclass
 class APIResponse:

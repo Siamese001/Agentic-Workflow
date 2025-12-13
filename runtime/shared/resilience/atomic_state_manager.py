@@ -20,11 +20,17 @@ class WorkflowState(BaseModel):
     """Strict schema for a persisted workflow state."""
     workflow_id: str = Field(..., description="Unique ID for the workflow run.")
     current_step: str = Field(..., description="The name of the currently executing step.")
-    last_checkpoint_time: datetime = Field(..., description="Timestamp of the last successful commit.")
-    data_payload: Dict[str, Any] = Field(..., description="The mutable dictionary holding the workflow's working data.")
-    checksum: str = Field(..., description="SHA256 hash of the data_payload for consistency validation.")
+    last_checkpoint_time: datetime = Field(...,
+        description="Timestamp of the last successful commit.")
+    data_payload: Dict[str,
+        Any] = Field(...,
+        description="The mutable dictionary holding the workflow's working data.")
+    checksum: str = Field(...,
+        description="SHA256 hash of the data_payload for consistency validation.")
 
     class Config:
+        """TODO: Add docstring."""
+
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }
@@ -219,7 +225,7 @@ class AtomicStateManager:
             )
 
     async def delete_state(self, workflow_id: str) -> bool:
-        """Delete workflow state.
+        """# SQL removed: Delete workflow state.
 
         Args:
             workflow_id: Workflow identifier

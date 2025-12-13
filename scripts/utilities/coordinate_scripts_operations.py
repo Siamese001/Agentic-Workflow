@@ -5,7 +5,6 @@ Domain: utilities
 Generated: 2025-12-07T12:07:59.880015
 """
 
-from __future__ import annotations
 import logging
 import time
 from typing import Callable, Dict, List, Optional
@@ -15,6 +14,8 @@ from enum import Enum
 logger = logging.getLogger(__name__)
 
 class StepStatus(Enum):
+    """TODO: Add docstring."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -44,7 +45,10 @@ class CoordinateScriptsOperations:
         self.steps: List[Dict] = []
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def add_step(self, name: str, executor: Callable, dependencies: Optional[List[str]] = None) -> "CoordinateScriptsOperations":
+    def add_step(self,
+        name: str,
+        executor: Callable,
+        dependencies: Optional[List[str]] = None) -> "CoordinateScriptsOperations":
         """Add a step to orchestration."""
         self.steps.append({"name": name, "executor": executor, "dependencies": dependencies or []})
         return self
@@ -84,7 +88,9 @@ class CoordinateScriptsOperations:
             final_output=context["outputs"].get(self.steps[-1]["name"]) if self.steps else None
         )
 
-def orchestrate(steps: List[Dict], initial_input: object = None, config: Optional[Dict] = None) -> OrchestrationResult:
+def orchestrate(steps: List[Dict],
+    initial_input: object = None,
+    config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     orch = CoordinateScriptsOperations(config)
     for step in steps:

@@ -16,7 +16,6 @@ Non-responsibilities:
 - Model invocation
 """
 
-from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
@@ -24,15 +23,21 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 class FailureType(Enum):
+    """TODO: Add docstring."""
+
     CREATIVE = "CREATIVE"
     MECHANICAL = "MECHANICAL"
     UNKNOWN = "UNKNOWN"
+
+    """TODO: Add docstring."""
 
 class RecoveryAction(Enum):
     INCREASE_TEMP = "INCREASE_TEMP"
     DECREASE_TEMP = "DECREASE_TEMP"
     HARD_HALT = "HARD_HALT"
     CONTINUE = "CONTINUE"
+
+    """TODO: Add docstring."""
 
 @dataclass
 class FailureEvent:
@@ -42,6 +47,8 @@ class FailureEvent:
     message: str
     timestamp: float = field(default_factory=time.time)
     details: Optional[Dict[str, Any]] = None
+    """TODO: Add docstring."""
+
 
 @dataclass
 class TemperatureAdjustment:
@@ -49,6 +56,8 @@ class TemperatureAdjustment:
     to_temp: float
     reason: str
     failure_type: FailureType
+    """TODO: Add docstring."""
+
     timestamp: float = field(default_factory=time.time)
 
 @dataclass

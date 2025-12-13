@@ -1,5 +1,4 @@
 """E2E tests for complete outreach campaign lifecycle."""
-from __future__ import annotations
 import re
 from typing import Dict, List
 from dataclasses import dataclass, field
@@ -7,6 +6,8 @@ from enum import Enum
 from datetime import datetime, timedelta
 
 class CampaignPhase(Enum):
+    """TODO: Add docstring."""
+
     PLANNING = "planning"
     RESEARCH = "research"
     CONTENT_GENERATION = "content_generation"
@@ -18,6 +19,8 @@ class CampaignPhase(Enum):
     COMPLETED = "completed"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class CampaignMetrics:
     total_contacts: int = 0
     messages_sent: int = 0
@@ -25,6 +28,8 @@ class CampaignMetrics:
     replies_received: int = 0
     meetings_booked: int = 0
     conversions: int = 0
+
+    """TODO: Add docstring."""
 
 @dataclass
 class CampaignState:
@@ -234,7 +239,6 @@ Would you be open to a brief conversation?
         message = "Hi {first_name}, I noticed {company} recently {recent_news}."
 
         # Check for unresolved placeholders
-        import scripts.validation.check_canonical_structure
         re.findall(r'\{[^}]+\}', message)
 
         # After personalization, should be empty

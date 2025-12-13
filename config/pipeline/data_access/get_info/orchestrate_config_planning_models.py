@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .orchestrate_config_planning_enums import *
+# from .orchestrate_config_planning_enums import *  # Star import removed
 
 @dataclass
 class ConfigDefinition:

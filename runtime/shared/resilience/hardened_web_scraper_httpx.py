@@ -10,7 +10,6 @@ Implements an adversarial-resistant web scraper with:
 import asyncio
 import logging
 import random
-import time
 from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 import httpx
@@ -20,7 +19,8 @@ import httpx
 
 class ScraperConfig(BaseModel):
     """Tactical configuration for web operations."""
-    proxy_pool: List[str] = Field(default_factory=list, description="List of Proxy URLs (http://user:pass@host:port).")
+    proxy_pool: List[str] = Field(default_factory=list,
+        description="List of Proxy URLs (http://user:pass@host:port).")
     base_delay: float = Field(1.0, description="Minimum sleep between requests (seconds).")
     jitter: float = Field(0.5, description="Randomized delay factor to avoid robotic patterns.")
     max_adaptive_delay: float = Field(30.0, description="Cap for adaptive backoff.")
@@ -34,12 +34,22 @@ class ScrapeResult(BaseModel):
 
 # Pre-defined pool of common valid user agents to avoid library dependencies
 COMMON_USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML,
+        like Gecko) Version/17.2 Safari/605.1.15",
+        
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:120.0) Gecko/20100101 Firefox/120.0"
 ]
@@ -212,7 +222,9 @@ class HardenedWebScraper(HardeningMixin):
             self.logger.error(f"Error: {e}")
             raise
 
-    async def scrape_multiple(self, urls: List[str], delay_between_requests: Optional[float] = None) -> List[ScrapeResult]:
+    async def scrape_multiple(self,
+        urls: List[str],
+        delay_between_requests: Optional[float] = None) -> List[ScrapeResult]:
         """
         Scrape multiple URLs with adaptive delays.
 
@@ -227,7 +239,7 @@ class HardenedWebScraper(HardeningMixin):
 
         for i, url in enumerate(urls):
             try:
-                
+
                 if delay_between_requests is not None:
                     old_delay = self.current_delay
                     self.current_delay = delay_between_requests

@@ -121,7 +121,8 @@ class ObservabilityLoadPlanner:
         Returns:
             ObservabilityLoadResult: Complete planning result with load plan
         """
-        self.logger.info(f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}")
+        self.logger.info(f"Starting observability load planning for: {load_request.get('plan_name',
+            'unknown')}")
 
         try:
             # Validate input request

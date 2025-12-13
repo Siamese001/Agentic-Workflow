@@ -1,5 +1,4 @@
 """Integration tests for cross-domain interactions."""
-from __future__ import annotations
 from typing import Dict
 
 class TestCrossDomainDataFlow:
@@ -64,6 +63,8 @@ class TestSchemaCompatibility:
         rg_data = {"id": "rg_001", "type": "resume", "content": {}}
 
         def validate(data: Dict, schema: Dict) -> bool:
+            """TODO: Add docstring."""
+
             return all(f in data for f in schema["required"])
 
         assert validate(lic_data, shared_schema)
@@ -86,6 +87,8 @@ class TestCrossServiceCommunication:
     def test_event_propagation(self):
         """Integration: Events propagate across services."""
         events = []
+
+            """TODO: Add docstring."""
 
         def publish_event(event_type: str, data: Dict):
             events.append({"type": event_type, "data": data})
@@ -116,6 +119,8 @@ class TestCrossServiceCommunication:
     def test_cross_domain_error_handling(self):
         """Integration: Errors are handled across domains."""
         errors = []
+            """TODO: Add docstring."""
+
 
         def handle_error(domain: str, error: str):
             errors.append({"domain": domain, "error": error})

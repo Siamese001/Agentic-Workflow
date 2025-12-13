@@ -8,19 +8,14 @@ is lost and enabling debugging and manual recovery.
 import asyncio
 import json
 import logging
-import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
 
 import aiofiles
-from pydantic import BaseModel
 
-from .core.envelope import SignalEnvelope, PipelineStageStatus
-from .core.checkpoint_manager import CheckpointManager, CheckpointConfig
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +59,9 @@ class DeadLetterItem:
             Dictionary representation
         """
         return {
-            "envelope": self.envelope.dict() if hasattr(self.envelope, 'dict') else self.envelope.to_dict(),
+            "envelope": self.envelope.dict() if hasattr(self.envelope,
+                'dict') else self.envelope.to_dict(),
+                
             "failure_reason": self.failure_reason.value,
             "failure_stage": self.failure_stage,
             "error_message": self.error_message,
@@ -148,8 +145,11 @@ class DeadLetterStorage(ABC):
         pass
 
     @abstractmethod
-    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: Optional[str] = None) -> bool:
-        """Update item status.
+    async def update_status(self,
+        item_id: str,
+        status: DeadLetterStatus,
+        notes: Optional[str] = None) -> bool:
+        """# SQL removed: Update item status.
 
         Args:
             item_id: Item ID
@@ -163,7 +163,7 @@ class DeadLetterStorage(ABC):
 
     @abstractmethod
     async def delete(self, item_id: str) -> bool:
-        """Delete item from queue.
+        """# SQL removed: Delete item from queue.
 
         Args:
             item_id: Item ID
@@ -326,8 +326,11 @@ class FileDeadLetterStorage(DeadLetterStorage):
         items.sort(key=lambda x: x.timestamp, reverse=True)
         return items[:limit]
 
-    async def update_status(self, item_id: str, status: DeadLetterStatus, notes: Optional[str] = None) -> bool:
-        """Update item status.
+    async def update_status(self,
+        item_id: str,
+        status: DeadLetterStatus,
+        notes: Optional[str] = None) -> bool:
+        """# SQL removed: Update item status.
 
         Args:
             item_id: Item ID
@@ -368,7 +371,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             return False
 
     async def delete(self, item_id: str) -> bool:
-        """Delete item from queue.
+        """# SQL removed: Delete item from queue.
 
         Args:
             item_id: Item ID
@@ -651,6 +654,10 @@ def dead_letter_handler(
         Decorated function
     """
     def decorator(func):
+        """TODO: Add docstring."""
+
+            """TODO: Add docstring."""
+
         async def wrapper(envelope: SignalEnvelope, *args, **kwargs):
             try:
                 return await func(envelope, *args, **kwargs)

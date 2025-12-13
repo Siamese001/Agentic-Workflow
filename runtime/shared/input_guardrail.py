@@ -10,7 +10,6 @@ import re
 import time
 import base64
 import unicodedata
-from typing import Dict, List, Optional, Tuple, Any, Set
 from dataclasses import dataclass
 from enum import Enum
 
@@ -145,16 +144,19 @@ class InputGuardrail:
         }
 
         # Base64 detection patterns
-        self.base64_pattern = re.compile(r'(?:[A-Za-z0-9+/]{4}){10,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?')
+        self.base64_pattern = re.compile(r'(?:[A-Za-z0-9+/]{4}){10,
+            }(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?')
 
         # PII detection patterns
         self.pii_patterns = {
             'email': re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'),
             'phone': re.compile(r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b'),
+                
             'ssn': re.compile(r'\b\d{3}-\d{2}-\d{4}\b'),
             'credit_card': re.compile(r'\b(?:\d{4}[-\s]?){3}\d{4}\b'),
             'ip_address': re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}\b'),
             'url': re.compile(r'https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?'),
+                
         }
 
         # Malicious intent keywords
@@ -466,6 +468,7 @@ class InputGuardrail:
             "pii_types_count": len(self.pii_patterns),
             "malicious_keywords_count": len(self.malicious_keywords),
             "unicode_homoglyphs_count": sum(len(homoglyphs) for homoglyphs in self.unicode_homoglyphs.values()),
+                
             "strict_mode": self.strict_mode,
             "rate_limit_per_minute": self.rate_limit_per_minute,
             "active_rate_limits": len(self._rate_limit_store),

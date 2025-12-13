@@ -11,8 +11,6 @@ import asyncio
 import logging
 import sys
 import time
-from pathlib import Path
-from typing import Dict, Any, Optional
 
 # CRITICAL: Fix Windows console crashes on Emoji/Unicode output
 sys.stdout.reconfigure(encoding='utf-8')
@@ -33,7 +31,6 @@ logger = logging.getLogger(__name__)
 try:
     from apps_rg.L3_orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
     from runtime.shared.routing import RoutingTier
-    from runtime.shared.agent_executor import AgentResponse
     from apps_rg.L3_orchestration.orchestrate_workflow import WorkflowSpec, HopSpec
 except ImportError as e:
     logger.error(f"Failed to import hardened components: {e}")

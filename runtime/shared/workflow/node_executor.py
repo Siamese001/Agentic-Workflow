@@ -10,6 +10,7 @@ Implements a clean pipeline pattern:
 
 import logging
 import time
+import asyncio
 import json
 from typing import Dict, Any, Optional, Type, List, Union
 from dataclasses import dataclass, field
@@ -77,6 +78,8 @@ class SchemaEnforcement:
         if not schema_config.get("enabled", False):
             # No schema enforcement, return raw output
             class RawOutput(BaseModel):
+                """TODO: Add docstring."""
+
                 content: str = raw_output
             return RawOutput(content=raw_output)
 
@@ -112,7 +115,7 @@ class SchemaEnforcement:
                     raise ValidationError(f"Schema validation failed after {max_retries} attempts: {e}")
 
                 self.logger.warning(f"Validation attempt {attempt + 1} failed, retrying...")
-                time.sleep(0.1)  # Brief delay before retry
+                await asyncio.sleep(0.1)  # Brief delay before retry
 
         raise ValidationError(f"Schema validation failed for {model_name}")
 
@@ -145,7 +148,8 @@ class CognitiveConstraints:
 
         for category, rules in constraints.items():
             if rules and isinstance(rules, list):
-                constraint_block += f"\n{category_descriptions.get(category, category.title() + ':')}\n"
+                constraint_block += f"\n{category_descriptions.get(category,
+                    category.title() + ':')}\n"
                 for rule in rules:
                     constraint_block += f"  - {rule}\n"
 
@@ -294,7 +298,7 @@ class ModelRouter:
         self.logger = logging.getLogger("ModelRouter")
 
     def select_model(self, context: NodeExecutionContext) -> str:
-        """Select appropriate model based on infrastructure config.
+        """# SQL removed: Select appropriate model based on infrastructure config.
 
         Args:
             context: Execution context
@@ -347,16 +351,26 @@ class MockTracer:
     """Mock tracer for when telemetry provider is not available."""
 
     def start_span(self, name: str):
+        """TODO: Add docstring."""
+
         return MockSpan()
+
+        """TODO: Add docstring."""
 
     def finish(self):
         pass
 
 class MockSpan:
     """Mock span for telemetry."""
+        """TODO: Add docstring."""
+
 
     def set_tag(self, key: str, value: str):
+        """TODO: Add docstring."""
+
         pass
+
+        """TODO: Add docstring."""
 
     def set_metric(self, key: str, value: Union[int, float]):
         pass

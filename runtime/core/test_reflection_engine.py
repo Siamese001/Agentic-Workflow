@@ -2,7 +2,6 @@
 
 import pytest
 import asyncio
-from unittest.mock import AsyncMock, patch
 
 from .reflection_engine import (
     ReflectionEngine,
@@ -15,7 +14,6 @@ from .reflection_engine import (
     STRICT_CRITERIA
 )
 
-from .subatomic_hop import (
     SubatomicHop,
     SubatomicHopConfig,
     ReflectionConfig as HopReflectionConfig,

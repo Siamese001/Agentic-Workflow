@@ -8,7 +8,6 @@ metrics (Revenue, OpEx, Retention).
 import logging
 import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any, Union
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
@@ -183,7 +182,7 @@ class MetricAugmenter:
             )
 
     def _select_highest_impact_metric(self, metrics: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Select the metric with highest business impact.
+        """# SQL removed: Select the metric with highest business impact.
 
         Args:
             metrics: List of detected metrics
@@ -379,7 +378,9 @@ class MetricAugmenter:
                 if accuracy and accuracy > 0:
                     # Every 5% accuracy ~ 2% revenue
                     revenue_lift = min(20, (accuracy / 5) * 2)
-                    multiplier = self.industry_multipliers.get(self.industry, {}).get("revenue", 1.0)
+                    multiplier = self.industry_multipliers.get(self.industry,
+                        {}).get("revenue",
+                        1.0)
                     revenue_lift *= multiplier
                     value_statement = f"enabling est. {revenue_lift:.0f}% revenue growth"
                     confidence = 0.6
@@ -395,7 +396,9 @@ class MetricAugmenter:
                 else:
                     cost_reduction = self._extract_number(metric_value)
                     if cost_reduction and cost_reduction > 0:
-                        multiplier = self.industry_multipliers.get(self.industry, {}).get("cost", 1.0)
+                        multiplier = self.industry_multipliers.get(self.industry,
+                            {}).get("cost",
+                            1.0)
                         cost_reduction *= multiplier
                         value_statement = f"slashing monthly cloud spend by est. {cost_reduction:.0f}%"
                         confidence = 0.7

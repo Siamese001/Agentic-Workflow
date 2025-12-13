@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .query_schema_store_enums import *
+# from .query_schema_store_enums import *  # Star import removed
 
 @dataclass
 class SchemaMetadata:

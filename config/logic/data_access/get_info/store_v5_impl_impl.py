@@ -1,6 +1,5 @@
 """Implementation for store_v5_impl."""
 
-from typing import Any, Dict, List, Optional
 
 class StoredPrompt:
     """

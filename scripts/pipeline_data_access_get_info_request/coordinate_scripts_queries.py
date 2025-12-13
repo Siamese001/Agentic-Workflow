@@ -6,7 +6,6 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
 import logging
 from datetime import datetime
 from enum import Enum

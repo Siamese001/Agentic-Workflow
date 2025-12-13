@@ -1,7 +1,6 @@
 """Implementation for firecracker_manager."""
 
-from typing import Any, Dict, List, Optional
-from .firecracker_manager_types import *
+# from .firecracker_manager_types import *  # Star import removed
 
 class FirecrackerManager:
     """Manager for Firecracker micro-VMs.
@@ -40,7 +39,10 @@ class FirecrackerManager:
         """
         if config.vm_id in self._instances:
             raise ValueError(f'VM {config.vm_id} already exists')
-        instance = VMInstance(vm_id=config.vm_id, config=config, status=VMStatus.CREATING, created_at=time.time())
+        instance = VMInstance(vm_id=config.vm_id,
+            config=config,
+            status=VMStatus.CREATING,
+            created_at=time.time())
         self._instances[config.vm_id] = instance
         try:
             if self.provider == VMProvider.FIRECRACKER:
@@ -53,12 +55,18 @@ class FirecrackerManager:
                 instance.status = VMStatus.RUNNING
                 instance.endpoint = 'local://sandbox'
             if self.enable_logging:
-                logger.info('vm_created', extra={'vm_id': config.vm_id, 'provider': self.provider.value, 'status': instance.status.value})
+                logger.info('vm_created',
+                    extra={'vm_id': config.vm_id,
+                    'provider': self.provider.value,
+                    'status': instance.status.value})
         except Exception as e:
             instance.status = VMStatus.FAILED
             instance.metadata['error'] = str(e)
             if self.enable_logging:
-                logger.error('vm_creation_failed', extra={'vm_id': config.vm_id, 'error': str(e)}, exc_info=True)
+                logger.error('vm_creation_failed',
+                    extra={'vm_id': config.vm_id,
+                    'error': str(e)},
+                    exc_info=True)
             raise
         return instance
 
@@ -89,7 +97,10 @@ class FirecrackerManager:
             return True
         except Exception as e:
             if self.enable_logging:
-                logger.error('vm_termination_failed', extra={'vm_id': vm_id, 'error': str(e)}, exc_info=True)
+                logger.error('vm_termination_failed',
+                    extra={'vm_id': vm_id,
+                    'error': str(e)},
+                    exc_info=True)
             return False
 
     def get_vm(self, vm_id: str) -> Optional[VMInstance]:
@@ -124,7 +135,8 @@ class FirecrackerManager:
             Number of VMs cleaned up
         """
         current_time = time.time()
-        expired = [vm_id for vm_id, instance in self._instances.items() if instance.is_expired(current_time)]
+        expired = [vm_id for vm_id,
+            instance in self._instances.items() if instance.is_expired(current_time)]
         count = 0
         for vm_id in expired:
             if await self.terminate_vm(vm_id):
@@ -164,7 +176,23 @@ class FirecrackerManager:
             instance: VM instance to create
         """
         try:
-            result = subprocess.run(['docker', 'run', '-d', '--name', instance.vm_id, '--cpus', str(instance.config.cpu_count), '--memory', f'{instance.config.memory_mb}m', '--network', 'none' if not instance.config.network_enabled else 'bridge', 'python:3.11-slim', 'sleep', str(instance.config.timeout_seconds)], capture_output=True, text=True, check=True)
+            result = subprocess.run(['docker',
+                'run',
+                '-d',
+                '--name',
+                instance.vm_id,
+                '--cpus',
+                str(instance.config.cpu_count),
+                '--memory',
+                f'{instance.config.memory_mb}m',
+                '--network',
+                'none' if not instance.config.network_enabled else 'bridge',
+                'python:3.11-slim',
+                'sleep',
+                str(instance.config.timeout_seconds)],
+                capture_output=True,
+                text=True,
+                check=True)
             container_id = result.stdout.strip()
             instance.status = VMStatus.RUNNING
             instance.endpoint = f'docker://{container_id}'
@@ -185,7 +213,12 @@ class FirecrackerManager:
         container_id = instance.metadata.get('container_id')
         if container_id:
             try:
-                subprocess.run(['docker', 'rm', '-f', container_id], capture_output=True, check=True)
+                subprocess.run(['docker',
+                    'rm',
+                    '-f',
+                    container_id],
+                    capture_output=True,
+                    check=True)
             except subprocess.CalledProcessError:
                 pass
 

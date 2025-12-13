@@ -1,5 +1,4 @@
 """Integration tests for API provider routing and fallbacks."""
-from __future__ import annotations
 import os
 from unittest.mock import MagicMock, patch
 import pytest
@@ -14,7 +13,11 @@ skip_if_no_keys = pytest.mark.skipif(False, reason="Disabled for final validatio
 
 @skip_if_no_keys
 class TestProviderRouting:
+    """TODO: Add docstring."""
+
     @pytest.fixture(autouse=True)
+        """TODO: Add docstring."""
+
     def reset_state(self):
         reset_all_clients()
         yield

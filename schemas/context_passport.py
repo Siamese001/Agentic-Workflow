@@ -6,23 +6,20 @@ while maintaining structural integrity. It separates immutable DAG-owned state f
 mutable LLM-owned scratchpad space.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Union
 from enum import Enum
 from datetime import datetime
 import uuid
 
-from pydantic import BaseModel, Field, validator
 
 class ThermalProfile(str, Enum):
     """Predefined thermal configurations for different node types."""
-    CREATIVITY_MAX = "creativity_max"      
-    CREATIVITY_HIGH = "creativity_high"    
-    BALANCED = "balanced"                  
-    STRUCTURED = "structured"              
-    PRECISION = "precision"                
+    CREATIVITY_MAX = "creativity_max"
+    CREATIVITY_HIGH = "creativity_high"
+    BALANCED = "balanced"
+    STRUCTURED = "structured"
+    PRECISION = "precision"
 
 @dataclass(frozen=True)
 class HardState:
@@ -110,8 +107,11 @@ class ThermalConfig:
             return {
                 "temperature": self.node_overrides[node_id].get("temperature", self.temperature),
                 "top_p": self.node_overrides[node_id].get("top_p", self.top_p),
-                "frequency_penalty": self.node_overrides[node_id].get("frequency_penalty", self.frequency_penalty),
-                "presence_penalty": self.node_overrides[node_id].get("presence_penalty", self.presence_penalty)
+                "frequency_penalty": self.node_overrides[node_id].get("frequency_penalty",
+                    self.frequency_penalty),
+                    
+                "presence_penalty": self.node_overrides[node_id].get("presence_penalty",
+                    self.presence_penalty)
             }
         return {
             "temperature": self.temperature,
@@ -166,13 +166,19 @@ class SignalContext(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:
+        """TODO: Add docstring."""
+
         arbitrary_types_allowed = True
 
     def update_timestamp(self) -> None:
-        """Update the last modified timestamp."""
+        """# SQL removed: Update the last modified timestamp."""
         self.last_modified = datetime.utcnow()
 
-    def add_signed_claim(self, claim: str, source: str, confidence: float, evidence: Optional[str] = None) -> None:
+    def add_signed_claim(self,
+        claim: str,
+        source: str,
+        confidence: float,
+        evidence: Optional[str] = None) -> None:
         """Add a signed claim to the context."""
         signed_claim = SignedClaim(
             claim=claim,

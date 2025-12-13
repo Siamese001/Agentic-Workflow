@@ -8,11 +8,9 @@ trusted system directives, preventing instruction drift and injection attacks.
 import json
 import logging
 import re
-import xml.etree.ElementTree as ET
 from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
 from pathlib import Path
-from pydantic import BaseModel, Field
 
 from .security.input_sanitizer import (
     InputSanitizer,

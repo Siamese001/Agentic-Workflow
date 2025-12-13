@@ -1,5 +1,4 @@
 """Unit tests for L3_orchestration/P4_safety - workflow safety checks."""
-from __future__ import annotations
 
 class TestWorkflowSafetyChecks:
     """Tests for workflow-level safety checks."""

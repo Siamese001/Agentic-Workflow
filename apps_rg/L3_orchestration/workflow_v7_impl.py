@@ -84,7 +84,9 @@ class RGWorkflowOrchestrator:
     """
     VERSION = '16.0'
 
-    def __init__(self, workflow_spec: Optional[WorkflowSpec]=None, run_base_dir: str='./pipeline_runs') -> None:
+    def __init__(self,
+        workflow_spec: Optional[WorkflowSpec]=None,
+        run_base_dir: str='./pipeline_runs') -> None:
         """
         Initialize the orchestrator.
 
@@ -111,7 +113,17 @@ class RGWorkflowOrchestrator:
             spec_data = json.load(f)
         hops = []
         for hop_data in spec_data.get('hops', []):
-            hops.append(HopSpec(id=hop_data['id'], script=hop_data['script'], description=hop_data['description'], inputs=[HopInput(**inp) for inp in hop_data.get('inputs', [])], outputs=[HopOutput(**out) for out in hop_data.get('outputs', [])], retry_policy=RetryPolicy(**hop_data.get('retry_policy', {})), extra_args=hop_data.get('extra_args', [])))
+            hops.append(HopSpec(id=hop_data['id'],
+                script=hop_data['script'],
+                description=hop_data['description'],
+                inputs=[HopInput(**inp) for inp in hop_data.get('inputs',
+                [])],
+                outputs=[HopOutput(**out) for out in hop_data.get('outputs',
+                [])],
+                retry_policy=RetryPolicy(**hop_data.get('retry_policy',
+                {})),
+                extra_args=hop_data.get('extra_args',
+                [])))
         self.spec = WorkflowSpec(name=spec_data['name'], version=spec_data['version'], hops=hops)
 
     def register_hop_executor(self, hop_id: str, executor: Callable[..., Any]) -> None:
@@ -132,7 +144,11 @@ class RGWorkflowOrchestrator:
         if not path.exists():
             raise FileNotFoundError(f'Static artifact not found: {path}')
         file_hash = hash_file(path)
-        self.artifacts[artifact_id] = Artifact(id=artifact_id, path=path, hash=file_hash, is_ready=True, is_static=True)
+        self.artifacts[artifact_id] = Artifact(id=artifact_id,
+            path=path,
+            hash=file_hash,
+            is_ready=True,
+            is_static=True)
 
     def build_dag(self) -> DAGBuilder:
         """Build the workflow DAG from the spec."""
@@ -161,7 +177,9 @@ class RGWorkflowOrchestrator:
         Returns:
             HopCheckpoint with execution results
         """
-        checkpoint = HopCheckpoint(hop_id=hop_id, status=HopStatus.RUNNING, start_time=datetime.now())
+        checkpoint = HopCheckpoint(hop_id=hop_id,
+            status=HopStatus.RUNNING,
+            start_time=datetime.now())
         try:
             executor = self._hop_executors.get(hop_id)
             if executor is None:
@@ -234,7 +252,20 @@ class RGWorkflowOrchestrator:
                 output_path = Path(f'execution_log_{self.workflow_id}.json')
             else:
                 output_path = self.run_dir / 'execution_log.json'
-        log_data = {'workflow_id': self.workflow_id, 'version': self.VERSION, 'spec_name': self.spec.name if self.spec else None, 'spec_version': self.spec.version if self.spec else None, 'checkpoints': [{'hop_id': cp.hop_id, 'status': cp.status.value, 'start_time': cp.start_time.isoformat(), 'end_time': cp.end_time.isoformat() if cp.end_time else None, 'output_artifacts': cp.output_artifacts, 'error_message': cp.error_message} for cp in self.hop_checkpoints], 'validation_results': [{'gate_id': vr.gate_id, 'decision': vr.decision.value, 'message': vr.message, 'details': vr.details} for vr in self.validation_results]}
+        log_data = {'workflow_id': self.workflow_id,
+            'version': self.VERSION,
+            'spec_name': self.spec.name if self.spec else None,
+            'spec_version': self.spec.version if self.spec else None,
+            'checkpoints': [{'hop_id': cp.hop_id,
+            'status': cp.status.value,
+            'start_time': cp.start_time.isoformat(),
+            'end_time': cp.end_time.isoformat() if cp.end_time else None,
+            'output_artifacts': cp.output_artifacts,
+            'error_message': cp.error_message} for cp in self.hop_checkpoints],
+            'validation_results': [{'gate_id': vr.gate_id,
+            'decision': vr.decision.value,
+            'message': vr.message,
+            'details': vr.details} for vr in self.validation_results]}
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(log_data, f, indent=2)
         return output_path
@@ -247,7 +278,8 @@ def hash_file(filepath: Path) -> str:
             sha256_hash.update(byte_block)
     return sha256_hash.hexdigest()
 
-def create_orchestrator(workflow_spec: Optional[WorkflowSpec]=None, run_base_dir: str='./pipeline_runs') -> RGWorkflowOrchestrator:
+def create_orchestrator(workflow_spec: Optional[WorkflowSpec]=None,
+    run_base_dir: str='./pipeline_runs') -> RGWorkflowOrchestrator:
     """builder function to create an orchestrator."""
     return RGWorkflowOrchestrator(workflow_spec, run_base_dir)
 

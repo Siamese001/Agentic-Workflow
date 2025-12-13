@@ -7,7 +7,6 @@ route (INMAIL vs CONNECTION_REQ) with premium routing validation.
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
 from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
@@ -286,7 +285,7 @@ class K1_RoutingAgent(Agent):
         route_override: Optional[str],
         archetype: str,
     ) -> RouteSelectionResult:
-        """Select message route with premium routing validation.
+        """# SQL removed: Select message route with premium routing validation.
 
         Args:
             lifecycle: NEW or EXISTING

@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .golden_state_evaluator_impl import *
-from .golden_state_evaluator_impl import *
+# from .golden_state_evaluator_impl import *  # Star import removed
+# from .golden_state_evaluator_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

@@ -5,15 +5,11 @@ and claim confidence scoring to ensure maximum output quality.
 """
 
 import hashlib
-import json
 import logging
-import math
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from dataclasses import dataclass, field
 from enum import Enum
-import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -661,7 +657,7 @@ class SignalEnhancer:
         return flags, recommendations
 
     def _update_stats(self, assessment: SignalAssessment) -> None:
-        """Update internal statistics.
+        """# SQL removed: Update internal statistics.
 
         Args:
             assessment: Latest assessment
@@ -701,7 +697,8 @@ class SignalEnhancer:
 # Global enhancer registry
 _enhancers: Dict[str, SignalEnhancer] = {}
 
-def get_signal_enhancer(name: str = "default", thresholds: Optional[QualityThresholds] = None) -> SignalEnhancer:
+def get_signal_enhancer(name: str = "default",
+    thresholds: Optional[QualityThresholds] = None) -> SignalEnhancer:
     """Get or create a signal enhancer.
 
     Args:

@@ -83,7 +83,9 @@ class NervousSystem(IOrchestrator):
         self._iteration = 0
         self._state = context.state.copy()
 
-        logger.info("execution_started", extra={"mission": context.mission, "scene_keys": list(context.scene.keys())})
+        logger.info("execution_started",
+            extra={"mission": context.mission,
+            "scene_keys": list(context.scene.keys())})
 
         try:
             execution_trace = await self._execute_phases(context, execution_trace, errors)
@@ -91,12 +93,19 @@ class NervousSystem(IOrchestrator):
         except Exception as e:
             return self._handle_execution_error(context, execution_trace, start_time, e)
 
-    async def _execute_phases(self, context: ExecutionContext, execution_trace: List[Dict], errors: List[str]) -> List[Dict]:
+    async def _execute_phases(self,
+        context: ExecutionContext,
+        execution_trace: List[Dict],
+        errors: List[str]) -> List[Dict]:
         """Execute all phases."""
-        execution_trace.append({"phase": ExecutionPhase.MISSION.value, "mission": context.mission, "timestamp": time.time()})
+        execution_trace.append({"phase": ExecutionPhase.MISSION.value,
+            "mission": context.mission,
+            "timestamp": time.time()})
 
         scene_result = await self.execute_step(ExecutionPhase.SCENE, context)
-        execution_trace.append({"phase": ExecutionPhase.SCENE.value, "result": scene_result, "timestamp": time.time()})
+        execution_trace.append({"phase": ExecutionPhase.SCENE.value,
+            "result": scene_result,
+            "timestamp": time.time()})
 
         await self._execute_main_loop(context, execution_trace, errors)
 
@@ -105,7 +114,10 @@ class NervousSystem(IOrchestrator):
 
         return execution_trace
 
-    async def _execute_main_loop(self, context: ExecutionContext, execution_trace: List[Dict], errors: List[str]) -> None:
+    async def _execute_main_loop(self,
+        context: ExecutionContext,
+        execution_trace: List[Dict],
+        errors: List[str]) -> None:
         """Execute main Think-Act-Observe loop."""
         while await self.should_continue(context):
             self._iteration += 1
@@ -117,7 +129,10 @@ class NervousSystem(IOrchestrator):
             logger.info("iteration_started", extra={"iteration": self._iteration})
 
             think_result = await self.think(context)
-            execution_trace.append({"phase": ExecutionPhase.THINK.value, "iteration": self._iteration, "result": think_result, "timestamp": time.time()})
+            execution_trace.append({"phase": ExecutionPhase.THINK.value,
+                "iteration": self._iteration,
+                "result": think_result,
+                "timestamp": time.time()})
 
             if not think_result.get("success"):
                 errors.append(f"Think phase failed: {think_result.get('error')}")
@@ -129,36 +144,64 @@ class NervousSystem(IOrchestrator):
                 break
 
             act_results = await self.act(actions, context)
-            execution_trace.append({"phase": ExecutionPhase.ACT.value, "iteration": self._iteration, "actions": [a.to_dict() for a in actions], "results": act_results, "timestamp": time.time()})
+            execution_trace.append({"phase": ExecutionPhase.ACT.value,
+                "iteration": self._iteration,
+                "actions": [a.to_dict() for a in actions],
+                "results": act_results,
+                "timestamp": time.time()})
 
             observe_result = await self.observe(act_results, context)
-            execution_trace.append({"phase": ExecutionPhase.OBSERVE.value, "iteration": self._iteration, "result": observe_result, "timestamp": time.time()})
+            execution_trace.append({"phase": ExecutionPhase.OBSERVE.value,
+                "iteration": self._iteration,
+                "result": observe_result,
+                "timestamp": time.time()})
 
             context.state.update(observe_result.get("state_updates", {}))
-            context.history.append({"iteration": self._iteration, "think": think_result, "act": act_results, "observe": observe_result})
+            context.history.append({"iteration": self._iteration,
+                "think": think_result,
+                "act": act_results,
+                "observe": observe_result})
 
             if observe_result.get("mission_complete"):
                 logger.info("mission_complete", extra={"iteration": self._iteration})
                 break
 
-    async def _execute_reflection(self, context: ExecutionContext, execution_trace: List[Dict]) -> List[Dict]:
+    async def _execute_reflection(self,
+        context: ExecutionContext,
+        execution_trace: List[Dict]) -> List[Dict]:
         """Execute reflection phase."""
-        reflect_result = await self.brain.reflect(execution_trace=execution_trace, outcome={"state": context.state, "history": context.history})
-        execution_trace.append({"phase": ExecutionPhase.REFLECT.value, "result": reflect_result, "timestamp": time.time()})
+        reflect_result = await self.brain.reflect(execution_trace=execution_trace,
+            outcome={"state": context.state,
+            "history": context.history})
+        execution_trace.append({"phase": ExecutionPhase.REFLECT.value,
+            "result": reflect_result,
+            "timestamp": time.time()})
         return execution_trace
 
-    def _create_execution_result(self, context: ExecutionContext, execution_trace: List[Dict], errors: List[str], start_time: float) -> ExecutionResult:
+    def _create_execution_result(self,
+        context: ExecutionContext,
+        execution_trace: List[Dict],
+        errors: List[str],
+        start_time: float) -> ExecutionResult:
         """Create execution result."""
         success = len(errors) == 0
         result = ExecutionResult(
             success=success, output=context.state.get("final_output"), final_state=context.state,
             execution_trace=execution_trace, iterations=self._iteration, errors=errors,
-            metadata={"execution_time_seconds": time.time() - start_time, "total_phases": len(execution_trace)}
+            metadata={"execution_time_seconds": time.time() - start_time,
+                "total_phases": len(execution_trace)}
         )
-        logger.info("execution_completed", extra={"success": success, "iterations": self._iteration, "execution_time": result.metadata["execution_time_seconds"]})
+        logger.info("execution_completed",
+            extra={"success": success,
+            "iterations": self._iteration,
+            "execution_time": result.metadata["execution_time_seconds"]})
         return result
 
-    def _handle_execution_error(self, context: ExecutionContext, execution_trace: List[Dict], start_time: float, error: Exception) -> ExecutionResult:
+    def _handle_execution_error(self,
+        context: ExecutionContext,
+        execution_trace: List[Dict],
+        start_time: float,
+        error: Exception) -> ExecutionResult:
         """Handle execution error."""
         logger.error("execution_failed", extra={"error": str(error)}, exc_info=True)
         return ExecutionResult(
@@ -337,7 +380,6 @@ class NervousSystem(IOrchestrator):
         Args:
             path: Path to load state from
         """
-        import json
 
         with open(path, 'r') as f:
             state = json.load(f)

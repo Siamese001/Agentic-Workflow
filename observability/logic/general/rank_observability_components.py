@@ -64,6 +64,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                 object_id=triplet.object,
                 valid_at=triplet.temporal_range.valid_at.isoformat(),
                 invalid_at=triplet.temporal_range.invalid_at.isoformat() if triplet.temporal_range.invalid_at else None,
+                    
                 attrs={
                     "confidence": triplet.confidence,
                     "source": triplet.source,
@@ -93,7 +94,9 @@ async def insert_event(event: TemporalEvent) -> None:
 
                 _neo4j_graph.update_relation_invalidity(
                     rel_id=event.triplet_id,
-                    invalid_at=invalid_at.isoformat() if isinstance(invalid_at, datetime) else invalid_at,
+                    invalid_at=invalid_at.isoformat() if isinstance(invalid_at,
+                        datetime) else invalid_at,
+                        
                     invalidated_by=invalidated_by,
                 )
     except (ValueError, TypeError, RuntimeError, KeyError):

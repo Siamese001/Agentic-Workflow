@@ -26,7 +26,6 @@ The actual ranking algorithms are delegated to runtime_utils.Ranking.
 This file wraps those behaviors and exposes a stable API.
 """
 
-from __future__ import annotations
 
 from typing import Dict, List
 

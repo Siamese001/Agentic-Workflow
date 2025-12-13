@@ -151,7 +151,9 @@ class KXNodeExecutor:
             sources = []
             if results and "documents" in results:
                 for i, doc in enumerate(results["documents"][0]):
-                    source_type = results.get("metadatas", [[{}]])[0][i].get("source_type", "generic")
+                    source_type = results.get("metadatas",
+                        [[{}]])[0][i].get("source_type",
+                        "generic")
                     weight = config.rag_config.source_weighting.get(source_type, 1.0)
 
                     sources.append({
@@ -193,7 +195,8 @@ class KXNodeExecutor:
         # Add RAG context if available
         if rag_sources:
             rag_context = "\n\n".join([
-                f"Source {i+1} ({src['metadata'].get('source_type', 'unknown')}):\n{src['document']}"
+                f"Source {i+1} ({src['metadata'].get('source_type',
+                    'unknown')}):\n{src['document']}"
                 for i, src in enumerate(rag_sources[:3])
             ])
 

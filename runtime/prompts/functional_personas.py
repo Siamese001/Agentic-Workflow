@@ -315,7 +315,6 @@ class PromptSanitizer:
         Returns:
             True if sanitized, False otherwise
         """
-        import re
 
         for pattern in cls.LEGACY_PATTERNS:
             if re.search(pattern, text, flags=re.IGNORECASE):

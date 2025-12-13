@@ -1,6 +1,4 @@
-from __future__ import annotations
 
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -15,6 +13,10 @@ class LLMProfile(BaseModel):
     """
 
     reasoning_mode: ReasoningMode = ReasoningMode.COT
-    model_tier: str = Field(default="balanced", description="Model tier hint, e.g. 'cheap', 'balanced', 'premium'.")
+    model_tier: str = Field(default="balanced",
+        description="Model tier hint,
+        e.g. 'cheap',
+        'balanced',
+        'premium'.")
     max_cost_usd: float = Field(default=0.10, ge=0.0)
     max_latency_ms: int = Field(default=3000, ge=0)

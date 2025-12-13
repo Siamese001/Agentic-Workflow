@@ -15,7 +15,6 @@ Author: Agentic-Workflow Team
 Version: 1.0.0
 """
 
-from typing import Any, Dict, List, Optional, Union
 import logging
 from datetime import datetime
 
@@ -26,7 +25,11 @@ class ProcessingError(Exception):
     """Custom exception for processing errors."""
     pass
 
-def process_data(data: Dict[str, object], config: Optional[Dict[str, object]] = None) -> Dict[str, object]:
+def process_data(data: Dict[str,
+    object],
+    config: Optional[Dict[str,
+    object]] = None) -> Dict[str,
+    object]:
     """
     Process data with optional configuration.
 

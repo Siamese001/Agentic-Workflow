@@ -9,9 +9,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
 
-from .firecracker_manager import (
     FirecrackerManager,
     VMConfig,
     VMProvider,
@@ -128,7 +126,12 @@ class EphemeralVM:
         vm_instance = None
 
         try:
-            vm_instance = await self._create_and_execute_vm(vm_id, vm_config, code, language, timeout, start_time)
+            vm_instance = await self._create_and_execute_vm(vm_id,
+                vm_config,
+                code,
+                language,
+                timeout,
+                start_time)
             return vm_instance
         except asyncio.TimeoutError:
             return self._handle_timeout(vm_id, timeout, start_time)
@@ -149,17 +152,29 @@ class EphemeralVM:
         )
         return vm_id, vm_config
 
-    async def _create_and_execute_vm(self, vm_id: str, vm_config, code: str, language: str, timeout: int, start_time: float) -> ExecutionResult:
+    async def _create_and_execute_vm(self,
+        vm_id: str,
+        vm_config,
+        code: str,
+        language: str,
+        timeout: int,
+        start_time: float) -> ExecutionResult:
         """Create VM and execute code."""
         if self.enable_logging:
             logger.info("creating_ephemeral_vm", extra={"vm_id": vm_id, "language": language})
 
         vm_instance = await self.vm_manager.create_vm(vm_config)
-        result = await self._execute_in_vm(vm_instance=vm_instance, code=code, language=language, timeout=timeout)
+        result = await self._execute_in_vm(vm_instance=vm_instance,
+            code=code,
+            language=language,
+            timeout=timeout)
         result.execution_time_seconds = time.time() - start_time
 
         if self.enable_logging:
-            logger.info("code_executed", extra={"vm_id": vm_id, "success": result.success, "execution_time": result.execution_time_seconds})
+            logger.info("code_executed",
+                extra={"vm_id": vm_id,
+                "success": result.success,
+                "execution_time": result.execution_time_seconds})
 
         return result
 
@@ -167,13 +182,27 @@ class EphemeralVM:
         """Handle execution timeout."""
         if self.enable_logging:
             logger.warning("execution_timeout", extra={"vm_id": vm_id, "timeout": timeout})
-        return ExecutionResult(success=False, output="", error=f"Execution timeout after {timeout} seconds", execution_time_seconds=time.time() - start_time, exit_code=124)
+        return ExecutionResult(success=False,
+            output="",
+            error=f"Execution timeout after {timeout} seconds",
+            execution_time_seconds=time.time() - start_time,
+            exit_code=124)
 
-    def _handle_execution_error(self, vm_id: str, error: Exception, start_time: float) -> ExecutionResult:
+    def _handle_execution_error(self,
+        vm_id: str,
+        error: Exception,
+        start_time: float) -> ExecutionResult:
         """Handle execution error."""
         if self.enable_logging:
-            logger.error("execution_failed", extra={"vm_id": vm_id, "error": str(error)}, exc_info=True)
-        return ExecutionResult(success=False, output="", error=str(error), execution_time_seconds=time.time() - start_time, exit_code=1)
+            logger.error("execution_failed",
+                extra={"vm_id": vm_id,
+                "error": str(error)},
+                exc_info=True)
+        return ExecutionResult(success=False,
+            output="",
+            error=str(error),
+            execution_time_seconds=time.time() - start_time,
+            exit_code=1)
 
     async def _teardown_vm(self, vm_instance, vm_id: str) -> None:
         """Teardown VM."""
@@ -233,7 +262,6 @@ class EphemeralVM:
         Returns:
             ExecutionResult
         """
-        import subprocess
 
         try:
             # Execute with timeout

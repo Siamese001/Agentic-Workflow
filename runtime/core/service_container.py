@@ -7,7 +7,6 @@ and resolved as needed throughout the application.
 
 import logging
 from typing import Type, TypeVar, Dict, Any, Optional, Callable
-from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +119,8 @@ class ServiceContainer:
                     return type(implementation)()
                 except Exception:
                     # If we can't create a new instance, return the original
-                    logger.warning(f"Could not create transient instance of {interface.__name__}, returning singleton")
+                    logger.warning(f"Could not create transient instance of {interface.__name__},
+                        returning singleton")
                     return implementation
 
         raise ServiceNotFoundError(f"Could not resolve {interface.__name__}")

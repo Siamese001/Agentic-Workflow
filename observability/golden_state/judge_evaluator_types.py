@@ -1,7 +1,6 @@
 """Types and models for judge_evaluator."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class JudgmentCriterion(Enum):
@@ -48,7 +47,12 @@ class JudgeEvaluationResult:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'overall_score': self.overall_score, 'verdicts': [v.to_dict() for v in self.verdicts], 'passed': self.passed, 'threshold': self.threshold, 'summary': self.summary, 'metadata': self.metadata}
+        return {'overall_score': self.overall_score,
+            'verdicts': [v.to_dict() for v in self.verdicts],
+            'passed': self.passed,
+            'threshold': self.threshold,
+            'summary': self.summary,
+            'metadata': self.metadata}
 
     def get_failing_criteria(self) -> List[JudgmentCriterion]:
         """Get criteria that failed."""

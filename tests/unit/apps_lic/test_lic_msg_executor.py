@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Test Lic Message Generation Executor - atomic execution layer."""
 
-from __future__ import annotations
 
 from typing import Dict
 

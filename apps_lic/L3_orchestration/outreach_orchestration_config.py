@@ -9,9 +9,9 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .outreach_orchestration_config_impl import *
-from .outreach_orchestration_config_models import *
-from .outreach_orchestration_config_models_1 import *
-from .outreach_orchestration_config_impl import *
+# from .outreach_orchestration_config_impl import *  # Star import removed
+# from .outreach_orchestration_config_models import *  # Star import removed
+# from .outreach_orchestration_config_models_1 import *  # Star import removed
+# from .outreach_orchestration_config_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

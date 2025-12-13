@@ -6,7 +6,6 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
 import logging
 from datetime import datetime
 from enum import Enum
@@ -148,7 +147,8 @@ class ScriptsLoadPlanner:
                 }
             )
 
-            self.logger.info(f"Successfully planned load: {len(sources)} sources, {estimated_duration}s estimated")
+            self.logger.info(f"Successfully planned load: {len(sources)} sources,
+                {estimated_duration}s estimated")
             return result
 
         except Exception as e:

@@ -10,7 +10,6 @@ import logging
 from typing import Optional
 
 from .router import HardenedRouter
-from .schema import DEFAULT_ROUTING_CONFIGS
 
 logger = logging.getLogger(__name__)
 

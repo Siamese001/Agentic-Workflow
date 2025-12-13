@@ -16,7 +16,6 @@ Non-responsibilities:
 - Headline composition
 """
 
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass
@@ -27,11 +26,15 @@ from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 @dataclass
 class SectionIntegratorConfig:
+    """TODO: Add docstring."""
+
     max_similarity_threshold: float = 0.75
     temperature: float = 0.6
     max_attempts: int = 3
 
 @dataclass
+    """TODO: Add docstring."""
+
 class SectionIntegratorResult:
     overview: str
     similarity_score: float
@@ -238,6 +241,7 @@ class SectionScopeIntegrator:
                 passed=True,
                 severity='INFO',
                 message=f"Deduplication passed: {similarity_score:.1%} similarity (threshold: <{self.config.max_similarity_threshold:.0%})",
+                    
                 signature=f"DEDUP:OK:{int(similarity_score*100)}",
                 details={'similarity_score': similarity_score, 'threshold': self.config.max_similarity_threshold}
             )

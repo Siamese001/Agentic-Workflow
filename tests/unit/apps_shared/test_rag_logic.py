@@ -9,17 +9,14 @@ logger = logging.getLogger(__name__)
 
 import pytest
 import time
-import hashlib
+import asyncio
 from datetime import datetime, timedelta
-from typing import Dict, List
 
-from apps_shared.rag.scoring.hybrid_scorer import (
     HybridScorer,
     ScoringWeights,
     ScoringResult,
     BM25Scorer
 )
-from apps_shared.cache.semantic_cache import (
     EnhancedSemanticCache,
     VectorSimilarityResult
 )
@@ -219,7 +216,10 @@ class TestEnhancedSemanticCache:
         """Test basic fingerprint generation."""
         fp1 = self.cache.generate_fingerlogger.info("Hello world", "gpt-4", 0.7, "You are helpful")
         fp2 = self.cache.generate_fingerlogger.info("Hello world", "gpt-4", 0.7, "You are helpful")
-        fp3 = self.cache.generate_fingerlogger.info("Hello world", "gpt-4", 0.8, "You are helpful")  # Different temp
+        fp3 = self.cache.generate_fingerlogger.info("Hello world",
+            "gpt-4",
+            0.8,
+            "You are helpful")  # Different temp
 
         # Same inputs should generate same fingerprint
         assert fp1 == fp2
@@ -334,7 +334,7 @@ class TestEnhancedSemanticCache:
         assert result is not None
 
         # Wait for expiration
-        time.sleep(1.1)
+        await asyncio.sleep(1.1)
 
         # Should be expired now
         result = self.cache.lookup(fingerprint)
@@ -379,7 +379,7 @@ class TestEnhancedSemanticCache:
 
         # Expire one entry
         self.cache.store("fp3", {'content': 'Test 3'}, ttl_hours=0.0003)
-        time.sleep(1.1)
+        await asyncio.sleep(1.1)
 
         stats = self.cache.get_cache_stats()
         assert stats['total_entries'] == 2  # Expired entry auto-removed

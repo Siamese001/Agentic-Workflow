@@ -36,11 +36,24 @@ def _extract_severity_string(severity: Any) -> str:
         return 'unknown'
     return severity.value if hasattr(severity, 'value') else str(severity)
 
-def _process_finding(finding: Any, findings_list: List[Dict], max_severity: Optional[str]) -> Optional[str]:
+def _process_finding(finding: Any,
+    findings_list: List[Dict],
+    max_severity: Optional[str]) -> Optional[str]:
     """Process a single finding and update max severity."""
     severity = getattr(finding, 'severity', None)
     severity_str = _extract_severity_string(severity)
-    findings_list.append({'check_id': getattr(finding, 'id', 'unknown'), 'category': getattr(finding, 'type', getattr(finding, 'category', 'unknown')), 'severity': severity_str, 'message': getattr(finding, 'message', '')})
+    findings_list.append({'check_id': getattr(finding,
+        'id',
+        'unknown'),
+        'category': getattr(finding,
+        'type',
+        getattr(finding,
+        'category',
+        'unknown')),
+        'severity': severity_str,
+        'message': getattr(finding,
+        'message',
+        '')})
     if severity_str in ('critical', 'high'):
         return 'high'
     elif severity_str == 'medium' and max_severity != 'high':
@@ -73,7 +86,11 @@ def _extract_verdict_from_event(event: Any) -> tuple[Optional[str], Optional[str
     reason = str(event_reason) if event_reason else None
     return (decision, reason)
 
-def arbitrate_safety(safety_result: Any, council_vote: Any, policy: Any, ctx: Any=None) -> Dict[str, object]:
+def arbitrate_safety(safety_result: Any,
+    council_vote: Any,
+    policy: Any,
+    ctx: Any=None) -> Dict[str,
+    object]:
     """Arbitrate between safety findings and council votes to produce a decision."""
     decision = 'allow'
     reason = 'No safety concerns detected'
@@ -117,6 +134,8 @@ def run_l5(safety_result: Any, council_vote: Any, policy: Any, ctx: Any=None) ->
 
     @dataclass
     class L5Event:
+        """TODO: Add docstring."""
+
         verdict: Optional[Verdict] = None
         reason: Optional[str] = None
     verdict = Verdict.ALLOW

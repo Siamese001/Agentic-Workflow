@@ -2,18 +2,21 @@
 Unit tests for shared_engine_ops/inspection_ops/
 Tests inspection operations for content analysis.
 """
-from __future__ import annotations
 import pytest
 from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
 
 class ContentQuality(Enum):
+    """TODO: Add docstring."""
+
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class InspectionResult:
     quality: ContentQuality
     issues: List[str]
@@ -98,6 +101,8 @@ class TestStructureInspection:
                 }
             }
         }
+
+            """TODO: Add docstring."""
 
         # Check depth
         def get_depth(d: Dict, depth: int = 0) -> int:

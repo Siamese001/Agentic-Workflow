@@ -13,10 +13,8 @@ logger = logging.getLogger(__name__)
 
 """
 
-import os
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
 
 class RepositoryCleaner:
     """Cleans up runaway refactoring artifacts."""
@@ -251,7 +249,8 @@ class RepositoryCleaner:
         for dir_name, result in results.items():
             if result["chains_found"] > 0:
                 logger.info(f"  {dir_name}:")
-                logger.info(f"    Chains: {result['chains_found']} found, {result['chains_cleaned']} cleaned")
+                logger.info(f"    Chains: {result['chains_found']} found,
+                    {result['chains_cleaned']} cleaned")
 
         logger.info("\n" + "=" * 80)
 

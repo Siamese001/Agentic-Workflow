@@ -12,14 +12,11 @@ Usage:
     python test_atomic_state.py
 """
 
-import asyncio
 import logging
 import os
 import sys
 import tempfile
-import time
 from pathlib import Path
-from unittest.mock import patch
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -39,7 +36,6 @@ from runtime.shared.state import (
     get_state_manager,
     reset_state_manager,
 )
-from datetime import datetime
 
 def test_workflow_state_schema():
     """Test WorkflowState schema and methods."""
@@ -219,6 +215,8 @@ def test_rollback_on_failure():
         # Mock atomic_swap to simulate failure
         original_swap = manager._atomic_swap
         def failing_swap(shadow_key, active_key):
+            """TODO: Add docstring."""
+
             raise IOError("Simulated disk failure during atomic swap")
 
         manager._atomic_swap = failing_swap

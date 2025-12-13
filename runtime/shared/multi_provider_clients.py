@@ -125,7 +125,6 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             return client
         except ImportError:
             # Fallback to legacy SDK
-            import google.generativeai as genai
             genai.configure(api_key=api_key)
             return genai
 
@@ -158,7 +157,6 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
         )
 
     elif provider == Provider.FIREWORKS:
-        import fireworks.client
         fireworks.client.api_key = api_key
         return fireworks.client
 

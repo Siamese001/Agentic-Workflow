@@ -6,7 +6,6 @@ performance, and brand compliance across all engines.
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Tuple
 
 from .fact_ledger import FactLedger, VerificationResult, get_fact_ledger
 from .global_cache import GlobalCache, get_global_cache
@@ -440,7 +439,6 @@ async def verify_claims(content: str) -> List[VerificationResult]:
     ledger = get_fact_ledger()
 
     # Split into claims
-    import re
     sentences = re.split(r'[.!?]+', content)
     sentences = [s.strip() for s in sentences if s.strip()]
 

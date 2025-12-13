@@ -7,8 +7,6 @@ covering Framing, Context, Reasoning, Tooling, Safety, and Output layers.
 import json
 import logging
 from enum import Enum
-from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass, field
 from pathlib import Path
 
 from .subatomic_hop import MicroStage
@@ -81,38 +79,98 @@ class StageMapping:
 # Stage mappings for all 30 injection types
 STAGE_MAPPINGS: List[StageMapping] = [
     # Framing Layer - Apply in PRE_CHECK
-    StageMapping(InstructionalInjectionType.GLOBAL_GOAL_STATE, [MicroStage.PRE_CHECK], priority=10, required=True),
-    StageMapping(InstructionalInjectionType.SUCCESS_CRITERIA, [MicroStage.PRE_CHECK], priority=9, required=True),
-    StageMapping(InstructionalInjectionType.TASK_MODE_DECLARATION, [MicroStage.PRE_CHECK], priority=8),
-    StageMapping(InstructionalInjectionType.SCOPE_BOUNDARIES, [MicroStage.PRE_CHECK], priority=9, required=True),
-    StageMapping(InstructionalInjectionType.COST_LATENCY_TARGETS, [MicroStage.PRE_CHECK], priority=6),
+    StageMapping(InstructionalInjectionType.GLOBAL_GOAL_STATE,
+        [MicroStage.PRE_CHECK],
+        priority=10,
+        required=True),
+        
+    StageMapping(InstructionalInjectionType.SUCCESS_CRITERIA,
+        [MicroStage.PRE_CHECK],
+        priority=9,
+        required=True),
+        
+    StageMapping(InstructionalInjectionType.TASK_MODE_DECLARATION,
+        [MicroStage.PRE_CHECK],
+        priority=8),
+        
+    StageMapping(InstructionalInjectionType.SCOPE_BOUNDARIES,
+        [MicroStage.PRE_CHECK],
+        priority=9,
+        required=True),
+        
+    StageMapping(InstructionalInjectionType.COST_LATENCY_TARGETS,
+        [MicroStage.PRE_CHECK],
+        priority=6),
+        
 
     # Context Layer - Apply in PRE_CHECK and THINK
-    StageMapping(InstructionalInjectionType.UNTRUSTED_BLOCK_WRAPPING, [MicroStage.PRE_CHECK, MicroStage.THINK], priority=10, required=True),
+    StageMapping(InstructionalInjectionType.UNTRUSTED_BLOCK_WRAPPING,
+        [MicroStage.PRE_CHECK,
+        MicroStage.THINK],
+        priority=10,
+        required=True),
+        
     StageMapping(InstructionalInjectionType.CANONICALIZATION, [MicroStage.PRE_CHECK], priority=8),
-    StageMapping(InstructionalInjectionType.CONTEXT_PRUNING, [MicroStage.PRE_CHECK, MicroStage.THINK], priority=7),
-    StageMapping(InstructionalInjectionType.CROSS_FIELD_CONSISTENCY, [MicroStage.THINK], priority=8),
-    StageMapping(InstructionalInjectionType.STRUCTURED_ORDERING, [MicroStage.PRE_CHECK], priority=7),
+    StageMapping(InstructionalInjectionType.CONTEXT_PRUNING,
+        [MicroStage.PRE_CHECK,
+        MicroStage.THINK],
+        priority=7),
+        
+    StageMapping(InstructionalInjectionType.CROSS_FIELD_CONSISTENCY,
+        [MicroStage.THINK],
+        priority=8),
+        
+    StageMapping(InstructionalInjectionType.STRUCTURED_ORDERING,
+        [MicroStage.PRE_CHECK],
+        priority=7),
+        
 
     # Reasoning Layer - Apply in THINK
     StageMapping(InstructionalInjectionType.FAILURE_ANTICIPATION, [MicroStage.THINK], priority=8),
     StageMapping(InstructionalInjectionType.MULTI_BRANCH_THINKING, [MicroStage.THINK], priority=7),
     StageMapping(InstructionalInjectionType.CONFIDENCE_UNCERTAINTY, [MicroStage.THINK], priority=6),
-    StageMapping(InstructionalInjectionType.REASON_THEN_ANSWER, [MicroStage.THINK], priority=9, required=True),
+    StageMapping(InstructionalInjectionType.REASON_THEN_ANSWER,
+        [MicroStage.THINK],
+        priority=9,
+        required=True),
+        
     StageMapping(InstructionalInjectionType.ERROR_SIMULATION, [MicroStage.THINK], priority=6),
 
     # Tooling Layer - Apply in ACT
     StageMapping(InstructionalInjectionType.TOOL_FEEDBACK_LOOP, [MicroStage.ACT], priority=8),
-    StageMapping(InstructionalInjectionType.EVIDENCE_BINDING, [MicroStage.ACT], priority=9, required=True),
-    StageMapping(InstructionalInjectionType.CROSS_TOOL_RECONCILIATION, [MicroStage.ACT], priority=7),
+    StageMapping(InstructionalInjectionType.EVIDENCE_BINDING,
+        [MicroStage.ACT],
+        priority=9,
+        required=True),
+        
+    StageMapping(InstructionalInjectionType.CROSS_TOOL_RECONCILIATION,
+        [MicroStage.ACT],
+        priority=7),
+        
     StageMapping(InstructionalInjectionType.SHADOW_VALIDATION, [MicroStage.ACT], priority=8),
     StageMapping(InstructionalInjectionType.MODEL_SWITCH_AWARE, [MicroStage.ACT], priority=5),
 
     # Safety Layer - Apply to ALL stages
-    StageMapping(InstructionalInjectionType.INJECTION_SHIELDING, list(MicroStage), priority=10, required=True),
-    StageMapping(InstructionalInjectionType.DATA_INSTRUCTION_SEPARATION, list(MicroStage), priority=9, required=True),
-    StageMapping(InstructionalInjectionType.CONSTITUTIONAL_GUARDRAILS, list(MicroStage), priority=10, required=True),
-    StageMapping(InstructionalInjectionType.DELEGATION_GUARDRAILS, [MicroStage.ACT, MicroStage.CRITIQUE], priority=8),
+    StageMapping(InstructionalInjectionType.INJECTION_SHIELDING,
+        list(MicroStage),
+        priority=10,
+        required=True),
+        
+    StageMapping(InstructionalInjectionType.DATA_INSTRUCTION_SEPARATION,
+        list(MicroStage),
+        priority=9,
+        required=True),
+        
+    StageMapping(InstructionalInjectionType.CONSTITUTIONAL_GUARDRAILS,
+        list(MicroStage),
+        priority=10,
+        required=True),
+        
+    StageMapping(InstructionalInjectionType.DELEGATION_GUARDRAILS,
+        [MicroStage.ACT,
+        MicroStage.CRITIQUE],
+        priority=8),
+        
     StageMapping(InstructionalInjectionType.ADVERSARIAL_MODE, list(MicroStage), priority=9),
 
     # Output Layer - Apply in COMMIT

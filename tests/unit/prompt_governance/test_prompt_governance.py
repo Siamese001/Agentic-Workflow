@@ -1,19 +1,21 @@
 """Unit tests for prompt governance - template management and validation."""
-from __future__ import annotations
 import re
 import pytest
-import scripts.validation.check_canonical_structure
 from typing import List
 from dataclasses import dataclass
 from enum import Enum
 
 class PromptCategory(Enum):
+    """TODO: Add docstring."""
+
     SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
     TOOL = "tool"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class PromptTemplate:
     id: str
     name: str

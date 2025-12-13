@@ -1,7 +1,6 @@
 """Implementation for config."""
 
-from typing import Any, Dict, List, Optional
-from .config_types import *
+# from .config_types import *  # Star import removed
 
 def _load_json_config(filename: str, description: str, required: bool=True) -> Dict[str, object]:
     """

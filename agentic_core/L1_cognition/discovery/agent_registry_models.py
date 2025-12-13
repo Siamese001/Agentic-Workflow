@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .agent_registry_enums import *
+# from .agent_registry_enums import *  # Star import removed
 
 @dataclass
 class MCPContract:
@@ -47,7 +47,15 @@ class AgentCard:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'identity': self.identity.to_dict(), 'name': self.name, 'description': self.description, 'capabilities': [c.value for c in self.capabilities], 'status': self.status.value, 'mcp_contracts': [c.to_dict() for c in self.mcp_contracts], 'tool_permissions': [p.to_dict() for p in self.tool_permissions], 'endpoints': self.endpoints, 'metadata': self.metadata}
+        return {'identity': self.identity.to_dict(),
+            'name': self.name,
+            'description': self.description,
+            'capabilities': [c.value for c in self.capabilities],
+            'status': self.status.value,
+            'mcp_contracts': [c.to_dict() for c in self.mcp_contracts],
+            'tool_permissions': [p.to_dict() for p in self.tool_permissions],
+            'endpoints': self.endpoints,
+            'metadata': self.metadata}
 
     def has_capability(self, capability: AgentCapability) -> bool:
         """Check if agent has a capability.
@@ -92,4 +100,6 @@ class RegistrationResult:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'success': self.success, 'agent_card': self.agent_card.to_dict() if self.agent_card else None, 'reason': self.reason}
+        return {'success': self.success,
+            'agent_card': self.agent_card.to_dict() if self.agent_card else None,
+            'reason': self.reason}

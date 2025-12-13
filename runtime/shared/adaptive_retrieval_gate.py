@@ -7,7 +7,6 @@ requires retrieval from the vector database or can be handled from context.
 import logging
 import re
 from typing import List, Dict, Optional
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +32,7 @@ class AdaptiveRetrievalGate:
             # Conversational patterns that don't need retrieval
             'conversational': re.compile(
                 r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye|yes|no|sure|got it|understood|cool|awesome|great|perfect)$',
+                    
                 re.IGNORECASE
             ),
 
@@ -158,7 +158,9 @@ class AdaptiveRetrievalGate:
 
         return base_score
 
-    def should_retrieve(self, query: str, history: Optional[List[Dict]] = None) -> RetrievalDecision:
+    def should_retrieve(self,
+        query: str,
+        history: Optional[List[Dict]] = None) -> RetrievalDecision:
         """Determine if retrieval is needed for the query.
 
         Args:

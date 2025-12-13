@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Test Constitutional Review - atomic execution layer."""
 
-from __future__ import annotations
 
 from typing import Dict
 

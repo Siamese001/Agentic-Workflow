@@ -9,8 +9,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .resume_orchestration_config_types_enums import *
-from .resume_orchestration_config_types_models import *
-from .resume_orchestration_config_types_models_1 import *
+# from .resume_orchestration_config_types_enums import *  # Star import removed
+# from .resume_orchestration_config_types_models import *  # Star import removed
+# from .resume_orchestration_config_types_models_1 import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

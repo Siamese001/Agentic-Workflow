@@ -99,7 +99,9 @@ def main():
             missing += 1
 
     logger.info("-" * 40)
-    logger.info(f"Summary: {available}/21 installed, {missing} missing, {missing_keys} missing keys")
+    logger.info(f"Summary: {available}/21 installed,
+        {missing} missing,
+        {missing_keys} missing keys")
 
     # Check MCP functionality
     logger.info("\nCHECKING MCP FUNCTIONALITY...")

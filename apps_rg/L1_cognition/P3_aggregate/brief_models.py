@@ -1,20 +1,26 @@
 """Dataclass models for rg_creative_brief."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from .rg_creative_brief_enums import *
+# from .rg_creative_brief_enums import *  # Star import removed
 
 @dataclass
 class ExperienceBulletsBrief:
     """Creative brief for experience bullets section."""
     provenance_strategy: ProvenanceStrategy = ProvenanceStrategy.JD_FIT_BASED
-    provenance_map: Dict[str, str] = field(default_factory=lambda: {'Unify Consulting': '4V-3T-0S', 'IBM': '4V-2T-0S'})
+    provenance_map: Dict[str,
+        str] = field(default_factory=lambda: {'Unify Consulting': '4V-3T-0S',
+        'IBM': '4V-2T-0S'})
     default_provenance_fallback: str = '10V-0A-0S'
     selection_logic: str = 'Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)'
-    overview_word_count: Dict[str, WordCountConstraint] = field(default_factory=lambda: {'k6': WordCountConstraint(25, 33), 'k7': WordCountConstraint(22, 28)})
+    overview_word_count: Dict[str,
+        WordCountConstraint] = field(default_factory=lambda: {'k6': WordCountConstraint(25,
+        33),
+        'k7': WordCountConstraint(22,
+        28)})
     k6_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(28, 33))
     k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
-    guidance: str = "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
+    guidance: str = "Must use standard technology terms (e.g.,
+        'cloud data platform' instead of 'Snowflake')."
 
 @dataclass
 class LeadershipCompetenciesBrief:
@@ -22,15 +28,19 @@ class LeadershipCompetenciesBrief:
     title: str = 'Strategic & Technical Competencies'
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.INTERNAL_FIRST
     count: int = 6
-    word_count_per_desc: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
+    word_count_per_desc: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24,
+        30))
 
 @dataclass
 class CoverLetterBrief:
     """Creative brief for cover letter section."""
     structure: str = '1-intro-2-body'
-    word_count_per_para: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(85, 100))
+    word_count_per_para: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(85,
+        100))
     min_specific_details: int = 4
-    forbidden_patterns: List[str] = field(default_factory=lambda: ['At [COMPANY], I...', 'During my time at...'])
+    forbidden_patterns: List[str] = field(default_factory=lambda: ['At [COMPANY],
+        I...',
+        'During my time at...'])
     signature_generation_policy: str = 'DYNAMIC_FROM_OWNER_CONTACT'
 
 @dataclass

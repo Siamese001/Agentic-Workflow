@@ -8,9 +8,7 @@ Legacy K-Node: K.4
 """
 
 import logging
-import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
 from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
@@ -185,7 +183,10 @@ CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 4. INDUSTRY-FIRST POSITIONING: Segment 1 MUST NOT contain technology keywords
 
 INDUSTRY-FIRST RULE (BLOCKING):
-- Segment 1 must lead with INDUSTRY/DOMAIN (e.g., "Healthcare", "Financial Services", "Enterprise SaaS")
+- Segment 1 must lead with INDUSTRY/DOMAIN (e.g.,
+    "Healthcare",
+    "Financial Services",
+    "Enterprise SaaS")
 - Segment 1 MUST NOT contain: AI, ML, Python, AWS, Kubernetes, Docker, etc.
 - Technology keywords belong in Segment 3 (Value Proposition) ONLY
 
@@ -212,7 +213,8 @@ EXAMPLES (Industry-First VIOLATIONS - DO NOT USE):
 ❌ "AI/ML Leader | Healthcare Technology | Innovation" (tech in Segment 1)
 ❌ "Python Engineer | Cloud Architecture | SaaS" (tech in Segment 1)
 
-Generate the headline now ({self.word_count_min}-{self.word_count_max} words, ≤{self.char_limit} chars):
+Generate the headline now ({self.word_count_min}-{self.word_count_max} words,
+    ≤{self.char_limit} chars):
 """
 
         return prompt

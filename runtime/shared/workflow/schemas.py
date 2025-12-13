@@ -7,7 +7,6 @@ and prevent LLM output drift.
 
 from pydantic import BaseModel, Field, validator, constr
 from typing import List, Optional, Dict, Any
-from datetime import datetime
 
 # K.1: Company and Job Title Extraction
 class K1CompanyJobTitle(BaseModel):
@@ -18,11 +17,15 @@ class K1CompanyJobTitle(BaseModel):
 
     @validator('company_name')
     def validate_company(cls, v):
+        """TODO: Add docstring."""
+
         if len(v.strip()) < 2:
             raise ValueError("Company name too short")
         return v.strip()
 
     @validator('job_title')
+        """TODO: Add docstring."""
+
     def validate_title(cls, v):
         if len(v.strip()) < 3:
             raise ValueError("Job title too short")
@@ -48,6 +51,8 @@ class K2SkillsAnalysis(BaseModel):
         description="Skills grouped by category (technical, soft, tools, etc.)"
     )
 
+        """TODO: Add docstring."""
+
     @validator('required_skills')
     def validate_required_skills(cls, v):
         cleaned = [skill.strip() for skill in v if skill.strip()]
@@ -70,6 +75,8 @@ class K3ExperienceRequirements(BaseModel):
         ...,
         description="Required industry experience"
     )
+        """TODO: Add docstring."""
+
 
     @validator('seniority_level')
     def validate_seniority(cls, v):
@@ -96,6 +103,8 @@ class K4Responsibilities(BaseModel):
     leadership_scope: Optional[str] = Field(
         None,
         description="Leadership or management scope if applicable"
+        """TODO: Add docstring."""
+
     )
 
     @validator('primary_responsibilities')
@@ -120,6 +129,8 @@ class K5ExecutiveSummary(BaseModel):
     )
     value_proposition: str = Field(
         ...,
+        """TODO: Add docstring."""
+
         description="Clear value proposition statement"
     )
 
@@ -139,6 +150,8 @@ class K6MostRecentExperience(BaseModel):
     bullets: List[str] = Field(
         ...,
         min_items=7,
+        """TODO: Add docstring."""
+
         max_items=7,
         description="Exactly 7 achievement bullets, 25-35 words each"
     )
@@ -148,6 +161,8 @@ class K6MostRecentExperience(BaseModel):
         for i, bullet in enumerate(v):
             word_count = len(bullet.split())
             if word_count < 25 or word_count > 35:
+        """TODO: Add docstring."""
+
                 raise ValueError(f"Bullet {i+1} must be 25-35 words (got {word_count})")
             if not bullet.endswith('.'):
                 raise ValueError(f"Bullet {i+1} must end with a period")
@@ -177,6 +192,8 @@ class K7TechnicalSkills(BaseModel):
         min_items=2,
         description="Database technologies"
     )
+        """TODO: Add docstring."""
+
     cloud_platforms: List[str] = Field(
         ...,
         min_items=1,
@@ -202,6 +219,8 @@ class K8ProjectExperience(BaseModel):
         min_items=3,
         max_items=5,
         description="Key achievements in the project"
+        """TODO: Add docstring."""
+
     )
     technologies_used: List[str] = Field(
         ...,
@@ -225,6 +244,8 @@ class K9EducationCertifications(BaseModel):
         None,
         ge=1950,
         le=2030,
+        """TODO: Add docstring."""
+
         description="Graduation year"
     )
     certifications: List[str] = Field(

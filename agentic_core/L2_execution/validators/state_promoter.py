@@ -6,19 +6,15 @@ and promotes it to immutable HardState only if it passes validation.
 If validation fails, it triggers a self-correction loop.
 """
 
-from __future__ import annotations
 
 import logging
 import json
-from typing import Any, Dict, List, Optional, Type, Union, Callable
 from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime
-import asyncio
 
 from pydantic import BaseModel, ValidationError
 
-from ...schemas.context_passport import SignalContext, SoftState, HardState
 from ...L1_cognition.inference.inference_engine import (
     InferenceEngine, InferenceRequest, InferenceMode
 )
@@ -210,6 +206,7 @@ class StatePromoter:
                         key=key,
                         validation_result=ValidationResult.FAILED,
                         error_message=f"Max correction attempts ({self.max_correction_attempts}) exceeded",
+                            
                         correction_attempts=correction_attempts,
                         execution_time_ms=execution_time
                     )

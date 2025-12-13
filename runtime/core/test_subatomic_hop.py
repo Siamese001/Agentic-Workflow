@@ -7,7 +7,6 @@ import json
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
-from .subatomic_hop import (
     SubatomicHop,
     SubatomicHopConfig,
     MicroStage,
@@ -304,7 +303,6 @@ class TestSubatomicHopIntegration:
 
     def teardown_method(self):
         """Cleanup integration test fixtures."""
-        import shutil
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @pytest.mark.asyncio

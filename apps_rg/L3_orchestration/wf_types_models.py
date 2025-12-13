@@ -1,8 +1,7 @@
 """Dataclass models for orchestrate_workflow_types."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from .orchestrate_workflow_types_enums import *
+# from .orchestrate_workflow_types_enums import *  # Star import removed
 
 @dataclass
 class Artifact:

@@ -5,7 +5,6 @@ Domain: 08_scripts
 Generated: 2025-12-07T12:07:59.862730
 """
 
-from __future__ import annotations
 import logging
 from typing import Dict, Optional
 from dataclasses import dataclass, field
@@ -31,7 +30,9 @@ class Phase4108ScriptsPurge:
         """Execute operation."""
         try:
             result = self._process(data, **kwargs)
-            return OperationResult(success=True, data=result, metadata={"input_type": type(data).__name__})
+            return OperationResult(success=True,
+                data=result,
+                metadata={"input_type": type(data).__name__})
         except (ValueError, TypeError, KeyError) as e:
             logger.error("Operation failed: %s", e)
             return OperationResult(success=False, message=str(e))
@@ -40,6 +41,9 @@ class Phase4108ScriptsPurge:
         """Process data."""
         return data
 
-def execute(data: object, config: Optional[Dict] = None, **kwargs: Dict[str, object]) -> OperationResult:
+def execute(data: object,
+    config: Optional[Dict] = None,
+    **kwargs: Dict[str,
+    object]) -> OperationResult:
     """Convenience function."""
     return Phase4108ScriptsPurge(config).execute(data, **kwargs)

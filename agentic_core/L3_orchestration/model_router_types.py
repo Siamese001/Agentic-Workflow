@@ -1,7 +1,5 @@
 """Types and models for model_router."""
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class ModelTier(Enum):
@@ -45,4 +43,8 @@ class RoutingDecision:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'selected_model': self.selected_model.to_dict(), 'task_complexity': self.task_complexity.value, 'estimated_cost': self.estimated_cost, 'reasoning': self.reasoning, 'alternatives': [a.to_dict() for a in self.alternatives]}
+        return {'selected_model': self.selected_model.to_dict(),
+            'task_complexity': self.task_complexity.value,
+            'estimated_cost': self.estimated_cost,
+            'reasoning': self.reasoning,
+            'alternatives': [a.to_dict() for a in self.alternatives]}

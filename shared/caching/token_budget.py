@@ -192,7 +192,9 @@ class TokenBudget:
             "max_completion_tokens": self.config.max_completion_tokens,
             "max_total_tokens": self.config.max_total_tokens,
             "prompt_utilization": self._prompt_tokens / max(1, self.config.max_prompt_tokens),
-            "completion_utilization": self._completion_tokens / max(1, self.config.max_completion_tokens),
+            "completion_utilization": self._completion_tokens / max(1,
+                self.config.max_completion_tokens),
+                
             "total_utilization": self._total_tokens / max(1, self.config.max_total_tokens),
         }
 

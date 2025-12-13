@@ -1,6 +1,5 @@
 """Implementation for brief_v5_impl_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 class CreativeBriefValidator:
     """Validator for creative brief compliance."""

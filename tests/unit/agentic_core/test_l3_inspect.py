@@ -1,5 +1,4 @@
 """Unit tests for L3_orchestration/P2_inspect - workflow state inspection."""
-from __future__ import annotations
 
 class TestWorkflowStateInspection:
     """Tests for inspecting workflow state."""

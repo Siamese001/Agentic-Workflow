@@ -1,6 +1,5 @@
 """Implementation for rules_v5_impl_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 def _iter_py_files(root: Path) -> None:
     if not root.exists():

@@ -12,10 +12,8 @@ logger = logging.getLogger(__name__)
 
 import asyncio
 import time
-from typing import List, Dict, Any, Tuple
 
 # Import the complete pipeline
-from runtime.shared import (
     TitaniumRAGPipeline,
     create_titanium_pipeline,
     HybridScoreResult
@@ -223,7 +221,9 @@ class TitaniumPipelineIntegrationTest:
         alpha_entity = self.pipeline.scorer._determine_dynamic_alpha("ABC-123 error code")
         alpha_technical = self.pipeline.scorer._determine_dynamic_alpha("Python API")
         alpha_concept = self.pipeline.scorer._determine_dynamic_alpha("company strategy")
-        logger.info(f"   Dynamic Alpha - Entity: {alpha_entity}, Technical: {alpha_technical}, Concept: {alpha_concept}")
+        logger.info(f"   Dynamic Alpha - Entity: {alpha_entity},
+            Technical: {alpha_technical},
+            Concept: {alpha_concept}")
 
         # Test Phase 3: SOTA Layer
         logger.info("\n3. Testing Phase 3 (SOTA Layer):")
@@ -333,7 +333,8 @@ class TitaniumPipelineIntegrationTest:
         logger.info(f"\nComponent Status:")
         logger.info(f"   Phase 1 (Precision): Available")
         logger.info(f"   Phase 2 (Reasoning): Available")
-        logger.info(f"   Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']}, "
+        logger.info(f"   Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']},
+            "
               f"Cache={component_info['phase_3_sota']['cache_available']}")
 
     async def test_error_handling(self):

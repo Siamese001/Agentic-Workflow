@@ -1,6 +1,5 @@
 """Implementation for collectors_v6_impl_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 def append_event(evt: TelemetryEvent) -> None:
     """Append a telemetry event to the in-memory buffer."""

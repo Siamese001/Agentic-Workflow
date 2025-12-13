@@ -6,13 +6,10 @@ to any component that executes external operations.
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
-import asyncio
 import time
 from typing import Any, Callable, Awaitable, Dict, Optional
 
-from .circuit_breaker import CircuitBreaker, get_breaker, CircuitBreakerOpenError
 from .error_recovery import ErrorRecoveryManager
-from .telemetry import SystemTelemetry, get_telemetry, OperationStatus
 
 class TokenLimitError(Exception):
     """Raised when token budget exceeds model limits."""

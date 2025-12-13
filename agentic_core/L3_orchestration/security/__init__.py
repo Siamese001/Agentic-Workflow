@@ -4,7 +4,6 @@ Phase 3 - Pillar 2: Agent Boundaries (Identity & Discovery)
 Links SPIFFE identity with Control Plane for granular policy enforcement.
 """
 
-from .agent_permissions import (
     AgentPermissionManager,
     Permission,
     PermissionScope,

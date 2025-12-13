@@ -16,17 +16,17 @@ Non-responsibilities:
 - Gap analysis
 """
 
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
-from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop, RecoveryResult
 
 @dataclass
 class BioWriterConfig:
+    """TODO: Add docstring."""
+
     min_words: int = 118
     max_words: int = 135
     voice: str = "THIRD_PERSON_IMPLIED"
@@ -34,6 +34,8 @@ class BioWriterConfig:
     max_attempts: int = 3
 
 @dataclass
+    """TODO: Add docstring."""
+
 class BioWriterResult:
     summary: str
     word_count: int

@@ -6,8 +6,6 @@ ensuring the most relevant context hits the LLM first.
 
 import logging
 import time
-from functools import lru_cache
-from typing import List, Optional, Tuple, Any
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +57,6 @@ class LateInteractionReranker:
 
         try:
             # Import sentence_transformers
-            from sentence_transformers import CrossEncoder
-            import torch
 
             logger.info(f"Loading CrossEncoder model: {self.model_name}")
             start_time = time.time()
@@ -249,7 +245,10 @@ class LateInteractionReranker:
             try:
                 if hasattr(self._model, 'config'):
                     info.update({
-                        "max_seq_length": getattr(self._model.config, 'max_position_embeddings', 'unknown'),
+                        "max_seq_length": getattr(self._model.config,
+                            'max_position_embeddings',
+                            'unknown'),
+                            
                         "num_labels": getattr(self._model.config, 'num_labels', 'unknown')
                     })
             except Exception:
@@ -290,6 +289,10 @@ class PassThroughReranker:
         """Return documents in original order."""
         return documents[:top_k] if top_k else documents
 
-    def rerank_with_scores(self, query: str, documents: List[str], top_k: Optional[int] = None) -> List[Tuple[str, float]]:
+    def rerank_with_scores(self,
+        query: str,
+        documents: List[str],
+        top_k: Optional[int] = None) -> List[Tuple[str,
+        float]]:
         """Return documents with dummy scores."""
         return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
