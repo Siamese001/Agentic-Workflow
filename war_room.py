@@ -5,7 +5,7 @@ from typing import Dict, Any
 
 # Import your new subatomic architecture modules
 try:
-    from runtime.shared.workflow.executive_agents import ExecutiveAgentOrchestrator
+    from runtime.shared.workflow.executive_orchestrator import ExecutiveAgentOrchestrator
     from runtime.shared.workflow.schema_definitions import TechnicalSWOT, StrategyRoadmap, InterviewerProfile
     from rich.console import Console
     from rich.panel import Panel
