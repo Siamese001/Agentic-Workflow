@@ -8,6 +8,8 @@ Phase 1C - SDK Integration Layer
 
 import logging
 import os
+from dataclasses import dataclass
+from enum import Enum
 from typing import Any, Dict, Optional, Tuple
 
 logger = logging.getLogger(__name__)
@@ -376,15 +378,11 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
             self.collections = {}
 
         def add_documents(self, collection_name: str, documents: list, ids: list = None):
-            """Docstring."""
+            """Add documents to collection."""
             if collection_name not in self.collections:
-            """TODO: Add docstring."""
-
                 self.collections[collection_name] = []
             self.collections[collection_name].extend(documents)
             return ids or list(range(len(documents)))
-
-            """TODO: Add docstring."""
 
         def search(self, collection_name: str, query: str, n_results: int = 10):
             """Docstring."""
