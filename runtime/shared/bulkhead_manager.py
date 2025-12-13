@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict, deque
 
 from .signal_infrastructure import EngineType
+from .circuit_breaker import CircuitBreaker, CircuitBreakerConfig, get_circuit_breaker_registry
 
 logger = logging.getLogger(__name__)
 
@@ -71,12 +72,13 @@ class ResourceExhaustedError(Exception):
 class Bulkhead:
     """A single bulkhead with isolated resources."""
     
-    def __init__(self, name: str, config: BulkheadConfig):
+    def __init__(self, name: str, config: BulkheadConfig, enable_circuit_breaker: bool = True):
         """Initialize bulkhead.
         
         Args:
             name: Bulkhead name
             config: Bulkhead configuration
+            enable_circuit_breaker: Whether to enable circuit breaker
         """
         self.name = name
         self.config = config
@@ -94,7 +96,30 @@ class Bulkhead:
         self._completed_count = 0
         self._rejected_count = 0
         
+        # Circuit breaker
+        self.circuit_breaker: Optional[CircuitBreaker] = None
+        if enable_circuit_breaker:
+            self._circuit_breaker_config = CircuitBreakerConfig(
+                failure_threshold=max(3, config.max_concurrency // 2),
+                timeout=60.0,
+                failure_rate_threshold=0.5
+            )
+        
         logger.info(f"Created bulkhead '{name}' with max_concurrency={config.max_concurrency}")
+    
+    async def _get_circuit_breaker(self) -> Optional[CircuitBreaker]:
+        """Get or create circuit breaker.
+        
+        Returns:
+            CircuitBreaker instance if enabled
+        """
+        if self.circuit_breaker is None and hasattr(self, '_circuit_breaker_config'):
+            registry = await get_circuit_breaker_registry()
+            self.circuit_breaker = await registry.get_circuit_breaker(
+                f"bulkhead_{self.name}",
+                self._circuit_breaker_config
+            )
+        return self.circuit_breaker
     
     async def execute(
         self,
@@ -118,6 +143,14 @@ class Bulkhead:
             ResourceExhaustedError: If bulkhead is full
             asyncio.TimeoutError: If execution times out
         """
+        # Check circuit breaker first
+        circuit_breaker = await self._get_circuit_breaker()
+        if circuit_breaker and not circuit_breaker.can_execute():
+            raise ResourceExhaustedError(
+                self.name,
+                f"Circuit breaker is {circuit_breaker.state.value}"
+            )
+        
         start_time = time.time()
         
         # Try to acquire semaphore with timeout
@@ -128,6 +161,11 @@ class Bulkhead:
             if self.queue.full():
                 self._rejected_count += 1
                 self.metrics.rejected_tasks = self._rejected_count
+                if circuit_breaker:
+                    circuit_breaker.record_failure(
+                        ResourceExhaustedError(self.name, "Queue full"),
+                        0
+                    )
                 raise ResourceExhaustedError(
                     self.name,
                     f"Queue full ({self.queue.qsize()}/{self.config.queue_size})"
@@ -143,6 +181,11 @@ class Bulkhead:
                 self.queue.get_nowait()  # Remove from queue
                 self._rejected_count += 1
                 self.metrics.rejected_tasks = self._rejected_count
+                if circuit_breaker:
+                    circuit_breaker.record_failure(
+                        asyncio.TimeoutError(f"Timeout acquiring semaphore after {timeout}s"),
+                        timeout * 1000
+                    )
                 raise ResourceExhaustedError(
                     self.name,
                     f"Timeout acquiring semaphore after {timeout}s"
@@ -153,7 +196,7 @@ class Bulkhead:
             self._wait_times.append(wait_time)
             
             # Create task
-            task = asyncio.create_task(self._execute_with_tracking(coro, *args, **kwargs))
+            task = asyncio.create_task(self._execute_with_circuit_breaker(coro, *args, **kwargs))
             self._active_tasks.add(task)
             task.add_done_callback(lambda t: self._active_tasks.discard(t))
             
@@ -172,6 +215,35 @@ class Bulkhead:
                 self.queue.get_nowait()
             self.semaphore.release()
             self._update_metrics()
+    
+    async def _execute_with_circuit_breaker(
+        self,
+        coro: Callable,
+        *args,
+        **kwargs
+    ) -> Any:
+        """Execute coroutine with circuit breaker tracking.
+        
+        Args:
+            coro: Coroutine function
+            *args: Arguments
+            **kwargs: Keyword arguments
+            
+        Returns:
+            Result
+        """
+        circuit_breaker = await self._get_circuit_breaker()
+        
+        if circuit_breaker:
+            # Execute through circuit breaker
+            return await circuit_breaker.call(coro, *args, **kwargs)
+        else:
+            # Execute normally
+            try:
+                return await coro(*args, **kwargs)
+            except Exception as e:
+                logger.error(f"Task in bulkhead '{self.name}' failed: {e}")
+                raise
     
     async def _execute_with_tracking(
         self,
