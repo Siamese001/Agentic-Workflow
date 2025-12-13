@@ -9,6 +9,8 @@ from typing import Dict, List, Optional, Any, Union
 from pydantic import BaseModel, Field
 from neo4j import GraphDatabase
 import json
+import numpy as np
+from datetime import datetime, timedelta
 
 
 logger = logging.getLogger(__name__)
@@ -26,18 +28,21 @@ class GraphContext(BaseModel):
 class KnowledgeGraphAgent:
     """Neo4j-powered knowledge graph agent for agentic architectures."""
     
-    def __init__(self, uri: str, user: str, password: str):
+    def __init__(self, uri: str, user: str, password: str, similarity_threshold: float = 0.9):
         """Initialize the knowledge graph agent.
         
         Args:
             uri: Neo4j database URI
             user: Database username
             password: Database password
+            similarity_threshold: Threshold for entity similarity matching
         """
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
+        self.similarity_threshold = similarity_threshold
         
         # Initialize indexes if needed
         self._setup_indexes()
+        self._ensure_graph_projection()
         
         logger.info("Initialized KnowledgeGraphAgent")
     
@@ -53,62 +58,125 @@ class KnowledgeGraphAgent:
             GraphContext with entities, relationships, and paths
         """
         try:
+            # Use community-weighted context for better results
+            return self.query_community_context(entity, limit)
+        except Exception as e:
+            logger.error(f"Error querying context: {str(e)}")
+            return GraphContext()
+    
+    def query_community_context(self, entity: str, limit: int = 10) -> GraphContext:
+        """Query context using PageRank-weighted community detection.
+        
+        Args:
+            entity: Central entity to query
+            limit: Maximum number of results
+            
+        Returns:
+            GraphContext with community-weighted entities
+        """
+        try:
             with self.driver.session() as session:
-                # Hybrid semantic + graph query
+                # Use PageRank to prioritize influential neighbors
                 cypher = """
-                // Find matching entities
-                CALL db.index.fulltext.queryNodes('entityNames', $entity) 
-                YIELD node, score
-                WITH node, score
-                // Explore neighborhood
-                MATCH (node)-[r*1..$hops]-(related)
-                RETURN DISTINCT 
-                    node as central_entity,
-                    related,
-                    relationships(r) as rels,
-                    score
+                MATCH (start:Entity {name: $entity})
+                CALL gds.pageRank.stream('agentGraph', {
+                    sourceNodes: [start],
+                    maxIterations: 20,
+                    dampingFactor: 0.85
+                })
+                YIELD nodeId, score
+                WITH gds.util.asNode(nodeId) AS related, score
+                WHERE related <> start
+                RETURN 
+                    related.name as entity_name,
+                    score as influence_score,
+                    labels(related) as labels,
+                    properties(related) as properties,
+                    [(related)-[r]-(start) | type(r)] as relations
+                ORDER BY score DESC 
                 LIMIT $limit
                 """
                 
-                result = session.run(cypher, entity=entity, hops=hops, limit=limit)
+                result = session.run(cypher, entity=entity, limit=limit)
                 
                 entities = []
                 relationships = []
-                paths = []
                 
                 for record in result:
                     entities.append({
-                        "id": record["central_entity"].id,
-                        "labels": list(record["central_entity"].labels),
-                        "properties": dict(record["central_entity"]),
-                        "score": record["score"]
+                        "name": record["entity_name"],
+                        "influence_score": record["score"],
+                        "labels": record["labels"],
+                        "properties": record["properties"],
+                        "relations": record["relations"]
                     })
                     
-                    if record["related"]:
-                        entities.append({
-                            "id": record["related"].id,
-                            "labels": list(record["related"].labels),
-                            "properties": dict(record["related"])
-                        })
-                    
-                    # Process relationships
-                    for rel in record["rels"] or []:
+                    # Extract relationships
+                    for rel_type in set(record["relations"]):
                         relationships.append({
-                            "type": rel.type,
-                            "properties": dict(rel),
-                            "start": rel.start_node.id,
-                            "end": rel.end_node.id
+                            "type": rel_type,
+                            "source": entity,
+                            "target": record["entity_name"],
+                            "weight": record["score"]
                         })
                 
                 return GraphContext(
                     entities=entities,
                     relationships=relationships,
-                    paths=paths,
-                    confidence=min(1.0, len(entities) / limit)
+                    paths=[],
+                    confidence=entities[0]["influence_score"] if entities else 0.0
                 )
                 
         except Exception as e:
-            logger.error(f"Error querying context: {str(e)}")
+            logger.error(f"Error querying community context: {str(e)}")
+            # Fallback to simple hop query if GDS not available
+            return self._query_context_fallback(entity, limit)
+    
+    def _query_context_fallback(self, entity: str, limit: int = 10) -> GraphContext:
+        """Fallback context query without GDS dependencies.
+        
+        Args:
+            entity: Entity to query
+            limit: Result limit
+            
+        Returns:
+            Basic GraphContext
+        """
+        try:
+            with self.driver.session() as session:
+                cypher = """
+                MATCH (start:Entity {name: $entity})
+                MATCH (start)-[r*1..2]-(related)
+                WITH related, count(*) as connection_count
+                RETURN 
+                    related.name as entity_name,
+                    connection_count as influence_score,
+                    labels(related) as labels,
+                    properties(related) as properties
+                ORDER BY connection_count DESC
+                LIMIT $limit
+                """
+                
+                result = session.run(cypher, entity=entity, limit=limit)
+                
+                entities = []
+                for record in result:
+                    entities.append({
+                        "name": record["entity_name"],
+                        "influence_score": record["influence_score"],
+                        "labels": record["labels"],
+                        "properties": record["properties"]
+                    })
+                
+                return GraphContext(
+                    entities=entities,
+                    relationships=[],
+                    paths=[],
+                    confidence=1.0
+                )
+                
+        except Exception as e:
+            logger.error(f"Error in fallback context query: {str(e)}")
             return GraphContext()
     
     def store_relationship(
@@ -132,31 +200,75 @@ class KnowledgeGraphAgent:
             True if successful
         """
         try:
+            # Use safe version with entity disambiguation
+            return self.store_relationship_safe(subject, relation, object, confidence, source)
+        except Exception as e:
+            logger.error(f"Error storing relationship: {str(e)}")
+            return False
+    
+    def store_relationship_safe(
+        self,
+        subject: str,
+        relation: str,
+        object: str,
+        confidence: float = 1.0,
+        source: str = "agent"
+    ) -> bool:
+        """Store relationship with entity disambiguation to prevent duplicates.
+        
+        Args:
+            subject: Subject entity
+            relation: Relationship type
+            object: Object entity
+            confidence: Confidence score
+            source: Source identifier
+            
+        Returns:
+            True if successful
+        """
+        try:
+            # Generate embeddings for entities (simplified - in production use proper embedding model)
+            sub_embedding = self._get_embedding(subject)
+            obj_embedding = self._get_embedding(object)
+            
+            # Find semantic matches to avoid duplicates
+            existing_subject = self.find_semantic_match(subject, sub_embedding)
+            final_subject = existing_subject if existing_subject else subject
+            
+            existing_object = self.find_semantic_match(object, obj_embedding)
+            final_object = existing_object if existing_object else object
+            
             with self.driver.session() as session:
                 cypher = """
-                MERGE (s:Entity {name: $subject})
-                MERGE (o:Entity {name: $object})
+                MERGE (s:Entity {name: $final_subject})
+                ON CREATE SET s.embedding = $sub_embedding, s.created_at = timestamp()
+                ON MATCH SET s.embedding = $sub_embedding, s.last_seen = timestamp()
+                MERGE (o:Entity {name: $final_object})
+                ON CREATE SET o.embedding = $obj_embedding, o.created_at = timestamp()
+                ON MATCH SET o.embedding = $obj_embedding, o.last_seen = timestamp()
                 MERGE (s)-[r:RELATION {type: $relation}]->(o)
                 SET r.confidence = $confidence, 
-                    r.source = $source,
-                    r.timestamp = datetime(),
-                    r.updated = datetime()
+                    r.last_verified = timestamp(),
+                    r.weight = coalesce(r.weight, 0) + 1,
+                    r.source = $source
                 RETURN r
                 """
                 
                 session.run(cypher, 
-                    subject=subject, 
-                    object=object, 
+                    final_subject=final_subject,
+                    final_object=final_object,
                     relation=relation,
+                    sub_embedding=sub_embedding,
+                    obj_embedding=obj_embedding,
                     confidence=confidence,
                     source=source
                 )
                 
-                logger.debug(f"Stored relationship: {subject}-{relation}->{object}")
+                logger.debug(f"Stored relationship: {final_subject}-{relation}->{final_object}")
                 return True
                 
         except Exception as e:
-            logger.error(f"Error storing relationship: {str(e)}")
+            logger.error(f"Error storing safe relationship: {str(e)}")
             return False
     
     def get_neighborhood(self, node_id: str, hops: int = 2) -> GraphContext:
@@ -226,7 +338,8 @@ class KnowledgeGraphAgent:
         self,
         agent_id: str,
         step_id: str,
-        step_data: Dict[str, Any]
+        step_data: Dict[str, Any],
+        state_embedding: Optional[List[float]] = None
     ) -> bool:
         """Create a reasoning step in the agent's decision chain.
         
@@ -234,18 +347,24 @@ class KnowledgeGraphAgent:
             agent_id: Agent identifier
             step_id: Step identifier
             step_data: Step data
+            state_embedding: Current state embedding for episodic memory
             
         Returns:
             True if successful
         """
         try:
+            # Generate state embedding if not provided
+            if state_embedding is None:
+                state_embedding = self._get_embedding(json.dumps(step_data))
+            
             with self.driver.session() as session:
                 cypher = """
-                // Create new step
+                // Create new step with embedding
                 CREATE (s:Step {
                     id: $step_id,
                     agent_id: $agent_id,
                     data: $data,
+                    embedding: $embedding,
                     timestamp: datetime()
                 })
                 
@@ -268,7 +387,8 @@ class KnowledgeGraphAgent:
                 session.run(cypher,
                     agent_id=agent_id,
                     step_id=step_id,
-                    data=json.dumps(step_data)
+                    data=json.dumps(step_data),
+                    embedding=state_embedding
                 )
                 
                 return True
@@ -276,6 +396,60 @@ class KnowledgeGraphAgent:
         except Exception as e:
             logger.error(f"Error creating reasoning step: {str(e)}")
             return False
+    
+    def find_similar_decisions(
+        self, 
+        current_state_embedding: List[float], 
+        limit: int = 3
+    ) -> List[Dict[str, Any]]:
+        """Find past decisions made in similar contexts.
+        
+        Args:
+            current_state_embedding: Current state vector
+            limit: Number of similar decisions to return
+            
+        Returns:
+            List of similar decision contexts
+        """
+        try:
+            with self.driver.session() as session:
+                cypher = """
+                CALL db.index.vector.queryNodes('reasoningEmbeddings', $limit, $embedding)
+                YIELD node, score
+                OPTIONAL MATCH (node)<-[:NEXT*]-(context_chain)
+                OPTIONAL MATCH (node)-[:NEXT]->(next_steps)
+                RETURN 
+                    node.id as step_id,
+                    node.data as decision_data,
+                    node.timestamp as decision_time,
+                    score as similarity,
+                    collect(context_chain.data) as history,
+                    collect(next_steps.data) as outcomes
+                ORDER BY score DESC
+                LIMIT $limit
+                """
+                
+                result = session.run(cypher,
+                    embedding=current_state_embedding,
+                    limit=limit
+                )
+                
+                decisions = []
+                for record in result:
+                    decisions.append({
+                        "step_id": record["step_id"],
+                        "decision": json.loads(record["decision_data"]),
+                        "timestamp": record["decision_time"],
+                        "similarity": record["score"],
+                        "history": [json.loads(d) for d in record["history"]],
+                        "outcomes": [json.loads(d) for d in record["outcomes"]]
+                    })
+                
+                return decisions
+                
+        except Exception as e:
+            logger.error(f"Error finding similar decisions: {str(e)}")
+            return []
     
     def semantic_search(
         self,
@@ -359,6 +533,17 @@ class KnowledgeGraphAgent:
                 ON e.embedding
                 """)
                 
+                # Vector index for reasoning embeddings
+                session.run("""
+                CREATE VECTOR INDEX reasoningEmbeddings IF NOT EXISTS 
+                FOR (s:Step) 
+                OPTIONS {indexConfig: {
+                    `vector.dimensions`: 1536,
+                    `vector.similarity_function`: 'cosine'
+                }}
+                ON s.embedding
+                """)
+                
                 # Unique constraints
                 session.run("""
                 CREATE CONSTRAINT entity_id_unique IF NOT EXISTS 
@@ -366,10 +551,168 @@ class KnowledgeGraphAgent:
                 REQUIRE e.id IS UNIQUE
                 """)
                 
+                session.run("""
+                CREATE CONSTRAINT step_id_unique IF NOT EXISTS 
+                FOR (s:Step) 
+                REQUIRE s.id IS UNIQUE
+                """)
+                
                 logger.info("Indexes and constraints setup complete")
                 
         except Exception as e:
             logger.warning(f"Error setting up indexes: {str(e)}")
+    
+    def _ensure_graph_projection(self):
+        """Ensure GDS graph projection exists for community detection."""
+        try:
+            with self.driver.session() as session:
+                # Check if projection exists
+                result = session.run("""
+                CALL gds.graph.exists('agentGraph') YIELD exists
+                RETURN exists
+                """)
+                
+                if not result.single()["exists"]:
+                    # Create graph projection
+                    session.run("""
+                    CALL gds.graph.project(
+                        'agentGraph',
+                        'Entity',
+                        {
+                            RELATION: {
+                                orientation: 'UNDIRECTED'
+                            }
+                        },
+                        {
+                            nodeProperties: ['embedding'],
+                            relationshipProperties: ['weight', 'confidence']
+                        }
+                    )
+                    YIELD graphName
+                    """)
+                    logger.info("Created GDS graph projection 'agentGraph'")
+                
+        except Exception as e:
+            logger.warning(f"Error ensuring graph projection: {str(e)}")
+    
+    def find_semantic_match(
+        self, 
+        entity: str, 
+        embedding: List[float],
+        threshold: Optional[float] = None
+    ) -> Optional[str]:
+        """Find semantically similar existing entities.
+        
+        Args:
+            entity: Entity name to match
+            embedding: Entity embedding
+            threshold: Similarity threshold (uses class default if None)
+            
+        Returns:
+            Name of matching entity or None
+        """
+        try:
+            threshold = threshold or self.similarity_threshold
+            
+            with self.driver.session() as session:
+                cypher = """
+                CALL db.index.vector.queryNodes('entityEmbeddings', 5, $embedding)
+                YIELD node, score
+                WHERE score > $threshold AND node.name <> $entity
+                RETURN node.name as name, score
+                ORDER BY score DESC
+                LIMIT 1
+                """
+                
+                result = session.run(cypher,
+                    embedding=embedding,
+                    threshold=threshold,
+                    entity=entity
+                )
+                
+                record = result.single()
+                return record["name"] if record else None
+                
+        except Exception as e:
+            logger.error(f"Error finding semantic match: {str(e)}")
+            return None
+    
+    def _get_embedding(self, text: str) -> List[float]:
+        """Generate embedding for text (simplified implementation).
+        
+        Args:
+            text: Text to embed
+            
+        Returns:
+            Vector embedding
+        """
+        # In production, use proper embedding model (OpenAI, Sentence Transformers, etc.)
+        # This is a simplified hash-based placeholder
+        import hashlib
+        hash_obj = hashlib.md5(text.encode())
+        hash_hex = hash_obj.hexdigest()
+        
+        # Convert to float vector
+        embedding = []
+        for i in range(0, len(hash_hex), 2):
+            hex_pair = hash_hex[i:i+2]
+            embedding.append(int(hex_pair, 16) / 255.0)
+        
+        # Pad to 1536 dimensions
+        while len(embedding) < 1536:
+            embedding.extend(embedding[:min(1536 - len(embedding), len(embedding))])
+        
+        return embedding[:1536]
+    
+    def prune_graph(
+        self, 
+        confidence_threshold: float = 0.3, 
+        days_old: int = 30
+    ) -> Dict[str, int]:
+        """Remove low-confidence and stale relationships.
+        
+        Args:
+            confidence_threshold: Minimum confidence to keep
+            days_old: Age in days for stale relationships
+            
+        Returns:
+            Dictionary with prune statistics
+        """
+        try:
+            stats = {"relationships_deleted": 0, "entities_deleted": 0}
+            
+            with self.driver.session() as session:
+                # Delete weak relationships
+                result = session.run("""
+                MATCH ()-[r:RELATION]->()
+                WHERE r.confidence < $threshold 
+                OR (timestamp() - coalesce(r.last_verified, 0) > $cutoff_time)
+                DELETE r
+                RETURN count(r) as deleted
+                """, 
+                threshold=confidence_threshold,
+                cutoff_time=days_old * 24 * 60 * 60 * 1000  # Convert to milliseconds
+                )
+                
+                stats["relationships_deleted"] = result.single()["deleted"]
+                
+                # Delete orphaned entities
+                result = session.run("""
+                MATCH (e:Entity)
+                WHERE NOT (e)-[]-()
+                DELETE e
+                RETURN count(e) as deleted
+                """)
+                
+                stats["entities_deleted"] = result.single()["deleted"]
+                
+                logger.info(f"Pruned graph: {stats}")
+                
+                return stats
+                
+        except Exception as e:
+            logger.error(f"Error pruning graph: {str(e)}")
+            return {"relationships_deleted": 0, "entities_deleted": 0}
     
     def close(self):
         """Close the database connection."""
@@ -381,7 +724,8 @@ class KnowledgeGraphAgent:
 def create_knowledge_graph_agent(
     uri: str,
     user: str,
-    password: str
+    password: str,
+    similarity_threshold: float = 0.9
 ) -> KnowledgeGraphAgent:
     """Create a KnowledgeGraphAgent instance.
     
@@ -389,8 +733,9 @@ def create_knowledge_graph_agent(
         uri: Neo4j URI
         user: Username
         password: Password
+        similarity_threshold: Threshold for entity similarity matching
         
     Returns:
         Configured KnowledgeGraphAgent
     """
-    return KnowledgeGraphAgent(uri, user, password)
+    return KnowledgeGraphAgent(uri, user, password, similarity_threshold)
