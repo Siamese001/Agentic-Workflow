@@ -6,11 +6,18 @@ work before passing it downstream, preventing hallucination cascades.
 
 import json
 import logging
-import re
+import logging
 import time
 from enum import Enum
-from typing import Dict, Any, List, Optional, Union, Callable
-from dataclasses import dataclass
+from typing import Dict, Any, Optional, List, Union, Callable
+from abc import ABC, abstractmethod
+
+from .resilience.circuit_breaker import (
+    CircuitBreakerFactory,
+    CircuitOpenError,
+    CircuitBreakerConfig
+)
+
 from pydantic import BaseModel, Field, validator
 import asyncio
 
@@ -25,7 +32,7 @@ class CritiqueResult(BaseModel):
     suggested_fix: Optional[str] = None
     validation_type: str = "unknown"  # "regex" or "llm"
     execution_time: float = 0.0
-    mutation_request: Optional[MutationRequest] = None
+    mutation_request: Optional["MutationRequest"] = None
     
     @validator('confidence_score')
     def validate_confidence(cls, v):
@@ -122,6 +129,16 @@ class ReflectionEngine:
             "average_confidence": 0.0
         }
         
+        # Initialize circuit breaker for LLM calls
+        self.circuit_breaker = CircuitBreakerFactory.get(
+            "reflection_engine",
+            CircuitBreakerConfig(
+                failure_threshold=3,
+                recovery_timeout=60.0,
+                timeout=self.config.timeout
+            )
+        )
+        
         logger.info(f"Initialized ReflectionEngine with model: {self.config.llm_model}")
     
     async def evaluate(
@@ -130,7 +147,7 @@ class ReflectionEngine:
         criteria: List[Union[str, ValidationCriterion]],
         context: Optional[Dict[str, Any]] = None
     ) -> CritiqueResult:
-        """Evaluate content against criteria.
+        """Evaluate content against criteria with circuit breaker protection.
         
         Args:
             content: The content to evaluate
@@ -154,13 +171,41 @@ class ReflectionEngine:
             else:
                 normalized_criteria.append(criterion)
         
-        # Determine evaluation path
-        if self._should_use_fast_path(normalized_criteria):
-            result = await self._fast_path_evaluate(content, normalized_criteria, context)
-            self.stats["fast_path_critiques"] += 1
-        else:
-            result = await self._llm_path_evaluate(content, normalized_criteria, context)
-            self.stats["llm_critiques"] += 1
+        # Determine evaluation path and execute with circuit breaker
+        try:
+            if self._should_use_fast_path(normalized_criteria):
+                # Fast path doesn't need circuit breaker (no LLM call)
+                result = await self._fast_path_evaluate(content, normalized_criteria, context)
+                self.stats["fast_path_critiques"] += 1
+            else:
+                # Wrap LLM call with circuit breaker
+                result = await self.circuit_breaker.call(
+                    self._llm_path_evaluate,
+                    content,
+                    normalized_criteria,
+                    context
+                )
+                self.stats["llm_critiques"] += 1
+                
+        except CircuitOpenError:
+            # Circuit is open - return conservative result
+            logger.warning("Reflection Engine Circuit OPEN. Skipping critique.")
+            result = CritiqueResult(
+                is_valid=True,  # Fail-open strategy
+                confidence_score=0.3,  # Low confidence
+                critique_reasoning="Circuit breaker OPEN - service degraded",
+                validation_type="circuit_breaker_fallback"
+            )
+            
+        except Exception as e:
+            # Unexpected error - return conservative result
+            logger.error(f"Reflection evaluation failed: {e}")
+            result = CritiqueResult(
+                is_valid=True,  # Fail-open to avoid blocking workflow
+                confidence_score=0.2,  # Very low confidence
+                critique_reasoning=f"Evaluation failed: {str(e)}",
+                validation_type="error_fallback"
+            )
         
         # Update statistics
         result.execution_time = time.time() - start_time

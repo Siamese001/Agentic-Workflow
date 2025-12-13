@@ -9,9 +9,18 @@ import json
 import logging
 import re
 from enum import Enum
+from .shared_models import (
+    InjectionType,
+    InjectionScope,
+    InjectionPattern,
+    InjectionMatch,
+    InjectionConfig,
+    MicroStage
+)
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
-from .subatomic_hop import SubatomicHop, HopState, MicroStage
+from .subatomic_hop import SubatomicHop
+from .shared_models import HopState
 from .instructional_injections import (
     get_instructional_injections,
     get_stage_applicable_injections,
@@ -23,100 +32,6 @@ from dataclasses import dataclass, field
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
-
-
-class InjectionType(Enum):
-    """Types of prompt injections."""
-    # Original types
-    RESUME_ENHANCEMENT = "resume_enhancement"
-    MESSAGE_PERSONALIZATION = "message_personalization"
-    TONE_ADJUSTMENT = "tone_adjustment"
-    KEYWORD_OPTIMIZATION = "keyword_optimization"
-    STRUCTURE_IMPROVEMENT = "structure_improvement"
-    CONTENT_EXPANSION = "content_expansion"
-    QUALITY_BOOST = "quality_boost"
-    
-    # Instructional injection types (30 categories)
-    # Framing Layer
-    GLOBAL_GOAL_STATE = "global_goal_state"
-    SUCCESS_CRITERIA = "success_criteria"
-    TASK_MODE_DECLARATION = "task_mode_declaration"
-    SCOPE_BOUNDARIES = "scope_boundaries"
-    COST_LATENCY_TARGETS = "cost_latency_targets"
-    
-    # Context Layer
-    UNTRUSTED_BLOCK_WRAPPING = "untrusted_block_wrapping"
-    CANONICALIZATION = "canonicalization"
-    CONTEXT_PRUNING = "context_pruning"
-    CROSS_FIELD_CONSISTENCY = "cross_field_consistency"
-    STRUCTURED_ORDERING = "structured_ordering"
-    
-    # Reasoning Layer
-    FAILURE_ANTICIPATION = "failure_anticipation"
-    MULTI_BRANCH_THINKING = "multi_branch_thinking"
-    CONFIDENCE_UNCERTAINTY = "confidence_uncertainty"
-    REASON_THEN_ANSWER = "reason_then_answer"
-    ERROR_SIMULATION = "error_simulation"
-    
-    # Tooling Layer
-    TOOL_FEEDBACK_LOOP = "tool_feedback_loop"
-    EVIDENCE_BINDING = "evidence_binding"
-    CROSS_TOOL_RECONCILIATION = "cross_tool_reconciliation"
-    SHADOW_VALIDATION = "shadow_validation"
-    MODEL_SWITCH_AWARE = "model_switch_aware"
-    
-    # Safety Layer
-    INJECTION_SHIELDING = "injection_shielding"
-    DATA_INSTRUCTION_SEPARATION = "data_instruction_separation"
-    CONSTITUTIONAL_GUARDRAILS = "constitutional_guardrails"
-    DELEGATION_GUARDRAILS = "delegation_guardrails"
-    ADVERSARIAL_MODE = "adversarial_mode"
-    
-    # Output Layer
-    JSON_ONLY_OUTPUT = "json_only_output"
-    SCHEMA_ENFORCEMENT = "schema_enforcement"
-    STABILITY_CONTRACTS = "stability_contracts"
-    ERROR_ENVELOPE = "error_envelope"
-    MINIMALITY_CONSTRAINTS = "minimality_constraints"
-
-
-class InjectionScope(BaseModel):
-    """Scope where injection should be applied."""
-    hop_types: List[str] = Field(default_factory=list)
-    stages: List[str] = Field(default_factory=list)
-    contexts: Dict[str, Any] = Field(default_factory=dict)
-
-
-class InjectionPattern(BaseModel):
-    """A single prompt injection pattern."""
-    id: str
-    name: str
-    type: InjectionType
-    description: str
-    template: str
-    variables: List[str] = Field(default_factory=list)
-    scope: InjectionScope = Field(default_factory=InjectionScope)
-    priority: int = Field(default=0, ge=0, le=10)
-    enabled: bool = True
-    
-    class Config:
-        use_enum_values = True
-
-
-class InjectionMatch(BaseModel):
-    """Result of matching injections to context."""
-    injection: InjectionPattern
-    relevance_score: float = Field(ge=0.0, le=1.0)
-    variable_values: Dict[str, Any] = Field(default_factory=dict)
-
-
-class InjectionConfig(BaseModel):
-    """Configuration for injection loader."""
-    injection_dir: Path = Field(default=Path("./injections"))
-    max_injections_per_hop: int = Field(default=5, ge=1, le=10)  # Increased to handle safety injections
-    relevance_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
-    enable_caching: bool = True
-    auto_reload: bool = True
 
 
 class PromptInjectionLoader:

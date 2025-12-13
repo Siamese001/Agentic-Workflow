@@ -9,7 +9,13 @@ import json
 import logging
 import time
 import uuid
-from enum import Enum
+from .shared_models import (
+    MicroStage,
+    HopState,
+    RetryPolicy,
+    MicroCheckpoint,
+    StageTransition
+)
 from typing import Dict, Any, Optional, Callable, List, Union
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -18,6 +24,7 @@ import asyncio
 from pydantic import BaseModel, Field, validator
 from datetime import datetime
 
+from .service_container import ServiceContainer, get_default_container
 from .reflection_engine import (
     ReflectionEngine,
     ReflectionConfig,
@@ -26,60 +33,14 @@ from .reflection_engine import (
     get_reflection_engine,
     STANDARD_CRITERIA
 )
+from .resilience.circuit_breaker import (
+    CircuitBreakerFactory,
+    CircuitOpenError,
+    CircuitBreakerConfig,
+    CriticalServiceFailure
+)
 
 logger = logging.getLogger(__name__)
-
-
-class MicroStage(Enum):
-    """The 5 atomic micro-stages of a Subatomic Hop."""
-    PRE_CHECK = "PRE_CHECK"     # Validate inputs and context
-    THINK = "THINK"             # Plan the execution (CoT)
-    ACT = "ACT"                 # Execute the tool/LLM call
-    CRITIQUE = "CRITIQUE"       # Review and validate output
-    COMMIT = "COMMIT"           # Write to state/memory
-
-
-class HopState(Enum):
-    """Overall state of a Subatomic Hop."""
-    PENDING = "PENDING"
-    RUNNING = "RUNNING"
-    PAUSED = "PAUSED"
-    COMPLETED = "COMPLETED"
-    FAILED = "FAILED"
-    NEGOTIATING = "NEGOTIATING"  # For Phase 4
-
-
-class RetryPolicy(BaseModel):
-    """Retry policy for micro-stages."""
-    max_retries: int = Field(default=3, ge=0, le=10)
-    retry_delay: float = Field(default=1.0, ge=0.0)
-    exponential_backoff: bool = Field(default=True)
-    retryable_stages: List[MicroStage] = Field(
-        default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
-    )
-
-
-class MicroCheckpoint(BaseModel):
-    """Checkpoint data for saving state between micro-stages."""
-    hop_id: str
-    stage: MicroStage
-    partial_result: Optional[Dict[str, Any]] = None
-    context: Dict[str, Any] = Field(default_factory=dict)
-    timestamp: float = Field(default_factory=time.time)
-    retry_count: int = Field(default=0)
-    error: Optional[str] = None
-    
-    class Config:
-        use_enum_values = True
-
-
-class StageTransition(BaseModel):
-    """Event for stage transitions."""
-    hop_id: str
-    from_stage: Optional[MicroStage]
-    to_stage: MicroStage
-    timestamp: float = Field(default_factory=time.time)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class InputValidationError(Exception):
@@ -124,7 +85,8 @@ class SubatomicHop:
         self,
         hop_function: Callable,
         config: Optional[SubatomicHopConfig] = None,
-        initial_context: Optional[Dict[str, Any]] = None
+        initial_context: Optional[Dict[str, Any]] = None,
+        container: Optional[ServiceContainer] = None
     ):
         """Initialize the Subatomic Hop.
         
@@ -132,14 +94,31 @@ class SubatomicHop:
             hop_function: The original function to execute
             config: Hop configuration
             initial_context: Initial context dictionary
+            container: Optional service container for dependency injection
         """
         self.hop_function = hop_function
         self.config = config or SubatomicHopConfig()
         self.context = initial_context or {}
+        self.container = container or get_default_container()
         
-        # Initialize reflection engine
-        self.reflection_engine = get_reflection_engine(
-            **self.config.reflection_config.dict() if self.config.reflection_config else {}
+        # Initialize reflection engine from container or create new one
+        if self.container.is_registered(ReflectionEngine):
+            self.reflection_engine = self.container.resolve(ReflectionEngine)
+        else:
+            self.reflection_engine = get_reflection_engine(
+                **self.config.reflection_config.dict() if self.config.reflection_config else {}
+            )
+            # Register in container for future use
+            self.container.register(ReflectionEngine, self.reflection_engine)
+        
+        # Initialize circuit breaker for LLM generation
+        self.generation_breaker = CircuitBreakerFactory.get(
+            "generation_engine",
+            CircuitBreakerConfig(
+                failure_threshold=3,
+                recovery_timeout=60.0,
+                timeout=30.0  # 30 second timeout for generation
+            )
         )
         
         # State management
@@ -499,19 +478,34 @@ class SubatomicHop:
             return kwargs
     
     async def _act(self, **kwargs) -> Dict[str, Any]:
-        """Execute the actual hop function."""
+        """Execute the actual hop function with circuit breaker protection."""
         logger.debug(f"Act stage for hop {self.config.hop_id}")
         
-        # Execute the hop function
-        if asyncio.iscoroutinefunction(self.hop_function):
-            result = await self.hop_function(**kwargs)
-        else:
-            result = self.hop_function(**kwargs)
-        
-        # Store result in context
-        self.context["raw_output"] = result
-        
-        return {"output": result}
+        try:
+            # Execute the hop function with circuit breaker protection
+            if asyncio.iscoroutinefunction(self.hop_function):
+                result = await self.generation_breaker.call(self.hop_function, **kwargs)
+            else:
+                # For sync functions, wrap in async
+                async def sync_wrapper():
+                    return self.hop_function(**kwargs)
+                result = await self.generation_breaker.call(sync_wrapper)
+            
+            # Store result in context
+            self.context["raw_output"] = result
+            
+            return {"output": result}
+            
+        except CircuitOpenError:
+            # Circuit is open - generation is failing
+            logger.critical("Generation Circuit OPEN. Node failed.")
+            # No fallback possible for generation - raise critical failure
+            raise CriticalServiceFailure("LLM Service Unreachable - circuit breaker open")
+            
+        except Exception as e:
+            # Other execution errors
+            logger.error(f"Hop execution failed: {e}")
+            raise StageExecutionError(f"Failed to execute hop: {e}")
     
     async def _critique(self, **kwargs) -> Dict[str, Any]:
         """Review and validate the output using Reflection Engine."""
@@ -523,16 +517,31 @@ class SubatomicHop:
         if raw_output is None:
             raise QualityGateFailure("No output produced")
         
-        # Use Reflection Engine for validation
-        critique_result = await self.reflection_engine.evaluate(
-            content=raw_output,
-            criteria=self.config.critique_criteria,
-            context={
-                "hop_id": self.config.hop_id,
-                "stage": "CRITIQUE",
-                "retry_count": self.critique_loop_count
-            }
-        )
+        # Use Reflection Engine for validation with timeout protection
+        try:
+            # Hard limit: 15 seconds for self-reflection
+            critique_result = await asyncio.wait_for(
+                self.reflection_engine.evaluate(
+                    content=raw_output,
+                    criteria=self.config.critique_criteria,
+                    context={
+                        "hop_id": self.config.hop_id,
+                        "stage": "CRITIQUE",
+                        "retry_count": self.critique_loop_count
+                    }
+                ),
+                timeout=15.0
+            )
+        except asyncio.TimeoutError:
+            logger.warning(f"Reflection timed out for hop {self.config.hop_id}. Defaulting to PASS.")
+            # Create a default passing result to avoid blocking workflow
+            from .reflection_engine import CritiqueResult
+            critique_result = CritiqueResult(
+                is_valid=True,
+                confidence_score=0.5,  # Low confidence but passing
+                critique_reasoning="Reflection timed out - auto-approved to prevent blocking",
+                validation_type="timeout_fallback"
+            )
         
         # Check if validation passed
         if not critique_result.is_valid:
