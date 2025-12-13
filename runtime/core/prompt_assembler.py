@@ -7,11 +7,18 @@ trusted system directives, preventing instruction drift and injection attacks.
 
 import json
 import logging
+import re
 import xml.etree.ElementTree as ET
 from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
 from pathlib import Path
 from pydantic import BaseModel, Field
+
+from .security.input_sanitizer import (
+    InputSanitizer,
+    SecurityIntegrityError
+)
+from .shared_models import InjectionMatch
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +125,7 @@ You are {role}. Your objective is {objective}.
         enforce_contract: bool = False,
         contract_id: Optional[str] = None
     ) -> str:
-        """Assemble a prompt with semantic fencing.
+        """Assemble a prompt with semantic fencing and security hardening.
         
         Args:
             role: Agent role (e.g., "Executive Drafter")
@@ -133,6 +140,10 @@ You are {role}. Your objective is {objective}.
             
         Returns:
             Assembled prompt with XML semantic fencing
+            
+        Raises:
+            SecurityIntegrityError: If security validation fails
+            PromptAssemblyError: If XML structure is malformed
         """
         # Select template
         if template_name and template_name in self.templates:
@@ -140,20 +151,70 @@ You are {role}. Your objective is {objective}.
         else:
             template = self.template
         
-        # Sanitize context data (XML escape to prevent leakage)
-        if isinstance(context_data, dict):
-            context_str = self._format_context_data(context_data)
-        else:
-            context_str = self._sanitize_xml(str(context_data))
+        # SECURITY: Sanitize all user input through InputSanitizer
+        try:
+            # Sanitize role and objective
+            sanitized_role = InputSanitizer.sanitize_xml_content(role)
+            sanitized_objective = InputSanitizer.sanitize_xml_content(objective)
+            
+            # Sanitize context data with comprehensive validation
+            if isinstance(context_data, dict):
+                # Sanitize entire context dictionary
+                sanitized_context = InputSanitizer.sanitize_context_data(context_data)
+                context_str = self._format_context_data(sanitized_context)
+            else:
+                # Validate for injection patterns first
+                InputSanitizer.validate_injection_safety("context_data", str(context_data))
+                context_str = InputSanitizer.sanitize_xml_content(str(context_data))
+            
+            # Sanitize injections (even though they're internal - defense in depth)
+            sanitized_injections = []
+            for injection in injections:
+                if hasattr(injection, 'content'):
+                    sanitized_content = InputSanitizer.sanitize_xml_content(injection.content)
+                    # Create new injection with sanitized content
+                    sanitized_injection = type(injection)(
+                        pattern=injection.pattern,
+                        content=sanitized_content,
+                        **{k: v for k, v in injection.__dict__.items() 
+                           if k not in ['pattern', 'content']}
+                    )
+                    sanitized_injections.append(sanitized_injection)
+                else:
+                    sanitized_injections.append(injection)
+            
+            # Sanitize negative constraints
+            sanitized_constraints = []
+            if negative_constraints:
+                for constraint in negative_constraints:
+                    InputSanitizer.validate_injection_safety("constraint", constraint)
+                    sanitized_constraints.append(
+                        InputSanitizer.sanitize_xml_content(constraint)
+                    )
+            
+            # Sanitize examples
+            sanitized_examples = None
+            if examples:
+                InputSanitizer.validate_injection_safety("examples", examples)
+                sanitized_examples = InputSanitizer.sanitize_xml_content(examples)
+            
+            # Sanitize output schema
+            sanitized_schema = None
+            if output_schema:
+                sanitized_schema = InputSanitizer.sanitize_json_content(output_schema)
+            
+        except SecurityIntegrityError as e:
+            logger.error(f"Security validation failed during prompt assembly: {e}")
+            raise
         
-        # Format directives from injections
-        directives = self._format_directives(injections)
+        # Format directives from sanitized injections
+        directives = self._format_directives(sanitized_injections)
         
         # Format negative constraints
         negative_str = ""
-        if negative_constraints:
+        if sanitized_constraints:
             negative_str = "<NEGATIVE_CONSTRAINTS>\n"
-            for constraint in negative_constraints:
+            for constraint in sanitized_constraints:
                 negative_str += f"  <CONSTRAINT>{self._sanitize_xml(constraint)}</CONSTRAINT>\n"
             negative_str += "</NEGATIVE_CONSTRAINTS>"
         
@@ -164,25 +225,49 @@ You are {role}. Your objective is {objective}.
         
         # Format output requirements
         output_format = "Respond clearly and professionally."
-        if output_schema:
-            output_format = f"Must respond with valid JSON matching this schema:\n{json.dumps(output_schema, indent=2)}"
+        if sanitized_schema:
+            output_format = f"Must respond with valid JSON matching this schema:\n{sanitized_schema}"
         
-        # Assemble the prompt
+        # Assemble the prompt with sanitized components
         prompt = template.format(
-            role=self._sanitize_xml(role),
-            objective=self._sanitize_xml(objective),
+            role=sanitized_role,
+            objective=sanitized_objective,
             context_data=context_str,
             directives=directives,
             negative_constraints=negative_str,
-            examples=examples_str,
+            examples=sanitized_examples if sanitized_examples else "",
             output_format=output_format
         )
         
-        # Add metadata if provided
+        # SECURITY: Tag Integrity Check
+        expected_tags = ["SYSTEM_PRIME", "CONTEXT_DATA", "DIRECTIVES", "OUTPUT_FORMAT"]
+        if sanitized_examples:
+            expected_tags.append("FEW_SHOT_EXAMPLES")
+        if sanitized_constraints:
+            expected_tags.append("NEGATIVE_CONSTRAINTS")
+        
+        try:
+            InputSanitizer.validate_template_integrity(prompt, expected_tags)
+        except SecurityIntegrityError as e:
+            logger.error(f"Tag integrity check failed: {e}")
+            raise SecurityIntegrityError(f"Prompt assembly failed integrity check: {e}")
+        
+        # SECURITY: XML Structure Validation
+        try:
+            InputSanitizer.validate_xml_structure(prompt)
+        except SecurityIntegrityError as e:
+            logger.error(f"XML validation failed: {e}")
+            raise SecurityIntegrityError(f"Generated XML is malformed: {e}")
+        
+        # Add metadata if provided (with sanitization)
         if metadata:
             metadata_str = "<METADATA>\n"
             for key, value in metadata.items():
-                metadata_str += f"  <{key}>{self._sanitize_xml(str(value))}</{key}>\n"
+                # Validate field name
+                if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", key):
+                    raise SecurityIntegrityError(f"Invalid metadata field name: {key}")
+                sanitized_value = InputSanitizer.sanitize_xml_content(str(value))
+                metadata_str += f"  <{key}>{sanitized_value}</{key}>\n"
             metadata_str += "</METADATA>\n"
             prompt = prompt.replace("</OUTPUT_FORMAT>", f"</OUTPUT_FORMAT>\n{metadata_str}")
         
@@ -190,6 +275,7 @@ You are {role}. Your objective is {objective}.
         if not self.legacy_mode:
             prompt = self._add_fencing_notice(prompt)
         
+        logger.debug("Prompt assembled successfully with security hardening")
         return prompt
     
     def _format_context_data(self, context: Dict[str, Any]) -> str:
