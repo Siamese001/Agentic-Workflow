@@ -17,14 +17,11 @@ Non-responsibilities:
 """
 
 
-from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
-from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 class RouteType(Enum):
+    """Docstring."""
     INMAIL = "INMAIL"
     CONNECTION_REQ = "CONNECTION_REQ"
     SHORT_NEW = "SHORT_NEW"
@@ -32,11 +29,13 @@ class RouteType(Enum):
 
 @dataclass
 class CTAConfig:
+    """Docstring."""
     temperature: float = 0.5
     max_attempts: int = 3
 
 @dataclass
 class CTAResult:
+    """Docstring."""
     cta: str
     route_type: RouteType
     char_count: int
@@ -70,6 +69,7 @@ class ActionCallGenerator:
         r'\b(?:tomorrow|today)\b',
         r'\b\d{1,2}(?:am|pm)\b',
         r'\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,
+
             2}\b'
     ]
 
@@ -91,6 +91,7 @@ class ActionCallGenerator:
         )
 
     def generate_cta(
+        """Docstring."""
         self,
         route_type: RouteType,
         message_body: str,
@@ -207,11 +208,15 @@ class ActionCallGenerator:
         if route_type == RouteType.CONNECTION_REQ:
             return "Would you be open to connecting to discuss potential synergies?"
         elif route_type == RouteType.SHORT_NEW:
-            return "I'd welcome the opportunity to schedule a brief call next Tuesday or Wednesday to explore how my experience aligns with your team's priorities. Are you available for a 15-minute conversation?"
+            return "I'd welcome the opportunity to schedule a brief call next Tuesday or Wednesday t
+    o explore how my experience aligns with your team's priorities. Are you available for a 15-minute conversation?"
         elif route_type == RouteType.INMAIL:
-            return "I'd appreciate the opportunity to discuss how my background in scaling technology organizations could support your strategic initiatives. Would you be available for a brief call next week? I'm flexible on timing and happy to work around your schedule."
+            return "I'd appreciate the opportunity to discuss how my background in scaling technolog
+    y organizations could support your strategic initiatives. Would you be available for a brief cal
+        l next week? I'm flexible on timing and happy to work around your schedule."
         else:
-            return "Looking forward to continuing our conversation. Are you available for a quick call this week?"
+            return "Looking forward to continuing our conversation. Are you available for a quick ca
+    ll this week?"
 
     def _validate_character_limit(
         self,
@@ -233,7 +238,8 @@ class ActionCallGenerator:
                     passed=True,
                     severity='INFO',
                     message=f"Character limit satisfied: {char_count} chars ({min_chars}-{max_chars})",
-                        
+
+
                     signature=f"CHARLIMIT:OK:{char_count}"
                 )
 
@@ -242,8 +248,10 @@ class ActionCallGenerator:
                 passed=False,
                 severity='BLOCK',
                 message=f"BLOCKED: Character count {char_count} outside range ({min_chars}-{max_chars})",
-                    
-                details={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': route_type.value}
+
+
+                details={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': rout
+    e_type.value}
             )
         else:
             if char_count <= limit:
@@ -323,6 +331,7 @@ class ActionCallGenerator:
         )
 
 def create_action_call_generator(
+    """Docstring."""
     config: Optional[CTAConfig] = None
 ) -> ActionCallGenerator:
     """Factory function to create ActionCallGenerator instance"""

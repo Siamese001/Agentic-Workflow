@@ -7,8 +7,6 @@ constraints (28-33 words per bullet).
 
 import logging
 import re
-from dataclasses import dataclass
-from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +35,7 @@ class K5AOutput:
     word_counts: List[int]
     metadata: Dict[str, Any]
 
-class K5A_GenerationAgent(Agent):
+class K5AGenerationAgent(Agent):
     """K.5A specialist agent for Unify Bullets generation.
 
     This agent generates exactly 7 bullets for the Unify Consulting section
@@ -168,7 +166,8 @@ class K5A_GenerationAgent(Agent):
         Returns:
             Formatted prompt
         """
-        prompt = f"""Generate exactly {self.provenance_rule.total} professional achievement bullets for the Unify Consulting section of a resume.
+        prompt = f"""Generate exactly {self.provenance_rule.total} professional achievement bullets
+    for the Unify Consulting section of a resume.
 
 CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 1. Exactly {self.provenance_rule.total} bullets

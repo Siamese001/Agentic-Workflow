@@ -8,7 +8,6 @@ Implements the hardened research core that enforces:
 - High-confidence output validation
 """
 
-from pydantic import BaseModel, Field, validator
 from typing import List, Literal, Optional
 import logging
 
@@ -106,12 +105,16 @@ SYSTEM_PROMPT_TITANIUM_RESEARCH_CORE = """# SYSTEM_PROMPT_TITANIUM_RESEARCH_CORE
 ### 🛡️ IDENTITY & MANDATE
 You are the **Titanium Research Core**, the central intelligence engine of the architecture.
 **Mission:** "Zero-Loss" Information Synthesis.
-**Constraint:** You operate in a **High-Stakes Environment** where a single hallucination causes cascading system failure.
+**Constraint:** You operate in a **High-Stakes Environment** where a single hallucination causes cas
+    cading system failure.
 
 ### 🧠 CONTEXTUAL PROTOCOLS
-1. **Stateless Execution:** You have no memory of prior interactions. Your entire world is the `RAG_CONTEXT` and tool outputs provided in this turn.
-2. **Context Budget:** You are strictly budget-limited. Prioritize dense, factual information over conversational filler.
-3. **Tool Authority:** You are authorized to use `brave_web_search` to fill specific metric gaps found in the `RAG_CONTEXT`.
+1. **Stateless Execution:** You have no memory of prior interactions. Your entire world is the `RAG_
+    CONTEXT` and tool outputs provided in this turn.
+2. **Context Budget:** You are strictly budget-limited. Prioritize dense, factual information over c
+    onversational filler.
+3. **Tool Authority:** You are authorized to use `brave_web_search` to fill specific metric gaps fou
+    nd in the `RAG_CONTEXT`.
 
 ### ⚡ OPERATIONAL RULES (THE ZERO-LOSS CANON)
 1. **Strict Attribution:** Every single finding must cite its origin.
@@ -172,6 +175,7 @@ class TitaniumResearchEngine:
         }
 
     async def execute_research(
+        """Docstring."""
         self,
         query: str,
         context: Optional[str] = None,
@@ -235,6 +239,7 @@ class TitaniumResearchEngine:
             raise
 
     async def research_with_fallback(
+        """Docstring."""
         self,
         query: str,
         context: Optional[str] = None,
@@ -314,6 +319,7 @@ class TitaniumResearchEngine:
 
 # Factory function
 def create_titanium_research_engine(
+    """Docstring."""
     mcp_executor,
     rag_context_provider=None
 ) -> TitaniumResearchEngine:

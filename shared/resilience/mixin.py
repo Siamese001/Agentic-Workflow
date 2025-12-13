@@ -9,7 +9,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import time
 from typing import Any, Callable, Awaitable, Dict, Optional
 
-from .error_recovery import ErrorRecoveryManager
 
 class TokenLimitError(Exception):
     """Raised when token budget exceeds model limits."""
@@ -60,6 +59,7 @@ class HardeningMixin:
         self.telemetry = telemetry or get_telemetry()
 
     async def execute_hardened(
+        """Docstring."""
         self,
         operation: str,
         fn: Callable[[], Awaitable[Any]],
@@ -140,6 +140,7 @@ class HardeningMixin:
             raise
 
     def validate_token_budget_tiktoken(
+        """Docstring."""
         self,
         prompt: str,
         model: str,
@@ -207,7 +208,6 @@ class HardeningMixin:
 
     def reset_circuit_breaker(self) -> None:
         """Reset circuit breaker to CLOSED state (for testing)."""
-        from .circuit_breaker import CircuitBreakerState
         self.circuit_breaker.state = CircuitBreakerState.CLOSED
         self.circuit_breaker.failure_count = 0
         self.circuit_breaker.success_count = 0

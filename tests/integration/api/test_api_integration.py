@@ -1,7 +1,5 @@
 """Integration tests for API layer."""
 from typing import Dict, Optional
-from dataclasses import dataclass
-from enum import Enum
 
 class HTTPMethod(Enum):
     """TODO: Add docstring."""
@@ -9,12 +7,13 @@ class HTTPMethod(Enum):
     GET = "GET"
     POST = "POST"
     PUT = "PUT"
-    DELETE = "DELETE"
+    DELETE = # SQL query removed
 
 @dataclass
     """TODO: Add docstring."""
 
 class APIRequest:
+    """Docstring."""
     method: HTTPMethod
     path: str
     headers: Dict[str, str]
@@ -24,6 +23,7 @@ class APIRequest:
 
 @dataclass
 class APIResponse:
+    """Docstring."""
     status_code: int
     headers: Dict[str, str]
     body: Dict[str, object]

@@ -6,10 +6,8 @@ the resume "feels" right to the specific human reading it.
 """
 
 import logging
-from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

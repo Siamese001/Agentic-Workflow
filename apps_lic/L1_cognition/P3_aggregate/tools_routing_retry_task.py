@@ -1,7 +1,6 @@
 """Backward compatibility shim for tools_routing_retry_task.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original tools_routing_retry_task.py contained 6 top-level definitions which

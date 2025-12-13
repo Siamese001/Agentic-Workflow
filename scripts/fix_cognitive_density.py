@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 def count_top_level_defs(filepath: Path) -> int:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -126,7 +127,6 @@ def split_file_by_type(filepath: Path) -> None:
     shim_content = f"""\"\"\"Backward compatibility shim for {stem}.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original {filepath.name} contained {total_defs} top-level definitions which

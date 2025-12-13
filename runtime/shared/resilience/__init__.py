@@ -9,7 +9,6 @@ This module provides military-grade resilience patterns including:
 - Provider Routing: Intelligent failover with health monitoring
 
 Usage:
-    from runtime.shared.resilience import (
         HardeningMixin,
         HardeningConfig,
         AtomicStateManager,

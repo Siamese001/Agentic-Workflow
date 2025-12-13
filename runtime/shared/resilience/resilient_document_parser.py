@@ -16,11 +16,7 @@ import tempfile
 import os
 from typing import Any, Dict, List, Optional, Union, Tuple, BinaryIO, AsyncIterator
 from pathlib import Path
-from dataclasses import dataclass, field
-from pydantic import BaseModel, Field
 from enum import Enum
-import json
-import hashlib
 
 logger = logging.getLogger(__name__)
 
@@ -132,9 +128,11 @@ class PDFParserPyPDF2(BaseDocumentParser):
         super().__init__("pypdf2")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
+        """Docstring."""
         return file_type == DocumentType.PDF
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
+        """Docstring."""
         import PyPDF2
 
         result = ParseResult(
@@ -183,9 +181,11 @@ class PDFParserPDFPlumber(BaseDocumentParser):
         super().__init__("pdfplumber")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
+        """Docstring."""
         return file_type == DocumentType.PDF
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
+        """Docstring."""
         import pdfplumber
 
         result = ParseResult(
@@ -255,9 +255,11 @@ class PDFParserPyMuPDF(BaseDocumentParser):
         super().__init__("pymupdf")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
+        """Docstring."""
         return file_type == DocumentType.PDF
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
+        """Docstring."""
         import fitz
 
         result = ParseResult(
@@ -307,9 +309,11 @@ class DOCXParserPythonDocx(BaseDocumentParser):
         super().__init__("python-docx")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
+        """Docstring."""
         return file_type == DocumentType.DOCX
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
+        """Docstring."""
         from docx import Document
 
         result = ParseResult(
@@ -369,9 +373,11 @@ class TextParser(BaseDocumentParser):
         super().__init__("text")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
+        """Docstring."""
         return file_type in [DocumentType.TXT, DocumentType.MD, DocumentType.RTF]
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
+        """Docstring."""
         result = ParseResult(
             content="",
             metadata={},
@@ -419,10 +425,11 @@ class HTMLParser(BaseDocumentParser):
         super().__init__("beautifulsoup")
 
     async def can_parse(self, file_path: Path, file_type: DocumentType) -> bool:
+        """Docstring."""
         return file_type == DocumentType.HTML
 
     async def parse(self, file_path: Path, config: ParserConfig) -> ParseResult:
-        from bs4 import BeautifulSoup
+        """Docstring."""
 
         result = ParseResult(
             content="",
@@ -518,6 +525,7 @@ class ResilientDocumentParser:
             self.stats["total_parsers"] += len(parsers)
 
     async def parse_document(
+        """Docstring."""
         self,
         file_path: Union[str, Path],
         chunk: bool = False
@@ -540,7 +548,8 @@ class ResilientDocumentParser:
         # Check file size
         file_size_mb = file_path.stat().st_size / (1024 * 1024)
         if file_size_mb > self.config.max_file_size_mb:
-            raise ValueError(f"File too large: {file_size_mb:.1f}MB > {self.config.max_file_size_mb}MB")
+            raise ValueError(f"File too large: {file_size_mb:.1f}MB > {self.config.max_file_size_mb}
+    MB")
 
         # Determine file type
         file_type = self._detect_file_type(file_path)
@@ -595,6 +604,7 @@ class ResilientDocumentParser:
         return result
 
     async def parse_stream(
+        """Docstring."""
         self,
         stream: BinaryIO,
         file_type: DocumentType,
@@ -665,6 +675,7 @@ class ResilientDocumentParser:
         return result
 
     async def parse_large_document(
+        """Docstring."""
         self,
         file_path: Union[str, Path],
         chunk_size: Optional[int] = None
@@ -791,7 +802,8 @@ class ResilientDocumentParser:
                 # Start new chunk with overlap
                 if overlap > 0 and chunks:
                     # Find sentences to overlap
-                    overlap_text = chunks[-1][-overlap:] if len(chunks[-1]) > overlap else chunks[-1]
+                    overlap_text = chunks[-1][-overlap:] if len(chunks[-1]) > overlap else chunks[-1
+    ]
                     current_chunk = overlap_text + " " + sentence
                     current_size = len(current_chunk)
                 else:
@@ -832,7 +844,9 @@ class ResilientDocumentParser:
         self.stats["total_parsers"] += 1
 
 # Factory function for creating resilient document parser
-def create_resilient_document_parser(config: Optional[ParserConfig] = None) -> ResilientDocumentParser:
+def create_resilient_document_parser(config: Optional[ParserConfig] = None) -> ResilientDocumentPars
+    """Docstring."""
+    er:
     """Create a resilient document parser.
 
     Args:

@@ -6,12 +6,9 @@ engines can use, eliminating the need for separate format_* modules.
 
 import json
 import logging
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from .signal_infrastructure import EngineType
 
 logger = logging.getLogger(__name__)
 
@@ -556,6 +553,7 @@ class UnifiedFormatter:
         logger.info("Initialized UnifiedFormatter")
 
     def format(
+        """Docstring."""
         self,
         data: Union[str, Dict, List],
         format_type: Union[FormatType, str],
@@ -632,6 +630,7 @@ def get_unified_formatter() -> UnifiedFormatter:
 
 # Convenience functions
 def format_data(
+    """Docstring."""
     data: Union[str, Dict, List],
     format_type: Union[FormatType, str],
     engine_type: Optional[EngineType] = None,

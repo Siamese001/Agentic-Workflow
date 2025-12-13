@@ -2,15 +2,12 @@
 HardenedGeminiExecutor - Example implementation using HardeningMixin.
 
 Demonstrates how to create a military-grade executor by inheriting
-from HardeningMixin for automatic resilience patterns.
 """
 
 import logging
 from typing import List, Optional, Dict, Any
 
-from pydantic import BaseModel
 
-from .hardening_mixin import HardeningMixin, HardeningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +49,7 @@ class HardenedGeminiExecutor(HardeningMixin):
             raise
 
     async def _raw_generate_content(
+        """Docstring."""
         self,
         model: str,
         contents: List[Dict[str, Any]],
@@ -93,6 +91,7 @@ class HardenedGeminiExecutor(HardeningMixin):
             raise
 
     async def execute_k_node(
+        """Docstring."""
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -152,6 +151,7 @@ class HardenedGeminiExecutor(HardeningMixin):
         return content
 
     async def execute_with_tools(
+        """Docstring."""
         self,
         messages: List[AgentMessage],
         tools: List[Dict[str, Any]],
@@ -201,6 +201,7 @@ class HardenedGeminiExecutor(HardeningMixin):
             raise
 
 def create_hardened_gemini_executor(
+    """Docstring."""
     component_name: str = "HardenedGeminiExecutor",
     api_key: Optional[str] = None
 ) -> HardenedGeminiExecutor:

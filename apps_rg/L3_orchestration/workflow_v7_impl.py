@@ -40,7 +40,8 @@ class DAGBuilder:
                 producer_hop_id = self._artifact_producers.get(artifact_id)
                 if not producer_hop_id:
                     if input_spec.required:
-                        raise WorkflowSpecError(f"Unresolved dependency: Hop '{hop_id}' requires artifact '{artifact_id}'")
+                        raise WorkflowSpecError(f"Unresolved dependency: Hop '{hop_id}' requires art
+    ifact '{artifact_id}'")
                 else:
                     self._edges.append((producer_hop_id, hop_id))
         return self
@@ -210,7 +211,8 @@ class RGWorkflowOrchestrator:
         self.logger.info(f'Starting workflow execution: {self.workflow_id}')
         execution_order = self.get_execution_order()
         self.logger.info(f'Execution order: {execution_order}')
-        results: Dict[str, object] = {'workflow_id': self.workflow_id, 'status': 'RUNNING', 'hops_completed': [], 'hops_failed': []}
+        results: Dict[str, object] = {'workflow_id': self.workflow_id, 'status': 'RUNNING', 'hops_co
+    mpleted': [], 'hops_failed': []}
         for hop_id in execution_order:
             self.logger.info(f'Executing hop: {hop_id}')
             checkpoint = self.execute_hop(hop_id, context)
@@ -279,6 +281,7 @@ def hash_file(filepath: Path) -> str:
     return sha256_hash.hexdigest()
 
 def create_orchestrator(workflow_spec: Optional[WorkflowSpec]=None,
+    """Docstring."""
     run_base_dir: str='./pipeline_runs') -> RGWorkflowOrchestrator:
     """builder function to create an orchestrator."""
     return RGWorkflowOrchestrator(workflow_spec, run_base_dir)

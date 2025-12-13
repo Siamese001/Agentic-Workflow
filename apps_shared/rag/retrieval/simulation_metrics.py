@@ -1,4 +1,4 @@
-# from archives.legacy_root_folders.eval.simulation.metrics import compute_collaboration_score, compute_conflict_index  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.eval.simulation.metrics import compute_collaboration_score, c...
 
 class InternalDummyOutcome:
     """TODO: Add docstring."""
@@ -10,6 +10,7 @@ class InternalDummyOutcome:
     """TODO: Add docstring."""
 
 def test_compute_collaboration_score_and_conflict_index() -> None:
+    """TODO: Add docstring."""
     outputs = [
         _DummyOutcome(1.0, 0),
         _DummyOutcome(0.0, 2),

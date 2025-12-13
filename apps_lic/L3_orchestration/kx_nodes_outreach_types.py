@@ -1,8 +1,6 @@
 """Types and models for kx_nodes_outreach."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from enum import Enum
 
 class OutreachKNodeType(str, Enum):
     """Outreach K.X node type classification."""

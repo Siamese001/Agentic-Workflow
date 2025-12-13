@@ -18,10 +18,8 @@ Non-responsibilities:
 
 
 import re
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
 
 @dataclass
 class BioWriterConfig:
@@ -37,6 +35,7 @@ class BioWriterConfig:
     """TODO: Add docstring."""
 
 class BioWriterResult:
+    """Docstring."""
     summary: str
     word_count: int
     validation_results: List[ValidationResult]
@@ -72,6 +71,7 @@ class StrategistBioWriter:
         )
 
     def generate_summary(
+        """Docstring."""
         self,
         bullet_pool: List[str],
         context: Dict[str, Any]
@@ -256,6 +256,7 @@ Generate the executive summary now:"""
         )
 
 def create_strategist_biowriter(
+    """Docstring."""
     config: Optional[BioWriterConfig] = None
 ) -> StrategistBioWriter:
     """Factory function to create StrategistBioWriter instance"""

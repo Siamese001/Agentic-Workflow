@@ -6,7 +6,6 @@ Validates all core components are working correctly
 
 import sys
 import importlib
-from datetime import datetime
 
 def test_import(package_name, min_version=None):
     """Test if a package can be imported and optionally check version"""
@@ -96,8 +95,10 @@ def main():
     util_success = sum(test_import(pkg) for pkg in util_packages)
 
     # Summary
-    total_packages = len(core_packages) + len(vector_packages) + len(cache_packages) + len(ml_packages) + len(safety_packages) + len(util_packages)
-    total_success = core_success + vector_success + cache_success + ml_success + safety_success + util_success
+    total_packages = len(core_packages) + len(vector_packages) + len(cache_packages) + len(ml_packag
+    es) + len(safety_packages) + len(util_packages)
+    total_success = core_success + vector_success + cache_success + ml_success + safety_success + ut
+    il_success
 
     if total_success == total_packages:
 

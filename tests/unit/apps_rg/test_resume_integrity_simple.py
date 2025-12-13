@@ -7,9 +7,6 @@ import pytest
 
 # Test imports from apps_rg module - only test what actually exists
 try:
-    from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
-    from apps_rg.L3_orchestration.orchestrate_workflow import HopStatus, GateDecision
-    from apps_rg import get_module_info, validate_config, create_instance
 except ImportError as e:
     pytest.skip(f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
@@ -124,7 +121,8 @@ class TestResumeEngineIntegrity:
                     "title": "Senior Software Engineer",
                     "company": "Tech Company",
                     "duration": "2020-Present",
-                    "responsibilities": ["Led development of microservices", "Improved system performance"]
+                    "responsibilities": ["Led development of microservices", "Improved system perfor
+    mance"]
                 }
             ],
             "education": [

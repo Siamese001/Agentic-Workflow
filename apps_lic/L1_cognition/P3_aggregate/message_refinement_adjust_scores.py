@@ -1,7 +1,6 @@
 """Backward compatibility shim for message_refinement_adjust_scores.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original message_refinement_adjust_scores.py contained 6 top-level definitions which

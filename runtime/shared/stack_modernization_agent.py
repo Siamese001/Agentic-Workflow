@@ -102,26 +102,33 @@ class StackModernizationAgent:
             "search_migration": {
                 "legacy": ["elasticsearch", "solr", "keyword search"],
                 "modern": "Vector-based Semantic RAG",
-                "thesis": "Moving from keyword matching to Semantic RAG to improve retrieval accuracy by 40%",
-                "strategy": "Implement Strangler Fig Pattern: gradually replace keyword endpoints with vector search while maintaining 100% uptime"
+                "thesis": "Moving from keyword matching to Semantic RAG to improve retrieval accurac
+    y by 40%",
+                "strategy": "Implement Strangler Fig Pattern: gradually replace keyword endpoints wi
+    th vector search while maintaining 100% uptime"
             },
             "monolith_decomposition": {
                 "legacy": ["monolith", "java 8", "soap"],
                 "modern": "Event-Driven Agentic Architecture",
-                "thesis": "Decoupling complex workflows into an Event-Driven Agentic Architecture for scalability",
-                "strategy": "Apply Parallel Run pattern: run new agent system alongside monolith, gradually migrating workflows"
+                "thesis": "Decoupling complex workflows into an Event-Driven Agentic Architecture fo
+    r scalability",
+                "strategy": "Apply Parallel Run pattern: run new agent system alongside monolith, gr
+    adually migrating workflows"
             },
             "data_modernization": {
                 "legacy": ["oracle", "data warehouse", "etl"],
                 "modern": "Knowledge Graph + Lakehouse",
                 "thesis": "Unlocking siloed data by overlaying a Knowledge Graph for AI context",
-                "strategy": "Implement CDC (Change Data Capture) for real-time sync while maintaining warehouse for reporting"
+                "strategy": "Implement CDC (Change Data Capture) for real-time sync while maintainin
+    g warehouse for reporting"
             },
             "cloud_migration": {
                 "legacy": ["on-prem", "data center", "physical servers"],
                 "modern": "Cloud-Native Microservices",
-                "thesis": "Transitioning to cloud-native architecture for elastic scalability and reduced TCO",
-                "strategy": "Use Lift-and-Shift followed by modernization, with parallel environments to ensure zero downtime"
+                "thesis": "Transitioning to cloud-native architecture for elastic scalability and re
+    duced TCO",
+                "strategy": "Use Lift-and-Shift followed by modernization, with parallel environment
+    s to ensure zero downtime"
             }
         }
 
@@ -186,7 +193,8 @@ class StackModernizationAgent:
             if not diagnostic.detected_legacy_tech:
                 # No legacy detected, return general thesis
                 return MigrationThesis(
-                    current_state_diagnosis="Modern technology stack with opportunities for optimization",
+                    current_state_diagnosis="Modern technology stack with opportunities for optimiza
+    tion",
                     target_state_vision="Enhanced AI capabilities with advanced architectures",
                     bridge_strategy="Incremental improvements and strategic AI integration"
                 )
@@ -202,9 +210,10 @@ class StackModernizationAgent:
             return MigrationThesis(
                 current_state_diagnosis=f"Mature infrastructure with {',
                     '.join(diagnostic.detected_legacy_tech[:2])}",
-                    
+
                 target_state_vision="Modern, cloud-native AI architecture",
-                bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business continuity"
+                bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business co
+    ntinuity"
             )
 
         except Exception as e:
@@ -257,8 +266,10 @@ class StackModernizationAgent:
             if thesis.is_transformative:
                 summary = (
                     f"Transformation Architect specializing in legacy-to-modern migrations. "
-                    f"Proven track record of {thesis.bridge_strategy.split('.')[0] if thesis.bridge_strategy else 'safe modernization'} "
-                    f"while maintaining 100% business continuity. Expert in bridging established systems "
+                    f"Proven track record of {thesis.bridge_strategy.split('.')[0] if thesis.bridge_
+    strategy else 'safe modernization'} "
+                    f"while maintaining 100% business continuity. Expert in bridging established sys
+    tems "
                     f"to cutting-edge AI architectures."
                 )
             else:

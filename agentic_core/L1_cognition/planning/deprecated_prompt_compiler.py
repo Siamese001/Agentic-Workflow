@@ -1,5 +1,5 @@
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.schemas import PromptSchema  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.compiler import compile_prompt  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.schemas import PromptSchema  # DE...
+# from archives.legacy_resume_gen.Agentic_Workflow-10_10.l1.cms.compiler import compile_prompt  #...
 
 def test_compile_prompt_produces_string() -> None:
     """Test that compile_prompt produces a string output."""

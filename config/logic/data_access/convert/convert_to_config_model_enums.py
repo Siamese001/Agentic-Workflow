@@ -1,6 +1,5 @@
 """Enum types for convert_to_config_model."""
 
-from enum import Enum
 
 class ConfigFormat(Enum):
     """Supported configuration formats."""

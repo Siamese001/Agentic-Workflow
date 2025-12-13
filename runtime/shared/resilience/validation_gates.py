@@ -9,10 +9,7 @@ import logging
 import asyncio
 from typing import Any, Dict, List, Optional, Callable, Awaitable
 from datetime import datetime
-from pydantic import BaseModel, Field
-from dataclasses import dataclass, field
 
-from .atomic_state_manager import AtomicStateManager, WorkflowState
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +126,8 @@ class ResilientValidationChain:
         messages = [
             {
                 "role": "system",
-                "content": "You are a validation Sentinel. Evaluate content against the given rubric."
+                "content": "You are a validation Sentinel. Evaluate content against the given rubric
+    ."
             },
             {
                 "role": "user",
@@ -173,7 +171,8 @@ class ResilientValidationChain:
             )
 
         except asyncio.TimeoutError:
-            self.logger.error(f"Sentinel timeout for gate {gate.gate_name} after {gate.gate_timeout_seconds}s")
+            self.logger.error(f"Sentinel timeout for gate {gate.gate_name} after {gate.gate_timeout_
+    seconds}s")
             self.metrics.timeouts["gate"] += 1
             return SentinelDecision(
                 status="FAIL",
@@ -191,6 +190,7 @@ class ResilientValidationChain:
             )
 
     async def _attempt_repair(
+        """Docstring."""
         self,
         content: str,
         decision: SentinelDecision,
@@ -240,6 +240,7 @@ class ResilientValidationChain:
             raise
 
     async def _checkpoint_gate_success(
+        """Docstring."""
         self,
         gate: ValidationGate,
         content: str,
@@ -291,6 +292,7 @@ class ResilientValidationChain:
         return None
 
     async def execute_chain(
+        """Docstring."""
         self,
         initial_content: str,
         gates: List[ValidationGate],
@@ -524,6 +526,7 @@ def create_standard_gates() -> List[ValidationGate]:
 
 # Example repair agent function signature
 async def default_repair_agent(
+    """Docstring."""
     original_content: str,
     feedback: str,
     instruction: str,

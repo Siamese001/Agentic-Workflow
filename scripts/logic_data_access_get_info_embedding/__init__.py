@@ -3,7 +3,8 @@
 Get Info Embedding Module
 
 This module provides embedding generation and retrieval within the Agentic-Workflow system.
-It is part of the scripts/logic/data_access/get_info_embedding component and offers specialized functionality
+It is part of the scripts/logic/data_access/get_info_embedding component and offers specialized func
+    tionality
 for efficient data processing and workflow management.
 
 Key Responsibilities:

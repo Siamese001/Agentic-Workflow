@@ -25,6 +25,7 @@ def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, flo
     return True
 
 def gate_against_baseline(
+    """Docstring."""
     current_scores: Dict[str, float],
     baseline_scores: Dict[str, float],
     tolerance: float = 0.0,

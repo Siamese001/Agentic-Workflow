@@ -7,7 +7,6 @@ unverifiable content is filtered out to ensure only high-signal content is used.
 
 import logging
 import re
-from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
 
@@ -89,12 +88,14 @@ class SignalQualityPipeline:
             # Tier 1: Official financial/regulatory documents
             "tier_1": {
                 "score": 1.0,
-                "sources": {"10-k", "10-q", "official_report", "sec_filing", "annual_report", "proxy_statement"}
+                "sources": {"10-k", "10-q", "official_report", "sec_filing", "annual_report", "proxy
+    _statement"}
             },
             # Tier 2: Professional profiles and verified resumes
             "tier_2": {
                 "score": 0.8,
-                "sources": {"linkedin", "resume_v1", "official_resume", "company_profile", "verified_profile"}
+                "sources": {"linkedin", "resume_v1", "official_resume", "company_profile", "verified
+    _profile"}
             },
             # Tier 3: Notes and informal sources
             "tier_3": {
@@ -131,6 +132,7 @@ class SignalQualityPipeline:
                    f"specificity={specificity_threshold}")
 
     def evaluate_signal(
+        """Docstring."""
         self,
         content: str,
         metadata: Dict[str, str],
@@ -387,6 +389,7 @@ class SignalQualityPipeline:
             return []
 
     def batch_evaluate(
+        """Docstring."""
         self,
         documents: List[Tuple[str, Dict[str, str], str]],
         filter_failed: bool = True
@@ -418,6 +421,7 @@ class SignalQualityPipeline:
 
 # Factory function for easy instantiation
 def create_quality_pipeline(
+    """Docstring."""
     relevance_threshold: float = 0.3,
     authority_threshold: float = 0.4,
     specificity_threshold: float = 0.5,
@@ -450,6 +454,7 @@ def create_quality_pipeline(
 
 # Convenience function for quick filtering
 def filter_high_quality_signals(
+    """Docstring."""
     documents: List[Tuple[str, Dict[str, str], str]],
     strict_mode: bool = False
 ) -> List[Dict[str, str]]:

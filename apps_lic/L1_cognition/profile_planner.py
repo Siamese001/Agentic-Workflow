@@ -8,7 +8,6 @@ This is a foundational L1 planning component that feeds into the hop-based
 K1-K7 execution pipeline for profile-driven message generation.
 """
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import logging
 
@@ -90,6 +89,7 @@ class ProfilePlanner:
         }
 
     def plan(
+        """Docstring."""
         self,
         *,
         recipient_profile: Dict[str, object],
@@ -369,7 +369,8 @@ class ProfilePlanner:
 
     def _determine_archetype_from_scores(self, scores: Dict[str, float]) -> str:
         """Determine archetype from scores."""
-        if scores["executive"] >= scores["senior_ta"] and scores["executive"] >= scores["recruiter"]:
+        if scores["executive"] >= scores["senior_ta"] and scores["executive"] >= scores["recruiter"]
+    :
             return "EXECUTIVE"
         elif scores["senior_ta"] >= scores["recruiter"]:
             return "SENIOR_TA"
@@ -488,8 +489,10 @@ class ProfilePlanner:
         required_fields = ["title", "company", "industry"]
         optional_fields = ["experience", "skills", "education"]
 
-        required_score = sum(1 for field in required_fields if profile.get(field)) / len(required_fields)
-        optional_score = sum(1 for field in optional_fields if profile.get(field)) / len(optional_fields)
+        required_score = sum(1 for field in required_fields if profile.get(field)) / len(required_fi
+    elds)
+        optional_score = sum(1 for field in optional_fields if profile.get(field)) / len(optional_fi
+    elds)
 
         completeness = (required_score * 0.7) + (optional_score * 0.3)
         return round(completeness, 3)

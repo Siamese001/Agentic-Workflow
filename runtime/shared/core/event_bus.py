@@ -10,10 +10,7 @@ import json
 import logging
 import time
 import uuid
-from abc import ABC, abstractmethod
-from enum import Enum
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -125,6 +122,7 @@ class EventBus(ABC):
 
     @abstractmethod
     async def subscribe(
+        """Docstring."""
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
@@ -217,6 +215,7 @@ class MemoryEventBus(EventBus):
         logger.debug(f"Published event {event.id} to channel {channel}")
 
     async def subscribe(
+        """Docstring."""
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
@@ -303,6 +302,7 @@ class MemoryEventBus(EventBus):
                 logger.error(f"Worker error for channel {channel}: {e}")
 
     async def _notify_subscribers(
+        """Docstring."""
         self,
         event: SystemEvent,
         subscribers: List[Callable]
@@ -324,6 +324,7 @@ class MemoryEventBus(EventBus):
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _safe_notify(
+        """Docstring."""
         self,
         callback: Callable[[SystemEvent], Awaitable[None]],
         event: SystemEvent
@@ -432,6 +433,7 @@ class RedisEventBus(EventBus):
             raise
 
     async def subscribe(
+        """Docstring."""
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
@@ -580,6 +582,7 @@ class RedisEventBus(EventBus):
                 await asyncio.sleep(1)  # Brief pause before retry
 
     async def _notify_subscribers(
+        """Docstring."""
         self,
         event: SystemEvent,
         subscribers: List[Callable]
@@ -601,6 +604,7 @@ class RedisEventBus(EventBus):
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _safe_notify(
+        """Docstring."""
         self,
         callback: Callable[[SystemEvent], Awaitable[None]],
         event: SystemEvent
@@ -669,6 +673,7 @@ async def get_event_bus() -> EventBus:
 
 # Event publishing helpers
 async def publish_event(
+    """Docstring."""
     event_type: EventType,
     source_component: str,
     payload: Dict[str, Any],
@@ -701,6 +706,7 @@ async def publish_event(
 
 # Decorator for event publishing
 def event_publisher(
+    """Docstring."""
     event_type: EventType,
     channel: Optional[str] = None
 ):
@@ -718,7 +724,9 @@ def event_publisher(
             """TODO: Add docstring."""
 
     def decorator(func):
+        """Docstring."""
         async def async_wrapper(*args, **kwargs):
+            """Docstring."""
             # Extract trace_id from first argument if it's a SignalEnvelope
             trace_id = None
             if args and hasattr(args[0], 'trace_id'):

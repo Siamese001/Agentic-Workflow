@@ -1,6 +1,5 @@
 """Dataclass models for tool_invoke_observability_tool."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 # from .tool_invoke_observability_tool_enums import *  # Star import removed
 

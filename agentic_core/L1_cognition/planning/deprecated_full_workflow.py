@@ -5,9 +5,8 @@ integrating all layers and components.
 """
 
 import pytest
-from unittest.mock import Mock, patch
 
-# from archives.legacy_root_folders.core.models.models import ExecutionContext, JobInput, ResumeInput, WorkflowConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.core.models.models import ExecutionContext, JobInput, ResumeI...
 
 class TestEndToEndWorkflow:
     """Test complete end-to-end workflow execution."""
@@ -42,7 +41,7 @@ class TestEndToEndWorkflow:
                 ]
 
                 # Mock L2 execution
-#                 from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # INVALID: Cannot import from path with hyphens
+#                 from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle ...
                 mock_strategy = Mock()
                 mock_strategy.branches = [Mock(description="Senior engineer strategy")]
 
@@ -55,7 +54,6 @@ class TestEndToEndWorkflow:
                 )
 
                 # Execute workflow
-                from orchestration.run_dag import run_dag
                 plans = [Mock()]
                 result = run_dag(plans, ctx)
 
@@ -160,7 +158,7 @@ class TestWorkflowPerformance:
         )
 
         with patch('l2.execute_workflow_plans') as mock_execute:
-#             from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # INVALID: Cannot import from path with hyphens
+#             from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # I...
             mock_strategy = Mock()
             mock_strategy.branches = [Mock(description="Test strategy")]
 

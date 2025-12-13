@@ -313,7 +313,8 @@ class SOTALayerTestSuite:
 
         # Step 4: Generate response (mock)
         logger.info("\n4. Generating response...")
-        response = f"Based on analysis: Our system shows 50ms latency while industry averages are 100ms. This represents a 2x performance advantage."
+        response = f"Based on analysis: Our system shows 50ms latency while industry averages are 10
+    0ms. This represents a 2x performance advantage."
         logger.info(f"   Response generated")
 
         # Step 5: Cache the result
@@ -361,7 +362,8 @@ class SOTALayerTestSuite:
 
         # Test get
         get_result = null_cache.get("test")
-        logger.info(f"   Get operation: {'None' if get_result is None else 'Unexpectedly returned value'}")
+        logger.info(f"   Get operation: {'None' if get_result is None else 'Unexpectedly returned va
+    lue'}")
 
         # Test stats
         stats = null_cache.get_stats()
@@ -406,8 +408,10 @@ class SOTALayerTestSuite:
         reranker_available = self.reranker.is_available
         cache_available = self.cache.is_available
 
-        logger.info(f"  Late Interaction Reranker: {'✅ Available' if reranker_available else '⚠️  Fallback mode'}")
-        logger.info(f"  Contrastive Semantic Cache: {'✅ Available' if cache_available else '⚠️  Fallback mode'}")
+        logger.info(f"  Late Interaction Reranker: {'✅ Available' if reranker_available else '⚠️  Fa
+    llback mode'}")
+        logger.info(f"  Contrastive Semantic Cache: {'✅ Available' if cache_available else '⚠️  Fall
+    back mode'}")
 
         # Run tests
         self.test_late_interaction_reranker()

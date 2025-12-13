@@ -7,9 +7,6 @@ Generated: 2025-12-07T12:07:59.858910
 
 import logging
 import time
-from contextlib import contextmanager
-from dataclasses import dataclass, field
-from enum import Enum
 
 try:
     from opentelemetry import trace
@@ -152,6 +149,7 @@ class OpenTelemetryTracingAdapter:
 
     @contextmanager
     def trace_orchestrator(
+        """Docstring."""
         self,
         mission: str,
         metadata: Optional[Dict[str, Any]] = None,
@@ -183,6 +181,7 @@ class OpenTelemetryTracingAdapter:
 
     @contextmanager
     def trace_cognitive(
+        """Docstring."""
         self,
         task: str,
         reasoning_mode: str = "react",
@@ -225,6 +224,7 @@ class OpenTelemetryTracingAdapter:
 
     @contextmanager
     def trace_action(
+        """Docstring."""
         self,
         action_count: int,
         resilience_metrics: Optional[ResilienceMetrics] = None,
@@ -264,6 +264,7 @@ class OpenTelemetryTracingAdapter:
 
     @contextmanager
     def trace_tool(
+        """Docstring."""
         self,
         tool_name: str,
         parameters: Optional[Dict[str, Any]] = None,
@@ -306,6 +307,7 @@ class OpenTelemetryTracingAdapter:
 
     @contextmanager
     def trace_dag_node(
+        """Docstring."""
         self,
         task_id: str,
         task_type: str,
@@ -343,6 +345,7 @@ class OpenTelemetryTracingAdapter:
 
     @contextmanager
     def trace_reasoning(
+        """Docstring."""
         self,
         step_number: int,
         step_type: str,
@@ -469,6 +472,7 @@ class OpenTelemetryTracingAdapter:
 _global_tracer: Optional[OpenTelemetryTracingAdapter] = None
 
 def get_tracer(
+    """Docstring."""
     service_name: str = "agentic-workflow",
     enable_console_export: bool = False,
 ) -> OpenTelemetryTracingAdapter:

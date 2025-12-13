@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:28:54.090417
 
 import logging
 from typing import Dict, Optional
-from shared.result_types import RetryResult
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +33,7 @@ class HandleServiceErrors:
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(self,
+        """Docstring."""
         primary: Callable,
         fallback: Callable,
         *args,

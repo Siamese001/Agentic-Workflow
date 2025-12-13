@@ -1,6 +1,5 @@
 """Dataclass models for query_schema_store."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 # from .query_schema_store_enums import *  # Star import removed
 

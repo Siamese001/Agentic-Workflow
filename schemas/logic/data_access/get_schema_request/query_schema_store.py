@@ -1,7 +1,6 @@
 """Backward compatibility shim for query_schema_store.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original query_schema_store.py contained 10 top-level definitions which

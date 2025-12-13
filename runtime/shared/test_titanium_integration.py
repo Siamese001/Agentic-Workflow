@@ -8,7 +8,6 @@ import asyncio
 import logging
 
 # Test imports
-from titanium_search_tool import (
     get_titanium_search_tool,
     get_titanium_search_with_sources,
     get_pipeline_stats,
@@ -125,7 +124,6 @@ async def test_hardened_orchestrator_integration():
     logger.info("\n=== Testing Hardened Orchestrator Integration ===")
 
     try:
-        from apps_rg.L3_orchestration.titanium_integration import (
             inject_titanium_tools,
             prepare_titanium_context,
             enhance_system_prompt
@@ -134,12 +132,14 @@ async def test_hardened_orchestrator_integration():
         # Test context injection
         context = {"test": "value"}
         enhanced_context = inject_titanium_tools(context)
-        logger.info(f"Injected tools: {list(k for k in enhanced_context.keys() if 'titanium' in k)}")
+        logger.info(f"Injected tools: {list(k for k in enhanced_context.keys() if 'titanium' in k)}"
+    )
         logger.info(f"Available tools count: {len(enhanced_context.get('available_tools', []))}")
 
         # Test async context preparation
         async_context = await prepare_titanium_context(context)
-        logger.info(f"Async context keys: {list(k for k in async_context.keys() if 'titanium' in k)}")
+        logger.info(f"Async context keys: {list(k for k in async_context.keys() if 'titanium' in k)}
+    ")
 
         # Test system prompt enhancement
         base_prompt = "You are an AI assistant."
@@ -157,7 +157,6 @@ async def test_dispatch_tools():
     logger.info("\n=== Testing Dispatch Resume Tools ===")
 
     try:
-        from apps_rg.L3_orchestration.dispatch_resume_tools import DispatchResumeTools
 
         # Initialize with Titanium enabled
         tools = DispatchResumeTools({"use_titanium_search": True})

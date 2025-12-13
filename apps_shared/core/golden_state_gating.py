@@ -1,4 +1,4 @@
-# from archives.legacy_root_folders.eval.golden_state.gating import gate_experiment  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.eval.golden_state.gating import gate_experiment  # DEPRECATED...
 
 def test_gate_experiment_allows_without_baseline() -> None:
     """TODO: Add docstring."""
@@ -8,6 +8,7 @@ def test_gate_experiment_allows_without_baseline() -> None:
     """TODO: Add docstring."""
 
 def test_gate_experiment_enforces_avg_and_pass_count() -> None:
+    """TODO: Add docstring."""
     baseline = {"avg_score": 0.8, "pass_count": 2}
 
     better = {"avg_score": 0.9, "pass_count": 2}

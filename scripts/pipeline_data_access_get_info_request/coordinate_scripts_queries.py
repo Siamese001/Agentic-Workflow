@@ -5,10 +5,8 @@ scripts, ensuring proper query routing, result aggregation, and error handling.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
 import logging
 from datetime import datetime
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +103,8 @@ class ScriptsQueriesCoordinator:
             query_results = self._execute_queries(sorted_queries)
 
             # Aggregate results if enabled
-            aggregated_results = self._aggregate_results(query_results) if self.config.enable_result_aggregation else {}
+            aggregated_results = self._aggregate_results(query_results) if self.config.enable_result
+    _aggregation else {}
 
             # Calculate statistics
             failed_queries = [r.query_id for r in query_results if r.status == QueryStatus.FAILED]
@@ -125,7 +124,8 @@ class ScriptsQueriesCoordinator:
                 }
             )
 
-            self.logger.info(f"Successfully coordinated {len(query_results)} queries with {len(failed_queries)} failures")
+            self.logger.info(f"Successfully coordinated {len(query_results)} queries with {len(faile
+    d_queries)} failures")
             return result
 
         except Exception as e:
@@ -287,6 +287,7 @@ class ScriptsQueriesCoordinator:
 
 # Factory function for easy instantiation
 def create_scripts_queries_coordinator(
+    """Docstring."""
     max_concurrent_queries: int = 10,
     enable_query_caching: bool = True,
     **kwargs: Dict[str, object]) -> ScriptsQueriesCoordinator:
@@ -300,6 +301,7 @@ def create_scripts_queries_coordinator(
 
 # Convenience function for direct usage
 def coordinate_script_queries(
+    """Docstring."""
     queries: List[Dict[str, Any]],
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:

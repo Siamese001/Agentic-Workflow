@@ -1,7 +1,6 @@
 """Backward compatibility shim for kx_nodes_outreach.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original kx_nodes_outreach.py contained 8 top-level definitions which

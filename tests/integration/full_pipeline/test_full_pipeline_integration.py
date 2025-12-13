@@ -1,7 +1,5 @@
 """Integration tests for full pipeline execution."""
 from typing import Dict, List, Optional
-from dataclasses import dataclass, field
-from enum import Enum
 
 class PipelineStage(Enum):
     """TODO: Add docstring."""
@@ -18,6 +16,7 @@ class PipelineStage(Enum):
     """TODO: Add docstring."""
 
 class PipelineState:
+    """Docstring."""
     pipeline_id: str
     stage: PipelineStage
     input_data: Dict[str, object]

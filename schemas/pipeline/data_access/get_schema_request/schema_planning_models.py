@@ -4,9 +4,7 @@ This module contains dataclass models for schema planning configuration
 and result structures.
 """
 
-from dataclasses import dataclass, field
 from typing import Dict, List, Any
-from .schema_types import SchemaDefinition, ValidationRule, TransformationType
 
 @dataclass
 class TransformationPlan:

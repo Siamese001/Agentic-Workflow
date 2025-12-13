@@ -1,6 +1,5 @@
 """Unit tests for runtime/shared/models.py"""
 from enum import Enum
-from shared.configuration.reasoning_config import ReasoningConfig
 # Utils classes don't exist yet, skipping import
 
 class TestGateDecision:
@@ -9,6 +8,7 @@ class TestGateDecision:
         """TODO: Add docstring."""
 
     def test_is_enum(self):
+        """Docstring."""
         assert issubclass(GateDecision, Enum)
         """TODO: Add docstring."""
 
@@ -28,6 +28,7 @@ class TestGateDecision:
     """TODO: Add docstring."""
 
 class TestValidationSeverity:
+    """Docstring."""
     def test_is_enum(self):
         """TODO: Add docstring."""
 
@@ -36,6 +37,7 @@ class TestValidationSeverity:
         """TODO: Add docstring."""
 
     def test_has_levels(self):
+        """Docstring."""
         assert len(list(ValidationSeverity)) >= 2
     """TODO: Add docstring."""
 
@@ -43,6 +45,7 @@ class TestValidationSeverity:
 
 
 class TestCircuitState:
+    """Docstring."""
     def test_is_enum(self):
         """TODO: Add docstring."""
 
@@ -68,25 +71,30 @@ class TestHopStatus:
     """TODO: Add docstring."""
 
 class TestAPICallStatus:
+    """Docstring."""
     def test_is_enum(self):
+        """Docstring."""
         assert issubclass(APICallStatus, Enum)
 
 class TestReasoningConfig:
         """TODO: Add docstring."""
 
     def test_creation(self):
+        """Docstring."""
         cfg = ReasoningConfig()
     """TODO: Add docstring."""
 
         assert cfg is not None
 
     def test_determinism(self):
+        """Docstring."""
         assert ReasoningConfig() == ReasoningConfig()
 
 class TestValidationResult:
         """TODO: Add docstring."""
 
     def test_creation(self):
+        """Docstring."""
         result = ValidationResult(
             rule_id="test_rule",
             passed=True,
@@ -98,6 +106,7 @@ class TestValidationResult:
         assert result.passed is True
 
     def test_invalid_case(self):
+        """Docstring."""
         result = ValidationResult(
             rule_id="test_rule",
     """TODO: Add docstring."""
@@ -111,11 +120,15 @@ class TestValidationResult:
         assert result.passed is False
 
 class TestRAGState:
+    """Docstring."""
     def test_creation(self):
+        """Docstring."""
         state = RAGState()
         assert state is not None
 
 class TestImmutableStagingBuffer:
+    """Docstring."""
     def test_creation(self):
+        """Docstring."""
         buf = ImmutableStagingBuffer()
         assert buf is not None

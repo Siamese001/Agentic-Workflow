@@ -122,6 +122,7 @@ class InternalSchemaConverter:
             errors.extend(validation_errors)
 
     def convert_to_internal(self,
+        """Docstring."""
         external_data: Dict[str,
         object],
         internal_schema: InternalSchema,
@@ -151,7 +152,8 @@ class InternalSchemaConverter:
                 'conversion_strategy': self.config.strategy.value,
                 'external_fields': len(external_data),
                 'internal_fields': len(converted_data)})
-            self.logger.info(f'Conversion completed with {len(errors)} errors and {len(warnings)} warnings')
+            self.logger.info(f'Conversion completed with {len(errors)} errors and {len(warnings)} wa
+    rnings')
             return result
         except Exception as e:
             self.logger.error(f'Schema conversion failed: {str(e)}')
@@ -162,6 +164,7 @@ class InternalSchemaConverter:
                 metadata={'error': str(e)})
 
     def auto_generate_mappings(self,
+        """Docstring."""
         external_schema: Dict[str,
         object],
         internal_schema: InternalSchema) -> List[FieldMapping]:
@@ -197,6 +200,7 @@ class InternalSchemaConverter:
         return mappings
 
     def convert_batch(self,
+        """Docstring."""
         external_data_list: List[Dict[str,
         object]],
         external_schema: Optional[Dict[str,
@@ -352,6 +356,7 @@ class InternalSchemaConverter:
             str) else x}
 
 def create_internal_schema_converter(strategy: str='lenient',
+    """Docstring."""
     preserve_unknown: bool=False,
     validate_types: bool=True,
     **kwargs: Dict[str,
@@ -364,6 +369,7 @@ def create_internal_schema_converter(strategy: str='lenient',
     return InternalSchemaConverter(config)
 
 def convert_to_internal_schema(external_data: Dict[str,
+    """Docstring."""
     Any],
     internal_schema_def: Dict[str,
     Any],
@@ -406,4 +412,8 @@ def convert_to_internal_schema(external_data: Dict[str,
         external_schema,
         internal_schema,
         mappings)
-    return {'internal_schema': {'name': result.internal_schema.name, 'version': result.internal_schema.version, 'namespace': result.internal_schema.namespace}, 'converted_data': result.converted_data, 'field_mappings': [{'external_path': m.external_path, 'internal_path': m.internal_path, 'type_conversion': m.type_conversion, 'required': m.required} for m in result.field_mappings], 'errors': result.errors, 'warnings': result.warnings, 'metadata': result.metadata}
+    return {'internal_schema': {'name': result.internal_schema.name, 'version': result.internal_sche
+    ma.version, 'namespace': result.internal_schema.namespace}, 'converted_data': result.converted_d
+        ata, 'field_mappings': [{'external_path': m.external_path, 'internal_path': m.internal_path,
+            'type_conversion': m.type_conversion, 'required': m.required} for m in result.field_mapp
+                ings], 'errors': result.errors, 'warnings': result.warnings, 'metadata': result.metadata}

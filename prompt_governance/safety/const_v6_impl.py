@@ -29,7 +29,8 @@ class LLMClient:
         return LLMJudgment(principle=principle.name,
             is_compliant=not is_violation,
             confidence=0.8 if is_violation else 0.9,
-            reasoning=f"Content appears {('to violate' if is_violation else 'to comply with')} principle {principle.name}")
+            reasoning=f"Content appears {('to violate' if is_violation else 'to comply with')} princ
+    iple {principle.name}")
 
     def generate(self, prompt: str) -> str:
         """Generate a response for the given prompt.
@@ -43,7 +44,9 @@ class LLMClient:
         import json
         harmful_keywords = ['harm', 'harmful', 'violence', 'kill', 'death']
         is_harmful = any((keyword in prompt.lower() for keyword in harmful_keywords))
-        response = {'is_compliant': not is_harmful, 'confidence': 0.95 if not is_harmful else 0.9, 'reasoning': 'Content is compliant with safety guidelines' if not is_harmful else 'Content contains harmful elements', 'suggested_fix': None if not is_harmful else 'Remove harmful content'}
+        response = {'is_compliant': not is_harmful, 'confidence': 0.95 if not is_harmful else 0.9, '
+    reasoning': 'Content is compliant with safety guidelines' if not is_harmful else 'Content contai
+        ns harmful elements', 'suggested_fix': None if not is_harmful else 'Remove harmful content'}
         return json.dumps(response)
 
 class MockLLMClient(LLMClient):
@@ -94,7 +97,10 @@ class MockLLMClient(LLMClient):
         """
         harmful_keywords = ['kill', 'harm', 'harmful', 'violence', 'death', 'murder']
         is_harmful = any((keyword in prompt.lower() for keyword in harmful_keywords))
-        response = {'is_compliant': not is_harmful, 'confidence': 0.95 if not is_harmful else 0.9, 'reasoning': 'Content is compliant with safety guidelines' if not is_harmful else 'Content contains harmful content and is not compliant', 'suggested_fix': None if not is_harmful else 'Remove harmful content and rewrite in a safe manner'}
+        response = {'is_compliant': not is_harmful, 'confidence': 0.95 if not is_harmful else 0.9, '
+    reasoning': 'Content is compliant with safety guidelines' if not is_harmful else 'Content contai
+        ns harmful content and is not compliant', 'suggested_fix': None if not is_harmful else 'Remo
+            ve harmful content and rewrite in a safe manner'}
         return json.dumps(response)
 
 class RuleEngine:
@@ -206,6 +212,7 @@ class ContentValidator:
         self._setup_default_rules()
 
     def validate(self,
+        """Docstring."""
         content: str,
         context: Optional[Dict[str,
         Any]]=None) -> ConstitutionalReviewResult:
@@ -220,7 +227,8 @@ class ContentValidator:
         """
         violations = self.rule_engine.evaluate(content)
         score = self._calculate_score(violations)
-        approved = score >= 0.7 and (not any((v.severity == RuleSeverity.CRITICAL for v in violations)))
+        approved = score >= 0.7 and (not any((v.severity == RuleSeverity.CRITICAL for v in violation
+    s)))
         return ConstitutionalReviewResult(approved=approved,
             violations=violations,
             score=score,
@@ -237,7 +245,8 @@ class ContentValidator:
         """
         if not violations:
             return 1.0
-        severity_weights = {RuleSeverity.LOW: 0.1, RuleSeverity.MEDIUM: 0.3, RuleSeverity.HIGH: 0.6, RuleSeverity.CRITICAL: 1.0}
+        severity_weights = {RuleSeverity.LOW: 0.1, RuleSeverity.MEDIUM: 0.3, RuleSeverity.HIGH: 0.6,
+    RuleSeverity.CRITICAL: 1.0}
         total_penalty = sum((severity_weights[v.severity] * v.confidence for v in violations))
         return max(0.0, 1.0 - total_penalty)
 
@@ -291,7 +300,8 @@ class ConstitutionalAISystem:
         self.auto_load_rules = auto_load_rules
         self.review_history: List[ConstitutionalReviewResult] = []
         self.principles: Dict[str, ConstitutionalPrinciple] = {}
-        self.system_stats = {'total_reviews': 0, 'llm_evaluations_performed': 0, 'revisions_attempted': 0, 'principles_loaded': 0}
+        self.system_stats = {'total_reviews': 0, 'llm_evaluations_performed': 0, 'revisions_attempte
+    d': 0, 'principles_loaded': 0}
         self._load_default_principles()
 
     def _load_default_principles(self) -> None:
@@ -303,7 +313,8 @@ class ConstitutionalAISystem:
             definition='Content should not cause physical,
             psychological,
             or emotional harm to any individual or group',
-            evaluation_prompt='Evaluate if the following content causes harm: {content}. Respond with JSON containing is_compliant,
+            evaluation_prompt='Evaluate if the following content causes harm: {content}. Respond wit
+    h JSON containing is_compliant,
             confidence,
             and reasoning.'),
             ConstitutionalPrinciple(id='helpfulness',
@@ -311,7 +322,8 @@ class ConstitutionalAISystem:
             description='Content should be helpful and constructive',
             category='utility',
             definition='Content should provide value and be constructive to the user',
-            evaluation_prompt='Evaluate if the following content is helpful: {content}. Respond with JSON containing is_compliant,
+            evaluation_prompt='Evaluate if the following content is helpful: {content}. Respond with
+    JSON containing is_compliant,
             confidence,
             and reasoning.'),
             ConstitutionalPrinciple(id='honesty',
@@ -319,7 +331,8 @@ class ConstitutionalAISystem:
             description='Content should be truthful and accurate',
             category='truthfulness',
             definition='Content should be factually accurate and not intentionally misleading',
-            evaluation_prompt='Evaluate if the following content is truthful: {content}. Respond with JSON containing is_compliant,
+            evaluation_prompt='Evaluate if the following content is truthful: {content}. Respond wit
+    h JSON containing is_compliant,
             confidence,
             and reasoning.'),
             ConstitutionalPrinciple(id='privacy',
@@ -327,13 +340,15 @@ class ConstitutionalAISystem:
             description='Content should respect privacy and confidentiality',
             category='privacy',
             definition='Content should protect personal information and respect privacy boundaries',
-            evaluation_prompt='Evaluate if the following content respects privacy: {content}. Respond with JSON containing is_compliant,
+            evaluation_prompt='Evaluate if the following content respects privacy: {content}. Respon
+    d with JSON containing is_compliant,
             confidence,
             and reasoning.')]
         self.principles = {p.id: p for p in principles}
         self.system_stats['principles_loaded'] = len(self.principles)
 
     def review_content(self,
+        """Docstring."""
         content: str,
         context: Optional[Dict[str,
         Any]]=None) -> ConstitutionalReviewResult:
@@ -374,7 +389,8 @@ class ConstitutionalAISystem:
                     category='general')
             if hasattr(self.llm_client, 'generate'):
                 try:
-                    response_json = self.llm_client.generate(f'Evaluate content for {principle_id}: {content}')
+                    response_json = self.llm_client.generate(f'Evaluate content for {principle_id}:
+    {content}')
                     if not response_json or response_json.strip() == '':
                         raise ValueError('Empty response from LLM')
                     response = json.loads(response_json)
@@ -402,6 +418,7 @@ class ConstitutionalAISystem:
         return judgments
 
     def critique_and_revise(self,
+        """Docstring."""
         content: str,
         judgments: List[LLMJudgment]) -> tuple[str,
         List[str]]:
@@ -418,7 +435,8 @@ class ConstitutionalAISystem:
         has_violations = any((not j.is_compliant for j in judgments))
         if not has_violations:
             return (content, [])
-        revision_prompt = f'\n        Please revise the following content to address the compliance issues:\n        \n        Original content: {content}\n        \n        Issues identified:\n        '
+        revision_prompt = f'\n        Please revise the following content to address the compliance
+    issues:\n        \n        Original content: {content}\n        \n        Issues identified:\n        '
         for j in judgments:
             if not j.is_compliant:
                 revision_prompt += f'\n- {j.principle}: {j.reasoning}'
@@ -465,6 +483,7 @@ class ConstitutionalAISystem:
             'average_score': sum((r.score for r in self.review_history)) / total}
 
 def create_constitutional_ai_system(config: Optional[Dict[str,
+    """Docstring."""
     Any]]=None) -> ConstitutionalAISystem:
     """Create a constitutional AI system.
 
@@ -477,6 +496,7 @@ def create_constitutional_ai_system(config: Optional[Dict[str,
     return ConstitutionalAISystem()
 
 def review_content(content: str,
+    """Docstring."""
     context: Optional[Dict[str,
     Any]]=None) -> ConstitutionalReviewResult:
     """Review content for constitutional compliance.

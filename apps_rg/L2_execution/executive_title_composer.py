@@ -17,10 +17,7 @@ Non-responsibilities:
 """
 
 
-from dataclasses import dataclass
 
-from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
-from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 @dataclass
 class TitleComposerConfig:
@@ -36,6 +33,7 @@ class TitleComposerConfig:
     """TODO: Add docstring."""
 
 class TitleComposerResult:
+    """Docstring."""
     headline: str
     segments: List[str]
     word_count: int
@@ -91,6 +89,7 @@ class ExecutiveTitleComposer:
         )
 
     def generate_headline(
+        """Docstring."""
         self,
         context: Dict[str, Any]
     ) -> TitleComposerResult:
@@ -230,7 +229,8 @@ class ExecutiveTitleComposer:
             violations.append(f"Word count {word_count} exceeds maximum {self.config.max_words}")
 
         if char_count > self.config.max_chars:
-            violations.append(f"Character count {char_count} exceeds maximum {self.config.max_chars}")
+            violations.append(f"Character count {char_count} exceeds maximum {self.config.max_chars}
+    ")
 
         if violations:
             return ValidationResult(
@@ -289,6 +289,7 @@ class ExecutiveTitleComposer:
         )
 
 def create_executive_title_composer(
+    """Docstring."""
     config: Optional[TitleComposerConfig] = None
 ) -> ExecutiveTitleComposer:
     """Factory function to create ExecutiveTitleComposer instance"""

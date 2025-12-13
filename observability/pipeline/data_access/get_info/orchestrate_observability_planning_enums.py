@@ -1,6 +1,5 @@
 """Enum types for orchestrate_observability_planning."""
 
-from enum import Enum
 
 class MetricType(Enum):
     """Types of metrics for observability."""

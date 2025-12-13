@@ -127,16 +127,20 @@ class TitaniumRAGPipeline:
         self.cache = cache or ContrastiveSemanticCache()
 
         # Initialize security layer
-        self.input_guardrail = input_guardrail or (get_input_guardrail() if enable_security else None)
+        self.input_guardrail = input_guardrail or (get_input_guardrail() if enable_security else Non
+    e)
         self.enable_security = enable_security and self.input_guardrail is not None
 
         # Initialize CRAG layer
-        self.retrieval_grader = retrieval_grader or (get_retrieval_grader() if enable_crag else None)
-        self.web_search_fallback = web_search_fallback or (get_web_search_fallback() if enable_crag else None)
+        self.retrieval_grader = retrieval_grader or (get_retrieval_grader() if enable_crag else None
+    )
+        self.web_search_fallback = web_search_fallback or (get_web_search_fallback() if enable_crag
+    else None)
         self.enable_crag = enable_crag and self.retrieval_grader is not None
 
         # Initialize GraphRAG layer
-        self.graphrag_fusion = graphrag_fusion or (get_graphrag_fusion() if enable_graphrag else None)
+        self.graphrag_fusion = graphrag_fusion or (get_graphrag_fusion() if enable_graphrag else Non
+    e)
         self.enable_graphrag = enable_graphrag and self.graphrag_fusion is not None
 
         # Configuration
@@ -170,6 +174,7 @@ class TitaniumRAGPipeline:
                    f"GraphRAG Layer: {self.enable_graphrag}")
 
     async def query(
+        """Docstring."""
         self,
         query: str,
         retrieval_function: callable,
@@ -378,6 +383,7 @@ class TitaniumRAGPipeline:
             try:
                 # Create vector retriever function for GraphRAG
                 async def vector_retriever_func(q: str, k: int) -> List[Dict[str, Any]]:
+                    """Docstring."""
                     # Use already retrieved documents
                     results = []
                     for doc in retrieved_docs[:k]:
@@ -445,6 +451,7 @@ class TitaniumRAGPipeline:
                 retrieved_docs = fused_docs
 
                 logger.info(f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)},
+
                     "
                            f"Graph entities: {len(fusion_result.graph_results.entities)}")
 
@@ -631,6 +638,7 @@ class TitaniumRAGPipeline:
 
 # Convenience function for quick setup
 def create_titanium_pipeline(
+    """Docstring."""
     enable_all: bool = True,
     **kwargs
 ) -> TitaniumRAGPipeline:

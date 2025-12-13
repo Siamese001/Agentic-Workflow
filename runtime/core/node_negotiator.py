@@ -11,9 +11,7 @@ import time
 import uuid
 from typing import Dict, Any, Optional, List, Callable
 from datetime import datetime
-from pydantic import BaseModel, Field, validator
 
-from .subatomic_hop import SubatomicHop, HopState, MicroStage
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +97,7 @@ class NodeNegotiator:
         })
 
     async def send_feedback(
+        """Docstring."""
         self,
         from_hop: SubatomicHop,
         to_hop_id: str,
@@ -152,6 +151,7 @@ class NodeNegotiator:
         return True
 
     async def request_change(
+        """Docstring."""
         self,
         downstream_hop: SubatomicHop,
         upstream_hop_id: str,
@@ -206,6 +206,7 @@ class NodeNegotiator:
         return result
 
     async def _handle_clarification(
+        """Docstring."""
         self,
         message: NegotiationMessage,
         negotiation: NegotiationRound
@@ -226,6 +227,7 @@ class NodeNegotiator:
         negotiation.messages.append(response)
 
     async def _handle_change_request(
+        """Docstring."""
         self,
         message: NegotiationMessage,
         negotiation: NegotiationRound
@@ -265,6 +267,7 @@ class NodeNegotiator:
             logger.info(f"Rolled back {message.to_hop} for negotiation")
 
     async def _handle_rejection(
+        """Docstring."""
         self,
         message: NegotiationMessage,
         negotiation: NegotiationRound
@@ -293,6 +296,7 @@ class NodeNegotiator:
         return round_id
 
     async def _wait_for_resolution(
+        """Docstring."""
         self,
         negotiation: NegotiationRound
     ) -> NegotiationResult:
@@ -339,7 +343,7 @@ class NodeNegotiator:
         last_message = negotiation.messages[-1]
 
         # Check for positive indicators
-        positive_indicators = ["done", "fixed", "updated", "changed", "modified"]
+        positive_indicators = ["done", "fixed", # SQL query removed, "changed", "modified"]
         payload_lower = last_message.payload.lower()
 
         return any(indicator in payload_lower for indicator in positive_indicators)
@@ -391,6 +395,7 @@ def get_node_negotiator(**kwargs) -> NodeNegotiator:
 
 # Convenience functions
 async def request_upstream_change(
+    """Docstring."""
     downstream_hop: SubatomicHop,
     upstream_hop_id: str,
     change_request: str,
@@ -419,6 +424,7 @@ async def request_upstream_change(
     )
 
 async def send_clarification(
+    """Docstring."""
     from_hop: SubatomicHop,
     to_hop_id: str,
     question: str,
@@ -455,6 +461,7 @@ class NegotiatingHop(SubatomicHop):
         self.negotiation_enabled = True
 
     async def evaluate_downstream_feedback(
+        """Docstring."""
         self,
         downstream_output: Any,
         expected_criteria: List[str]
@@ -476,6 +483,7 @@ class NegotiatingHop(SubatomicHop):
         return False
 
     async def request_upstream_modification(
+        """Docstring."""
         self,
         upstream_hop_id: str,
         modification: str,

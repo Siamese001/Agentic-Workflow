@@ -3,6 +3,7 @@
 from typing import Any, Dict, List, Optional
 
 def flatten_unit_tests() -> List[str]:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,8 @@ logger = logging.getLogger(__name__)
                         counter += 1
                 if test_file != dest:
                     shutil.move(str(test_file), str(dest))
-                    moved.append(f'{test_file.relative_to(TESTS_ROOT)} -> {dest.relative_to(TESTS_ROOT)}')
+                    moved.append(f'{test_file.relative_to(TESTS_ROOT)} -> {dest.relative_to(TESTS_RO
+    OT)}')
     return moved
 
 def _remove_lp_dirs_in_domain(domain_dir: Path) -> List[str]:

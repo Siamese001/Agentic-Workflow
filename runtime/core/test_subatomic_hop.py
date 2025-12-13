@@ -5,7 +5,6 @@ import asyncio
 import tempfile
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, patch
 
     SubatomicHop,
     SubatomicHopConfig,
@@ -87,6 +86,7 @@ class TestSubatomicHop:
 
         # Override pre-check to fail
         async def failing_pre_check(**kwargs):
+            """Docstring."""
             raise InputValidationError("Missing required input")
 
         hop._pre_check = failing_pre_check
@@ -108,6 +108,7 @@ class TestSubatomicHop:
         call_count = 0
 
         async def flaky_act(**kwargs):
+            """Docstring."""
             nonlocal call_count
             call_count += 1
             if call_count < 2:
@@ -230,6 +231,7 @@ class TestSubatomicHop:
         """Test the subatomic_hop decorator."""
         @subatomic_hop(config=self.config)
         def decorated_hop(x):
+            """Docstring."""
             return {"result": x * 3}
 
         hop = decorated_hop(x=4)
@@ -246,6 +248,7 @@ class TestSubatomicHop:
         )
 
         async def slow_hop():
+            """Docstring."""
             await asyncio.sleep(0.2)  # Longer than timeout
             return {"result": "too_slow"}
 
@@ -270,6 +273,7 @@ class TestSubatomicHop:
         attempt_times = []
 
         async def failing_act(**kwargs):
+            """Docstring."""
             attempt_times.append(time.time())
             if len(attempt_times) < 3:
                 raise StageExecutionError("Fail")
@@ -343,6 +347,7 @@ class TestSubatomicHopIntegration:
         execution_count = 0
 
         def unreliable_hop(x: int) -> dict:
+            """Docstring."""
             nonlocal execution_count
             execution_count += 1
 

@@ -10,11 +10,7 @@ import logging
 from typing import Any, Dict, List, Optional, Union
 
 from shared.resilience.circuit_breaker import CircuitBreakerState
-from shared.resilience.telemetry import SystemTelemetry, get_telemetry, OperationStatus
-from runtime.shared.multi_provider_clients import Provider
-from runtime.shared.agent_executor import AgentMessage, AgentResponse
 
-from .schema import RouteConfig, RoutingTier, DEFAULT_ROUTING_CONFIGS
 
 logger = logging.getLogger(__name__)
 
@@ -152,6 +148,7 @@ class HardenedRouter:
         )
 
     async def execute_with_fallback(
+        """Docstring."""
         self,
         tier: Union[str, RoutingTier],
         prompt: str,
@@ -264,6 +261,7 @@ class HardenedRouter:
         raise AllProvidersDownError(tier_name, all_providers)
 
     async def _execute_on_provider(
+        """Docstring."""
         self,
         provider: Provider,
         config: RouteConfig,

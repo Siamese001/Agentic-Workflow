@@ -13,7 +13,6 @@ from enum import Enum
 from datetime import datetime
 import hashlib
 
-from ...schemas.context_passport import SignalContext, SignedClaim
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +88,7 @@ class ClaimExtractor:
         logger.info("claim_extractor_initialized")
 
     def extract_claims(
+        """Docstring."""
         self,
         content: str,
         source_metadata: SourceMetadata
@@ -161,7 +161,8 @@ class ClaimExtractor:
             "skill": [
                 r"(?:skilled in|proficient in|expertise in|experience with)\s+([^.\n]+)",
                 r"(?:python|java|javascript|sql|aws|docker|kubernetes)\s+(?:developer|engineer|specialist)",
-                    
+
+
                 r"(\d+)\+?\s*years?\s+(?:of\s+)?experience\s+(?:in|with|as)\s+([^.\n]+)"
             ],
             "experience": [
@@ -181,9 +182,11 @@ class ClaimExtractor:
             ],
             "metric": [
                 r"(\d+%|\d+\s*(?:percent|percentage))\s+(?:increase|decrease|reduction|improvement)",
-                    
+
+
                 r"(\d+(?:\.\d+)?)\s*(?:million|billion|thousand|k|m|b)\s+(?:revenue|sales|users|customers)",
-                    
+
+
                 r"managed\s+(?:a\s+)?team\s+of\s+(\d+)"
             ],
             "fact": [
@@ -310,6 +313,7 @@ class SignalAnchor:
         )
 
     def anchor_rag_content(
+        """Docstring."""
         self,
         context: SignalContext,
         rag_content: List[Dict[str, Any]]
@@ -464,6 +468,7 @@ def create_job_description_anchor() -> SignalAnchor:
     )
 
 def anchor_resume_content(
+    """Docstring."""
     context: SignalContext,
     resume_text: str,
     metadata: Optional[Dict[str, Any]] = None

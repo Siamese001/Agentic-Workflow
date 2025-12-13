@@ -8,12 +8,10 @@ The ReAct framework interleaves reasoning and action steps to solve complex task
 
 import logging
 import uuid
-from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Awaitable
 
-from .trace_models import ReasoningTraceModel
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +112,7 @@ class ReActEngine:
         self.enable_self_reflection = enable_self_reflection
 
     async def run(
+        """Docstring."""
         self,
         task: str,
         think_fn: Callable[[str, List[ReActStep]], Awaitable[str]],
@@ -155,6 +154,7 @@ class ReActEngine:
         return trace
 
     async def _execute_reasoning_loop(
+        """Docstring."""
         self,
         task: str,
         think_fn: Callable,
@@ -188,6 +188,7 @@ class ReActEngine:
                 await self._self_reflect(trace, think_fn)
 
     async def _execute_step(self,
+        """Docstring."""
         step_num: int,
         thought: str,
         act_fn: Callable,
@@ -213,6 +214,7 @@ class ReActEngine:
         return step
 
     async def _finalize_trace(self,
+        """Docstring."""
         task: str,
         think_fn: Callable,
         trace: ReActTrace,
@@ -268,6 +270,7 @@ class ReActEngine:
         return action, action_input
 
     async def _self_reflect(
+        """Docstring."""
         self,
         trace: ReActTrace,
         think_fn: Callable[[str, List[ReActStep]], Awaitable[str]],
@@ -312,6 +315,7 @@ class ReActEngine:
             )
 
 def create_react_engine(
+    """Docstring."""
     max_steps: int = 10,
     enable_self_reflection: bool = True,
 ) -> ReActEngine:

@@ -11,12 +11,10 @@ import asyncio
 import json
 import logging
 
-from agentic_workflow.runtime.shared import (
     create_hardened_gemini_executor,
     AgentMessage,
     HardenedGeminiConfig,
 )
-from agentic_workflow.apps_rg.L1_cognition.k2_5_deep_research_models import DeepResearchOutput
 
 # Configure structured logging
 logging.basicConfig(
@@ -45,7 +43,8 @@ async def demonstrate_hardened_k25():
     messages = [
         AgentMessage(
             role="user",
-            content="Generate a comprehensive competitive intelligence report on DoorDash, focusing on their market position, technology stack, and leadership team."
+            content="Generate a comprehensive competitive intelligence report on DoorDash, focusing
+    on their market position, technology stack, and leadership team."
         )
     ]
 
@@ -75,16 +74,20 @@ You must respond with valid JSON matching the DeepResearchOutput schema."""
 
         # Display results
         logger.info("✅ Research completed successfully!\n")
-        logger.info(f"Strategic Insights: {len(research_output.strategic_layer.key_findings)} findings")
-        logger.info(f"Technical Analysis: {len(research_output.technical_layer.architecture_overview)} components")
-        logger.info(f"Leadership Profiles: {len(research_output.leadership_layer.executive_profiles)} profiles")
+        logger.info(f"Strategic Insights: {len(research_output.strategic_layer.key_findings)} findin
+    gs")
+        logger.info(f"Technical Analysis: {len(research_output.technical_layer.architecture_overview
+    )} components")
+        logger.info(f"Leadership Profiles: {len(research_output.leadership_layer.executive_profiles)
+    } profiles")
         logger.info(f"Total Citations: {len(research_output.citation_map)} sources")
 
         # Show sample finding
         if research_output.strategic_layer.key_findings:
             logger.info("\nSample Strategic Finding:")
             logger.info(f"- {research_output.strategic_layer.key_findings[0].finding}")
-            logger.info(f"  Confidence: {research_output.strategic_layer.key_findings[0].confidence_score}")
+            logger.info(f"  Confidence: {research_output.strategic_layer.key_findings[0].confidence_
+    score}")
 
         return research_output
 

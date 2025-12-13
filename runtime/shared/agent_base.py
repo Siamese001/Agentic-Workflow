@@ -5,10 +5,7 @@ integrating with LLM providers and enforcing reasoning configurations.
 """
 
 import logging
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +39,6 @@ class Agent(ABC):
 
     This class provides the foundational interface for K-node execution,
     integrating with LLM providers and enforcing reasoning configurations
-    from the orchestration config files.
     """
 
     def __init__(
@@ -82,6 +78,7 @@ class Agent(ABC):
         pass
 
     async def _call_llm(
+        """Docstring."""
         self,
         prompt: str,
         temperature: Optional[float] = None,
@@ -97,7 +94,6 @@ class Agent(ABC):
         Returns:
             LLM response text
         """
-        from runtime.shared.multi_provider_clients import get_client, Provider
 
         temp = temperature if temperature is not None else self.config.temperature
         tokens = max_tokens if max_tokens is not None else self.config.max_tokens
@@ -126,6 +122,7 @@ class Agent(ABC):
             raise
 
     async def _call_llm_with_self_consistency(
+        """Docstring."""
         self,
         prompt: str,
         k: Optional[int] = None,
@@ -152,6 +149,7 @@ class Agent(ABC):
         return candidates
 
     async def _call_llm_with_tot(
+        """Docstring."""
         self,
         prompt: str,
         branches: Optional[int] = None,
@@ -215,6 +213,7 @@ class Agent(ABC):
             return candidates[0]
 
     async def _execute_with_rag(
+        """Docstring."""
         self,
         prompt: str,
         context: Dict[str, Any],

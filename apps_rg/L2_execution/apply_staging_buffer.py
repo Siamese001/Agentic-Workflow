@@ -6,7 +6,6 @@ import copy
 from datetime import datetime
 from typing import Dict, Optional
 
-from shared.errors.exceptions import StagingBufferError
 
 class ImmutableStagingBuffer:
     """HOP-4: Immutable staging buffer. Once locked, cannot be modified."""

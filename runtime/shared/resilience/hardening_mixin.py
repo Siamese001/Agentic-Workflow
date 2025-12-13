@@ -7,9 +7,7 @@ that can be inherited by any component requiring fault tolerance.
 
 import time
 import logging
-from pydantic import BaseModel, Field
 
-from tenacity import (
     retry,
     stop_after_attempt,
     wait_exponential,
@@ -17,7 +15,6 @@ from tenacity import (
     RetryError
 )
 
-from .circuit_breaker import CircuitBreaker, CircuitBreakerError
 
 logger = logging.getLogger(__name__)
 
@@ -50,10 +47,12 @@ class HardeningMixin:
 
     Usage:
         class MyExecutor(HardeningMixin):
+            """Docstring."""
             def __init__(self, config: HardeningConfig):
                 super().__init__(config)
 
             async def my_operation(self, *args, **kwargs):
+                """Docstring."""
                 return await self.execute_with_hardening(
                     self._raw_operation,
                     *args,
@@ -102,6 +101,7 @@ class HardeningMixin:
         )
 
     async def execute_with_hardening(
+        """Docstring."""
         self,
         operation_func: Callable,
         *args,
@@ -150,6 +150,7 @@ class HardeningMixin:
         # --- 2. Retry Loop with Exponential Backoff ---
         @self._retry_decorator
         async def _execute_with_retry():
+            """Docstring."""
             nonlocal tokens_used
 
             try:

@@ -1,5 +1,4 @@
 
-from pydantic import BaseModel, Field
 
 class SafetyProfile(BaseModel):
     """Safety configuration profile used by execution profiles.

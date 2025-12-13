@@ -91,6 +91,7 @@ class TitaniumResearchIntegration:
         logger.info("Titanium Research integration initialized")
 
     async def research_financials(
+        """Docstring."""
         self,
         company: str,
         quarter: str,
@@ -120,7 +121,8 @@ class TitaniumResearchIntegration:
         - Period: {quarter} {year}
         - Required Metrics: {metric_list}
 
-        Zero-Loss Protocol: All findings must be sourced. Missing metrics must be explicitly declared in data_gaps.
+        Zero-Loss Protocol: All findings must be sourced. Missing metrics must be explicitly declare
+    d in data_gaps.
         """
 
         try:
@@ -144,6 +146,7 @@ class TitaniumResearchIntegration:
             raise
 
     async def research_market_trends(
+        """Docstring."""
         self,
         industry: str,
         time_period: str,
@@ -168,7 +171,8 @@ class TitaniumResearchIntegration:
         - Time Period: {time_period}
         - Focus Areas: {', '.join(specific_topics)}
 
-        Zero-Loss Protocol: Source all trend claims. Explicitly note if data is unavailable for certain regions or timeframes.
+        Zero-Loss Protocol: Source all trend claims. Explicitly note if data is unavailable for cert
+    ain regions or timeframes.
         """
 
         result = await self.research_engine.execute_research(
@@ -181,6 +185,7 @@ class TitaniumResearchIntegration:
         return result
 
     async def research_with_cross_validation(
+        """Docstring."""
         self,
         query: str,
         sources: List[str],
@@ -324,14 +329,12 @@ class TitaniumResearchIntegration:
 # Example usage
 async def main():
     """Example of Titanium Research Core usage."""
-    from .hardened_mcp_executor import HardenedMCPExecutor
 
     # Initialize components
     api_key = os.getenv("API_KEY")
     mcp_executor = HardenedMCPExecutor()
 
     # Register Brave Search tool
-    from .hardened_brave_search import create_brave_search_config
     brave_config = create_brave_search_config(api_key)
     mcp_executor.register_tool(brave_config)
 

@@ -7,7 +7,6 @@ Phase 1C - SDK Integration Layer
 """
 
 import logging
-from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -80,6 +79,7 @@ class MCPToolServer:
         logger.info(f"Registered MCP tool: {tool.name}")
 
     def register_function(
+        """Docstring."""
         self,
         name: str,
         description: str,
@@ -125,6 +125,7 @@ class MCPToolServer:
         return list(self._tools.keys())
 
     def get_tools_for_provider(
+        """Docstring."""
         self,
         provider: str = "openai",
     ) -> List[Dict[str, Any]]:
@@ -147,6 +148,7 @@ class MCPToolServer:
         return tools
 
     def execute_tool(
+        """Docstring."""
         self,
         name: str,
         arguments: Dict[str, Any],
@@ -286,6 +288,7 @@ def register_default_tools(server: MCPToolServer) -> None:
     logger.info("Registered default MCP tools")
 
 def create_mcp_server(
+    """Docstring."""
     name: str = "agentic-workflow-tools",
     register_defaults: bool = True,
 ) -> MCPToolServer:
@@ -306,6 +309,7 @@ def create_mcp_server(
     return server
 
 def execute_tool_calls(
+    """Docstring."""
     server: MCPToolServer,
     tool_calls: List[Dict[str, Any]],
 ) -> List[MCPToolResult]:

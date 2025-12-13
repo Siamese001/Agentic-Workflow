@@ -1,6 +1,5 @@
 """Enum types for agent_registry."""
 
-from enum import Enum
 
 class AgentCapability(Enum):
     """Standard agent capabilities."""

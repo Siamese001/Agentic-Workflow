@@ -52,6 +52,7 @@ class SchemaContextMatcher:
                 metadata={'error': str(e)})
 
     def find_similar_contexts(self,
+        """Docstring."""
         schema_context: SchemaContext,
         context_database: List[SchemaContext],
         top_k: int=10) -> List[Tuple[str,
@@ -264,16 +265,20 @@ class SchemaContextMatcher:
             explanations.append(f"Strong domain match ({match_result.match_details['domain']:.2f})")
         if 'purpose' in match_result.match_details and match_result.match_details['purpose'] > 0.6:
             explanations.append(f"Similar purpose ({match_result.match_details['purpose']:.2f})")
-        if 'semantic' in match_result.match_details and match_result.match_details['semantic'] > 0.5:
-            explanations.append(f"Semantic alignment ({match_result.match_details['semantic']:.2f})")
+        if 'semantic' in match_result.match_details and match_result.match_details['semantic'] > 0.5
+    :
+            explanations.append(f"Semantic alignment ({match_result.match_details['semantic']:.2f})"
+    )
         if 'usage' in match_result.match_details and match_result.match_details['usage'] > 0.4:
-            explanations.append(f"Shared usage patterns ({match_result.match_details['usage']:.2f})")
+            explanations.append(f"Shared usage patterns ({match_result.match_details['usage']:.2f})"
+    )
         if explanations:
             return 'Match based on: ' + ', '.join(explanations)
         else:
             return 'General similarity match'
 
 def create_schema_context_matcher(domain_weight: float=0.3,
+    """Docstring."""
     purpose_weight: float=0.25,
     semantic_weight: float=0.2,
     **kwargs: object) -> SchemaContextMatcher:
@@ -285,6 +290,7 @@ def create_schema_context_matcher(domain_weight: float=0.3,
     return SchemaContextMatcher(config)
 
 def match_schema_context(query_context: Dict[str,
+    """Docstring."""
     Any],
     candidate_schemas: List[Tuple[str,
     Dict[str,
@@ -323,4 +329,8 @@ def match_schema_context(query_context: Dict[str,
         top_k=top_k,
         include_explanations=include_explanations)
     result = matcher.match_context(request)
-    return {'query_context': {'schema_id': result.query_context.schema_id, 'domain': result.query_context.domain, 'purpose': result.query_context.purpose, 'tags': result.query_context.tags, 'usage_patterns': result.query_context.usage_patterns}, 'matches': [{'schema_id': m.schema_id, 'match_score': m.match_score, 'match_details': m.match_details, 'explanation': m.explanation, 'compatibility_score': m.compatibility_score} for m in result.matches], 'total_candidates': result.total_candidates, 'metadata': result.metadata}
+    return {'query_context': {'schema_id': result.query_context.schema_id, 'domain': result.query_co
+    ntext.domain, 'purpose': result.query_context.purpose, 'tags': result.query_context.tags, 'usage
+        _patterns': result.query_context.usage_patterns}, 'matches': [{'schema_id': m.schema_id, 'ma
+            tch_score': m.match_score, 'match_details': m.match_details, 'explanation': m.explanatio
+                n, 'compatibility_score': m.compatibility_score} for m in result.matches], 'total_candidates': result.total_candidates, 'metadata': result.metadata}

@@ -3,7 +3,6 @@
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
 
-from enum import Enum
 from typing import Dict, Optional
 
 class ProviderType(Enum):
@@ -66,6 +65,7 @@ def get_default_class(provider: str) -> Optional[str]:
     return DEFAULT_PROVIDER_CLASSES.get(provider.lower())
 
 def register_provider(
+    """Docstring."""
     provider: str,
     module: str,
     class_name: str,

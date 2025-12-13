@@ -8,7 +8,6 @@ Phase 1C - SDK Integration Layer
 
 import logging
 import os
-from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -129,7 +128,6 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             return genai
 
     elif provider == Provider.MISTRAL:
-        from mistralai import Mistral
         return Mistral(
             api_key=api_key,
             timeout=int(config.timeout),
@@ -150,7 +148,6 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
         )
 
     elif provider == Provider.TOGETHER:
-        from together import Together
         return Together(
             api_key=api_key,
             timeout=config.timeout,
@@ -164,6 +161,7 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
         raise ValueError(f"Unsupported provider: {provider}")
 
 def get_client(
+    """Docstring."""
     provider: Provider,
     config: Optional[ProviderConfig] = None,
     force_new: bool = False,
@@ -211,6 +209,7 @@ def get_available_providers() -> List[Provider]:
     return available
 
 def get_litellm_completion(
+    """Docstring."""
     messages: list[Dict[str, str]],
     model: str = "gpt-4o",
     temperature: float = 0.7,
@@ -248,6 +247,7 @@ def get_litellm_completion(
     )
 
 def get_instructor_client(
+    """Docstring."""
     provider: Provider,
     config: Optional[ProviderConfig] = None,
 ) -> Any:

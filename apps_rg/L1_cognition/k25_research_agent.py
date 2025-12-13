@@ -44,7 +44,8 @@ class K25DeepResearchAgent:
         self.prompt_template = self._load_prompt_template()
 
     def _load_prompt_template(self) -> str:
-        prompt_path = Path(__file__).parent.parent.parent / "config" / "prompts" / "k2_5_deep_research_mandate.md"
+        prompt_path = Path(__file__).parent.parent.parent / "config" / "prompts" / "k2_5_deep_resear
+    ch_mandate.md"
 
         if prompt_path.exists():
             return prompt_path.read_text(encoding="utf-8")
@@ -252,6 +253,7 @@ Begin research execution.
 """
 
 def create_k25_research_agent(
+    """Docstring."""
     company_name: str,
     company_url: Optional[str] = None
 ) -> K25DeepResearchAgent:

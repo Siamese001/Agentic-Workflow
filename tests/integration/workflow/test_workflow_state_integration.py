@@ -1,7 +1,5 @@
 """Integration tests for workflow state management."""
 from typing import Dict, List
-from dataclasses import dataclass, field
-from enum import Enum
 
 class WorkflowState(Enum):
     """TODO: Add docstring."""
@@ -16,6 +14,7 @@ class WorkflowState(Enum):
     """TODO: Add docstring."""
 
 class Workflow:
+    """Docstring."""
     id: str
     state: WorkflowState
     data: Dict[str, object] = field(default_factory=dict)
@@ -30,7 +29,8 @@ class TestWorkflowStateIntegration:
 
         valid_transitions = {
             WorkflowState.CREATED: [WorkflowState.RUNNING],
-            WorkflowState.RUNNING: [WorkflowState.PAUSED, WorkflowState.COMPLETED, WorkflowState.FAILED],
+            WorkflowState.RUNNING: [WorkflowState.PAUSED, WorkflowState.COMPLETED, WorkflowState.FAI
+    LED],
             WorkflowState.PAUSED: [WorkflowState.RUNNING, WorkflowState.FAILED],
         }
 

@@ -8,11 +8,8 @@ circuit breaking at the provider level, and real-time health monitoring.
 import time
 import logging
 from typing import Any, Dict, List, Optional
-from enum import Enum
 
-from pydantic import BaseModel, Field
 
-from .telemetry import get_telemetry
 
 logger = logging.getLogger(__name__)
 
@@ -195,6 +192,7 @@ class HardenedLiteLLMRouter:
         )
 
     async def completion(
+        """Docstring."""
         self,
         messages: List[Dict],
         **kwargs

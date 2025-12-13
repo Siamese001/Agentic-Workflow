@@ -2,8 +2,6 @@
 import re
 import pytest
 from typing import List
-from dataclasses import dataclass
-from enum import Enum
 
 class PromptCategory(Enum):
     """TODO: Add docstring."""
@@ -17,6 +15,7 @@ class PromptCategory(Enum):
     """TODO: Add docstring."""
 
 class PromptTemplate:
+    """Docstring."""
     id: str
     name: str
     category: PromptCategory

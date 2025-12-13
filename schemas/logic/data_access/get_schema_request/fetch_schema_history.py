@@ -1,7 +1,6 @@
 """Backward compatibility shim for fetch_schema_history.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original fetch_schema_history.py contained 9 top-level definitions which

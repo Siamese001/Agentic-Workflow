@@ -5,7 +5,6 @@ Defines strict models for each K-node to enforce structure
 and prevent LLM output drift.
 """
 
-from pydantic import BaseModel, Field, validator, constr
 from typing import List, Optional, Dict, Any
 
 # K.1: Company and Job Title Extraction
@@ -27,6 +26,7 @@ class K1CompanyJobTitle(BaseModel):
         """TODO: Add docstring."""
 
     def validate_title(cls, v):
+        """Docstring."""
         if len(v.strip()) < 3:
             raise ValueError("Job title too short")
         return v.strip()
@@ -55,6 +55,7 @@ class K2SkillsAnalysis(BaseModel):
 
     @validator('required_skills')
     def validate_required_skills(cls, v):
+        """Docstring."""
         cleaned = [skill.strip() for skill in v if skill.strip()]
         if len(cleaned) < 5:
             raise ValueError("At least 5 required skills needed")
@@ -80,6 +81,7 @@ class K3ExperienceRequirements(BaseModel):
 
     @validator('seniority_level')
     def validate_seniority(cls, v):
+        """Docstring."""
         valid_levels = ["Entry", "Mid", "Senior", "Lead", "Principal", "Executive"]
         if v not in valid_levels:
             raise ValueError(f"Invalid seniority level. Must be one of: {valid_levels}")
@@ -109,6 +111,7 @@ class K4Responsibilities(BaseModel):
 
     @validator('primary_responsibilities')
     def validate_primary(cls, v):
+        """Docstring."""
         for resp in v:
             if len(resp.strip()) < 10:
                 raise ValueError("Responsibility descriptions too short")
@@ -136,6 +139,7 @@ class K5ExecutiveSummary(BaseModel):
 
     @validator('summary_text')
     def validate_no_markdown(cls, v):
+        """Docstring."""
         if '#' in v or '*' in v or '`' in v:
             raise ValueError("Summary should not contain markdown formatting")
         return v.strip()
@@ -158,6 +162,7 @@ class K6MostRecentExperience(BaseModel):
 
     @validator('bullets')
     def validate_bullets(cls, v):
+        """Docstring."""
         for i, bullet in enumerate(v):
             word_count = len(bullet.split())
             if word_count < 25 or word_count > 35:
@@ -170,6 +175,7 @@ class K6MostRecentExperience(BaseModel):
 
     @validator('intro_sentence')
     def validate_intro(cls, v):
+        """Docstring."""
         if not v[0].isupper():
             raise ValueError("Intro sentence must start with capital letter")
         return v.strip()
@@ -202,6 +208,7 @@ class K7TechnicalSkills(BaseModel):
 
     @validator('programming_languages')
     def validate_languages(cls, v):
+        """Docstring."""
         # Remove duplicates and empty entries
         cleaned = list(set([lang.strip() for lang in v if lang.strip()]))
         if len(cleaned) < 3:
@@ -230,6 +237,7 @@ class K8ProjectExperience(BaseModel):
 
     @validator('achievements')
     def validate_achievements(cls, v):
+        """Docstring."""
         for achievement in v:
             if len(achievement.strip()) < 15:
                 raise ValueError("Achievement descriptions too short")
@@ -256,6 +264,7 @@ class K9EducationCertifications(BaseModel):
 
     @validator('institution')
     def validate_institution(cls, v):
+        """Docstring."""
         if len(v.strip()) < 3:
             raise ValueError("Institution name too short")
         return v.strip()

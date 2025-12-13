@@ -12,9 +12,14 @@ class AchvBulletSynthesizer:
     - K.6A (IBM): 2V-3T-1S pattern, 24-30 words each, 6 bullets
     - VG_BULLET_PROVENANCE_CHECK BLOCKS if pattern invalid
     """
-    VERB_KEYWORDS = {'led', 'drove', 'architected', 'built', 'managed', 'delivered', 'launched', 'scaled', 'optimized', 'transformed', 'implemented', 'established', 'directed', 'spearheaded', 'orchestrated', 'executed', 'pioneered', 'accelerated'}
-    TECH_KEYWORDS = {'python', 'java', 'aws', 'azure', 'kubernetes', 'docker', 'react', 'node.js', 'postgresql', 'mongodb', 'redis', 'kafka', 'spark', 'tensorflow', 'pytorch', 'microservices', 'api', 'ci/cd', 'devops', 'cloud', 'ml', 'ai', 'data pipeline'}
-    SOFT_KEYWORDS = {'leadership', 'collaboration', 'communication', 'strategic', 'cross-functional', 'stakeholder', 'mentorship', 'team building', 'agile', 'innovation', 'vision'}
+    VERB_KEYWORDS = {'led', 'drove', 'architected', 'built', 'managed', 'delivered', 'launched', 'sc
+    aled', 'optimized', 'transformed', 'implemented', 'established', 'directed', 'spearheaded', 'orc
+        hestrated', 'executed', 'pioneered', 'accelerated'}
+    TECH_KEYWORDS = {'python', 'java', 'aws', 'azure', 'kubernetes', 'docker', 'react', 'node.js', '
+    postgresql', 'mongodb', 'redis', 'kafka', 'spark', 'tensorflow', 'pytorch', 'microservices', 'ap
+        i', 'ci/cd', 'devops', 'cloud', 'ml', 'ai', 'data pipeline'}
+    SOFT_KEYWORDS = {'leadership', 'collaboration', 'communication', 'strategic', 'cross-functional'
+    , 'stakeholder', 'mentorship', 'team building', 'agile', 'innovation', 'vision'}
 
     def __init__(self,
         config: Optional[BulletSynthesizerConfig]=None,
@@ -22,9 +27,11 @@ class AchvBulletSynthesizer:
         recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
         self.config = config or BulletSynthesizerConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutor()
-        self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.temperature)
+        self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.t
+    emperature)
 
     def generate_bullets(self,
+        """Docstring."""
         experience_data: Dict[str,
         Any],
         context: Dict[str,
@@ -117,7 +124,11 @@ class AchvBulletSynthesizer:
         Placeholder for actual LLM integration.
         """
         pattern = self.config.provenance_pattern
-        bullets = [f'Led cloud migration initiative using AWS and Kubernetes, reducing infrastructure costs by 40% while improving system reliability', f'Architected microservices platform with Python and Node.js, enabling 3x faster feature deployment through strategic API design', f'Managed cross-functional team of 12 engineers, delivering $2M revenue-generating product using agile methodologies and CI/CD automation', f'Drove data pipeline optimization with Spark and PostgreSQL, processing 10M+ daily transactions with 99.9% uptime', f'Built ML-powered recommendation engine using TensorFlow, increasing user engagement by 35% through collaborative innovation', f'Implemented DevOps best practices with Docker and Jenkins, reducing deployment time from 4 hours to 15 minutes', f'Established technical mentorship program, developing 8 junior engineers into senior contributors through strategic leadership']
+        bullets = [f'Led cloud migration initiative using AWS and Kubernetes, reducing infrastructur
+    e costs by 40% while improving system reliability', f'Architected microservices platform with Py
+        thon and Node.js, enabling 3x faster feature deployment through strategic API design', f'Man
+            aged cross-functional team of 12 engineers, delivering $2M revenue-generating product us
+                ing agile methodologies and CI/CD automation', f'Drove data pipeline optimization with Spark and PostgreSQL, processing 10M+ daily transactions with 99.9% uptime', f'Built ML-powered recommendation engine using TensorFlow, increasing user engagement by 35% through collaborative innovation', f'Implemented DevOps best practices with Docker and Jenkins, reducing deployment time from 4 hours to 15 minutes', f'Established technical mentorship program, developing 8 junior engineers into senior contributors through strategic leadership']
         return bullets[:self.config.bullet_count]
 
     def _validate_bullet_word_count(self, bullet: str, bullet_num: int) -> ValidationResult:
@@ -136,7 +147,9 @@ class AchvBulletSynthesizer:
         return ValidationResult(gate_id=f'VG_BULLET_{bullet_num}_WORD_COUNT',
             passed=False,
             severity='BLOCK',
-            message=f'BLOCKED: Bullet {bullet_num} word count {word_count} outside range ({self.config.min_words}-{self.config.max_words})',
+            message=f'BLOCKED: Bullet {bullet_num} word count {word_count} outside range ({self.conf
+                ig.min_words}-{self.config.max_words})',
+
             details={'bullet_num': bullet_num,
             'word_count': word_count,
             'min': self.config.min_words,
@@ -149,7 +162,8 @@ class AchvBulletSynthesizer:
         """
         bullet_lower = bullet.lower()
         words = set(re.findall('\\b\\w+\\b', bullet_lower))
-        provenance_items = {ProvenanceType.VERB: [], ProvenanceType.TECH: [], ProvenanceType.SOFT: []}
+        provenance_items = {ProvenanceType.VERB: [], ProvenanceType.TECH: [], ProvenanceType.SOFT: [
+    ]}
         for word in words:
             if word in self.VERB_KEYWORDS:
                 provenance_items[ProvenanceType.VERB].append(word)
@@ -158,8 +172,11 @@ class AchvBulletSynthesizer:
             if word in self.SOFT_KEYWORDS:
                 provenance_items[ProvenanceType.SOFT].append(word)
         expected_pattern = str(self.config.provenance_pattern)
-        actual_pattern = f'{len(provenance_items[ProvenanceType.VERB])}V-{len(provenance_items[ProvenanceType.TECH])}T-{len(provenance_items[ProvenanceType.SOFT])}S'
-        pattern_match = len(provenance_items[ProvenanceType.VERB]) >= self.config.provenance_pattern.verb_count and len(provenance_items[ProvenanceType.TECH]) >= self.config.provenance_pattern.tech_count and (len(provenance_items[ProvenanceType.SOFT]) >= self.config.provenance_pattern.soft_count)
+        actual_pattern = f'{len(provenance_items[ProvenanceType.VERB])}V-{len(provenance_items[Prove
+    nanceType.TECH])}T-{len(provenance_items[ProvenanceType.SOFT])}S'
+        pattern_match = len(provenance_items[ProvenanceType.VERB]) >= self.config.provenance_pattern
+    .verb_count and len(provenance_items[ProvenanceType.TECH]) >= self.config.provenance_pattern.tec
+        h_count and (len(provenance_items[ProvenanceType.SOFT]) >= self.config.provenance_pattern.soft_count)
         return BulletProvenanceLog(bullet_text=bullet,
             word_count=len(bullet.split()),
             provenance_items=provenance_items,
@@ -187,7 +204,8 @@ class AchvBulletSynthesizer:
         return ValidationResult(gate_id='VG_BULLET_PROVENANCE_CHECK',
             passed=False,
             severity='BLOCK',
-            message=f'BLOCKED: Bullet {bullet_num} provenance invalid - expected {provenance_log.expected_pattern},
+            message=f'BLOCKED: Bullet {bullet_num} provenance invalid - expected {provenance_log.exp
+    ected_pattern},
             got {provenance_log.actual_pattern}',
             details={'bullet_num': bullet_num,
             'expected': provenance_log.expected_pattern,
@@ -216,6 +234,8 @@ class AchvBulletSynthesizer:
             'soft': log.provenance_items[ProvenanceType.SOFT]} for i,
             log in enumerate(provenance_logs)]}
 
-def create_achv_bullet_synthesizer(config: Optional[BulletSynthesizerConfig]=None) -> AchvBulletSynthesizer:
+def create_achv_bullet_synthesizer(config: Optional[BulletSynthesizerConfig]=None) -> AchvBulletSynt
+    """Docstring."""
+    hesizer:
     """Factory function to create AchvBulletSynthesizer instance"""
     return AchvBulletSynthesizer(config=config)

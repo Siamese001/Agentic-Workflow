@@ -34,8 +34,6 @@ logging.basicConfig(
     get_resilient_router,
     reset_router,
 )
-from runtime.shared.multi_provider_clients import Provider
-from shared.resilience.circuit_breaker import CircuitBreakerState
 
 async def test_primary_routing():
     """Test routing to primary provider when healthy."""

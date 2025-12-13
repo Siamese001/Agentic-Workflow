@@ -26,6 +26,7 @@ class ObservabilityOperationPerformer:
         self.logger.info(f'Registered operation: {operation_def.operation_id}')
 
     def perform_operation(self,
+        """Docstring."""
         context: OperationExecutionContext,
         inputs: Dict[str,
         Any]) -> OperationExecutionResult:
@@ -76,6 +77,7 @@ class ObservabilityOperationPerformer:
                 start_time)
 
     def perform_operation_stream(self,
+        """Docstring."""
         context: OperationExecutionContext,
         inputs: Dict[str,
         Any]) -> object:
@@ -97,6 +99,7 @@ class ObservabilityOperationPerformer:
             yield chunk
 
     def perform_operations_batch(self,
+        """Docstring."""
         contexts: List[OperationExecutionContext],
         inputs_list: List[Dict[str,
         Any]]) -> List[OperationExecutionResult]:
@@ -118,6 +121,7 @@ class ObservabilityOperationPerformer:
         return results
 
     def list_operations(self,
+        """Docstring."""
         scope: Optional[OperationScope]=None) -> List[ToolOperationDefinition]:
         """List registered operations.
 
@@ -267,7 +271,8 @@ class ObservabilityOperationPerformer:
             dict)}
         validator = type_validators.get(expected_type)
         if validator and (not validator(value)):
-            type_names = {'string': 'string', 'integer': 'integer', 'float': 'number', 'boolean': 'boolean', 'array': 'array', 'object': 'object'}
+            type_names = {'string': 'string', 'integer': 'integer', 'float': 'number', 'boolean': 'b
+    oolean', 'array': 'array', 'object': 'object'}
             return f"Field {field_name} must be {type_names.get(expected_type, 'valid type')}"
         return None
 
@@ -333,7 +338,9 @@ class ObservabilityOperationPerformer:
             scope=OperationScope.SERVICE)
 
         def _trace_analysis_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
-            return {'insights': [{'type': 'slow_span', 'description': 'Database query took 500ms'}, {'type': 'error_rate', 'description': '5% error rate detected'}], 'recommendations': ['Add database index', 'Implement retry logic'], 'metrics': {'spans_analyzed': 10, 'processing_time': 0.1}}
+            return {'insights': [{'type': 'slow_span', 'description': 'Database query took 500ms'},
+    {'type': 'error_rate', 'description': '5% error rate detected'}], 'recommendations': ['Add datab
+        ase index', 'Implement retry logic'], 'metrics': {'spans_analyzed': 10, 'processing_time': 0.1}}
         return (trace_op, _trace_analysis_handler)
 
     def _create_metric_operation(self) -> tuple:
@@ -404,6 +411,7 @@ class ObservabilityOperationPerformer:
         self.register_operation(log_op, log_handler)
 
 def create_observability_operation_performer(default_timeout: float=30.0,
+    """Docstring."""
     enable_tracing: bool=True,
     enable_metrics: bool=True,
     **kwargs: object) -> ObservabilityOperationPerformer:
@@ -415,6 +423,7 @@ def create_observability_operation_performer(default_timeout: float=30.0,
     return ObservabilityOperationPerformer(config)
 
 def tool_perform_observability_operation(operation_id: str,
+    """Docstring."""
     inputs: Dict[str,
     Any],
     execution_id: Optional[str]=None,
@@ -440,4 +449,7 @@ def tool_perform_observability_operation(operation_id: str,
         mode=OperationMode(mode),
         caller_context=caller_context)
     result = performer.perform_operation(context, inputs)
-    return {'execution_id': result.execution_id, 'operation_id': result.operation_id, 'success': result.success, 'output': result.output, 'metrics': result.metrics, 'traces': result.traces, 'artifacts': result.artifacts, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}
+    return {'execution_id': result.execution_id, 'operation_id': result.operation_id, 'success': res
+    ult.success, 'output': result.output, 'metrics': result.metrics, 'traces': result.traces, 'artif
+        acts': result.artifacts, 'error': result.error, 'warnings': result.warnings, 'execution_time
+            ': result.execution_time}

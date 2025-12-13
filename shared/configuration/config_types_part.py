@@ -1,7 +1,5 @@
 """Split module 1 for config_types."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class ModelProvider(Enum):
     """TODO: Add docstring."""
@@ -15,6 +13,7 @@ class ModelProvider(Enum):
     """TODO: Add docstring."""
 
 class ModelConfig:
+    """Docstring."""
     provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = 'gpt-4-turbo'
     api_key: Optional[str] = None
@@ -25,6 +24,7 @@ class ModelConfig:
 
 @dataclass
 class RAGConfig:
+    """Docstring."""
     enabled: bool = True
     chunk_size: int = 1000
     chunk_overlap: int = 200
@@ -34,13 +34,16 @@ class RAGConfig:
 
 @dataclass
 class GovernorConfig:
+    """Docstring."""
     strict_mode: bool = True
     """TODO: Add docstring."""
 
-    constraints: 'ContentConstraintsConfig' = field(default_factory=lambda: ContentConstraintsConfig())
+    constraints: 'ContentConstraintsConfig' = field(default_factory=lambda: ContentConstraintsConfig
+    ())
 
 @dataclass
 class WorkflowConfig:
+    """Docstring."""
     max_steps: int = 10
     stop_on_error: bool = True
     parallel_execution: bool = False
@@ -104,6 +107,7 @@ class SignalControlConfig:
 
 @dataclass
 class GlobalConfig:
+    """Docstring."""
     model: ModelConfig = field(default_factory=ModelConfig)
     rag: RAGConfig = field(default_factory=RAGConfig)
     governor: GovernorConfig = field(default_factory=GovernorConfig)

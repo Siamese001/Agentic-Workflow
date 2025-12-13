@@ -12,7 +12,7 @@ from typing import List, Optional
 from datetime import datetime
 
 try:
-#     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPRECATED: Archive import removed to protect archives from validation edits
+#     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPR...
     _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()
     _NEO4J_AVAILABLE = True
 except ImportError:
@@ -64,7 +64,8 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                 object_id=triplet.object,
                 valid_at=triplet.temporal_range.valid_at.isoformat(),
                 invalid_at=triplet.temporal_range.invalid_at.isoformat() if triplet.temporal_range.invalid_at else None,
-                    
+
+
                 attrs={
                     "confidence": triplet.confidence,
                     "source": triplet.source,
@@ -96,7 +97,7 @@ async def insert_event(event: TemporalEvent) -> None:
                     rel_id=event.triplet_id,
                     invalid_at=invalid_at.isoformat() if isinstance(invalid_at,
                         datetime) else invalid_at,
-                        
+
                     invalidated_by=invalidated_by,
                 )
     except (ValueError, TypeError, RuntimeError, KeyError):
@@ -104,6 +105,7 @@ async def insert_event(event: TemporalEvent) -> None:
         ...
 
 async def batch_process_invalidation(
+    """Docstring."""
     events_to_update: List[TemporalEvent]
 ) -> None:
     """
@@ -118,6 +120,7 @@ async def batch_process_invalidation(
         await insert_event(event)
 
 async def ingest_transcript(
+    """Docstring."""
     transcript_id: str,
     entities: List[TemporalEntity],
     triplets: List[TemporalTriplet],

@@ -8,7 +8,6 @@ import json
 import logging
 import re
 from datetime import datetime
-from dataclasses import dataclass, field
 from enum import Enum
 from pydantic import BaseModel, ValidationError, validator
 
@@ -452,6 +451,7 @@ class ValidatedInput(BaseModel):
     """Base model for validated input."""
 
     class Config:
+        """Docstring."""
         # Validate assignment
         validate_assignment = True
         # Use enum values
@@ -479,6 +479,7 @@ class ValidatedInput(BaseModel):
         return v
 
 def validate_with_pydantic(data: Dict[str,
+    """Docstring."""
     Any],
     model_class: Type[ValidatedInput]) -> ValidatedInput:
     """Validate data using Pydantic model.

@@ -7,8 +7,6 @@ voice to match, preventing the "Generic AI" voice.
 
 import logging
 import re
-from enum import Enum
-from pydantic import BaseModel, Field, validator, confloat
 
 logger = logging.getLogger(__name__)
 
@@ -189,7 +187,8 @@ class ToneAnalyzer:
             sentences = [s.strip() for s in sentences if s.strip()]
 
             if not sentences:
-                return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "confidence": 0.0}
+                return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "con
+    fidence": 0.0}
 
             # Average sentence length
             word_counts = [len(s.split()) for s in sentences]
@@ -214,7 +213,8 @@ class ToneAnalyzer:
             }
         except Exception as e:
             logger.error(f"Error calculating metrics: {str(e)}")
-            return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "confidence": 0.0}
+            return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "confide
+    nce": 0.0}
 
     def _detect_primary_tone(self, text: str, metrics: Dict[str, float]) -> ToneType:
         """Detect the primary tone from text and metrics.
@@ -387,7 +387,8 @@ class ToneAdapter:
                 "emoji_places": ["greeting", "closing"]
             },
             ToneType.ANALYTICAL: {
-                "add_transitions": ["Based on the data,", "The evidence suggests,", "Analysis indicates,"],
+                "add_transitions": ["Based on the data,", "The evidence suggests,", "Analysis indica
+    tes,"],
                 "require_evidence": True
             },
             ToneType.EMPATHETIC: {
@@ -508,35 +509,41 @@ class ToneModel:
         # Predefined configurations for each tone
         self.config_templates = {
             ToneType.AUTHORITATIVE: GenerationConfig(
-                system_prompt_fragment="Use confident, expert language. Lead with insights. Be decisive and clear.",
+                system_prompt_fragment="Use confident, expert language. Lead with insights. Be decis
+    ive and clear.",
                 temperature_setting=0.4,
                 banned_phrases=["maybe", "perhaps", "might", "could", "I think"],
                 preferred_transitions=["Therefore", "Consequently", "Based on"],
                 max_sentence_length=20
             ),
             ToneType.EMPATHETIC: GenerationConfig(
-                system_prompt_fragment="Use supportive, understanding language. Focus on people and values. Show genuine care.",
+                system_prompt_fragment="Use supportive, understanding language. Focus on people and
+    values. Show genuine care.",
                 temperature_setting=0.6,
                 banned_phrases=["must", "require", "mandatory", "failure"],
-                preferred_transitions=["Understanding that", "Recognizing that", "Appreciating that"],
+                preferred_transitions=["Understanding that", "Recognizing that", "Appreciating that"
+    ],
                 max_sentence_length=18
             ),
             ToneType.ANALYTICAL: GenerationConfig(
-                system_prompt_fragment="Use data-driven, logical language. Provide evidence and reasoning. Be thorough.",
+                system_prompt_fragment="Use data-driven, logical language. Provide evidence and reas
+    oning. Be thorough.",
                 temperature_setting=0.3,
                 banned_phrases=["feel", "believe", "intuition", "gut"],
                 preferred_transitions=["According to", "Based on", "Analysis shows"],
                 max_sentence_length=25
             ),
             ToneType.ENTHUSIASTIC: GenerationConfig(
-                system_prompt_fragment="Use energetic, positive language. Express excitement and possibility. Be engaging.",
+                system_prompt_fragment="Use energetic, positive language. Express excitement and pos
+    sibility. Be engaging.",
                 temperature_setting=0.7,
                 banned_phrases=["problem", "issue", "challenge", "difficult"],
                 preferred_transitions=["Excited to", "Thrilled about", "What's great is"],
                 max_sentence_length=15
             ),
             ToneType.DIRECT: GenerationConfig(
-                system_prompt_fragment="Use concise, action-oriented language. Be clear and specific. No fluff.",
+                system_prompt_fragment="Use concise, action-oriented language. Be clear and specific
+    . No fluff.",
                 temperature_setting=0.3,
                 banned_phrases=["delve", "tapestry", "journey", "utilize", "facilitate"],
                 preferred_transitions=["Next", "Then", "After that"],
@@ -547,6 +554,7 @@ class ToneModel:
         logger.info("Initialized ToneModel with all components")
 
     def analyze_and_configure(self,
+        """Docstring."""
         content_samples: List[str],
         archetype: Optional[str] = None) -> Tuple[StyleProfile,
         GenerationConfig]:
@@ -577,7 +585,8 @@ class ToneModel:
             if archetype:
                 config = self._adjust_for_archetype(config, archetype)
 
-            logger.info(f"Generated config for tone {profile.primary_tone.value} with temperature {config.temperature_setting}")
+            logger.info(f"Generated config for tone {profile.primary_tone.value} with temperature {c
+    onfig.temperature_setting}")
 
             return profile, config
 

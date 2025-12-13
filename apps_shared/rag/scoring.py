@@ -3,7 +3,6 @@
 Provides scoring algorithms for retrieved documents in RAG systems.
 """
 
-from dataclasses import dataclass
 import math
 import re
 
@@ -45,6 +44,7 @@ class RAGScorer:
         })
 
     def score_documents(
+        """Docstring."""
         self,
         documents: List[Dict[str, Any]],
         query: str,

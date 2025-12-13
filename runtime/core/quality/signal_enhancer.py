@@ -8,8 +8,6 @@ import hashlib
 import logging
 import re
 from datetime import datetime
-from dataclasses import dataclass, field
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -128,6 +126,7 @@ class SignalEnhancer:
         logger.debug(f"Initialized SignalEnhancer: {name}")
 
     def assess_signal(
+        """Docstring."""
         self,
         content: str,
         context: Optional[Dict[str, Any]] = None
@@ -698,6 +697,7 @@ class SignalEnhancer:
 _enhancers: Dict[str, SignalEnhancer] = {}
 
 def get_signal_enhancer(name: str = "default",
+    """Docstring."""
     thresholds: Optional[QualityThresholds] = None) -> SignalEnhancer:
     """Get or create a signal enhancer.
 

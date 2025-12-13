@@ -7,7 +7,6 @@ address security, privacy, and evaluation frameworks.
 
 import logging
 import re
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +131,8 @@ class GovernanceShieldAgent:
 
             # Check for zero tolerance violations
             if "zero hallucinations" in sanitized.lower():
-                logger.warning("CRITICAL: 'Zero hallucinations' claim detected - immediate disqualifier")
+                logger.warning("CRITICAL: 'Zero hallucinations' claim detected - immediate disqualif
+    ier")
                 sanitized = self._critical_fix_zero_hallucinations(sanitized)
 
             # Apply pattern replacements
@@ -195,7 +195,8 @@ class GovernanceShieldAgent:
 
             # Add compliance disclaimer if needed
             if any(term in audited.lower() for term in ["hipaa", "phi", "health data"]):
-                audited += "\n\n[Note: All healthcare applications maintain HIPAA compliance through on-prem deployment or BAA-compliant APIs.]"
+                audited += "\n\n[Note: All healthcare applications maintain HIPAA compliance through
+    on-prem deployment or BAA-compliant APIs.]"
 
             return audited
 
@@ -338,9 +339,11 @@ class GovernanceShieldAgent:
 
         return SafetyProtocol(
             validation_strategy="Automated eval pipeline (Ragas) + human expert review before production",
-                
+
+
             data_privacy_approach=privacy,
-            human_in_the_loop_policy="Mandatory human oversight for all high-stakes decisions with audit trails",
+            human_in_the_loop_policy="Mandatory human oversight for all high-stakes decisions with a
+    udit trails",
             compliance_frameworks=frameworks
         )
 
@@ -354,7 +357,8 @@ class GovernanceShieldAgent:
             Standard safety protocol
         """
         return SafetyProtocol(
-            validation_strategy="Comprehensive testing including bias, fairness, and performance metrics",
+            validation_strategy="Comprehensive testing including bias, fairness, and performance met
+    rics",
             data_privacy_approach="Privacy by design with differential privacy techniques",
             human_in_the_loop_policy="Human review for edge cases and sensitive applications",
             compliance_frameworks=risk_profile.compliance_keywords

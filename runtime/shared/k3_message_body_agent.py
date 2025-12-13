@@ -5,9 +5,7 @@ micro-structure enforcement, and placeholder detection blocking.
 """
 
 import logging
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
-from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +64,7 @@ ARCHETYPE_TEMPLATES = {
     },
 }
 
-class K3_MessageBodyAgent(Agent):
+class K3MessageBodyAgent(Agent):
     """K.3 specialist agent for message body generation.
 
     This agent generates archetype-specific message bodies with:

@@ -1,6 +1,5 @@
 """Enum types for outreach_orchestration_config."""
 
-from enum import Enum
 
 class Route(str, Enum):
     """Message delivery routes."""

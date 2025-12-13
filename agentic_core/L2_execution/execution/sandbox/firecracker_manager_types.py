@@ -1,7 +1,5 @@
 """Types and models for firecracker_manager."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class VMStatus(Enum):
     """VM operational status."""
@@ -33,7 +31,9 @@ class VMConfig:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'vm_id': self.vm_id, 'provider': self.provider.value, 'cpu_count': self.cpu_count, 'memory_mb': self.memory_mb, 'disk_mb': self.disk_mb, 'network_enabled': self.network_enabled, 'timeout_seconds': self.timeout_seconds, 'auto_teardown': self.auto_teardown, 'metadata': self.metadata}
+        return {'vm_id': self.vm_id, 'provider': self.provider.value, 'cpu_count': self.cpu_count, '
+    memory_mb': self.memory_mb, 'disk_mb': self.disk_mb, 'network_enabled': self.network_enabled, 't
+        imeout_seconds': self.timeout_seconds, 'auto_teardown': self.auto_teardown, 'metadata': self.metadata}
 
 @dataclass
 class VMInstance:

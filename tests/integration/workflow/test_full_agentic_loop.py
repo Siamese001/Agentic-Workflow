@@ -1,5 +1,4 @@
 """Integration tests for full agentic workflow loop."""
-from unittest.mock import MagicMock, patch
 import pytest
 from runtime.shared.multi_provider_clients import reset_all_clients, Provider
 
@@ -23,6 +22,7 @@ class TestAgenticLoopIntegration:
         """TODO: Add docstring."""
 
     def reset_state(self):
+        """Docstring."""
         reset_all_clients()
         reset_sdk_clients()
         yield

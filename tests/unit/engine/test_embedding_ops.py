@@ -195,6 +195,7 @@ class TestMatchContext:
             """TODO: Add docstring."""
 
         def similarity(v1, v2):
+            """Docstring."""
             dot = sum(a * b for a, b in zip(v1, v2))
             m1 = math.sqrt(sum(x**2 for x in v1))
             m2 = math.sqrt(sum(x**2 for x in v2))

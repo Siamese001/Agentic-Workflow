@@ -7,8 +7,6 @@ Enforces strict network/resource isolation and automatic teardown.
 import asyncio
 import logging
 import time
-from dataclasses import dataclass, field
-from enum import Enum
 
     FirecrackerManager,
     VMConfig,
@@ -105,6 +103,7 @@ class EphemeralVM:
             )
 
     async def execute_code(
+        """Docstring."""
         self,
         code: str,
         language: str = "python",
@@ -153,6 +152,7 @@ class EphemeralVM:
         return vm_id, vm_config
 
     async def _create_and_execute_vm(self,
+        """Docstring."""
         vm_id: str,
         vm_config,
         code: str,
@@ -216,6 +216,7 @@ class EphemeralVM:
                     logger.error("vm_teardown_failed", extra={"vm_id": vm_id, "error": str(e)})
 
     async def _execute_in_vm(
+        """Docstring."""
         self,
         vm_instance: Any,
         code: str,
@@ -249,6 +250,7 @@ class EphemeralVM:
             )
 
     async def _execute_python(
+        """Docstring."""
         self,
         code: str,
         timeout: int,
@@ -294,6 +296,7 @@ class EphemeralVM:
             )
 
     async def _execute_javascript(
+        """Docstring."""
         self,
         code: str,
         timeout: int,
@@ -338,6 +341,7 @@ class EphemeralVM:
             )
 
 def create_ephemeral_vm(
+    """Docstring."""
     vm_manager: Optional[FirecrackerManager] = None,
     isolation_config: Optional[IsolationConfig] = None,
 ) -> EphemeralVM:
@@ -350,7 +354,6 @@ def create_ephemeral_vm(
     Returns:
         EphemeralVM instance
     """
-    from .firecracker_manager import create_firecracker_manager
 
     if vm_manager is None:
         vm_manager = create_firecracker_manager()

@@ -28,10 +28,12 @@ class Neo4jGraphStore:
         """TODO: Add docstring."""
 
     def run(self, cypher: str, params: Dict[str, object] | None = None) -> List[Any]:
+        """TODO: Add docstring."""
         with self._driver.session() as session:
             return list(session.run(cypher, params or {}))
 
     def upsert_entity(self, entity_id: str, etype: str, name: str,
+        """Docstring."""
                         metadata: Dict[str, object] | None = None) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
@@ -74,6 +76,7 @@ class Neo4jGraphStore:
             )
 
     def upsert_relation(
+        """Docstring."""
         self,
         rel_id: str,
         subject_id: str,
@@ -122,6 +125,7 @@ class Neo4jGraphStore:
         self.run(cypher, params)
 
     def update_relation_invalidity(
+        """Docstring."""
         self,
         rel_id: str,
         invalid_at: str | None,
@@ -145,6 +149,7 @@ class Neo4jGraphStore:
         self.run(cypher, params)
 
     def query_factual_temporal(
+        """Docstring."""
         self,
         entity_name: str,
         predicate: str,

@@ -7,7 +7,6 @@ within the shared application layer.
 """
 
 import logging
-from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +38,7 @@ class Validation:
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     def process(self,
+        """Docstring."""
         payload: Union[str,
         int,
         float,

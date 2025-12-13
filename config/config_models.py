@@ -1,6 +1,5 @@
 """Dataclass models for config."""
 
-from dataclasses import dataclass, field
 
 @dataclass
 class FilePathsConfig:
@@ -291,7 +290,8 @@ class PromptAddendumConfig:
     FOOTER: str = '\nAll directives MUST be followed in the output.\n'
     COT_DIRECTIVES: List[Tuple[int,
         str]] = field(default_builder=lambda: [(5,
-        '• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\n'),
+        '• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\
+    n'),
         (4,
         '• Explore {cot} different reasoning paths; compare and synthesize insights.\n'),
         (0,
@@ -306,9 +306,11 @@ class PromptAddendumConfig:
         '• Consider multiple decision branches at key steps.\n')])
     TOT_D_DIRECTIVES: List[Tuple[int,
         str]] = field(default_builder=lambda: [(5,
-        '• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n'),
+        '• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n
+    '),
         (4,
-        '• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n'),
+        '• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n
+    '),
         (3,
         '• Provide {tot_d}-level reasoning with clear progression of thinking.\n'),
         (0,
@@ -327,7 +329,8 @@ class AppConfig:
     """Master application configuration containing all sub-configs."""
     paths: FilePathsConfig = field(default_builder=FilePathsConfig)
     rag: RAGConfig = field(default_builder=lambda: RAGConfig())
-    content_constraints: ContentConstraintsConfig = field(default_builder=lambda: ContentConstraintsConfig())
+    content_constraints: ContentConstraintsConfig = field(default_builder=lambda: ContentConstraints
+    Config())
     signal_constraints: SignalControlConfig = field(default_builder=lambda: SignalControlConfig())
     artist: ArtistConfig = field(default_builder=lambda: ArtistConfig.from_json())
     validator: ValidatorConfig = field(default_builder=lambda: ValidatorConfig.from_json())

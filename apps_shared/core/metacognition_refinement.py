@@ -1,5 +1,5 @@
-# from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.meta.metacognition.refinement import refine_low_confidence  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Ar...
+# from archives.legacy_root_folders.meta.metacognition.refinement import refine_low_confidence  #...
 
 def test_refine_marks_very_low_confidence_as_discarded() -> None:
     """TODO: Add docstring."""

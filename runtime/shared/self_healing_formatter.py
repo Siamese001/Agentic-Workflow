@@ -8,16 +8,12 @@ the LLM produces broken JSON, markdown wrappers, or missing fields.
 import json
 import logging
 import re
-from abc import ABC, abstractmethod
-from enum import Enum
 from datetime import datetime
 
-from pydantic import BaseModel, ValidationError
 
     UnifiedFormatter, FormatResult, FormatType,
     FormatterStrategy, get_unified_formatter
 )
-from .signal_infrastructure import EngineType
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +40,7 @@ class FormatRepair(ABC):
 
     @abstractmethod
     async def repair(
+        """Docstring."""
         self,
         broken_content: str,
         target_schema: Optional[BaseModel] = None,
@@ -88,6 +85,7 @@ class JSONRepairStrategy(FormatRepair):
         ]
 
     async def repair(
+        """Docstring."""
         self,
         broken_content: str,
         target_schema: Optional[BaseModel] = None,
@@ -204,6 +202,7 @@ class MarkdownStripStrategy(FormatRepair):
         ]
 
     async def repair(
+        """Docstring."""
         self,
         broken_content: str,
         target_schema: Optional[BaseModel] = None,
@@ -259,6 +258,7 @@ class RegexExtractStrategy(FormatRepair):
         }
 
     async def repair(
+        """Docstring."""
         self,
         broken_content: str,
         target_schema: Optional[BaseModel] = None,
@@ -326,6 +326,7 @@ class SchemaFillStrategy(FormatRepair):
     """Fills missing fields based on target schema."""
 
     async def repair(
+        """Docstring."""
         self,
         broken_content: str,
         target_schema: Optional[BaseModel] = None,
@@ -427,6 +428,7 @@ class FallbackTextStrategy(FormatRepair):
     """Provides safe text fallback."""
 
     async def repair(
+        """Docstring."""
         self,
         broken_content: str,
         target_schema: Optional[BaseModel] = None,
@@ -500,6 +502,7 @@ class SelfHealingFormatter:
         logger.info("Initialized SelfHealingFormatter")
 
     async def format_with_healing(
+        """Docstring."""
         self,
         data: Any,
         format_type: Union[FormatType, str],
@@ -639,6 +642,7 @@ def get_self_healing_formatter() -> SelfHealingFormatter:
 
 # Convenience functions
 async def format_with_healing(
+    """Docstring."""
     data: Any,
     format_type: Union[FormatType, str],
     engine_type: Optional[EngineType] = None,

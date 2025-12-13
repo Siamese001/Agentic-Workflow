@@ -1,6 +1,5 @@
 """Enum types for convert_to_internal_schema."""
 
-from enum import Enum
 
 class SchemaType(Enum):
     """Types of schemas supported."""

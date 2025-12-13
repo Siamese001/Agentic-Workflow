@@ -7,7 +7,6 @@ that can be answered by the retrieval system.
 import asyncio
 import logging
 import re
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +60,6 @@ class QueryDecomposer(SimpleAgentBase):
 
         # Import AdaptiveRetrievalGate for heuristic check
         try:
-            from .adaptive_retrieval_gate import AdaptiveRetrievalGate
             self.gate = AdaptiveRetrievalGate()
         except ImportError:
             logger.warning("AdaptiveRetrievalGate not available, skipping heuristic check")
@@ -71,14 +69,14 @@ class QueryDecomposer(SimpleAgentBase):
         self.complexity_indicators = {
             'comparison': re.compile(r'\b(compare|vs|versus|against|difference|contrast)\b',
                 re.IGNORECASE),
-                
+
             'causation': re.compile(r'\b(why|cause|reason|impact|effect)\b', re.IGNORECASE),
             'temporal': re.compile(r'\b(before|after|during|when|timeline|history)\b',
                 re.IGNORECASE),
-                
+
             'aggregation': re.compile(r'\b(sum|total|average|count|aggregate|combine)\b',
                 re.IGNORECASE),
-                
+
             'relationship': re.compile(r'\b(relationship|correlation|between|and)\b', re.IGNORECASE)
         }
 
@@ -125,7 +123,6 @@ class QueryDecomposer(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from .multi_provider_clients import get_client, Provider
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)
@@ -139,6 +136,7 @@ class QueryDecomposer(SimpleAgentBase):
             )
 
             class LLMResponseImpl:
+                """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 
@@ -148,6 +146,7 @@ class QueryDecomposer(SimpleAgentBase):
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
+                """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 
@@ -165,7 +164,8 @@ class QueryDecomposer(SimpleAgentBase):
         # Heuristic check: if gate says simple, skip LLM
         if self.gate:
             decision = self.gate.should_retrieve(query)
-            if decision.query_type in ["CONVERSATIONAL", "FACTUAL"] and not decision.should_retrieve:
+            if decision.query_type in ["CONVERSATIONAL", "FACTUAL"] and not decision.should_retrieve
+    :
                 logger.info(f"Simple query detected, skipping decomposition: {query}")
                 return DecomposedQuery(
                     original_query=query,
@@ -188,7 +188,8 @@ class QueryDecomposer(SimpleAgentBase):
             )
 
         # Build decomposition prompt
-        prompt = f"""You are an Expert Research Assistant. Break the following complex user query into 2-4 atomic, factual sub-queries that a search engine can answer.
+        prompt = f"""You are an Expert Research Assistant. Break the following complex user query in
+    to 2-4 atomic, factual sub-queries that a search engine can answer.
 
 Rules:
 - If the query is simple, return it as the single sub-query
@@ -207,7 +208,8 @@ Return in JSON format:
 Example:
 Input: "Compare AWS vs. Azure pricing for financial services"
 Output: {{
-    "sub_queries": ["AWS pricing model for financial services", "Azure pricing model for financial services", "AWS vs Azure cost comparison"],
+    "sub_queries": ["AWS pricing model for financial services", "Azure pricing model for financial s
+    ervices", "AWS vs Azure cost comparison"],
     "reasoning": "Decomposed into individual pricing queries and a comparison"
 }}"""
 
@@ -250,6 +252,7 @@ Output: {{
             )
 
     async def execute_plan(
+        """Docstring."""
         self,
         decomposed_query: DecomposedQuery,
         search_function: callable,
@@ -286,7 +289,8 @@ Output: {{
                 else:
                     processed_results.append(result)
 
-            logger.info(f"Completed execution: {sum(len(r) for r in processed_results)} total results")
+            logger.info(f"Completed execution: {sum(len(r) for r in processed_results)} total result
+    s")
             return processed_results
 
         except Exception as e:

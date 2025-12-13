@@ -47,6 +47,7 @@ class ModelRouter:
                 'tier': model.tier.value})
 
     def route(self,
+        """Docstring."""
         task_description: str,
         required_capabilities: Optional[List[str]]=None,
         estimated_tokens: Optional[int]=None,
@@ -80,7 +81,7 @@ class ModelRouter:
             alternatives=candidates[:3])
         if self.enable_logging:
             logger.info('model_routed',
-                extra={'selected_model': selected.model_id,
+                extra={# SQL query removed: selected.model_id,
                 'complexity': complexity.value,
                 'phase': phase,
                 'estimated_cost': estimated_cost})
@@ -202,7 +203,9 @@ class ModelRouter:
         """
         if not candidates:
             return min(self._models.values(), key=lambda m: m.cost_per_1k_tokens)
-        tier_preference = {TaskComplexity.VERY_HIGH: ModelTier.PREMIUM, TaskComplexity.HIGH: ModelTier.STANDARD, TaskComplexity.MEDIUM: ModelTier.STANDARD, TaskComplexity.LOW: ModelTier.FAST, TaskComplexity.TRIVIAL: ModelTier.MICRO}
+        tier_preference = {TaskComplexity.VERY_HIGH: ModelTier.PREMIUM, TaskComplexity.HIGH: ModelTi
+    er.STANDARD, TaskComplexity.MEDIUM: ModelTier.STANDARD, TaskComplexity.LOW: ModelTier.FAST, Task
+        Complexity.TRIVIAL: ModelTier.MICRO}
         preferred_tier = tier_preference.get(complexity, ModelTier.STANDARD)
         tier_matches = [m for m in candidates if m.tier == preferred_tier]
         if tier_matches:
@@ -229,8 +232,7 @@ class ModelRouter:
         Returns:
             Reasoning string
         """
-        return f'Selected {model.model_id} ({model.tier.value}) for {phase} phase with {complexity.value} complexity. Cost: ${model.cost_per_1k_tokens}/1K tokens,
-            Latency: ~{model.avg_latency_ms}ms'
+        return f# SQL query removed
 
 def create_model_router(cost_budget_per_request: Optional[float]=None) -> ModelRouter:
     """Factory function to create model router.

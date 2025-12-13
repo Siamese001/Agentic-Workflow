@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 from pathlib import Path
 from typing import Dict, Tuple
-from collections import defaultdict
 import json
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
@@ -24,7 +23,7 @@ STUB_PATTERNS = [
     r'raise\s+NotImplementedError',    # NotImplementedError
     r'PENDING',                           # Implementation pending
     r'PLACEHOLDER',                    # Placeholder markers
-    r'STUB',                               r'ATTENTION',                          # Implementation pending
+    r'STUB',                               r'ATTENTION',                          # Implementatio...
     r'XXX',                                r'\.\.\.(?:\s*#.*)?$',             # Ellipsis (...)
 ]
 
@@ -122,17 +121,20 @@ def audit_stubs() -> Dict:
             report["by_folder"][top_folder]["real"] += 1
 
     # Generate recommendations
-    stub_pct = (report["summary"]["stub_files"] / report["summary"]["total_py_files"] * 100) if report["summary"]["total_py_files"] > 0 else 0
+    stub_pct = (report["summary"]["stub_files"] / report["summary"]["total_py_files"] * 100) if repo
+    rt["summary"]["total_py_files"] > 0 else 0
 
     report["recommendations"].append(
-        f"CRITICAL: {report['summary']['stub_files']} stub files ({stub_pct:.1f}%) need implementation or removal"
+        f"CRITICAL: {report['summary']['stub_files']} stub files ({stub_pct:.1f}%) need implementati
+    on or removal"
     )
 
     for folder, stats in report["by_folder"].items():
         total = stats["stubs"] + stats["real"]
         if total > 0 and stats["stubs"] / total > 0.5:
             report["recommendations"].append(
-                f"Folder '{folder}' has {stats['stubs']}/{total} stub files ({stats['stubs']/total*100:.0f}%)"
+                f"Folder '{folder}' has {stats['stubs']}/{total} stub files ({stats['stubs']/total*1
+    00:.0f}%)"
             )
 
     return report
@@ -140,7 +142,8 @@ def audit_stubs() -> Dict:
 def print_report(report: Dict) -> None:
     """Print formatted audit report."""
 
-    stub_pct = (report['summary']['stub_files'] / report['summary']['total_py_files'] * 100) if report['summary']['total_py_files'] > 0 else 0
+    stub_pct = (report['summary']['stub_files'] / report['summary']['total_py_files'] * 100) if repo
+    rt['summary']['total_py_files'] > 0 else 0
 
     for reason, files in sorted(report["by_reason"].items(), key=lambda x: -len(x[1])):
         logger.info(f"\n    {reason}: {len(files)} files")

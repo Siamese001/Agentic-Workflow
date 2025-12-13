@@ -14,14 +14,12 @@ Implements L5 Safety/Policy Layer for update observability usage operations
 
 from typing import Dict, List, Optional
 
-from dataclasses import field
 
 from enum import Enum
 
 import logging
 
 
-from abc import ABC, abstractmethod
 
 logging.basicConfig(level=logging.INFO)
 
@@ -178,7 +176,8 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
 
         return {
             "risks": risks,
-            "overall_risk": "low" if all(r == "low" for r in risks.values()) else "medium" if any(r == "medium" for r in risks.values()) else "high"
+            "overall_risk": "low" if all(r == "low" for r in risks.values()) else "medium" if any(r
+    == "medium" for r in risks.values()) else "high"
         }
 
     def _check_injection_risk(self, data: Dict[str, object]) -> str:
@@ -247,7 +246,7 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
             {"name": "no_injection",
                 "pattern": r"(union|select|insert|update|delete|drop)",
                 "severity": "high"},
-                
+
             {"name": "no_scripts", "pattern": r"<script", "severity": "high"},
             {"name": "no_eval", "pattern": r"eval\s*\(", "severity": "high"},
             {"name": "size_limit", "max_size": 1000000, "severity": "medium"}

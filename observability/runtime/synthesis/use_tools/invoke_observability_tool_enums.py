@@ -1,6 +1,5 @@
 """Enum types for invoke_observability_tool."""
 
-from enum import Enum
 
 class InvocationType(Enum):
     """Types of tool invocation."""

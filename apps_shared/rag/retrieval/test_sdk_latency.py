@@ -1,6 +1,5 @@
 """Performance tests for SDK latency budgets."""
 import time
-from unittest.mock import MagicMock, patch
 
 from runtime.shared.cache import generate_llm_cache_key
 

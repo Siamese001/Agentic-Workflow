@@ -6,11 +6,6 @@ import pytest
 import tempfile
 
 from runtime.shared.state import get_state_manager, reset_state_manager
-from runtime.shared.routing.factory import reset_router
-from apps_rg.L3_orchestration.hardened_orchestrator import create_hardened_orchestrator
-from apps_rg.L3_orchestration.orchestrate_workflow import WorkflowSpec, HopSpec
-from runtime.shared.routing.router import HardenedRouter
-from runtime.shared.agent_executor import AgentResponse
 
 @pytest.fixture(autouse=True)
 def reset_singletons():
@@ -295,8 +290,8 @@ class TestCircuitBreaker:
 
             try:
                 orchestrator.execute_workflow({})
-            except Exception:
-                pass
+            except Exception as e:
+    logger.warning(f"Ignored error: {e}")
 
 class TestWorkflowResumption:
     """Test workflow resumption from checkpoints."""
@@ -428,8 +423,8 @@ class TestErrorRecovery:
             try:
                 result = orchestrator.execute_workflow({})
                 assert result["status"] in ["COMPLETED", "PARTIAL"]
-            except Exception:
-                pass
+            except Exception as e:
+    logger.warning(f"Ignored error: {e}")
 
 class TestPerformanceAndScaling:
     """Test performance and scaling characteristics."""

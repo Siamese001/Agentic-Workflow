@@ -12,14 +12,12 @@ import asyncio
 import logging
 import os
 
-from .hardened_openai_executor import (
     HardenedOpenAIExecutor,
     HardeningConfig,
     Provider,
     create_hardened_executor,
     AgentMessage
 )
-from .titanium_research_core import TitaniumResearchOutput
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +52,7 @@ class MultiProviderExecutor:
         self.logger = logging.getLogger("MultiProviderExecutor")
 
     def register_provider(
+        """Docstring."""
         self,
         provider: Provider,
         is_primary: bool = False,
@@ -82,6 +81,7 @@ class MultiProviderExecutor:
             raise
 
     async def execute_with_fallback(
+        """Docstring."""
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -216,6 +216,7 @@ class OpenAIExecutorIntegration:
         self.logger = logging.getLogger("OpenAIIntegration")
 
     async def generate_structured_response(
+        """Docstring."""
         self,
         prompt: str,
         schema: Type,
@@ -240,6 +241,7 @@ class OpenAIExecutorIntegration:
         )
 
     async def analyze_with_chain_of_thought(
+        """Docstring."""
         self,
         problem: str,
         context: Optional[str] = None
@@ -277,6 +279,7 @@ class OpenAIExecutorIntegration:
         )
 
     async def extract_entities(
+        """Docstring."""
         self,
         text: str,
         entity_types: List[str]
@@ -290,7 +293,6 @@ class OpenAIExecutorIntegration:
         Returns:
             Dictionary of entity types and their values
         """
-        from pydantic import BaseModel, Field
 
         class EntityExtraction(BaseModel):
             """TODO: Add docstring."""
@@ -317,6 +319,7 @@ class OpenAIExecutorIntegration:
         return result.entities
 
     async def summarize_document(
+        """Docstring."""
         self,
         content: str,
         max_length: int = 200,

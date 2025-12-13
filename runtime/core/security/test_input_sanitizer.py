@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 """
 
 import pytest
-from runtime.core.security.input_sanitizer import (
     InputSanitizer,
     SecurityIntegrityError
 )

@@ -8,7 +8,6 @@ to ensure adherence to constraints and consistency between plan and output.
 import json
 import logging
 import re
-from dataclasses import dataclass, field
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -103,7 +102,8 @@ class CognitiveContractValidator:
             constraints_text = constraints_match.group(1)
             # Extract bullet points or numbered items
             constraint_items = re.findall(r'[-*]\s*(.+)|\d+\.\s*(.+)', constraints_text)
-            plan.constraints_acknowledged = [item[0] or item[1] for item in constraint_items if item[0] or item[1]]
+            plan.constraints_acknowledged = [item[0] or item[1] for item in constraint_items if item
+    [0] or item[1]]
 
         # Extract strategy
         strategy_match = re.search(
@@ -123,7 +123,8 @@ class CognitiveContractValidator:
         if metrics_match:
             metrics_text = metrics_match.group(1)
             plan.key_metrics = re.findall(r'[-*]\s*(.+)|\d+\.\s*(.+)', metrics_text)
-            plan.key_metrics = [item[0] or item[1] for item in plan.key_metrics if item[0] or item[1]]
+            plan.key_metrics = [item[0] or item[1] for item in plan.key_metrics if item[0] or item[1
+    ]]
 
         # Extract pre-computation
         precomp_match = re.search(
@@ -184,10 +185,11 @@ class CognitiveContractValidator:
         acknowledged_text = " ".join(plan.constraints_acknowledged).lower()
 
         for constraint in constraints:
-            if constraint.priority >= 8:  # High priority constraints must be explicitly acknowledged
+            if constraint.priority >= 8:  # High priority constraints must be explicitly acknowle...
                 constraint_words = constraint.description.lower().split()
                 if not any(word in acknowledged_text for word in constraint_words if len(word) > 3):
-                    errors.append(f"High-priority constraint not acknowledged: {constraint.description}")
+                    errors.append(f"High-priority constraint not acknowledged: {constraint.descripti
+    on}")
 
         # Check strategy quality
         if len(plan.strategy) < 50:
@@ -213,7 +215,8 @@ class CognitiveContractValidator:
             content_words = set(content.lower().split())
 
             # At least 30% of strategy words should be in content
-            overlap = len(strategy_words & content_words) / len(strategy_words) if strategy_words else 0
+            overlap = len(strategy_words & content_words) / len(strategy_words) if strategy_words el
+    se 0
             if overlap < 0.3:
                 errors.append("Content doesn't appear to implement the described strategy")
 
@@ -231,7 +234,8 @@ class CognitiveContractValidator:
 
                 # Allow 20% variance
                 if actual_length > estimated * 1.2 or actual_length < estimated * 0.8:
-                    errors.append(f"Content length ({actual_length}) differs significantly from estimate ({estimated})")
+                    errors.append(f"Content length ({actual_length}) differs significantly from esti
+    mate ({estimated})")
 
         return errors
 
@@ -244,6 +248,7 @@ class CognitiveContractManager:
         self.active_contracts: Dict[str, CognitiveContract] = {}
 
     def create_contract(
+        """Docstring."""
         self,
         contract_id: str,
         constraints: List[Constraint]
@@ -268,6 +273,7 @@ class CognitiveContractManager:
         return contract
 
     def wrap_with_contract_requirement(
+        """Docstring."""
         self,
         base_prompt: str,
         constraints: List[Constraint]
@@ -325,6 +331,7 @@ CONSTRAINTS TO ACKNOWLEDGE:
         return contract_wrapper
 
     def process_response(
+        """Docstring."""
         self,
         contract_id: str,
         response: str
@@ -381,7 +388,8 @@ CONSTRAINTS TO ACKNOWLEDGE:
             consistency_errors = self.validator.validate_consistency(plan, content)
             if consistency_errors:
                 result["consistency_errors"] = consistency_errors
-                logger.warning(f"Consistency errors in contract {contract_id}: {consistency_errors}")
+                logger.warning(f"Consistency errors in contract {contract_id}: {consistency_errors}"
+    )
 
             contract.stage = ContractStage.CONTRACT_FULFILLED
             result["stage"] = ContractStage.CONTRACT_FULFILLED.value
@@ -470,6 +478,7 @@ def create_constraints_from_directives(directives: List[str]) -> List[Constraint
     return constraints
 
 def enforce_cognitive_contract(
+    """Docstring."""
     prompt: str,
     directives: List[str],
     contract_id: Optional[str] = None

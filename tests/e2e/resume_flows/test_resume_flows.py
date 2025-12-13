@@ -2,8 +2,6 @@
 import re
 import pytest
 from typing import Dict, List, Optional
-from dataclasses import dataclass
-from enum import Enum
 
 class ResumeSection(Enum):
     """TODO: Add docstring."""
@@ -18,6 +16,7 @@ class ResumeSection(Enum):
     """TODO: Add docstring."""
 
 class ResumeData:
+    """Docstring."""
     name: str
     email: str
     experience: List[Dict[str, object]]
@@ -29,6 +28,7 @@ class ResumeData:
 
 @dataclass
 class JobDescription:
+    """Docstring."""
     title: str
     company: str
     requirements: List[str]

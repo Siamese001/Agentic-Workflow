@@ -15,16 +15,15 @@ import asyncio
 from typing import Any, Dict, List, Optional, Tuple, Union, Set
 from datetime import datetime, timedelta
 from pathlib import Path
-from dataclasses import dataclass, field, asdict
 from enum import Enum
 
 logger = logging.getLogger(__name__)
 
 class OperationType(str, Enum):
     """Types of vector operations."""
-    INSERT = "insert"
-    UPDATE = "update"
-    DELETE = "delete"
+    INSERT = # SQL query removed
+    UPDATE = # SQL query removed
+    DELETE = # SQL query removed
     UPSERT = "upsert"
     BATCH_INSERT = "batch_insert"
     BATCH_DELETE = "batch_delete"
@@ -239,6 +238,7 @@ class HardenedVectorStore:
             raise
 
     async def insert(
+        """Docstring."""
         self,
         ids: List[str],
         embeddings: List[List[float]],
@@ -257,6 +257,7 @@ class HardenedVectorStore:
         )
 
     async def upsert(
+        """Docstring."""
         self,
         ids: List[str],
         embeddings: List[List[float]],
@@ -275,6 +276,7 @@ class HardenedVectorStore:
         )
 
     async def update(
+        """Docstring."""
         self,
         ids: List[str],
         embeddings: Optional[List[List[float]]] = None,
@@ -301,8 +303,10 @@ class HardenedVectorStore:
         )
 
     async def batch_insert(
+        """Docstring."""
         self,
-        batches: List[Tuple[List[str], List[List[float]], Optional[List[str]], Optional[List[Dict[str, Any]]]]]
+        batches: List[Tuple[List[str], List[List[float]], Optional[List[str]], Optional[List[Dict[st
+    r, Any]]]]]
     ) -> List[str]:
         """# SQL removed: Insert multiple batches atomically."""
         all_ids = []
@@ -352,6 +356,7 @@ class HardenedVectorStore:
             raise
 
     async def _execute_operation(
+        """Docstring."""
         self,
         operation_type: OperationType,
         vector_ids: List[str],
@@ -455,7 +460,8 @@ class HardenedVectorStore:
 
                     try:
                         if self.enable_compression:
-                            data = json.loads(gzip.decompress(line.strip().encode('latin1')).decode())
+                            data = json.loads(gzip.decompress(line.strip().encode('latin1')).decode(
+    ))
                         else:
                             data = json.loads(line.strip())
 
@@ -633,6 +639,7 @@ class HardenedVectorStore:
 
 # Factory function for creating hardened vector stores
 def create_hardened_vector_store(
+    """Docstring."""
     vector_store: Any,
     wal_dir: Union[str, Path] = "./data/vector_wal",
     **kwargs

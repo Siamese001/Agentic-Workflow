@@ -8,10 +8,7 @@ is lost and enabling debugging and manual recovery.
 import asyncio
 import json
 import logging
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from enum import Enum
 from pathlib import Path
 
 import aiofiles
@@ -61,7 +58,7 @@ class DeadLetterItem:
         return {
             "envelope": self.envelope.dict() if hasattr(self.envelope,
                 'dict') else self.envelope.to_dict(),
-                
+
             "failure_reason": self.failure_reason.value,
             "failure_stage": self.failure_stage,
             "error_message": self.error_message,
@@ -129,6 +126,7 @@ class DeadLetterStorage(ABC):
 
     @abstractmethod
     async def list(
+        """Docstring."""
         self,
         status: Optional[DeadLetterStatus] = None,
         limit: int = 100
@@ -146,6 +144,7 @@ class DeadLetterStorage(ABC):
 
     @abstractmethod
     async def update_status(self,
+        """Docstring."""
         item_id: str,
         status: DeadLetterStatus,
         notes: Optional[str] = None) -> bool:
@@ -241,7 +240,8 @@ class FileDeadLetterStorage(DeadLetterStorage):
 
             await aiofiles.os.rename(temp_path, path)
 
-            logger.warning(f"Added envelope {item.envelope.trace_id} to dead letter queue: {item.failure_reason}")
+            logger.warning(f"Added envelope {item.envelope.trace_id} to dead letter queue: {item.fai
+    lure_reason}")
             return True
 
         except Exception as e:
@@ -272,6 +272,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
         return None
 
     async def list(
+        """Docstring."""
         self,
         status: Optional[DeadLetterStatus] = None,
         limit: int = 100
@@ -327,6 +328,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
         return items[:limit]
 
     async def update_status(self,
+        """Docstring."""
         item_id: str,
         status: DeadLetterStatus,
         notes: Optional[str] = None) -> bool:
@@ -363,7 +365,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             if old_path.parent != new_path.parent:
                 await aiofiles.os.rename(old_path, new_path)
 
-            logger.info(f"Updated dead letter item {item_id} to status: {status.value}")
+            logger.info(f# SQL query removed)
             return True
 
         except Exception as e:
@@ -386,7 +388,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
         try:
             path = self._get_item_path(item)
             await aiofiles.os.remove(path)
-            logger.info(f"Deleted dead letter item {item_id}")
+            logger.info(f# SQL query removed)
             return True
 
         except Exception as e:
@@ -447,6 +449,7 @@ class DeadLetterQueue:
         logger.info("Initialized DeadLetterQueue")
 
     async def add_failed_envelope(
+        """Docstring."""
         self,
         envelope: SignalEnvelope,
         failure_reason: FailureReason,
@@ -496,6 +499,7 @@ class DeadLetterQueue:
         return await self.storage.get(trace_id)
 
     async def list_failed_envelopes(
+        """Docstring."""
         self,
         status: Optional[DeadLetterStatus] = None,
         limit: int = 100
@@ -641,6 +645,7 @@ async def get_dead_letter_queue() -> DeadLetterQueue:
 
 # Decorator for automatic dead letter handling
 def dead_letter_handler(
+    """Docstring."""
     failure_reason: FailureReason = FailureReason.UNKNOWN,
     include_payload: bool = True
 ):
@@ -659,6 +664,7 @@ def dead_letter_handler(
             """TODO: Add docstring."""
 
         async def wrapper(envelope: SignalEnvelope, *args, **kwargs):
+            """Docstring."""
             try:
                 return await func(envelope, *args, **kwargs)
             except Exception as e:

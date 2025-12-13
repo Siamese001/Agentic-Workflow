@@ -6,13 +6,8 @@ and adjusts validation thresholds dynamically for optimal outputs.
 
 import logging
 import time
-from collections import defaultdict, deque
-from dataclasses import dataclass, field
-from enum import Enum
 import statistics
-import threading
 
-from .signal_enhancer import SignalAssessment, SignalQuality
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +80,7 @@ class AdaptiveThresholds:
         }
 
     def adjust_thresholds(
+        """Docstring."""
         self,
         quality_scores: List[float],
         acceptance_rate: float,
@@ -171,7 +167,6 @@ class FeedbackLoop:
         })
 
         # Thread safety
-        self._lock = threading.Lock()
 
         logger.debug(f"Initialized FeedbackLoop: {name}")
 
@@ -497,7 +492,6 @@ class FeedbackLoop:
 
 # Global feedback loop registry
 _feedback_loops: Dict[str, FeedbackLoop] = {}
-_loop_lock = threading.Lock()
 
 def get_feedback_loop(name: str = "default", history_size: int = 1000) -> FeedbackLoop:
     """Get or create a feedback loop.

@@ -5,10 +5,8 @@ Migrated from archives/legacy_resume_gen/Agentic-Workflow-10_7_main/core_v10_7/m
 """
 
 import logging
-from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Protocol
 
-from .providers import get_default_module, get_default_class
 
 logger = logging.getLogger(__name__)
 

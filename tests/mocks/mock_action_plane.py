@@ -6,7 +6,6 @@ Simple mock implementation that returns predefined results.
 
 from typing import Any, Dict, List
 
-from schemas.core_interfaces import (
     IActionPlane,
     ActionRequest,
     ActionResult,
@@ -81,6 +80,7 @@ class MockActionPlane(IActionPlane):
         )
 
     async def execute_batch(
+        """Docstring."""
         self,
         requests: List[ActionRequest],
         parallel: bool = False,
@@ -108,6 +108,7 @@ class MockActionPlane(IActionPlane):
         return results
 
     async def validate_action(
+        """Docstring."""
         self,
         request: ActionRequest,
     ) -> Dict[str, Any]:

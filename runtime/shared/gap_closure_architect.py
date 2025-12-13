@@ -8,8 +8,6 @@ Legacy K-Node: K.9 (K.8 in some versions)
 """
 
 import logging
-from dataclasses import dataclass
-from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -199,9 +197,11 @@ class GapClosureArchitect(Agent):
         Returns:
             Formatted prompt
         """
-        prompt = f"""Generate exactly {self.competency_count} Strategic & Technical Competencies with STRICT gap coverage.
+        prompt = f"""Generate exactly {self.competency_count} Strategic & Technical Competencies wit
+    h STRICT gap coverage.
 
-PRIMARY OBJECTIVE: Achieve ≥{self.gap_coverage_minimum:.0%} coverage of JD keywords NOT yet used in K.4/K.5/K.6/K.7.
+PRIMARY OBJECTIVE: Achieve ≥{self.gap_coverage_minimum:.0%} coverage of JD keywords NOT yet used in
+    K.4/K.5/K.6/K.7.
 
 CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 1. Exactly {self.competency_count} competencies
@@ -231,7 +231,8 @@ FORMAT:
 2. [Title with 2-3 gap keywords]: [Description {self.word_count_min}-{self.word_count_max} words]
 ...
 
-Generate the {self.competency_count} competencies now (≥{self.gap_coverage_minimum:.0%} gap coverage):
+Generate the {self.competency_count} competencies now (≥{self.gap_coverage_minimum:.0%} gap coverage
+    ):
 """
 
         return prompt

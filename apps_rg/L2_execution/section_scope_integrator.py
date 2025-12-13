@@ -18,11 +18,8 @@ Non-responsibilities:
 
 
 import re
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
-from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 @dataclass
 class SectionIntegratorConfig:
@@ -36,6 +33,7 @@ class SectionIntegratorConfig:
     """TODO: Add docstring."""
 
 class SectionIntegratorResult:
+    """Docstring."""
     overview: str
     similarity_score: float
     validation_results: List[ValidationResult]
@@ -81,6 +79,7 @@ class SectionScopeIntegrator:
         )
 
     def generate_overview(
+        """Docstring."""
         self,
         bullets: List[str],
         master_baseline: str,
@@ -180,7 +179,8 @@ class SectionScopeIntegrator:
         Generate overview content using LLM.
         Placeholder for actual LLM integration.
         """
-        return "Directed strategic technology initiatives across cloud infrastructure and data engineering, delivering scalable solutions that drove measurable business impact and operational excellence."
+        return "Directed strategic technology initiatives across cloud infrastructure and data engin
+    eering, delivering scalable solutions that drove measurable business impact and operational excellence."
 
     def _validate_no_redundant_prefix(self, overview: str) -> ValidationResult:
         """
@@ -240,17 +240,21 @@ class SectionScopeIntegrator:
                 gate_id='VG_OVERVIEW_DEDUPLICATION',
                 passed=True,
                 severity='INFO',
-                message=f"Deduplication passed: {similarity_score:.1%} similarity (threshold: <{self.config.max_similarity_threshold:.0%})",
-                    
+                message=f"Deduplication passed: {similarity_score:.1%} similarity (threshold: <{self
+                    .config.max_similarity_threshold:.0%})",
+
+
                 signature=f"DEDUP:OK:{int(similarity_score*100)}",
-                details={'similarity_score': similarity_score, 'threshold': self.config.max_similarity_threshold}
+                details={'similarity_score': similarity_score, 'threshold': self.config.max_similari
+    ty_threshold}
             )
 
         return ValidationResult(
             gate_id='VG_OVERVIEW_DEDUPLICATION',
             passed=False,
             severity='BLOCK',
-            message=f"BLOCKED: Overview similarity {similarity_score:.1%} >= threshold {self.config.max_similarity_threshold:.0%}",
+            message=f"BLOCKED: Overview similarity {similarity_score:.1%} >= threshold {self.config.
+    max_similarity_threshold:.0%}",
             details={
                 'similarity_score': similarity_score,
                 'threshold': self.config.max_similarity_threshold,
@@ -259,6 +263,7 @@ class SectionScopeIntegrator:
         )
 
 def create_section_scope_integrator(
+    """Docstring."""
     config: Optional[SectionIntegratorConfig] = None
 ) -> SectionScopeIntegrator:
     """Factory function to create SectionScopeIntegrator instance"""

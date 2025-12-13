@@ -26,12 +26,14 @@ class RGValidationGates:
         """Register critical validation gates."""
         self.register_gate(ValidationGate(gate_id=self.VG_SUMMARY_GROUNDING_CHECK,
             name='Summary Grounding Check',
-            description='Verifies that the executive summary is grounded in source material and does not contain hallucinated claims.',
+            description='Verifies that the executive summary is grounded in source material and does
+    not contain hallucinated claims.',
             severity=GateSeverity.CRITICAL,
             validator=self._validate_summary_grounding))
         self.register_gate(ValidationGate(gate_id=self.VG_BULLET_HALLUCINATION_CHECK,
             name='Bullet Hallucination Check',
-            description='Checks that all bullet points are derived from source material with proper provenance.',
+            description='Checks that all bullet points are derived from source material with proper
+    provenance.',
             severity=GateSeverity.CRITICAL,
             validator=self._validate_bullet_hallucination))
 
@@ -39,17 +41,20 @@ class RGValidationGates:
         """Register high priority validation gates."""
         self.register_gate(ValidationGate(gate_id=self.VG_THEMATIC_UNIQUENESS,
             name='Thematic Uniqueness',
-            description='Ensures each bullet point covers a unique theme without redundancy across sections.',
+            description='Ensures each bullet point covers a unique theme without redundancy across s
+    ections.',
             severity=GateSeverity.HIGH,
             validator=self._validate_thematic_uniqueness))
         self.register_gate(ValidationGate(gate_id=self.VG_CREATIVE_BRIEF_ADHERENCE,
             name='Creative Brief Adherence',
-            description='Validates that all content adheres to the creative brief constraints including word counts and structure.',
+            description='Validates that all content adheres to the creative brief constraints includ
+    ing word counts and structure.',
             severity=GateSeverity.HIGH,
             validator=self._validate_creative_brief_adherence))
         self.register_gate(ValidationGate(gate_id=self.VG_BULLET_PROVENANCE_CHECK,
             name='Bullet Provenance Check',
-            description='Ensures each bullet can be traced back to source material with documented provenance.',
+            description='Ensures each bullet can be traced back to source material with documented p
+    rovenance.',
             severity=GateSeverity.HIGH,
             validator=self._validate_bullet_provenance))
         self.register_gate(ValidationGate(gate_id=self.VG_AGENTIC_OUTPUT_VALIDATION,
@@ -77,7 +82,8 @@ class RGValidationGates:
             validator=self._validate_competency_balance))
         self.register_gate(ValidationGate(gate_id=self.VG_SUMMARY_VOICE_TENSE,
             name='Summary Voice and Tense',
-            description='Validates that the executive summary uses correct voice and tense throughout.',
+            description='Validates that the executive summary uses correct voice and tense throughou
+    t.',
             severity=GateSeverity.MEDIUM,
             validator=self._validate_summary_voice_tense))
 
@@ -114,6 +120,7 @@ class RGValidationGates:
         return list(self._gates.keys())
 
     def run_gate(self,
+        """Docstring."""
         gate_id: str,
         content: object,
         context: Optional[Dict[str,
@@ -139,6 +146,7 @@ class RGValidationGates:
         return gate.validator(content, context)
 
     def run_all_gates(self,
+        """Docstring."""
         content: object,
         context: Optional[Dict[str,
         object]]=None) -> List[GateResult]:
@@ -230,7 +238,8 @@ class RGValidationGates:
                 words2 = set(bullet2.lower().split())
                 overlap = len(words1 & words2) / max(len(words1 | words2), 1)
                 if overlap > 0.6:
-                    violations.append(f'Bullets {i + 1} and {j + 1} have high similarity ({overlap:.0%})')
+                    violations.append(f'Bullets {i + 1} and {j + 1} have high similarity ({overlap:.
+    0%})')
         decision = GateDecision.PASS if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_THEMATIC_UNIQUENESS,
             decision=decision,
@@ -344,7 +353,8 @@ class RGValidationGates:
                 avg = sum(word_counts) / len(word_counts)
                 for i, wc in enumerate(word_counts):
                     if abs(wc - avg) > avg * 0.5:
-                        violations.append(f'Competency {i + 1}: Word count {wc} significantly differs from average {avg:.0f}')
+                        violations.append(f'Competency {i + 1}: Word count {wc} significantly differ
+    s from average {avg:.0f}')
         decision = GateDecision.PASS if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_COMPETENCY_WORD_COUNT_BALANCE,
             decision=decision,
@@ -415,6 +425,7 @@ def create_validation_gates() -> RGValidationGates:
     return RGValidationGates()
 
 def run_gate(gate_id: str,
+    """Docstring."""
     content: object,
     context: Optional[Dict[str,
     object]]=None) -> GateResult:

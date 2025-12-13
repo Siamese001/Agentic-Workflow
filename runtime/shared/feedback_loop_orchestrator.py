@@ -44,7 +44,8 @@ class RegenerationCheckpoint:
             "temperature": self.temperature,
             "failure_type": self.failure_type.value if self.failure_type else None,
             "score": self.score,
-            "validation_status": self.validation_result.status.value if self.validation_result else None,
+            "validation_status": self.validation_result.status.value if self.validation_result else
+    None,
         }
 
 @dataclass
@@ -115,6 +116,7 @@ class FeedbackLoopOrchestrator:
         )
 
     async def execute_with_feedback(
+        """Docstring."""
         self,
         generator: Callable,
         validator: Callable,
@@ -139,7 +141,8 @@ class FeedbackLoopOrchestrator:
         context = initial_context.copy()
 
         for attempt in range(1, self.max_attempts + 1):
-            logger.info(f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.2f})")
+            logger.info(f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.
+    2f})")
 
             # Generate content
             try:
@@ -220,7 +223,8 @@ class FeedbackLoopOrchestrator:
         # Return best attempt if reversion enabled
         if self.reversion_enabled and checkpoints:
             best_checkpoint = max(checkpoints, key=lambda cp: cp.score)
-            logger.info(f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.score:.2f})")
+            logger.info(f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.s
+    core:.2f})")
             return RegenerationResult(
                 success=False,
                 final_content=best_checkpoint.content,
@@ -386,6 +390,7 @@ class FeedbackLoopOrchestrator:
         return "\n".join(summary_lines)
 
     def apply_message_transition(
+        """Docstring."""
         self,
         current_route: str,
         target_route: str,
@@ -436,6 +441,7 @@ class FeedbackLoopOrchestrator:
         return content, context
 
     def generate_failure_report(
+        """Docstring."""
         self,
         result: RegenerationResult,
         k_node_id: str,
@@ -465,7 +471,8 @@ class FeedbackLoopOrchestrator:
             )
             report_lines.append(f"  Temperature: {checkpoint.temperature:.2f}")
             report_lines.append(f"  Score: {checkpoint.score:.2f}")
-            report_lines.append(f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type else 'N/A'}")
+            report_lines.append(f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failu
+    re_type else 'N/A'}")
 
             if hasattr(checkpoint.validation_result, 'failures'):
                 report_lines.append(f"  Failures: {len(checkpoint.validation_result.failures)}")

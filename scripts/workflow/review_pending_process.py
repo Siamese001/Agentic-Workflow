@@ -39,7 +39,7 @@ def has_real_code(path: Path) -> bool:
         code_lines = 0
         for line in lines:
             stripped = line.strip()
-            if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and not stripped.startswith("'''"):
+            if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and n...
                 code_lines += 1
         return code_lines > 20
     except (ValueError, TypeError, KeyError):

@@ -12,7 +12,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +206,7 @@ class EvidenceInjector:
         if evidence.description:
             desc_words = evidence.description.lower().split()
             if desc_words:
-                matches = sum(1 for word in desc_words[:20] if word in bullet)  # Check first 20 words
+                matches = sum(1 for word in desc_words[:20] if word in bullet)  # Check first 20 ...
                 desc_score = matches / min(len(desc_words), 20)
 
         # Weighted combination

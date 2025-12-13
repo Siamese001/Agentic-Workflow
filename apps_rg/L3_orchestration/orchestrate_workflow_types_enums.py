@@ -1,6 +1,5 @@
 """Enum types for orchestrate_workflow_types."""
 
-from enum import Enum
 
 class HopStatus(Enum):
     """Status of a workflow hop."""

@@ -85,6 +85,7 @@ class LateInteractionReranker:
             return False
 
     def rerank(
+        """Docstring."""
         self,
         query: str,
         documents: List[str],
@@ -170,6 +171,7 @@ class LateInteractionReranker:
             return documents[:top_k]
 
     def rerank_with_scores(
+        """Docstring."""
         self,
         query: str,
         documents: List[str],
@@ -248,16 +250,17 @@ class LateInteractionReranker:
                         "max_seq_length": getattr(self._model.config,
                             'max_position_embeddings',
                             'unknown'),
-                            
+
                         "num_labels": getattr(self._model.config, 'num_labels', 'unknown')
                     })
-            except Exception:
-                pass
+            except Exception as e:
+    logger.warning(f"Ignored error: {e}")
 
         return info
 
 # Convenience function for direct usage
 def rerank_documents(
+    """Docstring."""
     query: str,
     documents: List[str],
     model_name: str = "ms-marco-MiniLM-L-6-v2",
@@ -290,6 +293,7 @@ class PassThroughReranker:
         return documents[:top_k] if top_k else documents
 
     def rerank_with_scores(self,
+        """Docstring."""
         query: str,
         documents: List[str],
         top_k: Optional[int] = None) -> List[Tuple[str,

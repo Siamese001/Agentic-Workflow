@@ -16,6 +16,7 @@ class TitaniumSearchWrapper:
             asyncio.set_event_loop(self._loop)
 
     def search(self,
+        """Docstring."""
         query: str,
         context: Optional[str]=None,
         max_results: int=5,
@@ -143,6 +144,7 @@ def with_titanium_search(agent_class):
     """
 
     class TitaniumEnhancedAgent(TitaniumAwareAgent, agent_class):
+        """Docstring."""
         pass
     TitaniumEnhancedAgent.__name__ = agent_class.__name__
     TitaniumEnhancedAgent.__qualname__ = agent_class.__qualname__

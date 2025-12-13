@@ -1,14 +1,16 @@
 
 import asyncio
 
-# from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPR...
 
 async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:
+    """Docstring."""
     ctx = dict(ctx)
     ctx.setdefault("steps", []).append("noop")
     return ctx
 
 async def _set_value(ctx: Dict[str, object]) -> Dict[str, object]:
+    """Docstring."""
     ctx = dict(ctx)
     ctx["value"] = 42
     return ctx

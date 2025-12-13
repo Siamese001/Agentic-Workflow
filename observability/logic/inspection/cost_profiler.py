@@ -404,11 +404,13 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/cache_ops/data_access/get_info/understand_request/query_observability_state.py": {
+    "observability/cache_ops/data_access/get_info/understand_request/query_observability_state.py":
+    {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/cache_ops/data_access/get_info/understand_request/retrieve_observability_memory.py": {
+    "observability/cache_ops/data_access/get_info/understand_request/retrieve_observability_memory.p
+    y": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
@@ -424,7 +426,8 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/cache_ops/guardrails/check_rules/policy_check_safety/validate_memory_ethics.py": {
+    "observability/cache_ops/guardrails/check_rules/policy_check_safety/validate_memory_ethics.py":
+    {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
@@ -512,7 +515,8 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/logic/guardrails/manage_costs/state_update_ops/enforce_observability_limits.py": {
+    "observability/logic/guardrails/manage_costs/state_update_ops/enforce_observability_limits.py":
+    {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
@@ -616,15 +620,18 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/logic/validation/convert_content/embedding_compare_meaning/calculate_similarity.py": {
+    "observability/logic/validation/convert_content/embedding_compare_meaning/calculate_similarity.p
+    y": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/logic/validation/convert_content/embedding_compare_meaning/compute_embeddings.py": {
+    "observability/logic/validation/convert_content/embedding_compare_meaning/compute_embeddings.py"
+    : {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/logic/validation/convert_content/embedding_compare_meaning/normalize_vectors.py": {
+    "observability/logic/validation/convert_content/embedding_compare_meaning/normalize_vectors.py":
+    {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
@@ -644,15 +651,18 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/pipeline_ops/data_access/get_info/understand_request/coordinate_observability_queries.py": {
+    "observability/pipeline_ops/data_access/get_info/understand_request/coordinate_observability_que
+    ries.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/pipeline_ops/data_access/get_info/understand_request/manage_observability_context.py": {
+    "observability/pipeline_ops/data_access/get_info/understand_request/manage_observability_context
+    .py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/pipeline_ops/data_access/get_info/understand_request/orchestrate_observability_planning.py": {
+    "observability/pipeline_ops/data_access/get_info/understand_request/orchestrate_observability_pl
+    anning.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
@@ -660,15 +670,18 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/pipeline_ops/guardrails/check_rules/policy_check_safety/apply_orchestration_safety.py": {
+    "observability/pipeline_ops/guardrails/check_rules/policy_check_safety/apply_orchestration_safet
+    y.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/pipeline_ops/guardrails/check_rules/policy_check_safety/enforce_orchestration_policy.py": {
+    "observability/pipeline_ops/guardrails/check_rules/policy_check_safety/enforce_orchestration_pol
+    icy.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/pipeline_ops/guardrails/check_rules/policy_check_safety/validate_orchestration_ethics.py": {
+    "observability/pipeline_ops/guardrails/check_rules/policy_check_safety/validate_orchestration_et
+    hics.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
@@ -704,15 +717,18 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/runtime_ops/guardrails/check_rules/policy_check_safety/apply_execution_safety.py": {
+    "observability/runtime_ops/guardrails/check_rules/policy_check_safety/apply_execution_safety.py"
+    : {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/runtime_ops/guardrails/check_rules/policy_check_safety/enforce_execution_policy.py": {
+    "observability/runtime_ops/guardrails/check_rules/policy_check_safety/enforce_execution_policy.p
+    y": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/runtime_ops/guardrails/check_rules/policy_check_safety/validate_execution_ethics.py": {
+    "observability/runtime_ops/guardrails/check_rules/policy_check_safety/validate_execution_ethics.
+    py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
@@ -732,15 +748,18 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/runtime_ops/synthesis/use_tools/utility_prepare_information/format_execution_request.py": {
+    "observability/runtime_ops/synthesis/use_tools/utility_prepare_information/format_execution_requ
+    est.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/runtime_ops/synthesis/use_tools/utility_prepare_information/prepare_execution_payload.py": {
+    "observability/runtime_ops/synthesis/use_tools/utility_prepare_information/prepare_execution_pay
+    load.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/runtime_ops/synthesis/use_tools/utility_prepare_information/serialize_execution_params.py": {
+    "observability/runtime_ops/synthesis/use_tools/utility_prepare_information/serialize_execution_p
+    arams.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
@@ -748,15 +767,18 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/runtime_ops/validation/check_structure/policy_check_safety/check_execution_compliance.py": {
+    "observability/runtime_ops/validation/check_structure/policy_check_safety/check_execution_compli
+    ance.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/runtime_ops/validation/check_structure/policy_check_safety/enforce_execution_contracts.py": {
+    "observability/runtime_ops/validation/check_structure/policy_check_safety/enforce_execution_cont
+    racts.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/runtime_ops/validation/check_structure/policy_check_safety/validate_execution_schema.py": {
+    "observability/runtime_ops/validation/check_structure/policy_check_safety/validate_execution_sch
+    ema.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
@@ -768,27 +790,33 @@ Auto-hardened by WINDSURF v2
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/enforce_safety_budget.py": {
+    "observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_
+    ops/enforce_safety_budget.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/track_safety_cost.py": {
+    "observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_
+    ops/track_safety_cost.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_ops/update_safety_usage.py": {
+    "observability/security_controls/guardrails/check_rules/manage_observability_costs_state_update_
+    ops/update_safety_usage.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/security_controls/guardrails/check_rules/policy_check_safety/apply_safety_policy.py": {
+    "observability/security_controls/guardrails/check_rules/policy_check_safety/apply_safety_policy.
+    py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/security_controls/guardrails/check_rules/policy_check_safety/enforce_safety_filters.py": {
+    "observability/security_controls/guardrails/check_rules/policy_check_safety/enforce_safety_filte
+    rs.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     },
-    "observability/security_controls/guardrails/check_rules/policy_check_safety/validate_safety_ethics.py": {
+    "observability/security_controls/guardrails/check_rules/policy_check_safety/validate_safety_ethi
+    cs.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 0
     }

@@ -1,6 +1,5 @@
 
 
-from pydantic import BaseModel
 
 class SimScenario(BaseModel):
     """TODO: Add docstring."""
@@ -14,6 +13,7 @@ class SimScenario(BaseModel):
     """TODO: Add docstring."""
 
 class SimOutcome(BaseModel):
+    """TODO: Add docstring."""
     scenario_id: str
     average_scores: Dict[str, float]
     safety_incidents: int

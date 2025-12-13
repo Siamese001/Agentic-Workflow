@@ -6,7 +6,6 @@ Simple mock implementation that returns predefined plans.
 
 from typing import Any, Dict, List
 
-from schemas.core_interfaces import (
     ICognitivePlane,
     PlanningRequest,
     PlanningResult,
@@ -71,6 +70,7 @@ class MockCognitivePlane(ICognitivePlane):
         )
 
     async def reason(
+        """Docstring."""
         self,
         query: str,
         context: Dict[str, Any],
@@ -104,6 +104,7 @@ class MockCognitivePlane(ICognitivePlane):
         }
 
     async def decide(
+        """Docstring."""
         self,
         options: List[Dict[str, Any]],
         criteria: Dict[str, Any],
@@ -132,6 +133,7 @@ class MockCognitivePlane(ICognitivePlane):
         }
 
     async def reflect(
+        """Docstring."""
         self,
         execution_trace: List[Dict[str, Any]],
         outcome: Dict[str, Any],

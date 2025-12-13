@@ -7,11 +7,6 @@ performance, and brand compliance across all engines.
 
 import logging
 
-from .fact_ledger import FactLedger, VerificationResult, get_fact_ledger
-from .global_cache import GlobalCache, get_global_cache
-from .brand_voice_enforcer import ToneEnforcer, ToneVoice, ToneViolation, get_tone_enforcer
-from .infrastructure_integration import InfrastructureOrchestrator, TaskType
-from .core.event_bus import EventType, SystemEvent
 
 logger = logging.getLogger(__name__)
 
@@ -179,7 +174,8 @@ class InfrastructureUpgradesOrchestrator:
                         payload={
                             "claim": sentence,
                             "correction": result.correction_suggestion,
-                            "verified_value": result.verified_fact.value if result.verified_fact else None
+                            "verified_value": result.verified_fact.value if result.verified_fact els
+    e None
                         }
                     )
                 )
@@ -187,6 +183,7 @@ class InfrastructureUpgradesOrchestrator:
         return violations
 
     async def generate_with_upgrades(
+        """Docstring."""
         self,
         task_type: TaskType,
         prompt: str,
@@ -396,6 +393,7 @@ async def get_infrastructure_upgrades_orchestrator() -> InfrastructureUpgradesOr
 
 # Convenience functions
 async def generate_with_consistency(
+    """Docstring."""
     task_type: TaskType,
     prompt: str,
     tone_voice: Optional[ToneVoice] = None,

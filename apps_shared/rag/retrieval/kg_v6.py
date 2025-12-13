@@ -142,6 +142,7 @@ class TestTripletExtraction:
         """Test skill extraction from text."""
         executor = TripletExtractionExecutor()
         plan = create_extraction_plan(source_text='Experienced Python developer with expertise in AWS and Docker',
+
             source_id='doc_001',
             user_id='user_123')
         result = executor.execute(plan)
@@ -153,6 +154,7 @@ class TestTripletExtraction:
         """Test experience extraction from text."""
         executor = TripletExtractionExecutor()
         plan = create_extraction_plan(source_text='Worked at Google as Senior Engineer from 2020 to present',
+
             source_id='doc_002',
             user_id='user_123')
         result = executor.execute(plan)

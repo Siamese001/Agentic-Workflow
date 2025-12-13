@@ -3,7 +3,6 @@
 Tests the Resume Engine functionality with mocked LLM responses to avoid API calls.
 """
 
-from unittest.mock import Mock, patch
 
 # Import the classes we're testing
 from apps_rg.L2_execution.job_analyzer import JobAnalyzer
@@ -25,7 +24,8 @@ class TestJobAnalyzerMocked:
         mock_response.text = '''{
     "hard_skills": ["Python", "Django", "PostgreSQL", "AWS", "Docker"],
     "soft_skills": ["Communication", "Teamwork", "Problem-solving"],
-    "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optimize performance"],
+    "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optimize performa
+    nce"],
     "experience_level": "senior",
     "cultural_indicators": ["Innovation", "Teamwork", "Learning"],
     "north_star_metric": "Application performance and scalability"
@@ -34,7 +34,8 @@ class TestJobAnalyzerMocked:
         with patch('google.generativeai.GenerativeModel') as mock_model:
             mock_model.return_value.generate_content.return_value = mock_response
 
-            job_description = "Looking for a Senior Python Developer with Django and AWS experience."
+            job_description = "Looking for a Senior Python Developer with Django and AWS experience.
+    "
             result = self.analyzer.analyze(job_description)
 
             # Verify structure
@@ -91,11 +92,14 @@ class TestResumeGeneratorMocked:
         """Test successful resume tailoring."""
         # Mock the LLM responses for different prompts
         def mock_generate(prompt, generation_config=None):
+            """Docstring."""
             response = Mock()
             if "summary" in prompt.lower():
-                response.text = "Senior Python Developer with 5+ years of experience building scalable Django applications and optimizing AWS infrastructure for high-performance financial systems."
+                response.text = "Senior Python Developer with 5+ years of experience building scalab
+    le Django applications and optimizing AWS infrastructure for high-performance financial systems."
             elif "bullet" in prompt.lower():
-                response.text = "Designed and implemented scalable Django backend systems handling 10K+ requests per second"
+                response.text = "Designed and implemented scalable Django backend systems handling 1
+    0K+ requests per second"
             else:
                 response.text = "Developed Python applications using Django framework"
             return response
@@ -124,7 +128,8 @@ class TestResumeGeneratorMocked:
             analysis = {
                 "hard_skills": ["Python", "Django", "PostgreSQL", "AWS", "Docker"],
                 "soft_skills": ["Communication", "Teamwork", "Problem-solving"],
-                "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optimize performance"],
+                "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optim
+    ize performance"],
                 "experience_level": "senior",
                 "cultural_indicators": ["Innovation", "Teamwork", "Learning"],
                 "north_star_metric": "Application performance and scalability"
@@ -193,8 +198,10 @@ class TestExecuteResumeGenerationMocked:
         self.mock_generator = Mock()
 
         with patch('apps_rg.L2_execution.execute_resume_generation.JobAnalyzer') as mock_analyzer_class,
+
             \
-             patch('apps_rg.L2_execution.execute_resume_generation.ResumeGenerator') as mock_generator_class:
+             patch('apps_rg.L2_execution.execute_resume_generation.ResumeGenerator') as mock_generat
+    or_class:
 
             mock_analyzer_class.return_value = self.mock_analyzer
             mock_generator_class.return_value = self.mock_generator
@@ -331,6 +338,7 @@ class TestResumeEngineIntegration:
 
             # Mock resume generation
             def mock_generate_response(prompt, generation_config=None):
+                """Docstring."""
                 response = Mock()
                 if "summary" in prompt.lower():
                     response.text = mock_tailored["summary"]
@@ -340,6 +348,7 @@ class TestResumeEngineIntegration:
 
             # Set up side_effect to handle multiple calls
             def mock_generate_content(prompt, generation_config=None):
+                """Docstring."""
                 # Check if this is a job analysis call (contains "Analyze the following job")
                 if "Analyze the following job" in prompt:
                     return mock_job_response

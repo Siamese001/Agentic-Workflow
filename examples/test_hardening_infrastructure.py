@@ -181,6 +181,7 @@ async def demonstrate_hardening_mixin():
 
     # Create a simple hardened component
     class DemoComponent(HardeningMixin):
+        """Docstring."""
         def __init__(self, config: HardeningConfig):
             super().__init__(config)
             self.call_count = 0

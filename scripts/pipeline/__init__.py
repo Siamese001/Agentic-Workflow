@@ -2,7 +2,8 @@
 """
 08_scripts.pipeline_ops — Package initialization
 
-This module provides pipeline orchestration and data flow management for the Agentic-Workflow system.
+This module provides pipeline orchestration and data flow management for the Agentic-Workflow system
+    .
 It includes components for:
 - Pipeline definition and execution
 - Data flow coordination between stages

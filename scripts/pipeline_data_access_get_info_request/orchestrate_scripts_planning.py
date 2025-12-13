@@ -5,11 +5,9 @@ including dependency resolution, execution order, and resource allocation.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
 import logging
 from datetime import datetime
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -173,9 +171,11 @@ class ScriptsPlanningOrchestrator:
             "max_concurrent_tasks": self.config.max_concurrent_tasks,
             "total_tasks": len(tasks),
             "critical_tasks": len([t for t in tasks if t.priority == ScriptExecutionPriority.CRITICAL]),
-                
+
+
             "high_priority_tasks": len([t for t in tasks if t.priority == ScriptExecutionPriority.HIGH]),
-                
+
+
             "estimated_memory_mb": len(tasks) * 50,  # Rough estimate
             "estimated_cpu_cores": min(self.config.max_concurrent_tasks, 4)
         }
@@ -200,6 +200,7 @@ class ScriptsPlanningOrchestrator:
 
 # Factory function for easy instantiation
 def create_scripts_planning_orchestrator(
+    """Docstring."""
     max_concurrent_tasks: int = 5,
     enable_dependency_check: bool = True,
     **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestrator:
@@ -213,6 +214,7 @@ def create_scripts_planning_orchestrator(
 
 # Convenience function for direct usage
 def plan_script_execution(
+    """Docstring."""
     script_tasks: List[Dict[str, Any]],
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:

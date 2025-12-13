@@ -20,6 +20,7 @@ class ObservabilityPlanningOrchestrator:
             ObservabilityPlanningResult: Complete planning result with observability setup
         """
         self.logger.info(f"Starting observability planning for service: {observability_request.get('service_name',
+
             'unknown')}")
         try:
             self._validate_request(observability_request)
@@ -49,7 +50,8 @@ class ObservabilityPlanningOrchestrator:
                 'metric_count': len(metric_definitions),
                 'alert_count': len(alert_rules),
                 'orchestrator': 'ObservabilityPlanningOrchestrator'})
-            self.logger.info(f'Successfully planned observability for {len(metric_definitions)} metrics')
+            self.logger.info(f'Successfully planned observability for {len(metric_definitions)} metr
+    ics')
             return result
         except Exception as e:
             self.logger.error(f'Observability planning failed: {str(e)}')
@@ -104,7 +106,8 @@ class ObservabilityPlanningOrchestrator:
         """Plan logging configuration for the service."""
         service_name = request.get('service_name')
         log_level_str = request.get('log_level', 'info')
-        log_level_mapping = {'debug': LogLevel.DEBUG, 'info': LogLevel.INFO, 'warning': LogLevel.WARNING, 'error': LogLevel.ERROR, 'critical': LogLevel.CRITICAL}
+        log_level_mapping = {'debug': LogLevel.DEBUG, 'info': LogLevel.INFO, 'warning': LogLevel.WAR
+    NING, 'error': LogLevel.ERROR, 'critical': LogLevel.CRITICAL}
         log_level = log_level_mapping.get(log_level_str.lower(), LogLevel.INFO)
         return LogConfiguration(service_name=service_name,
             log_level=log_level,
@@ -168,7 +171,8 @@ class ObservabilityPlanningOrchestrator:
         traces: Optional[TraceConfiguration]) -> Dict[str,
         Any]:
         """Estimate resource requirements for observability."""
-        estimates = {'storage_gb_per_day': 0.0, 'network_mb_per_day': 0.0, 'cpu_cores': 0.1, 'memory_mb': 100}
+        estimates = {'storage_gb_per_day': 0.0, 'network_mb_per_day': 0.0, 'cpu_cores': 0.1, 'memory
+    _mb': 100}
         metric_points_per_day = len(metrics) * 86400
         estimates['storage_gb_per_day'] += metric_points_per_day * 16 / 1024 ** 3
         if logs:
@@ -192,6 +196,7 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
 
     @abstractmethod
     def process(self,
+        """Docstring."""
         input_data: Dict[str,
         object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process data with L5 safety constraints"""
@@ -202,7 +207,9 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
         """L5 Safety validation - fail-closed by default"""
         ...
 
-class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityPlanningOrchestratorProcessor):
+class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityPlanningOrchestratorP
+    """Docstring."""
+    rocessor):
     """
     L5 Implementation - L1 Cognitive Planning Layer
     Pure planning functionality with no side effects
@@ -214,6 +221,7 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def process(self,
+        """Docstring."""
         input_data: Dict[str,
         object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
@@ -277,7 +285,8 @@ class OrchestrateObservabilityPlanningOrchestratorInterface:
         """L5 Interface method - executes safely"""
         try:
             result = self._processor.process(input_data)
-            return {'success': result.success, 'data': result.data, 'errors': result.errors, 'safety_validated': result.safety_validated, 'timestamp': result.timestamp}
+            return {'success': result.success, 'data': result.data, 'errors': result.errors, 'safety
+    _validated': result.safety_validated, 'timestamp': result.timestamp}
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             raise SecurityError(f'Execution failed: {e}')
 
@@ -285,13 +294,17 @@ class OrchestrateObservabilityPlanningOrchestratorFactory:
     """L5 builder for creating processors with proper configuration"""
 
     @staticmethod
-    def create_processor(safety_level: str='strict') -> OrchestrateObservabilityPlanningOrchestratorInterface:
+    def create_processor(safety_level: str='strict') -> OrchestrateObservabilityPlanningOrchestrator
+        """Docstring."""
+    Interface:
         """Create configured engine"""
-        constraints = OrchestrateObservabilityPlanningOrchestratorConstraints(safety_level=safety_level)
+        constraints = OrchestrateObservabilityPlanningOrchestratorConstraints(safety_level=safety_le
+    vel)
         engine = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
         return OrchestrateObservabilityPlanningOrchestratorInterface(engine)
 
 def create_observability_planning_orchestrator(enable_metrics: bool=True,
+    """Docstring."""
     enable_logging: bool=True,
     enable_tracing: bool=True,
     **kwargs: object) -> ObservabilityPlanningOrchestrator:
@@ -303,6 +316,7 @@ def create_observability_planning_orchestrator(enable_metrics: bool=True,
     return ObservabilityPlanningOrchestrator(config)
 
 def plan_observability(service_name: str,
+    """Docstring."""
     service_type: str,
     config: Optional[Dict[str,
     Any]]=None) -> Dict[str,
@@ -326,7 +340,11 @@ def plan_observability(service_name: str,
     orchestrator_config = ObservabilityPlanningConfig(**config) if config else None
     orchestrator = ObservabilityPlanningOrchestrator(orchestrator_config)
     result = orchestrator.execute(request)
-    return {'success': result.success, 'metric_definitions': [{'name': m.name, 'metric_type': m.metric_type.value, 'description': m.description, 'labels': m.labels, 'sampling_rate': m.sampling_rate, 'aggregation': m.aggregation} for m in result.metric_definitions], 'log_configuration': {'service_name': result.log_configuration.service_name, 'log_level': result.log_configuration.log_level.value, 'format': result.log_configuration.format, 'include_timestamp': result.log_configuration.include_timestamp, 'include_trace_id': result.log_configuration.include_trace_id, 'filters': result.log_configuration.filters} if result.log_configuration else None, 'trace_configuration': {'service_name': result.trace_configuration.service_name, 'sampling_rate': result.trace_configuration.sampling_rate, 'include_payload': result.trace_configuration.include_payload, 'max_spans_per_trace': result.trace_configuration.max_spans_per_trace, 'export_batch_size': result.trace_configuration.export_batch_size} if result.trace_configuration else None, 'alert_rules': [{'name': a.name, 'condition': a.condition, 'severity': a.severity.value, 'threshold': a.threshold, 'duration': a.duration, 'notification_channels': a.notification_channels} for a in result.alert_rules], 'resource_estimates': result.resource_estimates, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
+    return {'success': result.success, 'metric_definitions': [{'name': m.name, 'metric_type': m.metr
+    ic_type.value, 'description': m.description, 'labels': m.labels, 'sampling_rate': m.sampling_rat
+        e, 'aggregation': m.aggregation} for m in result.metric_definitions], 'log_configuration': {
+            'service_name': result.log_configuration.service_name, 'log_level': result.log_configura
+                tion.log_level.value, 'format': result.log_configuration.format, 'include_timestamp': result.log_configuration.include_timestamp, 'include_trace_id': result.log_configuration.include_trace_id, 'filters': result.log_configuration.filters} if result.log_configuration else None, 'trace_configuration': {'service_name': result.trace_configuration.service_name, 'sampling_rate': result.trace_configuration.sampling_rate, 'include_payload': result.trace_configuration.include_payload, 'max_spans_per_trace': result.trace_configuration.max_spans_per_trace, 'export_batch_size': result.trace_configuration.export_batch_size} if result.trace_configuration else None, 'alert_rules': [{'name': a.name, 'condition': a.condition, 'severity': a.severity.value, 'threshold': a.threshold, 'duration': a.duration, 'notification_channels': a.notification_channels} for a in result.alert_rules], 'resource_estimates': result.resource_estimates, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
 
 def orchestrate_observability_planning(input_data: Dict[str, object]) -> Dict[str, object]:
     """

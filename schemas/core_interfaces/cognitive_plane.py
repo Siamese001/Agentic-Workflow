@@ -5,9 +5,6 @@ Defines the contract for all planning, reasoning, and decision-making.
 L1 Cognition: Pure thought, no side effects.
 """
 
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
 
 class CognitiveCapability(Enum):
     """Capabilities provided by the cognitive plane."""
@@ -87,6 +84,7 @@ class ICognitivePlane(ABC):
 
     @abstractmethod
     async def reason(
+        """Docstring."""
         self,
         query: str,
         context: Dict[str, Any],
@@ -106,6 +104,7 @@ class ICognitivePlane(ABC):
 
     @abstractmethod
     async def decide(
+        """Docstring."""
         self,
         options: List[Dict[str, Any]],
         criteria: Dict[str, Any],
@@ -123,6 +122,7 @@ class ICognitivePlane(ABC):
 
     @abstractmethod
     async def reflect(
+        """Docstring."""
         self,
         execution_trace: List[Dict[str, Any]],
         outcome: Dict[str, Any],

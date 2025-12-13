@@ -3,15 +3,10 @@
 
 import asyncio
 import tempfile
-from unittest.mock import AsyncMock
 
-from runtime.shared.state import get_state_manager, reset_state_manager
-from runtime.shared.routing.factory import reset_router
-from apps_rg.L3_orchestration.hardened_orchestrator import create_hardened_orchestrator
-from apps_rg.L3_orchestration.orchestrate_workflow import WorkflowSpec, HopSpec
-from runtime.shared.agent_executor import AgentResponse
 
 async def test_first_case():
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -46,12 +41,14 @@ logger = logging.getLogger(__name__)
         mock_responses = {
             "K.1": "Executive summary with strategic positioning and quantified achievements.",
             "K.4": "Senior Software Engineer | Cloud Architecture | Team Leadership",
-            "K.5": "• Led migration of 50+ services to cloud infrastructure, reducing costs by 30%\n• Developed microservices architecture serving 1M+ requests daily",
+            "K.5": "• Led migration of 50+ services to cloud infrastructure, reducing costs by 30%\n
+    • Developed microservices architecture serving 1M+ requests daily",
         }
 
         call_count = {"count": 0}
 
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
+            """Docstring."""
             call_count["count"] += 1
             hop_id = ["K.1", "K.4", "K.5"][call_count["count"] - 1]
             return AgentResponse(

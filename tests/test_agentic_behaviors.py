@@ -10,13 +10,10 @@ This module tests complex agentic behaviors including:
 
 import pytest
 import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock
 
 # Import the modules we're testing
 # Note: These imports may need adjustment based on actual module structure
 try:
-    from apps_rg.L3_orchestration import HardenedOrchestrator
-    from runtime.shared.state import WorkflowState
 except ImportError as e:
     # Fallback imports for testing
     pytest.skip(f"Skipping agentic behaviors tests: {e}", allow_module_level=True)
@@ -205,6 +202,7 @@ async def test_agentic_error_recovery_with_state_preservation():
         """TODO: Add docstring."""
 
     def mock_save_state(state):
+        """Docstring."""
         saved_states.append(state.copy())
 
     orchestrator.save_state = mock_save_state
@@ -260,6 +258,7 @@ async def test_adaptive_retry_with_exponential_backoff():
 
 
     async def mock_execute_with_delay(prompt):
+        """Docstring."""
         call_times.append(asyncio.get_event_loop().time())
         if len(call_times) < 3:
             raise Exception("Transient failure")
@@ -305,6 +304,7 @@ async def test_context_window_optimization():
 class HardenedOpenAIExecutor:
     """Mock OpenAI executor for testing."""
     async def execute(self, prompt: str, model: str) -> str:
+        """Docstring."""
         return f"Executed with {model}"
 
     def _truncate_prompt(self, prompt: str, max_tokens: int) -> str:
@@ -319,6 +319,7 @@ class ValidationError(Exception):
 class ContextOptimizer:
     """Mock context optimizer."""
     async def optimize(self, content: str, max_tokens: int) -> str:
+        """Docstring."""
         # Simple deduplication for testing
         lines = content.split('\n')
         seen = set()

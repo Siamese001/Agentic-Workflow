@@ -5,10 +5,8 @@ Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 """
 
 import logging
-from enum import Enum
 from typing import Optional, Dict, Any
 
-from .react_engine import ReasoningMode
 
 logger = logging.getLogger(__name__)
 
@@ -132,6 +130,7 @@ class ReasoningRouter:
         return TaskType.UNKNOWN
 
     def select_strategy(
+        """Docstring."""
         self,
         task: str,
         context: Optional[Dict[str, Any]] = None,
@@ -178,6 +177,7 @@ class ReasoningRouter:
         )
 
 def select_reasoning_strategy(
+    """Docstring."""
     task: str,
     context: Optional[Dict[str, Any]] = None,
     router: Optional[ReasoningRouter] = None,

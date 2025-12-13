@@ -16,7 +16,6 @@ from datetime import datetime
     NodeExecutionContext,
     create_node_executor
 )
-from .schemas import get_schema_registry
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +79,7 @@ class WorkflowOrchestrator:
         self.logger = logging.getLogger("WorkflowOrchestrator")
 
     async def execute_workflow(self,
+        """Docstring."""
         workflow_config: Dict[str,
         Any],
         input_data: Dict[str,
@@ -228,7 +228,8 @@ def create_sample_workflow_config() -> Dict[str, Any]:
                 }
             },
             "K.6_most_recent_experience": {
-                "system_prompt": "Generate 7 achievement bullets for the most recent work experience.",
+                "system_prompt": "Generate 7 achievement bullets for the most recent work experience
+    .",
                 "schema_enforcement": {
                     "enabled": True,
                     "pydantic_model": "K6MostRecentExperience",

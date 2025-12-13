@@ -7,8 +7,6 @@ metrics (Revenue, OpEx, Retention).
 
 import logging
 import re
-from enum import Enum
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -400,7 +398,8 @@ class MetricAugmenter:
                             {}).get("cost",
                             1.0)
                         cost_reduction *= multiplier
-                        value_statement = f"slashing monthly cloud spend by est. {cost_reduction:.0f}%"
+                        value_statement = f"slashing monthly cloud spend by est. {cost_reduction:.0f
+    }%"
                         confidence = 0.7
                     else:
                         value_statement = "optimizing operational efficiency"
@@ -486,6 +485,7 @@ class MetricAugmenter:
 
 # Factory function for easy instantiation
 def create_metric_augmenter(
+    """Docstring."""
     industry: str = "technology"
 ) -> MetricAugmenter:
     """Create a MetricAugmenter instance.
@@ -500,6 +500,7 @@ def create_metric_augmenter(
 
 # Convenience function for quick augmentation
 def augment_metrics(
+    """Docstring."""
     bullets: List[str],
     industry: str = "technology"
 ) -> List[str]:

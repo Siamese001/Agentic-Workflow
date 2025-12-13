@@ -9,13 +9,11 @@ import logging
 import time
 from typing import Dict, Any, Optional, List, Union, Callable
 
-from .resilience.circuit_breaker import (
     CircuitBreakerFactory,
     CircuitOpenError,
     CircuitBreakerConfig
 )
 
-from pydantic import BaseModel, Field, validator
 import asyncio
 
 logger = logging.getLogger(__name__)
@@ -136,6 +134,7 @@ class ReflectionEngine:
         logger.info(f"Initialized ReflectionEngine with model: {self.config.llm_model}")
 
     async def evaluate(
+        """Docstring."""
         self,
         content: Any,
         criteria: List[Union[str, ValidationCriterion]],
@@ -233,6 +232,7 @@ class ReflectionEngine:
         return True
 
     async def _fast_path_evaluate(
+        """Docstring."""
         self,
         content: Any,
         criteria: List[ValidationCriterion],
@@ -267,7 +267,8 @@ class ReflectionEngine:
         confidence = weighted_score / total_weight if total_weight > 0 else 0.0
         is_valid = confidence >= self.config.confidence_threshold
 
-        reasoning = "Fast path validation: " + "; ".join(results) if results else "All criteria passed"
+        reasoning = "Fast path validation: " + "; ".join(results) if results else "All criteria pass
+    ed"
 
         return CritiqueResult(
             is_valid=is_valid,
@@ -277,6 +278,7 @@ class ReflectionEngine:
         )
 
     async def _llm_path_evaluate(
+        """Docstring."""
         self,
         content: Any,
         criteria: List[ValidationCriterion],
@@ -464,6 +466,7 @@ def get_reflection_engine(**kwargs) -> ReflectionEngine:
 
 # Convenience functions
 async def evaluate_content(
+    """Docstring."""
     content: Any,
     criteria: List[Union[str, ValidationCriterion]],
     context: Optional[Dict[str, Any]] = None,

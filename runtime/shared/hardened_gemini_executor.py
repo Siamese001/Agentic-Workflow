@@ -10,17 +10,14 @@ Military-grade reliability for Google GenAI v1beta with:
 
 import logging
 import time
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
-from tenacity import (
     retry,
     retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
 )
 
-from .multi_provider_clients import Provider
 
 logger = logging.getLogger(__name__)
 
@@ -208,7 +205,6 @@ class HardenedGeminiExecutor:
 
     def _setup_client(self):
         """Setup Google GenAI client."""
-        from .multi_provider_clients import get_client
 
         try:
             self._client = get_client(Provider.GOOGLE)
@@ -226,7 +222,6 @@ class HardenedGeminiExecutor:
         """
         # Try to import types from google.genai, fallback to dict format
         try:
-            from google.genai import types
 
             return [
                 types.SafetySetting(
@@ -268,6 +263,7 @@ class HardenedGeminiExecutor:
             ]
 
     async def validate_context_budget(
+        """Docstring."""
         self,
         input_payload: List[Dict[str, Any]]
     ) -> int:
@@ -351,6 +347,7 @@ class HardenedGeminiExecutor:
         return payload
 
     async def _execute_with_retry(
+        """Docstring."""
         self,
         model: str,
         config: Dict[str, Any],
@@ -373,7 +370,6 @@ class HardenedGeminiExecutor:
 
         # Import errors based on available SDK
         try:
-            from google.genai import errors
             retry_exception = errors.ClientError
         except ImportError:
             # Fallback to generic exception
@@ -390,6 +386,7 @@ class HardenedGeminiExecutor:
             before_sleep=lambda _: logger.warning("Retrying due to rate limit or server error")
         )
         async def _execute():
+            """Docstring."""
             request_params = {
                 "model": model,
                 "input": input_payload,
@@ -420,6 +417,7 @@ class HardenedGeminiExecutor:
             raise
 
     async def log_interaction_telemetry(
+        """Docstring."""
         self,
         telemetry: InteractionTelemetry
     ):
@@ -445,6 +443,7 @@ class HardenedGeminiExecutor:
         logger.info(log_data)
 
     async def execute_k_node(
+        """Docstring."""
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -540,6 +539,7 @@ class HardenedGeminiExecutor:
             raise
 
     def execute_sync(
+        """Docstring."""
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -582,6 +582,7 @@ class HardenedGeminiExecutor:
 
 # Factory function for backward compatibility
 def create_hardened_gemini_executor(
+    """Docstring."""
     model: str = "gemini-3-pro-preview",
     temperature: float = 0.3,
     **kwargs
@@ -601,6 +602,7 @@ def create_hardened_gemini_executor(
 
 # Integration with existing AgentExecutor
 def create_agent_executor(
+    """Docstring."""
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
     temperature: float = 0.7,
@@ -627,7 +629,6 @@ def create_agent_executor(
         )
 
     # Use standard executor for other providers
-    from .agent_executor import AgentConfig
 
     config = AgentConfig(
         provider=provider,

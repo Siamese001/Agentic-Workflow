@@ -6,8 +6,6 @@ route (INMAIL vs CONNECTION_REQ) with premium routing validation.
 """
 
 import logging
-from dataclasses import dataclass
-from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +34,7 @@ class K1Output:
     entrance_gates_passed: List[str]
     metadata: Dict[str, Any]
 
-class K1_RoutingAgent(Agent):
+class K1RoutingAgent(Agent):
     """K.1 specialist agent for routing and archetype classification.
 
     This agent executes the mandatory 7 Prompt Shell Entrance Gates:

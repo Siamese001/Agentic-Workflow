@@ -5,12 +5,8 @@ Coordinates between Brain (cognitive) and Hands (action).
 L3 Orchestration: Manages the Think-Act-Observe cycle.
 """
 
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from .action_plane import IActionPlane, ActionRequest
 
 class ExecutionPhase(Enum):
     """Phases of execution in the orchestration cycle."""
@@ -127,6 +123,7 @@ class IOrchestrator(ABC):
 
     @abstractmethod
     async def execute_step(
+        """Docstring."""
         self,
         phase: ExecutionPhase,
         context: ExecutionContext,
@@ -156,6 +153,7 @@ class IOrchestrator(ABC):
 
     @abstractmethod
     async def act(
+        """Docstring."""
         self,
         actions: List[ActionRequest],
         context: ExecutionContext,
@@ -173,6 +171,7 @@ class IOrchestrator(ABC):
 
     @abstractmethod
     async def observe(
+        """Docstring."""
         self,
         action_results: List[Dict[str, Any]],
         context: ExecutionContext,

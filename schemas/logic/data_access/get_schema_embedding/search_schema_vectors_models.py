@@ -1,6 +1,5 @@
 """Dataclass models for search_schema_vectors."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 # from .search_schema_vectors_enums import *  # Star import removed
 

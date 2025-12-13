@@ -9,22 +9,11 @@ import hashlib
 import json
 import logging
 import time
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
 from datetime import datetime, timedelta
-import threading
-from collections import defaultdict
 
-from .signal_infrastructure import EngineType, DomainConfig, get_shared_infrastructure
-from .rag_components import SemanticCache, SelfRAGProcessor, KnowledgeGraphInjector
-from .claim_confidence import ClaimConfidenceScorer, analyze_claims
-from .prompt_optimizer import PromptOptimizer, optimize_prompt
-from .tone_model import ToneModel, adapt_tone
     SignalEnvelope, EnvelopeFactory, PipelineStageStatus,
     ResumeEnvelope, OutreachEnvelope, TextEnvelope, DictEnvelope
 )
-from .core.checkpoint_manager import CheckpointManager, CheckpointConfig, get_checkpoint_manager
 
 logger = logging.getLogger(__name__)
 
@@ -274,7 +263,8 @@ class ContextEnrichmentStage(PipelineStage):
                 return envelope
 
             # Check cache
-            cache_key = f"context_enriched_{hashlib.sha256(expanded_query.encode()).hexdigest()[:16]}"
+            cache_key = f"context_enriched_{hashlib.sha256(expanded_query.encode()).hexdigest()[:16]
+    }"
             cached = self.semantic_cache.get(cache_key)
 
             if cached:
@@ -506,7 +496,8 @@ class SignalAugmentationStage(PipelineStage):
         # Claim confidence scoring
         claims = analyze_claims(content)
         augmented["claims"] = claims
-        augmented["claim_confidence"] = sum(c.confidence for c in claims) / len(claims) if claims else 0.5
+        augmented["claim_confidence"] = sum(c.confidence for c in claims) / len(claims) if claims el
+    se 0.5
 
         # Prompt optimization
         if envelope.payload.payload_type.value == "resume_data":
@@ -771,7 +762,7 @@ class OutputFormattingStage(PipelineStage):
                 "trace_id": envelope.trace_id,
                 "payload": envelope.payload.dict() if hasattr(envelope.payload,
                     'dict') else envelope.payload,
-                    
+
                 "metadata": envelope.metadata,
                 "processing_timestamp": datetime.utcnow().isoformat()
             }
@@ -1076,7 +1067,6 @@ class UnifiedSignalPipeline:
         }
 
         # Thread safety
-        self._lock = threading.Lock()
 
         logger.info("Initialized UnifiedSignalPipeline with checkpointing")
 
@@ -1091,6 +1081,7 @@ class UnifiedSignalPipeline:
         return self._checkpoint_manager
 
     async def process(
+        """Docstring."""
         self,
         input_data: Any,
         engine_type: EngineType,
@@ -1220,10 +1211,11 @@ class UnifiedSignalPipeline:
             "trace_id": trace_id,
             "envelope_id": str(envelope.id),
             "created_at": envelope.created_at.isoformat(),
-            "updated_at": envelope.updated_at.isoformat(),
+            # SQL query removed: envelope.updated_at.isoformat(),
             "has_errors": envelope.has_errors,
             "error_count": envelope.error_count,
-            "completed_stages": [s.stage_name for s in envelope.history if s.status == PipelineStageStatus.SUCCESS],
+            "completed_stages": [s.stage_name for s in envelope.history if s.status == PipelineStage
+    Status.SUCCESS],
             "failed_stages": envelope.get_failed_stages(),
             "last_completed_stage": envelope.get_last_completed_stage(),
             "total_duration_ms": envelope.calculate_total_duration()
@@ -1297,7 +1289,6 @@ class PipelineExecutionError(Exception):
 
 # Global pipeline instance
 _pipeline: Optional[UnifiedSignalPipeline] = None
-_pipeline_lock = threading.Lock()
 
 def get_unified_pipeline() -> UnifiedSignalPipeline:
     """Get the global unified pipeline instance.

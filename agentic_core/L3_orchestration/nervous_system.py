@@ -8,7 +8,6 @@ import time
 import logging
 from typing import Any, Dict, List, Optional
 
-from schemas.core_interfaces import (
     IOrchestrator,
     ICognitivePlane,
     IActionPlane,
@@ -94,6 +93,7 @@ class NervousSystem(IOrchestrator):
             return self._handle_execution_error(context, execution_trace, start_time, e)
 
     async def _execute_phases(self,
+        """Docstring."""
         context: ExecutionContext,
         execution_trace: List[Dict],
         errors: List[str]) -> List[Dict]:
@@ -115,6 +115,7 @@ class NervousSystem(IOrchestrator):
         return execution_trace
 
     async def _execute_main_loop(self,
+        """Docstring."""
         context: ExecutionContext,
         execution_trace: List[Dict],
         errors: List[str]) -> None:
@@ -167,6 +168,7 @@ class NervousSystem(IOrchestrator):
                 break
 
     async def _execute_reflection(self,
+        """Docstring."""
         context: ExecutionContext,
         execution_trace: List[Dict]) -> List[Dict]:
         """Execute reflection phase."""
@@ -211,6 +213,7 @@ class NervousSystem(IOrchestrator):
         )
 
     async def execute_step(
+        """Docstring."""
         self,
         phase: ExecutionPhase,
         context: ExecutionContext,
@@ -271,6 +274,7 @@ class NervousSystem(IOrchestrator):
         }
 
     async def act(
+        """Docstring."""
         self,
         actions: List[ActionRequest],
         context: ExecutionContext,
@@ -289,6 +293,7 @@ class NervousSystem(IOrchestrator):
         return [r.to_dict() for r in results]
 
     async def observe(
+        """Docstring."""
         self,
         action_results: List[Dict[str, Any]],
         context: ExecutionContext,

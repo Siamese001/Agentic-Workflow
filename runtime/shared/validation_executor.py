@@ -13,11 +13,9 @@ Primary Responsibilities:
 
 import logging
 import re
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +91,7 @@ class ValidationGateExecutor:
         logger.info(f"Initialized ValidationGateExecutor with {len(self.validation_gates)} gates")
 
     def execute_gate(
+        """Docstring."""
         self,
         gate_id: str,
         content: str,
@@ -175,6 +174,7 @@ class ValidationGateExecutor:
         )
 
     def execute_all_gates(
+        """Docstring."""
         self,
         execution_point: str,
         content: str,
@@ -273,7 +273,8 @@ class ValidationGateExecutor:
 
         Handles scopes: total, per_bullet, per_segment, per_competency, per_paragraph
         """
-        constraint_key = f"{k_node_id}_{check}" if check in self.word_count_constraints else k_node_id
+        constraint_key = f"{k_node_id}_{check}" if check in self.word_count_constraints else k_node_
+    id
         constraint = self.word_count_constraints.get(constraint_key)
 
         if not constraint:
@@ -465,7 +466,8 @@ class ValidationGateExecutor:
                     rule_name="Similarity Check (Strict)",
                     severity="CRITICAL",
                     message=f"Similarity {similarity:.2%} >= threshold {threshold:.2%} (must be strictly less)",
-                        
+
+
                     actual=similarity,
                     expected=f"< {threshold}",
                     context={"target": target_name},

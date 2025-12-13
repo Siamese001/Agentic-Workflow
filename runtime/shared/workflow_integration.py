@@ -7,14 +7,8 @@ Phase 1C - SDK Integration Layer
 """
 
 import logging
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from .agent_executor import AgentExecutor, AgentMessage, create_agent_executor
-from .cache_clients import cache_get, cache_set, get_redis_client
-from .multi_provider_clients import Provider
-from .observability_clients import create_span, setup_tracing
-from .vector_store_clients import (
     VectorStoreProvider,
     create_chroma_collection,
     get_vector_store,
@@ -65,6 +59,7 @@ class WorkflowContext:
         return cache_set(self.cache_client, cache_key, value, ttl=ttl)
 
     def search_knowledge(
+        """Docstring."""
         self,
         query_embedding: List[float],
         collection_name: str = "default",
@@ -101,6 +96,7 @@ class HopExecutionContext:
     outputs: Dict[str, Any] = field(default_factory=dict)
 
     def execute_agent(
+        """Docstring."""
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -145,6 +141,7 @@ class HopExecutionContext:
         self.outputs[key] = value
 
 def create_workflow_context(
+    """Docstring."""
     workflow_id: str,
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
@@ -202,6 +199,7 @@ def create_workflow_context(
     )
 
 def execute_hop_with_agent(
+    """Docstring."""
     hop_id: str,
     workflow_context: WorkflowContext,
     hop_function: Any,
@@ -262,6 +260,7 @@ class WorkflowOrchestrator:
         self.hops: List[Dict[str, Any]] = []
 
     def register_hop(
+        """Docstring."""
         self,
         hop_id: str,
         hop_function: Any,
@@ -321,6 +320,7 @@ class WorkflowOrchestrator:
             return outputs
 
 def create_workflow_orchestrator(
+    """Docstring."""
     workflow_id: str,
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,

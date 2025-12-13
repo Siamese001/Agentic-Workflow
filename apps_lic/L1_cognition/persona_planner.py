@@ -8,7 +8,6 @@ This is a foundational L1 planning component that feeds into the hop-based
 K1-K7 execution pipeline for persona-driven message generation.
 """
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import logging
 
@@ -18,12 +17,12 @@ logger = logging.getLogger(__name__)
 class PersonaPlan:
     """Complete persona parameters for message generation."""
     archetype: str                       # "EXECUTIVE" | "SENIOR_TA" | "RECRUITER" | "OTHER"
-    tone_style: str                      # "concise_executive" | "technical_detailed" | "friendly_recruiter" | "neutral"
+    tone_style: str                      # "concise_executive" | "technical_detailed" | "friendly...
     detail_level: str                    # "high" | "medium" | "low"
     risk_tolerance: str                  # "low" | "medium" | "high"
     drift_threshold: float               # how much persona can drift across drafts [0, 1]
     communication_style: str             # "formal" | "professional" | "casual" | "technical"
-    decision_maker_type: str             # "analytical" | "intuitive" | "collaborative" | "directive"
+    decision_maker_type: str             # "analytical" | "intuitive" | "collaborative" | "direct...
     time_preference: str                 # "immediate" | "considered" | "deliberate"
     confidence_score: float = 0.0        # persona match confidence
     metadata: Dict[str, object] = field(default_factory=dict)
@@ -133,6 +132,7 @@ class PersonaPlanner:
         }
 
     def plan(
+        """Docstring."""
         self,
         *,
         archetype: str,
@@ -369,8 +369,10 @@ class PersonaPlanner:
         warnings = []
 
         # Check for contradictory combinations
-        if plan.detail_level == "high" and plan.risk_tolerance == "low" and plan.archetype == "EXECUTIVE":
-            warnings.append("High detail level with low risk tolerance may not suit executive audience")
+        if plan.detail_level == "high" and plan.risk_tolerance == "low" and plan.archetype == "EXECU
+    TIVE":
+            warnings.append("High detail level with low risk tolerance may not suit executive audien
+    ce")
 
         if plan.communication_style == "formal" and plan.tone_style == "friendly_recruiter":
             warnings.append("Formal communication conflicts with friendly recruiter tone")

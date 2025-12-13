@@ -10,6 +10,7 @@ def _get_prompt_template(key: str) -> str:
     return template
 
 def build_librarian_mission_extraction_prompt(job_description: str,
+    """Docstring."""
     company_name: str,
     job_title: str) -> str:
     """
@@ -22,6 +23,7 @@ def build_librarian_mission_extraction_prompt(job_description: str,
         job_title=job_title)
 
 def build_librarian_strategic_analysis_prompt(job_description: str,
+    """Docstring."""
     rag_mission: 'RAGMission',
     previous_context: Optional[str]=None) -> str:
     """
@@ -65,6 +67,7 @@ def _format_resume_index_summary(index: 'MasterResumeIndex') -> str:
     return '\n'.join(summary_parts) if summary_parts else 'Candidate profile context not available.'
 
 def build_phase1_prompt(job_description: str,
+    """Docstring."""
     mission: 'RAGMission',
     master_resume_index: 'MasterResumeIndex',
     company_name: Optional[str]=None,
@@ -80,10 +83,12 @@ def build_phase1_prompt(job_description: str,
     tech_search_line = ''
     if mission.key_technologies:
         safe_tech = mission.key_technologies[0].replace('"', '')
-        tech_search_line = f'3. Search for: `"{mission.target_company_name} press release {safe_tech}"`'
+        tech_search_line = f'3. Search for: `"{mission.target_company_name} press release {safe_tech
+    }"`'
     strategic_context = ''
     if hasattr(mission, 'strategic_priorities') and mission.strategic_priorities:
-        strategic_context = f"\n**Strategic Priorities to Address:**\n{chr(10).join(['- ' + p for p in mission.strategic_priorities])}\n"
+        strategic_context = f"\n**Strategic Priorities to Address:**\n{chr(10).join(['- ' + p for p
+    in mission.strategic_priorities])}\n"
     template = _get_prompt_template('rag_phase_1')
     return template.format(job_description=job_description[:1500],
         candidate_context=candidate_context,
@@ -95,6 +100,7 @@ def build_phase1_prompt(job_description: str,
         strategic_context=strategic_context)
 
 def build_phase2_prompt(job_description: str,
+    """Docstring."""
     mission: 'RAGMission',
     industry: str,
     librarian_context: Optional[str]=None) -> str:
@@ -118,6 +124,7 @@ def build_phase2_prompt(job_description: str,
         competitors_section=competitors_section)
 
 def build_phase3_prompt(job_description: str,
+    """Docstring."""
     mission: 'RAGMission',
     master_resume_index: 'MasterResumeIndex',
     peer_companies: List[str],
@@ -131,13 +138,15 @@ def build_phase3_prompt(job_description: str,
     template = _get_prompt_template('rag_phase_3')
     achievements_context = _format_resume_index_summary(master_resume_index)
     search_pattern_instruction = comp_config.search_pattern.format(role_title=mission.precise_role_title,
+
         peer_company='<peer_company>')
     librarian_section = ''
     if librarian_context:
         librarian_section = f'\n**Librarian Intelligence:**\n{librarian_context}\n'
     differentiators_section = ''
     if hasattr(mission, 'differentiators') and mission.differentiators:
-        differentiators_section = f"\n**Key Differentiators to Emphasize:**\n{chr(10).join(['- ' + d for d in mission.differentiators])}\n"
+        differentiators_section = f"\n**Key Differentiators to Emphasize:**\n{chr(10).join(['- ' + d
+    for d in mission.differentiators])}\n"
     return template.format(target_company_name=mission.target_company_name,
         precise_role_title=mission.precise_role_title,
         job_description=job_description[:1000],
@@ -159,10 +168,14 @@ def build_phase4_prompt(mission: 'RAGMission', librarian_context: Optional[str]=
     Enhanced with Librarian context for pain point identification.
     """
     template = _get_prompt_template('rag_phase_4')
-    queries = [f'"challenges of {mission.core_responsibilities[0]} for {mission.key_technologies[0]}"' if mission.core_responsibilities and mission.key_technologies else f'"challenges of {mission.precise_role_title}"', f'"case study {mission.precise_role_title}"', f'"{mission.target_company_name} customer success stories"']
+    queries = [f'"challenges of {mission.core_responsibilities[0]} for {mission.key_technologies[0]}
+    "' if mission.core_responsibilities and mission.key_technologies else f'"challenges of {mission.
+        precise_role_title}"', f'"case study {mission.precise_role_title}"', f'"{mission.target_comp
+            any_name} customer success stories"']
     pain_points_section = ''
     if hasattr(mission, 'identified_pain_points') and mission.identified_pain_points:
-        pain_points_section = f"\n**Identified Pain Points:**\n{chr(10).join(['- ' + p for p in mission.identified_pain_points])}\n"
+        pain_points_section = f"\n**Identified Pain Points:**\n{chr(10).join(['- ' + p for p in miss
+    ion.identified_pain_points])}\n"
     librarian_section = ''
     if librarian_context:
         librarian_section = f'\n**Librarian Intelligence:**\n{librarian_context}\n'
@@ -177,6 +190,7 @@ def build_phase4_prompt(mission: 'RAGMission', librarian_context: Optional[str]=
         librarian_section=librarian_section)
 
 def build_macro_tot_generation_prompt(base_prompt: str,
+    """Docstring."""
     draft_number: int,
     total_drafts: int,
     variation_instruction: str='') -> str:
@@ -191,13 +205,15 @@ def build_macro_tot_generation_prompt(base_prompt: str,
         elif draft_number == 2:
             variation_instruction = 'Focus on STRATEGIC VISION and leadership capabilities.'
         else:
-            variation_instruction = 'Focus on BALANCED APPROACH combining technical and strategic elements.'
+            variation_instruction = 'Focus on BALANCED APPROACH combining technical and strategic el
+    ements.'
     return template.format(base_prompt=base_prompt,
         draft_number=draft_number,
         total_drafts=total_drafts,
         variation_instruction=variation_instruction)
 
 def build_evaluator_scoring_prompt(drafts: List[str],
+    """Docstring."""
     criteria: Dict[str,
     object],
     section_name: str) -> str:
@@ -216,6 +232,7 @@ def build_evaluator_scoring_prompt(drafts: List[str],
         num_drafts=len(drafts))
 
 def build_macro_tot_synthesis_prompt(original_prompt: str,
+    """Docstring."""
     scored_drafts: List[Tuple[str,
     float]],
     top_k: int=2) -> str:
@@ -233,6 +250,7 @@ def build_macro_tot_synthesis_prompt(original_prompt: str,
         top_k=top_k)
 
 def build_narrative_prompt(company_name: str,
+    """Docstring."""
     title: str,
     target_sc: int,
     min_wc: int,
@@ -255,6 +273,7 @@ def build_narrative_prompt(company_name: str,
         k0_themes_str=k0_themes_str)
 
 def build_verbatim_bullet_selection_prompt(master_bullets_text_list: List[str],
+    """Docstring."""
     verbatim_count: int,
     thematic_analysis: 'ThematicAnalysis') -> str:
     """Builds the prompt for selecting verbatim bullets."""
@@ -272,6 +291,7 @@ def build_verbatim_bullet_selection_prompt(master_bullets_text_list: List[str],
         '.join(keywords_for_prompt) or 'N/A')
 
 def build_customized_bullet_prompt(source_bullets_text: List[str],
+    """Docstring."""
     thematic_analysis: 'ThematicAnalysis') -> str:
     """Builds the prompt for customizing bullets."""
     template = _get_prompt_template('artist_customized_bullet')
@@ -294,6 +314,7 @@ def build_customized_bullet_prompt(source_bullets_text: List[str],
         bullet_count=len(source_bullets_text))
 
 def build_synthetic_bullet_prompt(count: int,
+    """Docstring."""
     company_name: str,
     job_description: str,
     thematic_analysis: 'ThematicAnalysis',
@@ -323,6 +344,7 @@ def build_synthetic_bullet_prompt(count: int,
         count=count)
 
 def build_bullet_reorder_prompt(current_bullets_text_input: str,
+    """Docstring."""
     company_name: str,
     bullet_count: int,
     thematic_analysis: 'ThematicAnalysis') -> str:
@@ -344,6 +366,7 @@ def build_bullet_reorder_prompt(current_bullets_text_input: str,
         bullet_count=bullet_count)
 
 def build_bullet_rewrite_prompt(original_bullet: str,
+    """Docstring."""
     target_word_count_range: Tuple[int,
     int],
     **kwargs: Dict[str,
@@ -354,6 +377,7 @@ def build_bullet_rewrite_prompt(original_bullet: str,
     return template.format(original_bullet=original_bullet, min_wc=min_wc, max_wc=max_wc)
 
 def build_overview_generation_prompt(bullet_summary_input: str,
+    """Docstring."""
     word_count_range: Tuple[int,
     int],
     thematic_analysis: 'ThematicAnalysis',
@@ -388,13 +412,15 @@ def build_overview_generation_prompt(bullet_summary_input: str,
         theme_instructions.append('- Strategic planning and partnership elements')
     if include_technical_theme:
         theme_instructions.append('- Technical depth and platform expertise')
-    theme_prompt_section = '**KEY THEMES TO INCORPORATE (if relevant and natural):**\n' + '\n'.join(theme_instructions) if theme_instructions else ''
+    theme_prompt_section = '**KEY THEMES TO INCORPORATE (if relevant and natural):**\n' + '\n'.join(
+    theme_instructions) if theme_instructions else ''
     return template.format(bullet_summary_input=bullet_summary_input,
         theme_prompt_section=theme_prompt_section,
         min_wc=min_wc,
         max_wc=max_wc)
 
 def build_generation_prompt_with_reinforced_constraints(base_prompt: str,
+    """Docstring."""
     constraints: Dict[str,
     object],
     attempt_number: int) -> str:
@@ -405,21 +431,36 @@ def build_generation_prompt_with_reinforced_constraints(base_prompt: str,
     min_wc = constraints.get('min_wc', constraints.get('min_word_count', 0))
     max_wc = constraints.get('max_wc', constraints.get('max_word_count', 999))
     if attempt_number == 1:
-        constraint_language = f'\n\n**CONSTRAINTS (Strict Compliance Required):**\n- Word count: MUST be {min_wc}-{max_wc} words (verify before output)\n- Format: MUST NOT start with "At [Company]" or "As [Title]"\n- Output: MUST be ONLY the requested content (no fences,
+        constraint_language = f'\n\n**CONSTRAINTS (Strict Compliance Required):**\n- Word count: MUS
+            T be {min_wc}-{max_wc} words (verify before output)\n- Format: MUST NOT start with "At [
+                Company]" or "As [Title]"\n- Output: MUST be ONLY the requested content (no fences,
+
             no preamble)\n'
     elif attempt_number == 2:
-        constraint_language = f'\n\n**CRITICAL CONSTRAINTS (Validation Will Reject Non-Compliance):**\n❌ AUTOMATIC REJECTION if word count outside {min_wc}-{max_wc}\n❌ AUTOMATIC REJECTION if starts with "At",
+        constraint_language = f'\n\n**CRITICAL CONSTRAINTS (Validation Will Reject Non-Compliance):*
+            *\n❌ AUTOMATIC REJECTION if word count outside {min_wc}-{max_wc}\n❌ AUTOMATIC REJECTION if starts with "At",
+
             "As",
-            "In my role"\n❌ AUTOMATIC REJECTION if contains markdown fences (```)\n\n✓ Count words before submitting\n✓ Review output format before submitting\n'
+            "In my role"\n❌ AUTOMATIC REJECTION if contains markdown fences (```)\n\n✓ Count words b
+    efore submitting\n✓ Review output format before submitting\n'
     elif attempt_number == 3:
-        constraint_language = f'\n\n**VALIDATION CHECKLIST (Execute Before Output):**\n[ ] Count words using MS Word rules: [actual_count]\n[ ] Verify: {min_wc} ≤ [actual_count] ≤ {max_wc}\n[ ] Check first 3 words: NOT ["At",
+        constraint_language = f'\n\n**VALIDATION CHECKLIST (Execute Before Output):**\n[ ] Count wor
+            ds using MS Word rules: [actual_count]\n[ ] Verify: {min_wc} ≤ [actual_count] ≤ {max_wc}
+                \n[ ] Check first 3 words: NOT ["At",
+
             "As",
             "In",
             "The",
-            "This"]\n[ ] Check last characters: NOT "```"\n[ ] If ANY box unchecked: REGENERATE\n\nOUTPUT ONLY AFTER ALL BOXES CHECKED.\n'
+            "This"]\n[ ] Check last characters: NOT "```"\n[ ] If ANY box unchecked: REGENERATE\n\nO
+    UTPUT ONLY AFTER ALL BOXES CHECKED.\n'
     else:
-        constraint_language = f'\n\n**ALGORITHMIC CONSTRAINT ENFORCEMENT:**\n\nSTEP 1: Generate content naturally\nSTEP 2: Count words using: text.split()\nSTEP 3: IF count < {min_wc}: ADD content to shortest sentence\nSTEP 4: IF count > {max_wc}: REMOVE least-essential phrase\nSTEP 5: IF starts with forbidden pattern: DELETE first 2 words,
-            RECAPITALIZE\nSTEP 6: VERIFY all constraints met\nSTEP 7: OUTPUT\n\nDO NOT output until STEP 7.\n'
+        constraint_language = f'\n\n**ALGORITHMIC CONSTRAINT ENFORCEMENT:**\n\nSTEP 1: Generate cont
+            ent naturally\nSTEP 2: Count words using: text.split()\nSTEP 3: IF count < {min_wc}: ADD
+                content to shortest sentence\nSTEP 4: IF count > {max_wc}: REMOVE least-essential ph
+                    rase\nSTEP 5: IF starts with forbidden pattern: DELETE first 2 words,
+
+            RECAPITALIZE\nSTEP 6: VERIFY all constraints met\nSTEP 7: OUTPUT\n\nDO NOT output until
+    STEP 7.\n'
     return base_prompt + constraint_language
 
 def build_sc_synthesis_prompt(original_prompt: str, candidate_responses: List[str]) -> str:
@@ -431,6 +472,7 @@ def build_sc_synthesis_prompt(original_prompt: str, candidate_responses: List[st
     return template.format(original_prompt=original_prompt, candidate_responses=formatted_responses)
 
 def build_validator_factual_check_prompt(section_name: str,
+    """Docstring."""
     section_content: str,
     thematic_analysis: 'ThematicAnalysis',
     job_description: str) -> str:

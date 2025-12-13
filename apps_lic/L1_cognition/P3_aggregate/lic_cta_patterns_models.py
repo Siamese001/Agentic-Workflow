@@ -1,6 +1,5 @@
 """Dataclass models for lic_cta_patterns."""
 
-from dataclasses import dataclass, field
 # from .lic_cta_patterns_enums import *  # Star import removed
 
 @dataclass

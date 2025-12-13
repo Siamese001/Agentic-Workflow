@@ -1,6 +1,5 @@
 """Enum types for orchestrate_config_planning."""
 
-from enum import Enum
 
 class ConfigEnvironment(Enum):
     """Deployment environments for configuration."""

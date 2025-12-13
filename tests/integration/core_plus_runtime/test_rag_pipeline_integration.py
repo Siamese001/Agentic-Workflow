@@ -3,13 +3,9 @@ Integration tests for RAG Pipeline
 Tests RAG retrieval, augmentation, and generation behaviors
 """
 import pytest
-from unittest.mock import Mock
 
 # Import actual RAG components when available
 try:
-    from agentic_core.l4_memory.providers.rag_provider import RAGProvider
-    from agentic_core.l4_memory.providers.provider_registry import ProviderRegistry
-    from apps_rg.L2_execution.rg_company_research_executor import CompanyResearchExecutor
 except ImportError:
     RAGProvider = ProviderRegistry = CompanyResearchExecutor = Mock
 
@@ -318,4 +314,4 @@ class TestRAGPipelineIntegration:
             assert len(result1["results"]) == len(result2["results"])
             for i, (doc1, doc2) in enumerate(zip(result1["results"], result2["results"])):
                 assert doc1["doc_id"] == doc2["doc_id"]
-                assert abs(doc1["score"] - doc2["score"]) < 0.01  # Allow small floating point differences
+                assert abs(doc1["score"] - doc2["score"]) < 0.01  # Allow small floating point di...

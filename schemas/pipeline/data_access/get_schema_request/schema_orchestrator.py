@@ -8,8 +8,6 @@ from typing import Dict, List, Optional, Any
 import logging
 from datetime import datetime
 
-from .schema_types import SchemaDefinition, SchemaType
-from .schema_planning_models import (
     SchemaPlanningConfig,
     SchemaPlanningResult,
     TransformationPlan,
@@ -140,7 +138,8 @@ class SchemaPlanningOrchestrator:
                 for schema2 in schemas[i+1:]:
                     if schema1.schema_type != schema2.schema_type:
                         report["warnings"].append(
-                            f"Schema type mismatch: {schema1.name} ({schema1.schema_type}) vs {schema2.name} ({schema2.schema_type})"
+                            f"Schema type mismatch: {schema1.name} ({schema1.schema_type}) vs {schem
+    a2.name} ({schema2.schema_type})"
                         )
 
         return report

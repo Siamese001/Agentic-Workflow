@@ -3,7 +3,6 @@ safety.py - shared Module
 """
 import logging
 from typing import Dict, Optional
-from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 

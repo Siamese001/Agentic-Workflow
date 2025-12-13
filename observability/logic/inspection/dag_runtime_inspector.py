@@ -7,7 +7,6 @@ Generated: 2025-12-07T12:07:59.841073
 
 import logging
 from typing import Dict, List, Optional
-from dataclasses import dataclass, field
 from datetime import datetime
 
 logger = logging.getLogger(__name__)

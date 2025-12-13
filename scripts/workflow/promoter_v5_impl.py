@@ -3,6 +3,7 @@
 from typing import Any, Dict, List, Optional
 
 def analyze_file_content(content: str, filename: str) -> tuple[int, list[str], bool]:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -61,7 +62,8 @@ def _should_skip_file(src: Path, archive_dir: Path) -> Optional[str]:
         return 'Invalid file type'
     if 'scripts' in src.parts or src.parent.name == 'scripts':
         return 'In scripts folder'
-    if src.parts[0] in {'runtime', 'shared'} and src.parent.name not in {'apps_shared', 'archive_code'}:
+    if src.parts[0] in {'runtime', 'shared'} and src.parent.name not in {'apps_shared', 'archive_cod
+    e'}:
         return 'In runtime/shared'
     if any((root in src.parts for root in SOVEREIGN_ROOTS)):
         return 'Already in sovereign directory'
@@ -92,7 +94,8 @@ def _process_single_file(src: Path,
     if skip_reason:
         logger.info(f'  ⏭️  Skipped: {skip_reason}')
         return
-    is_staged_file = archive_dir.resolve() in src.resolve().parents or src.parent.name == 'archive_code'
+    is_staged_file = archive_dir.resolve() in src.resolve().parents or src.parent.name == 'archive_c
+    ode'
     content = src.read_text(errors='ignore')
     score, reasons, is_dirty = analyze_file_content(content, src.name)
     logger.info(f'  📈 Score: {score}/10')

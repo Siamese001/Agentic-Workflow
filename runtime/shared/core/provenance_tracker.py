@@ -8,10 +8,8 @@ import asyncio
 import json
 import logging
 import time
-from difflib import SequenceMatcher
 from pathlib import Path
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -88,6 +86,7 @@ class ProvenanceTracker:
         logger.info(f"Initialized ProvenanceTracker at {storage_path}")
 
     async def capture_context(
+        """Docstring."""
         self,
         trace_id: str,
         sources: List[Tuple[str, str, float]]  # (source_id, snippet, relevance)
@@ -116,6 +115,7 @@ class ProvenanceTracker:
             logger.debug(f"Captured {len(citations)} sources for trace {trace_id}")
 
     async def record_generation(
+        """Docstring."""
         self,
         trace_id: str,
         artifact_id: str,
@@ -310,6 +310,7 @@ class ProvenanceTracker:
             return f.readlines()
 
     async def search_lineage(
+        """Docstring."""
         self,
         trace_id: Optional[str] = None,
         model_version: Optional[str] = None,
@@ -486,6 +487,7 @@ class ProvenanceContext:
         pass
 
     async def record_generation(
+        """Docstring."""
         self,
         artifact_id: str,
         output: str,
@@ -513,6 +515,7 @@ class ProvenanceContext:
 
 # Helper functions
 async def track_provenance(
+    """Docstring."""
     trace_id: str,
     sources: List[Tuple[str, str, float]],
     artifact_id: str,
@@ -546,6 +549,7 @@ async def track_provenance(
 
 # Decorator for automatic provenance tracking
 def provenance_tracked(
+    """Docstring."""
     extract_sources: Optional[Callable] = None
 ):
     """Decorator to automatically track provenance.
@@ -561,7 +565,9 @@ def provenance_tracked(
             """TODO: Add docstring."""
 
     def decorator(func):
+        """Docstring."""
         async def async_wrapper(*args, **kwargs):
+            """Docstring."""
             # Extract trace_id
             trace_id = None
             if args and hasattr(args[0], 'trace_id'):

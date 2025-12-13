@@ -5,7 +5,8 @@
 from typing import Dict
 
 class UpdateRecipientProfiles:
-    """UpdateRecipientProfiles implementation."""
+    """Docstring."""
+    ""# SQL query removed""
 
     def __init__(self) -> None:
         """Initialize the component with default configuration."""

@@ -9,8 +9,6 @@ Legacy K-Node: K.1
 
 import logging
 import re
-from dataclasses import dataclass
-from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -198,7 +196,10 @@ Sentence 3: Core expertise and technical depth
 Sentence 4-5: Value proposition and impact
 
 EXAMPLES (3rd-Person Compliant):
-✅ "Seasoned engineering leader with 10+ years building scalable ML platforms. Proven track record architecting cloud-native systems serving millions of users. Deep expertise in AI/ML, distributed systems, and team leadership. Drives innovation through technical excellence and strategic vision. Passionate about building high-performing teams that deliver measurable business impact."
+✅ "Seasoned engineering leader with 10+ years building scalable ML platforms. Proven track record ar
+    chitecting cloud-native systems serving millions of users. Deep expertise in AI/ML, distributed
+        systems, and team leadership. Drives innovation through technical excellence and strategic v
+            ision. Passionate about building high-performing teams that deliver measurable business impact."
 
 EXAMPLES (1st-Person VIOLATIONS - DO NOT USE):
 ❌ "I am a seasoned engineering leader..." (1st-person)

@@ -9,7 +9,6 @@ Phase 1C - SDK Integration Layer
 import json
 import logging
 import os
-from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -30,6 +29,7 @@ class RedisConfig:
 _REDIS_CLIENT: Optional[Any] = None
 
 def get_redis_client(
+    """Docstring."""
     config: Optional[RedisConfig] = None,
     force_new: bool = False,
 ) -> Any:
@@ -101,6 +101,7 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
     return client
 
 def cache_set(
+    """Docstring."""
     client: Any,
     key: str,
     value: Any,
@@ -132,6 +133,7 @@ def cache_set(
         return False
 
 def cache_get(
+    """Docstring."""
     client: Any,
     key: str,
     deserialize: bool = True,
@@ -196,6 +198,7 @@ def cache_exists(client: Any, key: str) -> bool:
         return False
 
 def cache_get_many(
+    """Docstring."""
     client: Any,
     keys: list[str],
     deserialize: bool = True,
@@ -232,6 +235,7 @@ def cache_get_many(
         return {}
 
 def cache_set_many(
+    """Docstring."""
     client: Any,
     mapping: Dict[str, Any],
     ttl: Optional[int] = None,

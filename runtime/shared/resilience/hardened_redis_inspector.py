@@ -10,7 +10,6 @@ Implements a secure Redis inspection tool with:
 
 import logging
 from typing import Any, Dict, List, Optional, Union
-from pydantic import BaseModel, Field, validator
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -114,6 +113,7 @@ class HardenedRedisInspector:
             )
 
     async def execute_inspection(
+        """Docstring."""
         self,
         command: Union[str, RedisCommand],
         key: str,
@@ -142,7 +142,8 @@ class HardenedRedisInspector:
                     command=command,
                     key=key,
                     error=f"Command '{command}' is not whitelisted",
-                    suggestion="Use only whitelisted commands: GET, HGETALL, LLEN, LRANGE, EXISTS, SCARD, SMEMBERS, ZCARD, TYPE"
+                    suggestion="Use only whitelisted commands: GET, HGETALL, LLEN, LRANGE, EXISTS, S
+    CARD, SMEMBERS, ZCARD, TYPE"
                 )
 
         self.stats["total_inspections"] += 1
@@ -201,6 +202,7 @@ class HardenedRedisInspector:
             )
 
     async def _execute_redis_command(
+        """Docstring."""
         self,
         redis_conn,
         command: RedisCommand,
@@ -421,7 +423,7 @@ def create_redis_inspector_config(cache_client) -> 'ToolConfig':
                     SMEMBERS,
                     ZCARD,
                     TYPE)",
-                    
+
                 "required": True
             },
             "key": {

@@ -1,6 +1,5 @@
 """Integration tests for LinkedIn outreach + data layer integration."""
 from typing import Dict, List, Optional
-from dataclasses import dataclass
 
 @dataclass
 class ContactData:
@@ -17,6 +16,7 @@ class ContactData:
     """TODO: Add docstring."""
 
 class CompanyData:
+    """Docstring."""
     id: str
     name: str
     industry: str

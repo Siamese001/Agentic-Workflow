@@ -6,7 +6,6 @@ Integration tests for golden state evaluation.
 
 import pytest
 
-from apps_shared.core.golden_state_evaluator import (
     GoldenStateEvaluator,
     GoldenCase,
     GoldenOutput,
@@ -127,8 +126,6 @@ async def test_evaluate_all(evaluator):
 
 def test_generate_summary(evaluator, sample_case, sample_output):
     """Test generating evaluation summary."""
-    from apps_shared.core.golden_state_evaluator import EvaluationReport
-    from observability.golden_state import JudgeEvaluationResult
 
     # Create mock reports
     reports = {

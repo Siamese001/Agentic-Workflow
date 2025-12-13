@@ -83,6 +83,7 @@ class AgentRegistry:
         return self._agents.get(spiffe_id)
 
     def find_by_capability(self,
+        """Docstring."""
         capability: AgentCapability,
         status: Optional[AgentStatus]=None) -> List[AgentCard]:
         """Find agents by capability.

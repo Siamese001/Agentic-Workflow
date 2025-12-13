@@ -10,8 +10,6 @@ import re
 import time
 import base64
 import unicodedata
-from dataclasses import dataclass
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -151,12 +149,13 @@ class InputGuardrail:
         self.pii_patterns = {
             'email': re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'),
             'phone': re.compile(r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b'),
-                
+
+
             'ssn': re.compile(r'\b\d{3}-\d{2}-\d{4}\b'),
             'credit_card': re.compile(r'\b(?:\d{4}[-\s]?){3}\d{4}\b'),
             'ip_address': re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}\b'),
-            'url': re.compile(r'https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?'),
-                
+            'url': re.compile(r'https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*...
+
         }
 
         # Malicious intent keywords
@@ -216,8 +215,10 @@ class InputGuardrail:
                 unicode_result = self._check_unicode_attacks(input_text)
                 if unicode_result[0]:  # Found suspicious Unicode
                     if result.action == GuardAction.ALLOW:
-                        result.action = GuardAction.WARN if not self.strict_mode else GuardAction.BLOCK
-                        result.reason = f"Suspicious Unicode characters detected: {unicode_result[1]}"
+                        result.action = GuardAction.WARN if not self.strict_mode else GuardAction.BL
+    OCK
+                        result.reason = f"Suspicious Unicode characters detected: {unicode_result[1]
+    }"
                     result.confidence = max(result.confidence, 0.7)
 
             # Check for encoded payloads
@@ -452,8 +453,8 @@ class InputGuardrail:
                 decoded = bytes.fromhex(match).decode('utf-8', errors='ignore')
                 if any(keyword in decoded.lower() for keyword in self.malicious_keywords):
                     return (True, f"Hex encoded payload with malicious content")
-            except Exception:
-                pass
+            except Exception as e:
+    logger.warning(f"Ignored error: {e}")
 
         return (False, "")
 
@@ -468,7 +469,8 @@ class InputGuardrail:
             "pii_types_count": len(self.pii_patterns),
             "malicious_keywords_count": len(self.malicious_keywords),
             "unicode_homoglyphs_count": sum(len(homoglyphs) for homoglyphs in self.unicode_homoglyphs.values()),
-                
+
+
             "strict_mode": self.strict_mode,
             "rate_limit_per_minute": self.rate_limit_per_minute,
             "active_rate_limits": len(self._rate_limit_store),
