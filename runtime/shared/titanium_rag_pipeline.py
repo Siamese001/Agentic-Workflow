@@ -42,6 +42,21 @@ from .input_guardrail import (
     GuardResult,
     get_input_guardrail,
 )
+from .retrieval_grader import (
+    RetrievalGrader,
+    RetrievalGrade,
+    GradeStatus,
+    WebSearchFallback,
+    get_retrieval_grader,
+    get_web_search_fallback,
+)
+from .graphrag_fusion import (
+    GraphRAGFusion,
+    FusionResult,
+    QueryType,
+    get_graphrag_fusion,
+    graphrag_query,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -71,12 +86,21 @@ class TitaniumRAGPipeline:
         # Security layer
         input_guardrail: Optional[InputGuardrail] = None,
         
+        # CRAG layer
+        retrieval_grader: Optional[RetrievalGrader] = None,
+        web_search_fallback: Optional[WebSearchFallback] = None,
+        
+        # GraphRAG layer
+        graphrag_fusion: Optional[GraphRAGFusion] = None,
+        
         # Configuration
         enable_compression: bool = True,
         enable_decomposition: bool = True,
         enable_reranking: bool = True,
         enable_caching: bool = True,
         enable_security: bool = True,
+        enable_crag: bool = True,
+        enable_graphrag: bool = True,
         max_retrieved_docs: int = 50,
         top_k_final: int = 5
     ):
@@ -90,11 +114,16 @@ class TitaniumRAGPipeline:
             reranker: Late interaction reranker (Phase 3)
             cache: Contrastive semantic cache (Phase 3)
             input_guardrail: Security layer for input validation
+            retrieval_grader: CRAG grader for document relevance
+            web_search_fallback: Web search fallback for CRAG
+            graphrag_fusion: GraphRAG fusion for relationship queries
             enable_compression: Whether to enable compression
             enable_decomposition: Whether to enable query decomposition
             enable_reranking: Whether to enable reranking
             enable_caching: Whether to enable caching
             enable_security: Whether to enable security scanning
+            enable_crag: Whether to enable Corrective RAG
+            enable_graphrag: Whether to enable GraphRAG fusion
             max_retrieved_docs: Maximum documents to retrieve initially
             top_k_final: Number of top documents to return
         """
@@ -109,6 +138,15 @@ class TitaniumRAGPipeline:
         # Initialize security layer
         self.input_guardrail = input_guardrail or (get_input_guardrail() if enable_security else None)
         self.enable_security = enable_security and self.input_guardrail is not None
+        
+        # Initialize CRAG layer
+        self.retrieval_grader = retrieval_grader or (get_retrieval_grader() if enable_crag else None)
+        self.web_search_fallback = web_search_fallback or (get_web_search_fallback() if enable_crag else None)
+        self.enable_crag = enable_crag and self.retrieval_grader is not None
+        
+        # Initialize GraphRAG layer
+        self.graphrag_fusion = graphrag_fusion or (get_graphrag_fusion() if enable_graphrag else None)
+        self.enable_graphrag = enable_graphrag and self.graphrag_fusion is not None
         
         # Configuration
         self.enable_compression = enable_compression
@@ -128,11 +166,17 @@ class TitaniumRAGPipeline:
             "rerankings": 0,
             "security_blocks": 0,
             "security_warnings": 0,
-            "pii_redactions": 0
+            "pii_redactions": 0,
+            "crag_fallbacks": 0,
+            "crag_passes": 0,
+            "graphrag_queries": 0,
+            "graphrag_fallbacks": 0
         }
         
         logger.info(f"Initialized TitaniumRAGPipeline with all 3 phases + "
-                   f"Security Layer: {self.enable_security}")
+                   f"Security Layer: {self.enable_security} + "
+                   f"CRAG Layer: {self.enable_crag} + "
+                   f"GraphRAG Layer: {self.enable_graphrag}")
     
     async def query(
         self,
@@ -272,6 +316,150 @@ class TitaniumRAGPipeline:
         retrieved_docs = unique_docs[:self.max_retrieved_docs]
         
         logger.info(f"Retrieved {len(retrieved_docs)} unique documents")
+        
+        # CRAG Layer: Grade retrieval quality
+        # ------------------------------------
+        if self.enable_crag and self.retrieval_grader:
+            # Extract document texts for grading
+            doc_texts = []
+            for doc in retrieved_docs:
+                if hasattr(doc, 'metadata') and 'text' in doc.metadata:
+                    doc_texts.append(doc.metadata['text'])
+                elif hasattr(doc, 'text'):
+                    doc_texts.append(doc.text)
+                elif hasattr(doc, 'content'):
+                    doc_texts.append(doc.content)
+                else:
+                    doc_texts.append(f"Document {doc.doc_id}")
+            
+            # Grade the documents
+            grade = await self.retrieval_grader.grade_documents(query, doc_texts)
+            
+            # Handle grading results
+            if grade.status == GradeStatus.FALLBACK_REQUIRED:
+                self.stats["crag_fallbacks"] += 1
+                logger.warning(f"CRAG triggered fallback: {grade.reasoning}")
+                
+                # Perform web search fallback
+                if self.web_search_fallback:
+                    web_results = await self.web_search_fallback.search(query)
+                    
+                    # Create documents from web results
+                    web_docs = []
+                    for i, result in enumerate(web_results.get('results', [])):
+                        web_doc = type('WebDocument', (), {
+                            'doc_id': f"web_{i}",
+                            'text': result.get('snippet', ''),
+                            'metadata': {
+                                'text': result.get('snippet', ''),
+                                'source': result.get('url', ''),
+                                'title': result.get('title', ''),
+                                'from_web': True
+                            },
+                            'final_score': 1.0 - (i * 0.1)  # Simple ranking
+                        })()
+                        web_docs.append(web_doc)
+                    
+                    # Use web results instead of retrieved docs
+                    retrieved_docs = web_docs
+                    
+                    return {
+                        "query": query,
+                        "response": None,
+                        "documents": retrieved_docs,
+                        "metadata": {
+                            "crag_action": "FALLBACK_WEB_SEARCH",
+                            "crag_reason": grade.reasoning,
+                            "crag_relevance_ratio": grade.relevance_ratio,
+                            "web_results_count": len(web_docs),
+                            "processing_time": time.time() - start_time
+                        }
+                    }
+            elif grade.status == GradeStatus.PASS:
+                self.stats["crag_passes"] += 1
+                logger.info(f"CRAG passed: {grade.reasoning}")
+            else:
+                logger.info(f"CRAG uncertain: {grade.reasoning}")
+        
+        # GraphRAG Layer: Fuse vector and graph results
+        # -------------------------------------------
+        if self.enable_graphrag and self.graphrag_fusion:
+            try:
+                # Create vector retriever function for GraphRAG
+                async def vector_retriever_func(q: str, k: int) -> List[Dict[str, Any]]:
+                    # Use already retrieved documents
+                    results = []
+                    for doc in retrieved_docs[:k]:
+                        text = ""
+                        if hasattr(doc, 'metadata') and 'text' in doc.metadata:
+                            text = doc.metadata['text']
+                        elif hasattr(doc, 'text'):
+                            text = doc.text
+                        elif hasattr(doc, 'content'):
+                            text = doc.content
+                        
+                        results.append({
+                            'text': text,
+                            'doc_id': doc.doc_id,
+                            'score': getattr(doc, 'final_score', 0.0)
+                        })
+                    return results
+                
+                # Configure GraphRAG with vector retriever
+                self.graphrag_fusion.vector_retriever = vector_retriever_func
+                
+                # Execute GraphRAG fusion
+                fusion_result = await self.graphrag_fusion.query(
+                    query,
+                    max_results=self.top_k_final
+                )
+                
+                self.stats["graphrag_queries"] += 1
+                
+                # Create fused documents
+                fused_docs = []
+                
+                # Add vector results
+                for i, result in enumerate(fusion_result.vector_results):
+                    fused_doc = type('FusedDocument', (), {
+                        'doc_id': f"vector_{i}",
+                        'text': result.get('text', ''),
+                        'metadata': {
+                            'text': result.get('text', ''),
+                            'source': 'vector_search',
+                            'score': result.get('score', 0.0)
+                        },
+                        'final_score': result.get('score', 0.0)
+                    })()
+                    fused_docs.append(fused_doc)
+                
+                # Add graph results as structured context
+                if fusion_result.graph_results and fusion_result.graph_results.entities:
+                    graph_text = fusion_result.fused_context
+                    graph_doc = type('GraphDocument', (), {
+                        'doc_id': "graph_context",
+                        'text': graph_text,
+                        'metadata': {
+                            'text': graph_text,
+                            'source': 'graph_search',
+                            'entities': fusion_result.graph_results.entities,
+                            'relationships': fusion_result.graph_results.relationships,
+                            'confidence': fusion_result.graph_results.confidence
+                        },
+                        'final_score': fusion_result.confidence
+                    })()
+                    fused_docs.append(graph_doc)
+                
+                # Use fused results
+                retrieved_docs = fused_docs
+                
+                logger.info(f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)}, "
+                           f"Graph entities: {len(fusion_result.graph_results.entities)}")
+                
+            except Exception as e:
+                self.stats["graphrag_fallbacks"] += 1
+                logger.error(f"GraphRAG fusion failed: {e}")
+                # Continue with vector results only
         
         # Phase 3: SOTA Layer
         # -------------------
