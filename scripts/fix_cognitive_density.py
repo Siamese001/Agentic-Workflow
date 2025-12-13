@@ -144,15 +144,18 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
     filepath.write_text(shim_content, encoding='utf-8')
     print(f"  Updated {filepath.name} as compatibility shim")
 
-# Files to fix - truly final batch of cognitive density violations
+# Files to fix - continuing agentic_core + scripts cognitive density violations (very large scripts)
 files_to_fix = [
-    "apps_rg/L2_execution/rg_provenance_tracker_impl_impl_impl.py",
-    "apps_rg/L3_orchestration/orchestrate_workflow_impl_impl_impl.py",
-    "apps_rg/L3_orchestration/resume_orchestration_config_types.py",
-    "apps_rg/L3_orchestration/titanium_integration_impl.py",
-    "apps_rg/L3_orchestration/state/resume_state_impl.py",
-    "apps_rg/L1_cognition/P1_retrieve/check_resume_rules.py",
-    "apps_rg/L1_cognition/P2_inspect/rg_validation_gates.py",
+    "agentic_core/L1_cognition/planning/runtime_v5_impl_impl.py",
+    "scripts/deduplication/dedup_v7_impl_impl.py",
+    "scripts/setup/pop_v6_impl_impl_impl_impl.py",
+    "scripts/tooling/fix_v6_impl_impl_impl_impl.py",
+    "scripts/tooling/gen_v6_impl_impl_impl.py",
+    "scripts/tooling/pop_v6.py",
+    "scripts/tooling/purge_v5_impl_impl.py",
+    "scripts/tooling/trans_v5_impl_impl_impl.py",
+    "scripts/validation/audit_v6_impl_impl_impl_impl.py",
+    "scripts/validation/canon_v6_impl_impl_impl.py",
 ]
 
 root = Path("c:/Git/Agentic-Workflow")
