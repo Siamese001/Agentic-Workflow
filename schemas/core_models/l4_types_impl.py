@@ -1,0 +1,17 @@
+"""Implementation for l4_types."""
+
+from typing import Any, Dict, List, Optional
+from .l4_types_types import *
+
+class StateError(Exception):
+    """Base class for state-related errors."""
+    pass
+
+class StateValidationError(StateError):
+    """Raised when a state transition is invalid."""
+    pass
+
+class StateRollbackError(StateError):
+    """Raised when a rollback operation fails."""
+    pass
+
