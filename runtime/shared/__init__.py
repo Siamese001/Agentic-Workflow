@@ -33,6 +33,7 @@ from .multi_provider_clients import (
 )
 
 # Vector Store Clients
+from .vector_store_clients import (
     ChromaConfig,
     PineconeConfig,
     QdrantConfig,
@@ -48,6 +49,7 @@ from .multi_provider_clients import (
 )
 
 # Cache Clients
+from .cache_clients import (
     RedisConfig,
     cache_clear_pattern,
     cache_delete,
@@ -61,6 +63,7 @@ from .multi_provider_clients import (
 )
 
 # Observability Clients
+from .observability_clients import (
     TracingConfig,
     add_span_event,
     create_span,
@@ -74,6 +77,7 @@ from .multi_provider_clients import (
 )
 
 # Agent Executor
+from .agent_executor import (
     AgentConfig,
     AgentExecutor,
     AgentMessage,
@@ -82,6 +86,7 @@ from .multi_provider_clients import (
 )
 
 # Workflow Integration
+from .workflow_integration import (
     HopExecutionContext,
     WorkflowContext,
     WorkflowOrchestrator,
@@ -91,6 +96,7 @@ from .multi_provider_clients import (
 )
 
 # K.X Nodes (Knowledge Extraction)
+from .kx_nodes import (
     DecodingParams,
     KNodeConfig,
     KNodeType,
@@ -106,6 +112,7 @@ from .multi_provider_clients import (
 )
 
 # K.X Node Executor
+from .kx_node_executor import (
     KXExecutionContext,
     KXExecutionResult,
     KXNodeExecutor,
@@ -113,17 +120,12 @@ from .multi_provider_clients import (
 )
 
 # Uber High Signal Agents
-
-# from .architecture_visualizer_agent import (
-#     ArchitectureVisualizerAgent,
-#     DiagramType,
-#     DiagramNode,
-#     DiagramArtifact,
-# )
+from .cultural_decoder_agent import (
     CulturalDecoderAgent,
     CompanyDNA,
     CulturallyAlignedContent,
 )
+from .premortem_agent import (
     PreMortemAgent,
     RiskCategory,
     ImpactLevel,
@@ -132,26 +134,31 @@ from .multi_provider_clients import (
 )
 
 # Phase 1 Precision Layer Components
+from .contextual_compressor import (
     ContextualCompressor,
     CompressionResult,
     compress_chunks,
 )
+from .adaptive_retrieval_gate import (
     AdaptiveRetrievalGate,
     RetrievalDecision,
     should_retrieve,
 )
 
 # Phase 2 Reasoning Layer Components
+from .query_decomposer import (
     QueryDecomposer,
     DecomposedQuery,
     decompose_query,
 )
 
 # Phase 3 SOTA Layer Components
+from .late_interaction_reranker import (
     LateInteractionReranker,
     PassThroughReranker,
     rerank_documents,
 )
+from .contrastive_semantic_cache import (
     ContrastiveSemanticCache,
     CacheEntry,
     NullCache,
@@ -159,11 +166,13 @@ from .multi_provider_clients import (
 )
 
 # Unified Pipeline
+from .titanium_rag_pipeline import (
     TitaniumRAGPipeline,
     create_titanium_pipeline,
 )
 
 # Titanium Search Tool Integration
+from .titanium_search_tools import (
     get_titanium_search_tool,
     get_titanium_search_with_sources,
     get_pipeline_stats,
@@ -173,6 +182,7 @@ from .multi_provider_clients import (
 )
 
 # Adversarial Defense Layer
+from .adversarial_defense import (
     InputGuardrail,
     GuardAction,
     GuardResult,
@@ -184,6 +194,7 @@ from .multi_provider_clients import (
 )
 
 # Corrective RAG (CRAG) Layer
+from .corrective_rag import (
     RetrievalGrader,
     RetrievalGrade,
     GradeStatus,
@@ -195,6 +206,7 @@ from .multi_provider_clients import (
 )
 
 # GraphRAG Fusion Layer
+from .graphrag_fusion import (
     GraphRAGFusion,
     FusionResult,
     QueryType,

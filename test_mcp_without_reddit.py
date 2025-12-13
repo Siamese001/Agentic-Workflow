@@ -11,12 +11,12 @@ async def test_mcp():
     config = {
         "mcpServers": {
             "filesystem": {
-                "command": "C:\\Program Files\\nodejs\\npx.cmd",
-                "args": ["-y", "@modelcontextprotocol/server-filesystem", "./output", "./logs", "./project_knowledge"]
+                "command": "cmd.exe",
+                "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-filesystem", "./output", "./logs", "./project_knowledge"]
             },
             "browser": {
-                "command": "C:\\Program Files\\nodejs\\npx.cmd",
-                "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+                "command": "cmd.exe",
+                "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-puppeteer"]
             },
             "terminal": {
                 "command": "uvx",
