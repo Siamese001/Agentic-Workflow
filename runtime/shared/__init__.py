@@ -120,12 +120,13 @@ from .kx_executor import (
 )
 
 # Uber High Signal Agents
-from .architecture_visualizer_agent import (
-    ArchitectureVisualizerAgent,
-    DiagramType,
-    DiagramNode,
-    DiagramArtifact,
-)
+# Temporarily commented out due to missing models import
+# from .architecture_visualizer_agent import (
+#     ArchitectureVisualizerAgent,
+#     DiagramType,
+#     DiagramNode,
+#     DiagramArtifact,
+# )
 from .cultural_decoder_agent import (
     CulturalDecoderAgent,
     CompanyDNA,
