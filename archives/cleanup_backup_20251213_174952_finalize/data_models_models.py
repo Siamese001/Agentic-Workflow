@@ -61,6 +61,16 @@ class RAGResult:
     recipient_specific: bool
     confidence: float = 1.0
 
+
+# ============================================
+# Merged from: apps_lic/L2_execution/data_models_models_2.py
+# ============================================
+"""Dataclass models for data_models."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from .data_models_models_2 import *
+
 @dataclass
 class SenderGroundingWhitelists:
     """
@@ -127,6 +137,16 @@ class ValidationResult:
     message: str
     details: Optional[Dict[str, object]] = None
 
+
+# ============================================
+# Merged from: apps_lic/L2_execution/data_models_models_3.py
+# ============================================
+"""Dataclass models for data_models."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from .data_models_models_3 import *
+
 @dataclass
 class QAReport:
     """
@@ -138,3 +158,4 @@ class QAReport:
     validation_results: List[ValidationResult]
     passed: bool
     timestamp: str
+

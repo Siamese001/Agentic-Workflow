@@ -57,6 +57,16 @@ class SchemaLoadConfig:
     default_validation_mode: str = 'strict'
     log_level: str = 'INFO'
 
+
+# ============================================
+# Merged from: schemas/logic/data_access/get_schema_request/load_schema_planning_models_2.py
+# ============================================
+"""Dataclass models for load_schema_planning."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from .load_schema_planning_enums import *
+
 @dataclass
 class SchemaLoadResult:
     """Result of schema load planning."""
@@ -71,3 +81,4 @@ class SchemaLoadResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+

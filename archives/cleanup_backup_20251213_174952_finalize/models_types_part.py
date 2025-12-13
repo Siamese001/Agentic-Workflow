@@ -56,6 +56,16 @@ class ThematicAnalysis:
     retrieval_sources: List[Any] = field(default_factory=list)
     weighting_formula: Optional[Dict[str, object]] = None
 
+
+# ============================================
+# Merged from: shared/types/models_types_part_2.py
+# ============================================
+"""Split module 2 for models_types."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from enum import Enum
+
 @dataclass
 class APICallMetrics:
     """Metrics for API call tracking"""
@@ -93,3 +103,4 @@ class ImmutableStagingBuffer:
     def clear(self) -> ImmutableStagingBuffer:
         """Return a new empty buffer."""
         return ImmutableStagingBuffer(version=self.version + 1, timestamp=datetime.utcnow())
+

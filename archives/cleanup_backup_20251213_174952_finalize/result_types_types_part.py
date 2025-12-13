@@ -70,6 +70,16 @@ class ActionResult(Result):
         if self.affected_entities is None:
             self.affected_entities = []
 
+
+# ============================================
+# Merged from: shared/result_types_types_part_2.py
+# ============================================
+"""Split module 2 for result_types_types."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from enum import Enum
+
 @dataclass
 class ExecutionResult(Result):
     """Result for workflow execution."""
@@ -88,3 +98,4 @@ class ExecutionResult(Result):
             self.status = ResultStatus.PARTIAL
         else:
             self.status = ResultStatus.FAILURE
+
