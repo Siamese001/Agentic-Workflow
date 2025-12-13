@@ -1,8 +1,6 @@
 """Split module 1 for models_types."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from enum import Enum
 
 class ValidationSeverity(Enum):
     """Severity levels for validation results."""

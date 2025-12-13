@@ -2,8 +2,6 @@
 import re
 import pytest
 from typing import Dict, List
-from dataclasses import dataclass, field
-from enum import Enum
 
 class ResumePhase(Enum):
     """TODO: Add docstring."""
@@ -21,6 +19,7 @@ class ResumePhase(Enum):
     """TODO: Add docstring."""
 
 class ResumeGenerationState:
+    """Docstring."""
     session_id: str
     phase: ResumePhase
     user_data: Dict[str, object] = field(default_factory=dict)

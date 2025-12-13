@@ -1,7 +1,5 @@
 """Types and models for context_curator."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class ContextPriority(Enum):
     """Priority levels for context chunks."""
@@ -34,7 +32,9 @@ class ContextChunk:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priority': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_score, 'pinned': self.pinned, 'metadata': self.metadata}
+        return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priori
+    ty': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_sco
+        re, 'pinned': self.pinned, 'metadata': self.metadata}
 
 @dataclass
 class ContextWindow:

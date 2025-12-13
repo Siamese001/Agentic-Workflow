@@ -5,9 +5,7 @@ header order enforcement, and final QA block ordering.
 """
 
 import logging
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
-from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +26,7 @@ SIGNATURE_TEMPLATE = """Regards,
 
 {linkedin_url}"""
 
-class K7_AssemblyAgent(Agent):
+class K7AssemblyAgent(Agent):
     """K.7 specialist agent for final message assembly.
 
     This agent assembles the final message with:

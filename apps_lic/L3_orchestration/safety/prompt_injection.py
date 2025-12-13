@@ -4,7 +4,6 @@ Detects and blocks prompt injection attempts in user inputs.
 Part of the safety guardrail system for agentic workflows.
 """
 
-from dataclasses import dataclass, field
 from typing import Dict, List, Tuple
 import logging
 

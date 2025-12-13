@@ -210,11 +210,11 @@ class ContextualCompressor:
 
         # Import LLM client
         try:
-            from .multi_provider_clients import get_client, Provider
 
             client = get_client(Provider.ANTHROPIC)
 
-            prompt = f"""Extract verbatim sentences from the text below that answer this question: '{query}'.
+            prompt = f"""Extract verbatim sentences from the text below that answer this question: '
+    {query}'.
 Do not rewrite. Do not summarize. If irrelevant, return empty.
 
 Text:
@@ -237,6 +237,7 @@ Extracted sentences:"""
             return self._compress_heuristic(chunks, query)
 
     def compress(self,
+        """Docstring."""
         chunks: List[str],
         query: str,
         use_llm: Optional[bool] = None) -> CompressionResult:

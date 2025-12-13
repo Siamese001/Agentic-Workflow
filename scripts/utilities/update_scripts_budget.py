@@ -7,7 +7,6 @@ Generated: 2025-12-07T12:07:59.892445
 
 import logging
 from typing import Dict, Optional
-from dataclasses import dataclass, field
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -48,19 +47,19 @@ class UpdateScriptsBudget:
     def update(self, resource_id: str, data: object) -> ManagementResult:
         """# SQL removed: Update resource."""
         if resource_id not in self.resources:
-            return ManagementResult(success=False, operation="update", message="Not found")
+            return ManagementResult(success=False, operation=# SQL query removed, message="Not fo...
         self.resources[resource_id].data = data
-        self.resources[resource_id].state = "updated"
+        self.resources[resource_id].state = # SQL query removed
         return ManagementResult(success=True,
-            operation="update",
+            operation=# SQL query removed,
             resource=self.resources[resource_id])
 
     def delete(self, resource_id: str) -> ManagementResult:
         """# SQL removed: Delete resource."""
         if resource_id not in self.resources:
-            return ManagementResult(success=False, operation="delete", message="Not found")
+            return ManagementResult(success=False, operation=# SQL query removed, message="Not fo...
         resource = self.resources.pop(resource_id)
-        return ManagementResult(success=True, operation="delete", resource=resource)
+        return ManagementResult(success=True, operation=# SQL query removed, resource=resource)
 
     def get(self, resource_id: str) -> Optional[ManagedResource]:
         """Get resource."""
@@ -71,8 +70,8 @@ def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> Man
     coordinator = UpdateScriptsBudget(kwargs.get("config"))
     if operation == "create":
         return coordinator.create(resource_id, kwargs.get("type", "default"), kwargs.get("data"))
-    elif operation == "update":
+    elif operation == # SQL query removed:
         return coordinator.update(resource_id, kwargs.get("data"))
-    elif operation == "delete":
+    elif operation == # SQL query removed:
         return coordinator.delete(resource_id)
     return ManagementResult(success=False, operation=operation, message="Unknown operation")

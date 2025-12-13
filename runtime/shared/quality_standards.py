@@ -4,10 +4,7 @@ This module defines unified quality standards that apply across all engines
 while allowing for domain-specific customizations.
 """
 
-from dataclasses import dataclass, field
-from enum import Enum
 
-from .signal_infrastructure import EngineType, DomainConfig
 
 class StandardType(Enum):
     """Types of quality standards."""
@@ -335,6 +332,7 @@ class CrossEngineQualityStandards:
         return self._profiles.get(engine_type)
 
     def evaluate_against_standards(
+        """Docstring."""
         self,
         content: str,
         engine_type: EngineType,
@@ -418,14 +416,17 @@ class CrossEngineQualityStandards:
                 "description": "Preferred quality for production"
             },
             "excellence_gate": {
-                "required_standards": list(profile.base_standards | profile.preferred_standards | profile.excellence_standards),
-                    
+                "required_standards": list(profile.base_standards | profile.preferred_standards | pr
+                    ofile.excellence_standards),
+
+
                 "min_score": 0.9,
                 "description": "Excellence quality level"
             }
         }
 
     def create_domain_config_from_standards(
+        """Docstring."""
         self,
         engine_type: EngineType,
         quality_level: StandardType = StandardType.PREFERRED
@@ -520,6 +521,7 @@ def get_quality_standards() -> CrossEngineQualityStandards:
 
 # Convenience functions
 def evaluate_content_quality(
+    """Docstring."""
     content: str,
     engine_type: EngineType,
     quality_level: StandardType = StandardType.BASE,

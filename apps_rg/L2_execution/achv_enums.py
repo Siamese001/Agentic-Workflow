@@ -1,6 +1,5 @@
 """Enum types for achv_bullet_synthesizer_types."""
 
-from enum import Enum
 
 class BulletFormat(Enum):
     """TODO: Add docstring."""
@@ -11,6 +10,7 @@ class BulletFormat(Enum):
     """TODO: Add docstring."""
 
 class ProvenanceType(Enum):
+    """TODO: Add docstring."""
     VERB = 'V'
     TECH = 'T'
     SOFT = 'S'

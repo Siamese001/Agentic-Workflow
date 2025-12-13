@@ -9,8 +9,6 @@ Phase 3 - Atomic State Persistence
 import logging
 from typing import Optional
 
-from .atomic_manager import AtomicStateManager
-from .schema import BackendType
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +16,7 @@ logger = logging.getLogger(__name__)
 _state_manager_instance: Optional[AtomicStateManager] = None
 
 def get_state_manager(
+    """Docstring."""
     backend: BackendType = BackendType.FILE,
     storage_path: Optional[str] = None,
 ) -> AtomicStateManager:
@@ -55,6 +54,7 @@ def reset_state_manager() -> None:
         _state_manager_instance = None
 
 def create_custom_state_manager(
+    """Docstring."""
     backend: BackendType = BackendType.FILE,
     storage_path: Optional[str] = None,
 ) -> AtomicStateManager:

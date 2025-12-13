@@ -61,7 +61,7 @@ def comment_archive_imports() -> None:
             match = import_pattern.match(line)
             if match:
                 # Comment out the import and add deprecation notice
-                lines[i] = f"# {line}  # DEPRECATED: Archive import removed to protect archives from validation edits"
+                lines[i] = f"# {line}  # DEPRECATED: Archive import removed to protect archives f...
                 commented_imports += 1
                 modified = True
 

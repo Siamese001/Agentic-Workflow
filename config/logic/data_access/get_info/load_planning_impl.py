@@ -25,7 +25,8 @@ class ConfigLoadPlanner:
         try:
             self._validate_request(load_request)
             sources = self._parse_sources(load_request)
-            validation_rules = self._parse_validation_rules(load_request) if self.config.enable_validation else []
+            validation_rules = self._parse_validation_rules(load_request) if self.config.enable_vali
+    dation else []
             transformations = self._parse_transformations(load_request)
             load_plan = self._create_load_plan(load_request,
                 sources,
@@ -70,9 +71,13 @@ class ConfigLoadPlanner:
         raw_sources = request.get('sources', [])
         for raw_source in raw_sources:
             if isinstance(raw_source, dict):
-                config_type_mapping = {'environment': ConfigType.ENVIRONMENT, 'feature_flag': ConfigType.FEATURE_FLAG, 'deployment': ConfigType.DEPLOYMENT, 'service': ConfigType.SERVICE, 'security': ConfigType.SECURITY}
-                format_mapping = {'json': ConfigFormat.JSON, 'yaml': ConfigFormat.YAML, 'toml': ConfigFormat.TOML, 'xml': ConfigFormat.XML, 'properties': ConfigFormat.PROPERTIES}
-                scope_mapping = {'global': ConfigScope.GLOBAL, 'region': ConfigScope.REGION, 'environment': ConfigScope.ENVIRONMENT, 'service': ConfigScope.SERVICE, 'instance': ConfigScope.INSTANCE}
+                config_type_mapping = {'environment': ConfigType.ENVIRONMENT, 'feature_flag': Config
+    Type.FEATURE_FLAG, 'deployment': ConfigType.DEPLOYMENT, 'service': ConfigType.SERVICE, 'security
+        ': ConfigType.SECURITY}
+                format_mapping = {'json': ConfigFormat.JSON, 'yaml': ConfigFormat.YAML, 'toml': Conf
+    igFormat.TOML, 'xml': ConfigFormat.XML, 'properties': ConfigFormat.PROPERTIES}
+                scope_mapping = {'global': ConfigScope.GLOBAL, 'region': ConfigScope.REGION, 'enviro
+    nment': ConfigScope.ENVIRONMENT, 'service': ConfigScope.SERVICE, 'instance': ConfigScope.INSTANCE}
                 source = ConfigSource(id=raw_source.get('id',
                     f'source_{len(sources)}'),
                     name=raw_source.get('name',
@@ -95,7 +100,8 @@ class ConfigLoadPlanner:
                     {}))
                 sources.append(source)
         if len(sources) > self.config.max_sources_per_plan:
-            raise ValueError(f'Number of sources ({len(sources)}) exceeds maximum ({self.config.max_sources_per_plan})')
+            raise ValueError(f'Number of sources ({len(sources)}) exceeds maximum ({self.config.max_
+    sources_per_plan})')
         return sources
 
     def _parse_validation_rules(self, request: Dict[str, Any]) -> List[ConfigValidationRule]:
@@ -165,7 +171,8 @@ class ConfigLoadPlanner:
 
     def _get_base_size_for_type(self, config_type: ConfigType) -> int:
         """Get base size estimate for config type."""
-        size_map = {ConfigType.ENVIRONMENT: 1024, ConfigType.FEATURE_FLAG: 2048, ConfigType.DEPLOYMENT: 5120, ConfigType.SERVICE: 10240, ConfigType.SECURITY: 4096}
+        size_map = {ConfigType.ENVIRONMENT: 1024, ConfigType.FEATURE_FLAG: 2048, ConfigType.DEPLOYME
+    NT: 5120, ConfigType.SERVICE: 10240, ConfigType.SECURITY: 4096}
         return size_map.get(config_type, 2048)
 
     def _apply_format_multiplier(self, size: int, format: ConfigFormat) -> int:
@@ -196,7 +203,8 @@ class ConfigLoadPlanner:
 
     def _calculate_security_requirements(self, plan: ConfigLoadPlan) -> Dict[str, bool]:
         """Calculate security requirements for the load plan."""
-        requirements = {'encryption_needed': False, 'authentication_needed': False, 'authorization_needed': False, 'audit_logging': False}
+        requirements = {'encryption_needed': False, 'authentication_needed': False, 'authorization_n
+    eeded': False, 'audit_logging': False}
         if plan.enable_encryption or any((s.encryption for s in plan.sources)):
             requirements['encryption_needed'] = True
         if any((s.credentials for s in plan.sources)):
@@ -209,6 +217,7 @@ class ConfigLoadPlanner:
         return requirements
 
 def create_config_load_planner(enable_validation: bool=True,
+    """Docstring."""
     enable_encryption: bool=False,
     enable_caching: bool=True,
     **kwargs: object) -> ConfigLoadPlanner:
@@ -220,6 +229,7 @@ def create_config_load_planner(enable_validation: bool=True,
     return ConfigLoadPlanner(config)
 
 def plan_config_load(plan_name: str,
+    """Docstring."""
     sources: List[Dict[str,
     Any]],
     validation_rules: Optional[List[Dict[str,
@@ -243,8 +253,13 @@ def plan_config_load(plan_name: str,
     Returns:
         Dict: Planning result with load plan and resource requirements
     """
-    request = {'plan_name': plan_name, 'sources': sources, 'validation_rules': validation_rules or [], 'transformations': transformations or [], 'merge_strategy': merge_strategy}
+    request = {'plan_name': plan_name, 'sources': sources, 'validation_rules': validation_rules or [
+    ], 'transformations': transformations or [], 'merge_strategy': merge_strategy}
     planner_config = ConfigLoadConfig(**config) if config else None
     planner = ConfigLoadPlanner(planner_config)
     result = planner.plan_load(request)
-    return {'success': result.success, 'load_plan': {'id': result.load_plan.id, 'name': result.load_plan.name, 'sources': [{'id': s.id, 'name': s.name, 'config_type': s.config_type.value, 'format': s.format.value, 'location': s.location, 'scope': s.scope.value, 'version': s.version, 'encryption': s.encryption, 'credentials': s.credentials} for s in result.load_plan.sources], 'validation_rules': [{'id': r.id, 'field_path': r.field_path, 'rule_type': r.rule_type, 'parameters': r.parameters, 'error_message': r.error_message} for r in result.load_plan.validation_rules], 'transformations': [{'id': t.id, 'name': t.name, 'transformation_type': t.transformation_type, 'source_fields': t.source_fields, 'target_field': t.target_field, 'parameters': t.parameters} for t in result.load_plan.transformations], 'merge_strategy': result.load_plan.merge_strategy, 'enable_validation': result.load_plan.enable_validation, 'enable_encryption': result.load_plan.enable_encryption, 'cache_ttl': result.load_plan.cache_ttl, 'metadata': result.load_plan.metadata} if result.load_plan else None, 'estimated_config_size': result.estimated_config_size, 'validation_count': result.validation_count, 'transformation_count': result.transformation_count, 'load_time_estimate': result.load_time_estimate, 'security_requirements': result.security_requirements, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
+    return {'success': result.success, 'load_plan': {'id': result.load_plan.id, 'name': result.load_
+    plan.name, 'sources': [{'id': s.id, 'name': s.name, 'config_type': s.config_type.value, 'format'
+        : s.format.value, 'location': s.location, 'scope': s.scope.value, 'version': s.version, 'enc
+            ryption': s.encryption, 'credentials': s.credentials} for s in result.load_plan.sources]
+                , 'validation_rules': [{'id': r.id, 'field_path': r.field_path, 'rule_type': r.rule_type, 'parameters': r.parameters, 'error_message': r.error_message} for r in result.load_plan.validation_rules], 'transformations': [{'id': t.id, 'name': t.name, 'transformation_type': t.transformation_type, 'source_fields': t.source_fields, 'target_field': t.target_field, 'parameters': t.parameters} for t in result.load_plan.transformations], 'merge_strategy': result.load_plan.merge_strategy, 'enable_validation': result.load_plan.enable_validation, 'enable_encryption': result.load_plan.enable_encryption, 'cache_ttl': result.load_plan.cache_ttl, 'metadata': result.load_plan.metadata} if result.load_plan else None, 'estimated_config_size': result.estimated_config_size, 'validation_count': result.validation_count, 'transformation_count': result.transformation_count, 'load_time_estimate': result.load_time_estimate, 'security_requirements': result.security_requirements, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}

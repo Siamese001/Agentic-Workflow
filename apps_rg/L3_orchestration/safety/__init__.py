@@ -23,6 +23,7 @@ class SafetyValidator:
         """TODO: Add docstring."""
 
     def validate(self, *args, **kwargs: object):
+        """TODO: Add docstring."""
         return {"valid": True}
 
 class ContentFilter:
@@ -33,4 +34,5 @@ class ContentFilter:
 
 
     def filter(self, *args, **kwargs: object):
+        """TODO: Add docstring."""
         return {"filtered": False, "content": args[0] if args else ""}

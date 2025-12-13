@@ -1,6 +1,5 @@
 """Dataclass models for resume_orchestration_config_types."""
 
-from dataclasses import dataclass, field
 # from .resume_orchestration_config_types_enums import *  # Star import removed
 
 @dataclass

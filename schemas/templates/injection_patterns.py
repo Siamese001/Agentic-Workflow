@@ -8,7 +8,6 @@ within the shared application layer.
 
 import logging
 from typing import Dict, List, Optional, Union
-from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +39,7 @@ class InjectionPatterns:
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     def process(self,
+        """Docstring."""
         payload: Union[str,
         int,
         float,

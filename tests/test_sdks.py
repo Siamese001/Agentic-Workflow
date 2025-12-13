@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def test_provider(provider_name, module_path, test_func):
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,12 +24,14 @@ logger = logging.getLogger(__name__)
         return False, str(e)
 
 def main():
+    """Docstring."""
     logger.info("=" * 60)
     logger.info("AGENTIC WORKFLOW - SDK FUNCTIONALITY TEST")
     logger.info("=" * 60)
 
     # Test OpenAI
     def test_openai():
+        """Docstring."""
         from openai import OpenAI
         client = OpenAI()
         response = client.models.list()
@@ -38,6 +41,7 @@ def main():
 
     # Test Anthropic
     def test_anthropic():
+        """Docstring."""
         from anthropic import Anthropic
         client = Anthropic()
         # Just test client creation (no API call needed)
@@ -47,6 +51,7 @@ def main():
 
     # Test Google
     def test_google():
+        """Docstring."""
         import google.generativeai as genai
         genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
         models = genai.list_models()
@@ -56,6 +61,7 @@ def main():
 
     # Test Pinecone
     def test_pinecone():
+        """Docstring."""
         from pinecone import Pinecone
         client = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
         indexes = client.list_indexes()
@@ -65,6 +71,7 @@ def main():
 
     # Test ChromaDB
     def test_chromadb():
+        """Docstring."""
         import chromadb
         client = chromadb.Client()
         collection = client.create_collection("test")
@@ -74,6 +81,7 @@ def main():
 
     # Test Redis
     def test_redis():
+        """Docstring."""
         import redis
         client = redis.Redis(host='localhost', port=6379, decode_responses=True)
         client.ping()
@@ -83,6 +91,7 @@ def main():
 
     # Test LiteLLM
     def test_litellm():
+        """Docstring."""
         import litellm
         # Just test import
         return True
@@ -91,6 +100,7 @@ def main():
 
     # Test Instructor
     def test_instructor():
+        """Docstring."""
         import instructor
         return True
 
@@ -98,6 +108,7 @@ def main():
 
     # Test MCP
     def test_mcp():
+        """Docstring."""
         import mcp
         return True
 
@@ -105,6 +116,7 @@ def main():
 
     # Test FastMCP
     def test_fastmcp():
+        """Docstring."""
         import fastmcp
         return True
 

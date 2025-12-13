@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 from pathlib import Path
 
-from runtime.shared.execution_orchestrator import create_execution_orchestrator
 
 from apps_rg.L2_execution.strategist_biowriter import create_strategist_biowriter, BioWriterConfig
-from apps_rg.L2_execution.executive_title_composer import create_executive_title_composer, TitleComposerConfig
+from apps_rg.L2_execution.executive_title_composer import create_executive_title_composer, TitleComp
+    oserConfig
 
 
 def run_resume_generation_example():
@@ -209,7 +209,8 @@ def run_outreach_generation_example():
             }
         )
         logger.info(f"   ✓ Generated in {message_result.attempts} attempt(s)")
-        logger.info(f"   ✓ Metrics bound: {len(message_result.evidence_bindings)}/{len(message_result.metrics_used)}")
+        logger.info(f"   ✓ Metrics bound: {len(message_result.evidence_bindings)}/{len(message_resul
+    t.metrics_used)}")
     else:
         logger.info(f"   ✗ Failed after {message_result.attempts} attempts")
         orchestrator.record_validation_failure(composer.gate_executor)

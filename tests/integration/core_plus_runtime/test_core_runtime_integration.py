@@ -1,8 +1,6 @@
 """Integration tests for agentic_core + runtime integration."""
 import re
 from typing import Dict, List, Optional
-from dataclasses import dataclass, field
-from enum import Enum
 
 class LayerType(Enum):
     """TODO: Add docstring."""
@@ -17,6 +15,7 @@ class LayerType(Enum):
     """TODO: Add docstring."""
 
 class RuntimeContext:
+    """Docstring."""
     request_id: str
     config: Dict[str, object]
     state: Dict[str, object] = field(default_factory=dict)
@@ -116,6 +115,7 @@ class TestSDKIntegration:
 
 
         def try_provider(provider: str) -> Optional[str]:
+            """Docstring."""
             if provider == "openai":
                 return None  # Simulate failure
             return f"response_from_{provider}"
@@ -138,6 +138,7 @@ class TestObservabilityIntegration:
         spans = []
 
         def create_span(name: str, parent: Optional[str] = None):
+            """Docstring."""
             span = {"name": name, "parent": parent, "id": f"span_{len(spans)}"}
             spans.append(span)
             return span
@@ -170,6 +171,7 @@ class TestObservabilityIntegration:
         logs = []
 
         def log(level: str, message: str, **kwargs: object):
+            """Docstring."""
             logs.append({"level": level, "message": message, **kwargs})
 
         log("INFO", "Request started", request_id="req_001")

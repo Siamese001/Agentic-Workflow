@@ -7,7 +7,6 @@ Generated: 2025-12-07T13:28:54.205512
 
 import logging
 from typing import Union, Dict, Optional
-from shared.result_types import OperationResult
 
 logger = logging.getLogger(__name__)
 

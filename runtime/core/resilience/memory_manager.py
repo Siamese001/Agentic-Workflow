@@ -11,9 +11,7 @@ import time
 import asyncio
 import tracemalloc
 from collections import OrderedDict
-from enum import Enum
 import psutil
-import threading
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +58,6 @@ class MemoryManager:
 
         # Context storage with LRU ordering
         self._context: OrderedDict[str, ContextItem] = OrderedDict()
-        self._lock = threading.RLock()
 
         # Statistics
         self._stats = {
@@ -73,7 +70,6 @@ class MemoryManager:
 
         # Memory monitoring
         self._monitoring = False
-        self._monitor_thread: Optional[threading.Thread] = None
 
         # Start memory tracing if available
         if tracemalloc.is_tracing():
@@ -92,7 +88,6 @@ class MemoryManager:
             return
 
         self._monitoring = True
-        self._monitor_thread = threading.Thread(
             target=self._monitor_loop,
             args=(interval_seconds,),
             daemon=True
@@ -108,6 +103,7 @@ class MemoryManager:
         logger.info(f"Stopped memory monitoring for {self.name}")
 
     def add_context(
+        """Docstring."""
         self,
         key: str,
         value: Any,
@@ -198,6 +194,7 @@ class MemoryManager:
             return False
 
     def prune_context(
+        """Docstring."""
         self,
         strategy: PruningStrategy = PruningStrategy.LRU,
         target_size: Optional[int] = None
@@ -345,7 +342,8 @@ class MemoryManager:
 
             if memory_mb > self.limits.max_memory_mb:
                 self._stats["memory_violations"] += 1
-                logger.warning(f"Memory limit exceeded: {memory_mb:.1f}MB > {self.limits.max_memory_mb}MB")
+                logger.warning(f"Memory limit exceeded: {memory_mb:.1f}MB > {self.limits.max_memory_
+    mb}MB")
 
                 # Aggressive pruning
                 self.prune_context(
@@ -432,9 +430,9 @@ Memory Percent: {stats.get('process_memory_percent', 0):.1f}%
 
 # Global memory manager registry
 _managers: Dict[str, MemoryManager] = {}
-_manager_lock = threading.Lock()
 
 def get_memory_manager(name: str = "default",
+    """Docstring."""
     limits: Optional[MemoryLimits] = None) -> MemoryManager:
     """Get or create a memory manager.
 
@@ -475,5 +473,6 @@ def memory_bound(manager: MemoryManager, max_memory_mb: float):
     finally:
         current_memory = manager.get_stats().get('process_memory_mb', 0)
         if current_memory - initial_memory > max_memory_mb:
-            logger.warning(f"Operation exceeded memory bound: {current_memory - initial_memory:.1f}MB")
+            logger.warning(f"Operation exceeded memory bound: {current_memory - initial_memory:.1f}M
+    B")
             manager.prune_context(PruningStrategy.SIZE_BASED)

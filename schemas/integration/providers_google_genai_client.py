@@ -9,6 +9,7 @@ import os
 from typing import Any
 
 def run_llm_google(
+    """Docstring."""
     model: str,
     prompt: str,
     *,
@@ -35,7 +36,8 @@ def run_llm_google(
 
             api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
             if not api_key:
-                raise RuntimeError("GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider")
+                raise RuntimeError("GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider
+    ")
 
             client = genai.Client(api_key=api_key)
 

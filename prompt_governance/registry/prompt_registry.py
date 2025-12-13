@@ -12,8 +12,6 @@ Features:
 
 import json
 import logging
-from dataclasses import dataclass, field
-from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -156,6 +154,7 @@ class PromptRegistry:
         return self._templates.get(template_id)
 
     def find_by_category(
+        """Docstring."""
         self,
         category: PromptCategory,
     ) -> List[PromptTemplate]:
@@ -285,7 +284,8 @@ class PromptRegistry:
             template_id="system_default",
             name="Default System Instruction",
             category=PromptCategory.SYSTEM_INSTRUCTION,
-            content="You are a helpful AI assistant. You follow safety guidelines and provide accurate, helpful responses.",
+            content="You are a helpful AI assistant. You follow safety guidelines and provide accura
+    te, helpful responses.",
             version="1.0.0",
             description="Default system instruction for agents",
             tags=["default", "system"],
@@ -297,7 +297,8 @@ class PromptRegistry:
             template_id="safety_default",
             name="Default Safety Policy",
             category=PromptCategory.SAFETY_POLICY,
-            content="Do not provide harmful, illegal, or unethical content. Refuse requests that violate safety guidelines.",
+            content="Do not provide harmful, illegal, or unethical content. Refuse requests that vio
+    late safety guidelines.",
             version="1.0.0",
             description="Default safety policy",
             tags=["default", "safety"],
@@ -309,7 +310,8 @@ class PromptRegistry:
             template_id="react_default",
             name="ReAct Reasoning Template",
             category=PromptCategory.REASONING_TEMPLATE,
-            content="Think step-by-step:\n1. Thought: {thought}\n2. Action: {action}\n3. Observation: {observation}",
+            content="Think step-by-step:\n1. Thought: {thought}\n2. Action: {action}\n3. Observation
+    : {observation}",
             version="1.0.0",
             description="Default ReAct reasoning template",
             tags=["default", "reasoning", "react"],
@@ -320,6 +322,7 @@ class PromptRegistry:
         self._save_registry()
 
 def create_prompt_registry(
+    """Docstring."""
     registry_path: Optional[Path] = None,
 ) -> PromptRegistry:
     """Factory function to create prompt registry.

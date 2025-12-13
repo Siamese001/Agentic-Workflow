@@ -1,7 +1,5 @@
 """E2E tests for outreach flows - LinkedIn outreach campaign workflows."""
 from typing import List, Optional
-from dataclasses import dataclass
-from enum import Enum
 from datetime import datetime
 
 class OutreachStatus(Enum):
@@ -17,6 +15,7 @@ class OutreachStatus(Enum):
     """TODO: Add docstring."""
 
 class OutreachCampaign:
+    """Docstring."""
     id: str
     name: str
     target_contacts: List[str]
@@ -27,6 +26,7 @@ class OutreachCampaign:
 
 @dataclass
 class Contact:
+    """Docstring."""
     id: str
     name: str
     company: str

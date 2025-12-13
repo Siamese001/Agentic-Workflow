@@ -22,7 +22,7 @@ SENSITIVE_PATTERNS = [
     # API keys (common patterns)
     r'(?:api[_-]?key|apikey|api[_-]?secret|secret[_-]?key|token)[\s:=]+["\']?[A-Za-z0-9+/]{20,
         }["\']?',
-        
+
     # Passwords
     r'(?:password|passwd|pwd)[\s:=]+["\']?[^\s"\']{6,}["\']?',
     # URLs with potential sensitive data

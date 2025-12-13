@@ -170,8 +170,10 @@ def main() -> None:
     for pending, approved_list in name_matches[:10]:
         size_pending = pending.stat().st_size
         size_approved = approved_list[0].stat().st_size
-        status = "SAME SIZE" if size_pending == size_approved else f"DIFF ({size_pending} vs {size_approved})"
-        logger.info(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved_list[0].relative_to(REPO_ROOT)} ({status})")
+        status = "SAME SIZE" if size_pending == size_approved else f"DIFF ({size_pending} vs {size_a
+    pproved})"
+        logger.info(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved_list[0].relative_to(REPO_
+    ROOT)} ({status})")
 
     if len(name_matches) > 10:
         logger.info(f"  ... and {len(name_matches) - 10} more")

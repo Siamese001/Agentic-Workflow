@@ -130,7 +130,8 @@ class PrecisionLayerTestSuite:
                       f"({test_case['min_ratio']:.2f} - {test_case['max_ratio']:.2f})")
 
             # Show compressed text preview
-            preview = result.compressed_text[:200] + "..." if len(result.compressed_text) > 200 else result.compressed_text
+            preview = result.compressed_text[:200] + "..." if len(result.compressed_text) > 200 else
+    result.compressed_text
             logger.info(f"   Preview: {preview}")
 
     def test_adaptive_retrieval_gate(self):
@@ -180,7 +181,8 @@ class PrecisionLayerTestSuite:
         conversation = [
             {"role": "user", "content": "Hi there!"},
             {"role": "assistant", "content": "Hello! How can I help you today?"},
-            {"role": "user", "content": "What are the best practices for microservices deployment?"},
+            {"role": "user", "content": "What are the best practices for microservices deployment?"}
+    ,
         ]
 
         logger.info("\nSimulated Conversation:")
@@ -192,7 +194,8 @@ class PrecisionLayerTestSuite:
         for msg in conversation:
             if msg['role'] == 'user':
                 decision = self.gate.should_retrieve(msg['content'])
-                logger.info(f"  '{msg['content']}' -> {'RETRIEVE' if decision.should_retrieve else 'NO RETRIEVAL'}")
+                logger.info(f"  '{msg['content']}' -> {'RETRIEVE' if decision.should_retrieve else '
+    NO RETRIEVAL'}")
                 logger.info(f"    Reason: {decision.reason}")
 
                 # If retrieval is needed, simulate compression
@@ -202,7 +205,8 @@ class PrecisionLayerTestSuite:
                         chunks=self.sample_chunks,
                         query=msg['content']
                     )
-                    logger.info(f"    Retrieved chunks compressed by {(1-result.compression_ratio):.1%}")
+                    logger.info(f"    Retrieved chunks compressed by {(1-result.compression_ratio):.
+    1%}")
                     logger.info(f"    Compressed content: {result.compressed_text[:150]}...")
 
         # Performance metrics

@@ -5,7 +5,6 @@ into a single, cohesive system for robust prompt enhancement.
 """
 
 import logging
-from dataclasses import dataclass
 
     CognitiveContractManager,
     get_contract_manager,
@@ -45,6 +44,7 @@ class PromptEnhancer:
         logger.info(f"Initialized PromptEnhancer with config: {self.config}")
 
     def enhance_prompt(
+        """Docstring."""
         self,
         base_prompt: str,
         hop_type: str = "default",
@@ -196,6 +196,7 @@ class PromptEnhancer:
         return constraints
 
     def process_response(
+        """Docstring."""
         self,
         response: str,
         contract_id: Optional[str] = None
@@ -244,6 +245,7 @@ class PromptEnhancer:
         return response, result
 
     def create_enhanced_template(
+        """Docstring."""
         self,
         role: str,
         objective: str,
@@ -319,6 +321,7 @@ def get_prompt_enhancer(config: Optional[EnhancementConfig] = None) -> PromptEnh
 
 # Backward compatibility function
 def enhance_prompt(
+    """Docstring."""
     base_prompt: str,
     hop_type: str = "default",
     stage: str = "THINK",
@@ -357,6 +360,7 @@ def enhance_prompt(
 
 # Advanced enhancement with full features
 def enhance_prompt_advanced(
+    """Docstring."""
     base_prompt: str,
     hop_type: str = "default",
     stage: str = "THINK",

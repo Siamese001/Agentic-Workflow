@@ -5,10 +5,9 @@ Policies consume FailureSignal-like inputs and propose coarse-grained
 repair actions (retry, downgrade, replan, escalate).
 """
 
-from dataclasses import dataclass
 from typing import Dict, List
 
-# from archives.legacy_root_folders.eval.health.failure_detector import FailureSignal  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.eval.health.failure_detector import FailureSignal  # DEPRECAT...
 
 @dataclass
 class RepairAction:

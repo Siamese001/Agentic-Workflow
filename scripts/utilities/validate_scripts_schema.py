@@ -7,8 +7,6 @@ Generated: 2025-12-07T12:07:59.896179
 
 import logging
 from typing import Dict, List, Optional
-from dataclasses import dataclass, field
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +35,7 @@ class ValidationResult:
         """TODO: Add docstring."""
 
     def errors(self) -> List[ValidationFinding]:
+        """Docstring."""
         return [f for f in self.findings if f.severity == ValidationSeverity.ERROR]
 
 class ValidateScriptsSchema:
@@ -85,6 +84,7 @@ class ValidateScriptsSchema:
         return findings
 
 def validate(data: object,
+    """Docstring."""
     schema: Optional[Dict] = None,
     config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""

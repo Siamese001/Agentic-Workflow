@@ -12,10 +12,7 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import logging
 import os
-from dataclasses import dataclass
 
-from shared.resilience.mixin import HardeningMixin, TokenLimitError
-from runtime.shared.agent_executor import AgentMessage, AgentResponse
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +90,8 @@ class HardenedAnthropicExecutor(HardeningMixin):
         try:
             import anthropic
         except ImportError as exc:
-            raise ImportError("Anthropic package not installed. Install with: pip install anthropic") from exc
+            raise ImportError("Anthropic package not installed. Install with: pip install anthropic"
+    ) from exc
 
         api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
@@ -155,6 +153,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         return anthropic_messages, system_prompt
 
     async def run_llm(
+        """Docstring."""
         self,
         prompt: str,
         *,
@@ -186,6 +185,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
         # Define async operation
         async def _completion():
+            """Docstring."""
             response = self._client.messages.create(
                 model=self.config.model,
                 messages=anthropic_messages,
@@ -213,6 +213,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         )
 
     async def run_llm_with_response(
+        """Docstring."""
         self,
         prompt: str,
         *,
@@ -244,6 +245,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
         # Define async operation with response capture
         async def _completion():
+            """Docstring."""
             response = self._client.messages.create(
                 model=self.config.model,
                 messages=anthropic_messages,
@@ -288,6 +290,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         )
 
     def run_llm_sync(
+        """Docstring."""
         self,
         prompt: str,
         *,
@@ -330,6 +333,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
 # Factory function for backward compatibility
 def create_hardened_anthropic_executor(
+    """Docstring."""
     model: str = "claude-3-5-sonnet-20241022",
     temperature: float = 0.7,
     **kwargs

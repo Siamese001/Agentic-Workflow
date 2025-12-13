@@ -8,7 +8,6 @@ Phase 1C - SDK Integration Layer
 
 import logging
 import os
-from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -48,6 +47,7 @@ class PineconeConfig:
 _VECTOR_STORES: Dict[str, Any] = {}
 
 def get_vector_store(
+    """Docstring."""
     provider: VectorStoreProvider,
     config: Optional[Any] = None,
     force_new: bool = False,
@@ -109,7 +109,6 @@ def _create_vector_store(
 
     elif provider == VectorStoreProvider.QDRANT:
         try:
-            from qdrant_client import QdrantClient
         except ImportError:
             raise ImportError(
                 "qdrant-client not installed. Install with: pip install qdrant-client>=1.12.0"
@@ -152,6 +151,7 @@ def _create_vector_store(
         raise ValueError(f"Unknown vector store provider: {provider}")
 
 def create_chroma_collection(
+    """Docstring."""
     client: Any,
     collection_name: str,
     embedding_function: Optional[Any] = None,
@@ -175,6 +175,7 @@ def create_chroma_collection(
     )
 
 def create_qdrant_collection(
+    """Docstring."""
     client: Any,
     collection_name: str,
     vector_size: int = 1536,
@@ -188,7 +189,6 @@ def create_qdrant_collection(
         vector_size: Dimension of vectors
         distance: Distance metric (Cosine, Euclid, Dot)
     """
-    from qdrant_client.models import Distance, VectorParams
 
     distance_map = {
         "Cosine": Distance.COSINE,
@@ -209,6 +209,7 @@ def create_qdrant_collection(
         logger.debug(f"Collection {collection_name} may already exist: {e}")
 
 def upsert_vectors_chroma(
+    """Docstring."""
     collection: Any,
     ids: List[str],
     embeddings: List[List[float]],
@@ -232,6 +233,7 @@ def upsert_vectors_chroma(
     )
 
 def upsert_vectors_qdrant(
+    """Docstring."""
     client: Any,
     collection_name: str,
     ids: List[str],
@@ -247,7 +249,6 @@ def upsert_vectors_qdrant(
         vectors: List of embedding vectors
         payloads: Optional list of payload dicts
     """
-    from qdrant_client.models import PointStruct
 
     points = [
         PointStruct(
@@ -268,6 +269,7 @@ def upsert_vectors_qdrant(
     )
 
 def search_vectors_chroma(
+    """Docstring."""
     collection: Any,
     query_embeddings: List[List[float]],
     n_results: int = 10,
@@ -291,6 +293,7 @@ def search_vectors_chroma(
     )
 
 def search_vectors_qdrant(
+    """Docstring."""
     client: Any,
     collection_name: str,
     query_vector: List[float],

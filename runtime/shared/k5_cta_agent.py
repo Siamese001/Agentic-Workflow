@@ -5,8 +5,6 @@ and archetype-appropriate phrasing.
 """
 
 import logging
-from dataclasses import dataclass
-from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +58,7 @@ CTA_TEMPLATES = {
     },
 }
 
-class K5_CTAAgent(Agent):
+class K5CTAAgent(Agent):
     """K.5 specialist agent for CTA generation.
 
     This agent generates route-specific CTAs with:
@@ -204,7 +202,8 @@ FOLLOW_UP CTAs must:
 - Max 20 words
 """
 
-        prompt = f"""Generate a professional CTA for a LinkedIn {self.route} message to a {self.archetype}.
+        prompt = f"""Generate a professional CTA for a LinkedIn {self.route} message to a {self.arch
+    etype}.
 
 CRITICAL CONSTRAINTS:
 - Word limit: {word_limit} words (STRICT)

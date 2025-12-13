@@ -15,6 +15,7 @@ class ObservabilityToolInvoker:
         self._initialize_handlers()
 
     def register_tool(self,
+        """Docstring."""
         tool_name: str,
         endpoint: ToolEndpoint,
         handler: Optional[Callable]=None) -> None:
@@ -172,6 +173,7 @@ class ObservabilityToolInvoker:
         results = []
         for item in batch_items:
             item_request = InvocationRequest(invocation_id=f'{request.invocation_id}_{len(results)}',
+
                 tool_name=request.tool_name,
                 method=request.method,
                 parameters=item,
@@ -202,7 +204,8 @@ class ObservabilityToolInvoker:
         elif request.tool_name == 'metric_collector':
             data = {'metrics': [{'name': 'cpu', 'value': 45.2}, {'name': 'memory', 'value': 67.8}]}
         elif request.tool_name == 'log_analyzer':
-            data = {'logs': [{'message': 'Sample log', 'level': 'info'}, {'message': 'Error log', 'level': 'error'}]}
+            data = {'logs': [{'message': 'Sample log', 'level': 'info'}, {'message': 'Error log', 'l
+    evel': 'error'}]}
         else:
             data = {'message': f'Mock response from {request.tool_name}'}
         if proxy:
@@ -234,7 +237,8 @@ class ObservabilityToolInvoker:
 
     def _generate_cache_key(self, request: InvocationRequest) -> str:
         """Generate cache key for request."""
-        key_data = {'tool_name': request.tool_name, 'method': request.method, 'parameters': request.parameters}
+        key_data = {'tool_name': request.tool_name, 'method': request.method, 'parameters': request.
+    parameters}
         return f'tool_invoke_{hash(json.dumps(key_data, sort_keys=True))}'
 
     def _create_error_response(self,
@@ -282,6 +286,7 @@ class ObservabilityToolInvoker:
         self._tool_handlers['log_analyzer'] = _log_handler
 
 def create_observability_tool_invoker(default_timeout: float=30.0,
+    """Docstring."""
     retry_attempts: int=3,
     enable_caching: bool=True,
     **kwargs: object) -> ObservabilityToolInvoker:
@@ -293,6 +298,7 @@ def create_observability_tool_invoker(default_timeout: float=30.0,
     return ObservabilityToolInvoker(config)
 
 def invoke_observability_tool(invocation_id: str,
+    """Docstring."""
     tool_name: str,
     method: str,
     parameters: Dict[str,
@@ -321,4 +327,6 @@ def invoke_observability_tool(invocation_id: str,
         invocation_type=InvocationType(invocation_type),
         response_format=ResponseFormat(response_format))
     response = invoker.invoke_tool(request)
-    return {'invocation_id': response.invocation_id, 'tool_name': response.tool_name, 'success': response.success, 'data': response.data, 'headers': response.headers, 'status_code': response.status_code, 'error': response.error, 'warnings': response.warnings, 'execution_time': response.execution_time}
+    return {'invocation_id': response.invocation_id, 'tool_name': response.tool_name, 'success': res
+    ponse.success, 'data': response.data, 'headers': response.headers, 'status_code': response.statu
+        s_code, 'error': response.error, 'warnings': response.warnings, 'execution_time': response.execution_time}

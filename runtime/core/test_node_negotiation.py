@@ -13,7 +13,6 @@ import asyncio
     send_clarification
 )
 
-from .subatomic_hop import (
     SubatomicHop,
     SubatomicHopConfig,
     HopState,
@@ -297,9 +296,11 @@ class TestNegotiationIntegration:
         self.downstream_config = SubatomicHopConfig(hop_id="downstream")
 
         def upstream_func(data):
+            """Docstring."""
             return {"summary": data.get("text", "")[:100]}  # Truncate
 
         def downstream_func(data):
+            """Docstring."""
             summary = data.get("summary", "")
             if len(summary) < 50:
                 # Request more detail
@@ -374,12 +375,14 @@ class TestNegotiationScenarios:
         """Test negotiation over resume length."""
         # Create hops for resume generation and review
         def generate_resume(profile):
+            """Docstring."""
             return {
                 "resume": f"Resume for {profile['name']}",
                 "length": 100
             }
 
         def review_resume(resume_data):
+            """Docstring."""
             if resume_data["length"] < 200:
                 # Request longer resume
                 negotiator = get_node_negotiator()
@@ -414,9 +417,11 @@ class TestNegotiationScenarios:
     async def test_format_negotiation(self):
         """Test negotiation over output format."""
         def data_processor(data):
+            """Docstring."""
             return {"result": str(data)}
 
         def data_consumer(processed_data):
+            """Docstring."""
             result = processed_data.get("result", "")
             if not result.startswith("{"):
                 # Request JSON format

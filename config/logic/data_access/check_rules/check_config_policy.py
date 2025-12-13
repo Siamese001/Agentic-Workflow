@@ -9,7 +9,6 @@ Defines policy interface and implements safety engine for resume enhancement.
 
 from typing import Dict, List, Optional, TypeVar
 
-from dataclasses import field
 
 import logging
 
@@ -111,6 +110,7 @@ class SafetyEngine:
         return list(self._policies.values())
 
     def evaluate(
+        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,
@@ -215,6 +215,7 @@ class SafetyEngine:
         return policies
 
     def check_safe(
+        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,

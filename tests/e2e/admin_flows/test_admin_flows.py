@@ -1,7 +1,5 @@
 """E2E tests for admin flows - system configuration and management."""
 from typing import Dict, List
-from dataclasses import dataclass
-from enum import Enum
 
 class AdminAction(Enum):
     """TODO: Add docstring."""
@@ -15,6 +13,7 @@ class AdminAction(Enum):
     """TODO: Add docstring."""
 
 class AdminRequest:
+    """Docstring."""
     action: AdminAction
     payload: Dict[str, object]
     admin_id: str

@@ -5,7 +5,6 @@ import json
 import tempfile
 from pathlib import Path
 
-from .prompt_injection_loader import (
     PromptInjectionLoader,
     InjectionPattern,
     InjectionType,

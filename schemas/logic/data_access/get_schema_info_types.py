@@ -1,7 +1,5 @@
 """Types and models for get_schema_info."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
@@ -38,7 +36,8 @@ class ExecutionContext:
                 'traceback': traceback.format_exc()}
             logger.error(f'Execution failed: {error}')
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')
+            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s
+    ')
 
 @dataclass
 class ProcessingResult:

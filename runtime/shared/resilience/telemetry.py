@@ -8,9 +8,7 @@ and system health across all hardened components.
 import time
 import logging
 from typing import Dict, Any, Optional, List
-from dataclasses import dataclass, field
 from datetime import datetime
-from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +61,7 @@ class SystemTelemetry:
         logger.info("SystemTelemetry initialized")
 
     def log_operation(
+        """Docstring."""
         self,
         component: str,
         operation: str,

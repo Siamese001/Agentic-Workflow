@@ -1,8 +1,6 @@
 """Types and models for execute_observability_execution."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from enum import Enum
 
 class ObservabilityType(Enum):
     """Types of observability operations."""

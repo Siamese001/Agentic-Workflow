@@ -1,5 +1,5 @@
-# from archives.legacy_root_folders.meta.metacognition.evaluator import evaluate_hypotheses  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.meta.metacognition.evaluator import evaluate_hypotheses  # DE...
+# from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Ar...
 
 def test_evaluate_penalizes_no_evidence() -> None:
     """TODO: Add docstring."""
@@ -18,6 +18,7 @@ def test_evaluate_penalizes_no_evidence() -> None:
     """TODO: Add docstring."""
 
 def test_evaluate_clamps_confidence_range() -> None:
+    """TODO: Add docstring."""
     h = Hypothesis(
         id="h1",
         agent_id="a1",

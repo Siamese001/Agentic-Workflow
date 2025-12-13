@@ -10,7 +10,6 @@ import asyncio
 import logging
 
 # Import orchestration config
-from apps_rg.L3_orchestration.resume_orchestration_config import (
     K_NODE_REASONING_CONFIGS,
     GLOBAL_WORD_COUNTS,
     PROVENANCE_RULES,
@@ -20,13 +19,10 @@ from apps_rg.L3_orchestration.resume_orchestration_config import (
 )
 
 # Import execution framework
-from runtime.shared.agent_base import ReasoningConfig
-from runtime.shared.validation_executor import (
     ValidationGateExecutor,
     ValidationStatus,
     ValidationResult,
 )
-from runtime.shared.feedback_loop_orchestrator import (
     FeedbackLoopOrchestrator,
     RegenerationResult,
 )
@@ -39,6 +35,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 async def validate_k5a_output(
+    """Docstring."""
     output: K5AOutput,
     context: Dict[str, Any],
     validator: ValidationGateExecutor,
@@ -95,6 +92,7 @@ async def validate_k5a_output(
         )
 
 async def generate_k5a_bullets(
+    """Docstring."""
     context: Dict[str, Any],
     temperature: float,
     agent: K5A_GenerationAgent,
@@ -118,6 +116,7 @@ async def generate_k5a_bullets(
     return output
 
 async def execute_k5a_with_feedback(
+    """Docstring."""
     initial_context: Dict[str, Any],
     agent: K5A_GenerationAgent,
     validator: ValidationGateExecutor,
@@ -148,6 +147,7 @@ async def execute_k5a_with_feedback(
         """TODO: Add docstring."""
 
     async def validator_func(content: str, context: Dict[str, Any]) -> ValidationResult:
+        """Docstring."""
         output = context.get("_k5a_output")
         if not output:
             # Parse content back to output
@@ -250,14 +250,22 @@ async def main():
 
     context = {
         "master_bullets": [
-            "Led cross-functional team of 8 engineers to architect and deploy cloud-native ML platform serving 2M+ daily predictions with 99.9% uptime",
-            "Designed and implemented real-time data pipeline processing 500GB daily using Apache Kafka and Spark, reducing latency by 60%",
-            "Built production recommendation system using collaborative filtering and deep learning, increasing user engagement by 35%",
-            "Established MLOps practices including CI/CD pipelines, automated testing, and model monitoring, reducing deployment time by 70%",
-            "Mentored 5 junior engineers on ML best practices, code review standards, and system design principles",
-            "Optimized model inference performance through quantization and caching strategies, reducing costs by $200K annually",
-            "Collaborated with product and business teams to define ML roadmap and prioritize high-impact features",
-            "Implemented A/B testing framework for ML models, enabling data-driven decision making across 20+ experiments",
+            "Led cross-functional team of 8 engineers to architect and deploy cloud-native ML platfo
+    rm serving 2M+ daily predictions with 99.9% uptime",
+            "Designed and implemented real-time data pipeline processing 500GB daily using Apache Ka
+    fka and Spark, reducing latency by 60%",
+            "Built production recommendation system using collaborative filtering and deep learning,
+    increasing user engagement by 35%",
+            "Established MLOps practices including CI/CD pipelines, automated testing, and model mon
+    itoring, reducing deployment time by 70%",
+            "Mentored 5 junior engineers on ML best practices, code review standards, and system des
+    ign principles",
+            "Optimized model inference performance through quantization and caching strategies, redu
+    cing costs by $200K annually",
+            "Collaborated with product and business teams to define ML roadmap and prioritize high-i
+    mpact features",
+            "Implemented A/B testing framework for ML models, enabling data-driven decision making a
+    cross 20+ experiments",
         ],
         "differentiators": [
             "machine learning",
@@ -350,7 +358,8 @@ async def main():
             logger.info(f"\nAttempt {checkpoint.attempt}:")
             logger.info(f"  Temperature: {checkpoint.temperature:.2f}")
             logger.info(f"  Score: {checkpoint.score:.2f}")
-            logger.info(f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type else 'N/A'}")
+            logger.info(f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type
+    else 'N/A'}")
             logger.info(f"  Status: {checkpoint.validation_result.status.value}")
 
             if hasattr(checkpoint.validation_result,

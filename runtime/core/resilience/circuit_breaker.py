@@ -8,9 +8,7 @@ attempt recovery after a timeout.
 import asyncio
 import logging
 import time
-from enum import Enum
 from typing import Callable, Any, Optional, Dict
-import threading
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +68,8 @@ class CircuitBreaker:
             "circuit_closes": 0
         }
 
-        logger.info(f"Initialized CircuitBreaker '{name}' with threshold {self.config.failure_threshold}")
+        logger.info(f"Initialized CircuitBreaker '{name}' with threshold {self.config.failure_thresh
+    old}")
 
     async def call(self, func: Callable, *args, **kwargs) -> Any:
         """Execute a function through the circuit breaker.
@@ -206,9 +205,7 @@ class CircuitBreakerFactory:
     """
 
     _instance = None
-    _lock = threading.Lock()
     _breakers: Dict[str, CircuitBreaker] = {}
-    _breakers_lock = threading.RLock()  # Reentrant lock for nested operations
 
     def __new__(cls):
         """Thread-safe singleton pattern implementation."""
@@ -328,6 +325,7 @@ def get_circuit_breaker(name: str, config: Optional[CircuitBreakerConfig] = None
     return CircuitBreakerFactory.get(name, config)
 
 def with_circuit_breaker(
+    """Docstring."""
     breaker_name: str,
     config: Optional[CircuitBreakerConfig] = None
 ):
@@ -346,6 +344,7 @@ def with_circuit_breaker(
             """TODO: Add docstring."""
 
         async def wrapper(*args, **kwargs):
+            """Docstring."""
             breaker = get_circuit_breaker(breaker_name, config)
             return await breaker.call(func, *args, **kwargs)
         return wrapper

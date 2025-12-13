@@ -6,9 +6,7 @@ allowing nodes to spawn new predecessors when they detect missing information.
 
 import logging
 import uuid
-from enum import Enum
 from datetime import datetime
-from pydantic import BaseModel, Field, validator
 
 
 logger = logging.getLogger(__name__)
@@ -116,7 +114,8 @@ class GraphTransaction:
             # Source should have lower depth than target
             if source_depth >= target_depth:
                 raise ValueError(
-                    f"Depth ordering violation: {source}({source_depth}) -> {target}({target_depth})"
+                    f"Depth ordering violation: {source}({source_depth}) -> {target}({target_depth})
+    "
                 )
 
 class MutationAction(Enum):
@@ -154,6 +153,7 @@ class DAGMutation(BaseModel):
         """TODO: Add docstring."""
 
     def validate_hop_spec(cls, v, values):
+        """Docstring."""
         if values.get('action') in [MutationAction.SPAWN_PREDECESSOR,
             MutationAction.SPAWN_SUCCESSOR]:
             if v is None:
@@ -189,6 +189,7 @@ class DAGMutator:
         self.mutation_history: List[MutationResult] = []
 
     def apply_mutation(
+        """Docstring."""
         self,
         graph: nx.DiGraph,
         mutation: DAGMutation
@@ -251,7 +252,8 @@ class DAGMutator:
             # Calculate new depth if we add a predecessor
             target_depth = graph.nodes[mutation.target_hop_id].get('depth', 0)
             if target_depth >= self.config.max_depth - 1:
-                raise ValueError(f"Cannot spawn predecessor: would exceed max depth {self.config.max_depth}")
+                raise ValueError(f"Cannot spawn predecessor: would exceed max depth {self.config.max
+    _depth}")
 
         # For spawn operations, check new node doesn't already exist
         if mutation.new_hop_spec and mutation.new_hop_spec.hop_id in graph.nodes:
@@ -261,7 +263,8 @@ class DAGMutator:
         if mutation.action == MutationAction.SPAWN_SUCCESSOR:
             successors = list(graph.successors(mutation.target_hop_id))
             if len(successors) >= self.config.max_fan_out:
-                raise ValueError(f"Cannot spawn successor: would exceed max fan-out {self.config.max_fan_out}")
+                raise ValueError(f"Cannot spawn successor: would exceed max fan-out {self.config.max
+    _fan_out}")
 
     def _spawn_predecessor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
         """Spawn a new predecessor node."""
@@ -489,6 +492,7 @@ class DAGManager:
         logger.debug(f"Registered function: {name}")
 
     def add_node(
+        """Docstring."""
         self,
         hop: SubatomicHop,
         predecessors: Optional[List[str]] = None
@@ -556,6 +560,7 @@ class DAGManager:
         return result
 
     def create_mutation_request(
+        """Docstring."""
         self,
         action: MutationAction,
         target_hop_id: str,

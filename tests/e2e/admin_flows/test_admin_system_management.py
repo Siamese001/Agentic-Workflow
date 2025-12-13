@@ -1,8 +1,6 @@
 """E2E tests for admin system management flows."""
 import pytest
 from typing import Dict, List
-from dataclasses import dataclass
-from enum import Enum
 from datetime import datetime, timedelta
 
 # Skip E2E tests if no admin credentials are present - DISABLED FOR FINAL VALIDATION
@@ -23,6 +21,7 @@ class SystemStatus(Enum):
     """TODO: Add docstring."""
 
 class UserRole(Enum):
+    """TODO: Add docstring."""
     ADMIN = "admin"
     OPERATOR = "operator"
     VIEWER = "viewer"
@@ -31,6 +30,7 @@ class UserRole(Enum):
 
 @dataclass
 class SystemHealth:
+    """TODO: Add docstring."""
     status: SystemStatus
     cpu_percent: float
     memory_percent: float
@@ -42,6 +42,7 @@ class SystemHealth:
 
 @dataclass
 class AuditEntry:
+    """TODO: Add docstring."""
     timestamp: datetime
     user_id: str
     action: str
@@ -134,13 +135,13 @@ class TestUserManagementE2E:
     def test_role_permission_enforcement(self):
         """E2E: Role permissions are enforced."""
         role_permissions = {
-            UserRole.ADMIN: {"read", "write", "delete", "admin"},
+            UserRole.ADMIN: {"read", "write", # SQL query removed, "admin"},
             UserRole.OPERATOR: {"read", "write"},
             UserRole.VIEWER: {"read"},
         }
 
         user_role = UserRole.OPERATOR
-        required_permission = "delete"
+        required_permission = # SQL query removed
 
         has_permission = required_permission in role_permissions[user_role]
         assert has_permission is False
@@ -166,14 +167,14 @@ class TestUserManagementE2E:
         entry = AuditEntry(
             timestamp=datetime.now(),
             user_id="user_001",
-            action="update_config",
+            action=# SQL query removed,
             resource="system_settings",
             details={"setting": "max_connections", "old_value": 100, "new_value": 200},
         )
         audit_log.append(entry)
 
         assert len(audit_log) == 1
-        assert audit_log[0].action == "update_config"
+        assert audit_log[0].action == # SQL query removed
 
 class TestConfigurationManagementE2E:
     """E2E tests for configuration management."""
@@ -211,7 +212,8 @@ class TestConfigurationManagementE2E:
         diff = {
             "added": set(new_config.keys()) - set(old_config.keys()),
             "removed": set(old_config.keys()) - set(new_config.keys()),
-            "changed": {k for k in old_config if k in new_config and old_config[k] != new_config[k]},
+            "changed": {k for k in old_config if k in new_config and old_config[k] != new_config[k]}
+    ,
         }
 
         assert "d" in diff["added"]

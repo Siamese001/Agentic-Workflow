@@ -9,8 +9,6 @@ import logging
 import time
 import uuid
 from typing import Generator, Dict, List, Optional
-from dataclasses import dataclass, field
-from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +42,7 @@ class JsonTraceExporter:
 
     @contextmanager
     def start_span(self,
+        """Docstring."""
         name: str,
         attributes: Optional[Dict] = None) -> Generator[Span,
         None,

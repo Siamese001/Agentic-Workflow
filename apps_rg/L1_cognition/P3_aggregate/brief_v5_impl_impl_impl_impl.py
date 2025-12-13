@@ -18,10 +18,12 @@ class CreativeBriefValidator:
             result['violations'].append(message)
         if len(text) > self.brief.headline.char_count_max:
             result['is_valid'] = False
-            result['violations'].append(f'Character count {len(text)} exceeds max {self.brief.headline.char_count_max}')
+            result['violations'].append(f'Character count {len(text)} exceeds max {self.brief.headli
+    ne.char_count_max}')
         result['metrics']['char_count'] = len(text)
         if '|' not in text:
-            result['violations'].append(f'Missing structure separators. Expected: {self.brief.headline.structure}')
+            result['violations'].append(f'Missing structure separators. Expected: {self.brief.headli
+    ne.structure}')
         return result
 
     def validate_executive_summary(self, text: str) -> Dict[str, object]:

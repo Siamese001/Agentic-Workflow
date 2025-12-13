@@ -1,6 +1,5 @@
 """Split module 1 for workflow_types_types."""
 
-from enum import Enum
 
 class CircuitState(Enum):
     """Circuit breaker states."""

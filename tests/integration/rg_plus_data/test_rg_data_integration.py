@@ -1,7 +1,6 @@
 """Integration tests for Resume Generation + Data layer."""
 import pytest
 from typing import Dict, List
-from dataclasses import dataclass
 
 @dataclass
 class JobPosting:
@@ -17,6 +16,7 @@ class JobPosting:
     """TODO: Add docstring."""
 
 class UserProfile:
+    """Docstring."""
     id: str
     name: str
     skills: List[str]
@@ -137,7 +137,8 @@ class TestJobDataEnrichment:
 
     def test_extract_job_keywords(self):
         """Integration: Keywords are extracted from job description."""
-        description = "Looking for a Python developer with AWS experience and machine learning skills"
+        description = "Looking for a Python developer with AWS experience and machine learning skill
+    s"
 
         # basic keyword extraction
         tech_keywords = ["python", "aws", "machine learning", "java", "sql"]

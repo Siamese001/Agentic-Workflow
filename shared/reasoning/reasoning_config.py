@@ -10,7 +10,6 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
 
-from dataclasses import dataclass, field
 
 class ModelProvider(str, Enum):
     """Available model providers."""
@@ -108,7 +107,7 @@ _REASONING_CONFIGS = [
         "min_tot_depth": 2,
         "self_consistency": 6,
         "reflexion": True}),
-        
+
     ("K1_EXECUTIVE_SUMMARY_CONFIG",
         {"cot_min_paths": 3,
         "tot_branches": 3,
@@ -116,14 +115,14 @@ _REASONING_CONFIGS = [
         "self_consistency": 12,
         "reflexion": True,
         "max_reflexion_loops": 2}),
-        
+
     ("K5_UNIFY_BULLETS_CONFIG",
         {"cot_min_paths": 4,
         "tot_branches": 3,
         "min_tot_depth": 3,
         "self_consistency": 12,
         "reflexion": True}),
-        
+
     ("K5_UNIFY_OVERVIEW_CONFIG", None),
     ("K6_IBM_BULLETS_CONFIG",
         {"cot_min_paths": 4,
@@ -131,56 +130,56 @@ _REASONING_CONFIGS = [
         "min_tot_depth": 3,
         "self_consistency": 12,
         "reflexion": True}),
-        
+
     ("K6_IBM_OVERVIEW_CONFIG",
         {"cot_min_paths": 2,
         "tot_branches": 2,
         "min_tot_depth": 2,
         "self_consistency": 4,
         "reflexion": False}),
-        
+
     ("K8_EY_BULLETS_CONFIG",
         {"cot_min_paths": 2,
         "tot_branches": 2,
         "min_tot_depth": 2,
         "self_consistency": 4,
         "reflexion": False}),
-        
+
     ("K8_EY_OVERVIEW_CONFIG",
         {"cot_min_paths": 2,
         "tot_branches": 2,
         "min_tot_depth": 2,
         "self_consistency": 4,
         "reflexion": False}),
-        
+
     ("K9_EARLY_CAREER_BULLETS_CONFIG",
         {"cot_min_paths": 2,
         "tot_branches": 2,
         "min_tot_depth": 2,
         "self_consistency": 4,
         "reflexion": False}),
-        
+
     ("K9_EARLY_CAREER_OVERVIEW_CONFIG",
         {"cot_min_paths": 2,
         "tot_branches": 2,
         "min_tot_depth": 2,
         "self_consistency": 4,
         "reflexion": False}),
-        
+
     ("K2_SKILLS_CONFIG",
         {"cot_min_paths": 2,
         "tot_branches": 2,
         "min_tot_depth": 2,
         "self_consistency": 4,
         "reflexion": False}),
-        
+
     ("K10_COMPETENCIES_CONFIG",
         {"cot_min_paths": 3,
         "tot_branches": 3,
         "min_tot_depth": 2,
         "self_consistency": 10,
         "reflexion": True}),
-        
+
 ]
 
 for _name, _cfg in _REASONING_CONFIGS:

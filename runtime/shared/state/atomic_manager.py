@@ -11,7 +11,6 @@ import os
 import time
 from pathlib import Path
 
-from .schema import WorkflowState, BackendType, CheckpointMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +61,7 @@ class AtomicStateManager:
             raise ValueError(f"Unknown backend type: {backend}")
 
     def checkpoint(
+        """Docstring."""
         self,
         workflow_id: str,
         new_state: WorkflowState,
@@ -111,7 +111,8 @@ class AtomicStateManager:
                 workflow_id=workflow_id,
                 k_node_index=new_state.current_k_node,
                 k_node_name=new_state.get_last_execution().k_node_name if new_state.get_last_execution() else "init",
-                    
+
+
                 success=True,
                 duration_ms=duration_ms,
             )
@@ -153,7 +154,8 @@ class AtomicStateManager:
                 workflow_id=workflow_id,
                 k_node_index=new_state.current_k_node,
                 k_node_name=new_state.get_last_execution().k_node_name if new_state.get_last_execution() else "init",
-                    
+
+
                 success=False,
                 error_message=str(e),
                 duration_ms=duration_ms,
@@ -205,7 +207,7 @@ class AtomicStateManager:
         try:
             active_key = self._get_active_key(workflow_id)
             self._delete_from_backend(active_key)
-            logger.info(f"Deleted checkpoint for workflow: {workflow_id}")
+            logger.info(f# SQL query removed)
             return True
         except Exception as e:
             logger.warning(f"Failed to delete checkpoint for {workflow_id}: {e}")

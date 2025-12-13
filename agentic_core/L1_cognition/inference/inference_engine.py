@@ -8,8 +8,6 @@ adjusts LLM parameters to maximize creativity while maintaining structural integ
 
 import logging
 import time
-from dataclasses import dataclass
-from enum import Enum
 
     Provider, get_client, ProviderConfig, get_api_key
 )
@@ -350,6 +348,7 @@ class InferenceEngine:
 # Factory functions for common inference patterns
 
 async def creative_inference(
+    """Docstring."""
     prompt: str,
     context: SignalContext,
     provider: Provider = Provider.OPENAI
@@ -375,6 +374,7 @@ async def creative_inference(
     return await engine.infer(request)
 
 async def validation_inference(
+    """Docstring."""
     prompt: str,
     context: SignalContext,
     provider: Provider = Provider.OPENAI
@@ -400,6 +400,7 @@ async def validation_inference(
     return await engine.infer(request)
 
 async def analytical_inference(
+    """Docstring."""
     prompt: str,
     context: SignalContext,
     provider: Provider = Provider.OPENAI

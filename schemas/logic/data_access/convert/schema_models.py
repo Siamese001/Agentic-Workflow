@@ -1,6 +1,5 @@
 """Dataclass models for convert_to_internal_schema."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 # from .convert_to_internal_schema_enums import *  # Star import removed
 

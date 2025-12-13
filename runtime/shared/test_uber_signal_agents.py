@@ -37,7 +37,8 @@ class UberSignalTestSuite:
 
         # Test data
         self.test_architecture_bullet = (
-            "Built a scalable RAG pipeline using FastAPI, Redis caching, and Pinecone vector database "
+            "Built a scalable RAG pipeline using FastAPI, Redis caching, and Pinecone vector databas
+    e "
             "to serve 10M+ queries with 99.9% uptime"
         )
 
@@ -263,7 +264,8 @@ class UberSignalTestSuite:
             logger.info(self.architecture_agent.render_artifact(architecture_diagram))
 
             logger.info("\n⚠️  Risk Assessment:")
-            logger.info(f"Overall Risk: {risk_analysis.overall_risk_score:.1%} - {risk_analysis.go_no_go_recommendation}")
+            logger.info(f"Overall Risk: {risk_analysis.overall_risk_score:.1%} - {risk_analysis.go_n
+    o_go_recommendation}")
 
             logger.info("\n✅ Integration test successful!")
 

@@ -11,7 +11,6 @@ import asyncio
 import logging
 import random
 from typing import Dict, List, Optional
-from pydantic import BaseModel, Field
 import httpx
 
 # Import HardeningMixin (assuming it exists)
@@ -36,20 +35,20 @@ class ScrapeResult(BaseModel):
 COMMON_USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        
+
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML,
         like Gecko) Version/17.2 Safari/605.1.15",
-        
+
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        
+
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        
+
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        
+
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:120.0) Gecko/20100101 Firefox/120.0"
 ]
@@ -184,7 +183,8 @@ class HardenedWebScraper(HardeningMixin):
             )
 
             if old_delay != self.current_delay:
-                self.logger.info(f"Reduced delay from {old_delay:.2f}s to {self.current_delay:.2f}s")
+                self.logger.info(f"Reduced delay from {old_delay:.2f}s to {self.current_delay:.2f}s"
+    )
 
             self.stats["successful_requests"] += 1
 
@@ -207,7 +207,8 @@ class HardenedWebScraper(HardeningMixin):
             self.stats["adaptive_delays"] += 1
 
             self.logger.warning(f"🚫 Soft block detected: {e}")
-            self.logger.warning(f"Increased delay from {old_delay:.2f}s to {self.current_delay:.2f}s")
+            self.logger.warning(f"Increased delay from {old_delay:.2f}s to {self.current_delay:.2f}s
+    ")
             raise
 
         except Exception as e:
@@ -218,11 +219,13 @@ class HardenedWebScraper(HardeningMixin):
                 self.current_delay * 1.5
             )
 
-            self.logger.error(f"❌ Scraping failed for {url} after retries. Backing off to {self.current_delay:.2f}s")
+            self.logger.error(f"❌ Scraping failed for {url} after retries. Backing off to {self.curr
+    ent_delay:.2f}s")
             self.logger.error(f"Error: {e}")
             raise
 
     async def scrape_multiple(self,
+        """Docstring."""
         urls: List[str],
         delay_between_requests: Optional[float] = None) -> List[ScrapeResult]:
         """
@@ -288,16 +291,19 @@ class HardenedWebScraper(HardeningMixin):
         """Add a new proxy to the pool."""
         if proxy_url not in self.scraper_config.proxy_pool:
             self.scraper_config.proxy_pool.append(proxy_url)
-            self.logger.info(f"Added proxy to pool: {proxy_url.split('@')[-1] if '@' in proxy_url else proxy_url}")
+            self.logger.info(f"Added proxy to pool: {proxy_url.split('@')[-1] if '@' in proxy_url el
+    se proxy_url}")
 
     def remove_proxy(self, proxy_url: str) -> None:
         """Remove a proxy from the pool."""
         if proxy_url in self.scraper_config.proxy_pool:
             self.scraper_config.proxy_pool.remove(proxy_url)
-            self.logger.info(f"Removed proxy from pool: {proxy_url.split('@')[-1] if '@' in proxy_url else proxy_url}")
+            self.logger.info(f"Removed proxy from pool: {proxy_url.split('@')[-1] if '@' in proxy_ur
+    l else proxy_url}")
 
 # Factory function for creating hardened web scraper
 def create_hardened_web_scraper(
+    """Docstring."""
     hardening_config: 'HardeningConfig',
     proxy_pool: Optional[List[str]] = None,
     base_delay: float = 1.0,

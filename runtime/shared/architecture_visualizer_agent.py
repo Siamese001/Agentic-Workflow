@@ -7,9 +7,7 @@ Mermaid.js diagrams, providing visual proof of system design competency.
 import logging
 import re
 from enum import Enum
-from pydantic import BaseModel, Field, validator
 
-from .models import LLMResponse
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +89,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         }
 
     async def _extract_system_components(self,
+        """Docstring."""
         text: str) -> Tuple[List[DiagramNode],
         List[Tuple[str,
         str]]]:
@@ -104,14 +103,16 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         """
         # Use LLM to extract components and relationships
         prompt = f"""
-        You are a System Architect. Extract the system components and their relationships from this description:
+        You are a System Architect. Extract the system components and their relationships from this
+    description:
 
         "{text}"
 
         Return in JSON format:
         {{
             "components": [
-                {{"id": "unique_id", "label": "Display Label", "type": "service|database|queue|user|event"}}
+                {{"id": "unique_id", "label": "Display Label", "type": "service|database|queue|user|
+    event"}}
             ],
             "relationships": [
                 {{"from": "source_id", "to": "target_id", "label": "connection_label"}}
@@ -204,6 +205,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         return "\n".join(lines)
 
     async def generate_diagram(
+        """Docstring."""
         self,
         description: str,
         diagram_type: DiagramType = DiagramType.FLOWCHART,
@@ -308,7 +310,6 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from .multi_provider_clients import get_client, Provider
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)
@@ -322,6 +323,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             )
 
             class LLMResponseImpl:
+                """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 
@@ -331,6 +333,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
+                """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 

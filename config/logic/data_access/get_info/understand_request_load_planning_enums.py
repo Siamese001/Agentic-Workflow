@@ -1,6 +1,5 @@
 """Enum types for understand_request_load_planning."""
 
-from enum import Enum
 
 class ConfigType(Enum):
     """Types of configurations."""

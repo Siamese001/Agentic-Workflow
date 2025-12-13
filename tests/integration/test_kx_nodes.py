@@ -9,7 +9,6 @@ Phase 1C - Knowledge Extraction Integration
 import os
 import pytest
 
-from runtime.shared import (
     KNodeType,
     ReasoningStrategy,
     get_kx_registry,
@@ -249,7 +248,6 @@ class TestKXNodeExecution:
         )
 
         # Mock execution to test validation
-        from runtime.shared.kx_executor import KXNodeExecutor, KXExecutionContext
 
         config = get_resume_kx_node("K.0_Name")
         context = KXExecutionContext(
@@ -307,7 +305,6 @@ class TestKXNodeCustomization:
 
     def test_register_custom_resume_node(self):
         """Test registering a custom resume node."""
-        from runtime.shared import KNodeConfig, RAGConfig
 
         registry = get_kx_registry()
 
@@ -329,7 +326,6 @@ class TestKXNodeCustomization:
 
     def test_register_custom_outreach_node(self):
         """Test registering a custom outreach node."""
-        from runtime.shared import KNodeConfig
 
         registry = get_kx_registry()
 

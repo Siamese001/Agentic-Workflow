@@ -1,6 +1,5 @@
 """Dataclass models for lic_archetypes."""
 
-from dataclasses import dataclass, field
 # from .lic_archetypes_enums import *  # Star import removed
 
 @dataclass

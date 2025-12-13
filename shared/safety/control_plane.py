@@ -5,12 +5,7 @@ Provides unified defense system for prompt generation and output processing.
 """
 
 import logging
-from dataclasses import dataclass
-from enum import Enum
 
-from .pii_scrubber import PIIScrubber, PIIResult
-from .bias_auditor import BiasAuditor, BiasResult
-from .constitutional_ai import ConstitutionalAISystem, ConstitutionalReviewResult
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +82,7 @@ class ControlPlane:
         self._block_count = 0
 
     def evaluate_input(
+        """Docstring."""
         self,
         content: str,
         context: Optional[Dict[str, Any]] = None,
@@ -103,6 +99,7 @@ class ControlPlane:
         return self._evaluate(content, context, is_input=True)
 
     def evaluate_output(
+        """Docstring."""
         self,
         content: str,
         context: Optional[Dict[str, Any]] = None,
@@ -194,7 +191,8 @@ class ControlPlane:
 
         bias_result = self.bias_auditor.audit_content(content)
         if bias_result.has_bias:
-            warnings.append(f"Detected {len(bias_result.bias_types)} bias types: {[bt.value for bt in bias_result.bias_types]}")
+            warnings.append(f"Detected {len(bias_result.bias_types)} bias types: {[bt.value for bt i
+    n bias_result.bias_types]}")
             if self.policy.block_on_bias:
                 errors.append("Content blocked due to bias detection")
                 return bias_result, True
@@ -227,7 +225,8 @@ class ControlPlane:
         errors: List[str],
         is_input: bool) -> PolicyDecision:
         """Create final policy decision."""
-        action = PolicyAction.BLOCK if errors else (PolicyAction.SANITIZE if sanitized_content != content else (PolicyAction.WARN if warnings else PolicyAction.ALLOW))
+        action = PolicyAction.BLOCK if errors else (PolicyAction.SANITIZE if sanitized_content != co
+    ntent else (PolicyAction.WARN if warnings else PolicyAction.ALLOW))
         is_safe = not errors
 
         decision = PolicyDecision(
@@ -245,7 +244,8 @@ class ControlPlane:
                 "is_input": is_input,
                 "has_pii": pii_result.has_pii() if pii_result else False,
                 "has_bias": bias_result.has_bias if bias_result else False,
-                "is_compliant": constitutional_result.is_compliant if constitutional_result else True,
+                "is_compliant": constitutional_result.is_compliant if constitutional_result else Tru
+    e,
                 "warning_count": len(warnings),
                 "error_count": len(errors)})
 
@@ -300,6 +300,7 @@ class ControlPlane:
         }
 
 def create_control_plane(
+    """Docstring."""
     enable_pii_scrubbing: bool = True,
     enable_bias_detection: bool = True,
     enable_constitutional_review: bool = True,

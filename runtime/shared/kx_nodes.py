@@ -8,8 +8,6 @@ Phase 1C - Knowledge Extraction Integration
 """
 
 import logging
-from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -449,6 +447,7 @@ class KXNodeRegistry:
         return self._resume_nodes.get(node_key)
 
     def get_outreach_node(
+        """Docstring."""
         self,
         node_key: str,
         connection_request: bool = False
@@ -498,6 +497,7 @@ class KXNodeRegistry:
         }
 
     def register_custom_node(
+        """Docstring."""
         self,
         node_key: str,
         config: KNodeConfig,
@@ -548,6 +548,7 @@ def get_resume_kx_node(node_key: str) -> Optional[KNodeConfig]:
     return registry.get_resume_node(node_key)
 
 def get_outreach_kx_node(
+    """Docstring."""
     node_key: str,
     connection_request: bool = False
 ) -> Optional[KNodeConfig]:

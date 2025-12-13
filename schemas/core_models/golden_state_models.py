@@ -1,7 +1,5 @@
 
-from dataclasses import dataclass, field
 
-from pydantic import BaseModel
 
 @dataclass
 class GoldenStateTestCase:
@@ -49,6 +47,7 @@ class GoldenCase(BaseModel):
     """TODO: Add docstring."""
 
 class GoldenOutput(BaseModel):
+    """TODO: Add docstring."""
     case_id: str
     produced_keypoints: List[str]
     correctness_map: Dict[str, bool]

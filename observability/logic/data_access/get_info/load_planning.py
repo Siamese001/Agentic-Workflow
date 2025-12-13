@@ -5,7 +5,6 @@ including metric collection, log aggregation, and monitoring data optimization.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
 import logging
 from datetime import datetime
@@ -407,6 +406,7 @@ class ObservabilityLoadPlanner:
 
 # Factory function for easy instantiation
 def create_observability_load_planner(
+    """Docstring."""
     max_metrics: int = 100,
     max_logs: int = 100,
     max_traces: int = 100,
@@ -423,6 +423,7 @@ def create_observability_load_planner(
 
 # Convenience function for direct usage
 def plan_observability_load(
+    """Docstring."""
     plan_name: str,
     metrics: Optional[List[Dict[str, Any]]] = None,
     logs: Optional[List[Dict[str, Any]]] = None,

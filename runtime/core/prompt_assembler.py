@@ -9,14 +9,11 @@ import json
 import logging
 import re
 from typing import Dict, List, Any, Optional, Union
-from dataclasses import dataclass
 from pathlib import Path
 
-from .security.input_sanitizer import (
     InputSanitizer,
     SecurityIntegrityError
 )
-from .shared_models import InjectionMatch
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +104,7 @@ You are {role}. Your objective is {objective}.
                 logger.error(f"Failed to load template {file_path}: {e}")
 
     def assemble(
+        """Docstring."""
         self,
         role: str,
         objective: str,
@@ -221,7 +219,8 @@ You are {role}. Your objective is {objective}.
         # Format output requirements
         output_format = "Respond clearly and professionally."
         if sanitized_schema:
-            output_format = f"Must respond with valid JSON matching this schema:\n{sanitized_schema}"
+            output_format = f"Must respond with valid JSON matching this schema:\n{sanitized_schema}
+    "
 
         # Assemble the prompt with sanitized components
         prompt = template.format(
@@ -402,6 +401,7 @@ You are {role}. Your objective is {objective}.
         return errors
 
     def create_custom_template(
+        """Docstring."""
         self,
         name: str,
         template: str,
@@ -457,6 +457,7 @@ def get_prompt_assembler(legacy_mode: bool = False) -> PromptAssembler:
 
 # Convenience functions
 def assemble_prompt(
+    """Docstring."""
     role: str,
     objective: str,
     context_data: Union[Dict[str, Any], str],
@@ -498,6 +499,7 @@ def parse_response(response: str) -> Dict[str, Any]:
 
 # Backward compatibility wrapper
 def enhance_prompt_with_fencing(
+    """Docstring."""
     base_prompt: str,
     injections: List[InjectionMatch],
     role: str = "Assistant",

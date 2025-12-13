@@ -1,5 +1,5 @@
-# from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.infra.sandbox.vm_manager import run_in_ephemeral_vm  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Ar...
+# from archives.legacy_root_folders.infra.sandbox.vm_manager import run_in_ephemeral_vm  # DEPREC...
 
 def test_run_in_ephemeral_vm_basic():
     """TODO: Add docstring."""

@@ -1,6 +1,5 @@
 """Types and models for track_lic_state."""
 
-from dataclasses import dataclass, field
 
 @dataclass
 class StateCheckpoint:

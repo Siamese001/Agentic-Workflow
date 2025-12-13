@@ -8,9 +8,6 @@ import os
 
 # Import the classes we're testing
 try:
-    from apps_rg.L2_execution.job_analyzer import JobAnalyzer
-    from apps_rg.L2_execution.resume_generator import ResumeGenerator
-    from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
 except ImportError as e:
     pytest.skip(f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
@@ -123,7 +120,8 @@ class TestResumeGeneratorIntegration:
         analysis = {
             "hard_skills": ["Python", "Django", "PostgreSQL", "AWS", "Docker"],
             "soft_skills": ["Communication", "Teamwork", "Problem-solving"],
-            "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optimize performance"],
+            "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optimize
+    performance"],
             "experience_level": "senior",
             "cultural_indicators": ["Innovation", "Teamwork", "Learning"],
             "north_star_metric": "Application performance and scalability"
@@ -330,7 +328,8 @@ class TestEndToEndResumeWorkflow:
 
         # Verify resume tailoring
         assert tailored_resume["summary"] != resume_data["summary"]  # Should be rewritten
-        assert "financial" in tailored_resume["summary"].lower() or "fintech" in tailored_resume["summary"].lower()
+        assert "financial" in tailored_resume["summary"].lower() or "fintech" in tailored_resume["su
+    mmary"].lower()
 
         # Verify ATS optimization
         assert len(tailored_resume["ats_keywords"]) > 10

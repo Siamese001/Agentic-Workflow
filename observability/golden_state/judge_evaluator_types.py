@@ -1,7 +1,5 @@
 """Types and models for judge_evaluator."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class JudgmentCriterion(Enum):
     """Criteria for judging output quality."""
@@ -33,7 +31,8 @@ class JudgeVerdict:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'criterion': self.criterion.value, 'score': self.score.value, 'score_value': self.score_value, 'reasoning': self.reasoning, 'evidence': self.evidence, 'suggestions': self.suggestions}
+        return {'criterion': self.criterion.value, 'score': self.score.value, 'score_value': self.sc
+    ore_value, 'reasoning': self.reasoning, 'evidence': self.evidence, 'suggestions': self.suggestions}
 
 @dataclass
 class JudgeEvaluationResult:
@@ -56,4 +55,5 @@ class JudgeEvaluationResult:
 
     def get_failing_criteria(self) -> List[JudgmentCriterion]:
         """Get criteria that failed."""
-        return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]
+        return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.
+    UNACCEPTABLE}]

@@ -12,8 +12,6 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
 
-from pydantic import BaseModel, Field, validator
-from pydantic.generics import GenericModel
 
 logger = logging.getLogger(__name__)
 
@@ -164,6 +162,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         """TODO: Add docstring."""
 
     class Config:
+        """Docstring."""
         arbitrary_types_allowed = True
         use_enum_values = True
 
@@ -189,6 +188,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
         self._touch()
 
     def mark_stage_complete(
+        """Docstring."""
         self,
         stage_name: str,
         duration_ms: float,
@@ -211,7 +211,8 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     status=PipelineStageStatus.SUCCESS,
                     duration_ms=duration_ms,
                     output_hash=output_hash or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
-                        
+
+
                     metadata=metadata or {}
                 )
                 break
@@ -222,13 +223,15 @@ class SignalEnvelope(GenericModel, Generic[T]):
                 status=PipelineStageStatus.SUCCESS,
                 duration_ms=duration_ms,
                 output_hash=output_hash or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
-                    
+
+
                 metadata=metadata or {}
             ))
 
         self._touch()
 
     def mark_stage_failed(
+        """Docstring."""
         self,
         stage_name: str,
         error_message: str,
@@ -370,7 +373,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
             "trace_id": self.trace_id,
             "parent_trace_id": self.parent_trace_id,
             "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat(),
+            # SQL query removed: self.updated_at.isoformat(),
             "payload": self.payload.dict() if hasattr(self.payload, 'dict') else self.payload,
             "history": [r.dict() for r in self.history],
             "metadata": self.metadata,
@@ -410,7 +413,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
             trace_id=data["trace_id"],
             parent_trace_id=data.get("parent_trace_id"),
             created_at=datetime.fromisoformat(data["created_at"]),
-            updated_at=datetime.fromisoformat(data["updated_at"]),
+            updated_at=datetime.fromisoformat(data[# SQL query removed]),
             payload=payload,
             history=history,
             metadata=data.get("metadata", {}),
@@ -422,6 +425,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
 
     @classmethod
     def from_legacy_dict(cls,
+        """Docstring."""
         data: Dict[str,
         Any],
         metadata: Optional[Dict[str,
@@ -455,6 +459,7 @@ class EnvelopeFactory:
 
     @staticmethod
     def create_envelope(
+        """Docstring."""
         data: Any,
         metadata: Optional[Dict[str, str]] = None,
         trace_id: Optional[str] = None,

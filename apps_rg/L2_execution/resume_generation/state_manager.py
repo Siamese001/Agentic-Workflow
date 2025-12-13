@@ -4,7 +4,6 @@
 
 import json
 import os
-from dataclasses import asdict
 
 class StateSerializer:
     """
@@ -195,7 +194,6 @@ class StateSerializer:
         if expected_type == ThematicAnalysis:
             # Use the static method from rag_RES.py
             # Import here to avoid circular dependencies
-            from apps_shared.rag.hardening.rag import EnhancedJobDescriptionAnalyzer
             return EnhancedJobDescriptionAnalyzer._dict_to_thematic_analysis(data_dict)
 
         if expected_type == "list[ValidationResult]":
@@ -269,6 +267,7 @@ class ManifestManager:
         self.manifest_path = os.path.join(run_path, "run_manifest.json")
 
     def create_manifest(self, run_id: str, engine_version: str,
+        """Docstring."""
                        job_input: dict, master_resume_hash: str) -> Dict[str, object]:
         """
         Creates and saves a new manifest for a new run.

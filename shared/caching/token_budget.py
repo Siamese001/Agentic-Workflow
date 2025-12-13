@@ -5,7 +5,6 @@ Converts token budget inspector into active enforcement mechanism.
 """
 
 import logging
-from dataclasses import dataclass
 from typing import Optional, Dict, Any
 
 logger = logging.getLogger(__name__)
@@ -76,6 +75,7 @@ class TokenBudget:
         return len(text) // 4
 
     def check_request_budget(
+        """Docstring."""
         self,
         prompt: str,
         max_completion_tokens: int,
@@ -123,6 +123,7 @@ class TokenBudget:
             )
 
     def record_usage(
+        """Docstring."""
         self,
         prompt_tokens: int,
         completion_tokens: int,
@@ -194,7 +195,7 @@ class TokenBudget:
             "prompt_utilization": self._prompt_tokens / max(1, self.config.max_prompt_tokens),
             "completion_utilization": self._completion_tokens / max(1,
                 self.config.max_completion_tokens),
-                
+
             "total_utilization": self._total_tokens / max(1, self.config.max_total_tokens),
         }
 
@@ -221,6 +222,7 @@ class TokenBudget:
         }
 
 def enforce_token_budget(
+    """Docstring."""
     prompt: str,
     max_completion_tokens: int,
     budget: TokenBudget,

@@ -1,6 +1,5 @@
 """Enum types for lic_routing_rules."""
 
-from enum import Enum
 
 class MessageRoute(Enum):
     """Message route types for LinkedIn outreach."""

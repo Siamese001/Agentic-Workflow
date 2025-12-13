@@ -1,7 +1,6 @@
 """Backward compatibility shim for comprehensive_dedup_analysis.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original comprehensive_dedup_analysis.py contained 25 top-level definitions which

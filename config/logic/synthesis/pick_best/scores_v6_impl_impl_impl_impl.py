@@ -1,7 +1,6 @@
 """Backward compatibility shim for scores_v6_impl_impl_impl_impl.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original scores_v6_impl_impl_impl_impl.py contained 6 top-level definitions which

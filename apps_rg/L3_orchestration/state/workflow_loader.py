@@ -9,7 +9,6 @@ import json
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -151,17 +150,23 @@ class WorkflowLoader:
                 "description": "Creative generation phase",
                 "creative_brief": {
                     "headline": {"word_count": [8, 12], "char_count_max": 90},
-                    "executive_summary": {"word_count": [120, 140], "voice": "third_person_implied", "forbidden_patterns": []},
-                    "experience_bullets": {"unify_bullet_word_count": [28, 33], "ibm_bullet_word_count": [24, 30]},
-                    "experience_overview": {"unify_word_count": [25, 33], "ibm_word_count": [22, 28]},
+                    "executive_summary": {"word_count": [120, 140], "voice": "third_person_implied",
+    "forbidden_patterns": []},
+                    "experience_bullets": {"unify_bullet_word_count": [28, 33], "ibm_bullet_word_cou
+    nt": [24, 30]},
+                    "experience_overview": {"unify_word_count": [25, 33], "ibm_word_count": [22, 28]
+    },
                     "leadership_competencies": {"word_count_per_desc": [24, 30]},
                     "cover_letter": {"word_count_per_para": [85, 100]},
                     "deduplication_matrix": {"thresholds": {}}
                 },
                 "hardcoded_config": {
-                    "K.0": {"description": "Thematic analysis", "temp": 0.3, "rag_total_calls": 50, "rag_hops": 3},
-                    "K.1": {"description": "Executive summary", "temp": 0.9, "rag_total_calls": 4, "rag_hops": 2},
-                    "K.2": {"description": "Competitive analysis", "temp": 0.3, "rag_total_calls": 24, "rag_hops": 3}
+                    "K.0": {"description": "Thematic analysis", "temp": 0.3, "rag_total_calls": 50,
+    "rag_hops": 3},
+                    "K.1": {"description": "Executive summary", "temp": 0.9, "rag_total_calls": 4, "
+    rag_hops": 2},
+                    "K.2": {"description": "Competitive analysis", "temp": 0.3, "rag_total_calls": 2
+    4, "rag_hops": 3}
                 }
             }
         }
@@ -216,7 +221,7 @@ class WorkflowLoader:
                 executive_summary_voice=brief.get("executive_summary",
                     {}).get("voice",
                     "third_person_implied"),
-                    
+
                 forbidden_patterns=brief.get("executive_summary", {}).get("forbidden_patterns", []),
                 unify_bullet_word_count=WordCountConstraints.from_list(
                     brief.get("experience_bullets", {}).get("unify_bullet_word_count", [28, 33])

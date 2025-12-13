@@ -13,7 +13,6 @@ Phase 1C - SDK Integration Layer
 import os
 import pytest
 
-from runtime.shared import (
     AgentMessage,
     Provider,
     WorkflowOrchestrator,
@@ -185,6 +184,7 @@ class TestWorkflowOrchestration:
             """TODO: Add docstring."""
 
         def hop2(context):
+            """Docstring."""
             input_val = context.get_input("result")
             context.set_output("final_result", f"{input_val}_hop2")
 
@@ -259,7 +259,6 @@ class TestMultiProviderFallback:
 
     def test_provider_fallback_logic(self):
         """Test that fallback providers are configured."""
-        from runtime.shared.sdk_registry import SDK_REGISTRY
 
         anthropic_entry = SDK_REGISTRY.get("anthropic")
         assert anthropic_entry is not None
@@ -310,7 +309,6 @@ class TestVectorStoreIntegration:
             )
 
             if context.vector_store:
-                from runtime.shared import create_chroma_collection, upsert_vectors_chroma
 
                 collection = create_chroma_collection(
                     context.vector_store,

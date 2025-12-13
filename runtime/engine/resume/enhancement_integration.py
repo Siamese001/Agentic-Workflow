@@ -7,11 +7,6 @@ resume generation capabilities.
 
 import logging
 
-from .persona_router import PersonaRouter, ReaderPersona, get_persona_router
-from .evidence_injector import EvidenceInjector, get_evidence_injector
-from ..strategy.competitor_recon import ReconAgent, ReconSignal, get_recon_agent
-from ..shared.infrastructure_integration import InfrastructureOrchestrator, TaskType
-from ..shared.core.event_bus import EventType, SystemEvent
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +130,8 @@ class ResumeEnhancementOrchestrator:
 
             # This could trigger additional persona-specific logic
             # For now, just log the analysis
-            logger.info(f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype')})")
+            logger.info(f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype'
+    )})")
 
         except Exception as e:
             logger.error(f"Failed to handle persona analyzed: {e}")
@@ -171,6 +167,7 @@ class ResumeEnhancementOrchestrator:
         return None
 
     async def generate_enhanced_resume(
+        """Docstring."""
         self,
         job_description: str,
         candidate_history: List[str],
@@ -235,7 +232,8 @@ class ResumeEnhancementOrchestrator:
 
             # 6. Add competitive insights to prompt if available
             if recon_signal and recon_signal.position.value != "UNRELATED":
-                prompt_template += f"\n\nCompetitive Intelligence:\n{recon_signal.strategy_recommendation}"
+                prompt_template += f"\n\nCompetitive Intelligence:\n{recon_signal.strategy_recommend
+    ation}"
 
             # 7. Generate final resume through infrastructure
             result = await self.infrastructure.execute_with_infrastructure(
@@ -257,7 +255,8 @@ class ResumeEnhancementOrchestrator:
                         "persona": persona.title,
                         "enhanced_bullets": len(enhanced_bullets),
                         "links_injected": self.evidence_injector._links_used,
-                        "competitive_insights": recon_signal.position.value if recon_signal else None
+                        "competitive_insights": recon_signal.position.value if recon_signal else Non
+    e
                     },
                     causation_id=trace_id
                 )
@@ -335,7 +334,8 @@ class ResumeEnhancementOrchestrator:
             "evidence_injector": self.evidence_injector.get_stats(),
             "recon_agent": {
                 "companies_in_db": len(self.recon_agent.competitor_db),
-                "industries_covered": len(set(c.industry for c in self.recon_agent.competitor_db.values()))
+                "industries_covered": len(set(c.industry for c in self.recon_agent.competitor_db.val
+    ues()))
             }
         }
 
@@ -364,6 +364,7 @@ async def get_resume_enhancement_orchestrator() -> ResumeEnhancementOrchestrator
 
 # Convenience function
 async def enhance_resume(
+    """Docstring."""
     job_description: str,
     candidate_history: List[str],
     resume_bullets: List[str],

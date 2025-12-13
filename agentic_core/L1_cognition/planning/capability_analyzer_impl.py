@@ -27,6 +27,7 @@ class CapabilityAnalyzer:
             logger.info('capability_analyzer_initialized')
 
     def analyze_failures(self,
+        """Docstring."""
         agent_id: str,
         failure_reports: List[Dict[str,
         Any]]) -> List[CapabilityGap]:
@@ -57,6 +58,7 @@ class CapabilityAnalyzer:
         return gaps
 
     def generate_recommendations(self,
+        """Docstring."""
         agent_id: str,
         gaps: List[CapabilityGap]) -> List[Recommendation]:
         """Generate improvement recommendations for capability gaps.
@@ -83,6 +85,7 @@ class CapabilityAnalyzer:
         return recommendations
 
     def create_analysis_report(self,
+        """Docstring."""
         agent_id: str,
         failure_reports: List[Dict[str,
         Any]]) -> AnalysisReport:
@@ -155,7 +158,9 @@ class CapabilityAnalyzer:
         """
         if not failures:
             return None
-        gap_type_map = {'missing_tool': CapabilityGapType.MISSING_TOOL, 'insufficient_knowledge': CapabilityGapType.INSUFFICIENT_KNOWLEDGE, 'performance': CapabilityGapType.PERFORMANCE_DEGRADATION, 'reasoning': CapabilityGapType.REASONING_LIMITATION, 'integration': CapabilityGapType.INTEGRATION_FAILURE}
+        gap_type_map = {'missing_tool': CapabilityGapType.MISSING_TOOL, 'insufficient_knowledge': Ca
+    pabilityGapType.INSUFFICIENT_KNOWLEDGE, 'performance': CapabilityGapType.PERFORMANCE_DEGRADATION
+        , 'reasoning': CapabilityGapType.REASONING_LIMITATION, 'integration': CapabilityGapType.INTEGRATION_FAILURE}
         gap_type = gap_type_map.get(pattern_type, CapabilityGapType.INTEGRATION_FAILURE)
         scenarios = list(set((f.get('scenario_id', 'unknown') for f in failures)))
         severity = min(len(failures) / 10.0, 1.0)

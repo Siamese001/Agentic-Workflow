@@ -3,7 +3,8 @@
 Pick Best Refinement Module
 
 This module provides refinement selection and optimization within the Agentic-Workflow system.
-It is part of the scripts/logic/synthesis/pick_best_refinement component and offers specialized functionality
+It is part of the scripts/logic/synthesis/pick_best_refinement component and offers specialized func
+    tionality
 for efficient data processing and workflow management.
 
 Key Responsibilities:

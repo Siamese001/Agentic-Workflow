@@ -1,7 +1,5 @@
 """Types and models for rg_provenance_tracker."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class ProvenanceType(Enum):
     """Type of provenance source."""

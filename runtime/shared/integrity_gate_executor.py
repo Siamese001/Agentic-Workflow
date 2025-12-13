@@ -19,7 +19,6 @@ Non-responsibilities:
 
 import hashlib
 import re
-from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
@@ -34,6 +33,7 @@ class ValidationSeverity(Enum):
     """TODO: Add docstring."""
 
 class GateType(Enum):
+    """Docstring."""
     WORD_COUNT = "WORD_COUNT"
     INDUSTRY_FIRST = "INDUSTRY_FIRST"
     GROUNDING = "GROUNDING"
@@ -46,6 +46,7 @@ class GateType(Enum):
 
 @dataclass
 class ValidationRule:
+    """Docstring."""
     gate_id: str
     gate_type: GateType
     severity: ValidationSeverity
@@ -56,6 +57,7 @@ class ValidationRule:
 
 @dataclass
 class ValidationResult:
+    """Docstring."""
     gate_id: str
     passed: bool
     severity: ValidationSeverity
@@ -67,6 +69,7 @@ class ValidationResult:
 
 @dataclass
 class CryptographicSignature:
+    """Docstring."""
     gate_id: str
         """TODO: Add docstring."""
 
@@ -75,6 +78,7 @@ class CryptographicSignature:
     signature: str
 
     def verify(self, content: str) -> bool:
+        """Docstring."""
         computed_hash = hashlib.sha256(content.encode()).hexdigest()
         return computed_hash == self.content_hash
 
@@ -157,6 +161,7 @@ class IntegrityGateExecutor:
         )
 
     def execute_word_count_gate(
+        """Docstring."""
         self,
         content: str,
         min_words: int,
@@ -189,6 +194,7 @@ class IntegrityGateExecutor:
         )
 
     def execute_industry_first_gate(
+        """Docstring."""
         self,
         headline: str,
         valid_industries: Set[str],
@@ -230,6 +236,7 @@ class IntegrityGateExecutor:
         )
 
     def execute_grounding_check(
+        """Docstring."""
         self,
         content: str,
         evidence_pool: List[str],
@@ -273,6 +280,7 @@ class IntegrityGateExecutor:
         )
 
     def execute_metric_binding_gate(
+        """Docstring."""
         self,
         content: str,
         evidence_ids: Dict[str, str],
@@ -334,7 +342,8 @@ class IntegrityGateExecutor:
             'passed': sum(1 for r in self.results if r.passed),
             'failed': sum(1 for r in self.results if not r.passed),
             'blocked': sum(1 for r in self.results if r.severity == ValidationSeverity.BLOCK and not r.passed),
-                
+
+
             'results': [
                 {
                     'gate_id': r.gate_id,

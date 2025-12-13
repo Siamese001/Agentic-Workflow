@@ -1,6 +1,5 @@
 """Dataclass models for use_observability_execution."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 # from .use_observability_execution_enums import *  # Star import removed
 

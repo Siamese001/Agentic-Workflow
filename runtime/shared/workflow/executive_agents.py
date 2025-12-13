@@ -21,7 +21,6 @@ except ImportError:
     INSTRUCTOR_AVAILABLE = False
     logging.warning("Instructor not available. Executive agents will use mock responses.")
 
-from .schema_definitions import (
     TechnicalSWOT,
     StrategyRoadmap,
     InterviewerProfile,
@@ -55,7 +54,8 @@ class DataSourceProvider:
             Aggregated blog content
         """
         if not self.brave_search:
-            return f"[MOCK] Engineering blog content for {company_name}: Recent posts mention migration to microservices..."
+            return f"[MOCK] Engineering blog content for {company_name}: Recent posts mention migrat
+    ion to microservices..."
 
         queries = [
             f"{company_name} engineering blog",
@@ -85,7 +85,8 @@ class DataSourceProvider:
             Technology insights from GitHub
         """
         if not self.brave_search:
-            return f"[MOCK] GitHub scan for {company_name}: Primary repos use Python, React, Kubernetes..."
+            return f"[MOCK] GitHub scan for {company_name}: Primary repos use Python, React, Kuberne
+    tes..."
 
         query = f"site:github.com {company_name} organization repositories"
 
@@ -113,7 +114,8 @@ class DataSourceProvider:
             Professional background and interests
         """
         if not self.brave_search:
-            return "[MOCK] Interviewer profile: 15 years at company, technical background, loves system design..."
+            return "[MOCK] Interviewer profile: 15 years at company, technical background, loves sys
+    tem design..."
 
         # Extract name from URL if possible
         name = linkedin_url.split('/')[-1] if linkedin_url else "unknown"
@@ -215,6 +217,7 @@ class ExecutiveAgentOrchestrator:
             raise ValueError(f"No client available for model: {model}")
 
     async def execute_k11_shadow_audit(
+        """Docstring."""
         self,
         company_name: str,
         config: Dict[str, Any]
@@ -327,6 +330,7 @@ class ExecutiveAgentOrchestrator:
             raise
 
     async def execute_k12_strategy(
+        """Docstring."""
         self,
         job_description: str,
         technical_swot: TechnicalSWOT,
@@ -352,13 +356,16 @@ class ExecutiveAgentOrchestrator:
         if not INSTRUCTOR_AVAILABLE:
             # Return mock response
             return StrategyRoadmap(
-                executive_summary="Transform engineering organization to deliver scalable AI-powered solutions while improving developer productivity and system reliability.",
-                primary_objective="Establish modern MLOps infrastructure and high-performing engineering culture",
+                executive_summary="Transform engineering organization to deliver scalable AI-powered
+    solutions while improving developer productivity and system reliability.",
+                primary_objective="Establish modern MLOps infrastructure and high-performing enginee
+    ring culture",
                 milestones=[
                     {
                         "timeframe": "Day 30",
                         "focus_area": "People",
-                        "initiative": "Conduct team assessments and establish 1:1s with all engineers",
+                        "initiative": "Conduct team assessments and establish 1:1s with all engineer
+    s",
                         "success_metric": "100% team assessment completion",
                         "risk_level": "Low"
                     },
@@ -399,7 +406,8 @@ class ExecutiveAgentOrchestrator:
                     }
                 ],
                 key_stakeholders=["CTO", "VP Engineering", "Product Lead", "Engineering Managers"],
-                success_criteria="90% deployment success rate, 40% reduction in incident response time"
+                success_criteria="90% deployment success rate, 40% reduction in incident response ti
+    me"
             )
 
         # Execute with structured output
@@ -453,6 +461,7 @@ class ExecutiveAgentOrchestrator:
             raise
 
     async def execute_k13_simulation(
+        """Docstring."""
         self,
         interviewer_linkedin: str,
         resume_text: str,
@@ -495,7 +504,8 @@ class ExecutiveAgentOrchestrator:
                 ],
                 kill_chain_questions=[
                     {
-                        "question_text": "Tell me about a time you had to make a difficult technical trade-off",
+                        "question_text": "Tell me about a time you had to make a difficult technical
+    trade-off",
                         "question_type": "Technical",
                         "rationale": "Wants to see technical judgment and decision-making",
                         "recommended_angle": "Focus on systematic evaluation and business impact",
@@ -503,7 +513,8 @@ class ExecutiveAgentOrchestrator:
                         "follow_up_likelihood": "High"
                     }
                 ],
-                conversation_starters=["Tell me about your background", "What brings you here today?"],
+                conversation_starters=["Tell me about your background", "What brings you here today?
+    "],
                 decision_factors=["Technical depth", "Leadership experience", "Culture fit"],
                 red_flags=["Arrogance", "Blaming others", "No concrete examples"]
             )
@@ -575,6 +586,7 @@ class ExecutiveAgentOrchestrator:
 
 # Factory function
 def create_executive_orchestrator(
+    """Docstring."""
     brave_search_tool=None,
     data_source_provider: Optional[DataSourceProvider] = None
 ) -> ExecutiveAgentOrchestrator:

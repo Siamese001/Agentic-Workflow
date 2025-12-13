@@ -24,13 +24,10 @@ logger = logging.getLogger(__name__)
 import hashlib
 import json
 import time
-from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from runtime.shared.integrity_gate_executor import IntegrityGateExecutor
-from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 @dataclass
 class ExecutionArtifact:
@@ -45,6 +42,7 @@ class ExecutionArtifact:
     """TODO: Add docstring."""
 
 class ExecutionTrace:
+    """Docstring."""
     run_sha: str
     start_time: float
     end_time: Optional[float]
@@ -118,6 +116,7 @@ class ExecutionOrchestrator:
             self.current_trace.decision_path.append(decision_entry)
 
     def record_temperature_adjustment(
+        """Docstring."""
         self,
         recovery_loop: AdaptiveRecoveryLoop
     ) -> None:
@@ -128,6 +127,7 @@ class ExecutionOrchestrator:
             )
 
     def record_validation_failure(
+        """Docstring."""
         self,
         gate_executor: IntegrityGateExecutor
     ) -> None:
@@ -139,7 +139,7 @@ class ExecutionOrchestrator:
                     'message': r.message,
                     'severity': r.severity.value if hasattr(r.severity,
                         'value') else str(r.severity),
-                        
+
                     'details': r.details,
                     'timestamp': time.time()
                 }
@@ -149,6 +149,7 @@ class ExecutionOrchestrator:
             self.current_trace.validation_failures.extend(failed_results)
 
     def add_artifact(
+        """Docstring."""
         self,
         artifact_type: str,
         content: str,
@@ -167,6 +168,7 @@ class ExecutionOrchestrator:
             self.current_trace.artifacts.append(artifact)
 
     def complete_execution(
+        """Docstring."""
         self,
         success: bool,
         error: Optional[str] = None
@@ -279,6 +281,7 @@ class ExecutionOrchestrator:
         logger.info(f"[SYSTEM] {message}")
 
 def create_execution_orchestrator(
+    """Docstring."""
     output_dir: Optional[Path] = None,
     silent_mode: bool = True
 ) -> ExecutionOrchestrator:

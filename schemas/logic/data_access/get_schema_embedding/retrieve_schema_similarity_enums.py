@@ -1,6 +1,5 @@
 """Enum types for retrieve_schema_similarity."""
 
-from enum import Enum
 
 class SimilarityMethod(Enum):
     """Methods for computing schema similarity."""

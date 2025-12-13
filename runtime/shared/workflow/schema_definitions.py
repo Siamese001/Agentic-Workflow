@@ -7,7 +7,6 @@ Defines structured outputs for:
 - K.13 Interviewer Simulation: Oppositional interview preparation
 """
 
-from pydantic import BaseModel, Field, validator
 
 # ===== K.11 SHADOW AUDIT SCHEMAS =====
 
@@ -41,6 +40,7 @@ class TechStackInference(BaseModel):
 
     @validator('confidence_score')
     def validate_confidence(cls, v):
+        """Docstring."""
         if v < 0.3:
             raise ValueError("Confidence score too low for inclusion")
         return v
@@ -92,6 +92,7 @@ class TechnicalSWOT(BaseModel):
 
     @validator('strategic_opportunity')
     def validate_opportunity(cls, v):
+        """Docstring."""
         if not any(word in v.lower() for word in ['improve',
             'reduce',
             'increase',
@@ -136,6 +137,7 @@ class Milestone(BaseModel):
 
     @validator('success_metric')
     def validate_metric(cls, v):
+        """Docstring."""
         # Should contain a number or percentage
         if not any(char.isdigit() for char in v) and '%' not in v:
             raise ValueError("Success metric should be quantifiable")
@@ -189,6 +191,7 @@ class StrategyRoadmap(BaseModel):
 
     @validator('milestones')
     def validate_milestone_distribution(cls, v):
+        """Docstring."""
         # Ensure we have milestones for each timeframe
         timeframes = set(m.timeframe for m in v)
         required = {"Day 30", "Day 60", "Day 90"}
@@ -294,6 +297,7 @@ class InterviewerProfile(BaseModel):
 
     @validator('kill_chain_questions')
     def validate_question_difficulty(cls, v):
+        """Docstring."""
         # Ensure at least 2 "Hard" or "Killer" questions
         hard_questions = [q for q in v if q.difficulty in ["Hard", "Killer"]]
         if len(hard_questions) < 2:

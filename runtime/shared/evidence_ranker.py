@@ -8,7 +8,6 @@ the Resume Engine cites the most current and verified truth.
 import logging
 import re
 from datetime import datetime
-from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +101,7 @@ class EvidenceRanker:
                    f"semantic={self.semantic_weight:.2f}")
 
     def rank_evidence(
+        """Docstring."""
         self,
         signals: List[Dict[str, Any]],
         current_year: Optional[int] = None
@@ -144,7 +144,8 @@ class EvidenceRanker:
                         continue
 
                     if not 0.0 <= semantic_score <= 1.0:
-                        logger.warning(f"Semantic score out of bounds for doc {doc_id}: {semantic_score}")
+                        logger.warning(f"Semantic score out of bounds for doc {doc_id}: {semantic_sc
+    ore}")
                         semantic_score = max(0.0, min(1.0, semantic_score))
 
                     # Calculate freshness score
@@ -316,7 +317,8 @@ class EvidenceRanker:
                     corroboration_counts[entity] = len(all_entities[entity])
 
             # Calculate total corroboration (sum of corroborating signals)
-            total_corroboration = sum(count - 1 for count in corroboration_counts.values() if count > 1)
+            total_corroboration = sum(count - 1 for count in corroboration_counts.values() if count
+    > 1)
 
             # Identify key entities (those with corroboration)
             key_entities = [entity for entity, count in corroboration_counts.items() if count > 1]
@@ -424,12 +426,14 @@ class EvidenceRanker:
                 "recent_count": recent_count,
                 "corroborated_count": corroborated_count,
                 "avg_freshness": sum(e.freshness_score for e in ranked_evidence) / len(ranked_evidence),
-                    
+
+
                 "avg_corroboration": sum(e.corroboration_count for e in ranked_evidence) / len(ranked_evidence),
-                    
+
+
                 "year_range": (min(years_detected),
                     max(years_detected)) if years_detected else None,
-                    
+
                 "avg_year": avg_year,
                 "top_score": ranked_evidence[0].final_score,
                 "bottom_score": ranked_evidence[-1].final_score
@@ -440,6 +444,7 @@ class EvidenceRanker:
 
 # Factory function for easy instantiation
 def create_evidence_ranker(
+    """Docstring."""
     freshness_weight: float = 0.4,
     corroboration_weight: float = 0.2,
     semantic_weight: float = 0.4,
@@ -465,6 +470,7 @@ def create_evidence_ranker(
 
 # Convenience function for quick ranking
 def rank_evidence(
+    """Docstring."""
     signals: List[Dict[str, Any]],
     prioritize_freshness: bool = True,
     current_year: Optional[int] = None

@@ -12,7 +12,6 @@ import math
 from typing import List, Tuple
 
 try:
-    from scripts.utilities.format_scripts_context import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
 
     SKLEARN_AVAILABLE = True
@@ -67,6 +66,7 @@ class TextSimilarityCalculator:
         return numerator / denominator
 
     def find_duplicates(
+        """Docstring."""
         self, texts: List[str], threshold: float = 0.9
     ) -> List[Tuple[int, int, float]]:
         """Find text pairs with similarity >= threshold."""

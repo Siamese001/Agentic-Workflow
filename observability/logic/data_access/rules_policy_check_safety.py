@@ -1,7 +1,6 @@
 """Backward compatibility shim for rules_policy_check_safety.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original rules_policy_check_safety.py contained 6 top-level definitions which

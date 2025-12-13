@@ -1,6 +1,5 @@
 """Enum types for lic_archetypes."""
 
-from enum import Enum
 
 class RecipientArchetype(Enum):
     """Recipient archetype classifications."""

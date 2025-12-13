@@ -3,8 +3,6 @@ Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
 from typing import Dict, List, Optional
-from dataclasses import dataclass
-from enum import Enum
 
 class ToolStatus(Enum):
     """TODO: Add docstring."""
@@ -18,6 +16,7 @@ class ToolStatus(Enum):
     """TODO: Add docstring."""
 
 class ToolDefinition:
+    """Docstring."""
     name: str
     description: str
     parameters: Dict[str, object]
@@ -27,6 +26,7 @@ class ToolDefinition:
 
 @dataclass
 class ToolResult:
+    """Docstring."""
     success: bool
     data: Optional[Any]
     error: Optional[str]
@@ -90,6 +90,7 @@ class TestToolExecution:
     def test_execute_tool_success(self):
         """Tool executes successfully."""
         def mock_search(query: str) -> Dict:
+            """Docstring."""
             return {"results": [f"Result for: {query}"]}
 
         result = mock_search("test query")
@@ -109,6 +110,7 @@ class TestToolExecution:
     def test_execute_tool_failure(self):
         """Tool failure is handled correctly."""
         def mock_failing_tool() -> Dict:
+            """Docstring."""
             raise ValueError("Tool execution failed")
 
         try:

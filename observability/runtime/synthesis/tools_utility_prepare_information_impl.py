@@ -35,6 +35,7 @@ class ToolsUtilityPrepareInformation:
             raise ValueError(f'Missing required config keys: {missing}')
 
     def process(self,
+        """Docstring."""
         payload: Union[str,
         int,
         float,

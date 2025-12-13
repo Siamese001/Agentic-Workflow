@@ -53,7 +53,8 @@ class SchemaHistoryFetcher:
                 'storage_path': self.config.storage_path,
                 'total_schemas': len(self._history_records),
                 'fetcher': 'SchemaHistoryFetcher'})
-            self.logger.info(f'Schema history fetched: {len(paginated_records)} records (total: {total_count})')
+            self.logger.info(f'Schema history fetched: {len(paginated_records)} records (total: {tot
+    al_count})')
             return result
         except Exception as e:
             self.logger.error(f'Failed to fetch schema history: {str(e)}')
@@ -77,8 +78,10 @@ class SchemaHistoryFetcher:
             self._history_records[record.schema_id].append(record)
             if len(self._history_records[record.schema_id]) > self.config.max_records_per_schema:
                 self._history_records[record.schema_id].sort(key=lambda x: x.timestamp)
-                excess = len(self._history_records[record.schema_id]) - self.config.max_records_per_schema
-                self._history_records[record.schema_id] = self._history_records[record.schema_id][excess:]
+                excess = len(self._history_records[record.schema_id]) - self.config.max_records_per_
+    schema
+                self._history_records[record.schema_id] = self._history_records[record.schema_id][ex
+    cess:]
             self._save_schema_history(record.schema_id)
             self.logger.debug(f'Added change record for schema: {record.schema_id}')
             return True
@@ -157,6 +160,7 @@ class SchemaHistoryFetcher:
                     stats[contributor]['schemas_modified'].add(schema_id)
                     action = record.action.value
                     stats[contributor]['actions'][action] = stats[contributor]['actions'].get(action,
+
                         0) + 1
         for contributor in stats:
             stats[contributor]['schemas_modified'] = len(stats[contributor]['schemas_modified'])
@@ -215,7 +219,8 @@ class SchemaHistoryFetcher:
                 except Exception as e:
                     self.logger.error(f'Failed to load history from {history_file}: {str(e)}')
             total_records = sum((len(records) for records in self._history_records.values()))
-            self.logger.info(f'Loaded {total_records} history records for {len(self._history_records)} schemas')
+            self.logger.info(f'Loaded {total_records} history records for {len(self._history_records
+    )} schemas')
         except Exception as e:
             self.logger.error(f'Failed to load schema history: {str(e)}')
 
@@ -267,6 +272,7 @@ class SchemaHistoryFetcher:
             self._save_schema_history(schema_id)
 
 def create_schema_history_fetcher(storage_path: str='data/schema_history',
+    """Docstring."""
     max_records_per_schema: int=1000,
     retention_days: int=365,
     **kwargs: object) -> SchemaHistoryFetcher:
@@ -278,6 +284,7 @@ def create_schema_history_fetcher(storage_path: str='data/schema_history',
     return SchemaHistoryFetcher(config)
 
 def fetch_schema_history(schema_id: Optional[str]=None,
+    """Docstring."""
     actions: List[str]=None,
     changed_by: Optional[str]=None,
     date_from: Optional[datetime]=None,

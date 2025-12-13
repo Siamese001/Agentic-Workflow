@@ -54,7 +54,8 @@ class SchemaSimilarityRetriever:
                 'source_field_count': len(source_fields),
                 'target_field_count': len(target_fields),
                 'retriever': 'SchemaSimilarityRetriever'})
-            self.logger.info(f'Schema similarity computed: {similarity:.3f} (compatibility: {compatibility.value})')
+            self.logger.info(f'Schema similarity computed: {similarity:.3f} (compatibility: {compati
+    bility.value})')
             return result
         except Exception as e:
             self.logger.error(f'Failed to compute schema similarity: {str(e)}')
@@ -63,6 +64,7 @@ class SchemaSimilarityRetriever:
                 metadata={'error': str(e)})
 
     def batch_similarity(self,
+        """Docstring."""
         source_schema: Dict[str,
         Any],
         target_schemas: List[Dict[str,
@@ -91,12 +93,14 @@ class SchemaSimilarityRetriever:
         return results
 
     def find_compatible_schemas(self,
+        """Docstring."""
         schema: Dict[str,
         Any],
         schema_candidates: List[Tuple[str,
         Dict[str,
         Any]]],
-        min_compatibility: CompatibilityLevel=CompatibilityLevel.PARTIALLY_COMPATIBLE) -> List[Tuple[str,
+        min_compatibility: CompatibilityLevel=CompatibilityLevel.PARTIALLY_COMPATIBLE) -> List[Tuple
+    [str,
         SchemaSimilarityResult]]:
         """Find schemas compatible with a given schema.
 
@@ -109,7 +113,8 @@ class SchemaSimilarityRetriever:
             List of (schema_id, similarity_result) tuples
         """
         compatible_schemas = []
-        compatibility_order = [CompatibilityLevel.INCOMPATIBLE, CompatibilityLevel.PARTIALLY_COMPATIBLE, CompatibilityLevel.COMPATIBLE, CompatibilityLevel.IDENTICAL]
+        compatibility_order = [CompatibilityLevel.INCOMPATIBLE, CompatibilityLevel.PARTIALLY_COMPATI
+    BLE, CompatibilityLevel.COMPATIBLE, CompatibilityLevel.IDENTICAL]
         min_threshold = compatibility_order.index(min_compatibility)
         for schema_id, candidate_schema in schema_candidates:
             request = SchemaSimilarityRequest(source_schema=schema,
@@ -329,12 +334,14 @@ class SchemaSimilarityRetriever:
         return False
 
 def create_schema_similarity_retriever(default_method: str='hybrid',
+    """Docstring."""
     **kwargs: object) -> SchemaSimilarityRetriever:
     """Create a configured schema similarity retriever."""
     config = SchemaSimilarityConfig(default_method=SimilarityMethod(default_method), **kwargs)
     return SchemaSimilarityRetriever(config)
 
 def retrieve_schema_similarity(source_schema: Dict[str,
+    """Docstring."""
     Any],
     target_schema: Dict[str,
     Any],
@@ -371,4 +378,8 @@ def retrieve_schema_similarity(source_schema: Dict[str,
         weight_semantic=weight_semantic,
         weight_overlap=weight_overlap)
     result = retriever.retrieve_similarity(request)
-    return {'similarity_score': result.similarity_score, 'compatibility_level': result.compatibility_level.value, 'field_matches': [{'field_name': m.field_name, 'source_type': m.source_type, 'target_type': m.target_type, 'type_match': m.type_match, 'semantic_similarity': m.semantic_similarity, 'confidence': m.confidence} for m in result.field_matches], 'missing_fields': result.missing_fields, 'extra_fields': result.extra_fields, 'type_conflicts': result.type_conflicts, 'metadata': result.metadata}
+    return {'similarity_score': result.similarity_score, 'compatibility_level': result.compatibility
+    _level.value, 'field_matches': [{'field_name': m.field_name, 'source_type': m.source_type, 'targ
+        et_type': m.target_type, 'type_match': m.type_match, 'semantic_similarity': m.semantic_simil
+            arity, 'confidence': m.confidence} for m in result.field_matches], 'missing_fields': res
+                ult.missing_fields, 'extra_fields': result.extra_fields, 'type_conflicts': result.type_conflicts, 'metadata': result.metadata}

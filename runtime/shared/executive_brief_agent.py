@@ -9,7 +9,6 @@ Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
 
 import logging
 from datetime import datetime
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +79,6 @@ class ExecutiveBriefAgent:
 
         # Import tone model for enforcement
         try:
-            from .tone_model import ToneType, create_tone_model
             self.tone_model = create_tone_model()
             self.target_tone = ToneType.DIRECT  # Executive briefs should be direct
         except ImportError:
@@ -134,6 +132,7 @@ class ExecutiveBriefAgent:
         }
 
     async def _research_company_with_titanium(self,
+        """Docstring."""
         company_name: str,
         industry: str) -> Dict[str,
         Any]:
@@ -195,6 +194,7 @@ class ExecutiveBriefAgent:
             return {"name": company_name, "industry": industry}
 
     async def generate_brief_with_titanium(
+        """Docstring."""
         self,
         company_name: str,
         industry: str,
@@ -229,6 +229,7 @@ class ExecutiveBriefAgent:
             )
 
     def generate_brief(
+        """Docstring."""
         self,
         company_data: Dict[str, Any],
         job_description: str,
@@ -398,13 +399,16 @@ class ExecutiveBriefAgent:
                 if context["recent_news"] or context["risk_factors"] or context["jd_metrics"]:
                     if context["jd_metrics"]:
                         metrics_str = ", ".join(context["jd_metrics"][:2])  # Use first 2 metrics
-                        content = f"{company_name} is facing {problem}, with current metrics showing {metrics_str}. This is impacting operational efficiency."
+                        content = f"{company_name} is facing {problem}, with current metrics showing
+    {metrics_str}. This is impacting operational efficiency."
                     else:
-                        content = f"{company_name} is facing {problem}, which is impacting operational efficiency and competitive positioning."
+                        content = f"{company_name} is facing {problem}, which is impacting operation
+    al efficiency and competitive positioning."
                     confidence = 0.9
                 else:
                     # Use general industry observation
-                    content = f"Like many leaders in {context['industry']}, {company_name} is likely navigating {problem} as AI systems scale."
+                    content = f"Like many leaders in {context['industry']}, {company_name} is likely
+    navigating {problem} as AI systems scale."
                     confidence = 0.6
 
                 # Apply tone enforcement
@@ -418,7 +422,8 @@ class ExecutiveBriefAgent:
                 )
             else:
                 # Generic observation
-                content = f"{company_name} is at a critical inflection point in scaling AI capabilities from prototype to production."
+                content = f"{company_name} is at a critical inflection point in scaling AI capabilit
+    ies from prototype to production."
                 if self.tone_model and self.target_tone:
                     content = self._apply_tone_enforcement(content)
 
@@ -485,7 +490,8 @@ class ExecutiveBriefAgent:
                 metric = self.pain_point_solutions[pain_point]["metric"]
 
                 # Generate peer-to-peer insight
-                content = f"Industry leaders are solving this through {solution}, achieving {metric} while maintaining model performance. This requires both technical expertise and change management experience."
+                content = f"Industry leaders are solving this through {solution}, achieving {metric}
+    while maintaining model performance. This requires both technical expertise and change management experience."
 
                 return BriefSection(
                     heading="Insight: Proven Solution Patterns",
@@ -496,7 +502,8 @@ class ExecutiveBriefAgent:
                 # Generic insight
                 return BriefSection(
                     heading="Insight: Strategic Imperative",
-                    content="Successful AI transformation requires balancing rapid innovation with sustainable operations, focusing on measurable business outcomes.",
+                    content="Successful AI transformation requires balancing rapid innovation with s
+    ustainable operations, focusing on measurable business outcomes.",
                     confidence=0.6
                 )
 
@@ -525,11 +532,13 @@ class ExecutiveBriefAgent:
 
             if relevant_exp and len(relevant_exp) > 0:
                 exp = relevant_exp[0]  # Use most relevant experience
-                content = f"I led this exact transformation at {previous_role}, {exp}. I have a 90-day roadmap tailored to {context['company_name']}'s context. Worth a brief chat?"
+                content = f"I led this exact transformation at {previous_role}, {exp}. I have a 90-d
+    ay roadmap tailored to {context['company_name']}'s context. Worth a brief chat?"
                 confidence = 0.9
             else:
                 # Generic proposition
-                content = f"I have direct experience scaling AI systems and can provide a 90-day roadmap for {context['company_name']}. Available to discuss specific implementation strategies."
+                content = f"I have direct experience scaling AI systems and can provide a 90-day roa
+    dmap for {context['company_name']}. Available to discuss specific implementation strategies."
                 confidence = 0.6
 
             return BriefSection(
@@ -567,12 +576,14 @@ class ExecutiveBriefAgent:
             ),
             insight=BriefSection(
                 heading="Insight: Strategic Approach",
-                content="Successful AI transformation requires technical excellence and business acumen.",
+                content="Successful AI transformation requires technical excellence and business acu
+    men.",
                 confidence=0.4
             ),
             proposition=BriefSection(
                 heading="Proposition: Strategic Discussion",
-                content="I would welcome the opportunity to discuss how my experience aligns with your goals.",
+                content="I would welcome the opportunity to discuss how my experience aligns with yo
+    ur goals.",
                 confidence=0.4
             )
         )
@@ -651,6 +662,7 @@ From: {self.candidate_name}
 
 # Factory function for easy instantiation
 def create_executive_brief_agent(
+    """Docstring."""
     candidate_name: str,
     candidate_background: Dict[str, Any]
 ) -> ExecutiveBriefAgent:
@@ -667,6 +679,7 @@ def create_executive_brief_agent(
 
 # Convenience function for quick brief generation
 def generate_executive_brief(
+    """Docstring."""
     candidate_name: str,
     candidate_background: Dict[str, Any],
     company_data: Dict[str, Any],

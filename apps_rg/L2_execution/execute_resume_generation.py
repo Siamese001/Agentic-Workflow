@@ -9,9 +9,6 @@ import logging
 import time
 from typing import Dict, Optional, Any
 
-from shared.result_types import ExecutionResult
-from .job_analyzer import JobAnalyzer
-from .resume_generator import ResumeGenerator
 # Local workflow loader to avoid L3 dependency
 class LocalWorkflowLoader:
     """Local workflow loader to avoid architectural violation."""
@@ -55,11 +52,11 @@ class ExecuteResumeGeneration:
             validation_rules=self.workflow.get_validation_rules()
         )
 
-        logger.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}")
+        logger.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_versio
+    n()}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
-        from shared.result_types import ResultStatus, Result
 
         start = time.time()
         try:
@@ -146,6 +143,7 @@ class ExecuteResumeGeneration:
         }
 
 def execute(action: str,
+    """Docstring."""
     params: Dict[str,
     object],
     config: Optional[Dict] = None) -> ExecutionResult:

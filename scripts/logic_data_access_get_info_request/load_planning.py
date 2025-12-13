@@ -5,7 +5,6 @@ including source identification, data extraction strategies, and loading optimiz
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from dataclasses import dataclass, field
 import logging
 from datetime import datetime
 from enum import Enum
@@ -291,7 +290,8 @@ class ScriptsLoadPlanner:
         # Add time based on parallel workers (inverse relationship)
         parallel_factor = max(0.5, 1 / plan.parallel_workers)
 
-        total_duration = (base_duration + source_duration + transform_duration) * batch_factor * parallel_factor
+        total_duration = (base_duration + source_duration + transform_duration) * batch_factor * par
+    allel_factor
 
         return int(total_duration)
 
@@ -335,15 +335,17 @@ class ScriptsLoadPlanner:
         # Network requirements for remote sources
         remote_sources = [
             s for s in plan.sources
-            if s.source_type in [DataSourceType.API, DataSourceType.CLOUD_STORAGE, DataSourceType.DATABASE]
+            if s.source_type in [DataSourceType.API, DataSourceType.CLOUD_STORAGE, DataSourceType.DA
+    TABASE]
         ]
         if remote_sources:
-            requirements["network_bandwidth"] = len(remote_sources) * 10  # 10 Mbps per remote source
+            requirements["network_bandwidth"] = len(remote_sources) * 10  # 10 Mbps per remote so...
 
         return requirements
 
 # Factory function for easy instantiation
 def create_scripts_load_planner(
+    """Docstring."""
     enable_parallel_loading: bool = True,
     enable_validation: bool = True,
     **kwargs: Dict[str, object]) -> ScriptsLoadPlanner:
@@ -357,6 +359,7 @@ def create_scripts_load_planner(
 
 # Convenience function for direct usage
 def plan_scripts_load(
+    """Docstring."""
     plan_name: str,
     sources: List[Dict[str, Any]],
     load_strategy: str = "batch_load",

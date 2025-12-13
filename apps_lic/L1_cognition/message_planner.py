@@ -8,7 +8,6 @@ This is a foundational L1 planning component that integrates with other L1
 planners and feeds into the hop-based K3 draft execution phase.
 """
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import logging
 
@@ -167,6 +166,7 @@ class MessagePlanner:
         }
 
     def plan(
+        """Docstring."""
         self,
         *,
         content: MessageContent,
@@ -302,7 +302,8 @@ class MessagePlanner:
         if hasattr(persona_plan, 'communication_style'):
             if persona_plan.communication_style == "formal" and section.section_type == "subject":
                 section.style_guidelines.append("formal_tone")
-            elif persona_plan.communication_style == "technical" and section.section_type == "value":
+            elif persona_plan.communication_style == "technical" and section.section_type == "value"
+    :
                 section.optional_elements.append("technical_details")
 
         return section
@@ -334,6 +335,7 @@ class MessagePlanner:
         if hasattr(fusion_plan, 'sections'):
             # Find corresponding fusion section
             fusion_section = next((s for s in fusion_plan.sections if s.section_type == section_name),
+
                 None)
             if fusion_section:
                 section.metadata["fusion_guidance"] = fusion_section.tone_guidance

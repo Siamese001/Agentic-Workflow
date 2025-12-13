@@ -1,6 +1,5 @@
 """Dataclass models for agent_registry."""
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 # from .agent_registry_enums import *  # Star import removed
 
@@ -14,7 +13,8 @@ class MCPContract:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'provider': self.provider, 'endpoints': self.endpoints, 'parameters': self.parameters, 'version': self.version}
+        return {'provider': self.provider, 'endpoints': self.endpoints, 'parameters': self.parameter
+    s, 'version': self.version}
 
 @dataclass
 class ToolPermission:
@@ -26,7 +26,8 @@ class ToolPermission:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'tool_name': self.tool_name, 'allowed_operations': self.allowed_operations, 'rate_limit': self.rate_limit, 'requires_approval': self.requires_approval}
+        return {'tool_name': self.tool_name, 'allowed_operations': self.allowed_operations, 'rate_li
+    mit': self.rate_limit, 'requires_approval': self.requires_approval}
 
 @dataclass
 class AgentCard:

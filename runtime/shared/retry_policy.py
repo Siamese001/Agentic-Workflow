@@ -8,8 +8,6 @@ import asyncio
 import logging
 import random
 import time
-from dataclasses import dataclass, field
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +100,7 @@ class DelayCalculator:
 
     @staticmethod
     def calculate_delay(
+        """Docstring."""
         config: RetryConfig,
         attempt: int,
         base_delay: Optional[float] = None
@@ -161,6 +160,7 @@ class RetryPolicy:
         logger.debug(f"Initialized RetryPolicy with strategy: {self.config.strategy}")
 
     async def execute(
+        """Docstring."""
         self,
         func: Callable,
         *args,
@@ -326,6 +326,7 @@ class RetryableExecutor:
         logger.debug(f"Registered retry policy: {name}")
 
     async def execute(
+        """Docstring."""
         self,
         func: Callable,
         *args,
@@ -380,6 +381,7 @@ async def get_retry_executor() -> RetryableExecutor:
 
 # Decorators for automatic retry
 def retry(
+    """Docstring."""
     max_attempts: int = 3,
     strategy: RetryStrategy = RetryStrategy.EXPONENTIAL_BACKOFF,
     base_delay: float = 1.0,
@@ -399,7 +401,9 @@ def retry(
         Decorated function
     """
     def decorator(func):
+        """Docstring."""
         async def async_wrapper(*args, **kwargs):
+            """Docstring."""
             config = RetryConfig(
                 max_attempts=max_attempts,
                 strategy=strategy,
@@ -417,8 +421,10 @@ def retry(
             return result.result
 
         def sync_wrapper(*args, **kwargs):
+            """Docstring."""
             # For sync functions, run in thread pool
             async def async_func():
+                """Docstring."""
                 return func(*args, **kwargs)
 
             return asyncio.run(async_wrapper())
@@ -440,7 +446,9 @@ def retry_with_policy(policy_name: str):
         Decorated function
     """
     def decorator(func):
+        """Docstring."""
         async def wrapper(*args, **kwargs):
+            """Docstring."""
             executor = await get_retry_executor()
             return await executor.execute(func, *args, policy=policy_name, **kwargs)
         return wrapper

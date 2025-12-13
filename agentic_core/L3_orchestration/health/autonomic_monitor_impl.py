@@ -71,9 +71,11 @@ class AutonomicMonitor:
         avg_success_rate = sum((m.success_rate for m in recent)) / len(recent)
         avg_error_rate = sum((m.error_rate for m in recent)) / len(recent)
         avg_response_time = sum((m.avg_response_time_ms for m in recent)) / len(recent)
-        if avg_success_rate < 0.5 or avg_error_rate > 0.5 or avg_response_time > self.response_time_threshold_ms * 2:
+        if avg_success_rate < 0.5 or avg_error_rate > 0.5 or avg_response_time > self.response_time_
+    threshold_ms * 2:
             return HealthStatus.CRITICAL
-        elif avg_success_rate < self.success_rate_threshold or avg_error_rate > self.error_rate_threshold or avg_response_time > self.response_time_threshold_ms:
+        elif avg_success_rate < self.success_rate_threshold or avg_error_rate > self.error_rate_thre
+    shold or avg_response_time > self.response_time_threshold_ms:
             return HealthStatus.DEGRADED
         return HealthStatus.HEALTHY
 
@@ -91,6 +93,7 @@ class AutonomicMonitor:
         return history[-limit:] if history else []
 
     def get_alerts(self,
+        """Docstring."""
         agent_id: Optional[str]=None,
         severity: Optional[AlertSeverity]=None) -> List[HealthAlert]:
         """Get health alerts.
@@ -166,18 +169,23 @@ class AutonomicMonitor:
         """
         recommendations = []
         if metrics.success_rate < self.success_rate_threshold:
-            recommendations.append(f'Success rate ({metrics.success_rate:.1%}) below threshold - Consider retraining in Agent Gym')
+            recommendations.append(f'Success rate ({metrics.success_rate:.1%}) below threshold - Con
+    sider retraining in Agent Gym')
         if metrics.error_rate > self.error_rate_threshold:
-            recommendations.append(f'Error rate ({metrics.error_rate:.1%}) above threshold - Review error logs and failure patterns')
+            recommendations.append(f'Error rate ({metrics.error_rate:.1%}) above threshold - Review
+    error logs and failure patterns')
         if metrics.avg_response_time_ms > self.response_time_threshold_ms:
-            recommendations.append(f'Response time ({metrics.avg_response_time_ms:.0f}ms) above threshold - Optimize performance or increase resources')
+            recommendations.append(f'Response time ({metrics.avg_response_time_ms:.0f}ms) above thre
+    shold - Optimize performance or increase resources')
         if metrics.circuit_breaker_trips > 5:
-            recommendations.append(f'Circuit breaker trips ({metrics.circuit_breaker_trips}) high - Check external service health and implement fallbacks')
+            recommendations.append(f'Circuit breaker trips ({metrics.circuit_breaker_trips}) high -
+    Check external service health and implement fallbacks')
         if status == HealthStatus.CRITICAL:
             recommendations.append('CRITICAL: Consider taking agent offline for maintenance')
         return recommendations
 
 def create_autonomic_monitor(success_rate_threshold: float=0.8,
+    """Docstring."""
     error_rate_threshold: float=0.2) -> AutonomicMonitor:
     """Factory function to create autonomic monitor.
 

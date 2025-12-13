@@ -1,7 +1,5 @@
 """Types and models for autonomic_monitor."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class HealthStatus(Enum):
     """Agent health status."""
@@ -30,7 +28,9 @@ class HealthMetrics:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'agent_id': self.agent_id, 'success_rate': self.success_rate, 'avg_response_time_ms': self.avg_response_time_ms, 'error_rate': self.error_rate, 'circuit_breaker_trips': self.circuit_breaker_trips, 'total_requests': self.total_requests, 'timestamp': self.timestamp}
+        return {'agent_id': self.agent_id, 'success_rate': self.success_rate, 'avg_response_time_ms'
+    : self.avg_response_time_ms, 'error_rate': self.error_rate, 'circuit_breaker_trips': self.circui
+        t_breaker_trips, 'total_requests': self.total_requests, 'timestamp': self.timestamp}
 
 @dataclass
 class HealthAlert:

@@ -1,6 +1,5 @@
 """Enum types for models."""
 
-from enum import Enum
 
 class ValidationSeverity(Enum):
     """Severity levels for validation results."""

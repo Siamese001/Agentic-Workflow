@@ -8,9 +8,6 @@ system health for operations teams.
 import asyncio
 import logging
 import time
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +111,8 @@ class BulkheadHealthChecker(HealthChecker):
                 if utilization > 90:
                     issues.append(f"{name}: High utilization ({utilization:.1f}%)")
                 if bulkhead_metrics.queued_tasks > bulkhead_metrics.queue_size * 0.8:
-                    issues.append(f"{name}: Queue buildup ({bulkhead_metrics.queued_tasks}/{bulkhead_metrics.queue_size})")
+                    issues.append(f"{name}: Queue buildup ({bulkhead_metrics.queued_tasks}/{bulkhead
+    _metrics.queue_size})")
 
             # Determine status
             if not issues:
@@ -447,9 +445,11 @@ class HealthCheckRegistry:
                         if result.status == HealthStatus.CRITICAL:
                             overall_status = HealthStatus.CRITICAL
                             critical_issues.append(result.message)
-                        elif result.status == HealthStatus.UNHEALTHY and overall_status != HealthStatus.CRITICAL:
+                        elif result.status == HealthStatus.UNHEALTHY and overall_status != HealthSta
+    tus.CRITICAL:
                             overall_status = HealthStatus.UNHEALTHY
-                        elif result.status == HealthStatus.DEGRADED and overall_status not in [HealthStatus.CRITICAL, HealthStatus.UNHEALTHY]:
+                        elif result.status == HealthStatus.DEGRADED and overall_status not in [Healt
+    hStatus.CRITICAL, HealthStatus.UNHEALTHY]:
                             overall_status = HealthStatus.DEGRADED
 
             self._last_check = datetime.utcnow()
@@ -544,6 +544,7 @@ async def get_health_registry() -> HealthCheckRegistry:
     return _health_registry
 
 async def initialize_system_health_checks(
+    """Docstring."""
     bulkhead_manager=None,
     circuit_breaker_registry=None,
     dead_letter_queue=None,

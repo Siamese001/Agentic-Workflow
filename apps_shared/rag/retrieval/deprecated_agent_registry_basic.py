@@ -1,6 +1,6 @@
-# from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry  # DEPRECAT...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
-# from archives.legacy_root_folders.core.models.models import AgentRole  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.core.models.models import AgentRole  # DEPRECATED: Archive im...
 
 def test_agent_registry_register_and_lookup() -> None:
     """TODO: Add docstring."""
@@ -22,6 +22,7 @@ def test_agent_registry_register_and_lookup() -> None:
     """TODO: Add docstring."""
 
 def test_agent_registry_find_by_capability() -> None:
+    """TODO: Add docstring."""
     registry = AgentRegistry()
 
     a1 = AgentCard(agent_id="agent-a",

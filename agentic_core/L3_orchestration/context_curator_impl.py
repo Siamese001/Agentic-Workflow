@@ -191,7 +191,9 @@ class ContextCurator:
             if chunk.chunk_type not in by_type:
                 by_type[chunk.chunk_type] = []
             by_type[chunk.chunk_type].append(chunk)
-        type_order = [ContextType.SYSTEM_INSTRUCTION, ContextType.SAFETY_POLICY, ContextType.TASK_DESCRIPTION, ContextType.TOOL_DOCUMENTATION, ContextType.EXAMPLE, ContextType.RETRIEVED_KNOWLEDGE, ContextType.CONVERSATION_HISTORY]
+        type_order = [ContextType.SYSTEM_INSTRUCTION, ContextType.SAFETY_POLICY, ContextType.TASK_DE
+    SCRIPTION, ContextType.TOOL_DOCUMENTATION, ContextType.EXAMPLE, ContextType.RETRIEVED_KNOWLEDGE,
+        ContextType.CONVERSATION_HISTORY]
         for chunk_type in type_order:
             if chunk_type in by_type:
                 chunks = by_type[chunk_type]
@@ -221,7 +223,8 @@ class ContextCurator:
         if current_total <= target_total:
             return True
         unpinned = [chunk for chunk in self._chunks.values() if not chunk.pinned]
-        priority_order = {ContextPriority.LOW: 0, ContextPriority.MEDIUM: 1, ContextPriority.HIGH: 2, ContextPriority.CRITICAL: 3}
+        priority_order = {ContextPriority.LOW: 0, ContextPriority.MEDIUM: 1, ContextPriority.HIGH: 2
+    , ContextPriority.CRITICAL: 3}
         unpinned.sort(key=lambda c: (priority_order[c.priority], c.relevance_score))
         tokens_freed = 0
         for chunk in unpinned:

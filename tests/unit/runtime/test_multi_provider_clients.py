@@ -1,8 +1,8 @@
 """Unit tests for runtime/shared/multi_provider_clients.py"""
 import os
-from unittest.mock import MagicMock, patch
 import pytest
-from runtime.shared.multi_provider_clients import Provider, get_api_key, get_client, reset_all_clients, ProviderConfig, DEFAULT_MAX_RETRIES
+from runtime.shared.multi_provider_clients import Provider, get_api_key, get_client, reset_all_clien
+    ts, ProviderConfig, DEFAULT_MAX_RETRIES
 
 class TestProviderEnum:
     """TODO: Add docstring."""
@@ -10,6 +10,7 @@ class TestProviderEnum:
         """TODO: Add docstring."""
 
     def test_provider_values(self):
+        """Docstring."""
         assert Provider.OPENAI.value == "openai"
         assert Provider.ANTHROPIC.value == "anthropic"
         assert isinstance(Provider.OPENAI, str)
@@ -17,6 +18,7 @@ class TestProviderEnum:
 
 
     def test_provider_iteration_determinism(self):
+        """Docstring."""
         assert list(Provider) == list(Provider)
         """TODO: Add docstring."""
 
@@ -27,6 +29,7 @@ class TestGetApiKey:
         """TODO: Add docstring."""
 
     def test_success(self):
+        """Docstring."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "sk-test"}):
             assert get_api_key(Provider.OPENAI) == "sk-test"
 
@@ -41,13 +44,16 @@ class TestGetApiKey:
 
 
     def test_determinism(self):
+        """Docstring."""
         with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "sk-ant"}):
             assert get_api_key(Provider.ANTHROPIC) == get_api_key(Provider.ANTHROPIC)
     """TODO: Add docstring."""
 
 
 class TestGetClient:
+    """Docstring."""
     def test_singleton(self):
+        """Docstring."""
         reset_all_clients()
         """TODO: Add docstring."""
 
@@ -62,6 +68,7 @@ class TestGetClient:
 
 
     def test_missing_key_raises(self):
+        """Docstring."""
         reset_all_clients()
         with patch.dict(os.environ, {}, clear=True):
         """TODO: Add docstring."""
@@ -73,11 +80,14 @@ class TestGetClient:
                 get_client(Provider.OPENAI)
 
 class TestProviderConfig:
+    """Docstring."""
     def test_defaults(self):
+        """Docstring."""
         cfg = ProviderConfig()
         assert cfg.max_retries == DEFAULT_MAX_RETRIES
         assert cfg.timeout > 0
 
     def test_custom(self):
+        """Docstring."""
         cfg = ProviderConfig(max_retries=3, timeout=30.0)
         assert cfg.max_retries == 3

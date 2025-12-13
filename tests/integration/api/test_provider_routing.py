@@ -1,8 +1,7 @@
 """Integration tests for API provider routing and fallbacks."""
 import os
-from unittest.mock import MagicMock, patch
 import pytest
-from runtime.shared.multi_provider_clients import reset_all_clients, get_available_providers, Provider, get_client
+    er, get_client
 
 # Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION
 # skip_if_no_keys = pytest.mark.skipif(
@@ -19,6 +18,7 @@ class TestProviderRouting:
         """TODO: Add docstring."""
 
     def reset_state(self):
+        """Docstring."""
         reset_all_clients()
         yield
         reset_all_clients()

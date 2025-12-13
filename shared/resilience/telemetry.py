@@ -9,7 +9,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import json
 import logging
 import time
-from enum import Enum
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -47,6 +46,7 @@ class SystemTelemetry:
         self.logger = logging.getLogger(f"{__name__}.{service_name}")
 
     def log_metric(
+        """Docstring."""
         self,
         component: str,
         operation: str,
@@ -112,6 +112,7 @@ class SystemTelemetry:
             self.logger.info(json.dumps(log_data))
 
     def log_success(
+        """Docstring."""
         self,
         component: str,
         operation: str,
@@ -130,6 +131,7 @@ class SystemTelemetry:
         )
 
     def log_failure(
+        """Docstring."""
         self,
         component: str,
         operation: str,
@@ -150,6 +152,7 @@ class SystemTelemetry:
         )
 
     def log_retry(
+        """Docstring."""
         self,
         component: str,
         operation: str,
@@ -178,6 +181,7 @@ class SystemTelemetry:
         )
 
     def log_circuit_breaker(
+        """Docstring."""
         self,
         component: str,
         breaker_name: str,

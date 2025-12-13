@@ -1,7 +1,6 @@
 """Backward compatibility shim for coordinate_observability_queries.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original coordinate_observability_queries.py contained 9 top-level definitions which

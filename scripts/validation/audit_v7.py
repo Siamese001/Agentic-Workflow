@@ -3,6 +3,7 @@
 from typing import Any, Dict, List, Optional
 
 def collect_test_files() -> List[Path]:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -83,11 +84,14 @@ def audit_tests() -> Dict:
                 report['violations']['unknown_categories'].append({'category': category,
                     'file': rel_path})
     if report['violations']['forbidden_lp_patterns']:
-        report['recommendations'].append('CRITICAL: Remove L1-L5/P1-P4 folder mirroring in unit tests. Tests should be organized by domain (agentic_core,
+        report['recommendations'].append('CRITICAL: Remove L1-L5/P1-P4 folder mirroring in unit test
+            s. Tests should be organized by domain (agentic_core,
+
             apps_lic,
             etc.) not by cognitive layer.')
     if report['violations']['banned_folders']:
-        report['recommendations'].append(f'Remove banned folders: {BANNED_FOLDERS}. Move tests to appropriate YAML-defined categories.')
+        report['recommendations'].append(f'Remove banned folders: {BANNED_FOLDERS}. Move tests to ap
+    propriate YAML-defined categories.')
     for category, expected_subs in YAML_TAXONOMY.items():
         actual_subs = set(report['coverage'].get(category, {}).keys())
         missing = set(expected_subs) - actual_subs
@@ -103,7 +107,8 @@ def print_report(report: Dict) -> None:
         for v in report['violations']['forbidden_lp_patterns'][:10]:
             logger.info(f'    - {v}')
         if len(report['violations']['forbidden_lp_patterns']) > 10:
-            logger.info(f"    ... and {len(report['violations']['forbidden_lp_patterns']) - 10} more")
+            logger.info(f"    ... and {len(report['violations']['forbidden_lp_patterns']) - 10} more
+    ")
     if report['violations']['banned_folders']:
         logger.info('\n  Banned folders:')
         for v in report['violations']['banned_folders']:
@@ -124,6 +129,7 @@ def print_report(report: Dict) -> None:
             logger.info(f'    {i}. {rec}')
 
 def main() -> None:
+    """Docstring."""
     report = audit_tests()
     print_report(report)
     report_path = REPO_ROOT / 'test_structure_audit_report.json'

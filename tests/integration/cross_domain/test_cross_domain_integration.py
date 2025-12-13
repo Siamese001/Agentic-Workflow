@@ -91,6 +91,7 @@ class TestCrossServiceCommunication:
             """TODO: Add docstring."""
 
         def publish_event(event_type: str, data: Dict):
+            """Docstring."""
             events.append({"type": event_type, "data": data})
 
         # LIC publishes event
@@ -123,6 +124,7 @@ class TestCrossServiceCommunication:
 
 
         def handle_error(domain: str, error: str):
+            """Docstring."""
             errors.append({"domain": domain, "error": error})
 
         # Error in LIC

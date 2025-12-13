@@ -27,7 +27,6 @@ logger = logging.getLogger(__name__)
             new_content = f'''"""Backward compatibility shim for {stem}.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The Subatomic Canon requires files to either:
@@ -40,8 +39,6 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .{stem}_types import *
-from .{stem}_impl import *
 
 __all__ = ['*']  # Re-export all imported names
 '''

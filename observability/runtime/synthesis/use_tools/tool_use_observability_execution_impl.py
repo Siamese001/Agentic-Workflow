@@ -91,6 +91,7 @@ class ObservabilityToolExecutor:
             yield chunk
 
     def execute_tools_batch(self,
+        """Docstring."""
         requests: List[ToolExecutionRequest]) -> List[ToolExecutionResult]:
         """Execute multiple tools.
 
@@ -297,7 +298,8 @@ class ObservabilityToolExecutor:
                     'message': 'Sample log'}]}
             elif command == 'filter':
                 level = params.get('level', 'info')
-                return {'stdout': f'Filtered logs by level: {level}', 'exit_code': 0, 'filtered_count': 50}
+                return {'stdout': f'Filtered logs by level: {level}', 'exit_code': 0, 'filtered_coun
+    t': 50}
             else:
                 return {'stderr': f'Unknown command: {command}', 'exit_code': 1}
         metric_tool = ToolDefinition(tool_id='metric_collector',
@@ -315,9 +317,11 @@ class ObservabilityToolExecutor:
             **kwargs: object) -> Dict[str,
             Any]:
             if command == 'collect':
-                return {'stdout': 'Collected system metrics', 'exit_code': 0, 'metrics': {'cpu': 45.2, 'memory': 67.8, 'disk': 23.5}}
+                return {'stdout': 'Collected system metrics', 'exit_code': 0, 'metrics': {'cpu': 45.
+    2, 'memory': 67.8, 'disk': 23.5}}
             elif command == 'aggregate':
-                return {'stdout': 'Aggregated metrics over time window', 'exit_code': 0, 'aggregated': {'avg_cpu': 42.1, 'max_memory': 78.9}}
+                return {'stdout': 'Aggregated metrics over time window', 'exit_code': 0, 'aggregated
+    ': {'avg_cpu': 42.1, 'max_memory': 78.9}}
             else:
                 return {'stderr': f'Unknown command: {command}', 'exit_code': 1}
         trace_tool = ToolDefinition(tool_id='trace_analyzer',
@@ -335,12 +339,14 @@ class ObservabilityToolExecutor:
             **kwargs: object) -> Dict[str,
             Any]:
             trace_id = params.get('trace_id', 'default')
-            return {'stdout': f'Analyzed trace: {trace_id}', 'exit_code': 0, 'analysis': {'trace_id': trace_id, 'span_count': 10, 'total_duration': 0.5, 'errors': 0}}
+            return {'stdout': f'Analyzed trace: {trace_id}', 'exit_code': 0, 'analysis': {'trace_id'
+    : trace_id, 'span_count': 10, 'total_duration': 0.5, 'errors': 0}}
         self.register_tool(log_tool, _log_collector_impl)
         self.register_tool(metric_tool, _metric_collector_impl)
         self.register_tool(trace_tool, _trace_analyzer_impl)
 
 def create_observability_tool_executor(default_timeout: float=30.0,
+    """Docstring."""
     max_retries: int=3,
     enable_health_checks: bool=True,
     **kwargs: object) -> ObservabilityToolExecutor:
@@ -352,6 +358,7 @@ def create_observability_tool_executor(default_timeout: float=30.0,
     return ObservabilityToolExecutor(config)
 
 def tool_use_observability_execution(tool_id: str,
+    """Docstring."""
     command: str,
     parameters: Dict[str,
     Any],
@@ -380,4 +387,7 @@ def tool_use_observability_execution(tool_id: str,
         execution_type=ExecutionType(execution_type),
         timeout=timeout)
     result = executor.execute_tool(request)
-    return {'execution_id': result.execution_id, 'tool_id': result.tool_id, 'command': result.command, 'success': result.success, 'output': result.output, 'exit_code': result.exit_code, 'stdout': result.stdout, 'stderr': result.stderr, 'metrics': result.metrics, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}
+    return {'execution_id': result.execution_id, 'tool_id': result.tool_id, 'command': result.comman
+    d, 'success': result.success, 'output': result.output, 'exit_code': result.exit_code, 'stdout':
+        result.stdout, 'stderr': result.stderr, 'metrics': result.metrics, 'error': result.error, 'w
+            arnings': result.warnings, 'execution_time': result.execution_time}

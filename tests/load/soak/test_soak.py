@@ -1,7 +1,6 @@
 """Soak tests for long-running stability validation."""
 import time
 from typing import Dict, List
-from dataclasses import dataclass
 import gc
 
 @dataclass
@@ -65,6 +64,7 @@ class TestMemoryStability:
             """TODO: Add docstring."""
 
         class TempObject:
+            """Docstring."""
             def __init__(self, data: str):
                 self.data = data
 

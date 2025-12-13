@@ -13,6 +13,7 @@ def test_policy_selection_honors_requested_model() -> None:
     """TODO: Add docstring."""
 
 def test_policy_selection_defaults_when_no_model() -> None:
+    """TODO: Add docstring."""
     ctx = RoutingContext(agent_id="agent", task_type="llm_call", execution_profile=None)
 
     choice = choose_provider_and_model(ctx, requested_model=None)

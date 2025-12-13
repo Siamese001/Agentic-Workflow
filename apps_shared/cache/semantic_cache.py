@@ -7,10 +7,8 @@ logger = logging.getLogger(__name__)
 
 """
 
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 import hashlib
-import json
 import time
 from datetime import datetime, timedelta
 
@@ -64,6 +62,7 @@ class EnhancedSemanticCache:
         self.embedding_cache: Dict[str, List[float]] = {}
 
     def get(self,
+        """Docstring."""
             query: str,
             query_embedding: Optional[List[float]] = None,
             top_k: int = 5) -> List[VectorSimilarityResult]:
@@ -105,6 +104,7 @@ class EnhancedSemanticCache:
         return results[:top_k]
 
     def put(self,
+        """Docstring."""
             query: str,
             content: str,
             metadata: Optional[Dict[str, Any]] = None,
@@ -208,6 +208,7 @@ class EnhancedSemanticCache:
         return dot_product / (norm1 * norm2)
 
     def generate_fingerlogger.info(self,
+        """Docstring."""
         prompt: str,
         model: str,
         temperature: float = 0.7,
@@ -255,6 +256,7 @@ class EnhancedSemanticCache:
         return None
 
     def store(self,
+        """Docstring."""
         fingerprint: str,
         data: Dict[str,
         Any],
@@ -332,4 +334,3 @@ class EnhancedSemanticCache:
         return len(keys_to_remove)
 
 # Import math for cosine similarity
-import math

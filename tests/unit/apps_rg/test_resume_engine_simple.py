@@ -21,7 +21,8 @@ def test_job_analyzer_with_mocked_client() -> None:
         mock_response.text = '''{
     "hard_skills": ["Python", "Django", "PostgreSQL", "AWS", "Docker"],
     "soft_skills": ["Communication", "Teamwork", "Problem-solving"],
-    "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optimize performance"],
+    "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optimize performa
+    nce"],
     "experience_level": "senior",
     "cultural_indicators": ["Innovation", "Teamwork", "Learning"],
     "north_star_metric": "Application performance and scalability"
@@ -51,7 +52,8 @@ def test_resume_generator_with_mocked_client() -> None:
         from apps_rg.L2_execution.resume_generator import ResumeGenerator
 
         # Mock the LLM responses
-        mock_client.generate_content.return_value.text = "Senior Python Developer with Django expertise"
+        mock_client.generate_content.return_value.text = "Senior Python Developer with Django expert
+    ise"
 
         # Test the generator
         generator = ResumeGenerator()
@@ -150,7 +152,6 @@ def test_resume_engine_with_mock_client() -> None:
          patch('apps_rg.L2_execution.resume_generator.get_client') as mock_get_client_gen:
 
         # Create mock clients
-        from runtime.shared.multi_provider_clients import StubClient
         mock_get_client.return_value = StubClient("google")
         mock_get_client_gen.return_value = StubClient("google")
 

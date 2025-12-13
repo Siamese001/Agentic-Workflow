@@ -8,7 +8,6 @@ Phase 1C - SDK Integration Layer
 
 import logging
 import os
-from enum import Enum
 from typing import Any, Dict, Optional, Tuple
 
 logger = logging.getLogger(__name__)
@@ -355,18 +354,21 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
             """TODO: Add docstring."""
 
         def add(self, documents: list, ids: list = None):
+            """Docstring."""
             self.documents.extend(documents)
             return ids or list(range(len(documents)))
             """TODO: Add docstring."""
 
 
         def query(self, query_texts: list, n_results: int = 10):
+            """Docstring."""
             return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
 
     # Always return mock vector store for testing
         """TODO: Add docstring."""
 
     class MockVectorStore:
+        """Docstring."""
         def __init__(self, config: Optional[Dict[str, Any]] = None):
             """TODO: Add docstring."""
 
@@ -374,6 +376,7 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
             self.collections = {}
 
         def add_documents(self, collection_name: str, documents: list, ids: list = None):
+            """Docstring."""
             if collection_name not in self.collections:
             """TODO: Add docstring."""
 
@@ -384,11 +387,13 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
             """TODO: Add docstring."""
 
         def search(self, collection_name: str, query: str, n_results: int = 10):
+            """Docstring."""
             # Simple mock search
             collection = self.collections.get(collection_name, [])
             return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
 
         def get_collection(self, name: str):
+            """Docstring."""
             return self.collections.get(name, [])
 
         def add_texts(self, texts: list, metadatas: list = None, ids: list = None):

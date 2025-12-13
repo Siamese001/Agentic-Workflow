@@ -5,8 +5,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
 import time
-from dataclasses import dataclass
-from enum import Enum
 
 class CircuitBreakerState(Enum):
     """TODO: Add docstring."""
@@ -96,6 +94,7 @@ class CircuitBreaker:
 _BREAKERS: Dict[str, CircuitBreaker] = {}
 
 def get_breaker(
+    """Docstring."""
     name: str,
     failure_threshold: int = 5,
     reset_after_s: int = 30,

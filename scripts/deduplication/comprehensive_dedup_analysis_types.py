@@ -1,6 +1,5 @@
 """Types and models for comprehensive_dedup_analysis."""
 
-from dataclasses import dataclass, field
 
 @dataclass
 class FileFingerprint:

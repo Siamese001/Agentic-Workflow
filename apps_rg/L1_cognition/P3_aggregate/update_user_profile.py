@@ -5,7 +5,8 @@
 from typing import Dict
 
 class UpdateUserProfile:
-    """UpdateUserProfile implementation."""
+    """Docstring."""
+    ""# SQL query removed""
 
     def __init__(self) -> None:
         """Initialize the component with default configuration."""

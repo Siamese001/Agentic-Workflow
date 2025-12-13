@@ -1,6 +1,6 @@
 
 
-# from archives.legacy_root_folders.runtime.observability.spans import start_span, end_span  # DEPRECATED: Archive import removed to protect archives from validation edits
+# from archives.legacy_root_folders.runtime.observability.spans import start_span, end_span  # DE...
 
 def start_agent_span(name: str, meta: Dict[str, object]) -> str:
     """Start an agent-level span and return its span identifier.

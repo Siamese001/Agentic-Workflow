@@ -1,7 +1,6 @@
 """Backward compatibility shim for generate_apps_structure.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original generate_apps_structure.py contained 23 top-level definitions which

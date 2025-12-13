@@ -24,32 +24,36 @@ SOVEREIGN_ROOTS = {
 
 # Files that ALWAYS promote regardless of score
 FORCE_PROMOTE_PATTERN = re.compile(
-    r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|schema_transform",
+    r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|schema_t
+    ransform",
     re.I,
 )
 
 # Destination map — highest priority first
 DESTINATION_RULES = [
     (
-        r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|schema_transform",
+        r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|sche
+    ma_transform",
         "apps_shared/rag/hardening",
     ),
     (
-        r"rag.*pipeline|rag.*hardening|signal.*quality|self.?critique|fact.?check|claim.*verif|hyde|reranker|guardrail|citation|provenance",
+        r"rag.*pipeline|rag.*hardening|signal.*quality|self.?critique|fact.?check|claim.*verif|hyde|
+    reranker|guardrail|citation|provenance",
         "apps_shared/rag/hardening",
     ),
     (r"retriev|embed|vector|index|search|lookup|chunk|passage", "apps_shared/rag/retrieval"),
     (
-        r"planner|orchestrator|route|delegate|schedule|coordinate|workflow|loop|agent.*loop|synthesis",
+        r"planner|orchestrator|route|delegate|schedule|coordinate|workflow|loop|agent.*loop|synthesi
+    s",
         "agentic_core/planning",
     ),
     (r"tool.*call|invoke.*tool|execute.*action|dispatch|perform|use.*tool",
         "agentic_core/execution/tools"),
-        
+
     (r"schema|contract|pydantic.*model|request|response|dto|json", "schemas"),
     (r"prompt.*govern|system.*prompt|safety.*rail|jailbreak|redteam|red.?team|prompt",
         "prompt_governance"),
-        
+
     (r"metric|trace|span|observ|log.*structured|otel|opentelemetry|monitoring", "observability"),
     (r"config|setting|feature.*flag|env|toggle|runtime.*config|secrets", "config"),
     (r"readme|guide|doc|manual|setup|install", "docs"),
@@ -99,8 +103,10 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
 
     core_terms = len(
         re.findall(
-            r"\b(RAG|HyDE|reranker|guardrail|self.?critique|fact.?check|claim|source.?tier|orchestrator|planner|mcp|sdk|signal.?quality)\b",
-                
+            r"\b(RAG|HyDE|reranker|guardrail|self.?critique|fact.?check|claim|source.?tier|orchestra
+                tor|planner|mcp|sdk|signal.?quality)\b",
+
+
             content,
             re.I,
         )
@@ -168,7 +174,8 @@ def _should_skip_file(src: Path) -> bool:
     # Skip sovereign roots and system folders
     if "scripts" in src.parts or src.parent.name == "scripts":
         return True
-    if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", "archive_code"}:
+    if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", "archive_cod
+    e"}:
         return True
     if any(root in src.parts for root in SOVEREIGN_ROOTS):
         return True
@@ -203,7 +210,8 @@ def main() -> None:
             continue
 
         # Determine if this file is from the staging area
-        is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == "archive_code")
+        is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == "ar
+    chive_code")
 
         content = src.read_text(errors="ignore")
         score, reasons, is_dirty = analyze_file_content(content, src.name)

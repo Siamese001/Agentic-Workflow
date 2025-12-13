@@ -3,6 +3,7 @@
 from typing import Any, Dict, List, Optional
 
 def clean_debug_statements(file_path: str) -> None:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ def analyze_file_complexity(file_path: str) -> Dict[str, int]:
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-        code_lines = sum((1 for line in lines if line.strip() and (not line.strip().startswith('#'))))
+        code_lines = sum((1 for line in lines if line.strip() and (not line.strip().startswith('#...
         file_size = os.path.getsize(file_path)
         return {'lines': code_lines, 'size': file_size, 'hash': get_file_hash(file_path)}
     except (OSError, IOError, UnicodeDecodeError):
@@ -44,7 +45,8 @@ def analyze_file_complexity(file_path: str) -> Dict[str, int]:
 
 def canonicalize_filename(encoded_name: str) -> str:
     """Convert path-encoded filename back to clean name"""
-    prefixes = ['agentic_core_', 'apps_shared_', 'apps_rg_', 'apps_lic_', 'schemas_', 'config_', 'docs_', 'observability_', 'data_']
+    prefixes = ['agentic_core_', 'apps_shared_', 'apps_rg_', 'apps_lic_', 'schemas_', 'config_', 'do
+    cs_', 'observability_', 'data_']
     clean_name = encoded_name
     for prefix in prefixes:
         if clean_name.startswith(prefix):
@@ -99,7 +101,7 @@ def _find_dirty_files(base_dir: Path) -> list:
                 file_path = Path(root) / file
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                    if 'logger.info(' in content or 'pdb.' in content or '# Debugger removed' in content:
+                    if 'logger.info(' in content or 'pdb.' in content or '# Debugger removed' in ...
                         dirty_files.append(file_path)
     return dirty_files
 

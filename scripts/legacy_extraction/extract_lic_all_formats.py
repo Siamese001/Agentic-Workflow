@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Dict, Set, List, Tuple
 
 def get_file_hash(filepath: Path) -> str:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)

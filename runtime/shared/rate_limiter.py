@@ -2,15 +2,11 @@
 
 This module implements rate limiting with multiple strategies including
 token bucket, sliding window, and fixed window to protect the system
-from abuse while ensuring fair usage.
 """
 
 import asyncio
 import logging
 import time
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -388,6 +384,7 @@ class RateLimitManager:
             return limiter
 
     async def check_limit(
+        """Docstring."""
         self,
         limiter_name: str,
         identifier: str
@@ -491,6 +488,7 @@ async def get_rate_limit_manager() -> RateLimitManager:
 
 # Decorators for rate limiting
 def rate_limit(
+    """Docstring."""
     limiter_name: str,
     identifier_extractor: Optional[Callable] = None
 ):
@@ -509,6 +507,7 @@ def rate_limit(
         """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
+            """Docstring."""
             manager = await get_rate_limit_manager()
 
             # Extract identifier
@@ -537,8 +536,10 @@ def rate_limit(
 
 
         def sync_wrapper(*args, **kwargs):
+            """Docstring."""
             # For sync functions, run in thread pool
             async def async_func():
+                """Docstring."""
                 return func(*args, **kwargs)
 
             return asyncio.run(async_func())

@@ -3,6 +3,7 @@
 from typing import Any, Dict, List, Optional
 
 class TestLLMInvocation:
+    """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -72,7 +73,6 @@ class TestWorkflowOrchestration:
     @patch('l3.orchestrate_execution')
     def test_l3_dag_orchestration(self, mock_orchestrate: Mock) -> None:
         """Test L3 DAG orchestration."""
-        from orchestration.run_dag import run_dag
         mock_strategy = Mock()
         mock_strategy.branches = [Mock(description='Test strategy branch text')]
         mock_orchestrate.return_value = L2ResultBundle(strategy=mock_strategy,

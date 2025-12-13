@@ -20,6 +20,7 @@ class PeerIntelligenceAuditor:
         self.gate_executor = gate_executor or IntegrityGateExecutor()
 
     def analyze_competitive_landscape(self,
+        """Docstring."""
         jd_keywords: List[str],
         context: Dict[str,
         Any]) -> PeerIntelligenceResult:
@@ -46,8 +47,10 @@ class PeerIntelligenceAuditor:
                 success=False,
                 total_searches_executed=sum((len(hop.search_queries) for hop in hops)))
         keyword_analyses = self._classify_keywords(jd_keywords, hops)
-        table_stakes = [analysis.keyword for analysis in keyword_analyses if analysis.classification == KeywordClassification.TABLE_STAKES]
-        differentiators = [analysis.keyword for analysis in keyword_analyses if analysis.classification == KeywordClassification.DIFFERENTIATOR]
+        table_stakes = [analysis.keyword for analysis in keyword_analyses if analysis.classification
+    == KeywordClassification.TABLE_STAKES]
+        differentiators = [analysis.keyword for analysis in keyword_analyses if analysis.classificat
+    ion == KeywordClassification.DIFFERENTIATOR]
         classification_result = ValidationResult(gate_id='VG_KEYWORD_CLASSIFICATION',
             passed=True,
             severity='INFO',
@@ -111,7 +114,8 @@ class PeerIntelligenceAuditor:
         Execute search queries against RAG system.
         Placeholder for actual RAG integration.
         """
-        return [{'query': query, 'results': [{'title': f'Result 1 for {query}', 'relevance': 0.9}, {'title': f'Result 2 for {query}', 'relevance': 0.7}]} for query in queries]
+        return [{'query': query, 'results': [{'title': f'Result 1 for {query}', 'relevance': 0.9}, {
+    'title': f'Result 2 for {query}', 'relevance': 0.7}]} for query in queries]
 
     def _extract_keywords_from_results(self, results: List[Dict[str, Any]]) -> Set[str]:
         """Extract keywords from search results"""
@@ -137,15 +141,19 @@ class PeerIntelligenceAuditor:
             all_keywords_found.update(hop.keywords_found)
         for keyword in jd_keywords:
             keyword_lower = keyword.lower()
-            frequency_score = sum((1 for hop in hops if keyword_lower in hop.keywords_found)) / len(hops)
-            competitive_density = len([kw for kw in all_keywords_found if keyword_lower in kw]) / max(len(all_keywords_found),
+            frequency_score = sum((1 for hop in hops if keyword_lower in hop.keywords_found)) / len(
+    hops)
+            competitive_density = len([kw for kw in all_keywords_found if keyword_lower in kw]) / ma
+                x(len(all_keywords_found),
+
                 1)
             if frequency_score > 0.6:
                 classification = KeywordClassification.TABLE_STAKES
                 reasoning = f'High frequency ({frequency_score:.1%}) indicates common requirement'
             elif competitive_density < self.config.differentiator_threshold:
                 classification = KeywordClassification.DIFFERENTIATOR
-                reasoning = f'Low competitive density ({competitive_density:.1%}) indicates unique positioning opportunity'
+                reasoning = f'Low competitive density ({competitive_density:.1%}) indicates unique p
+    ositioning opportunity'
             else:
                 classification = KeywordClassification.TABLE_STAKES
                 reasoning = f'Moderate metrics suggest standard requirement'
@@ -167,6 +175,7 @@ class PeerIntelligenceAuditor:
                 passed=True,
                 severity='INFO',
                 message=f'RAG intensity satisfied: {total_searches} searches across {len(hops)} hops',
+
                 signature=f'RAG:OK:{total_searches}',
                 details={'total_searches': total_searches,
                 'total_hops': len(hops),
@@ -174,12 +183,16 @@ class PeerIntelligenceAuditor:
         return ValidationResult(gate_id='VG_RAG_INTENSITY',
             passed=False,
             severity='BLOCK',
-            message=f'BLOCKED: Insufficient RAG intensity - {total_searches} searches across {len(hops)} hops (expected {self.config.total_searches} searches across {self.config.total_hops} hops)',
+            message=f'BLOCKED: Insufficient RAG intensity - {total_searches} searches across {len(ho
+                ps)} hops (expected {self.config.total_searches} searches across {self.config.total_hops} hops)',
+
             details={'total_searches': total_searches,
             'expected_searches': self.config.total_searches,
             'total_hops': len(hops),
             'expected_hops': self.config.total_hops})
 
-def create_peer_intelligence_auditor(config: Optional[PeerIntelligenceConfig]=None) -> PeerIntelligenceAuditor:
+def create_peer_intelligence_auditor(config: Optional[PeerIntelligenceConfig]=None) -> PeerIntellige
+    """Docstring."""
+    nceAuditor:
     """Factory function to create PeerIntelligenceAuditor instance"""
     return PeerIntelligenceAuditor(config=config)

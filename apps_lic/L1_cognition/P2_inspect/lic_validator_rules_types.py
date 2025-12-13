@@ -1,7 +1,5 @@
 """Types and models for lic_validator_rules."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class ValidationSeverity(Enum):
     """Severity levels for validation errors."""

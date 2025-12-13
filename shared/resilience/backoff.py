@@ -4,8 +4,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
 import random
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
 class BackoffStrategy(ABC):
     """Abstract base for backoff strategies."""
@@ -81,6 +79,7 @@ class LinearBackoff(BackoffStrategy):
         return max(0, int(base + jitter))
 
 def calculate_backoff_ms(
+    """Docstring."""
     base_backoff_ms: int,
     attempt: int,
     jitter_ms: int = 100,

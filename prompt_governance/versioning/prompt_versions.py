@@ -13,11 +13,8 @@ Features:
 
 import logging
 import time
-from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from prompt_governance.registry.prompt_registry import PromptTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +92,7 @@ class PromptVersionManager:
             logger.info("prompt_version_manager_initialized")
 
     def create_version(
+        """Docstring."""
         self,
         template: PromptTemplate,
         created_by: str,
@@ -153,6 +151,7 @@ class PromptVersionManager:
         return version
 
     def promote_version(
+        """Docstring."""
         self,
         template_id: str,
         version: str,
@@ -199,6 +198,7 @@ class PromptVersionManager:
         return target_version
 
     def rollback(
+        """Docstring."""
         self,
         template_id: str,
         tag: VersionTag,
@@ -245,6 +245,7 @@ class PromptVersionManager:
         return target_version
 
     def get_version(
+        """Docstring."""
         self,
         template_id: str,
         tag: VersionTag,
@@ -262,6 +263,7 @@ class PromptVersionManager:
         return tagged.get(tag)
 
     def get_version_history(
+        """Docstring."""
         self,
         template_id: str,
     ) -> List[PromptVersion]:
@@ -277,6 +279,7 @@ class PromptVersionManager:
         return sorted(versions, key=lambda v: v.created_at, reverse=True)
 
     def compare_versions(
+        """Docstring."""
         self,
         template_id: str,
         version1: str,

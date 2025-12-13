@@ -7,7 +7,6 @@ with specific mitigations, demonstrating executive maturity and foresight.
 import logging
 from enum import Enum
 
-from .models import LLMResponse
 
 logger = logging.getLogger(__name__)
 
@@ -368,7 +367,8 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             Recommendation string
         """
-        critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and r.probability > 0.5]
+        critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and r.probability > 0
+    .5]
 
         if critical_risks:
             return "NO-GO: Address critical risks before proceeding"
@@ -427,7 +427,8 @@ class PreMortemAgent(SimpleAgentBase):
         monitoring = {}
 
         for risk in risks[:3]:  # Top 3 risks
-            monitoring[risk.risk] = f"Weekly check-ins, track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
+            monitoring[risk.risk] = f"Weekly check-ins, track {risk.early_warning_signs[0] if risk.e
+    arly_warning_signs else 'key metrics'}"
 
         return monitoring
 
@@ -465,9 +466,11 @@ class PreMortemAgent(SimpleAgentBase):
         ]
 
         for risk in report.top_risks:
-            mitigation = risk.mitigation_strategy[:50] + "..." if len(risk.mitigation_strategy) > 50 else risk.mitigation_strategy
+            mitigation = risk.mitigation_strategy[:50] + "..." if len(risk.mitigation_strategy) > 50
+    else risk.mitigation_strategy
             lines.append(
-                f"| {risk.risk[:40]}... | {risk.category} | {risk.probability:.0%} | {risk.impact} | {mitigation} |"
+                f"| {risk.risk[:40]}... | {risk.category} | {risk.probability:.0%} | {risk.impact} |
+    {mitigation} |"
             )
 
         lines.extend([
@@ -502,7 +505,6 @@ class PreMortemAgent(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from .multi_provider_clients import get_client, Provider
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)
@@ -529,6 +531,7 @@ class PreMortemAgent(SimpleAgentBase):
                 """TODO: Add docstring."""
 
             class LLMResponseImpl:
+                """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 

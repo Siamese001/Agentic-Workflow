@@ -1,6 +1,5 @@
 """Enum types for perform_observability_operation."""
 
-from enum import Enum
 
 class OperationCategory(Enum):
     """Categories of observability operations."""

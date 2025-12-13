@@ -6,10 +6,7 @@ LLM based on task type, complexity, and budget constraints.
 
 import asyncio
 import logging
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -257,6 +254,7 @@ class ModelRouter:
         )
 
     def get_model_config(
+        """Docstring."""
         self,
         task_type: TaskType,
         complexity_score: int = 1,
@@ -387,6 +385,7 @@ class ModelRouter:
         return FallbackClient(model_config, self)
 
     def record_usage(
+        """Docstring."""
         self,
         model_name: str,
         input_tokens: int,
@@ -508,6 +507,7 @@ class FallbackClient:
         self._client_cache: Dict[str, "LLMClient"] = {}
 
     async def generate(
+        """Docstring."""
         self,
         prompt: str,
         **kwargs
@@ -697,6 +697,7 @@ async def get_model_router() -> ModelRouter:
 
 # Helper functions
 async def route_and_generate(
+    """Docstring."""
     task_type: TaskType,
     prompt: str,
     complexity_score: int = 1,

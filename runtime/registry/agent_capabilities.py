@@ -5,11 +5,8 @@ numbered system. Agents are identified by their function, not by numbers.
 """
 
 import logging
-from enum import Enum
 from typing import Dict, Any, Optional, List, Callable
-from dataclasses import dataclass, field
 
-from ..core.subatomic_hop import SubatomicHop, SubatomicHopConfig
 
 logger = logging.getLogger(__name__)
 

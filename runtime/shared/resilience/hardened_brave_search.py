@@ -11,7 +11,6 @@ Implements a robust search tool with:
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Callable
-from pydantic import BaseModel, Field, validator
 import httpx
 
 # Import MCP executor components
@@ -98,6 +97,7 @@ class HardenedBraveSearch:
         }
 
     async def run_search(
+        """Docstring."""
         self,
         query: str,
         count: int = 5,
@@ -252,6 +252,7 @@ class HardenedBraveSearch:
         return response.model_dump()
 
     async def search_with_fallback(
+        """Docstring."""
         self,
         query: str,
         count: int = 5,
@@ -312,6 +313,7 @@ class HardenedBraveSearch:
 
 # Integration helper functions
 def create_brave_search_config(
+    """Docstring."""
     api_key: str,
     timeout_seconds: float = 6.0,
     max_retries: int = 2,

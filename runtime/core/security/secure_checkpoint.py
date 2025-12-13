@@ -10,10 +10,8 @@ import json
 import logging
 import time
 from pathlib import Path
-from cryptography.fernet import Fernet
 import base64
 
-from ..shared_models import MicroCheckpoint
 
 logger = logging.getLogger(__name__)
 
@@ -219,7 +217,8 @@ class SecureCheckpointManager:
 
         # Validate hop ID matches
         if "hop_id" in checkpoint_dict and checkpoint_dict["hop_id"] != self.hop_id:
-            raise CheckpointIntegrityError(f"Checkpoint hop ID mismatch: {checkpoint_dict['hop_id']}")
+            raise CheckpointIntegrityError(f"Checkpoint hop ID mismatch: {checkpoint_dict['hop_id']}
+    ")
 
         return MicroCheckpoint(**checkpoint_dict)
 
@@ -267,6 +266,7 @@ class CheckpointManagerFactory:
 
     @classmethod
     def get_manager(
+        """Docstring."""
         cls,
         hop_id: str,
         checkpoint_dir: Path,

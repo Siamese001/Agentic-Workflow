@@ -9,11 +9,7 @@ import logging
 import os
 import time
 from pathlib import Path
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
-import threading
 
 
 logger = logging.getLogger(__name__)
@@ -45,7 +41,6 @@ class SecureConfigManager:
         self.config_file = self.config_dir / "secure_config.encrypted"
         self.keys_file = self.config_dir / "encryption_keys.encrypted"
 
-        self._lock = threading.Lock()
         self._config = self._load_config()
         self._keys = self._load_keys()
 
@@ -407,7 +402,6 @@ class SecureConfigManager:
 
 # Global config manager instance
 _default_manager: Optional[SecureConfigManager] = None
-_manager_lock = threading.Lock()
 
 def get_config_manager() -> SecureConfigManager:
     """Get the default secure config manager.

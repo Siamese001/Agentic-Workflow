@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 import pytest
 import asyncio
-from unittest.mock import Mock, AsyncMock, patch
 
 # Import all components to test
     InputGuardrail,
@@ -42,7 +41,6 @@ from unittest.mock import Mock, AsyncMock, patch
     CypherQueryGenerator
 )
 
-from .titanium_rag_pipeline import TitaniumRAGPipeline
 
 class TestInputGuardrail:
     """Test suite for Input Guardrail (Phase 9)."""

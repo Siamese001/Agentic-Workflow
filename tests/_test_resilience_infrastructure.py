@@ -86,6 +86,7 @@ class TestExecutor(HardeningMixin):
     async def execute_with_hardening(self, should_fail=False):
         """Execute mock API call with hardening."""
         async def _api_call():
+            """Docstring."""
             return await self.mock_api.call(should_fail)
 
         return await self.execute_hardened(
@@ -185,7 +186,9 @@ async def test_telemetry():
     logged_events = []
 
     class TestTelemetry(SystemTelemetry):
+        """Docstring."""
         def log_metric(self, *args, **kwargs):
+            """Docstring."""
             # Capture events for testing
             event = {
                 "component": kwargs.get("component"),
@@ -314,7 +317,6 @@ async def test_hardened_executors():
     if os.getenv("OPENAI_API_KEY"):
         logger.info("Testing OpenAI executor...")
         try:
-            from runtime.shared.hardened_openai_executor import HardenedOpenAIExecutor
 
             executor = HardenedOpenAIExecutor()
             result = await executor.run_llm(
@@ -332,7 +334,6 @@ async def test_hardened_executors():
     if os.getenv("ANTHROPIC_API_KEY"):
         logger.info("Testing Anthropic executor...")
         try:
-            from runtime.shared.hardened_anthropic_executor import HardenedAnthropicExecutor
 
             executor = HardenedAnthropicExecutor()
             result = await executor.run_llm(

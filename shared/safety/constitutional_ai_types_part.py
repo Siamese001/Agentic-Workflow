@@ -1,6 +1,5 @@
 """Split module 1 for constitutional_ai_types."""
 
-from enum import Enum
 
 class RuleType(Enum):
     """Types of constitutional rules."""

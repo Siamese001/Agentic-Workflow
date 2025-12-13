@@ -11,7 +11,6 @@ import time
 from collections import OrderedDict
 from typing import Any, Dict, List, Optional, Tuple
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -176,6 +175,7 @@ class L2VectorStore:
             self.embeddings = self.embeddings[1:]
 
     def search(
+        """Docstring."""
         self,
         query_embedding: List[float],
         threshold: float = 0.92,
@@ -373,6 +373,7 @@ class GlobalCache:
         return None
 
     def get_semantic(
+        """Docstring."""
         self,
         query_text: str,
         threshold: Optional[float] = None,
@@ -414,6 +415,7 @@ class GlobalCache:
         return []
 
     def put(
+        """Docstring."""
         self,
         key: str,
         value: Any,
@@ -541,6 +543,7 @@ def get_global_cache() -> GlobalCache:
 
 # Decorator for caching function results
 def cached(
+    """Docstring."""
     key_func: Optional[callable] = None,
     ttl: int = 3600,
     semantic: bool = False,
@@ -558,7 +561,9 @@ def cached(
         Decorated function
     """
     def decorator(func):
+        """Docstring."""
         async def async_wrapper(*args, **kwargs):
+            """Docstring."""
             cache = get_global_cache()
 
             # Generate key
@@ -613,6 +618,7 @@ def cache_get(key: str) -> Optional[Any]:
     return cache.get(key)
 
 def cache_put(
+    """Docstring."""
     key: str,
     value: Any,
     text_for_embedding: Optional[str] = None,
@@ -632,6 +638,7 @@ def cache_put(
     cache.put(key, value, text_for_embedding, ttl, source_engine)
 
 def cache_search_semantic(
+    """Docstring."""
     query_text: str,
     threshold: Optional[float] = None,
     max_results: int = 1

@@ -12,9 +12,7 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import logging
 import os
-from dataclasses import dataclass
 
-from runtime.shared.agent_executor import AgentMessage, AgentResponse
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +98,8 @@ class HardenedOpenAIExecutor(HardeningMixin):
         try:
             import openai
         except ImportError as exc:
-            raise ImportError("OpenAI package not installed. Install with: pip install openai") from exc
+            raise ImportError("OpenAI package not installed. Install with: pip install openai") from
+    exc
 
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
@@ -160,6 +159,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         return openai_messages
 
     async def run_llm(
+        """Docstring."""
         self,
         prompt: str,
         *,
@@ -193,6 +193,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         # Define async operation
         async def _completion():
+            """Docstring."""
             response = self._client.chat.completions.create(
                 model=self.config.model,
                 messages=openai_messages,
@@ -218,6 +219,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         )
 
     async def run_llm_with_response(
+        """Docstring."""
         self,
         prompt: str,
         *,
@@ -251,6 +253,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         # Define async operation with response capture
         async def _completion():
+            """Docstring."""
             response = self._client.chat.completions.create(
                 model=self.config.model,
                 messages=openai_messages,
@@ -294,6 +297,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         )
 
     def run_llm_sync(
+        """Docstring."""
         self,
         prompt: str,
         *,
@@ -336,6 +340,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
 # Factory function for backward compatibility
 def create_hardened_openai_executor(
+    """Docstring."""
     model: str = "gpt-4o-2024-08-06",
     temperature: float = 0.7,
     **kwargs

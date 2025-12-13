@@ -38,7 +38,8 @@ def select_canonical(files: List[Path]) -> Tuple[Path, List[Path]]:
 
     def score_file(f: Path) -> Tuple[int, int, int]:
         """Score a file for dedup priority based on folder, size, and path."""
-        folder_priority = {'observability': 0, 'runtime': 1, 'agentic_core': 2, 'scripts': 3, '09_apps': 4, '06_data': 5, 'config': 6}
+        folder_priority = {'observability': 0, 'runtime': 1, 'agentic_core': 2, 'scripts': 3, '09_ap
+    ps': 4, '06_data': 5, 'config': 6}
         folder_score = 10
         for folder, priority in folder_priority.items():
             if folder in str(f):

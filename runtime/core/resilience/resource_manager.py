@@ -6,10 +6,6 @@ connection pooling, and prevention of resource leaks.
 
 import asyncio
 import logging
-from contextlib import asynccontextmanager, contextmanager
-from dataclasses import dataclass, field
-from enum import Enum
-import threading
 import time
 import aiofiles
 from pathlib import Path
@@ -50,7 +46,6 @@ class ResourceManager:
         # Resource tracking
         self._resources: Dict[str, ResourceInfo] = {}
         self._resource_counter = 0
-        self._lock = threading.Lock()
 
         # Connection pools
         self._connection_pools: Dict[str, Any] = {}
@@ -100,6 +95,7 @@ class ResourceManager:
         return f"{self.name}_res_{self._resource_counter}_{int(time.time() * 1000)}"
 
     def register_resource(
+        """Docstring."""
         self,
         resource_type: ResourceType,
         cleanup_callback: Optional[Callable] = None,
@@ -314,8 +310,8 @@ class ResourceManager:
             # Cleanup on failure
             try:
                 await aiofiles.os.remove(temp_path)
-            except Exception:
-                pass
+            except Exception as e:
+    logger.warning(f"Ignored error: {e}")
             raise
         finally:
             self.unregister_resource(resource_id)
@@ -344,7 +340,6 @@ class ResourceManager:
 
 # Global resource manager registry
 _managers: Dict[str, ResourceManager] = {}
-_manager_lock = threading.Lock()
 
 def get_resource_manager(name: str = "default", max_resources: int = 1000) -> ResourceManager:
     """Get or create a resource manager.

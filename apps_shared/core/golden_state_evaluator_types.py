@@ -1,6 +1,5 @@
 """Types and models for golden_state_evaluator."""
 
-from dataclasses import dataclass, field
 
 @dataclass
 class GoldenCase:

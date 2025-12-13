@@ -52,8 +52,8 @@ class ShimChainCleaner:
                 if len(code_lines) <= 3:
                     return True
 
-        except Exception:
-            pass
+        except Exception as e:
+    logger.warning(f"Ignored error: {e}")
 
         return False
 
@@ -146,8 +146,8 @@ class ShimChainCleaner:
                 content = py_file.read_text(encoding='utf-8')
                 if pattern.search(content):
                     return True
-            except Exception:
-                pass
+            except Exception as e:
+    logger.warning(f"Ignored error: {e}")
 
         return False
 

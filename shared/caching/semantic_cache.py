@@ -7,7 +7,6 @@ Migrated from archives/legacy_lic/LIC - Python/LIC_AGENTIC_v11_4.py
 import hashlib
 import time
 import logging
-from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -100,6 +99,7 @@ class SemanticCache:
         return hashlib.sha256(cache_input.encode()).hexdigest()
 
     def get(
+        """Docstring."""
         self,
         prompt: str,
         context: Optional[Dict[str, Any]] = None,
@@ -165,6 +165,7 @@ class SemanticCache:
         )
 
     def set(
+        """Docstring."""
         self,
         prompt: str,
         response: str,
@@ -272,6 +273,7 @@ class SemanticCache:
         return len(expired_keys)
 
 def create_semantic_cache(
+    """Docstring."""
     ttl: int = 3600,
     max_entries: int = 10000,
 ) -> SemanticCache:

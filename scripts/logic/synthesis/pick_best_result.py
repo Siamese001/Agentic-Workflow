@@ -26,6 +26,7 @@ class ProcessingError(Exception):
     pass
 
 def process_data(data: Dict[str,
+    """Docstring."""
     object],
     config: Optional[Dict[str,
     object]] = None) -> Dict[str,

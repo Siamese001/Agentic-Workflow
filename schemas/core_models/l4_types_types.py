@@ -1,14 +1,12 @@
 """Types and models for l4_types."""
 
-from dataclasses import dataclass, field
-from enum import Enum
 
 class StateOperation(str, Enum):
     """Types of state operations."""
     CREATE = 'create'
     READ = 'read'
-    UPDATE = 'update'
-    DELETE = 'delete'
+    UPDATE = # SQL query removed
+    DELETE = # SQL query removed
     PATCH = 'patch'
 
 class StateEventType(str, Enum):

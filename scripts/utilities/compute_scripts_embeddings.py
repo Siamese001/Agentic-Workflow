@@ -8,7 +8,6 @@ Generated: 2025-12-07T12:07:59.877485
 import logging
 import math
 from typing import Dict, List, Optional, Sequence
-from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +54,7 @@ class ComputeScriptsEmbeddings:
         return sum(values) / len(values)
 
 def compute(values: Sequence[float],
+    """Docstring."""
     operation: str = "mean",
     config: Optional[Dict] = None) -> ComputationResult:
     """Convenience function for computation."""

@@ -35,52 +35,62 @@ class TitaniumPipelineIntegrationTest:
         self.document_db = [
             {
                 "doc_id": "doc1",
-                "text": "Our RAG pipeline achieves 50ms average latency with 95% accuracy using optimized vector search",
+                "text": "Our RAG pipeline achieves 50ms average latency with 95% accuracy using opti
+    mized vector search",
                 "metadata": {"source": "performance_report", "date": "2024-01-15"}
             },
             {
                 "doc_id": "doc2",
-                "text": "Industry benchmarks for financial applications show 100ms average response time with 90% accuracy",
+                "text": "Industry benchmarks for financial applications show 100ms average response
+    time with 90% accuracy",
                 "metadata": {"source": "industry_analysis", "date": "2024-01-10"}
             },
             {
                 "doc_id": "doc3",
-                "text": "The microservices architecture improved scalability by 300% through horizontal scaling and load balancing",
+                "text": "The microservices architecture improved scalability by 300% through horizon
+    tal scaling and load balancing",
                 "metadata": {"source": "architecture_doc", "date": "2024-01-05"}
             },
             {
                 "doc_id": "doc4",
-                "text": "Python Django REST API handles 10,000 requests per second with proper caching and database optimization",
+                "text": "Python Django REST API handles 10,000 requests per second with proper cachi
+    ng and database optimization",
                 "metadata": {"source": "api_documentation", "date": "2024-01-12"}
             },
             {
                 "doc_id": "doc5",
-                "text": "Our strategic plan for Q2 focuses on expanding market presence and improving customer retention by 25%",
+                "text": "Our strategic plan for Q2 focuses on expanding market presence and improvin
+    g customer retention by 25%",
                 "metadata": {"source": "strategy_doc", "date": "2024-01-20"}
             },
             {
                 "doc_id": "doc6",
-                "text": "Authentication system uses OAuth 2.0 with JWT tokens for secure API access and session management",
+                "text": "Authentication system uses OAuth 2.0 with JWT tokens for secure API access
+    and session management",
                 "metadata": {"source": "security_doc", "date": "2024-01-08"}
             },
             {
                 "doc_id": "doc7",
-                "text": "Error rate decreased from 5% to 0.1% after implementing comprehensive monitoring and alerting",
+                "text": "Error rate decreased from 5% to 0.1% after implementing comprehensive monit
+    oring and alerting",
                 "metadata": {"source": "quality_report", "date": "2024-01-18"}
             },
             {
                 "doc_id": "doc8",
-                "text": "Machine learning model accuracy improved to 99.2% using ensemble methods and feature engineering",
+                "text": "Machine learning model accuracy improved to 99.2% using ensemble methods an
+    d feature engineering",
                 "metadata": {"source": "ml_report", "date": "2024-01-14"}
             },
             {
                 "doc_id": "doc9",
-                "text": "Kubernetes cluster runs on 50 nodes with auto-scaling based on CPU and memory utilization",
+                "text": "Kubernetes cluster runs on 50 nodes with auto-scaling based on CPU and memo
+    ry utilization",
                 "metadata": {"source": "infrastructure_doc", "date": "2024-01-11"}
             },
             {
                 "doc_id": "doc10",
-                "text": "Customer satisfaction scores increased by 25% after implementing real-time support chat",
+                "text": "Customer satisfaction scores increased by 25% after implementing real-time
+    support chat",
                 "metadata": {"source": "customer_report", "date": "2024-01-22"}
             }
         ]
@@ -107,7 +117,8 @@ class TitaniumPipelineIntegrationTest:
             },
             {
                 "name": "Executive Complex Query (Full Pipeline)",
-                "query": "Compare our system performance against industry benchmarks and identify optimization opportunities",
+                "query": "Compare our system performance against industry benchmarks and identify op
+    timization opportunities",
                 "expected_phase": "full_pipeline",
                 "description": "Should use all three phases"
             },
@@ -120,6 +131,7 @@ class TitaniumPipelineIntegrationTest:
         ]
 
     async def mock_retrieval_function(
+        """Docstring."""
         self,
         query: str,
         max_docs: int = 10,
@@ -188,10 +200,12 @@ class TitaniumPipelineIntegrationTest:
 
         # Test gate
         gate_result = self.pipeline.gate.should_retrieve("hello")
-        logger.info(f"   Gate - Simple query: {'Block' if not gate_result.should_retrieve else 'Allow'} ({gate_result.reason})")
+        logger.info(f"   Gate - Simple query: {'Block' if not gate_result.should_retrieve else 'Allo
+    w'} ({gate_result.reason})")
 
         gate_result = self.pipeline.gate.should_retrieve("What is RAG?")
-        logger.info(f"   Gate - Complex query: {'Block' if not gate_result.should_retrieve else 'Allow'} ({gate_result.reason})")
+        logger.info(f"   Gate - Complex query: {'Block' if not gate_result.should_retrieve else 'All
+    ow'} ({gate_result.reason})")
 
         # Test compressor
         test_chunks = [
@@ -324,7 +338,8 @@ class TitaniumPipelineIntegrationTest:
         logger.info(f"   Total queries: {stats['total_queries']}")
         logger.info(f"   Gate blocks: {stats['gate_blocks']} ({stats['gate_block_rate']:.1%})")
         logger.info(f"   Cache hits: {stats['cache_hits']} ({stats['cache_hit_rate']:.1%})")
-        logger.info(f"   Decompositions: {stats['decompositions']} ({stats['decomposition_rate']:.1%})")
+        logger.info(f"   Decompositions: {stats['decompositions']} ({stats['decomposition_rate']:.1%
+    })")
         logger.info(f"   Compressions: {stats['compressions']} ({stats['compression_rate']:.1%})")
         logger.info(f"   Rerankings: {stats['rerankings']} ({stats['reranking_rate']:.1%})")
 
@@ -334,6 +349,7 @@ class TitaniumPipelineIntegrationTest:
         logger.info(f"   Phase 1 (Precision): Available")
         logger.info(f"   Phase 2 (Reasoning): Available")
         logger.info(f"   Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']},
+
             "
               f"Cache={component_info['phase_3_sota']['cache_available']}")
 
@@ -411,8 +427,10 @@ class TitaniumPipelineIntegrationTest:
         logger.info(f"  Phase 1 (Precision): ✅ Available")
         logger.info(f"  Phase 2 (Reasoning): ✅ Available")
         logger.info(f"  Phase 3 (SOTA):")
-        logger.info(f"    - Reranker: {'✅' if component_info['phase_3_sota']['reranker_available'] else '⚠️  Fallback'}")
-        logger.info(f"    - Cache: {'✅' if component_info['phase_3_sota']['cache_available'] else '⚠️  Fallback'}")
+        logger.info(f"    - Reranker: {'✅' if component_info['phase_3_sota']['reranker_available'] e
+    lse '⚠️  Fallback'}")
+        logger.info(f"    - Cache: {'✅' if component_info['phase_3_sota']['cache_available'] else '⚠
+    ️  Fallback'}")
 
         # Run all tests
         await self.test_individual_phases()

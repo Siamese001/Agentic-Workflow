@@ -13,7 +13,6 @@ import json
 import tiktoken
 from typing import List, Optional, Dict, Type, Any, Union
 from openai import AsyncOpenAI, APIError, RateLimitError
-from pydantic import BaseModel
 
 # Import hardening infrastructure
 # from .hardening_mixin import HardeningMixin, HardeningConfig
@@ -159,6 +158,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         return input_cost + output_cost
 
     async def _raw_chat_completion(
+        """Docstring."""
         self,
         messages: List[Dict[str, str]],
         **kwargs
@@ -197,6 +197,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
             raise
 
     async def execute_k_node(
+        """Docstring."""
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -322,6 +323,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
             raise
 
     async def execute_with_fallback(
+        """Docstring."""
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -402,7 +404,6 @@ class HardenedOpenAIExecutor(HardeningMixin):
                 self.stats[key] = 0
 
 # Factory function and provider enum
-from enum import Enum
 
 class Provider(Enum):
     """Supported LLM providers."""
@@ -411,6 +412,7 @@ class Provider(Enum):
     ANTHROPIC = "anthropic"
 
 def create_hardened_executor(
+    """Docstring."""
     provider: Provider,
     config: HardeningConfig,
     **kwargs
@@ -458,6 +460,7 @@ def create_hardened_executor(
 
 # Factory function
 def create_openai_executor(
+    """Docstring."""
     api_key: str,
     model: str = "gpt-4o",
     hardening_config: Optional[HardeningConfig] = None

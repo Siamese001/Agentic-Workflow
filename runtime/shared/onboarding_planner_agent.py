@@ -6,7 +6,6 @@ description analysis and company maturity.
 """
 
 import logging
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +73,7 @@ class OnboardingPlannerAgent:
         logger.info("Initialized OnboardingPlannerAgent")
 
     def generate_plan(
+        """Docstring."""
         self,
         job_description: str,
         company_maturity: str,
@@ -135,14 +135,16 @@ class OnboardingPlannerAgent:
                 for phase in plan.phases:
                     phase.key_deliverables = [
                         d for d in phase.key_deliverables
-                        if "architecture" in d.lower() or "code" in d.lower() or "technical" in d.lower()
+                        if "architecture" in d.lower() or "code" in d.lower() or "technical" in d.lo
+    wer()
                     ] + [
                         "Complete technical debt assessment",
                         "Establish coding standards and review process",
                         "Create system architecture documentation"
                     ][:3]
 
-            elif "head of ai" in role_lower or "vp of ai" in role_lower or "director of ai" in role_lower:
+            elif "head of ai" in role_lower or "vp of ai" in role_lower or "director of ai" in role_
+    lower:
                 # Focus on leadership and strategy
                 for phase in plan.phases:
                     phase.key_deliverables = [
@@ -174,7 +176,8 @@ class OnboardingPlannerAgent:
                 "# Operational Roadmap: Q1 Objectives",
                 "",
                 "## Overview",
-                f"This 90-day roadmap focuses on strategic value delivery while ensuring smooth integration and team alignment.",
+                f"This 90-day roadmap focuses on strategic value delivery while ensuring smooth inte
+    gration and team alignment.",
                 "",
                 "---",
                 ""
@@ -215,7 +218,8 @@ class OnboardingPlannerAgent:
                 "",
                 "---",
                 "",
-                f"*This roadmap demonstrates operational readiness and strategic thinking for the role.*"
+                f"*This roadmap demonstrates operational readiness and strategic thinking for the ro
+    le.*"
             ])
 
             return "\n".join(lines)
@@ -403,7 +407,8 @@ class OnboardingPlannerAgent:
                 )
             else:
                 return (
-                    "Primary risks include organizational resistance and complex stakeholder landscape. "
+                    "Primary risks include organizational resistance and complex stakeholder landsca
+    pe. "
                     "Mitigation: Build coalitions, demonstrate quick wins, "
                     "and align initiatives with existing business processes."
                 )
@@ -511,6 +516,7 @@ def create_onboarding_planner_agent() -> OnboardingPlannerAgent:
 
 # Convenience function for quick plan generation
 def generate_onboarding_plan(
+    """Docstring."""
     job_description: str,
     company_maturity: str,
     role_title: str

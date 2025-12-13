@@ -6,9 +6,7 @@ for signaling deep authority.
 """
 
 import logging
-from enum import Enum
 
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -168,6 +166,7 @@ class ReconAgent:
         }
 
     def analyze(
+        """Docstring."""
         self,
         target_company: str,
         candidate_history: List[str]
@@ -188,7 +187,8 @@ class ReconAgent:
             return ReconSignal(
                 target_company=target_company,
                 position=CompetitivePosition.UNRELATED,
-                strategy_recommendation="No competitive intelligence available. Focus on transferable skills.",
+                strategy_recommendation="No competitive intelligence available. Focus on transferabl
+    e skills.",
                 confidence_score=0.0
             )
 
@@ -206,7 +206,8 @@ class ReconAgent:
         return ReconSignal(
             target_company=target_company,
             position=CompetitivePosition.UNRELATED,
-            strategy_recommendation="No direct competitive experience. Emphasize industry expertise and transferable skills.",
+            strategy_recommendation="No direct competitive experience. Emphasize industry expertise
+    and transferable skills.",
             confidence_score=0.0
         )
 
@@ -351,7 +352,7 @@ class ReconAgent:
         """
         if company_name in self.competitor_db:
             self.competitor_db[company_name].competitors = competitors
-            logger.debug(f"Updated competitors for {company_name}")
+            logger.debug(f# SQL query removed)
 
     def get_competitive_landscape(self, company_name: str) -> Optional[Dict[str, List[str]]]:
         """Get competitive landscape for a company.
@@ -373,6 +374,7 @@ class ReconAgent:
         }
 
     def batch_analyze(
+        """Docstring."""
         self,
         target_companies: List[str],
         candidate_history: List[str]
@@ -409,6 +411,7 @@ def get_recon_agent() -> ReconAgent:
 
 # Convenience function
 def analyze_competitive_fit(
+    """Docstring."""
     target_company: str,
     candidate_history: List[str]
 ) -> ReconSignal:

@@ -9,7 +9,6 @@ Updated: 2025-12-12 - Integrated Titanium RAG Pipeline
 import logging
 import time
 from typing import Dict, Optional
-from shared.result_types import ExecutionResult
 
 logger = logging.getLogger(__name__)
 
@@ -127,6 +126,7 @@ class DispatchResumeTools:
             return {"error": str(e)}
 
 def execute(action: str,
+    """Docstring."""
     params: Dict[str,
     object],
     config: Optional[Dict] = None) -> ExecutionResult:

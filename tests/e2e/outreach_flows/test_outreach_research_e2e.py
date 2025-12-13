@@ -47,7 +47,8 @@ class TestMessageGenerationE2E:
             "recent_achievement": "product launch",
         }
 
-        message = f"Hi {context['recipient']}, congrats on the {context['recent_achievement']} at {context['company']}!"
+        message = f"Hi {context['recipient']}, congrats on the {context['recent_achievement']} at {c
+    ontext['company']}!"
 
         assert context["recipient"] in message
         assert context["company"] in message

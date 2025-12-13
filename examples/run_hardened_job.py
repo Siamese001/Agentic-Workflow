@@ -29,9 +29,7 @@ logger = logging.getLogger(__name__)
 
 # Import hardened components
 try:
-    from apps_rg.L3_orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
     from runtime.shared.routing import RoutingTier
-    from apps_rg.L3_orchestration.orchestrate_workflow import WorkflowSpec, HopSpec
 except ImportError as e:
     logger.error(f"Failed to import hardened components: {e}")
     logger.error("Make sure the runtime modules are properly installed")

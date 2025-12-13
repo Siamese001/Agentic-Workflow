@@ -7,7 +7,6 @@ stop calling failing services and allow them time to recover.
 import asyncio
 import logging
 import time
-from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -287,7 +286,8 @@ class CircuitBreaker:
             "failure_count": self.failure_count,
             "success_count": self.success_count,
             "last_failure_time": self.last_failure_time.isoformat() if self.last_failure_time else None,
-                
+
+
             "last_state_change": self.last_state_change.isoformat(),
             "current_failure_rate": self._get_current_failure_rate()
         })
@@ -325,6 +325,7 @@ class CircuitBreakerRegistry:
         self._lock = asyncio.Lock()
 
     async def get_circuit_breaker(
+        """Docstring."""
         self,
         name: str,
         config: Optional[CircuitBreakerConfig] = None
@@ -344,6 +345,7 @@ class CircuitBreakerRegistry:
             return self.circuit_breakers[name]
 
     async def call_through(
+        """Docstring."""
         self,
         circuit_name: str,
         func: Callable,
@@ -407,6 +409,7 @@ async def get_circuit_breaker_registry() -> CircuitBreakerRegistry:
 
 # Decorators
 def circuit_breaker(
+    """Docstring."""
     name: str,
     config: Optional[CircuitBreakerConfig] = None
 ):
@@ -425,6 +428,7 @@ def circuit_breaker(
             """TODO: Add docstring."""
 
         async def async_wrapper(*args, **kwargs):
+            """Docstring."""
             registry = await get_circuit_breaker_registry()
             return await registry.call_through(name, func, *args, config=config, **kwargs)
             """TODO: Add docstring."""
@@ -433,8 +437,10 @@ def circuit_breaker(
                 """TODO: Add docstring."""
 
         def sync_wrapper(*args, **kwargs):
+            """Docstring."""
             # For sync functions, run in thread pool
             async def async_func():
+                """Docstring."""
                 return func(*args, **kwargs)
 
             return asyncio.run(async_func())

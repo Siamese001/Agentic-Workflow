@@ -45,6 +45,7 @@ class ConstitutionalAISystem:
                 logger.debug(f'Removed constitutional rule: {rule_id}')
 
     def review_content(self,
+        """Docstring."""
         content: str,
         context: Optional[Dict[str,
         any]]=None) -> ConstitutionalReviewResult:
@@ -71,7 +72,8 @@ class ConstitutionalAISystem:
             logger.warning('constitutional_violations',
                 extra={'violation_count': len(violations),
                 'compliance_score': compliance_score,
-                'critical_count': sum((1 for v in violations if v.severity == RuleSeverity.CRITICAL))})
+                'critical_count': sum((1 for v in violations if v.severity == RuleSeverity.CRITICAL)
+    )})
         return ConstitutionalReviewResult(is_compliant=is_compliant,
             violations=violations,
             compliance_score=compliance_score,
@@ -95,7 +97,8 @@ class ConstitutionalAISystem:
         for rule in self.rules.values():
             rule_violations = self._check_rule(content, rule, context)
             violations.extend(rule_violations)
-        severity_order = {RuleSeverity.CRITICAL: 0, RuleSeverity.HIGH: 1, RuleSeverity.MEDIUM: 2, RuleSeverity.LOW: 3}
+        severity_order = {RuleSeverity.CRITICAL: 0, RuleSeverity.HIGH: 1, RuleSeverity.MEDIUM: 2, Ru
+    leSeverity.LOW: 3}
         violations.sort(key=lambda v: severity_order.get(v.severity, 4))
         return violations
 
@@ -142,7 +145,8 @@ class ConstitutionalAISystem:
         """
         if not violations:
             return 1.0
-        severity_weights = {RuleSeverity.CRITICAL: 1.0, RuleSeverity.HIGH: 0.7, RuleSeverity.MEDIUM: 0.4, RuleSeverity.LOW: 0.2}
+        severity_weights = {RuleSeverity.CRITICAL: 1.0, RuleSeverity.HIGH: 0.7, RuleSeverity.MEDIUM:
+    0.4, RuleSeverity.LOW: 0.2}
         total_penalty = sum((severity_weights.get(v.severity, 0.5) for v in violations))
         score = max(0.0, 1.0 - total_penalty / 10.0)
         return round(score, 2)
@@ -163,9 +167,11 @@ class ConstitutionalAISystem:
         for v in violations:
             violation_by_type[v.severity].append(v)
         if RuleSeverity.CRITICAL in violation_by_type:
-            recommendations.append(f'CRITICAL: Address {len(violation_by_type[RuleSeverity.CRITICAL])} critical violations immediately')
+            recommendations.append(f'CRITICAL: Address {len(violation_by_type[RuleSeverity.CRITICAL]
+    )} critical violations immediately')
         if RuleSeverity.HIGH in violation_by_type:
-            recommendations.append(f'HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-severity violations')
+            recommendations.append(f'HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-s
+    everity violations')
         unique_rules = set((v.rule_id for v in violations))
         if len(unique_rules) <= 3:
             for rule_id in unique_rules:
@@ -201,6 +207,7 @@ class ConstitutionalAISystem:
             self.add_rule(rule)
 
 def review_content(content: str,
+    """Docstring."""
     context: Optional[Dict[str,
     any]]=None) -> ConstitutionalReviewResult:
     """Convenience function to review content.

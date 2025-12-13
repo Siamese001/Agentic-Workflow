@@ -1,7 +1,6 @@
 """Backward compatibility shim for workflow_v7.
 
 This module maintains backward compatibility by re-exporting all components
-from the refactored submodules. All functionality has been split into focused
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original workflow_v7.py contained 7 top-level definitions which

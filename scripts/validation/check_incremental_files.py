@@ -6,7 +6,7 @@ import sys
 
 # --- USER-PROVIDED INPUTS ---
 
-# List 1: Basenames of all Python files in the current Sovereign Codebase (the files we MUST NOT overwrite).
+# List 1: Basenames of all Python files in the current Sovereign Codebase (the files we MUST NOT ...
 # Format: ['fileA.py', 'helper_util.py', ...]
 SOVEREIGN_EXCLUSION_LIST = [
     'fix_canon_violations.py',
@@ -47,7 +47,7 @@ SOVEREIGN_EXCLUSION_LIST = [
 ]
 
 # List 2: Basenames of all Python files in the archive folder:
-# C:\Git\Agentic-Workflow\archives\engines\legacy_engines (the files we want to check and potentially copy).
+# C:\Git\Agentic-Workflow\archives\engines\legacy_engines (the files we want to check and potenti...
 # Format: ['Legacy_Engine.py', 'old_util.py', ...]
 ARCHIVE_SOURCE_LIST = [
     'constitutional_ai_system.py',

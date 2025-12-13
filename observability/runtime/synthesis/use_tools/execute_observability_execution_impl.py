@@ -82,6 +82,7 @@ class ObservabilityExecutionAdapter:
         return self._active_traces.get(trace_id)
 
     def get_metrics(self,
+        """Docstring."""
         metric_name: str,
         time_range: Optional[Tuple[float,
         float]]=None) -> List[float]:
@@ -139,7 +140,8 @@ class ObservabilityExecutionAdapter:
                 success=True,
                 data=data,
                 metrics=metrics,
-                traces=[self._active_traces[trace_id]] if trace_id and trace_id in self._active_traces else [])
+                traces=[self._active_traces[trace_id]] if trace_id and trace_id in self._active_trac
+    es else [])
             return result
         except Exception as e:
             return ObservabilityResult(request_id=request.request_id,
@@ -243,6 +245,7 @@ class ObservabilityExecutionAdapter:
         self.register_handler(ObservabilityType.PROFILE, _profile_handler)
 
 def create_observability_execution_adapter(default_timeout: float=10.0,
+    """Docstring."""
     enable_tracing: bool=True,
     enable_metrics: bool=True,
     **kwargs: object) -> ObservabilityExecutionAdapter:
@@ -254,6 +257,7 @@ def create_observability_execution_adapter(default_timeout: float=10.0,
     return ObservabilityExecutionAdapter(config)
 
 def execute_observability_execution(request_id: str,
+    """Docstring."""
     operation_type: str,
     target: str,
     parameters: Dict[str,
@@ -279,4 +283,6 @@ def execute_observability_execution(request_id: str,
         parameters=parameters,
         execution_level=ExecutionLevel(execution_level))
     result = adapter.execute(request)
-    return {'request_id': result.request_id, 'operation_type': result.operation_type.value, 'success': result.success, 'data': result.data, 'metrics': result.metrics, 'traces': result.traces, 'error': result.error, 'execution_time': result.execution_time, 'metadata': result.metadata}
+    return {'request_id': result.request_id, 'operation_type': result.operation_type.value, 'success
+    ': result.success, 'data': result.data, 'metrics': result.metrics, 'traces': result.traces, 'err
+        or': result.error, 'execution_time': result.execution_time, 'metadata': result.metadata}
