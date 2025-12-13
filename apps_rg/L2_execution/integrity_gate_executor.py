@@ -9,6 +9,11 @@ from apps_rg.L1_cognition.k2_5_deep_research_models import (
 
 
 class IntegrityGateExecutor:
+    """Executor for integrity gate validation.
+    
+    Validates research outputs against quality criteria including
+    depth, citations, and structural requirements.
+    """
     
     FLUFF_WORDS = {
         "cutting-edge", "innovative", "world-class", "leading", "premier",
@@ -27,6 +32,14 @@ class IntegrityGateExecutor:
         self.min_depth_score = min_depth_score
     
     def execute(self, research_output: DeepResearchOutput) -> IntegrityGateResult:
+        """Execute integrity gate validation on research output.
+        
+        Args:
+            research_output: The research output to validate
+            
+        Returns:
+            IntegrityGateResult: Validation result with any violations
+        """
         result = IntegrityGateResult(passed=True, depth_score=0.0)
         
         self._check_unbound_metrics(research_output, result)

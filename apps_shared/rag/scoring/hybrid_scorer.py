@@ -294,36 +294,7 @@ class HybridScorer:
         """
         # Check for date in document
         if "date" in document:
-            try:
-                date_value = document["date"]
-                if isinstance(date_value, datetime):
-                    days_ago = (datetime.now() - date_value).days
-                elif isinstance(date_value, str):
-                    # Try to parse ISO format date string
-                    from datetime import datetime as dt
-                    # Handle ISO format with/without timezone
-                    if 'T' in date_value:
-                        # Full ISO datetime
-                        parsed_date = dt.fromisoformat(date_value.replace('Z', '+00:00'))
-                    else:
-                        # Date only
-                        parsed_date = dt.fromisoformat(date_value)
-                    days_ago = (datetime.now() - parsed_date).days
-                else:
-                    days_ago = 999
-                
-                if days_ago <= 1:
-                    return 0.95  # Very recent document (> 0.9)
-                elif days_ago <= 7:
-                    return 0.8  # Recent document
-                elif days_ago <= 30:
-                    return 0.4  # Medium age (0.3-0.5)
-                elif days_ago <= 90:
-                    return 0.05  # Old-ish (< 0.1)
-                else:
-                    return 0.05  # Very old (< 0.1)
-            except:
-                pass
+            return self._calculate_date_recency(document["date"])
         
         # Check for timestamp
         if "timestamp" in document:

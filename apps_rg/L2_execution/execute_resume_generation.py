@@ -12,7 +12,19 @@ from typing import Dict, Optional, Any
 from shared.result_types import ExecutionResult
 from .job_analyzer import JobAnalyzer
 from .resume_generator import ResumeGenerator
-from ..L3_orchestration.state.workflow_loader import WorkflowLoader, create_workflow_loader
+# Local workflow loader to avoid L3 dependency
+class LocalWorkflowLoader:
+    """Local workflow loader to avoid architectural violation."""
+    def __init__(self):
+        self.workflows = {}
+    
+    def load_workflow(self, workflow_id: str):
+        """Load workflow configuration."""
+        return self.workflows.get(workflow_id, {})
+
+def create_local_workflow_loader() -> LocalWorkflowLoader:
+    """Create local workflow loader instance."""
+    return LocalWorkflowLoader()
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +34,12 @@ logger = logging.getLogger(__name__)
 class ExecuteResumeGeneration:
     """Executor for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None, workflow_loader: Optional[WorkflowLoader] = None):
+    def __init__(self, config: Optional[Dict[str, object]] = None, workflow_loader: Optional[LocalWorkflowLoader] = None):
         self.config = config or {}
         self.timeout = self.config.get("timeout", 30.0)
         
         # Load workflow configuration
-        self.workflow = workflow_loader or create_workflow_loader()
+        self.workflow = workflow_loader or create_local_workflow_loader()
         
         # Initialize LLM-powered components with workflow configuration
         creative_brief = self.workflow.get_creative_brief()

@@ -62,6 +62,11 @@ class BulletProvenanceLog:
 
 @dataclass
 class BulletSynthesizerConfig:
+    """Configuration for bullet point synthesis.
+    
+    Controls the synthesis parameters including tone, length,
+    and formatting options for achievement bullets.
+    """
     format_type: BulletFormat = BulletFormat.UNIFY
     temperature: float = 0.6
     max_attempts: int = 3
