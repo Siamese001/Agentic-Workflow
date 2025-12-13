@@ -44,6 +44,12 @@ from .security.secure_checkpoint import (
     CheckpointManagerFactory,
     CheckpointIntegrityError
 )
+from .quality.signal_enhancer import (
+    SignalEnhancer,
+    SignalQuality,
+    QualityThresholds,
+    get_signal_enhancer
+)
 
 logger = logging.getLogger(__name__)
 
@@ -135,6 +141,12 @@ class SubatomicHop:
             )
         else:
             self.checkpoint_manager = None
+        
+        # Initialize signal enhancer for quality control
+        self.signal_enhancer = get_signal_enhancer(
+            f"{self.config.hop_id}_enhancer",
+            QualityThresholds()  # Use strict thresholds
+        )
         
         # State management
         self.current_stage: Optional[MicroStage] = None
@@ -523,7 +535,7 @@ class SubatomicHop:
             raise StageExecutionError(f"Failed to execute hop: {e}")
     
     async def _critique(self, **kwargs) -> Dict[str, Any]:
-        """Review and validate the output using Reflection Engine."""
+        """Review and validate the output using Reflection Engine and Signal Enhancer."""
         logger.debug(f"Critique stage for hop {self.config.hop_id}")
         
         raw_output = self.context.get("raw_output")
@@ -532,7 +544,47 @@ class SubatomicHop:
         if raw_output is None:
             raise QualityGateFailure("No output produced")
         
-        # Use Reflection Engine for validation with timeout protection
+        # First, assess signal quality
+        signal_assessment = self.signal_enhancer.assess_signal(
+            raw_output,
+            context={
+                "hop_id": self.config.hop_id,
+                "stage": "CRITIQUE",
+                "retry_count": self.critique_loop_count,
+                "query": self.context.get("objective", ""),
+                "sources": self.context.get("sources", [])
+            }
+        )
+        
+        # Check if signal meets minimum quality standards
+        min_quality = SignalQuality.GOOD  # Require at least GOOD quality
+        if not signal_assessment.is_acceptable(min_quality):
+            self.critique_loop_count += 1
+            logger.warning(
+                f"Signal quality too low: {signal_assessment.quality_level.value} "
+                f"(score: {signal_assessment.composite_score:.2f}) "
+                f"Flags: {', '.join(signal_assessment.flags)}"
+            )
+            
+            # Store assessment for potential mutation
+            self.context["signal_assessment"] = signal_assessment
+            
+            # Request mutation with quality feedback
+            from .reflection_engine import MutationRequest
+            mutation_request = MutationRequest(
+                reason=f"Signal quality {signal_assessment.quality_level.value}. "
+                       f"Recommendations: {'; '.join(signal_assessment.recommendations[:3])}",
+                priority="high" if signal_assessment.quality_level == SignalQuality.POOR else "medium",
+                context={
+                    "quality_score": signal_assessment.composite_score,
+                    "flags": signal_assessment.flags,
+                    "hallucination_risk": signal_assessment.hallucination_risk
+                }
+            )
+            
+            return {"mutation_request": mutation_request}
+        
+        # Signal quality is acceptable, proceed with reflection engine validation
         try:
             # Hard limit: 15 seconds for self-reflection
             critique_result = await asyncio.wait_for(
@@ -542,21 +594,26 @@ class SubatomicHop:
                     context={
                         "hop_id": self.config.hop_id,
                         "stage": "CRITIQUE",
-                        "retry_count": self.critique_loop_count
+                        "retry_count": self.critique_loop_count,
+                        "signal_quality": signal_assessment.quality_level.value,
+                        "signal_score": signal_assessment.composite_score
                     }
                 ),
                 timeout=15.0
             )
         except asyncio.TimeoutError:
-            logger.warning(f"Reflection timed out for hop {self.config.hop_id}. Defaulting to PASS.")
-            # Create a default passing result to avoid blocking workflow
+            logger.warning(f"Reflection timed out for hop {self.config.hop_id}. Using signal assessment.")
+            # Create a result based on signal assessment
             from .reflection_engine import CritiqueResult
             critique_result = CritiqueResult(
-                is_valid=True,
-                confidence_score=0.5,  # Low confidence but passing
-                critique_reasoning="Reflection timed out - auto-approved to prevent blocking",
-                validation_type="timeout_fallback"
+                is_valid=signal_assessment.is_acceptable(SignalQuality.MARGINAL),
+                confidence_score=signal_assessment.composite_score,
+                critique_reasoning=f"Reflection timed out. Signal quality: {signal_assessment.quality_level.value}",
+                validation_type="signal_assessment_fallback"
             )
+        
+        # Store signal assessment in context
+        self.context["signal_assessment"] = signal_assessment
         
         # Check if validation passed
         if not critique_result.is_valid:
@@ -566,40 +623,47 @@ class SubatomicHop:
             if critique_result.mutation_request:
                 logger.info(f"Mutation requested: {critique_result.mutation_request.reason}")
                 
+                # Enhance mutation request with signal feedback
+                if signal_assessment.hallucination_risk > 0.3:
+                    critique_result.mutation_request.reason += " [HIGH HALLUCINATION RISK]"
+                
                 # Pause current hop
                 self.state = HopState.PAUSED
-                
-                # Raise MutationRequired to trigger DAG mutation
-                raise MutationRequired(critique_result.mutation_request)
-            
-            # Check if we've exceeded max critique loops
-            if self.critique_loop_count > self.reflection_engine.config.max_critique_loops:
-                raise QualityGateFailure(
-                    f"Failed quality validation after {self.critique_loop_count} attempts. "
-                    f"Last error: {critique_result.critique_reasoning}"
+                self.stage_history.append(
+                    StageTransition(
+                        from_stage=MicroStage.CRITIQUE,
+                        to_stage=MicroStage.MUTATE,
+                        timestamp=time.time(),
+                        metadata={
+                            "mutation_reason": critique_result.mutation_request.reason,
+                            "signal_quality": signal_assessment.quality_level.value,
+                            "signal_score": signal_assessment.composite_score
+                        }
+                    )
                 )
+                
+                return {"mutation_request": critique_result.mutation_request}
             
-            # Inject suggested fix into context for retry
-            if critique_result.suggested_fix:
-                self.context["critique_feedback"] = critique_result.suggested_fix
-                logger.warning(f"Critique failed, retrying with feedback: {critique_result.suggested_fix}")
+            # No mutation requested, but validation failed - retry
+            if self.critique_loop_count >= self.config.max_critique_retries:
+                logger.error(f"Max critique retries exceeded for hop {self.config.hop_id}")
+                raise QualityGateFailure(f"Validation failed after {self.config.max_critique_retries} attempts")
             
-            # Raise to trigger retry
-            raise QualityGateFailure(
-                f"Quality validation failed: {critique_result.critique_reasoning}"
-            )
+            return {"retry": True}
         
-        # Store validated output
-        self.context["validated_output"] = raw_output
-        self.context["critique_result"] = critique_result.dict()
+        # Both signal quality and reflection validation passed
+        validated_output = raw_output
+        self.context["validated_output"] = validated_output
         
-        return {
-            "is_valid": True,
-            "output_type": type(raw_output).__name__,
-            "size": len(str(raw_output)),
-            "confidence": critique_result.confidence_score,
-            "critique_loops": self.critique_loop_count
-        }
+        # Log quality metrics
+        logger.info(
+            f"Hop {self.config.hop_id} passed validation: "
+            f"Signal={signal_assessment.quality_level.value} "
+            f"(SNR={signal_assessment.signal_to_noise_ratio:.1f}:1, "
+            f"Accuracy={signal_assessment.factual_accuracy:.2f})"
+        )
+        
+        return {"validated_output": validated_output}
     
     async def _commit(self, **kwargs) -> Dict[str, Any]:
         """Write to state/memory with atomic write pattern."""
