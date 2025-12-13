@@ -6,6 +6,7 @@ ensuring the most relevant context hits the LLM first.
 
 import logging
 import time
+from typing import List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -298,5 +299,5 @@ class PassThroughReranker:
         documents: List[str],
         top_k: Optional[int] = None) -> List[Tuple[str,
         float]]:
-            """Return documents with dummy scores."""
+        """Return documents with dummy scores."""
         return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
