@@ -34,6 +34,14 @@
       "command": "cmd.exe",
       "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-sequential-thinking"],
       "description": "Chain-of-thought reasoning and structured problem solving."
+    },
+    "figma": {
+      "command": "cmd.exe",
+      "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "figma-mcp-pro", "--figma-api-key", "${FIGMA_TOKEN}"],
+      "env": { 
+        "FIGMA_TEAM_ID": "${FIGMA_TEAM_ID}"
+      },
+      "description": "Figma design system integration, asset downloads, and design-to-code."
     }
   }
 }
