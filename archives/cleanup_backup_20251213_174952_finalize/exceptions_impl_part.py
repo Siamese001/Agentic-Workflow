@@ -29,6 +29,16 @@ class PhaseTimeoutError(AgenticWorkflowError):
     """Phase execution timed out."""
     pass
 
+
+# ============================================
+# Merged from: shared/errors/exceptions_impl_part_2.py
+# ============================================
+"""Split module 2 for exceptions_impl."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from enum import Enum
+
 class ValidationError(AgenticWorkflowError):
     """Validation rule failed."""
     pass
@@ -36,3 +46,4 @@ class ValidationError(AgenticWorkflowError):
 class APIError(AgenticWorkflowError):
     """External API call failed."""
     pass
+

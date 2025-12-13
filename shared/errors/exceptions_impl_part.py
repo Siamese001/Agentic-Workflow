@@ -29,3 +29,10 @@ class PhaseTimeoutError(AgenticWorkflowError):
     """Phase execution timed out."""
     pass
 
+class ValidationError(AgenticWorkflowError):
+    """Validation rule failed."""
+    pass
+
+class APIError(AgenticWorkflowError):
+    """External API call failed."""
+    pass

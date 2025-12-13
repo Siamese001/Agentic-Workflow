@@ -42,6 +42,16 @@ class ArchetypeTemplate:
     avoid: str
     creative_brief: CreativeBrief
 
+
+# ============================================
+# Merged from: apps_lic/L1_cognition/P3_aggregate/lic_archetypes_models_2.py
+# ============================================
+"""Dataclass models for lic_archetypes."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from .lic_archetypes_enums import *
+
 @dataclass
 class SignatureTemplate:
     """Template for message signature."""
@@ -54,3 +64,4 @@ class GreetingTemplate:
     """Template for message greeting."""
     template: str
     note: str
+

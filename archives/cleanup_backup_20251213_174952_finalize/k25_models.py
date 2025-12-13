@@ -57,6 +57,16 @@ class TechnicalLayer:
             return False
         return all((tech.validate() for tech in self.key_technologies))
 
+
+# ============================================
+# Merged from: apps_rg/L1_cognition/k25_models_2.py
+# ============================================
+"""Dataclass models for k25_research_models_types."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from .k25_research_models_types_enums import *
+
 @dataclass
 class LeadershipLayer:
     key_executives: List[ExecutiveProfile] = field(default_factory=list)
@@ -125,3 +135,4 @@ class IntegrityGateResult:
         self.rejection_reasons.append(reason)
         self.detailed_violations.append(detail)
         self.passed = False
+

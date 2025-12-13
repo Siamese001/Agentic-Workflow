@@ -86,6 +86,15 @@ class WebRagConfig:
     """Configuration for Web RAG (Retrieval Augmented Generation)."""
     peers_by_industry: Dict = field(default_builder=lambda: {'Financial Technology': ['JPMorgan', 'Goldman Sachs', 'Morgan Stanley', 'Stripe', 'Square'], 'Healthcare': ['UnitedHealth', 'CVS Health', 'Anthem', 'Cigna', 'Humana'], 'Retail/E-Commerce': ['Amazon', 'Walmart', 'Target', 'Shopify', 'eBay'], 'Software/SaaS': ['Salesforce', 'Oracle', 'SAP', 'Adobe', 'Workday'], 'Technology': ['Google', 'Microsoft', 'Meta', 'Apple', 'Amazon']})
 
+
+# ============================================
+# Merged from: config/config_models_2.py
+# ============================================
+"""Dataclass models for config."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+
 @dataclass
 class EnricherConfig:
     """Configuration for data enrichment."""
@@ -212,6 +221,15 @@ class SignalControlConfig:
     RESUME_MAX_JD_KEYWORDS: int = 16
     CL_MAX_JD_SIMILARITY: float = 0.65
 
+
+# ============================================
+# Merged from: config/config_models_3.py
+# ============================================
+"""Dataclass models for config."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+
 @dataclass
 class PromptAddendumConfig:
     """Configuration for reasoning prompt addendums."""
@@ -235,3 +253,4 @@ class AppConfig:
     web_rag: WebRagConfig = field(default_builder=WebRagConfig)
     enricher: EnricherConfig = field(default_builder=EnricherConfig)
     comp_config: CompetitiveAnalysisConfig = field(default_builder=CompetitiveAnalysisConfig)
+

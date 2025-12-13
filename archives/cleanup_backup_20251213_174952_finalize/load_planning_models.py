@@ -61,6 +61,16 @@ class ConfigLoadConfig:
     default_cache_ttl: int = 300
     log_level: str = 'INFO'
 
+
+# ============================================
+# Merged from: config/logic/data_access/get_info/load_planning_models_2.py
+# ============================================
+"""Dataclass models for load_planning."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from .load_planning_enums import *
+
 @dataclass
 class ConfigLoadResult:
     """Result of config load planning."""
@@ -74,3 +84,4 @@ class ConfigLoadResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+

@@ -36,6 +36,16 @@ class WorkflowConfig:
     stop_on_error: bool = True
     parallel_execution: bool = False
 
+
+# ============================================
+# Merged from: shared/core/config_types_part_2.py
+# ============================================
+"""Split module 2 for config_types."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from enum import Enum
+
 @dataclass
 class Config:
     """Legacy Config class for backward compatibility"""
@@ -97,3 +107,4 @@ class GlobalConfig:
     rag: RAGConfig = field(default_factory=RAGConfig)
     governor: GovernorConfig = field(default_factory=GovernorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
+
