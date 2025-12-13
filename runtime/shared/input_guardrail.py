@@ -439,7 +439,7 @@ class InputGuardrail:
                     if re.search(pattern, decoded, re.IGNORECASE):
                         return (True, f"Base64 payload with injection pattern: {match[:20]}...")
                         
-            except:
+            except Exception:
                 # Not valid base64, continue
                 pass
         
@@ -453,7 +453,7 @@ class InputGuardrail:
                 decoded = bytes.fromhex(match).decode('utf-8', errors='ignore')
                 if any(keyword in decoded.lower() for keyword in self.malicious_keywords):
                     return (True, f"Hex encoded payload with malicious content")
-            except:
+            except Exception:
                 pass
         
         return (False, "")

@@ -516,7 +516,7 @@ class JSONFormatter(FormatterStrategy):
                 # Try to parse as JSON first
                 try:
                     parsed = json.loads(data)
-                except:
+                except Exception:
                     parsed = {"text": data}
             else:
                 parsed = data

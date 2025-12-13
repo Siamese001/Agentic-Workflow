@@ -267,7 +267,7 @@ class InputValidator:
                     # Try ISO format first
                     try:
                         return datetime.fromisoformat(value)
-                    except:
+                    except Exception:
                         # Try timestamp
                         return datetime.fromtimestamp(float(value))
                 elif isinstance(value, (int, float)):
