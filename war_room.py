@@ -6,8 +6,12 @@ from typing import Dict, Any
 
 # Import your new subatomic architecture modules
 try:
-    from runtime.shared.workflow.executive_orchestrator import ExecutiveAgentOrchestrator
-    from runtime.shared.workflow.schema_definitions import TechnicalSWOT, StrategyRoadmap, InterviewerProfile
+    # Import directly to bypass broken __init__.py
+    import sys
+    import os
+    sys.path.append(os.path.join(os.path.dirname(__file__), 'runtime', 'shared', 'workflow'))
+    from executive_orchestrator import ExecutiveAgentOrchestrator
+    from schema_definitions import TechnicalSWOT, StrategyRoadmap, InterviewerProfile
     from rich.console import Console
     from rich.panel import Panel
     from rich.markdown import Markdown

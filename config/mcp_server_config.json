@@ -1,28 +1,39 @@
 {
   "mcpServers": {
     "filesystem": {
-      "command": "C:\\Program Files\\nodejs\\npx.cmd",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "./output", "./logs", "./project_knowledge"],
+      "command": "cmd.exe",
+      "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-filesystem", "./output", "./logs", "./project_knowledge"],
       "description": "Restricted access: Can only read/write to specific output folders."
     },
     "github": {
-      "command": "C:\\Program Files\\nodejs\\npx.cmd",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "command": "cmd.exe",
+      "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-github"],
       "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" }
     },
     "postgres_memory": {
-      "command": "C:\\Program Files\\nodejs\\npx.cmd",
-      "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"],
+      "command": "cmd.exe",
+      "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"],
       "description": "Persistent episodic memory store."
     },
     "browser": {
-      "command": "C:\\Program Files\\nodejs\\npx.cmd",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+      "command": "cmd.exe",
+      "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-puppeteer"]
     },
     "terminal": {
-      "command": "uvx",
-      "args": ["mcp-server-command", "--allow-commands", "python", "pip", "grep", "cat", "ls"],
-      "description": "Safe subset of terminal commands for self-correction."
+      "command": "cmd.exe",
+      "args": ["/c", "powershell", "-Command", "& { $input | Out-Null; Write-Host 'Terminal MCP placeholder - PowerShell commands can be executed here' }"],
+      "description": "Windows PowerShell terminal access."
+    },
+    "pinecone": {
+      "command": "cmd.exe",
+      "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@pinecone-database/mcp"],
+      "env": { "PINECONE_API_KEY": "${PINECONE_API_KEY}" },
+      "description": "Vector database for semantic search and RAG."
+    },
+    "sequential_thinking": {
+      "command": "cmd.exe",
+      "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Chain-of-thought reasoning and structured problem solving."
     }
   }
 }
