@@ -6,6 +6,7 @@ alignment and hero content prioritization.
 """
 
 import logging
+import re
 from typing import Dict, List, Optional, Tuple, Any, Union
 from pydantic import BaseModel, Field, validator
 
@@ -55,32 +56,106 @@ class HybridScorer:
     
     def __init__(
         self,
-        alpha: float = 0.7,
+        alpha: Optional[float] = None,
         industry_boost: float = 0.15,
         hero_boost: float = 0.1,
-        max_score: float = 1.0
+        max_score: float = 1.0,
+        dynamic_alpha: bool = True
     ):
         """Initialize the hybrid scorer.
         
         Args:
             alpha: Weight for dense (vector) scores vs sparse (0.0-1.0)
+                  If None and dynamic_alpha=True, will be determined per query
             industry_boost: Boost amount for industry matches
             hero_boost: Boost amount for hero content
             max_score: Maximum allowed score (cap)
+            dynamic_alpha: Whether to dynamically adjust alpha based on query
         """
-        self.alpha = max(0.0, min(1.0, alpha))  # Clamp to valid range
+        # Set alpha (will be dynamic if None and dynamic_alpha=True)
+        self.alpha = max(0.0, min(1.0, alpha)) if alpha is not None else 0.6
+        self.default_alpha = self.alpha
         self.industry_boost = max(0.0, industry_boost)
         self.hero_boost = max(0.0, hero_boost)
         self.max_score = max(0.0, max_score)
+        self.dynamic_alpha = dynamic_alpha
         
-        logger.info(f"Initialized HybridScorer: alpha={self.alpha}, "
+        # Compile regex patterns for entity/technical/concept detection
+        self._compile_alpha_patterns()
+        
+        logger.info(f"Initialized HybridScorer: alpha={self.alpha} (dynamic={dynamic_alpha}), "
                    f"industry_boost={self.industry_boost}, hero_boost={self.hero_boost}")
+    
+    def _compile_alpha_patterns(self):
+        """Compile regex patterns for dynamic alpha determination."""
+        # Entity Heavy patterns (alpha -> 0.3, more keyword weight)
+        self.entity_patterns = [
+            re.compile(r'[A-Z0-9]{3,}-[0-9]+'),  # Ticket IDs like ABC-123
+            re.compile(r'\b[A-Z]{2,}-\d+\b'),     # Project codes
+            re.compile(r'\b\w+@\w+\.\w+\b'),     # Email addresses
+            re.compile(r'\b[A-Z]{2,}-\d+-[A-Z]+\b'),  # Complex IDs
+            re.compile(r'error\s+[A-Z0-9]+', re.IGNORECASE),  # Error codes
+        ]
+        
+        # Technical Specific patterns (alpha -> 0.4, moderate keyword weight)
+        self.technical_patterns = [
+            re.compile(r'\b(Python|Java|JavaScript|TypeScript|SQL|NoSQL|MongoDB|PostgreSQL|MySQL|Redis|Kafka|RabbitMQ)\b', re.IGNORECASE),
+            re.compile(r'\b(API|REST|GraphQL|gRPC|SOAP)\b', re.IGNORECASE),
+            re.compile(r'\b(JSON|XML|YAML|CSV|Parquet)\b', re.IGNORECASE),
+            re.compile(r'\b(v\d+\.\d+|\d+\.\d+\.\d+)\b'),  # Version numbers
+            re.compile(r'\b(Docker|Kubernetes|Terraform|Ansible|Jenkins|GitLab|GitHub)\b', re.IGNORECASE),
+            re.compile(r'\b(AWS|Azure|GCP|OCI|Alibaba Cloud)\b', re.IGNORECASE),
+        ]
+        
+        # Concept/Strategy patterns (alpha -> 0.8, more semantic weight)
+        self.concept_patterns = [
+            re.compile(r'\b(strategy|strategic|vision|leadership|culture)\b', re.IGNORECASE),
+            re.compile(r'\b(sentiment|opinion|feeling|perception|attitude)\b', re.IGNORECASE),
+            re.compile(r'\b(philosophy|principle|value|belief|ethic)\b', re.IGNORECASE),
+            re.compile(r'\b(innovation|creativity|breakthrough|paradigm)\b', re.IGNORECASE),
+            re.compile(r'\b(transformation|evolution|revolution|change)\b', re.IGNORECASE),
+        ]
+    
+    def _determine_dynamic_alpha(self, query: str) -> float:
+        """Determine alpha value dynamically based on query characteristics.
+        
+        Args:
+            query: Query string to analyze
+            
+        Returns:
+            Alpha value between 0.0 (all keyword) and 1.0 (all semantic)
+        """
+        if not self.dynamic_alpha:
+            return self.default_alpha
+        
+        # Check for entity-heavy patterns (favor keyword search)
+        for pattern in self.entity_patterns:
+            if pattern.search(query):
+                logger.debug(f"Entity pattern detected, using alpha=0.3 for: {query[:50]}...")
+                return 0.3
+        
+        # Check for technical-specific patterns (moderate keyword preference)
+        for pattern in self.technical_patterns:
+            if pattern.search(query):
+                logger.debug(f"Technical pattern detected, using alpha=0.4 for: {query[:50]}...")
+                return 0.4
+        
+        # Check for concept/strategy patterns (favor semantic search)
+        for pattern in self.concept_patterns:
+            if pattern.search(query):
+                logger.debug(f"Concept pattern detected, using alpha=0.8 for: {query[:50]}...")
+                return 0.8
+        
+        # Default: slightly vector-biased
+        logger.debug(f"No specific pattern detected, using default alpha=0.6 for: {query[:50]}...")
+        return 0.6
     
     def score_documents(
         self,
         dense_results: List[Dict[str, Any]],
         sparse_results: List[Dict[str, Any]],
-        target_industry: Optional[str] = None
+        target_industry: Optional[str] = None,
+        query: Optional[str] = None
     ) -> List[HybridScoreResult]:
         """Score documents using hybrid approach.
         
@@ -88,11 +163,19 @@ class HybridScorer:
             dense_results: List of dense (vector) search results
             sparse_results: List of sparse (BM25) search results
             target_industry: Target industry for context boosting
+            query: Query string for dynamic alpha determination
             
         Returns:
             List of HybridScoreResult sorted by final_score descending
         """
         try:
+            # Determine alpha dynamically if query provided
+            if query is not None and self.dynamic_alpha:
+                self.alpha = self._determine_dynamic_alpha(query)
+                logger.info(f"Using dynamic alpha={self.alpha} for query: {query[:50]}...")
+            else:
+                self.alpha = self.default_alpha
+            
             # Validate inputs
             if not isinstance(dense_results, list):
                 logger.warning("Invalid dense_results type, using empty list")
