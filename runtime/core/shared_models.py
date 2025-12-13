@@ -8,7 +8,6 @@ runtime.* modules - only from pydantic, enum, and typing.
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Union, Type
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -136,6 +135,8 @@ class InjectionPattern(BaseModel):
     enabled: bool = True
 
     class Config:
+        """TODO: Add docstring."""
+
         use_enum_values = True
 
 class InjectionMatch(BaseModel):

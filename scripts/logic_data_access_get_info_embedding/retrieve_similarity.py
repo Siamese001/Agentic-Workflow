@@ -6,9 +6,7 @@ Follows the functional component pattern with proper logging.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple
 import logging
-import numpy as np
 from datetime import datetime
 from enum import Enum
 
@@ -66,7 +64,10 @@ class SimilarityRetriever:
         self.logger = logging.getLogger(self.__class__.__name__)
         self._vector_cache = {}
 
-    def _compute_similarities_by_metric(self, query_vector: np.ndarray, candidate_vectors: np.ndarray, metric: SimilarityMetric) -> np.ndarray:
+    def _compute_similarities_by_metric(self,
+        query_vector: np.ndarray,
+        candidate_vectors: np.ndarray,
+        metric: SimilarityMetric) -> np.ndarray:
         """Compute similarities based on the specified metric."""
         if metric == SimilarityMetric.COSINE:
             return np.dot(candidate_vectors, query_vector)
@@ -116,7 +117,9 @@ class SimilarityRetriever:
                 candidate_vectors = np.array([self._normalize_vector(v) for v in candidate_vectors])
 
             # Compute similarities
-            similarities = self._compute_similarities_by_metric(query_vector, candidate_vectors, request.metric)
+            similarities = self._compute_similarities_by_metric(query_vector,
+                candidate_vectors,
+                request.metric)
 
             # Apply threshold
             threshold_mask = similarities >= request.threshold
@@ -234,11 +237,17 @@ class SimilarityRetriever:
         result = self.compute_similarity(request)
 
         # Map indices back to IDs
-        similar_vectors = [(vector_ids[idx], score) for idx, score in zip(result.indices, result.scores)]
+        similar_vectors = [(vector_ids[idx],
+            score) for idx,
+            score in zip(result.indices,
+            result.scores)]
 
         return similar_vectors
 
-    def _compute_pairwise_metric(self, vector1: np.ndarray, vector2: np.ndarray, metric: SimilarityMetric) -> float:
+    def _compute_pairwise_metric(self,
+        vector1: np.ndarray,
+        vector2: np.ndarray,
+        metric: SimilarityMetric) -> float:
         """Compute similarity between two vectors for pairwise comparison."""
         if metric == SimilarityMetric.COSINE:
             return np.dot(vector1, vector2)

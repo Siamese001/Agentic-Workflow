@@ -1,6 +1,5 @@
 """Implementation for tracker_v6_impl_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 class ProvenanceTracker:
     """Tracker for bullet provenance throughout the generation pipeline."""
@@ -10,7 +9,11 @@ class ProvenanceTracker:
         self._bullets: Dict[str, BulletProvenance] = {}
         self._provenance_maps = DEFAULT_PROVENANCE_MAPS.copy()
 
-    def register_bullet(self, bullet_text: str, category: BulletCategory, sources: Optional[List[ProvenanceSource]]=None, bullet_id: Optional[str]=None) -> str:
+    def register_bullet(self,
+        bullet_text: str,
+        category: BulletCategory,
+        sources: Optional[List[ProvenanceSource]]=None,
+        bullet_id: Optional[str]=None) -> str:
         """
         Register a bullet point with provenance.
 
@@ -25,7 +28,10 @@ class ProvenanceTracker:
         """
         if bullet_id is None:
             bullet_id = self._generate_bullet_id(bullet_text)
-        provenance = BulletProvenance(bullet_id=bullet_id, bullet_text=bullet_text, category=category, sources=sources or [])
+        provenance = BulletProvenance(bullet_id=bullet_id,
+            bullet_text=bullet_text,
+            category=category,
+            sources=sources or [])
         if provenance.sources:
             provenance.confidence_score = sum((s.confidence for s in provenance.sources)) / len(provenance.sources)
         self._bullets[bullet_id] = provenance
@@ -89,7 +95,11 @@ class ProvenanceTracker:
             actual = counts.get(category, 0)
             if actual < required:
                 violations.append(f'Category {category}: need {required}, have {actual}')
-        return {'is_valid': len(violations) == 0, 'pattern': pattern, 'requirements': requirements, 'actual_counts': counts, 'violations': violations}
+        return {'is_valid': len(violations) == 0,
+            'pattern': pattern,
+            'requirements': requirements,
+            'actual_counts': counts,
+            'violations': violations}
 
     def get_low_confidence_bullets(self, threshold: float=0.7) -> List[BulletProvenance]:
         """Get bullets with confidence below threshold."""
@@ -101,7 +111,16 @@ class ProvenanceTracker:
 
     def export_provenance_report(self) -> Dict[str, object]:
         """Export a complete provenance report."""
-        return {'total_bullets': len(self._bullets), 'by_category': {cat.value: len(self.get_bullets_by_category(cat)) for cat in BulletCategory}, 'low_confidence_count': len(self.get_low_confidence_bullets()), 'ungrounded_count': len(self.get_ungrounded_bullets()), 'bullets': [{'id': b.bullet_id, 'text': b.bullet_text[:100] + '...' if len(b.bullet_text) > 100 else b.bullet_text, 'category': b.category.value, 'confidence': b.confidence_score, 'source_count': len(b.sources), 'transformations': len(b.transformation_log)} for b in self._bullets.values()]}
+        return {'total_bullets': len(self._bullets),
+            'by_category': {cat.value: len(self.get_bullets_by_category(cat)) for cat in BulletCategory},
+            'low_confidence_count': len(self.get_low_confidence_bullets()),
+            'ungrounded_count': len(self.get_ungrounded_bullets()),
+            'bullets': [{'id': b.bullet_id,
+            'text': b.bullet_text[:100] + '...' if len(b.bullet_text) > 100 else b.bullet_text,
+            'category': b.category.value,
+            'confidence': b.confidence_score,
+            'source_count': len(b.sources),
+            'transformations': len(b.transformation_log)} for b in self._bullets.values()]}
 
     def _generate_bullet_id(self, text: str) -> str:
         """Generate a unique ID for a bullet."""
@@ -125,7 +144,6 @@ class BulletSelector:
         jd_words = set((kw.lower() for kw in jd_keywords))
         overlap = len(bullet_words & jd_words) / max(len(jd_words), 1)
         jd_score = overlap * 0.5
-        import scripts.validation.check_canonical_structure
         metrics = re.findall('\\d+%|\\$\\d+|\\d+x|\\d+\\+', bullet.bullet_text)
         metric_score = min(len(metrics) * 0.1, 0.3)
         uniqueness_score = bullet.confidence_score * 0.2
@@ -188,8 +206,15 @@ def create_bullet_selector(tracker: Optional[ProvenanceTracker]=None) -> BulletS
         tracker = ProvenanceTracker()
     return BulletSelector(tracker)
 
-def create_provenance_source(source_type: ProvenanceType, source_text: str, source_id: Optional[str]=None, confidence: float=1.0) -> ProvenanceSource:
+def create_provenance_source(source_type: ProvenanceType,
+    source_text: str,
+    source_id: Optional[str]=None,
+    confidence: float=1.0) -> ProvenanceSource:
     """Create a provenance source instance."""
     if source_id is None:
         source_id = hashlib.md5(source_text.encode()).hexdigest()[:8]
-    return ProvenanceSource(source_type=source_type, source_id=source_id, source_text=source_text, confidence=confidence, timestamp=datetime.now())
+    return ProvenanceSource(source_type=source_type,
+        source_id=source_id,
+        source_text=source_text,
+        confidence=confidence,
+        timestamp=datetime.now())

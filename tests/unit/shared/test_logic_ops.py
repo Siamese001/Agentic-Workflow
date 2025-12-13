@@ -2,7 +2,6 @@
 Unit tests for shared/logic/
 Tests logic operations including data access, guardrails, synthesis, and validation.
 """
-from __future__ import annotations
 import re
 import pytest
 from typing import Dict, List
@@ -10,11 +9,15 @@ from dataclasses import dataclass
 from enum import Enum
 
 class ValidationLevel(Enum):
+    """TODO: Add docstring."""
+
     STRICT = "strict"
     NORMAL = "normal"
     LENIENT = "lenient"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class ValidationResult:
     is_valid: bool
     errors: List[str]
@@ -73,7 +76,6 @@ class TestLogicGuardrails:
     def test_input_sanitization(self):
         """Inputs are sanitized before processing."""
         raw_input = "  Hello <script>alert('xss')</script> World  "
-        import scripts.validation.check_canonical_structure
         sanitized = re.sub(r'<[^>]+>', '', raw_input).strip()
         assert "<script>" not in sanitized
         assert sanitized == "Hello alert('xss') World"
@@ -209,6 +211,8 @@ class TestLogicValidation:
     def test_validation_levels(self):
         """Different validation levels work correctly."""
         data = {"name": "J", "description": ""}  # Short name, empty description
+            """TODO: Add docstring."""
+
 
         def validate(data: Dict, level: ValidationLevel) -> ValidationResult:
             errors = []

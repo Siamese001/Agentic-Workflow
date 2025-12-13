@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .comprehensive_dedup_analysis_impl_impl_impl import *
-from .comprehensive_dedup_analysis_impl import *
+# from .comprehensive_dedup_analysis_impl_impl_impl import *  # Star import removed
+# from .comprehensive_dedup_analysis_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

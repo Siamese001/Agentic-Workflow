@@ -1,10 +1,14 @@
 """Implementation for sdk_v5_impl."""
 
-from typing import Any, Dict, List, Optional
 
 def record_test_result(name: str, status: str, details: str='', error: str='') -> None:
     """Record a test result."""
-    results.append({'sdk_name': name, 'install_status': 'SUCCESS' if status == 'PASS' else 'FAILED', 'test_results': status, 'details': details, 'error': error, 'follow_up': '' if status == 'PASS' else 'Review error and reinstall if needed'})
+    results.append({'sdk_name': name,
+        'install_status': 'SUCCESS' if status == 'PASS' else 'FAILED',
+        'test_results': status,
+        'details': details,
+        'error': error,
+        'follow_up': '' if status == 'PASS' else 'Review error and reinstall if needed'})
 
 def test_core_dependencies() -> None:
     """Test core Python dependencies."""
@@ -20,17 +24,18 @@ def test_core_dependencies() -> None:
     except Exception as e:
         record_test_result('pydantic', 'FAIL', error=str(e))
     try:
-        import numpy as np
         arr = np.array([1, 2, 3])
         assert arr.sum() == 6
         record_test_result('numpy', 'PASS', f'Version: {np.__version__}, operations working')
     except Exception as e:
         record_test_result('numpy', 'FAIL', error=str(e))
     try:
-        import pandas as pd
         df = pd.DataFrame({'a': [1, 2], 'b': [3, 4]})
         assert len(df) == 2
-        record_test_result('pandas', 'PASS', f'Version: {pd.__version__}, DataFrame operations working')
+        record_test_result('pandas',
+            'PASS',
+            f'Version: {pd.__version__},
+            DataFrame operations working')
     except Exception as e:
         record_test_result('pandas', 'FAIL', error=str(e))
     try:
@@ -64,17 +69,20 @@ def test_core_dependencies() -> None:
 def test_llm_providers() -> None:
     """Test LLM provider SDKs."""
     try:
-        import data.sdks_mcps.reference_clients.minimal_openai
-        record_test_result('openai', 'PASS', f'Version: {openai.__version__}, SDK import successful')
+        record_test_result('openai',
+            'PASS',
+            f'Version: {openai.__version__},
+            SDK import successful')
     except Exception as e:
         record_test_result('openai', 'FAIL', error=str(e))
     try:
-        import data.sdks_mcps.reference_clients.minimal_anthropic
-        record_test_result('anthropic', 'PASS', f'Version: {anthropic.__version__}, SDK import successful')
+        record_test_result('anthropic',
+            'PASS',
+            f'Version: {anthropic.__version__},
+            SDK import successful')
     except Exception as e:
         record_test_result('anthropic', 'FAIL', error=str(e))
     try:
-        import google.generativeai as genai
         genai
         record_test_result('google-generativeai', 'PASS', 'SDK import successful')
     except Exception as e:
@@ -92,16 +100,26 @@ def test_vector_databases() -> None:
         version = getattr(chromadb, '__version__', 'unknown')
         try:
             chromadb.Client()
-            record_test_result('chromadb', 'PASS', f'Version: {version}, Basic client initialization successful')
+            record_test_result('chromadb',
+                'PASS',
+                f'Version: {version},
+                Basic client initialization successful')
         except Exception as e:
             if 'unable to infer type' in str(e):
-                record_test_result('chromadb', 'WARNING', f'Version: {version}, Basic functionality works but with type inference warning (Python 3.14+ compatibility issue)')
+                record_test_result('chromadb',
+                    'WARNING',
+                    f'Version: {version},
+                    Basic functionality works but with type inference warning (Python 3.14+ compatibility issue)')
             else:
-                record_test_result('chromadb', 'WARNING', error=f'Unexpected error (Python 3.14+ compatibility?): {str(e)}')
+                record_test_result('chromadb',
+                    'WARNING',
+                    error=f'Unexpected error (Python 3.14+ compatibility?): {str(e)}')
     except ImportError as e:
         record_test_result('chromadb', 'FAIL', error=f'SDK not installed: {str(e)}')
     except Exception as e:
-        record_test_result('chromadb', 'WARNING', error=f'Unexpected error (Python 3.14+ compatibility?): {str(e)}')
+        record_test_result('chromadb',
+            'WARNING',
+            error=f'Unexpected error (Python 3.14+ compatibility?): {str(e)}')
     try:
         try:
             import pinecone
@@ -128,7 +146,10 @@ def test_ml_libraries() -> None:
     try:
         import sentence_transformers
         version = getattr(sentence_transformers, '__version__', 'unknown')
-        record_test_result('sentence-transformers', 'PASS', f'Version: {version}, Import successful')
+        record_test_result('sentence-transformers',
+            'PASS',
+            f'Version: {version},
+            Import successful')
     except Exception as e:
         record_test_result('sentence-transformers', 'FAIL', error=str(e))
 
@@ -137,16 +158,24 @@ def test_observability() -> None:
     try:
         import opentelemetry
         version = getattr(opentelemetry, '__version__', 'unknown')
-        record_test_result('opentelemetry-api', 'PASS', f'Version: {version}, Core API import successful')
+        record_test_result('opentelemetry-api',
+            'PASS',
+            f'Version: {version},
+            Core API import successful')
     except Exception as e:
         record_test_result('opentelemetry-api', 'FAIL', error=str(e))
     try:
         try:
             from opentelemetry.sdk.trace import TracerProvider
             TracerProvider()
-            record_test_result('opentelemetry-sdk', 'PASS', 'TracerProvider initialization successful')
+            record_test_result('opentelemetry-sdk',
+                'PASS',
+                'TracerProvider initialization successful')
         except ImportError:
-            record_test_result('opentelemetry-sdk', 'WARNING', 'SDK not installed, but API available')
+            record_test_result('opentelemetry-sdk',
+                'WARNING',
+                'SDK not installed,
+                but API available')
     except Exception as e:
         record_test_result('opentelemetry-sdk', 'FAIL', error=str(e))
 
@@ -180,7 +209,9 @@ def test_project_imports() -> None:
         record_test_result('cache_redis (project)', 'FAIL', error=str(e))
     try:
         infra.storage.vector_store_chroma
-        record_test_result('vector_store_chroma (project)', 'PASS', 'Project module import successful')
+        record_test_result('vector_store_chroma (project)',
+            'PASS',
+            'Project module import successful')
     except Exception as e:
         record_test_result('vector_store_chroma (project)', 'FAIL', error=str(e))
     try:

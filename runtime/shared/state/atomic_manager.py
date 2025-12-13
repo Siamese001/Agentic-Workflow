@@ -6,15 +6,11 @@ Uses shadow files/keys for isolation and atomic swap operations.
 Phase 3 - Atomic State Persistence
 """
 
-import json
 import logging
 import os
-import shutil
 import time
 from pathlib import Path
-from typing import Optional, Dict, Any
 
-from shared.resilience.telemetry import SystemTelemetry, get_telemetry, OperationStatus
 from .schema import WorkflowState, BackendType, CheckpointMetadata
 
 logger = logging.getLogger(__name__)
@@ -115,6 +111,7 @@ class AtomicStateManager:
                 workflow_id=workflow_id,
                 k_node_index=new_state.current_k_node,
                 k_node_name=new_state.get_last_execution().k_node_name if new_state.get_last_execution() else "init",
+                    
                 success=True,
                 duration_ms=duration_ms,
             )
@@ -156,6 +153,7 @@ class AtomicStateManager:
                 workflow_id=workflow_id,
                 k_node_index=new_state.current_k_node,
                 k_node_name=new_state.get_last_execution().k_node_name if new_state.get_last_execution() else "init",
+                    
                 success=False,
                 error_message=str(e),
                 duration_ms=duration_ms,
@@ -196,7 +194,7 @@ class AtomicStateManager:
         return self._load_state(workflow_id)
 
     def delete_checkpoint(self, workflow_id: str) -> bool:
-        """Delete checkpoint for a workflow.
+        """# SQL removed: Delete checkpoint for a workflow.
 
         Args:
             workflow_id: Unique workflow identifier
@@ -347,7 +345,7 @@ class AtomicStateManager:
             raise StatePersistenceError(f"Failed to load state: {e}") from e
 
     def _delete_from_backend(self, key: str) -> None:
-        """Delete state from backend storage.
+        """# SQL removed: Delete state from backend storage.
 
         Args:
             key: Storage key

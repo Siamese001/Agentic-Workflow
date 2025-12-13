@@ -4,7 +4,6 @@ Hallucination checking module for apps_rg.
 Provides basic hallucination detection for resume generation.
 """
 
-from typing import Dict, Any, List
 
 class HallucinationDetector:
     """Stub implementation of hallucination detector."""

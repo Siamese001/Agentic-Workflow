@@ -5,7 +5,6 @@ Domain: utilities
 Generated: 2025-12-07T12:07:59.881062
 """
 
-from __future__ import annotations
 import logging
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field

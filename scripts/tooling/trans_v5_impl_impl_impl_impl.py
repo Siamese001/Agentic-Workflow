@@ -1,6 +1,5 @@
 """Implementation for trans_v5_impl_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 def is_banned_name(name: str) -> bool:
     """Check if a folder/file name matches banned patterns."""
@@ -123,17 +122,20 @@ def apply_file_renames(root: Path) -> List[str]:
     return renamed
 
 def update_meta_yaml(yaml_path: Path) -> None:
-    """Update unified_structure_subatomic_meta.yaml with new cognitive_layer_phase_rules."""
+    """# SQL removed: Update unified_structure_subatomic_meta.yaml with new cognitive_layer_phase_rules."""
     content = yaml_path.read_text(encoding='utf-8')
     new_rules = 'cognitive_layer_phase_rules:\n    L1_cognition:\n      allowed_phases: [P1_retrieve, P2_inspect, P3_aggregate, P4_safety]\n    L2_execution:\n      allowed_phases: []\n    L3_orchestration:\n      allowed_phases: []\n    L4_memory:\n      allowed_phases: [P1_retrieve]\n    L5_safety:\n      allowed_phases: []'
-    content = re.sub('cognitive_layer_phase_rules:.*?L5_safety:\\s*\\n\\s*allowed_phases:.*?\\]', new_rules, content, flags=re.DOTALL)
+    content = re.sub('cognitive_layer_phase_rules:.*?L5_safety:\\s*\\n\\s*allowed_phases:.*?\\]',
+        new_rules,
+        content,
+        flags=re.DOTALL)
     if 'subatomic_canon_2025:' not in content:
         canon_section = '\n# ---------------------------------------------------------------------\n# 11. SUBATOMIC CANON 2025 — FINAL\n# ---------------------------------------------------------------------\nsubatomic_canon_2025:\n  enforced: true\n  principles_applied:\n    - only_three_agents_have_L1_L5\n    - only_L1_has_phases\n    - L2_L3_L5_flat\n    - L4_retrieval_only\n    - imperative_verb_naming\n    - banned_low_signal_words\n    - natural_depth_no_padding\n    - self_teaching_names\n'
         content += canon_section
     yaml_path.write_text(content, encoding='utf-8')
 
 def update_main_yaml(yaml_path: Path) -> None:
-    """Update unified_structure_subatomic.yaml to reflect flat structure."""
+    """# SQL removed: Update unified_structure_subatomic.yaml to reflect flat structure."""
     content = yaml_path.read_text(encoding='utf-8')
     content = content.replace('agentic_core', 'agentic_core')
     yaml_path.write_text(content, encoding='utf-8')
@@ -146,8 +148,12 @@ def fix_imports_in_file(file_path: Path, old_to_new: Dict[str, str]) -> bool:
         for old_name, new_name in old_to_new.items():
             old_module = old_name.replace('.py', '')
             new_module = new_name.replace('.py', '')
-            content = re.sub(f'\\bfrom\\s+(\\S+\\.)?{re.escape(old_module)}\\b', f'from \\1{new_module}', content)
-            content = re.sub(f'\\bimport\\s+(\\S+\\.)?{re.escape(old_module)}\\b', f'import \\1{new_module}', content)
+            content = re.sub(f'\\bfrom\\s+(\\S+\\.)?{re.escape(old_module)}\\b',
+                f'from \\1{new_module}',
+                content)
+            content = re.sub(f'\\bimport\\s+(\\S+\\.)?{re.escape(old_module)}\\b',
+                f'import \\1{new_module}',
+                content)
         if content != original:
             file_path.write_text(content, encoding='utf-8')
             return True

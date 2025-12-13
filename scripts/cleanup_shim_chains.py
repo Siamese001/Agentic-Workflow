@@ -14,11 +14,8 @@ logger = logging.getLogger(__name__)
 
 """
 
-import os
 import re
-import ast
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional, Set
 
 class ShimChainCleaner:
     """Detects and cleans up shim chains."""
@@ -248,7 +245,10 @@ def main():
     # Get directories to check
     dirs_to_check = []
     for item in repo_root.iterdir():
-        if item.is_dir() and item.name not in {'.git', '__pycache__', '.pytest_cache', 'node_modules'}:
+        if item.is_dir() and item.name not in {'.git',
+            '__pycache__',
+            '.pytest_cache',
+            'node_modules'}:
             dirs_to_check.append(item.name)
 
     logger.info(f"Found {len(dirs_to_check)} directories to check")

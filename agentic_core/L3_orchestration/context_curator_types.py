@@ -1,7 +1,6 @@
 """Types and models for context_curator."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class ContextPriority(Enum):
@@ -47,4 +46,8 @@ class ContextWindow:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'chunks': [c.to_dict() for c in self.chunks], 'total_tokens': self.total_tokens, 'max_tokens': self.max_tokens, 'pinned_tokens': self.pinned_tokens, 'available_tokens': self.max_tokens - self.total_tokens}
+        return {'chunks': [c.to_dict() for c in self.chunks],
+            'total_tokens': self.total_tokens,
+            'max_tokens': self.max_tokens,
+            'pinned_tokens': self.pinned_tokens,
+            'available_tokens': self.max_tokens - self.total_tokens}

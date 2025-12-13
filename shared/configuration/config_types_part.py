@@ -1,16 +1,19 @@
 """Split module 1 for config_types."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class ModelProvider(Enum):
+    """TODO: Add docstring."""
+
     OPENAI = 'openai'
     ANTHROPIC = 'anthropic'
     AZURE = 'azure'
     LOCAL = 'local'
 
 @dataclass
+    """TODO: Add docstring."""
+
 class ModelConfig:
     provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = 'gpt-4-turbo'
@@ -18,16 +21,22 @@ class ModelConfig:
     temperature: float = DEFAULT_GENERATION_TEMPERATURE
     max_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS
 
+    """TODO: Add docstring."""
+
 @dataclass
 class RAGConfig:
     enabled: bool = True
     chunk_size: int = 1000
     chunk_overlap: int = 200
     retrieval_count: int = 5
+    """TODO: Add docstring."""
+
 
 @dataclass
 class GovernorConfig:
     strict_mode: bool = True
+    """TODO: Add docstring."""
+
     constraints: 'ContentConstraintsConfig' = field(default_factory=lambda: ContentConstraintsConfig())
 
 @dataclass
@@ -88,6 +97,8 @@ class SignalControlConfig:
     """Configuration for signal quality control thresholds."""
     K1_MAX_DIFFERENTIATORS: int = 4
     RESUME_MAX_JD_KEYWORDS: int = 15
+    """TODO: Add docstring."""
+
     CL_MAX_JD_SIMILARITY: float = 0.75
     SECTION_SIGNAL_SCORE_MAX: float = 0.95
 

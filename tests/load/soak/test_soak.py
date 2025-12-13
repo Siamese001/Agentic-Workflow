@@ -1,5 +1,4 @@
 """Soak tests for long-running stability validation."""
-from __future__ import annotations
 import time
 from typing import Dict, List
 from dataclasses import dataclass
@@ -7,6 +6,8 @@ import gc
 
 @dataclass
 class SoakMetrics:
+    """TODO: Add docstring."""
+
     iterations: int
     total_time_seconds: float
     memory_samples: List[int]
@@ -61,6 +62,8 @@ class TestMemoryStability:
 
     def test_object_creation_cleanup(self):
         """Soak: Objects are properly garbage collected."""
+            """TODO: Add docstring."""
+
         class TempObject:
             def __init__(self, data: str):
                 self.data = data

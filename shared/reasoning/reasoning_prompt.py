@@ -9,7 +9,6 @@ EXTRACTED FROM: apps_rg/L3_orchestration/orchestrate_resume_generation.py
 CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
-from __future__ import annotations
 
 from typing import Dict
 
@@ -17,7 +16,8 @@ def build_reasoning_prompt_addendum(params: Dict) -> str:
     """Construct system prompt addendum based on reasoning parameters."""
     p = params
     addendum = "\n\n**REASONING IMPLEMENTATION DIRECTIVES (v5.71):**\n"
-    addendum += f"(Configuration Level: {p['reasoning_level']}, Intensity: {p['intensity_score']:.1f}/40)\n\n"
+    addendum += f"(Configuration Level: {p['reasoning_level']},
+        Intensity: {p['intensity_score']:.1f}/40)\n\n"
 
     if p["cot"] >= 5:
         addendum += f"• MANDATORY: Explore at least {p['cot']} distinct reasoning paths.\n"

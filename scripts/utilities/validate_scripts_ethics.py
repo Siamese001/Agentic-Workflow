@@ -5,7 +5,6 @@ Domain: utilities
 Generated: 2025-12-07T12:07:59.894878
 """
 
-from __future__ import annotations
 import logging
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
@@ -14,6 +13,8 @@ from enum import Enum
 logger = logging.getLogger(__name__)
 
 class ValidationSeverity(Enum):
+    """TODO: Add docstring."""
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -33,6 +34,8 @@ class ValidationResult:
     findings: List[ValidationFinding] = field(default_factory=list)
 
     @property
+        """TODO: Add docstring."""
+
     def errors(self) -> List[ValidationFinding]:
         return [f for f in self.findings if f.severity == ValidationSeverity.ERROR]
 
@@ -81,6 +84,8 @@ class ValidateScriptsEthics:
                     ))
         return findings
 
-def validate(data: object, schema: Optional[Dict] = None, config: Optional[Dict] = None) -> ValidationResult:
+def validate(data: object,
+    schema: Optional[Dict] = None,
+    config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return ValidateScriptsEthics(config).validate(data, schema)

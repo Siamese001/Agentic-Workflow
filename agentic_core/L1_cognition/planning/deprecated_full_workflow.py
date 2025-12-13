@@ -6,7 +6,6 @@ integrating all layers and components.
 
 import pytest
 from unittest.mock import Mock, patch
-from datetime import datetime
 
 # from archives.legacy_root_folders.core.models.models import ExecutionContext, JobInput, ResumeInput, WorkflowConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
 
@@ -105,7 +104,6 @@ class TestEndToEndWorkflow:
         with patch('l2.execute_workflow_plans') as mock_execute:
             mock_execute.side_effect = Exception("L2 execution failed")
 
-            from orchestration.run_dag import run_dag
 
             with pytest.raises(Exception):
                 plans = [Mock()]
@@ -176,7 +174,6 @@ class TestWorkflowPerformance:
 
             start_time = time.time()
 
-            from orchestration.run_dag import run_dag
             plans = [Mock()]
             result = run_dag(plans, ctx)
 

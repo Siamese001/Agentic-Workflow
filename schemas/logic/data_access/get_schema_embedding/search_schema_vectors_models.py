@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .search_schema_vectors_enums import *
+# from .search_schema_vectors_enums import *  # Star import removed
 
 @dataclass
 class SchemaVectorEntry:

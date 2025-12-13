@@ -6,16 +6,12 @@ connection pooling, and prevention of resource leaks.
 
 import asyncio
 import logging
-import shutil
-import weakref
 from contextlib import asynccontextmanager, contextmanager
-from typing import Any, Dict, List, Optional, Set, Union, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 import threading
 import time
 import aiofiles
-import aiofiles.os
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -140,7 +136,7 @@ class ResourceManager:
             return resource_id
 
     def update_last_used(self, resource_id: str) -> None:
-        """Update the last used time for a resource.
+        """# SQL removed: Update the last used time for a resource.
 
         Args:
             resource_id: ID of the resource

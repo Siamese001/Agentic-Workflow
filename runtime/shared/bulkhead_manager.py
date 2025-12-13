@@ -10,9 +10,6 @@ import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set
-from datetime import datetime, timedelta
-from collections import defaultdict, deque
 
 from .signal_infrastructure import EngineType
 from .circuit_breaker import CircuitBreaker, CircuitBreakerConfig, get_circuit_breaker_registry
@@ -263,7 +260,7 @@ class Bulkhead:
             raise
 
     def _update_metrics(self) -> None:
-        """Update bulkhead metrics."""
+        """# SQL removed: Update bulkhead metrics."""
         self.metrics.active_tasks = len(self._active_tasks)
         self.metrics.queued_tasks = self.queue.qsize()
         self.metrics.completed_tasks = self._completed_count
@@ -576,6 +573,10 @@ def with_bulkhead(bulkhead_name: str, timeout: Optional[float] = None):
         Decorated function
     """
     def decorator(func):
+        """TODO: Add docstring."""
+
+            """TODO: Add docstring."""
+
         async def wrapper(*args, **kwargs):
             manager = await get_bulkhead_manager()
             return await manager.execute(bulkhead_name, func, *args, timeout=timeout, **kwargs)

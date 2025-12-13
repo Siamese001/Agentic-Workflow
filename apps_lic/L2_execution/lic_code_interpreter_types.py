@@ -1,8 +1,5 @@
 """Types and models for lic_code_interpreter."""
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from enum import Enum
 
 @dataclass
 class ScoredCandidate:

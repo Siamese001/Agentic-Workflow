@@ -1,5 +1,4 @@
 """Performance tests for cost estimation consistency."""
-from __future__ import annotations
 
 from runtime.shared.multi_provider_clients import Provider
 

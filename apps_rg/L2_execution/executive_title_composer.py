@@ -16,16 +16,16 @@ Non-responsibilities:
 - Content grounding
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set
 
 from runtime.shared.integrity_gate_executor import IntegrityGateExecutor, ValidationResult
 from runtime.shared.adaptive_recovery_loop import AdaptiveRecoveryLoop
 
 @dataclass
 class TitleComposerConfig:
+    """TODO: Add docstring."""
+
     min_words: int = 8
     max_words: int = 13
     max_chars: int = 90
@@ -33,6 +33,8 @@ class TitleComposerConfig:
     max_attempts: int = 3
 
 @dataclass
+    """TODO: Add docstring."""
+
 class TitleComposerResult:
     headline: str
     segments: List[str]

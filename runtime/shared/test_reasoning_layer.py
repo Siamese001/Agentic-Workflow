@@ -12,10 +12,8 @@ logger = logging.getLogger(__name__)
 
 import asyncio
 import time
-from typing import List, Dict, Any
 
 # Import the reasoning layer components
-from runtime.shared import (
     QueryDecomposer,
     DecomposedQuery,
     decompose_query,
@@ -131,7 +129,8 @@ class ReasoningLayerTestSuite:
             if len(result.sub_queries) == test_case['expected_sub_queries']:
                 logger.info(f"   ✅ Correct number of sub-queries")
             else:
-                logger.info(f"   ⚠️  Expected {test_case['expected_sub_queries']}, got {len(result.sub_queries)}")
+                logger.info(f"   ⚠️  Expected {test_case['expected_sub_queries']},
+                    got {len(result.sub_queries)}")
 
             if test_case['complexity_min'] <= result.complexity_score <= test_case['complexity_max']:
                 logger.info(f"   ✅ Complexity within expected range")
@@ -166,7 +165,8 @@ class ReasoningLayerTestSuite:
             if self.scorer.alpha == test_case['expected_alpha']:
                 logger.info(f"   ✅ Alpha matches expectation")
             else:
-                logger.info(f"   ⚠️  Expected {test_case['expected_alpha']}, got {self.scorer.alpha}")
+                logger.info(f"   ⚠️  Expected {test_case['expected_alpha']},
+                    got {self.scorer.alpha}")
 
             # Show top result
             if results:

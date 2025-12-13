@@ -1,12 +1,14 @@
 """Unit tests for observability - logging, tracing, and metrics."""
-from __future__ import annotations
 import time
+import asyncio
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 
 class LogLevel(Enum):
+    """TODO: Add docstring."""
+
     DEBUG = "debug"
     INFO = "info"
     WARNING = "warning"
@@ -14,11 +16,15 @@ class LogLevel(Enum):
     CRITICAL = "critical"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class LogEntry:
     level: LogLevel
     message: str
     timestamp: datetime
     context: Dict[str, object] = field(default_factory=dict)
+
+    """TODO: Add docstring."""
 
 @dataclass
 class Span:
@@ -101,7 +107,7 @@ class TestDistributedTracing:
             span_id="s1",
             start_time=time.time(),
         )
-        time.sleep(0.01)  # Small delay
+        await asyncio.sleep(0.01)  # Small delay
         span.end_time = time.time()
         duration = span.end_time - span.start_time
         assert duration > 0

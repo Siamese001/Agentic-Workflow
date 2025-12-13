@@ -211,7 +211,7 @@ class PromptRegistry:
         return list(self._templates.values())
 
     def delete(self, template_id: str) -> bool:
-        """Delete a template.
+        """# SQL removed: Delete a template.
 
         Args:
             template_id: Template identifier

@@ -6,7 +6,6 @@ description analysis and company maturity.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any, Union
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
@@ -95,7 +94,10 @@ class OnboardingPlannerAgent:
             priorities = self._extract_priorities(job_description, company_maturity)
 
             # Generate the three phases
-            phases = self._generate_phases(priorities, job_description, company_maturity, role_title)
+            phases = self._generate_phases(priorities,
+                job_description,
+                company_maturity,
+                role_title)
 
             # Assess risks and requirements
             risk_assessment = self._assess_risks(company_maturity, role_title)

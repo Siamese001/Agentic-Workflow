@@ -4,7 +4,6 @@ This module is the ONLY place where google.generativeai is imported.
 It exposes a narrow run_llm interface used by runtime_utils.
 """
 
-from __future__ import annotations
 
 import os
 from typing import Any
@@ -73,7 +72,6 @@ def run_llm_google(
 
     # Legacy SDK implementation
     try:
-        import google.generativeai as genai  # type: ignore
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError("google-generativeai package not installed") from exc
 

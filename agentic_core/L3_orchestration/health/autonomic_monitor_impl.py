@@ -1,7 +1,6 @@
 """Implementation for autonomic_monitor."""
 
-from typing import Any, Dict, List, Optional
-from .autonomic_monitor_types import *
+# from .autonomic_monitor_types import *  # Star import removed
 
 class AutonomicMonitor:
     """Autonomic immune system for agent health monitoring.
@@ -14,7 +13,11 @@ class AutonomicMonitor:
     - Self-healing recommendations
     """
 
-    def __init__(self, success_rate_threshold: float=0.8, error_rate_threshold: float=0.2, response_time_threshold_ms: float=5000.0, enable_logging: bool=True):
+    def __init__(self,
+        success_rate_threshold: float=0.8,
+        error_rate_threshold: float=0.2,
+        response_time_threshold_ms: float=5000.0,
+        enable_logging: bool=True):
         """Initialize autonomic monitor.
 
         Args:
@@ -31,7 +34,10 @@ class AutonomicMonitor:
         self._alerts: List[HealthAlert] = []
         self._alert_callbacks: List[Callable[[HealthAlert], None]] = []
         if self.enable_logging:
-            logger.info('autonomic_monitor_initialized', extra={'success_threshold': success_rate_threshold, 'error_threshold': error_rate_threshold, 'response_time_threshold': response_time_threshold_ms})
+            logger.info('autonomic_monitor_initialized',
+                extra={'success_threshold': success_rate_threshold,
+                'error_threshold': error_rate_threshold,
+                'response_time_threshold': response_time_threshold_ms})
 
     def record_metrics(self, metrics: HealthMetrics) -> None:
         """Record health metrics for an agent.
@@ -84,7 +90,9 @@ class AutonomicMonitor:
         history = self._metrics_history.get(agent_id, [])
         return history[-limit:] if history else []
 
-    def get_alerts(self, agent_id: Optional[str]=None, severity: Optional[AlertSeverity]=None) -> List[HealthAlert]:
+    def get_alerts(self,
+        agent_id: Optional[str]=None,
+        severity: Optional[AlertSeverity]=None) -> List[HealthAlert]:
         """Get health alerts.
 
         Args:
@@ -124,7 +132,12 @@ class AutonomicMonitor:
             severity = AlertSeverity.INFO
         message = f'Agent {metrics.agent_id} health is {status.value}'
         recommendations = self._generate_recommendations(metrics, status)
-        alert = HealthAlert(alert_id=f'alert_{metrics.agent_id}_{int(time.time())}', agent_id=metrics.agent_id, severity=severity, message=message, metrics=metrics, recommended_actions=recommendations)
+        alert = HealthAlert(alert_id=f'alert_{metrics.agent_id}_{int(time.time())}',
+            agent_id=metrics.agent_id,
+            severity=severity,
+            message=message,
+            metrics=metrics,
+            recommended_actions=recommendations)
         self._alerts.append(alert)
         if len(self._alerts) > 100:
             self._alerts = self._alerts[-100:]
@@ -135,7 +148,11 @@ class AutonomicMonitor:
                 if self.enable_logging:
                     logger.error('alert_callback_failed', extra={'error': str(e)}, exc_info=True)
         if self.enable_logging:
-            logger.warning('health_alert_triggered', extra={'alert_id': alert.alert_id, 'agent_id': metrics.agent_id, 'severity': severity.value, 'status': status.value})
+            logger.warning('health_alert_triggered',
+                extra={'alert_id': alert.alert_id,
+                'agent_id': metrics.agent_id,
+                'severity': severity.value,
+                'status': status.value})
 
     def _generate_recommendations(self, metrics: HealthMetrics, status: HealthStatus) -> List[str]:
         """Generate improvement recommendations.
@@ -160,7 +177,8 @@ class AutonomicMonitor:
             recommendations.append('CRITICAL: Consider taking agent offline for maintenance')
         return recommendations
 
-def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_threshold: float=0.2) -> AutonomicMonitor:
+def create_autonomic_monitor(success_rate_threshold: float=0.8,
+    error_rate_threshold: float=0.2) -> AutonomicMonitor:
     """Factory function to create autonomic monitor.
 
     Args:
@@ -170,4 +188,5 @@ def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_thres
     Returns:
         AutonomicMonitor instance
     """
-    return AutonomicMonitor(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)
+    return AutonomicMonitor(success_rate_threshold=success_rate_threshold,
+        error_rate_threshold=error_rate_threshold)

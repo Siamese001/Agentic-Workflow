@@ -7,7 +7,6 @@ active voice) across all generated text in both Resume and Outreach engines.
 import logging
 import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -221,6 +220,7 @@ class ToneEnforcer:
                     type="sentence_length",
                     severity="warning",
                     message=f"Sentence too long: {word_count} words (max: {settings.max_sentence_length})",
+                        
                     location=sentence[:50] + "..." if len(sentence) > 50 else sentence,
                     suggestion=f"Consider breaking into shorter sentences"
                 ))
@@ -230,6 +230,7 @@ class ToneEnforcer:
                     type="sentence_length",
                     severity="info",
                     message=f"Sentence too short: {word_count} words (min: {settings.min_sentence_length})",
+                        
                     location=sentence,
                     suggestion="Consider expanding with more detail"
                 ))
@@ -325,7 +326,8 @@ class ToneEnforcer:
                     type="voice_inconsistency",
                     severity="warning",
                     message=f"Voice inconsistency: '{avoid_word}' doesn't match {voice.value} tone",
-                    suggestion=f"Use {voice.value} voice alternatives: {', '.join(patterns['verbs'][:3])}"
+                    suggestion=f"Use {voice.value} voice alternatives: {',
+                        '.join(patterns['verbs'][:3])}"
                 ))
 
         # Check if enough preferred patterns found
@@ -374,6 +376,7 @@ class ToneEnforcer:
                 type="passive_voice",
                 severity="warning",
                 message=f"Too much passive voice: {passive_percent:.1f}% (max: {settings.max_passive_voice_percent}%)",
+                    
                 suggestion="Use more active voice construction"
             ))
 

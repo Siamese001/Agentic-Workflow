@@ -1,8 +1,6 @@
 """Types and models for track_lic_state."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from enum import Enum
 
 @dataclass
 class StateCheckpoint:

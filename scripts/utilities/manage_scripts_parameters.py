@@ -5,7 +5,6 @@ Domain: utilities
 Generated: 2025-12-07T12:07:59.886801
 """
 
-from __future__ import annotations
 import logging
 from typing import Dict, Optional
 from dataclasses import dataclass, field
@@ -47,15 +46,17 @@ class ManageScriptsParameters:
         return ManagementResult(success=True, operation="create", resource=resource)
 
     def update(self, resource_id: str, data: object) -> ManagementResult:
-        """Update resource."""
+        """# SQL removed: Update resource."""
         if resource_id not in self.resources:
             return ManagementResult(success=False, operation="update", message="Not found")
         self.resources[resource_id].data = data
         self.resources[resource_id].state = "updated"
-        return ManagementResult(success=True, operation="update", resource=self.resources[resource_id])
+        return ManagementResult(success=True,
+            operation="update",
+            resource=self.resources[resource_id])
 
     def delete(self, resource_id: str) -> ManagementResult:
-        """Delete resource."""
+        """# SQL removed: Delete resource."""
         if resource_id not in self.resources:
             return ManagementResult(success=False, operation="delete", message="Not found")
         resource = self.resources.pop(resource_id)

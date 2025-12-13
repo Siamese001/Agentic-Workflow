@@ -1,7 +1,6 @@
 """Implementation for l4_types."""
 
-from typing import Any, Dict, List, Optional
-from .l4_types_types import *
+# from .l4_types_types import *  # Star import removed
 
 class StateError(Exception):
     """Base class for state-related errors."""

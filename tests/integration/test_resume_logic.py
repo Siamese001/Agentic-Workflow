@@ -5,7 +5,6 @@ Tests the actual LLM-powered functionality with real API calls.
 
 import pytest
 import os
-from typing import Dict, Any
 
 # Import the classes we're testing
 try:
@@ -68,10 +67,14 @@ class TestJobAnalyzerIntegration:
 
         # Verify content - should find Python
         hard_skills = result.get("hard_skills", [])
-        assert any("python" in skill.lower() for skill in hard_skills), f"Expected Python in skills: {hard_skills}"
+        assert any("python" in skill.lower() for skill in hard_skills),
+            f"Expected Python in skills: {hard_skills}"
 
         # Should identify senior level
-        assert result.get("experience_level") in ["senior", "lead"], f"Expected senior level, got: {result.get('experience_level')}"
+        assert result.get("experience_level") in ["senior",
+            "lead"],
+            f"Expected senior level,
+            got: {result.get('experience_level')}"
 
         # Should have soft skills
         soft_skills = result.get("soft_skills", [])

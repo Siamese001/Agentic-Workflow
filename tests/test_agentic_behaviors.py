@@ -11,14 +11,11 @@ This module tests complex agentic behaviors including:
 import pytest
 import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock
-from typing import Dict, Any, Tuple, List
 
 # Import the modules we're testing
 # Note: These imports may need adjustment based on actual module structure
 try:
     from apps_rg.L3_orchestration import HardenedOrchestrator
-    from runtime.shared.validation import ValidationGate, ValidationResult
-    from runtime.shared.routing import HardenedRouter, RoutingTier
     from runtime.shared.state import WorkflowState
 except ImportError as e:
     # Fallback imports for testing
@@ -163,6 +160,8 @@ async def test_context_aware_prompt_truncation():
 
     # Mock truncation logic
     def mock_truncate(prompt: str, max_tokens: int) -> str:
+        """TODO: Add docstring."""
+
         # Preserve first 1000 chars (important context)
         return prompt[:1000] + "... [truncated]"
 
@@ -203,6 +202,8 @@ async def test_agentic_error_recovery_with_state_preservation():
 
     # Mock state persistence
     saved_states = []
+        """TODO: Add docstring."""
+
     def mock_save_state(state):
         saved_states.append(state.copy())
 
@@ -255,6 +256,8 @@ async def test_adaptive_retry_with_exponential_backoff():
 
     # Track call timestamps
     call_times = []
+        """TODO: Add docstring."""
+
 
     async def mock_execute_with_delay(prompt):
         call_times.append(asyncio.get_event_loop().time())
@@ -297,6 +300,8 @@ async def test_context_window_optimization():
     assert "deadline is Friday" in optimized
 
 # Mock classes for testing
+        """TODO: Add docstring."""
+
 class HardenedOpenAIExecutor:
     """Mock OpenAI executor for testing."""
     async def execute(self, prompt: str, model: str) -> str:
@@ -308,6 +313,8 @@ class HardenedOpenAIExecutor:
 class ValidationError(Exception):
     """Raised when validation fails."""
     pass
+        """TODO: Add docstring."""
+
 
 class ContextOptimizer:
     """Mock context optimizer."""

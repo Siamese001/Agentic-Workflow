@@ -1,11 +1,12 @@
 """Integration tests for agentic_core + runtime integration."""
-from __future__ import annotations
 import re
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
 class LayerType(Enum):
+    """TODO: Add docstring."""
+
     L1_COGNITION = "L1_cognition"
     L2_EXECUTION = "L2_execution"
     L3_ORCHESTRATION = "L3_orchestration"
@@ -13,6 +14,8 @@ class LayerType(Enum):
     L5_SAFETY = "L5_safety"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class RuntimeContext:
     request_id: str
     config: Dict[str, object]
@@ -109,6 +112,8 @@ class TestSDKIntegration:
     def test_multi_provider_fallback(self):
         """Integration: Multi-provider fallback works."""
         providers = ["openai", "anthropic", "groq"]
+            """TODO: Add docstring."""
+
 
         def try_provider(provider: str) -> Optional[str]:
             if provider == "openai":
@@ -128,6 +133,8 @@ class TestObservabilityIntegration:
 
     def test_tracing_spans_created(self):
         """Integration: Tracing spans are created for operations."""
+            """TODO: Add docstring."""
+
         spans = []
 
         def create_span(name: str, parent: Optional[str] = None):
@@ -157,6 +164,8 @@ class TestObservabilityIntegration:
         assert metrics["request_count"] == 1
 
     def test_logging_structured(self):
+            """TODO: Add docstring."""
+
         """Integration: Logs are structured."""
         logs = []
 
@@ -187,7 +196,6 @@ class TestSecurityIntegration:
         """Integration: PII filtering works in pipeline."""
         input_text = "Contact john@example.com for details"
 
-        import scripts.validation.check_canonical_structure
         filtered = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[EMAIL]', input_text)
 
         assert "john@example.com" not in filtered

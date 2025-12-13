@@ -7,7 +7,6 @@ AI leadership roles.
 
 import logging
 import re
-from typing import Dict, List, Optional, Tuple, Any, Union
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
@@ -16,7 +15,8 @@ class TalentMetrics(BaseModel):
     """Metrics describing talent acquisition and management capabilities."""
 
     team_size: int = Field(..., ge=0, description="Size of team managed")
-    pedigree_keywords: List[str] = Field(default_factory=list, description="Prestige markers in team")
+    pedigree_keywords: List[str] = Field(default_factory=list,
+        description="Prestige markers in team")
     retention_rate: Optional[str] = Field(None, description="Team retention rate")
     hiring_velocity: Optional[str] = Field(None, description="Hiring speed metric")
 
@@ -340,7 +340,9 @@ class TalentSignalEnhancer:
                     return f"{match.group(1)}%"
 
             # Look for "no attrition", "zero turnover"
-            if any(phrase in text.lower() for phrase in ["no attrition", "zero turnover", "100% retained"]):
+            if any(phrase in text.lower() for phrase in ["no attrition",
+                "zero turnover",
+                "100% retained"]):
                 return "100%"
 
             return None

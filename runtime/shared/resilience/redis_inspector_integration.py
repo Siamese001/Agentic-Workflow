@@ -10,9 +10,7 @@ This file demonstrates how to:
 
 import asyncio
 import logging
-from typing import Dict, Any, List, Optional
 
-from .hardened_redis_inspector import (
     HardenedRedisInspector,
     create_redis_inspector_config,
     RedisCommand
@@ -493,7 +491,6 @@ class TitaniumOrchestratorMemoryHelper:
             )
 
             if start_time.get("value"):
-                import time
                 elapsed = time.time() - float(start_time["value"])
 
                 if elapsed > 300:  # 5 minutes
@@ -535,7 +532,10 @@ async def main():
     queue_report = await integration.monitor_queue_performance()
     logger.info(f"\n=== Queue Performance ===")
     for queue, metrics in queue_report["queues"].items():
-        logger.info(f"{queue}: depth={metrics.get('depth', 0)}, utilization={metrics.get('utilization', 0):.2%}")
+        logger.info(f"{queue}: depth={metrics.get('depth',
+            0)},
+            utilization={metrics.get('utilization',
+            0):.2%}")
 
     # Check workflow health
     health = await integration.check_workflow_health("workflow_123")

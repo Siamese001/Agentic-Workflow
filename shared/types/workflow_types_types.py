@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .workflow_types_types_part import *
-from .workflow_types_types_part_2 import *
+# from .workflow_types_types_part import *  # Star import removed
+# from .workflow_types_types_part_2 import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

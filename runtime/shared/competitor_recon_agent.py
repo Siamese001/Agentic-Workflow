@@ -7,8 +7,6 @@ to competitive threats.
 
 import logging
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple, Any, Union
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
@@ -142,7 +140,10 @@ class MockIntelProvider(IntelProvider):
     def get_competitors(self, target_company: str, industry: str) -> List[str]:
         """Get mock competitors for target company."""
         industry_lower = industry.lower()
-        return self.mock_competitors.get(industry_lower, ["Market Leader A", "Market Leader B", "Market Leader C"])[:3]
+        return self.mock_competitors.get(industry_lower,
+            ["Market Leader A",
+            "Market Leader B",
+            "Market Leader C"])[:3]
 
     def get_recent_moves(self, competitor: str, months: int = 6) -> List[CompetitorMove]:
         """Get mock recent moves for competitor."""

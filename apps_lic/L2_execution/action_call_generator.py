@@ -16,7 +16,6 @@ Non-responsibilities:
 - Final assembly
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
@@ -70,7 +69,8 @@ class ActionCallGenerator:
         r'\b(?:next|this)\s+(?:week|tuesday|wednesday|thursday|friday|monday)\b',
         r'\b(?:tomorrow|today)\b',
         r'\b\d{1,2}(?:am|pm)\b',
-        r'\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b'
+        r'\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,
+            2}\b'
     ]
 
     SPECIFIC_ACTION_PATTERNS = [
@@ -233,6 +233,7 @@ class ActionCallGenerator:
                     passed=True,
                     severity='INFO',
                     message=f"Character limit satisfied: {char_count} chars ({min_chars}-{max_chars})",
+                        
                     signature=f"CHARLIMIT:OK:{char_count}"
                 )
 
@@ -241,6 +242,7 @@ class ActionCallGenerator:
                 passed=False,
                 severity='BLOCK',
                 message=f"BLOCKED: Character count {char_count} outside range ({min_chars}-{max_chars})",
+                    
                 details={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': route_type.value}
             )
         else:
@@ -274,7 +276,6 @@ class ActionCallGenerator:
 
     def _check_specific_action(self, cta: str) -> bool:
         """Check if CTA contains specific action language"""
-        import re
         cta_lower = cta.lower()
 
         for pattern in self.SPECIFIC_ACTION_PATTERNS:

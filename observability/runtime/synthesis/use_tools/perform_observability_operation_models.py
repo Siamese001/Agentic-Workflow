@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .perform_observability_operation_enums import *
+# from .perform_observability_operation_enums import *  # Star import removed
 
 @dataclass
 class OperationContext:

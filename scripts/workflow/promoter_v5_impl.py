@@ -35,7 +35,12 @@ def choose_destination(content: str, filename: str) -> Path:
             return Path(dest)
     return Path('apps_shared/core')
 
-def _should_promote_file(src: Path, score: int, reasons: List[str], is_dirty: bool, is_staged_file: bool) -> Tuple[bool, str]:
+def _should_promote_file(src: Path,
+    score: int,
+    reasons: List[str],
+    is_dirty: bool,
+    is_staged_file: bool) -> Tuple[bool,
+    str]:
     """Determine if a file should be promoted and why."""
     if FORCE_PROMOTE_PATTERN.search(src.name):
         return (True, 'force-promote:historical')
@@ -71,11 +76,16 @@ def _scan_archive_directory(archive_dir: Path) -> List[Path]:
     json_files = list(archive_dir.glob('*.json'))
     md_files = list(archive_dir.glob('*.md'))
     files = py_files + json_files + md_files
-    logger.info(f'📁 Found {len(py_files)} .py files, {len(json_files)} .json files, {len(md_files)} .md files')
+    logger.info(f'📁 Found {len(py_files)} .py files,
+        {len(json_files)} .json files,
+        {len(md_files)} .md files')
     logger.info(f'📊 Total files to process: {len(files)}')
     return files
 
-def _process_single_file(src: Path, archive_dir: Path, promoted_files: List, rejected_files: List) -> None:
+def _process_single_file(src: Path,
+    archive_dir: Path,
+    promoted_files: List,
+    rejected_files: List) -> None:
     """Process a single file for promotion."""
     logger.info(f'\n🔎 Processing: {src.name}')
     skip_reason = _should_skip_file(src, archive_dir)
@@ -88,14 +98,22 @@ def _process_single_file(src: Path, archive_dir: Path, promoted_files: List, rej
     logger.info(f'  📈 Score: {score}/10')
     logger.info(f"  📝 Reasons: {', '.join(reasons)}")
     logger.info(f'  🧹 Dirty: {is_dirty}')
-    should_promote, promotion_reason = _should_promote_file(src, score, reasons, is_dirty, is_staged_file)
+    should_promote,
+        promotion_reason = _should_promote_file(src,
+        score,
+        reasons,
+        is_dirty,
+        is_staged_file)
     if not should_promote:
         logger.info(f'  ❌ REJECTED')
         rejected_files.append(src.name)
         return
     _execute_promotion(src, content, promotion_reason, promoted_files)
 
-def _execute_promotion(src: Path, content: str, promotion_reason: str, promoted_files: List) -> None:
+def _execute_promotion(src: Path,
+    content: str,
+    promotion_reason: str,
+    promoted_files: List) -> None:
     """Execute file promotion to destination directory."""
     dest_dir = choose_destination(content, src.name)
     dest_dir.mkdir(parents=True, exist_ok=True)

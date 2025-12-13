@@ -7,7 +7,6 @@ that can be answered by the retrieval system.
 import asyncio
 import logging
 import re
-from typing import List, Dict, Optional, Any
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
@@ -70,10 +69,16 @@ class QueryDecomposer(SimpleAgentBase):
 
         # Simple patterns to detect complex queries
         self.complexity_indicators = {
-            'comparison': re.compile(r'\b(compare|vs|versus|against|difference|contrast)\b', re.IGNORECASE),
+            'comparison': re.compile(r'\b(compare|vs|versus|against|difference|contrast)\b',
+                re.IGNORECASE),
+                
             'causation': re.compile(r'\b(why|cause|reason|impact|effect)\b', re.IGNORECASE),
-            'temporal': re.compile(r'\b(before|after|during|when|timeline|history)\b', re.IGNORECASE),
-            'aggregation': re.compile(r'\b(sum|total|average|count|aggregate|combine)\b', re.IGNORECASE),
+            'temporal': re.compile(r'\b(before|after|during|when|timeline|history)\b',
+                re.IGNORECASE),
+                
+            'aggregation': re.compile(r'\b(sum|total|average|count|aggregate|combine)\b',
+                re.IGNORECASE),
+                
             'relationship': re.compile(r'\b(relationship|correlation|between|and)\b', re.IGNORECASE)
         }
 
@@ -217,7 +222,8 @@ Output: {{
             # Validate and limit sub-queries
             sub_queries = result.get("sub_queries", [query])
             if len(sub_queries) > self.max_sub_queries:
-                logger.warning(f"LLM generated too many sub-queries ({len(sub_queries)}), truncating")
+                logger.warning(f"LLM generated too many sub-queries ({len(sub_queries)}),
+                    truncating")
                 sub_queries = sub_queries[:self.max_sub_queries]
 
             # Ensure at least one sub-query

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .match_schema_context_enums import *
+# from .match_schema_context_enums import *  # Star import removed
 
 @dataclass
 class SchemaContext:

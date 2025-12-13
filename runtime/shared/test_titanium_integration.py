@@ -6,7 +6,6 @@ with the L3 orchestrator and various agents.
 
 import asyncio
 import logging
-from typing import Dict, Any, List
 
 # Test imports
 from titanium_search_tool import (
@@ -172,7 +171,8 @@ async def test_dispatch_tools():
         logger.info(f"Search action result: {result.success}")
         if result.success:
             output = result.output
-            logger.info(f"Output keys: {list(output.keys()) if isinstance(output, dict) else 'string output'}")
+            logger.info(f"Output keys: {list(output.keys()) if isinstance(output,
+                dict) else 'string output'}")
 
         # Test search with sources
         result2 = tools.execute("search_with_sources", {

@@ -6,8 +6,6 @@ systems to modern AI architectures.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -202,7 +200,9 @@ class StackModernizationAgent:
 
             # Default to general modernization
             return MigrationThesis(
-                current_state_diagnosis=f"Mature infrastructure with {', '.join(diagnostic.detected_legacy_tech[:2])}",
+                current_state_diagnosis=f"Mature infrastructure with {',
+                    '.join(diagnostic.detected_legacy_tech[:2])}",
+                    
                 target_state_vision="Modern, cloud-native AI architecture",
                 bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business continuity"
             )
@@ -227,13 +227,15 @@ class StackModernizationAgent:
         """
         try:
             # Extract modern tech from thesis
-            modern_tech = thesis.target_state_vision.split(",")[0] if thesis.target_state_vision else "modern architecture"
+            modern_tech = thesis.target_state_vision.split(",
+                ")[0] if thesis.target_state_vision else "modern architecture"
 
             hook = (
                 f"I noticed you are transitioning from {legacy_tech}. "
                 f"At [Previous Role], I led the architecture de-risking for this exact migration, "
                 f"ensuring zero downtime while modernizing to {modern_tech} "
-                f"using {thesis.bridge_strategy.split(',')[0] if thesis.bridge_strategy else 'industry best practices'}."
+                f"using {thesis.bridge_strategy.split(',
+                    ')[0] if thesis.bridge_strategy else 'industry best practices'}."
             )
 
             return hook
@@ -288,7 +290,8 @@ class StackModernizationAgent:
         try:
             # Respectful current state diagnosis
             current = (
-                f"Mature infrastructure with established {', '.join(diagnostic.detected_legacy_tech[:2])}. "
+                f"Mature infrastructure with established {',
+                    '.join(diagnostic.detected_legacy_tech[:2])}. "
                 f"Experiencing {', '.join(diagnostic.implied_pain_points[:2])}."
             )
 

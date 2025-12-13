@@ -12,7 +12,6 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
-from .circuit_breaker import CircuitBreaker, CircuitBreakerError
 from .telemetry import get_telemetry
 
 logger = logging.getLogger(__name__)
@@ -32,7 +31,10 @@ class ProviderType(str, Enum):
 class ProviderConfig(BaseModel):
     """Configuration for a single LLM provider endpoint."""
     provider_name: ProviderType
-    model_id: str = Field(..., description="The specific model tag (e.g., 'gpt-4o', 'claude-3-opus').")
+    model_id: str = Field(...,
+        description="The specific model tag (e.g.,
+        'gpt-4o',
+        'claude-3-opus').")
 
     # Routing Weights
     priority_rank: int = Field(1, description="1 = Primary, 2 = Secondary, etc.")
@@ -41,7 +43,8 @@ class ProviderConfig(BaseModel):
     # Resilience Settings
     timeout_seconds: int = Field(30, description="Strict timeout for this specific provider.")
     max_failures: int = Field(5, description="Failures before circuit opens.")
-    circuit_break_duration: int = Field(60, description="Seconds to keep provider blacklisted after failure.")
+    circuit_break_duration: int = Field(60,
+        description="Seconds to keep provider blacklisted after failure.")
 
     # Optional API configuration
     api_key: Optional[str] = None
@@ -311,7 +314,8 @@ class HardenedLiteLLMRouter:
                 "circuit_state": circuit.state.value,
                 "healthy": circuit.is_closed(),
                 "statistics": stats,
-                "circuit_stats": circuit.stats.to_dict() if hasattr(circuit.stats, 'to_dict') else {}
+                "circuit_stats": circuit.stats.to_dict() if hasattr(circuit.stats,
+                    'to_dict') else {}
             }
 
         return health

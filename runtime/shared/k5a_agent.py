@@ -8,7 +8,6 @@ constraints (28-33 words per bullet).
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
 from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)

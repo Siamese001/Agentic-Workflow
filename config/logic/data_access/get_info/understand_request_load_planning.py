@@ -9,9 +9,9 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .understand_request_load_planning_impl import *
-from .understand_request_load_planning_models import *
-from .load_models_2 import *
-from .understand_request_load_planning_impl import *
+# from .understand_request_load_planning_impl import *  # Star import removed
+# from .understand_request_load_planning_models import *  # Star import removed
+# from .load_models_2 import *  # Star import removed
+# from .understand_request_load_planning_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

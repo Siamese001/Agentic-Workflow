@@ -1,13 +1,15 @@
 """Implementation for kg_v5_impl_impl_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 class TestTripletStore:
     """Test L4 TripletStore functionality."""
 
     def test_create_triplet(self) -> None:
         """Test triplet creation."""
-        triplet = create_triplet(subject='user_123', predicate='has_skill', obj='Python', confidence=0.9)
+        triplet = create_triplet(subject='user_123',
+            predicate='has_skill',
+            obj='Python',
+            confidence=0.9)
         assert triplet.subject == 'user_123'
         assert triplet.predicate == 'has_skill'
         assert triplet.object == 'Python'
@@ -53,7 +55,10 @@ class TestEntityResolution:
 
     def test_entity_creation(self) -> None:
         """Test entity creation."""
-        entity = create_entity(name='Python', entity_type=EntityType.SKILL, aliases=['python', 'Python 3'])
+        entity = create_entity(name='Python',
+            entity_type=EntityType.SKILL,
+            aliases=['python',
+            'Python 3'])
         assert entity.canonical_name == 'Python'
         assert entity.entity_type == EntityType.SKILL
         assert 'python' in entity.aliases
@@ -70,7 +75,10 @@ class TestEntityResolution:
     def test_entity_fuzzy_matching(self) -> None:
         """Test fuzzy entity matching."""
         registry = EntityRegistry()
-        entity = create_entity(name='Amazon Web Services', entity_type=EntityType.SKILL, aliases=['AWS', 'amazon web services'])
+        entity = create_entity(name='Amazon Web Services',
+            entity_type=EntityType.SKILL,
+            aliases=['AWS',
+            'amazon web services'])
         registry.register_entity(entity)
         mention = create_mention(text='AWS', entity_type=EntityType.SKILL)
         result = registry.resolve(mention)
@@ -89,7 +97,9 @@ class TestKGRetrievalPlanning:
     def test_plan_neighborhood_query(self) -> None:
         """Test planning multi-hop neighborhood query."""
         planner = KGRetrievalPlanner()
-        plan = planner.plan_query(query_type=QueryType.NEIGHBORHOOD, start_entities=['user_123'], max_hops=2)
+        plan = planner.plan_query(query_type=QueryType.NEIGHBORHOOD,
+            start_entities=['user_123'],
+            max_hops=2)
         assert plan.query_type == QueryType.NEIGHBORHOOD
         assert plan.max_hops == 2
         assert len(plan.hops) == 2
@@ -97,7 +107,9 @@ class TestKGRetrievalPlanning:
     def test_plan_with_template(self) -> None:
         """Test planning with predefined template."""
         planner = KGRetrievalPlanner()
-        plan = planner.plan_query(query_type=QueryType.NEIGHBORHOOD, start_entities=['user_123'], template_name='similar_skills')
+        plan = planner.plan_query(query_type=QueryType.NEIGHBORHOOD,
+            start_entities=['user_123'],
+            template_name='similar_skills')
         assert len(plan.hops) == 2
         assert plan.hops[0].direction == HopDirection.OUTGOING
 
@@ -129,7 +141,9 @@ class TestTripletExtraction:
     def test_extract_skills(self) -> None:
         """Test skill extraction from text."""
         executor = TripletExtractionExecutor()
-        plan = create_extraction_plan(source_text='Experienced Python developer with expertise in AWS and Docker', source_id='doc_001', user_id='user_123')
+        plan = create_extraction_plan(source_text='Experienced Python developer with expertise in AWS and Docker',
+            source_id='doc_001',
+            user_id='user_123')
         result = executor.execute(plan)
         assert result.total_extracted > 0
         skills = [t.object for t in result.triplets if t.predicate == 'has_skill']
@@ -138,7 +152,9 @@ class TestTripletExtraction:
     def test_extract_experience(self) -> None:
         """Test experience extraction from text."""
         executor = TripletExtractionExecutor()
-        plan = create_extraction_plan(source_text='Worked at Google as Senior Engineer from 2020 to present', source_id='doc_002', user_id='user_123')
+        plan = create_extraction_plan(source_text='Worked at Google as Senior Engineer from 2020 to present',
+            source_id='doc_002',
+            user_id='user_123')
         result = executor.execute(plan)
         companies = [t.object for t in result.triplets if t.predicate == 'worked_at']
         assert result.total_extracted >= 0
@@ -162,7 +178,9 @@ class TestKGOrchestration:
     def test_build_retrieval_dag(self):
         """Test building a retrieval DAG."""
         orchestrator = KGFirstRetrievalOrchestrator()
-        context = create_hybrid_context(query='Python developer', user_id='user_123', kg_entities=['user_123'])
+        context = create_hybrid_context(query='Python developer',
+            user_id='user_123',
+            kg_entities=['user_123'])
         dag = orchestrator.build_dag(context)
         assert 'kg_query' in dag.nodes
         assert 'vector_search' in dag.nodes

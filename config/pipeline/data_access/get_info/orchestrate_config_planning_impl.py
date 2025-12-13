@@ -1,7 +1,7 @@
 """Implementation for orchestrate_config_planning."""
 
 from typing import Any, Dict, List, Optional
-from .orchestrate_config_planning_types import *
+# from .orchestrate_config_planning_types import *  # Star import removed
 
 class ConfigPlanningOrchestrator:
     """Orchestrator for planning configuration operations."""
@@ -20,7 +20,8 @@ class ConfigPlanningOrchestrator:
         Returns:
             ConfigPlanningResult: Complete planning result with validated configs and deployment plan
         """
-        self.logger.info(f"Starting config planning for: {config_request.get('service', 'unknown')}")
+        self.logger.info(f"Starting config planning for: {config_request.get('service',
+            'unknown')}")
         try:
             self._validate_request(config_request)
             validated_configs = []
@@ -28,12 +29,22 @@ class ConfigPlanningOrchestrator:
                 validated_configs = self._validate_configs(config_request)
             deployment_plan = self._create_deployment_plan(config_request, validated_configs)
             validation_errors = self._collect_validation_errors(config_request)
-            result = ConfigPlanningResult(success=len(validation_errors) == 0, validated_configs=validated_configs, deployment_plan=deployment_plan, validation_errors=validation_errors, metadata={'planned_at': datetime.utcnow().isoformat(), 'service': config_request.get('service'), 'config_count': len(validated_configs), 'orchestrator': 'ConfigPlanningOrchestrator'})
+            result = ConfigPlanningResult(success=len(validation_errors) == 0,
+                validated_configs=validated_configs,
+                deployment_plan=deployment_plan,
+                validation_errors=validation_errors,
+                metadata={'planned_at': datetime.utcnow().isoformat(),
+                'service': config_request.get('service'),
+                'config_count': len(validated_configs),
+                'orchestrator': 'ConfigPlanningOrchestrator'})
             self.logger.info(f'Successfully planned configuration: {len(validated_configs)} configs validated')
             return result
         except Exception as e:
             self.logger.error(f'Config planning failed: {str(e)}')
-            return ConfigPlanningResult(success=False, errors=[str(e)], metadata={'failed_at': datetime.utcnow().isoformat(), 'orchestrator': 'ConfigPlanningOrchestrator'})
+            return ConfigPlanningResult(success=False,
+                errors=[str(e)],
+                metadata={'failed_at': datetime.utcnow().isoformat(),
+                'orchestrator': 'ConfigPlanningOrchestrator'})
 
     def _validate_request(self, request: Dict[str, Any]) -> None:
         """Validate config planning request."""
@@ -53,11 +64,26 @@ class ConfigPlanningOrchestrator:
         environment = env_mapping.get(environment_str.lower(), ConfigEnvironment.DEVELOPMENT)
         for raw_config in raw_configs:
             if isinstance(raw_config, dict):
-                config = ConfigDefinition(name=raw_config.get('name', 'unnamed'), format=ConfigFormat(raw_config.get('format', 'json')), environment=environment, content=raw_config.get('content', {}), version=raw_config.get('version', '1.0.0'), namespace=raw_config.get('namespace'), description=raw_config.get('description'), tags=raw_config.get('tags', []))
+                config = ConfigDefinition(name=raw_config.get('name',
+                    'unnamed'),
+                    format=ConfigFormat(raw_config.get('format',
+                    'json')),
+                    environment=environment,
+                    content=raw_config.get('content',
+                    {}),
+                    version=raw_config.get('version',
+                    '1.0.0'),
+                    namespace=raw_config.get('namespace'),
+                    description=raw_config.get('description'),
+                    tags=raw_config.get('tags',
+                    []))
                 configs.append(config)
         return configs
 
-    def _create_deployment_plan(self, request: Dict[str, Any], configs: List[ConfigDefinition]) -> Optional[DeploymentPlan]:
+    def _create_deployment_plan(self,
+        request: Dict[str,
+        Any],
+        configs: List[ConfigDefinition]) -> Optional[DeploymentPlan]:
         """Create deployment plan for configurations."""
         if not configs:
             return None
@@ -71,7 +97,15 @@ class ConfigPlanningOrchestrator:
             env_mapping = {'dev': ConfigEnvironment.DEVELOPMENT, 'development': ConfigEnvironment.DEVELOPMENT, 'test': ConfigEnvironment.TESTING, 'testing': ConfigEnvironment.TESTING, 'staging': ConfigEnvironment.STAGING, 'prod': ConfigEnvironment.PRODUCTION, 'production': ConfigEnvironment.PRODUCTION, 'dr': ConfigEnvironment.DR}
             env = env_mapping.get(env_str.lower(), ConfigEnvironment.DEVELOPMENT)
             target_envs.append(env)
-        return DeploymentPlan(strategy=strategy, target_environments=target_envs, rollout_percentage=deployment_config.get('rollout_percentage', 100.0), validation_steps=deployment_config.get('validation_steps', []), rollback_plan=deployment_config.get('rollback_plan'), dependencies=deployment_config.get('dependencies', []))
+        return DeploymentPlan(strategy=strategy,
+            target_environments=target_envs,
+            rollout_percentage=deployment_config.get('rollout_percentage',
+            100.0),
+            validation_steps=deployment_config.get('validation_steps',
+            []),
+            rollback_plan=deployment_config.get('rollback_plan'),
+            dependencies=deployment_config.get('dependencies',
+            []))
 
     def _collect_validation_errors(self, request: Dict[str, Any]) -> List[str]:
         """Collect validation errors from configurations."""
@@ -90,12 +124,24 @@ class ConfigPlanningOrchestrator:
                 errors.append(f'Config exceeds maximum size: {content_size} > {self.config.max_config_size}')
         return errors
 
-def create_config_planning_orchestrator(enable_validation: bool=True, enable_versioning: bool=True, **kwargs: object) -> ConfigPlanningOrchestrator:
+def create_config_planning_orchestrator(enable_validation: bool=True,
+    enable_versioning: bool=True,
+    **kwargs: object) -> ConfigPlanningOrchestrator:
     """Create a configured config planning orchestrator."""
-    config = ConfigPlanningConfig(enable_validation=enable_validation, enable_versioning=enable_versioning, **kwargs)
+    config = ConfigPlanningConfig(enable_validation=enable_validation,
+        enable_versioning=enable_versioning,
+        **kwargs)
     return ConfigPlanningOrchestrator(config)
 
-def plan_config_deployment(service: str, environment: str, configs: List[Dict[str, Any]], deployment: Optional[Dict[str, Any]]=None, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
+def plan_config_deployment(service: str,
+    environment: str,
+    configs: List[Dict[str,
+    Any]],
+    deployment: Optional[Dict[str,
+    Any]]=None,
+    config: Optional[Dict[str,
+    Any]]=None) -> Dict[str,
+    Any]:
     """Plan configuration deployment from simple parameters.
 
     Args:

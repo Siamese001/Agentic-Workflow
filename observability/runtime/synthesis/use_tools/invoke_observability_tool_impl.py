@@ -1,7 +1,7 @@
 """Implementation for invoke_observability_tool."""
 
 from typing import Any, Dict, List, Optional
-from .invoke_observability_tool_types import *
+# from .invoke_observability_tool_types import *  # Star import removed
 
 class ObservabilityToolInvoker:
     """Main invoker for observability tools."""
@@ -14,7 +14,10 @@ class ObservabilityToolInvoker:
         self._invocation_cache: Dict[str, Tuple[Any, float]] = {}
         self._initialize_handlers()
 
-    def register_tool(self, tool_name: str, endpoint: ToolEndpoint, handler: Optional[Callable]=None) -> None:
+    def register_tool(self,
+        tool_name: str,
+        endpoint: ToolEndpoint,
+        handler: Optional[Callable]=None) -> None:
         """Register a tool endpoint.
 
         Args:
@@ -46,7 +49,10 @@ class ObservabilityToolInvoker:
                     cached_response.execution_time = time.time() - start_time
                     return cached_response
             if request.tool_name not in self._registered_tools:
-                return self._create_error_response(request.invocation_id, request.tool_name, f'Tool not registered: {request.tool_name}', start_time)
+                return self._create_error_response(request.invocation_id,
+                    request.tool_name,
+                    f'Tool not registered: {request.tool_name}',
+                    start_time)
             if request.invocation_type == InvocationType.DIRECT:
                 response = self._invoke_direct(request)
             elif request.invocation_type == InvocationType.PROXY:
@@ -63,7 +69,10 @@ class ObservabilityToolInvoker:
             return response
         except Exception as e:
             self.logger.error(f'Tool invocation failed: {str(e)}')
-            return self._create_error_response(request.invocation_id, request.tool_name, str(e), start_time)
+            return self._create_error_response(request.invocation_id,
+                request.tool_name,
+                str(e),
+                start_time)
 
     def invoke_batch(self, requests: List[InvocationRequest]) -> List[InvocationResponse]:
         """Invoke multiple tools.
@@ -109,7 +118,11 @@ class ObservabilityToolInvoker:
         if tool_name not in self._registered_tools:
             return None
         endpoint = self._registered_tools[tool_name]
-        return {'tool_name': tool_name, 'endpoint': endpoint.url, 'protocol': endpoint.protocol, 'status': 'active', 'last_check': datetime.utcnow().isoformat()}
+        return {'tool_name': tool_name,
+            'endpoint': endpoint.url,
+            'protocol': endpoint.protocol,
+            'status': 'active',
+            'last_check': datetime.utcnow().isoformat()}
 
     def clear_cache(self, pattern: Optional[str]=None) -> int:
         """Clear invocation cache.
@@ -137,7 +150,11 @@ class ObservabilityToolInvoker:
         handler = self._tool_handlers.get(request.tool_name)
         if handler:
             result = handler(request.method, request.parameters)
-            return InvocationResponse(invocation_id=request.invocation_id, tool_name=request.tool_name, success=True, data=result, status_code=200)
+            return InvocationResponse(invocation_id=request.invocation_id,
+                tool_name=request.tool_name,
+                success=True,
+                data=result,
+                status_code=200)
         else:
             return self._simulate_invocation(request)
 
@@ -154,16 +171,34 @@ class ObservabilityToolInvoker:
         batch_items = request.parameters.get('batch_items', [])
         results = []
         for item in batch_items:
-            item_request = InvocationRequest(invocation_id=f'{request.invocation_id}_{len(results)}', tool_name=request.tool_name, method=request.method, parameters=item, endpoint=request.endpoint, invocation_type=InvocationType.DIRECT, response_format=request.response_format)
+            item_request = InvocationRequest(invocation_id=f'{request.invocation_id}_{len(results)}',
+                tool_name=request.tool_name,
+                method=request.method,
+                parameters=item,
+                endpoint=request.endpoint,
+                invocation_type=InvocationType.DIRECT,
+                response_format=request.response_format)
             response = self._invoke_direct(item_request)
             results.append(response.data if response.success else {'error': response.error})
-        return InvocationResponse(invocation_id=request.invocation_id, tool_name=request.tool_name, success=True, data=results, status_code=200)
+        return InvocationResponse(invocation_id=request.invocation_id,
+            tool_name=request.tool_name,
+            success=True,
+            data=results,
+            status_code=200)
 
-    def _simulate_invocation(self, request: InvocationRequest, proxy: bool=False, async_mode: bool=False) -> InvocationResponse:
+    def _simulate_invocation(self,
+        request: InvocationRequest,
+        proxy: bool=False,
+        async_mode: bool=False) -> InvocationResponse:
         """Simulate tool invocation."""
-        time.sleep(0.1)
+        await asyncio.sleep(0.1)
         if request.tool_name == 'trace_collector':
-            data = {'trace_id': request.parameters.get('trace_id', 'mock_trace_123'), 'spans': [{'operation': 'span1', 'duration': 0.1}, {'operation': 'span2', 'duration': 0.2}]}
+            data = {'trace_id': request.parameters.get('trace_id',
+                'mock_trace_123'),
+                'spans': [{'operation': 'span1',
+                'duration': 0.1},
+                {'operation': 'span2',
+                'duration': 0.2}]}
         elif request.tool_name == 'metric_collector':
             data = {'metrics': [{'name': 'cpu', 'value': 45.2}, {'name': 'memory', 'value': 67.8}]}
         elif request.tool_name == 'log_analyzer':
@@ -174,7 +209,12 @@ class ObservabilityToolInvoker:
             data['proxy_used'] = True
         if async_mode:
             data['async_mode'] = True
-        return InvocationResponse(invocation_id=request.invocation_id, tool_name=request.tool_name, success=True, data=data, headers={'content-type': 'application/json'}, status_code=200)
+        return InvocationResponse(invocation_id=request.invocation_id,
+            tool_name=request.tool_name,
+            success=True,
+            data=data,
+            headers={'content-type': 'application/json'},
+            status_code=200)
 
     def _get_from_cache(self, request: InvocationRequest) -> Optional[InvocationResponse]:
         """Get response from cache."""
@@ -197,9 +237,17 @@ class ObservabilityToolInvoker:
         key_data = {'tool_name': request.tool_name, 'method': request.method, 'parameters': request.parameters}
         return f'tool_invoke_{hash(json.dumps(key_data, sort_keys=True))}'
 
-    def _create_error_response(self, invocation_id: str, tool_name: str, error: str, start_time: float) -> InvocationResponse:
+    def _create_error_response(self,
+        invocation_id: str,
+        tool_name: str,
+        error: str,
+        start_time: float) -> InvocationResponse:
         """Create error response."""
-        return InvocationResponse(invocation_id=invocation_id, tool_name=tool_name, success=False, error=error, execution_time=time.time() - start_time)
+        return InvocationResponse(invocation_id=invocation_id,
+            tool_name=tool_name,
+            success=False,
+            error=error,
+            execution_time=time.time() - start_time)
 
     def _initialize_handlers(self) -> None:
         """Initialize default tool handlers."""
@@ -214,7 +262,9 @@ class ObservabilityToolInvoker:
 
         def _metric_handler(method: str, params: Dict[str, Any]) -> Dict[str, Any]:
             if method == 'collect':
-                return {'metrics': [{'name': 'cpu', 'value': 45.2, 'timestamp': datetime.utcnow().isoformat()}]}
+                return {'metrics': [{'name': 'cpu',
+                    'value': 45.2,
+                    'timestamp': datetime.utcnow().isoformat()}]}
             elif method == 'query':
                 return {'query_result': 'metric_data'}
             else:
@@ -231,12 +281,25 @@ class ObservabilityToolInvoker:
         self._tool_handlers['metric_collector'] = _metric_handler
         self._tool_handlers['log_analyzer'] = _log_handler
 
-def create_observability_tool_invoker(default_timeout: float=30.0, retry_attempts: int=3, enable_caching: bool=True, **kwargs: object) -> ObservabilityToolInvoker:
+def create_observability_tool_invoker(default_timeout: float=30.0,
+    retry_attempts: int=3,
+    enable_caching: bool=True,
+    **kwargs: object) -> ObservabilityToolInvoker:
     """Create a configured observability tool invoker."""
-    config = InvocationConfig(default_timeout=default_timeout, retry_attempts=retry_attempts, enable_caching=enable_caching, **kwargs)
+    config = InvocationConfig(default_timeout=default_timeout,
+        retry_attempts=retry_attempts,
+        enable_caching=enable_caching,
+        **kwargs)
     return ObservabilityToolInvoker(config)
 
-def invoke_observability_tool(invocation_id: str, tool_name: str, method: str, parameters: Dict[str, Any], invocation_type: str='direct', response_format: str='json') -> Dict[str, Any]:
+def invoke_observability_tool(invocation_id: str,
+    tool_name: str,
+    method: str,
+    parameters: Dict[str,
+    Any],
+    invocation_type: str='direct',
+    response_format: str='json') -> Dict[str,
+    Any]:
     """Invoke observability tool.
 
     Args:
@@ -251,6 +314,11 @@ def invoke_observability_tool(invocation_id: str, tool_name: str, method: str, p
         Dict: Invocation response
     """
     invoker = create_observability_tool_invoker()
-    request = InvocationRequest(invocation_id=invocation_id, tool_name=tool_name, method=method, parameters=parameters, invocation_type=InvocationType(invocation_type), response_format=ResponseFormat(response_format))
+    request = InvocationRequest(invocation_id=invocation_id,
+        tool_name=tool_name,
+        method=method,
+        parameters=parameters,
+        invocation_type=InvocationType(invocation_type),
+        response_format=ResponseFormat(response_format))
     response = invoker.invoke_tool(request)
     return {'invocation_id': response.invocation_id, 'tool_name': response.tool_name, 'success': response.success, 'data': response.data, 'headers': response.headers, 'status_code': response.status_code, 'error': response.error, 'warnings': response.warnings, 'execution_time': response.execution_time}

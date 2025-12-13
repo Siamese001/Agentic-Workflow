@@ -11,10 +11,8 @@ logger = logging.getLogger(__name__)
 """
 
 import time
-from typing import List, Dict
 
 # Import the precision layer components
-from runtime.shared import (
     ContextualCompressor,
     CompressionResult,
     compress_chunks,
@@ -162,9 +160,11 @@ class PrecisionLayerTestSuite:
                 correct_decisions += 1
             else:
                 if not type_correct:
-                    logger.info(f"   ⚠️  Type mismatch: expected {expected_type}, got {decision.query_type}")
+                    logger.info(f"   ⚠️  Type mismatch: expected {expected_type},
+                        got {decision.query_type}")
                 if not retrieve_correct:
-                    logger.info(f"   ⚠️  Retrieval mismatch: expected {expected_retrieve}, got {decision.should_retrieve}")
+                    logger.info(f"   ⚠️  Retrieval mismatch: expected {expected_retrieve},
+                        got {decision.should_retrieve}")
 
         accuracy = correct_decisions / total_tests
         logger.info(f"\n{'='*60}")

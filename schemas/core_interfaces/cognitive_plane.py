@@ -8,7 +8,6 @@ L1 Cognition: Pure thought, no side effects.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
 
 class CognitiveCapability(Enum):
     """Capabilities provided by the cognitive plane."""

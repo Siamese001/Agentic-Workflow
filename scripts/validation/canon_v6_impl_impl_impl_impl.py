@@ -99,7 +99,7 @@ def _find_dirty_files(base_dir: Path) -> list:
                 file_path = Path(root) / file
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                    if 'logger.info(' in content or 'pdb.' in content or 'breakpoint()' in content:
+                    if 'logger.info(' in content or 'pdb.' in content or '# Debugger removed' in content:
                         dirty_files.append(file_path)
     return dirty_files
 

@@ -28,11 +28,25 @@ class InjectionPatterns:
     across the sovereign domain.
     """
 
-    def __init__(self, config: Optional[Dict[str, Union[str, int, float, bool, List, Dict]]] = None):
+    def __init__(self,
+        config: Optional[Dict[str,
+        Union[str,
+        int,
+        float,
+        bool,
+        List,
+        Dict]]] = None):
         self.config = config or {}
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-    def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict] = None) -> ExecutionResult:
+    def process(self,
+        payload: Union[str,
+        int,
+        float,
+        bool,
+        List,
+        Dict],
+        context: Optional[Dict] = None) -> ExecutionResult:
         """
         Execute the primary logic for this module.
 
@@ -54,7 +68,19 @@ class InjectionPatterns:
             self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 
-    def _execute_logic(self, data: Union[str, int, float, bool, List, Dict], context: Optional[Dict]) -> Union[str, int, float, bool, List, Dict]:
+    def _execute_logic(self,
+        data: Union[str,
+        int,
+        float,
+        bool,
+        List,
+        Dict],
+        context: Optional[Dict]) -> Union[str,
+        int,
+        float,
+        bool,
+        List,
+        Dict]:
         """Internal execution executor to be implemented or extended."""
         return data
 

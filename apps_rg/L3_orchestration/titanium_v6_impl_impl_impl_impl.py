@@ -15,7 +15,11 @@ class TitaniumSearchWrapper:
             self._loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self._loop)
 
-    def search(self, query: str, context: Optional[str]=None, max_results: int=5, include_metadata: bool=False) -> str:
+    def search(self,
+        query: str,
+        context: Optional[str]=None,
+        max_results: int=5,
+        include_metadata: bool=False) -> str:
         """Synchronous search wrapper.
 
         Args:
@@ -28,7 +32,10 @@ class TitaniumSearchWrapper:
             Formatted search results
         """
         self._ensure_loop()
-        return self._loop.run_until_complete(get_titanium_search_tool(query, context, max_results, include_metadata))
+        return self._loop.run_until_complete(get_titanium_search_tool(query,
+            context,
+            max_results,
+            include_metadata))
 
     def search_with_sources(self, query: str, context: Optional[str]=None) -> Dict[str, Any]:
         """Synchronous search with sources wrapper.
@@ -102,7 +109,26 @@ def inject_titanium_tools(context: Dict[str, Any]) -> Dict[str, Any]:
     context['titanium_stats'] = _titanium_wrapper.get_stats
     context['titanium_clear_cache'] = _titanium_wrapper.clear_cache
     context['available_tools'] = context.get('available_tools', [])
-    context['available_tools'].extend([{'name': 'titanium_search', 'description': 'Search using the Titanium RAG Pipeline with precision, reasoning, and SOTA ranking', 'parameters': {'query': {'type': 'string', 'required': True}, 'context': {'type': 'string', 'required': False}, 'max_results': {'type': 'integer', 'required': False, 'default': 5}, 'include_metadata': {'type': 'boolean', 'required': False, 'default': False}}}, {'name': 'titanium_search_with_sources', 'description': 'Search with full source information for citations', 'parameters': {'query': {'type': 'string', 'required': True}, 'context': {'type': 'string', 'required': False}}}])
+    context['available_tools'].extend([{'name': 'titanium_search',
+        'description': 'Search using the Titanium RAG Pipeline with precision,
+        reasoning,
+        and SOTA ranking',
+        'parameters': {'query': {'type': 'string',
+        'required': True},
+        'context': {'type': 'string',
+        'required': False},
+        'max_results': {'type': 'integer',
+        'required': False,
+        'default': 5},
+        'include_metadata': {'type': 'boolean',
+        'required': False,
+        'default': False}}},
+        {'name': 'titanium_search_with_sources',
+        'description': 'Search with full source information for citations',
+        'parameters': {'query': {'type': 'string',
+        'required': True},
+        'context': {'type': 'string',
+        'required': False}}}])
     logger.info('Injected Titanium RAG tools into agent context')
     return context
 
@@ -164,4 +190,7 @@ def log_titanium_usage(hop_id: str, query: str, results: Dict[str, Any]):
     stats = get_pipeline_stats()
     if stats.get('status') == 'active':
         stats_data = stats.get('statistics', {})
-        logger.info(f"  Pipeline Stats - Total: {stats_data.get('total_queries', 0)}, Cache Hit Rate: {stats_data.get('cache_hit_rate', 0):.1%}")
+        logger.info(f"  Pipeline Stats - Total: {stats_data.get('total_queries',
+            0)},
+            Cache Hit Rate: {stats_data.get('cache_hit_rate',
+            0):.1%}")

@@ -6,7 +6,6 @@ outreach and resume generation.
 """
 
 import logging
-from typing import Dict, List, Optional, Union, Any
 from pydantic import BaseModel, Field, confloat
 
 logger = logging.getLogger(__name__)
@@ -14,9 +13,15 @@ logger = logging.getLogger(__name__)
 class SignalWeights(BaseModel):
     """Weight coefficients for different signal types (0.0-1.0)."""
 
-    technical_depth: confloat(ge=0.0, le=1.0) = 0.5  # Weight for code samples, stack details, architecture
+    technical_depth: confloat(ge=0.0,
+        le=1.0) = 0.5  # Weight for code samples,
+        stack details,
+        architecture
     business_impact: confloat(ge=0.0, le=1.0) = 0.5  # Weight for revenue, % growth, cost savings
-    leadership_scope: confloat(ge=0.0, le=1.0) = 0.5  # Weight for team size, mentorship, strategic initiatives
+    leadership_scope: confloat(ge=0.0,
+        le=1.0) = 0.5  # Weight for team size,
+        mentorship,
+        strategic initiatives
     cultural_fit: confloat(ge=0.0, le=1.0) = 0.5  # Weight for soft skills, mission alignment
 
     class Config:
@@ -36,7 +41,9 @@ class WeightingResult(BaseModel):
     """Result of reweighting operation."""
 
     original_score: confloat(ge=0.0, le=1.0) = Field(..., description="Original relevance score")
-    adjusted_score: confloat(ge=0.0, le=1.0) = Field(..., description="Adjusted score after weighting")
+    adjusted_score: confloat(ge=0.0,
+        le=1.0) = Field(...,
+        description="Adjusted score after weighting")
     weights_applied: SignalWeights = Field(..., description="Weights that were applied")
     signal_type: str = Field(..., description="Type of signal detected")
     adjustment_factor: confloat(ge=0.0, le=1.0) = Field(..., description="Weight factor applied")
@@ -252,10 +259,17 @@ class SignalWeighter:
                     try:
                         # Create adjusted weights
                         adjusted_weights = SignalWeights(
-                            technical_depth=min(1.0, base_weights.technical_depth * modifiers["technical_depth"]),
-                            business_impact=min(1.0, base_weights.business_impact * modifiers["business_impact"]),
-                            leadership_scope=min(1.0, base_weights.leadership_scope * modifiers["leadership_scope"]),
-                            cultural_fit=min(1.0, base_weights.cultural_fit * modifiers["cultural_fit"])
+                            technical_depth=min(1.0,
+                                base_weights.technical_depth * modifiers["technical_depth"]),
+                                
+                            business_impact=min(1.0,
+                                base_weights.business_impact * modifiers["business_impact"]),
+                                
+                            leadership_scope=min(1.0,
+                                base_weights.leadership_scope * modifiers["leadership_scope"]),
+                                
+                            cultural_fit=min(1.0,
+                                base_weights.cultural_fit * modifiers["cultural_fit"])
                         )
 
                         logger.debug(
@@ -298,7 +312,9 @@ class SignalWeighter:
                 original_score = 0.0
 
             if not 0.0 <= original_score <= 1.0:
-                logger.warning(f"Score out of bounds: {original_score} for doc {doc_id}, clamping to [0,1]")
+                logger.warning(f"Score out of bounds: {original_score} for doc {doc_id},
+                    clamping to [0,
+                    1]")
                 original_score = max(0.0, min(1.0, original_score))
 
             # Ensure metadata is a dictionary
@@ -376,11 +392,20 @@ class SignalWeighter:
             content_lower = str(metadata.get("content", "")).lower()
             if any(keyword in content_lower for keyword in ["revenue", "growth", "savings", "roi"]):
                 return "business_impact"
-            elif any(keyword in content_lower for keyword in ["team", "managed", "led", "mentorship"]):
+            elif any(keyword in content_lower for keyword in ["team",
+                "managed",
+                "led",
+                "mentorship"]):
                 return "leadership_scope"
-            elif any(keyword in content_lower for keyword in ["python", "java", "architecture", "algorithm"]):
+            elif any(keyword in content_lower for keyword in ["python",
+                "java",
+                "architecture",
+                "algorithm"]):
                 return "technical_depth"
-            elif any(keyword in content_lower for keyword in ["culture", "mission", "values", "collaboration"]):
+            elif any(keyword in content_lower for keyword in ["culture",
+                "mission",
+                "values",
+                "collaboration"]):
                 return "cultural_fit"
 
             # Default to balanced weighting

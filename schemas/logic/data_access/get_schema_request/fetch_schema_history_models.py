@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .fetch_schema_history_enums import *
+# from .fetch_schema_history_enums import *  # Star import removed
 
 @dataclass
 class SchemaChangeRecord:

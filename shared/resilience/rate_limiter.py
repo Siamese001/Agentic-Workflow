@@ -5,7 +5,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import time
 from dataclasses import dataclass, field
-from typing import Dict, Optional
 
 class RateLimitExceeded(Exception):
     """Raised when rate limit is exceeded."""

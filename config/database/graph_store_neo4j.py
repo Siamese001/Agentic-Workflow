@@ -21,7 +21,11 @@ class Neo4jGraphStore:
         self._driver = GraphDatabase.driver(uri, auth=(user, pwd))
 
     def close(self) -> None:
+        """TODO: Add docstring."""
+
         self._driver.close()
+
+        """TODO: Add docstring."""
 
     def run(self, cypher: str, params: Dict[str, object] | None = None) -> List[Any]:
         with self._driver.session() as session:

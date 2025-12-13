@@ -1,6 +1,5 @@
 """Implementation for test_v6_impl_impl_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 def _iter_project_py_files() -> list:
     for path in PROJECT_ROOT.glob('*.py'):
@@ -8,7 +7,11 @@ def _iter_project_py_files() -> list:
             continue
         yield path
     for path in PROJECT_ROOT.iterdir():
-        if path.is_dir() and path.name not in {'tests', '.mypy_cache', '.pytest_cache', '.ruff_cache', '.git'}:
+        if path.is_dir() and path.name not in {'tests',
+            '.mypy_cache',
+            '.pytest_cache',
+            '.ruff_cache',
+            '.git'}:
             for sub in path.rglob('*.py'):
                 yield sub
 

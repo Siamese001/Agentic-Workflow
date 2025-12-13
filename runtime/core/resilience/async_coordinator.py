@@ -7,9 +7,7 @@ managing timeouts safely, and ensuring proper cleanup of async resources.
 import asyncio
 import logging
 import time
-import weakref
 from contextlib import asynccontextmanager
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Set, Union
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -345,7 +343,9 @@ class AsyncCoordinator:
 
                 async with self._lock:
                     for task_id, task_info in self._tasks.items():
-                        if (task_info.state in (TaskState.COMPLETED, TaskState.CANCELLED, TaskState.FAILED)
+                        if (task_info.state in (TaskState.COMPLETED,
+                            TaskState.CANCELLED,
+                            TaskState.FAILED)
                             and task_info.created_at < cutoff_time):
                             tasks_to_remove.append(task_id)
 
@@ -432,6 +432,10 @@ def managed(
         Decorated function
     """
     def decorator(func):
+        """TODO: Add docstring."""
+
+            """TODO: Add docstring."""
+
         async def wrapper(*args, **kwargs):
             coordinator = await get_coordinator(coordinator_name)
             async with coordinator.managed_task(
@@ -463,6 +467,8 @@ async def safe_wait_for(
         asyncio.TimeoutError: If the coroutine times out
     """
     coordinator = await get_coordinator(coordinator_name)
+
+        """TODO: Add docstring."""
 
     async def timeout_wrapper():
         return await coro

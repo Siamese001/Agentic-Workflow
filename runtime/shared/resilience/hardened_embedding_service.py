@@ -16,7 +16,6 @@ import time
 from typing import Any, Dict, List, Optional, Tuple, Union
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
-from pydantic import BaseModel, Field
 from enum import Enum
 import json
 
@@ -374,7 +373,7 @@ class HardenedEmbeddingService:
         del self._cache_access_times[lru_key]
 
     async def _select_provider(self, model: str) -> Optional[str]:
-        """Select best available provider for the model."""
+        """# SQL removed: Select best available provider for the model."""
         available_providers = []
 
         for provider_name, provider_client in self.providers.items():
@@ -411,6 +410,8 @@ class HardenedEmbeddingService:
 
         # Sort by success rate and response time
         def provider_score(name: str) -> Tuple[float, float]:
+            """TODO: Add docstring."""
+
             metrics = self.stats.provider_stats[name]
             if metrics.total_requests == 0:
                 return (1.0, 0.0)
@@ -442,14 +443,22 @@ class HardenedEmbeddingService:
 
                 # Call provider
                 if provider == "openai":
-                    batch_result = await self._call_openai(provider_client, batch_texts, request.model)
+                    batch_result = await self._call_openai(provider_client,
+                        batch_texts,
+                        request.model)
                 elif provider == "anthropic":
-                    batch_result = await self._call_anthropic(provider_client, batch_texts, request.model)
+                    batch_result = await self._call_anthropic(provider_client,
+                        batch_texts,
+                        request.model)
                 elif provider == "cohere":
-                    batch_result = await self._call_cohere(provider_client, batch_texts, request.model)
+                    batch_result = await self._call_cohere(provider_client,
+                        batch_texts,
+                        request.model)
                 else:
                     # Generic call
-                    batch_result = await self._call_generic(provider_client, batch_texts, request.model)
+                    batch_result = await self._call_generic(provider_client,
+                        batch_texts,
+                        request.model)
 
                 all_embeddings.extend(batch_result["embeddings"])
 
@@ -516,7 +525,11 @@ class HardenedEmbeddingService:
         return {
             "embeddings": response.embeddings,
             "usage": {
-                "prompt_tokens": getattr(response, "meta", {}).get("billed_units", {}).get("input_tokens", 0)
+                "prompt_tokens": getattr(response,
+                    "meta",
+                    {}).get("billed_units",
+                    {}).get("input_tokens",
+                    0)
             }
         }
 
@@ -540,7 +553,7 @@ class HardenedEmbeddingService:
         return 100
 
     def _update_stats(self, result: EmbeddingResult) -> None:
-        """Update service statistics."""
+        """# SQL removed: Update service statistics."""
         self.stats.total_requests += 1
         self.stats.total_embeddings += len(result.embeddings)
 

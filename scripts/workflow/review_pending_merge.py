@@ -137,7 +137,10 @@ def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -
 
     return result
 
-def _categorize_files(pending_files: List[Path], approved_by_name: Dict[str, List[Path]]) -> Dict[str, List[Path]]:
+def _categorize_files(pending_files: List[Path],
+    approved_by_name: Dict[str,
+    List[Path]]) -> Dict[str,
+    List[Path]]:
     """Categorize pending files into different buckets."""
     categories = {
         "has_more_code": [],

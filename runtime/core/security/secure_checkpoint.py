@@ -10,10 +10,7 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 
 from ..shared_models import MicroCheckpoint

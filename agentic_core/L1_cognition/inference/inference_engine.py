@@ -5,18 +5,14 @@ The inference engine reads thermal configuration from the SignalContext and dyna
 adjusts LLM parameters to maximize creativity while maintaining structural integrity.
 """
 
-from __future__ import annotations
 
 import logging
 import time
-from typing import Any, Dict, List, Optional, Union
 from dataclasses import dataclass
 from enum import Enum
 
-from ...runtime.shared.multi_provider_clients import (
     Provider, get_client, ProviderConfig, get_api_key
 )
-from ...schemas.context_passport import (
     SignalContext, ThermalProfile, HardState, SoftState
 )
 

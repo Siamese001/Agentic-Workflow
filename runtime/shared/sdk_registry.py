@@ -8,7 +8,6 @@ Phase 1C - SDK Integration Layer
 
 import logging
 import os
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Optional, Tuple
 
@@ -348,27 +347,41 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
     """
     # Mock collection class
     class MockCollection:
+        """TODO: Add docstring."""
+
         def __init__(self, documents: list = None):
             self.documents = documents or []
+
+            """TODO: Add docstring."""
 
         def add(self, documents: list, ids: list = None):
             self.documents.extend(documents)
             return ids or list(range(len(documents)))
+            """TODO: Add docstring."""
+
 
         def query(self, query_texts: list, n_results: int = 10):
             return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
 
     # Always return mock vector store for testing
+        """TODO: Add docstring."""
+
     class MockVectorStore:
         def __init__(self, config: Optional[Dict[str, Any]] = None):
+            """TODO: Add docstring."""
+
             self.config = config or {}
             self.collections = {}
 
         def add_documents(self, collection_name: str, documents: list, ids: list = None):
             if collection_name not in self.collections:
+            """TODO: Add docstring."""
+
                 self.collections[collection_name] = []
             self.collections[collection_name].extend(documents)
             return ids or list(range(len(documents)))
+
+            """TODO: Add docstring."""
 
         def search(self, collection_name: str, query: str, n_results: int = 10):
             # Simple mock search

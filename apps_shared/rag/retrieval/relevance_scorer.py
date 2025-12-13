@@ -208,6 +208,8 @@ class RelevanceScorer:
         """
         # Character trigram similarity
         def get_trigrams(text: str) -> set:
+            """TODO: Add docstring."""
+
             text = text.lower()
             return {text[i:i+3] for i in range(len(text) - 2)}
 

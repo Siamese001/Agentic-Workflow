@@ -1,7 +1,6 @@
 """Types and models for l4_types."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class StateOperation(str, Enum):
@@ -49,7 +48,13 @@ class StateTransition(Generic[T]):
 
     def with_metadata(self, **kwargs: object) -> StateTransition[T]:
         """Create a new transition with updated metadata."""
-        return StateTransition(operation=self.operation, path=self.path, value=self.value, condition=self.condition, metadata={**self.metadata, **kwargs}, timestamp=self.timestamp)
+        return StateTransition(operation=self.operation,
+            path=self.path,
+            value=self.value,
+            condition=self.condition,
+            metadata={**self.metadata,
+            **kwargs},
+            timestamp=self.timestamp)
 
 @dataclass(frozen=True)
 class StateSnapshot(Generic[T]):
@@ -63,7 +68,12 @@ class StateSnapshot(Generic[T]):
 
     def get_hash(self) -> str:
         """Generate a deterministic hash of this snapshot."""
-        data = {'state_id': self.state_id, 'data': self.data, 'parent_id': self.parent_id, 'timestamp': self.timestamp.isoformat()}
+        data = {'state_id': self.state_id,
+            'data': self.data,
+            'parent_id': self.parent_id,
+            'timestamp': self.timestamp.isoformat()}
         if self.transition:
-            data['transition'] = {'operation': self.transition.operation.value, 'path': str(self.transition.path), 'value': self.transition.value}
+            data['transition'] = {'operation': self.transition.operation.value,
+                'path': str(self.transition.path),
+                'value': self.transition.value}
         return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()

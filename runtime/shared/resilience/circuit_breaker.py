@@ -10,9 +10,7 @@ Implements the Circuit Breaker pattern with three states:
 import time
 import logging
 from enum import Enum
-from typing import Optional, Callable
 from dataclasses import dataclass, field
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 

@@ -11,16 +11,9 @@ Implements a robust Redis client with:
 
 import logging
 import asyncio
-import json
 import time
 import pickle
-import hashlib
-from typing import Any, Dict, List, Optional, Union, Callable, Tuple
-from datetime import datetime, timedelta
-from dataclasses import dataclass, field
-from pydantic import BaseModel, Field
 from enum import Enum
-import weakref
 from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
@@ -88,7 +81,7 @@ class CacheEntry:
         return (datetime.now() - self.created_at).total_seconds() > self.ttl_seconds
 
     def touch(self) -> None:
-        """Update access statistics."""
+        """# SQL removed: Update access statistics."""
         self.last_accessed = datetime.now()
         self.access_count += 1
 
@@ -138,7 +131,7 @@ class L1MemoryCache:
             # Calculate size
             try:
                 size_bytes = len(pickle.dumps(value))
-            except:
+            except Exception:
                 size_bytes = len(str(value).encode())
 
             entry = CacheEntry(
@@ -155,7 +148,11 @@ class L1MemoryCache:
                 await self._evict()
 
             # Update cache
-            old_size = self._cache.get(key, CacheEntry(key="", value=None, created_at=now, last_accessed=now)).size_bytes
+            old_size = self._cache.get(key,
+                CacheEntry(key="",
+                value=None,
+                created_at=now,
+                last_accessed=now)).size_bytes
             self._cache[key] = entry
             self._update_access_order(key)
 
@@ -163,7 +160,7 @@ class L1MemoryCache:
             self._stats["size_bytes"] += size_bytes - old_size
 
     async def delete(self, key: str) -> bool:
-        """Delete key from L1 cache."""
+        """# SQL removed: Delete key from L1 cache."""
         async with self._lock:
             return await self._remove_entry(key)
 
@@ -209,7 +206,7 @@ class L1MemoryCache:
             self._stats["evictions"] += 1
 
     def _update_access_order(self, key: str) -> None:
-        """Update access order for LRU."""
+        """# SQL removed: Update access order for LRU."""
         if self.eviction_policy == "lru":
             self._access_order.move_to_end(key)
         elif self.eviction_policy == "lfu":
@@ -338,7 +335,6 @@ class HardenedCacheClient:
     async def _connect(self) -> None:
         """Connect to Redis with connection pooling."""
         try:
-            import redis.asyncio as redis
 
             self.connection_pool = redis.ConnectionPool(
                 host=self.config.redis_host,
@@ -473,7 +469,7 @@ class HardenedCacheClient:
                     self.metrics["redis_errors"] += 1
 
     async def delete(self, key: str, use_l1: bool = True, use_l2: bool = True) -> bool:
-        """Delete key from cache.
+        """# SQL removed: Delete key from cache.
 
         Args:
             key: Cache key
@@ -518,7 +514,11 @@ class HardenedCacheClient:
 
         return False
 
-    async def get_many(self, keys: List[str], use_l1: bool = True, use_l2: bool = True) -> Dict[str, Any]:
+    async def get_many(self,
+        keys: List[str],
+        use_l1: bool = True,
+        use_l2: bool = True) -> Dict[str,
+        Any]:
         """Get multiple values from cache.
 
         Args:
@@ -600,14 +600,14 @@ class HardenedCacheClient:
 
         try:
             return pickle.loads(value)
-        except:
+        except Exception:
             return value.decode('utf-8')
 
     async def _set_to_redis(self, key: str, value: Any, ttl_seconds: Optional[int]) -> None:
         """Set value in Redis."""
         try:
             serialized = pickle.dumps(value)
-        except:
+        except Exception:
             serialized = str(value).encode()
 
         if ttl_seconds:
@@ -616,7 +616,7 @@ class HardenedCacheClient:
             await self.redis_client.set(key, serialized)
 
     async def _delete_from_redis(self, key: str) -> bool:
-        """Delete key from Redis."""
+        """# SQL removed: Delete key from Redis."""
         result = await self.redis_client.delete(key)
         return result > 0
 
@@ -633,7 +633,7 @@ class HardenedCacheClient:
             if value is not None:
                 try:
                     results[key] = pickle.loads(value)
-                except:
+                except Exception:
                     results[key] = value.decode('utf-8')
 
         return results
@@ -645,7 +645,7 @@ class HardenedCacheClient:
         for key, value in mapping.items():
             try:
                 serialized = pickle.dumps(value)
-            except:
+            except Exception:
                 serialized = str(value).encode()
 
             if ttl_seconds:

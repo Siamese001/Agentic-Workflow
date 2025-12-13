@@ -5,9 +5,7 @@ with specific mitigations, demonstrating executive maturity and foresight.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any
 from enum import Enum
-from pydantic import BaseModel, Field, validator
 
 from .models import LLMResponse
 
@@ -39,7 +37,8 @@ class FailureMode(BaseModel):
     probability: float = Field(..., ge=0.0, le=1.0, description="Probability of occurrence (0-1)")
     impact: ImpactLevel = Field(..., description="Impact if risk materializes")
     mitigation_strategy: str = Field(..., description="Specific mitigation approach")
-    early_warning_signs: List[str] = Field(default_factory=list, description="Early warning indicators")
+    early_warning_signs: List[str] = Field(default_factory=list,
+        description="Early warning indicators")
     owner: Optional[str] = Field(None, description="Who owns this risk")
 
     @property
@@ -60,8 +59,11 @@ class PreMortemReport(BaseModel):
     top_risks: List[FailureMode] = Field(..., description="Top identified risks")
     overall_risk_score: float = Field(..., ge=0.0, le=1.0, description="Overall plan risk score")
     go_no_go_recommendation: str = Field(..., description="Go/No-Go recommendation")
-    critical_success_factors: List[str] = Field(default_factory=list, description="Critical success factors")
-    monitoring_plan: Dict[str, str] = Field(default_factory=dict, description="Risk monitoring plan")
+    critical_success_factors: List[str] = Field(default_factory=list,
+        description="Critical success factors")
+    monitoring_plan: Dict[str,
+        str] = Field(default_factory=dict,
+        description="Risk monitoring plan")
 
 class SimpleAgentBase:
     """Simple base class for standalone agents."""
@@ -514,6 +516,8 @@ class PreMortemAgent(SimpleAgentBase):
             )
 
             class LLMResponseImpl:
+                """TODO: Add docstring."""
+
                 def __init__(self, content: str):
                     self.content = content
 
@@ -522,6 +526,8 @@ class PreMortemAgent(SimpleAgentBase):
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
+                """TODO: Add docstring."""
+
             class LLMResponseImpl:
                 def __init__(self, content: str):
                     self.content = content

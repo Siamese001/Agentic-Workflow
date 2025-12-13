@@ -7,13 +7,10 @@ against malformed data, JSON/XML attacks, and boundary violations.
 import json
 import logging
 import re
-import xml.etree.ElementTree as ET
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Type, Union, get_type_hints
 from dataclasses import dataclass, field
 from enum import Enum
 from pydantic import BaseModel, ValidationError, validator
-import math
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +140,9 @@ class InputValidator:
         # Raise errors if any
         if errors:
             error_messages = [f"{e.field}: {e.message}" for e in errors]
-            raise InputValidationError("multiple", f"Validation failed: {', '.join(error_messages)}")
+            raise InputValidationError("multiple",
+                f"Validation failed: {',
+                '.join(error_messages)}")
 
         return validated
 
@@ -190,7 +189,8 @@ class InputValidator:
         if rule.pattern:
             if isinstance(validated_value, str):
                 if not re.match(rule.pattern, validated_value):
-                    raise InputValidationError(field, f"Value does not match pattern: {rule.pattern}")
+                    raise InputValidationError(field,
+                        f"Value does not match pattern: {rule.pattern}")
 
         # Allowed values validation
         if rule.allowed_values:
@@ -478,7 +478,9 @@ class ValidatedInput(BaseModel):
             raise ValueError("Collection too large")
         return v
 
-def validate_with_pydantic(data: Dict[str, Any], model_class: Type[ValidatedInput]) -> ValidatedInput:
+def validate_with_pydantic(data: Dict[str,
+    Any],
+    model_class: Type[ValidatedInput]) -> ValidatedInput:
     """Validate data using Pydantic model.
 
     Args:

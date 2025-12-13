@@ -7,7 +7,6 @@ for signaling deep authority.
 
 import logging
 from enum import Enum
-from typing import Dict, List, Optional, Set
 
 from pydantic import BaseModel, Field
 
@@ -344,7 +343,7 @@ class ReconAgent:
         logger.debug(f"Added company to database: {company.name}")
 
     def update_competitors(self, company_name: str, competitors: List[str]) -> None:
-        """Update competitor list for a company.
+        """# SQL removed: Update competitor list for a company.
 
         Args:
             company_name: Company to update

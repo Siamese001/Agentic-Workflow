@@ -10,11 +10,10 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import directly to bypass broken __init__.py
-import runtime.shared.sdk_registry as sdk_registry
-import runtime.shared.mcp_tools as mcp_tools
-import runtime.shared.multi_provider_clients as mp_clients
 
 def main():
+    """TODO: Add docstring."""
+
     logger.info("=" * 60)
     logger.info("AGENTIC WORKFLOW - SDK & MCP VALIDATION")
     logger.info("=" * 60)

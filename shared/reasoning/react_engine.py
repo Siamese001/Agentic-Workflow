@@ -136,10 +136,18 @@ class ReActEngine:
         trace_id = str(uuid.uuid4())
         trace = ReActTrace(trace_id=trace_id, task=task, metadata=context or {})
 
-        logger.info("react_start", extra={"trace_id": trace_id, "task": task[:100], "max_steps": self.max_steps})
+        logger.info("react_start",
+            extra={"trace_id": trace_id,
+            "task": task[:100],
+            "max_steps": self.max_steps})
 
         try:
-            await self._execute_reasoning_loop(task, think_fn, act_fn, should_continue_fn, trace, trace_id)
+            await self._execute_reasoning_loop(task,
+                think_fn,
+                act_fn,
+                should_continue_fn,
+                trace,
+                trace_id)
             trace = await self._finalize_trace(task, think_fn, trace, trace_id)
         except Exception as e:
             self._handle_trace_error(trace, trace_id, e)
@@ -160,40 +168,66 @@ class ReActEngine:
             thought = await think_fn(task, trace.steps)
 
             if not thought or "FINISH" in thought.upper():
-                logger.info("react_finish", extra={"trace_id": trace_id, "step": step_num, "reason": "finish_signal"})
+                logger.info("react_finish",
+                    extra={"trace_id": trace_id,
+                    "step": step_num,
+                    "reason": "finish_signal"})
                 break
 
             step = await self._execute_step(step_num, thought, act_fn, trace_id)
             trace.steps.append(step)
 
             if should_continue_fn and not should_continue_fn(trace.steps):
-                logger.info("react_stop", extra={"trace_id": trace_id, "step": step_num, "reason": "should_continue_false"})
+                logger.info("react_stop",
+                    extra={"trace_id": trace_id,
+                    "step": step_num,
+                    "reason": "should_continue_false"})
                 break
 
             if self.enable_self_reflection and step_num % 3 == 0:
                 await self._self_reflect(trace, think_fn)
 
-    async def _execute_step(self, step_num: int, thought: str, act_fn: Callable, trace_id: str) -> ReActStep:
+    async def _execute_step(self,
+        step_num: int,
+        thought: str,
+        act_fn: Callable,
+        trace_id: str) -> ReActStep:
         """Execute a single reasoning step."""
         action, action_input = self._parse_action(thought)
-        step = ReActStep(step_number=step_num, thought=thought, action=action, action_input=action_input)
+        step = ReActStep(step_number=step_num,
+            thought=thought,
+            action=action,
+            action_input=action_input)
 
         try:
             observation = await act_fn(action, action_input)
             step.observation = observation
         except Exception as e:
-            logger.error("react_action_error", extra={"trace_id": trace_id, "step": step_num, "action": action, "error": str(e)})
+            logger.error("react_action_error",
+                extra={"trace_id": trace_id,
+                "step": step_num,
+                "action": action,
+                "error": str(e)})
             step.observation = f"Error: {str(e)}"
 
         return step
 
-    async def _finalize_trace(self, task: str, think_fn: Callable, trace: ReActTrace, trace_id: str) -> ReActTrace:
+    async def _finalize_trace(self,
+        task: str,
+        think_fn: Callable,
+        trace: ReActTrace,
+        trace_id: str) -> ReActTrace:
         """Finalize trace with final answer."""
-        final_thought = await think_fn(f"Based on the reasoning above, provide the final answer to: {task}", trace.steps)
+        final_thought = await think_fn(f"Based on the reasoning above,
+            provide the final answer to: {task}",
+            trace.steps)
         trace.final_answer = final_thought
         trace.success = True
         trace.completed_at = datetime.now()
-        logger.info("react_complete", extra={"trace_id": trace_id, "steps": len(trace.steps), "success": True})
+        logger.info("react_complete",
+            extra={"trace_id": trace_id,
+            "steps": len(trace.steps),
+            "success": True})
         return trace
 
     def _handle_trace_error(self, trace: ReActTrace, trace_id: str, error: Exception) -> None:

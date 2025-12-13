@@ -1,5 +1,4 @@
 """Unit tests for L2_execution/P1_retrieve - execution context retrieval."""
-from __future__ import annotations
 from typing import Dict
 
 class TestExecutionContextRetrieval:

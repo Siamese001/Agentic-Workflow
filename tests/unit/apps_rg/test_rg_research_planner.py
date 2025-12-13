@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Test Rg Research Planner - atomic implementation."""
 
-from __future__ import annotations
 
 from typing import Dict
 

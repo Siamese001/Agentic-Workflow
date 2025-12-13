@@ -16,7 +16,6 @@ Non-responsibilities:
 - File I/O operations
 """
 
-from __future__ import annotations
 
 import hashlib
 import re
@@ -26,9 +25,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 class ValidationSeverity(Enum):
+    """TODO: Add docstring."""
+
     BLOCK = "BLOCK"
     WARN = "WARN"
     INFO = "INFO"
+
+    """TODO: Add docstring."""
 
 class GateType(Enum):
     WORD_COUNT = "WORD_COUNT"
@@ -39,6 +42,8 @@ class GateType(Enum):
     METRIC_BINDING = "METRIC_BINDING"
     CHARACTER_LIMIT = "CHARACTER_LIMIT"
 
+    """TODO: Add docstring."""
+
 @dataclass
 class ValidationRule:
     gate_id: str
@@ -46,6 +51,8 @@ class ValidationRule:
     severity: ValidationSeverity
     description: str
     params: Dict[str, Any]
+    """TODO: Add docstring."""
+
 
 @dataclass
 class ValidationResult:
@@ -54,11 +61,15 @@ class ValidationResult:
     severity: ValidationSeverity
     message: str
     signature: Optional[str] = None
+    """TODO: Add docstring."""
+
     details: Optional[Dict[str, Any]] = None
 
 @dataclass
 class CryptographicSignature:
     gate_id: str
+        """TODO: Add docstring."""
+
     content_hash: str
     timestamp: str
     signature: str
@@ -323,6 +334,7 @@ class IntegrityGateExecutor:
             'passed': sum(1 for r in self.results if r.passed),
             'failed': sum(1 for r in self.results if not r.passed),
             'blocked': sum(1 for r in self.results if r.severity == ValidationSeverity.BLOCK and not r.passed),
+                
             'results': [
                 {
                     'gate_id': r.gate_id,

@@ -1,10 +1,11 @@
 """Integration tests for full pipeline execution."""
-from __future__ import annotations
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
 class PipelineStage(Enum):
+    """TODO: Add docstring."""
+
     INPUT = "input"
     COGNITION = "cognition"
     PLANNING = "planning"
@@ -14,6 +15,8 @@ class PipelineStage(Enum):
     OUTPUT = "output"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class PipelineState:
     pipeline_id: str
     stage: PipelineStage

@@ -8,8 +8,6 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from shared.reasoning import ReActEngine, ReActTrace
-from .dag_engine import DAGEngine, Task, TaskType, TaskStatus
 
 logger = logging.getLogger(__name__)
 
@@ -453,7 +451,6 @@ class ThinkActObserveEngine:
         Args:
             path: Path to load state from
         """
-        import json
 
         with open(path, 'r') as f:
             state_dict = json.load(f)

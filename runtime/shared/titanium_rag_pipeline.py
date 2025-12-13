@@ -10,17 +10,13 @@ Enhanced with adversarial defense as the outermost security layer.
 
 import logging
 import time
-from typing import Dict, List, Optional, Any, Callable, Tuple
-from dataclasses import dataclass
 
-from .precision_layer import (
     ContextualCompressor,
     SignalQualityPipeline,
     CompressionResult,
     create_compressor,
     create_signal_pipeline,
 )
-from .reasoning_layer import (
     QueryDecomposer,
     DecomposedQuery,
     HybridScorer,
@@ -28,7 +24,6 @@ from .reasoning_layer import (
     create_query_decomposer,
     create_hybrid_scorer,
 )
-from .sota_layer import (
     ContrastiveSemanticCache,
     LateInteractionReranker,
     CacheEntry,
@@ -36,13 +31,11 @@ from .sota_layer import (
     create_cache,
     create_reranker,
 )
-from .input_guardrail import (
     InputGuardrail,
     GuardAction,
     GuardResult,
     get_input_guardrail,
 )
-from .retrieval_grader import (
     RetrievalGrader,
     RetrievalGrade,
     GradeStatus,
@@ -50,7 +43,6 @@ from .retrieval_grader import (
     get_retrieval_grader,
     get_web_search_fallback,
 )
-from .graphrag_fusion import (
     GraphRAGFusion,
     FusionResult,
     QueryType,
@@ -452,7 +444,8 @@ class TitaniumRAGPipeline:
                 # Use fused results
                 retrieved_docs = fused_docs
 
-                logger.info(f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)}, "
+                logger.info(f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)},
+                    "
                            f"Graph entities: {len(fusion_result.graph_results.entities)}")
 
             except Exception as e:

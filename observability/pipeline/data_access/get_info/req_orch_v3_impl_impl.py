@@ -1,6 +1,5 @@
 """Implementation for req_orch_v3_impl."""
 
-from typing import Any, Dict, List, Optional
 
 class OrchestrateObservabilityPlanningOrchestratorConstraints:
     """L5 Safety constraints - fail-closed behavior"""
@@ -21,7 +20,9 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
     """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
+    def process(self,
+        input_data: Dict[str,
+        object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
 
@@ -36,24 +37,35 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
     Pure planning functionality with no side effects
     """
 
-    def __init__(self, constraints: Optional[OrchestrateObservabilityPlanningOrchestratorConstraints]=None):
+    def __init__(self,
+        constraints: Optional[OrchestrateObservabilityPlanningOrchestratorConstraints]=None):
         self.constraints = constraints or OrchestrateObservabilityPlanningOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: Dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
+    def process(self,
+        input_data: Dict[str,
+        object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f'Processing {input_data}')
         self._validate_input(input_data)
         if not self.validate_safety(input_data):
             raise SecurityError('Input failed L5 safety validation')
-        result = OrchestrateObservabilityPlanningOrchestratorResult(success=True, data={'processed': True, 'input': input_data}, safety_validated=True, timestamp=self._get_timestamp())
+        result = OrchestrateObservabilityPlanningOrchestratorResult(success=True,
+            data={'processed': True,
+            'input': input_data},
+            safety_validated=True,
+            timestamp=self._get_timestamp())
         self.logger.info(f'Successfully processed: {result.success}')
         return result
 
     def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
-            dangerous_patterns = ['<script>', 'javascript:', '# SECURITY: ast.literal_eval(', '# SECURITY: pass  # exec disabled: ', '__import__']
+            dangerous_patterns = ['<script>',
+                'javascript:',
+                '# SECURITY: ast.literal_eval(',
+                '# SECURITY: pass  # exec disabled: ',
+                '__import__']
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:

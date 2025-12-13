@@ -11,12 +11,16 @@ class HallucinationDetector:
         pass
 
     def check(self, *args, **kwargs: object):
+        """TODO: Add docstring."""
+
         return {"safe": True, "confidence": 0.95}
 
 class SafetyValidator:
     """Stub safety validator."""
     def __init__(self, *args, **kwargs: object):
         pass
+
+        """TODO: Add docstring."""
 
     def validate(self, *args, **kwargs: object):
         return {"valid": True}
@@ -25,6 +29,8 @@ class ContentFilter:
     """Stub content filter."""
     def __init__(self, *args, **kwargs: object):
         pass
+        """TODO: Add docstring."""
+
 
     def filter(self, *args, **kwargs: object):
         return {"filtered": False, "content": args[0] if args else ""}

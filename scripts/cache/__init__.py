@@ -16,7 +16,6 @@ operations and providing fast retrieval of frequently used data.
 Auto-generated to satisfy SSoT structure requirements.
 """
 
-from .data_access import get_info, get_info_request, get_info_embedding
 
 __version__ = "1.0.0"
 __author__ = "Agentic-Workflow Team"

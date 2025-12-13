@@ -75,7 +75,10 @@ def split_large_types_files():
         if full_path.exists():
             try:
                 tree = ast.parse(full_path.read_text(encoding='utf-8'))
-                defs = [n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef))]
+                defs = [n for n in tree.body if isinstance(n,
+                    (ast.FunctionDef,
+                    ast.ClassDef,
+                    ast.AsyncFunctionDef))]
 
                 if len(defs) > 5:
                     logger.info(f"Splitting {file_path}: {len(defs)} defs")

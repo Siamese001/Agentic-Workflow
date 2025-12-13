@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Clerk extraction for resume generation HOP-1."""
 
-import scripts.validation.check_canonical_structure
 from typing import Dict, List, Tuple
 
 from shared.types.models import ValidationResult
@@ -79,7 +78,12 @@ class ClerkExtractor:
 
     def _extract_metrics(self, text: str) -> List[str]:
         """Extract quantified metrics from bullet text."""
-        patterns = [r"\$\d+\.?\d*[MBK]\+?", r"\d+\.?\d*%", r"\d+\.?\d*[MBK]\+", r"\d{1,3}(?:,\d{3})+"]
+        patterns = [r"\$\d+\.?\d*[MBK]\+?",
+            r"\d+\.?\d*%",
+            r"\d+\.?\d*[MBK]\+",
+            r"\d{1,
+            3}(?:,
+            \d{3})+"]
         metrics = []
         for pattern in patterns:
             metrics.extend(re.findall(pattern, text))

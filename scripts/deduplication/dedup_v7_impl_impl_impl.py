@@ -81,7 +81,10 @@ def _process_class_node(node: ast.AST) -> Optional[str]:
         return node.name
     return None
 
-def _extract_node_elements(node: ast.AST, imports: List[str], functions: List[str], classes: List[str]) -> None:
+def _extract_node_elements(node: ast.AST,
+    imports: List[str],
+    functions: List[str],
+    classes: List[str]) -> None:
     """Extract semantic elements from a single AST node."""
     if isinstance(node, (ast.Import, ast.ImportFrom)):
         imports.extend(_process_import_node(node))
@@ -111,7 +114,10 @@ def extract_semantic_elements(content: str) -> Tuple[List[str], List[str], List[
 
 def compute_semantic_hash(imports: List[str], functions: List[str], classes: List[str]) -> str:
     """Compute hash of semantic elements."""
-    semantic_str = f"imports:{','.join(imports)}|functions:{','.join(functions)}|classes:{','.join(classes)}"
+    semantic_str = f"imports:{',
+        '.join(imports)}|functions:{',
+        '.join(functions)}|classes:{',
+        '.join(classes)}"
     return hashlib.sha256(semantic_str.encode()).hexdigest()
 
 def is_stub_file(content: str, functions: List[str], classes: List[str]) -> bool:
@@ -129,13 +135,37 @@ def fingerprint_file(filepath: Path) -> FileFingerprint:
     try:
         content = filepath.read_text(encoding='utf-8', errors='ignore')
     except Exception as e:
-        return FileFingerlogger.info(path=filepath, content_hash='', ast_hash='', normalized_hash='', semantic_hash='', size=0, line_count=0, imports=[], functions=[], classes=[], is_stub=False, parse_error=str(e))
+        return FileFingerlogger.info(path=filepath,
+            content_hash='',
+            ast_hash='',
+            normalized_hash='',
+            semantic_hash='',
+            size=0,
+            line_count=0,
+            imports=[],
+            functions=[],
+            classes=[],
+            is_stub=False,
+            parse_error=str(e))
     content_hash = compute_content_hash(content)
     ast_hash, ast_error = compute_ast_hash(content)
     normalized_hash = compute_normalized_hash(content)
     imports, functions, classes = extract_semantic_elements(content)
     semantic_hash = compute_semantic_hash(imports, functions, classes)
-    return FileFingerlogger.info(path=filepath, content_hash=content_hash, ast_hash=ast_hash, normalized_hash=normalized_hash, semantic_hash=semantic_hash, size=filepath.stat().st_size, line_count=content.count('\n') + 1, imports=imports, functions=functions, classes=classes, is_stub=is_stub_file(content, functions, classes), parse_error=ast_error)
+    return FileFingerlogger.info(path=filepath,
+        content_hash=content_hash,
+        ast_hash=ast_hash,
+        normalized_hash=normalized_hash,
+        semantic_hash=semantic_hash,
+        size=filepath.stat().st_size,
+        line_count=content.count('\n') + 1,
+        imports=imports,
+        functions=functions,
+        classes=classes,
+        is_stub=is_stub_file(content,
+        functions,
+        classes),
+        parse_error=ast_error)
 
 def collect_fingerprints() -> List[FileFingerprint]:
     """Collect fingerprints for all Python files."""
@@ -175,7 +205,10 @@ def find_duplicate_clusters(fingerprints: List[FileFingerprint]) -> List[Duplica
         if len(fps) > 1:
             paths = [fp.path for fp in fps]
             if not any((p in processed_paths for p in paths)):
-                cluster = DuplicateCluster(cluster_id=f'exact_{cluster_id}', match_type='exact', fingerprints=fps, duplicates=[fp.path for fp in fps])
+                cluster = DuplicateCluster(cluster_id=f'exact_{cluster_id}',
+                    match_type='exact',
+                    fingerprints=fps,
+                    duplicates=[fp.path for fp in fps])
                 clusters.append(cluster)
                 processed_paths.update(paths)
                 cluster_id += 1
@@ -184,7 +217,10 @@ def find_duplicate_clusters(fingerprints: List[FileFingerprint]) -> List[Duplica
             paths = [fp.path for fp in fps]
             unprocessed = [fp for fp in fps if fp.path not in processed_paths]
             if len(unprocessed) > 1:
-                cluster = DuplicateCluster(cluster_id=f'ast_{cluster_id}', match_type='ast', fingerprints=unprocessed, duplicates=[fp.path for fp in unprocessed])
+                cluster = DuplicateCluster(cluster_id=f'ast_{cluster_id}',
+                    match_type='ast',
+                    fingerprints=unprocessed,
+                    duplicates=[fp.path for fp in unprocessed])
                 clusters.append(cluster)
                 processed_paths.update([fp.path for fp in unprocessed])
                 cluster_id += 1
@@ -193,7 +229,10 @@ def find_duplicate_clusters(fingerprints: List[FileFingerprint]) -> List[Duplica
             paths = [fp.path for fp in fps]
             unprocessed = [fp for fp in fps if fp.path not in processed_paths]
             if len(unprocessed) > 1:
-                cluster = DuplicateCluster(cluster_id=f'normalized_{cluster_id}', match_type='normalized', fingerprints=unprocessed, duplicates=[fp.path for fp in unprocessed])
+                cluster = DuplicateCluster(cluster_id=f'normalized_{cluster_id}',
+                    match_type='normalized',
+                    fingerprints=unprocessed,
+                    duplicates=[fp.path for fp in unprocessed])
                 clusters.append(cluster)
                 processed_paths.update([fp.path for fp in unprocessed])
                 cluster_id += 1
@@ -202,7 +241,10 @@ def find_duplicate_clusters(fingerprints: List[FileFingerprint]) -> List[Duplica
             significant = [fp for fp in fps if fp.size > 200 and len(fp.functions) + len(fp.classes) > 0]
             unprocessed = [fp for fp in significant if fp.path not in processed_paths]
             if len(unprocessed) > 1:
-                cluster = DuplicateCluster(cluster_id=f'semantic_{cluster_id}', match_type='semantic', fingerprints=unprocessed, duplicates=[fp.path for fp in unprocessed])
+                cluster = DuplicateCluster(cluster_id=f'semantic_{cluster_id}',
+                    match_type='semantic',
+                    fingerprints=unprocessed,
+                    duplicates=[fp.path for fp in unprocessed])
                 clusters.append(cluster)
                 processed_paths.update([fp.path for fp in unprocessed])
                 cluster_id += 1
@@ -222,7 +264,7 @@ def score_path(fp: FileFingerprint) -> Tuple[int, int, int, int]:
     return (stub_score, folder_score, size_score, path_score)
 
 def select_canonical_path(cluster: DuplicateCluster) -> Path:
-    """Select the canonical file from a cluster based on YAML-defined priorities."""
+    """# SQL removed: Select the canonical file from a cluster based on YAML-defined priorities."""
     sorted_fps = sorted(cluster.fingerprints, key=score_path)
     return sorted_fps[0].path
 
@@ -232,7 +274,15 @@ def generate_merge_plan(cluster: DuplicateCluster) -> Dict:
     cluster.canonical_path = canonical
     non_canonical = [fp.path for fp in cluster.fingerprints if fp.path != canonical]
     canonical_fp = next((fp for fp in cluster.fingerprints if fp.path == canonical))
-    plan = {'canonical_path': str(canonical.relative_to(REPO_ROOT)), 'canonical_hash': canonical_fp.content_hash[:16], 'canonical_size': canonical_fp.size, 'non_canonical': [str(p.relative_to(REPO_ROOT)) for p in non_canonical], 'match_type': cluster.match_type, 'functions_preserved': canonical_fp.functions, 'classes_preserved': canonical_fp.classes, 'imports_preserved': canonical_fp.imports, 'bytes_recoverable': sum((fp.size for fp in cluster.fingerprints if fp.path != canonical))}
+    plan = {'canonical_path': str(canonical.relative_to(REPO_ROOT)),
+        'canonical_hash': canonical_fp.content_hash[:16],
+        'canonical_size': canonical_fp.size,
+        'non_canonical': [str(p.relative_to(REPO_ROOT)) for p in non_canonical],
+        'match_type': cluster.match_type,
+        'functions_preserved': canonical_fp.functions,
+        'classes_preserved': canonical_fp.classes,
+        'imports_preserved': canonical_fp.imports,
+        'bytes_recoverable': sum((fp.size for fp in cluster.fingerprints if fp.path != canonical))}
     cluster.merge_plan = plan
     return plan
 
@@ -244,7 +294,15 @@ def run_analysis() -> DedupReport:
     clusters = find_duplicate_clusters(fingerprints)
     for cluster in clusters:
         generate_merge_plan(cluster)
-    report = DedupReport(total_files_scanned=len(fingerprints), total_duplicates=sum((len(c.duplicates) - 1 for c in clusters)), exact_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'exact')), ast_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'ast')), normalized_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'normalized')), semantic_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'semantic')), clusters=clusters, bytes_recoverable=sum((c.merge_plan.get('bytes_recoverable', 0) for c in clusters)))
+    report = DedupReport(total_files_scanned=len(fingerprints),
+        total_duplicates=sum((len(c.duplicates) - 1 for c in clusters)),
+        exact_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'exact')),
+        ast_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'ast')),
+        normalized_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'normalized')),
+        semantic_duplicates=sum((len(c.duplicates) - 1 for c in clusters if c.match_type == 'semantic')),
+        clusters=clusters,
+        bytes_recoverable=sum((c.merge_plan.get('bytes_recoverable',
+        0) for c in clusters)))
     return report
 
 def print_section_a(report: DedupReport) -> None:
@@ -275,7 +333,19 @@ def print_section_e(report: DedupReport) -> None:
 def save_report(report: DedupReport) -> Path:
     """Save report to JSON."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    report_data = {'timestamp': report.timestamp, 'total_files_scanned': report.total_files_scanned, 'total_duplicates': report.total_duplicates, 'exact_duplicates': report.exact_duplicates, 'ast_duplicates': report.ast_duplicates, 'normalized_duplicates': report.normalized_duplicates, 'semantic_duplicates': report.semantic_duplicates, 'bytes_recoverable': report.bytes_recoverable, 'clusters': [{'cluster_id': c.cluster_id, 'match_type': c.match_type, 'canonical_path': str(c.canonical_path.relative_to(REPO_ROOT)) if c.canonical_path else None, 'duplicates': [str(p.relative_to(REPO_ROOT)) for p in c.duplicates], 'merge_plan': c.merge_plan} for c in report.clusters]}
+    report_data = {'timestamp': report.timestamp,
+        'total_files_scanned': report.total_files_scanned,
+        'total_duplicates': report.total_duplicates,
+        'exact_duplicates': report.exact_duplicates,
+        'ast_duplicates': report.ast_duplicates,
+        'normalized_duplicates': report.normalized_duplicates,
+        'semantic_duplicates': report.semantic_duplicates,
+        'bytes_recoverable': report.bytes_recoverable,
+        'clusters': [{'cluster_id': c.cluster_id,
+        'match_type': c.match_type,
+        'canonical_path': str(c.canonical_path.relative_to(REPO_ROOT)) if c.canonical_path else None,
+        'duplicates': [str(p.relative_to(REPO_ROOT)) for p in c.duplicates],
+        'merge_plan': c.merge_plan} for c in report.clusters]}
     output_path = OUTPUT_DIR / f"dedup_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     with open(output_path, 'w') as f:
         json.dump(report_data, f, indent=2)

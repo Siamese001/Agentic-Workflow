@@ -2,10 +2,12 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from .k25_research_models_types_enums import *
+# from .k25_research_models_types_enums import *  # Star import removed
 
 @dataclass
 class ExecutiveProfile:
+    """TODO: Add docstring."""
+
     name: str
     title: str
     ownership: str
@@ -13,27 +15,39 @@ class ExecutiveProfile:
     linkedin_url: Optional[str] = None
 
 @dataclass
+    """TODO: Add docstring."""
+
 class FinancialMetric:
     metric_name: str
     value: str
     period: str
     yoy_change: Optional[str] = None
     source_citation: str
+        """TODO: Add docstring."""
+
 
     def validate(self) -> bool:
         return bool(self.metric_name and self.value and self.source_citation)
+
+    """TODO: Add docstring."""
 
 @dataclass
 class TechnicalImplementation:
     technology_name: str
     implementation_details: str
+        """TODO: Add docstring."""
+
     performance_gain: Optional[str] = None
     source_citation: str
 
     def validate(self) -> bool:
         return bool(self.technology_name and self.implementation_details and self.source_citation)
+    """TODO: Add docstring."""
+
 
 @dataclass
+        """TODO: Add docstring."""
+
 class StrategicLayer:
     core_thesis: str
     financial_proof_points: List[FinancialMetric] = field(default_factory=list)
@@ -44,7 +58,11 @@ class StrategicLayer:
             return False
         if len(self.financial_proof_points) < 2:
             return False
+    """TODO: Add docstring."""
+
         return all((metric.validate() for metric in self.financial_proof_points))
+        """TODO: Add docstring."""
+
 
 @dataclass
 class TechnicalLayer:
@@ -54,6 +72,10 @@ class TechnicalLayer:
 
     def validate(self) -> bool:
         if len(self.key_technologies) < 2:
+        """TODO: Add docstring."""
+
+    """TODO: Add docstring."""
+
             return False
         return all((tech.validate() for tech in self.key_technologies))
 
@@ -61,9 +83,17 @@ class TechnicalLayer:
 class LeadershipLayer:
     key_executives: List[ExecutiveProfile] = field(default_factory=list)
     organizational_structure: Optional[str] = None
+        """TODO: Add docstring."""
+
 
     def validate(self) -> bool:
+        """TODO: Add docstring."""
+
+    """TODO: Add docstring."""
+
         if len(self.key_executives) < 2:
+        """TODO: Add docstring."""
+
             return False
         return all((exec.name and exec.title and exec.ownership for exec in self.key_executives))
 
@@ -79,6 +109,8 @@ class CitationMap:
 
     def validate(self) -> bool:
         return len(self.citations) >= 3
+
+        """TODO: Add docstring."""
 
 @dataclass
 class DeepResearchOutput:
@@ -100,14 +132,20 @@ class DeepResearchOutput:
     def to_dict(self) -> Dict[str, Any]:
         """Convert the research output to a dictionary format.
 
+    """TODO: Add docstring."""
+
         Returns:
             Dictionary representation of the research output
         """
         return {'company_name': self.company_name, 'strategic_layer': {'core_thesis': self.strategic_layer.core_thesis, 'financial_proof_points': [{'metric_name': m.metric_name, 'value': m.value, 'period': m.period, 'yoy_change': m.yoy_change, 'source_citation': m.source_citation} for m in self.strategic_layer.financial_proof_points], 'strategic_initiatives': self.strategic_layer.strategic_initiatives}, 'technical_layer': {'key_technologies': [{'technology_name': t.technology_name, 'implementation_details': t.implementation_details, 'performance_gain': t.performance_gain, 'source_citation': t.source_citation} for t in self.technical_layer.key_technologies], 'infrastructure_stack': self.technical_layer.infrastructure_stack, 'implementation_summary': self.technical_layer.implementation_summary}, 'leadership_layer': {'key_executives': [{'name': e.name, 'title': e.title, 'ownership': e.ownership, 'strategic_focus': e.strategic_focus, 'linkedin_url': e.linkedin_url} for e in self.leadership_layer.key_executives], 'organizational_structure': self.leadership_layer.organizational_structure}, 'citation_map': self.citation_map.citations, 'research_timestamp': self.research_timestamp}
 
+        """TODO: Add docstring."""
+
 @dataclass
 class ResearchHopResult:
     phase: ResearchHopPhase
+    """TODO: Add docstring."""
+
     query: str
     results: List[str] = field(default_factory=list)
     citations: List[str] = field(default_factory=list)

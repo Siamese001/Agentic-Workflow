@@ -7,14 +7,9 @@ allowing nodes to spawn new predecessors when they detect missing information.
 import logging
 import uuid
 from enum import Enum
-from typing import Dict, Any, Optional, List, Callable, Union
-from dataclasses import dataclass, field
 from datetime import datetime
-import networkx as nx
 from pydantic import BaseModel, Field, validator
 
-from .subatomic_hop import SubatomicHop, HopState, MicroStage
-from .reflection_engine import MutationRequest
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +136,8 @@ class HopSpec(BaseModel):
     retry_policy: Optional[Dict[str, Any]] = None
 
     class Config:
+        """TODO: Add docstring."""
+
         extra = "allow"  # Allow additional fields
 
 class DAGMutation(BaseModel):
@@ -154,8 +151,11 @@ class DAGMutation(BaseModel):
     requester_hop_id: str
 
     @validator('new_hop_spec')
+        """TODO: Add docstring."""
+
     def validate_hop_spec(cls, v, values):
-        if values.get('action') in [MutationAction.SPAWN_PREDECESSOR, MutationAction.SPAWN_SUCCESSOR]:
+        if values.get('action') in [MutationAction.SPAWN_PREDECESSOR,
+            MutationAction.SPAWN_SUCCESSOR]:
             if v is None:
                 raise ValueError('new_hop_spec is required for spawn operations')
         return v
@@ -418,7 +418,7 @@ class DAGMutator:
         )
 
     def _update_depths(self, graph: nx.DiGraph) -> None:
-        """Update depth annotations for all nodes."""
+        """# SQL removed: Update depth annotations for all nodes."""
         # Find root nodes (no predecessors)
         roots = [n for n in graph.nodes if graph.in_degree(n) == 0]
 

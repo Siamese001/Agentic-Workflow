@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 """
 
-import os
 from pathlib import Path
 
 def clean_prompt_governance():
@@ -91,7 +90,12 @@ def clean_other_directories():
 
     # Check each top-level directory
     for item in base.iterdir():
-        if item.is_dir() and item.name not in ['.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', '.vscode']:
+        if item.is_dir() and item.name not in ['.git',
+            '__pycache__',
+            '.pytest_cache',
+            'node_modules',
+            '.venv',
+            '.vscode']:
             # Look for files with _impl patterns
             impl_files = list(item.rglob("*_impl*.py"))
 

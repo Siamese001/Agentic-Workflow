@@ -1,8 +1,7 @@
 """Dataclass models for lic_routing_rules."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from .lic_routing_rules_enums import *
+# from .lic_routing_rules_enums import *  # Star import removed
 
 @dataclass
 class ToolCallBudget:

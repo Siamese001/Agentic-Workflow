@@ -1,7 +1,7 @@
 """Implementation for get_schema_info."""
 
 from typing import Any, Dict, List, Optional
-from .get_schema_info_types import *
+# from .get_schema_info_types import *  # Star import removed
 
 class GetSchemaInfo:
     """
@@ -34,7 +34,15 @@ class GetSchemaInfo:
         if missing:
             raise ValueError(f'Missing required config keys: {missing}')
 
-    def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]=None) -> ProcessingResult:
+    def process(self,
+        payload: Union[str,
+        int,
+        float,
+        bool,
+        List,
+        Dict],
+        context: Optional[Dict[str,
+        Any]]=None) -> ProcessingResult:
         """
         Main processing method with comprehensive error handling.
 
@@ -45,19 +53,38 @@ class GetSchemaInfo:
         Returns:
             ProcessingResult with outcome and metadata
         """
-        exec_ctx = ExecutionContext(operation_id=self.config.get('operation_id', 'default'), metadata=context or {})
+        exec_ctx = ExecutionContext(operation_id=self.config.get('operation_id',
+            'default'),
+            metadata=context or {})
         try:
             exec_ctx.start()
             if payload is None:
                 raise ValueError('Payload cannot be None')
             result = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
-            return ProcessingResult(success=True, data=result, execution_context=exec_ctx, additional_info={'processed_at': time.time(), 'executor': self.__class__.__name__})
+            return ProcessingResult(success=True,
+                data=result,
+                execution_context=exec_ctx,
+                additional_info={'processed_at': time.time(),
+                'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
 
-    def _execute_core(self, data: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
+    def _execute_core(self,
+        data: Union[str,
+        int,
+        float,
+        bool,
+        List,
+        Dict],
+        context: Optional[Dict[str,
+        Any]]) -> Union[str,
+        int,
+        float,
+        bool,
+        List,
+        Dict]:
         """Core execution logic to be overridden by subclasses."""
         return data
 

@@ -4,7 +4,6 @@ Phase 4 - Pillar 5: Capability Maturity (Self-Evolving System)
 Agent Gym for offline simulation, benchmarking, and self-improvement.
 """
 
-from .agent_gym import (
     AgentGym,
     TrainingScenario,
     BenchmarkResult,

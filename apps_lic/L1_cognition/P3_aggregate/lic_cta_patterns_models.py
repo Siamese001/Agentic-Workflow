@@ -1,8 +1,7 @@
 """Dataclass models for lic_cta_patterns."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from .lic_cta_patterns_enums import *
+# from .lic_cta_patterns_enums import *  # Star import removed
 
 @dataclass
 class CTAPattern:

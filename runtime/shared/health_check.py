@@ -10,9 +10,7 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
 
@@ -326,7 +324,6 @@ class CheckpointManagerHealthChecker(HealthChecker):
             test_trace_id = f"health_check_{int(time.time())}"
 
             # Test save
-            from .core.envelope import SignalEnvelope, TextEnvelope
             test_envelope = TextEnvelope(
                 text="health check test",
                 trace_id=test_trace_id
@@ -348,7 +345,9 @@ class CheckpointManagerHealthChecker(HealthChecker):
                 message = "Checkpoint operations working normally"
             else:
                 status = HealthStatus.UNHEALTHY
-                message = f"Checkpoint operations failing (save:{save_success}, load:{loaded is not None}, delete:{delete_success})"
+                message = f"Checkpoint operations failing (save:{save_success},
+                    load:{loaded is not None},
+                    delete:{delete_success})"
 
             return HealthCheckResult(
                 component_name=self.component_name,

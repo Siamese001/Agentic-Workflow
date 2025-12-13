@@ -1,7 +1,6 @@
 """Types and models for agent_permissions."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class PermissionScope(Enum):
@@ -59,4 +58,8 @@ class PermissionCheck:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'allowed': self.allowed, 'identity': self.identity.to_dict(), 'permission': self.permission.to_dict() if self.permission else None, 'reason': self.reason, 'safety_decision': self.safety_decision.to_dict() if self.safety_decision else None}
+        return {'allowed': self.allowed,
+            'identity': self.identity.to_dict(),
+            'permission': self.permission.to_dict() if self.permission else None,
+            'reason': self.reason,
+            'safety_decision': self.safety_decision.to_dict() if self.safety_decision else None}

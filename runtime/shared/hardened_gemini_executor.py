@@ -20,7 +20,6 @@ from tenacity import (
     wait_exponential,
 )
 
-from .agent_executor import AgentExecutor, AgentMessage, AgentResponse
 from .multi_provider_clients import Provider
 
 logger = logging.getLogger(__name__)
@@ -558,23 +557,27 @@ class HardenedGeminiExecutor:
         Returns:
             Generated text response
         """
-        import asyncio
 
         # Run async method in event loop
         loop = asyncio.get_event_loop()
         if loop.is_running():
             # If already in event loop, use run_in_executor
-            import concurrent.futures
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
                     asyncio.run,
-                    self.execute_k_node(messages, system_prompt, response_schema, previous_interaction_id)
+                    self.execute_k_node(messages,
+                        system_prompt,
+                        response_schema,
+                        previous_interaction_id)
                 )
                 return future.result()
         else:
             return asyncio.run(
-                self.execute_k_node(messages, system_prompt, response_schema, previous_interaction_id)
+                self.execute_k_node(messages,
+                    system_prompt,
+                    response_schema,
+                    previous_interaction_id)
             )
 
 # Factory function for backward compatibility

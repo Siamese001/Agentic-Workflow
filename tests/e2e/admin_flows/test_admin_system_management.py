@@ -1,6 +1,4 @@
 """E2E tests for admin system management flows."""
-from __future__ import annotations
-import os
 import pytest
 from typing import Dict, List
 from dataclasses import dataclass
@@ -15,15 +13,21 @@ from datetime import datetime, timedelta
 skip_if_no_admin = pytest.mark.skipif(False, reason="Disabled for final validation")
 
 class SystemStatus(Enum):
+    """TODO: Add docstring."""
+
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     MAINTENANCE = "maintenance"
     OFFLINE = "offline"
 
+    """TODO: Add docstring."""
+
 class UserRole(Enum):
     ADMIN = "admin"
     OPERATOR = "operator"
     VIEWER = "viewer"
+
+    """TODO: Add docstring."""
 
 @dataclass
 class SystemHealth:
@@ -33,6 +37,8 @@ class SystemHealth:
     disk_percent: float
     active_connections: int
     error_rate: float
+    """TODO: Add docstring."""
+
 
 @dataclass
 class AuditEntry:

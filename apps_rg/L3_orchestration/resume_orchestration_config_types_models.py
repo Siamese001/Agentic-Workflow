@@ -1,8 +1,7 @@
 """Dataclass models for resume_orchestration_config_types."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from .resume_orchestration_config_types_enums import *
+# from .resume_orchestration_config_types_enums import *  # Star import removed
 
 @dataclass
 class WordCountConstraint:

@@ -19,7 +19,8 @@ class ObservabilityPlanningOrchestrator:
         Returns:
             ObservabilityPlanningResult: Complete planning result with observability setup
         """
-        self.logger.info(f"Starting observability planning for service: {observability_request.get('service_name', 'unknown')}")
+        self.logger.info(f"Starting observability planning for service: {observability_request.get('service_name',
+            'unknown')}")
         try:
             self._validate_request(observability_request)
             metric_definitions = []
@@ -34,13 +35,28 @@ class ObservabilityPlanningOrchestrator:
             alert_rules = []
             if self.config.enable_alerts:
                 alert_rules = self._plan_alerts(observability_request)
-            resource_estimates = self._estimate_resources(metric_definitions, log_configuration, trace_configuration)
-            result = ObservabilityPlanningResult(success=True, metric_definitions=metric_definitions, log_configuration=log_configuration, trace_configuration=trace_configuration, alert_rules=alert_rules, resource_estimates=resource_estimates, metadata={'planned_at': datetime.utcnow().isoformat(), 'service_name': observability_request.get('service_name'), 'metric_count': len(metric_definitions), 'alert_count': len(alert_rules), 'orchestrator': 'ObservabilityPlanningOrchestrator'})
+            resource_estimates = self._estimate_resources(metric_definitions,
+                log_configuration,
+                trace_configuration)
+            result = ObservabilityPlanningResult(success=True,
+                metric_definitions=metric_definitions,
+                log_configuration=log_configuration,
+                trace_configuration=trace_configuration,
+                alert_rules=alert_rules,
+                resource_estimates=resource_estimates,
+                metadata={'planned_at': datetime.utcnow().isoformat(),
+                'service_name': observability_request.get('service_name'),
+                'metric_count': len(metric_definitions),
+                'alert_count': len(alert_rules),
+                'orchestrator': 'ObservabilityPlanningOrchestrator'})
             self.logger.info(f'Successfully planned observability for {len(metric_definitions)} metrics')
             return result
         except Exception as e:
             self.logger.error(f'Observability planning failed: {str(e)}')
-            return ObservabilityPlanningResult(success=False, errors=[str(e)], metadata={'failed_at': datetime.utcnow().isoformat(), 'orchestrator': 'ObservabilityPlanningOrchestrator'})
+            return ObservabilityPlanningResult(success=False,
+                errors=[str(e)],
+                metadata={'failed_at': datetime.utcnow().isoformat(),
+                'orchestrator': 'ObservabilityPlanningOrchestrator'})
 
     def _validate_request(self, request: Dict[str, Any]) -> None:
         """Validate observability planning request."""
@@ -56,13 +72,32 @@ class ObservabilityPlanningOrchestrator:
         service_name = request.get('service_name')
         service_type = request.get('service_type')
         metrics = []
-        metrics.append(MetricDefinition(name=f'{service_name}_requests_total', metric_type=MetricType.COUNTER, description='Total number of requests', labels={'service': service_name, 'method': '*'}))
-        metrics.append(MetricDefinition(name=f'{service_name}_request_duration_seconds', metric_type=MetricType.HISTOGRAM, description='Request duration in seconds', labels={'service': service_name}, aggregation='percentile'))
+        metrics.append(MetricDefinition(name=f'{service_name}_requests_total',
+            metric_type=MetricType.COUNTER,
+            description='Total number of requests',
+            labels={'service': service_name,
+            'method': '*'}))
+        metrics.append(MetricDefinition(name=f'{service_name}_request_duration_seconds',
+            metric_type=MetricType.HISTOGRAM,
+            description='Request duration in seconds',
+            labels={'service': service_name},
+            aggregation='percentile'))
         if service_type == 'api':
-            metrics.append(MetricDefinition(name=f'{service_name}_api_errors_total', metric_type=MetricType.COUNTER, description='Total API errors', labels={'service': service_name, 'error_code': '*'}))
+            metrics.append(MetricDefinition(name=f'{service_name}_api_errors_total',
+                metric_type=MetricType.COUNTER,
+                description='Total API errors',
+                labels={'service': service_name,
+                'error_code': '*'}))
         elif service_type == 'worker':
-            metrics.append(MetricDefinition(name=f'{service_name}_jobs_processed_total', metric_type=MetricType.COUNTER, description='Total jobs processed', labels={'service': service_name, 'status': '*'}))
-            metrics.append(MetricDefinition(name=f'{service_name}_queue_size', metric_type=MetricType.GAUGE, description='Current queue size', labels={'service': service_name}))
+            metrics.append(MetricDefinition(name=f'{service_name}_jobs_processed_total',
+                metric_type=MetricType.COUNTER,
+                description='Total jobs processed',
+                labels={'service': service_name,
+                'status': '*'}))
+            metrics.append(MetricDefinition(name=f'{service_name}_queue_size',
+                metric_type=MetricType.GAUGE,
+                description='Current queue size',
+                labels={'service': service_name}))
         return metrics
 
     def _plan_logging(self, request: Dict[str, Any]) -> LogConfiguration:
@@ -71,28 +106,67 @@ class ObservabilityPlanningOrchestrator:
         log_level_str = request.get('log_level', 'info')
         log_level_mapping = {'debug': LogLevel.DEBUG, 'info': LogLevel.INFO, 'warning': LogLevel.WARNING, 'error': LogLevel.ERROR, 'critical': LogLevel.CRITICAL}
         log_level = log_level_mapping.get(log_level_str.lower(), LogLevel.INFO)
-        return LogConfiguration(service_name=service_name, log_level=log_level, format='json', include_timestamp=True, include_trace_id=True, filters=['password', 'token', 'secret'])
+        return LogConfiguration(service_name=service_name,
+            log_level=log_level,
+            format='json',
+            include_timestamp=True,
+            include_trace_id=True,
+            filters=['password',
+            'token',
+            'secret'])
 
     def _plan_tracing(self, request: Dict[str, Any]) -> TraceConfiguration:
         """Plan tracing configuration for the service."""
         service_name = request.get('service_name')
         sampling_rate = request.get('tracing_sampling_rate', self.config.default_sampling_rate)
-        return TraceConfiguration(service_name=service_name, sampling_rate=sampling_rate, include_payload=False, max_spans_per_trace=1000, export_batch_size=100)
+        return TraceConfiguration(service_name=service_name,
+            sampling_rate=sampling_rate,
+            include_payload=False,
+            max_spans_per_trace=1000,
+            export_batch_size=100)
 
     def _plan_alerts(self, request: Dict[str, Any]) -> List[AlertRule]:
         """Plan alert rules for the service."""
         service_name = request.get('service_name')
         service_type = request.get('service_type')
         alerts = []
-        alerts.append(AlertRule(name=f'{service_name}_high_error_rate', condition='error_rate > 0.05', severity=AlertSeverity.HIGH, threshold=0.05, duration=300, notification_channels=['slack', 'email']))
-        alerts.append(AlertRule(name=f'{service_name}_high_latency', condition='p95_latency > 1000', severity=AlertSeverity.MEDIUM, threshold=1000.0, duration=600, notification_channels=['slack']))
+        alerts.append(AlertRule(name=f'{service_name}_high_error_rate',
+            condition='error_rate > 0.05',
+            severity=AlertSeverity.HIGH,
+            threshold=0.05,
+            duration=300,
+            notification_channels=['slack',
+            'email']))
+        alerts.append(AlertRule(name=f'{service_name}_high_latency',
+            condition='p95_latency > 1000',
+            severity=AlertSeverity.MEDIUM,
+            threshold=1000.0,
+            duration=600,
+            notification_channels=['slack']))
         if service_type == 'api':
-            alerts.append(AlertRule(name=f'{service_name}_api_availability', condition='availability < 0.99', severity=AlertSeverity.CRITICAL, threshold=0.99, duration=60, notification_channels=['pagerduty', 'slack', 'email']))
+            alerts.append(AlertRule(name=f'{service_name}_api_availability',
+                condition='availability < 0.99',
+                severity=AlertSeverity.CRITICAL,
+                threshold=0.99,
+                duration=60,
+                notification_channels=['pagerduty',
+                'slack',
+                'email']))
         elif service_type == 'worker':
-            alerts.append(AlertRule(name=f'{service_name}_queue_backlog', condition='queue_size > 1000', severity=AlertSeverity.HIGH, threshold=1000.0, duration=300, notification_channels=['slack', 'email']))
+            alerts.append(AlertRule(name=f'{service_name}_queue_backlog',
+                condition='queue_size > 1000',
+                severity=AlertSeverity.HIGH,
+                threshold=1000.0,
+                duration=300,
+                notification_channels=['slack',
+                'email']))
         return alerts
 
-    def _estimate_resources(self, metrics: List[MetricDefinition], logs: Optional[LogConfiguration], traces: Optional[TraceConfiguration]) -> Dict[str, Any]:
+    def _estimate_resources(self,
+        metrics: List[MetricDefinition],
+        logs: Optional[LogConfiguration],
+        traces: Optional[TraceConfiguration]) -> Dict[str,
+        Any]:
         """Estimate resource requirements for observability."""
         estimates = {'storage_gb_per_day': 0.0, 'network_mb_per_day': 0.0, 'cpu_cores': 0.1, 'memory_mb': 100}
         metric_points_per_day = len(metrics) * 86400
@@ -117,7 +191,9 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
     """L5 interface foundation - ensures L1 pure planning behavior"""
 
     @abstractmethod
-    def process(self, input_data: Dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
+    def process(self,
+        input_data: Dict[str,
+        object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
 
@@ -132,24 +208,35 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(OrchestrateObservabilityP
     Pure planning functionality with no side effects
     """
 
-    def __init__(self, constraints: Optional[OrchestrateObservabilityPlanningOrchestratorConstraints]=None):
+    def __init__(self,
+        constraints: Optional[OrchestrateObservabilityPlanningOrchestratorConstraints]=None):
         self.constraints = constraints or OrchestrateObservabilityPlanningOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def process(self, input_data: Dict[str, object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
+    def process(self,
+        input_data: Dict[str,
+        object]) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f'Processing {input_data}')
         self._validate_input(input_data)
         if not self.validate_safety(input_data):
             raise SecurityError('Input failed L5 safety validation')
-        result = OrchestrateObservabilityPlanningOrchestratorResult(success=True, data={'processed': True, 'input': input_data}, safety_validated=True, timestamp=self._get_timestamp())
+        result = OrchestrateObservabilityPlanningOrchestratorResult(success=True,
+            data={'processed': True,
+            'input': input_data},
+            safety_validated=True,
+            timestamp=self._get_timestamp())
         self.logger.info(f'Successfully processed: {result.success}')
         return result
 
     def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior"""
         try:
-            dangerous_patterns = ['<script>', 'javascript:', '# SECURITY: ast.literal_eval(', '# SECURITY: pass  # exec disabled: ', '__import__']
+            dangerous_patterns = ['<script>',
+                'javascript:',
+                '# SECURITY: ast.literal_eval(',
+                '# SECURITY: pass  # exec disabled: ',
+                '__import__']
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:
@@ -204,12 +291,22 @@ class OrchestrateObservabilityPlanningOrchestratorFactory:
         engine = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
         return OrchestrateObservabilityPlanningOrchestratorInterface(engine)
 
-def create_observability_planning_orchestrator(enable_metrics: bool=True, enable_logging: bool=True, enable_tracing: bool=True, **kwargs: object) -> ObservabilityPlanningOrchestrator:
+def create_observability_planning_orchestrator(enable_metrics: bool=True,
+    enable_logging: bool=True,
+    enable_tracing: bool=True,
+    **kwargs: object) -> ObservabilityPlanningOrchestrator:
     """Create a configured observability planning orchestrator."""
-    config = ObservabilityPlanningConfig(enable_metrics=enable_metrics, enable_logging=enable_logging, enable_tracing=enable_tracing, **kwargs)
+    config = ObservabilityPlanningConfig(enable_metrics=enable_metrics,
+        enable_logging=enable_logging,
+        enable_tracing=enable_tracing,
+        **kwargs)
     return ObservabilityPlanningOrchestrator(config)
 
-def plan_observability(service_name: str, service_type: str, config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
+def plan_observability(service_name: str,
+    service_type: str,
+    config: Optional[Dict[str,
+    Any]]=None) -> Dict[str,
+    Any]:
     """Plan observability setup from simple parameters.
 
     Args:
@@ -220,7 +317,12 @@ def plan_observability(service_name: str, service_type: str, config: Optional[Di
     Returns:
         Dict: Planning result with observability configuration
     """
-    request = {'service_name': service_name, 'service_type': service_type, 'log_level': config.get('log_level', 'info') if config else 'info', 'tracing_sampling_rate': config.get('tracing_sampling_rate', 0.1) if config else 0.1}
+    request = {'service_name': service_name,
+        'service_type': service_type,
+        'log_level': config.get('log_level',
+        'info') if config else 'info',
+        'tracing_sampling_rate': config.get('tracing_sampling_rate',
+        0.1) if config else 0.1}
     orchestrator_config = ObservabilityPlanningConfig(**config) if config else None
     orchestrator = ObservabilityPlanningOrchestrator(orchestrator_config)
     result = orchestrator.execute(request)

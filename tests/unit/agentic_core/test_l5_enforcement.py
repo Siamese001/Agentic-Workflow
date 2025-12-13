@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Test L5 Enforcement - atomic implementation."""
 
-from __future__ import annotations
 
 from typing import Dict
 

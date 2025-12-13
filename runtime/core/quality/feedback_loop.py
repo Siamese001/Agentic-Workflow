@@ -4,12 +4,9 @@ This module collects feedback on signal quality, analyzes patterns,
 and adjusts validation thresholds dynamically for optimal outputs.
 """
 
-import json
 import logging
 import time
 from collections import defaultdict, deque
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from enum import Enum
 import statistics

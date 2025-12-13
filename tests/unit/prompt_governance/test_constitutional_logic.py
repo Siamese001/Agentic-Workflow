@@ -3,10 +3,7 @@ Unit tests for Constitutional AI System logic expansion.
 Tests the LLM-based evaluation and revision functionality.
 """
 
-import pytest
 import json
-from unittest.mock import Mock, patch
-from typing import Dict, List
 
 from prompt_governance.safety.constitutional_ai import (
     ConstitutionalAISystem,
@@ -107,7 +104,12 @@ class TestConstitutionalLogic:
     def test_critique_and_revise_with_violations(self):
         """Test that non-compliant content is revised."""
         judgments = [
-            LLMJudgment("harmlessness", False, 0.9, "Contains harmful language", "Remove harmful parts"),
+            LLMJudgment("harmlessness",
+                False,
+                0.9,
+                "Contains harmful language",
+                "Remove harmful parts"),
+                
             LLMJudgment("helpfulness", True, 0.95, "Is helpful")
         ]
 

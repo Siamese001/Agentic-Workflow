@@ -8,7 +8,6 @@ This is the proof of concept that bridges the Configuration Layer and Execution 
 
 import asyncio
 import logging
-from typing import Dict, Any, List
 
 # Import orchestration config
 from apps_rg.L3_orchestration.resume_orchestration_config import (
@@ -22,7 +21,6 @@ from apps_rg.L3_orchestration.resume_orchestration_config import (
 
 # Import execution framework
 from runtime.shared.agent_base import ReasoningConfig
-from runtime.shared.k5a_agent import K5A_GenerationAgent, ProvenanceRule, K5AOutput
 from runtime.shared.validation_executor import (
     ValidationGateExecutor,
     ValidationStatus,
@@ -138,6 +136,8 @@ async def execute_k5a_with_feedback(
     """
     # Define generator wrapper
     async def generator(context: Dict[str, Any], temperature: float) -> str:
+        """TODO: Add docstring."""
+
         output = await generate_k5a_bullets(context, temperature, agent)
         # Store output in context for validation
         context["_k5a_output"] = output
@@ -145,6 +145,8 @@ async def execute_k5a_with_feedback(
         return "\n".join(f"• {bullet}" for bullet in output.bullets)
 
     # Define validator wrapper
+        """TODO: Add docstring."""
+
     async def validator_func(content: str, context: Dict[str, Any]) -> ValidationResult:
         output = context.get("_k5a_output")
         if not output:
@@ -351,7 +353,8 @@ async def main():
             logger.info(f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type else 'N/A'}")
             logger.info(f"  Status: {checkpoint.validation_result.status.value}")
 
-            if hasattr(checkpoint.validation_result, 'failures') and checkpoint.validation_result.failures:
+            if hasattr(checkpoint.validation_result,
+                'failures') and checkpoint.validation_result.failures:
                 logger.info(f"  Failures: {len(checkpoint.validation_result.failures)}")
                 for failure in checkpoint.validation_result.failures[:2]:
                     logger.info(f"    - {failure.rule_name}: {failure.message}")

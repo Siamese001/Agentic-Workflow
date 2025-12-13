@@ -2,6 +2,8 @@
 # from archives.legacy_root_folders.eval.golden_state.scorer import aggregate_scores  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 def test_aggregate_scores_basic() -> None:
+    """TODO: Add docstring."""
+
     verdicts = [
         JudgeVerdict(score=1.0, rating="pass", explanation=""),
         JudgeVerdict(score=0.0, rating="fail", explanation=""),

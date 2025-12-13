@@ -1,7 +1,7 @@
 """Implementation for load_planning."""
 
 from typing import Any, Dict, List, Optional
-from .load_planning_types import *
+# from .load_planning_types import *  # Star import removed
 
 class ConfigLoadPlanner:
     """Planner for configuration data loading operations."""
@@ -20,22 +20,40 @@ class ConfigLoadPlanner:
         Returns:
             ConfigLoadResult: Complete planning result with load plan
         """
-        self.logger.info(f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}")
+        self.logger.info(f"Starting config load planning for: {load_request.get('plan_name',
+            'unknown')}")
         try:
             self._validate_request(load_request)
             sources = self._parse_sources(load_request)
             validation_rules = self._parse_validation_rules(load_request) if self.config.enable_validation else []
             transformations = self._parse_transformations(load_request)
-            load_plan = self._create_load_plan(load_request, sources, validation_rules, transformations)
+            load_plan = self._create_load_plan(load_request,
+                sources,
+                validation_rules,
+                transformations)
             config_size = self._estimate_config_size(load_plan)
             load_time = self._estimate_load_time(load_plan)
             security_requirements = self._calculate_security_requirements(load_plan)
-            result = ConfigLoadResult(success=True, load_plan=load_plan, estimated_config_size=config_size, validation_count=len(validation_rules), transformation_count=len(transformations), load_time_estimate=load_time, security_requirements=security_requirements, metadata={'planned_at': datetime.utcnow().isoformat(), 'plan_name': load_request.get('plan_name'), 'source_count': len(sources), 'planner': 'ConfigLoadPlanner'})
-            self.logger.info(f'Successfully planned config load: {len(sources)} sources, {len(validation_rules)} validations')
+            result = ConfigLoadResult(success=True,
+                load_plan=load_plan,
+                estimated_config_size=config_size,
+                validation_count=len(validation_rules),
+                transformation_count=len(transformations),
+                load_time_estimate=load_time,
+                security_requirements=security_requirements,
+                metadata={'planned_at': datetime.utcnow().isoformat(),
+                'plan_name': load_request.get('plan_name'),
+                'source_count': len(sources),
+                'planner': 'ConfigLoadPlanner'})
+            self.logger.info(f'Successfully planned config load: {len(sources)} sources,
+                {len(validation_rules)} validations')
             return result
         except Exception as e:
             self.logger.error(f'Config load planning failed: {str(e)}')
-            return ConfigLoadResult(success=False, errors=[str(e)], metadata={'failed_at': datetime.utcnow().isoformat(), 'planner': 'ConfigLoadPlanner'})
+            return ConfigLoadResult(success=False,
+                errors=[str(e)],
+                metadata={'failed_at': datetime.utcnow().isoformat(),
+                'planner': 'ConfigLoadPlanner'})
 
     def _validate_request(self, request: Dict[str, Any]) -> None:
         """Validate config load planning request."""
@@ -55,7 +73,26 @@ class ConfigLoadPlanner:
                 config_type_mapping = {'environment': ConfigType.ENVIRONMENT, 'feature_flag': ConfigType.FEATURE_FLAG, 'deployment': ConfigType.DEPLOYMENT, 'service': ConfigType.SERVICE, 'security': ConfigType.SECURITY}
                 format_mapping = {'json': ConfigFormat.JSON, 'yaml': ConfigFormat.YAML, 'toml': ConfigFormat.TOML, 'xml': ConfigFormat.XML, 'properties': ConfigFormat.PROPERTIES}
                 scope_mapping = {'global': ConfigScope.GLOBAL, 'region': ConfigScope.REGION, 'environment': ConfigScope.ENVIRONMENT, 'service': ConfigScope.SERVICE, 'instance': ConfigScope.INSTANCE}
-                source = ConfigSource(id=raw_source.get('id', f'source_{len(sources)}'), name=raw_source.get('name', 'unnamed'), config_type=config_type_mapping.get(raw_source.get('config_type', 'environment'), ConfigType.ENVIRONMENT), format=format_mapping.get(raw_source.get('format', 'json'), ConfigFormat.JSON), location=raw_source.get('location', ''), scope=scope_mapping.get(raw_source.get('scope', 'global'), ConfigScope.GLOBAL), version=raw_source.get('version'), encryption=raw_source.get('encryption', False), credentials=raw_source.get('credentials', {}))
+                source = ConfigSource(id=raw_source.get('id',
+                    f'source_{len(sources)}'),
+                    name=raw_source.get('name',
+                    'unnamed'),
+                    config_type=config_type_mapping.get(raw_source.get('config_type',
+                    'environment'),
+                    ConfigType.ENVIRONMENT),
+                    format=format_mapping.get(raw_source.get('format',
+                    'json'),
+                    ConfigFormat.JSON),
+                    location=raw_source.get('location',
+                    ''),
+                    scope=scope_mapping.get(raw_source.get('scope',
+                    'global'),
+                    ConfigScope.GLOBAL),
+                    version=raw_source.get('version'),
+                    encryption=raw_source.get('encryption',
+                    False),
+                    credentials=raw_source.get('credentials',
+                    {}))
                 sources.append(source)
         if len(sources) > self.config.max_sources_per_plan:
             raise ValueError(f'Number of sources ({len(sources)}) exceeds maximum ({self.config.max_sources_per_plan})')
@@ -67,7 +104,16 @@ class ConfigLoadPlanner:
         raw_rules = request.get('validation_rules', [])
         for raw_rule in raw_rules:
             if isinstance(raw_rule, dict):
-                rule = ConfigValidationRule(id=raw_rule.get('id', f'rule_{len(rules)}'), field_path=raw_rule.get('field_path', ''), rule_type=raw_rule.get('rule_type', 'required'), parameters=raw_rule.get('parameters', {}), error_message=raw_rule.get('error_message', ''))
+                rule = ConfigValidationRule(id=raw_rule.get('id',
+                    f'rule_{len(rules)}'),
+                    field_path=raw_rule.get('field_path',
+                    ''),
+                    rule_type=raw_rule.get('rule_type',
+                    'required'),
+                    parameters=raw_rule.get('parameters',
+                    {}),
+                    error_message=raw_rule.get('error_message',
+                    ''))
                 rules.append(rule)
         return rules
 
@@ -77,13 +123,45 @@ class ConfigLoadPlanner:
         raw_transforms = request.get('transformations', [])
         for raw_transform in raw_transforms:
             if isinstance(raw_transform, dict):
-                transform = ConfigTransformation(id=raw_transform.get('id', f'transform_{len(transformations)}'), name=raw_transform.get('name', 'unnamed'), transformation_type=raw_transform.get('transformation_type', 'override'), source_fields=raw_transform.get('source_fields', []), target_field=raw_transform.get('target_field', ''), parameters=raw_transform.get('parameters', {}))
+                transform = ConfigTransformation(id=raw_transform.get('id',
+                    f'transform_{len(transformations)}'),
+                    name=raw_transform.get('name',
+                    'unnamed'),
+                    transformation_type=raw_transform.get('transformation_type',
+                    'override'),
+                    source_fields=raw_transform.get('source_fields',
+                    []),
+                    target_field=raw_transform.get('target_field',
+                    ''),
+                    parameters=raw_transform.get('parameters',
+                    {}))
                 transformations.append(transform)
         return transformations
 
-    def _create_load_plan(self, request: Dict[str, Any], sources: List[ConfigSource], validation_rules: List[ConfigValidationRule], transformations: List[ConfigTransformation]) -> ConfigLoadPlan:
+    def _create_load_plan(self,
+        request: Dict[str,
+        Any],
+        sources: List[ConfigSource],
+        validation_rules: List[ConfigValidationRule],
+        transformations: List[ConfigTransformation]) -> ConfigLoadPlan:
         """Create config load plan from parsed components."""
-        return ConfigLoadPlan(id=request.get('plan_id', f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"), name=request.get('plan_name', 'unnamed_plan'), sources=sources, validation_rules=validation_rules, transformations=transformations, merge_strategy=request.get('merge_strategy', self.config.default_merge_strategy), enable_validation=request.get('enable_validation', self.config.enable_validation), enable_encryption=request.get('enable_encryption', self.config.enable_encryption), cache_ttl=request.get('cache_ttl', self.config.default_cache_ttl), metadata=request.get('metadata', {}))
+        return ConfigLoadPlan(id=request.get('plan_id',
+            f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"),
+            name=request.get('plan_name',
+            'unnamed_plan'),
+            sources=sources,
+            validation_rules=validation_rules,
+            transformations=transformations,
+            merge_strategy=request.get('merge_strategy',
+            self.config.default_merge_strategy),
+            enable_validation=request.get('enable_validation',
+            self.config.enable_validation),
+            enable_encryption=request.get('enable_encryption',
+            self.config.enable_encryption),
+            cache_ttl=request.get('cache_ttl',
+            self.config.default_cache_ttl),
+            metadata=request.get('metadata',
+            {}))
 
     def _get_base_size_for_type(self, config_type: ConfigType) -> int:
         """Get base size estimate for config type."""
@@ -130,12 +208,28 @@ class ConfigLoadPlanner:
             requirements['audit_logging'] = True
         return requirements
 
-def create_config_load_planner(enable_validation: bool=True, enable_encryption: bool=False, enable_caching: bool=True, **kwargs: object) -> ConfigLoadPlanner:
+def create_config_load_planner(enable_validation: bool=True,
+    enable_encryption: bool=False,
+    enable_caching: bool=True,
+    **kwargs: object) -> ConfigLoadPlanner:
     """Create a configured config load planner."""
-    config = ConfigLoadConfig(enable_validation=enable_validation, enable_encryption=enable_encryption, enable_caching=enable_caching, **kwargs)
+    config = ConfigLoadConfig(enable_validation=enable_validation,
+        enable_encryption=enable_encryption,
+        enable_caching=enable_caching,
+        **kwargs)
     return ConfigLoadPlanner(config)
 
-def plan_config_load(plan_name: str, sources: List[Dict[str, Any]], validation_rules: Optional[List[Dict[str, Any]]]=None, transformations: Optional[List[Dict[str, Any]]]=None, merge_strategy: str='override', config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
+def plan_config_load(plan_name: str,
+    sources: List[Dict[str,
+    Any]],
+    validation_rules: Optional[List[Dict[str,
+    Any]]]=None,
+    transformations: Optional[List[Dict[str,
+    Any]]]=None,
+    merge_strategy: str='override',
+    config: Optional[Dict[str,
+    Any]]=None) -> Dict[str,
+    Any]:
     """Plan config data load from simple parameters.
 
     Args:

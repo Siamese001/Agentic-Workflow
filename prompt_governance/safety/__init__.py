@@ -3,7 +3,6 @@
 Provides safety validation and constitutional AI functionality.
 """
 
-from .constitutional_ai import (
     ConstitutionalPrinciple,
     ConstitutionalRule,
     LLMClient,

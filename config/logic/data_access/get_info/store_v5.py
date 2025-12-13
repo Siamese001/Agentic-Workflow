@@ -9,6 +9,6 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .store_v5_impl_impl import *
+# from .store_v5_impl_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

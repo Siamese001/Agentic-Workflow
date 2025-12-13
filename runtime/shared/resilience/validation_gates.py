@@ -43,16 +43,23 @@ class ValidationGate(BaseModel):
     rubric: str = Field(..., description="The specific criteria the Sentinel uses for this gate.")
 
     # Hardening config
-    max_repair_attempts: int = Field(3, description="How many times to attempt repair before fatal failure.")
-    fatal_on_fail: bool = Field(True, description="If True, failure stops the chain. If False, it logs a warning.")
+    max_repair_attempts: int = Field(3,
+        description="How many times to attempt repair before fatal failure.")
+    fatal_on_fail: bool = Field(True,
+        description="If True,
+        failure stops the chain. If False,
+        it logs a warning.")
 
     # Oscillation detection
-    detect_oscillation: bool = Field(True, description="Detect if repair agent is oscillating between states.")
-    oscillation_threshold: int = Field(3, description="Number of repeated failures before detecting oscillation.")
+    detect_oscillation: bool = Field(True,
+        description="Detect if repair agent is oscillating between states.")
+    oscillation_threshold: int = Field(3,
+        description="Number of repeated failures before detecting oscillation.")
 
     # Timeout configuration
     gate_timeout_seconds: float = Field(60.0, description="Max time for gate validation (seconds).")
-    repair_timeout_seconds: float = Field(120.0, description="Max time for each repair attempt (seconds).")
+    repair_timeout_seconds: float = Field(120.0,
+        description="Max time for each repair attempt (seconds).")
 
 class GateHistory(BaseModel):
     """Tracks repair history for a gate to detect oscillation."""

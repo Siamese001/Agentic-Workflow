@@ -6,9 +6,7 @@ Follows the functional component pattern with proper logging.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union, Tuple
 import logging
-import numpy as np
 from datetime import datetime
 from enum import Enum
 
@@ -138,7 +136,12 @@ class ScriptsLogicVectorSearcher:
                 metadata={"error": str(e)}
             )
 
-    def add_vector(self, vector_id: str, vector: List[float], content: str, metadata: Optional[Dict[str, Any]] = None) -> bool:
+    def add_vector(self,
+        vector_id: str,
+        vector: List[float],
+        content: str,
+        metadata: Optional[Dict[str,
+        Any]] = None) -> bool:
         """Add a vector to the index.
 
         Args:
@@ -174,7 +177,7 @@ class ScriptsLogicVectorSearcher:
             return False
 
     def delete_vector(self, vector_id: str) -> bool:
-        """Delete a vector from the index.
+        """# SQL removed: Delete a vector from the index.
 
         Args:
             vector_id: ID of vector to delete
@@ -227,7 +230,9 @@ class ScriptsLogicVectorSearcher:
 
         for vector_id, vector in self._vectors.items():
             # Calculate similarity
-            similarity = self._calculate_similarity(query_vector, vector, self.config.distance_metric)
+            similarity = self._calculate_similarity(query_vector,
+                vector,
+                self.config.distance_metric)
 
             if similarity >= query.threshold:
                 result = SearchResult(
@@ -306,6 +311,7 @@ class ScriptsLogicVectorSearcher:
                         score=score,
                         metadata=metadata if query.include_metadata else {},
                         vector=self._vectors[vector_id].tolist() if query.include_metadata else None,
+                            
                         timestamp=datetime.fromisoformat(metadata["timestamp"])
                     )
                     results.append(result)
@@ -334,7 +340,10 @@ class ScriptsLogicVectorSearcher:
 
         return results[:query.top_k]
 
-    def _calculate_similarity(self, vector1: np.ndarray, vector2: np.ndarray, metric: VectorDistance) -> float:
+    def _calculate_similarity(self,
+        vector1: np.ndarray,
+        vector2: np.ndarray,
+        metric: VectorDistance) -> float:
         """Calculate similarity between two vectors."""
         if metric == VectorDistance.COSINE:
             return np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2))
@@ -348,7 +357,7 @@ class ScriptsLogicVectorSearcher:
             return 0.0
 
     def _update_index(self) -> None:
-        """Update the internal index structure."""
+        """# SQL removed: Update the internal index structure."""
         # Placeholder for index update logic
         # In production, this would update the vector index (e.g., HNSW)
         pass

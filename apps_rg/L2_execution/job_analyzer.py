@@ -15,7 +15,10 @@ logger = logging.getLogger(__name__)
 class JobAnalyzer:
     """Analyzes job descriptions using LLM to extract key information."""
 
-    def __init__(self, llm_client: Optional[Any] = None, provider: Optional[Provider] = None, workflow_config: Optional[Any] = None):
+    def __init__(self,
+        llm_client: Optional[Any] = None,
+        provider: Optional[Provider] = None,
+        workflow_config: Optional[Any] = None):
         """
         Initialize JobAnalyzer.
 
@@ -99,7 +102,6 @@ Return ONLY the JSON object, no additional text."""
 
     def _generate_with_gemini(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using Google Gemini."""
-        import google.generativeai as genai
 
         # Configure model
         model = genai.GenerativeModel('gemini-1.5-flash')
@@ -172,7 +174,6 @@ Return ONLY the JSON object, no additional text."""
             List of relevant keywords
         """
         # Simple keyword extraction as fallback
-        import re
 
         # Common tech/role keywords to look for
         common_keywords = {

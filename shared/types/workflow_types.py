@@ -13,6 +13,6 @@ about the refactoring that was performed to split the original module.
 """
 
 # Re-export all components for backward compatibility
-from .workflow_types_types import *
+# from .workflow_types_types import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

@@ -15,9 +15,16 @@ class ThinkStep(BaseModel):
     """
 
     thought: str = Field(..., description="The reasoning or thought process")
-    confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="Confidence in this reasoning")
-    reasoning_type: str = Field(default="general", description="Type of reasoning (e.g., deductive, inductive)")
-    timestamp: datetime = Field(default_factory=datetime.now, description="When this thought occurred")
+    confidence: float = Field(default=1.0,
+        ge=0.0,
+        le=1.0,
+        description="Confidence in this reasoning")
+    reasoning_type: str = Field(default="general",
+        description="Type of reasoning (e.g.,
+        deductive,
+        inductive)")
+    timestamp: datetime = Field(default_factory=datetime.now,
+        description="When this thought occurred")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigThinkStep:
@@ -33,7 +40,8 @@ class ActionStep(BaseModel):
     action_type: str = Field(default="tool_call", description="Type of action")
     parameters: Dict[str, Any] = Field(default_factory=dict, description="Action parameters")
     expected_outcome: Optional[str] = Field(None, description="Expected result of this action")
-    timestamp: datetime = Field(default_factory=datetime.now, description="When this action was taken")
+    timestamp: datetime = Field(default_factory=datetime.now,
+        description="When this action was taken")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigActionStep:
@@ -49,7 +57,8 @@ class ObservationStep(BaseModel):
     success: bool = Field(default=True, description="Whether the action succeeded")
     error: Optional[str] = Field(None, description="Error message if action failed")
     data: Dict[str, Any] = Field(default_factory=dict, description="Structured observation data")
-    timestamp: datetime = Field(default_factory=datetime.now, description="When this observation was made")
+    timestamp: datetime = Field(default_factory=datetime.now,
+        description="When this observation was made")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigObservationStep:
@@ -109,7 +118,10 @@ class ReasoningTraceModel(BaseModel):
         """Get all observation steps from the trace."""
         return [s for s in self.steps if isinstance(s, ObservationStep)]
 
-    def complete(self, final_answer: str, success: bool = True, error: Optional[str] = None) -> None:
+    def complete(self,
+        final_answer: str,
+        success: bool = True,
+        error: Optional[str] = None) -> None:
         """Mark the trace as complete."""
         self.final_answer = final_answer
         self.success = success

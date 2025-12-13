@@ -14,7 +14,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-from .exceptions_impl_part import *
-from .exceptions_impl_part_2 import *
+# from .exceptions_impl_part import *  # Star import removed
+# from .exceptions_impl_part_2 import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

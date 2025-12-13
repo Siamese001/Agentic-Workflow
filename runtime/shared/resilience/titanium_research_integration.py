@@ -1,4 +1,5 @@
 """
+import os
 Integration example for Titanium Research Core with Zero-Loss protocol.
 
 This file demonstrates how to:
@@ -10,15 +11,12 @@ This file demonstrates how to:
 
 import asyncio
 import logging
-from typing import Dict, Any, Optional, List
 
-from .titanium_research_core import (
     TitaniumResearchEngine,
     TitaniumResearchOutput,
     SYSTEM_PROMPT_TITANIUM_RESEARCH_CORE,
     create_titanium_research_engine
 )
-from .hardened_brave_search import HardenedBraveSearch
 
 logger = logging.getLogger(__name__)
 
@@ -276,7 +274,7 @@ class TitaniumResearchIntegration:
             logger.info(f"Preferred sources not used: {missing}")
 
     def _update_quality_metrics(self, result: TitaniumResearchOutput) -> None:
-        """Update quality metrics."""
+        """# SQL removed: Update quality metrics."""
         self.quality_metrics["total_queries"] += 1
 
         # Check Zero-Loss compliance
@@ -329,7 +327,7 @@ async def main():
     from .hardened_mcp_executor import HardenedMCPExecutor
 
     # Initialize components
-    api_key = "your-brave-api-key"
+    api_key = os.getenv("API_KEY")
     mcp_executor = HardenedMCPExecutor()
 
     # Register Brave Search tool

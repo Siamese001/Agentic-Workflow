@@ -1,7 +1,7 @@
 """Implementation for tool_execute_observability_execution."""
 
 from typing import Any, Dict, List, Optional
-from .tool_execute_observability_execution_types import *
+# from .tool_execute_observability_execution_types import *  # Star import removed
 
 class ObservabilityToolExecutor:
     """Main executor for observability tools."""
@@ -25,7 +25,10 @@ class ObservabilityToolExecutor:
         self._tool_handlers[tool_def.tool_id] = handler
         self.logger.info(f'Registered tool: {tool_def.tool_id}')
 
-    def execute_tool(self, context: ToolExecutionContext, parameters: Dict[str, Any]) -> ToolExecutionResult:
+    def execute_tool(self,
+        context: ToolExecutionContext,
+        parameters: Dict[str,
+        Any]) -> ToolExecutionResult:
         """Execute an observability tool.
 
         Args:
@@ -39,11 +42,17 @@ class ObservabilityToolExecutor:
         start_time = time.time()
         try:
             if context.tool_id not in self._registered_tools:
-                return self._create_error_result(context.execution_id, context.tool_id, f'Tool not found: {context.tool_id}', start_time)
+                return self._create_error_result(context.execution_id,
+                    context.tool_id,
+                    f'Tool not found: {context.tool_id}',
+                    start_time)
             tool_def = self._registered_tools[context.tool_id]
             validation_errors = self._validate_parameters(parameters, tool_def)
             if validation_errors:
-                return self._create_error_result(context.execution_id, context.tool_id, f'Parameter validation failed: {validation_errors}', start_time)
+                return self._create_error_result(context.execution_id,
+                    context.tool_id,
+                    f'Parameter validation failed: {validation_errors}',
+                    start_time)
             self._track_execution_start(context)
             handler = self._tool_handlers[context.tool_id]
             result = self._execute_with_context(handler, context, parameters)
@@ -52,9 +61,16 @@ class ObservabilityToolExecutor:
             return result
         except Exception as e:
             self.logger.error(f'Tool execution failed: {str(e)}')
-            return self._create_error_result(context.execution_id, context.tool_id, str(e), start_time)
+            return self._create_error_result(context.execution_id,
+                context.tool_id,
+                str(e),
+                start_time)
 
-    def execute_tool_stream(self, context: ToolExecutionContext, parameters: Dict[str, str]) -> Dict[str, object]:
+    def execute_tool_stream(self,
+        context: ToolExecutionContext,
+        parameters: Dict[str,
+        str]) -> Dict[str,
+        object]:
         """Execute tool in streaming mode.
 
         Args:
@@ -124,7 +140,11 @@ class ObservabilityToolExecutor:
         """
         return self._active_executions.get(execution_id)
 
-    def _execute_with_context(self, handler: Callable, context: ToolExecutionContext, parameters: Dict[str, str]) -> ToolExecutionResult:
+    def _execute_with_context(self,
+        handler: Callable,
+        context: ToolExecutionContext,
+        parameters: Dict[str,
+        str]) -> ToolExecutionResult:
         """Execute tool with context."""
         exec_env = {'context': context, 'parameters': parameters, 'config': self.config, 'logger': self.logger}
         if context.mode == ExecutionMode.SYNCHRONOUS:
@@ -139,7 +159,13 @@ class ObservabilityToolExecutor:
         metrics = result_data.get('metrics', {})
         artifacts = result_data.get('artifacts', [])
         warnings = result_data.get('warnings', [])
-        return ToolExecutionResult(execution_id=context.execution_id, tool_id=context.tool_id, success=True, output=output, metrics=metrics, artifacts=artifacts, warnings=warnings)
+        return ToolExecutionResult(execution_id=context.execution_id,
+            tool_id=context.tool_id,
+            success=True,
+            output=output,
+            metrics=metrics,
+            artifacts=artifacts,
+            warnings=warnings)
 
     def _execute_batch(self, handler: Callable, exec_env: Dict[str, str]) -> Dict[str, str]:
         """Execute tool in batch mode."""
@@ -170,16 +196,34 @@ class ObservabilityToolExecutor:
                 final_metrics[f'{key}_total'] = sum(values)
         return {'output': results, 'metrics': final_metrics, 'artifacts': all_artifacts, 'warnings': all_warnings}
 
-    def _validate_parameter_type(self, param_name: str, value: object, expected_type: str) -> Optional[str]:
+    def _validate_parameter_type(self,
+        param_name: str,
+        value: object,
+        expected_type: str) -> Optional[str]:
         """Validate a single parameter type and return error message if invalid."""
-        type_validators = {'string': lambda v: isinstance(v, str), 'integer': lambda v: isinstance(v, int), 'float': lambda v: isinstance(v, (int, float)), 'boolean': lambda v: isinstance(v, bool), 'array': lambda v: isinstance(v, list), 'object': lambda v: isinstance(v, dict)}
+        type_validators = {'string': lambda v: isinstance(v,
+            str),
+            'integer': lambda v: isinstance(v,
+            int),
+            'float': lambda v: isinstance(v,
+            (int,
+            float)),
+            'boolean': lambda v: isinstance(v,
+            bool),
+            'array': lambda v: isinstance(v,
+            list),
+            'object': lambda v: isinstance(v,
+            dict)}
         validator = type_validators.get(expected_type)
         if validator and (not validator(value)):
             type_names = {'string': 'string', 'integer': 'integer', 'float': 'number', 'boolean': 'boolean', 'array': 'array', 'object': 'object'}
             return f"Parameter {param_name} must be {type_names.get(expected_type, 'valid type')}"
         return None
 
-    def _validate_parameters(self, parameters: Dict[str, Any], tool_def: ToolDefinition) -> List[str]:
+    def _validate_parameters(self,
+        parameters: Dict[str,
+        Any],
+        tool_def: ToolDefinition) -> List[str]:
         """Validate tool parameters."""
         errors = []
         for param_name, param_def in tool_def.parameters.items():
@@ -195,9 +239,15 @@ class ObservabilityToolExecutor:
 
     def _track_execution_start(self, context: ToolExecutionContext) -> None:
         """Track execution start."""
-        self._active_executions[context.execution_id] = {'tool_id': context.tool_id, 'mode': context.mode, 'start_time': time.time(), 'status': 'running', 'cancelled': False}
+        self._active_executions[context.execution_id] = {'tool_id': context.tool_id,
+            'mode': context.mode,
+            'start_time': time.time(),
+            'status': 'running',
+            'cancelled': False}
 
-    def _track_execution_complete(self, context: ToolExecutionContext, result: ToolExecutionResult) -> None:
+    def _track_execution_complete(self,
+        context: ToolExecutionContext,
+        result: ToolExecutionResult) -> None:
         """Track execution completion."""
         if context.execution_id in self._active_executions:
             execution = self._active_executions[context.execution_id]
@@ -205,37 +255,110 @@ class ObservabilityToolExecutor:
             execution['status'] = 'completed' if result.success else 'failed'
             execution['execution_time'] = result.execution_time
 
-    def _create_error_result(self, execution_id: str, tool_id: str, error: str, start_time: float) -> ToolExecutionResult:
+    def _create_error_result(self,
+        execution_id: str,
+        tool_id: str,
+        error: str,
+        start_time: float) -> ToolExecutionResult:
         """Create error result."""
-        return ToolExecutionResult(execution_id=execution_id, tool_id=tool_id, success=False, error=error, execution_time=time.time() - start_time)
+        return ToolExecutionResult(execution_id=execution_id,
+            tool_id=tool_id,
+            success=False,
+            error=error,
+            execution_time=time.time() - start_time)
 
     def _initialize_built_in_tools(self) -> None:
         """Initialize built-in observability tools."""
-        trace_tool = ToolDefinition(tool_id='trace_collector', tool_type=ToolType.TRACER, name='Trace Collector', version='1.0', description='Collects and analyzes trace data', parameters={'trace_id': {'type': 'string', 'required': False}, 'service': {'type': 'string', 'required': False}, 'time_range': {'type': 'object', 'required': False}}, capabilities=['collect', 'analyze', 'export'])
+        trace_tool = ToolDefinition(tool_id='trace_collector',
+            tool_type=ToolType.TRACER,
+            name='Trace Collector',
+            version='1.0',
+            description='Collects and analyzes trace data',
+            parameters={'trace_id': {'type': 'string',
+            'required': False},
+            'service': {'type': 'string',
+            'required': False},
+            'time_range': {'type': 'object',
+            'required': False}},
+            capabilities=['collect',
+            'analyze',
+            'export'])
 
         def _trace_handler(exec_env: Dict[str, Any]) -> Dict[str, Any]:
             params = exec_env['parameters']
             return {'output': {'traces': [{'id': 'trace_1', 'duration': 0.5, 'spans': 5}, {'id': 'trace_2', 'duration': 0.3, 'spans': 3}], 'summary': {'total_traces': 2, 'avg_duration': 0.4}}, 'metrics': {'traces_collected': 2, 'processing_time': 0.1}}
-        metric_tool = ToolDefinition(tool_id='metric_collector', tool_type=ToolType.METRIC_COLLECTOR, name='Metric Collector', version='1.0', description='Collects system and application metrics', parameters={'metric_names': {'type': 'array', 'required': False}, 'aggregation': {'type': 'string', 'required': False}}, capabilities=['collect', 'aggregate', 'query'])
+        metric_tool = ToolDefinition(tool_id='metric_collector',
+            tool_type=ToolType.METRIC_COLLECTOR,
+            name='Metric Collector',
+            version='1.0',
+            description='Collects system and application metrics',
+            parameters={'metric_names': {'type': 'array',
+            'required': False},
+            'aggregation': {'type': 'string',
+            'required': False}},
+            capabilities=['collect',
+            'aggregate',
+            'query'])
 
         def _metric_handler(exec_env: Dict[str, Any]) -> Dict[str, Any]:
             params = exec_env['parameters']
-            return {'output': {'metrics': [{'name': 'cpu_usage', 'value': 45.2, 'timestamp': datetime.utcnow().isoformat()}, {'name': 'memory_usage', 'value': 67.8, 'timestamp': datetime.utcnow().isoformat()}]}, 'metrics': {'metrics_collected': 2, 'processing_time': 0.05}}
-        log_tool = ToolDefinition(tool_id='log_analyzer', tool_type=ToolType.LOG_ANALYZER, name='Log Analyzer', version='1.0', description='Analyzes and filters log data', parameters={'level': {'type': 'string', 'required': False}, 'pattern': {'type': 'string', 'required': False}, 'limit': {'type': 'integer', 'required': False}}, capabilities=['filter', 'parse', 'analyze'])
+            return {'output': {'metrics': [{'name': 'cpu_usage',
+                'value': 45.2,
+                'timestamp': datetime.utcnow().isoformat()},
+                {'name': 'memory_usage',
+                'value': 67.8,
+                'timestamp': datetime.utcnow().isoformat()}]},
+                'metrics': {'metrics_collected': 2,
+                'processing_time': 0.05}}
+        log_tool = ToolDefinition(tool_id='log_analyzer',
+            tool_type=ToolType.LOG_ANALYZER,
+            name='Log Analyzer',
+            version='1.0',
+            description='Analyzes and filters log data',
+            parameters={'level': {'type': 'string',
+            'required': False},
+            'pattern': {'type': 'string',
+            'required': False},
+            'limit': {'type': 'integer',
+            'required': False}},
+            capabilities=['filter',
+            'parse',
+            'analyze'])
 
         def _log_handler(exec_env: Dict[str, Any]) -> Dict[str, Any]:
             params = exec_env['parameters']
-            return {'output': {'logs': [{'message': 'Application started', 'level': 'info', 'timestamp': datetime.utcnow().isoformat()}, {'message': 'Error processing request', 'level': 'error', 'timestamp': datetime.utcnow().isoformat()}], 'summary': {'total_logs': 2, 'error_count': 1}}, 'metrics': {'logs_analyzed': 2, 'processing_time': 0.08}}
+            return {'output': {'logs': [{'message': 'Application started',
+                'level': 'info',
+                'timestamp': datetime.utcnow().isoformat()},
+                {'message': 'Error processing request',
+                'level': 'error',
+                'timestamp': datetime.utcnow().isoformat()}],
+                'summary': {'total_logs': 2,
+                'error_count': 1}},
+                'metrics': {'logs_analyzed': 2,
+                'processing_time': 0.08}}
         self.register_tool(trace_tool, _trace_handler)
         self.register_tool(metric_tool, _metric_handler)
         self.register_tool(log_tool, _log_handler)
 
-def create_observability_tool_executor(timeout: float=30.0, retry_count: int=3, enable_tracing: bool=True, **kwargs: object) -> ObservabilityToolExecutor:
+def create_observability_tool_executor(timeout: float=30.0,
+    retry_count: int=3,
+    enable_tracing: bool=True,
+    **kwargs: object) -> ObservabilityToolExecutor:
     """Create a configured observability tool executor."""
-    config = ToolExecutionConfig(timeout=timeout, retry_count=retry_count, enable_tracing=enable_tracing, **kwargs)
+    config = ToolExecutionConfig(timeout=timeout,
+        retry_count=retry_count,
+        enable_tracing=enable_tracing,
+        **kwargs)
     return ObservabilityToolExecutor(config)
 
-def tool_execute_observability_execution(tool_id: str, execution_id: str, parameters: Dict[str, Any], mode: str='synchronous', caller_id: Optional[str]=None) -> Dict[str, Any]:
+def tool_execute_observability_execution(tool_id: str,
+    execution_id: str,
+    parameters: Dict[str,
+    Any],
+    mode: str='synchronous',
+    caller_id: Optional[str]=None) -> Dict[str,
+    Any]:
     """Execute observability tool.
 
     Args:
@@ -249,6 +372,9 @@ def tool_execute_observability_execution(tool_id: str, execution_id: str, parame
         Dict: Execution result
     """
     executor = create_observability_tool_executor()
-    context = ToolExecutionContext(execution_id=execution_id, tool_id=tool_id, mode=ExecutionMode(mode), caller_id=caller_id)
+    context = ToolExecutionContext(execution_id=execution_id,
+        tool_id=tool_id,
+        mode=ExecutionMode(mode),
+        caller_id=caller_id)
     result = executor.execute_tool(context, parameters)
     return {'execution_id': result.execution_id, 'tool_id': result.tool_id, 'success': result.success, 'output': result.output, 'metrics': result.metrics, 'artifacts': result.artifacts, 'error': result.error, 'warnings': result.warnings, 'execution_time': result.execution_time}

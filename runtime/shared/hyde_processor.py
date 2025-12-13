@@ -8,8 +8,6 @@ search toward the most relevant content for each recipient type.
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Union, Any
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -272,7 +270,8 @@ class HyDEProcessor:
             logger.error(f"HyDE expansion failed: {str(e)}")
 
             # Emergency fallback
-            fallback_query = self._keyword_fallback(original_query, industry) if self.fallback_enabled else original_query
+            fallback_query = self._keyword_fallback(original_query,
+                industry) if self.fallback_enabled else original_query
 
             return HyDEResult(
                 original_query=original_query,

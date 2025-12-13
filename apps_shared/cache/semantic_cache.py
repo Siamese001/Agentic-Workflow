@@ -44,7 +44,10 @@ class CacheEntry:
 class EnhancedSemanticCache:
     """Enhanced semantic cache with similarity-based retrieval."""
 
-    def __init__(self, max_size: int = 1000, ttl_seconds: int = 3600, similarity_threshold: float = 0.8):
+    def __init__(self,
+        max_size: int = 1000,
+        ttl_seconds: int = 3600,
+        similarity_threshold: float = 0.8):
         """Initialize enhanced semantic cache.
 
         Args:
@@ -204,7 +207,11 @@ class EnhancedSemanticCache:
 
         return dot_product / (norm1 * norm2)
 
-    def generate_fingerlogger.info(self, prompt: str, model: str, temperature: float = 0.7, system_prompt: Optional[str] = None) -> str:
+    def generate_fingerlogger.info(self,
+        prompt: str,
+        model: str,
+        temperature: float = 0.7,
+        system_prompt: Optional[str] = None) -> str:
         """Generate fingerprint for cache lookup.
 
         Args:
@@ -223,7 +230,8 @@ class EnhancedSemanticCache:
             str(temperature)
         ]
         if system_prompt is not None:
-            components.append(system_prompt.strip() if isinstance(system_prompt, str) else str(system_prompt))
+            components.append(system_prompt.strip() if isinstance(system_prompt,
+                str) else str(system_prompt))
         combined = "|".join(components)
         return hashlib.sha256(combined.encode()).hexdigest()
 
@@ -246,7 +254,11 @@ class EnhancedSemanticCache:
                 del self.entries[fingerprint]
         return None
 
-    def store(self, fingerprint: str, data: Dict[str, Any], ttl_hours: Optional[float] = None) -> None:
+    def store(self,
+        fingerprint: str,
+        data: Dict[str,
+        Any],
+        ttl_hours: Optional[float] = None) -> None:
         """Store content in cache.
 
         Args:

@@ -2,6 +2,8 @@
 # from archives.legacy_root_folders.meta.metacognition.refinement import refine_low_confidence  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 def test_refine_marks_very_low_confidence_as_discarded() -> None:
+    """TODO: Add docstring."""
+
     hs = [
         Hypothesis(id="h1", agent_id="a1", content="c1", confidence=0.1),
         Hypothesis(id="h2", agent_id="a1", content="c2", confidence=0.5),

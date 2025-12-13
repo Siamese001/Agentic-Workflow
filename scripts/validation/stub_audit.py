@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 """
 
-import scripts.validation.check_canonical_structure
 from pathlib import Path
 from typing import Dict, Tuple
 from collections import defaultdict

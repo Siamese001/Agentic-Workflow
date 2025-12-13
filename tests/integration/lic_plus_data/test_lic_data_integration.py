@@ -1,10 +1,11 @@
 """Integration tests for LinkedIn outreach + data layer integration."""
-from __future__ import annotations
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 @dataclass
 class ContactData:
+    """TODO: Add docstring."""
+
     id: str
     name: str
     company: str
@@ -13,6 +14,8 @@ class ContactData:
     enrichment_data: Optional[Dict[str, object]] = None
 
 @dataclass
+    """TODO: Add docstring."""
+
 class CompanyData:
     id: str
     name: str

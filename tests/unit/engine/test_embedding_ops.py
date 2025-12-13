@@ -2,7 +2,6 @@
 Unit tests for shared_engine_ops/embedding_ops/
 Tests embedding operations including similarity calculation, vector search, etc.
 """
-from __future__ import annotations
 import pytest
 import math
 
@@ -112,6 +111,8 @@ class TestSearchVectors:
         ]
 
         def cosine_sim(v1, v2):
+            """TODO: Add docstring."""
+
             dot = sum(a * b for a, b in zip(v1, v2))
             m1 = math.sqrt(sum(x**2 for x in v1))
             m2 = math.sqrt(sum(x**2 for x in v2))
@@ -190,6 +191,8 @@ class TestMatchContext:
             {"id": "ctx1", "embedding": [0.95, 0.05], "text": "Relevant context"},
             {"id": "ctx2", "embedding": [0.1, 0.9], "text": "Irrelevant context"},
         ]
+
+            """TODO: Add docstring."""
 
         def similarity(v1, v2):
             dot = sum(a * b for a, b in zip(v1, v2))

@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 """
 
-from typing import List, Dict, Any
 from .prompt_injection_loader import (
     InjectionPattern,
     InjectionType,

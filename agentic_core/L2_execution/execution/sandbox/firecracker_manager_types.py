@@ -1,7 +1,6 @@
 """Types and models for firecracker_manager."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class VMStatus(Enum):
@@ -70,4 +69,10 @@ class VMInstance:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'vm_id': self.vm_id, 'config': self.config.to_dict(), 'status': self.status.value, 'created_at': self.created_at, 'process_id': self.process_id, 'endpoint': self.endpoint, 'metadata': self.metadata}
+        return {'vm_id': self.vm_id,
+            'config': self.config.to_dict(),
+            'status': self.status.value,
+            'created_at': self.created_at,
+            'process_id': self.process_id,
+            'endpoint': self.endpoint,
+            'metadata': self.metadata}

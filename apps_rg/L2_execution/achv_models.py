@@ -1,11 +1,11 @@
 """Dataclass models for achv_bullet_synthesizer_types."""
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from .achv_bullet_synthesizer_types_enums import *
+# from .achv_bullet_synthesizer_types_enums import *  # Star import removed
 
 @dataclass
 class ProvenancePattern:
+    """TODO: Add docstring."""
+
     format_type: BulletFormat
     verb_count: int
     tech_count: int
@@ -15,6 +15,8 @@ class ProvenancePattern:
         return f'{self.verb_count}V-{self.tech_count}T-{self.soft_count}S'
 
 @dataclass
+    """TODO: Add docstring."""
+
 class BulletProvenanceLog:
     bullet_text: str
     word_count: int
@@ -34,15 +36,23 @@ class BulletSynthesizerConfig:
     temperature: float = 0.6
     max_attempts: int = 3
 
+        """TODO: Add docstring."""
+
     @property
     def min_words(self) -> int:
         return 28 if self.format_type == BulletFormat.UNIFY else 24
+        """TODO: Add docstring."""
+
 
     @property
     def max_words(self) -> int:
+        """TODO: Add docstring."""
+
         return 33 if self.format_type == BulletFormat.UNIFY else 30
 
     @property
+        """TODO: Add docstring."""
+
     def bullet_count(self) -> int:
         return 7 if self.format_type == BulletFormat.UNIFY else 6
 
@@ -52,6 +62,8 @@ class BulletSynthesizerConfig:
             return ProvenancePattern(BulletFormat.UNIFY, verb_count=3, tech_count=3, soft_count=1)
         else:
             return ProvenancePattern(BulletFormat.IBM, verb_count=2, tech_count=3, soft_count=1)
+
+    """TODO: Add docstring."""
 
 @dataclass
 class BulletSynthesizerResult:

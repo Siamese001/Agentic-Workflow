@@ -173,7 +173,9 @@ class ScriptsPlanningOrchestrator:
             "max_concurrent_tasks": self.config.max_concurrent_tasks,
             "total_tasks": len(tasks),
             "critical_tasks": len([t for t in tasks if t.priority == ScriptExecutionPriority.CRITICAL]),
+                
             "high_priority_tasks": len([t for t in tasks if t.priority == ScriptExecutionPriority.HIGH]),
+                
             "estimated_memory_mb": len(tasks) * 50,  # Rough estimate
             "estimated_cpu_cores": min(self.config.max_concurrent_tasks, 4)
         }

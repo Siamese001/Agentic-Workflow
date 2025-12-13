@@ -7,7 +7,6 @@ Defines structured outputs for:
 - K.13 Interviewer Simulation: Oppositional interview preparation
 """
 
-from typing import List, Optional, Literal, Dict, Any
 from pydantic import BaseModel, Field, validator
 
 # ===== K.11 SHADOW AUDIT SCHEMAS =====
@@ -30,7 +29,10 @@ class TechStackInference(BaseModel):
     )
     evidence_source: str = Field(
         ...,
-        description="Where this was found (e.g., 'Engineering Blog 2023', 'Job posting', 'GitHub org')"
+        description="Where this was found (e.g.,
+            'Engineering Blog 2023',
+            'Job posting',
+            'GitHub org')"
     )
     maturity_level: Literal["Legacy", "Stable", "Modern", "Cutting-Edge"] = Field(
         ...,
@@ -47,7 +49,11 @@ class TechnicalDebtIndicator(BaseModel):
     """Specific signs of technical debt or issues."""
     area: str = Field(..., description="Area of concern (e.g., 'Data Pipeline', 'Monolith')")
     issue: str = Field(..., description="Specific issue identified")
-    severity: Literal["Low", "Medium", "High", "Critical"] = Field(..., description="Impact severity")
+    severity: Literal["Low",
+        "Medium",
+        "High",
+        "Critical"] = Field(...,
+        description="Impact severity")
     evidence: str = Field(..., description="Evidence from public sources")
 
 class TechnicalSWOT(BaseModel):
@@ -86,7 +92,11 @@ class TechnicalSWOT(BaseModel):
 
     @validator('strategic_opportunity')
     def validate_opportunity(cls, v):
-        if not any(word in v.lower() for word in ['improve', 'reduce', 'increase', 'enable', 'transform']):
+        if not any(word in v.lower() for word in ['improve',
+            'reduce',
+            'increase',
+            'enable',
+            'transform']):
             raise ValueError("Strategic opportunity must be action-oriented")
         return v
 
@@ -94,8 +104,14 @@ class TechnicalSWOT(BaseModel):
 
 class Milestone(BaseModel):
     """Specific milestone in the 30-60-90 day plan."""
-    timeframe: Literal["Day 30", "Day 60", "Day 90"] = Field(..., description="When this milestone occurs")
-    focus_area: Literal["People", "Process", "Technology"] = Field(..., description="P-P-T framework")
+    timeframe: Literal["Day 30",
+        "Day 60",
+        "Day 90"] = Field(...,
+        description="When this milestone occurs")
+    focus_area: Literal["People",
+        "Process",
+        "Technology"] = Field(...,
+        description="P-P-T framework")
     initiative: str = Field(
         ...,
         min_length=20,
@@ -227,7 +243,11 @@ class PredictedQuestion(BaseModel):
 
 class InterviewerBias(BaseModel):
     """Specific bias or preference of the interviewer."""
-    category: Literal["Technical", "Cultural", "Experience", "Education"] = Field(..., description="Type of bias")
+    category: Literal["Technical",
+        "Cultural",
+        "Experience",
+        "Education"] = Field(...,
+        description="Type of bias")
     preference: str = Field(..., description="What they prefer")
     aversion: Optional[str] = Field(None, description="What they dislike")
     how_to_leverage: str = Field(..., description="How to use this to your advantage")

@@ -1,16 +1,19 @@
 """E2E tests for admin flows - system configuration and management."""
-from __future__ import annotations
 from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
 
 class AdminAction(Enum):
+    """TODO: Add docstring."""
+
     CREATE_USER = "create_user"
     UPDATE_CONFIG = "update_config"
     VIEW_LOGS = "view_logs"
     MANAGE_PERMISSIONS = "manage_permissions"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class AdminRequest:
     action: AdminAction
     payload: Dict[str, object]

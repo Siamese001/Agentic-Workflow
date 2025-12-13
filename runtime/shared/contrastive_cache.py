@@ -7,8 +7,6 @@ queries and serve cached responses instantly.
 import json
 import logging
 import time
-from datetime import datetime, timedelta
-from functools import lru_cache
 from typing import List, Optional, Dict, Any
 
 import numpy as np
@@ -96,10 +94,10 @@ class ContrastiveSemanticCache:
         # Try to check availability without loading
         try:
             from sentence_transformers import SentenceTransformer
-            import numpy as np
             return True
         except ImportError:
-            logger.warning("sentence_transformers or numpy not available, cache will be in fallback mode")
+            logger.warning("sentence_transformers or numpy not available,
+                cache will be in fallback mode")
             return False
 
     def _load_model(self) -> bool:
@@ -113,8 +111,6 @@ class ContrastiveSemanticCache:
 
         try:
             # Import required libraries
-            from sentence_transformers import SentenceTransformer
-            import numpy as np
 
             logger.info(f"Loading SentenceTransformer model: {self.model_name}")
             start_time = time.time()
@@ -178,7 +174,7 @@ class ContrastiveSemanticCache:
             return None
 
     def _update_embedding_matrix(self):
-        """Update the embedding matrix from cache entries."""
+        """# SQL removed: Update the embedding matrix from cache entries."""
         if not self._cache:
             self._embedding_matrix = None
             return
@@ -205,7 +201,9 @@ class ContrastiveSemanticCache:
         try:
             # Normalize vectors
             query_norm = query_embedding / np.linalg.norm(query_embedding)
-            cache_norm = self._embedding_matrix / np.linalg.norm(self._embedding_matrix, axis=1, keepdims=True)
+            cache_norm = self._embedding_matrix / np.linalg.norm(self._embedding_matrix,
+                axis=1,
+                keepdims=True)
 
             # Calculate cosine similarity
             similarities = np.dot(cache_norm, query_norm)

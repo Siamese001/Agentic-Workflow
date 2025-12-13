@@ -104,7 +104,8 @@ def move_logic_tests() -> List[str]:
                 shutil.move(str(test_file), str(dest))
                 moved.append(f'logic/{test_file.name} -> unit/agentic_core/{test_file.name}')
         if logic_dir.exists():
-            remaining = [f for f in logic_dir.iterdir() if f.name not in ['__init__.py', '__pycache__']]
+            remaining = [f for f in logic_dir.iterdir() if f.name not in ['__init__.py',
+                '__pycache__']]
             if not remaining:
                 shutil.rmtree(logic_dir)
                 moved.append('Removed empty logic/ folder')

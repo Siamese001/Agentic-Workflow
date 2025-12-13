@@ -43,7 +43,11 @@ class BaggagePropagator:
 
         return context
 
-def inject_context(context: Dict[str, object], carrier: Dict[str, str], config: Optional[Dict] = None) -> None:
+def inject_context(context: Dict[str,
+    object],
+    carrier: Dict[str,
+    str],
+    config: Optional[Dict] = None) -> None:
     """Inject context into carrier."""
     BaggagePropagator(config).inject(context, carrier)
 

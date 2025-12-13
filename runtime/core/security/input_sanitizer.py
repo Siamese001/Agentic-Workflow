@@ -8,7 +8,6 @@ like radioactive material - it must be sterilized before use.
 import json
 import logging
 import re
-import xml.sax.saxutils
 from typing import Dict, List, Any, Union
 
 logger = logging.getLogger(__name__)
@@ -220,7 +219,6 @@ class InputSanitizer:
             SecurityIntegrityError: If XML is malformed
         """
         try:
-            import xml.etree.ElementTree as ET
             ET.fromstring(xml_string)
             return True
         except ET.ParseError as e:

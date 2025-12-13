@@ -14,15 +14,8 @@ import logging
 import asyncio
 import random
 import time
-import json
-import base64
-from typing import Any, Dict, List, Optional, Union, Tuple, Callable
-from datetime import datetime, timedelta
 from dataclasses import dataclass, field
-from pydantic import BaseModel, Field
 from enum import Enum
-from urllib.parse import urljoin, urlparse
-import hashlib
 import aiohttp
 import ssl
 
@@ -120,9 +113,15 @@ class UserAgentRotator:
     def __init__(self):
         self.user_agents = [
             # Chrome
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+                like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+                like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
+                like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                
 
             # Firefox
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0",
@@ -130,10 +129,13 @@ class UserAgentRotator:
             "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/121.0",
 
             # Safari
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML,
+                like Gecko) Version/17.2 Safari/605.1.15",
+                
 
             # Edge
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0"
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+                like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0"
         ]
         self.current_index = 0
 
@@ -236,7 +238,10 @@ class ProxyRotator:
 class RateLimiter:
     """Rate limiting with adaptive strategies."""
 
-    def __init__(self, strategy: RateLimitStrategy, requests_per_second: float, burst_size: int = 5):
+    def __init__(self,
+        strategy: RateLimitStrategy,
+        requests_per_second: float,
+        burst_size: int = 5):
         self.strategy = strategy
         self.requests_per_second = requests_per_second
         self.burst_size = burst_size
@@ -486,7 +491,8 @@ class HardenedWebScraper:
                 # Check if we should retry
                 if result.status_code in [429, 502, 503, 504] and attempt < self.config.max_retries:
                     retry_delay = self.config.retry_delay_seconds * (2 ** attempt)
-                    logger.warning(f"Request failed with {result.status_code}, retrying in {retry_delay}s")
+                    logger.warning(f"Request failed with {result.status_code},
+                        retrying in {retry_delay}s")
                     await asyncio.sleep(retry_delay)
                     continue
 
@@ -590,7 +596,7 @@ class HardenedWebScraper:
         return True
 
     def _update_stats(self, result: ScrapeResult) -> None:
-        """Update scraping statistics."""
+        """# SQL removed: Update scraping statistics."""
         self.stats["total_requests"] += 1
 
         if result.success:

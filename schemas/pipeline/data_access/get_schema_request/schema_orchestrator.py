@@ -28,7 +28,8 @@ class SchemaPlanningOrchestrator:
 
     def execute(self, schema_request: Dict[str, Any]) -> SchemaPlanningResult:
         """Execute the schema planning orchestration."""
-        self.logger.info(f"Starting schema planning for: {schema_request.get('operation', 'unknown')}")
+        self.logger.info(f"Starting schema planning for: {schema_request.get('operation',
+            'unknown')}")
 
         try:
             self._validate_request(schema_request)
@@ -62,7 +63,8 @@ class SchemaPlanningOrchestrator:
                 }
             )
 
-            self.logger.info(f"Successfully planned schemas: {len(validated_schemas)} validated, {len(transformation_plans)} transformations")
+            self.logger.info(f"Successfully planned schemas: {len(validated_schemas)} validated,
+                {len(transformation_plans)} transformations")
             return result
 
         except Exception as e:
@@ -105,7 +107,10 @@ class SchemaPlanningOrchestrator:
 
         return schemas
 
-    def _plan_transformations(self, request: Dict[str, Any], schemas: List[SchemaDefinition]) -> List[TransformationPlan]:
+    def _plan_transformations(self,
+        request: Dict[str,
+        Any],
+        schemas: List[SchemaDefinition]) -> List[TransformationPlan]:
         """Plan schema transformations based on request."""
         plans = []
         transformations = request.get("transformations", [])

@@ -1,11 +1,12 @@
 """Integration tests for Resume Generation + Data layer."""
-from __future__ import annotations
 import pytest
 from typing import Dict, List
 from dataclasses import dataclass
 
 @dataclass
 class JobPosting:
+    """TODO: Add docstring."""
+
     id: str
     title: str
     company: str
@@ -13,6 +14,8 @@ class JobPosting:
     keywords: List[str]
 
 @dataclass
+    """TODO: Add docstring."""
+
 class UserProfile:
     id: str
     name: str

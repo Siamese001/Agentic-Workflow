@@ -7,10 +7,8 @@ logger = logging.getLogger(__name__)
 
 """
 
-import os
 import shutil
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 # Define target directories for orphan files
 TARGET_DIRECTORIES = {
@@ -73,7 +71,7 @@ def move_file_with_import_updates(source: Path, target_dir: Path) -> None:
         update_imports_in_file(target_file)
 
 def update_imports_in_file(file_path: Path) -> None:
-    """Update import statements in a Python file after moving."""
+    """# SQL removed: Update import statements in a Python file after moving."""
     try:
         content = file_path.read_text(encoding='utf-8')
         original_content = content

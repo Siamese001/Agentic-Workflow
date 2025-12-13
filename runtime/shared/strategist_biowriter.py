@@ -10,7 +10,6 @@ Legacy K-Node: K.1
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
 from runtime.shared.agent_base import Agent, ReasoningConfig
 
 logger = logging.getLogger(__name__)
@@ -206,7 +205,9 @@ EXAMPLES (1st-Person VIOLATIONS - DO NOT USE):
 ❌ "My expertise includes..." (1st-person)
 ❌ "We built scalable systems..." (1st-person)
 
-Generate the executive summary now ({self.word_count_min}-{self.word_count_max} words, {self.sentence_count_min}-{self.sentence_count_max} sentences, 3rd-person ONLY):
+Generate the executive summary now ({self.word_count_min}-{self.word_count_max} words,
+    {self.sentence_count_min}-{self.sentence_count_max} sentences,
+    3rd-person ONLY):
 """
 
         return prompt

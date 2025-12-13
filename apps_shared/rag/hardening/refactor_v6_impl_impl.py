@@ -1,6 +1,5 @@
 """Implementation for refactor_v6_impl."""
 
-from typing import Any, Dict, List, Optional
 
 @pytest.mark.skip(reason='L1 module not yet implemented')
 def test_l1_imports() -> None:
@@ -17,7 +16,11 @@ def test_l1_strategy_planning_imports() -> None:
     try:
         from typing import Any
         StrategyPlan, DraftPlan, LatentThinkingPlan = (Any, Any, Any)
-        plan_strategy, plan_draft, generate_latent_thinking_plan = (lambda: None, lambda: None, lambda: None)
+        plan_strategy,
+            plan_draft,
+            generate_latent_thinking_plan = (lambda: None,
+            lambda: None,
+            lambda: None)
         assert StrategyPlan is not None
         assert DraftPlan is not None
         assert LatentThinkingPlan is not None
@@ -32,7 +35,6 @@ def test_l1_strategy_planning_imports() -> None:
 def test_l1_rag_planning_imports() -> None:
     """Verify RAG planning module imports."""
     try:
-        from typing import Any
         RAGReasoningPlan, HydePlan = (Any, Any)
         plan_rag_reasoning, plan_hyde_query = (lambda: None, lambda: None)
         assert RAGReasoningPlan is not None
@@ -47,7 +49,6 @@ def test_l1_rag_planning_imports() -> None:
 def test_l1_qa_planning_imports() -> None:
     """Verify QA planning module imports."""
     try:
-        from typing import Any
         SemanticQAPlan, CouncilPlan = (Any, Any)
         plan_semantic_qa, plan_council_review = (lambda: None, lambda: None)
         assert SemanticQAPlan is not None
@@ -62,7 +63,6 @@ def test_l1_qa_planning_imports() -> None:
 def test_l1_safety_planning_imports() -> None:
     """Verify safety planning module imports."""
     try:
-        from typing import Any
         SafetyPlan = Any
         plan_safety_review = lambda: None
         assert SafetyPlan is not None
@@ -75,7 +75,6 @@ def test_l1_safety_planning_imports() -> None:
 def test_cognitive_agents_imports() -> None:
     """Verify cognitive agents import successfully."""
     try:
-        from typing import Any
         StrategyLLMAgent = Any
         DraftingGuild = Any
         SemanticQAAgent = Any
@@ -130,7 +129,24 @@ def test_l1_planning_is_pure() -> None:
 
 def run_all_tests() -> None:
     """Run all Phase A verification tests."""
-    tests = [('L1 Module Imports', test_l1_imports), ('Strategy Planning', test_l1_strategy_planning_imports), ('RAG Planning', test_l1_rag_planning_imports), ('QA Planning', test_l1_qa_planning_imports), ('Safety Planning', test_l1_safety_planning_imports), ('Cognitive Agents', test_cognitive_agents_imports), ('L2 Module', test_l2_imports), ('No Circular Dependencies', test_no_circular_dependencies), ('L1 Planning Purity', test_l1_planning_is_pure)]
+    tests = [('L1 Module Imports',
+        test_l1_imports),
+        ('Strategy Planning',
+        test_l1_strategy_planning_imports),
+        ('RAG Planning',
+        test_l1_rag_planning_imports),
+        ('QA Planning',
+        test_l1_qa_planning_imports),
+        ('Safety Planning',
+        test_l1_safety_planning_imports),
+        ('Cognitive Agents',
+        test_cognitive_agents_imports),
+        ('L2 Module',
+        test_l2_imports),
+        ('No Circular Dependencies',
+        test_no_circular_dependencies),
+        ('L1 Planning Purity',
+        test_l1_planning_is_pure)]
     results = []
     for name, test_func in tests:
         result = test_func()

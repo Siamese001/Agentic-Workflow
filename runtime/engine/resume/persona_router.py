@@ -6,7 +6,6 @@ the resume "feels" right to the specific human reading it.
 """
 
 import logging
-import re
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 

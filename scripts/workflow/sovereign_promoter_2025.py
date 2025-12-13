@@ -43,9 +43,13 @@ DESTINATION_RULES = [
         r"planner|orchestrator|route|delegate|schedule|coordinate|workflow|loop|agent.*loop|synthesis",
         "agentic_core/planning",
     ),
-    (r"tool.*call|invoke.*tool|execute.*action|dispatch|perform|use.*tool", "agentic_core/execution/tools"),
+    (r"tool.*call|invoke.*tool|execute.*action|dispatch|perform|use.*tool",
+        "agentic_core/execution/tools"),
+        
     (r"schema|contract|pydantic.*model|request|response|dto|json", "schemas"),
-    (r"prompt.*govern|system.*prompt|safety.*rail|jailbreak|redteam|red.?team|prompt", "prompt_governance"),
+    (r"prompt.*govern|system.*prompt|safety.*rail|jailbreak|redteam|red.?team|prompt",
+        "prompt_governance"),
+        
     (r"metric|trace|span|observ|log.*structured|otel|opentelemetry|monitoring", "observability"),
     (r"config|setting|feature.*flag|env|toggle|runtime.*config|secrets", "config"),
     (r"readme|guide|doc|manual|setup|install", "docs"),
@@ -96,6 +100,7 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
     core_terms = len(
         re.findall(
             r"\b(RAG|HyDE|reranker|guardrail|self.?critique|fact.?check|claim|source.?tier|orchestrator|planner|mcp|sdk|signal.?quality)\b",
+                
             content,
             re.I,
         )
@@ -126,7 +131,12 @@ def choose_destination(content: str, filename: str) -> Path:
     # Default fallback for unclassified Python
     return Path("apps_shared/core")
 
-def _should_promote_file(src: Path, score: int, reasons: List[str], is_dirty: bool, is_staged_file: bool) -> Tuple[bool, str]:
+def _should_promote_file(src: Path,
+    score: int,
+    reasons: List[str],
+    is_dirty: bool,
+    is_staged_file: bool) -> Tuple[bool,
+    str]:
     """Determine if a file should be promoted and why."""
     # Rule 1: Force Promote Pattern
     if FORCE_PROMOTE_PATTERN.search(src.name):
@@ -199,7 +209,12 @@ def main() -> None:
         score, reasons, is_dirty = analyze_file_content(content, src.name)
 
         # --- PROMOTION LOGIC ---
-        should_promote, promotion_reason = _should_promote_file(src, score, reasons, is_dirty, is_staged_file)
+        should_promote,
+            promotion_reason = _should_promote_file(src,
+            score,
+            reasons,
+            is_dirty,
+            is_staged_file)
 
         if not should_promote:
             if is_staged_file:

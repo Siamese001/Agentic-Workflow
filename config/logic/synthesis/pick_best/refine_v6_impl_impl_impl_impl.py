@@ -1,6 +1,5 @@
 """Implementation for refine_v6_impl_impl_impl."""
 
-from typing import Any, Dict, List, Optional
 
 def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
@@ -22,7 +21,10 @@ def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     return _Ranking.hybrid_rank(items)
 
-def apply_strategy(items: List[Dict[str, object]], strategy: str='hybrid') -> List[Dict[str, object]]:
+def apply_strategy(items: List[Dict[str,
+    object]],
+    strategy: str='hybrid') -> List[Dict[str,
+    object]]:
     """
     Apply a ranking strategy:
 
@@ -75,7 +77,10 @@ def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, 
         item['rank'] = idx + 1
     return flattened
 
-def rank_documents(items: List[Dict[str, object]], strategy: str='hybrid') -> List[Dict[str, object]]:
+def rank_documents(items: List[Dict[str,
+    object]],
+    strategy: str='hybrid') -> List[Dict[str,
+    object]]:
     """
     Top-level ranking support used by RAGExecutor:
 

@@ -8,8 +8,6 @@ address security, privacy, and evaluation frameworks.
 import logging
 import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +21,8 @@ class RiskProfile(BaseModel):
     """Risk profile for target company and role."""
 
     industry_sensitivity: IndustrySensitivity = Field(..., description="Industry risk level")
-    compliance_keywords: List[str] = Field(default_factory=list, description="Required compliance frameworks")
+    compliance_keywords: List[str] = Field(default_factory=list,
+        description="Required compliance frameworks")
     data_sensitivity: List[str] = Field(default_factory=list, description="Sensitive data types")
 
     @property
@@ -37,7 +36,8 @@ class SafetyProtocol(BaseModel):
     validation_strategy: str = Field(..., description="Model validation approach")
     data_privacy_approach: str = Field(..., description="Data privacy protection method")
     human_in_the_loop_policy: str = Field(..., description="Human oversight requirements")
-    compliance_frameworks: List[str] = Field(default_factory=list, description="Compliance standards")
+    compliance_frameworks: List[str] = Field(default_factory=list,
+        description="Compliance standards")
 
     @property
     def is_comprehensive(self) -> bool:
@@ -240,7 +240,11 @@ class GovernanceShieldAgent:
                 data_types = ["User Data", "Analytics Data"]
 
             # Boost sensitivity if JD mentions compliance
-            if any(term in jd_lower for term in ["compliance", "regulatory", "audit", "sox", "hipaa"]):
+            if any(term in jd_lower for term in ["compliance",
+                "regulatory",
+                "audit",
+                "sox",
+                "hipaa"]):
                 if sensitivity == IndustrySensitivity.MEDIUM:
                     sensitivity = IndustrySensitivity.HIGH
                     logger.info("Boosted to HIGH sensitivity due to JD compliance keywords")
@@ -334,6 +338,7 @@ class GovernanceShieldAgent:
 
         return SafetyProtocol(
             validation_strategy="Automated eval pipeline (Ragas) + human expert review before production",
+                
             data_privacy_approach=privacy,
             human_in_the_loop_policy="Mandatory human oversight for all high-stakes decisions with audit trails",
             compliance_frameworks=frameworks

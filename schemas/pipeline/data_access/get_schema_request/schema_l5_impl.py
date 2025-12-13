@@ -43,7 +43,11 @@ class OrchestrateDataPlanningOrchestratorImpl:
     def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation with fail-closed behavior."""
         try:
-            dangerous_patterns = ["<script>", "javascript:", "ast.literal_eval(", "pass  # exec disabled: ", "__import__"]
+            dangerous_patterns = ["<script>",
+                "javascript:",
+                "ast.literal_eval(",
+                "pass  # exec disabled: ",
+                "__import__"]
             data_str = str(data).lower()
             for pattern in dangerous_patterns:
                 if pattern in data_str:

@@ -16,7 +16,6 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
-import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -466,6 +465,7 @@ class ValidationGateExecutor:
                     rule_name="Similarity Check (Strict)",
                     severity="CRITICAL",
                     message=f"Similarity {similarity:.2%} >= threshold {threshold:.2%} (must be strictly less)",
+                        
                     actual=similarity,
                     expected=f"< {threshold}",
                     context={"target": target_name},

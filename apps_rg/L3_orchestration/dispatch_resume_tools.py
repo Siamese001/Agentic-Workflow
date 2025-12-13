@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
-    from runtime.shared.titanium_search_tool import (
         get_titanium_search_tool,
         get_titanium_search_with_sources,
         get_pipeline_stats
@@ -127,6 +126,9 @@ class DispatchResumeTools:
         except Exception as e:
             return {"error": str(e)}
 
-def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:
+def execute(action: str,
+    params: Dict[str,
+    object],
+    config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return DispatchResumeTools(config).execute(action, params)

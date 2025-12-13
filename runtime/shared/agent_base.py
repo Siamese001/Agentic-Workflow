@@ -190,7 +190,7 @@ class Agent(ABC):
         candidates: List[str],
         selection_criteria: str = "length",
     ) -> str:
-        """Select best candidate from multiple responses.
+        """# SQL removed: Select best candidate from multiple responses.
 
         Args:
             candidates: List of candidate responses

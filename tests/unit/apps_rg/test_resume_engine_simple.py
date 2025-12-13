@@ -3,8 +3,6 @@
 Tests the Resume Engine functionality with proper mocking to avoid API calls.
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
 
 # Test the core logic without requiring API keys
 
@@ -135,9 +133,6 @@ def test_execute_resume_generation_with_mocked_components() -> None:
 def test_resume_engine_components_can_be_imported() -> None:
     """Test that all Resume Engine components can be imported."""
     # These imports should work without API keys
-    from apps_rg.L2_execution.job_analyzer import JobAnalyzer
-    from apps_rg.L2_execution.resume_generator import ResumeGenerator
-    from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
 
     # Verify classes exist
     assert JobAnalyzer is not None
@@ -160,9 +155,6 @@ def test_resume_engine_with_mock_client() -> None:
         mock_get_client_gen.return_value = StubClient("google")
 
         # Import and create instances
-        from apps_rg.L2_execution.job_analyzer import JobAnalyzer
-        from apps_rg.L2_execution.resume_generator import ResumeGenerator
-        from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
 
         # Should create without error
         analyzer = JobAnalyzer()

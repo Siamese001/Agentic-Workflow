@@ -7,8 +7,6 @@ and messages.
 
 import json
 import logging
-import re
-from enum import Enum
 from .shared_models import (
     InjectionType,
     InjectionScope,
@@ -17,19 +15,13 @@ from .shared_models import (
     InjectionConfig,
     MicroStage
 )
-from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
-from .subatomic_hop import SubatomicHop
-from .shared_models import HopState
-from .instructional_injections import (
     get_instructional_injections,
     get_stage_applicable_injections,
     get_required_injections,
     InstructionalInjectionType,
     STAGE_MAPPINGS
 )
-from dataclasses import dataclass, field
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -398,7 +390,12 @@ class PromptInjectionLoader:
             "sales representative": "CRM, Lead generation, Negotiation, Pipeline management, Customer relationship, Closing"
         }
 
-        return keyword_map.get(role.lower(), "Leadership, Communication, Collaboration, Problem-solving, Innovation")
+        return keyword_map.get(role.lower(),
+            "Leadership,
+            Communication,
+            Collaboration,
+            Problem-solving,
+            Innovation")
 
     def apply_injections(
         self,
@@ -479,7 +476,6 @@ class PromptInjectionLoader:
             Fully assembled prompt with semantic fencing
         """
         # Lazy import to avoid circular dependency
-        from .prompt_assembler import assemble_prompt
 
         # Find matching injections
         matches = self.find_matching_injections(

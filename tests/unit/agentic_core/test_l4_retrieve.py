@@ -1,5 +1,4 @@
 """Unit tests for L4_memory/P1_retrieve - memory retrieval operations."""
-from __future__ import annotations
 from typing import Dict
 from datetime import datetime
 

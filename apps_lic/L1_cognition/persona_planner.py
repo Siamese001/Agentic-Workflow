@@ -160,13 +160,17 @@ class PersonaPlanner:
         seniority_adjusted = self._apply_seniority_adjustments(base_persona, recipient_profile)
 
         # 3. Apply industry-specific adjustments
-        industry_adjusted = self._apply_industry_adjustments(seniority_adjusted, recipient_profile, outreach_context)
+        industry_adjusted = self._apply_industry_adjustments(seniority_adjusted,
+            recipient_profile,
+            outreach_context)
 
         # 4. Apply grounding-based refinements
         final_persona = self._apply_grounding_refinements(industry_adjusted, grounding_plan)
 
         # 5. Calculate confidence score
-        confidence_score = self._calculate_confidence_score(archetype, recipient_profile, final_persona)
+        confidence_score = self._calculate_confidence_score(archetype,
+            recipient_profile,
+            final_persona)
 
         # 6. Build metadata
         metadata = {
@@ -210,7 +214,12 @@ class PersonaPlanner:
         logger.debug(f"Base persona for {archetype}: {base['tone_style']}")
         return base
 
-    def _apply_seniority_adjustments(self, persona: Dict[str, object], profile: Dict[str, object]) -> Dict[str, object]:
+    def _apply_seniority_adjustments(self,
+        persona: Dict[str,
+        object],
+        profile: Dict[str,
+        object]) -> Dict[str,
+        object]:
         """Apply seniority-based adjustments to persona."""
         seniority = profile.get("seniority", "").upper()
         adjustments = self.seniority_adjustments.get(seniority, {})
@@ -223,7 +232,14 @@ class PersonaPlanner:
         logger.debug(f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
         return adjusted
 
-    def _apply_industry_adjustments(self, persona: Dict[str, object], profile: Dict[str, object], context: Dict[str, object]) -> Dict[str, object]:
+    def _apply_industry_adjustments(self,
+        persona: Dict[str,
+        object],
+        profile: Dict[str,
+        object],
+        context: Dict[str,
+        object]) -> Dict[str,
+        object]:
         """Apply industry-specific adjustments to persona."""
         # Try multiple sources for industry
         industry = (
@@ -246,7 +262,11 @@ class PersonaPlanner:
         logger.debug(f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
         return adjusted
 
-    def _apply_grounding_refinements(self, persona: Dict[str, object], grounding_plan: Optional[Any]) -> Dict[str, object]:
+    def _apply_grounding_refinements(self,
+        persona: Dict[str,
+        object],
+        grounding_plan: Optional[Any]) -> Dict[str,
+        object]:
         """Apply grounding-based refinements to persona."""
         if not grounding_plan:
             return persona
@@ -282,7 +302,12 @@ class PersonaPlanner:
         logger.debug("Applied grounding-based refinements")
         return refined
 
-    def _calculate_confidence_score(self, archetype: str, profile: Dict[str, object], persona: Dict[str, object]) -> float:
+    def _calculate_confidence_score(self,
+        archetype: str,
+        profile: Dict[str,
+        object],
+        persona: Dict[str,
+        object]) -> float:
         """Calculate persona match confidence score."""
         base_score = 0.7  # Start with reasonable confidence
 

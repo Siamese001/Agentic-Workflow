@@ -2,14 +2,14 @@
 Unit tests for shared/security_controls/
 Tests security control operations including guardrails.
 """
-from __future__ import annotations
 import re
-import scripts.validation.check_canonical_structure
 from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
 
 class ThreatLevel(Enum):
+    """TODO: Add docstring."""
+
     NONE = "none"
     LOW = "low"
     MEDIUM = "medium"
@@ -17,6 +17,8 @@ class ThreatLevel(Enum):
     CRITICAL = "critical"
 
 @dataclass
+    """TODO: Add docstring."""
+
 class SecurityCheckResult:
     passed: bool
     threat_level: ThreatLevel
@@ -243,6 +245,8 @@ class TestSecurityAudit:
     def test_security_event_logged(self):
         """Security events are logged."""
         audit_log: List[Dict] = []
+            """TODO: Add docstring."""
+
 
         def log_security_event(event_type: str, details: Dict):
             audit_log.append({

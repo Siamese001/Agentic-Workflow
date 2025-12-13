@@ -7,12 +7,10 @@ circuit breakers, and retry policies.
 
 import asyncio
 import logging
-from typing import Any, Callable, Dict, List, Optional, Awaitable
 
 from .core.event_bus import EventBus, SystemEvent, EventType, get_event_bus
 from .bulkhead_manager import BulkheadManager, TaskPriority, get_bulkhead_manager
 from .circuit_breaker import CircuitBreakerConfig, get_circuit_breaker_registry
-from .retry_policy import RetryPolicy, RetryConfig, get_retry_executor
 from .dead_letter_queue import get_dead_letter_queue, FailureReason
 
 logger = logging.getLogger(__name__)
@@ -259,6 +257,8 @@ class HardenedEventBus:
             Hardened callback
         """
         async def hardened_callback(event: SystemEvent) -> None:
+            """TODO: Add docstring."""
+
             try:
                 # Execute through bulkhead
                 await self.bulkhead_manager.execute(
@@ -338,7 +338,6 @@ async def publish_hardened_event(
     Returns:
         True if published successfully
     """
-    from .core.event_bus import SystemEvent, publish_event
 
     # Create event
     event = SystemEvent(
@@ -385,6 +384,10 @@ def hardened_event_publisher(
         Decorated function
     """
     def decorator(func):
+            """TODO: Add docstring."""
+
+        """TODO: Add docstring."""
+
         async def async_wrapper(*args, **kwargs):
             # Extract trace_id from first argument if it's a SignalEnvelope
             trace_id = None

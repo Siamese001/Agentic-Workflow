@@ -9,9 +9,9 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .fetch_schema_history_impl import *
-from .fetch_schema_history_models import *
-from .fetch_schema_history_models_1 import *
-from .fetch_schema_history_impl import *
+# from .fetch_schema_history_impl import *  # Star import removed
+# from .fetch_schema_history_models import *  # Star import removed
+# from .fetch_schema_history_models_1 import *  # Star import removed
+# from .fetch_schema_history_impl import *  # Star import removed
 
 __all__ = ['*']  # Re-export all imported names

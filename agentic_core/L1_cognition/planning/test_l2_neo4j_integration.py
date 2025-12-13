@@ -62,7 +62,6 @@ class TestNeo4jIntegration:
         """Test that kg_writer module imports correctly."""
         try:
             # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_writer import insert_entity, insert_triplet, insert_event, batch_process_invalidation, ingest_transcript  # DEPRECATED: Archive import removed to protect archives from validation edits
-            from typing import Any
             insert_entity = insert_triplet = insert_event = batch_process_invalidation = ingest_transcript = lambda *args, **kwargs: None
         except ImportError:
             # Archive imports not available
@@ -146,7 +145,6 @@ class TestNeo4jIntegration:
 
     def test_requirements_includes_neo4j(self):
         """Test that requirements.txt includes Neo4j dependency."""
-        import os
         # Get the project root directory (3 levels up from test file)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
         requirements_path = os.path.join(project_root, "requirements.txt")

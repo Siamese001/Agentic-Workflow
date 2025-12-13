@@ -10,7 +10,6 @@ Implements a robust search tool with:
 
 import logging
 import asyncio
-import os
 from typing import Dict, List, Any, Optional, Callable
 from pydantic import BaseModel, Field, validator
 import httpx
@@ -75,7 +74,9 @@ class HardenedBraveSearch:
     - Result quality scoring
     """
 
-    def __init__(self, api_key: str, base_url: str = "https://api.search.brave.com/res/v1/web/search"):
+    def __init__(self,
+        api_key: str,
+        base_url: str = "https://api.search.brave.com/res/v1/web/search"):
         """Initialize Brave Search client.
 
         Args:
@@ -334,6 +335,8 @@ def create_brave_search_config(
     # Default fallback function if not provided
     if fallback_function is None:
         async def default_fallback(error: str, query: str, **kwargs) -> Dict[str, Any]:
+            """TODO: Add docstring."""
+
             return {
                 "fallback_message": "External search failed. Using internal knowledge only.",
                 "error_context": error,

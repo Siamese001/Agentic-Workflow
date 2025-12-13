@@ -387,8 +387,8 @@ class TextParser(BaseDocumentParser):
                     raw = f.read(10000)
                     if b'\0' in raw:
                         encoding = 'utf-16'
-            except:
-                pass
+            except Exception as e:
+    logger.warning(f"Error: {e}")
 
             # Read file
             with open(file_path, 'r', encoding=encoding) as f:

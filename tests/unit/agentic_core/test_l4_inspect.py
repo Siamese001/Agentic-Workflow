@@ -1,5 +1,4 @@
 """Unit tests for L4_memory/P2_inspect - memory inspection operations."""
-from __future__ import annotations
 from typing import Dict, List
 from datetime import datetime, timedelta
 

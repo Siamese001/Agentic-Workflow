@@ -1,7 +1,5 @@
 """Types and models for coordinate_observability_queries."""
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
 
 class CoordinateObservabilityOperationsOrchestratorType(Enum):

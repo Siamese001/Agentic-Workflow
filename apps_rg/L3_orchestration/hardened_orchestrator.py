@@ -12,10 +12,7 @@ Phase 4: Titanium RAG Integration - Brain transplant complete
 """
 
 import logging
-import uuid
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 from runtime.shared.state import (
     get_state_manager,
@@ -26,11 +23,9 @@ from runtime.shared.routing import (
     get_resilient_router,
     RoutingTier,
 )
-from runtime.shared.agent_executor import (
     AgentMessage,
     AgentResponse,
 )
-from apps_rg.L3_orchestration.orchestrate_workflow import (
     RGWorkflowOrchestrator,
     WorkflowSpec,
     HopSpec,
@@ -42,7 +37,6 @@ from apps_rg.L3_orchestration.resume_orchestration_config import (
     ReasoningConfig,
     get_reasoning_config,
 )
-from apps_rg.L3_orchestration.titanium_integration import (
     inject_titanium_tools,
     prepare_titanium_context,
     log_titanium_usage,
@@ -377,7 +371,9 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             "current_k_node": self.workflow_state.current_k_node if self.workflow_state else 0,
             "total_k_nodes": self.workflow_state.total_k_nodes if self.workflow_state else 0,
             "progress_percentage": self.workflow_state.get_progress_percentage() if self.workflow_state else 0,
+                
             "execution_log_count": len(self.workflow_state.execution_log) if self.workflow_state else 0,
+                
         }
 
         logger.info(
