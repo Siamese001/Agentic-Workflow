@@ -10,39 +10,59 @@ Enhanced with adversarial defense as the outermost security layer.
 
 import logging
 import time
+from typing import List, Dict, Any, Optional, Tuple
 
+# Phase 1: Precision Layer
+from .contextual_compressor import (
     ContextualCompressor,
-    SignalQualityPipeline,
     CompressionResult,
     create_compressor,
+)
+from .signal_quality_pipeline import (
+    SignalQualityPipeline,
     create_signal_pipeline,
 )
+from .adaptive_retrieval_gate import (
+    AdaptiveRetrievalGate,
+    RetrievalDecision,
+)
+
+# Phase 2: Reasoning Layer
+from .query_decomposer import (
     QueryDecomposer,
     DecomposedQuery,
+    decompose_query,
+)
+from .hybrid_scorer import (
     HybridScorer,
     ScoringResult,
-    create_query_decomposer,
     create_hybrid_scorer,
 )
-    ContrastiveSemanticCache,
+
+# Phase 3: SOTA Layer
+from .late_interaction_reranker import (
     LateInteractionReranker,
-    CacheEntry,
-    RerankResult,
-    create_cache,
-    create_reranker,
+    PassThroughReranker,
+    rerank_documents,
 )
+
+# Security Layer
+from .input_guardrails import (
     InputGuardrail,
     GuardAction,
     GuardResult,
     get_input_guardrail,
 )
+from .retrieval_grader import (
     RetrievalGrader,
     RetrievalGrade,
+    grade_retrieval,
     GradeStatus,
     WebSearchFallback,
     get_retrieval_grader,
     get_web_search_fallback,
 )
+from .graphrag_fusion import (
     GraphRAGFusion,
     FusionResult,
     QueryType,
@@ -72,7 +92,7 @@ class TitaniumRAGPipeline:
 
         # Phase 3 components
         reranker: Optional[LateInteractionReranker] = None,
-        cache: Optional[ContrastiveSemanticCache] = None,
+        # cache: Optional[ContrastiveSemanticCache] = None,  # Commented out as class doesn't exist
 
         # Security layer
         input_guardrail: Optional[InputGuardrail] = None,
@@ -88,14 +108,14 @@ class TitaniumRAGPipeline:
         enable_compression: bool = True,
         enable_decomposition: bool = True,
         enable_reranking: bool = True,
-        enable_caching: bool = True,
+        enable_caching: bool = False,  # Disabled as cache class doesn't exist
         enable_security: bool = True,
         enable_crag: bool = True,
         enable_graphrag: bool = True,
         max_retrieved_docs: int = 50,
         top_k_final: int = 5
     ):
-            """Initialize the Titanium RAG Pipeline.
+        """Initialize the Titanium RAG Pipeline.
 
         Args:
             gate: Adaptive retrieval gate (Phase 1)
@@ -103,7 +123,7 @@ class TitaniumRAGPipeline:
             decomposer: Query decomposer (Phase 2)
             scorer: Dynamic hybrid scorer (Phase 2)
             reranker: Late interaction reranker (Phase 3)
-            cache: Contrastive semantic cache (Phase 3)
+            cache: Contrastive semantic cache (Phase 3) - Currently disabled as class doesn't exist
             input_guardrail: Security layer for input validation
             retrieval_grader: CRAG grader for document relevance
             web_search_fallback: Web search fallback for CRAG
@@ -124,23 +144,19 @@ class TitaniumRAGPipeline:
         self.decomposer = decomposer or QueryDecomposer()
         self.scorer = scorer or HybridScorer(dynamic_alpha=True)
         self.reranker = reranker or LateInteractionReranker()
-        self.cache = cache or ContrastiveSemanticCache()
+        # self.cache = cache or ContrastiveSemanticCache()  # Commented out as class doesn't exist
 
         # Initialize security layer
-        self.input_guardrail = input_guardrail or (get_input_guardrail() if enable_security else Non
-    e)
+        self.input_guardrail = input_guardrail or (get_input_guardrail() if enable_security else None)
         self.enable_security = enable_security and self.input_guardrail is not None
 
         # Initialize CRAG layer
-        self.retrieval_grader = retrieval_grader or (get_retrieval_grader() if enable_crag else None
-    )
-        self.web_search_fallback = web_search_fallback or (get_web_search_fallback() if enable_crag
-    else None)
+        self.retrieval_grader = retrieval_grader or (get_retrieval_grader() if enable_crag else None)
+        self.web_search_fallback = web_search_fallback or (get_web_search_fallback() if enable_crag else None)
         self.enable_crag = enable_crag and self.retrieval_grader is not None
 
         # Initialize GraphRAG layer
-        self.graphrag_fusion = graphrag_fusion or (get_graphrag_fusion() if enable_graphrag else Non
-    e)
+        self.graphrag_fusion = graphrag_fusion or (get_graphrag_fusion() if enable_graphrag else None)
         self.enable_graphrag = enable_graphrag and self.graphrag_fusion is not None
 
         # Configuration
@@ -180,7 +196,7 @@ class TitaniumRAGPipeline:
         retrieval_function: callable,
         **kwargs
     ) -> Dict[str, Any]:
-            """Execute a complete RAG pipeline query.
+        """Execute a complete RAG pipeline query.
 
         Args:
             query: User query
@@ -246,10 +262,10 @@ class TitaniumRAGPipeline:
                 }
             }
 
-        # 2. Check semantic cache
+        # 2. Check semantic cache - Disabled as cache class doesn't exist
         cached_response = None
-        if self.enable_caching:
-            cached_response = self.cache.get(query)
+        if self.enable_caching and False:  # Temporarily disabled
+            # cached_response = self.cache.get(query)  # Commented out
             if cached_response:
                 self.stats["cache_hits"] += 1
                 logger.info("Cache hit, returning cached response")
@@ -383,7 +399,7 @@ class TitaniumRAGPipeline:
             try:
                 # Create vector retriever function for GraphRAG
                 async def vector_retriever_func(q: str, k: int) -> List[Dict[str, Any]]:
-                        """Docstring."""
+                    """Docstring."""
                     # Use already retrieved documents
                     results = []
                     for doc in retrieved_docs[:k]:
@@ -450,9 +466,7 @@ class TitaniumRAGPipeline:
                 # Use fused results
                 retrieved_docs = fused_docs
 
-                logger.info(f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)},
-
-                    "
+                logger.info(f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)}, "
                            f"Graph entities: {len(fusion_result.graph_results.entities)}")
 
             except Exception as e:
@@ -565,7 +579,7 @@ class TitaniumRAGPipeline:
         documents: List[Any],
         compressed_context: Optional[str] = None
     ) -> str:
-            """Generate response from retrieved documents.
+        """Generate response from retrieved documents.
 
         In a real implementation, this would call an LLM.
         Here we provide a mock response for testing.
@@ -584,7 +598,7 @@ class TitaniumRAGPipeline:
         return response
 
     def get_stats(self) -> Dict[str, Any]:
-            """Get pipeline statistics.
+        """Get pipeline statistics.
 
         Returns:
             Dictionary with usage statistics
@@ -611,7 +625,7 @@ class TitaniumRAGPipeline:
         return stats
 
     def get_component_info(self) -> Dict[str, Any]:
-            """Get information about all components.
+        """Get information about all components.
 
         Returns:
             Dictionary with component status and capabilities

@@ -150,12 +150,6 @@ from .late_interaction_reranker import (
     PassThroughReranker,
     rerank_documents,
 )
-from .contrastive_semantic_cache import (
-    ContrastiveSemanticCache,
-    CacheEntry,
-    NullCache,
-    get_cached_response,
-)
 
 # Unified Pipeline
 from .titanium_rag_pipeline import (
