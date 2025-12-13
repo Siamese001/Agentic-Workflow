@@ -9,7 +9,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-from .achv_bullet_synthesizer_types_enums import *
-from .achv_bullet_synthesizer_types_models import *
+from .achv_enums import *
+from .achv_models import *
 
 __all__ = ['*']  # Re-export all imported names
