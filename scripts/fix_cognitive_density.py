@@ -144,18 +144,15 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
     filepath.write_text(shim_content, encoding='utf-8')
     print(f"  Updated {filepath.name} as compatibility shim")
 
-# Files to fix - config/ cognitive density violations
+# Files to fix - truly final batch of cognitive density violations
 files_to_fix = [
-    "config/l5___init__.py",
-    "config/core/config.py",
-    "config/policy/l5___init__.py",
-    "config/pipeline/data_access/get_info_understand_request.py",
-    "config/pipeline/synthesis/tools_routing_retry_task.py",
-    "config/pipeline/synthesis/tools_use_a_tool.py",
-    "config/pipeline/data_access/get_info/orchestrate_config_planning.py",
-    "config/logic/data_access/get_info_embedding_compare_meaning.py",
-    "config/logic/data_access/get_info_understand_request.py",
-    "config/logic/data_access/get_info_utility_prepare_information.py",
+    "apps_rg/L2_execution/rg_provenance_tracker_impl_impl_impl.py",
+    "apps_rg/L3_orchestration/orchestrate_workflow_impl_impl_impl.py",
+    "apps_rg/L3_orchestration/resume_orchestration_config_types.py",
+    "apps_rg/L3_orchestration/titanium_integration_impl.py",
+    "apps_rg/L3_orchestration/state/resume_state_impl.py",
+    "apps_rg/L1_cognition/P1_retrieve/check_resume_rules.py",
+    "apps_rg/L1_cognition/P2_inspect/rg_validation_gates.py",
 ]
 
 root = Path("c:/Git/Agentic-Workflow")
