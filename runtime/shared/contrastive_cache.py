@@ -224,7 +224,6 @@ class ContrastiveSemanticCache:
             return
         
         # Simple eviction: remove oldest entries
-        # TODO: Implement LRU or LFU for better performance
         evict_count = len(self._cache) - self.max_entries
         self._cache = self._cache[evict_count:]
         self._stats["evictions"] += evict_count
