@@ -6,6 +6,9 @@ with specific mitigations, demonstrating executive maturity and foresight.
 
 import logging
 from enum import Enum
+from typing import Dict, List, Optional
+from pydantic import BaseModel, Field
+import json
 
 
 logger = logging.getLogger(__name__)
@@ -42,7 +45,7 @@ class FailureMode(BaseModel):
 
     @property
     def risk_score(self) -> float:
-            """Calculate overall risk score (probability x impact weight)."""
+        """Calculate overall risk score (probability x impact weight)."""
         impact_weights = {
             ImpactLevel.LOW: 0.25,
             ImpactLevel.MEDIUM: 0.5,
@@ -68,7 +71,7 @@ class SimpleAgentBase:
     """Simple base class for standalone agents."""
 
     def __init__(self, name: str, model_name: str = "gpt-4"):
-            """Initialize the agent.
+        """Initialize the agent.
 
         Args:
             name: Agent name for logging
@@ -82,7 +85,7 @@ class PreMortemAgent(SimpleAgentBase):
     """Agent that performs pre-mortem analysis on plans."""
 
     def __init__(self, model_name: str = "gpt-4"):
-            """Initialize the Pre-Mortem Agent.
+        """Initialize the Pre-Mortem Agent.
 
         Args:
             model_name: LLM model to use for risk analysis
@@ -136,7 +139,7 @@ class PreMortemAgent(SimpleAgentBase):
         }
 
     async def analyze_plan(self, plan_text: str, plan_type: str = "onboarding") -> PreMortemReport:
-            """Perform pre-mortem analysis on a plan.
+        """Perform pre-mortem analysis on a plan.
 
         Args:
             plan_text: The plan to analyze
@@ -180,7 +183,7 @@ class PreMortemAgent(SimpleAgentBase):
         )
 
     async def _identify_failure_modes(self, plan_text: str, plan_type: str) -> List[FailureMode]:
-            """Identify potential failure modes using LLM.
+        """Identify potential failure modes using LLM.
 
         Args:
             plan_text: Plan to analyze
@@ -254,7 +257,7 @@ class PreMortemAgent(SimpleAgentBase):
             ]
 
     async def _generate_mitigation(self, failure: FailureMode, plan_text: str) -> str:
-            """Generate specific mitigation strategy for a failure mode.
+        """Generate specific mitigation strategy for a failure mode.
 
         Args:
             failure: The failure mode to mitigate
@@ -290,7 +293,7 @@ class PreMortemAgent(SimpleAgentBase):
             return "Implement regular check-ins and monitoring to address early signs of this risk."
 
     def _identify_warning_signs(self, failure: FailureMode) -> List[str]:
-            """Identify early warning signs for a failure mode.
+        """Identify early warning signs for a failure mode.
 
         Args:
             failure: The failure mode to analyze
@@ -340,7 +343,7 @@ class PreMortemAgent(SimpleAgentBase):
         return warning_signs_map.get(failure.category, ["Unexpected deviations from plan"])
 
     def _calculate_overall_risk(self, risks: List[FailureMode]) -> float:
-            """Calculate overall risk score for the plan.
+        """Calculate overall risk score for the plan.
 
         Args:
             risks: List of failure modes
@@ -358,7 +361,7 @@ class PreMortemAgent(SimpleAgentBase):
         return min(1.0, weighted_score / total_weight * 2)  # Normalize and amplify
 
     def _generate_recommendation(self, risk_score: float, risks: List[FailureMode]) -> str:
-            """Generate go/no-go recommendation.
+        """Generate go/no-go recommendation.
 
         Args:
             risk_score: Overall risk score
@@ -367,8 +370,7 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             Recommendation string
         """
-        critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and r.probability > 0
-    .5]
+        critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and r.probability > 0.5]
 
         if critical_risks:
             return "NO-GO: Address critical risks before proceeding"
@@ -380,7 +382,7 @@ class PreMortemAgent(SimpleAgentBase):
             return "GO: Low risk, proceed as planned"
 
     def _identify_success_factors(self, plan_text: str, risks: List[FailureMode]) -> List[str]:
-            """Identify critical success factors.
+        """Identify critical success factors.
 
         Args:
             plan_text: Original plan
@@ -416,7 +418,7 @@ class PreMortemAgent(SimpleAgentBase):
         return factors[:5]  # Top 5 factors
 
     def _create_monitoring_plan(self, risks: List[FailureMode]) -> Dict[str, str]:
-            """Create risk monitoring plan.
+        """Create monitoring plan for identified risks.
 
         Args:
             risks: Risks to monitor
@@ -427,13 +429,12 @@ class PreMortemAgent(SimpleAgentBase):
         monitoring = {}
 
         for risk in risks[:3]:  # Top 3 risks
-            monitoring[risk.risk] = f"Weekly check-ins, track {risk.early_warning_signs[0] if risk.e
-    arly_warning_signs else 'key metrics'}"
+            monitoring[risk.risk] = f"Weekly check-ins, track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
 
         return monitoring
 
     def _summarize_plan(self, plan_text: str) -> str:
-            """Create brief summary of the plan.
+        """Create brief summary of the plan.
 
         Args:
             plan_text: Plan to summarize
@@ -445,7 +446,7 @@ class PreMortemAgent(SimpleAgentBase):
         return plan_text[:200] + "..." if len(plan_text) > 200 else plan_text
 
     def render_risk_assessment(self, report: PreMortemReport) -> str:
-            """Render pre-mortem report as Markdown.
+        """Render pre-mortem report as Markdown.
 
         Args:
             report: Pre-mortem report to render
@@ -466,11 +467,9 @@ class PreMortemAgent(SimpleAgentBase):
         ]
 
         for risk in report.top_risks:
-            mitigation = risk.mitigation_strategy[:50] + "..." if len(risk.mitigation_strategy) > 50
-    else risk.mitigation_strategy
+            mitigation = risk.mitigation_strategy[:50] + "..." if len(risk.mitigation_strategy) > 50 else risk.mitigation_strategy
             lines.append(
-                f"| {risk.risk[:40]}... | {risk.category} | {risk.probability:.0%} | {risk.impact} |
-    {mitigation} |"
+                f"| {risk.risk[:40]}... | {risk.category} | {risk.probability:.0%} | {risk.impact} | {mitigation} |"
             )
 
         lines.extend([
@@ -493,8 +492,8 @@ class PreMortemAgent(SimpleAgentBase):
 
         return "\n".join(lines)
 
-    async def _call_llm(self, prompt: str, temperature: float = 0.3) -> LLMResponse:
-            """Call the LLM with the given prompt.
+    async def _call_llm(self, prompt: str, temperature: float = 0.3):
+        """Call the LLM with the given prompt.
 
         Args:
             prompt: Prompt to send to LLM
@@ -505,7 +504,8 @@ class PreMortemAgent(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-
+            from .multi_provider_clients import get_client, Provider
+            
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)
 
@@ -518,21 +518,18 @@ class PreMortemAgent(SimpleAgentBase):
             )
 
             class LLMResponseImpl:
-                    """TODO: Add docstring."""
-
-                def __init__(self, content: str):
-                    self.content = content
+                """TODO: Add docstring."""
+            def __init__(self, content: str):
+                self.content = content
 
             return LLMResponseImpl(response.content[0].text)
 
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
-                """TODO: Add docstring."""
-
             class LLMResponseImpl:
-                    """Docstring."""
-                def __init__(self, content: str):
-                    self.content = content
+                """Docstring."""
+            def __init__(self, content: str):
+                self.content = content
 
             return LLMResponseImpl('{"failure_modes": []}')
