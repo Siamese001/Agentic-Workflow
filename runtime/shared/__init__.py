@@ -119,6 +119,26 @@ from .kx_executor import (
     execute_kx_node,
 )
 
+# Uber High Signal Agents
+from .architecture_visualizer_agent import (
+    ArchitectureVisualizerAgent,
+    DiagramType,
+    DiagramNode,
+    DiagramArtifact,
+)
+from .cultural_decoder_agent import (
+    CulturalDecoderAgent,
+    CompanyDNA,
+    CulturallyAlignedContent,
+)
+from .pre_mortem_agent import (
+    PreMortemAgent,
+    RiskCategory,
+    ImpactLevel,
+    FailureMode,
+    PreMortemReport,
+)
+
 __all__ = [
     # SDK Registry
     "SDK_REGISTRY",
@@ -206,4 +226,17 @@ __all__ = [
     "KXExecutionResult",
     "KXNodeExecutor",
     "execute_kx_node",
+    # Uber High Signal Agents
+    "ArchitectureVisualizerAgent",
+    "CulturalDecoderAgent",
+    "PreMortemAgent",
+    "DiagramType",
+    "DiagramNode",
+    "DiagramArtifact",
+    "CompanyDNA",
+    "CulturallyAlignedContent",
+    "RiskCategory",
+    "ImpactLevel",
+    "FailureMode",
+    "PreMortemReport",
 ]
