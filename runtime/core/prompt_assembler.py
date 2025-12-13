@@ -13,9 +13,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from pydantic import BaseModel, Field
 
-from .prompt_injection_loader import InjectionPattern, InjectionMatch
-from .instructional_injections import get_instructional_injections
-
 logger = logging.getLogger(__name__)
 
 
@@ -117,7 +114,9 @@ You are {role}. Your objective is {objective}.
         examples: Optional[str] = None,
         output_schema: Optional[Dict[str, Any]] = None,
         template_name: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
+        enforce_contract: bool = False,
+        contract_id: Optional[str] = None
     ) -> str:
         """Assemble a prompt with semantic fencing.
         
