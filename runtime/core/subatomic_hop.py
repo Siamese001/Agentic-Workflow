@@ -39,6 +39,11 @@ from .resilience.circuit_breaker import (
     CircuitBreakerConfig,
     CriticalServiceFailure
 )
+from .security.secure_checkpoint import (
+    SecureCheckpointManager,
+    CheckpointManagerFactory,
+    CheckpointIntegrityError
+)
 
 logger = logging.getLogger(__name__)
 
@@ -120,6 +125,16 @@ class SubatomicHop:
                 timeout=30.0  # 30 second timeout for generation
             )
         )
+        
+        # Initialize secure checkpoint manager
+        if self.config.enable_checkpoints:
+            self.checkpoint_manager = CheckpointManagerFactory.get_manager(
+                self.config.hop_id,
+                self.config.checkpoint_dir,
+                use_global_key=True
+            )
+        else:
+            self.checkpoint_manager = None
         
         # State management
         self.current_stage: Optional[MicroStage] = None
@@ -650,49 +665,41 @@ class SubatomicHop:
             )
     
     async def _save_checkpoint(self, checkpoint: MicroCheckpoint) -> None:
-        """Save a checkpoint to disk."""
-        if not self.config.enable_checkpoints:
+        """Save a checkpoint using the secure checkpoint manager."""
+        if not self.config.enable_checkpoints or not self.checkpoint_manager:
             return
         
-        self.checkpoints[checkpoint.stage] = checkpoint
-        
-        checkpoint_file = self.config.checkpoint_dir / f"{self.config.hop_id}_{checkpoint.stage.value}.json"
-        
-        with open(checkpoint_file, 'w') as f:
-            json.dump(checkpoint.dict(), f, indent=2, default=str)
-        
-        logger.debug(f"Saved checkpoint for stage {checkpoint.stage.value}")
+        try:
+            await self.checkpoint_manager.save_checkpoint(checkpoint)
+            self.checkpoints[checkpoint.stage] = checkpoint
+            logger.debug(f"Saved secure checkpoint for stage {checkpoint.stage.value}")
+        except Exception as e:
+            logger.error(f"Failed to save secure checkpoint: {e}")
+            # Continue execution - checkpoint failure shouldn't stop the hop
     
     async def _load_checkpoint(self) -> None:
-        """Load the most recent checkpoint to resume from."""
-        if not self.config.enable_checkpoints:
+        """Load the most recent checkpoint using the secure checkpoint manager."""
+        if not self.config.enable_checkpoints or not self.checkpoint_manager:
             return
         
-        # Find the most recent checkpoint
-        latest_checkpoint = None
-        latest_time = 0
-        
-        for checkpoint_file in self.config.checkpoint_dir.glob(f"{self.config.hop_id}_*.json"):
-            if checkpoint_file.name.endswith("_final.json"):
-                continue  # Skip final result files
+        try:
+            latest_checkpoint = await self.checkpoint_manager.load_latest_checkpoint()
             
-            try:
-                with open(checkpoint_file, 'r') as f:
-                    data = json.load(f)
-                    checkpoint = MicroCheckpoint(**data)
-                    
-                    if checkpoint.timestamp > latest_time:
-                        latest_time = checkpoint.timestamp
-                        latest_checkpoint = checkpoint
-            except Exception as e:
-                logger.warning(f"Failed to load checkpoint {checkpoint_file}: {e}")
-        
-        if latest_checkpoint:
-            self.current_stage = latest_checkpoint.stage
-            self.context = latest_checkpoint.context
-            self.stage_retry_counts[latest_checkpoint.stage] = latest_checkpoint.retry_count
-            
-            logger.info(f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.value}")
+            if latest_checkpoint:
+                self.current_stage = latest_checkpoint.stage
+                self.context = latest_checkpoint.context
+                self.stage_retry_counts[latest_checkpoint.stage] = latest_checkpoint.retry_count
+                self.checkpoints[latest_checkpoint.stage] = latest_checkpoint
+                
+                logger.info(f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.value}")
+        except CheckpointIntegrityError as e:
+            logger.error(f"Checkpoint integrity validation failed: {e}")
+            # Quarantine all checkpoints and start fresh
+            self.checkpoint_manager.quarantine_all_checkpoints()
+            logger.warning("Quarantined all checkpoints due to integrity failure")
+        except Exception as e:
+            logger.warning(f"Failed to load secure checkpoint: {e}")
+            # Continue without checkpoint - start fresh
     
     def get_status(self) -> Dict[str, Any]:
         """Get current status of the hop."""

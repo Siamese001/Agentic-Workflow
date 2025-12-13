@@ -11,6 +11,7 @@ import time
 from enum import Enum
 from typing import Callable, Any, Optional, Dict
 from dataclasses import dataclass, field
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -204,33 +205,42 @@ class CircuitBreaker:
 
 
 class CircuitBreakerFactory:
-    """Factory for managing named circuit breakers.
+    """Factory for managing named circuit breakers with thread safety.
     
     Provides singleton access to circuit breakers by name, ensuring
-    that failures in one service don't affect others.
+    that failures in one service don't affect others. Thread-safe
+    implementation prevents race conditions in concurrent environments.
     """
     
     _instance = None
+    _lock = threading.Lock()
     _breakers: Dict[str, CircuitBreaker] = {}
+    _breakers_lock = threading.RLock()  # Reentrant lock for nested operations
     
     def __new__(cls):
-        """Singleton pattern implementation."""
+        """Thread-safe singleton pattern implementation."""
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+                    cls._instance._initialized = False
         return cls._instance
     
     def __init__(self):
-        """Initialize the factory."""
+        """Initialize the factory with thread safety."""
         if self._initialized:
             return
         
-        self._initialized = True
-        logger.info("Initialized CircuitBreakerFactory")
+        with self._lock:
+            if self._initialized:
+                return
+            
+            self._initialized = True
+            logger.info("Initialized CircuitBreakerFactory with thread safety")
     
     @classmethod
     def get(cls, name: str, config: Optional[CircuitBreakerConfig] = None) -> CircuitBreaker:
-        """Get or create a circuit breaker by name.
+        """Get or create a circuit breaker by name with thread safety.
         
         Args:
             name: Unique name for the circuit breaker
@@ -241,43 +251,75 @@ class CircuitBreakerFactory:
         """
         factory = cls()
         
+        # Double-checked locking pattern
         if name not in factory._breakers:
-            factory._breakers[name] = CircuitBreaker(name, config)
-            logger.debug(f"Created new CircuitBreaker: {name}")
+            with factory._breakers_lock:
+                if name not in factory._breakers:
+                    factory._breakers[name] = CircuitBreaker(name, config)
+                    logger.debug(f"Created new CircuitBreaker: {name}")
         
         return factory._breakers[name]
     
     @classmethod
     def list_all(cls) -> Dict[str, Dict[str, Any]]:
-        """List all circuit breakers and their states.
+        """List all circuit breakers and their states with thread safety.
         
         Returns:
             Dictionary mapping breaker names to their stats
         """
         factory = cls()
-        return {name: breaker.get_stats() for name, breaker in factory._breakers.items()}
+        with factory._breakers_lock:
+            return {name: breaker.get_stats() for name, breaker in factory._breakers.items()}
     
     @classmethod
     def reset_all(cls) -> None:
-        """Reset all circuit breakers to CLOSED state."""
+        """Reset all circuit breakers to CLOSED state with thread safety."""
         factory = cls()
-        for breaker in factory._breakers.values():
-            breaker.reset()
+        with factory._breakers_lock:
+            for breaker in factory._breakers.values():
+                breaker.reset()
         logger.info("All circuit breakers reset to CLOSED state")
     
     @classmethod
     def reset(cls, name: str) -> None:
-        """Reset a specific circuit breaker.
+        """Reset a specific circuit breaker with thread safety.
         
         Args:
             name: Name of the circuit breaker to reset
         """
         factory = cls()
-        if name in factory._breakers:
-            factory._breakers[name].reset()
-            logger.info(f"CircuitBreaker '{name}' reset to CLOSED state")
-        else:
-            logger.warning(f"CircuitBreaker '{name}' not found")
+        with factory._breakers_lock:
+            if name in factory._breakers:
+                factory._breakers[name].reset()
+                logger.info(f"CircuitBreaker '{name}' reset to CLOSED state")
+            else:
+                logger.warning(f"CircuitBreaker '{name}' not found")
+    
+    @classmethod
+    def remove(cls, name: str) -> bool:
+        """Remove a circuit breaker from the factory with thread safety.
+        
+        Args:
+            name: Name of the circuit breaker to remove
+            
+        Returns:
+            True if removed, False if not found
+        """
+        factory = cls()
+        with factory._breakers_lock:
+            if name in factory._breakers:
+                del factory._breakers[name]
+                logger.info(f"CircuitBreaker '{name}' removed from factory")
+                return True
+            return False
+    
+    @classmethod
+    def clear_all(cls) -> None:
+        """Clear all circuit breakers from the factory with thread safety."""
+        factory = cls()
+        with factory._breakers_lock:
+            factory._breakers.clear()
+        logger.info("All circuit breakers cleared from factory")
 
 
 # Convenience functions for direct access
