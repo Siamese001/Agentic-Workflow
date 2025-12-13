@@ -96,6 +96,7 @@ aiohttp>=3.9.0                  # Async HTTP for parallel requests
 uvicorn>=0.30.0                 # ASGI server for MCP/FastAPI
 sentence-transformers>=2.2.2    # SOTA embeddings and cross-encoders for RAG
 rich>=13.0.0                     # Rich terminal formatting for War Room UI
+tavily-python>=0.3.0              # Search API for automated intelligence gathering
 
 # =============================================================================
 # COVERAGE MATRIX (21 SDKs)
