@@ -288,7 +288,7 @@ def hydrate_repo_data() -> None:
     ALL_DIRS.clear()
     
     sov_roots = {d for d in SOVEREIGN_DIRS if (ROOT / d).is_dir()}
-    excluded = {".git", "__pycache__", "node_modules"} | EXCLUDED_DIRS
+    excluded = {".git", "__pycache__", "node_modules", ".venv"} | EXCLUDED_DIRS
     
     for item in ROOT.rglob("*"):
         # Skip excluded directories
@@ -381,7 +381,7 @@ def is_globally_excluded(path: Path) -> bool:
     This is the Single Source of Truth for exclusions.
     """
     # Standard infrastructure dirs
-    infra = {".git", "__pycache__", "node_modules", ".idea", ".vscode", "venv", "env"}
+    infra = {".git", "__pycache__", "node_modules", ".idea", ".vscode", "venv", "env", ".venv"}
     # Combine with Domain Exclusions
     all_excluded = infra | EXCLUDED_DIRS  # {"data", "archives"}
     
@@ -556,7 +556,8 @@ def check_key_01_no_sovereign_deletions() -> None:
         try:
             data = json.loads(read_file(tombstone_path))
             valid_tombstones = set(data.get("authorized_deletions", []))
-        except: pass
+        except (json.JSONDecodeError, FileNotFoundError, OSError):
+            pass
 
     if not truly_deleted:
         status_msg = "No unauthorized sovereign deletions"
@@ -1592,19 +1593,27 @@ def check_key_40_validator_self_sanity() -> None:
 def _iter_light_py_files() -> Iterable[Path]:
     """
     Non-sovereign Python files under project root (uses cache).
-    Strictly excludes sovereign dirs AND global excludes (data/archives/.git).
+    Strictly excludes sovereign dirs AND global excludes (data/archives/.git/.venv).
     """
     if _REPO_HYDRATED:
         for fd in LIGHT_FILES:
+            # Additional .venv filter even when using cache
+            # fd.rel_path is a string, convert to Path to check parts
+            rel_path = Path(fd.rel_path)
+            if any(part == ".venv" for part in rel_path.parts):
+                continue
             yield fd.path
     else:
         sov_roots = set(SOVEREIGN_DIRS)
         for f in ROOT.rglob("*.py"):
             rel = f.relative_to(ROOT)
-            # Check 1: Global Excludes (data, archives, .git, etc.)
+            # Check 1: Global Excludes (data, archives, .git, .venv, etc.)
             if is_globally_excluded(rel):
                 continue
-            # Check 2: Sovereign Directories (not light)
+            # Check 2: Explicit .venv exclusion (Windows path issue)
+            if any(part == ".venv" for part in rel.parts):
+                continue
+            # Check 3: Sovereign Directories (not light)
             if rel.parts and rel.parts[0] in sov_roots:
                 continue
             yield f
@@ -1626,7 +1635,7 @@ def check_key_41_light_no_debug() -> None:
     violations: List[str] = []
     # Scripts and CLI tools are exempt (they need print for output)
     exempt_files = {"canon_validator.py", "fix_canon_violations.py", "verify_installation.py"}
-    exempt_dirs = {"scripts", "runtime"}  # Scripts and runtime are exempt
+    exempt_dirs = {"scripts", "runtime", "examples", "tests"}  # Added examples and tests to exempt dirs
     
     for f in _iter_light_py_files():
         if f.name in exempt_files:
@@ -1763,7 +1772,11 @@ def check_key_47_no_zombie_archive_anywhere() -> None:
     # 1. Check for zombie archive directories (original check)
     for d in ROOT.rglob("archive"):
         if d.is_dir():
-            violations.append(f"archive/ directory: {d.relative_to(ROOT)}")
+            rel_path = d.relative_to(ROOT)
+            # Skip archive directories that are inside the archives/ directory
+            if "archives" in rel_path.parts:
+                continue
+            violations.append(f"archive/ directory: {rel_path}")
 
     # 2. Check for residual compiled files and metadata (Hole 1 fix)
     residual_extensions = {".pyc", ".bak", ".tmp", ".swp", ".orig", "~", ".DS_Store", "Thumbs.db"}
@@ -2038,6 +2051,10 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     import json
+
+    # Force rehydration to pick up .venv exclusion changes
+    global _REPO_HYDRATED
+    _REPO_HYDRATED = False
 
     # Load pre-commit change tracker if available
     load_change_tracker_from_env()

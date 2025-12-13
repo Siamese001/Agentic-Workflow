@@ -102,6 +102,11 @@ class CitationMap:
 
 @dataclass
 class DeepResearchOutput:
+    """Output data structure for K.2.5 deep research results.
+    
+    Contains comprehensive research findings across strategic, technical,
+    and organizational dimensions with proper citations.
+    """
     company_name: str
     strategic_layer: StrategicLayer
     technical_layer: TechnicalLayer
@@ -117,7 +122,12 @@ class DeepResearchOutput:
             self.citation_map.validate()
         )
     
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert the research output to a dictionary format.
+        
+        Returns:
+            Dictionary representation of the research output
+        """
         return {
             "company_name": self.company_name,
             "strategic_layer": {

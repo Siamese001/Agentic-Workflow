@@ -118,7 +118,7 @@ async def demonstrate_stateful_continuation():
         # Note: interaction_id would be in telemetry logs, not response
         print("Initial response received")
         print(f"Response length: {len(response1)} characters")
-    except:
+    except json.JSONDecodeError:
         print("Initial response received (plain text)")
     
     # Continue with refinement
