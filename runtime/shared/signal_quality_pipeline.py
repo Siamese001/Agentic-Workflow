@@ -25,14 +25,14 @@ class QualityAssessment(BaseModel):
 
     @validator('flags', pre=True)
     def validate_flags(cls, v):
-            """Ensure flags is a list of strings."""
+        """Ensure flags is a list of strings."""
         if isinstance(v, str):
             return [v]
         return v if isinstance(v, list) else []
 
     @property
     def composite_score(self) -> float:
-            """Calculate composite quality score."""
+        """Calculate composite quality score."""
         # Weighted average of all scores
         weights = {
             "relevance": 0.3,
@@ -48,11 +48,11 @@ class QualityAssessment(BaseModel):
         )
 
     def has_flag(self, flag: str) -> bool:
-            """Check if a specific flag is present."""
+        """Check if a specific flag is present."""
         return flag in self.flags
 
     def add_flag(self, flag: str) -> None:
-            """Add a quality flag."""
+        """Add a quality flag."""
         if flag not in self.flags:
             self.flags.append(flag)
 
@@ -70,7 +70,7 @@ class SignalQualityPipeline:
         specificity_threshold: float = 0.5,
         enable_coherence_check: bool = False
     ):
-            """Initialize the quality pipeline.
+        """Initialize the quality pipeline.
 
         Args:
             relevance_threshold: Minimum relevance score to pass
@@ -88,14 +88,12 @@ class SignalQualityPipeline:
             # Tier 1: Official financial/regulatory documents
             "tier_1": {
                 "score": 1.0,
-                "sources": {"10-k", "10-q", "official_report", "sec_filing", "annual_report", "proxy
-    _statement"}
+                "sources": {"10-k", "10-q", "official_report", "sec_filing", "annual_report", "proxy_statement"}
             },
             # Tier 2: Professional profiles and verified resumes
             "tier_2": {
                 "score": 0.8,
-                "sources": {"linkedin", "resume_v1", "official_resume", "company_profile", "verified
-    _profile"}
+                "sources": {"linkedin", "resume_v1", "official_resume", "company_profile", "verified_profile"}
             },
             # Tier 3: Notes and informal sources
             "tier_3": {
@@ -131,7 +129,6 @@ class SignalQualityPipeline:
                    f"relevance={relevance_threshold}, authority={authority_threshold}, "
                    f"specificity={specificity_threshold}")
 
-        """Docstring."""
     def evaluate_signal(
         self,
         content: str,
@@ -139,7 +136,7 @@ class SignalQualityPipeline:
         query: str,
         doc_id: Optional[str] = None
     ) -> QualityAssessment:
-            """Evaluate a signal through all quality checks.
+        """Evaluate a signal through all quality checks.
 
         Args:
             content: Document content to evaluate
