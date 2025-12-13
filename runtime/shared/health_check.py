@@ -8,6 +8,8 @@ system health for operations teams.
 import asyncio
 import logging
 import time
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +43,7 @@ class HealthCheckResult:
     details: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary.
+            """Convert to dictionary.
 
         Returns:
             Dictionary representation
@@ -61,7 +63,7 @@ class HealthChecker(ABC):
 
     @abstractmethod
     async def check_health(self) -> HealthCheckResult:
-        """Perform health check.
+            """Perform health check.
 
         Returns:
             Health check result
@@ -71,20 +73,20 @@ class HealthChecker(ABC):
     @property
     @abstractmethod
     def component_name(self) -> str:
-        """Get component name."""
+            """Get component name."""
         pass
 
     @property
     @abstractmethod
     def component_type(self) -> ComponentType:
-        """Get component type."""
+            """Get component type."""
         pass
 
 class BulkheadHealthChecker(HealthChecker):
     """Health checker for bulkheads."""
 
     def __init__(self, bulkhead_manager):
-        """Initialize bulkhead health checker.
+            """Initialize bulkhead health checker.
 
         Args:
             bulkhead_manager: BulkheadManager instance
@@ -92,7 +94,7 @@ class BulkheadHealthChecker(HealthChecker):
         self.bulkhead_manager = bulkhead_manager
 
     async def check_health(self) -> HealthCheckResult:
-        """Check bulkhead health.
+            """Check bulkhead health.
 
         Returns:
             Health check result
@@ -145,19 +147,19 @@ class BulkheadHealthChecker(HealthChecker):
 
     @property
     def component_name(self) -> str:
-        """Get component name."""
+            """Get component name."""
         return "bulkhead_manager"
 
     @property
     def component_type(self) -> ComponentType:
-        """Get component type."""
+            """Get component type."""
         return ComponentType.BULKHEAD
 
 class CircuitBreakerHealthChecker(HealthChecker):
     """Health checker for circuit breakers."""
 
     def __init__(self, circuit_breaker_registry):
-        """Initialize circuit breaker health checker.
+            """Initialize circuit breaker health checker.
 
         Args:
             circuit_breaker_registry: CircuitBreakerRegistry instance
@@ -165,7 +167,7 @@ class CircuitBreakerHealthChecker(HealthChecker):
         self.registry = circuit_breaker_registry
 
     async def check_health(self) -> HealthCheckResult:
-        """Check circuit breaker health.
+            """Check circuit breaker health.
 
         Returns:
             Health check result
@@ -226,19 +228,19 @@ class CircuitBreakerHealthChecker(HealthChecker):
 
     @property
     def component_name(self) -> str:
-        """Get component name."""
+            """Get component name."""
         return "circuit_breaker_registry"
 
     @property
     def component_type(self) -> ComponentType:
-        """Get component type."""
+            """Get component type."""
         return ComponentType.CIRCUIT_BREAKER
 
 class DeadLetterQueueHealthChecker(HealthChecker):
     """Health checker for dead letter queue."""
 
     def __init__(self, dead_letter_queue):
-        """Initialize DLQ health checker.
+            """Initialize DLQ health checker.
 
         Args:
             dead_letter_queue: DeadLetterQueue instance
@@ -246,7 +248,7 @@ class DeadLetterQueueHealthChecker(HealthChecker):
         self.dlq = dead_letter_queue
 
     async def check_health(self) -> HealthCheckResult:
-        """Check DLQ health.
+            """Check DLQ health.
 
         Returns:
             Health check result
@@ -292,19 +294,19 @@ class DeadLetterQueueHealthChecker(HealthChecker):
 
     @property
     def component_name(self) -> str:
-        """Get component name."""
+            """Get component name."""
         return "dead_letter_queue"
 
     @property
     def component_type(self) -> ComponentType:
-        """Get component type."""
+            """Get component type."""
         return ComponentType.DEAD_LETTER_QUEUE
 
 class CheckpointManagerHealthChecker(HealthChecker):
     """Health checker for checkpoint manager."""
 
     def __init__(self, checkpoint_manager):
-        """Initialize checkpoint manager health checker.
+            """Initialize checkpoint manager health checker.
 
         Args:
             checkpoint_manager: CheckpointManager instance
@@ -312,7 +314,7 @@ class CheckpointManagerHealthChecker(HealthChecker):
         self.checkpoint_manager = checkpoint_manager
 
     async def check_health(self) -> HealthCheckResult:
-        """Check checkpoint manager health.
+            """Check checkpoint manager health.
 
         Returns:
             Health check result
@@ -367,26 +369,26 @@ class CheckpointManagerHealthChecker(HealthChecker):
 
     @property
     def component_name(self) -> str:
-        """Get component name."""
+            """Get component name."""
         return "checkpoint_manager"
 
     @property
     def component_type(self) -> ComponentType:
-        """Get component type."""
+            """Get component type."""
         return ComponentType.CHECKPOINT_MANAGER
 
 class HealthCheckRegistry:
     """Registry for managing health checks."""
 
     def __init__(self):
-        """Initialize health check registry."""
+            """Initialize health check registry."""
         self.checkers: Dict[str, HealthChecker] = {}
         self._lock = asyncio.Lock()
         self._last_check: Optional[datetime] = None
         self._last_results: Dict[str, HealthCheckResult] = {}
 
     async def register_checker(self, checker: HealthChecker) -> None:
-        """Register a health checker.
+            """Register a health checker.
 
         Args:
             checker: Health checker to register
@@ -396,7 +398,7 @@ class HealthCheckRegistry:
             logger.debug(f"Registered health checker: {checker.component_name}")
 
     async def unregister_checker(self, component_name: str) -> None:
-        """Unregister a health checker.
+            """Unregister a health checker.
 
         Args:
             component_name: Component name to unregister
@@ -407,7 +409,7 @@ class HealthCheckRegistry:
                 logger.debug(f"Unregistered health checker: {component_name}")
 
     async def check_all(self) -> Dict[str, Any]:
-        """Check health of all registered components.
+            """Check health of all registered components.
 
         Returns:
             Aggregated health results
@@ -475,7 +477,7 @@ class HealthCheckRegistry:
             return response
 
     async def _safe_check(self, checker: HealthChecker) -> HealthCheckResult:
-        """Safely execute health check.
+            """Safely execute health check.
 
         Args:
             checker: Health checker to execute
@@ -496,7 +498,7 @@ class HealthCheckRegistry:
             )
 
     async def check_component(self, component_name: str) -> Optional[HealthCheckResult]:
-        """Check health of specific component.
+            """Check health of specific component.
 
         Args:
             component_name: Component to check
@@ -512,7 +514,7 @@ class HealthCheckRegistry:
             return await self._safe_check(checker)
 
     def list_components(self) -> List[str]:
-        """List all registered components.
+            """List all registered components.
 
         Returns:
             List of component names
@@ -520,7 +522,7 @@ class HealthCheckRegistry:
         return list(self.checkers.keys())
 
     def get_last_results(self) -> Dict[str, HealthCheckResult]:
-        """Get results from last health check.
+            """Get results from last health check.
 
         Returns:
             Last health check results
@@ -543,8 +545,8 @@ async def get_health_registry() -> HealthCheckRegistry:
             _health_registry = HealthCheckRegistry()
     return _health_registry
 
-async def initialize_system_health_checks(
     """Docstring."""
+async def initialize_system_health_checks(
     bulkhead_manager=None,
     circuit_breaker_registry=None,
     dead_letter_queue=None,

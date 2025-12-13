@@ -14,7 +14,7 @@ class InfrastructureUpgradesOrchestrator:
     """Orchestrates all infrastructure upgrade components."""
 
     def __init__(self):
-        """Initialize infrastructure upgrades orchestrator."""
+            """Initialize infrastructure upgrades orchestrator."""
         self.fact_ledger: Optional[FactLedger] = None
         self.global_cache: Optional[GlobalCache] = None
         self.tone_enforcer: Optional[ToneEnforcer] = None
@@ -25,7 +25,7 @@ class InfrastructureUpgradesOrchestrator:
         logger.info("Initialized InfrastructureUpgradesOrchestrator")
 
     async def initialize(self) -> None:
-        """Initialize all components."""
+            """Initialize all components."""
         if self._initialized:
             return
 
@@ -46,7 +46,7 @@ class InfrastructureUpgradesOrchestrator:
         logger.info("Infrastructure upgrades initialization complete")
 
     async def _setup_event_subscriptions(self) -> None:
-        """Setup event subscriptions for component coordination."""
+            """Setup event subscriptions for component coordination."""
         # Subscribe to content generation events for fact checking
         await self.infrastructure.event_bus.subscribe(
             "events.content_generated",
@@ -68,7 +68,7 @@ class InfrastructureUpgradesOrchestrator:
         logger.info("Setup infrastructure upgrades event subscriptions")
 
     async def _handle_content_generated(self, event: SystemEvent) -> None:
-        """Handle content generation event for fact checking.
+            """Handle content generation event for fact checking.
 
         Args:
             event: Content generated event
@@ -102,7 +102,7 @@ class InfrastructureUpgradesOrchestrator:
             logger.error(f"Failed to handle content generated: {e}")
 
     async def _handle_cache_miss(self, event: SystemEvent) -> None:
-        """Handle cache miss event.
+            """Handle cache miss event.
 
         Args:
             event: Cache miss event
@@ -121,7 +121,7 @@ class InfrastructureUpgradesOrchestrator:
             logger.error(f"Failed to handle cache miss: {e}")
 
     async def _handle_tone_violation(self, event: SystemEvent) -> None:
-        """Handle tone violation event.
+            """Handle tone violation event.
 
         Args:
             event: Tone violation event
@@ -141,7 +141,7 @@ class InfrastructureUpgradesOrchestrator:
             logger.error(f"Failed to handle tone violation: {e}")
 
     async def _verify_content_facts(self, content: str, trace_id: str) -> List[VerificationResult]:
-        """Verify facts in generated content.
+            """Verify facts in generated content.
 
         Args:
             content: Generated content
@@ -182,8 +182,8 @@ class InfrastructureUpgradesOrchestrator:
 
         return violations
 
-    async def generate_with_upgrades(
         """Docstring."""
+    async def generate_with_upgrades(
         self,
         task_type: TaskType,
         prompt: str,
@@ -193,7 +193,7 @@ class InfrastructureUpgradesOrchestrator:
         use_cache: bool = True,
         trace_id: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Generate content with all infrastructure upgrades.
+            """Generate content with all infrastructure upgrades.
 
         Args:
             task_type: Type of task
@@ -343,7 +343,7 @@ class InfrastructureUpgradesOrchestrator:
             raise
 
     async def load_profile_facts(self, profile_data: Dict[str, Any]) -> None:
-        """Load profile facts into the ledger.
+            """Load profile facts into the ledger.
 
         Args:
             profile_data: Profile data dictionary
@@ -355,7 +355,7 @@ class InfrastructureUpgradesOrchestrator:
         logger.info(f"Loaded profile facts: {self.fact_ledger.get_stats()['facts_loaded']} facts")
 
     def get_upgrades_stats(self) -> Dict[str, Any]:
-        """Get statistics for all upgrade components.
+            """Get statistics for all upgrade components.
 
         Returns:
             Statistics dictionary
@@ -392,8 +392,8 @@ async def get_infrastructure_upgrades_orchestrator() -> InfrastructureUpgradesOr
     return _upgrades_orchestrator
 
 # Convenience functions
-async def generate_with_consistency(
     """Docstring."""
+async def generate_with_consistency(
     task_type: TaskType,
     prompt: str,
     tone_voice: Optional[ToneVoice] = None,

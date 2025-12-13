@@ -12,6 +12,7 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import logging
 import os
+from dataclasses import dataclass
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ class HardenedAnthropicConfig:
 
     @property
     def max_context_tokens(self) -> int:
-        """Get maximum context tokens for the model."""
+            """Get maximum context tokens for the model."""
         return self.MODEL_LIMITS.get(self.model, 200000)
 
 class HardenedAnthropicExecutor(HardeningMixin):
@@ -64,7 +65,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         config: Optional[HardenedAnthropicConfig] = None,
         telemetry: Optional[SystemTelemetry] = None,
     ):
-        """Initialize hardened Anthropic executor.
+            """Initialize hardened Anthropic executor.
 
         Args:
             config: Optional configuration
@@ -86,7 +87,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         self._setup_client()
 
     def _setup_client(self) -> None:
-        """Setup Anthropic client."""
+            """Setup Anthropic client."""
         try:
             import anthropic
         except ImportError as exc:
@@ -103,7 +104,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         )
 
     def _validate_token_budget(self, prompt: str) -> None:
-        """Validate token budget before API call.
+            """Validate token budget before API call.
 
         Anthropic doesn't provide official tokenization, so we use
         a conservative estimate based on character count.
@@ -131,7 +132,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
     ) -> tuple[List[Dict[str, str]], Optional[str]]:
-        """Build Anthropic message format.
+            """Build Anthropic message format.
 
         Args:
             messages: Agent messages
@@ -152,8 +153,8 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
         return anthropic_messages, system_prompt
 
-    async def run_llm(
         """Docstring."""
+    async def run_llm(
         self,
         prompt: str,
         *,
@@ -162,7 +163,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         system_prompt: Optional[str] = None,
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
-        """Run Anthropic completion with hardening.
+            """Run Anthropic completion with hardening.
 
         Args:
             prompt: Input prompt (used if messages not provided)
@@ -185,7 +186,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
         # Define async operation
         async def _completion():
-            """Docstring."""
+                """Docstring."""
             response = self._client.messages.create(
                 model=self.config.model,
                 messages=anthropic_messages,
@@ -212,8 +213,8 @@ class HardenedAnthropicExecutor(HardeningMixin):
             },
         )
 
-    async def run_llm_with_response(
         """Docstring."""
+    async def run_llm_with_response(
         self,
         prompt: str,
         *,
@@ -222,7 +223,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         system_prompt: Optional[str] = None,
         messages: Optional[List[AgentMessage]] = None,
     ) -> AgentResponse:
-        """Run Anthropic completion with full response metadata.
+            """Run Anthropic completion with full response metadata.
 
         Args:
             prompt: Input prompt (used if messages not provided)
@@ -245,7 +246,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
         # Define async operation with response capture
         async def _completion():
-            """Docstring."""
+                """Docstring."""
             response = self._client.messages.create(
                 model=self.config.model,
                 messages=anthropic_messages,
@@ -289,8 +290,8 @@ class HardenedAnthropicExecutor(HardeningMixin):
             finish_reason=raw_response.stop_reason if raw_response else None,
         )
 
-    def run_llm_sync(
         """Docstring."""
+    def run_llm_sync(
         self,
         prompt: str,
         *,
@@ -299,7 +300,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         system_prompt: Optional[str] = None,
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
-        """Synchronous version of run_llm.
+            """Synchronous version of run_llm.
 
         Args:
             prompt: Input prompt
@@ -332,8 +333,8 @@ class HardenedAnthropicExecutor(HardeningMixin):
             )
 
 # Factory function for backward compatibility
-def create_hardened_anthropic_executor(
     """Docstring."""
+def create_hardened_anthropic_executor(
     model: str = "claude-3-5-sonnet-20241022",
     temperature: float = 0.7,
     **kwargs

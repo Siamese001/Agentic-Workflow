@@ -2,7 +2,9 @@
 Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
+from enum import Enum
+from dataclasses import dataclass
 
 class ToolStatus(Enum):
     """TODO: Add docstring."""
@@ -13,8 +15,6 @@ class ToolStatus(Enum):
     ERROR = "error"
 
 @dataclass
-    """TODO: Add docstring."""
-
 class ToolDefinition:
     """Docstring."""
     name: str
@@ -22,10 +22,8 @@ class ToolDefinition:
     parameters: Dict[str, object]
     required_params: List[str]
 
-    """TODO: Add docstring."""
-
 @dataclass
-class ToolResult:
+class ToolExecutionResult:
     """Docstring."""
     success: bool
     data: Optional[Any]
@@ -85,8 +83,6 @@ class TestToolRegistration:
 class TestToolExecution:
     """Tests for tool execution."""
 
-            """TODO: Add docstring."""
-
     def test_execute_tool_success(self):
         """Tool executes successfully."""
         def mock_search(query: str) -> Dict:
@@ -95,7 +91,7 @@ class TestToolExecution:
 
         result = mock_search("test query")
 
-        tool_result = ToolResult(
+        tool_result = ToolExecutionResult(
             success=True,
             data=result,
             error=None,
@@ -104,8 +100,6 @@ class TestToolExecution:
 
         assert tool_result.success is True
         assert tool_result.data is not None
-            """TODO: Add docstring."""
-
 
     def test_execute_tool_failure(self):
         """Tool failure is handled correctly."""
@@ -115,9 +109,9 @@ class TestToolExecution:
 
         try:
             mock_failing_tool()
-            tool_result = ToolResult(success=True, data={}, error=None, execution_time_ms=0)
+            tool_result = ToolExecutionResult(success=True, data={}, error=None, execution_time_ms=0)
         except ValueError as e:
-            tool_result = ToolResult(
+            tool_result = ToolExecutionResult(
                 success=False,
                 data=None,
                 error=str(e),

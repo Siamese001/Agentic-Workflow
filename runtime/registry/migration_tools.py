@@ -24,7 +24,7 @@ class KNodeScanner:
     ]
 
     def __init__(self, root_path: Path):
-        """Initialize scanner.
+            """Initialize scanner.
 
         Args:
             root_path: Root directory to scan
@@ -33,7 +33,7 @@ class KNodeScanner:
         self.findings: List[Dict[str, Any]] = []
 
     def scan_directory(self, extensions: List[str] = None) -> Dict[str, Any]:
-        """Scan directory for K-node references.
+            """Scan directory for K-node references.
 
         Args:
             extensions: File extensions to scan (default: .py, .md, .json)
@@ -68,7 +68,7 @@ class KNodeScanner:
         return results
 
     def scan_file(self, file_path: Path) -> Dict[str, Any]:
-        """Scan a single file for K-node references.
+            """Scan a single file for K-node references.
 
         Args:
             file_path: File to scan
@@ -107,7 +107,7 @@ class KNodeScanner:
         }
 
     def _is_knode_reference(self, text: str) -> bool:
-        """Check if text is actually a K-node reference.
+            """Check if text is actually a K-node reference.
 
         Args:
             text: Text to check
@@ -134,11 +134,11 @@ class KNodeMigrator:
     """Migrates K-node references to functional roles."""
 
     def __init__(self):
-        """Initialize migrator."""
+            """Initialize migrator."""
         self.replacements = self._build_replacement_map()
 
     def _build_replacement_map(self) -> Dict[str, str]:
-        """Build replacement map for migration.
+            """Build replacement map for migration.
 
         Returns:
             Dictionary mapping legacy references to functional roles
@@ -169,7 +169,7 @@ class KNodeMigrator:
         return replacements
 
     def migrate_file(self, file_path: Path, backup: bool = True) -> bool:
-        """Migrate a file from K-nodes to functional roles.
+            """Migrate a file from K-nodes to functional roles.
 
         Args:
             file_path: File to migrate
@@ -215,7 +215,7 @@ class KNodeMigrator:
             return False
 
     def migrate_configuration(self, config_path: Path) -> bool:
-        """Migrate configuration files.
+            """Migrate configuration files.
 
         Args:
             config_path: Path to configuration file
@@ -232,7 +232,7 @@ class KNodeMigrator:
 
             # Recursively migrate
             def migrate_dict(d: Dict, path: str = "") -> None:
-                """TODO: Add docstring."""
+                    """TODO: Add docstring."""
 
                 nonlocal changes_made
 
@@ -275,11 +275,11 @@ class MigrationValidator:
     """Validates that migration was successful."""
 
     def __init__(self):
-        """Initialize validator."""
+            """Initialize validator."""
         self.scanner = KNodeScanner(Path("."))
 
     def validate_migration(self, root_path: Path) -> Dict[str, Any]:
-        """Validate that all K-node references have been migrated.
+            """Validate that all K-node references have been migrated.
 
         Args:
             root_path: Root path to validate
@@ -318,7 +318,7 @@ class MigrationValidator:
         return validation
 
     def _is_false_positive(self, text: str, file_path: str) -> bool:
-        """Check if a reference is a false positive.
+            """Check if a reference is a false positive.
 
         Args:
             text: The reference text

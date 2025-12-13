@@ -36,7 +36,7 @@ class RedisInspectionInput(BaseModel):
 
     @validator('key')
     def validate_key_format(cls, v):
-        """Ensure key is not empty."""
+            """Ensure key is not empty."""
         if not v or not v.strip():
             raise ValueError("Key cannot be empty")
         return v.strip()
@@ -65,7 +65,7 @@ class HardenedRedisInspector:
     """
 
     def __init__(self, cache_client):
-        """Initialize the Redis inspector.
+            """Initialize the Redis inspector.
 
         Args:
             cache_client: HardenedCacheClient instance for connection reuse
@@ -97,7 +97,7 @@ class HardenedRedisInspector:
         }
 
     def _validate_key(self, key: str) -> None:
-        """Prevents access to system secrets and unauthorized namespaces.
+            """Prevents access to system secrets and unauthorized namespaces.
 
         Args:
             key: Redis key to validate
@@ -112,14 +112,14 @@ class HardenedRedisInspector:
                 f"Allowed prefixes: {self.ALLOWED_PREFIXES}"
             )
 
-    async def execute_inspection(
         """Docstring."""
+    async def execute_inspection(
         self,
         command: Union[str, RedisCommand],
         key: str,
         args: Optional[List[str]] = None
     ) -> Dict[str, Any]:
-        """
+            """
         Executes the whitelisted command via the Hardened Client.
 
         Args:
@@ -201,15 +201,15 @@ class HardenedRedisInspector:
                 suggestion="Check key format or Redis connectivity"
             )
 
-    async def _execute_redis_command(
         """Docstring."""
+    async def _execute_redis_command(
         self,
         redis_conn,
         command: RedisCommand,
         key: str,
         args: List[str]
     ) -> Any:
-        """Execute the specific Redis command.
+            """Execute the specific Redis command.
 
         Args:
             redis_conn: Redis connection
@@ -264,7 +264,7 @@ class HardenedRedisInspector:
         error: str,
         suggestion: str
     ) -> Dict[str, Any]:
-        """Create an error result dictionary.
+            """Create an error result dictionary.
 
         Args:
             command: Command that failed
@@ -284,7 +284,7 @@ class HardenedRedisInspector:
         ).model_dump()
 
     async def inspect_workflow_state(self, workflow_id: str) -> Dict[str, Any]:
-        """Convenience method to inspect workflow state.
+            """Convenience method to inspect workflow state.
 
         Args:
             workflow_id: ID of the workflow to inspect
@@ -319,7 +319,7 @@ class HardenedRedisInspector:
         return results
 
     async def inspect_queue_status(self, queue_name: str = "high_priority") -> Dict[str, Any]:
-        """Convenience method to inspect queue status.
+            """Convenience method to inspect queue status.
 
         Args:
             queue_name: Name of the queue (without prefix)
@@ -345,7 +345,7 @@ class HardenedRedisInspector:
         return results
 
     async def inspect_memory_usage(self) -> Dict[str, Any]:
-        """Inspect memory usage statistics.
+            """Inspect memory usage statistics.
 
         Returns:
             Memory usage information
@@ -363,7 +363,7 @@ class HardenedRedisInspector:
         return results
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get inspection statistics."""
+            """Get inspection statistics."""
         total = self.stats["total_inspections"]
         if total == 0:
             return self.stats
@@ -383,7 +383,7 @@ class HardenedRedisInspector:
         return stats
 
     def reset_stats(self) -> None:
-        """Reset inspection statistics."""
+            """Reset inspection statistics."""
         for key in self.stats:
             if key == "commands_used":
                 for cmd in self.stats[key]:

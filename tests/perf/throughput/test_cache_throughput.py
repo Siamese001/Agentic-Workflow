@@ -5,7 +5,7 @@ import time
 class TestCacheKeyThroughput:
     """Docstring."""
     def test_cache_key_throughput_10k_per_second(self):
-        """Docstring."""
+            """Docstring."""
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
         assert throughput >= 10000, f"Throughput: {throughput:.0f}/s"
 
     def test_fingerprint_key_throughput(self):
-        """Fingerprinted keys maintain high throughput."""
+            """Fingerprinted keys maintain high throughput."""
         messages = [{"role": "user", "content": "Test"}]
         iterations = 5000
 
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class TestBatchProcessingThroughput:
     """Docstring."""
     def test_batch_key_generation(self):
-        """Batch key generation has no pathological overhead."""
+            """Batch key generation has no pathological overhead."""
         batch_sizes = [10, 100, 1000]
         times_per_item = []
 

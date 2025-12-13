@@ -95,7 +95,7 @@ class TitaniumRAGPipeline:
         max_retrieved_docs: int = 50,
         top_k_final: int = 5
     ):
-        """Initialize the Titanium RAG Pipeline.
+            """Initialize the Titanium RAG Pipeline.
 
         Args:
             gate: Adaptive retrieval gate (Phase 1)
@@ -173,14 +173,14 @@ class TitaniumRAGPipeline:
                    f"CRAG Layer: {self.enable_crag} + "
                    f"GraphRAG Layer: {self.enable_graphrag}")
 
-    async def query(
         """Docstring."""
+    async def query(
         self,
         query: str,
         retrieval_function: callable,
         **kwargs
     ) -> Dict[str, Any]:
-        """Execute a complete RAG pipeline query.
+            """Execute a complete RAG pipeline query.
 
         Args:
             query: User query
@@ -383,7 +383,7 @@ class TitaniumRAGPipeline:
             try:
                 # Create vector retriever function for GraphRAG
                 async def vector_retriever_func(q: str, k: int) -> List[Dict[str, Any]]:
-                    """Docstring."""
+                        """Docstring."""
                     # Use already retrieved documents
                     results = []
                     for doc in retrieved_docs[:k]:
@@ -565,7 +565,7 @@ class TitaniumRAGPipeline:
         documents: List[Any],
         compressed_context: Optional[str] = None
     ) -> str:
-        """Generate response from retrieved documents.
+            """Generate response from retrieved documents.
 
         In a real implementation, this would call an LLM.
         Here we provide a mock response for testing.
@@ -584,7 +584,7 @@ class TitaniumRAGPipeline:
         return response
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get pipeline statistics.
+            """Get pipeline statistics.
 
         Returns:
             Dictionary with usage statistics
@@ -611,7 +611,7 @@ class TitaniumRAGPipeline:
         return stats
 
     def get_component_info(self) -> Dict[str, Any]:
-        """Get information about all components.
+            """Get information about all components.
 
         Returns:
             Dictionary with component status and capabilities
@@ -637,8 +637,8 @@ class TitaniumRAGPipeline:
         }
 
 # Convenience function for quick setup
-def create_titanium_pipeline(
     """Docstring."""
+def create_titanium_pipeline(
     enable_all: bool = True,
     **kwargs
 ) -> TitaniumRAGPipeline:

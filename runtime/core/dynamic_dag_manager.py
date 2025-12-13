@@ -7,6 +7,7 @@ allowing nodes to spawn new predecessors when they detect missing information.
 import logging
 import uuid
 from datetime import datetime
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -19,7 +20,7 @@ class GraphTransaction:
     """
 
     def __init__(self, manager):
-        """Initialize the transaction.
+            """Initialize the transaction.
 
         Args:
             manager: The DynamicDAGManager instance
@@ -29,7 +30,7 @@ class GraphTransaction:
         self.transaction_graph = None
 
     def __enter__(self):
-        """Enter transaction - create a copy of the graph.
+            """Enter transaction - create a copy of the graph.
 
         Returns:
             The transaction graph (copy of original)
@@ -44,7 +45,7 @@ class GraphTransaction:
         return self.transaction_graph
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Exit transaction - commit or rollback.
+            """Exit transaction - commit or rollback.
 
         Args:
             exc_type: Exception type if an error occurred
@@ -81,7 +82,7 @@ class GraphTransaction:
         return True
 
     def _validate_transaction_graph(self):
-        """Validate that the transaction graph is still a valid DAG.
+            """Validate that the transaction graph is still a valid DAG.
 
         Raises:
             ValueError: If validation fails
@@ -103,7 +104,7 @@ class GraphTransaction:
         self._validate_depth_ordering()
 
     def _validate_depth_ordering(self):
-        """Validate that depth values are consistent with graph structure."""
+            """Validate that depth values are consistent with graph structure."""
         depths = nx.get_node_attributes(self.transaction_graph, 'depth')
 
         for edge in self.transaction_graph.edges():
@@ -135,7 +136,7 @@ class HopSpec(BaseModel):
     retry_policy: Optional[Dict[str, Any]] = None
 
     class Config:
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         extra = "allow"  # Allow additional fields
 
@@ -153,7 +154,7 @@ class DAGMutation(BaseModel):
         """TODO: Add docstring."""
 
     def validate_hop_spec(cls, v, values):
-        """Docstring."""
+            """Docstring."""
         if values.get('action') in [MutationAction.SPAWN_PREDECESSOR,
             MutationAction.SPAWN_SUCCESSOR]:
             if v is None:
@@ -180,7 +181,7 @@ class DAGMutator:
     """Handles the actual graph mutations."""
 
     def __init__(self, config: DAGConfig):
-        """Initialize the DAG Mutator.
+            """Initialize the DAG Mutator.
 
         Args:
             config: DAG configuration
@@ -188,13 +189,13 @@ class DAGMutator:
         self.config = config
         self.mutation_history: List[MutationResult] = []
 
-    def apply_mutation(
         """Docstring."""
+    def apply_mutation(
         self,
         graph: nx.DiGraph,
         mutation: DAGMutation
     ) -> MutationResult:
-        """Apply a mutation to the graph with transactional safety.
+            """Apply a mutation to the graph with transactional safety.
 
         Args:
             graph: The NetworkX directed graph
@@ -242,7 +243,7 @@ class DAGMutator:
             return error_result
 
     def _validate_mutation(self, graph: nx.DiGraph, mutation: DAGMutation) -> None:
-        """Validate that a mutation is safe to apply."""
+            """Validate that a mutation is safe to apply."""
         # Check target node exists
         if mutation.target_hop_id not in graph.nodes:
             raise ValueError(f"Target node {mutation.target_hop_id} not found in graph")
@@ -267,7 +268,7 @@ class DAGMutator:
     _fan_out}")
 
     def _spawn_predecessor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
-        """Spawn a new predecessor node."""
+            """Spawn a new predecessor node."""
         new_node = mutation.new_hop_spec.hop_id
         target_node = mutation.target_hop_id
 
@@ -301,7 +302,7 @@ class DAGMutator:
         )
 
     def _spawn_successor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
-        """Spawn a new successor node."""
+            """Spawn a new successor node."""
         new_node = mutation.new_hop_spec.hop_id
         target_node = mutation.target_hop_id
 
@@ -345,7 +346,7 @@ class DAGMutator:
         )
 
     def _skip_successor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
-        """Skip a successor node by bridging the gap."""
+            """Skip a successor node by bridging the gap."""
         target_node = mutation.target_hop_id
         successors = list(graph.successors(target_node))
 
@@ -376,7 +377,7 @@ class DAGMutator:
         )
 
     def _replace_node(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
-        """Replace a node with a new one."""
+            """Replace a node with a new one."""
         old_node = mutation.target_hop_id
         new_node = mutation.new_hop_spec.hop_id
 
@@ -421,7 +422,7 @@ class DAGMutator:
         )
 
     def _update_depths(self, graph: nx.DiGraph) -> None:
-        """# SQL removed: Update depth annotations for all nodes."""
+            """# SQL removed: Update depth annotations for all nodes."""
         # Find root nodes (no predecessors)
         roots = [n for n in graph.nodes if graph.in_degree(n) == 0]
 
@@ -440,7 +441,7 @@ class DAGMutator:
                         queue.append((successor, depth + 1))
 
     def _store_mutation_result(self, result: MutationResult) -> None:
-        """Store mutation result in history."""
+            """Store mutation result in history."""
         self.mutation_history.append(result)
 
         # Trim history if needed
@@ -448,7 +449,7 @@ class DAGMutator:
             self.mutation_history = self.mutation_history[-self.config.mutation_history_size:]
 
     def get_mutation_history(self, limit: Optional[int] = None) -> List[MutationResult]:
-        """Get mutation history."""
+            """Get mutation history."""
         if limit:
             return self.mutation_history[-limit:]
         return self.mutation_history
@@ -457,7 +458,7 @@ class DAGManager:
     """Manages the dynamic DAG with mutation capabilities."""
 
     def __init__(self, config: Optional[DAGConfig] = None):
-        """Initialize the DAG Manager.
+            """Initialize the DAG Manager.
 
         Args:
             config: Optional configuration
@@ -482,7 +483,7 @@ class DAGManager:
         logger.info("Initialized DAGManager with dynamic mutation support")
 
     def register_function(self, name: str, function: Callable) -> None:
-        """Register a hop function that can be spawned.
+            """Register a hop function that can be spawned.
 
         Args:
             name: Function name
@@ -491,13 +492,13 @@ class DAGManager:
         self.function_registry[name] = function
         logger.debug(f"Registered function: {name}")
 
-    def add_node(
         """Docstring."""
+    def add_node(
         self,
         hop: SubatomicHop,
         predecessors: Optional[List[str]] = None
     ) -> None:
-        """Add a node to the DAG.
+            """Add a node to the DAG.
 
         Args:
             hop: The SubatomicHop to add
@@ -529,7 +530,7 @@ class DAGManager:
         logger.info(f"Added node {hop.config.hop_id} to DAG")
 
     def request_mutation(self, mutation: DAGMutation) -> MutationResult:
-        """Request a mutation to the DAG.
+            """Request a mutation to the DAG.
 
         Args:
             mutation: The mutation to request
@@ -559,8 +560,8 @@ class DAGManager:
 
         return result
 
-    def create_mutation_request(
         """Docstring."""
+    def create_mutation_request(
         self,
         action: MutationAction,
         target_hop_id: str,
@@ -569,7 +570,7 @@ class DAGManager:
         requester_hop_id: str,
         **kwargs
     ) -> DAGMutation:
-        """Create a mutation request.
+            """Create a mutation request.
 
         Args:
             action: Type of mutation
@@ -596,7 +597,7 @@ class DAGManager:
         )
 
     def get_next_node(self) -> Optional[SubatomicHop]:
-        """Get the next node to execute.
+            """Get the next node to execute.
 
         Returns:
             Next SubatomicHop or None if queue is empty
@@ -608,7 +609,7 @@ class DAGManager:
         return self.node_registry.get(hop_id)
 
     def pause_node(self, hop_id: str) -> bool:
-        """Pause a node's execution.
+            """Pause a node's execution.
 
         Args:
             hop_id: Node ID to pause
@@ -625,7 +626,7 @@ class DAGManager:
         return False
 
     def resume_node(self, hop_id: str) -> bool:
-        """Resume a paused node.
+            """Resume a paused node.
 
         Args:
             hop_id: Node ID to resume
@@ -644,7 +645,7 @@ class DAGManager:
         return False
 
     def get_graph_stats(self) -> Dict[str, Any]:
-        """Get graph statistics."""
+            """Get graph statistics."""
         return {
             "node_count": self.graph.number_of_nodes(),
             "edge_count": self.graph.number_of_edges(),
@@ -654,7 +655,7 @@ class DAGManager:
         }
 
     def visualize_graph(self) -> Dict[str, Any]:
-        """Get graph data for visualization.
+            """Get graph data for visualization.
 
         Returns:
             Dictionary with nodes and edges

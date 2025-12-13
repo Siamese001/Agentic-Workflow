@@ -24,11 +24,11 @@ class SignalWeights(BaseModel):
     cultural_fit: confloat(ge=0.0, le=1.0) = 0.5  # Weight for soft skills, mission alignment
 
     class Config:
-        """Pydantic configuration."""
+            """Pydantic configuration."""
         validate_assignment = True
 
     def as_dict(self) -> Dict[str, float]:
-        """Convert weights to dictionary."""
+            """Convert weights to dictionary."""
         return {
             "technical_depth": self.technical_depth,
             "business_impact": self.business_impact,
@@ -50,12 +50,12 @@ class WeightingResult(BaseModel):
 
     @property
     def score_change(self) -> float:
-        """Calculate the change in score."""
+            """Calculate the change in score."""
         return self.adjusted_score - self.original_score
 
     @property
     def percent_change(self) -> float:
-        """Calculate percentage change."""
+            """Calculate percentage change."""
         if self.original_score == 0:
             return 0.0
         return (self.score_change / self.original_score) * 100
@@ -71,7 +71,7 @@ class SignalWeighter:
         self,
         default_weights: Optional[SignalWeights] = None
     ):
-        """Initialize the signal weighter.
+            """Initialize the signal weighter.
 
         Args:
             default_weights: Default weights to use when no specific mapping exists
@@ -225,7 +225,7 @@ class SignalWeighter:
     ings")
 
     def get_weights(self, archetype: str, industry: Optional[str] = None) -> SignalWeights:
-        """Get weights for a specific archetype and industry.
+            """Get weights for a specific archetype and industry.
 
         Args:
             archetype: Target recipient archetype (e.g., "CTO", "Recruiter")
@@ -288,15 +288,15 @@ class SignalWeighter:
             logger.error(f"Error getting weights for archetype '{archetype}': {str(e)}")
             return self.default_weights
 
-    def reweight_score(
         """Docstring."""
+    def reweight_score(
         self,
         original_score: float,
         doc_metadata: Dict[str, Union[str, float]],
         weights: SignalWeights,
         doc_id: Optional[str] = None
     ) -> WeightingResult:
-        """Apply dynamic weighting to a document score.
+            """Apply dynamic weighting to a document score.
 
         Args:
             original_score: Original relevance score (0.0-1.0)
@@ -366,7 +366,7 @@ class SignalWeighter:
             )
 
     def _extract_signal_type(self, metadata: Dict[str, Union[str, float]]) -> str:
-        """Extract signal type from document metadata.
+            """Extract signal type from document metadata.
 
         Args:
             metadata: Document metadata
@@ -417,7 +417,7 @@ class SignalWeighter:
             return "balanced"
 
     def _get_weight_for_signal_type(self, signal_type: str, weights: SignalWeights) -> float:
-        """Get the appropriate weight for a signal type.
+            """Get the appropriate weight for a signal type.
 
         Args:
             signal_type: Type of signal
@@ -444,14 +444,14 @@ class SignalWeighter:
             logger.error(f"Error getting weight for signal type '{signal_type}': {str(e)}")
             return 0.5
 
-    def batch_reweight(
         """Docstring."""
+    def batch_reweight(
         self,
         documents: List[Dict[str, Union[str, float]]],
         archetype: str,
         industry: Optional[str] = None
     ) -> List[WeightingResult]:
-        """Apply dynamic weighting to a batch of documents.
+            """Apply dynamic weighting to a batch of documents.
 
         Args:
             documents: List of documents with scores and metadata
@@ -491,8 +491,8 @@ def create_signal_weighter(default_weights: Optional[SignalWeights] = None) -> S
     return SignalWeighter(default_weights=default_weights)
 
 # Convenience function for quick reweighting
-def weight_results(
     """Docstring."""
+def weight_results(
     documents: List[Dict[str, Union[str, float]]],
     archetype: str,
     industry: Optional[str] = None

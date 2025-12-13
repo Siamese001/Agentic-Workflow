@@ -5,6 +5,7 @@ Tests inspection operations for content analysis.
 import pytest
 from typing import Dict, List
 from enum import Enum
+from dataclasses import dataclass
 
 class ContentQuality(Enum):
     """TODO: Add docstring."""
@@ -14,8 +15,6 @@ class ContentQuality(Enum):
     LOW = "low"
 
 @dataclass
-    """TODO: Add docstring."""
-
 class InspectionResult:
     """Docstring."""
     quality: ContentQuality
@@ -101,8 +100,6 @@ class TestStructureInspection:
                 }
             }
         }
-
-            """TODO: Add docstring."""
 
         # Check depth
         def get_depth(d: Dict, depth: int = 0) -> int:

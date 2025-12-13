@@ -42,7 +42,7 @@ class FailureMode(BaseModel):
 
     @property
     def risk_score(self) -> float:
-        """Calculate overall risk score (probability x impact weight)."""
+            """Calculate overall risk score (probability x impact weight)."""
         impact_weights = {
             ImpactLevel.LOW: 0.25,
             ImpactLevel.MEDIUM: 0.5,
@@ -68,7 +68,7 @@ class SimpleAgentBase:
     """Simple base class for standalone agents."""
 
     def __init__(self, name: str, model_name: str = "gpt-4"):
-        """Initialize the agent.
+            """Initialize the agent.
 
         Args:
             name: Agent name for logging
@@ -82,7 +82,7 @@ class PreMortemAgent(SimpleAgentBase):
     """Agent that performs pre-mortem analysis on plans."""
 
     def __init__(self, model_name: str = "gpt-4"):
-        """Initialize the Pre-Mortem Agent.
+            """Initialize the Pre-Mortem Agent.
 
         Args:
             model_name: LLM model to use for risk analysis
@@ -136,7 +136,7 @@ class PreMortemAgent(SimpleAgentBase):
         }
 
     async def analyze_plan(self, plan_text: str, plan_type: str = "onboarding") -> PreMortemReport:
-        """Perform pre-mortem analysis on a plan.
+            """Perform pre-mortem analysis on a plan.
 
         Args:
             plan_text: The plan to analyze
@@ -180,7 +180,7 @@ class PreMortemAgent(SimpleAgentBase):
         )
 
     async def _identify_failure_modes(self, plan_text: str, plan_type: str) -> List[FailureMode]:
-        """Identify potential failure modes using LLM.
+            """Identify potential failure modes using LLM.
 
         Args:
             plan_text: Plan to analyze
@@ -254,7 +254,7 @@ class PreMortemAgent(SimpleAgentBase):
             ]
 
     async def _generate_mitigation(self, failure: FailureMode, plan_text: str) -> str:
-        """Generate specific mitigation strategy for a failure mode.
+            """Generate specific mitigation strategy for a failure mode.
 
         Args:
             failure: The failure mode to mitigate
@@ -290,7 +290,7 @@ class PreMortemAgent(SimpleAgentBase):
             return "Implement regular check-ins and monitoring to address early signs of this risk."
 
     def _identify_warning_signs(self, failure: FailureMode) -> List[str]:
-        """Identify early warning signs for a failure mode.
+            """Identify early warning signs for a failure mode.
 
         Args:
             failure: The failure mode to analyze
@@ -340,7 +340,7 @@ class PreMortemAgent(SimpleAgentBase):
         return warning_signs_map.get(failure.category, ["Unexpected deviations from plan"])
 
     def _calculate_overall_risk(self, risks: List[FailureMode]) -> float:
-        """Calculate overall risk score for the plan.
+            """Calculate overall risk score for the plan.
 
         Args:
             risks: List of failure modes
@@ -358,7 +358,7 @@ class PreMortemAgent(SimpleAgentBase):
         return min(1.0, weighted_score / total_weight * 2)  # Normalize and amplify
 
     def _generate_recommendation(self, risk_score: float, risks: List[FailureMode]) -> str:
-        """Generate go/no-go recommendation.
+            """Generate go/no-go recommendation.
 
         Args:
             risk_score: Overall risk score
@@ -380,7 +380,7 @@ class PreMortemAgent(SimpleAgentBase):
             return "GO: Low risk, proceed as planned"
 
     def _identify_success_factors(self, plan_text: str, risks: List[FailureMode]) -> List[str]:
-        """Identify critical success factors.
+            """Identify critical success factors.
 
         Args:
             plan_text: Original plan
@@ -416,7 +416,7 @@ class PreMortemAgent(SimpleAgentBase):
         return factors[:5]  # Top 5 factors
 
     def _create_monitoring_plan(self, risks: List[FailureMode]) -> Dict[str, str]:
-        """Create risk monitoring plan.
+            """Create risk monitoring plan.
 
         Args:
             risks: Risks to monitor
@@ -433,7 +433,7 @@ class PreMortemAgent(SimpleAgentBase):
         return monitoring
 
     def _summarize_plan(self, plan_text: str) -> str:
-        """Create brief summary of the plan.
+            """Create brief summary of the plan.
 
         Args:
             plan_text: Plan to summarize
@@ -445,7 +445,7 @@ class PreMortemAgent(SimpleAgentBase):
         return plan_text[:200] + "..." if len(plan_text) > 200 else plan_text
 
     def render_risk_assessment(self, report: PreMortemReport) -> str:
-        """Render pre-mortem report as Markdown.
+            """Render pre-mortem report as Markdown.
 
         Args:
             report: Pre-mortem report to render
@@ -494,7 +494,7 @@ class PreMortemAgent(SimpleAgentBase):
         return "\n".join(lines)
 
     async def _call_llm(self, prompt: str, temperature: float = 0.3) -> LLMResponse:
-        """Call the LLM with the given prompt.
+            """Call the LLM with the given prompt.
 
         Args:
             prompt: Prompt to send to LLM
@@ -518,7 +518,7 @@ class PreMortemAgent(SimpleAgentBase):
             )
 
             class LLMResponseImpl:
-                """TODO: Add docstring."""
+                    """TODO: Add docstring."""
 
                 def __init__(self, content: str):
                     self.content = content
@@ -531,7 +531,7 @@ class PreMortemAgent(SimpleAgentBase):
                 """TODO: Add docstring."""
 
             class LLMResponseImpl:
-                """Docstring."""
+                    """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 

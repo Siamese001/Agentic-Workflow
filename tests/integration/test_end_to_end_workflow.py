@@ -24,7 +24,7 @@ class TestSDKValidation:
     """Test SDK availability and configuration."""
 
     def test_validate_all_sdks(self):
-        """Test SDK validation report."""
+            """Test SDK validation report."""
         report = validate_all_sdks()
 
         assert "total" in report
@@ -33,7 +33,7 @@ class TestSDKValidation:
         assert report["total"] == 23
 
     def test_required_sdks_available(self):
-        """Test that required SDKs are available."""
+            """Test that required SDKs are available."""
         report = validate_all_sdks()
 
         required_sdks = [
@@ -55,7 +55,7 @@ class TestWorkflowContext:
     """Test workflow context creation and SDK integration."""
 
     def test_create_workflow_context(self):
-        """Test workflow context creation."""
+            """Test workflow context creation."""
         context = create_workflow_context(
             workflow_id="test-workflow-001",
             provider=Provider.OPENAI,
@@ -68,7 +68,7 @@ class TestWorkflowContext:
         assert context.agent_executor is not None
 
     def test_workflow_context_with_cache(self):
-        """Test workflow context with Redis cache."""
+            """Test workflow context with Redis cache."""
         try:
             context = create_workflow_context(
                 workflow_id="test-workflow-002",
@@ -85,7 +85,7 @@ class TestWorkflowContext:
             pytest.skip(f"Redis not available: {e}")
 
     def test_workflow_context_with_vector_store(self):
-        """Test workflow context with vector store."""
+            """Test workflow context with vector store."""
         try:
             context = create_workflow_context(
                 workflow_id="test-workflow-003",
@@ -106,7 +106,7 @@ class TestAgentExecution:
         reason="OPENAI_API_KEY not set"
     )
     def test_agent_execute_openai(self):
-        """Test agent execution with OpenAI."""
+            """Test agent execution with OpenAI."""
         context = create_workflow_context(
             workflow_id="test-agent-001",
             provider=Provider.OPENAI,
@@ -134,7 +134,7 @@ class TestAgentExecution:
         reason="ANTHROPIC_API_KEY not set"
     )
     def test_agent_execute_anthropic(self):
-        """Test agent execution with Anthropic."""
+            """Test agent execution with Anthropic."""
         context = create_workflow_context(
             workflow_id="test-agent-002",
             provider=Provider.ANTHROPIC,
@@ -160,7 +160,7 @@ class TestWorkflowOrchestration:
     """Test end-to-end workflow orchestration."""
 
     def test_workflow_orchestrator_creation(self):
-        """Test workflow orchestrator creation."""
+            """Test workflow orchestrator creation."""
         orchestrator = WorkflowOrchestrator(
             workflow_id="test-orchestrator-001",
             provider=Provider.OPENAI,
@@ -171,20 +171,20 @@ class TestWorkflowOrchestration:
         assert len(orchestrator.hops) == 0
 
     def test_workflow_hop_registration(self):
-        """Test hop registration."""
+            """Test hop registration."""
         orchestrator = WorkflowOrchestrator(
             workflow_id="test-orchestrator-002",
         )
 
         def hop1(context):
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
             context.set_output("result", "hop1_output")
 
             """TODO: Add docstring."""
 
         def hop2(context):
-            """Docstring."""
+                """Docstring."""
             input_val = context.get_input("result")
             context.set_output("final_result", f"{input_val}_hop2")
 
@@ -200,14 +200,14 @@ class TestWorkflowOrchestration:
         reason="OPENAI_API_KEY not set"
     )
     def test_end_to_end_workflow_execution(self):
-        """Test complete end-to-end workflow execution."""
+            """Test complete end-to-end workflow execution."""
         orchestrator = WorkflowOrchestrator(
             workflow_id="test-e2e-001",
             provider=Provider.OPENAI,
         )
 
         def analyze_hop(context):
-            """Analyze input and generate insights."""
+                """Analyze input and generate insights."""
             user_input = context.get_input("user_query", "What is AI?")
 
             messages = [
@@ -225,7 +225,7 @@ class TestWorkflowOrchestration:
             context.set_output("analysis", response.content)
 
         def summarize_hop(context):
-            """Summarize the analysis."""
+                """Summarize the analysis."""
             analysis = context.get_input("analysis", "")
 
             messages = [
@@ -258,7 +258,7 @@ class TestMultiProviderFallback:
     """Test multi-provider fallback scenarios."""
 
     def test_provider_fallback_logic(self):
-        """Test that fallback providers are configured."""
+            """Test that fallback providers are configured."""
 
         anthropic_entry = SDK_REGISTRY.get("anthropic")
         assert anthropic_entry is not None
@@ -272,7 +272,7 @@ class TestCachingIntegration:
     """Test caching integration in workflows."""
 
     def test_cache_workflow_state(self):
-        """Test caching workflow state."""
+            """Test caching workflow state."""
         try:
             context = create_workflow_context(
                 workflow_id="test-cache-001",
@@ -299,7 +299,7 @@ class TestVectorStoreIntegration:
     """Test vector store integration in workflows."""
 
     def test_knowledge_search(self):
-        """Test knowledge search in vector store."""
+            """Test knowledge search in vector store."""
         try:
             context = create_workflow_context(
                 workflow_id="test-vector-001",

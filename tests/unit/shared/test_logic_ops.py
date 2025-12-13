@@ -5,6 +5,8 @@ Tests logic operations including data access, guardrails, synthesis, and validat
 import re
 import pytest
 from typing import Dict, List
+from enum import Enum
+from dataclasses import dataclass
 
 class ValidationLevel(Enum):
     """TODO: Add docstring."""
@@ -14,8 +16,6 @@ class ValidationLevel(Enum):
     LENIENT = "lenient"
 
 @dataclass
-    """TODO: Add docstring."""
-
 class ValidationResult:
     """Docstring."""
     is_valid: bool
@@ -210,8 +210,6 @@ class TestLogicValidation:
     def test_validation_levels(self):
         """Different validation levels work correctly."""
         data = {"name": "J", "description": ""}  # Short name, empty description
-            """TODO: Add docstring."""
-
 
         def validate(data: Dict, level: ValidationLevel) -> ValidationResult:
             """Docstring."""

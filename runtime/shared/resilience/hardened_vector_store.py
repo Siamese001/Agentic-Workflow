@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union, Set
 from datetime import datetime, timedelta
 from pathlib import Path
 from enum import Enum
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +49,7 @@ class WALRecord:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def compute_checksum(self) -> str:
-        """Compute checksum for integrity verification."""
+            """Compute checksum for integrity verification."""
         data = {
             "operation_id": self.operation_id,
             "operation_type": self.operation_type.value,
@@ -58,7 +59,7 @@ class WALRecord:
         return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
 
     def verify_integrity(self) -> bool:
-        """Verify record integrity using checksum."""
+            """Verify record integrity using checksum."""
         return self.compute_checksum() == self.checksum
 
 @dataclass
@@ -96,7 +97,7 @@ class HardenedVectorStore:
         wal_retention_days: int = 7,  # Keep WAL for 7 days
         enable_compression: bool = True
     ):
-        """Initialize hardened vector store.
+            """Initialize hardened vector store.
 
         Args:
             vector_store: Underlying vector store client
@@ -128,7 +129,7 @@ class HardenedVectorStore:
         asyncio.create_task(self._recover_uncommitted())
 
     def _initialize_wal(self) -> None:
-        """Initialize the Write-Ahead Log."""
+            """Initialize the Write-Ahead Log."""
         self.wal_file = self.wal_path / "vector_wal.jsonl"
         self.checkpoint_file = self.wal_path / "checkpoint.json"
 
@@ -138,7 +139,7 @@ class HardenedVectorStore:
             logger.info(f"Created new WAL at {self.wal_file}")
 
     async def _recover_uncommitted(self) -> None:
-        """Recover any uncommitted operations from WAL."""
+            """Recover any uncommitted operations from WAL."""
         logger.info("Recovering uncommitted operations from WAL...")
 
         # Load checkpoint to know what's been committed
@@ -165,7 +166,7 @@ class HardenedVectorStore:
         logger.info(f"Recovered {len(uncommitted)} operations from WAL")
 
     async def _recover_operation(self, record: WALRecord) -> None:
-        """Attempt to recover a single operation."""
+            """Attempt to recover a single operation."""
         logger.info(f"Recovering operation {record.operation_id}")
 
         # Check if operation was actually applied despite being pending
@@ -176,7 +177,7 @@ class HardenedVectorStore:
             await self._replay_operation(record)
 
     async def _verify_operation_applied(self, record: WALRecord) -> bool:
-        """Verify if an operation was actually applied to the vector store."""
+            """Verify if an operation was actually applied to the vector store."""
         try:
             if record.operation_type in [OperationType.INSERT, OperationType.UPSERT]:
                 # Check if vectors exist
@@ -204,7 +205,7 @@ class HardenedVectorStore:
         return False
 
     async def _replay_operation(self, record: WALRecord) -> None:
-        """Replay an operation from the WAL."""
+            """Replay an operation from the WAL."""
         try:
             if record.operation_type == OperationType.INSERT:
                 await self.vector_store.add(
@@ -237,15 +238,15 @@ class HardenedVectorStore:
             logger.error(f"Failed to replay operation {record.operation_id}: {e}")
             raise
 
-    async def insert(
         """Docstring."""
+    async def insert(
         self,
         ids: List[str],
         embeddings: List[List[float]],
         documents: Optional[List[str]] = None,
         metadatas: Optional[List[Dict[str, Any]]] = None
     ) -> List[str]:
-        """# SQL removed: Insert vectors with WAL protection."""
+            """# SQL removed: Insert vectors with WAL protection."""
         return await self._execute_operation(
             operation_type=OperationType.INSERT,
             vector_ids=ids,
@@ -256,15 +257,15 @@ class HardenedVectorStore:
             }
         )
 
-    async def upsert(
         """Docstring."""
+    async def upsert(
         self,
         ids: List[str],
         embeddings: List[List[float]],
         documents: Optional[List[str]] = None,
         metadatas: Optional[List[Dict[str, Any]]] = None
     ) -> List[str]:
-        """Upsert vectors with WAL protection."""
+            """Upsert vectors with WAL protection."""
         return await self._execute_operation(
             operation_type=OperationType.UPSERT,
             vector_ids=ids,
@@ -275,15 +276,15 @@ class HardenedVectorStore:
             }
         )
 
-    async def update(
         """Docstring."""
+    async def update(
         self,
         ids: List[str],
         embeddings: Optional[List[List[float]]] = None,
         documents: Optional[List[str]] = None,
         metadatas: Optional[List[Dict[str, Any]]] = None
     ) -> List[str]:
-        """# SQL removed: Update vectors with WAL protection."""
+            """# SQL removed: Update vectors with WAL protection."""
         return await self._execute_operation(
             operation_type=OperationType.UPDATE,
             vector_ids=ids,
@@ -295,20 +296,20 @@ class HardenedVectorStore:
         )
 
     async def delete(self, ids: List[str]) -> List[str]:
-        """# SQL removed: Delete vectors with WAL protection."""
+            """# SQL removed: Delete vectors with WAL protection."""
         return await self._execute_operation(
             operation_type=OperationType.DELETE,
             vector_ids=ids,
             payload={}
         )
 
-    async def batch_insert(
         """Docstring."""
+    async def batch_insert(
         self,
         batches: List[Tuple[List[str], List[List[float]], Optional[List[str]], Optional[List[Dict[st
     r, Any]]]]]
     ) -> List[str]:
-        """# SQL removed: Insert multiple batches atomically."""
+            """# SQL removed: Insert multiple batches atomically."""
         all_ids = []
         operation_id = self._generate_operation_id()
 
@@ -355,14 +356,14 @@ class HardenedVectorStore:
             await self._rollback_batch(operation_id, all_ids)
             raise
 
-    async def _execute_operation(
         """Docstring."""
+    async def _execute_operation(
         self,
         operation_type: OperationType,
         vector_ids: List[str],
         payload: Dict[str, Any]
     ) -> List[str]:
-        """Execute a vector operation with WAL protection."""
+            """Execute a vector operation with WAL protection."""
         # Check for idempotency
         for vector_id in vector_ids:
             if vector_id in self._processed_operations:
@@ -434,7 +435,7 @@ class HardenedVectorStore:
             raise
 
     async def _write_to_wal(self, record: WALRecord) -> None:
-        """Write a record to the Write-Ahead Log."""
+            """Write a record to the Write-Ahead Log."""
         try:
             with open(self.wal_file, "a") as f:
                 line = json.dumps(asdict(record), default=str)
@@ -451,7 +452,7 @@ class HardenedVectorStore:
             raise VectorStoreCorruptionError(f"WAL write failed: {e}")
 
     async def _scan_wal(self) -> WALRecord:
-        """Scan WAL and yield records."""
+            """Scan WAL and yield records."""
         try:
             with open(self.wal_file, "r") as f:
                 for line in f:
@@ -485,22 +486,22 @@ class HardenedVectorStore:
             logger.error(f"Error scanning WAL: {e}")
 
     async def _mark_committed(self, operation_id: str) -> None:
-        """Mark an operation as committed in WAL."""
+            """Mark an operation as committed in WAL."""
         await self._update_operation_status(operation_id, OperationStatus.COMMITTED)
 
     async def _mark_rolled_back(self, operation_id: str) -> None:
-        """Mark an operation as rolled back in WAL."""
+            """Mark an operation as rolled back in WAL."""
         await self._update_operation_status(operation_id, OperationStatus.ROLLED_BACK)
         self.stats.rolled_back_operations += 1
 
     async def _update_operation_status(self, operation_id: str, status: OperationStatus) -> None:
-        """# SQL removed: Update the status of an operation in WAL."""
+            """# SQL removed: Update the status of an operation in WAL."""
         # In a real implementation, this would update the record in place
         # For simplicity, we'll just log the status change
         logger.info(f"Operation {operation_id} status: {status.value}")
 
     async def _rollback_batch(self, operation_id: str, vector_ids: List[str]) -> None:
-        """Rollback a failed batch operation."""
+            """Rollback a failed batch operation."""
         try:
             # Attempt to delete any vectors that were inserted
             await self.vector_store.delete(ids=vector_ids)
@@ -511,7 +512,7 @@ class HardenedVectorStore:
             raise VectorStoreCorruptionError(f"Rollback failed: {e}")
 
     async def _create_checkpoint(self) -> None:
-        """Create a checkpoint with current state."""
+            """Create a checkpoint with current state."""
         checkpoint = {
             "timestamp": datetime.now().isoformat(),
             "processed_operations": list(self._processed_operations),
@@ -533,7 +534,7 @@ class HardenedVectorStore:
             logger.error(f"Failed to create checkpoint: {e}")
 
     async def _load_checkpoint(self) -> Optional[Dict[str, Any]]:
-        """Load the latest checkpoint."""
+            """Load the latest checkpoint."""
         try:
             with open(self.checkpoint_file, "r") as f:
                 return json.load(f)
@@ -544,7 +545,7 @@ class HardenedVectorStore:
             return None
 
     async def _cleanup_wal(self) -> None:
-        """Clean up old WAL records."""
+            """Clean up old WAL records."""
         cutoff_date = datetime.now() - timedelta(days=self.wal_retention_days)
 
         # Create a new WAL with only recent records
@@ -572,12 +573,12 @@ class HardenedVectorStore:
                 temp_wal.unlink()
 
     def _generate_operation_id(self) -> str:
-        """Generate a unique operation ID."""
+            """Generate a unique operation ID."""
         import uuid
         return str(uuid.uuid4())
 
     async def verify_store_integrity(self) -> Dict[str, Any]:
-        """Verify the integrity of the vector store."""
+            """Verify the integrity of the vector store."""
         logger.info("Verifying vector store integrity...")
 
         issues = []
@@ -605,7 +606,7 @@ class HardenedVectorStore:
         }
 
     async def repair_store(self) -> Dict[str, Any]:
-        """Attempt to repair detected issues."""
+            """Attempt to repair detected issues."""
         logger.info("Attempting to repair vector store...")
 
         repairs_made = []
@@ -634,12 +635,12 @@ class HardenedVectorStore:
         }
 
     def get_stats(self) -> VectorStats:
-        """Get current vector store statistics."""
+            """Get current vector store statistics."""
         return self.stats
 
 # Factory function for creating hardened vector stores
-def create_hardened_vector_store(
     """Docstring."""
+def create_hardened_vector_store(
     vector_store: Any,
     wal_dir: Union[str, Path] = "./data/vector_wal",
     **kwargs

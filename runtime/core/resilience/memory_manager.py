@@ -12,6 +12,8 @@ import asyncio
 import tracemalloc
 from collections import OrderedDict
 import psutil
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ class MemoryManager:
     """Manages memory usage and enforces limits."""
 
     def __init__(self, name: str = "default", limits: Optional[MemoryLimits] = None):
-        """Initialize the memory manager.
+            """Initialize the memory manager.
 
         Args:
             name: Manager name for logging
@@ -79,7 +81,7 @@ class MemoryManager:
         logger.debug(f"Initialized MemoryManager: {name}")
 
     def start_monitoring(self, interval_seconds: float = 5.0) -> None:
-        """Start memory monitoring.
+            """Start memory monitoring.
 
         Args:
             interval_seconds: Monitoring interval
@@ -96,21 +98,21 @@ class MemoryManager:
         logger.info(f"Started memory monitoring for {self.name}")
 
     def stop_monitoring(self) -> None:
-        """Stop memory monitoring."""
+            """Stop memory monitoring."""
         self._monitoring = False
         if self._monitor_thread:
             self._monitor_thread.join(timeout=1.0)
         logger.info(f"Stopped memory monitoring for {self.name}")
 
-    def add_context(
         """Docstring."""
+    def add_context(
         self,
         key: str,
         value: Any,
         priority: int = 0,
         max_size: Optional[int] = None
     ) -> bool:
-        """Add an item to context with size limits.
+            """Add an item to context with size limits.
 
         Args:
             key: Context key
@@ -158,7 +160,7 @@ class MemoryManager:
             return True
 
     def get_context(self, key: str, default: Any = None) -> Any:
-        """Get a context item.
+            """Get a context item.
 
         Args:
             key: Context key
@@ -177,7 +179,7 @@ class MemoryManager:
             return default
 
     def remove_context(self, key: str) -> bool:
-        """Remove a context item.
+            """Remove a context item.
 
         Args:
             key: Context key
@@ -193,13 +195,13 @@ class MemoryManager:
                 return True
             return False
 
-    def prune_context(
         """Docstring."""
+    def prune_context(
         self,
         strategy: PruningStrategy = PruningStrategy.LRU,
         target_size: Optional[int] = None
     ) -> int:
-        """Prune context items based on strategy.
+            """Prune context items based on strategy.
 
         Args:
             strategy: Pruning strategy
@@ -259,7 +261,7 @@ class MemoryManager:
             return pruned
 
     def clear_context(self) -> None:
-        """Clear all context data."""
+            """Clear all context data."""
         with self._lock:
             self._context.clear()
             self._stats["total_size"] = 0
@@ -267,7 +269,7 @@ class MemoryManager:
             logger.debug("Cleared all context data")
 
     def _sanitize_value(self, value: Any, max_size: Optional[int] = None) -> Any:
-        """Sanitize a value to prevent memory issues.
+            """Sanitize a value to prevent memory issues.
 
         Args:
             value: Value to sanitize
@@ -298,7 +300,7 @@ class MemoryManager:
         return value
 
     def _calculate_size(self, value: Any) -> int:
-        """Calculate approximate size of a value.
+            """Calculate approximate size of a value.
 
         Args:
             value: Value to measure
@@ -317,7 +319,7 @@ class MemoryManager:
             return sys.getsizeof(value)
 
     def _ensure_capacity(self, required_size: int) -> None:
-        """Ensure enough capacity for new item.
+            """Ensure enough capacity for new item.
 
         Args:
             required_size: Size of item to add
@@ -335,7 +337,7 @@ class MemoryManager:
                 target_size=self.limits.max_context_size - required_size)
 
     def _check_memory_limits(self) -> None:
-        """Check if process memory limits are exceeded."""
+            """Check if process memory limits are exceeded."""
         try:
             process = psutil.Process()
             memory_mb = process.memory_info().rss / 1024 / 1024
@@ -364,7 +366,7 @@ class MemoryManager:
             pass  # Process might have ended
 
     def _monitor_loop(self, interval_seconds: float) -> None:
-        """Background monitoring loop.
+            """Background monitoring loop.
 
         Args:
             interval_seconds: Monitoring interval
@@ -377,7 +379,7 @@ class MemoryManager:
                 logger.error(f"Memory monitoring error: {e}")
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get memory manager statistics.
+            """Get memory manager statistics.
 
         Returns:
             Statistics dictionary
@@ -403,7 +405,7 @@ class MemoryManager:
             return stats
 
     def get_memory_report(self) -> str:
-        """Get a formatted memory report.
+            """Get a formatted memory report.
 
         Returns:
             Memory report string
@@ -431,8 +433,8 @@ Memory Percent: {stats.get('process_memory_percent', 0):.1f}%
 # Global memory manager registry
 _managers: Dict[str, MemoryManager] = {}
 
-def get_memory_manager(name: str = "default",
     """Docstring."""
+def get_memory_manager(name: str = "default",
     limits: Optional[MemoryLimits] = None) -> MemoryManager:
     """Get or create a memory manager.
 

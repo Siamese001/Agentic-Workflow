@@ -8,6 +8,7 @@ import asyncio
 import logging
 import re
 from enum import Enum
+from dataclasses import dataclass
 
 
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ class CypherQueryGenerator:
     """Generates Cypher queries from natural language patterns."""
 
     def __init__(self):
-        """Initialize the query generator with patterns."""
+            """Initialize the query generator with patterns."""
         # Common query patterns
         self.patterns = {
             # Skills and experience
@@ -164,7 +165,7 @@ class CypherQueryGenerator:
         }
 
     def generate_query(self, natural_query: str) -> Tuple[str, Dict[str, Any], str]:
-        """Generate Cypher query from natural language.
+            """Generate Cypher query from natural language.
 
         Args:
             natural_query: Natural language query
@@ -234,7 +235,7 @@ class GraphRAGFusion:
         enable_fusion: bool = True,
         confidence_threshold: float = 0.6
     ):
-        """Initialize GraphRAG fusion.
+            """Initialize GraphRAG fusion.
 
         Args:
             knowledge_graph: KnowledgeGraphAgent instance
@@ -260,14 +261,14 @@ class GraphRAGFusion:
 
         logger.info(f"Initialized GraphRAGFusion - Fusion: {enable_fusion}")
 
-    async def query(
         """Docstring."""
+    async def query(
         self,
         natural_query: str,
         query_type: Optional[QueryType] = None,
         max_results: int = 5
     ) -> FusionResult:
-        """Execute a GraphRAG fusion query.
+            """Execute a GraphRAG fusion query.
 
         Args:
             natural_query: Natural language query
@@ -292,7 +293,7 @@ class GraphRAGFusion:
             return await self._fusion_query(natural_query, query_type, max_results)
 
     def _detect_query_type(self, query: str) -> QueryType:
-        """Detect query type from natural language.
+            """Detect query type from natural language.
 
         Args:
             query: Natural language query
@@ -329,13 +330,13 @@ class GraphRAGFusion:
         else:
             return QueryType.VECTOR_ONLY
 
-    async def _vector_only_query(
         """Docstring."""
+    async def _vector_only_query(
         self,
         query: str,
         max_results: int
     ) -> FusionResult:
-        """Execute vector-only query.
+            """Execute vector-only query.
 
         Args:
             query: Query string
@@ -370,13 +371,13 @@ class GraphRAGFusion:
                 confidence=0.0
             )
 
-    async def _graph_only_query(
         """Docstring."""
+    async def _graph_only_query(
         self,
         query: str,
         max_results: int
     ) -> FusionResult:
-        """Execute graph-only query.
+            """Execute graph-only query.
 
         Args:
             query: Query string
@@ -422,14 +423,14 @@ class GraphRAGFusion:
             # Fallback to vector
             return await self._vector_only_query(query, max_results)
 
-    async def _fusion_query(
         """Docstring."""
+    async def _fusion_query(
         self,
         query: str,
         query_type: QueryType,
         max_results: int
     ) -> FusionResult:
-        """Execute fusion query combining vector and graph.
+            """Execute fusion query combining vector and graph.
 
         Args:
             query: Query string
@@ -492,7 +493,7 @@ class GraphRAGFusion:
         graph_context: GraphContext,
         query_type: QueryType
     ) -> str:
-        """Fuse vector and graph results into context.
+            """Fuse vector and graph results into context.
 
         Args:
             vector_results: Results from vector search
@@ -539,7 +540,7 @@ class GraphRAGFusion:
         return "\n".join(context_parts)
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get fusion statistics.
+            """Get fusion statistics.
 
         Returns:
             Dictionary with stats
@@ -571,8 +572,8 @@ def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
     return _graphrag_fusion
 
 # Convenience function
-async def graphrag_query(
     """Docstring."""
+async def graphrag_query(
     query: str,
     query_type: Optional[QueryType] = None,
     max_results: int = 5,

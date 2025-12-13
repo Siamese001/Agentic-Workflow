@@ -21,7 +21,7 @@ class KnowledgeGraphAgent:
     """Neo4j-powered knowledge graph agent for agentic architectures."""
 
     def __init__(self, uri: str, user: str, password: str, similarity_threshold: float = 0.9):
-        """Initialize the knowledge graph agent.
+            """Initialize the knowledge graph agent.
 
         Args:
             uri: Neo4j database URI
@@ -39,7 +39,7 @@ class KnowledgeGraphAgent:
         logger.info("Initialized KnowledgeGraphAgent")
 
     def query_context(self, entity: str, hops: int = 2, limit: int = 10) -> GraphContext:
-        """Query context around an entity using GraphRAG pattern.
+            """Query context around an entity using GraphRAG pattern.
 
         Args:
             entity: Central entity to query
@@ -57,7 +57,7 @@ class KnowledgeGraphAgent:
             return GraphContext()
 
     def query_community_context(self, entity: str, limit: int = 10) -> GraphContext:
-        """Query context using PageRank-weighted community detection.
+            """Query context using PageRank-weighted community detection.
 
         Args:
             entity: Central entity to query
@@ -125,7 +125,7 @@ class KnowledgeGraphAgent:
             return self._query_context_fallback(entity, limit)
 
     def _query_context_fallback(self, entity: str, limit: int = 10) -> GraphContext:
-        """Fallback context query without GDS dependencies.
+            """Fallback context query without GDS dependencies.
 
         Args:
             entity: Entity to query
@@ -171,8 +171,8 @@ class KnowledgeGraphAgent:
             logger.error(f"Error in fallback context query: {str(e)}")
             return GraphContext()
 
-    def store_relationship(
         """Docstring."""
+    def store_relationship(
         self,
         subject: str,
         relation: str,
@@ -180,7 +180,7 @@ class KnowledgeGraphAgent:
         confidence: float = 1.0,
         source: str = "agent"
     ) -> bool:
-        """Store a new relationship in the knowledge graph.
+            """Store a new relationship in the knowledge graph.
 
         Args:
             subject: Subject entity
@@ -199,8 +199,8 @@ class KnowledgeGraphAgent:
             logger.error(f"Error storing relationship: {str(e)}")
             return False
 
-    def store_relationship_safe(
         """Docstring."""
+    def store_relationship_safe(
         self,
         subject: str,
         relation: str,
@@ -208,7 +208,7 @@ class KnowledgeGraphAgent:
         confidence: float = 1.0,
         source: str = "agent"
     ) -> bool:
-        """Store relationship with entity disambiguation to prevent duplicates.
+            """Store relationship with entity disambiguation to prevent duplicates.
 
         Args:
             subject: Subject entity
@@ -266,7 +266,7 @@ class KnowledgeGraphAgent:
             return False
 
     def get_neighborhood(self, node_id: str, hops: int = 2) -> GraphContext:
-        """Get the neighborhood of a specific node.
+            """Get the neighborhood of a specific node.
 
         Args:
             node_id: Node identifier
@@ -328,15 +328,15 @@ class KnowledgeGraphAgent:
             logger.error(f"Error getting neighborhood: {str(e)}")
             return GraphContext()
 
-    def create_reasoning_step(
         """Docstring."""
+    def create_reasoning_step(
         self,
         agent_id: str,
         step_id: str,
         step_data: Dict[str, Any],
         state_embedding: Optional[List[float]] = None
     ) -> bool:
-        """Create a reasoning step in the agent's decision chain.
+            """Create a reasoning step in the agent's decision chain.
 
         Args:
             agent_id: Agent identifier
@@ -392,13 +392,13 @@ class KnowledgeGraphAgent:
             logger.error(f"Error creating reasoning step: {str(e)}")
             return False
 
-    def find_similar_decisions(
         """Docstring."""
+    def find_similar_decisions(
         self,
         current_state_embedding: List[float],
         limit: int = 3
     ) -> List[Dict[str, Any]]:
-        """Find past decisions made in similar contexts.
+            """Find past decisions made in similar contexts.
 
         Args:
             current_state_embedding: Current state vector
@@ -447,13 +447,13 @@ class KnowledgeGraphAgent:
             logger.error(f"Error finding similar decisions: {str(e)}")
             return []
 
-    def semantic_search(
         """Docstring."""
+    def semantic_search(
         self,
         query_embedding: List[float],
         top_k: int = 5
     ) -> GraphContext:
-        """Perform semantic search using Neo4j vector index.
+            """Perform semantic search using Neo4j vector index.
 
         Args:
             query_embedding: Query vector embedding
@@ -509,7 +509,7 @@ class KnowledgeGraphAgent:
             return GraphContext()
 
     def _setup_indexes(self):
-        """Setup necessary indexes and constraints."""
+            """Setup necessary indexes and constraints."""
         try:
             with self.driver.session() as session:
                 # Entity name full-text index
@@ -560,7 +560,7 @@ class KnowledgeGraphAgent:
             logger.warning(f"Error setting up indexes: {str(e)}")
 
     def _ensure_graph_projection(self):
-        """Ensure GDS graph projection exists for community detection."""
+            """Ensure GDS graph projection exists for community detection."""
         try:
             with self.driver.session() as session:
                 # Check if projection exists
@@ -592,14 +592,14 @@ class KnowledgeGraphAgent:
         except Exception as e:
             logger.warning(f"Error ensuring graph projection: {str(e)}")
 
-    def find_semantic_match(
         """Docstring."""
+    def find_semantic_match(
         self,
         entity: str,
         embedding: List[float],
         threshold: Optional[float] = None
     ) -> Optional[str]:
-        """Find semantically similar existing entities.
+            """Find semantically similar existing entities.
 
         Args:
             entity: Entity name to match
@@ -636,7 +636,7 @@ class KnowledgeGraphAgent:
             return None
 
     def _get_embedding(self, text: str) -> List[float]:
-        """Generate embedding for text (simplified implementation).
+            """Generate embedding for text (simplified implementation).
 
         Args:
             text: Text to embed
@@ -662,13 +662,13 @@ class KnowledgeGraphAgent:
 
         return embedding[:1536]
 
-    def prune_graph(
         """Docstring."""
+    def prune_graph(
         self,
         confidence_threshold: float = 0.3,
         days_old: int = 30
     ) -> Dict[str, int]:
-        """Remove low-confidence and stale relationships.
+            """Remove low-confidence and stale relationships.
 
         Args:
             confidence_threshold: Minimum confidence to keep
@@ -714,13 +714,13 @@ class KnowledgeGraphAgent:
             return {"relationships_deleted": 0, "entities_deleted": 0}
 
     def close(self):
-        """Close the database connection."""
+            """Close the database connection."""
         if self.driver:
             self.driver.close()
 
 # Factory function
-def create_knowledge_graph_agent(
     """Docstring."""
+def create_knowledge_graph_agent(
     uri: str,
     user: str,
     password: str,

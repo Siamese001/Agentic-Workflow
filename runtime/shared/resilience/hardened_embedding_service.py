@@ -16,6 +16,8 @@ import time
 from typing import Any, Dict, List, Optional, Tuple, Union
 from datetime import datetime, timedelta
 import json
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +44,7 @@ class EmbeddingRequest:
     priority: int = 1  # 1=high, 2=normal, 3=low
 
     def compute_cache_key(self) -> str:
-        """Compute cache key for the request."""
+            """Compute cache key for the request."""
         unique_data = {
             "texts": self.texts,
             "model": self.model
@@ -90,7 +92,7 @@ class TokenBucket:
     """Token bucket for rate limiting."""
 
     def __init__(self, capacity: int, refill_rate: float):
-        """Initialize token bucket.
+            """Initialize token bucket.
 
         Args:
             capacity: Maximum number of tokens
@@ -103,7 +105,7 @@ class TokenBucket:
         self._lock = asyncio.Lock()
 
     async def consume(self, tokens: int = 1) -> bool:
-        """Consume tokens if available.
+            """Consume tokens if available.
 
         Args:
             tokens: Number of tokens to consume
@@ -127,7 +129,7 @@ class TokenBucket:
             return False
 
     def time_until_available(self, tokens: int = 1) -> float:
-        """Get time until tokens are available."""
+            """Get time until tokens are available."""
         if self.tokens >= tokens:
             return 0.0
 
@@ -152,7 +154,7 @@ class HardenedEmbeddingService:
         redis_client: Any = None,
         config: Optional[Dict[str, Any]] = None
     ):
-        """Initialize hardened embedding service.
+            """Initialize hardened embedding service.
 
         Args:
             providers: Dictionary of embedding providers
@@ -201,8 +203,8 @@ class HardenedEmbeddingService:
         # Background tasks
         self._cleanup_task = asyncio.create_task(self._periodic_cleanup())
 
-    async def embed(
         """Docstring."""
+    async def embed(
         self,
         texts: Union[str, List[str]],
         model: str = "text-embedding-ada-002",
@@ -210,7 +212,7 @@ class HardenedEmbeddingService:
         use_cache: bool = True,
         priority: int = 1
     ) -> EmbeddingResult:
-        """Generate embeddings for texts.
+            """Generate embeddings for texts.
 
         Args:
             texts: Single text or list of texts to embed
@@ -267,15 +269,15 @@ class HardenedEmbeddingService:
             self.stats.total_requests += 1
             raise
 
-    async def embed_batch(
         """Docstring."""
+    async def embed_batch(
         self,
         texts: List[str],
         model: str = "text-embedding-ada-002",
         batch_size: Optional[int] = None,
         provider: Optional[str] = None
     ) -> List[List[float]]:
-        """Generate embeddings for a large batch of texts.
+            """Generate embeddings for a large batch of texts.
 
         Args:
             texts: List of texts to embed
@@ -311,7 +313,7 @@ class HardenedEmbeddingService:
         return all_embeddings
 
     async def _get_from_cache(self, request: EmbeddingRequest) -> Optional[EmbeddingResult]:
-        """Get embeddings from cache."""
+            """Get embeddings from cache."""
         cache_key = request.compute_cache_key()
 
         # Check memory cache first
@@ -336,7 +338,7 @@ class HardenedEmbeddingService:
         return None
 
     async def _store_in_cache(self, request: EmbeddingRequest, result: EmbeddingResult) -> None:
-        """Store embeddings in cache."""
+            """Store embeddings in cache."""
         cache_key = request.compute_cache_key()
 
         # Store in memory cache
@@ -355,7 +357,7 @@ class HardenedEmbeddingService:
                 logger.warning(f"Redis cache write failed: {e}")
 
     async def _store_in_memory(self, cache_key: str, result: EmbeddingResult) -> None:
-        """Store in memory cache with LRU eviction."""
+            """Store in memory cache with LRU eviction."""
         # Evict if cache is full
         if len(self._memory_cache) >= self.memory_cache_size:
             await self._evict_lru()
@@ -364,7 +366,7 @@ class HardenedEmbeddingService:
         self._cache_access_times[cache_key] = time.time()
 
     async def _evict_lru(self) -> None:
-        """Evict least recently used item from memory cache."""
+            """Evict least recently used item from memory cache."""
         if not self._cache_access_times:
             return
 
@@ -373,7 +375,7 @@ class HardenedEmbeddingService:
         del self._cache_access_times[lru_key]
 
     async def _select_provider(self, model: str) -> Optional[str]:
-        """# SQL removed: Select best available provider for the model."""
+            """# SQL removed: Select best available provider for the model."""
         available_providers = []
 
         for provider_name, provider_client in self.providers.items():
@@ -410,7 +412,7 @@ class HardenedEmbeddingService:
 
         # Sort by success rate and response time
         def provider_score(name: str) -> Tuple[float, float]:
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
             metrics = self.stats.provider_stats[name]
             if metrics.total_requests == 0:
@@ -421,13 +423,13 @@ class HardenedEmbeddingService:
 
         return max(available_providers, key=provider_score)
 
-    async def _generate_embeddings(
         """Docstring."""
+    async def _generate_embeddings(
         self,
         request: EmbeddingRequest,
         provider: str
     ) -> EmbeddingResult:
-        """Generate embeddings using specified provider."""
+            """Generate embeddings using specified provider."""
         provider_client = self.providers[provider]
         metrics = self.stats.provider_stats[provider]
 
@@ -496,7 +498,7 @@ class HardenedEmbeddingService:
             raise
 
     async def _call_openai(self, client, texts: List[str], model: str) -> Dict[str, Any]:
-        """Call OpenAI embedding API."""
+            """Call OpenAI embedding API."""
         response = await client.embeddings.create(
             model=model,
             input=texts
@@ -511,13 +513,13 @@ class HardenedEmbeddingService:
         }
 
     async def _call_anthropic(self, client, texts: List[str], model: str) -> Dict[str, Any]:
-        """Call Anthropic embedding API."""
+            """Call Anthropic embedding API."""
         # Anthropic doesn't have a dedicated embedding API
         # This is a placeholder for future implementation
         raise NotImplementedError("Anthropic embedding API not available")
 
     async def _call_cohere(self, client, texts: List[str], model: str) -> Dict[str, Any]:
-        """Call Cohere embedding API."""
+            """Call Cohere embedding API."""
         response = await client.embed(
             texts=texts,
             model=model
@@ -535,7 +537,7 @@ class HardenedEmbeddingService:
         }
 
     async def _call_generic(self, client, texts: List[str], model: str) -> Dict[str, Any]:
-        """Call generic embedding provider."""
+            """Call generic embedding provider."""
         # Default implementation - should be overridden
         response = await client.encode(texts, model=model)
 
@@ -545,7 +547,7 @@ class HardenedEmbeddingService:
         }
 
     def _get_optimal_batch_size(self, provider: str, model: str) -> int:
-        """Get optimal batch size for provider/model."""
+            """Get optimal batch size for provider/model."""
         # Check provider-specific limits
         if provider in self.default_batch_sizes:
             return self.default_batch_sizes[provider]
@@ -554,7 +556,7 @@ class HardenedEmbeddingService:
         return 100
 
     def _update_stats(self, result: EmbeddingResult) -> None:
-        """# SQL removed: Update service statistics."""
+            """# SQL removed: Update service statistics."""
         self.stats.total_requests += 1
         self.stats.total_embeddings += len(result.embeddings)
 
@@ -575,7 +577,7 @@ class HardenedEmbeddingService:
                 )
 
     async def _periodic_cleanup(self) -> None:
-        """Periodic cleanup task."""
+            """Periodic cleanup task."""
         while True:
             try:
                 # Clean up expired memory cache entries
@@ -600,7 +602,7 @@ class HardenedEmbeddingService:
                 await asyncio.sleep(300)  # Retry in 5 minutes
 
     def get_stats(self) -> EmbeddingStats:
-        """Get current service statistics."""
+            """Get current service statistics."""
         # Calculate error rate
         total_requests = sum(m.total_requests for m in self.stats.provider_stats.values())
         total_failures = sum(m.failed_requests for m in self.stats.provider_stats.values())
@@ -615,7 +617,7 @@ class HardenedEmbeddingService:
         return self.stats
 
     async def health_check(self) -> Dict[str, Any]:
-        """Perform health check on all providers."""
+            """Perform health check on all providers."""
         health = {
             "status": "healthy",
             "providers": {},
@@ -646,7 +648,7 @@ class HardenedEmbeddingService:
         return health
 
     async def clear_cache(self, level: CacheLevel = CacheLevel.BOTH) -> None:
-        """Clear embedding cache.
+            """Clear embedding cache.
 
         Args:
             level: Which cache level to clear
@@ -667,8 +669,8 @@ class HardenedEmbeddingService:
                 logger.error(f"Failed to clear Redis cache: {e}")
 
 # Factory function for creating hardened embedding service
-def create_hardened_embedding_service(
     """Docstring."""
+def create_hardened_embedding_service(
     providers: Dict[str, Any],
     redis_client: Any = None,
     config: Optional[Dict[str, Any]] = None

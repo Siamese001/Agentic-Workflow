@@ -19,7 +19,7 @@ class PlanPhase(BaseModel):
 
     @validator('key_deliverables')
     def validate_deliverables(cls, v):
-        """Ensure at least 3 deliverables."""
+            """Ensure at least 3 deliverables."""
         if len(v) < 3:
             raise ValueError("Each phase must have at least 3 key deliverables")
         return v
@@ -33,7 +33,7 @@ class OnboardingPlan(BaseModel):
 
     @validator('phases')
     def validate_three_phases(cls, v):
-        """Ensure exactly 3 phases."""
+            """Ensure exactly 3 phases."""
         if len(v) != 3:
             raise ValueError("Onboarding plan must have exactly 3 phases")
         return v
@@ -42,7 +42,7 @@ class OnboardingPlannerAgent:
     """Generates strategic 30-60-90 day onboarding roadmaps."""
 
     def __init__(self):
-        """Initialize the onboarding planner agent."""
+            """Initialize the onboarding planner agent."""
         # Priority mappings for different company types
         self.startup_priorities = {
             "speed": "Focus on rapid iteration and MVP delivery",
@@ -72,14 +72,14 @@ class OnboardingPlannerAgent:
 
         logger.info("Initialized OnboardingPlannerAgent")
 
-    def generate_plan(
         """Docstring."""
+    def generate_plan(
         self,
         job_description: str,
         company_maturity: str,
         role_title: str
     ) -> OnboardingPlan:
-        """Generate a 30-60-90 day onboarding plan.
+            """Generate a 30-60-90 day onboarding plan.
 
         Args:
             job_description: Job description text
@@ -118,7 +118,7 @@ class OnboardingPlannerAgent:
             return self._generate_fallback_plan(role_title)
 
     def tailor_to_role(self, plan: OnboardingPlan, role_title: str) -> OnboardingPlan:
-        """Tailor the plan to specific role focus.
+            """Tailor the plan to specific role focus.
 
         Args:
             plan: Base onboarding plan
@@ -163,7 +163,7 @@ class OnboardingPlannerAgent:
             return plan
 
     def render_roadmap_md(self, plan: OnboardingPlan) -> str:
-        """Render the plan as a 1-page Markdown document.
+            """Render the plan as a 1-page Markdown document.
 
         Args:
             plan: Onboarding plan to render
@@ -229,7 +229,7 @@ class OnboardingPlannerAgent:
             return "# Onboarding Roadmap\n\nError rendering plan."
 
     def _extract_priorities(self, job_description: str, company_maturity: str) -> Dict[str, str]:
-        """Extract priorities from job description.
+            """Extract priorities from job description.
 
         Args:
             job_description: Job description text
@@ -272,7 +272,7 @@ class OnboardingPlannerAgent:
         company_maturity: str,
         role_title: str
     ) -> List[PlanPhase]:
-        """Generate the three phases of the plan.
+            """Generate the three phases of the plan.
 
         Args:
             priorities: Extracted priorities
@@ -366,7 +366,7 @@ class OnboardingPlannerAgent:
             return self._generate_fallback_phases()
 
     def _extract_tech_keywords(self, job_description: str) -> List[str]:
-        """Extract technology keywords from job description.
+            """Extract technology keywords from job description.
 
         Args:
             job_description: Job description text
@@ -389,7 +389,7 @@ class OnboardingPlannerAgent:
             return []
 
     def _assess_risks(self, company_maturity: str, role_title: str) -> str:
-        """Assess potential risks for the plan.
+            """Assess potential risks for the plan.
 
         Args:
             company_maturity: Company maturity level
@@ -418,7 +418,7 @@ class OnboardingPlannerAgent:
             return "Standard onboarding risks apply with appropriate mitigations."
 
     def _identify_resources(self, phases: List[PlanPhase], company_maturity: str) -> List[str]:
-        """Identify resources needed for the plan.
+            """Identify resources needed for the plan.
 
         Args:
             phases: Plan phases
@@ -452,7 +452,7 @@ class OnboardingPlannerAgent:
             return ["Standard onboarding resources"]
 
     def _generate_fallback_plan(self, role_title: str) -> OnboardingPlan:
-        """Generate fallback plan when errors occur.
+            """Generate fallback plan when errors occur.
 
         Args:
             role_title: Role title
@@ -467,7 +467,7 @@ class OnboardingPlannerAgent:
         )
 
     def _generate_fallback_phases(self) -> List[PlanPhase]:
-        """Generate fallback phases.
+            """Generate fallback phases.
 
         Returns:
             Basic three phases
@@ -515,8 +515,8 @@ def create_onboarding_planner_agent() -> OnboardingPlannerAgent:
     return OnboardingPlannerAgent()
 
 # Convenience function for quick plan generation
-def generate_onboarding_plan(
     """Docstring."""
+def generate_onboarding_plan(
     job_description: str,
     company_maturity: str,
     role_title: str

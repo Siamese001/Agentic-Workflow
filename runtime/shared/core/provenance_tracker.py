@@ -9,6 +9,7 @@ import json
 import logging
 import time
 from pathlib import Path
+from dataclasses import dataclass
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ class SourceCitation:
     verified: bool = False  # Whether verified as actually used
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary.
+            """Convert to dictionary.
 
         Returns:
             Dictionary representation
@@ -50,7 +51,7 @@ class ArtifactLineage(BaseModel):
     verified_citations: List[str] = Field(default_factory=list)
 
     class Config:
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         json_encoders = {
             # Handle any special encoding if needed
@@ -60,7 +61,7 @@ class ProvenanceTracker:
     """Tracks data lineage for generated artifacts."""
 
     def __init__(self, storage_path: str = "./.provenance"):
-        """Initialize provenance tracker.
+            """Initialize provenance tracker.
 
         Args:
             storage_path: Path to store lineage data
@@ -85,13 +86,13 @@ class ProvenanceTracker:
 
         logger.info(f"Initialized ProvenanceTracker at {storage_path}")
 
-    async def capture_context(
         """Docstring."""
+    async def capture_context(
         self,
         trace_id: str,
         sources: List[Tuple[str, str, float]]  # (source_id, snippet, relevance)
     ) -> None:
-        """Capture context sources for a trace.
+            """Capture context sources for a trace.
 
         Args:
             trace_id: Trace ID for tracking
@@ -114,8 +115,8 @@ class ProvenanceTracker:
 
             logger.debug(f"Captured {len(citations)} sources for trace {trace_id}")
 
-    async def record_generation(
         """Docstring."""
+    async def record_generation(
         self,
         trace_id: str,
         artifact_id: str,
@@ -123,7 +124,7 @@ class ProvenanceTracker:
         model_version: str,
         generation_prompt: Optional[str] = None
     ) -> ArtifactLineage:
-        """Record a generation with its lineage.
+            """Record a generation with its lineage.
 
         Args:
             trace_id: Trace ID
@@ -170,7 +171,7 @@ class ProvenanceTracker:
             return lineage
 
     async def verify_citations(self, lineage: ArtifactLineage, output: str) -> ArtifactLineage:
-        """Verify which sources were actually used.
+            """Verify which sources were actually used.
 
         Args:
             lineage: Artifact lineage to verify
@@ -182,7 +183,7 @@ class ProvenanceTracker:
         return await self._verify_citations(lineage, output)
 
     async def _verify_citations(self, lineage: ArtifactLineage, output: str) -> None:
-        """Internal method to verify citations.
+            """Internal method to verify citations.
 
         Args:
             lineage: Artifact lineage to update
@@ -210,7 +211,7 @@ class ProvenanceTracker:
         lineage.verification_status = "verified" if verified_ids else "failed"
 
     def _calculate_similarity(self, snippet: str, output: str) -> float:
-        """Calculate similarity between snippet and output.
+            """Calculate similarity between snippet and output.
 
         Args:
             snippet: Source snippet
@@ -224,7 +225,7 @@ class ProvenanceTracker:
         return matcher.ratio()
 
     def _has_exact_phrase(self, snippet: str, output: str, min_words: int = 3) -> bool:
-        """Check if snippet contains an exact phrase in output.
+            """Check if snippet contains an exact phrase in output.
 
         Args:
             snippet: Source snippet
@@ -246,7 +247,7 @@ class ProvenanceTracker:
         return False
 
     async def _store_lineage(self, lineage: ArtifactLineage) -> None:
-        """Store lineage to file.
+            """Store lineage to file.
 
         Args:
             lineage: Lineage to store
@@ -264,7 +265,7 @@ class ProvenanceTracker:
             raise
 
     def _append_lineage(self, lineage_json: str) -> None:
-        """Append lineage to file (sync for file I/O).
+            """Append lineage to file (sync for file I/O).
 
         Args:
             lineage_json: JSON string to append
@@ -273,7 +274,7 @@ class ProvenanceTracker:
             f.write(lineage_json + '\n')
 
     async def get_lineage(self, artifact_id: str) -> Optional[ArtifactLineage]:
-        """Get lineage for an artifact.
+            """Get lineage for an artifact.
 
         Args:
             artifact_id: Artifact ID
@@ -298,7 +299,7 @@ class ProvenanceTracker:
             return None
 
     def _read_lineage_file(self) -> List[str]:
-        """Read lineage file lines.
+            """Read lineage file lines.
 
         Returns:
             List of JSON lines
@@ -309,14 +310,14 @@ class ProvenanceTracker:
         with open(self.lineage_file, 'r', encoding='utf-8') as f:
             return f.readlines()
 
-    async def search_lineage(
         """Docstring."""
+    async def search_lineage(
         self,
         trace_id: Optional[str] = None,
         model_version: Optional[str] = None,
         limit: int = 100
     ) -> List[ArtifactLineage]:
-        """Search lineage records.
+            """Search lineage records.
 
         Args:
             trace_id: Filter by trace ID
@@ -351,7 +352,7 @@ class ProvenanceTracker:
         return results
 
     async def cleanup(self, older_than_days: int = 30) -> int:
-        """Clean up old lineage records.
+            """Clean up old lineage records.
 
         Args:
             older_than_days: Age threshold in days
@@ -389,7 +390,7 @@ class ProvenanceTracker:
             return 0
 
     def _write_lineage_file(self, lines: List[str]) -> None:
-        """Write lineage file (sync for file I/O).
+            """Write lineage file (sync for file I/O).
 
         Args:
             lines: Lines to write
@@ -398,7 +399,7 @@ class ProvenanceTracker:
             f.writelines(lines)
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get provenance tracker statistics.
+            """Get provenance tracker statistics.
 
         Returns:
             Statistics dictionary
@@ -406,7 +407,7 @@ class ProvenanceTracker:
         return self._stats.copy()
 
     async def health_check(self) -> Dict[str, Any]:
-        """Check health of provenance tracker.
+            """Check health of provenance tracker.
 
         Returns:
             Health status
@@ -462,7 +463,7 @@ class ProvenanceContext:
         sources: List[Tuple[str, str, float]],
         tracker: Optional[ProvenanceTracker] = None
     ):
-        """Initialize provenance context.
+            """Initialize provenance context.
 
         Args:
             trace_id: Trace ID
@@ -474,7 +475,7 @@ class ProvenanceContext:
         self.tracker = tracker
 
     async def __aenter__(self):
-        """Enter context."""
+            """Enter context."""
         if not self.tracker:
             self.tracker = await get_provenance_tracker()
 
@@ -482,19 +483,19 @@ class ProvenanceContext:
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Exit context."""
+            """Exit context."""
         # Clean up on exit if needed
         pass
 
-    async def record_generation(
         """Docstring."""
+    async def record_generation(
         self,
         artifact_id: str,
         output: str,
         model_version: str,
         generation_prompt: Optional[str] = None
     ) -> ArtifactLineage:
-        """Record generation within context.
+            """Record generation within context.
 
         Args:
             artifact_id: Artifact ID
@@ -514,8 +515,8 @@ class ProvenanceContext:
         )
 
 # Helper functions
-async def track_provenance(
     """Docstring."""
+async def track_provenance(
     trace_id: str,
     sources: List[Tuple[str, str, float]],
     artifact_id: str,
@@ -548,8 +549,8 @@ async def track_provenance(
         )
 
 # Decorator for automatic provenance tracking
-def provenance_tracked(
     """Docstring."""
+def provenance_tracked(
     extract_sources: Optional[Callable] = None
 ):
     """Decorator to automatically track provenance.
@@ -565,9 +566,9 @@ def provenance_tracked(
             """TODO: Add docstring."""
 
     def decorator(func):
-        """Docstring."""
-        async def async_wrapper(*args, **kwargs):
             """Docstring."""
+        async def async_wrapper(*args, **kwargs):
+                """Docstring."""
             # Extract trace_id
             trace_id = None
             if args and hasattr(args[0], 'trace_id'):

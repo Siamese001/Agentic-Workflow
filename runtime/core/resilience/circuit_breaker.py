@@ -9,6 +9,8 @@ import asyncio
 import logging
 import time
 from typing import Callable, Any, Optional, Dict
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +45,7 @@ class CircuitBreaker:
     """
 
     def __init__(self, name: str, config: Optional[CircuitBreakerConfig] = None):
-        """Initialize the circuit breaker.
+            """Initialize the circuit breaker.
 
         Args:
             name: Name for logging/tracking
@@ -72,7 +74,7 @@ class CircuitBreaker:
     old}")
 
     async def call(self, func: Callable, *args, **kwargs) -> Any:
-        """Execute a function through the circuit breaker.
+            """Execute a function through the circuit breaker.
 
         Args:
             func: The function to execute
@@ -130,11 +132,11 @@ class CircuitBreaker:
             raise
 
     def _should_attempt_reset(self) -> bool:
-        """Check if enough time has passed to attempt recovery."""
+            """Check if enough time has passed to attempt recovery."""
         return time.time() - self.last_failure_time >= self.config.recovery_timeout
 
     def _on_success(self) -> None:
-        """Handle a successful call."""
+            """Handle a successful call."""
         self.stats["successful_calls"] += 1
 
         if self.state == CircuitState.HALF_OPEN:
@@ -146,7 +148,7 @@ class CircuitBreaker:
             self.failure_count = 0
 
     def _on_failure(self) -> None:
-        """Handle a failed call."""
+            """Handle a failed call."""
         self.stats["failed_calls"] += 1
         self.failure_count += 1
         self.last_failure_time = time.time()
@@ -159,14 +161,14 @@ class CircuitBreaker:
             self._open_circuit()
 
     def _open_circuit(self) -> None:
-        """Open the circuit to block further calls."""
+            """Open the circuit to block further calls."""
         self.state = CircuitState.OPEN
         self.success_count = 0
         self.stats["circuit_opens"] += 1
         logger.warning(f"Circuit '{self.name}' OPENED after {self.failure_count} failures")
 
     def _close_circuit(self) -> None:
-        """Close the circuit to allow normal operation."""
+            """Close the circuit to allow normal operation."""
         self.state = CircuitState.CLOSED
         self.failure_count = 0
         self.success_count = 0
@@ -174,11 +176,11 @@ class CircuitBreaker:
         logger.info(f"Circuit '{self.name}' CLOSED after successful recovery")
 
     def get_state(self) -> CircuitState:
-        """Get the current circuit state."""
+            """Get the current circuit state."""
         return self.state
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get circuit breaker statistics."""
+            """Get circuit breaker statistics."""
         return {
             "name": self.name,
             "state": self.state.value,
@@ -189,7 +191,7 @@ class CircuitBreaker:
         }
 
     def reset(self) -> None:
-        """Manually reset the circuit to CLOSED state."""
+            """Manually reset the circuit to CLOSED state."""
         self.state = CircuitState.CLOSED
         self.failure_count = 0
         self.success_count = 0
@@ -208,7 +210,7 @@ class CircuitBreakerFactory:
     _breakers: Dict[str, CircuitBreaker] = {}
 
     def __new__(cls):
-        """Thread-safe singleton pattern implementation."""
+            """Thread-safe singleton pattern implementation."""
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
@@ -217,7 +219,7 @@ class CircuitBreakerFactory:
         return cls._instance
 
     def __init__(self):
-        """Initialize the factory with thread safety."""
+            """Initialize the factory with thread safety."""
         if self._initialized:
             return
 
@@ -230,7 +232,7 @@ class CircuitBreakerFactory:
 
     @classmethod
     def get(cls, name: str, config: Optional[CircuitBreakerConfig] = None) -> CircuitBreaker:
-        """Get or create a circuit breaker by name with thread safety.
+            """Get or create a circuit breaker by name with thread safety.
 
         Args:
             name: Unique name for the circuit breaker
@@ -252,7 +254,7 @@ class CircuitBreakerFactory:
 
     @classmethod
     def list_all(cls) -> Dict[str, Dict[str, Any]]:
-        """List all circuit breakers and their states with thread safety.
+            """List all circuit breakers and their states with thread safety.
 
         Returns:
             Dictionary mapping breaker names to their stats
@@ -263,7 +265,7 @@ class CircuitBreakerFactory:
 
     @classmethod
     def reset_all(cls) -> None:
-        """Reset all circuit breakers to CLOSED state with thread safety."""
+            """Reset all circuit breakers to CLOSED state with thread safety."""
         factory = cls()
         with factory._breakers_lock:
             for breaker in factory._breakers.values():
@@ -272,7 +274,7 @@ class CircuitBreakerFactory:
 
     @classmethod
     def reset(cls, name: str) -> None:
-        """Reset a specific circuit breaker with thread safety.
+            """Reset a specific circuit breaker with thread safety.
 
         Args:
             name: Name of the circuit breaker to reset
@@ -287,7 +289,7 @@ class CircuitBreakerFactory:
 
     @classmethod
     def remove(cls, name: str) -> bool:
-        """Remove a circuit breaker from the factory with thread safety.
+            """Remove a circuit breaker from the factory with thread safety.
 
         Args:
             name: Name of the circuit breaker to remove
@@ -305,7 +307,7 @@ class CircuitBreakerFactory:
 
     @classmethod
     def clear_all(cls) -> None:
-        """Clear all circuit breakers from the factory with thread safety."""
+            """Clear all circuit breakers from the factory with thread safety."""
         factory = cls()
         with factory._breakers_lock:
             factory._breakers.clear()
@@ -324,8 +326,8 @@ def get_circuit_breaker(name: str, config: Optional[CircuitBreakerConfig] = None
     """
     return CircuitBreakerFactory.get(name, config)
 
-def with_circuit_breaker(
     """Docstring."""
+def with_circuit_breaker(
     breaker_name: str,
     config: Optional[CircuitBreakerConfig] = None
 ):
@@ -339,12 +341,12 @@ def with_circuit_breaker(
         Decorated function
     """
     def decorator(func):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
             """TODO: Add docstring."""
 
         async def wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             breaker = get_circuit_breaker(breaker_name, config)
             return await breaker.call(func, *args, **kwargs)
         return wrapper

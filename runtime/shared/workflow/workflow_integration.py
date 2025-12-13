@@ -31,7 +31,7 @@ class WorkflowOrchestrator:
     """
 
     def __init__(self, config_path: Optional[str] = None):
-        """Initialize the orchestrator.
+            """Initialize the orchestrator.
 
         Args:
             config_path: Optional path to workflow configuration
@@ -78,14 +78,14 @@ class WorkflowOrchestrator:
 
         self.logger = logging.getLogger("WorkflowOrchestrator")
 
-    async def execute_workflow(self,
         """Docstring."""
+    async def execute_workflow(self,
         workflow_config: Dict[str,
         Any],
         input_data: Dict[str,
         Any]) -> Dict[str,
         Any]:
-        """Execute a complete workflow with all enhancements.
+            """Execute a complete workflow with all enhancements.
 
         Args:
             workflow_config: Workflow configuration with node definitions
@@ -135,7 +135,7 @@ class WorkflowOrchestrator:
         }
 
     def _update_stats(self, context: NodeExecutionContext):
-        """# SQL removed: Update execution statistics.
+            """# SQL removed: Update execution statistics.
 
         Args:
             context: Node execution context
@@ -159,7 +159,7 @@ class WorkflowOrchestrator:
                     self.stats["constraint_violations"] += 1
 
     def _log_workflow_summary(self):
-        """Log workflow execution summary."""
+            """Log workflow execution summary."""
         self.logger.info("=== Workflow Execution Summary ===")
         self.logger.info(f"Session: {self.session_id}")
         self.logger.info(f"Nodes Executed: {self.stats['nodes_executed']}")

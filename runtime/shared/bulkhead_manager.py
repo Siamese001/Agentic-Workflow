@@ -8,6 +8,8 @@ tasks are not blocked by lower-priority ones.
 import asyncio
 import logging
 import time
+from dataclasses import dataclass
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -47,7 +49,7 @@ class ResourceExhaustedError(Exception):
     """Raised when bulkhead resources are exhausted."""
 
     def __init__(self, bulkhead_name: str, reason: str):
-        """Initialize resource exhausted error.
+            """Initialize resource exhausted error.
 
         Args:
             bulkhead_name: Name of the bulkhead
@@ -61,7 +63,7 @@ class Bulkhead:
     """A single bulkhead with isolated resources."""
 
     def __init__(self, name: str, config: BulkheadConfig, enable_circuit_breaker: bool = True):
-        """Initialize bulkhead.
+            """Initialize bulkhead.
 
         Args:
             name: Bulkhead name
@@ -96,7 +98,7 @@ class Bulkhead:
         logger.info(f"Created bulkhead '{name}' with max_concurrency={config.max_concurrency}")
 
     async def _get_circuit_breaker(self) -> Optional[CircuitBreaker]:
-        """Get or create circuit breaker.
+            """Get or create circuit breaker.
 
         Returns:
             CircuitBreaker instance if enabled
@@ -109,15 +111,15 @@ class Bulkhead:
             )
         return self.circuit_breaker
 
-    async def execute(
         """Docstring."""
+    async def execute(
         self,
         coro: Callable,
         *args,
         timeout: Optional[float] = None,
         **kwargs
     ) -> Any:
-        """Execute a coroutine within the bulkhead.
+            """Execute a coroutine within the bulkhead.
 
         Args:
             coro: Coroutine function to execute
@@ -205,14 +207,14 @@ class Bulkhead:
             self.semaphore.release()
             self._update_metrics()
 
-    async def _execute_with_circuit_breaker(
         """Docstring."""
+    async def _execute_with_circuit_breaker(
         self,
         coro: Callable,
         *args,
         **kwargs
     ) -> Any:
-        """Execute coroutine with circuit breaker tracking.
+            """Execute coroutine with circuit breaker tracking.
 
         Args:
             coro: Coroutine function
@@ -235,14 +237,14 @@ class Bulkhead:
                 logger.error(f"Task in bulkhead '{self.name}' failed: {e}")
                 raise
 
-    async def _execute_with_tracking(
         """Docstring."""
+    async def _execute_with_tracking(
         self,
         coro: Callable,
         *args,
         **kwargs
     ) -> Any:
-        """Execute coroutine with tracking.
+            """Execute coroutine with tracking.
 
         Args:
             coro: Coroutine function
@@ -259,7 +261,7 @@ class Bulkhead:
             raise
 
     def _update_metrics(self) -> None:
-        """# SQL removed: Update bulkhead metrics."""
+            """# SQL removed: Update bulkhead metrics."""
         self.metrics.active_tasks = len(self._active_tasks)
         self.metrics.queued_tasks = self.queue.qsize()
         self.metrics.completed_tasks = self._completed_count
@@ -278,7 +280,7 @@ class Bulkhead:
         self.metrics.last_updated = datetime.utcnow()
 
     def try_acquire(self) -> bool:
-        """Try to acquire without blocking.
+            """Try to acquire without blocking.
 
         Returns:
             True if acquired, False otherwise
@@ -286,7 +288,7 @@ class Bulkhead:
         return self.semaphore._value > 0 and not self.queue.full()
 
     def get_metrics(self) -> BulkheadMetrics:
-        """Get current metrics.
+            """Get current metrics.
 
         Returns:
             Bulkhead metrics
@@ -295,7 +297,7 @@ class Bulkhead:
         return self.metrics
 
     async def wait_for_available(self, timeout: float = 1.0) -> bool:
-        """Wait for resources to become available.
+            """Wait for resources to become available.
 
         Args:
             timeout: Timeout in seconds
@@ -316,7 +318,7 @@ class BulkheadManager:
     """Manages multiple bulkheads for resource isolation."""
 
     def __init__(self):
-        """Initialize bulkhead manager."""
+            """Initialize bulkhead manager."""
         self.bulkheads: Dict[str, Bulkhead] = {}
         self._global_metrics = {
             "total_active_tasks": 0,
@@ -356,7 +358,7 @@ class BulkheadManager:
         logger.info(f"Initialized BulkheadManager with {len(self.bulkheads)} bulkheads")
 
     def create_bulkhead(self, name: str, config: BulkheadConfig) -> Bulkhead:
-        """Create a new bulkhead.
+            """Create a new bulkhead.
 
         Args:
             name: Bulkhead name
@@ -376,7 +378,7 @@ class BulkheadManager:
         return bulkhead
 
     def get_bulkhead(self, name: str) -> Optional[Bulkhead]:
-        """Get a bulkhead by name.
+            """Get a bulkhead by name.
 
         Args:
             name: Bulkhead name
@@ -387,7 +389,7 @@ class BulkheadManager:
         return self.bulkheads.get(name)
 
     def remove_bulkhead(self, name: str) -> bool:
-        """Remove a bulkhead.
+            """Remove a bulkhead.
 
         Args:
             name: Bulkhead name
@@ -402,8 +404,8 @@ class BulkheadManager:
             return True
         return False
 
-    async def execute(
         """Docstring."""
+    async def execute(
         self,
         bulkhead_name: str,
         coro: Callable,
@@ -411,7 +413,7 @@ class BulkheadManager:
         timeout: Optional[float] = None,
         **kwargs
     ) -> Any:
-        """Execute a coroutine in a specific bulkhead.
+            """Execute a coroutine in a specific bulkhead.
 
         Args:
             bulkhead_name: Name of bulkhead
@@ -436,7 +438,7 @@ class BulkheadManager:
         return await bulkhead.execute(coro, *args, timeout=timeout, **kwargs)
 
     def get_engine_bulkhead(self, engine_type: EngineType) -> str:
-        """Get bulkhead name for engine type.
+            """Get bulkhead name for engine type.
 
         Args:
             engine_type: Type of engine
@@ -449,8 +451,8 @@ class BulkheadManager:
         else:
             return "OUTREACH_GENERATION"
 
-    async def execute_for_engine(
         """Docstring."""
+    async def execute_for_engine(
         self,
         engine_type: EngineType,
         coro: Callable,
@@ -458,7 +460,7 @@ class BulkheadManager:
         timeout: Optional[float] = None,
         **kwargs
     ) -> Any:
-        """Execute a coroutine for a specific engine.
+            """Execute a coroutine for a specific engine.
 
         Args:
             engine_type: Type of engine
@@ -474,7 +476,7 @@ class BulkheadManager:
         return await self.execute(bulkhead_name, coro, *args, timeout=timeout, **kwargs)
 
     def get_all_metrics(self) -> Dict[str, Any]:
-        """Get metrics for all bulkheads.
+            """Get metrics for all bulkheads.
 
         Returns:
             Metrics dictionary
@@ -500,7 +502,7 @@ class BulkheadManager:
         }
 
     def log_utilization(self) -> None:
-        """Log current utilization of all bulkheads."""
+            """Log current utilization of all bulkheads."""
         metrics = self.get_all_metrics()
 
         logger.info("=== Bulkhead Utilization ===")
@@ -516,7 +518,7 @@ class BulkheadManager:
             )
 
     async def health_check(self) -> Dict[str, Any]:
-        """Check health of all bulkheads.
+            """Check health of all bulkheads.
 
         Returns:
             Health status
@@ -577,12 +579,12 @@ def with_bulkhead(bulkhead_name: str, timeout: Optional[float] = None):
         Decorated function
     """
     def decorator(func):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
             """TODO: Add docstring."""
 
         async def wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             manager = await get_bulkhead_manager()
             return await manager.execute(bulkhead_name, func, *args, timeout=timeout, **kwargs)
         return wrapper

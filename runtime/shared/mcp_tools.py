@@ -8,6 +8,7 @@ Phase 1C - SDK Integration Layer
 
 import logging
 from typing import Any, Callable, Dict, List, Optional
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ class MCPTool:
     requires_approval: bool = False
 
     def to_openai_format(self) -> Dict[str, Any]:
-        """Convert to OpenAI function calling format.
+            """Convert to OpenAI function calling format.
 
         Returns:
             OpenAI-compatible tool definition
@@ -36,7 +37,7 @@ class MCPTool:
         }
 
     def to_anthropic_format(self) -> Dict[str, Any]:
-        """Convert to Anthropic tool format.
+            """Convert to Anthropic tool format.
 
         Returns:
             Anthropic-compatible tool definition
@@ -60,7 +61,7 @@ class MCPToolServer:
     """MCP tool server for managing and executing tools."""
 
     def __init__(self, name: str = "agentic-workflow-tools"):
-        """Initialize MCP tool server.
+            """Initialize MCP tool server.
 
         Args:
             name: Server name
@@ -70,7 +71,7 @@ class MCPToolServer:
         logger.info(f"MCP tool server initialized: {name}")
 
     def register_tool(self, tool: MCPTool) -> None:
-        """Register a tool.
+            """Register a tool.
 
         Args:
             tool: MCP tool to register
@@ -78,8 +79,8 @@ class MCPToolServer:
         self._tools[tool.name] = tool
         logger.info(f"Registered MCP tool: {tool.name}")
 
-    def register_function(
         """Docstring."""
+    def register_function(
         self,
         name: str,
         description: str,
@@ -87,7 +88,7 @@ class MCPToolServer:
         handler: Callable,
         requires_approval: bool = False,
     ) -> None:
-        """Register a function as an MCP tool.
+            """Register a function as an MCP tool.
 
         Args:
             name: Tool name
@@ -106,7 +107,7 @@ class MCPToolServer:
         self.register_tool(tool)
 
     def get_tool(self, name: str) -> Optional[MCPTool]:
-        """Get a tool by name.
+            """Get a tool by name.
 
         Args:
             name: Tool name
@@ -117,19 +118,19 @@ class MCPToolServer:
         return self._tools.get(name)
 
     def list_tools(self) -> List[str]:
-        """List all registered tool names.
+            """List all registered tool names.
 
         Returns:
             List of tool names
         """
         return list(self._tools.keys())
 
-    def get_tools_for_provider(
         """Docstring."""
+    def get_tools_for_provider(
         self,
         provider: str = "openai",
     ) -> List[Dict[str, Any]]:
-        """Get tools in provider-specific format.
+            """Get tools in provider-specific format.
 
         Args:
             provider: Provider name (openai, anthropic)
@@ -147,13 +148,13 @@ class MCPToolServer:
 
         return tools
 
-    def execute_tool(
         """Docstring."""
+    def execute_tool(
         self,
         name: str,
         arguments: Dict[str, Any],
     ) -> MCPToolResult:
-        """Execute a tool.
+            """Execute a tool.
 
         Args:
             name: Tool name
@@ -218,7 +219,7 @@ def register_default_tools(server: MCPToolServer) -> None:
     """
     # Calculator tool
     def calculator(operation: str, a: float, b: float) -> float:
-        """Perform basic arithmetic operations."""
+            """Perform basic arithmetic operations."""
         operations = {
             "add": lambda x, y: x + y,
             "subtract": lambda x, y: x - y,
@@ -258,7 +259,7 @@ def register_default_tools(server: MCPToolServer) -> None:
 
     # Text analysis tool
     def analyze_text(text: str) -> Dict[str, Any]:
-        """Analyze text and return statistics."""
+            """Analyze text and return statistics."""
         words = text.split()
         sentences = text.split('.')
 
@@ -287,8 +288,8 @@ def register_default_tools(server: MCPToolServer) -> None:
 
     logger.info("Registered default MCP tools")
 
-def create_mcp_server(
     """Docstring."""
+def create_mcp_server(
     name: str = "agentic-workflow-tools",
     register_defaults: bool = True,
 ) -> MCPToolServer:
@@ -308,8 +309,8 @@ def create_mcp_server(
 
     return server
 
-def execute_tool_calls(
     """Docstring."""
+def execute_tool_calls(
     server: MCPToolServer,
     tool_calls: List[Dict[str, Any]],
 ) -> List[MCPToolResult]:

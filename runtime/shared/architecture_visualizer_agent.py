@@ -28,7 +28,7 @@ class DiagramNode(BaseModel):
 
     @validator('id')
     def validate_id(cls, v):
-        """Ensure node ID is Mermaid-compatible."""
+            """Ensure node ID is Mermaid-compatible."""
         # Remove spaces and special characters, keep alphanumeric and underscore
         return re.sub(r'[^a-zA-Z0-9_]', '', v)
 
@@ -45,7 +45,7 @@ class SimpleAgentBase:
     """Simple base class for standalone agents."""
 
     def __init__(self, name: str, model_name: str = "gpt-4"):
-        """Initialize the agent.
+            """Initialize the agent.
 
         Args:
             name: Agent name for logging
@@ -59,7 +59,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
     """Agent that converts text descriptions into Mermaid.js diagrams."""
 
     def __init__(self, model_name: str = "gpt-4", max_nodes: int = 10):
-        """Initialize the Architecture Visualizer Agent.
+            """Initialize the Architecture Visualizer Agent.
 
         Args:
             model_name: LLM model to use for diagram generation
@@ -88,12 +88,12 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             "event": r'\b(event|message|trigger|signal)\b'
         }
 
-    async def _extract_system_components(self,
         """Docstring."""
+    async def _extract_system_components(self,
         text: str) -> Tuple[List[DiagramNode],
         List[Tuple[str,
         str]]]:
-        """Extract system components and relationships from text.
+            """Extract system components and relationships from text.
 
         Args:
             text: Description of the system architecture
@@ -159,7 +159,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         relationships: List[Tuple[str, str]],
         diagram_type: DiagramType
     ) -> str:
-        """Generate Mermaid code from nodes and relationships.
+            """Generate Mermaid code from nodes and relationships.
 
         Args:
             nodes: List of diagram nodes
@@ -204,14 +204,14 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
 
         return "\n".join(lines)
 
-    async def generate_diagram(
         """Docstring."""
+    async def generate_diagram(
         self,
         description: str,
         diagram_type: DiagramType = DiagramType.FLOWCHART,
         caption: Optional[str] = None
     ) -> Optional[DiagramArtifact]:
-        """Generate a Mermaid diagram from text description.
+            """Generate a Mermaid diagram from text description.
 
         Args:
             description: Text description of the architecture
@@ -256,7 +256,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return None
 
     def render_artifact(self, artifact: DiagramArtifact) -> str:
-        """Render diagram artifact as Markdown.
+            """Render diagram artifact as Markdown.
 
         Args:
             artifact: Diagram artifact to render
@@ -274,7 +274,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
 """
 
     async def visualize_bullet(self, bullet_text: str) -> Optional[str]:
-        """Convert a resume bullet describing a system into a diagram.
+            """Convert a resume bullet describing a system into a diagram.
 
         Args:
             bullet_text: Resume bullet point describing a system
@@ -299,7 +299,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         return None
 
     async def _call_llm(self, prompt: str, temperature: float = 0.3) -> LLMResponse:
-        """Call the LLM with the given prompt.
+            """Call the LLM with the given prompt.
 
         Args:
             prompt: Prompt to send to LLM
@@ -323,7 +323,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             )
 
             class LLMResponseImpl:
-                """Docstring."""
+                    """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 
@@ -333,7 +333,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
-                """Docstring."""
+                    """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 

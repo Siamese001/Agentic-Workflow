@@ -20,7 +20,7 @@ class DecomposedQuery(BaseModel):
 
     @validator('sub_queries')
     def validate_sub_queries(cls, v):
-        """Ensure sub-queries are valid."""
+            """Ensure sub-queries are valid."""
         if not v:
             raise ValueError("At least one sub-query is required")
         if len(v) > 4:
@@ -31,7 +31,7 @@ class SimpleAgentBase:
     """Simple base class for standalone agents."""
 
     def __init__(self, name: str, model_name: str = "gpt-4"):
-        """Initialize the agent.
+            """Initialize the agent.
 
         Args:
             name: Agent name for logging
@@ -49,7 +49,7 @@ class QueryDecomposer(SimpleAgentBase):
     """
 
     def __init__(self, model_name: str = "gpt-4", max_sub_queries: int = 4):
-        """Initialize the Query Decomposer.
+            """Initialize the Query Decomposer.
 
         Args:
             model_name: LLM model to use for decomposition
@@ -81,7 +81,7 @@ class QueryDecomposer(SimpleAgentBase):
         }
 
     def _calculate_complexity_score(self, query: str) -> int:
-        """Calculate complexity score for a query (1-10).
+            """Calculate complexity score for a query (1-10).
 
         Args:
             query: Query to analyze
@@ -112,7 +112,7 @@ class QueryDecomposer(SimpleAgentBase):
         return min(score, 10)
 
     async def _call_llm(self, prompt: str, temperature: float = 0.3) -> Any:
-        """Call the LLM with the given prompt.
+            """Call the LLM with the given prompt.
 
         Args:
             prompt: Prompt to send to LLM
@@ -136,7 +136,7 @@ class QueryDecomposer(SimpleAgentBase):
             )
 
             class LLMResponseImpl:
-                """Docstring."""
+                    """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 
@@ -146,14 +146,14 @@ class QueryDecomposer(SimpleAgentBase):
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
-                """Docstring."""
+                    """Docstring."""
                 def __init__(self, content: str):
                     self.content = content
 
             return LLMResponseImpl('{"sub_queries": ["query"], "reasoning": "fallback"}')
 
     async def decompose(self, query: str) -> DecomposedQuery:
-        """Decompose a complex query into sub-queries.
+            """Decompose a complex query into sub-queries.
 
         Args:
             query: Complex query to decompose
@@ -251,14 +251,14 @@ Output: {{
                 complexity_score=complexity
             )
 
-    async def execute_plan(
         """Docstring."""
+    async def execute_plan(
         self,
         decomposed_query: DecomposedQuery,
         search_function: callable,
         **kwargs
     ) -> List[Any]:
-        """Execute search for all sub-queries in parallel.
+            """Execute search for all sub-queries in parallel.
 
         Args:
             decomposed_query: Result from decompose() method

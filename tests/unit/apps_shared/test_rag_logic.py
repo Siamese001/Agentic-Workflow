@@ -25,11 +25,11 @@ class TestHybridScorer:
     """Test suite for HybridScorer logic expansion."""
 
     def setup_method(self):
-        """Set up test fixtures."""
+            """Set up test fixtures."""
         self.scorer = HybridScorer()
 
     def test_calculate_hybrid_score_basic(self):
-        """Test basic hybrid score calculation."""
+            """Test basic hybrid score calculation."""
         # Test with equal weights
         weights = {'semantic_weight': 0.5, 'bm25_weight': 0.5, 'recency_weight': 0.0}
 
@@ -50,7 +50,7 @@ class TestHybridScorer:
         assert score == pytest.approx(0.55, rel=1e-3)  # (0.9 * 0.5) + (0.2 * 0.5)
 
     def test_calculate_hybrid_score_prioritizes_vector(self):
-        """Test that higher vector weight prioritizes vector score."""
+            """Test that higher vector weight prioritizes vector score."""
         # High vector weight
         weights_high_vector = {'semantic_weight': 0.8, 'bm25_weight': 0.2, 'recency_weight': 0.0}
 
@@ -74,7 +74,7 @@ class TestHybridScorer:
         assert score2 == pytest.approx(0.26, rel=1e-3)  # (0.1 * 0.8) + (0.9 * 0.2)
 
     def test_calculate_hybrid_score_prioritizes_keyword(self):
-        """Test that higher keyword weight prioritizes keyword score."""
+            """Test that higher keyword weight prioritizes keyword score."""
         # High keyword weight
         weights_high_keyword = {'semantic_weight': 0.2, 'bm25_weight': 0.8, 'recency_weight': 0.0}
 
@@ -98,13 +98,13 @@ class TestHybridScorer:
         assert score2 == pytest.approx(0.74, rel=1e-3)  # (0.1 * 0.2) + (0.9 * 0.8)
 
     def test_normalize_score_already_normalized(self):
-        """Test that already normalized scores pass through unchanged."""
+            """Test that already normalized scores pass through unchanged."""
         assert self.scorer._normalize_score(0.0) == 0.0
         assert self.scorer._normalize_score(0.5) == 0.5
         assert self.scorer._normalize_score(1.0) == 1.0
 
     def test_normalize_score_unbounded(self):
-        """Test normalization of unbounded scores using sigmoid."""
+            """Test normalization of unbounded scores using sigmoid."""
         # High positive score should be close to 1
         normalized = self.scorer._normalize_score(10.0)
         assert normalized > 0.9 and normalized <= 1.0
@@ -118,7 +118,7 @@ class TestHybridScorer:
         assert normalized > 0.99
 
     def test_calculate_recency_boost_with_date(self):
-        """Test recency boost calculation with explicit date."""
+            """Test recency boost calculation with explicit date."""
         # Recent document (1 day old)
         recent_metadata = {
             'date': (datetime.now() - timedelta(days=1)).isoformat(),
@@ -144,7 +144,7 @@ class TestHybridScorer:
         assert boost < 0.1  # Should be low for old docs
 
     def test_calculate_recency_boost_with_keywords(self):
-        """Test recency boost based on content keywords."""
+            """Test recency boost based on content keywords."""
         # Content with recent indicators
         recent_metadata = {
             'content': 'Latest updates from today show new developments'
@@ -160,7 +160,7 @@ class TestHybridScorer:
         assert boost == 0.5
 
     def test_calculate_hybrid_score_with_recency_boost(self):
-        """Test hybrid score calculation with recency boost enabled."""
+            """Test hybrid score calculation with recency boost enabled."""
         weights = {'semantic_weight': 0.6, 'bm25_weight': 0.3, 'recency_weight': 0.1}
 
         # Recent document
@@ -187,7 +187,7 @@ class TestHybridScorer:
         assert score_with_boost > score_without_boost
 
     def test_score_bounds(self):
-        """Test that hybrid scores are always within 0-1 bounds."""
+            """Test that hybrid scores are always within 0-1 bounds."""
         weights = {'semantic_weight': 0.5, 'bm25_weight': 0.5, 'recency_weight': 0.0}
 
         # Test extreme values
@@ -209,11 +209,11 @@ class TestEnhancedSemanticCache:
     """Test suite for EnhancedSemanticCache logic expansion."""
 
     def setup_method(self):
-        """Set up test fixtures."""
+            """Set up test fixtures."""
         self.cache = EnhancedSemanticCache()
 
     def test_generate_fingerprint_basic(self):
-        """Test basic fingerprint generation."""
+            """Test basic fingerprint generation."""
         fp1 = self.cache.generate_fingerlogger.info("Hello world", "gpt-4", 0.7, "You are helpful")
         fp2 = self.cache.generate_fingerlogger.info("Hello world", "gpt-4", 0.7, "You are helpful")
         fp3 = self.cache.generate_fingerlogger.info("Hello world",
@@ -229,7 +229,7 @@ class TestEnhancedSemanticCache:
         assert fp1 != fp3
 
     def test_generate_fingerprint_temperature_sensitivity(self):
-        """Test that fingerprint changes with temperature."""
+            """Test that fingerprint changes with temperature."""
         prompt = "Test prompt"
         model = "gpt-4"
         system = "System prompt"
@@ -247,7 +247,7 @@ class TestEnhancedSemanticCache:
         assert fp_medium != fp_high
 
     def test_generate_fingerprint_model_sensitivity(self):
-        """Test that fingerprint changes with model name."""
+            """Test that fingerprint changes with model name."""
         prompt = "Test prompt"
         temp = 0.7
         system = "System prompt"
@@ -258,7 +258,7 @@ class TestEnhancedSemanticCache:
         assert fp_gpt3 != fp_gpt4
 
     def test_generate_fingerprint_system_prompt_sensitivity(self):
-        """Test that fingerprint changes with system prompt."""
+            """Test that fingerprint changes with system prompt."""
         prompt = "Test prompt"
         model = "gpt-4"
         temp = 0.7
@@ -269,12 +269,12 @@ class TestEnhancedSemanticCache:
         assert fp_system1 != fp_system2
 
     def test_lookup_cache_miss(self):
-        """Test cache lookup for non-existent key."""
+            """Test cache lookup for non-existent key."""
         result = self.cache.lookup("nonexistent_fingerprint")
         assert result is None
 
     def test_store_and_lookup(self):
-        """Test storing and retrieving from cache."""
+            """Test storing and retrieving from cache."""
         fingerprint = "test_fp_123"
         data = {
             'content': 'Generated response',
@@ -298,7 +298,7 @@ class TestEnhancedSemanticCache:
         assert result2['content'] == 'Generated response'  # Should be unchanged
 
     def test_lookup_returns_none_on_temperature_change(self):
-        """Test that changing temperature causes cache miss."""
+            """Test that changing temperature causes cache miss."""
         prompt = "What is the capital of France?"
         model = "gpt-4"
         system = "Answer briefly"
@@ -322,7 +322,7 @@ class TestEnhancedSemanticCache:
         assert result['response'] == 'Paris'
 
     def test_cache_expiration(self):
-        """Test that cache entries expire based on TTL."""
+            """Test that cache entries expire based on TTL."""
         fingerprint = "test_fp_expiry"
         data = {'content': 'Test content'}
 
@@ -341,7 +341,7 @@ class TestEnhancedSemanticCache:
         assert result is None
 
     def test_invalidate_by_pattern(self):
-        """Test cache invalidation by pattern matching."""
+            """Test cache invalidation by pattern matching."""
         # Store multiple entries
         self.cache.store("fp1", {'content': 'Response about cats'})
         self.cache.store("fp2", {'content': 'Response about dogs'})
@@ -361,7 +361,7 @@ class TestEnhancedSemanticCache:
         assert self.cache.lookup("fp4") is None  # CATS invalidated
 
     def test_get_cache_stats(self):
-        """Test cache statistics reporting."""
+            """Test cache statistics reporting."""
         # Initially empty
         stats = self.cache.get_cache_stats()
         assert stats['total_entries'] == 0
@@ -386,7 +386,7 @@ class TestEnhancedSemanticCache:
         assert stats['fresh_entries'] == 2
 
     def test_fingerprint_consistency(self):
-        """Test that fingerprints are consistent across multiple calls."""
+            """Test that fingerprints are consistent across multiple calls."""
         prompt = "Test prompt with spaces  "
         model = "  gpt-4  "
         system = "  System prompt  "
@@ -411,7 +411,7 @@ class TestRAGIntegration:
     """Integration tests for RAG components."""
 
     def test_hybrid_scorer_with_cache(self):
-        """Test using HybridScorer and EnhancedSemanticCache together."""
+            """Test using HybridScorer and EnhancedSemanticCache together."""
         scorer = HybridScorer()
         cache = EnhancedSemanticCache()
 

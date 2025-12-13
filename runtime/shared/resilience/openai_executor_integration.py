@@ -30,7 +30,7 @@ class MultiProviderExecutor:
     """
 
     def __init__(self, config: HardeningConfig):
-        """Initialize multi-provider executor.
+            """Initialize multi-provider executor.
 
         Args:
             config: Hardening configuration
@@ -51,14 +51,14 @@ class MultiProviderExecutor:
 
         self.logger = logging.getLogger("MultiProviderExecutor")
 
-    def register_provider(
         """Docstring."""
+    def register_provider(
         self,
         provider: Provider,
         is_primary: bool = False,
         **kwargs
     ) -> None:
-        """Register a provider with the executor.
+            """Register a provider with the executor.
 
         Args:
             provider: Provider type
@@ -80,15 +80,15 @@ class MultiProviderExecutor:
             self.logger.error(f"Failed to register {provider.value}: {e}")
             raise
 
-    async def execute_with_fallback(
         """Docstring."""
+    async def execute_with_fallback(
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
         response_schema: Optional[Type] = None,
         temperature: float = 0.7
     ) -> Any:
-        """Execute with automatic provider fallback.
+            """Execute with automatic provider fallback.
 
         Args:
             messages: List of agent messages
@@ -147,7 +147,7 @@ class MultiProviderExecutor:
         raise RuntimeError("All providers failed to execute request")
 
     def _update_provider_stats(self, provider: Provider, success: bool) -> None:
-        """# SQL removed: Update provider-specific statistics.
+            """# SQL removed: Update provider-specific statistics.
 
         Args:
             provider: Provider that was used
@@ -169,7 +169,7 @@ class MultiProviderExecutor:
             stats["failures"] += 1
 
     def get_comprehensive_stats(self) -> Dict[str, Any]:
-        """Get comprehensive statistics across all providers."""
+            """Get comprehensive statistics across all providers."""
         total = self.stats["total_requests"]
 
         if total == 0:
@@ -207,7 +207,7 @@ class OpenAIExecutorIntegration:
     """
 
     def __init__(self, executor: HardenedOpenAIExecutor):
-        """Initialize with OpenAI executor.
+            """Initialize with OpenAI executor.
 
         Args:
             executor: HardenedOpenAIExecutor instance
@@ -215,14 +215,14 @@ class OpenAIExecutorIntegration:
         self.executor = executor
         self.logger = logging.getLogger("OpenAIIntegration")
 
-    async def generate_structured_response(
         """Docstring."""
+    async def generate_structured_response(
         self,
         prompt: str,
         schema: Type,
         temperature: float = 0.3
     ) -> Any:
-        """Generate a structured response using OpenAI's JSON mode.
+            """Generate a structured response using OpenAI's JSON mode.
 
         Args:
             prompt: Input prompt
@@ -240,13 +240,13 @@ class OpenAIExecutorIntegration:
             temperature=temperature
         )
 
-    async def analyze_with_chain_of_thought(
         """Docstring."""
+    async def analyze_with_chain_of_thought(
         self,
         problem: str,
         context: Optional[str] = None
     ) -> str:
-        """Generate analysis using chain of thought.
+            """Generate analysis using chain of thought.
 
         Args:
             problem: Problem to analyze
@@ -269,7 +269,7 @@ class OpenAIExecutorIntegration:
         4. Final conclusion
 
         Analysis:
-        """
+            """
 
         messages = [AgentMessage(role="user", content=cot_prompt)]
 
@@ -278,13 +278,13 @@ class OpenAIExecutorIntegration:
             temperature=0.5
         )
 
-    async def extract_entities(
         """Docstring."""
+    async def extract_entities(
         self,
         text: str,
         entity_types: List[str]
     ) -> Dict[str, List[str]]:
-        """Extract entities from text.
+            """Extract entities from text.
 
         Args:
             text: Text to analyze
@@ -295,7 +295,7 @@ class OpenAIExecutorIntegration:
         """
 
         class EntityExtraction(BaseModel):
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
             entities: Dict[str, List[str]] = Field(
                 ...,
@@ -318,14 +318,14 @@ class OpenAIExecutorIntegration:
 
         return result.entities
 
-    async def summarize_document(
         """Docstring."""
+    async def summarize_document(
         self,
         content: str,
         max_length: int = 200,
         style: str = "executive"
     ) -> str:
-        """Summarize document with specified style.
+            """Summarize document with specified style.
 
         Args:
             content: Document content
@@ -353,7 +353,7 @@ class OpenAIExecutorIntegration:
         {content}
 
         Summary:
-        """
+            """
 
         messages = [AgentMessage(role="user", content=prompt)]
 
@@ -363,7 +363,7 @@ class OpenAIExecutorIntegration:
         )
 
     def get_usage_report(self) -> Dict[str, Any]:
-        """Get detailed usage and cost report."""
+            """Get detailed usage and cost report."""
         stats = self.executor.get_stats()
 
         # Add cost projections

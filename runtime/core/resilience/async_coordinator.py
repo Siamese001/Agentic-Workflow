@@ -7,6 +7,8 @@ managing timeouts safely, and ensuring proper cleanup of async resources.
 import asyncio
 import logging
 import time
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ class AsyncCoordinator:
     """Coordinates async tasks and prevents orphaned operations."""
 
     def __init__(self, name: str = "default", max_concurrent: int = 100):
-        """Initialize the coordinator.
+            """Initialize the coordinator.
 
         Args:
             name: Coordinator name for logging
@@ -58,7 +60,7 @@ class AsyncCoordinator:
         logger.debug(f"Initialized AsyncCoordinator: {name}")
 
     async def start(self) -> None:
-        """Start the coordinator and cleanup task."""
+            """Start the coordinator and cleanup task."""
         if self._running:
             return
 
@@ -67,7 +69,7 @@ class AsyncCoordinator:
         logger.info(f"Started AsyncCoordinator: {self.name}")
 
     async def stop(self) -> None:
-        """Stop the coordinator and cancel all tasks."""
+            """Stop the coordinator and cancel all tasks."""
         if not self._running:
             return
 
@@ -87,7 +89,7 @@ class AsyncCoordinator:
         logger.info(f"Stopped AsyncCoordinator: {self.name}")
 
     def generate_task_id(self) -> str:
-        """Generate a unique task ID.
+            """Generate a unique task ID.
 
         Returns:
             Unique task ID
@@ -95,15 +97,15 @@ class AsyncCoordinator:
         self._task_counter += 1
         return f"{self.name}_task_{self._task_counter}_{int(time.time() * 1000)}"
 
-    async def create_task(
         """Docstring."""
+    async def create_task(
         self,
         coro: Awaitable,
         timeout: Optional[float] = None,
         parent_id: Optional[str] = None,
         cleanup_callback: Optional[Callable] = None
     ) -> str:
-        """Create and manage a new task.
+            """Create and manage a new task.
 
         Args:
             coro: Coroutine to execute
@@ -147,14 +149,14 @@ class AsyncCoordinator:
         logger.debug(f"Created task: {task_id} (timeout: {timeout})")
         return task_id
 
-    async def _run_with_timeout(
         """Docstring."""
+    async def _run_with_timeout(
         self,
         coro: Awaitable,
         timeout: Optional[float],
         task_id: str
     ) -> Any:
-        """Run a coroutine with timeout handling.
+            """Run a coroutine with timeout handling.
 
         Args:
             coro: Coroutine to run
@@ -197,7 +199,7 @@ class AsyncCoordinator:
             raise
 
     async def _on_task_done(self, task_id: str) -> None:
-        """Handle task completion.
+            """Handle task completion.
 
         Args:
             task_id: ID of the completed task
@@ -236,7 +238,7 @@ class AsyncCoordinator:
                 logger.error(f"Cleanup callback failed for {task_id}: {e}")
 
     async def wait_for_task(self, task_id: str, timeout: Optional[float] = None) -> Any:
-        """Wait for a specific task to complete.
+            """Wait for a specific task to complete.
 
         Args:
             task_id: ID of the task to wait for
@@ -260,7 +262,7 @@ class AsyncCoordinator:
             raise
 
     async def cancel_task(self, task_id: str) -> bool:
-        """Cancel a specific task.
+            """Cancel a specific task.
 
         Args:
             task_id: ID of the task to cancel
@@ -283,7 +285,7 @@ class AsyncCoordinator:
         return True
 
     async def cancel_all_tasks(self) -> int:
-        """Cancel all managed tasks.
+            """Cancel all managed tasks.
 
         Returns:
             Number of tasks cancelled
@@ -300,7 +302,7 @@ class AsyncCoordinator:
         return cancelled
 
     async def get_task_status(self, task_id: str) -> Optional[TaskState]:
-        """Get the status of a task.
+            """Get the status of a task.
 
         Args:
             task_id: ID of the task
@@ -313,7 +315,7 @@ class AsyncCoordinator:
             return task_info.state if task_info else None
 
     async def list_tasks(self) -> Dict[str, Dict[str, Any]]:
-        """List all managed tasks.
+            """List all managed tasks.
 
         Returns:
             Dictionary of task information
@@ -331,7 +333,7 @@ class AsyncCoordinator:
             return result
 
     async def _cleanup_loop(self) -> None:
-        """Background cleanup loop for old tasks."""
+            """Background cleanup loop for old tasks."""
         while self._running:
             try:
                 await asyncio.sleep(30)  # Cleanup every 30 seconds
@@ -362,14 +364,14 @@ class AsyncCoordinator:
                 logger.error(f"Error in cleanup loop: {e}")
 
     @asynccontextmanager
-    async def managed_task(
         """Docstring."""
+    async def managed_task(
         self,
         coro: Awaitable,
         timeout: Optional[float] = None,
         cleanup_callback: Optional[Callable] = None
     ):
-        """Context manager for a managed task.
+            """Context manager for a managed task.
 
         Args:
             coro: Coroutine to run
@@ -416,8 +418,8 @@ async def shutdown_all_coordinators() -> None:
         _coordinators.clear()
 
 # Decorator for managed async functions
-def managed(
     """Docstring."""
+def managed(
     coordinator_name: str = "default",
     timeout: Optional[float] = None,
     cleanup_callback: Optional[Callable] = None
@@ -433,12 +435,12 @@ def managed(
         Decorated function
     """
     def decorator(func):
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
             """TODO: Add docstring."""
 
         async def wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             coordinator = await get_coordinator(coordinator_name)
             async with coordinator.managed_task(
                 func(*args, **kwargs),
@@ -450,8 +452,8 @@ def managed(
     return decorator
 
 # Safe timeout wrapper that prevents orphaned tasks
-async def safe_wait_for(
     """Docstring."""
+async def safe_wait_for(
     coro: Awaitable,
     timeout: float,
     coordinator_name: str = "timeout_coordinator"
@@ -474,7 +476,7 @@ async def safe_wait_for(
         """TODO: Add docstring."""
 
     async def timeout_wrapper():
-        """Docstring."""
+            """Docstring."""
         return await coro
 
     task_id = await coordinator.create_task(timeout_wrapper(), timeout)

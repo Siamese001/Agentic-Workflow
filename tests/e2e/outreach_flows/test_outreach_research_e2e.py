@@ -4,7 +4,7 @@ class TestContactResearchE2E:
     """E2E tests for contact research."""
 
     def test_full_contact_research_flow(self):
-        """E2E: Full contact research flow completes."""
+            """E2E: Full contact research flow completes."""
 
         # Research steps
         steps = ["linkedin_lookup", "company_research", "news_search", "enrichment"]
@@ -16,7 +16,7 @@ class TestContactResearchE2E:
         assert all(r["completed"] for r in results.values())
 
     def test_company_research_flow(self):
-        """E2E: Company research flow completes."""
+            """E2E: Company research flow completes."""
 
         research = {
             "company_info": {"industry": "Technology", "size": "1000+"},
@@ -27,7 +27,7 @@ class TestContactResearchE2E:
         assert len(research["recent_news"]) >= 1
 
     def test_research_with_multiple_sources(self):
-        """E2E: Research aggregates multiple sources."""
+            """E2E: Research aggregates multiple sources."""
         sources = ["linkedin", "crunchbase", "news", "company_website"]
 
         aggregated = {}
@@ -40,7 +40,7 @@ class TestMessageGenerationE2E:
     """E2E tests for message generation."""
 
     def test_personalized_message_generation(self):
-        """E2E: Personalized message is generated."""
+            """E2E: Personalized message is generated."""
         context = {
             "recipient": "John Doe",
             "company": "TechCorp",
@@ -54,7 +54,7 @@ class TestMessageGenerationE2E:
         assert context["company"] in message
 
     def test_message_variant_generation(self):
-        """E2E: Multiple message variants are generated."""
+            """E2E: Multiple message variants are generated."""
         variants = [
             {"tone": "formal", "message": "Dear Mr. Doe..."},
             {"tone": "casual", "message": "Hey John..."},
@@ -64,7 +64,7 @@ class TestMessageGenerationE2E:
         assert len(variants) >= 2
 
     def test_message_quality_scoring(self):
-        """E2E: Message quality is scored."""
+            """E2E: Message quality is scored."""
 
         scores = {
             "personalization": 0.8,

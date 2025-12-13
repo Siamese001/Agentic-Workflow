@@ -13,7 +13,7 @@ class TestRAGPipelineIntegration:
     """Test RAG pipeline integration contracts"""
 
     def test_rag_hybrid_retrieval_configured_contract(self):
-        """Test RAG pipeline has hybrid retrieval configured"""
+            """Test RAG pipeline has hybrid retrieval configured"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -34,7 +34,7 @@ class TestRAGPipelineIntegration:
         assert retrieval_config["sparse_retriever"]["analyzer"] == "standard"
 
     def test_rag_dense_and_sparse_retrievers_valid_contract(self):
-        """Test RAG dense and sparse retrievers are valid"""
+            """Test RAG dense and sparse retrievers are valid"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -63,7 +63,7 @@ class TestRAGPipelineIntegration:
             assert isinstance(result["score"], (int, float))
 
     def test_rag_rrf_reranker_deterministic_contract(self):
-        """Test RAG RRF reranker is deterministic"""
+            """Test RAG RRF reranker is deterministic"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -112,7 +112,7 @@ class TestRAGPipelineIntegration:
             assert result["rrf_score"] != result["sparse_score"]
 
     def test_rag_golden_queries_present_contract(self):
-        """Test RAG pipeline has golden queries for validation"""
+            """Test RAG pipeline has golden queries for validation"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -131,7 +131,7 @@ class TestRAGPipelineIntegration:
             assert isinstance(query["expected_min_score"], (int, float))
 
     def test_rag_golden_queries_pass_contract(self):
-        """Test RAG golden queries pass validation"""
+            """Test RAG golden queries pass validation"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -161,7 +161,7 @@ class TestRAGPipelineIntegration:
                 assert top_score >= min_score
 
     def test_rag_source_attribution_required_contract(self):
-        """Test RAG pipeline provides source attribution"""
+            """Test RAG pipeline provides source attribution"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -188,7 +188,7 @@ class TestRAGPipelineIntegration:
                 assert "title" in doc["source"] or "url" in doc["source"]
 
     def test_rag_retrieval_latency_within_bounds_contract(self):
-        """Test RAG retrieval meets latency requirements"""
+            """Test RAG retrieval meets latency requirements"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -211,7 +211,7 @@ class TestRAGPipelineIntegration:
         assert "results" in result
 
     def test_rag_off_topic_results_detected_contract(self):
-        """Test RAG pipeline detects and filters off-topic results"""
+            """Test RAG pipeline detects and filters off-topic results"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -239,7 +239,7 @@ class TestRAGPipelineIntegration:
             assert result["metadata"]["relevant_count"] <= result["metadata"]["total_retrieved"]
 
     def test_rag_integration_with_provider_registry_contract(self):
-        """Test RAG integrates properly with provider registry"""
+            """Test RAG integrates properly with provider registry"""
         if all(cls is Mock for cls in [RAGProvider, ProviderRegistry]):
             pytest.skip("RAG components not implemented")
 
@@ -262,7 +262,7 @@ class TestRAGPipelineIntegration:
         assert "results" in query_result
 
     def test_rag_negative_case_invalid_query_contract(self):
-        """Test negative case: RAG handles invalid queries gracefully"""
+            """Test negative case: RAG handles invalid queries gracefully"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -290,7 +290,7 @@ class TestRAGPipelineIntegration:
                 ...
 
     def test_rag_deterministic_behavior_contract(self):
-        """Test RAG behavior is deterministic for same input"""
+            """Test RAG behavior is deterministic for same input"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 

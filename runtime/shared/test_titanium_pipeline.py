@@ -23,7 +23,7 @@ class TitaniumPipelineIntegrationTest:
     """Integration test suite for the complete Titanium RAG Pipeline."""
 
     def __init__(self):
-        """Initialize the test suite."""
+            """Initialize the test suite."""
         # Create pipeline with all features enabled
         self.pipeline = create_titanium_pipeline(
             enable_all=True,
@@ -130,14 +130,14 @@ class TitaniumPipelineIntegrationTest:
             }
         ]
 
-    async def mock_retrieval_function(
         """Docstring."""
+    async def mock_retrieval_function(
         self,
         query: str,
         max_docs: int = 10,
         **kwargs
     ) -> Tuple[List[Dict], List[Dict]]:
-        """Mock retrieval function that simulates vector and BM25 search.
+            """Mock retrieval function that simulates vector and BM25 search.
 
         Args:
             query: Query string
@@ -189,7 +189,7 @@ class TitaniumPipelineIntegrationTest:
         return dense_results, sparse_results
 
     async def test_individual_phases(self):
-        """Test each phase individually."""
+            """Test each phase individually."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Individual Phases")
         logger.info("="*60)
@@ -263,7 +263,7 @@ class TitaniumPipelineIntegrationTest:
             logger.info(f"   Cache test: {'Hit' if cached else 'Miss'}")
 
     async def test_full_pipeline_scenarios(self):
-        """Test complete pipeline with various scenarios."""
+            """Test complete pipeline with various scenarios."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Full Pipeline Scenarios")
         logger.info("="*60)
@@ -312,7 +312,7 @@ class TitaniumPipelineIntegrationTest:
                     logger.info(f"   ❌ Should have been blocked by gate")
 
     async def test_pipeline_statistics(self):
-        """Test pipeline statistics and monitoring."""
+            """Test pipeline statistics and monitoring."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Pipeline Statistics")
         logger.info("="*60)
@@ -354,7 +354,7 @@ class TitaniumPipelineIntegrationTest:
               f"Cache={component_info['phase_3_sota']['cache_available']}")
 
     async def test_error_handling(self):
-        """Test pipeline error handling and fallbacks."""
+            """Test pipeline error handling and fallbacks."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Error Handling & Fallbacks")
         logger.info("="*60)
@@ -393,7 +393,7 @@ class TitaniumPipelineIntegrationTest:
         logger.info(f"   Minimal pipeline works: {result['metadata'] is not None}")
 
     def test_convenience_functions(self):
-        """Test convenience functions for easy setup."""
+            """Test convenience functions for easy setup."""
         logger.info("\n" + "="*60)
         logger.info("TESTING: Convenience Functions")
         logger.info("="*60)
@@ -416,7 +416,7 @@ class TitaniumPipelineIntegrationTest:
         logger.info(f"   Reranking enabled: {custom_pipeline.enable_reranking}")
 
     async def run_all_tests(self):
-        """Run all integration tests."""
+            """Run all integration tests."""
         logger.info("🚀 Starting Titanium RAG Pipeline Integration Test Suite")
         logger.info("="*60)
 

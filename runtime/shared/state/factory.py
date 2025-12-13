@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 # Global singleton instance
 _state_manager_instance: Optional[AtomicStateManager] = None
 
-def get_state_manager(
     """Docstring."""
+def get_state_manager(
     backend: BackendType = BackendType.FILE,
     storage_path: Optional[str] = None,
 ) -> AtomicStateManager:
@@ -53,8 +53,8 @@ def reset_state_manager() -> None:
         logger.info("Resetting atomic state manager singleton")
         _state_manager_instance = None
 
-def create_custom_state_manager(
     """Docstring."""
+def create_custom_state_manager(
     backend: BackendType = BackendType.FILE,
     storage_path: Optional[str] = None,
 ) -> AtomicStateManager:

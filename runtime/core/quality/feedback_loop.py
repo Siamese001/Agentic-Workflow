@@ -7,6 +7,8 @@ and adjusts validation thresholds dynamically for optimal outputs.
 import logging
 import time
 import statistics
+from dataclasses import dataclass
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -59,7 +61,7 @@ class AdaptiveThresholds:
     """Dynamically adjusting quality thresholds."""
 
     def __init__(self, initial_thresholds: Dict[str, float]):
-        """Initialize adaptive thresholds.
+            """Initialize adaptive thresholds.
 
         Args:
             initial_thresholds: Starting threshold values
@@ -79,14 +81,14 @@ class AdaptiveThresholds:
             "marginal": 0.55
         }
 
-    def adjust_thresholds(
         """Docstring."""
+    def adjust_thresholds(
         self,
         quality_scores: List[float],
         acceptance_rate: float,
         target_acceptance: float = 0.75
     ) -> Dict[str, float]:
-        """Adjust thresholds based on performance.
+            """Adjust thresholds based on performance.
 
         Args:
             quality_scores: Recent quality scores
@@ -137,7 +139,7 @@ class FeedbackLoop:
     """Manages feedback collection and quality improvement."""
 
     def __init__(self, name: str = "default", history_size: int = 1000):
-        """Initialize the feedback loop.
+            """Initialize the feedback loop.
 
         Args:
             name: Loop name for logging
@@ -171,7 +173,7 @@ class FeedbackLoop:
         logger.debug(f"Initialized FeedbackLoop: {name}")
 
     def record_assessment(self, assessment: SignalAssessment) -> None:
-        """Record a signal assessment.
+            """Record a signal assessment.
 
         Args:
             assessment: Assessment to record
@@ -192,7 +194,7 @@ class FeedbackLoop:
             self._cache_timestamp = 0
 
     def add_feedback(self, feedback: QualityFeedback) -> None:
-        """Add feedback to the loop.
+            """Add feedback to the loop.
 
         Args:
             feedback: Feedback to add
@@ -210,7 +212,7 @@ class FeedbackLoop:
             logger.debug(f"Added {feedback.feedback_type.value} feedback")
 
     def analyze_trends(self, force_refresh: bool = False) -> Dict[str, QualityTrend]:
-        """Analyze quality trends.
+            """Analyze quality trends.
 
         Args:
             force_refresh: Force cache refresh
@@ -241,7 +243,7 @@ class FeedbackLoop:
             return trends
 
     def _calculate_trend(self, metric_name: str, values: List[float]) -> QualityTrend:
-        """Calculate trend for a metric.
+            """Calculate trend for a metric.
 
         Args:
             metric_name: Name of metric
@@ -305,7 +307,7 @@ class FeedbackLoop:
         )
 
     def get_quality_insights(self) -> Dict[str, Any]:
-        """Get insights about quality patterns.
+            """Get insights about quality patterns.
 
         Returns:
             Insights dictionary
@@ -353,7 +355,7 @@ class FeedbackLoop:
             }
 
     def recommend_improvements(self) -> List[str]:
-        """Recommend improvements based on feedback.
+            """Recommend improvements based on feedback.
 
         Returns:
             List of recommendations
@@ -425,7 +427,7 @@ class FeedbackLoop:
         return recommendations
 
     def adjust_thresholds_automatically(self) -> Dict[str, float]:
-        """Automatically adjust thresholds based on performance.
+            """Automatically adjust thresholds based on performance.
 
         Returns:
             Updated thresholds
@@ -453,7 +455,7 @@ class FeedbackLoop:
             return new_thresholds
 
     def export_feedback_data(self) -> Dict[str, Any]:
-        """Export feedback data for analysis.
+            """Export feedback data for analysis.
 
         Returns:
             Export data dictionary

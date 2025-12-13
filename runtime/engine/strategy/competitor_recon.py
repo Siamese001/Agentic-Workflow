@@ -6,6 +6,7 @@ for signaling deep authority.
 """
 
 import logging
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ class ReconAgent:
     """Analyzes candidate history for competitive signals."""
 
     def __init__(self):
-        """Initialize recon agent with competitor database."""
+            """Initialize recon agent with competitor database."""
         # Mock competitor database - in production, this would query real data
         self.competitor_db: Dict[str, Company] = self._build_competitor_db()
 
@@ -58,7 +59,7 @@ class ReconAgent:
         logger.info("Initialized ReconAgent with competitor database")
 
     def _build_competitor_db(self) -> Dict[str, Company]:
-        """Build mock competitor database.
+            """Build mock competitor database.
 
         Returns:
             Dictionary of companies and their competitive data
@@ -165,13 +166,13 @@ class ReconAgent:
             )
         }
 
-    def analyze(
         """Docstring."""
+    def analyze(
         self,
         target_company: str,
         candidate_history: List[str]
     ) -> ReconSignal:
-        """Analyze candidate history for competitive signals.
+            """Analyze candidate history for competitive signals.
 
         Args:
             target_company: Target company name
@@ -216,7 +217,7 @@ class ReconAgent:
         target: Company,
         candidate_history: List[str]
     ) -> Optional[str]:
-        """Find if candidate worked at direct competitor.
+            """Find if candidate worked at direct competitor.
 
         Args:
             target: Target company
@@ -238,7 +239,7 @@ class ReconAgent:
         target: Company,
         candidate_history: List[str]
     ) -> Optional[str]:
-        """Find if candidate worked at adjacent market company.
+            """Find if candidate worked at adjacent market company.
 
         Args:
             target: Target company
@@ -267,7 +268,7 @@ class ReconAgent:
         target: Company,
         competitor: str
     ) -> ReconSignal:
-        """Generate signal for direct competitor experience.
+            """Generate signal for direct competitor experience.
 
         Args:
             target: Target company
@@ -303,7 +304,7 @@ class ReconAgent:
         target: Company,
         adjacent: str
     ) -> ReconSignal:
-        """Generate signal for adjacent market experience.
+            """Generate signal for adjacent market experience.
 
         Args:
             target: Target company
@@ -335,7 +336,7 @@ class ReconAgent:
         )
 
     def add_company(self, company: Company) -> None:
-        """Add company to competitor database.
+            """Add company to competitor database.
 
         Args:
             company: Company to add
@@ -344,7 +345,7 @@ class ReconAgent:
         logger.debug(f"Added company to database: {company.name}")
 
     def update_competitors(self, company_name: str, competitors: List[str]) -> None:
-        """# SQL removed: Update competitor list for a company.
+            """# SQL removed: Update competitor list for a company.
 
         Args:
             company_name: Company to update
@@ -355,7 +356,7 @@ class ReconAgent:
             logger.debug(f# SQL query removed)
 
     def get_competitive_landscape(self, company_name: str) -> Optional[Dict[str, List[str]]]:
-        """Get competitive landscape for a company.
+            """Get competitive landscape for a company.
 
         Args:
             company_name: Company to analyze
@@ -373,13 +374,13 @@ class ReconAgent:
             "industry": company.industry
         }
 
-    def batch_analyze(
         """Docstring."""
+    def batch_analyze(
         self,
         target_companies: List[str],
         candidate_history: List[str]
     ) -> List[ReconSignal]:
-        """Analyze multiple target companies.
+            """Analyze multiple target companies.
 
         Args:
             target_companies: List of target companies
@@ -410,8 +411,8 @@ def get_recon_agent() -> ReconAgent:
     return _recon_agent
 
 # Convenience function
-def analyze_competitive_fit(
     """Docstring."""
+def analyze_competitive_fit(
     target_company: str,
     candidate_history: List[str]
 ) -> ReconSignal:

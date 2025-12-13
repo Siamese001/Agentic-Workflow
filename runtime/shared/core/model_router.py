@@ -7,6 +7,8 @@ LLM based on task type, complexity, and budget constraints.
 import asyncio
 import logging
 from datetime import datetime, timedelta
+from dataclasses import dataclass
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -60,7 +62,7 @@ class ModelRouter:
         daily_budget: float = 5.0,
         budget_period_hours: int = 24
     ):
-        """Initialize model router.
+            """Initialize model router.
 
         Args:
             daily_budget: Daily spend limit in USD
@@ -94,7 +96,7 @@ class ModelRouter:
         logger.info(f"Initialized ModelRouter with budget ${daily_budget}/{budget_period_hours}h")
 
     def _initialize_defaults(self) -> None:
-        """Initialize default model configurations and task profiles."""
+            """Initialize default model configurations and task profiles."""
         # Fast tier models
         self._models["gpt-4o-mini"] = ModelConfig(
             provider="openai",
@@ -253,14 +255,14 @@ class ModelRouter:
             }
         )
 
-    def get_model_config(
         """Docstring."""
+    def get_model_config(
         self,
         task_type: TaskType,
         complexity_score: int = 1,
         force_tier: Optional[ModelTier] = None
     ) -> Dict[str, Any]:
-        """Get model configuration for a task.
+            """Get model configuration for a task.
 
         Args:
             task_type: Type of task
@@ -309,7 +311,7 @@ class ModelRouter:
         return config
 
     def _determine_tier(self, profile: TaskProfile, complexity_score: int) -> ModelTier:
-        """Determine model tier based on complexity.
+            """Determine model tier based on complexity.
 
         Args:
             profile: Task profile
@@ -329,7 +331,7 @@ class ModelRouter:
             return ModelTier.FAST
 
     def _apply_budget_constraints(self, tier: ModelTier) -> ModelTier:
-        """Apply budget constraints to tier selection.
+            """Apply budget constraints to tier selection.
 
         Args:
             tier: Original tier selection
@@ -350,7 +352,7 @@ class ModelRouter:
         return tier
 
     def _select_model_for_tier(self, tier: ModelTier) -> ModelConfig:
-        """# SQL removed: Select the best model for a tier.
+            """# SQL removed: Select the best model for a tier.
 
         Args:
             tier: Model tier
@@ -371,7 +373,7 @@ class ModelRouter:
         return min(tier_models, key=lambda m: m.cost_per_1k_tokens)
 
     async def get_client(self, tier: ModelTier) -> "LLMClient":
-        """Get LLM client for a tier with fallback.
+            """Get LLM client for a tier with fallback.
 
         Args:
             tier: Model tier
@@ -384,15 +386,15 @@ class ModelRouter:
         # Create client with fallback wrapper
         return FallbackClient(model_config, self)
 
-    def record_usage(
         """Docstring."""
+    def record_usage(
         self,
         model_name: str,
         input_tokens: int,
         output_tokens: int,
         cost: float
     ) -> None:
-        """Record model usage for budget tracking.
+            """Record model usage for budget tracking.
 
         Args:
             model_name: Model used
@@ -423,7 +425,7 @@ class ModelRouter:
         self._check_budget_period()
 
     def _is_budget_exceeded(self) -> bool:
-        """Check if budget is exceeded.
+            """Check if budget is exceeded.
 
         Returns:
             True if budget exceeded
@@ -431,7 +433,7 @@ class ModelRouter:
         return self._current_spend >= self.daily_budget
 
     def _check_budget_period(self) -> None:
-        """Check and reset budget period if needed."""
+            """Check and reset budget period if needed."""
         now = datetime.utcnow()
         elapsed = now - self._budget_start
 
@@ -442,7 +444,7 @@ class ModelRouter:
             logger.info("Budget period reset")
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get router statistics.
+            """Get router statistics.
 
         Returns:
             Statistics dictionary
@@ -470,7 +472,7 @@ class ModelRouter:
         return stats
 
     def add_model(self, name: str, config: ModelConfig) -> None:
-        """Add a new model configuration.
+            """Add a new model configuration.
 
         Args:
             name: Model name
@@ -480,7 +482,7 @@ class ModelRouter:
         logger.info(f"Added model {name} ({config.tier.value})")
 
     def add_task_profile(self, profile: TaskProfile) -> None:
-        """Add a new task profile.
+            """Add a new task profile.
 
         Args:
             profile: Task profile
@@ -496,7 +498,7 @@ class FallbackClient:
         primary_config: ModelConfig,
         router: ModelRouter
     ):
-        """Initialize fallback client.
+            """Initialize fallback client.
 
         Args:
             primary_config: Primary model configuration
@@ -506,13 +508,13 @@ class FallbackClient:
         self.router = router
         self._client_cache: Dict[str, "LLMClient"] = {}
 
-    async def generate(
         """Docstring."""
+    async def generate(
         self,
         prompt: str,
         **kwargs
     ) -> str:
-        """Generate text with fallback logic.
+            """Generate text with fallback logic.
 
         Args:
             prompt: Generation prompt
@@ -557,7 +559,7 @@ class FallbackClient:
             raise RuntimeError(f"All model attempts failed. Last error: {e}")
 
     async def _get_client(self, config: ModelConfig) -> "LLMClient":
-        """Get or create LLM client.
+            """Get or create LLM client.
 
         Args:
             config: Model configuration
@@ -581,7 +583,7 @@ class FallbackClient:
         return self._client_cache[cache_key]
 
     def _get_fallback_tier(self, current_tier: ModelTier) -> Optional[ModelTier]:
-        """Get fallback tier.
+            """Get fallback tier.
 
         Args:
             current_tier: Current tier
@@ -597,7 +599,7 @@ class FallbackClient:
             return None
 
     def _record_usage(self, client: "LLMClient", prompt: str, result: str) -> None:
-        """Record usage for billing.
+            """Record usage for billing.
 
         Args:
             client: LLM client used
@@ -625,7 +627,7 @@ class LLMClient(ABC):
     """Abstract base for LLM clients."""
 
     def __init__(self, config: ModelConfig):
-        """Initialize client.
+            """Initialize client.
 
         Args:
             config: Model configuration
@@ -634,7 +636,7 @@ class LLMClient(ABC):
 
     @abstractmethod
     async def generate(self, prompt: str, **kwargs) -> str:
-        """Generate text.
+            """Generate text.
 
         Args:
             prompt: Generation prompt
@@ -649,7 +651,7 @@ class OpenAIClient(LLMClient):
     """OpenAI client implementation."""
 
     async def generate(self, prompt: str, **kwargs) -> str:
-        """Generate text using OpenAI.
+            """Generate text using OpenAI.
 
         Args:
             prompt: Generation prompt
@@ -666,7 +668,7 @@ class AnthropicClient(LLMClient):
     """Anthropic client implementation."""
 
     async def generate(self, prompt: str, **kwargs) -> str:
-        """Generate text using Anthropic.
+            """Generate text using Anthropic.
 
         Args:
             prompt: Generation prompt
@@ -696,8 +698,8 @@ async def get_model_router() -> ModelRouter:
     return _model_router
 
 # Helper functions
-async def route_and_generate(
     """Docstring."""
+async def route_and_generate(
     task_type: TaskType,
     prompt: str,
     complexity_score: int = 1,

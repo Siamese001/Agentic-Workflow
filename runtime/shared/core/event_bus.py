@@ -10,6 +10,7 @@ import json
 import logging
 import time
 import uuid
+from enum import Enum
 
 
 logger = logging.getLogger(__name__)
@@ -60,12 +61,12 @@ class SystemEvent(BaseModel):
     causation_id: Optional[str] = None   # The event that caused this one
 
     class Config:
-        """TODO: Add docstring."""
+            """TODO: Add docstring."""
 
         frozen = True  # Events are immutable
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for serialization.
+            """Convert to dictionary for serialization.
 
         Returns:
             Dictionary representation
@@ -83,7 +84,7 @@ class SystemEvent(BaseModel):
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SystemEvent":
-        """Create from dictionary.
+            """Create from dictionary.
 
         Args:
             data: Dictionary data
@@ -107,12 +108,12 @@ class EventBus(ABC):
 
     @abstractmethod
     async def connect(self) -> None:
-        """Connect to the event bus backend."""
+            """Connect to the event bus backend."""
         pass
 
     @abstractmethod
     async def publish(self, channel: str, event: SystemEvent) -> None:
-        """Publish an event to a channel.
+            """Publish an event to a channel.
 
         Args:
             channel: Channel name
@@ -121,13 +122,13 @@ class EventBus(ABC):
         pass
 
     @abstractmethod
-    async def subscribe(
         """Docstring."""
+    async def subscribe(
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
-        """Subscribe to events on a channel.
+            """Subscribe to events on a channel.
 
         Args:
             channel: Channel name
@@ -137,7 +138,7 @@ class EventBus(ABC):
 
     @abstractmethod
     async def unsubscribe(self, channel: str) -> None:
-        """Unsubscribe from a channel.
+            """Unsubscribe from a channel.
 
         Args:
             channel: Channel name
@@ -146,12 +147,12 @@ class EventBus(ABC):
 
     @abstractmethod
     async def close(self) -> None:
-        """Close the event bus connection."""
+            """Close the event bus connection."""
         pass
 
     @abstractmethod
     async def health_check(self) -> Dict[str, Any]:
-        """Check health of event bus.
+            """Check health of event bus.
 
         Returns:
             Health status
@@ -162,7 +163,7 @@ class MemoryEventBus(EventBus):
     """In-memory event bus using asyncio.Queue."""
 
     def __init__(self):
-        """Initialize memory event bus."""
+            """Initialize memory event bus."""
         self._queues: Dict[str, asyncio.Queue] = {}
         self._subscribers: Dict[str, List[Callable]] = {}
         self._workers: Dict[str, asyncio.Task] = {}
@@ -177,12 +178,12 @@ class MemoryEventBus(EventBus):
         logger.info("Initialized MemoryEventBus")
 
     async def connect(self) -> None:
-        """Connect to the event bus."""
+            """Connect to the event bus."""
         self._running = True
         logger.info("MemoryEventBus connected")
 
     async def publish(self, channel: str, event: SystemEvent) -> None:
-        """Publish an event to a channel.
+            """Publish an event to a channel.
 
         Args:
             channel: Channel name
@@ -214,13 +215,13 @@ class MemoryEventBus(EventBus):
 
         logger.debug(f"Published event {event.id} to channel {channel}")
 
-    async def subscribe(
         """Docstring."""
+    async def subscribe(
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
-        """Subscribe to events on a channel.
+            """Subscribe to events on a channel.
 
         Args:
             channel: Channel name
@@ -233,7 +234,7 @@ class MemoryEventBus(EventBus):
         logger.debug(f"Subscribed to channel {channel}")
 
     async def unsubscribe(self, channel: str) -> None:
-        """Unsubscribe from a channel.
+            """Unsubscribe from a channel.
 
         Args:
             channel: Channel name
@@ -243,7 +244,7 @@ class MemoryEventBus(EventBus):
             logger.debug(f"Unsubscribed from channel {channel}")
 
     async def close(self) -> None:
-        """Close the event bus."""
+            """Close the event bus."""
         self._running = False
 
         # Cancel all workers
@@ -261,7 +262,7 @@ class MemoryEventBus(EventBus):
         logger.info("MemoryEventBus closed")
 
     async def health_check(self) -> Dict[str, Any]:
-        """Check health of event bus.
+            """Check health of event bus.
 
         Returns:
             Health status
@@ -276,7 +277,7 @@ class MemoryEventBus(EventBus):
         }
 
     async def _worker_loop(self, channel: str) -> None:
-        """Worker loop for processing events.
+            """Worker loop for processing events.
 
         Args:
             channel: Channel to process
@@ -301,13 +302,13 @@ class MemoryEventBus(EventBus):
             except Exception as e:
                 logger.error(f"Worker error for channel {channel}: {e}")
 
-    async def _notify_subscribers(
         """Docstring."""
+    async def _notify_subscribers(
         self,
         event: SystemEvent,
         subscribers: List[Callable]
     ) -> None:
-        """Notify all subscribers of an event.
+            """Notify all subscribers of an event.
 
         Args:
             event: Event to publish
@@ -323,13 +324,13 @@ class MemoryEventBus(EventBus):
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
 
-    async def _safe_notify(
         """Docstring."""
+    async def _safe_notify(
         self,
         callback: Callable[[SystemEvent], Awaitable[None]],
         event: SystemEvent
     ) -> None:
-        """Safely notify a subscriber.
+            """Safely notify a subscriber.
 
         Args:
             callback: Subscriber callback
@@ -350,7 +351,7 @@ class RedisEventBus(EventBus):
         consumer_group: str = "agentic_workflow",
         consumer_name: Optional[str] = None
     ):
-        """Initialize Redis event bus.
+            """Initialize Redis event bus.
 
         Args:
             connection_string: Redis connection string
@@ -376,7 +377,7 @@ class RedisEventBus(EventBus):
         logger.info(f"Initialized RedisEventBus for {connection_string}")
 
     async def connect(self) -> None:
-        """Connect to Redis."""
+            """Connect to Redis."""
         try:
 
             # Create Redis client with connection pooling
@@ -401,7 +402,7 @@ class RedisEventBus(EventBus):
             raise
 
     async def publish(self, channel: str, event: SystemEvent) -> None:
-        """Publish an event to a Redis stream.
+            """Publish an event to a Redis stream.
 
         Args:
             channel: Channel name (stream key)
@@ -432,13 +433,13 @@ class RedisEventBus(EventBus):
             await self._handle_connection_error(e)
             raise
 
-    async def subscribe(
         """Docstring."""
+    async def subscribe(
         self,
         channel: str,
         callback: Callable[[SystemEvent], Awaitable[None]]
     ) -> None:
-        """Subscribe to a Redis stream.
+            """Subscribe to a Redis stream.
 
         Args:
             channel: Channel name (stream key)
@@ -474,7 +475,7 @@ class RedisEventBus(EventBus):
         logger.debug(f"Subscribed to Redis stream {channel}")
 
     async def unsubscribe(self, channel: str) -> None:
-        """Unsubscribe from a Redis stream.
+            """Unsubscribe from a Redis stream.
 
         Args:
             channel: Channel name
@@ -490,7 +491,7 @@ class RedisEventBus(EventBus):
             logger.debug(f"Unsubscribed from Redis stream {channel}")
 
     async def close(self) -> None:
-        """Close Redis connection."""
+            """Close Redis connection."""
         self._running = False
 
         # Cancel all readers
@@ -507,7 +508,7 @@ class RedisEventBus(EventBus):
         logger.info("RedisEventBus closed")
 
     async def health_check(self) -> Dict[str, Any]:
-        """Check health of Redis event bus.
+            """Check health of Redis event bus.
 
         Returns:
             Health status
@@ -537,7 +538,7 @@ class RedisEventBus(EventBus):
             }
 
     async def _reader_loop(self, channel: str) -> None:
-        """Reader loop for processing Redis stream events.
+            """Reader loop for processing Redis stream events.
 
         Args:
             channel: Stream to read from
@@ -581,13 +582,13 @@ class RedisEventBus(EventBus):
                 logger.error(f"Reader error for stream {channel}: {e}")
                 await asyncio.sleep(1)  # Brief pause before retry
 
-    async def _notify_subscribers(
         """Docstring."""
+    async def _notify_subscribers(
         self,
         event: SystemEvent,
         subscribers: List[Callable]
     ) -> None:
-        """Notify all subscribers of an event.
+            """Notify all subscribers of an event.
 
         Args:
             event: Event to publish
@@ -603,13 +604,13 @@ class RedisEventBus(EventBus):
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
 
-    async def _safe_notify(
         """Docstring."""
+    async def _safe_notify(
         self,
         callback: Callable[[SystemEvent], Awaitable[None]],
         event: SystemEvent
     ) -> None:
-        """Safely notify a subscriber.
+            """Safely notify a subscriber.
 
         Args:
             callback: Subscriber callback
@@ -622,7 +623,7 @@ class RedisEventBus(EventBus):
             logger.error(f"Subscriber callback error: {e}", exc_info=True)
 
     async def _handle_connection_error(self, error: Exception) -> None:
-        """Handle Redis connection errors.
+            """Handle Redis connection errors.
 
         Args:
             error: Connection error
@@ -672,8 +673,8 @@ async def get_event_bus() -> EventBus:
     return _event_bus
 
 # Event publishing helpers
-async def publish_event(
     """Docstring."""
+async def publish_event(
     event_type: EventType,
     source_component: str,
     payload: Dict[str, Any],
@@ -705,8 +706,8 @@ async def publish_event(
     await bus.publish(channel, event)
 
 # Decorator for event publishing
-def event_publisher(
     """Docstring."""
+def event_publisher(
     event_type: EventType,
     channel: Optional[str] = None
 ):
@@ -724,9 +725,9 @@ def event_publisher(
             """TODO: Add docstring."""
 
     def decorator(func):
-        """Docstring."""
-        async def async_wrapper(*args, **kwargs):
             """Docstring."""
+        async def async_wrapper(*args, **kwargs):
+                """Docstring."""
             # Extract trace_id from first argument if it's a SignalEnvelope
             trace_id = None
             if args and hasattr(args[0], 'trace_id'):

@@ -6,6 +6,8 @@ integrating with LLM providers and enforcing reasoning configurations.
 
 import logging
 from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ class Agent(ABC):
         k_node_id: str,
         element: str,
     ):
-        """Initialize agent with reasoning configuration.
+            """Initialize agent with reasoning configuration.
 
         Args:
             config: Reasoning configuration from orchestration config
@@ -65,7 +67,7 @@ class Agent(ABC):
 
     @abstractmethod
     async def execute(self, context: Dict[str, Any]) -> Any:
-        """Execute agent with given context.
+            """Execute agent with given context.
 
         This method must be implemented by specialist agents (e.g., K5A_GenerationAgent).
 
@@ -77,14 +79,14 @@ class Agent(ABC):
         """
         pass
 
-    async def _call_llm(
         """Docstring."""
+    async def _call_llm(
         self,
         prompt: str,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
     ) -> str:
-        """Call LLM with configured parameters.
+            """Call LLM with configured parameters.
 
         Args:
             prompt: Prompt to send to LLM
@@ -121,13 +123,13 @@ class Agent(ABC):
             logger.error(f"LLM call failed for {self.k_node_id}: {e}")
             raise
 
-    async def _call_llm_with_self_consistency(
         """Docstring."""
+    async def _call_llm_with_self_consistency(
         self,
         prompt: str,
         k: Optional[int] = None,
     ) -> List[str]:
-        """Call LLM multiple times for self-consistency.
+            """Call LLM multiple times for self-consistency.
 
         Args:
             prompt: Prompt to send to LLM
@@ -148,14 +150,14 @@ class Agent(ABC):
 
         return candidates
 
-    async def _call_llm_with_tot(
         """Docstring."""
+    async def _call_llm_with_tot(
         self,
         prompt: str,
         branches: Optional[int] = None,
         depth: Optional[int] = None,
     ) -> List[str]:
-        """Call LLM with Tree of Thoughts reasoning.
+            """Call LLM with Tree of Thoughts reasoning.
 
         Args:
             prompt: Base prompt
@@ -188,7 +190,7 @@ class Agent(ABC):
         candidates: List[str],
         selection_criteria: str = "length",
     ) -> str:
-        """# SQL removed: Select best candidate from multiple responses.
+            """# SQL removed: Select best candidate from multiple responses.
 
         Args:
             candidates: List of candidate responses
@@ -212,13 +214,13 @@ class Agent(ABC):
             logger.warning(f"Unknown selection criteria: {selection_criteria}, using first")
             return candidates[0]
 
-    async def _execute_with_rag(
         """Docstring."""
+    async def _execute_with_rag(
         self,
         prompt: str,
         context: Dict[str, Any],
     ) -> str:
-        """Execute with RAG integration.
+            """Execute with RAG integration.
 
         Args:
             prompt: Base prompt

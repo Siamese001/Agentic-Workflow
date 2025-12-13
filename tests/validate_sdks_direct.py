@@ -118,7 +118,7 @@ def main():
 
         # Register a test tool
         def test_function(x: int) -> int:
-            """Docstring."""
+                """Docstring."""
             return x * 2
 
         server.register_function(

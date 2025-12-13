@@ -7,6 +7,8 @@ validation hooks, and protection against partial state corruption.
 import copy
 import logging
 import time
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +30,7 @@ class StateSnapshot:
     external_state: Dict[str, Any] = field(default_factory=dict)
 
     def restore_to(self, target_graph: nx.DiGraph) -> None:
-        """Restore this snapshot to a target graph.
+            """Restore this snapshot to a target graph.
 
         Args:
             target_graph: Graph to restore state to
@@ -54,7 +56,7 @@ class DAGSafetyManager:
     """Manages DAG mutation safety with comprehensive rollback."""
 
     def __init__(self, name: str = "default"):
-        """Initialize the safety manager.
+            """Initialize the safety manager.
 
         Args:
             name: Manager name for logging
@@ -68,13 +70,13 @@ class DAGSafetyManager:
 
         logger.debug(f"Initialized DAGSafetyManager: {name}")
 
-    def add_validation_hook(
         """Docstring."""
+    def add_validation_hook(
         self,
         phase: MutationPhase,
         hook: Callable[[nx.DiGraph, Dict[str, Any]], None]
     ) -> None:
-        """Add a validation hook for a specific phase.
+            """Add a validation hook for a specific phase.
 
         Args:
             phase: Phase to attach hook to
@@ -83,13 +85,13 @@ class DAGSafetyManager:
         self._validation_hooks[phase].append(hook)
         logger.debug(f"Added validation hook for phase: {phase.value}")
 
-    def create_snapshot(
         """Docstring."""
+    def create_snapshot(
         self,
         graph: nx.DiGraph,
         external_state: Optional[Dict[str, Any]] = None
     ) -> str:
-        """Create a snapshot of the current DAG state.
+            """Create a snapshot of the current DAG state.
 
         Args:
             graph: Current graph
@@ -131,7 +133,7 @@ class DAGSafetyManager:
         return snapshot_id
 
     def restore_snapshot(self, snapshot_id: str, target_graph: nx.DiGraph) -> bool:
-        """Restore a snapshot to the target graph.
+            """Restore a snapshot to the target graph.
 
         Args:
             snapshot_id: ID of snapshot to restore
@@ -153,7 +155,7 @@ class DAGSafetyManager:
         return True
 
     def begin_mutation(self, mutation_type: str, metadata: Dict[str, Any]) -> str:
-        """Begin a mutation operation.
+            """Begin a mutation operation.
 
         Args:
             mutation_type: Type of mutation
@@ -177,14 +179,14 @@ class DAGSafetyManager:
 
         return mutation_id
 
-    def execute_mutation(
         """Docstring."""
+    def execute_mutation(
         self,
         graph: nx.DiGraph,
         mutation_func: Callable[[nx.DiGraph], None],
         mutation_id: str
     ) -> bool:
-        """Execute a mutation with full safety checks.
+            """Execute a mutation with full safety checks.
 
         Args:
             graph: Graph to mutate
@@ -249,7 +251,7 @@ class DAGSafetyManager:
         graph: nx.DiGraph,
         mutation_info: Dict[str, Any]
     ) -> None:
-        """Run validation hooks for a phase.
+            """Run validation hooks for a phase.
 
         Args:
             phase: Phase to run hooks for
@@ -264,7 +266,7 @@ class DAGSafetyManager:
                 raise
 
     def get_mutation_history(self) -> List[Dict[str, Any]]:
-        """Get history of mutations.
+            """Get history of mutations.
 
         Returns:
             List of mutation information
@@ -272,7 +274,7 @@ class DAGSafetyManager:
         return copy.deepcopy(self._mutation_stack)
 
     def clear_history(self) -> None:
-        """Clear mutation history and snapshots."""
+            """Clear mutation history and snapshots."""
         self._snapshots.clear()
         self._mutation_stack.clear()
         logger.debug("Cleared mutation history")
@@ -333,7 +335,7 @@ class SafeMutationContext:
         mutation_type: str,
         metadata: Optional[Dict[str, Any]] = None
     ):
-        """Initialize the context.
+            """Initialize the context.
 
         Args:
             safety_manager: Safety manager instance
@@ -348,7 +350,7 @@ class SafeMutationContext:
         self.mutation_id = None
 
     def __enter__(self):
-        """Enter mutation context.
+            """Enter mutation context.
 
         Returns:
             Mutation function wrapper
@@ -360,7 +362,7 @@ class SafeMutationContext:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Exit mutation context.
+            """Exit mutation context.
 
         Args:
             exc_type: Exception type
@@ -372,7 +374,7 @@ class SafeMutationContext:
         return False  # Propagate exceptions
 
     def execute(self, mutation_func: Callable[[nx.DiGraph], None]) -> bool:
-        """Execute a mutation safely.
+            """Execute a mutation safely.
 
         Args:
             mutation_func: Function to perform mutation

@@ -18,13 +18,13 @@ class TestProviderRouting:
         """TODO: Add docstring."""
 
     def reset_state(self):
-        """Docstring."""
+            """Docstring."""
         reset_all_clients()
         yield
         reset_all_clients()
 
     def test_available_providers_with_keys(self):
-        """Returns providers that have API keys configured."""
+            """Returns providers that have API keys configured."""
         with patch.dict(os.environ, {
             "OPENAI_API_KEY": "sk-test",
             "ANTHROPIC_API_KEY": "sk-ant",
@@ -34,7 +34,7 @@ class TestProviderRouting:
             assert Provider.ANTHROPIC in available
 
     def test_client_creation_with_valid_key(self):
-        """Client is created when API key is present."""
+            """Client is created when API key is present."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "sk-test"}):
             with patch("openai.OpenAI") as mock:
                 mock.return_value = MagicMock()
@@ -43,7 +43,7 @@ class TestProviderRouting:
                 mock.assert_called_once()
 
     def test_provider_enum_routing(self):
-        """Provider enum values map correctly for routing."""
+            """Provider enum values map correctly for routing."""
         assert Provider.OPENAI.value == "openai"
         assert Provider.ANTHROPIC.value == "anthropic"
         assert Provider.GROQ.value == "groq"

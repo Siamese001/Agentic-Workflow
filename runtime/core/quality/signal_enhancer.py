@@ -8,6 +8,8 @@ import hashlib
 import logging
 import re
 from datetime import datetime
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +82,7 @@ class SignalAssessment:
     recommendations: List[str] = field(default_factory=list)
 
     def is_acceptable(self, min_quality: SignalQuality = SignalQuality.GOOD) -> bool:
-        """Check if signal meets minimum quality threshold.
+            """Check if signal meets minimum quality threshold.
 
         Args:
             min_quality: Minimum acceptable quality level
@@ -105,7 +107,7 @@ class SignalEnhancer:
     """Enhances signal quality through multi-stage validation."""
 
     def __init__(self, name: str = "default", thresholds: Optional[QualityThresholds] = None):
-        """Initialize the signal enhancer.
+            """Initialize the signal enhancer.
 
         Args:
             name: Enhancer name for logging
@@ -125,13 +127,13 @@ class SignalEnhancer:
 
         logger.debug(f"Initialized SignalEnhancer: {name}")
 
-    def assess_signal(
         """Docstring."""
+    def assess_signal(
         self,
         content: str,
         context: Optional[Dict[str, Any]] = None
     ) -> SignalAssessment:
-        """Assess the quality of content signal.
+            """Assess the quality of content signal.
 
         Args:
             content: Content to assess
@@ -214,7 +216,7 @@ class SignalEnhancer:
         return assessment
 
     def _assess_relevance(self, content: str, context: Optional[Dict[str, Any]]) -> float:
-        """Assess content relevance.
+            """Assess content relevance.
 
         Args:
             content: Content to assess
@@ -251,7 +253,7 @@ class SignalEnhancer:
         return max(score, self.thresholds.MIN_RELEVANCE if score > 0.3 else score)
 
     def _assess_authority(self, content: str, context: Optional[Dict[str, Any]]) -> float:
-        """Assess source authority.
+            """Assess source authority.
 
         Args:
             content: Content to assess
@@ -290,7 +292,7 @@ class SignalEnhancer:
         return min(1.0, authority_score / len(sources))
 
     def _assess_specificity(self, content: str) -> float:
-        """Assess content specificity.
+            """Assess content specificity.
 
         Args:
             content: Content to assess
@@ -328,7 +330,7 @@ class SignalEnhancer:
         return min(1.0, specificity_ratio * 10)
 
     def _assess_coherence(self, content: str) -> float:
-        """Assess content coherence.
+            """Assess content coherence.
 
         Args:
             content: Content to assess
@@ -379,7 +381,7 @@ class SignalEnhancer:
         return min(1.0, coherence_score)
 
     def _calculate_signal_to_noise(self, content: str) -> float:
-        """Calculate signal-to-noise ratio.
+            """Calculate signal-to-noise ratio.
 
         Args:
             content: Content to analyze
@@ -410,7 +412,7 @@ class SignalEnhancer:
         return signal_count / noise_count
 
     def _calculate_information_density(self, content: str) -> float:
-        """Calculate information density.
+            """Calculate information density.
 
         Args:
             content: Content to analyze
@@ -435,7 +437,7 @@ class SignalEnhancer:
         return len(unique_words) / len(words)
 
     def _assess_factual_accuracy(self, content: str) -> float:
-        """Assess factual accuracy (simplified).
+            """Assess factual accuracy (simplified).
 
         Args:
             content: Content to assess
@@ -471,7 +473,7 @@ class SignalEnhancer:
         return factual_count / total_indicators
 
     def _assess_originality(self, content: str) -> float:
-        """Assess content originality.
+            """Assess content originality.
 
         Args:
             content: Content to assess
@@ -507,7 +509,7 @@ class SignalEnhancer:
         return max(0.0, variety_score - phrase_penalty)
 
     def _assess_hallucination_risk(self, content: str) -> float:
-        """Assess hallucination risk.
+            """Assess hallucination risk.
 
         Args:
             content: Content to assess
@@ -544,7 +546,7 @@ class SignalEnhancer:
         return min(1.0, risk_ratio * 20)  # Scale to 0-1
 
     def _calculate_repetition_ratio(self, content: str) -> float:
-        """Calculate repetition ratio.
+            """Calculate repetition ratio.
 
         Args:
             content: Content to analyze
@@ -567,7 +569,7 @@ class SignalEnhancer:
         return repetition_ratio
 
     def _analyze_claims(self, content: str) -> List[ClaimAnalysis]:
-        """Analyze claims in content.
+            """Analyze claims in content.
 
         Args:
             content: Content to analyze
@@ -608,7 +610,7 @@ class SignalEnhancer:
         repetition_ratio: float,
         claims: List[ClaimAnalysis]
     ) -> Tuple[List[str], List[str]]:
-        """Generate flags and recommendations.
+            """Generate flags and recommendations.
 
         Args:
             content: Content being assessed
@@ -656,7 +658,7 @@ class SignalEnhancer:
         return flags, recommendations
 
     def _update_stats(self, assessment: SignalAssessment) -> None:
-        """# SQL removed: Update internal statistics.
+            """# SQL removed: Update internal statistics.
 
         Args:
             assessment: Latest assessment
@@ -680,7 +682,7 @@ class SignalEnhancer:
             )
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get enhancer statistics.
+            """Get enhancer statistics.
 
         Returns:
             Statistics dictionary
@@ -696,8 +698,8 @@ class SignalEnhancer:
 # Global enhancer registry
 _enhancers: Dict[str, SignalEnhancer] = {}
 
-def get_signal_enhancer(name: str = "default",
     """Docstring."""
+def get_signal_enhancer(name: str = "default",
     thresholds: Optional[QualityThresholds] = None) -> SignalEnhancer:
     """Get or create a signal enhancer.
 

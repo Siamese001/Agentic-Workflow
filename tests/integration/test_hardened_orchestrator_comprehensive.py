@@ -27,7 +27,7 @@ def mock_execute_with_fallback():
     """Mock the execute_with_fallback method."""
     with patch.object(HardenedRouter, 'execute_with_fallback') as mock:
         def side_effect(prompt, **kwargs):
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
             return AgentResponse(
                 content=f"Mock response for: {prompt[:50]}",
@@ -42,7 +42,7 @@ class TestHardenedOrchestratorBasics:
     """Test basic hardened orchestrator functionality."""
 
     def test_orchestrator_creation(self, temp_state_dir):
-        """Test creating a hardened orchestrator."""
+            """Test creating a hardened orchestrator."""
         orchestrator = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
@@ -51,7 +51,7 @@ class TestHardenedOrchestratorBasics:
         assert orchestrator.router is not None
 
     def test_workflow_execution_simple(self, temp_state_dir, mock_execute_with_fallback):
-        """Test simple workflow execution."""
+            """Test simple workflow execution."""
         workflow_spec = WorkflowSpec(
             name="test_simple",
             version="1.0",
@@ -73,7 +73,7 @@ class TestHardenedOrchestratorBasics:
         assert result["final_state"]["progress_percentage"] == 100.0
 
     def test_workflow_with_parallel_hops(self, temp_state_dir, mock_execute_with_fallback):
-        """Test workflow with parallel hop execution."""
+            """Test workflow with parallel hop execution."""
         workflow_spec = WorkflowSpec(
             name="test_parallel",
             version="1.0",
@@ -99,7 +99,7 @@ class TestAtomicStateManagement:
     """Test atomic state management with ACID guarantees."""
 
     def test_checkpoint_creation(self, temp_state_dir, mock_execute_with_fallback):
-        """Test that checkpoints are created after each hop."""
+            """Test that checkpoints are created after each hop."""
         workflow_spec = WorkflowSpec(
             name="test_checkpoint",
             version="1.0",
@@ -122,7 +122,7 @@ class TestAtomicStateManagement:
         assert len(checkpoints) >= 2
 
     def test_state_persistence(self, temp_state_dir, mock_execute_with_fallback):
-        """Test that workflow state persists across orchestrator instances."""
+            """Test that workflow state persists across orchestrator instances."""
         workflow_spec = WorkflowSpec(
             name="test_persist",
             version="1.0",
@@ -148,7 +148,7 @@ class TestAtomicStateManagement:
         assert loaded_state.status == "completed"
 
     def test_atomic_rollback(self, temp_state_dir):
-        """Test atomic rollback on failure."""
+            """Test atomic rollback on failure."""
         workflow_spec = WorkflowSpec(
             name="test_rollback",
             version="1.0",
@@ -181,7 +181,7 @@ class TestResilientRouting:
     """Test resilient routing with provider fallback."""
 
     def test_provider_fallback_on_failure(self, temp_state_dir):
-        """Test that router falls back to next provider on failure."""
+            """Test that router falls back to next provider on failure."""
         orchestrator = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
@@ -214,7 +214,7 @@ class TestResilientRouting:
             assert result["status"] == "COMPLETED"
 
     def test_all_providers_exhausted(self, temp_state_dir):
-        """Test behavior when all providers fail."""
+            """Test behavior when all providers fail."""
         workflow_spec = WorkflowSpec(
             name="test_all_fail",
             version="1.0",
@@ -238,7 +238,7 @@ class TestCircuitBreaker:
     """Test circuit breaker integration."""
 
     def test_circuit_breaker_opens_on_failures(self, temp_state_dir):
-        """Test that circuit breaker opens after consecutive failures."""
+            """Test that circuit breaker opens after consecutive failures."""
         workflow_spec = WorkflowSpec(
             name="test_circuit",
             version="1.0",
@@ -260,7 +260,7 @@ class TestCircuitBreaker:
                 orchestrator.execute_workflow({})
 
     def test_circuit_breaker_recovery(self, temp_state_dir):
-        """Test circuit breaker recovery after successful calls."""
+            """Test circuit breaker recovery after successful calls."""
         orchestrator = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
@@ -297,7 +297,7 @@ class TestWorkflowResumption:
     """Test workflow resumption from checkpoints."""
 
     def test_resume_from_checkpoint(self, temp_state_dir, mock_execute_with_fallback):
-        """Test resuming workflow from a checkpoint."""
+            """Test resuming workflow from a checkpoint."""
         workflow_spec = WorkflowSpec(
             name="test_resume",
             version="1.0",
@@ -336,7 +336,7 @@ class TestWorkflowResumption:
         assert len(result["hops_completed"]) >= 2
 
     def test_resume_preserves_execution_log(self, temp_state_dir, mock_execute_with_fallback):
-        """Test that execution log is preserved across resume."""
+            """Test that execution log is preserved across resume."""
         workflow_spec = WorkflowSpec(
             name="test_log_preserve",
             version="1.0",
@@ -362,7 +362,7 @@ class TestErrorRecovery:
     """Test error recovery mechanisms."""
 
     def test_retry_on_transient_failure(self, temp_state_dir):
-        """Test retry mechanism on transient failures."""
+            """Test retry mechanism on transient failures."""
         orchestrator = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
@@ -393,7 +393,7 @@ class TestErrorRecovery:
             assert result["status"] == "COMPLETED"
 
     def test_graceful_degradation(self, temp_state_dir):
-        """Test graceful degradation when optional hops fail."""
+            """Test graceful degradation when optional hops fail."""
         orchestrator = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
@@ -430,7 +430,7 @@ class TestPerformanceAndScaling:
     """Test performance and scaling characteristics."""
 
     def test_large_workflow_execution(self, temp_state_dir, mock_execute_with_fallback):
-        """Test execution of large workflow with many hops."""
+            """Test execution of large workflow with many hops."""
         num_hops = 20
         workflow_spec = WorkflowSpec(
             name="test_large",
@@ -452,7 +452,7 @@ class TestPerformanceAndScaling:
         assert len(result["hops_completed"]) == num_hops
 
     def test_checkpoint_overhead(self, temp_state_dir, mock_execute_with_fallback):
-        """Test that checkpointing doesn't significantly impact performance."""
+            """Test that checkpointing doesn't significantly impact performance."""
         import time
 
         workflow_spec = WorkflowSpec(

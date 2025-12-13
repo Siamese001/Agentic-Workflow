@@ -8,12 +8,17 @@ Phase 1C - SDK Integration Layer
 
 import logging
 from typing import Any, Dict, List, Optional
-
+from dataclasses import dataclass, field
+from .vector_store_clients import (
     VectorStoreProvider,
     create_chroma_collection,
     get_vector_store,
     search_vectors_chroma,
 )
+from .agent_executor import AgentExecutor, AgentMessage
+from .cache_clients import cache_get, cache_set
+from .observability_clients import create_span, setup_tracing
+from .multi_provider_clients import Provider
 
 logger = logging.getLogger(__name__)
 
@@ -58,8 +63,7 @@ class WorkflowContext:
         cache_key = f"workflow:{self.workflow_id}:{key}"
         return cache_set(self.cache_client, cache_key, value, ttl=ttl)
 
-    def search_knowledge(
-        """Docstring."""
+    def search_vector_store(
         self,
         query_embedding: List[float],
         collection_name: str = "default",
@@ -96,7 +100,6 @@ class HopExecutionContext:
     outputs: Dict[str, Any] = field(default_factory=dict)
 
     def execute_agent(
-        """Docstring."""
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
@@ -141,7 +144,6 @@ class HopExecutionContext:
         self.outputs[key] = value
 
 def create_workflow_context(
-    """Docstring."""
     workflow_id: str,
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
@@ -177,6 +179,7 @@ def create_workflow_context(
     cache_client = None
     if enable_cache:
         try:
+            from .cache_clients import get_redis_client
             cache_client = get_redis_client()
             logger.info("Redis cache enabled for workflow")
         except Exception as e:
@@ -199,7 +202,6 @@ def create_workflow_context(
     )
 
 def execute_hop_with_agent(
-    """Docstring."""
     hop_id: str,
     workflow_context: WorkflowContext,
     hop_function: Any,
@@ -260,7 +262,6 @@ class WorkflowOrchestrator:
         self.hops: List[Dict[str, Any]] = []
 
     def register_hop(
-        """Docstring."""
         self,
         hop_id: str,
         hop_function: Any,
@@ -279,53 +280,40 @@ class WorkflowOrchestrator:
             "dependencies": dependencies or [],
         })
 
-    def execute(self, initial_inputs: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def execute(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         """Execute the workflow.
 
         Args:
-            initial_inputs: Optional initial workflow inputs
+            inputs: Initial workflow inputs
 
         Returns:
-            Workflow outputs
+            Final workflow outputs
         """
-        with create_span(f"workflow.{self.workflow_id}"):
-            logger.info(f"Starting workflow execution: {self.workflow_id}")
-
+        with create_span(f"workflow.{self.workflow_id}") as span:
+            # Simple sequential execution for now
+            # TODO: Add dependency resolution and parallel execution
+            current_inputs = inputs
             outputs = {}
-            hop_outputs: Dict[str, Dict[str, Any]] = {}
 
-            # Execute hops in order
             for hop in self.hops:
-                hop_id = hop["id"]
-                hop_function = hop["function"]
-
-                # Gather inputs from dependencies
-                hop_inputs = initial_inputs.copy() if initial_inputs else {}
-                for dep_id in hop["dependencies"]:
-                    if dep_id in hop_outputs:
-                        hop_inputs.update(hop_outputs[dep_id])
-
-                # Execute hop
-                hop_result = execute_hop_with_agent(
-                    hop_id=hop_id,
+                hop_outputs = execute_hop_with_agent(
+                    hop_id=hop["id"],
                     workflow_context=self.context,
-                    hop_function=hop_function,
-                    inputs=hop_inputs,
+                    hop_function=hop["function"],
+                    inputs=current_inputs,
                 )
+                outputs.update(hop_outputs)
+                current_inputs = hop_outputs
 
-                hop_outputs[hop_id] = hop_result
-                outputs.update(hop_result)
-
-            logger.info(f"Workflow {self.workflow_id} completed successfully")
             return outputs
 
+
 def create_workflow_orchestrator(
-    """Docstring."""
     workflow_id: str,
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
 ) -> WorkflowOrchestrator:
-    """Factory function to create workflow orchestrator.
+    """Create workflow orchestrator with SDK clients.
 
     Args:
         workflow_id: Unique workflow identifier

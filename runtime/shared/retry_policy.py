@@ -8,6 +8,8 @@ import asyncio
 import logging
 import random
 import time
+from dataclasses import dataclass
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +52,7 @@ class RetryConfig:
     ])
 
     def should_retry(self, exception: Exception, attempt: int) -> bool:
-        """Check if exception should be retried.
+            """Check if exception should be retried.
 
         Args:
             exception: Exception that occurred
@@ -99,13 +101,13 @@ class DelayCalculator:
     """Calculates delay between retry attempts."""
 
     @staticmethod
-    def calculate_delay(
         """Docstring."""
+    def calculate_delay(
         config: RetryConfig,
         attempt: int,
         base_delay: Optional[float] = None
     ) -> float:
-        """Calculate delay for next attempt.
+            """Calculate delay for next attempt.
 
         Args:
             config: Retry configuration
@@ -144,7 +146,7 @@ class RetryPolicy:
     """Implements retry policy with configurable strategies."""
 
     def __init__(self, config: Optional[RetryConfig] = None):
-        """Initialize retry policy.
+            """Initialize retry policy.
 
         Args:
             config: Retry configuration
@@ -159,8 +161,8 @@ class RetryPolicy:
 
         logger.debug(f"Initialized RetryPolicy with strategy: {self.config.strategy}")
 
-    async def execute(
         """Docstring."""
+    async def execute(
         self,
         func: Callable,
         *args,
@@ -168,7 +170,7 @@ class RetryPolicy:
         on_retry: Optional[Callable[[RetryAttempt], None]] = None,
         **kwargs
     ) -> RetryResult:
-        """Execute function with retry policy.
+            """Execute function with retry policy.
 
         Args:
             func: Function to execute
@@ -269,7 +271,7 @@ class RetryPolicy:
         )
 
     def _update_stats(self, attempts: int, success: bool) -> None:
-        """# SQL removed: Update retry statistics.
+            """# SQL removed: Update retry statistics.
 
         Args:
             attempts: Number of attempts
@@ -291,7 +293,7 @@ class RetryPolicy:
             )
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get retry statistics.
+            """Get retry statistics.
 
         Returns:
             Statistics dictionary
@@ -307,7 +309,7 @@ class RetryableExecutor:
     """Executor with built-in retry capabilities."""
 
     def __init__(self, default_config: Optional[RetryConfig] = None):
-        """Initialize retryable executor.
+            """Initialize retryable executor.
 
         Args:
             default_config: Default retry configuration
@@ -316,7 +318,7 @@ class RetryableExecutor:
         self.policies: Dict[str, RetryPolicy] = {}
 
     def register_policy(self, name: str, config: RetryConfig) -> None:
-        """Register a named retry policy.
+            """Register a named retry policy.
 
         Args:
             name: Policy name
@@ -325,8 +327,8 @@ class RetryableExecutor:
         self.policies[name] = RetryPolicy(config)
         logger.debug(f"Registered retry policy: {name}")
 
-    async def execute(
         """Docstring."""
+    async def execute(
         self,
         func: Callable,
         *args,
@@ -334,7 +336,7 @@ class RetryableExecutor:
         config: Optional[RetryConfig] = None,
         **kwargs
     ) -> Any:
-        """Execute function with retry policy.
+            """Execute function with retry policy.
 
         Args:
             func: Function to execute
@@ -380,8 +382,8 @@ async def get_retry_executor() -> RetryableExecutor:
     return _retry_executor
 
 # Decorators for automatic retry
-def retry(
     """Docstring."""
+def retry(
     max_attempts: int = 3,
     strategy: RetryStrategy = RetryStrategy.EXPONENTIAL_BACKOFF,
     base_delay: float = 1.0,
@@ -401,9 +403,9 @@ def retry(
         Decorated function
     """
     def decorator(func):
-        """Docstring."""
-        async def async_wrapper(*args, **kwargs):
             """Docstring."""
+        async def async_wrapper(*args, **kwargs):
+                """Docstring."""
             config = RetryConfig(
                 max_attempts=max_attempts,
                 strategy=strategy,
@@ -421,10 +423,10 @@ def retry(
             return result.result
 
         def sync_wrapper(*args, **kwargs):
-            """Docstring."""
+                """Docstring."""
             # For sync functions, run in thread pool
             async def async_func():
-                """Docstring."""
+                    """Docstring."""
                 return func(*args, **kwargs)
 
             return asyncio.run(async_wrapper())
@@ -446,9 +448,9 @@ def retry_with_policy(policy_name: str):
         Decorated function
     """
     def decorator(func):
-        """Docstring."""
-        async def wrapper(*args, **kwargs):
             """Docstring."""
+        async def wrapper(*args, **kwargs):
+                """Docstring."""
             executor = await get_retry_executor()
             return await executor.execute(func, *args, policy=policy_name, **kwargs)
         return wrapper

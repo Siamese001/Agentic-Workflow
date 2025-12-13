@@ -19,6 +19,8 @@ Non-responsibilities:
 
 import time
 from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from enum import Enum
 
 class FailureType(Enum):
     """TODO: Add docstring."""
@@ -103,14 +105,14 @@ class AdaptiveRecoveryLoop:
         self.failure_history: List[FailureEvent] = []
         self.temperature_history: List[TemperatureAdjustment] = []
 
-    def record_failure(
         """Docstring."""
+    def record_failure(
         self,
         gate_id: str,
         message: str,
         details: Optional[Dict[str, Any]] = None
     ) -> RecoveryResult:
-        """
+            """
         Record a validation failure and determine recovery action.
 
         Returns RecoveryResult with action and new temperature.
@@ -169,7 +171,7 @@ class AdaptiveRecoveryLoop:
         )
 
     def record_success(self) -> Dict[str, Any]:
-        """Record successful generation after recovery"""
+            """Record successful generation after recovery"""
         return {
             'success': True,
             'total_attempts': self.attempt_count,
@@ -187,7 +189,7 @@ class AdaptiveRecoveryLoop:
         }
 
     def reset(self, initial_temperature: Optional[float] = None) -> None:
-        """Reset recovery loop for new generation task"""
+            """Reset recovery loop for new generation task"""
         if initial_temperature is not None:
             self.initial_temperature = initial_temperature
 
@@ -197,7 +199,7 @@ class AdaptiveRecoveryLoop:
         self.temperature_history.clear()
 
     def get_temperature_log(self) -> List[Dict[str, Any]]:
-        """Get complete temperature adjustment log for audit"""
+            """Get complete temperature adjustment log for audit"""
         return [
             {
                 'from_temp': adj.from_temp,
@@ -215,7 +217,7 @@ class AdaptiveRecoveryLoop:
         message: str,
         details: Optional[Dict[str, Any]]
     ) -> FailureType:
-        """
+            """
         Classify failure as CREATIVE or MECHANICAL based on message content.
 
         Creative: Generic/cliché/robotic prose detected
@@ -239,7 +241,7 @@ class AdaptiveRecoveryLoop:
         return FailureType.UNKNOWN
 
     def _calculate_new_temperature(self, failure_type: FailureType) -> float:
-        """
+            """
         Calculate new temperature based on failure type.
 
         Creative Failure: +0.15 (max 0.9) - Force model to think differently
@@ -264,7 +266,7 @@ class AdaptiveRecoveryLoop:
         return round(new_temp, 2)
 
     def _get_adjustment_reason(self, failure_type: FailureType) -> str:
-        """Get human-readable reason for temperature adjustment"""
+            """Get human-readable reason for temperature adjustment"""
         if failure_type == FailureType.CREATIVE:
             return "Creative failure detected - forcing different thinking pattern"
         elif failure_type == FailureType.MECHANICAL:

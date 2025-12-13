@@ -74,8 +74,8 @@ async def _create_fallback_pipeline() -> TitaniumRAGPipeline:
         enable_caching=False
     )
 
-async def get_titanium_search_tool(
     """Docstring."""
+async def get_titanium_search_tool(
     query: str,
     context: Optional[str] = None,
     max_results: int = 5,
@@ -106,7 +106,7 @@ async def get_titanium_search_tool(
         # Connect to actual vector stores
         # In production, this would connect to your configured vector stores
         async def actual_retrieval(query: str, max_docs: int = 10):
-            """Actual retrieval function that connects to vector stores."""
+                """Actual retrieval function that connects to vector stores."""
             try:
                 # Import vector store clients
 
@@ -189,8 +189,8 @@ async def get_titanium_search_tool(
         logger.error(f"Search failed for query '{query}': {e}")
         return f"Search encountered an error. Please try rephrasing your query."
 
-async def get_titanium_search_with_sources(
     """Docstring."""
+async def get_titanium_search_with_sources(
     query: str,
     context: Optional[str] = None
 ) -> Dict[str, Any]:
@@ -211,7 +211,7 @@ async def get_titanium_search_with_sources(
 
         # Use the same actual_retrieval function as get_titanium_search_tool
         async def actual_retrieval(query: str, max_docs: int = 10):
-            """Actual retrieval function that connects to vector stores."""
+                """Actual retrieval function that connects to vector stores."""
             try:
                 # Import vector store clients
 
@@ -333,7 +333,7 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
         # Use run_coroutine_threadsafe instead
 
         def run_in_thread():
-            """Docstring."""
+                """Docstring."""
             new_loop = asyncio.new_event_loop()
             asyncio.set_event_loop(new_loop)
             try:

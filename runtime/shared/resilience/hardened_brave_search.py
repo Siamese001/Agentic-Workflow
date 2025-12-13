@@ -27,14 +27,14 @@ class SearchResultItem(BaseModel):
 
     @validator('url')
     def validate_url(cls, v):
-        """Basic URL validation."""
+            """Basic URL validation."""
         if not v.startswith(('http://', 'https://')):
             raise ValueError('Invalid URL format')
         return v
 
     @validator('description')
     def validate_description(cls, v):
-        """Ensure description is not empty."""
+            """Ensure description is not empty."""
         if not v or len(v.strip()) < 10:
             raise ValueError('Description too short or empty')
         return v.strip()
@@ -48,7 +48,7 @@ class BraveSearchResponse(BaseModel):
 
     @validator('total_found')
     def validate_total(cls, v, values):
-        """Ensure total matches results length."""
+            """Ensure total matches results length."""
         if 'results' in values and v != len(values['results']):
             v = len(values['results'])
         return v
@@ -76,7 +76,7 @@ class HardenedBraveSearch:
     def __init__(self,
         api_key: str,
         base_url: str = "https://api.search.brave.com/res/v1/web/search"):
-        """Initialize Brave Search client.
+            """Initialize Brave Search client.
 
         Args:
             api_key: Brave Search API key
@@ -96,8 +96,8 @@ class HardenedBraveSearch:
             "avg_result_count": 0.0
         }
 
-    async def run_search(
         """Docstring."""
+    async def run_search(
         self,
         query: str,
         count: int = 5,
@@ -105,7 +105,7 @@ class HardenedBraveSearch:
         text_decorations: bool = False,
         text_format: str = "raw"
     ) -> Dict[str, Any]:
-        """
+            """
         Execute search with validation and error handling.
 
         Args:
@@ -251,15 +251,15 @@ class HardenedBraveSearch:
 
         return response.model_dump()
 
-    async def search_with_fallback(
         """Docstring."""
+    async def search_with_fallback(
         self,
         query: str,
         count: int = 5,
         fallback_function: Optional[Callable] = None,
         **kwargs
     ) -> Dict[str, Any]:
-        """
+            """
         Execute search with fallback support.
 
         Args:
@@ -293,7 +293,7 @@ class HardenedBraveSearch:
             }
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get search statistics."""
+            """Get search statistics."""
         total = self.stats["total_searches"]
         if total == 0:
             return self.stats
@@ -306,14 +306,14 @@ class HardenedBraveSearch:
         return stats
 
     def reset_stats(self) -> None:
-        """Reset search statistics."""
+            """Reset search statistics."""
         for key in self.stats:
             if isinstance(self.stats[key], (int, float)):
                 self.stats[key] = 0
 
 # Integration helper functions
-def create_brave_search_config(
     """Docstring."""
+def create_brave_search_config(
     api_key: str,
     timeout_seconds: float = 6.0,
     max_retries: int = 2,
@@ -337,7 +337,7 @@ def create_brave_search_config(
     # Default fallback function if not provided
     if fallback_function is None:
         async def default_fallback(error: str, query: str, **kwargs) -> Dict[str, Any]:
-            """TODO: Add docstring."""
+                """TODO: Add docstring."""
 
             return {
                 "fallback_message": "External search failed. Using internal knowledge only.",

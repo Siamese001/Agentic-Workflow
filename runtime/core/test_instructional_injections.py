@@ -25,7 +25,7 @@ class TestInstructionalInjections:
     """Test the 30 instructional injection patterns."""
 
     def test_all_30_injections_loaded(self):
-        """Verify all 30 instructional injections are loaded."""
+            """Verify all 30 instructional injections are loaded."""
         injections = get_instructional_injections()
         assert len(injections) == 30, f"Expected 30 injections, got {len(injections)}"
 
@@ -35,7 +35,7 @@ class TestInstructionalInjections:
         assert types == expected_types, f"Missing types: {expected_types - types}"
 
     def test_layer_distribution(self):
-        """Verify injections are distributed across 6 layers."""
+            """Verify injections are distributed across 6 layers."""
         injections = get_instructional_injections()
 
         layer_counts = {}
@@ -61,13 +61,13 @@ class TestInstructionalInjections:
     actual_count}"
 
     def test_stage_mappings(self):
-        """Verify all injections have proper stage mappings."""
+            """Verify all injections have proper stage mappings."""
         for mapping in STAGE_MAPPINGS:
             assert mapping.applicable_stages, f"No stages mapped for {mapping.injection_type}"
             assert 0 <= mapping.priority <= 10, f"Invalid priority for {mapping.injection_type}"
 
     def test_required_injections_by_stage(self):
-        """Verify required injections are properly identified."""
+            """Verify required injections are properly identified."""
         for stage in MicroStage:
             required = get_required_injections(stage)
 
@@ -90,7 +90,7 @@ class TestPromptInjectionLoaderIntegration:
 
     @pytest.fixture
     def loader(self):
-        """Create a test injection loader."""
+            """Create a test injection loader."""
         config = {
             "injection_dir": Path("./test_injections"),
             "max_injections_per_hop": 10,
@@ -99,7 +99,7 @@ class TestPromptInjectionLoaderIntegration:
         return PromptInjectionLoader(config)
 
     def test_loads_instructional_injections(self, loader):
-        """Verify loader loads all instructional injections."""
+            """Verify loader loads all instructional injections."""
         # Count instructional injections
         instructional_count = sum(
             1 for inj in loader.injections.values()
@@ -110,7 +110,7 @@ class TestPromptInjectionLoaderIntegration:
     _count}"
 
     def test_finds_stage_specific_injections(self, loader):
-        """Test finding injections for specific stages."""
+            """Test finding injections for specific stages."""
         # Test PRE_CHECK stage (should get Framing layer)
         matches = loader.find_matching_injections(
             hop_type="test_hop",
@@ -129,7 +129,7 @@ class TestPromptInjectionLoaderIntegration:
         assert len(framing_types) > 0, "No framing injections found for PRE_CHECK"
 
     def test_required_inclusions(self, loader):
-        """Test that required injections are always included."""
+            """Test that required injections are always included."""
         # Test with empty context
         matches = loader.find_matching_injections(
             hop_type="test_hop",
@@ -146,7 +146,7 @@ class TestPromptInjectionLoaderIntegration:
         assert len(required_found) >= 2, "Required safety injections not found"
 
     def test_applies_injections_correctly(self, loader):
-        """Test injection application to prompts."""
+            """Test injection application to prompts."""
         # Get a matching injection
         matches = loader.find_matching_injections(
             hop_type="test_hop",
@@ -167,15 +167,15 @@ class TestSubatomicHopIntegration:
 
     @pytest.fixture
     def mock_hop_function(self):
-        """Create a mock hop function."""
+            """Create a mock hop function."""
         async def mock_func(**kwargs):
-            """Docstring."""
+                """Docstring."""
             return {"result": "test", "injections_applied": kwargs.get("instructional_injections")}
         return mock_func
 
     @pytest.fixture
     def hop(self, mock_hop_function):
-        """Create a test SubatomicHop with injections enabled."""
+            """Create a test SubatomicHop with injections enabled."""
         config = SubatomicHopConfig(
             hop_id="test_hop",
             enable_checkpoints=False  # Disable for testing
@@ -186,7 +186,7 @@ class TestSubatomicHopIntegration:
 
     @pytest.mark.asyncio
     async def test_applies_injections_at_all_stages(self, hop):
-        """Test that injections are applied at all stages."""
+            """Test that injections are applied at all stages."""
         with patch('runtime.core.prompt_injection_loader.get_injection_loader') as mock_loader:
             # Mock the loader
             loader = Mock()
@@ -219,7 +219,7 @@ class TestSubatomicHopIntegration:
 
     @pytest.mark.asyncio
     async def test_safety_injections_always_applied(self, hop):
-        """Test that safety injections are always applied."""
+            """Test that safety injections are always applied."""
         with patch('runtime.core.prompt_injection_loader.get_injection_loader') as mock_loader:
             # Mock loader to return safety injections
             safety_injection = InjectionMatch(
@@ -249,11 +249,11 @@ class TestSubatomicHopIntegration:
 
     @pytest.mark.asyncio
     async def test_stage_specific_injection_types(self, hop):
-        """Test that different stages get appropriate injection types."""
+            """Test that different stages get appropriate injection types."""
         stage_injection_map = {}
 
         def track_injections(hop_type, stage, context, content=None):
-            """Docstring."""
+                """Docstring."""
             matches = []
 
             # Mock different injections for different stages
@@ -328,7 +328,7 @@ class TestInjectionQuality:
     """Test quality and effectiveness of injections."""
 
     def test_injection_templates_have_variables(self):
-        """Verify all injection templates have proper variable placeholders."""
+            """Verify all injection templates have proper variable placeholders."""
         injections = get_instructional_injections()
 
         for injection in injections:
@@ -341,7 +341,7 @@ class TestInjectionQuality:
     on.id}"
 
     def test_injection_priorities_are_reasonable(self):
-        """Verify injection priorities make sense."""
+            """Verify injection priorities make sense."""
         injections = get_instructional_injections()
 
         # Safety injections should have highest priority
@@ -352,7 +352,7 @@ class TestInjectionQuality:
             assert inj.priority >= 9, f"Safety injection {inj.id} has low priority {inj.priority}"
 
     def test_critical_injections_are_required(self):
-        """Verify critical injections are marked as required."""
+            """Verify critical injections are marked as required."""
         critical_types = [
             "injection_shielding",
             "constitutional_guardrails",

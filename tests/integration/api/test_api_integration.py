@@ -1,5 +1,7 @@
 """Integration tests for API layer."""
 from typing import Dict, Optional
+from dataclasses import dataclass
+from enum import Enum
 
 class HTTPMethod(Enum):
     """TODO: Add docstring."""
@@ -32,7 +34,7 @@ class TestAPIEndpointIntegration:
     """Integration tests for API endpoints."""
 
     def test_process_endpoint(self):
-        """Integration: /process endpoint works correctly."""
+            """Integration: /process endpoint works correctly."""
         APIRequest(
             method=HTTPMethod.POST,
             path="/api/v1/process",
@@ -51,7 +53,7 @@ class TestAPIEndpointIntegration:
         assert "id" in response.body
 
     def test_status_endpoint(self):
-        """Integration: /status endpoint returns correct status."""
+            """Integration: /status endpoint returns correct status."""
         APIRequest(
             method=HTTPMethod.GET,
             path="/api/v1/status/req_001",
@@ -67,7 +69,7 @@ class TestAPIEndpointIntegration:
         assert response.body["status"] == "completed"
 
     def test_results_endpoint(self):
-        """Integration: /results endpoint returns results."""
+            """Integration: /results endpoint returns results."""
         response = APIResponse(
             status_code=200,
             headers={},
@@ -81,7 +83,7 @@ class TestAPIEndpointIntegration:
         assert len(response.body["results"]) >= 1
 
     def test_cancel_endpoint(self):
-        """Integration: /cancel endpoint cancels request."""
+            """Integration: /cancel endpoint cancels request."""
         response = APIResponse(
             status_code=200,
             headers={},
@@ -94,7 +96,7 @@ class TestAPIAuthenticationIntegration:
     """Integration tests for API authentication."""
 
     def test_valid_api_key(self):
-        """Integration: Valid API key is accepted."""
+            """Integration: Valid API key is accepted."""
         request = APIRequest(
             method=HTTPMethod.POST,
             path="/api/v1/process",
@@ -107,7 +109,7 @@ class TestAPIAuthenticationIntegration:
         assert is_valid
 
     def test_missing_api_key_rejected(self):
-        """Integration: Missing API key is rejected."""
+            """Integration: Missing API key is rejected."""
         request = APIRequest(
             method=HTTPMethod.POST,
             path="/api/v1/process",
@@ -119,7 +121,7 @@ class TestAPIAuthenticationIntegration:
         assert has_auth is False
 
     def test_invalid_api_key_rejected(self):
-        """Integration: Invalid API key is rejected."""
+            """Integration: Invalid API key is rejected."""
         valid_keys = {"valid_key_123", "valid_key_456"}
         provided_key = "invalid_key"
 
@@ -130,7 +132,7 @@ class TestAPIRateLimitingIntegration:
     """Integration tests for API rate limiting."""
 
     def test_rate_limit_headers(self):
-        """Integration: Rate limit headers are included."""
+            """Integration: Rate limit headers are included."""
         response = APIResponse(
             status_code=200,
             headers={
@@ -145,7 +147,7 @@ class TestAPIRateLimitingIntegration:
         assert int(response.headers["X-RateLimit-Remaining"]) > 0
 
     def test_rate_limit_exceeded(self):
-        """Integration: Rate limit exceeded returns 429."""
+            """Integration: Rate limit exceeded returns 429."""
         requests_made = 105
         rate_limit = 100
 
@@ -157,7 +159,7 @@ class TestAPIRateLimitingIntegration:
         assert status_code == 429
 
     def test_rate_limit_reset(self):
-        """Integration: Rate limit resets after window."""
+            """Integration: Rate limit resets after window."""
         from datetime import datetime, timedelta
 
         window_start = datetime.now() - timedelta(minutes=2)
@@ -170,7 +172,7 @@ class TestAPIErrorHandlingIntegration:
     """Integration tests for API error handling."""
 
     def test_validation_error_response(self):
-        """Integration: Validation errors return 400."""
+            """Integration: Validation errors return 400."""
         response = APIResponse(
             status_code=400,
             headers={},
@@ -187,7 +189,7 @@ class TestAPIErrorHandlingIntegration:
         assert response.body["error"]["code"] == "VALIDATION_ERROR"
 
     def test_not_found_response(self):
-        """Integration: Not found returns 404."""
+            """Integration: Not found returns 404."""
         response = APIResponse(
             status_code=404,
             headers={},
@@ -197,7 +199,7 @@ class TestAPIErrorHandlingIntegration:
         assert response.status_code == 404
 
     def test_internal_error_response(self):
-        """Integration: Internal errors return 500."""
+            """Integration: Internal errors return 500."""
         response = APIResponse(
             status_code=500,
             headers={},
@@ -214,7 +216,7 @@ class TestAPIErrorHandlingIntegration:
         assert "request_id" in response.body["error"]
 
     def test_error_includes_request_id(self):
-        """Integration: Errors include request ID for debugging."""
+            """Integration: Errors include request ID for debugging."""
         response = APIResponse(
             status_code=500,
             headers={"X-Request-ID": "req_abc123"},
@@ -227,7 +229,7 @@ class TestAPIVersioningIntegration:
     """Integration tests for API versioning."""
 
     def test_v1_endpoint(self):
-        """Integration: v1 endpoint is accessible."""
+            """Integration: v1 endpoint is accessible."""
         request = APIRequest(
             method=HTTPMethod.GET,
             path="/api/v1/health",
@@ -237,7 +239,7 @@ class TestAPIVersioningIntegration:
         assert "/v1/" in request.path
 
     def test_version_header(self):
-        """Integration: API version is in response header."""
+            """Integration: API version is in response header."""
         response = APIResponse(
             status_code=200,
             headers={"X-API-Version": "1.0.0"},
@@ -247,7 +249,7 @@ class TestAPIVersioningIntegration:
         assert "X-API-Version" in response.headers
 
     def test_deprecated_version_warning(self):
-        """Integration: Deprecated version includes warning."""
+            """Integration: Deprecated version includes warning."""
         response = APIResponse(
             status_code=200,
             headers={
