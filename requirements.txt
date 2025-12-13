@@ -94,6 +94,7 @@ tiktoken>=0.7.0                 # Token counting for OpenAI models
 numpy>=1.26.0                   # Numerical operations
 aiohttp>=3.9.0                  # Async HTTP for parallel requests
 uvicorn>=0.30.0                 # ASGI server for MCP/FastAPI
+sentence-transformers>=2.2.2    # SOTA embeddings and cross-encoders for RAG
 
 # =============================================================================
 # COVERAGE MATRIX (21 SDKs)

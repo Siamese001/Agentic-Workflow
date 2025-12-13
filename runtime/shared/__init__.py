@@ -158,6 +158,25 @@ from .query_decomposer import (
     decompose_query,
 )
 
+# Phase 3 SOTA Layer Components
+from .late_interaction_reranker import (
+    LateInteractionReranker,
+    PassThroughReranker,
+    rerank_documents,
+)
+from .contrastive_cache import (
+    ContrastiveSemanticCache,
+    CacheEntry,
+    NullCache,
+    get_cached_response,
+)
+
+# Unified Pipeline
+from .titanium_rag_pipeline import (
+    TitaniumRAGPipeline,
+    create_titanium_pipeline,
+)
+
 __all__ = [
     # SDK Registry
     "SDK_REGISTRY",
@@ -269,4 +288,15 @@ __all__ = [
     "QueryDecomposer",
     "DecomposedQuery",
     "decompose_query",
+    # Phase 3 SOTA Layer
+    "LateInteractionReranker",
+    "PassThroughReranker",
+    "rerank_documents",
+    "ContrastiveSemanticCache",
+    "CacheEntry",
+    "NullCache",
+    "get_cached_response",
+    # Unified Pipeline
+    "TitaniumRAGPipeline",
+    "create_titanium_pipeline",
 ]
