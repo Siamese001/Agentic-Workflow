@@ -20,13 +20,6 @@ class CompressionResult(BaseModel):
     compressed_length: int = Field(..., description="Compressed text length in characters")
     compressed_text: str = Field(..., description="Compressed text content")
     compression_ratio: float = Field(..., ge=0.0, le=1.0, description="Compression ratio (compressed/original)")
-    
-    @validator('compression_ratio')
-    def calculate_compression_ratio(cls, v, values):
-        """Calculate compression ratio from lengths."""
-        if 'original_length' in values and values['original_length'] > 0:
-            return values['compressed_length'] / values['original_length']
-        return v
 
 
 class ContextualCompressor:
