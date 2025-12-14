@@ -2,7 +2,9 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Text counting functions for resume generation.'
+import logging
 from typing import List
+logger = logging.getLogger(__name__)
 
 def count_words_ms_word_style(text: str) -> int:
     """Count words replicating MS Word behavior."""

@@ -1,6 +1,9 @@
 """Dataclass models for config."""
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 @dataclass
 class FilePathsConfig:

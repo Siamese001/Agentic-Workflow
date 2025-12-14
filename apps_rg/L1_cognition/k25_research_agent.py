@@ -2,6 +2,9 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
     CitationMap,
     DeepResearchOutput,

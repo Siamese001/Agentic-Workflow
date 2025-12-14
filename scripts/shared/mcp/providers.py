@@ -8,6 +8,9 @@ Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 import logging
 from typing import Dict, Optional
 
+logger = logging.getLogger(__name__)
+
+
 
 class ProviderType(Enum):
     """Supported MCP provider types."""

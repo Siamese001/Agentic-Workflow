@@ -1,6 +1,9 @@
 """Unit Tests for Dependency Injection System
 
 import os
+import logging
+logger = logging.getLogger(__name__)
+
 
 LOGGER = logging.getLogger(__name__)
 Tests DI container functionality and proper service injection

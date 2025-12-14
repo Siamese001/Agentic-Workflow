@@ -15,6 +15,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
 
+logger = logging.getLogger(__name__)
+
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -86,12 +89,12 @@ class ValidationContext:
 
         if not passed and violation_key in false_positives:
             # This is a known false positive, mark as passed
-            print(f"   [{agent}] Key {key}: PASS (Meta-Learning: Known false positive)")
+            logger.info(f"   [{agent}] Key {key}: PASS (Meta-Learning: Known false positive)")
             self.results[key] = {"passed": True, "details": [], "meta_learning": "False positive overridden"}
             return
 
         status = "PASS" if passed else "FAIL"
-        print(f"   [{agent}] Key {key}: {status}")
+        logger.info(f"   [{agent}] Key {key}: {status}")
         self.results[key] = {"passed": passed, "details": details}
 
         # Log failures for potential human review
@@ -109,7 +112,7 @@ class ValidationContext:
                 with open(fp_path, "r") as f:
                     data = json.load(f)
                     return set(data.get("false_positives", []))
-            except:
+            except Exception:
                 pass
         return set()
 
@@ -130,7 +133,7 @@ class ValidationContext:
             try:
                 with open(review_log, "r") as f:
                     log_data = json.load(f)
-            except:
+            except Exception:
                 pass
 
         # Add new entry
@@ -150,19 +153,19 @@ class ValidationContext:
 
     def signal_critical_failure(self):
         self.signals.add("CRITICAL_FAIL")
-        print("   🚨 SIGNAL: CRITICAL_FAIL asserted on Blackboard.")
+        logger.info("   🚨 SIGNAL: CRITICAL_FAIL asserted on Blackboard.")
 
     def signal_ast_valid(self):
         self.signals.add("AST_VALID")
-        print("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
+        logger.info("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
 
     def signal_deps_valid(self):
         self.signals.add("DEPS_VALID")
-        print("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
+        logger.info("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
 
     def signal_secure(self):
         self.signals.add("SECURE")
-        print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
+        logger.info("   ✅ SIGNAL: SECURE asserted on Blackboard.")
 
     def process_file(self, file_path: str, processor_func):
         """Process a single file with isolation - reduces memory footprint."""
@@ -171,7 +174,7 @@ class ValidationContext:
                 content = f.read()
                 return processor_func(content, file_path)
         except Exception as e:
-            print(f"   ⚠️  Failed to process {file_path}: {e}")
+            logger.info(f"   ⚠️  Failed to process {file_path}: {e}")
             return None
 
     def process_files_batch(self, file_paths: List[str], processor_func, batch_size: int = 10):
@@ -244,7 +247,7 @@ Current blackboard state: {signals_summary}
             try:
                 with open(prompts_path, "r", encoding="utf-8") as f:
                     return json.load(f)
-            except:
+            except Exception:
                 pass
         return {}
     
@@ -254,8 +257,8 @@ Current blackboard state: {signals_summary}
     
     def execute(self):
         """Execute with reinforced instructional context."""
-        print(f"\n[>>>] {self.name} ACTIVATED")
-        print(f"   📋 INSTRUCTIONAL CONTEXT: {self.prompt.split(chr(10))[0]}...")  # First line teaser
+        logger.info(f"\n[>>>] {self.name} ACTIVATED")
+        logger.info(f"   📋 INSTRUCTIONAL CONTEXT: {self.prompt.split(chr(10))[0]}...")  # First line teaser
         raise NotImplementedError
 
 # ==============================================================================
@@ -269,7 +272,7 @@ class SystemArchitect(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
 
         # Key 40: No metaclasses (stub)
         self.ctx.report(self.name, 40, True, [])
@@ -311,7 +314,7 @@ class GenerativeGuard(SubAtomicAgent):
     ]
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
         violations = []
 
         all_files = []
@@ -328,7 +331,7 @@ class GenerativeGuard(SubAtomicAgent):
                     break
 
         if violations:
-            print(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
+            logger.info(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
             self.ctx.report(self.name, 45, False, violations)
 
             purge_runaway = "--purge-runaway" in sys.argv
@@ -338,9 +341,9 @@ class GenerativeGuard(SubAtomicAgent):
                 for file_path in violations:
                     try:
                         os.remove(file_path)
-                        print(f"      🗑️  DELETED: {file_path}")
+                        logger.info(f"      🗑️  DELETED: {file_path}")
                     except Exception as e:
-                        print(f"      ❌ Failed to delete {file_path}: {e}")
+                        logger.info(f"      ❌ Failed to delete {file_path}: {e}")
                 self.ctx.signals.add("GENERATIVE_CLEAN")
         else:
             self.ctx.report(self.name, 45, True, [])
@@ -353,13 +356,13 @@ class WhitespaceMechanic(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Whitespace Hygiene...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Enforcing Whitespace Hygiene...")
 
         # Key 11: Trailing whitespace
         passed, details = self.check_key_11_no_trailing_whitespace()
         self.ctx.report(self.name, 11, passed, details)
         if not passed:
-            print("      🔧 Auto-fixing trailing whitespace...")
+            logger.info("      🔧 Auto-fixing trailing whitespace...")
             self._fix_trailing_whitespace()
             passed, details = self.check_key_11_no_trailing_whitespace()
             self.ctx.report(self.name, 11, passed, details)
@@ -501,13 +504,13 @@ class WhitespaceMechanic(SubAtomicAgent):
                         f.writelines(new_lines)
                     fixed_count += 1
             except Exception as e:
-                print(f"      ⚠️  Failed to fix {file_path}: {e}")
+                logger.info(f"      ⚠️  Failed to fix {file_path}: {e}")
         
         if fixed_count > 0:
-            print(f"      ✅ Trailing whitespace fixed in {fixed_count} files")
+            logger.info(f"      ✅ Trailing whitespace fixed in {fixed_count} files")
             self.ctx.modified_files.update(self.ctx.get_python_files())
         else:
-            print("      ℹ️  No trailing whitespace to fix")
+            logger.info("      ℹ️  No trailing whitespace to fix")
 
 class StructuralLinter(SubAtomicAgent):
     """
@@ -516,7 +519,7 @@ class StructuralLinter(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Code Structure...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Analyzing Code Structure...")
 
         # Key 10: Long lines
         passed, details = self.check_key_10_no_long_lines()
@@ -579,7 +582,7 @@ class ConstantMechanic(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking for Magic Numbers...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking for Magic Numbers...")
 
         # Key 15: Magic numbers
         passed, details = self.check_key_15_no_magic_numbers()
@@ -619,7 +622,7 @@ class DependencySentinel(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
 
         # Check for isort
         try:
@@ -627,7 +630,7 @@ class DependencySentinel(SubAtomicAgent):
             has_isort = True
         except (subprocess.CalledProcessError, FileNotFoundError):
             has_isort = False
-            print("      ⚠️  isort not installed. Install with: pip install isort")
+            logger.info("      ⚠️  isort not installed. Install with: pip install isort")
 
         # Check for autoflake
         try:
@@ -638,7 +641,7 @@ class DependencySentinel(SubAtomicAgent):
 
         # Key 9: Unused imports (auto-fix with autoflake) - L3 HARDENED
         if has_autoflake:
-            print("   🔧 Running autoflake (Removes Key 9 violations)...")
+            logger.info("   🔧 Running autoflake (Removes Key 9 violations)...")
             try:
                 result = subprocess.run([
                     "autoflake",
@@ -663,7 +666,7 @@ class DependencySentinel(SubAtomicAgent):
 
         # Key 14: Duplicate imports (auto-fix with isort) - L3 HARDENED
         if has_isort:
-            print("   🔧 Running isort (Orders and removes Key 14 duplicates)...")
+            logger.info("   🔧 Running isort (Orders and removes Key 14 duplicates)...")
             try:
                 result = subprocess.run([
                     "isort",
@@ -785,7 +788,7 @@ class SecurityEnforcer(SubAtomicAgent):
         ) + "\n\nCRITICAL DIRECTIVE: Any violation in keys 0, 5, or 6 → IMMEDIATELY call self.ctx.signal_critical_failure()"
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Critical Security Policies...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Enforcing Critical Security Policies...")
 
         # Key 0: No hardcoded secrets (CRITICAL)
         passed_0, details_0 = self.check_key_00_no_hardcoded_secrets()
@@ -953,7 +956,7 @@ class CodeQualityAuditor(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Auditing Code Quality...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Auditing Code Quality...")
 
         # Key 1: No TODO/FIXME
         passed, details = self.check_key_01_no_todo_fixme()
@@ -1029,7 +1032,7 @@ class DocumentationAgent(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Documentation...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Documentation...")
         try:
             passed, details = self.check_key_21_no_missing_docstrings()
             self.ctx.report(self.name, 21, passed, details)
@@ -1061,7 +1064,7 @@ class NamingAgent(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Naming Conventions...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Naming Conventions...")
         try:
             # Stub implementation
             self.ctx.report(self.name, 47, True, [])
@@ -1078,7 +1081,7 @@ class TypeMechanic(SubAtomicAgent):
         return "AST_VALID" in self.ctx.signals and "DEPS_VALID" in self.ctx.signals
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Safety...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Safety...")
 
         # Key 22: Missing type hints
         passed, details = self.check_key_22_no_missing_type_hints()
@@ -1209,7 +1212,7 @@ class BudgetAgent(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Complexity Budgets...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Complexity Budgets...")
 
         # Key 17: Large functions
         passed, details = self.check_key_17_no_large_functions()
@@ -1240,7 +1243,7 @@ class BudgetAgent(SubAtomicAgent):
                 continue
 
         if violations:
-            print(f"   Budget violated. {len(violations)} large functions found.")
+            logger.info(f"   Budget violated. {len(violations)} large functions found.")
 
         return (len(violations) == 0, violations)
 
@@ -1299,7 +1302,7 @@ class StructuralEngineer(SubAtomicAgent):
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
 
         # Key 17: Large functions (duplicate check from BudgetAgent)
         passed, details = self.check_key_17_no_large_functions()
@@ -1328,7 +1331,7 @@ class StructuralEngineer(SubAtomicAgent):
         passed, details = self.check_key_46_no_duplicate_code()
         self.ctx.report(self.name, 46, passed, details)
 
-        print("   ✅ No structural changes pending.")
+        logger.info("   ✅ No structural changes pending.")
 
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """Check for large functions (>50 lines) - L5 EVOLUTION ENABLED."""
@@ -1344,8 +1347,8 @@ class StructuralEngineer(SubAtomicAgent):
                 with open(rules_path, "r", encoding="utf-8") as f:
                     rules = json.load(f)
                 max_lines = rules.get("max_function_lines", max_lines)
-                print(f"   📏 Using evolved threshold: {max_lines} lines")
-            except:
+                logger.info(f"   📏 Using evolved threshold: {max_lines} lines")
+            except Exception:
                 pass
         
         for file_path in self.ctx.get_python_files():
@@ -1427,7 +1430,7 @@ class SemanticMapper(SubAtomicAgent):
         self.prompt += "\n\nSEMANTIC DIRECTIVE: Build comprehensive call-graph to enable intelligent refactoring decisions. Calculate cohesion scores for logical unit identification."
     
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Building Call-Graph...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Building Call-Graph...")
         
         # Build project call-graph
         self.call_graph = self._build_call_graph()
@@ -1439,7 +1442,7 @@ class SemanticMapper(SubAtomicAgent):
         for key in range(26, 40):
             self.ctx.report(self.name, key, True, [])
         
-        print(f"   ✅ Call-graph built: {len(self.call_graph['files'])} files analyzed")
+        logger.info(f"   ✅ Call-graph built: {len(self.call_graph['files'])} files analyzed")
     
     def _build_call_graph(self) -> dict:
         """Build a comprehensive call-graph of the entire project."""
@@ -1492,7 +1495,7 @@ class SemanticMapper(SubAtomicAgent):
                 graph["files"][file_path] = file_info
                 
             except Exception as e:
-                print(f"   ⚠️ Failed to analyze {file_path}: {e}")
+                logger.info(f"   ⚠️ Failed to analyze {file_path}: {e}")
                 continue
         
         # Calculate cohesion scores
@@ -1664,10 +1667,10 @@ class RefactoringExecutionAgent(SubAtomicAgent):
         self.prompt += "\n\nEXECUTION DIRECTIVE: Prioritize plans by priority field. Use learning_insights['successful_patterns'] to select extraction strategy. On failure, record detailed execution_details for future learning."
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Executing Refactor Plans...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Executing Refactor Plans...")
 
         if not self.ctx.refactor_plans:
-            print("   ℹ No refactor plans to execute.")
+            logger.info("   ℹ No refactor plans to execute.")
             self.ctx.report(self.name, 99, True, ["No plans to execute"])
             return
 
@@ -1678,7 +1681,7 @@ class RefactoringExecutionAgent(SubAtomicAgent):
         # Process only SPLIT_FUNCTION plans
         for plan_key, plan in list(self.ctx.refactor_plans.items()):
             if plan.get("type") == "SPLIT_FUNCTION" and plan.get("status") == "PENDING":
-                print(f"\n   🔧 Executing plan: {plan_key}")
+                logger.info(f"\n   🔧 Executing plan: {plan_key}")
 
                 # Execute with atomic rollback
                 success, details = self._execute_split_function_plan(plan_key, plan)
@@ -1691,15 +1694,15 @@ class RefactoringExecutionAgent(SubAtomicAgent):
 
                 if success:
                     success_count += 1
-                    print(f"      ✅ Plan executed successfully")
+                    logger.info(f"      ✅ Plan executed successfully")
                 else:
                     failed_count += 1
-                    print(f"      ❌ Plan failed: {details}")
+                    logger.info(f"      ❌ Plan failed: {details}")
 
                 executed_count += 1
 
-        print(f"\n   📊 Execution Summary: {executed_count} plans processed")
-        print(f"      Success: {success_count}, Failed: {failed_count}")
+        logger.info(f"\n   📊 Execution Summary: {executed_count} plans processed")
+        logger.info(f"      Success: {success_count}, Failed: {failed_count}")
 
         self.ctx.report(self.name, 99, failed_count == 0, [f"Executed {executed_count} plans"])
 
@@ -1947,11 +1950,11 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
         self.prompt += "\n\nARCHITECTURAL DIRECTIVE: Plan and execute multi-file refactoring missions. Use call-graph data to minimize dependencies. Ensure atomic transactions across all affected files."
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Planning and Executing Architectural Refactoring Missions...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Planning and Executing Architectural Refactoring Missions...")
         
         # Check if we have call-graph data from SemanticMapper
         if not hasattr(self.ctx, 'call_graph'):
-            print("   ⚠️ No call-graph available - skipping architectural analysis")
+            logger.info("   ⚠️ No call-graph available - skipping architectural analysis")
             return
         
         # First, assess and plan missions
@@ -1961,7 +1964,7 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
         # Then execute planned missions
         self._execute_missions()
         
-        print("   ✅ Architectural refactoring complete")
+        logger.info("   ✅ Architectural refactoring complete")
     
     def _execute_missions(self):
         """Execute all planned architectural refactoring missions."""
@@ -1982,7 +1985,7 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
                 if plan.get("status") == "PLANNED":
                     planned_missions += 1
                     mission = plan.get("mission")
-                    print(f"\n   🏗️ Executing mission: {mission} (key: {plan_key})")
+                    logger.info(f"\n   🏗️ Executing mission: {mission} (key: {plan_key})")
                     
                     if mission in mission_executors:
                         try:
@@ -1993,21 +1996,21 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
                             plan["execution_details"] = details
                             
                             if success:
-                                print(f"      ✅ Mission completed: {details}")
+                                logger.info(f"      ✅ Mission completed: {details}")
                             else:
-                                print(f"      ❌ Mission failed: {details}")
+                                logger.info(f"      ❌ Mission failed: {details}")
                         except Exception as e:
                             plan["status"] = "EXECUTED"
                             plan["outcome"] = "FAILED"
                             plan["execution_details"] = str(e)
-                            print(f"      ❌ Mission error: {e}")
+                            logger.info(f"      ❌ Mission error: {e}")
                     else:
-                        print(f"      ⚠️ No executor found for mission: {mission}")
+                        logger.info(f"      ⚠️ No executor found for mission: {mission}")
         
         if total_missions == 0:
-            print("   ℹ️ No refactor plans found")
+            logger.info("   ℹ️ No refactor plans found")
         else:
-            print(f"\n   📊 Mission Summary: {total_missions} total, {multi_file_missions} multi-file, {planned_missions} executed")
+            logger.info(f"\n   📊 Mission Summary: {total_missions} total, {multi_file_missions} multi-file, {planned_missions} executed")
     
     def _execute_encapsulate_globals(self, plan: dict) -> Tuple[bool, str]:
         """L5 Execute: Encapsulate all global variables into a ConfigurationService."""
@@ -2025,7 +2028,7 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
         if not all_globals:
             return False, "No global variables found"
         
-        print(f"   📊 Found {len(all_globals)} global variables in {len(files_with_globals)} files")
+        logger.info(f"   📊 Found {len(all_globals)} global variables in {len(files_with_globals)} files")
         
         # Create ConfigurationService
         service_content = self._generate_configuration_service(all_globals)
@@ -2173,7 +2176,7 @@ config = ConfigurationService()
         if not target_file or not (service_classes or utility_classes):
             return False, "Invalid reorganization plan"
         
-        print(f"   📊 Reorganizing {len(service_classes)} service and {len(utility_classes)} utility classes")
+        logger.info(f"   📊 Reorganizing {len(service_classes)} service and {len(utility_classes)} utility classes")
         
         try:
             # Read the source file
@@ -2257,7 +2260,7 @@ config = ConfigurationService()
                            for file_info in self.ctx.call_graph["files"].values())
         
         if total_globals > 50:  # Threshold for architectural intervention
-            print(f"   🏗️ Found {total_globals} global variables - planning encapsulation mission")
+            logger.info(f"   🏗️ Found {total_globals} global variables - planning encapsulation mission")
             
             # Create architectural refactoring plan
             self.ctx.refactor_plans["MISSION_ENCAPSULATE_GLOBALS"] = {
@@ -2275,7 +2278,7 @@ config = ConfigurationService()
             class_count = len(file_info.get("classes", {}))
             
             if class_count > 10:  # Too many classes in one file
-                print(f"   🏗️ File {file_path} has {class_count} classes - planning reorganization")
+                logger.info(f"   🏗️ File {file_path} has {class_count} classes - planning reorganization")
                 
                 # Analyze class cohesion for intelligent grouping
                 cohesion_scores = self.ctx.call_graph["cohesion_scores"]
@@ -2316,7 +2319,7 @@ class PolicyEvolutionAgent(SubAtomicAgent):
         self.prompt += "\n\nL5 EVOLUTION DIRECTIVE: Analyze all execution outcomes. Identify failure patterns. Generate recommendations. Evolve rules based on demonstrated capability."
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Outcomes & Evolving Policy...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Analyzing Outcomes & Evolving Policy...")
         
         # Load execution history
         history = self._load_execution_history()
@@ -2334,7 +2337,7 @@ class PolicyEvolutionAgent(SubAtomicAgent):
         self.ctx.evolved_rules = evolved_rules
         self.ctx.policy_analysis = analysis
         
-        print("   ✅ Policy evolution complete")
+        logger.info("   ✅ Policy evolution complete")
     
     def _load_execution_history(self) -> dict:
         """Load execution history from cache."""
@@ -2351,7 +2354,7 @@ class PolicyEvolutionAgent(SubAtomicAgent):
                     history = json.load(f)
                 if "executions" not in history:
                     history["executions"] = []
-            except:
+            except Exception:
                 pass
         
         return history
@@ -2413,7 +2416,7 @@ class PolicyEvolutionAgent(SubAtomicAgent):
             try:
                 with open(rules_file, "r", encoding="utf-8") as f:
                     rules = json.load(f)
-            except:
+            except Exception:
                 pass
         
         # Evolve function rules
@@ -2423,11 +2426,11 @@ class PolicyEvolutionAgent(SubAtomicAgent):
         if func_failed > func_success * 2:
             old_threshold = rules.get("max_function_lines", 50)
             rules["max_function_lines"] = max(30, old_threshold - 5)
-            print(f"   📉 Reducing function size threshold to {rules['max_function_lines']} lines (high failure rate)")
+            logger.info(f"   📉 Reducing function size threshold to {rules['max_function_lines']} lines (high failure rate)")
         elif func_success > func_failed * 3:
             old_threshold = rules.get("max_function_lines", 50)
             rules["max_function_lines"] = min(100, old_threshold + 5)
-            print(f"   📈 Increasing function size threshold to {rules['max_function_lines']} lines (high success rate)")
+            logger.info(f"   📈 Increasing function size threshold to {rules['max_function_lines']} lines (high success rate)")
         
         # Evolve architectural rules
         architectural_confidence = rules.get("architectural_confidence", 0.5)
@@ -2439,7 +2442,7 @@ class PolicyEvolutionAgent(SubAtomicAgent):
             if success_rate > 0.8:
                 old_limit = rules.get("max_globals_per_file", 10)
                 rules["max_globals_per_file"] = max(0, old_limit - 2)
-                print(f"   🏗️ Tightening global variable limit to {rules['max_globals_per_file']} per file (successful encapsulation)")
+                logger.info(f"   🏗️ Tightening global variable limit to {rules['max_globals_per_file']} per file (successful encapsulation)")
                 architectural_confidence = min(1.0, architectural_confidence + 0.1)
         
         # Class reorganization success
@@ -2449,12 +2452,12 @@ class PolicyEvolutionAgent(SubAtomicAgent):
             if success_rate > 0.8:
                 old_limit = rules.get("max_classes_per_file", 10)
                 rules["max_classes_per_file"] = max(5, old_limit - 1)
-                print(f"   🏗️ Tightening class density limit to {rules['max_classes_per_file']} per file (successful reorganization)")
+                logger.info(f"   🏗️ Tightening class density limit to {rules['max_classes_per_file']} per file (successful reorganization)")
                 architectural_confidence = min(1.0, architectural_confidence + 0.1)
         
         rules["architectural_confidence"] = architectural_confidence
         if architectural_confidence > 0.7:
-            print(f"   🧬 L5 Self-Evolution: High architectural confidence ({architectural_confidence:.1%}) - system ready for complex missions")
+            logger.info(f"   🧬 L5 Self-Evolution: High architectural confidence ({architectural_confidence:.1%}) - system ready for complex missions")
         
         # Save evolved rules
         with open(rules_file, "w", encoding="utf-8") as f:
@@ -2485,7 +2488,7 @@ class StatePersistenceAgent(SubAtomicAgent):
         self.prompt += "\n\nPERSISTENCE DIRECTIVE: Perform atomic I/O operations. Save execution history and context state."
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Persisting Execution State...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Persisting Execution State...")
         
         # Persist execution history (atomic I/O)
         self._persist_execution_history()
@@ -2495,7 +2498,7 @@ class StatePersistenceAgent(SubAtomicAgent):
             if key != 48:  # Key 48 is reserved
                 self.ctx.report(self.name, key, True, [])
         
-        print("   ✅ State persisted")
+        logger.info("   ✅ State persisted")
     
     def _persist_execution_history(self):
         """Save refactor plan outcomes for future learning."""
@@ -2566,7 +2569,7 @@ class RefactorTransaction:
         
         if exc_type is not None:
             # Error occurred - rollback from backup
-            print(f"   🔄 Rolling back {len(self.target_files)} files...")
+            logger.info(f"   🔄 Rolling back {len(self.target_files)} files...")
             for file_path in self.target_files:
                 backup_path = self.backup_dir / Path(file_path).name
                 if backup_path.exists():
@@ -2577,10 +2580,10 @@ class RefactorTransaction:
                 if Path(new_file).exists():
                     Path(new_file).unlink()
             
-            print(f"   ✅ Rollback complete")
+            logger.info(f"   ✅ Rollback complete")
         else:
             # Success - commit changes
-            print(f"   ✅ Committed {len(self.modifications)} file changes")
+            logger.info(f"   ✅ Committed {len(self.modifications)} file changes")
         
         # Cleanup backup directory
         shutil.rmtree(self.backup_dir, ignore_errors=True)
@@ -2919,8 +2922,8 @@ class MissionPlannerAgent(SubAtomicAgent):
 # ==============================================================================
 def main():
     """L5 Orchestrator: Dynamic agent execution with MissionPlanner."""
-    print("\n🚀 Canon Validator v3.0 - L5 Subatomic Swarm Governance Platform")
-    print("=" * 70)
+    logger.info("\n🚀 Canon Validator v3.0 - L5 Subatomic Swarm Governance Platform")
+    logger.info("=" * 70)
     
     # Initialize shared context
     ctx = ValidationContext()
@@ -2935,52 +2938,52 @@ def main():
         
         # Check prerequisites
         if hasattr(agent, 'can_run') and not agent.can_run():
-            print(f"\n⏭️  Skipping {agent.name} - prerequisites not met")
+            logger.info(f"\n⏭️  Skipping {agent.name} - prerequisites not met")
             continue
         
         # Execute agent
         agent.execute()
     
     # Final Summary
-    print("\n" + "=" * 70)
-    print("📊 VALIDATION SUMMARY")
-    print("=" * 70)
+    logger.info("\n" + "=" * 70)
+    logger.info("📊 VALIDATION SUMMARY")
+    logger.info("=" * 70)
     
     passed = sum(1 for r in ctx.results.values() if r["passed"])
     total = len(ctx.results)
     
-    print(f"\n   Total Keys: {total}/50")
-    print(f"   Passed: {passed}")
-    print(f"   Failed: {total - passed}")
+    logger.info(f"\n   Total Keys: {total}/50")
+    logger.info(f"   Passed: {passed}")
+    logger.info(f"   Failed: {total - passed}")
     
     if ctx.modified_files:
-        print(f"\n   📝 Modified Files: {len(ctx.modified_files)}")
+        logger.info(f"\n   📝 Modified Files: {len(ctx.modified_files)}")
         for file in sorted(ctx.modified_files):
-            print(f"      - {file}")
+            logger.info(f"      - {file}")
     
     if ctx.refactor_plans:
-        print(f"\n   📋 Refactor Plans: {len(ctx.refactor_plans)}")
+        logger.info(f"\n   📋 Refactor Plans: {len(ctx.refactor_plans)}")
         for key, plan in ctx.refactor_plans.items():
             status = plan.get("status", "UNKNOWN")
             outcome = plan.get("outcome", "")
             if outcome:
                 status = f"{status} ({outcome})"
-            print(f"      - {key}: {status}")
+            logger.info(f"      - {key}: {status}")
     
     # L4+ Meta-Learning Report
     if hasattr(ctx, 'learning_insights'):
-        print(f"\n   🧠 Learning Insights:")
-        print(f"      - Successful patterns: {', '.join(ctx.learning_insights.get('successful_patterns', []))}")
-        print(f"      - Current threshold: {ctx.learning_insights.get('current_threshold', 50)} lines")
+        logger.info(f"\n   🧠 Learning Insights:")
+        logger.info(f"      - Successful patterns: {', '.join(ctx.learning_insights.get('successful_patterns', []))}")
+        logger.info(f"      - Current threshold: {ctx.learning_insights.get('current_threshold', 50)} lines")
     
-    print("\n" + "=" * 70)
+    logger.info("\n" + "=" * 70)
     
     # Exit with appropriate code
     if passed == total:
-        print("✅ ALL KEYS PASSED - Subatomic Perfection Achieved!")
+        logger.info("✅ ALL KEYS PASSED - Subatomic Perfection Achieved!")
         return 0
     else:
-        print(f"❌ {total - passed} keys failed - Review details above")
+        logger.info(f"❌ {total - passed} keys failed - Review details above")
         return 1
 
 if __name__ == "__main__":

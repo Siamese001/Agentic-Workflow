@@ -13,6 +13,9 @@ import logging
 from datetime import datetime
 from typing import List, Optional
 
+logger = logging.getLogger(__name__)
+
+
 try:
 #     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPR...
     _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()

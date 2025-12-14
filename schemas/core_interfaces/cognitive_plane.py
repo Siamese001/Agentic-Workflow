@@ -8,6 +8,9 @@ L1 Cognition: Pure thought, no side effects.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 
 class CognitiveCapability(Enum):
     """Capabilities provided by the cognitive plane."""

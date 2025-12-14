@@ -18,6 +18,9 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 from unittest.mock import AsyncMock, Mock, patch
 
+logger = logging.getLogger(__name__)
+
+
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 

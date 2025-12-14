@@ -1,5 +1,5 @@
 import logging
-from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
 def test_agent_bus_send_and_get() -> None:

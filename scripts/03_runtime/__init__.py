@@ -1,6 +1,3 @@
-"""
-
-
-LOGGER = logging.getLogger(__name__)
-Runtime components for Agentic Workflow.
-"""
+import logging
+logger = logging.getLogger(__name__)
+'\n\n\nLOGGER = logging.getLogger(__name__)\nRuntime components for Agentic Workflow.\n'

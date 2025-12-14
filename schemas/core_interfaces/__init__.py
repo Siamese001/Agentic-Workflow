@@ -7,6 +7,9 @@ Defines strict boundaries between Brain (cognitive) and Hands (action).
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     ICognitivePlane,
     PlanningRequest,
     PlanningResult,

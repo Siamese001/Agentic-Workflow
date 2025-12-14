@@ -7,8 +7,12 @@ Contains ContextEnrichmentStage and SignalAugmentationStage.
 """
 
 import hashlib
+import logging
 import time
 from typing import Any, Dict, List
+
+logger = logging.getLogger(__name__)
+
 
 from .types import PipelineStage
 

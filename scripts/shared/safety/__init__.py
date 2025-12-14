@@ -6,6 +6,9 @@ Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     PIIScrubber,
     PIIType,
     PIIMatch,

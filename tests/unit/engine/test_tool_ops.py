@@ -5,11 +5,13 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
+import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 
 class ToolStatus(Enum):
     """TODO: Add docstring."""

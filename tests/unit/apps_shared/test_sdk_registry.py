@@ -1,5 +1,9 @@
 """Unit tests for runtime/shared/sdk_registry.py"""
+import logging
 from unittest.mock import MagicMock, patch
+
+logger = logging.getLogger(__name__)
+
 
 import pytest
 from runtime.shared.sdk_registry import (=, __name__, import, logger, logging,

@@ -7,6 +7,9 @@ Links SPIFFE identity with Control Plane for granular policy enforcement.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     AgentPermissionManager,
     Permission,
     PermissionScope,

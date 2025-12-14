@@ -11,6 +11,9 @@ This package contains the modular components of the unified signal pipeline:
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     PipelineExecutionError
 )
     'PipelineStageType',

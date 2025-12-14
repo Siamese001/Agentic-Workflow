@@ -2,6 +2,9 @@
 import logging
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
     SAFETY_THRESHOLD,
     CONFIG,

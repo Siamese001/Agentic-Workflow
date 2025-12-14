@@ -26,8 +26,6 @@ class ConfigurationService:
             self._achievement_count = None
             self._action = None
             self._admin_id = None
-            self._adversarial_findings = None
-            self._age_days = None
             self._agent_conflict_count = None
             self._agent_id = None
             self._agent_registry = None
@@ -50,7 +48,6 @@ class ConfigurationService:
             self._attempts = None
             self._audit_logging_enabled = None
             self._authenticity_patterns = None
-            self._auto_reload = None
             self._average_scores = None
             self._avoid = None
             self._avoid_holidays = None
@@ -74,9 +71,7 @@ class ConfigurationService:
             self._candidate_text = None
             self._canonical_path = None
             self._case_id = None
-            self._case_studies = None
             self._category = None
-            self._char_count = None
             self._char_limit = None
             self._checksum = None
             self._circuit_breaker_threshold = None
@@ -88,12 +83,12 @@ class ConfigurationService:
             self._collection_name = None
             self._collector = None
             self._company = None
-            self._company_context = None
             self._competitive_intelligence = None
             self._completed_at = None
             self._compliance_score = None
             self._conditions = None
             self._confidence = None
+            self._confidence_level = None
             self._confidence_score = None
             self._confidence_scores = None
             self._connection_status = None
@@ -104,7 +99,6 @@ class ConfigurationService:
             self._context = None
             self._context_budget = None
             self._context_schema = None
-            self._contexts = None
             self._correctness_criteria = None
             self._correctness_map = None
             self._cot_min_paths = None
@@ -132,12 +126,10 @@ class ConfigurationService:
             self._dominant_theme = None
             self._duplicate_groups = None
             self._duplicates = None
-            self._duration_ms = None
             self._edges = None
             self._element = None
             self._embedding = None
             self._embedding_model = None
-            self._enable_caching = None
             self._enable_console_export = None
             self._enable_otlp_export = None
             self._enabled = None
@@ -159,37 +151,31 @@ class ConfigurationService:
             self._expected_behavior = None
             self._expected_keypoints = None
             self._explanation = None
-            self._exponential_backoff = None
             self._extra_args = None
-            self._extracted_keywords = None
             self._filepath = None
             self._files_removed = None
             self._final_verdict = None
             self._findings = None
             self._fingerprints = None
-            self._finish_reason = None
             self._focus = None
+            self._follow_up_questions = None
             self._forbidden_phrases = None
             self._formality = None
             self._formality_level = None
             self._format_type = None
             self._frequency_penalty = None
-            self._from_stage = None
             self._functions = None
             self._gap_coverage_percentage = None
             self._gap_keywords_covered = None
-            self._gaps_identified = None
             self._gate_id = None
-            self._generation_attempts = None
             self._generation_confidence = None
-            self._generation_temperature = None
             self._global_confidence = None
+            self._global_gatekeeper = None
             self._global_governor = None
             self._greeting_format = None
             self._guidance = None
             self._hash = None
             self._hop_id = None
-            self._hop_types = None
             self._hops = None
             self._host = None
             self._hypotheses = None
@@ -200,8 +186,6 @@ class ConfigurationService:
             self._industry_first_ranking = None
             self._initial_context = None
             self._initialized = None
-            self._injection = None
-            self._injection_dir = None
             self._input_text = None
             self._inputs = None
             self._instance = None
@@ -211,22 +195,19 @@ class ConfigurationService:
             self._is_safe = None
             self._is_static = None
             self._is_stub = None
-            self._is_sufficient = None
             self._is_valid = None
             self._issues_detected = None
             self._jargon_level = None
-            self._job_description = None
             self._k_nodes_enabled = None
             self._k_nodes_format = None
             self._kept_files = None
-            self._key_indicators = None
+            self._key_findings = None
             self._keyword_density = None
             self._keywords = None
             self._kind = None
             self._legacy_k_nodes = None
             self._line_count = None
             self._location = None
-            self._locked_sections = None
             self._logger = None
             self._match_type = None
             self._max = None
@@ -236,7 +217,6 @@ class ConfigurationService:
             self._max_context_documents = None
             self._max_cost_usd = None
             self._max_creative_retries = None
-            self._max_injections_per_hop = None
             self._max_latency_ms = None
             self._max_reflexion_loops = None
             self._max_requests_per_minute = None
@@ -256,7 +236,6 @@ class ConfigurationService:
             self._metacognition_summary = None
             self._metadata = None
             self._method = None
-            self._metrics = None
             self._min = None
             self._min_buffer_days = None
             self._min_claim_confidence = None
@@ -273,7 +252,6 @@ class ConfigurationService:
             self._model_name = None
             self._mutation_hooks = None
             self._name = None
-            self._needs_manual_override = None
             self._no_source_penalty = None
             self._node_id = None
             self._node_type = None
@@ -313,26 +291,22 @@ class ConfigurationService:
             self._prior_message_count = None
             self._prior_message_count_gt = None
             self._prior_message_count_gte = None
-            self._priority = None
             self._problem_solution_narratives = None
             self._produced_keypoints = None
-            self._products = None
             self._prompt_type = None
             self._provider = None
             self._qa_blocks_order = None
-            self._quantifiable_achievements = None
             self._query = None
             self._query_text = None
             self._query_time_ms = None
+            self._query_understanding = None
             self._rag_config = None
             self._rag_enabled = None
             self._rag_hops = None
-            self._rag_results = None
             self._rag_total_calls = None
             self._rate_limits = None
             self._rating = None
             self._rationale = None
-            self._raw_evidence = None
             self._raw_output = None
             self._raw_score = None
             self._readability = None
@@ -342,15 +316,9 @@ class ConfigurationService:
             self._reasoning_trace = None
             self._recency_decay_days = None
             self._recency_factors = None
-            self._recent_activity = None
-            self._recipient_insights = None
-            self._recipient_profile = None
-            self._recipient_specific = None
             self._recommendations = None
-            self._refinement_tasks = None
             self._reflexion = None
-            self._relevance_score = None
-            self._relevance_threshold = None
+            self._relevant_context_keys = None
             self._remediation = None
             self._removed_files = None
             self._repetition_penalty = None
@@ -365,17 +333,12 @@ class ConfigurationService:
             self._retrieval_method = None
             self._retrieval_score = None
             self._retrieval_sources = None
-            self._retrieved_docs = None
             self._retrieved_documents = None
-            self._retry_delay = None
             self._retry_policy = None
-            self._retryable_stages = None
             self._reviewed_at = None
-            self._role = None
             self._role_classification = None
             self._roles = None
             self._route = None
-            self._route_override = None
             self._rule_id = None
             self._rule_type = None
             self._run_count = None
@@ -383,10 +346,10 @@ class ConfigurationService:
             self._safety_decisions = None
             self._safety_enabled = None
             self._safety_incidents = None
+            self._safety_notes = None
             self._safety_threshold = None
             self._safety_tier = None
             self._scenario_id = None
-            self._scope = None
             self._score = None
             self._scores = None
             self._script = None
@@ -399,9 +362,6 @@ class ConfigurationService:
             self._self_consistency_runs = None
             self._semantic_duplicates = None
             self._semantic_hash = None
-            self._sender_grounding = None
-            self._sender_profile = None
-            self._sentiment = None
             self._severity = None
             self._signal_quality_score = None
             self._signature_format = None
@@ -416,18 +376,13 @@ class ConfigurationService:
             self._source_text = None
             self._source_text_length = None
             self._source_type = None
-            self._source_weight = None
             self._source_weighting = None
             self._source_weights = None
             self._sources = None
             self._specific_source = None
-            self._stage = None
-            self._stages = None
             self._start_time = None
             self._started_at = None
-            self._state = None
             self._status = None
-            self._stop_sequences = None
             self._strategic_alignment = None
             self._strategy = None
             self._structure_template = None
@@ -438,31 +393,27 @@ class ConfigurationService:
             self._success_count = None
             self._suggested_pattern = None
             self._suggestion = None
-            self._supporting_sources = None
             self._system_instructions = None
             self._system_prompt_template = None
-            self._team_members = None
             self._technical_count = None
             self._technology_keywords_in_segment_1 = None
             self._telemetry_enabled = None
             self._telemetry_log_dir = None
             self._temperature = None
             self._template = None
+            self._test_cases = None
             self._test_id = None
             self._text = None
             self._text1_length = None
             self._text2_length = None
-            self._theme = None
             self._themes = None
             self._threshold = None
             self._timeout = None
             self._timeout_seconds = None
             self._timestamp = None
             self._title = None
-            self._to_stage = None
             self._tone = None
-            self._tool_call_id = None
-            self._tool_calls = None
+            self._tool_arguments = None
             self._tool_name = None
             self._tools = None
             self._top_k = None
@@ -482,14 +433,12 @@ class ConfigurationService:
             self._type = None
             self._uncertainty_score = None
             self._url = None
-            self._usage = None
             self._use_for = None
             self._validation_method = None
             self._validation_results = None
             self._validation_rules = None
             self._validator = None
             self._value_count = None
-            self._variable_values = None
             self._variables = None
             self._vector_store_path = None
             self._verb_preference = None
@@ -512,7 +461,7 @@ class ConfigurationService:
             self.agent = None
             self.agent_executor = None
             self.all_completed = None
-            self.allowed_modules = None
+            self.all_sentences = None
             self.api_key = None
             self.archetype = None
             self.artifact_id = None
@@ -524,7 +473,7 @@ class ConfigurationService:
             self.banned_patterns = None
             self.bare_except_pattern = None
             self.base_response = None
-            self.batch = None
+            self.best_opinion = None
             self.bias_recommendations = None
             self.bias_type = None
             self.bias_types = None
@@ -540,21 +489,25 @@ class ConfigurationService:
             self.cache_key = None
             self.char_count = None
             self.checkpoints = None
+            self.chosen_plan = None
             self.circuit_breaker = None
             self.class_name = None
             self.clean_content = None
             self.client_id = None
             self.clusters = None
             self.collection_name = None
-            self.command = None
             self.comment = None
             self.competencies = None
             self.complexity = None
+            self.compressed_length = None
+            self.compressed_text = None
+            self.compression_ratio = None
             self.confidence = None
             self.confidence_score = None
             self.config = None
             self.config_history = None
             self.config_update = None
+            self.consensus_score = None
             self.constraints_file = None
             self.content = None
             self.context = None
@@ -562,10 +515,8 @@ class ConfigurationService:
             self.cost_tiers = None
             self.count = None
             self.counts = None
-            self.cov_path = None
             self.coverage_command = None
             self.coverage_report = None
-            self.coverage_result = None
             self.created_count = None
             self.cumulative_spend = None
             self.current_error = None
@@ -579,6 +530,7 @@ class ConfigurationService:
             self.description = None
             self.detected_bias_types = None
             self.directory = None
+            self.dissenting_opinions = None
             self.distance_map = None
             self.dry_run = None
             self.duplicates_found = None
@@ -591,11 +543,14 @@ class ConfigurationService:
             self.embedding_function = None
             self.empty_except_pattern = None
             self.end_line = None
+            self.end_pos = None
             self.entities = None
-            self.error = None
+            self.entity_match = None
             self.error_logs = None
+            self.error_msg = None
             self.errors = None
             self.errors_text = None
+            self.excluded_dirs = None
             self.executed_nodes = None
             self.execution_time_ms = None
             self.exit_code = None
@@ -604,11 +559,10 @@ class ConfigurationService:
             self.factors = None
             self.fail_count = None
             self.failed_checks = None
-            self.failed_tests = None
+            self.failed_count = None
             self.failure_detail = None
-            self.failures = None
             self.false_positives = None
-            self.file_path = None
+            self.filepath = None
             self.files_modified = None
             self.final_message = None
             self.findings = None
@@ -616,9 +570,10 @@ class ConfigurationService:
             self.fix_proposal = None
             self.fixed = None
             self.fixed_count = None
+            self.fixed_lines = None
             self.flagged_phrases = None
-            self.full_command = None
             self.full_path = None
+            self.full_text = None
             self.gate_id = None
             self.generation_config = None
             self.h = None
@@ -628,10 +583,12 @@ class ConfigurationService:
             self.has_error = None
             self.header_block = None
             self.headline = None
+            self.high_risk_count = None
             self.hop_context = None
             self.hop_id = None
             self.hop_outputs = None
             self.hs = None
+            self.i = None
             self.id = None
             self.in_degree = None
             self.indent_match = None
@@ -639,23 +596,25 @@ class ConfigurationService:
             self.input_text = None
             self.input_tokens = None
             self.inputs = None
+            self.insert_pos = None
             self.insights_count = None
-            self.install_cmd = None
-            self.integrity_analyst = None
             self.invalid_layers = None
             self.is_available = None
             self.is_consistent = None
             self.is_failure = None
             self.is_fresh = None
-            self.is_high_risk = None
             self.is_success = None
             self.is_valid = None
             self.is_within_bounds = None
             self.is_within_limit = None
             self.issues = None
             self.j = None
+            self.judge_prompt = None
+            self.judge_result = None
+            self.keyword_match = None
             self.labels = None
             self.level = None
+            self.line = None
             self.line_content = None
             self.line_num = None
             self.lines = None
@@ -668,11 +627,15 @@ class ConfigurationService:
             self.metadata = None
             self.metrics = None
             self.min = None
-            self.min_coverage = None
             self.mission_id = None
+            self.mock_analyzer = None
+            self.mock_client = None
+            self.mock_generator = None
             self.mock_modified = None
             self.mock_plans = None
+            self.mock_response = None
             self.model = None
+            self.model_name = None
             self.model_pricing = None
             self.modified_files = None
             self.module = None
@@ -682,14 +645,17 @@ class ConfigurationService:
             self.new_lines = None
             self.new_signature = None
             self.new_version = None
+            self.next_markers = None
             self.numbers = None
             self.operation = None
             self.orchestrator = None
+            self.original = None
+            self.original_length = None
+            self.original_text = None
             self.otlp_exporter = None
             self.output_text = None
             self.output_tokens = None
             self.outputs = None
-            self.overall_success = None
             self.p = None
             self.page_items = None
             self.param_count = None
@@ -699,20 +665,21 @@ class ConfigurationService:
             self.pass_count = None
             self.passed = None
             self.password = None
-            self.percent_covered = None
-            self.performance_eval = None
+            self.path_to_check = None
             self.performance_metrics = None
-            self.performance_script = None
+            self.persona_name = None
             self.phrase = None
             self.pii_patterns = None
             self.pip_path = None
-            self.plan_type = None
-            self.project_root = None
+            self.plan = None
+            self.prev_index = None
             self.prompt_no_cot = None
             self.prompt_with_cot = None
-            self.python_files = None
             self.python_path = None
             self.quality = None
+            self.query_entities = None
+            self.query_words = None
+            self.quote_count = None
             self.rate_limit = None
             self.reasoning = None
             self.recent_errors = None
@@ -720,33 +687,39 @@ class ConfigurationService:
             self.refactor_plans = None
             self.rel_path = None
             self.requires_approval = None
-            self.resolved = None
             self.result = None
             self.result_data = None
             self.results = None
             self.results_path = None
+            self.resume_data = None
+            self.risk_assessment = None
+            self.risk_counts = None
             self.risk_score = None
             self.risk_weights = None
             self.role = None
-            self.route = None
             self.rule_id = None
             self.rules_result = None
             self.runtime_path = None
             self.runtime_state = None
             self.safe_cmd_display = None
             self.safe_env = None
-            self.sanitized = None
+            self.safe_to_proceed = None
             self.score = None
-            self.secret_patterns = None
+            self.secondary_clients = None
             self.section_lines = None
+            self.selected_sentences = None
+            self.sentence_entities = None
+            self.sentence_scores = None
+            self.sentence_words = None
             self.server_params = None
             self.service_name = None
             self.severity = None
             self.shared_path = None
             self.should_block = None
+            self.should_include = None
             self.should_open = None
+            self.should_use_llm = None
             self.should_warn = None
-            self.signals = None
             self.signature_block = None
             self.sorted_items = None
             self.sorted_memories = None
@@ -758,18 +731,16 @@ class ConfigurationService:
             self.source_results = None
             self.sovereign_dirs = None
             self.span_id = None
-            self.status = None
+            self.start_time = None
             self.step_metrics = None
             self.success = None
             self.suspicious_indicators = None
             self.system_prompt = None
-            self.target_paths = None
             self.tc = None
             self.template = None
             self.test_content = None
             self.test_path = None
             self.test_results = None
-            self.text = None
             self.think_cost = None
             self.timestamp = None
             self.title = None
@@ -779,11 +750,11 @@ class ConfigurationService:
             self.tokens_used = None
             self.tone = None
             self.tool_calls = None
+            self.tool_choice = None
             self.tool_result = None
             self.tool_statuses = None
             self.tools = None
             self.tools_only = None
-            self.total = None
             self.total_chars = None
             self.total_cost = None
             self.total_fixed = None
@@ -791,13 +762,12 @@ class ConfigurationService:
             self.total_yaml = None
             self.trace_id = None
             self.transition_phrase = None
-            self.unit_mechanic = None
             self.unsafe_key = None
             self.updated_context = None
-            self.usage = None
             self.v1 = None
             self.v2 = None
             self.valid = None
+            self.valid_opinions = None
             self.validation_results = None
             self.value = None
             self.var_name = None
@@ -833,6 +803,9 @@ ABOVE = None
 
 # Legacy constant
 ACTION = None
+
+# Legacy constant
+ADDENDUM = None
 
 # Legacy constant
 ADJACENCY = None
@@ -964,6 +937,9 @@ COMPLETED = None
 COMPLETENESS = None
 
 # Legacy constant
+COMPRESSOR = None
+
+# Legacy constant
 CONFIDENCE = None
 
 # Legacy constant
@@ -1037,6 +1013,9 @@ DETAILS = None
 
 # Legacy constant
 DISTRIBUTION = None
+
+# Legacy constant
+DOCSTRING_DEBT = None
 
 # Legacy constant
 DOCUMENT = None
@@ -1180,6 +1159,9 @@ IMPORTS = None
 INSIGHTS = None
 
 # Legacy constant
+INSTRUCTOR_AVAILABLE = None
+
+# Legacy constant
 INTENT = None
 
 # Legacy constant
@@ -1297,6 +1279,9 @@ OPERATIONS = None
 OPERATORS = None
 
 # Legacy constant
+OPINIONS = None
+
+# Legacy constant
 OPTIMIZATIONS = None
 
 # Legacy constant
@@ -1366,6 +1351,9 @@ PREDS = None
 PREFIX = None
 
 # Legacy constant
+PROCESS = None
+
+# Legacy constant
 PROFILE = None
 
 # Legacy constant
@@ -1415,6 +1403,9 @@ RANKED = None
 
 # Legacy constant
 REAL = None
+
+# Legacy constant
+REASONING = None
 
 # Legacy constant
 RECOMMENDATIONS = None
@@ -1492,6 +1483,9 @@ RETRIEVED = None
 REVIEW_PENDING = None
 
 # Legacy constant
+RISK = None
+
+# Legacy constant
 ROOT = None
 
 # Legacy constant
@@ -1520,6 +1514,9 @@ SCORES = None
 
 # Legacy constant
 SECOND = None
+
+# Legacy constant
+SERVERS = None
 
 # Legacy constant
 SESSION = None
@@ -1664,6 +1661,12 @@ WEIGHTS = None
 
 # Legacy constant
 WORDS = None
+
+# Legacy constant
+WORDS1 = None
+
+# Legacy constant
+WORDS2 = None
 
 # Legacy constant
 YELLOW = None

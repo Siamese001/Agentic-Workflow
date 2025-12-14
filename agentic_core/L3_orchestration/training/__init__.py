@@ -7,6 +7,9 @@ Agent Gym for offline simulation, benchmarking, and self-improvement.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     AgentGym,
     TrainingScenario,
     BenchmarkResult,

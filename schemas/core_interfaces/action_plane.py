@@ -10,6 +10,9 @@ L2 Execution: Side effects allowed, but controlled and observable.
 import logging
 from typing import Any, Dict, List, Optional
 
+logger = logging.getLogger(__name__)
+
+
 
 class ActionCapability(Enum):
     """Capabilities provided by the action plane."""

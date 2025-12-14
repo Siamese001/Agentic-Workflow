@@ -216,7 +216,7 @@ def test_rollback_on_failure():
         # Mock atomic_swap to simulate failure
         original_swap = manager._atomic_swap
         def failing_swap(shadow_key, active_key):
-                """TODO: Add docstring."""
+                """Placeholder for future documentation."""
 
             raise IOError("Simulated disk failure during atomic swap")
 

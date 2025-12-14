@@ -1,6 +1,7 @@
 import logging
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
 def test_judge_engine_unsafe_on_high_severity() -> None:

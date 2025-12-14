@@ -12,6 +12,9 @@ import logging
 import uuid
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
+
+
 
 class ThermalProfile(str, Enum):
     """Predefined thermal configurations for different node types."""

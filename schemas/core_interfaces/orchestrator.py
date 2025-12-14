@@ -10,6 +10,9 @@ L3 Orchestration: Manages the Think-Act-Observe cycle.
 import logging
 from typing import Any, Dict, List, Optional
 
+logger = logging.getLogger(__name__)
+
+
 
 class ExecutionPhase(Enum):
     """Phases of execution in the orchestration cycle."""

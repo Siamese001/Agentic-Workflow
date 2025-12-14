@@ -8,6 +8,9 @@ import json
 import logging
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
+
 PROJECT_ROOT = Path(r"C:/Git/Agentic-Workflow")
 
 def run_e2e_tests():

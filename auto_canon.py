@@ -82,7 +82,7 @@ def run_fixers(output):
          read_file(VALIDATOR_SCRIPT)
          if "except:" in code:
              logger.info("   >>> 🔧 SELF-REPAIR: Fixing bare 'except:' in validator")
-             new_code = code.replace("except:", "except Exception as e: print(e)")
+             new_code = code.replace("except:", "except Exception as e: logger.info(e)")
              write_file(VALIDATOR_SCRIPT, new_code)
              fixed_something = True
 

@@ -5,9 +5,11 @@ LOGGER = logging.getLogger(__name__)
 Policies consume FailureSignal-like inputs and propose coarse-grained
 repair actions (retry, downgrade, replan, escalate).
 """
+import logging
 from typing import Dict, List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 
 @dataclass
 class RepairAction:

@@ -11,10 +11,14 @@ Tests all MCP servers with the executive orchestrator:
 """
 
 import asyncio
+import logging
 import os
 import sys
 from datetime import datetime
 from typing import Any
+
+logger = logging.getLogger(__name__)
+
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(__file__))

@@ -2,7 +2,9 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Enforce Resume Contracts - atomic execution layer.'
+import logging
 from typing import Dict
+logger = logging.getLogger(__name__)
 
 def enforce_resume_contracts(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce resume contracts data."""

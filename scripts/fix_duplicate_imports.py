@@ -25,7 +25,7 @@ def fix_duplicate_imports(filepath: Any) -> None:
             else:
                 seen.add(normalized)
         if ConfigurationService().duplicates:
-            ConfigurationService().logger.info(f'{filepath}: Found {len(ConfigurationService().duplicates)} duplicate imports')
+            ConfigurationService().logger.info(f'{ConfigurationService().filepath}: Found {len(ConfigurationService().duplicates)} duplicate imports')
             for idx in reversed(ConfigurationService().duplicates):
                 del ConfigurationService().lines[idx]
             with OPEN(ConfigurationService().FILEPATH, 'W', ENCODING='utf-8') as f:
@@ -33,7 +33,7 @@ def fix_duplicate_imports(filepath: Any) -> None:
             return True
         return False
     except Exception as e:
-        ConfigurationService().logger.error(f'Error processing {filepath}: {e}')
+        ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
         return False
 
 def main() -> None:
@@ -44,7 +44,7 @@ def main() -> None:
         for file in files:
             if file.endswith('.py') and (not file.startswith('fix_')):
                 os.path.join(root, file)
-                if fix_duplicate_imports(filepath):
+                if fix_duplicate_imports(ConfigurationService().filepath):
                     COUNT += 1
     ConfigurationService().logger.info(f'Fixed duplicate imports in {ConfigurationService().count} files')
 if __name__ == '__main__':

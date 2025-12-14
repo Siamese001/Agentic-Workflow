@@ -9,6 +9,9 @@ import sys
 # import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types  # DEPRECATED: Archive import...
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = REPO_ROOT / "tests"
 OUTPUT_ROOT = REPO_ROOT / "tests_flat"

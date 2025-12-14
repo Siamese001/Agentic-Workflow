@@ -1,6 +1,7 @@
 import logging
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
 def start_agent_span(name: str, meta: Dict[str, object]) -> str:

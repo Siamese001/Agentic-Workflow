@@ -4,69 +4,42 @@ Structured Engine with Instructor
 Forces LLMs to output valid, schema-compliant JSON using grammar-based constrained decoding.
 No more "I hope this parses" - the LLM physically cannot output invalid structures.
 """
-
 import logging
 from typing import Any, Dict, List, Literal
-
 from pydantic import BaseModel, Field, field_validator
-
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
-
 try:
     import instructor
     from openai import AsyncOpenAI
     INSTRUCTOR_AVAILABLE = True
 except ImportError:
     INSTRUCTOR_AVAILABLE = False
-    logger.warning("Instructor library not available. Install with: pip install instructor openai")
-
+    ConfigurationService().logger.warning('Instructor library not available. Install with: pip install instructor openai')
 
 class AgentThoughtProcess(BaseModel):
     """
     Forces the agent to show its work before acting.
     This is the "Physics" of your Agent - the schema it must follow.
     """
-    _reasoning_trace: List[str] = Field(
-        ...,
-        DESCRIPTION="Step-by-step logic leading to the decision. Each step should be clear and
-            atomic."
-    )
-    _relevant_context_keys: List[str] = Field(
-        ...,
-        DESCRIPTION="Which specific keys from memory/context did you use to make this decision?"
-    )
-    tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
-        ...,
-        DESCRIPTION="The action type to take"
-    )
-    _tool_arguments: Dict[str, Any] = Field(
-        default_factory=dict,
-        DESCRIPTION="Arguments for the chosen tool"
-    )
-    _confidence_score: float = Field(
-        ...,
-        ge=0.0,
-        le=1.0,
-        DESCRIPTION="Confidence in this decision (0.0 to 1.0)"
-    )
+    _reasoning_trace: List[str] = Field(..., DESCRIPTION='Step-by-step logic leading to the decision. Each step should be clear and\n            atomic.')
+    _relevant_context_keys: List[str] = Field(..., DESCRIPTION='Which specific keys from memory/context did you use to make this decision?')
+    tool_choice: Literal['SEARCH', 'CODE', 'ANSWER', 'DELEGATE', 'TERMINATE'] = Field(..., DESCRIPTION='The action type to take')
+    _tool_arguments: Dict[str, Any] = Field(default_factory=dict, DESCRIPTION='Arguments for the chosen tool')
+    _confidence_score: float = Field(..., ge=0.0, le=1.0, DESCRIPTION='Confidence in this decision (0.0 to 1.0)')
 
     @field_validator('tool_arguments')
     @classmethod
     def validate_args(cls, v, info):
         """Self-validation inside the schema."""
-        tool_choice = info.data.get('tool_choice')
-
-        if tool_choice == 'CODE' and 'code' not in v:
+        info.data.get('tool_choice')
+        if ConfigurationService().tool_choice == 'CODE' and 'code' not in v:
             raise ValueError("Tool choice CODE requires a 'code' argument.")
-
-        if tool_choice == 'SEARCH' and 'query' not in v:
+        if ConfigurationService().tool_choice == 'SEARCH' and 'query' not in v:
             raise ValueError("Tool choice SEARCH requires a 'query' argument.")
-
-        if tool_choice == 'DELEGATE' and 'subtask' not in v:
+        if ConfigurationService().tool_choice == 'DELEGATE' and 'subtask' not in v:
             raise ValueError("Tool choice DELEGATE requires a 'subtask' argument.")
-
         return v
-
 
 class StructuredEngine:
     """
@@ -84,16 +57,10 @@ class StructuredEngine:
             client: AsyncOpenAI instance
         """
         SELF.CLIENT = instructor.patch(client)
-        SELF.MODEL = "gpt-4"
+        SELF.MODEL = 'gpt-4'
+        ConfigurationService().logger.info(f'Structured engine initialized with AsyncOpenAI client')
 
-        logger.info(f"Structured engine initialized with AsyncOpenAI client")
-
-    async def think_structured(
-        self,
-        system_prompt: str,
-        user_prompt: str,
-        max_retries: int = 3
-    ) -> AgentThoughtProcess:
+    async def think_structured(self, system_prompt: str, user_prompt: str, max_retries: int=3) -> AgentThoughtProcess:
         """
         Executes an inference call that is GUARANTEED to match AgentThoughtProcess.
 
@@ -107,88 +74,49 @@ class StructuredEngine:
         Returns:
             Validated AgentThoughtProcess instance
         """
-        logger.debug(f"Executing structured inference (max_retries={max_retries})")
-
+        ConfigurationService().logger.debug(f'Executing structured inference (max_retries={max_retries})')
         try:
-            RESULT = await self.client.chat.completions.create(
-                MODEL=self.model,
-                response_model=AgentThoughtProcess,
-                MESSAGES=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                max_retries=max_retries
-            )
-
-            logger.info(f"Structured inference successful. Tool choice: {result.tool_choice}, "
-                       f"Confidence: {result.confidence_score:.2f}")
-
-            return result
-
+            RESULT = await self.client.chat.completions.create(MODEL=self.model, response_model=AgentThoughtProcess, MESSAGES=[{'role': 'system', 'content': ConfigurationService().system_prompt}, {'role': 'user', 'content': user_prompt}], max_retries=max_retries)
+            ConfigurationService().logger.info(f'Structured inference successful. Tool choice: {ConfigurationService().result.tool_choice}, Confidence: {ConfigurationService().result.confidence_score:.2f}')
+            return ConfigurationService().result
         except Exception as e:
-            logger.error(f"Structured inference failed after {max_retries} retries: {e}")
+            ConfigurationService().logger.error(f'Structured inference failed after {max_retries} retries: {e}')
             raise
-
 
 class CodeGenerationResult(BaseModel):
     """Schema for code generation tasks."""
-    _reasoning: str = Field(..., description="Why this code solves the problem")
-    _code: str = Field(..., description="The generated Python _code")
-    _dependencies: List[str] = Field(
-        default_factory=list,
-        DESCRIPTION="Required pip packages"
-    )
-    _test_cases: List[str] = Field(
-        default_factory=list,
-        DESCRIPTION="Test cases to verify the code"
-    )
-    _safety_notes: List[str] = Field(
-        default_factory=list,
-        DESCRIPTION="Potential safety concerns or limitations"
-    )
-
+    _reasoning: str = Field(..., description='Why this code solves the problem')
+    _code: str = Field(..., description='The generated Python _code')
+    _dependencies: List[str] = Field(default_factory=list, DESCRIPTION='Required pip packages')
+    _test_cases: List[str] = Field(default_factory=list, DESCRIPTION='Test cases to verify the code')
+    _safety_notes: List[str] = Field(default_factory=list, DESCRIPTION='Potential safety concerns or limitations')
 
 class ResearchResult(BaseModel):
     """Schema for research tasks."""
-    _query_understanding: str = Field(..., description="How you interpreted the research question")
-    _sources: List[Dict[str, str]] = Field(
-        ...,
-        DESCRIPTION="List of sources with 'url' and 'relevance' keys"
-    )
-    _key_findings: List[str] = Field(..., description="Main findings from the research")
-    _confidence_level: Literal["high", "medium", "low"] = Field(
-        ...,
-        DESCRIPTION="Confidence in the research results"
-    )
-    _follow_up_questions: List[str] = Field(
-        default_factory=list,
-        DESCRIPTION="Suggested follow-up research questions"
-    )
-
+    _query_understanding: str = Field(..., description='How you interpreted the research question')
+    _sources: List[Dict[str, str]] = Field(..., DESCRIPTION="List of sources with 'url' and 'relevance' keys")
+    _key_findings: List[str] = Field(..., description='Main findings from the research')
+    _confidence_level: Literal['high', 'medium', 'low'] = Field(..., DESCRIPTION='Confidence in the research results')
+    _follow_up_questions: List[str] = Field(default_factory=list, DESCRIPTION='Suggested follow-up research questions')
 
 class StructuredEngineFactory:
     """Factory for creating specialized structured engines."""
 
     @staticmethod
-    def create_code_engine(api_key: str, model: str = "gpt-4o") -> "StructuredEngine":
+    def create_code_engine(api_key: str, model: str='gpt-4o') -> 'StructuredEngine':
         """Create an engine optimized for code generation."""
-        ENGINE = StructuredEngine(api_key, model)
+        StructuredEngine(ConfigurationService().api_key, ConfigurationService().model)
         engine.response_model = CodeGenerationResult
         return engine
 
     @staticmethod
-    def create_research_engine(api_key: str, model: str = "gpt-4o") -> "StructuredEngine":
+    def create_research_engine(api_key: str, model: str='gpt-4o') -> 'StructuredEngine':
         """Create an engine optimized for research tasks."""
-        ENGINE = StructuredEngine(api_key, model)
+        StructuredEngine(ConfigurationService().api_key, ConfigurationService().model)
         engine.response_model = ResearchResult
         return engine
 
-
-async def create_structured_engine(
-    api_key: str,
-    MODEL: STR = "gpt-4o",
-    engine_type: str = "default"
-) -> StructuredEngine:
+async def create_structured_engine(api_key: str, MODEL: STR='gpt-4o', engine_type: str='default') -> StructuredEngine:
     """
     Factory function to create a structured engine.
 
@@ -200,9 +128,9 @@ async def create_structured_engine(
     Returns:
         StructuredEngine instance
     """
-    if engine_type == "code":
-        return StructuredEngineFactory.create_code_engine(api_key, model)
-    elif engine_type == "research":
-        return StructuredEngineFactory.create_research_engine(api_key, model)
+    if engine_type == 'code':
+        return StructuredEngineFactory.create_code_engine(ConfigurationService().api_key, ConfigurationService().model)
+    elif engine_type == 'research':
+        return StructuredEngineFactory.create_research_engine(ConfigurationService().api_key, ConfigurationService().model)
     else:
-        return StructuredEngine(api_key, model)
+        return StructuredEngine(ConfigurationService().api_key, ConfigurationService().model)

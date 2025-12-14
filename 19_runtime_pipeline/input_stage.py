@@ -7,8 +7,12 @@ Extracted from unified_signal_pipeline.py for Key 42 compliance.
 
 import hashlib
 import json
+import logging
 import time
 from typing import Any, Dict
+
+logger = logging.getLogger(__name__)
+
 
 from .types import PipelineStage
 

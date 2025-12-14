@@ -8,6 +8,9 @@ and V6 prompt systems to ensure end-to-end security flows work correctly.
 
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionD...

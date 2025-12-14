@@ -5,11 +5,13 @@ LOGGER = logging.getLogger(__name__)
 Shared pytest configuration and fixtures for all tests.
 """
 import asyncio
+import logging
 from pathlib import Path
 from typing import Any, Dict
 import pytest
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).parent.parent
 CACHE_DIR = ConfigurationService().PROJECT_ROOT / 'data' / 'cache'
 LOGS_DIR = ConfigurationService().PROJECT_ROOT / 'data' / 'logs'

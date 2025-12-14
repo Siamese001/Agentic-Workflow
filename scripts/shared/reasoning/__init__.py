@@ -1,6 +1,9 @@
 """Structured reasoning components for agentic workflows."""
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
     ReActEngine,
     ReActStep,

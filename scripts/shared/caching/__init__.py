@@ -6,6 +6,9 @@ Phase 1 - Pillar 11: Cost & Optimization (Semantic Caching)
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     SemanticCache,
     CacheEntry,
     CacheHit,

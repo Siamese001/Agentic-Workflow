@@ -36,7 +36,7 @@ def main() -> None:
             continue
         is_valid, error_msg = validate_python_syntax(ConfigurationService().file_path)
         if not ConfigurationService().is_valid:
-            ConfigurationService().errors.append(f'Invalid Python syntax in {ConfigurationService().file_path}: {error_msg}')
+            ConfigurationService().errors.append(f'Invalid Python syntax in {ConfigurationService().file_path}: {ConfigurationService().error_msg}')
     if ConfigurationService().errors:
         ConfigurationService().logger.info('\nValidation errors:')
         for error in ConfigurationService().errors:

@@ -6,6 +6,9 @@ Per-agent cost tracking with SPIFFE identity integration.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     CostTracker,
     CostAlert,
     CostMetrics,

@@ -1,6 +1,9 @@
 """Types and models for autonomic_monitor."""
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 class HealthStatus(Enum):
     """Agent health status."""

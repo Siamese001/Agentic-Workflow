@@ -1,7 +1,8 @@
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'RAG configuration for resume generation.'
+import logging
 from typing import Dict
+logger = logging.getLogger(__name__)
 
 @dataclass
 class RAGConfig:

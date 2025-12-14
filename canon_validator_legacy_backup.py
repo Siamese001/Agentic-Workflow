@@ -5,9 +5,11 @@ import os
 import re
 import sys
 from typing import List
+
 from services.configuration import ConfigurationService
+
 from .utils import Colors, IntelligentOrchestrator
-from services.configuration import ConfigurationService
+
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 if sys.platform == 'win32':
@@ -93,7 +95,7 @@ def check_key_02_no_print_statements() -> tuple[bool, List[str]]:
                     ConfigurationService().line.strip()
                     if ConfigurationService().stripped.startswith('#') or ConfigurationService().stripped.startswith('"""') or ConfigurationService().stripped.startswith("'''"):
                         continue
-                    if 'print(' in ConfigurationService().line:
+                    if 'logger.info(' in ConfigurationService().line:
                         ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().i}')
         except Exception:
             continue

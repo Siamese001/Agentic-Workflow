@@ -11,6 +11,9 @@ import os
 import sys
 from datetime import UTC, datetime
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 # Add project root to path for imports

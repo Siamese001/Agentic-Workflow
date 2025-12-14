@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, List
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 class CampaignPhase(Enum):
     """TODO: Add docstring."""

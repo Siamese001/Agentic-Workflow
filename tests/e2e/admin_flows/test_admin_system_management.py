@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, List
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 LOGGER = logging.getLogger(__name__)

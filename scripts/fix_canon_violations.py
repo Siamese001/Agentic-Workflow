@@ -10,6 +10,9 @@ import os
 import shutil
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
+
 import scripts.validation.check_canonical_structure
 
 ROOT = Path(__file__).resolve().parent

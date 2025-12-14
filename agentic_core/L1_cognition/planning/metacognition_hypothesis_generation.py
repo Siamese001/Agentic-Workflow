@@ -1,6 +1,9 @@
 import logging
 from typing import Any
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.metacognition.hypothesis import generate_initial_hypothe...
 # from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Ar...

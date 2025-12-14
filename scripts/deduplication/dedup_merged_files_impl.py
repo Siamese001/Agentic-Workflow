@@ -1,6 +1,9 @@
 """Implementation for dedup_merged_files."""
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 # from .dedup_merged_files_types import *  # Star import removed
 

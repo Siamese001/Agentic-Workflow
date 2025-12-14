@@ -9,6 +9,9 @@ import importlib
 import logging
 import sys
 
+logger = logging.getLogger(__name__)
+
+
 
 def test_import(package_name, min_version=None):
     """Test if a package can be imported and optionally check version"""

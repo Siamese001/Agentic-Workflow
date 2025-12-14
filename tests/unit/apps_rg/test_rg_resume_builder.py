@@ -2,7 +2,9 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Test Rg Resume Builder - atomic execution layer.'
+import logging
 from typing import Dict
+logger = logging.getLogger(__name__)
 
 def test_rg_resume_builder(data: Dict[str, object]) -> Dict[str, object]:
     """Process test rg resume builder data."""

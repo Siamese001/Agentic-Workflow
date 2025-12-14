@@ -7,6 +7,9 @@ Micro-VM based isolation for secure code execution.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     FirecrackerManager,
     VMConfig,
     VMStatus,

@@ -1,6 +1,9 @@
 import logging
 from typing import Any
 
+logger = logging.getLogger(__name__)
+
+
 import instructor
 import yaml
 from openai import AsyncOpenAI

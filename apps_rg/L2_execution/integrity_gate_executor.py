@@ -1,6 +1,9 @@
 import logging
 import re
 
+logger = logging.getLogger(__name__)
+
+
     DeepResearchOutput,
     IntegrityGateResult,
     ValidationRejectionReason,

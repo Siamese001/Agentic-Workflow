@@ -12,6 +12,9 @@ This module tests complex agentic behaviors including:
 import asyncio
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 # Import the modules we're testing

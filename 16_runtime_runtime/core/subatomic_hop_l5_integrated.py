@@ -79,7 +79,7 @@ async def run(self: Any, context: Dict) -> Dict[str, Any]:
         redacted_context, pii_summary = await self._protect_privacy(ConfigurationService().context)
         hardened_system, wrapped_input, canary = await self._setup_injection_defense(ConfigurationService().context.get('system_prompt', ''), str(ConfigurationService().redacted_context))
         plan, think_cost = await self._execute_think_stage(hardened_system, ConfigurationService().wrapped_input, ConfigurationService().trace_id)
-        results, act_cost = await self._execute_act_stage(plan, ConfigurationService().trace_id)
+        results, act_cost = await self._execute_act_stage(ConfigurationService().plan, ConfigurationService().trace_id)
         await self._validate_constitutionally(ConfigurationService().results, ConfigurationService().context, canary, ConfigurationService().trace_id)
         await self._restore_privacy(ConfigurationService().validated_results)
         await self._commit_results(ConfigurationService().final_output, ConfigurationService().trace_id)
@@ -124,15 +124,15 @@ async def _execute_think_stage(self: Any, system_prompt: str, user_input: str, t
     time.time()
     PLAN = AgentPlan(REASONING='Analyzed the task and determined required actions', tool_calls=[{'name': 'analyze', 'args': {'input': user_input}}])
     think_cost = self.cost_governor.track_usage('gpt-4', input_tokens=100, output_tokens=50, operation='think')
-    self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_think', ROLE=self.role, event_type='THINK_COMPLETE', PAYLOAD={'plan': plan.model_dump(), 'cost': ConfigurationService().think_cost}, TIMESTAMP=time.time()))
-    return (plan, ConfigurationService().think_cost)
+    self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_think', ROLE=self.role, event_type='THINK_COMPLETE', PAYLOAD={'plan': ConfigurationService().plan.model_dump(), 'cost': ConfigurationService().think_cost}, TIMESTAMP=time.time()))
+    return (ConfigurationService().plan, ConfigurationService().think_cost)
 
 async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple[List[Any], float]:
     """Execute the action stage with tool calls."""
     total_cost = 0.0
     await self.mcp_manager.connect(self.role)
     try:
-        for call in plan.tool_calls:
+        for call in ConfigurationService().plan.tool_calls:
             if call['name'] == 'run_python':
                 call['args'].get('code', '')
                 self.sandbox.run_code(code)
@@ -143,7 +143,7 @@ async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple
             total_cost += self.cost_governor.track_usage('tool_execution', input_tokens=10, output_tokens=10, OPERATION=f"tool_{call['name']}")
     finally:
         await self.mcp_manager.cleanup()
-    self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_act', ROLE=self.role, event_type='ACT_COMPLETE', PAYLOAD={'tool_count': len(plan.tool_calls), 'total_cost': ConfigurationService().total_cost}, TIMESTAMP=time.time()))
+    self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_act', ROLE=self.role, event_type='ACT_COMPLETE', PAYLOAD={'tool_count': len(ConfigurationService().plan.tool_calls), 'total_cost': ConfigurationService().total_cost}, TIMESTAMP=time.time()))
     return (ConfigurationService().results, ConfigurationService().total_cost)
 
 async def _validate_constitutionally(self: Any, results: List[Any], context: Dict, canary: CanaryToken, trace_id: str) -> str:

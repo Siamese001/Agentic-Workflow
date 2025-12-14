@@ -5,15 +5,17 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared/runtime_ops/
 Tests runtime operations including data access, guardrails, synthesis, and validation.
 """
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 
 @dataclass
 class RuntimeContext:
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
     _request_id: str
     _start_time: datetime
     _timeout_seconds: int

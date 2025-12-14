@@ -1,6 +1,9 @@
 """E2E tests for outreach research flows."""
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 class TestContactResearchE2E:
     """E2E tests for contact research."""

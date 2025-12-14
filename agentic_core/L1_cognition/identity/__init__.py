@@ -7,6 +7,9 @@ SPIFFE-based cryptographic identity for secure multi-agent collaboration.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 SPIFFEManager,
 AgentIdentity,
 IdentityVerificationResult,

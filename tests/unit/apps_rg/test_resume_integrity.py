@@ -7,6 +7,9 @@ Verify that the Resume Engine classes can be instantiated and run without crashi
 
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 # Test imports from apps_rg module

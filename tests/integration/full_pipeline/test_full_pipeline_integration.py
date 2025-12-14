@@ -4,6 +4,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 class PipelineStage(Enum):
     """TODO: Add docstring."""

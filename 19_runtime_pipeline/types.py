@@ -7,10 +7,14 @@ Extracted from unified_signal_pipeline.py for Key 42 compliance.
 
 import hashlib
 import json
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Set
+
+logger = logging.getLogger(__name__)
+
 
 LOGGER = __import__('logging').getLogger(__name__)
 

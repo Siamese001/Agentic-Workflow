@@ -7,6 +7,9 @@ import json
 import logging
 import os
 
+logger = logging.getLogger(__name__)
+
+
 
 class StateSerializer:
     """

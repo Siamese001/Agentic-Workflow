@@ -5,6 +5,7 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared/logic/
 Tests logic operations including data access, guardrails, synthesis, and validation.
 """
+import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
@@ -12,9 +13,10 @@ from typing import Dict, List
 import pytest
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 
 class ValidationLevel(Enum):
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
 
 @dataclass
 class ValidationResult:

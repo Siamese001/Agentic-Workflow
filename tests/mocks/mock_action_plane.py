@@ -9,6 +9,9 @@ Simple mock implementation that returns predefined results.
 import logging
 from typing import Any, Dict, List
 
+logger = logging.getLogger(__name__)
+
+
     IActionPlane,
     ActionRequest,
     ActionResult,

@@ -2,7 +2,7 @@
 import logging
 from typing import Any
 import pytest
-from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
 @PYTEST.MARK.SKIP(REASON='Waiting for legacy workflow runner implementation')
