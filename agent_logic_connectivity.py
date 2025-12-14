@@ -1,459 +1,224 @@
-"""
-Agent Logic - Connectivity-Hardened Canon Validator
-
-The L5 Meta-Learner that validates code against the Canon
-using RedisVL and Pinecone with explicit library usage.
-"""
-
 import logging
-from typing import Dict, List, Any, Optional, Tuple
+import json
+import time
+from typing import Dict, Any, Optional
 from datetime import datetime
+import numpy as np
 
-from connection_manager import ConnectionFactory
-from schemas_connectivity import CanonEntry, CanonQuery, generate_ast_structure, validate_ast_integrity
+# Import our hardened schemas and connection manager
+from schemas_connectivity import CanonEntry
+from connection_manager import ConnectionManager
+from redisvl.query import VectorQuery
+from redisvl.query.filter import Tag, FilterExpression
 
 logger = logging.getLogger(__name__)
 
-
 class CanonValidator:
     """
-    The L5 Meta-Learner for Canon validation.
-    
-    Implements the check_and_learn and update_learning methods
-    using RedisVL for L1 and Pinecone for L2 storage.
+    The Gatekeeper logic that enforces the 'Subatomic' canon.
+    Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.
     """
     
-    def __init__(self):
-        """Initialize the Canon Validator."""
-        # Get connections
-        self.redis_conn = ConnectionFactory.get_redis_connection()
-        self.pinecone = ConnectionFactory.get_pinecone_connection()
-        self.embed_func = ConnectionFactory.get_embedding_function()
+    def __init__(self, similarity_threshold: float = 0.75): # Lowered to catch code vs comment similarities
+        self.cm = ConnectionManager()
+        self.similarity_threshold = similarity_threshold
         
-        # Get indexes
-        self.redis_index = ConnectionFactory.create_redis_index(None)
-        self.pinecone_index = os.getenv("PINECONE_INDEX_NAME", "canon-memory-l2")
+        # Initialize connections immediately
+        self.redis_index = self.cm.get_redis_index()
+        self.pinecone_index = self.cm.get_pinecone_index()
+        self.embedding_fn = self.cm.get_embedding
+
+    def process_entry(self, entry: CanonEntry) -> Dict[str, Any]:
+        """
+        Main entry point.
+        1. Checks L1 (Redis) for exact AST match.
+        2. Checks L2 (Pinecone) for semantic similarity.
+        3. Decides whether to Ingest, Reject, or Flag.
+        """
+        start_time = time.time()
         
-        # Configuration
-        self.failure_threshold = int(os.getenv("FAILURE_THRESHOLD", "5"))
-        self.success_threshold = int(os.getenv("SUCCESS_THRESHOLD", "3"))
-        
-        logger.info("CanonValidator initialized with RedisVL and Pinecone")
+        # 1. Generate Embedding if missing
+        if not entry.embedding:
+            try:
+                entry.embedding = self.embedding_fn(entry.content)
+            except Exception as e:
+                logger.error(f"Embedding generation failed: {e}")
+                return {"status": "error", "message": str(e)}
+
+        # 2. Check L1: Exact AST/Hash Match (Hot Memory)
+        l1_match = self._check_l1_cache(entry)
+        if l1_match:
+            return self._format_result(l1_match, "l1_exact_match", start_time)
+
+        # 3. Check L2: Semantic Similarity (Cold Memory)
+        l2_match = self._check_l2_cache(entry)
+        if l2_match:
+            return self._format_result(l2_match, "l2_semantic_match", start_time)
+
+        # 4. No Match Found -> Ingest as New Canon
+        return self._ingest_new_entry(entry, start_time)
     
-    def check_and_learn(self, new_code: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def check_and_learn(self, code: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        Check code against the Canon and learn from results.
-        
-        Process:
-        1. Generate embedding/AST for new_code
-        2. Query L1 (Redis) with hybrid filter: failure_count < 5
-        3. If miss, query L2 (Pinecone)
-        4. If hit, validate AST structure
-        
-        Args:
-            new_code: Python code to validate
-            context: Optional context information
-            
-        Returns:
-            Dictionary with validation result and metadata
+        Compatibility method for simulation script.
+        Accepts raw string input and converts to CanonEntry.
         """
-        start_time = datetime.utcnow()
+        from schemas_connectivity import CanonEntry, CanonMetadata
         
-        # Generate embedding and AST
-        embedding = self.embed_func(f"Code validation: {new_code[:100]}...")
-        ast_structure = generate_ast_structure(new_code)
+        # Generate embedding first to meet validation requirements
+        try:
+            embedding = self.embedding_fn(code)
+        except Exception as e:
+            logger.error(f"Embedding generation failed: {e}")
+            return {"status": "error", "message": str(e)}
         
-        # Check if code is syntactically valid
-        if not validate_ast_integrity(ast_structure):
-            return {
-                "is_valid": False,
-                "confidence": 0.0,
-                "error": "Invalid Python syntax",
-                "ast_error": ast_structure.get("error"),
-                "source": "syntax_check",
-                "matched_pattern": None,
-                "recommendation": "Fix syntax errors before validation"
-            }
-        
-        # Prepare query
-        query = CanonQuery(
-            text=new_code[:200],  # First 200 chars for context
-            filter_failures=True,
-            max_results=10,
-            threshold=0.7,
-            project_context=context.get("project_context") if context else None
+        # Create CanonEntry from string input
+        entry = CanonEntry(
+            code_snippet=code,
+            ast_structure={"type": "module"},  # Simple AST structure
+            embedding=embedding,  # Now has valid embedding
+            metadata=CanonMetadata(
+                project_context=context.get("project_context", "default") if context else "default",
+                canon_rule_id=context.get("type", "unknown") if context else "unknown"
+            )
         )
         
-        # Query L1 (Redis) first
-        l1_results = self._query_redis(embedding, query)
+        # Delegate to process_entry
+        result = self.process_entry(entry)
         
-        if l1_results:
-            # Found match in L1
-            best_match = l1_results[0]
-            validation = self._validate_ast_match(new_code, ast_structure, best_match.entry)
+        # Convert status to expected format for simulation
+        if result.get("status") == "duplicate":
+            result["source"] = "l1_match"
+        elif result.get("status") == "similar":
+            result["source"] = "l2_match"
+        elif result.get("status") == "ingested":
+            result["source"] = "no_match"
+            result["is_valid"] = True
             
-            result = {
-                "is_valid": validation["is_valid"],
-                "confidence": best_match.score,
-                "source": "L1_Redis",
-                "matched_pattern": best_match.entry.id,
-                "ast_match": validation["is_match"],
-                "recommendation": validation["recommendation"],
-                "query_time_ms": (datetime.utcnow() - start_time).total_seconds() * 1000
-            }
-            
-            logger.info(f"L1 match found: {best_match.entry.id} with score {best_match.score:.3f}")
-            return result
-        
-        # Query L2 (Pinecone) if no L1 match
-        logger.info("No L1 match found, querying L2...")
-        l2_results = self._query_pinecone(embedding, query)
-        
-        if l2_results:
-            # Found match in L2
-            best_match = l2_results[0]
-            validation = self._validate_ast_match(new_code, ast_structure, best_match.entry)
-            
-            # Promote to L1 if valid
-            if validation["is_valid"]:
-                self._promote_to_l1(best_match.entry)
-            
-            result = {
-                "is_valid": validation["is_valid"],
-                "confidence": best_match.score,
-                "source": "L2_Pinecone",
-                "matched_pattern": best_match.entry.id,
-                "ast_match": validation["is_match"],
-                "recommendation": validation["recommendation"],
-                "query_time_ms": (datetime.utcnow() - start_time).total_seconds() * 1000
-            }
-            
-            logger.info(f"L2 match found: {best_match.entry.id} with score {best_match.score:.3f}")
-            return result
-        
-        # No matches found
-        result = {
-            "is_valid": True,  # New code is assumed valid
-            "confidence": 1.0,
-            "source": "no_match",
-            "matched_pattern": None,
-            "ast_match": False,
-            "recommendation": "New code pattern - proceed with caution",
-            "query_time_ms": (datetime.utcnow() - start_time).total_seconds() * 1000
-        }
-        
-        logger.info("No matches found in L1 or L2")
         return result
-    
-    def _query_redis(self, embedding: List[float], query: CanonQuery) -> List[Dict[str, Any]]:
-        """Query RedisVL for similar patterns."""
+
+    def _check_l1_cache(self, entry: CanonEntry) -> Optional[Dict[str, Any]]:
+        """
+        Queries Redis for an exact match on the AST hash or Content Hash.
+        """
         try:
-            # Build vector query
-            vector_query = VectorQuery(
-                vector=embedding,
-                vector_field_name="embedding",
-                return_fields=[
-                    "id", "code_snippet", "failure_count", "success_count",
-                    "project_context", "canon_rule_id", "last_validated"
-                ],
-                num_results=query.max_results,
-                return_score=True
+            # We use the Tag filter for exact matching on the 'ast_hash' field
+            # Note: Ensure schema definitions in redisvl match this field name
+            t = Tag("ast_hash") == entry.ast_hash
+            
+            # Construct a VectorQuery but with a filter that creates a strict candidate set
+            # We set num_results=1 because we only care if it exists
+            query = VectorQuery(
+                vector=entry.embedding,
+                vector_field_name="embedding",  # Match schema field name
+                return_fields=["id", "content", "ast_hash", "metadata"],
+                filter_expression=t,
+                num_results=1
             )
             
-            # Add hybrid filter if requested
-            if query.filter_failures:
-                vector_query.set_filter(f"failure_count < {self.failure_threshold}")
+            results = self.redis_index.query(query)
             
-            if query.project_context:
-                project_filter = f"@project_context:{{{query.project_context}}}"
-                if vector_query.filter:
-                    vector_query.filter += f" {project_filter}"
-                else:
-                    vector_query.set_filter(project_filter)
-            
-            # Execute query
-            results = self.redis_index.query(vector_query)
-            
-            # Convert to CanonEntry objects
-            entries = []
-            for result in results:
-                if result.score >= query.threshold:
-                    # Create partial CanonEntry (without full AST)
-                    entry = CanonEntry(
-                        id=result["id"],
-                        code_snippet=result["code_snippet"],
-                        ast_structure={},  # Not loaded from Redis for performance
-                        embedding=embedding,  # Use query embedding
-                        metadata={
-                            "failure_count": result["failure_count"],
-                            "success_count": result["success_count"],
-                            "project_context": result["project_context"],
-                            "canon_rule_id": result["canon_rule_id"]
-                        }
-                    )
-                    entries.append({"entry": entry, "score": result.score})
-            
-            return entries
-            
-        except Exception as e:
-            logger.error(f"Redis query failed: {e}")
-            return []
-    
-    def _query_pinecone(self, embedding: List[float], query: CanonQuery) -> List[Dict[str, Any]]:
-        """Query Pinecone for similar patterns."""
-        try:
-            # Get Pinecone index
-            index = self.pinecone.Index(self.pinecone_index)
-            
-            # Build filter
-            filter_dict = {}
-            if query.filter_failures:
-                filter_dict["failure_count"] = {"$lt": self.failure_threshold}
-            if query.project_context:
-                filter_dict["project_context"] = query.project_context
-            
-            # Query Pinecone
-            results = index.query(
-                vector=embedding,
-                top_k=query.max_results,
-                include_metadata=True,
-                filter=filter_dict if filter_dict else None
-            )
-            
-            # Convert to CanonEntry objects
-            entries = []
-            for match in results["matches"]:
-                if match["score"] >= query.threshold:
-                    metadata = match["metadata"]
+            if results and len(results) > 0:
+                match = results[0]
+                # RedisVL returns a dict. We parse the JSON metadata string back to dict if needed
+                meta = match.get("metadata")
+                if isinstance(meta, str):
+                    meta = json.loads(meta)
                     
-                    entry = CanonEntry(
-                        id=match["id"],
-                        code_snippet=metadata["code_snippet"],
-                        ast_structure=metadata["ast_structure"],
-                        embedding=match["values"],
-                        metadata={
-                            "failure_count": metadata["failure_count"],
-                            "success_count": metadata["success_count"],
-                            "project_context": metadata["project_context"],
-                            "canon_rule_id": metadata["canon_rule_id"]
-                        }
-                    )
-                    entries.append({"entry": entry, "score": match["score"]})
+                return {
+                    "id": match.get("id"),
+                    "content": match.get("content"),
+                    "similarity": 1.0, # Exact tag match implies 100% logic match
+                    "metadata": meta
+                }
+                
+        except Exception as e:
+            # Log specific query error but don't crash
+            logger.error(f"Redis query failed: {e}")
             
-            return entries
+        return None
+
+    def _check_l2_cache(self, entry: CanonEntry) -> Optional[Dict[str, Any]]:
+        """
+        Queries Pinecone for semantic similarity.
+        """
+        try:
+            # query() expects a list of floats
+            results = self.pinecone_index.query(
+                vector=entry.embedding,
+                top_k=1,
+                include_metadata=True
+            )
             
+            if results and results['matches']:
+                best_match = results['matches'][0]
+                score = best_match['score']
+                
+                if score >= self.similarity_threshold:
+                    # FIX: Access metadata safely
+                    metadata = best_match.get('metadata', {})
+                    
+                    return {
+                        "id": best_match['id'],
+                        "content": metadata.get('content', 'Content not in metadata'),
+                        "similarity": score,
+                        "metadata": metadata
+                    }
+                    
         except Exception as e:
             logger.error(f"Pinecone query failed: {e}")
-            return []
-    
-    def _validate_ast_match(
-        self,
-        new_code: str,
-        new_ast: Dict[str, Any],
-        existing_entry: CanonEntry
-    ) -> Dict[str, Any]:
-        """Validate AST structure match."""
-        # Simple AST similarity check
-        similarity = self._calculate_ast_similarity(new_ast, existing_entry.ast_structure)
-        
-        # Check success rate
-        success_rate = existing_entry.metadata.success_rate
-        
-        # Determine validity
-        is_match = similarity > 0.7
-        is_valid = is_match and success_rate > 0.5
+            
+        return None
+
+    def _ingest_new_entry(self, entry: CanonEntry, start_time: float) -> Dict[str, Any]:
+        """
+        Writes the new unique entry to both L1 (Redis) and L2 (Pinecone).
+        """
+        try:
+            # 1. Write to Redis (Hot)
+            redis_data = entry.to_redis_dict()
+            self.redis_index.load([redis_data])
+            logger.info(f"✅ Stored new pattern in Redis: {entry.id}")
+            
+            # 2. Write to Pinecone (Cold)
+            pinecone_record = entry.to_pinecone_record()
+            self.pinecone_index.upsert(vectors=[pinecone_record])
+            logger.info(f"✅ Stored new pattern in Pinecone: {entry.id}")
+            
+            return {
+                "status": "ingested",
+                "is_valid": True,
+                "confidence": 1.0,
+                "source": "no_match",
+                "matched_pattern": None,
+                "ast_match": False,
+                "recommendation": "New code pattern - stored in Canon",
+                "pattern_id": entry.id,
+                "query_time_ms": (time.time() - start_time) * 1000
+            }
+            
+        except Exception as e:
+            logger.error(f"Ingestion failed: {e}")
+            return {
+                "status": "error", 
+                "message": f"Ingestion failed: {str(e)}",
+                "query_time_ms": (time.time() - start_time) * 1000
+            }
+
+    def _format_result(self, match: Dict, source: str, start_time: float) -> Dict[str, Any]:
+        """
+        Helper to format a 'Duplicate Found' response.
+        """
+        status = "duplicate" if source == "l1_exact_match" else "similar"
         
         return {
-            "is_match": is_match,
-            "is_valid": is_valid,
-            "similarity": similarity,
-            "success_rate": success_rate,
-            "recommendation": self._generate_recommendation(similarity, success_rate)
+            "status": status, # Crucial for the simulator to detect 'duplicate'
+            "is_valid": True, # It is valid logic, just redundant
+            "confidence": match['similarity'],
+            "source": source,
+            "matched_pattern": match['id'],
+            "ast_match": (source == "l1_exact_match"),
+            "recommendation": "Use existing pattern",
+            "metadata": match.get('metadata'),
+            "query_time_ms": (time.time() - start_time) * 1000
         }
-    
-    def _calculate_ast_similarity(self, ast1: Dict[str, Any], ast2: Dict[str, Any]) -> float:
-        """Calculate AST similarity score."""
-        # Simplified similarity calculation
-        # In production, this would use more sophisticated algorithms
-        try:
-            import ast
-            
-            # Parse ASTs
-            tree1 = ast.parse(ast1.get("body", "{}"))
-            tree2 = ast.parse(ast2.get("body", "{}"))
-            
-            # Compare node types
-            types1 = set(type(node).__name__ for node in ast.walk(tree1))
-            types2 = set(type(node).__name__ for node in ast.walk(tree2))
-            
-            # Jaccard similarity
-            intersection = len(types1.intersection(types2))
-            union = len(types1.union(types2))
-            
-            return intersection / union if union > 0 else 0.0
-            
-        except:
-            return 0.0
-    
-    def _generate_recommendation(self, similarity: float, success_rate: float) -> str:
-        """Generate recommendation based on similarity and success rate."""
-        if similarity > 0.8 and success_rate > 0.8:
-            return "Strong match with successful pattern - proceed"
-        elif similarity > 0.7 and success_rate > 0.5:
-            return "Pattern matches but has mixed results - review carefully"
-        elif similarity > 0.7 and success_rate <= 0.5:
-            return "Pattern matches known failure - avoid this approach"
-        else:
-            return "Low similarity - new pattern, validate thoroughly"
-    
-    def _promote_to_l1(self, entry: CanonEntry):
-        """Promote a pattern from L2 to L1."""
-        try:
-            # Convert to Redis fields
-            fields = entry.to_redis_fields()
-            
-            # Store in Redis
-            key = f"canon:{fields['id']}"
-            self.redis_conn.client.hset(key, mapping=fields)
-            
-            # Add to search index
-            self.redis_index.load([{
-                "id": fields["id"],
-                "embedding": fields["embedding"],
-                "failure_count": fields["failure_count"],
-                "success_count": fields["success_count"],
-                "project_context": fields["project_context"],
-                "canon_rule_id": fields["canon_rule_id"],
-                "last_validated": fields["last_validated"]
-            }])
-            
-            logger.info(f"Promoted pattern {entry.id} to L1")
-            
-        except Exception as e:
-            logger.error(f"Failed to promote pattern to L1: {e}")
-    
-    def update_learning(self, entry_id: str, outcome: bool, error_trace: Optional[str] = None):
-        """
-        Update learning based on execution outcome.
-        
-        Args:
-            entry_id: ID of the pattern to update
-            outcome: True for success, False for failure
-            error_trace: Optional error trace for failures
-        """
-        try:
-            # Get entry from Redis first
-            key = f"canon:{entry_id}"
-            fields = self.redis_conn.client.hgetall(key)
-            
-            if not fields:
-                # Try Pinecone if not in Redis
-                self._update_pinecone_learning(entry_id, outcome, error_trace)
-                return
-            
-            # Update counts
-            if outcome:
-                fields["success_count"] = int(fields.get("success_count", 0)) + 1
-            else:
-                fields["failure_count"] = int(fields.get("failure_count", 0)) + 1
-            
-            fields["last_validated"] = datetime.utcnow().isoformat()
-            
-            # Update Redis
-            self.redis_conn.client.hset(key, mapping=fields)
-            
-            # Check for promotion to L2
-            if int(fields["success_count"]) >= self.success_threshold:
-                self._promote_to_l2(entry_id, fields)
-            
-            logger.info(f"Updated learning for {entry_id}: {'SUCCESS' if outcome else 'FAILURE'}")
-            
-        except Exception as e:
-            logger.error(f"Failed to update learning: {e}")
-    
-    def _update_pinecone_learning(self, entry_id: str, outcome: bool, error_trace: Optional[str]):
-        """Update learning in Pinecone when not in Redis."""
-        try:
-            index = self.pinecone.Index(self.pinecone_index)
-            
-            # Fetch from Pinecone
-            results = index.fetch(ids=[entry_id])
-            
-            if entry_id in results["vectors"]:
-                vector = results["vectors"][entry_id]
-                metadata = vector["metadata"]
-                
-                # Update counts
-                if outcome:
-                    metadata["success_count"] += 1
-                else:
-                    metadata["failure_count"] += 1
-                
-                metadata["last_validated"] = datetime.utcnow().isoformat()
-                
-                # Update Pinecone
-                index.upsert(vectors=[{
-                    "id": entry_id,
-                    "values": vector["values"],
-                    "metadata": metadata
-                }])
-                
-                logger.info(f"Updated Pinecone learning for {entry_id}")
-            
-        except Exception as e:
-            logger.error(f"Failed to update Pinecone learning: {e}")
-    
-    def _promote_to_l2(self, entry_id: str, fields: Dict[str, Any]):
-        """Promote a successful pattern to L2."""
-        try:
-            # Get full entry from Redis
-            entry = CanonEntry.from_redis_fields(fields)
-            
-            # Convert to Pinecone format
-            vector = entry.to_pinecone_vector()
-            
-            # Upsert to Pinecone
-            index = self.pinecone.Index(self.pinecone_index)
-            index.upsert(vectors=[vector])
-            
-            logger.info(f"Promoted pattern {entry_id} to L2")
-            
-        except Exception as e:
-            logger.error(f"Failed to promote to L2: {e}")
-    
-    def get_stats(self) -> Dict[str, Any]:
-        """Get Canon validator statistics."""
-        stats = {
-            "redis_stats": {},
-            "pinecone_stats": {},
-            "thresholds": {
-                "failure_threshold": self.failure_threshold,
-                "success_threshold": self.success_threshold
-            }
-        }
-        
-        # Redis stats
-        try:
-            redis_info = self.redis_conn.client.info()
-            stats["redis_stats"] = {
-                "connected_clients": redis_info.get("connected_clients", 0),
-                "used_memory": redis_info.get("used_memory_human", "0B"),
-                "keyspace_hits": redis_info.get("keyspace_hits", 0),
-                "keyspace_misses": redis_info.get("keyspace_misses", 0)
-            }
-        except Exception as e:
-            logger.error(f"Failed to get Redis stats: {e}")
-        
-        # Pinecone stats
-        try:
-            index = self.pinecone.Index(self.pinecone_index)
-            index_stats = index.describe_index_stats()
-            stats["pinecone_stats"] = {
-                "vector_count": index_stats.get("total_vector_count", 0),
-                "dimension": index_stats.get("dimension", 0),
-                "index_fullness": index_stats.get("index_fullness", 0)
-            }
-        except Exception as e:
-            logger.error(f"Failed to get Pinecone stats: {e}")
-        
-        return stats
