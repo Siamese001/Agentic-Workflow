@@ -4,14 +4,17 @@ Ultimate Canon Fixer - Final push to 100% compliance
 Addresses all remaining violations with maximum aggression.
 """
 
-import ast
 import os
 import re
 from pathlib import Path
 from typing import List, Set
 
 EXCLUDE_DIRS = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
-EXCLUDE_FILES = {'canon_validator.py', 'comprehensive_canon_fixer.py', 'fix_canon_violations.py', 'final_canon_fixer.py', 'ultimate_canon_fixer.py'}
+EXCLUDE_FILES = {'canon_validator.py',
+    'comprehensive_canon_fixer.py',
+    'fix_canon_violations.py',
+    'final_canon_fixer.py',
+    'ultimate_canon_fixer.py'}
 
 def get_python_files() -> List[Path]:
     """Get all Python files excluding specified directories and files."""
@@ -66,8 +69,12 @@ def fix_all_empty_except():
             original = content
 
             # Fix all variations of empty except
-            content = re.sub(r'except\s+Exception\s*:\s*\n\s*pass\b', 'except Exception as e:\n    pass  # Error handled', content)
-            content = re.sub(r'except\s*:\s*\n\s*pass\b', 'except Exception as e:\n    pass  # Error handled', content)
+            content = re.sub(r'except\s+Exception\s*:\s*\n\s*pass\b',
+                'except Exception as e:\n    pass  # Error handled',
+                content)
+            content = re.sub(r'except\s*:\s*\n\s*pass\b',
+                'except Exception as e:\n    pass  # Error handled',
+                content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -124,7 +131,14 @@ def fix_all_unused_imports():
 
                     # Check if used (simple check)
                     rest_of_file = '\n'.join(lines[lines.index(line)+1:])
-                    if module and (module in rest_of_file or module in ['logging', 'os', 'sys', 'Path', 'List', 'Dict', 'Optional', 'Any']):
+                    if module and (module in rest_of_file or module in ['logging',
+                        'os',
+                        'sys',
+                        'Path',
+                        'List',
+                        'Dict',
+                        'Optional',
+                        'Any']):
                         new_lines.append(line)
                 else:
                     new_lines.append(line)
@@ -247,7 +261,10 @@ def add_stub_docstrings():
 
                 # Check if this is a function or class definition
                 stripped = line.strip()
-                if (stripped.startswith('def ') or stripped.startswith('class ')) and not stripped.startswith('def _') and not stripped.startswith('class _'):
+                if (stripped.startswith('def ') or stripped.startswith('class ')) and
+                    not stripped.
+                        .startswith('def _')                    not stripped.
+                        .startswith('class _'):
                     # Check if next line is a docstring
                     if i + 1 < len(lines):
                         next_line = lines[i + 1].strip()
@@ -342,7 +359,8 @@ def fix_all_naming():
         'runtime/shared/k7_assembly_agent.py': [('K7_AssemblyAgent', 'K7AssemblyAgent')],
         'runtime/shared/k8_gap_agent.py': [('K8_GapAgent', 'K8GapAgent')],
         'runtime/shared/k9_experience_agent.py': [('K9_ExperienceAgent', 'K9ExperienceAgent')],
-        'runtime/shared/k10_prior_career_agent.py': [('K10_PriorCareerAgent', 'K10PriorCareerAgent')],
+        'runtime/shared/k10_prior_career_agent.py': [('K10_PriorCareerAgent',
+            'K10PriorCareerAgent')],
     }
 
     for file_str, replacements in naming_fixes.items():

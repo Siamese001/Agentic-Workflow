@@ -9,7 +9,6 @@ The original request_orchestrate_observability_planning_impl_impl.py contained 8
     ns which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .req_orch_v3 import *  # Star import removed

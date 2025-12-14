@@ -345,7 +345,8 @@ class IntegrityGateExecutor:
             'total_gates': len(self.results),
             'passed': sum(1 for r in self.results if r.passed),
             'failed': sum(1 for r in self.results if not r.passed),
-            'blocked': sum(1 for r in self.results if r.severity == ValidationSeverity.BLOCK and not r.passed),
+            'blocked': sum(1 for r in self.results if r.severity == ValidationSeverity.BLOCK and
+                not r.passed),
 
 
             'results': [

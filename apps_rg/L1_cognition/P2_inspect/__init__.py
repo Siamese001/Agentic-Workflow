@@ -5,7 +5,6 @@ logger = logging.getLogger(__name__)
 
 Generated: 2025-12-07T13:28:54.201446
 """
-import logging
 
 
 __all__: list[str] = [

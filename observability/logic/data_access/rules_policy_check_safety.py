@@ -8,7 +8,6 @@ modules to comply with cognitive density limits (max 5 top-level definitions).
 The original rules_policy_check_safety.py contained 6 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .rules_policy_check_safety_impl import *  # Star import removed

@@ -150,7 +150,11 @@ class InputGuardrail:
         # PII detection patterns
         self.pii_patterns = {
             'email': re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'),
-            'phone': re.compile(r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b'),
+            'phone': re.
+                .compile(r'\b(?:\+?1[-.
+                .\s]?)?\(?([0-9]{3})\)?[-.
+                .\s]?([0-9]{3})[-.
+                .\s]?([0-9]{4})\b'),
 
 
             'ssn': re.compile(r'\b\d{3}-\d{2}-\d{4}\b'),
@@ -470,7 +474,9 @@ class InputGuardrail:
             "injection_patterns_count": len(self.injection_patterns),
             "pii_types_count": len(self.pii_patterns),
             "malicious_keywords_count": len(self.malicious_keywords),
-            "unicode_homoglyphs_count": sum(len(homoglyphs) for homoglyphs in self.unicode_homoglyphs.values()),
+            "unicode_homoglyphs_count": sum(len(homoglyphs) for homoglyphs in self.
+                .unicode_homoglyphs.
+                .values()),
 
 
             "strict_mode": self.strict_mode,

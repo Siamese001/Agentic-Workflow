@@ -341,7 +341,10 @@ class ObservabilityOperationPerformer:
         def _trace_analysis_handler(inputs: Dict[str, Any], **kwargs: object) -> Dict[str, Any]:
             return {'insights': [{'type': 'slow_span', 'description': 'Database query took 500ms'},
     {'type': 'error_rate', 'description': '5% error rate detected'}], 'recommendations': ['Add datab
-        ase index', 'Implement retry logic'], 'metrics': {'spans_analyzed': 10, 'processing_time': 0.1}}
+        ase index',
+            'Implement retry logic'],
+            'metrics': {'spans_analyzed': 10,
+            'processing_time': 0.1}}
         return (trace_op, _trace_analysis_handler)
 
     def _create_metric_operation(self) -> tuple:

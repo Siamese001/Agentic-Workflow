@@ -10,9 +10,7 @@ Tests cover:
 - Performance under concurrent load
 """
 
-import pytest
 import asyncio
-import json
 import sys
 import os
 from typing import Any, Dict, List, Optional
@@ -23,9 +21,13 @@ from dataclasses import dataclass
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # Import mcp_tools directly to avoid problematic __init__.py imports
-import importlib.util
-import logging
-spec = importlib.util.spec_from_file_location("mcp_tools", os.path.join(os.path.dirname(__file__), '..', '..', 'runtime', 'shared', 'mcp_tools.py'))
+spec = importlib.util.spec_from_file_location("mcp_tools",
+    os.path.join(os.path.dirname(__file__),
+    '..',
+    '..',
+    'runtime',
+    'shared',
+    'mcp_tools.py'))
 mcp_tools = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mcp_tools)
 
@@ -409,7 +411,8 @@ class TestAgentWorkflowOrchestration:
 
         # Step 3: Generate summary
         summary_result = summary_agent.mcp_server.execute_tool("generate_text", {
-            "prompt": f"Based on {len(search_data)} search results and analysis showing average of {analysis_data['mean']}",
+            "prompt": f"Based on {len(search_data)} search results and
+                analysis showing average of {analysis_data['mean']}",
             "max_length": 100
         })
 
@@ -418,8 +421,6 @@ class TestAgentWorkflowOrchestration:
 
     def test_parallel_workflow(self):
         """Test parallel execution across multiple agents."""
-        import time
-        import concurrent.futures
 
         # Create multiple agents
         agents = [
@@ -523,7 +524,6 @@ class TestAgentPerformance:
     def test_concurrent_agent_operations(self):
         """Test concurrent operations across multiple agents."""
         import threading
-        import time
 
         # Create multiple agents
         agents = [
@@ -568,7 +568,6 @@ class TestAgentPerformance:
     def test_memory_usage_with_many_agents(self):
         """Test memory usage with many registered agents."""
         import psutil
-        import os
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss

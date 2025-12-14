@@ -63,7 +63,11 @@ class PIIScrubber:
 
         self.pii_patterns = {
             PIIType.EMAIL: r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-            PIIType.PHONE: r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b',
+            PIIType.
+                .PHONE: r'\b(?:\+?1[-.
+                .\s]?)?\(?([0-9]{3})\)?[-.
+                .\s]?([0-9]{3})[-.
+                .\s]?([0-9]{4})\b',
 
 
             PIIType.SSN: r'\b\d{3}-\d{2}-\d{4}\b',

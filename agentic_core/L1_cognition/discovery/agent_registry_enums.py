@@ -2,8 +2,9 @@
 import logging
 
 
-
 logger = logging.getLogger(__name__)
+
+
 class AgentCapability(Enum):
     """Standard agent capabilities."""
     PLANNING = 'planning'
@@ -16,6 +17,7 @@ class AgentCapability(Enum):
     SUMMARIZATION = 'summarization'
     TRANSLATION = 'translation'
     ORCHESTRATION = 'orchestration'
+
 
 class AgentStatus(Enum):
     """Agent operational status."""

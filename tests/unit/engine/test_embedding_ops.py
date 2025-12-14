@@ -6,7 +6,6 @@ Tests embedding operations including similarity calculation, vector search, etc.
 """
 import pytest
 import math
-import logging
 
 class TestComputeEmbeddings:
     """Tests for embedding computation."""

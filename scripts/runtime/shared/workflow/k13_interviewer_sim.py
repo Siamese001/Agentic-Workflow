@@ -1,6 +1,5 @@
 """K.13 Interviewer Simulation Agent - Oppositional Preparation."""
 
-import logging
 from typing import Dict, Any, Optional
 from .base_agent import BaseExecutiveAgent
 from .schema_definitions import InterviewerProfile
@@ -15,7 +14,9 @@ class K13InterviewerSimulationAgent(BaseExecutiveAgent):
     their public digital footprint and background.
     """
 
-    def __init__(self, data_source_provider=None, prompt_provider: Optional[K13PromptProvider] = None):
+    def __init__(self,
+        data_source_provider=None,
+        prompt_provider: Optional[K13PromptProvider] = None):
         """Initialize K.13 agent.
 
         Args:
@@ -50,7 +51,9 @@ class K13InterviewerSimulationAgent(BaseExecutiveAgent):
         # Gather interviewer background
         interviewer_background = ""
         if self.data_sources:
-            interviewer_background = await self.data_sources.get_interviewer_profile(interviewer_linkedin)
+            interviewer_background = await self.
+                .data_sources.
+                .get_interviewer_profile(interviewer_linkedin)
 
         # Return mock response if instructor not available
         if not hasattr(self, 'openai_client') or not self.openai_client:
@@ -77,7 +80,8 @@ class K13InterviewerSimulationAgent(BaseExecutiveAgent):
                         "follow_up_likelihood": "High"
                     }
                 ],
-                conversation_starters=["Tell me about your background", "What brings you here today?"],
+                conversation_starters=["Tell me about your background",
+                    "What brings you here today?"],
                 decision_factors=["Technical depth", "Leadership experience", "Culture fit"],
                 red_flags=["Arrogance", "Blaming others", "No concrete examples"]
             )
@@ -95,7 +99,8 @@ class K13InterviewerSimulationAgent(BaseExecutiveAgent):
                 response_model=InterviewerProfile,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Interviewer Profile:\n\n{interviewer_background}\n\nCandidate Resume:\n\n{resume_text}"}
+                    {"role": "user",
+                        "content": f"Interviewer Profile:\n\n{interviewer_background}\n\nCandidate Resume:\n\n{resume_text}"}
                 ],
                 temperature=temperature
             )

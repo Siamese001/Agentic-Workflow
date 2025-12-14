@@ -6,7 +6,6 @@ across all agent domains: executive, resume generation, outreach, and utilities.
 
 import os
 import yaml
-import json
 import logging
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional, List, Union
@@ -106,12 +105,19 @@ class PromptVersionRegistry:
                     )
 
                     self.templates[domain.value][template.name] = template
-                    self.logger.debug(f"Loaded template: {domain_name}/{template.name} v{template.version}")
+                    self.
+                        .logger.
+                        .debug(f"Loaded template: {domain_name}/{template.
+                        .name} v{template.
+                        .version}")
 
                 except Exception as e:
                     self.logger.error(f"Failed to load {yaml_file}: {e}")
 
-    def get_template(self, domain: AgentDomain, name: str, version: Optional[str] = None) -> Optional[PromptTemplate]:
+    def get_template(self,
+        domain: AgentDomain,
+        name: str,
+        version: Optional[str] = None) -> Optional[PromptTemplate]:
         """Get a prompt template.
 
         Args:

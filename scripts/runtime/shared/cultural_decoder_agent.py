@@ -85,9 +85,14 @@ class CulturalDecoderAgent(SimpleAgentBase):
                            "Insist on the Highest Standards", "Think Big", "Bias for Action",
                            "Frugality", "Earn Trust", "Deliver Results"],
                 writing_style=WritingStyle.NARRATIVE,
-                buzzwords=["Bar Raiser", "6-Pager", "Two-Pizza Team", "Single Threaded Owner", "Disagree and Commit"],
+                buzzwords=["Bar Raiser",
+                    "6-Pager",
+                    "Two-Pizza Team",
+                    "Single Threaded Owner",
+                    "Disagree and Commit"],
                 value_phrases={
-                    "Customer Obsession": ["customer-obsessed", "working backwards from the customer"],
+                    "Customer Obsession": ["customer-obsessed",
+                        "working backwards from the customer"],
                     "Ownership": ["took ownership", "end-to-end ownership", "driver"],
                     "Deliver Results": ["delivered results", "measured impact", "metrics-driven"],
                     "Bias for Action": ["bias for action", "calculated risks", "moved quickly"]
@@ -103,7 +108,9 @@ class CulturalDecoderAgent(SimpleAgentBase):
                 buzzwords=["20% Time", "TGIF", "OKR", "Design Doc", "Launch", "Scale", "Moonshot"],
                 value_phrases={
                     "Focus on the user": ["user-centric", "user-focused", "user experience first"],
-                    "Technical excellence": ["technically rigorous", "elegant solutions", "robust architecture"],
+                    "Technical excellence": ["technically rigorous",
+                        "elegant solutions",
+                        "robust architecture"],
                     "Scale": ["at scale", "global scale", "billions of users"],
                     "Innovation": ["breakthrough", "novel approach", "cutting-edge"]
                 },
@@ -118,8 +125,12 @@ class CulturalDecoderAgent(SimpleAgentBase):
                 buzzwords=["Move Fast", "Hackathon", "Zuck", "Meta", "Horizon", "Quest"],
                 value_phrases={
                     "Move Fast": ["moved fast", "rapid iteration", "ship early"],
-                    "Build Awesome Things": ["built impactful products", "game-changing", "revolutionary"],
-                    "Focus on Impact": ["measurable impact", "billion-user impact", "moved the needle"],
+                    "Build Awesome Things": ["built impactful products",
+                        "game-changing",
+                        "revolutionary"],
+                    "Focus on Impact": ["measurable impact",
+                        "billion-user impact",
+                        "moved the needle"],
                     "Bold Action": ["bold bets", "audacious goals", "challenged the status quo"]
                 },
                 forbidden_words=["enterprise", "corporate", "bureaucracy"]
@@ -130,12 +141,21 @@ class CulturalDecoderAgent(SimpleAgentBase):
                 core_values=["Judgment", "Communication", "Curiosity", "Courage", "Passion",
                            "Selflessness", "Innovation", "Inclusion", "Integrity", "Impact"],
                 writing_style=WritingStyle.STORYTELLING,
-                buzzwords=["Context not Control", "High Performance", "No Rules Rules", "Keeper Test",
+                buzzwords=["Context not Control",
+                    "High Performance",
+                    "No Rules Rules",
+                    "Keeper Test",
                           "Radical Candor", "Freedom and Responsibility"],
                 value_phrases={
-                    "Context not Control": ["provided context", "empowered teams", "delegated effectively"],
-                    "High Performance": ["high-performing team", "stunning colleagues", "top talent"],
-                    "Freedom and Responsibility": ["took ownership", "acted with freedom", "responsible freedom"],
+                    "Context not Control": ["provided context",
+                        "empowered teams",
+                        "delegated effectively"],
+                    "High Performance": ["high-performing team",
+                        "stunning colleagues",
+                        "top talent"],
+                    "Freedom and Responsibility": ["took ownership",
+                        "acted with freedom",
+                        "responsible freedom"],
                     "Judgment": ["sound judgment", "good instincts", "wise decisions"]
                 },
                 forbidden_words=["process", "procedure", "protocol", "approval chain"]
@@ -143,15 +163,30 @@ class CulturalDecoderAgent(SimpleAgentBase):
 
             "Stripe": CompanyDNA(
                 company_name="Stripe",
-                core_values=["Users First", "Rigorous Thinking", "Optimism", "Trust", "Macro-optimism",
+                core_values=["Users First",
+                    "Rigorous Thinking",
+                    "Optimism",
+                    "Trust",
+                    "Macro-optimism",
                            "Micro-pessimism", "Move with Urgency"],
                 writing_style=WritingStyle.TECHNICAL,
-                buzzwords=["API", "Infrastructure", "Payments", "Developers", "Elegance", "Simplicity"],
+                buzzwords=["API",
+                    "Infrastructure",
+                    "Payments",
+                    "Developers",
+                    "Elegance",
+                    "Simplicity"],
                 value_phrases={
-                    "Users First": ["developer-first", "user-obsessed", "solved real user problems"],
-                    "Rigorous Thinking": ["thoughtful approach", "deep analysis", "first principles"],
+                    "Users First": ["developer-first",
+                        "user-obsessed",
+                        "solved real user problems"],
+                    "Rigorous Thinking": ["thoughtful approach",
+                        "deep analysis",
+                        "first principles"],
                     "Elegance": ["elegant solution", "beautiful API", "thoughtful design"],
-                    "Move with Urgency": ["moved with urgency", "rapid execution", "focused delivery"]
+                    "Move with Urgency": ["moved with urgency",
+                        "rapid execution",
+                        "focused delivery"]
                 },
                 forbidden_words=["enterprise software", "B2B", "sales-driven"]
             )
@@ -165,7 +200,9 @@ class CulturalDecoderAgent(SimpleAgentBase):
             buzzwords=["Agile", "Scrum", "Sprint", "MVP", "Iterate", "Pivot"],
             value_phrases={
                 "Collaboration": ["cross-functional", "team player", "collaborative approach"],
-                "Innovation": ["innovative solutions", "creative problem-solving", "breakthrough thinking"],
+                "Innovation": ["innovative solutions",
+                    "creative problem-solving",
+                    "breakthrough thinking"],
                 "Excellence": ["high-quality", "best practices", "continuous improvement"],
                 "Agility": ["agile mindset", "quick adaptation", "flexible approach"]
             },
@@ -225,7 +262,6 @@ class CulturalDecoderAgent(SimpleAgentBase):
 
         try:
             response = await self._call_llm(prompt, temperature=0.1)
-            import json
             extracted = json.loads(response.content.strip())
 
             return CompanyDNA(
@@ -260,7 +296,9 @@ class CulturalDecoderAgent(SimpleAgentBase):
         buzzwords_str = ", ".join(company_dna.buzzwords[:5])
 
         prompt = f"""
-        You are an expert career coach helping a candidate align their narrative with {company_dna.company_name}'s culture.
+        You are an expert career coach helping a candidate align their narrative with {company_dna.
+            .company_name}'s culture.
+            .
 
         REWRITE RULES:
         1. Be SUBTLE and AUTHENTIC - do not caricature or stuff keywords unnaturally
@@ -273,7 +311,11 @@ class CulturalDecoderAgent(SimpleAgentBase):
         "{original_text}"
 
         Provide:
-        1. Rewritten text that sounds like it belongs to a high-performing leader at {company_dna.company_name}
+        1.
+            .
+                . Rewritten text that sounds like it belongs to a high-performing leader at {company_dna.
+                .
+            .company_name}
         2. Brief rationale for key changes
 
         Format as JSON:
@@ -336,7 +378,8 @@ class CulturalDecoderAgent(SimpleAgentBase):
         # Check forbidden words
         forbidden_matches = [fw for fw in dna.forbidden_words if fw.lower() in text.lower()]
         if forbidden_matches:
-            misalignment_indicators.append(f"Uses discouraged words: {', '.join(forbidden_matches)}")
+            misalignment_indicators.append(f"Uses discouraged words: {',
+                '.join(forbidden_matches)}")
 
         # Check value alignment
         value_mentions = []
@@ -468,4 +511,6 @@ class CulturalDecoderAgent(SimpleAgentBase):
             def __init__(self, content: str):
                 self.content = content
 
-            return LLMResponseImpl('{"rewritten_text": "sample", "rationale": "sample", "key_changes": []}')
+            return LLMResponseImpl('{"rewritten_text": "sample",
+                "rationale": "sample",
+                "key_changes": []}')

@@ -8,7 +8,6 @@ modules to comply with cognitive density limits (max 5 top-level definitions).
 The original tool_invoke_observability_tool.py contained 9 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .tool_invoke_observability_tool_impl import *  # Star import removed

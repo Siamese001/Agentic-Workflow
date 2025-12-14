@@ -9,7 +9,6 @@ The original request_coordinate_observability_queries_impl_impl.py contained 8 t
     which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .req_coord_v3 import *  # Star import removed

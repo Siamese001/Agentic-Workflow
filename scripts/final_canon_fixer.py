@@ -15,7 +15,10 @@ def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
     if exclude_dirs is None:
         exclude_dirs = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
 
-    exclude_files = {'canon_validator.py', 'comprehensive_canon_fixer.py', 'fix_canon_violations.py', 'final_canon_fixer.py'}
+    exclude_files = {'canon_validator.py',
+        'comprehensive_canon_fixer.py',
+        'fix_canon_violations.py',
+        'final_canon_fixer.py'}
 
     python_files = []
     for root, dirs, files in os.walk('.'):
@@ -384,9 +387,15 @@ def fix_mutable_defaults():
             original = content
 
             # Replace [] with None
-            content = re.sub(r'def\s+\w+\([^)]*=\s*\[\]', lambda m: m.group(0).replace('=[]', '=None'), content)
+            content = re.sub(r'def\s+\w+\([^)]*=\s*\[\]',
+                lambda m: m.group(0).replace('=[]',
+                '=None'),
+                content)
             # Replace {} with None
-            content = re.sub(r'def\s+\w+\([^)]*=\s*\{\}', lambda m: m.group(0).replace('={}', '=None'), content)
+            content = re.sub(r'def\s+\w+\([^)]*=\s*\{\}',
+                lambda m: m.group(0).replace('={}',
+                '=None'),
+                content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -406,7 +415,8 @@ def fix_threading_imports():
             content = file_path.read_text(encoding='utf-8')
             if 'import threading' in content or 'from threading' in content:
                 lines = content.split('\n')
-                new_lines = [line for line in lines if 'threading' not in line or line.strip().startswith('#')]
+                new_lines = [line for line in lines if 'threading' not in line or
+                    line.strip().startswith('#')]
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:

@@ -1,4 +1,3 @@
-import logging
 
 """AIS repair / mitigation policies.
 

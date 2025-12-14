@@ -140,10 +140,15 @@ class SchemaLoadPlanner:
         transforms = []
         raw_transforms = request.get('transforms', [])
         type_mapping = {'json': SchemaType.JSON, 'xml': SchemaType.XML, 'yaml': SchemaType.YAML, 'pr
-    otobuf': SchemaType.PROTOBUF, 'avro': SchemaType.AVRO, 'openapi': SchemaType.OPENAPI, 'graphql': SchemaType.GRAPHQL}
+    otobuf': SchemaType.PROTOBUF,
+        'avro': SchemaType.AVRO,
+        'openapi': SchemaType.OPENAPI,
+        'graphql': SchemaType.GRAPHQL}
         for raw_transform in raw_transforms:
             if isinstance(raw_transform, dict):
-                transform = SchemaTransform(source_type=type_mapping.get(raw_transform.get('source_type',
+                transform = SchemaTransform(source_type=type_mapping.
+                    .get(raw_transform.
+                    .get('source_type',
 
                     'json'),
                     SchemaType.JSON),
@@ -188,7 +193,11 @@ class SchemaLoadPlanner:
         schema_time = len(plan.schemas) * 0.5
         validation_multiplier = {ValidationMode.STRICT: 2.0, ValidationMode.LENIENT: 1.0, Validation
     Mode.SYNTAX_ONLY: 0.5, ValidationMode.DISABLED: 0.1}
-        validation_time = len(plan.validation_rules) * 0.2 * validation_multiplier.get(plan.validation_mode,
+        validation_time = len(plan.
+            .validation_rules) * 0.
+            .2 * validation_multiplier.
+            .get(plan.
+            .validation_mode,
 
             1.0)
         transform_time = len(plan.transforms) * 1.0
@@ -248,7 +257,9 @@ def plan_schema_load(plan_name: str,
         Dict: Planning result with load plan and resource requirements
     """
     request = {'plan_name': plan_name, 'schemas': schemas, 'validation_mode': validation_mode, 'vali
-    dation_rules': validation_rules or [], 'transforms': transforms or [], 'resolve_dependencies': resolve_dependencies}
+    dation_rules': validation_rules or [],
+        'transforms': transforms or [],
+        'resolve_dependencies': resolve_dependencies}
     planner_config = SchemaLoadConfig(**config) if config else None
     planner = SchemaLoadPlanner(planner_config)
     result = planner.plan_load(request)
@@ -256,4 +267,25 @@ def plan_schema_load(plan_name: str,
     plan.name, 'schemas': [{'name': s.name, 'type': s.type.value, 'version': s.version, 'file_path':
         s.file_path, 'url': s.url, 'dependencies': s.dependencies, 'scope': s.scope.value} for s in
             result.load_plan.schemas], 'validation_mode': result.load_plan.validation_mode.value, 'v
-                alidation_rules': [{'name': r.name, 'type': r.type, 'parameters': r.parameters, 'severity': r.severity, 'message': r.message} for r in result.load_plan.validation_rules], 'transforms': [{'source_type': t.source_type.value, 'target_type': t.target_type.value, 'transform_function': t.transform_function, 'parameters': t.parameters} for t in result.load_plan.transforms], 'resolve_dependencies': result.load_plan.resolve_dependencies, 'enable_caching': result.load_plan.enable_caching, 'cache_ttl': result.load_plan.cache_ttl, 'metadata': result.load_plan.metadata} if result.load_plan else None, 'schema_count': result.schema_count, 'dependency_count': result.dependency_count, 'validation_rule_count': result.validation_rule_count, 'transform_count': result.transform_count, 'load_time_estimate': result.load_time_estimate, 'memory_estimate': result.memory_estimate, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
+                alidation_rules': [{'name': r.name,
+                    'type': r.type,
+                    'parameters': r.parameters,
+                    'severity': r.severity,
+                    'message': r.message} for r in result.load_plan.validation_rules],
+                    'transforms': [{'source_type': t.source_type.value,
+                    'target_type': t.target_type.value,
+                    'transform_function': t.transform_function,
+                    'parameters': t.parameters} for t in result.load_plan.transforms],
+                    'resolve_dependencies': result.load_plan.resolve_dependencies,
+                    'enable_caching': result.load_plan.enable_caching,
+                    'cache_ttl': result.load_plan.cache_ttl,
+                    'metadata': result.load_plan.metadata} if result.load_plan else None,
+                    'schema_count': result.schema_count,
+                    'dependency_count': result.dependency_count,
+                    'validation_rule_count': result.validation_rule_count,
+                    'transform_count': result.transform_count,
+                    'load_time_estimate': result.load_time_estimate,
+                    'memory_estimate': result.memory_estimate,
+                    'warnings': result.warnings,
+                    'errors': result.errors,
+                    'metadata': result.metadata}

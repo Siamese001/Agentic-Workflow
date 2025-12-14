@@ -482,7 +482,8 @@ class UnifiedFeedbackSystem:
                 plan["cross_engine_opportunities"].append({
                     "category": category,
                     "source_engines": list(set(f.source_engine.value for f in feedback_list)),
-                    "transfer_score": sum(f.transfer_score for f in feedback_list) / len(feedback_list),
+                    "transfer_score": sum(f.transfer_score for f in feedback_list) /
+                        len(feedback_list),
 
 
                     "suggested_actions": list(set(action for f in feedback_list for action in f.sugg

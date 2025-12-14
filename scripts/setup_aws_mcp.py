@@ -6,7 +6,6 @@ Setup script for AWS MCP server configuration.
 This script helps configure AWS credentials and MCP server settings.
 """
 
-import os
 import json
 import sys
 from pathlib import Path
@@ -133,7 +132,6 @@ def main():
 
     # Check if required packages are installed
     try:
-        import mcp_server_aws
         logger.info("✓ mcp-server-aws is installed")
     except ImportError:
         logger.info("✗ mcp-server-aws not found. Installing...")

@@ -158,7 +158,24 @@ class DeepResearchOutput:
     _layer.core_thesis, 'financial_proof_points': [{'metric_name': m.metric_name, 'value': m.value,
         'period': m.period, 'yoy_change': m.yoy_change, 'source_citation': m.source_citation} for m
             in self.strategic_layer.financial_proof_points], 'strategic_initiatives': self.strategic
-                _layer.strategic_initiatives}, 'technical_layer': {'key_technologies': [{'technology_name': t.technology_name, 'implementation_details': t.implementation_details, 'performance_gain': t.performance_gain, 'source_citation': t.source_citation} for t in self.technical_layer.key_technologies], 'infrastructure_stack': self.technical_layer.infrastructure_stack, 'implementation_summary': self.technical_layer.implementation_summary}, 'leadership_layer': {'key_executives': [{'name': e.name, 'title': e.title, 'ownership': e.ownership, 'strategic_focus': e.strategic_focus, 'linkedin_url': e.linkedin_url} for e in self.leadership_layer.key_executives], 'organizational_structure': self.leadership_layer.organizational_structure}, 'citation_map': self.citation_map.citations, 'research_timestamp': self.research_timestamp}
+                _layer.strategic_initiatives},
+                    'technical_layer': {'key_technologies': [{'technology_name': t.technology_name,
+                    'implementation_details': t.implementation_details,
+                    'performance_gain': t.performance_gain,
+                    'source_citation': t.
+                        .source_citation} for t in self.
+                        .technical_layer.
+                        .key_technologies],
+                    'infrastructure_stack': self.technical_layer.infrastructure_stack,
+                    'implementation_summary': self.technical_layer.implementation_summary},
+                    'leadership_layer': {'key_executives': [{'name': e.name,
+                    'title': e.title,
+                    'ownership': e.ownership,
+                    'strategic_focus': e.strategic_focus,
+                    'linkedin_url': e.linkedin_url} for e in self.leadership_layer.key_executives],
+                    'organizational_structure': self.leadership_layer.organizational_structure},
+                    'citation_map': self.citation_map.citations,
+                    'research_timestamp': self.research_timestamp}
 
         """TODO: Add docstring."""
 

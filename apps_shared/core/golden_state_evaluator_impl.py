@@ -177,7 +177,9 @@ class GoldenStateEvaluator:
             'name': r.case_name,
             'errors': r.errors} for r in reports.values() if not r.passed]
         return {'total_cases': total, 'passed': passed, 'failed': failed, 'pass_rate': pass_rate, 'a
-    vg_judge_score': avg_judge_score, 'avg_action_score': avg_action_score, 'failing_cases': failing_cases}
+    vg_judge_score': avg_judge_score,
+        'avg_action_score': avg_action_score,
+        'failing_cases': failing_cases}
 
 def load_golden_cases(dataset_path: Optional[Path]=None) -> List[GoldenCase]:
     """Load golden test cases.

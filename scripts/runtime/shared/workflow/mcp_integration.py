@@ -7,7 +7,6 @@ agent autonomy with external tools and capabilities.
 import os
 import json
 import logging
-import asyncio
 from typing import Dict, Any, Optional, List, Callable
 from pathlib import Path
 from dataclasses import dataclass, field
@@ -71,7 +70,11 @@ class MCPIntegrationManager:
             config_path: Path to MCP configuration file
         """
         if config_path is None:
-            config_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "mcp_config.json")
+            config_path = os.path.join(os.path.dirname(__file__),
+                "..",
+                "..",
+                "..",
+                "mcp_config.json")
 
         self.config_path = Path(config_path)
         self.servers: Dict[str, MCPServer] = {}
@@ -162,7 +165,10 @@ class MCPEnhancedAgent:
             "solution": "Structured reasoning output"
         }
 
-    async def search_reddit_insights(self, query: str, subreddit: Optional[str] = None) -> List[Dict[str, Any]]:
+    async def search_reddit_insights(self,
+        query: str,
+        subreddit: Optional[str] = None) -> List[Dict[str,
+        Any]]:
         """Search Reddit for market insights.
 
         Args:
@@ -254,7 +260,10 @@ class MCPEnhancedAgent:
             "pages": []
         }
 
-    async def semantic_context_search(self, query: str, context_type: str = "general") -> List[Dict[str, Any]]:
+    async def semantic_context_search(self,
+        query: str,
+        context_type: str = "general") -> List[Dict[str,
+        Any]]:
         """Search semantic context using Context7.
 
         Args:

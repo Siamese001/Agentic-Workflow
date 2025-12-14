@@ -166,7 +166,8 @@ class QueryDecomposer(SimpleAgentBase):
         # Heuristic check: if gate says simple, skip LLM
         if self.gate:
             decision = self.gate.should_retrieve(query)
-            if decision.query_type in ["CONVERSATIONAL", "FACTUAL"] and not decision.should_retrieve:
+            if decision.query_type in ["CONVERSATIONAL",
+                "FACTUAL"] and not decision.should_retrieve:
                 logger.info(f"Simple query detected, skipping decomposition: {query}")
                 return DecomposedQuery(
                     original_query=query,
@@ -225,7 +226,8 @@ Output: {{
             # Validate and limit sub-queries
             sub_queries = result.get("sub_queries", [query])
             if len(sub_queries) > self.max_sub_queries:
-                logger.warning(f"LLM generated too many sub-queries ({len(sub_queries)}), truncating")
+                logger.warning(f"LLM generated too many sub-queries ({len(sub_queries)}),
+                    truncating")
                 sub_queries = sub_queries[:self.max_sub_queries]
 
             # Ensure at least one sub-query

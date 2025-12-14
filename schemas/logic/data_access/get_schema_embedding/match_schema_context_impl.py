@@ -334,4 +334,7 @@ def match_schema_context(query_context: Dict[str,
     ntext.domain, 'purpose': result.query_context.purpose, 'tags': result.query_context.tags, 'usage
         _patterns': result.query_context.usage_patterns}, 'matches': [{'schema_id': m.schema_id, 'ma
             tch_score': m.match_score, 'match_details': m.match_details, 'explanation': m.explanatio
-                n, 'compatibility_score': m.compatibility_score} for m in result.matches], 'total_candidates': result.total_candidates, 'metadata': result.metadata}
+                n,
+                    'compatibility_score': m.compatibility_score} for m in result.matches],
+                    'total_candidates': result.total_candidates,
+                    'metadata': result.metadata}

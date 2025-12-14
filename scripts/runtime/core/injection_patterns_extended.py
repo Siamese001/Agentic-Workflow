@@ -24,7 +24,9 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             type=InjectionType.RESUME_ENHANCEMENT,
             description="Creates a compelling professional brand statement",
             template="Transform this basic info into a powerful professional brand statement: '{info
-    }'. Highlight unique value proposition, key strengths, and career trajectory. Make it 3-4 lines maximum.",
+    }'. Highlight unique value proposition,
+        key strengths,
+        and career trajectory. Make it 3-4 lines maximum.",
             variables=["info"],
             scope=InjectionScope(
                 hop_types=["resume_writer", "summary_generator"],
@@ -88,7 +90,10 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             type=InjectionType.CONTENT_EXPANSION,
             description="Enhances education section with relevant details",
             template="Enhance this education entry: '{education}'. Add relevant coursework, achievem
-    ents, GPA if impressive, honors, and extracurricular leadership. Focus on what's relevant to {target_role}.",
+    ents,
+        GPA if impressive,
+        honors,
+        and extracurricular leadership. Focus on what's relevant to {target_role}.",
             variables=["education", "target_role"],
             scope=InjectionScope(
                 hop_types=["resume_writer", "education_formatter"],
@@ -124,7 +129,8 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             type=InjectionType.MESSAGE_PERSONALIZATION,
             description="Creates personalized LinkedIn connection requests",
             template="Write a LinkedIn connection request to {name} at {company}. Reference their {r
-    ecent_activity} and shared {interest}. Keep it under 300 characters, professional but warm. No sales pitch.",
+    ecent_activity} and shared {interest}. Keep it under 300 characters,
+        professional but warm. No sales pitch.",
             variables=["name", "company", "recent_activity", "interest"],
             scope=InjectionScope(
                 hop_types=["message_generator", "linkedin_writer"],
@@ -140,7 +146,9 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             type=InjectionType.MESSAGE_PERSONALIZATION,
             description="Creates compelling cold email openers",
             template="Craft a cold email opener to {name} that references {company_challenge} and yo
-    ur {solution_value}. Make it intriguing, personalized, and focused on their benefit. Avoid generic praise.",
+    ur {solution_value}. Make it intriguing,
+        personalized,
+        and focused on their benefit. Avoid generic praise.",
             variables=["name", "company_challenge", "solution_value"],
             scope=InjectionScope(
                 hop_types=["message_generator", "email_writer"],
@@ -156,7 +164,9 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             type=InjectionType.MESSAGE_PERSONALIZATION,
             description="Creates follow-up messages with additional value",
             template="Write a follow-up to {name} after {days_since_contact} days. Reference previou
-    s {topic} and add new {value_add}. Keep it brief, helpful, and forward-looking. Include clear next step.",
+    s {topic} and add new {value_add}. Keep it brief,
+        helpful,
+        and forward-looking. Include clear next step.",
             variables=["name", "days_since_contact", "topic", "value_add"],
             scope=InjectionScope(
                 hop_types=["message_generator", "followup_writer"],
@@ -227,7 +237,9 @@ def get_quality_boost_injections() -> List[InjectionPattern]:
             type=InjectionType.QUALITY_BOOST,
             description="Makes content more concise and impactful",
             template="Make this content more concise and impactful: '{content}'. Remove fluff, use s
-    trong verbs, eliminate redundant phrases, and ensure every word adds value. Target {word_count} words maximum.",
+    trong verbs,
+        eliminate redundant phrases,
+        and ensure every word adds value. Target {word_count} words maximum.",
             variables=["content", "word_count"],
             scope=InjectionScope(
                 hop_types=["content_generator", "editor"],
@@ -257,7 +269,9 @@ def get_quality_boost_injections() -> List[InjectionPattern]:
             type=InjectionType.QUALITY_BOOST,
             description="Makes content more engaging and persuasive",
             template="Make this content more engaging: '{content}'. Add storytelling elements, use e
-    motional language, include compelling examples, and end with clear call to action for {audience}.",
+    motional language,
+        include compelling examples,
+        and end with clear call to action for {audience}.",
             variables=["content", "audience"],
             scope=InjectionScope(
                 hop_types=["content_generator", "copywriter"],

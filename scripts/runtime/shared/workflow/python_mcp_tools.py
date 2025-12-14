@@ -5,12 +5,10 @@ Node.js MCP servers. These tools integrate seamlessly with the agentic framework
 """
 
 import os
-import asyncio
 import logging
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 import requests
-from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 import praw
 
@@ -31,7 +29,10 @@ class PlaywrightMCPTool:
         """Initialize Playwright tool."""
         self.logger = logging.getLogger("PlaywrightMCPTool")
 
-    async def scrape_url(self, url: str, selectors: Optional[Dict[str, str]] = None) -> MCPToolResult:
+    async def scrape_url(self,
+        url: str,
+        selectors: Optional[Dict[str,
+        str]] = None) -> MCPToolResult:
         """Scrape a URL and extract data using CSS selectors.
 
         Args:
@@ -139,7 +140,10 @@ class RedditMCPTool:
             self.enabled = False
             self.logger.warning("Reddit credentials not set - tool disabled")
 
-    def search_posts(self, query: str, subreddit: Optional[str] = None, limit: int = 10) -> MCPToolResult:
+    def search_posts(self,
+        query: str,
+        subreddit: Optional[str] = None,
+        limit: int = 10) -> MCPToolResult:
         """Search Reddit posts.
 
         Args:
@@ -302,11 +306,17 @@ class PythonMCPToolkit:
         self.dockerhub = DockerHubMCPTool()
         self.logger = logging.getLogger("PythonMCPToolkit")
 
-    async def scrape_web(self, url: str, selectors: Optional[Dict[str, str]] = None) -> MCPToolResult:
+    async def scrape_web(self,
+        url: str,
+        selectors: Optional[Dict[str,
+        str]] = None) -> MCPToolResult:
         """Scrape web content using Playwright."""
         return await self.playwright.scrape_url(url, selectors)
 
-    def search_reddit(self, query: str, subreddit: Optional[str] = None, limit: int = 10) -> MCPToolResult:
+    def search_reddit(self,
+        query: str,
+        subreddit: Optional[str] = None,
+        limit: int = 10) -> MCPToolResult:
         """Search Reddit posts."""
         return self.reddit.search_posts(query, subreddit, limit)
 

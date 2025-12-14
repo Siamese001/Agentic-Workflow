@@ -494,7 +494,8 @@ class AgentExecutor:
             # Try to get schema from response_model if it has one
             schema = getattr(response_model, 'json_schema', None)
             if not schema:
-                raise ValueError("response_model must be a Pydantic BaseModel or have json_schema method")
+                raise ValueError("response_model must be a Pydantic BaseModel or
+                    have json_schema method")
 
         # Prepare input for interactions.create
         input_messages = []

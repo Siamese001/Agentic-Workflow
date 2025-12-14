@@ -339,7 +339,8 @@ class GovernanceShieldAgent:
             privacy = "End-to-end encryption with data minimization and anonymization"
 
         return SafetyProtocol(
-            validation_strategy="Automated eval pipeline (Ragas) + human expert review before production",
+            validation_strategy="Automated eval pipeline (Ragas) +
+                human expert review before production",
 
 
             data_privacy_approach=privacy,

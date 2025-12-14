@@ -425,10 +425,12 @@ class EvidenceRanker:
                 "total": len(ranked_evidence),
                 "recent_count": recent_count,
                 "corroborated_count": corroborated_count,
-                "avg_freshness": sum(e.freshness_score for e in ranked_evidence) / len(ranked_evidence),
+                "avg_freshness": sum(e.freshness_score for e in ranked_evidence) /
+                    len(ranked_evidence),
 
 
-                "avg_corroboration": sum(e.corroboration_count for e in ranked_evidence) / len(ranked_evidence),
+                "avg_corroboration": sum(e.corroboration_count for e in ranked_evidence) /
+                    len(ranked_evidence),
 
 
                 "year_range": (min(years_detected),

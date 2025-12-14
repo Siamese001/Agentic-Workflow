@@ -7,15 +7,15 @@ SPIFFE-based cryptographic identity for secure multi-agent collaboration.
 """
 import logging
 
-    SPIFFEManager,
-    AgentIdentity,
-    IdentityVerificationResult,
-    create_spiffe_manager,
+SPIFFEManager,
+AgentIdentity,
+IdentityVerificationResult,
+create_spiffe_manager,
 )
 
-__all__ = [
-    "SPIFFEManager",
-    "AgentIdentity",
-    "IdentityVerificationResult",
-    "create_spiffe_manager",
+    __all__ = [
+"SPIFFEManager",
+"AgentIdentity",
+"IdentityVerificationResult",
+"create_spiffe_manager",
 ]

@@ -417,4 +417,7 @@ def convert_to_internal_schema(external_data: Dict[str,
     ma.version, 'namespace': result.internal_schema.namespace}, 'converted_data': result.converted_d
         ata, 'field_mappings': [{'external_path': m.external_path, 'internal_path': m.internal_path,
             'type_conversion': m.type_conversion, 'required': m.required} for m in result.field_mapp
-                ings], 'errors': result.errors, 'warnings': result.warnings, 'metadata': result.metadata}
+                ings],
+                    'errors': result.errors,
+                    'warnings': result.warnings,
+                    'metadata': result.metadata}

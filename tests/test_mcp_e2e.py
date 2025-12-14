@@ -11,7 +11,6 @@ Tests all MCP servers with the executive orchestrator:
 """
 
 import asyncio
-import json
 import os
 import sys
 from datetime import datetime
@@ -20,7 +19,6 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(__file__))
 
 from mcp_adapter import UniversalMCPClient
-import logging
 
 async def test_filesystem_mcp(client):
     """Test filesystem MCP read/write operations."""

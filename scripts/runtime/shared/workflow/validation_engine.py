@@ -43,7 +43,9 @@ class AutoRemediator:
 
             # If we are out of retries, fail
             if attempt == max_retries:
-                return ValidationResult(is_valid=False, errors=errors, fixed_content=current_content)
+                return ValidationResult(is_valid=False,
+                    errors=errors,
+                    fixed_content=current_content)
 
             # 2. Attempt Remediation
             logger.error(f"🔧 Auto-Remediator: Fixing {errors} (Attempt {attempt+1}/{max_retries})")
@@ -78,7 +80,12 @@ class AutoRemediator:
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": f"You are a text editor. Fix the text below. Requirement: {instruction}. Output ONLY the fixed text."},
+                {"role": "system",
+                    "content": f"You are a text editor.
+                        . Fix the text below.
+                        . Requirement: {instruction}.
+                        . Output ONLY the fixed text.
+                        ."},
                 {"role": "user", "content": content}
             ]
         )

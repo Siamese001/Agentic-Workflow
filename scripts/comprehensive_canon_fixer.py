@@ -15,7 +15,9 @@ def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
     if exclude_dirs is None:
         exclude_dirs = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
 
-    exclude_files = {'canon_validator.py', 'comprehensive_canon_fixer.py', 'fix_canon_violations.py'}
+    exclude_files = {'canon_validator.py',
+        'comprehensive_canon_fixer.py',
+        'fix_canon_violations.py'}
 
     python_files = []
     for root, dirs, files in os.walk('.'):

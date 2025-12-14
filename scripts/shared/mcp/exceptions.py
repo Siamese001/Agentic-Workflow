@@ -4,7 +4,6 @@
 logger = logging.getLogger(__name__)
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
-import logging
 
 class MCPError(Exception):
     """Base exception for MCP-related errors."""

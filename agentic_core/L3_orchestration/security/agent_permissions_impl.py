@@ -78,7 +78,10 @@ class AgentPermissionManager:
         if spiffe_id not in self._permissions:
             return False
         original_count = len(self._permissions[spiffe_id])
-        self._permissions[spiffe_id] = [p for p in self._permissions[spiffe_id] if not p.matches(scope,
+        self.
+            ._permissions[spiffe_id] = [p for p in self.
+            ._permissions[spiffe_id] if not p.
+            .matches(scope,
 
             action,
             resource)]
@@ -170,7 +173,10 @@ class AgentPermissionManager:
 
     def _load_default_permissions(self) -> None:
         """Load default permissions for each identity type."""
-        self._default_permissions[IdentityType.ORCHESTRATOR] = [Permission(scope=PermissionScope.TOOL_EXECUTION,
+        self.
+            ._default_permissions[IdentityType.
+            .ORCHESTRATOR] = [Permission(scope=PermissionScope.
+            .TOOL_EXECUTION,
 
             action=PermissionAction.ADMIN,
             resource='*'),
@@ -180,25 +186,37 @@ class AgentPermissionManager:
             Permission(scope=PermissionScope.SYSTEM_CONFIGURATION,
             action=PermissionAction.ADMIN,
             resource='*')]
-        self._default_permissions[IdentityType.COGNITIVE_AGENT] = [Permission(scope=PermissionScope.DATA_ACCESS,
+        self.
+            ._default_permissions[IdentityType.
+            .COGNITIVE_AGENT] = [Permission(scope=PermissionScope.
+            .DATA_ACCESS,
 
             action=PermissionAction.READ,
             resource='*'),
             Permission(scope=PermissionScope.AGENT_COMMUNICATION,
             action=PermissionAction.READ,
             resource='*')]
-        self._default_permissions[IdentityType.ACTION_AGENT] = [Permission(scope=PermissionScope.TOOL_EXECUTION,
+        self.
+            ._default_permissions[IdentityType.
+            .ACTION_AGENT] = [Permission(scope=PermissionScope.
+            .TOOL_EXECUTION,
 
             action=PermissionAction.EXECUTE,
             resource='*'),
             Permission(scope=PermissionScope.DATA_ACCESS,
             action=PermissionAction.READ,
             resource='*')]
-        self._default_permissions[IdentityType.TOOL_AGENT] = [Permission(scope=PermissionScope.TOOL_EXECUTION,
+        self.
+            ._default_permissions[IdentityType.
+            .TOOL_AGENT] = [Permission(scope=PermissionScope.
+            .TOOL_EXECUTION,
 
             action=PermissionAction.EXECUTE,
             resource='assigned_tools')]
-        self._default_permissions[IdentityType.HUMAN_OPERATOR] = [Permission(scope=PermissionScope.DATA_ACCESS,
+        self.
+            ._default_permissions[IdentityType.
+            .HUMAN_OPERATOR] = [Permission(scope=PermissionScope.
+            .DATA_ACCESS,
 
             action=PermissionAction.READ,
             resource='*')]

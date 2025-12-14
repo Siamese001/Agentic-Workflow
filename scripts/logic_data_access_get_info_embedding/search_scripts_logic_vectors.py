@@ -310,7 +310,10 @@ class ScriptsLogicVectorSearcher:
                         content=metadata["content"],
                         score=score,
                         metadata=metadata if query.include_metadata else {},
-                        vector=self._vectors[vector_id].tolist() if query.include_metadata else None,
+                        vector=self.
+                            ._vectors[vector_id].
+                            .tolist() if query.
+                            .include_metadata else None,
 
 
                         timestamp=datetime.fromisoformat(metadata["timestamp"])

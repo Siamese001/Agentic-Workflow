@@ -5,6 +5,8 @@ import logging
 
 
 logger = logging.getLogger(__name__)
+
+
 class IdentityType(Enum):
     """Types of agent identities."""
     ORCHESTRATOR = 'orchestrator'
@@ -13,11 +15,13 @@ class IdentityType(Enum):
     TOOL_AGENT = 'tool_agent'
     HUMAN_OPERATOR = 'human_operator'
 
+
 class TrustDomain(Enum):
     """Trust domains for identity verification."""
     LOCAL = 'local'
     CLUSTER = 'cluster'
     FEDERATED = 'federated'
+
 
 @dataclass
 class AgentIdentity:
@@ -58,8 +62,8 @@ class AgentIdentity:
             Dictionary representation
         """
         return {'spiffe_id': self.spiffe_id, 'agent_type': self.agent_type.value, 'trust_domain': se
-    lf.trust_domain.value, 'public_key': self.public_key, 'issued_at': self.issued_at, 'expires_at':
-        self.expires_at, 'capabilities': self.capabilities, 'metadata': self.metadata}
+                lf.trust_domain.value, 'public_key': self.public_key, 'issued_at': self.issued_at, 'expires_at':
+                self.expires_at, 'capabilities': self.capabilities, 'metadata': self.metadata}
 
     def get_namespace(self) -> str:
         """Extract namespace from SPIFFE ID.
@@ -83,6 +87,7 @@ class AgentIdentity:
             return parts[4]
         return 'unknown'
 
+
 @dataclass
 class IdentityVerificationResult:
     """Result of identity verification."""
@@ -98,6 +103,6 @@ class IdentityVerificationResult:
             Dictionary representation
         """
         return {'valid': self.valid,
-            'identity': self.identity.to_dict() if self.identity else None,
-            'reason': self.reason,
-            'verified_at': self.verified_at}
+                'identity': self.identity.to_dict() if self.identity else None,
+                'reason': self.reason,
+                'verified_at': self.verified_at}

@@ -6,6 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 # from .agent_registry_enums import *  # Star import removed
 
+
 @dataclass
 class MCPContract:
     """MCP contract definition for agent."""
@@ -18,6 +19,7 @@ class MCPContract:
         """Convert to dictionary."""
         return {'provider': self.provider, 'endpoints': self.endpoints, 'parameters': self.parameter
     s, 'version': self.version}
+
 
 @dataclass
 class ToolPermission:

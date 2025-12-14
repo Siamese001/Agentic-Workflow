@@ -8,7 +8,6 @@ repair actions (retry, downgrade, replan, escalate).
 """
 
 from typing import Dict, List
-import logging
 
 # from archives.legacy_root_folders.eval.health.failure_detector import FailureSignal  # DEPRECAT...
 

@@ -383,4 +383,7 @@ def retrieve_schema_similarity(source_schema: Dict[str,
     _level.value, 'field_matches': [{'field_name': m.field_name, 'source_type': m.source_type, 'targ
         et_type': m.target_type, 'type_match': m.type_match, 'semantic_similarity': m.semantic_simil
             arity, 'confidence': m.confidence} for m in result.field_matches], 'missing_fields': res
-                ult.missing_fields, 'extra_fields': result.extra_fields, 'type_conflicts': result.type_conflicts, 'metadata': result.metadata}
+                ult.missing_fields,
+                    'extra_fields': result.extra_fields,
+                    'type_conflicts': result.type_conflicts,
+                    'metadata': result.metadata}

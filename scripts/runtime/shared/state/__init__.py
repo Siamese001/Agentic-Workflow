@@ -7,7 +7,6 @@ two-phase commit to ensure zero data loss.
 
 Phase 3 - Atomic State Persistence
 """
-import logging
 
 
 __all__ = [
