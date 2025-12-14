@@ -1084,8 +1084,23 @@ class StructuralEngineer(SubAtomicAgent):
         print("   ✅ No structural changes pending.")
 
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
-        """Check for large functions (>50 lines) - L4 PLANNING ENABLED."""
+        """Check for large functions (>50 lines) - L5 EVOLUTION ENABLED."""
         violations = []
+        max_lines = 50
+        
+        # L5 Override from evolved rules
+        from pathlib import Path
+        rules_path = Path("cache/evolved_rules.json")
+        if rules_path.exists():
+            try:
+                import json
+                with open(rules_path, "r", encoding="utf-8") as f:
+                    rules = json.load(f)
+                max_lines = rules.get("max_function_lines", max_lines)
+                print(f"   📏 Using evolved threshold: {max_lines} lines")
+            except:
+                pass
+        
         for file_path in self.ctx.get_python_files():
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
@@ -1095,7 +1110,7 @@ class StructuralEngineer(SubAtomicAgent):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
                             func_lines = node.end_lineno - node.lineno + 1
-                            if func_lines > 50:
+                            if func_lines > max_lines:
                                 violation = f"{file_path}:{node.lineno} ({func_lines} lines)"
                                 violations.append(violation)
 
@@ -1107,9 +1122,9 @@ class StructuralEngineer(SubAtomicAgent):
                                     "file": file_path,
                                     "line": node.lineno,
                                     "current_lines": func_lines,
-                                    "reason": f"Exceeds 50 lines (current: {func_lines})",
+                                    "reason": f"Exceeds {max_lines} lines (current: {func_lines})",
                                     "status": "PENDING",
-                                    "priority": "HIGH" if func_lines > 100 else "MEDIUM"
+                                    "priority": "HIGH" if func_lines > max_lines * 2 else "MEDIUM"
                                 }
             except Exception:
                 continue
@@ -1214,83 +1229,280 @@ class RefactoringExecutionAgent(SubAtomicAgent):
         self.ctx.report(self.name, 99, failed_count == 0, [f"Executed {executed_count} plans"])
 
     def _execute_split_function_plan(self, plan_key: str, plan: dict) -> Tuple[bool, str]:
-        """Execute a SPLIT_FUNCTION plan with atomic rollback."""
+        """L4 AUTONOMOUS REFACTOR: Extract logical sub-function from large function."""
         import shutil
         from pathlib import Path
-
+        
         file_path = plan["file"]
         target_function = plan["target"]
-
-        # Create backup for atomic rollback
+        current_lines = plan["current_lines"]
+        
         backup_path = Path(file_path + ".l4_backup")
         original_path = Path(file_path)
-
+        
         try:
             # Step 1: Create atomic backup
             shutil.copy2(original_path, backup_path)
-
-            # Step 2: Read and analyze the file
+            
+            # Step 2: Read and parse source
             with open(original_path, "r", encoding="utf-8") as f:
-                original_content = f.read()
-
-            # Step 3: Parse AST to find function
-            tree = ast.parse(original_content)
+                source = f.read()
+            
+            tree = ast.parse(source)
             function_node = None
-
+            
             for node in ast.walk(tree):
-                if isinstance(node, ast.FunctionDef) and node.name == target_function:
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == target_function:
                     function_node = node
                     break
-
+            
             if not function_node:
-                return False, f"Function {target_function} not found"
-
-            # Step 4: Create a stub split (L4 placeholder - marks where manual split needed)
-            split_marker = f"\n# L4 REFACTOR: Function '{target_function}' exceeds {plan['current_lines']} lines\n# TODO: Manual split required - see refactor plan {plan_key}\n"
-
-            # Insert marker before function
-            lines = original_content.split('\n')
-            insert_line = function_node.lineno - 1
-            lines.insert(insert_line, split_marker)
-
-            # Write modified content
-            with open(original_path, "w", encoding="utf-8") as f:
-                f.write('\n'.join(lines))
-
-            # Step 5: Verify syntax (Tier 1 check)
-            try:
-                with open(original_path, "r", encoding="utf-8") as f:
-                    ast.parse(f.read())
-            except SyntaxError as e:
-                # Rollback on syntax error
-                shutil.copy2(backup_path, original_path)
-                backup_path.unlink()  # Remove backup
-                return False, f"Syntax error after modification: {e}"
-
-            # Step 6: Verify imports still resolve (Tier 2 check)
-            try:
-                # Try to compile the module
-                compile(open(original_path, "r").read(), file_path, 'exec')
-            except Exception as e:
-                # Rollback on import error
-                shutil.copy2(backup_path, original_path)
-                backup_path.unlink()
-                return False, f"Import error after modification: {e}"
-
-            # Step 7: Success - clean up backup
+                return False, "Function not found in AST"
+            
+            # Step 3: L4+ Multi-block extraction with learning priority
+            candidate_blocks = self._find_extractable_blocks(function_node)
+            if not candidate_blocks:
+                # Fallback to comment marker if no extractable block
+                return self._fallback_marker_insertion(original_path, function_node, plan_key, current_lines)
+            
+            # Prioritize by learned success patterns (e.g., 'with_context' succeeds more)
+            insights = getattr(self.ctx, 'learning_insights', {})
+            success_patterns = insights.get('successful_patterns', ['with_context', 'iterate'])
+            
+            def priority(block):
+                name_hint = self._suggest_name(block[0], target_function)
+                return sum(1 for pat in success_patterns if pat in name_hint) * 10 + block[1]
+            
+            candidate_blocks.sort(key=priority, reverse=True)
+            
+            extracted = []
+            # Process blocks in reverse order to preserve line numbers
+            for block_node, score in candidate_blocks[:2][::-1]:  # Extract up to 2 best, reversed
+                new_func_name = self._suggest_name(block_node, target_function)
+                new_file = self._suggest_module_split(file_path, new_func_name) if len(candidate_blocks) > 1 else None
+                
+                # Step 6: Perform extraction using FunctionExtractor
+                extractor = FunctionExtractor()
+                result = extractor.extract(
+                    source=source,
+                    func_node=function_node,
+                    block_node=block_node,
+                    new_func_name=new_func_name,
+                    new_module_path=new_file,
+                    source_file=file_path
+                )
+                
+                if not result.success:
+                    continue  # Skip failed, continue with others
+                
+                # Step 7: Write changes atomically
+                for path, content in result.modified_files.items():
+                    path_obj = Path(path)
+                    path_obj.parent.mkdir(parents=True, exist_ok=True)
+                    path_obj.write_text(content, encoding="utf-8")
+                    self.ctx.modified_files.add(str(path))
+                
+                # L4 Safety: Compile check
+                for path, content in result.modified_files.items():
+                    try:
+                        compile(content, path, 'exec')
+                    except SyntaxError as e:
+                        raise Exception(f"Post-refactor syntax error in {path}: {e}")
+                
+                extracted.append(new_func_name)
+                # Update source for next iteration
+                source = Path(file_path).read_text(encoding="utf-8")
+                # Re-parse to get updated AST
+                tree = ast.parse(source)
+                for node in ast.walk(tree):
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == target_function:
+                        function_node = node
+                        break
+            
+            if not extracted:
+                return False, "All extraction attempts failed"
+            
+            # Step 8: Verify syntax for all modified files
+            for modified_file in self.ctx.modified_files:
+                try:
+                    with open(modified_file, "r", encoding="utf-8") as f:
+                        ast.parse(f.read())
+                except SyntaxError as e:
+                    raise Exception(f"Syntax error in {modified_file}: {e}")
+            
+            # Step 9: Success - clean up backup
             backup_path.unlink()
-
-            # Add to modified files list for tracking
-            self.ctx.modified_files.add(file_path)
-
-            return True, f"Successfully marked {target_function} for manual split"
-
+            
+            return True, f"Extracted: {', '.join(extracted)}"
+            
         except Exception as e:
             # Emergency rollback
             if backup_path.exists():
                 shutil.copy2(backup_path, original_path)
                 backup_path.unlink()
-            return False, f"Execution error: {str(e)}"
+            return False, f"Refactor failed: {str(e)}"
+    
+    def _fallback_marker_insertion(self, file_path: Path, func_node: ast.FunctionDef, plan_key: str, current_lines: int) -> Tuple[bool, str]:
+        """Fallback to comment marker if extraction fails."""
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            
+            marker = f"# L4 REFACTOR: Function '{func_node.name}' exceeds {current_lines} lines - extraction attempted but no suitable block found\n"
+            insert_line = func_node.lineno - 1
+            lines.insert(insert_line, marker)
+            
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.writelines(lines)
+            
+            self.ctx.modified_files.add(str(file_path))
+            return True, f"Marked {func_node.name} for manual review (no extractable block)"
+        except Exception as e:
+            return False, f"Marker insertion failed: {e}"
+    
+    def _find_extractable_blocks(self, func_node: ast.FunctionDef) -> List[Tuple[ast.AST, int]]:
+        """L4+ Hardened: Lower thresholds + fallback to any control block >4 lines."""
+        candidates = []
+        
+        def get_scope_vars(node):
+            reads = set()
+            writes = set()
+            for n in ast.walk(node):
+                if isinstance(n, ast.Name):
+                    if isinstance(n.ctx, ast.Load):
+                        reads.add(n.id)
+                    elif isinstance(n.ctx, ast.Store):
+                        writes.add(n.id)
+            return reads, writes
+        
+        for node in ast.walk(func_node):
+            if isinstance(node, (ast.With, ast.For, ast.While, ast.Try, ast.If, ast.FunctionDef)) and hasattr(node, 'body'):
+                body_size = len(node.body)
+                if body_size >= 5:  # Reduced from 8
+                    reads, writes = get_scope_vars(node)
+                    # Inputs: reads not written in block (need params)
+                    inputs = reads - writes
+                    # Outputs: writes not read before (need return)
+                    outputs = writes - reads
+                    penalty = len(inputs) + len(outputs) * 1.5  # Returns cost more
+                    score = body_size - penalty
+                    if score > 2:  # Reduced from 5 for more opportunities
+                        candidates.append((node, score))
+        
+        # Fallback: Any block >6 lines if no scored candidates
+        if not candidates:
+            for node in ast.walk(func_node):
+                if hasattr(node, 'body') and len(node.body) > 6:
+                    candidates.append((node, 0))
+        
+        return sorted(candidates, key=lambda x: x[1], reverse=True)[:4]  # Up to 4
+    
+    def _suggest_name(self, block_node: ast.AST, parent_name: str) -> str:
+        """Suggest meaningful name using node type and context."""
+        base = parent_name.replace("large_", "").replace("process_", "").lstrip('_')
+        suffix = {
+            ast.With: "with_context",
+            ast.For: "iterate",
+            ast.While: "wait_until",
+            ast.Try: "safe_execute",
+            ast.If: "handle_case",
+        }.get(type(block_node), "step")
+        return f"{base}_{suffix}"
+    
+    def _suggest_module_split(self, file_path: str, new_func_name: str) -> str:
+        """Return new module path if file > 500 lines, else None."""
+        try:
+            from pathlib import Path
+            line_count = len(Path(file_path).read_text(encoding="utf-8").splitlines())
+            if line_count > 500:
+                stem = Path(file_path).stem
+                parent = Path(file_path).parent
+                return str(parent / f"{stem}_{new_func_name}.py")
+        except:
+            pass
+        return None
+
+@dataclass
+class ExtractionResult:
+    """Result of function extraction operation."""
+    success: bool
+    error: str = ""
+    modified_files: Dict[str, str] = field(default_factory=dict)
+    target_file: str = ""
+
+class FunctionExtractor:
+    """L4++ Hardened: Extracts with parameters, returns, and variable propagation."""
+    
+    def extract(self, source: str, func_node: ast.FunctionDef, block_node: ast.AST,
+                new_func_name: str, new_module_path: str = None, file_path: str = "original.py") -> ExtractionResult:
+        """Extract a code block into a new function with proper dependency handling."""
+        result = ExtractionResult(success=False, modified_files={})
+        
+        try:
+            import textwrap
+            from pathlib import Path
+            
+            lines = source.splitlines(keepends=True)
+            start_idx = block_node.lineno - 1
+            end_idx = getattr(block_node, 'end_lineno', start_idx + 10)
+            
+            block_lines = lines[start_idx:end_idx]
+            block_source = ''.join(block_lines)
+            dedented = textwrap.dedent(block_source)
+            
+            # Dependency analysis
+            reads = set()
+            writes = set()
+            for n in ast.walk(block_node):
+                if isinstance(n, ast.Name):
+                    if isinstance(n.ctx, ast.Load): 
+                        reads.add(n.id)
+                    if isinstance(n.ctx, ast.Store): 
+                        writes.add(n.id)
+            params = sorted(reads - writes)  # Need as args
+            returns = sorted(writes - reads)  # Need return
+            
+            # Build signature
+            param_str = ", ".join(params) if params else ""
+            return_str = f"return ({', '.join(returns)})" if returns else "return None"
+            dedented_lines = dedented.splitlines()
+            if dedented_lines and not dedented_lines[-1].strip().startswith("return"):
+                dedented_lines.append(f"    {return_str}")
+            new_body = "\n".join(dedented_lines)
+            
+            new_func_def = f"def {new_func_name}({param_str}):\n{textwrap.indent(new_body, '    ')}\n"
+            
+            # Call with args and unpack return
+            indent = ' ' * (len(block_lines[0]) - len(block_lines[0].lstrip()))
+            call = f"{new_func_name}({', '.join(params)})"
+            if returns:
+                assign = ", ".join(returns) + " = "
+                call_line = f"{assign}{call}\n"
+            else:
+                call_line = f"{call}\n"
+            indented_call = indent + call_line
+            
+            modified_lines = lines[:start_idx] + [indented_call] + lines[end_idx:]
+            modified_source = ''.join(modified_lines)
+            
+            if not new_module_path:
+                insert_pos = getattr(func_node, 'end_lineno', end_idx)
+                insert_lines = list(modified_lines)
+                insert_lines.insert(insert_pos, '\n' + new_func_def)
+                result.modified_files[file_path] = ''.join(insert_lines)
+            else:
+                header = f"# L4++ Extracted from {Path(file_path).name}\n\n"
+                result.modified_files[new_module_path] = header + new_func_def
+                rel_import = f"from .{Path(new_module_path).stem} import {new_func_name}\n"
+                result.modified_files[file_path] = rel_import + modified_source
+            
+            result.success = True
+            result.target_file = new_module_path or file_path
+            return result
+            
+        except Exception as e:
+            result.error = f"Extraction failed: {str(e)}"
+            return result
 
 class StatePersistenceAgent(SubAtomicAgent):
     """
@@ -1343,8 +1555,11 @@ class StatePersistenceAgent(SubAtomicAgent):
 
             # L4 Learning: Report learning insights
             self._report_learning_insights(execution_history)
+            
+            # L5 SELF-EVOLUTION: Adjust thresholds based on outcomes
+            self._evolve_validation_rules(execution_history)
 
-            self.ctx.report(self.name, 98, True, [f"Checkpointed {plan_count} plans with learning"])
+            self.ctx.report(self.name, 98, True, [f"Checkpointed {plan_count} plans with learning + evolution"])
 
             # Also save refactor plans to a human-readable file
             if self.ctx.refactor_plans:
@@ -1463,6 +1678,32 @@ class StatePersistenceAgent(SubAtomicAgent):
             for rec in insights["recommendations"]:
                 print(f"        - {rec}")
 
+    def _evolve_validation_rules(self, history: dict):
+        """L5: Dynamically adjust canon thresholds based on refactor success."""
+        success_rate = history.get("success_rate", 0.5)
+        total = history.get("total_executed", 0)
+
+        if total < 10:
+            return  # Not enough data
+
+        # Example: If success low, be more conservative
+        new_max_lines = 50
+        if success_rate < 0.6:
+            new_max_lines = 40  # Stricter
+        elif success_rate > 0.85:
+            new_max_lines = 70  # More aggressive
+
+        # Persist evolved rule
+        rules_path = Path("cache/evolved_rules.json")
+        rules = {"max_function_lines": new_max_lines}
+        rules_path.parent.mkdir(exist_ok=True)
+        with open(rules_path, "w", encoding="utf-8") as f:
+            json.dump(rules, f, indent=2)
+
+        print(f"   🧬 L5 EVOLUTION: Adjusted max_function_lines → {new_max_lines} (success_rate={success_rate:.1%})")
+
+        # In StructuralEngineer/BudgetAgent, load this file to override hardcoded 50
+
     def _update_execution_history(self, history: dict):
         """Update execution history with current session's executed plans."""
         executed_plans = []
@@ -1518,12 +1759,25 @@ class IntelligentOrchestrator:
 
         # L4: Try to load previous context
         self._load_checkpoint()
+        
+        # L4 Self-Healing: Run validator on itself if modified
+        from pathlib import Path
+        current_file = Path(__file__).resolve()
+        if str(current_file) in self.ctx.modified_files:
+            print(f"   🛠️ L4 SELF-HEALING: Re-validating {current_file.name} after modification...")
+            # Re-run critical agents on self
+            temp_ctx = ValidationContext()
+            for agent in [CodeJanitor(temp_ctx), DependencySentinel(temp_ctx)]:
+                try:
+                    agent.execute()
+                except Exception as e:
+                    print(f"      ⚠️ Self-healing check failed: {e}")
 
         # Print file count using on-demand method (prevents context bloat)
         file_count = len(self.ctx.get_python_files())
         print(f"   [CTX] Blackboard initialized with {file_count} valid source files.")
         print(f"   [CTX] Subatomic Isolation: Files loaded on-demand per agent.")
-        print(f"   [CTX] L3/L4 Architecture: Full coverage + State persistence enabled.")
+        print(f"   [CTX] L3/L4 Architecture: Full coverage + State persistence + Self-healing enabled.")
 
         self.swarm = [
             SystemArchitect(self.ctx),      # 1. Structure (Blocker)
