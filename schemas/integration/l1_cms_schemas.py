@@ -12,16 +12,16 @@ class PromptType(str, Enum):
 @dataclass
 class PromptSchema:
     """Schema definition for prompt validation."""
-    name: str
-    prompt_type: PromptType
-    required_fields: List[str]
-    optional_fields: List[str] = None
-    validation_rules: Dict[str, object] = None
+    _name: str
+    _prompt_type: PromptType
+    _required_fields: List[str]
+    _optional_fields: List[str] = None
+    _validation_rules: Dict[str, object] = None
 
 @dataclass
 class ValidationResult:
     """Result of prompt validation."""
-    is_valid: bool
+    _is_valid: bool
     errors: List[str] = None
     warnings: List[str] = None
 

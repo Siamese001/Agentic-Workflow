@@ -11,11 +11,11 @@ from dataclasses import dataclass
 class ScoredResult:
     """TODO: Add docstring."""
 
-    id: str
-    content: str
-    score: float
-    source: str
-    metadata: Optional[Dict] = None
+    _id: str
+    _content: str
+    _score: float
+    _source: str
+    _metadata: Optional[Dict] = None
 
 class TestPickBestResult:
     """Tests for pick_best_result operations."""

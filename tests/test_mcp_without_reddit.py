@@ -1,3 +1,4 @@
+from typing import Any
 """Test MCP integration without Reddit credentials."""
 
 import asyncio

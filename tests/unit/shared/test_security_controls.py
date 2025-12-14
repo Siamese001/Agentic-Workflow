@@ -15,10 +15,10 @@ class ThreatLevel(Enum):
 @dataclass
 class SecurityCheckResult:
     """Docstring."""
-    passed: bool
-    threat_level: ThreatLevel
-    findings: List[str]
-    recommendations: List[str]
+    _passed: bool
+    _threat_level: ThreatLevel
+    _findings: List[str]
+    _recommendations: List[str]
 
 class TestInputSanitization:
     """Tests for input sanitization."""

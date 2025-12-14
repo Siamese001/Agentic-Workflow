@@ -20,16 +20,16 @@ class VectorStoreProvider(str, Enum):
 @dataclass
 class ChromaConfig:
     """Configuration for ChromaDB."""
-    persist_directory: str = "./chroma_db"
+    _persist_directory: str = "./chroma_db"
     collection_name: str = "default"
     embedding_function: Optional[Any] = None
 
 @dataclass
 class QdrantConfig:
     """Configuration for Qdrant."""
-    url: Optional[str] = None
-    host: str = "localhost"
-    port: int = 6333
+    _url: Optional[str] = None
+    _host: str = "localhost"
+    _port: int = 6333
     api_key: Optional[str] = None
     collection_name: str = "default"
     vector_size: int = 1536
@@ -38,8 +38,8 @@ class QdrantConfig:
 class PineconeConfig:
     """Configuration for Pinecone."""
     api_key: Optional[str] = None
-    environment: str = "us-east-1"
-    index_name: str = "default"
+    _environment: str = "us-east-1"
+    _index_name: str = "default"
 
 # Singleton client cache
 _VECTOR_STORES: Dict[str, Any] = {}

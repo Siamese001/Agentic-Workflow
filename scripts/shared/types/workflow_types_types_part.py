@@ -18,9 +18,9 @@ class BulletProvenance(Enum):
 @dataclass
 class HopCheckpoint:
     """Checkpoint data for a workflow hop."""
-    hop_id: str
-    status: HopStatus
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    error: Optional[str] = None
-    output: Optional[Dict[str, object]] = None
+    _hop_id: str
+    _status: HopStatus
+    _started_at: Optional[str] = None
+    _completed_at: Optional[str] = None
+    _error: Optional[str] = None
+    _output: Optional[Dict[str, object]] = None

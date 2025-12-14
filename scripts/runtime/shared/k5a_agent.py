@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ProvenanceRule:
     """Provenance rule for bullet generation."""
-    verbatim: int  # Number of verbatim bullets from master resume
-    transformed: int  # Number of transformed bullets
-    synthetic: int  # Number of synthetic bullets
+    _verbatim: int  # Number of _verbatim bullets from master resume
+    _transformed: int  # Number of _transformed bullets
+    _synthetic: int  # Number of _synthetic bullets
 
     @property
     def total(self) -> int:
@@ -33,7 +33,7 @@ class K5AOutput:
     bullets: List[str]
     provenance: List[str]  # "V", "T", or "S" for each bullet
     word_counts: List[int]
-    metadata: Dict[str, Any]
+    _metadata: Dict[str, Any]
 
 class K5AGenerationAgent(Agent):
     """K.5A specialist agent for Unify Bullets generation.

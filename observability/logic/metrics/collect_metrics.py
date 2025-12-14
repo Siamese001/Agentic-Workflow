@@ -15,7 +15,7 @@ class CollectedItem:
     """A collected item."""
     source: str
     data: Any
-    timestamp: float = field(default_factory=lambda: __import__("time").time())
+    _timestamp: float = field(default_factory=lambda: __import__("time").time())
 
 class BaseCollector:
     """Collector for metrics domain."""

@@ -6,8 +6,8 @@ import logging
 @dataclass
 class ConstitutionalReviewResult:
     """Result of constitutional review."""
-    is_compliant: bool
-    violations: List[ViolationReport]
-    compliance_score: float
-    recommendations: List[str]
-    reviewed_at: float
+    _is_compliant: bool
+    _violations: List[ViolationReport]
+    _compliance_score: float
+    _recommendations: List[str]
+    _reviewed_at: float

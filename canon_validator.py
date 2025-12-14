@@ -1,3 +1,4 @@
+from typing import Any
 #!/usr/bin/env python3
 """
 Subatomic Canon Validator - Agentic Workflow Hardening
@@ -1125,7 +1126,11 @@ def check_key_40_no_metaclass_abuse():
     info("Checking for metaclass usage...")
     violations = []
     python_files = get_python_files()
+
     for file_path in python_files:
+        # Skip the validator itself to avoid false positive
+        if file_path == './canon_validator.py':
+            continue
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 if 'metaclass=' in f.read():

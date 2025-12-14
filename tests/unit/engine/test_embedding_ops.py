@@ -1,3 +1,4 @@
+from typing import Any
 """
 
 Unit tests for shared_engine_ops/embedding_ops/

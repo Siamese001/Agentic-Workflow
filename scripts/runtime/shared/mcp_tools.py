@@ -51,11 +51,11 @@ class MCPTool:
 @dataclass
 class MCPToolResult:
     """Result from MCP tool execution."""
-    tool_name: str
-    success: bool
+    _tool_name: str
+    _success: bool
     result: Any
-    error: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    _error: Optional[str] = None
+    _metadata: Dict[str, Any] = field(default_factory=dict)
 
 class MCPToolServer:
     """MCP tool server for managing and executing tools."""

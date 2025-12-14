@@ -17,8 +17,8 @@ class K7Output:
     body_block: str
     signature_block: str
     total_chars: int
-    qa_blocks_order: List[str]
-    metadata: Dict[str, Any]
+    _qa_blocks_order: List[str]
+    _metadata: Dict[str, Any]
 
 # Signature immutability template (from LinkedInCanonical v2.90)
 SIGNATURE_TEMPLATE = """Regards,

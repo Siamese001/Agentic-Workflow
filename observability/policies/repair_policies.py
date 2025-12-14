@@ -14,9 +14,9 @@ repair actions (retry, downgrade, replan, escalate).
 class RepairAction:
     """Single AIS repair action recommendation."""
 
-    kind: str  # e.g. "retry", "downgrade", "replan", "escalate"
-    reason: str
-    metadata: Dict[str, object]
+    _kind: str  # e.g. "retry", "downgrade", "replan", "escalate"
+    _reason: str
+    _metadata: Dict[str, object]
 
 def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
     """Map FailureSignal list into a set of RepairAction recommendations."""

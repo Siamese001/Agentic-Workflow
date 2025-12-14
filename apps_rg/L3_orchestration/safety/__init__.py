@@ -1,3 +1,4 @@
+from typing import Any
 """
 
 Safety module stub for apps_rg.

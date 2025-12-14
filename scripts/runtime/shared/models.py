@@ -11,11 +11,11 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class LLMResponse:
     """Standard LLM response format."""
-    content: str
-    model: str
-    usage: Optional[Dict[str, int]] = None
-    finish_reason: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    _content: str
+    _model: str
+    _usage: Optional[Dict[str, int]] = None
+    _finish_reason: Optional[str] = None
+    _metadata: Optional[Dict[str, Any]] = None
 
 class MessageType(str, Enum):
     """Message types for agent communication."""
@@ -23,36 +23,36 @@ class MessageType(str, Enum):
 @dataclass
 class AgentMessage:
     """Message in agent conversation."""
-    role: MessageType
+    _role: MessageType
     content: str
-    tool_calls: Optional[List[Dict[str, Any]]] = None
-    tool_call_id: Optional[str] = None
+    _tool_calls: Optional[List[Dict[str, Any]]] = None
+    _tool_call_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
 @dataclass
 class AgentResponse:
     """Response from agent execution."""
-    message: AgentMessage
-    success: bool
-    error: Optional[str] = None
+    _message: AgentMessage
+    _success: bool
+    _error: Optional[str] = None
     usage: Optional[Dict[str, int]] = None
     metadata: Optional[Dict[str, Any]] = None
 
 class ValidationResult(BaseModel):
     """Validation result for data or operations."""
-    is_valid: bool
-    errors: List[str] = []
-    warnings: List[str] = []
+    _is_valid: bool
+    _errors: List[str] = []
+    _warnings: List[str] = []
     metadata: Dict[str, Any] = {}
 
 class ReasoningConfig(BaseModel):
     """Configuration for reasoning operations."""
-    temperature: float = 0.7
-    max_tokens: int = 1000
-    top_p: float = 0.9
-    frequency_penalty: float = 0.0
-    presence_penalty: float = 0.0
-    stop_sequences: Optional[List[str]] = None
+    _temperature: float = 0.7
+    _max_tokens: int = 1000
+    _top_p: float = 0.9
+    _frequency_penalty: float = 0.0
+    _presence_penalty: float = 0.0
+    _stop_sequences: Optional[List[str]] = None
 
 class HopStatus(str, Enum):
     """Status of hop execution."""
@@ -66,27 +66,27 @@ class ValidationSeverity(str, Enum):
 @dataclass
 class WorkflowCheckpoint:
     """Checkpoint in workflow execution."""
-    hop_id: str
-    status: HopStatus
-    data: Dict[str, Any]
-    timestamp: str
+    _hop_id: str
+    _status: HopStatus
+    _data: Dict[str, Any]
+    _timestamp: str
     metadata: Optional[Dict[str, Any]] = None
 
 @dataclass
 class ThematicAnalysis:
     """Analysis of thematic content."""
-    theme: str
-    confidence: float
-    keywords: List[str]
-    sentiment: Optional[str] = None
+    _theme: str
+    _confidence: float
+    _keywords: List[str]
+    _sentiment: Optional[str] = None
 
 @dataclass
 class RAGState:
     """State of RAG operations."""
-    query: str
-    retrieved_docs: List[Dict[str, Any]]
-    context: str
-    response: Optional[str] = None
+    _query: str
+    _retrieved_docs: List[Dict[str, Any]]
+    _context: str
+    _response: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
 class CircuitState(str, Enum):

@@ -8,39 +8,39 @@ import logging
 @dataclass
 class ValidationResult:
     """Result of a validation rule execution."""
-    rule_id: str
-    passed: bool
-    severity: ValidationSeverity
-    message: str = ''
-    details: Dict[str, Any] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    _rule_id: str
+    _passed: bool
+    _severity: ValidationSeverity
+    _message: str = ''
+    _details: Dict[str, Any] = field(default_factory=dict)
+    _timestamp: datetime = field(default_factory=datetime.utcnow)
 
 @dataclass
 class ThematicAnalysis:
     """Analysis of thematic content in text."""
-    themes: List[str] = field(default_factory=list)
-    confidence_scores: List[float] = field(default_factory=list)
-    dominant_theme: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    _themes: List[str] = field(default_factory=list)
+    _confidence_scores: List[float] = field(default_factory=list)
+    _dominant_theme: Optional[str] = None
+    _metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class RAGState:
     """State of RAG (Retrieval-Augmented Generation) process."""
-    query: str = ''
-    retrieved_documents: List[Dict[str, Any]] = field(default_factory=list)
-    context: str = ''
-    response: str = ''
-    retrieval_score: float = 0.0
-    generation_confidence: float = 0.0
+    _query: str = ''
+    _retrieved_documents: List[Dict[str, Any]] = field(default_factory=list)
+    _context: str = ''
+    _response: str = ''
+    _retrieval_score: float = 0.0
+    _generation_confidence: float = 0.0
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class ImmutableStagingBuffer:
     """Immutable buffer for staging data transformations."""
-    data: Dict[str, Any] = field(default_factory=dict)
-    version: int = 1
+    _data: Dict[str, Any] = field(default_factory=dict)
+    _version: int = 1
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    checksum: Optional[str] = None
+    _checksum: Optional[str] = None
 
     def with_data(self, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
         """Return a new buffer with updated data."""

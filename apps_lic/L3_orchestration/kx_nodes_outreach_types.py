@@ -13,34 +13,34 @@ class ReasoningStrategy(str, Enum):
 @dataclass
 class RAGConfig:
     """RAG configuration for K.X node."""
-    enabled: bool = True
-    min_retrievers: int = 3
-    max_retrievers: int = 6
-    hops: int = 2
+    _enabled: bool = True
+    _min_retrievers: int = 3
+    _max_retrievers: int = 6
+    _hops: int = 2
 
 @dataclass
 class DecodingParams:
     """Decoding parameters for LLM generation."""
-    temperature: float = 0.7
-    top_p: float = 0.9
-    top_k: int = 40
-    min_p: float = 0.04
-    repetition_penalty: float = 1.1
+    _temperature: float = 0.7
+    _top_p: float = 0.9
+    _top_k: int = 40
+    _min_p: float = 0.04
+    _repetition_penalty: float = 1.1
 
 @dataclass
 class OutreachKNode:
     """Outreach K.X node configuration for DAG execution."""
-    node_id: str
-    element: str
-    node_type: OutreachKNodeType
-    reasoning_strategy: ReasoningStrategy = ReasoningStrategy.COT
-    rag_config: Optional[RAGConfig] = None
-    decoding_params: Optional[DecodingParams] = None
-    tot_branches: int = 3
-    self_consistency_runs: int = 1
-    max_chars: Optional[int] = None
-    max_words: Optional[int] = None
-    structure_template: Optional[str] = None
-    validation_rules: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    _node_id: str
+    _element: str
+    _node_type: OutreachKNodeType
+    _reasoning_strategy: ReasoningStrategy = ReasoningStrategy.COT
+    _rag_config: Optional[RAGConfig] = None
+    _decoding_params: Optional[DecodingParams] = None
+    _tot_branches: int = 3
+    _self_consistency_runs: int = 1
+    _max_chars: Optional[int] = None
+    _max_words: Optional[int] = None
+    _structure_template: Optional[str] = None
+    _validation_rules: List[str] = field(default_factory=list)
+    _dependencies: List[str] = field(default_factory=list)
+    _metadata: Dict[str, Any] = field(default_factory=dict)

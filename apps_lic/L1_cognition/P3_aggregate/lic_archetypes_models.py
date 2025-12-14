@@ -7,50 +7,50 @@ import logging
 @dataclass
 class SubjectLineBrief:
     """Brief for subject line generation."""
-    word_count: tuple[int, int]
-    tone: str
-    forbidden_phrases: List[str] = field(default_factory=list)
+    _word_count: tuple[int, int]
+    _tone: str
+    _forbidden_phrases: List[str] = field(default_factory=list)
 
 @dataclass
 class MessageBodyBrief:
     """Brief for message body generation."""
     word_count: tuple[int, int]
-    jargon_level: str
-    focus: str
+    _jargon_level: str
+    _focus: str
 
 @dataclass
 class CTABrief:
     """Brief for call-to-action generation."""
     word_count: tuple[int, int]
     tone: str
-    strategy: Optional[str] = None
+    _strategy: Optional[str] = None
 
 @dataclass
 class CreativeBrief:
     """Complete creative brief for message generation."""
-    subject_line: SubjectLineBrief
-    message_body: MessageBodyBrief
-    cta: CTABrief
+    _subject_line: SubjectLineBrief
+    _message_body: MessageBodyBrief
+    _cta: CTABrief
 
 @dataclass
 class ArchetypeTemplate:
     """Complete template for an archetype."""
-    archetype: RecipientArchetype
-    system_instructions: str
+    _archetype: RecipientArchetype
+    _system_instructions: str
     tone: str
-    approach: str
-    avoid: str
-    creative_brief: CreativeBrief
+    _approach: str
+    _avoid: str
+    _creative_brief: CreativeBrief
 
 @dataclass
 class SignatureTemplate:
     """Template for message signature."""
-    template: str
-    use_for: List[str]
-    line_count: int
+    _template: str
+    _use_for: List[str]
+    _line_count: int
 
 @dataclass
 class GreetingTemplate:
     """Template for message greeting."""
     template: str
-    note: str
+    _note: str

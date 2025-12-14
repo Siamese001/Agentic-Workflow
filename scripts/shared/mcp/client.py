@@ -37,11 +37,11 @@ class MCPClientSpec:
 
     Attributes:
         name: Unique client identifier
-        provider: Provider type (redis, chromadb, openai, etc.)
-        module: Optional explicit Python module path
-        class_name: Optional explicit class name
+        _provider: Provider type (redis, chromadb, openai, etc.)
+        _module: Optional explicit Python _module path
+        _class_name: Optional explicit class name
         parameters: Client initialization parameters
-        optional: Whether this client is optional (won't fail if unavailable)
+        _optional: Whether this client is _optional (won't fail if unavailable)
     """
 
     name: str

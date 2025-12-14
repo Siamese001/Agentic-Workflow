@@ -11,9 +11,9 @@ from dataclasses import dataclass
 class RuntimeContext:
     """TODO: Add docstring."""
 
-    request_id: str
-    start_time: datetime
-    timeout_seconds: int
+    _request_id: str
+    _start_time: datetime
+    _timeout_seconds: int
     metadata: Dict[str, object]
 
 class TestRuntimeDataAccess:

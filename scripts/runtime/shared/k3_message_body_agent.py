@@ -19,7 +19,7 @@ class K3Output:
     bullets_count: int
     word_count: int
     char_count: int
-    metadata: Dict[str, Any]
+    _metadata: Dict[str, Any]
 
 # Archetype-specific transition phrases (from LinkedInCanonical v2.90)
 ARCHETYPE_TRANSITIONS = {

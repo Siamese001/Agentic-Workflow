@@ -13,8 +13,8 @@ class AdminAction(Enum):
 class AdminRequest:
     """Docstring."""
     action: AdminAction
-    payload: Dict[str, object]
-    admin_id: str
+    _payload: Dict[str, object]
+    _admin_id: str
 
 class TestAdminUserManagement:
     """E2E tests for admin user management flows."""

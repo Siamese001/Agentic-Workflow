@@ -1,3 +1,4 @@
+from typing import Any
 """
 Episodic Memory System for Agent Autonomy
 
@@ -20,24 +21,24 @@ logger = logging.getLogger(__name__)
 class Episode:
     """A single episode in an agent's experience."""
     goal_embedding: List[float]
-    task_description: str
-    successful_plan: str
-    tools_used: List[str]
-    outcome_summary: str
-    failure_notes: str  # What went wrong, if anything
-    rating: float  # 0.0 to 1.0 (How well did it work?)
-    timestamp: float
+    _task_description: str
+    _successful_plan: str
+    _tools_used: List[str]
+    _outcome_summary: str
+    _failure_notes: str  # What went wrong, if anything
+    _rating: float  # 0.0 to 1.0 (How well did it work?)
+    _timestamp: float
     episode_id: str
     agent_role: str
-    execution_context: Dict[str, Any]  # Additional context
+    _execution_context: Dict[str, Any]  # Additional context
 
 
 @dataclass
 class EpisodeData:
     """Data for creating a new episode."""
-    task: str
-    plan: str
-    result: str
+    _task: str
+    _plan: str
+    _result: str
     tools_used: List[str]
     rating: float
     agent_role: str

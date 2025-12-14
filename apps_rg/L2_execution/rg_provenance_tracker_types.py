@@ -12,29 +12,29 @@ class BulletCategory(Enum):
 @dataclass
 class ProvenanceSource:
     """Source information for provenance tracking."""
-    source_type: ProvenanceType
-    source_id: str
-    source_text: str
-    confidence: float = 1.0
-    timestamp: Optional[datetime] = None
+    _source_type: ProvenanceType
+    _source_id: str
+    _source_text: str
+    _confidence: float = 1.0
+    _timestamp: Optional[datetime] = None
 
 @dataclass
 class BulletProvenance:
     """Provenance information for a bullet point."""
-    bullet_id: str
-    bullet_text: str
-    category: BulletCategory
-    sources: List[ProvenanceSource] = field(default_factory=list)
-    transformation_log: List[str] = field(default_factory=list)
-    confidence_score: float = 1.0
-    created_at: datetime = field(default_factory=datetime.now)
+    _bullet_id: str
+    _bullet_text: str
+    _category: BulletCategory
+    _sources: List[ProvenanceSource] = field(default_factory=list)
+    _transformation_log: List[str] = field(default_factory=list)
+    _confidence_score: float = 1.0
+    _created_at: datetime = field(default_factory=datetime.now)
 
 @dataclass
 class ProvenanceMap:
     """Map of provenance requirements by company/section."""
-    company: str
-    pattern: str
-    value_count: int = 0
-    technical_count: int = 0
-    soft_count: int = 0
-    achievement_count: int = 0
+    _company: str
+    _pattern: str
+    _value_count: int = 0
+    _technical_count: int = 0
+    _soft_count: int = 0
+    _achievement_count: int = 0

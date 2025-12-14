@@ -7,14 +7,14 @@ import logging
 @dataclass
 class OutreachMission:
     """Complete mission specification (Input)"""
-    mission_id: str
-    sender_profile: Dict[str, object]
-    recipient_profile: Dict[str, object]
-    job_description: Dict[str, object]
-    connection_status: str = 'not_connected'
-    prior_message_count: int = 0
-    route_override: Optional[Route] = None
-    context: Dict[str, object] = field(default_factory=dict)
+    _mission_id: str
+    _sender_profile: Dict[str, object]
+    _recipient_profile: Dict[str, object]
+    _job_description: Dict[str, object]
+    _connection_status: str = 'not_connected'
+    _prior_message_count: int = 0
+    _route_override: Optional[Route] = None
+    _context: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class ProfileAnalysis:
@@ -23,28 +23,28 @@ class ProfileAnalysis:
     Output is now state/1_profile_analysis.json
     This class is kept for type hinting in legacy models if needed.
     """
-    archetype: Archetype
-    confidence: float
-    reasoning: str
-    key_indicators: List[str]
-    needs_manual_override: bool = False
+    _archetype: Archetype
+    _confidence: float
+    _reasoning: str
+    _key_indicators: List[str]
+    _needs_manual_override: bool = False
 
 @dataclass
 class MessageClaim:
     """NEW v11.6: Individual claim with confidence (FEATURE 1.2)"""
-    text: str
+    _text: str
     confidence: float
-    supporting_sources: List[str]
-    source_weights: List[float]
+    _supporting_sources: List[str]
+    _source_weights: List[float]
 
 @dataclass
 class RAGCritique:
     """NEW v11.6: RAG quality critique (FEATURE 1.4)"""
-    confidence_score: float
-    gaps_identified: List[str]
-    refinement_tasks: List[str]
+    _confidence_score: float
+    _gaps_identified: List[str]
+    _refinement_tasks: List[str]
     reasoning: str
-    is_sufficient: bool = False
+    _is_sufficient: bool = False
 
 @dataclass
 class RAGResult:
@@ -52,13 +52,13 @@ class RAGResult:
     Single RAG retrieval result with metadata.
     Used by HOP-2 ResearchAgent.
     """
-    source: str
-    source_type: str
+    _source: str
+    _source_type: str
     text: str
-    extracted_keywords: List[str]
-    source_weight: float
-    age_days: int
-    recipient_specific: bool
+    _extracted_keywords: List[str]
+    _source_weight: float
+    _age_days: int
+    _recipient_specific: bool
     confidence: float = 1.0
 
 @dataclass
@@ -67,11 +67,11 @@ class SenderGroundingWhitelists:
     Output of HOP-3 SenderGroundingAgent.
     Used to validate "my team" / "our product" claims in HOP-6.
     """
-    team_members: List[str] = field(default_factory=list)
-    products: List[str] = field(default_factory=list)
-    case_studies: List[str] = field(default_factory=list)
-    quantifiable_achievements: List[str] = field(default_factory=list)
-    raw_evidence: Dict[str, List[str]] = field(default_factory=dict)
+    _team_members: List[str] = field(default_factory=list)
+    _products: List[str] = field(default_factory=list)
+    _case_studies: List[str] = field(default_factory=list)
+    _quantifiable_achievements: List[str] = field(default_factory=list)
+    _raw_evidence: Dict[str, List[str]] = field(default_factory=dict)
 
 @dataclass
 class ResearchContext:
@@ -80,12 +80,12 @@ class ResearchContext:
     Output is now state/2_research_context.json
     This class is kept for type hinting in legacy models if needed.
     """
-    recipient_insights: List[str]
-    company_context: List[str]
-    recent_activity: List[str]
-    rag_results: List[RAGResult]
-    sender_grounding: Optional[SenderGroundingWhitelists] = None
-    adversarial_findings: List[str] = field(default_factory=list)
+    _recipient_insights: List[str]
+    _company_context: List[str]
+    _recent_activity: List[str]
+    _rag_results: List[RAGResult]
+    _sender_grounding: Optional[SenderGroundingWhitelists] = None
+    _adversarial_findings: List[str] = field(default_factory=list)
 
 @dataclass
 class MessageScaffold:
@@ -94,11 +94,11 @@ class MessageScaffold:
     Output is now state/4_routing_decision.json
     This class is kept for type hinting in legacy models if needed.
     """
-    route: Route
+    _route: Route
     archetype: Archetype
-    sections: Dict[str, Dict[str, object]]
-    constraints: Dict[str, object]
-    locked_sections: Set[str] = field(default_factory=set)
+    _sections: Dict[str, Dict[str, object]]
+    _constraints: Dict[str, object]
+    _locked_sections: Set[str] = field(default_factory=set)
 
 @dataclass
 class GeneratedMessage:
@@ -107,25 +107,25 @@ class GeneratedMessage:
     Output is now state/5_generated_drafts.json
     This class is kept for type hinting in legacy models if needed.
     """
-    content: str
-    word_count: int
-    char_count: int
+    _content: str
+    _word_count: int
+    _char_count: int
     route: Route
     archetype: Archetype
-    generation_temperature: float
-    generation_attempts: int
-    checksum: str
+    _generation_temperature: float
+    _generation_attempts: int
+    _checksum: str
 
 @dataclass
 class ValidationResult:
     """
     Result from a single validation check in HOP-6.
     """
-    passed: bool
-    severity: ValidationSeverity
-    rule_id: str
-    message: str
-    details: Optional[Dict[str, object]] = None
+    _passed: bool
+    _severity: ValidationSeverity
+    _rule_id: str
+    _message: str
+    _details: Optional[Dict[str, object]] = None
 
 @dataclass
 class QAReport:
@@ -135,6 +135,6 @@ class QAReport:
     This class is kept for type hinting in legacy models if needed.
     """
     mission_id: str
-    validation_results: List[ValidationResult]
+    _validation_results: List[ValidationResult]
     passed: bool
-    timestamp: str
+    _timestamp: str
