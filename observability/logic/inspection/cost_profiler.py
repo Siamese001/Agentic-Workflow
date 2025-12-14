@@ -1,7 +1,10 @@
 """
+
+logger = logging.getLogger(__name__)
 _unassigned\support_nomatch\cost_profiler.py
 Auto-hardened by WINDSURF v2
 """
+import logging
 
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # ======================================================================

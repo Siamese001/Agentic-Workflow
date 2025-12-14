@@ -1,10 +1,13 @@
 """Shared data models for runtime components.
 
+
+logger = logging.getLogger(__name__)
 Provides common data structures used across the runtime shared modules.
 """
 
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+import logging
 
 @dataclass
 class LLMResponse:

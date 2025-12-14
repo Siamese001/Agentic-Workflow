@@ -1,6 +1,9 @@
 """Dataclass models for use_observability_execution."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .use_observability_execution_enums import *  # Star import removed
 
 @dataclass

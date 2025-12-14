@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Unit tests for shared/security_controls/
 Tests security control operations including guardrails.
 """
@@ -6,6 +8,7 @@ import re
 from typing import Dict, List
 from enum import Enum
 from dataclasses import dataclass
+import logging
 
 class ThreatLevel(Enum):
     """TODO: Add docstring."""

@@ -7,6 +7,7 @@ for use by executive agents.
 import asyncio
 import os
 import json
+import logging
 from contextlib import AsyncExitStack
 from typing import List, Dict, Any, Optional
 from mcp import ClientSession, StdioServerParameters
@@ -17,12 +18,9 @@ class UniversalMCPClient:
     """Universal adapter for managing multiple MCP server connections."""
     
     def __init__(self, config_path: str = "config/mcp_server_config.json"):
-        """Initialize the MCP client.
-        
-        Args:
-            config_path: Path to MCP server configuration JSON
-        """
         self.config_path = config_path
+        self.servers = {}
+        self.logger = logging.getLogger(__name__)
         self.exit_stack = AsyncExitStack()
         self.sessions: Dict[str, ClientSession] = {}
 
@@ -34,7 +32,7 @@ class UniversalMCPClient:
         with open(self.config_path) as f:
             config_data = json.load(f)
 
-        print(f"🔌 MCP: Connecting to {len(config_data['mcpServers'])} servers...")
+        self.logger.info(f"MCP: Connecting to {len(config_data['mcpServers'])} servers...")
         
         for name, cfg in config_data['mcpServers'].items():
             try:
@@ -67,10 +65,10 @@ class UniversalMCPClient:
                 session = await self.exit_stack.enter_async_context(ClientSession(read, write))
                 await session.initialize()
                 self.sessions[name] = session
-                print(f"✅ Connected to {name}")
+                self.logger.info(f"Connected to {name}")
                 
             except Exception as e:
-                print(f"❌ Failed to connect to {name}: {e}")
+                self.logger.error(f"Failed to connect to {name}: {e}")
 
     async def get_tools_for_llm(self) -> List[Dict[str, Any]]:
         """Returns tools formatted for OpenAI/Anthropic.
@@ -90,7 +88,7 @@ class UniversalMCPClient:
                         "input_schema": tool.inputSchema
                     })
             except Exception as e:
-                print(f"⚠️ Could not list tools for {name}: {e}")
+                self.logger.warning(f"Could not list tools for {name}: {e}")
         return all_tools
 
     async def execute_tool(self, namespaced_tool_name: str, arguments: Dict[str, Any]):

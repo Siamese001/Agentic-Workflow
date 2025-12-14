@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.272685+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_lic_outreach_engine_dag.py
 # High-signal content preserved below — zero-loss migration
@@ -7,6 +9,7 @@
 import pytest
 from typing import Dict, Any
 from dataclasses import dataclass
+import logging
 
 # Mock implementations for testing
 @dataclass

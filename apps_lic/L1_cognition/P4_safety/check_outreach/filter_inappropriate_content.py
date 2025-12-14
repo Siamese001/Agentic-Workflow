@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Filter Inappropriate Content - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def filter_inappropriate_content(data: Dict[str, object]) -> Dict[str, object]:
     """Process filter inappropriate content data."""

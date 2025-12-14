@@ -1,6 +1,9 @@
 """Dataclass models for load_planning."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .load_planning_enums import *  # Star import removed
 
 @dataclass

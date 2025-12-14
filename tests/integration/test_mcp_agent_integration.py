@@ -1,5 +1,7 @@
 """Integration tests for MCP and micro agent communication.
 
+
+logger = logging.getLogger(__name__)
 Tests cover:
 - Agent registration and discovery via MCP
 - Inter-agent communication patterns
@@ -22,6 +24,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # Import mcp_tools directly to avoid problematic __init__.py imports
 import importlib.util
+import logging
 spec = importlib.util.spec_from_file_location("mcp_tools", os.path.join(os.path.dirname(__file__), '..', '..', 'runtime', 'shared', 'mcp_tools.py'))
 mcp_tools = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mcp_tools)

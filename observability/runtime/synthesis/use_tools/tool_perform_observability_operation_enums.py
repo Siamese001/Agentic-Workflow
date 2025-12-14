@@ -1,6 +1,9 @@
 """Enum types for tool_perform_observability_operation."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class OperationMode(Enum):
     """Modes of operation execution."""
     SYNCHRONOUS = 'synchronous'

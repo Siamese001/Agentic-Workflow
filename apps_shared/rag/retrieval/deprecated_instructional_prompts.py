@@ -1,5 +1,7 @@
 """Tests for Instructional Injection v6 Prompts and Many-Shot Examples
 
+
+logger = logging.getLogger(__name__)
 This module validates:
 - v6 prompt structure and completeness
 - Many-shot example quality
@@ -8,6 +10,7 @@ This module validates:
 """
 
 import pytest
+import logging
 
 class TestInstructionalPromptStructure:
     """Test v6 prompt structure and functionality."""

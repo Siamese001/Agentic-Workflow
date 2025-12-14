@@ -1,6 +1,9 @@
 """Types and models for content_embedding_compare_meaning."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING = 'pending'

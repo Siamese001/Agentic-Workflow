@@ -1,5 +1,7 @@
 """Action Call Generator Agent - CTA Generator (K.5)
 
+
+logger = logging.getLogger(__name__)
 This agent generates route-specific CTAs with strict character limits.
 Enforces CONNECTION_REQ ≤300 chars and SHORT_NEW 360-380 chars post-normalization.
 
@@ -18,6 +20,7 @@ Non-responsibilities:
 
 
 from typing import Any, Dict, List, Optional
+import logging
 
 
 class RouteType(Enum):

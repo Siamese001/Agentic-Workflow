@@ -1,10 +1,13 @@
 """
+
+logger = logging.getLogger(__name__)
 Unit tests for shared/runtime_ops/
 Tests runtime operations including data access, guardrails, synthesis, and validation.
 """
 from typing import Dict
 from datetime import datetime
 from dataclasses import dataclass
+import logging
 
 @dataclass
 class RuntimeContext:

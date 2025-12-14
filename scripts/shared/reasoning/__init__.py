@@ -1,5 +1,8 @@
 """Structured reasoning components for agentic workflows."""
+import logging
 
+
+logger = logging.getLogger(__name__)
     ReActEngine,
     ReActStep,
     ReActTrace,

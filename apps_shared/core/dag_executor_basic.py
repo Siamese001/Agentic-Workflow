@@ -2,7 +2,10 @@
 import asyncio
 
 import pytest
+import logging
 
+
+logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPR...
 
 async def _id_node(ctx: Dict[str, object]) -> Dict[str, object]:

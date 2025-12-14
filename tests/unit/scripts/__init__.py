@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Unit tests for scripts module.
 
@@ -15,6 +17,7 @@ Test Structure:
 """
 
 import pytest
+import logging
 
 # Common test fixtures
 @pytest.fixture

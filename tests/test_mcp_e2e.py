@@ -1,5 +1,7 @@
 """End-to-End MCP Integration Test
 
+
+logger = logging.getLogger(__name__)
 Tests all MCP servers with the executive orchestrator:
 - Filesystem: Read/write operations
 - Browser: Web navigation and content extraction  
@@ -18,10 +20,11 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(__file__))
 
 from mcp_adapter import UniversalMCPClient
+import logging
 
 async def test_filesystem_mcp(client):
     """Test filesystem MCP read/write operations."""
-    print("\n📁 Testing Filesystem MCP...")
+    logger.info("\n📁 Testing Filesystem MCP...")
     
     # Test write operation
     test_content = f"""# MCP E2E Test Report
@@ -39,51 +42,51 @@ Generated: {datetime.now().isoformat()}
         "path": "./output/e2e_test_report.md",
         "content": test_content
     })
-    print(f"  ✅ Write result: {result}")
+    logger.info(f"  ✅ Write result: {result}")
     
     # Test read operation
     result = await client.execute_tool("filesystem__read_text_file", {
         "path": "./output/e2e_test_report.md"
     })
-    print(f"  ✅ Read result: Success (content length: {len(str(result))})")
+    logger.info(f"  ✅ Read result: Success (content length: {len(str(result))})")
     
     # Test list directory
     result = await client.execute_tool("filesystem__list_directory", {
         "path": "./output"
     })
-    print(f"  ✅ List directory: {len(str(result))} characters")
+    logger.info(f"  ✅ List directory: {len(str(result))} characters")
     
     return True
 
 async def test_browser_mcp(client):
     """Test browser MCP navigation and content extraction."""
-    print("\n🌐 Testing Browser MCP...")
+    logger.info("\n🌐 Testing Browser MCP...")
     
     # Navigate to a test page
     result = await client.execute_tool("browser__puppeteer_navigate", {
         "url": "https://httpbin.org/html"
     })
-    print(f"  ✅ Navigate result: {result}")
+    logger.info(f"  ✅ Navigate result: {result}")
     
     # Get page content
     result = await client.execute_tool("browser__puppeteer_evaluate", {
         "script": "document.title"
     })
-    print(f"  ✅ Page title: {result}")
+    logger.info(f"  ✅ Page title: {result}")
     
     # Take screenshot
     result = await client.execute_tool("browser__puppeteer_screenshot", {})
-    print(f"  ✅ Screenshot taken: {type(result)}")
+    logger.info(f"  ✅ Screenshot taken: {type(result)}")
     
     return True
 
 async def test_github_mcp(client):
     """Test GitHub MCP repository access."""
-    print("\n🐙 Testing GitHub MCP...")
+    logger.info("\n🐙 Testing GitHub MCP...")
     
     # Check if token is available
     if not os.getenv("GITHUB_TOKEN"):
-        print("  ⚠️ GITHUB_TOKEN not set, skipping GitHub tests")
+        logger.warning("  ⚠️ GITHUB_TOKEN not set, skipping GitHub tests")
         return False
     
     try:
@@ -91,27 +94,27 @@ async def test_github_mcp(client):
         result = await client.execute_tool("github__list_repositories", {
             "owner": "octocat"
         })
-        print(f"  ✅ List repos: {type(result)}")
+        logger.info(f"  ✅ List repos: {type(result)}")
         
         # Get repository info
         result = await client.execute_tool("github__get_repository", {
             "owner": "octocat",
             "repo": "Hello-World"
         })
-        print(f"  ✅ Get repo: Success")
+        logger.info(f"  ✅ Get repo: Success")
         
         return True
     except Exception as e:
-        print(f"  ❌ GitHub test failed: {e}")
+        logger.error(f"  ❌ GitHub test failed: {e}")
         return False
 
 async def test_postgres_mcp(client):
     """Test Postgres MCP memory operations."""
-    print("\n🗄️ Testing Postgres MCP...")
+    logger.info("\n🗄️ Testing Postgres MCP...")
     
     # Check if database URL is available
     if not os.getenv("DATABASE_URL"):
-        print("  ⚠️ DATABASE_URL not set, skipping Postgres tests")
+        logger.warning("  ⚠️ DATABASE_URL not set, skipping Postgres tests")
         return False
     
     try:
@@ -125,7 +128,7 @@ async def test_postgres_mcp(client):
             )
             """
         })
-        print(f"  ✅ Create table: {result}")
+        logger.info(f"  ✅ Create table: {result}")
         
         # Insert test data
         result = await client.execute_tool("postgres_memory__query", {
@@ -133,32 +136,32 @@ async def test_postgres_mcp(client):
             INSERT INTO mcp_e2e_test (test_name) VALUES ('e2e_test')
             """
         })
-        print(f"  ✅ Insert data: {result}")
+        logger.info(f"  ✅ Insert data: {result}")
         
         # Query test data
         result = await client.execute_tool("postgres_memory__query", {
             "query": "SELECT COUNT(*) as count FROM mcp_e2e_test"
         })
-        print(f"  ✅ Query data: {result}")
+        logger.info(f"  ✅ Query data: {result}")
         
         return True
     except Exception as e:
-        print(f"  ❌ Postgres test failed: {e}")
+        logger.error(f"  ❌ Postgres test failed: {e}")
         return False
 
 async def test_pinecone_mcp(client):
     """Test Pinecone MCP vector operations."""
-    print("\n🌲 Testing Pinecone MCP...")
+    logger.info("\n🌲 Testing Pinecone MCP...")
     
     # Check if Pinecone API key is available
     if not os.getenv("PINECONE_API_KEY"):
-        print("  ⚠️ PINECONE_API_KEY not set, skipping Pinecone tests")
+        logger.warning("  ⚠️ PINECONE_API_KEY not set, skipping Pinecone tests")
         return False
     
     try:
         # List indexes
         result = await client.execute_tool("pinecone__list_indexes", {})
-        print(f"  ✅ List indexes: {type(result)}")
+        logger.info(f"  ✅ List indexes: {type(result)}")
         
         # Create test index (if not exists)
         test_index = "mcp-e2e-test"
@@ -167,7 +170,7 @@ async def test_pinecone_mcp(client):
             "dimension": 1536,
             "metric": "cosine"
         })
-        print(f"  ✅ Create index: {result}")
+        logger.info(f"  ✅ Create index: {result}")
         
         # Upsert vectors
         test_vectors = [
@@ -178,7 +181,7 @@ async def test_pinecone_mcp(client):
             "indexName": test_index,
             "vectors": test_vectors
         })
-        print(f"  ✅ Upsert vectors: {result}")
+        logger.info(f"  ✅ Upsert vectors: {result}")
         
         # Query vectors
         result = await client.execute_tool("pinecone__query", {
@@ -186,16 +189,16 @@ async def test_pinecone_mcp(client):
             "vector": [0.1] * 1536,
             "topK": 5
         })
-        print(f"  ✅ Query vectors: Success")
+        logger.info(f"  ✅ Query vectors: Success")
         
         return True
     except Exception as e:
-        print(f"  ❌ Pinecone test failed: {e}")
+        logger.error(f"  ❌ Pinecone test failed: {e}")
         return False
 
 async def test_terminal_mcp(client):
     """Test Terminal MCP safe command execution."""
-    print("\n💻 Testing Terminal MCP...")
+    logger.info("\n💻 Testing Terminal MCP...")
     
     try:
         # List files (safe command)
@@ -203,23 +206,23 @@ async def test_terminal_mcp(client):
             "command": "ls",
             "args": ["-la", "./output"]
         })
-        print(f"  ✅ ls command: {type(result)}")
+        logger.info(f"  ✅ ls command: {type(result)}")
         
         # Python version (safe command)
         result = await client.execute_tool("terminal__execute", {
             "command": "python",
             "args": ["--version"]
         })
-        print(f"  ✅ python version: {result}")
+        logger.info(f"  ✅ python version: {result}")
         
         return True
     except Exception as e:
-        print(f"  ❌ Terminal test failed: {e}")
+        logger.error(f"  ❌ Terminal test failed: {e}")
         return False
 
 async def test_sequential_thinking_mcp(client):
     """Test Sequential Thinking MCP reasoning capabilities."""
-    print("\n🧠 Testing Sequential Thinking MCP...")
+    logger.info("\n🧠 Testing Sequential Thinking MCP...")
     
     try:
         # Test sequential thinking tool
@@ -227,23 +230,23 @@ async def test_sequential_thinking_mcp(client):
             "problem": "How should we optimize the agentic workflow for better performance?",
             "context": "We have multiple MCP servers and need to minimize latency"
         })
-        print(f"  ✅ Sequential thinking: {type(result)}")
+        logger.info(f"  ✅ Sequential thinking: {type(result)}")
         
         # Test step-by-step reasoning
         result = await client.execute_tool("sequential_thinking__step", {
             "step": "Analyze current bottlenecks",
             "previous_steps": []
         })
-        print(f"  ✅ Step reasoning: Success")
+        logger.info(f"  ✅ Step reasoning: Success")
         
         return True
     except Exception as e:
-        print(f"  ❌ Sequential thinking test failed: {e}")
+        logger.error(f"  ❌ Sequential thinking test failed: {e}")
         return False
 
 async def test_executive_orchestrator_integration():
     """Test integration with ExecutiveAgentOrchestrator."""
-    print("\n🤖 Testing Executive Orchestrator Integration...")
+    logger.info("\n🤖 Testing Executive Orchestrator Integration...")
     
     try:
         # Import with MCP
@@ -254,11 +257,11 @@ async def test_executive_orchestrator_integration():
         
         # Check MCP client
         if orchestrator.mcp:
-            print("  ✅ MCP client initialized in orchestrator")
+            logger.info("  ✅ MCP client initialized in orchestrator")
             
             # Get available tools
             tools = await orchestrator.mcp.get_tools_for_llm()
-            print(f"  ✅ Available tools: {len(tools)} tools")
+            logger.info(f"  ✅ Available tools: {len(tools)} tools")
             
             # List tool categories
             categories = {}
@@ -266,31 +269,31 @@ async def test_executive_orchestrator_integration():
                 category = tool['name'].split('__')[0]
                 categories[category] = categories.get(category, 0) + 1
             
-            print("  📊 Tool categories:")
+            logger.info("  📊 Tool categories:")
             for cat, count in categories.items():
-                print(f"    - {cat}: {count} tools")
+                logger.info(f"    - {cat}: {count} tools")
             
             return True
         else:
-            print("  ❌ MCP client not initialized")
+            logger.error("  ❌ MCP client not initialized")
             return False
             
     except Exception as e:
-        print(f"  ❌ Orchestrator test failed: {e}")
+        logger.error(f"  ❌ Orchestrator test failed: {e}")
         return False
 
 async def main():
     """Run all MCP integration tests."""
-    print("=" * 60)
-    print("🚀 MCP Integration End-to-End Test")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("🚀 MCP Integration End-to-End Test")
+    logger.info("=" * 60)
     
     # Initialize MCP client
     client = UniversalMCPClient()
     
     try:
         # Connect all servers
-        print("\n🔌 Connecting to MCP servers...")
+        logger.info("\n🔌 Connecting to MCP servers...")
         await client.connect_all()
         
         # Run tests
@@ -306,32 +309,32 @@ async def main():
         results['orchestrator'] = await test_executive_orchestrator_integration()
         
         # Summary
-        print("\n" + "=" * 60)
-        print("📊 TEST SUMMARY")
-        print("=" * 60)
+        logger.info("\n" + "=" * 60)
+        logger.info("📊 TEST SUMMARY")
+        logger.info("=" * 60)
         
         for test, passed in results.items():
             status = "✅ PASS" if passed else "❌ FAIL"
-            print(f"{test:15} {status}")
+            logger.info(f"{test:15} {status}")
         
         total = len(results)
         passed = sum(results.values())
-        print(f"\nOverall: {passed}/{total} tests passed")
+        logger.info(f"\nOverall: {passed}/{total} tests passed")
         
         if passed == total:
-            print("\n🎉 All MCP integrations working correctly!")
+            logger.info("\n🎉 All MCP integrations working correctly!")
         else:
-            print(f"\n⚠️ {total - passed} test(s) failed or skipped")
+            logger.warning(f"\n⚠️ {total - passed} test(s) failed or skipped")
         
     except Exception as e:
-        print(f"\n❌ Test suite failed: {e}")
+        logger.error(f"\n❌ Test suite failed: {e}")
         import traceback
         traceback.print_exc()
     
     finally:
         # Cleanup
         await client.cleanup()
-        print("\n✅ MCP connections closed")
+        logger.info("\n✅ MCP connections closed")
 
 if __name__ == "__main__":
     asyncio.run(main())

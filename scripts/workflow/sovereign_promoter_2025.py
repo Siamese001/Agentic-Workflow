@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 # scripts/sovereign_promoter_2025.py — FINAL PERMISSIVE VERSION (Dec 2025)
 # Supports .py, .json, .md
@@ -9,6 +11,7 @@ import sys
 import re
 import json
 from pathlib import Path
+import logging
 
 SOVEREIGN_ROOTS = {
     "agentic_core",

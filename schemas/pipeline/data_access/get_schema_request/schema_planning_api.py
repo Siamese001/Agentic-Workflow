@@ -1,10 +1,13 @@
 """Schema Planning API - Factory and convenience functions.
 
+
+logger = logging.getLogger(__name__)
 This module provides high-level API functions for creating orchestrators
 and executing schema planning operations.
 """
 
 from typing import Dict, List, Optional, Any
+import logging
 
 def create_schema_planning_orchestrator(
     """Docstring."""

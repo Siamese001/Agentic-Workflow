@@ -1,7 +1,10 @@
 """Integration tests for full agentic workflow loop."""
 import pytest
 from runtime.shared.multi_provider_clients import reset_all_clients, Provider
+import logging
 
+
+logger = logging.getLogger(__name__)
 # Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION
 # skip_if_no_keys = pytest.mark.skipif(
 #     not any(os.environ.get(k) for k in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]),

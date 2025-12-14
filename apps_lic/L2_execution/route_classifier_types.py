@@ -1,6 +1,9 @@
 """Types and models for route_classifier."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class RouteType(Enum):
     """TODO: Add docstring."""
 

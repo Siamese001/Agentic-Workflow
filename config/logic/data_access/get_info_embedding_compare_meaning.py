@@ -1,11 +1,14 @@
 """Backward compatibility shim for get_info_embedding_compare_meaning.
 
+
+logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original get_info_embedding_compare_meaning.py contained 6 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
+import logging
 
 # Re-export all components for backward compatibility
 # from .get_info_embedding_compare_meaning_impl import *  # Star import removed

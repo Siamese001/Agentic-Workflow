@@ -1,11 +1,14 @@
 """Backward compatibility shim for tool_perform_observability_operation.
 
+
+logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original tool_perform_observability_operation.py contained 9 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
+import logging
 
 # Re-export all components for backward compatibility
 # from .tool_perform_observability_operation_impl import *  # Star import removed

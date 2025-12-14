@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 try:
     from neo4j import GraphDatabase
 except ImportError:
@@ -5,6 +7,7 @@ except ImportError:
     GraphDatabase = None
 import os
 from typing import Any, List, Dict
+import logging
 
 class Neo4jGraphStore:
     """

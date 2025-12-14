@@ -1,11 +1,14 @@
 """Backward compatibility shim for load_schema_planning.
 
+
+logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
 The original load_schema_planning.py contained 12 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
+import logging
 
 # Re-export all components for backward compatibility
 # from .load_schema_planning_impl import *  # Star import removed

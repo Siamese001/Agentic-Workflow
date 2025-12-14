@@ -1,10 +1,13 @@
 """Integration Tests for Security and Injection Detection
 
+
+logger = logging.getLogger(__name__)
 Tests integration between injection detection, dependency injection,
 and V6 prompt systems to ensure end-to-end security flows work correctly.
 """
 
 import pytest
+import logging
 
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionD...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, Severity,...

@@ -1,11 +1,14 @@
 """Hybrid Scorer for RAG systems.
 
+
+logger = logging.getLogger(__name__)
 Combines multiple scoring strategies for optimal document ranking.
 """
 
 from typing import Any, Dict, List, Optional
 import math
 import re
+import logging
 
 @dataclass
 class ScoringWeights:

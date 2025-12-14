@@ -1,10 +1,13 @@
 """
+
+logger = logging.getLogger(__name__)
 Unit tests for shared/pipeline_ops/
 Tests pipeline operations including data access, guardrails, and synthesis.
 """
 from typing import Dict, List, Optional
 from enum import Enum
 from dataclasses import dataclass, field
+import logging
 
 class PipelineStatus(Enum):
     """TODO: Add docstring."""

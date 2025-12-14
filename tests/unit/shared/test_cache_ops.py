@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Unit tests for shared/cache_ops/
 Tests cache operations including data access and guardrails.
 """
@@ -6,6 +8,7 @@ from typing import Dict
 from datetime import datetime, timedelta
 import hashlib
 import json
+import logging
 
 class TestCacheDataAccess:
     """Tests for cache data access operations."""

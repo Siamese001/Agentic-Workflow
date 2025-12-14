@@ -1,7 +1,10 @@
+
+logger = logging.getLogger(__name__)
 # scripts/auto_ruff_path.py
 import tomllib
 import sys
 from pathlib import Path
+import logging
 
 pyproject = Path("pyproject.toml")
 data = tomllib.loads(pyproject.read_text())

@@ -4,7 +4,10 @@ from typing import Dict, List
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 from enum import Enum
+import logging
 
+
+logger = logging.getLogger(__name__)
 # Skip E2E tests if no admin credentials are present - DISABLED FOR FINAL VALIDATION
 # skip_if_no_admin = pytest.mark.skipif(
 #     not os.environ.get("ADMIN_API_KEY"),

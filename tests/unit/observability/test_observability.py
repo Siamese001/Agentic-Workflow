@@ -5,7 +5,10 @@ from typing import Dict, List, Optional
 from datetime import datetime
 from dataclasses import dataclass
 from enum import Enum
+import logging
 
+
+logger = logging.getLogger(__name__)
 class LogLevel(Enum):
     """TODO: Add docstring."""
 

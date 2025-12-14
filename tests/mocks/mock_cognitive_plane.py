@@ -1,10 +1,13 @@
 """Mock Cognitive Plane for testing.
 
+
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Simple mock implementation that returns predefined plans.
 """
 
 from typing import Any, Dict, List
+import logging
 
     ICognitivePlane,
     PlanningRequest,

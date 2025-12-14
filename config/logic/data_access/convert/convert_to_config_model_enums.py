@@ -1,6 +1,9 @@
 """Enum types for convert_to_config_model."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ConfigFormat(Enum):
     """Supported configuration formats."""
     JSON = 'json'

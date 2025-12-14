@@ -1,5 +1,8 @@
 """Unit tests for runtime/shared/config.py"""
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
     SAFETY_THRESHOLD,
     CONFIG,
     C2,

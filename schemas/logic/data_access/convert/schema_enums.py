@@ -1,6 +1,9 @@
 """Enum types for convert_to_internal_schema."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class SchemaType(Enum):
     """Types of schemas supported."""
     JSON_SCHEMA = 'json_schema'

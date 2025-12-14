@@ -1,5 +1,7 @@
 """Dedicated prompt providers for subatomic agents.
 
+
+logger = logging.getLogger(__name__)
 Separates prompt generation logic from agent execution, enabling
 dynamic prompt configuration and easier maintenance.
 """
@@ -7,6 +9,7 @@ dynamic prompt configuration and easier maintenance.
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
 import json
+import logging
 
 
 class BasePromptProvider(ABC):

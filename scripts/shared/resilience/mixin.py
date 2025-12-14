@@ -1,5 +1,7 @@
 """Hardening mixin for resilient execution.
 
+
+logger = logging.getLogger(__name__)
 Provides a unified way to add circuit breaking, retries, and telemetry
 to any component that executes external operations.
 
@@ -8,6 +10,7 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import time
 from typing import Any, Callable, Awaitable, Dict, Optional
+import logging
 
 
 class TokenLimitError(Exception):

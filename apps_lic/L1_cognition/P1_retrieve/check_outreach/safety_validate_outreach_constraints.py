@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Validate Outreach Constraints - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def validate_outreach_constraints(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate outreach constraints data."""

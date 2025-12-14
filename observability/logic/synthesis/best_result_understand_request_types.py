@@ -1,6 +1,9 @@
 """Types and models for best_result_understand_request."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING = 'pending'

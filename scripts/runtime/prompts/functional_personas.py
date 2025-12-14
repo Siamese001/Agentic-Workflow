@@ -1,10 +1,13 @@
 """Functional Persona Templates - Clean prompts without legacy K-node references.
 
+
+logger = logging.getLogger(__name__)
 This module provides sanitized prompt templates that use functional personas
 instead of numbered nodes. All references to K.X have been eliminated.
 """
 
 from typing import Dict, Any, Optional
+import logging
 
 class PersonaTemplate:
     """Template for functional persona prompts."""

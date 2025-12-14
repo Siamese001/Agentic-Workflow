@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/safety_ops/
 Tests safety operations including check_rules.
 """
@@ -6,6 +8,7 @@ import re
 from typing import Dict, List
 from enum import Enum
 from dataclasses import dataclass
+import logging
 
 class SafetyViolationType(Enum):
     """TODO: Add docstring."""

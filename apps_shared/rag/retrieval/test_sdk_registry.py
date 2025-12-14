@@ -2,6 +2,9 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from runtime.shared.sdk_registry import (
+import logging
+
+logger = logging.getLogger(__name__)
     SDK_REGISTRY,
     SDKEntry,
     validate_sdk,

@@ -1,6 +1,9 @@
 """Split module 1 for exceptions_impl."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class AgenticWorkflowError(Exception):
     """foundation exception for all agentic workflow errors."""
     pass

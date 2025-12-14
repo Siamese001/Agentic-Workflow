@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
 """Enforce Length Limits - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def enforce_length_limits(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce length limits data."""

@@ -1,11 +1,14 @@
 """Unit Tests for Dependency Injection System
 
 import os
+
+logger = logging.getLogger(__name__)
 Tests DI container functionality and proper service injection
 across all layers to maintain L1-L5 atomicity.
 """
 
 import pytest
+import logging
 
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapt...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  # Archive...

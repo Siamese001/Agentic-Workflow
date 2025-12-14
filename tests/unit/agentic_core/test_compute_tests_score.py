@@ -1,9 +1,12 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
 """Test Compute Tests Score - atomic execution layer."""
 
 
 from typing import Dict
+import logging
 
 def test_compute_tests_score(data: Dict[str, object]) -> Dict[str, object]:
     """Process test compute tests score data."""

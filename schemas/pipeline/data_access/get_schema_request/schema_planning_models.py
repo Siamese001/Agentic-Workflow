@@ -1,10 +1,13 @@
 """Schema Planning Models - Configuration and result models.
 
+
+logger = logging.getLogger(__name__)
 This module contains dataclass models for schema planning configuration
 and result structures.
 """
 
 from typing import Dict, List, Any
+import logging
 
 @dataclass
 class TransformationPlan:

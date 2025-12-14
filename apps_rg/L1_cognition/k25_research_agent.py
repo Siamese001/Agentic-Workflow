@@ -1,6 +1,9 @@
 from datetime import datetime
 from pathlib import Path
+import logging
 
+
+logger = logging.getLogger(__name__)
     CitationMap,
     DeepResearchOutput,
     ExecutiveProfile,

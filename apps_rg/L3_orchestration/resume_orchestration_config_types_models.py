@@ -1,5 +1,8 @@
 """Dataclass models for resume_orchestration_config_types."""
+import logging
 
+
+logger = logging.getLogger(__name__)
 # from .resume_orchestration_config_types_enums import *  # Star import removed
 
 @dataclass

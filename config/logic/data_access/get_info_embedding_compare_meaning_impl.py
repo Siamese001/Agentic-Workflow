@@ -1,6 +1,7 @@
 """Implementation for get_info_embedding_compare_meaning."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .get_info_embedding_compare_meaning_types import *  # Star import removed
 
 class GetInfoEmbeddingCompareMeaning:

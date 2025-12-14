@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Search Similar Messages - atomic implementation."""
 
 from typing import Dict
+import logging
 
 class SearchSimilarMessages:
     """SearchSimilarMessages implementation."""

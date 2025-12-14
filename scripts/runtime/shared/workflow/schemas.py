@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Pydantic schemas for workflow node validation.
 
 Defines strict models for each K-node to enforce structure
@@ -6,6 +8,7 @@ and prevent LLM output drift.
 """
 
 from typing import List, Optional, Dict, Any
+import logging
 
 # K.1: Company and Job Title Extraction
 class K1CompanyJobTitle(BaseModel):

@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """
 pytest configuration and fixtures
@@ -18,6 +20,7 @@ Version: 1.0.0
 import os
 import sys
 from pathlib import Path
+import logging
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent

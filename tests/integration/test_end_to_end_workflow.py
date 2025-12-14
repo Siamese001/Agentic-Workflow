@@ -1,5 +1,7 @@
 """End-to-End Integration Test for Agentic Workflow with SDK Integration.
 
+
+logger = logging.getLogger(__name__)
 Tests complete workflow execution with:
 - LLM provider integration (OpenAI/Anthropic)
 - Vector store integration (ChromaDB)
@@ -12,6 +14,7 @@ Phase 1C - SDK Integration Layer
 
 import os
 import pytest
+import logging
 
     AgentMessage,
     Provider,

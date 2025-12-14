@@ -1,6 +1,7 @@
 """Implementation for get_info_understand_request."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .get_info_understand_request_types import *  # Star import removed
 
 class GetInfoUnderstandRequest:

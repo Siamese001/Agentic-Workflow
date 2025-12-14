@@ -1,8 +1,11 @@
 """
+
+logger = logging.getLogger(__name__)
 Safety module stub for apps_rg.
 
 This module provides safety checking functionality for resume generation.
 """
+import logging
 
 # Stub classes to prevent import errors
 class HallucinationDetector:

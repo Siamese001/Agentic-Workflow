@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Example of using OpenAI SDK with an agent.
 Demonstrates basic chat completion and structured outputs.
 """
@@ -10,6 +12,7 @@ import json
 
 # Import our OpenAI client manager
 from agentic_workflow.runtime.shared.openai_client import (
+import logging
     get_openai_client,
     create_agent_prompt,
     configure_openai
@@ -144,33 +147,33 @@ class OpenAIAgent:
 
 def main():
     """Example usage of OpenAI agent."""
-    print("OpenAI Agent Example")
-    print("=" * 50)
+    logger.info("OpenAI Agent Example")
+    logger.info("=" * 50)
     
     # Initialize agent
     agent = OpenAIAgent("Example Agent")
     
     # Example 1: General task
-    print("\n1. General Task Example:")
+    logger.info("\n1. General Task Example:")
     task = "Explain the concept of machine learning in simple terms."
     result = agent.process_task(task, "general")
-    print(f"Response: {result.response}")
-    print(f"Next Steps: {result.next_steps}")
+    logger.info(f"Response: {result.response}")
+    logger.info(f"Next Steps: {result.next_steps}")
     
     # Example 2: Code generation
-    print("\n2. Code Generation Example:")
+    logger.info("\n2. Code Generation Example:")
     code_desc = "Create a function that calculates the factorial of a number recursively"
     code = agent.generate_code(code_desc)
-    print(f"Generated Code:\n{code}")
+    logger.info(f"Generated Code:\n{code}")
     
     # Example 3: Text analysis
-    print("\n3. Text Analysis Example:")
+    logger.info("\n3. Text Analysis Example:")
     sample_text = "I love using OpenAI's API! It's incredibly powerful and easy to use."
     analysis = agent.analyze_text(sample_text, "sentiment")
-    print(f"Analysis Result: {analysis['result']}")
+    logger.info(f"Analysis Result: {analysis['result']}")
     
     # Example 4: Using structured outputs
-    print("\n4. Structured Output Example:")
+    logger.info("\n4. Structured Output Example:")
     json_task = "Create a JSON object representing a user profile with name, email, and preferences"
     messages = [
         {"role": "system", "content": "Return only valid JSON in your response."},
@@ -187,15 +190,15 @@ def main():
     
     try:
         json_result = json.loads(response.choices[0].message.content)
-        print(f"Structured JSON: {json.dumps(json_result, indent=2)}")
+        logger.info(f"Structured JSON: {json.dumps(json_result, indent=2)}")
     except json.JSONDecodeError:
-        print("Failed to parse JSON response")
+        logger.error("Failed to parse JSON response")
 
 
 if __name__ == "__main__":
     # Check for API key
     if not os.getenv("OPENAI_API_KEY"):
-        print("Error: OPENAI_API_KEY environment variable not set.")
-        print("Please set it before running this example.")
+        logger.error("Error: OPENAI_API_KEY environment variable not set.")
+        logger.info("Please set it before running this example.")
     else:
         main()

@@ -1,5 +1,7 @@
 """Observability - Runtime Layer
 
+
+logger = logging.getLogger(__name__)
 This module provides observability compatibility shim.
 
 Layer: Runtime/Infrastructure
@@ -12,6 +14,7 @@ Non-responsibilities:
 - Business logic
 - Layer-specific operations
 """
+import logging
 
 # FILE: observability.py
 

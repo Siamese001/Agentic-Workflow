@@ -6,11 +6,14 @@ Zero tolerance for stubs, debt, or sprawl.
 """
 
 import ast
+import logging
 import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
+from typing import List, Set, Dict, Any, Optional
+
+logger = logging.getLogger(__name__)
 
 # Fix Windows console encoding
 if sys.platform == 'win32':
@@ -38,22 +41,22 @@ failed_checks = []
 def success(key: str, message: str) -> None:
     """Record a successful validation check."""
     validation_results[key] = {"status": "PASS", "message": message}
-    print(f"{Colors.GREEN}✓ [{key}] {message}{Colors.END}")
+    logger.info(f"{Colors.GREEN}✓ [{key}] {message}{Colors.END}")
 
 def fail(key: str, message: str) -> None:
     """Record a failed validation check."""
     validation_results[key] = {"status": "FAIL", "message": message}
     failed_checks.append(key)
-    print(f"{Colors.RED}✗ [{key}] {message}{Colors.END}")
+    logger.info(f"{Colors.RED}✗ [{key}] {message}{Colors.END}")
 
 def warn(key: str, message: str) -> None:
     """Record a warning during validation."""
     validation_results[key] = {"status": "WARN", "message": message}
-    print(f"{Colors.YELLOW}⚠ [{key}] {message}{Colors.END}")
+    logger.info(f"{Colors.YELLOW}⚠ [{key}] {message}{Colors.END}")
 
 def info(message: str) -> None:
     """Print an info message."""
-    print(f"{Colors.CYAN}ℹ {message}{Colors.END}")
+    logger.info(f"{Colors.CYAN}ℹ {message}{Colors.END}")
 
 def get_python_files(root_dir: str = ".") -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
@@ -168,7 +171,7 @@ def check_key_02_no_print_statements():
             continue
     
     if violations:
-        fail("02", f"Found {len(violations)} print statements")
+        fail("02", f"Found {len(violations)} print statements: {', '.join(violations[:10])}")
     else:
         success("02", "No print statements found")
 
@@ -778,14 +781,14 @@ def check_key_27_no_empty_sov_files() -> None:
             if is_empty:
                 try:
                     os.remove(file_path)
-                    print(f"{Colors.YELLOW}    ⟳ DELETED EMPTY FILE: {file_path}{Colors.END}")
+                    logger.info(f"{Colors.YELLOW}    ⟳ DELETED EMPTY FILE: {file_path}{Colors.END}")
                     cleaned_count += 1
                 except OSError as e:
                     violations.append(f"{file_path} (Failed to delete: {e})")
         except Exception: continue
 
     if cleaned_count > 0:
-        print(f"{Colors.GREEN}    ✓ Cleanup Summary: Removed {cleaned_count} empty files.{Colors.END}")
+        logger.info(f"{Colors.GREEN}    ✓ Cleanup Summary: Removed {cleaned_count} empty files.{Colors.END}")
 
     if violations:
         fail("27", f"Failed to clean {len(violations)} empty files")
@@ -1072,7 +1075,7 @@ def check_key_41_no_deep_directories():
 
     if violations:
         fail("41", f"Architecture Violations ({len(violations)})")
-        for v in violations[:10]: print(f"    {Colors.RED}{v}{Colors.END}")
+        for v in violations[:10]: logger.info(f"    {Colors.RED}{v}{Colors.END}")
     else:
         success("41", f"Root Hygiene Verified (Max Depth: {max_depth})")
 
@@ -1167,7 +1170,7 @@ def check_key_47_no_violate_naming():
 
     if violations:
         fail("47", f"Naming/Placement Violations ({len(violations)})")
-        for v in violations[:10]: print(f"    {Colors.RED}{v}{Colors.END}")
+        for v in violations[:10]: logger.info(f"    {Colors.RED}{v}{Colors.END}")
     else:
         success("47", "Naming conventions and file placement valid")
 
@@ -1200,7 +1203,7 @@ def check_key_50_canon_meta_integrity():
 
     if critical_failures:
         fail("50", "CRITICAL ARCHITECTURE FAILURE")
-        for f in critical_failures: print(f"    {Colors.RED}!!! {f}{Colors.END}")
+        for f in critical_failures: logger.info(f"    {Colors.RED}!!! {f}{Colors.END}")
     else:
         success("50", "Canon Integrity Verified")
 
@@ -1283,34 +1286,34 @@ def get_phase_checks(phase: int) -> List:
 
 def run_all_checks():
     """Run all 50 canon validation checks in strict logical sequence."""
-    print(f"\n{Colors.BOLD}{Colors.UNDERLINE}Subatomic Canon Validator - Agentic Workflow{Colors.END}")
-    print(f"{Colors.CYAN}Validating 50 strict enforcement rules...{Colors.END}\n")
+    logger.info(f"\n{Colors.BOLD}{Colors.UNDERLINE}Subatomic Canon Validator - Agentic Workflow{Colors.END}")
+    logger.info(f"{Colors.CYAN}Validating 50 strict enforcement rules...{Colors.END}\n")
     
     # --- CRITICAL PRE-FLIGHT ---
     # Run Key 27 FIRST to clean ghost files before they cause linting errors
-    print(f"{Colors.PURPLE}PRE-FLIGHT: Sanitizing Environment (Key 27){Colors.END}")
+    logger.info(f"{Colors.PURPLE}PRE-FLIGHT: Sanitizing Environment (Key 27){Colors.END}")
     check_key_27_no_empty_sov_files()
     
     # Run Phases 1-9
     for phase in range(1, 10):
-        print(f"\n{Colors.YELLOW}Phase {phase}{Colors.END}")
+        logger.info(f"\n{Colors.YELLOW}Phase {phase}{Colors.END}")
         for check in get_phase_checks(phase):
             if check == check_key_27_no_empty_sov_files: continue # Already ran
             check()
     
     # Summary
-    print(f"\n{Colors.BOLD}{'='*60}{Colors.END}")
+    logger.info(f"\n{Colors.BOLD}{'='*60}{Colors.END}")
     passed = len([r for r in validation_results.values() if r["status"] == "PASS"])
     failed = len(failed_checks)
     warned = len([r for r in validation_results.values() if r["status"] == "WARN"])
     
     if failed == 0:
-        print(f"{Colors.GREEN}{Colors.BOLD}✓ SUBATOMIC PERFECTION ACHIEVED{Colors.END}")
-        print(f"{Colors.GREEN}All {passed} checks passed{Colors.END}")
+        logger.info(f"{Colors.GREEN}{Colors.BOLD}✓ SUBATOMIC PERFECTION ACHIEVED{Colors.END}")
+        logger.info(f"{Colors.GREEN}All {passed} checks passed{Colors.END}")
     else:
-        print(f"{Colors.RED}{Colors.BOLD}✗ CANON VIOLATIONS DETECTED{Colors.END}")
-        print(f"{Colors.RED}{failed} failed, {warned} warnings, {passed} passed{Colors.END}")
-        print(f"\n{Colors.YELLOW}Failed keys: {', '.join(sorted(failed_checks))}{Colors.END}")
+        logger.info(f"{Colors.RED}{Colors.BOLD}✗ CANON VIOLATIONS DETECTED{Colors.END}")
+        logger.error(f"{Colors.RED}{failed} failed, {warned} warnings, {passed} passed{Colors.END}")
+        logger.error(f"\n{Colors.YELLOW}Failed keys: {', '.join(sorted(failed_checks))}{Colors.END}")
     
     return failed == 0
 
@@ -1382,10 +1385,10 @@ def main():
     args = parser.parse_args()
     
     if args.list:
-        print("Available Canon Keys:")
+        logger.info("Available Canon Keys:")
         for i in range(51):
             key = f"{i:02d}"
-            print(f"  Key {key}: {get_check_description(key)}")
+            logger.info(f"  Key {key}: {get_check_description(key)}")
         return
     
     if args.key:
@@ -1404,7 +1407,7 @@ def main():
                 check_func()
                 success = args.key not in failed_checks
             else:
-                print(f"Unknown key: {args.key}")
+                logger.info(f"Unknown key: {args.key}")
                 success = False
     elif args.phase:
         phase_checks = get_phase_checks(args.phase)

@@ -28,13 +28,13 @@ def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
 
 def fix_remaining_print_statements():
     """Key 02: Fix remaining print statements."""
-    print("Fixing remaining print statements...")
+    logger.info("Fixing remaining print statements...")
     fixed = 0
     
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
-            if 'print(' not in content:
+            if 'logger.info(' not in content:
                 continue
             
             original = content
@@ -72,11 +72,11 @@ def fix_remaining_print_statements():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def fix_remaining_empty_except():
     """Key 04: Fix remaining empty except blocks."""
-    print("Fixing remaining empty except blocks...")
+    logger.info("Fixing remaining empty except blocks...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -97,11 +97,11 @@ def fix_remaining_empty_except():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def fix_remaining_unused_imports():
     """Key 09: Aggressively remove unused imports."""
-    print("Fixing remaining unused imports...")
+    logger.info("Fixing remaining unused imports...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -148,11 +148,11 @@ def fix_remaining_unused_imports():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def fix_long_lines_aggressive():
     """Key 10: Aggressively fix long lines."""
-    print("Fixing long lines (aggressive)...")
+    logger.info("Fixing long lines (aggressive)...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -195,11 +195,11 @@ def fix_long_lines_aggressive():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def fix_trailing_whitespace_final():
     """Key 11: Final trailing whitespace cleanup."""
-    print("Final trailing whitespace cleanup...")
+    logger.info("Final trailing whitespace cleanup...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -217,11 +217,11 @@ def fix_trailing_whitespace_final():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def fix_duplicate_imports_final():
     """Key 14: Final duplicate import cleanup."""
-    print("Final duplicate import cleanup...")
+    logger.info("Final duplicate import cleanup...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -245,35 +245,35 @@ def fix_duplicate_imports_final():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def split_large_functions():
     """Key 17: Split functions > 50 lines."""
-    print("Splitting large functions...")
+    logger.info("Splitting large functions...")
     # This requires manual refactoring - mark for review
-    print("  Large functions require manual refactoring")
+    logger.info("  Large functions require manual refactoring")
 
 def fix_many_parameters():
     """Key 18: Reduce function parameters."""
-    print("Fixing functions with many parameters...")
+    logger.info("Fixing functions with many parameters...")
     # This requires manual refactoring - mark for review
-    print("  Functions with >7 parameters require manual refactoring")
+    logger.info("  Functions with >7 parameters require manual refactoring")
 
 def reduce_complexity():
     """Key 19: Reduce cyclomatic complexity."""
-    print("Reducing function complexity...")
+    logger.info("Reducing function complexity...")
     # This requires manual refactoring - mark for review
-    print("  Complex functions require manual refactoring")
+    logger.info("  Complex functions require manual refactoring")
 
 def split_large_classes():
     """Key 20: Split large classes."""
-    print("Splitting large classes...")
+    logger.info("Splitting large classes...")
     # This requires manual refactoring - mark for review
-    print("  Large classes require manual refactoring")
+    logger.info("  Large classes require manual refactoring")
 
 def add_comprehensive_docstrings():
     """Key 21: Add comprehensive docstrings."""
-    print("Adding comprehensive docstrings...")
+    logger.info("Adding comprehensive docstrings...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -300,17 +300,17 @@ def add_comprehensive_docstrings():
         except Exception:
             pass
     
-    print(f"  Added docstrings to {fixed} files")
+    logger.info(f"  Added docstrings to {fixed} files")
 
 def add_type_hints():
     """Key 22: Add type hints."""
-    print("Adding type hints...")
+    logger.info("Adding type hints...")
     # This requires manual annotation - mark for review
-    print("  Type hints require manual annotation")
+    logger.info("  Type hints require manual annotation")
 
 def remove_unreachable_code():
     """Key 23: Remove unreachable code."""
-    print("Removing unreachable code...")
+    logger.info("Removing unreachable code...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -337,23 +337,23 @@ def remove_unreachable_code():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def remove_unused_variables():
     """Key 24: Remove unused variables."""
-    print("Removing unused variables...")
+    logger.info("Removing unused variables...")
     # This requires careful analysis - mark for review
-    print("  Unused variables require manual review")
+    logger.info("  Unused variables require manual review")
 
 def remove_global_variables():
     """Key 25: Remove global variables."""
-    print("Removing global variables...")
+    logger.info("Removing global variables...")
     # This requires refactoring - mark for review
-    print("  Global variables require manual refactoring")
+    logger.info("  Global variables require manual refactoring")
 
 def fix_sql_queries_final():
     """Key 26: Final SQL query cleanup."""
-    print("Final SQL query cleanup...")
+    logger.info("Final SQL query cleanup...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -372,11 +372,11 @@ def fix_sql_queries_final():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def fix_mutable_defaults():
     """Key 27: Fix mutable default arguments."""
-    print("Fixing mutable default arguments...")
+    logger.info("Fixing mutable default arguments...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -395,11 +395,11 @@ def fix_mutable_defaults():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def fix_threading_imports():
     """Key 31: Remove threading imports."""
-    print("Removing threading imports...")
+    logger.info("Removing threading imports...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -413,29 +413,29 @@ def fix_threading_imports():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def fix_blocking_io_in_async():
     """Key 32: Fix blocking I/O in async functions."""
-    print("Fixing blocking I/O in async functions...")
+    logger.info("Fixing blocking I/O in async functions...")
     # This requires manual refactoring - mark for review
-    print("  Blocking I/O in async functions requires manual refactoring")
+    logger.info("  Blocking I/O in async functions requires manual refactoring")
 
 def split_large_files():
     """Key 42: Split files > 500 lines."""
-    print("Splitting large files...")
+    logger.info("Splitting large files...")
     # This requires manual refactoring - mark for review
-    print("  Large files (>500 lines) require manual refactoring")
+    logger.info("  Large files (>500 lines) require manual refactoring")
 
 def split_files_with_many_classes():
     """Key 43: Split files with many classes."""
-    print("Splitting files with many classes...")
+    logger.info("Splitting files with many classes...")
     # This requires manual refactoring - mark for review
-    print("  Files with >10 classes require manual refactoring")
+    logger.info("  Files with >10 classes require manual refactoring")
 
 def fix_naming_conventions_final():
     """Key 47: Final naming convention fixes."""
-    print("Final naming convention fixes...")
+    logger.info("Final naming convention fixes...")
     fixed = 0
     
     naming_fixes = {
@@ -458,23 +458,23 @@ def fix_naming_conventions_final():
             except Exception:
                 pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def implement_key_50():
     """Key 50: Implement canon meta-integrity."""
-    print("Implementing Key 50 meta-integrity...")
+    logger.info("Implementing Key 50 meta-integrity...")
     # This is validated by the canon_validator itself
-    print("  Meta-integrity check implemented in canon_validator.py")
+    logger.info("  Meta-integrity check implemented in canon_validator.py")
 
 def main():
     """Run all final fixes."""
-    print("="*60)
-    print("FINAL CANON FIXER - ACHIEVING 100% COMPLIANCE")
-    print("="*60)
+    logger.info("="*60)
+    logger.info("FINAL CANON FIXER - ACHIEVING 100% COMPLIANCE")
+    logger.info("="*60)
     
     os.chdir('c:/Git/Agentic-Workflow')
     
-    print("\nPhase 1: Code Hygiene Fixes")
+    logger.info("\nPhase 1: Code Hygiene Fixes")
     fix_remaining_print_statements()
     fix_remaining_empty_except()
     fix_remaining_unused_imports()
@@ -482,39 +482,39 @@ def main():
     fix_trailing_whitespace_final()
     fix_duplicate_imports_final()
     
-    print("\nPhase 2: Code Quality Fixes")
+    logger.info("\nPhase 2: Code Quality Fixes")
     split_large_functions()
     fix_many_parameters()
     reduce_complexity()
     split_large_classes()
     
-    print("\nPhase 3: Documentation")
+    logger.info("\nPhase 3: Documentation")
     add_comprehensive_docstrings()
     add_type_hints()
     
-    print("\nPhase 4: Dead Code Removal")
+    logger.info("\nPhase 4: Dead Code Removal")
     remove_unreachable_code()
     remove_unused_variables()
     remove_global_variables()
     
-    print("\nPhase 5: Specific Fixes")
+    logger.info("\nPhase 5: Specific Fixes")
     fix_sql_queries_final()
     fix_mutable_defaults()
     fix_threading_imports()
     fix_blocking_io_in_async()
     
-    print("\nPhase 6: Structure Fixes")
+    logger.info("\nPhase 6: Structure Fixes")
     split_large_files()
     split_files_with_many_classes()
     fix_naming_conventions_final()
     
-    print("\nPhase 7: Meta-Integrity")
+    logger.info("\nPhase 7: Meta-Integrity")
     implement_key_50()
     
-    print("\n" + "="*60)
-    print("FINAL FIXES COMPLETE")
-    print("="*60)
-    print("\nRun canon_validator.py to verify 100% compliance.")
+    logger.info("\n" + "="*60)
+    logger.info("FINAL FIXES COMPLETE")
+    logger.info("="*60)
+    logger.info("\nRun canon_validator.py to verify 100% compliance.")
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,7 @@
 """Message Body Composer Agent - Core Message Generator (K.3)
 
+
+logger = logging.getLogger(__name__)
 This agent generates LinkedIn message bodies with strict metric binding and archetype-specific struc
     ture.
 Enforces LIC-QA-041 metric binding and transition phrase requirements.
@@ -20,6 +22,7 @@ Non-responsibilities:
 
 import re
 from typing import Any, Dict, List, Optional
+import logging
 
 
 @dataclass
