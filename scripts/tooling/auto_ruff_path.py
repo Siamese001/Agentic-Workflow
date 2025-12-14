@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # scripts/auto_ruff_path.py
 import tomllib

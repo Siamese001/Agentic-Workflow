@@ -10,13 +10,26 @@ from typing import List
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def get_python_files(root_dir: str = ".") -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
     python_files = []
     exclude_dirs = {
-        ".git", "__pycache__", ".pytest_cache", ".tox", "venv", "env",
-        ".venv", ".env", "node_modules", ".idea", ".vscode", "dist", "build",
-        "archives", "data"
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".tox",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        "node_modules",
+        ".idea",
+        ".vscode",
+        "dist",
+        "build",
+        "archives",
+        "data",
     }
 
     for root, dirs, files in os.walk(root_dir):
@@ -32,65 +45,85 @@ def get_python_files(root_dir: str = ".") -> List[str]:
 
     return python_files
 
+
 def _should_skip_line(content: str) -> bool:
     """Check if line should be skipped from breaking."""
-    return (content.strip().startswith('#') or
-            '"""' in content or "'''" in content or
-            content.strip().startswith('r"""') or
-            content.strip().startswith("r'''"))
+    return (
+        content.strip().startswith("#")
+        or '"""' in content
+        or "'''" in content
+        or content.strip().startswith('r"""')
+        or content.strip().startswith("r'''")
+    )
+
 
 def _break_at_commas(content: str, indent: str) -> str:
     """Break line at commas for function calls/arguments."""
-    parts = content.split(', ')
+    parts = content.split(", ")
     if len(parts) <= 1:
         return None
 
     base_indent = len(indent)
     extra_indent = 4
-    new_line = indent + parts[0] + ',\n'
+    new_line = indent + parts[0] + ",\n"
 
     for part in parts[1:-1]:
-        new_line += ' ' * (base_indent + extra_indent) + part + ',\n'
+        new_line += " " * (base_indent + extra_indent) + part + ",\n"
 
-    new_line += ' ' * (base_indent + extra_indent) + parts[-1] + '\n'
+    new_line += " " * (base_indent + extra_indent) + parts[-1] + "\n"
     return new_line
+
 
 def _break_at_boolean_operator(content: str, indent: str, operator: str) -> str:
     """Break line at boolean operators (and/or)."""
-    parts = content.split(f' {operator} ')
+    parts = content.split(f" {operator} ")
     if len(parts) <= 1:
         return None
 
     base_indent = len(indent)
     extra_indent = 4
-    new_line = indent + parts[0] + f' {operator} \n'
+    new_line = indent + parts[0] + f" {operator} \n"
 
     for part in parts[1:]:
-        new_line += ' ' * (base_indent + extra_indent) + part
+        new_line += " " * (base_indent + extra_indent) + part
 
-    new_line += '\n'
+    new_line += "\n"
     return new_line
+
 
 def _break_at_method_chain(content: str, indent: str) -> str:
     """Break line at dots for chained method calls."""
-    parts = content.split('.')
+    parts = content.split(".")
     if len(parts) <= 2:
         return None
 
     base_indent = len(indent)
     extra_indent = 4
-    new_line = indent + parts[0] + '.\n'
+    new_line = indent + parts[0] + ".\n"
 
     for part in parts[1:-1]:
-        new_line += ' ' * (base_indent + extra_indent) + '.' + part + '.\n'
+        new_line += " " * (base_indent + extra_indent) + "." + part + ".\n"
 
-    new_line += ' ' * (base_indent + extra_indent) + '.' + parts[-1] + '\n'
+    new_line += " " * (base_indent + extra_indent) + "." + parts[-1] + "\n"
     return new_line
+
 
 def _break_at_operators(content: str, indent: str) -> str:
     """Break line at arithmetic/comparison operators."""
-    operators = [' == ', ' != ', ' < ', ' > ', ' <= ', ' >= ',
-                 ' + ', ' - ', ' * ', ' / ', ' % ', ' // ']
+    operators = [
+        " == ",
+        " != ",
+        " < ",
+        " > ",
+        " <= ",
+        " >= ",
+        " + ",
+        " - ",
+        " * ",
+        " / ",
+        " % ",
+        " // ",
+    ]
 
     for op in operators:
         if op in content:
@@ -98,16 +131,17 @@ def _break_at_operators(content: str, indent: str) -> str:
             if len(parts) > 1:
                 base_indent = len(indent)
                 extra_indent = 4
-                new_line = indent + parts[0] + op + '\n'
-                new_line += ' ' * (base_indent + extra_indent) + op.join(parts[1:]) + '\n'
+                new_line = indent + parts[0] + op + "\n"
+                new_line += " " * (base_indent + extra_indent) + op.join(parts[1:]) + "\n"
                 return new_line
 
     return None
 
+
 def fix_long_lines_in_file(file_path: str) -> int:
     """Fix long lines in a single file. Returns number of lines fixed."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
         modified = False
@@ -120,27 +154,27 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 new_lines.append(line)
                 continue
 
-            indent_match = re.match(r'^(\s*)', line)
-            indent = indent_match.group(1) if indent_match else ''
-            content = line[len(indent):].rstrip()
+            indent_match = re.match(r"^(\s*)", line)
+            indent = indent_match.group(1) if indent_match else ""
+            content = line[len(indent) :].rstrip()
 
             if _should_skip_line(content):
                 new_lines.append(line)
                 continue
 
-            is_import = content.strip().startswith('import')
+            is_import = content.strip().startswith("import")
             result = None
 
-            if not is_import and ', ' in content:
+            if not is_import and ", " in content:
                 result = _break_at_commas(content, indent)
 
-            if not result and not is_import and ' and ' in content:
-                result = _break_at_boolean_operator(content, indent, 'and')
+            if not result and not is_import and " and " in content:
+                result = _break_at_boolean_operator(content, indent, "and")
 
-            if not result and not is_import and ' or ' in content:
-                result = _break_at_boolean_operator(content, indent, 'or')
+            if not result and not is_import and " or " in content:
+                result = _break_at_boolean_operator(content, indent, "or")
 
-            if not result and not is_import and '.' in content:
+            if not result and not is_import and "." in content:
                 result = _break_at_method_chain(content, indent)
 
             if not result and not is_import:
@@ -154,7 +188,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 new_lines.append(line)
 
         if modified:
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 f.writelines(new_lines)
 
         return fixed_count
@@ -162,6 +196,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
     except Exception as e:
         logger.info(f"Error fixing {file_path}: {e}")
         return 0
+
 
 def main() -> None:
     """Main function to fix long lines."""
@@ -181,6 +216,7 @@ def main() -> None:
             total_fixed += fixed
 
     logger.info(f"Fixed {total_fixed} long lines in {files_modified} files")
+
 
 if __name__ == "__main__":
     main()

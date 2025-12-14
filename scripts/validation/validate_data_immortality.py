@@ -10,11 +10,12 @@ logger = logging.getLogger(__name__)
 
 import sys
 
+
 def main() -> None:
     """Check if any files being committed are in data/ directories."""
     files = sys.argv[1:] if len(sys.argv) > 1 else []
 
-    data_patterns = ['data/', '06_data/']
+    data_patterns = ["data/", "06_data/"]
 
     for file_path in files:
         # Check if file is in data directories
@@ -25,6 +26,7 @@ def main() -> None:
                 sys.exit(1)
 
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 Generated: 2025-12-07T13:28:54.045984
 """
 
-
 __all__: list[str] = [
     "LICValidator",
     "create_lic_validator",

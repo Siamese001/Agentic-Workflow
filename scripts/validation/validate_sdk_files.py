@@ -12,10 +12,11 @@ import sys
 import os
 import ast
 
+
 def validate_python_syntax(file_path: str) -> bool:
     """Check if Python file has valid syntax."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Parse the AST to check syntax
@@ -26,14 +27,14 @@ def validate_python_syntax(file_path: str) -> bool:
     except (ValueError, TypeError, KeyError) as e:
         return False, f"Error reading file: {e}"
 
+
 def main() -> None:
     """Validate all SDK Python files."""
     files = sys.argv[1:] if len(sys.argv) > 1 else []
 
     # Filter for Python files in SDK directories
     sdk_files = [
-        f for f in files
-        if f.endswith('.py') and ('sdks_mcps' in f or 'client_wrappers' in f)
+        f for f in files if f.endswith(".py") and ("sdks_mcps" in f or "client_wrappers" in f)
     ]
 
     if not sdk_files:
@@ -59,6 +60,7 @@ def main() -> None:
         sys.exit(1)
 
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

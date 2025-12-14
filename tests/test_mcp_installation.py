@@ -18,10 +18,9 @@ logger.info("")
 logger.info("1. Testing Node.js installation...")
 try:
     import subprocess
+
     result = subprocess.run(
-        [r"C:\Program Files\nodejs\node.exe", "--version"],
-        capture_output=True,
-        text=True
+        [r"C:\Program Files\nodejs\node.exe", "--version"], capture_output=True, text=True
     )
     if result.returncode == 0:
         logger.info(f"   ✓ Node.js installed: {result.stdout.strip()}")
@@ -36,6 +35,7 @@ logger.info("")
 logger.info("2. Testing Python MCP Tools...")
 try:
     from runtime.shared.workflow.python_mcp_tools import PythonMCPToolkit
+
     toolkit = PythonMCPToolkit()
     tools = toolkit.get_available_tools()
     logger.info(f"   ✓ Python MCP Toolkit loaded")
@@ -76,7 +76,7 @@ packages = {
     "requests": "Web requests",
     "beautifulsoup4": "HTML parsing",
     "pyyaml": "YAML parsing",
-    "python-dotenv": "Environment variables"
+    "python-dotenv": "Environment variables",
 }
 
 for package, description in packages.items():

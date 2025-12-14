@@ -10,23 +10,26 @@ from typing import Any, Dict, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 
+
 class MCPClient(Protocol):
     """Protocol defining the MCP client interface.
 
     All MCP clients must implement this protocol for type safety.
     """
 
+
 def __call__(self: Any) -> Dict[str, object]:
-        """Execute the client operation.
+    """Execute the client operation.
 
-        Args:
-            *args: Variable positional arguments
-            **kwargs: Variable keyword arguments
+    Args:
+        *args: Variable positional arguments
+        **kwargs: Variable keyword arguments
 
-        Returns:
-            Dict with operation result
-        """
-        ...
+    Returns:
+        Dict with operation result
+    """
+    ...
+
 
 @dataclass
 class MCPClientSpec:
@@ -51,50 +54,54 @@ class MCPClientSpec:
     parameters: Dict[str, Any] = field(default_factory=dict)
     optional: bool = False
 
-def resolved_module(self: Any) -> Optional[str]:
-        """Return explicit module or provider-mapped default.
 
-        Returns:
-            Module path or None for stub
-        """
-        if self.module:
-            return self.module
-        return get_default_module(self.provider)
+def resolved_module(self: Any) -> Optional[str]:
+    """Return explicit module or provider-mapped default.
+
+    Returns:
+        Module path or None for stub
+    """
+    if self.module:
+        return self.module
+    return get_default_module(self.provider)
+
 
 def resolved_class(self: Any) -> Optional[str]:
-        """Return explicit class_name or provider-mapped default.
+    """Return explicit class_name or provider-mapped default.
 
-        Returns:
-            Class name or None
-        """
-        if self.class_name:
-            return self.class_name
-        return get_default_class(self.provider)
+    Returns:
+        Class name or None
+    """
+    if self.class_name:
+        return self.class_name
+    return get_default_class(self.provider)
+
 
 def validate(self: Any) -> None:
-        """Validate the spec configuration.
+    """Validate the spec configuration.
 
-        Raises:
-            ValueError: If spec is invalid
-        """
-        if not self.name:
-            raise ValueError("MCPClientSpec requires a non-empty 'name'")
+    Raises:
+        ValueError: If spec is invalid
+    """
+    if not self.name:
+        raise ValueError("MCPClientSpec requires a non-empty 'name'")
 
-        if not isinstance(self.parameters, dict):
-            raise ValueError(f"MCPClientSpec '{self.name}' parameters must be a dict")
+    if not isinstance(self.parameters, dict):
+        raise ValueError(f"MCPClientSpec '{self.name}' parameters must be a dict")
 
-        if self.provider != "stub":
-            if not self.resolved_module():
-                raise ValueError(
-                    f"MCPClientSpec '{self.name}': no module specified "
-                    f"and no default for provider '{self.provider}'"
-                )
+    if self.provider != "stub":
+        if not self.resolved_module():
+            raise ValueError(
+                f"MCPClientSpec '{self.name}': no module specified "
+                f"and no default for provider '{self.provider}'"
+            )
 
-            if not self.resolved_class():
-                raise ValueError(
-                    f"MCPClientSpec '{self.name}': no class_name specified "
-                    f"and no default for provider '{self.provider}'"
-                )
+        if not self.resolved_class():
+            raise ValueError(
+                f"MCPClientSpec '{self.name}': no class_name specified "
+                f"and no default for provider '{self.provider}'"
+            )
+
 
 class MCPClientStub:
     """Safe fallback MCP client.
@@ -104,43 +111,47 @@ class MCPClientStub:
     while maintaining type safety.
     """
 
+
 def __init__(self: Any, name: str, parameters: Optional[Dict[str, Any]]) -> None:
-        """Initialize stub client.
+    """Initialize stub client.
 
-        Args:
-            name: Client name
-            parameters: Optional parameters (for logging/debugging)
-        """
-        self.name = name
-        self.parameters = parameters or {}
+    Args:
+        name: Client name
+        parameters: Optional parameters (for logging/debugging)
+    """
+    self.name = name
+    self.parameters = parameters or {}
 
-        logger.info(
-            "mcp_stub_created",
-            extra={
-                "client_name": name,
-                "parameters": parameters,
-            }
-        )
+    logger.info(
+        "mcp_stub_created",
+        extra={
+            "client_name": name,
+            "parameters": parameters,
+        },
+    )
+
 
 def __call__(self: Any) -> Dict[str, Any]:
-        """All calls return a structured stub result.
+    """All calls return a structured stub result.
 
-        Returns:
-            Dict with stub=True and error message
-        """
-        return {
-            "stub": True,
-            "client": self.name,
-            "parameters": self.parameters,
-            "args": args,
-            "kwargs": kwargs,
-            "error": self.parameters.get("error", "Stubbed MCP client."),
-        }
+    Returns:
+        Dict with stub=True and error message
+    """
+    return {
+        "stub": True,
+        "client": self.name,
+        "parameters": self.parameters,
+        "args": args,
+        "kwargs": kwargs,
+        "error": self.parameters.get("error", "Stubbed MCP client."),
+    }
+
 
 def __repr__(self: Any) -> str:
-        """String representation."""
-        details = ", ".join(f"{k}={v}" for k, v in self.parameters.items())
-        return f"<MCPClientStub name={self.name} {details}>"
+    """String representation."""
+    details = ", ".join(f"{k}={v}" for k, v in self.parameters.items())
+    return f"<MCPClientStub name={self.name} {details}>"
+
 
 class MCPClientRegistry:
     """Registry for managing MCP clients.
@@ -149,87 +160,95 @@ class MCPClientRegistry:
     with type-safe retrieval.
     """
 
+
 def __init__(self: Any) -> None:
-        """Initialize empty registry."""
-        self._clients: Dict[str, MCPClient] = {}
-        self._specs: Dict[str, MCPClientSpec] = {}
+    """Initialize empty registry."""
+    self._clients: Dict[str, MCPClient] = {}
+    self._specs: Dict[str, MCPClientSpec] = {}
+
 
 def register(self: Any, name: str, client: MCPClient) -> None:
-        """Register a client instance.
+    """Register a client instance.
 
-        Args:
-            name: Client name
-            client: Instantiated client
-        """
-        self._clients[name] = client
-        spec.validate()
+    Args:
+        name: Client name
+        client: Instantiated client
+    """
+    self._clients[name] = client
+    spec.validate()
 
-        self._specs[spec.name] = spec
-        self._clients[spec.name] = client
+    self._specs[spec.name] = spec
+    self._clients[spec.name] = client
 
-        logger.info(
-            "mcp_client_registered",
-            extra={
-                "client_name": spec.name,
-                "provider": spec.provider,
-                "is_stub": isinstance(client, MCPClientStub),
-            }
-        )
+    logger.info(
+        "mcp_client_registered",
+        extra={
+            "client_name": spec.name,
+            "provider": spec.provider,
+            "is_stub": isinstance(client, MCPClientStub),
+        },
+    )
+
 
 def get(self: Any, name: str) -> Optional[Any]:
-        """Get a client by name.
+    """Get a client by name.
 
-        Args:
-            name: Client name
+    Args:
+        name: Client name
 
-        Returns:
-            Client instance or None if not found
-        """
-        return self._clients.get(name)
+    Returns:
+        Client instance or None if not found
+    """
+    return self._clients.get(name)
+
 
 def get_spec(self: Any, name: str) -> Optional[MCPClientSpec]:
-        """Get a client spec by name.
+    """Get a client spec by name.
 
-        Args:
-            name: Client name
+    Args:
+        name: Client name
 
-        Returns:
-            Client spec or None if not found
-        """
-        return self._specs.get(name)
+    Returns:
+        Client spec or None if not found
+    """
+    return self._specs.get(name)
+
 
 def has(self: Any, name: str) -> bool:
-        """Check if a client exists.
+    """Check if a client exists.
 
-        Args:
-            name: Client name
+    Args:
+        name: Client name
 
-        Returns:
-            True if client exists
-        """
-        return name in self._clients
+    Returns:
+        True if client exists
+    """
+    return name in self._clients
+
 
 def list_clients(self: Any) -> list[str]:
-        """List all registered client names.
+    """List all registered client names.
 
-        Returns:
-            List of client names
-        """
-        return list(self._clients.keys())
+    Returns:
+        List of client names
+    """
+    return list(self._clients.keys())
+
 
 def is_stub(self: Any, name: str) -> bool:
-        """Check if a client is a stub.
+    """Check if a client is a stub.
 
-        Args:
-            name: Client name
+    Args:
+        name: Client name
 
-        Returns:
-            True if client is a stub
-        """
-        client = self.get(name)
-        return isinstance(client, MCPClientStub)
+    Returns:
+        True if client is a stub
+    """
+    client = self.get(name)
+    return isinstance(client, MCPClientStub)
+
 
 def clear(self: Any) -> None:
-        """Clear all registered clients."""
-        self._clients.clear()
-        self._specs.clear()
+    """Clear all registered clients."""
+    self._clients.clear()
+    self._specs.clear()

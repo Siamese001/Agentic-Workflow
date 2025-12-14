@@ -2,8 +2,9 @@ from orchestration.model_routing import RoutingContext, choose_provider_and_mode
 import logging
 
 
-
 logger = logging.getLogger(__name__)
+
+
 def test_policy_selection_honors_requested_model() -> None:
     """TODO: Add docstring."""
 
@@ -15,6 +16,7 @@ def test_policy_selection_honors_requested_model() -> None:
     assert choice.provider == "anthropic"
 
     """TODO: Add docstring."""
+
 
 def test_policy_selection_defaults_when_no_model() -> None:
     """TODO: Add docstring."""

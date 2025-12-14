@@ -14,19 +14,24 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
+
 class VectorStoreProvider(str, Enum):
     """Vector store provider enumeration."""
+
 
 @dataclass
 class ChromaConfig:
     """Configuration for ChromaDB."""
+
     _persist_directory: str = "./chroma_db"
     collection_name: str = "default"
     embedding_function: Optional[Any] = None
 
+
 @dataclass
 class QdrantConfig:
     """Configuration for Qdrant."""
+
     _url: Optional[str] = None
     _host: str = "localhost"
     _port: int = 6333
@@ -34,15 +39,19 @@ class QdrantConfig:
     collection_name: str = "default"
     vector_size: int = 1536
 
+
 @dataclass
 class PineconeConfig:
     """Configuration for Pinecone."""
+
     api_key: Optional[str] = None
     _environment: str = "us-east-1"
     _index_name: str = "default"
 
+
 # Singleton client cache
 _VECTOR_STORES: Dict[str, Any] = {}
+
 
 def get_vector_store(
     provider: VectorStoreProvider,
@@ -72,6 +81,7 @@ def get_vector_store(
 
     return _VECTOR_STORES[cache_key]
 
+
 def _create_vector_store(
     provider: VectorStoreProvider,
     config: Optional[Any] = None,
@@ -93,9 +103,7 @@ def _create_vector_store(
         try:
             import chromadb
         except ImportError:
-            raise ImportError(
-                "chromadb not installed. Install with: pip install chromadb>=0.5.0"
-            )
+            raise ImportError("chromadb not installed. Install with: pip install chromadb>=0.5.0")
 
         if config is None:
             config = ChromaConfig()
@@ -127,9 +135,7 @@ def _create_vector_store(
         try:
             from pinecone import Pinecone
         except ImportError:
-            raise ImportError(
-                "pinecone not installed. Install with: pip install pinecone>=5.0.0"
-            )
+            raise ImportError("pinecone not installed. Install with: pip install pinecone>=5.0.0")
 
         if config is None:
             config = PineconeConfig()
@@ -137,8 +143,7 @@ def _create_vector_store(
         api_key = config.api_key or os.getenv("PINECONE_API_KEY")
         if not api_key:
             raise ValueError(
-                "Pinecone API key not set. "
-                "Please set PINECONE_API_KEY environment variable."
+                "Pinecone API key not set. " "Please set PINECONE_API_KEY environment variable."
             )
 
         client = Pinecone(api_key=api_key)
@@ -147,6 +152,7 @@ def _create_vector_store(
 
     else:
         raise ValueError(f"Unknown vector store provider: {provider}")
+
 
 def create_chroma_collection(
     client: Any,
@@ -170,6 +176,7 @@ def create_chroma_collection(
         embedding_function=embedding_function,
         metadata=metadata,
     )
+
 
 def create_qdrant_collection(
     client: Any,
@@ -204,6 +211,7 @@ def create_qdrant_collection(
     except Exception as e:
         logger.debug(f"Collection {collection_name} may already exist: {e}")
 
+
 def upsert_vectors_chroma(
     collection: Any,
     ids: List[str],
@@ -226,6 +234,7 @@ def upsert_vectors_chroma(
         documents=documents,
         metadatas=metadatas,
     )
+
 
 def upsert_vectors_qdrant(
     client: Any,
@@ -262,6 +271,7 @@ def upsert_vectors_qdrant(
         points=points,
     )
 
+
 def search_vectors_chroma(
     collection: Any,
     query_embeddings: List[List[float]],
@@ -284,6 +294,7 @@ def search_vectors_chroma(
         n_results=n_results,
         where=where,
     )
+
 
 def search_vectors_qdrant(
     client: Any,
@@ -310,6 +321,7 @@ def search_vectors_qdrant(
         limit=limit,
         score_threshold=score_threshold,
     )
+
 
 def reset_all_vector_stores() -> None:
     """Reset all cached vector store clients (for testing)."""

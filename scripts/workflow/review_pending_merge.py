@@ -10,27 +10,28 @@ logger = logging.getLogger(__name__)
 
 from pathlib import Path
 
-REPO = Path('c:/Git/Agentic-Workflow')
-REVIEW_PENDING = REPO / 'config/review_pending'
+REPO = Path("c:/Git/Agentic-Workflow")
+REVIEW_PENDING = REPO / "config/review_pending"
 
 APPROVED_FOLDERS = [
-    'agentic_core',
-    'schemas',
-    'runtime',
-    'prompt_governance',
-    'config',
-    'observability',
-    'scripts',
-    '09_apps',
-    'shared',
-    'shared_engine_ops',
+    "agentic_core",
+    "schemas",
+    "runtime",
+    "prompt_governance",
+    "config",
+    "observability",
+    "scripts",
+    "09_apps",
+    "shared",
+    "shared_engine_ops",
 ]
+
 
 def count_real_lines(path: Path) -> int:
     """Count non-empty, non-comment, non-docstring lines."""
     try:
-        content = path.read_text(encoding='utf-8', errors='ignore')
-        lines = content.split('\n')
+        content = path.read_text(encoding="utf-8", errors="ignore")
+        lines = content.split("\n")
         real = 0
         in_docstring = False
         for line in lines:
@@ -40,51 +41,55 @@ def count_real_lines(path: Path) -> int:
                 continue
             if in_docstring:
                 continue
-            if not stripped or stripped.startswith('#'):
+            if not stripped or stripped.startswith("#"):
                 continue
-            if stripped.startswith('from __future__') or stripped.startswith('import '):
+            if stripped.startswith("from __future__") or stripped.startswith("import "):
                 continue
             real += 1
         return real
     except (ValueError, TypeError, KeyError):
         return 0
 
+
 def _is_stub_marker(content: str) -> bool:
     """Check if content has stub markers."""
-    if 'DO NOT implement logic here' in content:
+    if "DO NOT implement logic here" in content:
         return True
-    if 'AUTO-GENERATED ZERO-LOSS' in content and 'Phase 3 hydration' in content:
+    if "AUTO-GENERATED ZERO-LOSS" in content and "Phase 3 hydration" in content:
         return True
-    if 'PENDING[HUMAN_OWNER]' in content and 'Unmapped historical' in content:
+    if "PENDING[HUMAN_OWNER]" in content and "Unmapped historical" in content:
         return True
     return False
 
+
 def _has_real_implementation(lines: List[str], i: int) -> bool:
     """Check if function/class has real implementation."""
-    for j in range(i+1, min(i+5, len(lines))):
+    for j in range(i + 1, min(i + 5, len(lines))):
         next_line = lines[j].strip()
-        if not next_line or next_line in ('pass', '...', '"""', "'''"):
+        if not next_line or next_line in ("pass", "...", '"""', "'''"):
             continue
-        if next_line.startswith('#') or next_line.startswith('"'):
+        if next_line.startswith("#") or next_line.startswith('"'):
             continue
         return True
     return False
+
 
 def has_real_code(path: Path) -> bool:
     """Check if file has real implementation beyond stubs."""
     try:
-        content = path.read_text(encoding='utf-8', errors='ignore')
+        content = path.read_text(encoding="utf-8", errors="ignore")
         if _is_stub_marker(content):
             return False
 
-        lines = content.split('\n')
+        lines = content.split("\n")
         for i, line in enumerate(lines):
-            if line.strip().startswith('def ') or line.strip().startswith('class '):
+            if line.strip().startswith("def ") or line.strip().startswith("class "):
                 if _has_real_implementation(lines, i):
                     return True
         return False
     except (ValueError, TypeError, KeyError):
         return False
+
 
 def _build_approved_name_index() -> Dict[str, List[Path]]:
     """Build index of approved files by name."""
@@ -94,12 +99,13 @@ def _build_approved_name_index() -> Dict[str, List[Path]]:
         folder_path = REPO / folder
         if not folder_path.exists():
             continue
-        for f in folder_path.rglob('*.py'):
-            if 'review_pending' in str(f) or '__pycache__' in str(f):
+        for f in folder_path.rglob("*.py"):
+            if "review_pending" in str(f) or "__pycache__" in str(f):
                 continue
             approved_by_name.setdefault(f.name, []).append(f)
 
     return approved_by_name
+
 
 def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -> Dict[str, Any]:
     """Categorize a pending file based on comparison with approved versions."""
@@ -110,7 +116,7 @@ def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -
         "file": f,
         "pending_real": pending_real,
         "pending_has_code": pending_has_code,
-        "category": None
+        "category": None,
     }
 
     if f.name in approved_by_name:
@@ -137,17 +143,17 @@ def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -
 
     return result
 
-def _categorize_files(pending_files: List[Path],
-    approved_by_name: Dict[str,
-    List[Path]]) -> Dict[str,
-    List[Path]]:
+
+def _categorize_files(
+    pending_files: List[Path], approved_by_name: Dict[str, List[Path]]
+) -> Dict[str, List[Path]]:
     """Categorize pending files into different buckets."""
     categories = {
         "has_more_code": [],
         "has_code_vs_stub": [],
         "same_or_less": [],
         "unique_with_code": [],
-        "unique_stub": []
+        "unique_stub": [],
     }
 
     for f in pending_files:
@@ -158,10 +164,11 @@ def _categorize_files(pending_files: List[Path],
 
     return categories
 
+
 def main() -> None:
     """Main entry point for review pending merge."""
     approved_by_name = _build_approved_name_index()
-    pending_files = [f for f in REVIEW_PENDING.rglob('*.py') if '__pycache__' not in str(f)]
+    pending_files = [f for f in REVIEW_PENDING.rglob("*.py") if "__pycache__" not in str(f)]
 
     categories = _categorize_files(pending_files, approved_by_name)
     pending_has_more_code = categories["has_more_code"]
@@ -198,5 +205,6 @@ def main() -> None:
     else:
         logger.info(f"\n⚠ {needs_review} files need review before archiving")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

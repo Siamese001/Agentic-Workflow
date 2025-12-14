@@ -252,7 +252,8 @@ def absolute_fix_docstrings():
                     # Check next line for docstring
                     if i + 1 < len(lines):
                         next_stripped = lines[i + 1].strip()
-                        if not next_stripped.startswith('"""') and not next_stripped.startswith("'''"):
+                        if not next_stripped.startswith('"""')
+                            and not next_stripped.startswith("'''"):
                             indent = len(line) - len(line.lstrip()) + 4
                             new_lines.append(' ' * indent + '"""Docstring."""')
                             fixed += 1

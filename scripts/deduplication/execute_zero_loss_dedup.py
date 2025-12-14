@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
@@ -25,6 +23,7 @@ ANALYSIS_DIR = REPO_ROOT / "06_data" / "dedup_analysis"
 ARCHIVE_DIR = REPO_ROOT / "06_data" / "dedup_archive_comprehensive"
 POINTER_DIR = REPO_ROOT / "06_data" / "dedup_pointers"
 
+
 def load_latest_analysis() -> Dict:
     """Load the most recent analysis report."""
     reports = sorted(ANALYSIS_DIR.glob("dedup_analysis_*.json"), reverse=True)
@@ -34,16 +33,21 @@ def load_latest_analysis() -> Dict:
     with open(reports[0]) as f:
         return json.load(f)
 
+
 def create_pointer_file(original_path: Path, canonical_path: str, source_hash: str) -> str:
     """Create pointer file content."""
-    return json.dumps({
-        "pointer_type": "dedup",
-        "canonical_path": canonical_path,
-        "reason": "AST+semantic duplicate - zero-loss merge",
-        "source_hash": source_hash,
-        "original_path": str(original_path),
-        "created": datetime.now().isoformat(),
-    }, indent=2)
+    return json.dumps(
+        {
+            "pointer_type": "dedup",
+            "canonical_path": canonical_path,
+            "reason": "AST+semantic duplicate - zero-loss merge",
+            "source_hash": source_hash,
+            "original_path": str(original_path),
+            "created": datetime.now().isoformat(),
+        },
+        indent=2,
+    )
+
 
 def execute_dedup(dry_run: bool = True) -> Dict:
     """Execute the deduplication."""
@@ -63,11 +67,11 @@ def execute_dedup(dry_run: bool = True) -> Dict:
         ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
         POINTER_DIR.mkdir(parents=True, exist_ok=True)
 
-    for cluster in report['clusters']:
-        cluster['cluster_id']
-        canonical = cluster['canonical_path']
-        merge_plan = cluster['merge_plan']
-        non_canonical = merge_plan['non_canonical']
+    for cluster in report["clusters"]:
+        cluster["cluster_id"]
+        canonical = cluster["canonical_path"]
+        merge_plan = cluster["merge_plan"]
+        non_canonical = merge_plan["non_canonical"]
 
         if not non_canonical:
             continue
@@ -90,39 +94,35 @@ def execute_dedup(dry_run: bool = True) -> Dict:
 
                     # Create pointer file
                     pointer_content = create_pointer_file(
-                        nc_path,
-                        canonical,
-                        merge_plan.get('canonical_hash', 'unknown')
+                        nc_path, canonical, merge_plan.get("canonical_hash", "unknown")
                     )
 
                     # Replace original with pointer
-                    pointer_path = nc_path.with_suffix('.py.dedup_pointer.json')
+                    pointer_path = nc_path.with_suffix(".py.dedup_pointer.json")
                     pointer_path.write_text(pointer_content)
 
                     nc_path.unlink()
 
-                    results['pointers_created'] += 1
+                    results["pointers_created"] += 1
 
-                results['files_archived'] += 1
-                results['bytes_recovered'] += file_size
+                results["files_archived"] += 1
+                results["bytes_recovered"] += file_size
 
             except (ValueError, TypeError, KeyError) as e:
-                results['errors'].append({
-                    "path": nc_path_str,
-                    "error": str(e)
-                })
+                results["errors"].append({"path": nc_path_str, "error": str(e)})
 
-        results['clusters_processed'] += 1
+        results["clusters_processed"] += 1
 
     # Summary
 
     if dry_run:
-        pass  #"\n[DRY RUN] Would execute the following operations:")
-        pass  #f"  - Process {len(report['clusters'])} clusters")
-        pass  #f"  - Archive {results['files_archived']} files")
-        pass  #f"  - Create {results['pointers_created']} pointers")
+        pass  # "\n[DRY RUN] Would execute the following operations:")
+        pass  # f"  - Process {len(report['clusters'])} clusters")
+        pass  # f"  - Archive {results['files_archived']} files")
+        pass  # f"  - Create {results['pointers_created']} pointers")
 
     return results
+
 
 if __name__ == "__main__":
     import sys

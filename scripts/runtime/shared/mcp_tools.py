@@ -12,171 +12,194 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class MCPTool:
     """MCP tool definition."""
+
     name: str
     description: str
     parameters: Dict[str, Any]
     handler: Callable
     requires_approval: bool = False
 
+
 def to_openai_format(self: Any) -> Dict[str, Any]:
-        """Convert to OpenAI function calling format.
+    """Convert to OpenAI function calling format.
 
-        Returns:
-            OpenAI-compatible tool definition
-        """
-        return {
-            "type": "function",
-            "function": {
-                "name": self.name,
-                "description": self.description,
-                "parameters": self.parameters,
-            },
-        }
-
-def to_anthropic_format(self: Any) -> Dict[str, Any]:
-        """Convert to Anthropic tool format.
-
-        Returns:
-            Anthropic-compatible tool definition
-        """
-        return {
+    Returns:
+        OpenAI-compatible tool definition
+    """
+    return {
+        "type": "function",
+        "function": {
             "name": self.name,
             "description": self.description,
-            "input_schema": self.parameters,
-        }
+            "parameters": self.parameters,
+        },
+    }
+
+
+def to_anthropic_format(self: Any) -> Dict[str, Any]:
+    """Convert to Anthropic tool format.
+
+    Returns:
+        Anthropic-compatible tool definition
+    """
+    return {
+        "name": self.name,
+        "description": self.description,
+        "input_schema": self.parameters,
+    }
+
 
 @dataclass
 class MCPToolResult:
     """Result from MCP tool execution."""
+
     _tool_name: str
     _success: bool
     result: Any
     _error: Optional[str] = None
     _metadata: Dict[str, Any] = field(default_factory=dict)
 
+
 class MCPToolServer:
     """MCP tool server for managing and executing tools."""
 
-def __init__(self: Any, name: str) -> None:
-        """Initialize MCP tool server.
 
-        Args:
-            name: Server name
-        """
-        self.name = name
-        self._tools: Dict[str, MCPTool] = {}
-        logger.info(f"MCP tool server initialized: {name}")
+def __init__(self: Any, name: str) -> None:
+    """Initialize MCP tool server.
+
+    Args:
+        name: Server name
+    """
+    self.name = name
+    self._tools: Dict[str, MCPTool] = {}
+    logger.info(f"MCP tool server initialized: {name}")
+
 
 def register_tool(self: Any, tool: MCPTool) -> None:
-        """Register a tool.
+    """Register a tool.
 
-        Args:
-            tool: MCP tool to register
-        """
-        self._tools[tool.name] = tool
-        logger.info(f"Registered MCP tool: {tool.name}")
+    Args:
+        tool: MCP tool to register
+    """
+    self._tools[tool.name] = tool
+    logger.info(f"Registered MCP tool: {tool.name}")
 
-def register_function(self: Any, name: str, description: str, parameters: Dict[str, Any], handler: Callable, requires_approval: bool) -> None:
-        """Register a function as an MCP tool.
 
-        Args:
-            name: Tool name
-            description: Tool description
-            parameters: JSON schema for parameters
-            handler: Function to execute
-            requires_approval: Whether tool requires approval
-        """
-        tool = MCPTool(
-            name=name,
-            description=description,
-            parameters=parameters,
-            handler=handler,
-            requires_approval=requires_approval,
-        )
-        self.register_tool(tool)
+def register_function(
+    self: Any,
+    name: str,
+    description: str,
+    parameters: Dict[str, Any],
+    handler: Callable,
+    requires_approval: bool,
+) -> None:
+    """Register a function as an MCP tool.
+
+    Args:
+        name: Tool name
+        description: Tool description
+        parameters: JSON schema for parameters
+        handler: Function to execute
+        requires_approval: Whether tool requires approval
+    """
+    tool = MCPTool(
+        name=name,
+        description=description,
+        parameters=parameters,
+        handler=handler,
+        requires_approval=requires_approval,
+    )
+    self.register_tool(tool)
+
 
 def get_tool(self: Any, name: str) -> Optional[MCPTool]:
-        """Get a tool by name.
+    """Get a tool by name.
 
-        Args:
-            name: Tool name
+    Args:
+        name: Tool name
 
-        Returns:
-            MCPTool or None if not found
-        """
-        return self._tools.get(name)
+    Returns:
+        MCPTool or None if not found
+    """
+    return self._tools.get(name)
+
 
 def list_tools(self: Any) -> List[str]:
-        """List all registered tool names.
+    """List all registered tool names.
 
-        Returns:
-            List of tool names
-        """
-        return list(self._tools.keys())
+    Returns:
+        List of tool names
+    """
+    return list(self._tools.keys())
+
 
 def get_tools_for_provider(self: Any, provider: str) -> List[Dict[str, Any]]:
-        """Get tools in provider-specific format.
+    """Get tools in provider-specific format.
 
-        Args:
-            provider: Provider name (openai, anthropic)
+    Args:
+        provider: Provider name (openai, anthropic)
 
-        Returns:
-            List of tool definitions
-        """
-        tools = []
+    Returns:
+        List of tool definitions
+    """
+    tools = []
 
-        for tool in self._tools.values():
-            if provider == "anthropic":
-                tools.append(tool.to_anthropic_format())
-            else:
-                tools.append(tool.to_openai_format())
+    for tool in self._tools.values():
+        if provider == "anthropic":
+            tools.append(tool.to_anthropic_format())
+        else:
+            tools.append(tool.to_openai_format())
 
-        return tools
+    return tools
+
 
 def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResult:
-        """Execute a tool.
+    """Execute a tool.
 
-        Args:
-            name: Tool name
-            arguments: Tool arguments
+    Args:
+        name: Tool name
+        arguments: Tool arguments
 
-        Returns:
-            MCPToolResult with execution result
-        """
-        tool = self.get_tool(name)
+    Returns:
+        MCPToolResult with execution result
+    """
+    tool = self.get_tool(name)
 
-        if not tool:
-            return MCPToolResult(
-                tool_name=name,
-                success=False,
-                result=None,
-                error=f"Tool not found: {name}",
-            )
+    if not tool:
+        return MCPToolResult(
+            tool_name=name,
+            success=False,
+            result=None,
+            error=f"Tool not found: {name}",
+        )
 
-        try:
-            result = tool.handler(**arguments)
+    try:
+        result = tool.handler(**arguments)
 
-            return MCPToolResult(
-                tool_name=name,
-                success=True,
-                result=result,
-            )
+        return MCPToolResult(
+            tool_name=name,
+            success=True,
+            result=result,
+        )
 
-        except Exception as e:
-            logger.error(f"Tool execution failed for {name}: {e}")
+    except Exception as e:
+        logger.error(f"Tool execution failed for {name}: {e}")
 
-            return MCPToolResult(
-                tool_name=name,
-                success=False,
-                result=None,
-                error=str(e),
-            )
+        return MCPToolResult(
+            tool_name=name,
+            success=False,
+            result=None,
+            error=str(e),
+        )
+
 
 # Global MCP tool server instance
 _MCP_SERVER: Optional[MCPToolServer] = None
+
 
 def get_mcp_server(name: str = "agentic-workflow-tools") -> MCPToolServer:
     """Get or create global MCP tool server.
@@ -194,12 +217,14 @@ def get_mcp_server(name: str = "agentic-workflow-tools") -> MCPToolServer:
 
     return _MCP_SERVER
 
+
 def register_default_tools(server: MCPToolServer) -> None:
     """Register default MCP tools.
 
     Args:
         server: MCP tool server
     """
+
     # Calculator tool
     def calculator(operation: str, a: float, b: float) -> float:
         """Perform basic arithmetic operations."""
@@ -207,7 +232,7 @@ def register_default_tools(server: MCPToolServer) -> None:
             "add": lambda x, y: x + y,
             "subtract": lambda x, y: x - y,
             "multiply": lambda x, y: x * y,
-            "divide": lambda x, y: x / y if y != 0 else float('inf'),
+            "divide": lambda x, y: x / y if y != 0 else float("inf"),
         }
 
         if operation not in operations:
@@ -244,7 +269,7 @@ def register_default_tools(server: MCPToolServer) -> None:
     def analyze_text(text: str) -> Dict[str, Any]:
         """Analyze text and return statistics."""
         words = text.split()
-        sentences = text.split('.')
+        sentences = text.split(".")
 
         return {
             "character_count": len(text),
@@ -271,6 +296,7 @@ def register_default_tools(server: MCPToolServer) -> None:
 
     logger.info("Registered default MCP tools")
 
+
 def create_mcp_server(
     name: str = "agentic-workflow-tools",
     register_defaults: bool = True,
@@ -290,6 +316,7 @@ def create_mcp_server(
         register_default_tools(server)
 
     return server
+
 
 def execute_tool_calls(
     server: MCPToolServer,
@@ -314,6 +341,7 @@ def execute_tool_calls(
 
             if isinstance(arguments, str):
                 import json
+
                 try:
                     arguments = json.loads(arguments)
                 except json.JSONDecodeError:

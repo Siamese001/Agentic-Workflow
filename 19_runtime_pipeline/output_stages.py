@@ -227,7 +227,10 @@ def _format_outreach_message(self: Any, content: str) -> Dict[str, str]:
             "signature": "Best regards"
         }
 
-def _update_envelope_with_formatted_output(self: Any, envelope: Any, formatted: Dict[str, Any]) -> None:
+def _update_envelope_with_formatted_output(self: Any,
+     envelope: Any,
+     formatted: Dict[str,
+     Any]) -> None:
         """Update envelope with formatted output."""
         if hasattr(envelope.payload, 'metadata'):
             envelope.payload.metadata.update(formatted)

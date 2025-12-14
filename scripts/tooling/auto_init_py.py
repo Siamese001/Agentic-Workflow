@@ -26,6 +26,7 @@ import sys
 import pathlib
 from typing import List
 
+
 def create_init_files(paths: List[str]) -> int:
     """
     Create __init__.py files for the given paths.
@@ -56,6 +57,7 @@ def create_init_files(paths: List[str]) -> int:
 
     return created_count
 
+
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -64,6 +66,7 @@ def main() -> None:
 
     created = create_init_files(sys.argv[1:])
     logger.info(f"\nCreated {created} __init__.py files")
+
 
 if __name__ == "__main__":
     main()

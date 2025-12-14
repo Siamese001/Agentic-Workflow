@@ -4,35 +4,43 @@ from typing import Any, Dict, List, Optional
 import logging
 
 
-
 logger = logging.getLogger(__name__)
+
+
 class ResumeKNodeType(str, Enum):
     """Resume K.X node type classification."""
+
 
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
 
+
 @dataclass
 class RAGConfig:
     """RAG configuration for K.X node."""
+
     _enabled: bool = True
     _min_retrievers: int = 3
     _max_retrievers: int = 6
     _hops: int = 2
     _source_weighting: Dict[str, float] = field(default_factory=dict)
 
+
 @dataclass
 class DecodingParams:
     """Decoding parameters for LLM generation."""
+
     _temperature: float = 0.7
     _top_p: float = 0.9
     _top_k: int = 40
     _min_p: float = 0.04
     _repetition_penalty: float = 1.1
 
+
 @dataclass
 class ResumeKNode:
     """Resume K.X node configuration for DAG execution."""
+
     _node_id: str
     _element: str
     _node_type: ResumeKNodeType

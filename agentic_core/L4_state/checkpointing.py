@@ -116,7 +116,6 @@ class VerifiableCheckpointManager:
                                                             .
                                                                 .
                                                                     .
-                                                                        .debug(f"Loaded checkpoint: {session_id}/{node_id} (checksum={calculated_checksum[:8]}.
                                                                         .
                                                                     .
                                                                 .

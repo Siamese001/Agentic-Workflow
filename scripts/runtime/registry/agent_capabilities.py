@@ -10,6 +10,7 @@ from typing import Dict, Any, Optional, List, Callable
 
 logger = logging.getLogger(__name__)
 
+
 class AgentRole(Enum):
     """Functional roles for agents in the system."""
 
@@ -22,6 +23,7 @@ class AgentRole(Enum):
     # Quality & Governance
 
     # Specialized Roles
+
 
 @dataclass
 class AgentCapability:
@@ -40,56 +42,64 @@ class AgentCapability:
     # Legacy mapping for transition
     _legacy_k_nodes: List[str] = field(default_factory=list)
 
+
 class AgentSpec:
     """Specification for creating an agent instance."""
 
-def __init__(self: Any, role: AgentRole, hop_function: Callable, config: Optional[SubatomicHopConfig]) -> None:
-        """Initialize agent specification.
 
-        Args:
-            role: Functional role of the agent
-            hop_function: The core function to execute
-            config: Optional SubatomicHop configuration
-            **kwargs: Additional parameters
-        """
-        self.role = role
-        self.hop_function = hop_function
-        self.config = config or SubatomicHopConfig(hop_id=role.value)
-        self.parameters = kwargs
+def __init__(
+    self: Any, role: AgentRole, hop_function: Callable, config: Optional[SubatomicHopConfig]
+) -> None:
+    """Initialize agent specification.
 
-        # Configure based on role
-        self._configure_for_role()
+    Args:
+        role: Functional role of the agent
+        hop_function: The core function to execute
+        config: Optional SubatomicHop configuration
+        **kwargs: Additional parameters
+    """
+    self.role = role
+    self.hop_function = hop_function
+    self.config = config or SubatomicHopConfig(hop_id=role.value)
+    self.parameters = kwargs
+
+    # Configure based on role
+    self._configure_for_role()
+
 
 def _configure_for_role(self: Any) -> None:
-        """Configure the agent spec based on its role."""
-        capability = AGENT_CAPABILITIES.get(self.role)
-        if not capability:
-            return
+    """Configure the agent spec based on its role."""
+    capability = AGENT_CAPABILITIES.get(self.role)
+    if not capability:
+        return
 
-        # Update configuration based on capability
-        self.config.hop_id = f"{self.role.value}_agent"
+    # Update configuration based on capability
+    self.config.hop_id = f"{self.role.value}_agent"
 
-        # Add role-specific context
-        if "context" not in self.parameters:
-            self.parameters["context"] = {}
+    # Add role-specific context
+    if "context" not in self.parameters:
+        self.parameters["context"] = {}
 
-        self.parameters["context"].update({
+    self.parameters["context"].update(
+        {
             "role": self.role.value,
             "display_name": capability.display_name,
-            "primary_function": capability.primary_function
-        })
+            "primary_function": capability.primary_function,
+        }
+    )
+
 
 def create_hop(self: Any) -> SubatomicHop:
-        """Create a SubatomicHop instance from this spec."""
-        return SubatomicHop(
-            hop_function=self.hop_function,
-            config=self.config,
-            initial_context=self.parameters.get("context", {})
-        )
+    """Create a SubatomicHop instance from this spec."""
+    return SubatomicHop(
+        hop_function=self.hop_function,
+        config=self.config,
+        initial_context=self.parameters.get("context", {}),
+    )
+
 
 # Registry of agent capabilities
 AGENT_CAPABILITIES: Dict[AgentRole, AgentCapability] = {
-
     # Context Gathering
     AgentRole.CONTEXT_GATHERER: AgentCapability(
         role=AgentRole.CONTEXT_GATHERER,
@@ -109,9 +119,8 @@ Your downstream consumer: Strategic Planner and Content Drafter.
 - Use the TitaniumRAGPipeline for deep research
 - Do not hallucinate or invent information
 - Provide confidence scores for findings""",
-        legacy_k_nodes=["K.2", "K2"]
+        legacy_k_nodes=["K.2", "K2"],
     ),
-
     # Strategic Planning
     AgentRole.STRATEGIC_PLANNER: AgentCapability(
         role=AgentRole.STRATEGIC_PLANNER,
@@ -130,9 +139,8 @@ Your downstream consumer: Content Drafter and Quality Critic.
 - Plans must be specific and measurable
 - Consider all constraints and resources
 - Use the CreativeBrief framework for consistency""",
-        legacy_k_nodes=["Executive Brief", "Strategic Planner"]
+        legacy_k_nodes=["Executive Brief", "Strategic Planner"],
     ),
-
     # Content Drafting
     AgentRole.CONTENT_DRAFTER: AgentCapability(
         role=AgentRole.CONTENT_DRAFTER,
@@ -151,9 +159,8 @@ Your downstream consumer: Quality Critic and Protocol Enforcer.
 - Strict adherence to tone settings
 - All claims must be supported by research
 - Use the ToneModel for consistency""",
-        legacy_k_nodes=["K.3", "K3"]
+        legacy_k_nodes=["K.3", "K3"],
     ),
-
     # Quality Criticism
     AgentRole.QUALITY_CRITIC: AgentCapability(
         role=AgentRole.QUALITY_CRITIC,
@@ -172,9 +179,8 @@ Your downstream consumer: Protocol Enforcer and Coordinator.
 - Apply all validation gates rigorously
 - Provide specific, actionable feedback
 - Use the ReflectionEngine for deep analysis""",
-        legacy_k_nodes=["K.5", "K5", "Refiner"]
+        legacy_k_nodes=["K.5", "K5", "Refiner"],
     ),
-
     # Message Crafting
     AgentRole.MESSAGE_CRAFTER: AgentCapability(
         role=AgentRole.MESSAGE_CRAFTER,
@@ -193,9 +199,8 @@ Your downstream consumer: Quality Critic.
 - Personalization must be genuine
 - Follow all anti-spam guidelines
 - Match the recipient's communication style""",
-        legacy_k_nodes=["K.3", "Message Body"]
+        legacy_k_nodes=["K.3", "Message Body"],
     ),
-
     # Protocol Enforcement
     AgentRole.PROTOCOL_ENFORCER: AgentCapability(
         role=AgentRole.PROTOCOL_ENFORCER,
@@ -214,9 +219,8 @@ Your downstream consumer: Coordinator and end users.
 - No exceptions to protocol violations
 - Document all compliance decisions
 - Apply rules consistently""",
-        legacy_k_nodes=["K.5", "Protocol Layer"]
+        legacy_k_nodes=["K.5", "Protocol Layer"],
     ),
-
     # Resume Building
     AgentRole.RESUME_BUILDER: AgentCapability(
         role=AgentRole.RESUME_BUILDER,
@@ -235,8 +239,8 @@ Your downstream consumer: Quality Critic.
 - Optimize for ATS keywords
 - Use strong action verbs
 - Quantify all achievements""",
-        legacy_k_nodes=["K.3", "Resume Specialist"]
-    )
+        legacy_k_nodes=["K.3", "Resume Specialist"],
+    ),
 }
 
 # Legacy mapping for transition
@@ -248,7 +252,6 @@ LEGACY_MAPPING: Dict[str, AgentRole] = {
     "K3": AgentRole.CONTENT_DRAFTER,
     "K.5": AgentRole.QUALITY_CRITIC,
     "K5": AgentRole.QUALITY_CRITIC,
-
     # Functional mappings
     "HyDE": AgentRole.CONTEXT_GATHERER,
     "Researcher": AgentRole.CONTEXT_GATHERER,
@@ -258,123 +261,129 @@ LEGACY_MAPPING: Dict[str, AgentRole] = {
     "Refiner": AgentRole.QUALITY_CRITIC,
     "Executive Brief": AgentRole.STRATEGIC_PLANNER,
     "Message Body": AgentRole.MESSAGE_CRAFTER,
-    "Protocol": AgentRole.PROTOCOL_ENFORCER
+    "Protocol": AgentRole.PROTOCOL_ENFORCER,
 }
+
 
 class AgentRegistry:
     """Registry for managing agent capabilities and specifications."""
 
-def __init__(self: Any) -> None:
-        """Initialize the agent registry."""
-        self._capabilities = AGENT_CAPABILITIES
-        self._specs: Dict[AgentRole, AgentSpec] = {}
-        self._custom_capabilities: Dict[AgentRole, AgentCapability] = {}
 
-        logger.info("Initialized AgentRegistry")
+def __init__(self: Any) -> None:
+    """Initialize the agent registry."""
+    self._capabilities = AGENT_CAPABILITIES
+    self._specs: Dict[AgentRole, AgentSpec] = {}
+    self._custom_capabilities: Dict[AgentRole, AgentCapability] = {}
+
+    logger.info("Initialized AgentRegistry")
+
 
 def get_capability(self: Any, role: AgentRole) -> AgentCapability:
-        """Get the capability definition for a role.
+    """Get the capability definition for a role.
 
-        Args:
-            role: The agent role
+    Args:
+        role: The agent role
 
-        Returns:
-            AgentCapability definition
-        """
-        return self._capabilities.get(role) or self._custom_capabilities.get(role)
+    Returns:
+        AgentCapability definition
+    """
+    return self._capabilities.get(role) or self._custom_capabilities.get(role)
+
 
 def register_agent(self: Any, spec: AgentSpec) -> None:
-        """Register an agent specification.
+    """Register an agent specification.
 
-        Args:
-            spec: Agent specification to register
-        """
-        self._specs[spec.role] = spec
-        logger.info(f"Registered agent for role: {spec.role.value}")
+    Args:
+        spec: Agent specification to register
+    """
+    self._specs[spec.role] = spec
+    logger.info(f"Registered agent for role: {spec.role.value}")
+
 
 def get_agent_spec(self: Any, role: AgentRole) -> Optional[AgentSpec]:
-        """Get a registered agent specification.
+    """Get a registered agent specification.
 
-        Args:
-            role: The agent role
+    Args:
+        role: The agent role
 
-        Returns:
-            AgentSpec if registered, None otherwise
-        """
-        return self._specs.get(role)
+    Returns:
+        AgentSpec if registered, None otherwise
+    """
+    return self._specs.get(role)
+
 
 def create_agent(self: Any, role: AgentRole) -> Optional[SubatomicHop]:
-        """Create an agent instance for the given role.
+    """Create an agent instance for the given role.
 
-        Args:
-            role: The functional role
-            **kwargs: Additional parameters
+    Args:
+        role: The functional role
+        **kwargs: Additional parameters
 
-        Returns:
-            SubatomicHop instance or None if not found
-        """
-        spec = self.get_agent_spec(role)
-        if not spec:
-            logger.error(f"No spec registered for role: {role.value}")
-            return None
+    Returns:
+        SubatomicHop instance or None if not found
+    """
+    spec = self.get_agent_spec(role)
+    if not spec:
+        logger.error(f"No spec registered for role: {role.value}")
+        return None
 
-        return spec.create_hop()
+    return spec.create_hop()
+
 
 def list_roles(self: Any) -> List[AgentRole]:
-        """List all available agent roles.
+    """List all available agent roles.
 
-        Returns:
-            List of available roles
-        """
-        return list(self._capabilities.keys()) + list(self._custom_capabilities.keys())
+    Returns:
+        List of available roles
+    """
+    return list(self._capabilities.keys()) + list(self._custom_capabilities.keys())
+
 
 def map_legacy_to_role(self: Any, legacy_reference: str) -> Optional[AgentRole]:
-        """Map a legacy K-node reference to a functional role.
+    """Map a legacy K-node reference to a functional role.
 
-        Args:
-            legacy_reference: Legacy reference (e.g., "K.3", "K2")
+    Args:
+        legacy_reference: Legacy reference (e.g., "K.3", "K2")
 
-        Returns:
-            Corresponding AgentRole or None
-        """
-        return LEGACY_MAPPING.get(legacy_reference)
+    Returns:
+        Corresponding AgentRole or None
+    """
+    return LEGACY_MAPPING.get(legacy_reference)
+
 
 def validate_no_legacy_references(self: Any, text: str) -> List[str]:
-        """Check text for legacy K-node references.
+    """Check text for legacy K-node references.
 
-        Args:
-            text: Text to check
+    Args:
+        text: Text to check
 
-        Returns:
-            List of found legacy references
-        """
-        found = []
-        for legacy_ref in LEGACY_MAPPING.keys():
-            if legacy_ref in text:
-                found.append(legacy_ref)
-        return found
+    Returns:
+        List of found legacy references
+    """
+    found = []
+    for legacy_ref in LEGACY_MAPPING.keys():
+        if legacy_ref in text:
+            found.append(legacy_ref)
+    return found
+
 
 def get_registry_stats(self: Any) -> Dict[str, Any]:
-        """Get statistics about the registry.
+    """Get statistics about the registry.
 
-        Returns:
-            Registry statistics
-        """
-        return {
-            "total_roles": len(self.list_roles()),
-            "registered_specs": len(self._specs),
-            "legacy_mappings": len(LEGACY_MAPPING),
-            "categories": {
-                "research": 3,
-                "strategy": 3,
-                "content": 3,
-                "quality": 3,
-                "specialized": 3
-            }
-        }
+    Returns:
+        Registry statistics
+    """
+    return {
+        "total_roles": len(self.list_roles()),
+        "registered_specs": len(self._specs),
+        "legacy_mappings": len(LEGACY_MAPPING),
+        "categories": {"research": 3, "strategy": 3, "content": 3, "quality": 3, "specialized": 3},
+    }
+
 
 # Global registry instance
 _agent_registry: Optional[AgentRegistry] = None
+
 
 def get_agent_registry() -> AgentRegistry:
     """Get the global agent registry instance.
@@ -389,6 +398,7 @@ def get_agent_registry() -> AgentRegistry:
 
     return _agent_registry
 
+
 # Convenience functions
 def get_agent_capability(role: AgentRole) -> Optional[AgentCapability]:
     """Get capability for a role.
@@ -400,6 +410,7 @@ def get_agent_capability(role: AgentRole) -> Optional[AgentCapability]:
         AgentCapability or None
     """
     return get_agent_registry().get_capability(role)
+
 
 def create_functional_agent(role: AgentRole, hop_function: Callable, **kwargs) -> SubatomicHop:
     """Create a functional agent.
@@ -415,6 +426,7 @@ def create_functional_agent(role: AgentRole, hop_function: Callable, **kwargs) -
     spec = AgentSpec(role=role, hop_function=hop_function, **kwargs)
     return spec.create_hop()
 
+
 def map_legacy_node(legacy_reference: str) -> Optional[AgentRole]:
     """Map legacy node reference to functional role.
 
@@ -426,9 +438,11 @@ def map_legacy_node(legacy_reference: str) -> Optional[AgentRole]:
     """
     return get_agent_registry().map_legacy_to_role(legacy_reference)
 
+
 # Exception for legacy code detection
 class LegacyCodeError(Exception):
     """Raised when legacy K-node references are detected."""
+
 
 def validate_no_legacy_code(text: str, context: str = "Unknown") -> None:
     """Validate that text contains no legacy references.

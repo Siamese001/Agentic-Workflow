@@ -103,7 +103,9 @@ def _rebuild_embedding_matrix(self: Any) -> None:
         else:
             self._embedding_matrix = None
 
-def _filter_episode_candidates(self: Any, agent_role: Optional[str], min_rating: float) -> List[tuple]:
+def _filter_episode_candidates(self: Any,
+     agent_role: Optional[str],
+     min_rating: float) -> List[tuple]:
         """Filter episodes by role and rating."""
         candidates = []
         for i, episode in enumerate(self._episodes):
@@ -148,7 +150,10 @@ def _format_memory_context(self: Any, episode: Episode, score: float) -> str:
 
         return memory_context
 
-async def recall_relevant_experience(self: Any, current_task: str, agent_role: Optional[str], min_rating: float) -> Optional[str]:
+async def recall_relevant_experience(self: Any,
+     current_task: str,
+     agent_role: Optional[str],
+     min_rating: float) -> Optional[str]:
         """
         Retrieves the 'Lesson Learned' from the most similar past task.
 
@@ -244,7 +249,11 @@ async def _persist_episode(self: Any, episode: Episode) -> None:
             }
         )
 
-async def get_successful_patterns(self: Any, task_type: Optional[str], min_rating: float, limit: int) -> List[Dict[str, Any]]:
+async def get_successful_patterns(self: Any,
+     task_type: Optional[str],
+     min_rating: float,
+     limit: int) -> List[Dict[str,
+     Any]]:
         """
         Get successful patterns for learning.
 
@@ -335,7 +344,9 @@ def create_episodic_memory(
 
     Returns:
         EpisodicMemory instance
-def create_episodic_memory(storage_adapter: Any, embedder: Any, similarity_threshold: float) -> EpisodicMemory:
+def create_episodic_memory(storage_adapter: Any,
+     embedder: Any,
+     similarity_threshold: float) -> EpisodicMemory:
     return EpisodicMemory(
         storage_adapter=storage_adapter,
         embedder=embedder,

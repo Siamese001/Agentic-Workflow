@@ -85,7 +85,11 @@ def _load_model(self: Any) -> bool:
             return False
 
         """Docstring."""
-def rerank(self: Any, query: str, documents: List[str], top_k: Optional[int], batch_size: int) -> List[str]:
+def rerank(self: Any,
+     query: str,
+     documents: List[str],
+     top_k: Optional[int],
+     batch_size: int) -> List[str]:
         """Rerank documents based on query relevance.
 
         Args:
@@ -165,7 +169,12 @@ def rerank(self: Any, query: str, documents: List[str], top_k: Optional[int], ba
             return documents[:top_k]
 
         """Docstring."""
-def rerank_with_scores(self: Any, query: str, documents: List[str], top_k: Optional[int], batch_size: int) -> List[Tuple[str, float]]:
+def rerank_with_scores(self: Any,
+     query: str,
+     documents: List[str],
+     top_k: Optional[int],
+     batch_size: int) -> List[Tuple[str,
+     float]]:
         """Rerank documents and return with scores.
 
         Args:

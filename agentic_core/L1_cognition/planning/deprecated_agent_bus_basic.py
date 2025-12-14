@@ -5,6 +5,7 @@ logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.orchestration.agent_bus import AgentBus  # DEPRECATED: Archiv...
 # from archives.legacy_root_folders.core.models.models import AgentMessage  # DEPRECATED: Archive...
 
+
 def test_agent_bus_send_and_get() -> None:
     """Test basic agent bus send and get message operations."""
     bus = AgentBus()

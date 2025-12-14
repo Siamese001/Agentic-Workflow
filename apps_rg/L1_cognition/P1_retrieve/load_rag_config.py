@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
@@ -7,6 +5,7 @@ logger = logging.getLogger(__name__)
 
 from typing import Dict
 import logging
+
 
 @dataclass
 class RAGConfig:
@@ -32,8 +31,14 @@ class RAGConfig:
     _cache_ttl_days: int = 30
     _telemetry_enabled: bool = True
     _telemetry_log_dir: str = "/staging/rag_telemetry"
-    _source_weights: Dict[str, float] = field(default_factory=lambda: {
-        "SOURCE_JD": 1.8, "SOURCE_COMPANY_BLOG": 1.5, "SOURCE_TARGET_EMPLOYEE": 1.4,
-        "SOURCE_GARTNER_MQ": 1.2, "SOURCE_PEER_JD": 0.8, "SOURCE_GENERIC_PROFILE": 0.5,
-        "LOCAL_NLP": 0.2,
-    })
+    _source_weights: Dict[str, float] = field(
+        default_factory=lambda: {
+            "SOURCE_JD": 1.8,
+            "SOURCE_COMPANY_BLOG": 1.5,
+            "SOURCE_TARGET_EMPLOYEE": 1.4,
+            "SOURCE_GARTNER_MQ": 1.2,
+            "SOURCE_PEER_JD": 0.8,
+            "SOURCE_GENERIC_PROFILE": 0.5,
+            "LOCAL_NLP": 0.2,
+        }
+    )

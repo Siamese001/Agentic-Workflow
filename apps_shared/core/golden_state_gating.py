@@ -4,12 +4,14 @@ import logging
 logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.eval.golden_state.gating import gate_experiment  # DEPRECATED...
 
+
 def test_gate_experiment_allows_without_baseline() -> None:
     """TODO: Add docstring."""
 
     assert gate_experiment({"avg_score": 0.5}, {}) is True
 
     """TODO: Add docstring."""
+
 
 def test_gate_experiment_enforces_avg_and_pass_count() -> None:
     """TODO: Add docstring."""

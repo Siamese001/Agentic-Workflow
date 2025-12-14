@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
@@ -8,9 +6,11 @@ logger = logging.getLogger(__name__)
 from typing import Dict
 import logging
 
+
 def rg_message_generation_executor(data: Dict[str, object]) -> Dict[str, object]:
     """Process rg message generation executor data."""
     return {"status": "processed", "input_keys": list(data.keys())}
+
 
 def get_rg_message_generation_executor_config() -> Dict[str, object]:
     """Get configuration for rg_message_generation_executor."""

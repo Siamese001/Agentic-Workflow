@@ -12,4 +12,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 # Re-export all components for backward compatibility
 # from .gen_apps_impl_impl_impl_impl import *  # Star import removed
 
-__all__ = ['*']  # Re-export all imported names
+__all__ = ["*"]  # Re-export all imported names

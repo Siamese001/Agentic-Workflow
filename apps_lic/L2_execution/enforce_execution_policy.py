@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L2_execution
 # -*- coding: utf-8 -*-
@@ -8,9 +6,11 @@ logger = logging.getLogger(__name__)
 from typing import Dict
 import logging
 
+
 def enforce_execution_policy(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce execution policy data."""
     return {"status": "processed", "input_keys": list(data.keys())}
+
 
 def get_enforce_execution_policy_config() -> Dict[str, object]:
     """Get configuration for enforce_execution_policy."""

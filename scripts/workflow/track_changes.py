@@ -16,6 +16,7 @@ from pathlib import Path
 
 SOVEREIGN_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
 
+
 def main() -> None:
     """Main entry point for tracking changes."""
     root = Path(".").resolve()
@@ -55,8 +56,9 @@ def main() -> None:
             if len(parts) >= 3:
                 old_path = (root / parts[1]).resolve()
                 new_path = (root / parts[2]).resolve()
-                if (any(agent in str(old_path) for agent in SOVEREIGN_AGENTS) or
-                    any(agent in str(new_path) for agent in SOVEREIGN_AGENTS)):
+                if any(agent in str(old_path) for agent in SOVEREIGN_AGENTS) or any(
+                    agent in str(new_path) for agent in SOVEREIGN_AGENTS
+                ):
                     changes.append(f"{old_path}|RENAME|{new_path}")
 
     if changes:
@@ -89,6 +91,7 @@ def main() -> None:
                 logger.info(f"    ... and {len(renames) - 3} more")
 
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

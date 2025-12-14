@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
@@ -9,9 +7,11 @@ logger = logging.getLogger(__name__)
 from typing import Dict
 import logging
 
+
 def test_execution_planning(data: Dict[str, object]) -> Dict[str, object]:
     """Process test execution planning data."""
     return {"status": "processed", "input_keys": list(data.keys())}
+
 
 def get_test_execution_planning_config() -> Dict[str, object]:
     """Get configuration for test_execution_planning."""

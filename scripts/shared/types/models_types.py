@@ -18,4 +18,4 @@ smaller, more focused submodules for better maintainability and compliance.
 # from .models_types_part import *  # Star import removed
 # from .models_types_part_2 import *  # Star import removed
 
-__all__ = ['*']  # Re-export all imported names
+__all__ = ["*"]  # Re-export all imported names

@@ -1,6 +1,6 @@
 """Unit tests for runtime/shared/utils.py"""
-import logging
 
+import logging
 
 
 logger = logging.getLogger(__name__)

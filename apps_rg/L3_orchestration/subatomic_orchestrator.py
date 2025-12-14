@@ -18,4 +18,4 @@ smaller, more focused submodules for better maintainability and compliance.
 # from .subatomic_orchestrator_impl import *  # Star import removed
 # from .subatomic_orchestrator_impl import *  # Star import removed
 
-__all__ = ['*']  # Re-export all imported names
+__all__ = ["*"]  # Re-export all imported names

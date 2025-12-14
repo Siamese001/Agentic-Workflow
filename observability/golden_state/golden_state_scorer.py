@@ -1,11 +1,10 @@
-
 from typing import Dict, Iterable
 import logging
 
 
-
 logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict  # DEPRECATED: A...
+
 
 def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
     """Aggregate judge verdicts into simple metrics.

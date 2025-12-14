@@ -291,7 +291,9 @@ Output: {{
                 else:
                     processed_results.append(result)
 
-            logger.info(f"Completed execution: {sum(len(r) for r in processed_results)} total results")
+            logger.info(f"(
+                Completed execution: {sum(len(r) for r in processed_results)} total results 
+            )"
             return processed_results
 
         except Exception as e:

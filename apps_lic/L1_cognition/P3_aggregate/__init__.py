@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 Generated: 2025-12-07T13:28:54.073115
 """
 
-
 __all__: list[str] = [
     # Routing
     "LICRouter",
@@ -25,7 +24,6 @@ __all__: list[str] = [
     "create_router",
     "get_route_config",
     "get_archetype_tone",
-
     "ArchetypeTemplateManager",
     "ArchetypeTemplate",
     "CreativeBrief",

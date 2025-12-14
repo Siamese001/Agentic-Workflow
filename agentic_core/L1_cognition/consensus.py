@@ -228,7 +228,10 @@ Be concise but thorough. Focus on safety and reliability.
             return ConsensusVerdict(
                 chosen_plan="CONSENSUS_BLOCKED",
                 consensus_score=0.0,
-                dissenting_opinions=[f"High risk assessed by {high_risk_count}/{len(opinions)} models"],
+                dissenting_opinions=[
+                    f"High risk assessed by {high_risk_count}/{len(opinions)} models"
+                ],
+                    
                 reasoning="Multiple models assessed high risk",
                 safe_to_proceed=False
             )
