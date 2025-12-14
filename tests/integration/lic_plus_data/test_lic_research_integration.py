@@ -1,7 +1,5 @@
-from typing import Any
 """Integration tests for LIC research + data layer."""
 import pytest
-import logging
 
 
 class TestLICResearchIntegration:

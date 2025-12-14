@@ -1,5 +1,4 @@
 """Dataclass models for lic_routing_rules."""
-import logging
 
 
 # from .lic_routing_rules_enums import *  # Star import removed

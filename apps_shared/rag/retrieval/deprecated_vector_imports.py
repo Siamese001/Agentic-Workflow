@@ -1,6 +1,5 @@
 """Test that all vector search modules can be imported."""
 import pytest
-import logging
 
 
 def _can_import_pinecone() -> bool:

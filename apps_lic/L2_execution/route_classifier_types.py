@@ -1,5 +1,4 @@
 """Types and models for route_classifier."""
-import logging
 
 
 

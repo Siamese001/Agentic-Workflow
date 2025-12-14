@@ -1,4 +1,3 @@
-from typing import Any
 """End-to-End MCP Integration Test
 
 

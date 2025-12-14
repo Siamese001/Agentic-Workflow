@@ -1,4 +1,3 @@
-from typing import Any
 #!/usr/bin/env python3
 """
 Comprehensive Canon Fixer - Achieves 100% Canon Compliance

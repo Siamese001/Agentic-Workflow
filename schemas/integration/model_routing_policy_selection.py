@@ -1,5 +1,4 @@
 from orchestration.model_routing import RoutingContext, choose_provider_and_model
-import logging
 
 
 def test_policy_selection_honors_requested_model() -> None:

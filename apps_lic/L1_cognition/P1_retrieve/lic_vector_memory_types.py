@@ -1,5 +1,4 @@
 """Types and models for lic_vector_memory."""
-import logging
 
 
 

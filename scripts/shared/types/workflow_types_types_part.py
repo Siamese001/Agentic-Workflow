@@ -1,5 +1,4 @@
 """Split module 1 for workflow_types_types."""
-import logging
 
 
 

@@ -1,5 +1,4 @@
 """Types and models for lic_validator_rules."""
-import logging
 
 
 

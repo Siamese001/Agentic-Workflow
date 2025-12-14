@@ -1,5 +1,4 @@
 """Unit tests for runtime/shared/utils.py"""
-import logging
 
 
 # Test file for utils module - classes don't exist yet, so skip tests

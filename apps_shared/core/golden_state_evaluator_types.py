@@ -1,6 +1,5 @@
 from typing import Any
 """Types and models for golden_state_evaluator."""
-import logging
 
 
 

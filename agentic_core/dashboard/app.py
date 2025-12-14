@@ -52,9 +52,9 @@ try:
                MIN(timestamp) as start_time,
                MAX(timestamp) as end_time,
                COUNT(*) as event_count
-        FROM traces 
+        FROM traces
         GROUP BY trace_id
-        ORDER BY start_time DESC 
+        ORDER BY start_time DESC
         LIMIT 50
     """).df()
 except Exception as e:
@@ -100,11 +100,11 @@ with col3:
     st.metric("Start Time", traces_df.iloc[selected_idx]['start_time'].strftime("%H:%M:%S"))
 
 gantt_df = conn.execute("""
-    SELECT span_id, agent_role, 
-           MIN(timestamp) as Start, 
+    SELECT span_id, agent_role,
+           MIN(timestamp) as Start,
            MAX(timestamp) as Finish
-    FROM traces 
-    WHERE trace_id = ? 
+    FROM traces
+    WHERE trace_id = ?
     GROUP BY span_id, agent_role
     ORDER BY Start ASC
 """, [selected_trace]).df()
@@ -113,12 +113,12 @@ if not gantt_df.empty:
     gantt_df["Start"] = pd.to_datetime(gantt_df["Start"], unit='s')
     gantt_df["Finish"] = pd.to_datetime(gantt_df["Finish"], unit='s')
     gantt_df["Duration"] = (gantt_df["Finish"] - gantt_df["Start"]).dt.total_seconds()
-    
+
     fig = px.timeline(
-        gantt_df, 
-        x_start="Start", 
-        x_end="Finish", 
-        y="agent_role", 
+        gantt_df,
+        x_start="Start",
+        x_end="Finish",
+        y="agent_role",
         color="agent_role",
         hover_data=["span_id", "Duration"],
         title="Agent Execution Timeline (Gantt Chart)"
@@ -134,25 +134,25 @@ col_left, col_right = st.columns([1, 2])
 
 with col_left:
     st.subheader("📋 Event Stream")
-    
+
     events_df = conn.execute("""
-        SELECT span_id, event_type, timestamp, payload 
-        FROM traces 
-        WHERE trace_id = ? 
+        SELECT span_id, event_type, timestamp, payload
+        FROM traces
+        WHERE trace_id = ?
         ORDER BY timestamp ASC
     """, [selected_trace]).df()
-    
+
     if not events_df.empty:
         events_df['timestamp'] = pd.to_datetime(events_df['timestamp'], unit='s')
-        
+
         event_types = ["All"] + sorted(events_df['event_type'].unique().tolist())
         filter_type = st.selectbox("Filter by Event Type", event_types)
-        
+
         if filter_type != "All":
             filtered_events = events_df[events_df['event_type'] == filter_type]
         else:
             filtered_events = events_df
-        
+
             "Select Event",
             filtered_events.index,
             format_func=lambda i: f"{filtered_events.loc[i, 'event_type']} @ {filtered_events.loc[i, 'timestamp'].strftime('%H:%M:%S.%f')[:-3]}"
@@ -162,32 +162,32 @@ with col_left:
 
 with col_right:
     st.subheader("🔍 Black Box Data")
-    
+
     if selected_event_idx is not None and not events_df.empty:
         row = events_df.loc[selected_event_idx]
-        
+
         st.info(f"**Event Type:** {row['event_type']}")
         st.info(f"**Span ID:** {row['span_id']}")
         st.info(f"**Timestamp:** {row['timestamp']}")
-        
+
         try:
             payload = json.loads(row['payload'])
-            
+
             if row['event_type'] == 'THINK_COMPLETE' and 'reasoning' in payload:
                 st.markdown("### 🧠 Agent Reasoning")
                 st.write(payload['reasoning'])
-            
+
             if row['event_type'] == 'MCP_CALL' and 'tool' in payload:
                 st.markdown(f"### 🔧 Tool Call: `{payload['tool']}`")
                 st.json(payload.get('args', {}))
-            
+
             if 'ERROR' in row['event_type']:
                 st.error("### ⚠️ Error Event")
                 st.code(payload.get('error_message', 'Unknown error'))
-            
+
             with st.expander("📦 Full Payload (JSON)"):
                 st.json(payload)
-                
+
         except json.JSONDecodeError:
             st.text(row['payload'])
     else:
@@ -197,9 +197,9 @@ st.markdown("---")
 st.subheader("📊 MCP Tool Performance")
 
 tool_stats_df = conn.execute("""
-    SELECT json_extract_string(payload, '$.tool') as tool_name, 
+    SELECT json_extract_string(payload, '$.tool') as tool_name,
            COUNT(*) as calls
-    FROM traces 
+    FROM traces
     WHERE trace_id = ? AND event_type = 'MCP_CALL'
     GROUP BY tool_name
     ORDER BY calls DESC
@@ -207,7 +207,7 @@ tool_stats_df = conn.execute("""
 
 if not tool_stats_df.empty:
     col1, col2 = st.columns([2, 1])
-    
+
     with col1:
         fig = px.bar(
             tool_stats_df,
@@ -217,7 +217,7 @@ if not tool_stats_df.empty:
             labels={'tool_name': 'Tool', 'calls': 'Number of Calls'}
         )
         st.plotly_chart(fig, use_container_width=True)
-    
+
     with col2:
         st.dataframe(tool_stats_df, use_container_width=True)
 else:
@@ -228,14 +228,14 @@ st.subheader("⚠️ Error Analysis")
 
 error_df = conn.execute("""
     SELECT span_id, event_type, timestamp, payload
-    FROM traces 
+    FROM traces
     WHERE trace_id = ? AND event_type LIKE '%ERROR%'
     ORDER BY timestamp DESC
 """, [selected_trace]).df()
 
 if not error_df.empty:
     error_df['timestamp'] = pd.to_datetime(error_df['timestamp'], unit='s')
-    
+
     for idx, row in error_df.iterrows():
         with st.expander(f"❌ {row['event_type']} @ {row['timestamp'].strftime('%H:%M:%S')}"):
             try:
@@ -253,7 +253,7 @@ st.sidebar.markdown("### 📈 Global Stats")
 try:
     total_events = conn.execute("SELECT COUNT(*) as count FROM traces").fetchone()[0]
     total_traces = conn.execute("SELECT COUNT(DISTINCT trace_id) as count FROM traces").fetchone()[0]
-    
+
     st.sidebar.metric("Total Events (All Time)", f"{total_events:,}")
     st.sidebar.metric("Total Traces (All Time)", f"{total_traces:,}")
 except Exception as e:

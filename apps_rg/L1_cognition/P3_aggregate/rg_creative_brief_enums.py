@@ -1,5 +1,4 @@
 """Enum types for rg_creative_brief."""
-import logging
 
 
 

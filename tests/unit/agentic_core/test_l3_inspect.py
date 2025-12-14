@@ -1,6 +1,4 @@
-from typing import Any
 """Unit tests for L3_orchestration/P2_inspect - workflow state inspection."""
-import logging
 
 
 class TestWorkflowStateInspection:

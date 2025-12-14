@@ -1,5 +1,4 @@
 """Types and models for rg_validation_gates."""
-import logging
 
 
 

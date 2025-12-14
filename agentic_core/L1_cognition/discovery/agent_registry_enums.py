@@ -1,5 +1,4 @@
 """Enum types for agent_registry."""
-import logging
 
 
 

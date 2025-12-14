@@ -1,4 +1,3 @@
-from typing import Any
 
 # -*- coding: utf-8 -*-
 """Unit tests for scripts module.

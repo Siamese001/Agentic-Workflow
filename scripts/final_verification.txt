@@ -20,7 +20,7 @@ Phase 1
 Γä╣ Checking for empty except blocks...
 ./observability/logic/inspection/cost_profiler.py:4: SyntaxWarning: invalid escape sequence '\s'
   _unassigned\support_nomatch\cost_profiler.py
-Γ£ù [04] Found 33 empty except blocks: ./canon_validator.py:1315, ./canon_validator.py:847, ./agentic_core/L2_execution/execution/sandbox/firecracker_manager_impl.py:223, ./scripts/comprehensive_canon_fixer.py:67, ./scripts/comprehensive_canon_fixer.py:114, ./scripts/comprehensive_canon_fixer.py:137, ./scripts/comprehensive_canon_fixer.py:162, ./scripts/comprehensive_canon_fixer.py:183, ./scripts/comprehensive_canon_fixer.py:214, ./scripts/comprehensive_canon_fixer.py:236
+Γ£ù [04] Found 33 empty except blocks: ./canon_validator.py:1314, ./canon_validator.py:846, ./agentic_core/L2_execution/execution/sandbox/firecracker_manager_impl.py:223, ./scripts/comprehensive_canon_fixer.py:66, ./scripts/comprehensive_canon_fixer.py:113, ./scripts/comprehensive_canon_fixer.py:136, ./scripts/comprehensive_canon_fixer.py:161, ./scripts/comprehensive_canon_fixer.py:182, ./scripts/comprehensive_canon_fixer.py:213, ./scripts/comprehensive_canon_fixer.py:235
 Γä╣ Checking for bare except clauses...
 ./observability/logic/inspection/cost_profiler.py:4: SyntaxWarning: invalid escape sequence '\s'
   _unassigned\support_nomatch\cost_profiler.py
@@ -40,13 +40,13 @@ Phase 1
 Γä╣ Checking for unused imports...
 ./observability/logic/inspection/cost_profiler.py:4: SyntaxWarning: invalid escape sequence '\s'
   _unassigned\support_nomatch\cost_profiler.py
-Γ£ù [09] Found 133 unused imports
+Γ£ù [09] Found 10 unused imports
 
 Phase 2
 Γä╣ Checking for long lines...
 Γ£ù [10] Found 50 lines > 100 chars
 Γä╣ Checking for trailing whitespace...
-Γ£ù [11] Found 548 lines with trailing whitespace
+Γ£ô [11] No trailing whitespace found
 Γä╣ Checking for missing final newline...
 Γ£ô [12] All files end with newline
 Γä╣ Checking for tab characters...
@@ -175,6 +175,6 @@ Phase 9
 
 ============================================================
 Γ£ù CANON VIOLATIONS DETECTED
-15 failed, 6 warnings, 30 passed
+14 failed, 6 warnings, 31 passed
 
-Failed keys: 01, 04, 09, 10, 11, 14, 17, 19, 22, 24, 25, 26, 31, 42, 43
+Failed keys: 01, 04, 09, 10, 14, 17, 19, 22, 24, 25, 26, 31, 42, 43

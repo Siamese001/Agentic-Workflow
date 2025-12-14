@@ -1,4 +1,3 @@
-from typing import Any
 #!/usr/bin/env python3
 """
 Subatomic Canon Validator - Agentic Workflow Hardening

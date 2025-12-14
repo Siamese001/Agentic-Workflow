@@ -1,5 +1,4 @@
 """Dataclass models for lic_archetypes."""
-import logging
 
 
 # from .lic_archetypes_enums import *  # Star import removed
