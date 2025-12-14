@@ -1,9 +1,10 @@
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 '\nVerb canonicalization for resume bullet points.\n\nCanonicalizes action verbs to approved list and detects forbidden verbs.\n'
 import logging
 from typing import Dict, List
+
 logger = logging.getLogger(__name__)
 
 class VerbCanonicalizer:

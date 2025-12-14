@@ -6,9 +6,11 @@ No more "I hope this parses" - the LLM physically cannot output invalid structur
 """
 import logging
 from typing import Any, Dict, List, Literal
+
 from pydantic import BaseModel, Field, field_validator
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 try:
     import instructor

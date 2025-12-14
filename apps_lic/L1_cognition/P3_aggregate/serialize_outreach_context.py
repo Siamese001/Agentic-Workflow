@@ -1,9 +1,10 @@
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 'Serialize Outreach Context - atomic implementation.'
 import logging
 from typing import Dict
+
 logger = logging.getLogger(__name__)
 
 class SerializeOutreachContext:

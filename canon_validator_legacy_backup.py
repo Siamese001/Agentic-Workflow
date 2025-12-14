@@ -5,9 +5,11 @@ import os
 import re
 import sys
 from typing import List
+
 from services.configuration import ConfigurationService
+
 from .utils import Colors, IntelligentOrchestrator
-from services.configuration import ConfigurationService
+
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 if sys.platform == 'win32':
@@ -205,8 +207,7 @@ def check_key_07_no_star_imports() -> tuple[bool, List[str]]:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
                 f.readlines()
                 for i, line in enumerate(ConfigurationService().lines, 1):
-                    if 'from .* import *' in ConfigurationService().line or 'import *' in ConfigurationService().line:
-                        ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().i}')
+                    ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().i}')
         except Exception:
             continue
     if ConfigurationService().violations:

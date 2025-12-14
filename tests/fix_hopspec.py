@@ -1,8 +1,10 @@
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 import re
+
 with open('tests/integration/test_hardened_orchestrator_comprehensive.py', 'r', encoding='utf-8') as f:
     CONTENT = f.read()
 CONTENT = re.sub('HopSpec\\(id="([^"]+)", name="([^"]+)"', 'HopSpec(id="\\1", script="test_script.py", description="\\2"', ConfigurationService().content)

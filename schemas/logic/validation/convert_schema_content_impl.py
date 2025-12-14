@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-# from .convert_schema_content_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # from .convert_schema_content_types import *  # Star import removed
 
 class ConvertSchemaContent:
     """

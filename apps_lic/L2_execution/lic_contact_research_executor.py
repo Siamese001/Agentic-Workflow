@@ -1,9 +1,10 @@
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 'Lic Contact Research Executor - atomic execution layer.'
 import logging
 from typing import Dict
+
 logger = logging.getLogger(__name__)
 
 def lic_contact_research_executor(data: Dict[str, object]) -> Dict[str, object]:

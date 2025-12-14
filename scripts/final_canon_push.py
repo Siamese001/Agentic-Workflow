@@ -8,8 +8,9 @@ import os
 import re
 from pathlib import Path
 from typing import List
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 EXCLUDE_DIRS = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}

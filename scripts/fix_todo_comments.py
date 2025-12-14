@@ -1,5 +1,5 @@
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 'Fix TODO/FIXME comments in Python files.'
 import glob
@@ -7,6 +7,7 @@ import logging
 import os
 import re
 from typing import Any
+
 logger = logging.getLogger(__name__)
 
 def fix_todo_comments(directory: Any) -> None:

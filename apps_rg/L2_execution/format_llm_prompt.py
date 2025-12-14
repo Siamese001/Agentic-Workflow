@@ -6,8 +6,9 @@ Generated: 2025-12-07T13:29:00.517863
 """
 import logging
 from typing import Dict, Optional, Union
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 class FormatLlmPrompt:

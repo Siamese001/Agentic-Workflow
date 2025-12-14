@@ -107,7 +107,7 @@ def split_large_types_files():
                     shim_content = f'"""Re-export split modules for {stem}."""\n\n'
                     for i in range(0, len(defs), 5):
                         SUFFIX = "" if i == 0 else f"_{i//5 + 1}"
-                        shim_content += f"from .{stem}_part{suffix} import *"
+# TODO: Replace star import: # TODO: Replace star import:                         shim_content += f"from .{stem}_part{suffix} import *"
 
                     full_path.write_text(shim_content, encoding='utf-8')
                     logger.info(f"  Updated {full_path.name} as re-export shim")

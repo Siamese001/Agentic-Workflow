@@ -210,7 +210,7 @@ def fix_star_imports():
                 CONTENT = file_path.read_text(encoding='utf-8')
                 CONTENT = re.sub(
                     r'from\s+(\S+)\s+import\s+\*',
-                    r'# from \1 import *  # Star import removed',
+# TODO: Replace star import: # TODO: Replace star import:                     r'# from \1 import *  # Star import removed',
                     content
                 )
                 file_path.write_text(content, encoding='utf-8')
