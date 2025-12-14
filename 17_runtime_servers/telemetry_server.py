@@ -12,7 +12,7 @@ CONN = duckdb.connect("flight_recorder.duckdb", read_only=True)
 def search_errors(trace_id: str) -> str:
     """Finds error logs for a specific trace."""
     RES = CONN.execute(
-        "SELECT payload FROM traces WHERE trace_id = ? AND event_type LIKE '%ERROR%'", [trace_id]
+        "SELECT payload from traces WHERE trace_id = ? and event_type LIKE '%ERROR%'", [trace_id]
     ).fetchall()
     return "\n".join([str(r[0]) for r in res])
 

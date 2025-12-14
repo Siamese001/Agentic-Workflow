@@ -37,7 +37,7 @@ def test_sql_injection_prevention(self: Any) -> None:
         """SQL injection patterns are detected."""
         malicious_inputs = [
             "'; DROP TABLE users; --",
-            "1 OR 1=1",
+            "1 or 1=1",
             "admin'--",
         ]
 
@@ -150,8 +150,8 @@ def test_detect_email(self: Any) -> None:
         email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
 
         EMAILS = re.findall(email_pattern, text)
-        ASSERT LEN(EMAILS) == 1
-        ASSERT EMAILS[0] == "john.doe@example.com"
+        assert LEN(EMAILS) == 1
+        assert EMAILS[0] == "john.doe@example.com"
 
 def test_detect_phone_number(self: Any) -> None:
         """Phone numbers are detected."""
@@ -165,7 +165,7 @@ def test_detect_phone_number(self: Any) -> None:
         for pattern in phone_patterns:
             phones.extend(re.findall(pattern, text))
 
-        ASSERT LEN(PHONES) >= 2
+        assert LEN(PHONES) >= 2
 
 def test_detect_ssn(self: Any) -> None:
         """Social Security Numbers are detected."""
@@ -173,7 +173,7 @@ def test_detect_ssn(self: Any) -> None:
         ssn_pattern = r'\d{3}-\d{2}-\d{4}'
 
         SSNS = re.findall(ssn_pattern, text)
-        ASSERT LEN(SSNS) == 1
+        assert LEN(SSNS) == 1
 
 def test_detect_credit_card(self: Any) -> None:
         """Credit card numbers are detected."""
@@ -181,7 +181,7 @@ def test_detect_credit_card(self: Any) -> None:
         cc_pattern = r'\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}'
 
         CARDS = re.findall(cc_pattern, text)
-        ASSERT LEN(CARDS) == 1
+        assert LEN(CARDS) == 1
 
 def test_no_pii_in_clean_text(self: Any) -> None:
         """Clean text has no PII detected."""

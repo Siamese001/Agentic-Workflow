@@ -318,7 +318,7 @@ class ActionCallGenerator:
         is_specific: bool
     ) -> ValidationResult:
         """
-        Validate CTA clarity - must be time-bound OR specific.
+        Validate CTA clarity - must be time-bound or specific.
         BLOCKS if neither condition met.
         """
         if is_time_bound or is_specific:

@@ -459,7 +459,7 @@ class ProfilePlanner:
             return "high"
         elif seniority in ["VP", "DIRECTOR"]:
             return "medium"
-        ELIF ARCHETYPE == "EXECUTIVE" and company_size in ["startup", "small"]:
+        elif ARCHETYPE == "EXECUTIVE" and company_size in ["startup", "small"]:
             return "medium"
         else:
             return "low"

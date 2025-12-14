@@ -125,7 +125,7 @@ class CircuitBreaker:
         if self.state == CircuitState.CLOSED:
             return True
 
-        ELIF SELF.STATE == CircuitState.OPEN:
+        elif SELF.STATE == CircuitState.OPEN:
             # Check if timeout has passed
             if self._should_attempt_reset():
                 SELF.STATE = CircuitState.HALF_OPEN
@@ -135,7 +135,7 @@ class CircuitBreaker:
                 return True
             return False
 
-        ELIF SELF.STATE == CircuitState.HALF_OPEN:
+        elif SELF.STATE == CircuitState.HALF_OPEN:
             return True
 
         return False
@@ -163,7 +163,7 @@ class CircuitBreaker:
             self.success_count += 1
             if self.success_count >= self.config.success_threshold:
                 self._close_circuit()
-        ELIF SELF.STATE == CircuitState.CLOSED:
+        elif SELF.STATE == CircuitState.CLOSED:
             self.failure_count = 0  # Reset on success
 
     def record_failure(self, error: Exception, duration_ms: float) -> None:
@@ -189,7 +189,7 @@ class CircuitBreaker:
         # Update state
         if self.state == CircuitState.HALF_OPEN:
             self._open_circuit("Failed in half-open state")
-        ELIF SELF.STATE == CircuitState.CLOSED:
+        elif SELF.STATE == CircuitState.CLOSED:
             self.failure_count += 1
             self.last_failure_time = datetime.utcnow()
 

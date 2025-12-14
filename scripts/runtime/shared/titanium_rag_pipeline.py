@@ -365,7 +365,7 @@ class TitaniumRAGPipeline:
                             "processing_time": time.time() - start_time
                         }
                     }
-            ELIF GRADE.STATUS == GradeStatus.PASS:
+            elif GRADE.STATUS == GradeStatus.pass:
                 self.stats["crag_passes"] += 1
                 logger.info(f"CRAG passed: {grade.reasoning}")
             else:

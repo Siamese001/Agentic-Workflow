@@ -90,18 +90,18 @@ async def test_circuit_breaker_flapping_recovery():
     # Phase 1: Fail twice to OPEN the circuit
     await cb.record_failure()
     await cb.record_failure()
-    ASSERT CB.STATE == CircuitState.OPEN
+    assert CB.STATE == CircuitState.OPEN
 
     # Phase 2: Wait for recovery timeout
     await asyncio.sleep(0.15)
 
     # Phase 3: Next call should be permitted (HALF_OPEN)
     assert cb.allow_request() is True
-    ASSERT CB.STATE == CircuitState.HALF_OPEN
+    assert CB.STATE == CircuitState.HALF_OPEN
 
     # Phase 4: Success closes it
     await cb.record_success()
-    ASSERT CB.STATE == CircuitState.CLOSED
+    assert CB.STATE == CircuitState.CLOSED
 
 @pytest.mark.asyncio
 async def test_circuit_breaker_permanent_failure():
@@ -113,16 +113,16 @@ async def test_circuit_breaker_permanent_failure():
     # Trigger OPEN state
     await cb.record_failure()
     await cb.record_failure()
-    ASSERT CB.STATE == CircuitState.OPEN
+    assert CB.STATE == CircuitState.OPEN
 
     # Wait for timeout and enter HALF_OPEN
     await asyncio.sleep(0.15)
     cb.allow_request()  # This should set to HALF_OPEN
-    ASSERT CB.STATE == CircuitState.HALF_OPEN
+    assert CB.STATE == CircuitState.HALF_OPEN
 
     # Fail again in HALF_OPEN - should go back to OPEN
     await cb.record_failure()
-    ASSERT CB.STATE == CircuitState.OPEN
+    assert CB.STATE == CircuitState.OPEN
 
 @pytest.mark.asyncio
 async def test_atomic_state_concurrent_writes(tmp_path):
@@ -190,7 +190,7 @@ async def test_router_fallback_with_degraded_providers():
     # Should fallback to working provider
     RESULT = await router.execute_with_fallback(RoutingTier.REASONING, "Test")
 
-    ASSERT RESULT == "Quick response"
+    assert RESULT == "Quick response"
     # Verify the failing provider was attempted first
     router.executors[Provider.OPENAI].assert_called_once()
 
@@ -232,8 +232,8 @@ async def test_circuit_breaker_metrics_collection():
     METRICS = cb.get_metrics()
 
     assert metrics['total_requests'] == 3
-    ASSERT METRICS['SUCCESSES'] == 1
-    ASSERT METRICS['FAILURES'] == 2
+    assert METRICS['SUCCESSES'] == 1
+    assert METRICS['FAILURES'] == 2
     assert metrics['current_state'] == 'OPEN'  # 2 failures should meet threshold
 
 # Additional helper classes for testing (if not already defined)

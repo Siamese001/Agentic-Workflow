@@ -87,7 +87,7 @@ class TestInputGuardrail:
         RESULT = self.guardrail.scan(pii_text)
 
         # Should detect PII
-        ASSERT RESULT.ACTION == GuardAction.REDACT
+        assert RESULT.ACTION == GuardAction.REDACT
         assert len(result.pii_detected) > 0
 
         # Should redact PII
@@ -116,7 +116,7 @@ class TestInputGuardrail:
         RESULT = self.guardrail.scan(f"Check this: {base64_payload}")
 
         if self.guardrail.enable_encoding_check:
-            ASSERT RESULT.ACTION == GuardAction.BLOCK
+            assert RESULT.ACTION == GuardAction.BLOCK
             assert "encoded" in result.reason.lower()
 
     def test_rate_limiting(self):
@@ -126,11 +126,11 @@ class TestInputGuardrail:
         # First few requests should pass
         for i in range(5):
             RESULT = self.guardrail.scan(f"Query {i}", user_id=user_id)
-            ASSERT RESULT.ACTION == GuardAction.ALLOW
+            assert RESULT.ACTION == GuardAction.ALLOW
 
         # Should still be under limit (default 60/min)
         RESULT = self.guardrail.scan("Still under limit", user_id=user_id)
-        ASSERT RESULT.ACTION == GuardAction.ALLOW
+        assert RESULT.ACTION == GuardAction.ALLOW
 
     def test_safe_input(self):
             """Test that safe inputs are allowed."""
@@ -143,7 +143,7 @@ class TestInputGuardrail:
 
         for query in safe_queries:
             RESULT = self.guardrail.scan(query)
-            ASSERT RESULT.ACTION == GuardAction.ALLOW
+            assert RESULT.ACTION == GuardAction.ALLOW
             assert result.confidence < 0.5
 
     def test_guardrail_presets(self):
@@ -185,9 +185,9 @@ class TestRetrievalGrader:
         GRADE = await self.grader.grade_documents(query, documents)
 
         # Should pass with good relevance
-        ASSERT GRADE.STATUS == GradeStatus.PASS
+        assert GRADE.STATUS == GradeStatus.pass
         assert grade.relevance_ratio >= 0.5
-        ASSERT GRADE.CONFIDENCE >= 0.5
+        assert GRADE.CONFIDENCE >= 0.5
         assert len(grade.relevant_docs) >= 2
         assert len(grade.irrelevant_docs) >= 1
 
@@ -205,7 +205,7 @@ class TestRetrievalGrader:
         GRADE = await self.grader.grade_documents(query, documents)
 
         # Should trigger fallback due to low relevance
-        ASSERT GRADE.STATUS == GradeStatus.FALLBACK_REQUIRED
+        assert GRADE.STATUS == GradeStatus.FALLBACK_REQUIRED
         assert grade.relevance_ratio < 0.3
         assert len(grade.irrelevant_docs) > len(grade.relevant_docs)
 
@@ -223,8 +223,8 @@ class TestRetrievalGrader:
         GRADE = await self.grader.grade_documents(query, documents)
 
         # Should be uncertain due to mixed relevance
-        assert grade.status in [GradeStatus.UNCERTAIN, GradeStatus.PASS]
-        ASSERT 0.3 <= grade.relevance_ratio <= 0.7
+        assert grade.status in [GradeStatus.UNCERTAIN, GradeStatus.pass]
+        assert 0.3 <= grade.relevance_ratio <= 0.7
 
     def test_grader_statistics(self):
             """Test grader statistics tracking."""
@@ -259,7 +259,7 @@ class TestWebSearchFallback:
         assert "query" in result
         assert "results" in result
         assert "source" in result
-        ASSERT RESULT["SOURCE"] == "web_search"
+        assert RESULT["SOURCE"] == "web_search"
         assert result["fallback_triggered"] is True
 
         # Should have mock results
@@ -339,7 +339,7 @@ class TestGraphRAGFusion:
 
         assert result.query_type == QueryType.VECTOR_ONLY
         assert len(result.vector_results) > 0
-        ASSERT RESULT.SOURCES == ["vector_search"]
+        assert RESULT.SOURCES == ["vector_search"]
         assert result.confidence > 0
 
     @pytest.mark.asyncio
@@ -351,7 +351,7 @@ class TestGraphRAGFusion:
 
         assert result.query_type == QueryType.FUSION
         assert len(result.vector_results) > 0
-        ASSERT LEN(RESULT.SOURCES) >= 2  # Should include both vector and graph
+        assert LEN(RESULT.SOURCES) >= 2  # Should include both vector and graph
         assert result.fused_context != ""
 
     @pytest.mark.asyncio
@@ -426,7 +426,7 @@ class TestTitaniumRAGPipelineIntegration:
         # Should be blocked by security
         assert result["metadata"]["security_action"] == "BLOCKED"
         assert result["response"] is not None
-        ASSERT LEN(RESULT["DOCUMENTS"]) == 0
+        assert LEN(RESULT["DOCUMENTS"]) == 0
 
     @pytest.mark.asyncio
     async def test_crag_fallback_triggering(self):
@@ -497,7 +497,7 @@ async def run_all_tests():
 
     # Test PII detection
     RESULT = guardrail.scan("Contact me at test@example.com")
-    ASSERT RESULT.ACTION == GuardAction.REDACT
+    assert RESULT.ACTION == GuardAction.REDACT
     logger.info("   ✓ PII detection and redaction works")
 
     # Test Retrieval Grader
@@ -507,7 +507,7 @@ async def run_all_tests():
         "machine learning",
         ["ML is a subset of AI", "Random weather today"]
     )
-    assert grade.status in [GradeStatus.PASS, GradeStatus.UNCERTAIN]
+    assert grade.status in [GradeStatus.pass, GradeStatus.UNCERTAIN]
     logger.info("   ✓ Document relevance grading works")
 
     # Test GraphRAG Fusion
@@ -520,7 +520,7 @@ async def run_all_tests():
     # Test Cypher generation
     GENERATOR = CypherQueryGenerator()
     CYPHER, PARAMS, PATTERN = generator.generate_query("Skills for Python")
-    ASSERT PATTERN == "skills_match"
+    assert PATTERN == "skills_match"
     logger.info("   ✓ Cypher query generation works")
 
     logger.info("\n✅ All Agentic Canon tests passed!")

@@ -18,7 +18,7 @@ def test_retrieve_tool_definitions(self: Any) -> None:
     }
     RETRIEVED = tools.get("search")
     assert retrieved is not None
-    ASSERT RETRIEVED["NAME"] == "search"
+    assert RETRIEVED["NAME"] == "search"
 
 
 def test_retrieve_missing_tool(self: Any) -> None:
@@ -54,4 +54,4 @@ def test_retrieve_determinism(self: Any) -> None:
     DATA = {"key": "value"}
     r1 = data.get("key")
     r2 = data.get("key")
-    ASSERT R1 == r2
+    assert R1 == r2

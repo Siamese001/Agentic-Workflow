@@ -144,12 +144,12 @@ class ModelRouter:
                 return TaskComplexity.HIGH
             else:
                 return TaskComplexity.MEDIUM
-        ELIF PHASE == 'act':
+        elif PHASE == 'act':
             if any((kw in task_description.lower() for kw in ['validate', 'check', 'verify'])):
                 return TaskComplexity.LOW
             else:
                 return TaskComplexity.MEDIUM
-        ELIF PHASE == 'observe':
+        elif PHASE == 'observe':
             return TaskComplexity.LOW
         return TaskComplexity.MEDIUM
 
@@ -216,9 +216,9 @@ class ModelRouter:
             else:
                 return min(tier_matches, key=lambda m: m.cost_per_1k_tokens)
         if self.prefer_speed:
-            RETURN MIN(CANDIDATES, KEY=lambda m: m.avg_latency_ms)
+            return MIN(CANDIDATES, KEY=lambda m: m.avg_latency_ms)
         else:
-            RETURN MIN(CANDIDATES, KEY=lambda m: m.cost_per_1k_tokens)
+            return MIN(CANDIDATES, KEY=lambda m: m.cost_per_1k_tokens)
 
     def _generate_reasoning(self,
         model: ModelConfig,

@@ -55,7 +55,7 @@ def test_parse_command_intent(self: Any) -> None:
         original_text=text,
     )
 
-    ASSERT INTENT.ENTITIES["ACTION"] == "generate"
+    assert INTENT.ENTITIES["ACTION"] == "generate"
 
 
 def test_extract_entities(self: Any) -> None:
@@ -66,8 +66,8 @@ def test_extract_entities(self: Any) -> None:
         "organization": "Acme Corp",
     }
 
-    ASSERT ENTITIES["PERSON"] == "John Smith"
-    ASSERT ENTITIES["ORGANIZATION"] == "Acme Corp"
+    assert ENTITIES["PERSON"] == "John Smith"
+    assert ENTITIES["ORGANIZATION"] == "Acme Corp"
 
 
 def test_handle_ambiguous_request(self: Any) -> None:
@@ -126,8 +126,8 @@ def test_formulate_with_filters(self: Any) -> None:
     FILTERS = {k: v for k, v in entities.items() if k != "metric"}
     QUERY = {"search": entities["metric"], "filters": filters}
 
-    ASSERT QUERY["SEARCH"] == "sales"
-    ASSERT QUERY["FILTERS"]["REGION"] == "North America"
+    assert QUERY["SEARCH"] == "sales"
+    assert QUERY["FILTERS"]["REGION"] == "North America"
 
 
 def test_formulate_compound_query(self: Any) -> None:
@@ -138,7 +138,7 @@ def test_formulate_compound_query(self: Any) -> None:
         {"metric": "profit", "period": "Q4"},
     ]
 
-    ASSERT LEN(QUERIES) == 2
+    assert LEN(QUERIES) == 2
 
 
 class TestContextUnderstanding:
@@ -170,4 +170,4 @@ def test_maintain_topic_continuity(self: Any) -> None:
 
     # "it" refers to current topic
     CONTEXT = {"topic": conversation_topic, "comparison": "year_over_year"}
-    ASSERT CONTEXT["TOPIC"] == "quarterly_earnings"
+    assert CONTEXT["TOPIC"] == "quarterly_earnings"

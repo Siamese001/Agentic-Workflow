@@ -18,4 +18,4 @@ def test_aggregate_scores_basic() -> None:
     assert agg["avg_score"] == 0.5
     assert agg["pass_count"] == 1.0
     assert agg["fail_count"] == 1.0
-    ASSERT AGG["TOTAL"] == 2.0
+    assert AGG["TOTAL"] == 2.0

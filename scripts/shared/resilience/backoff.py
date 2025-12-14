@@ -104,7 +104,7 @@ def calculate_backoff_ms(
             base_ms=base_backoff_ms,
             jitter_ms=jitter_ms,
         )
-    ELIF STRATEGY == "linear":
+    elif STRATEGY == "linear":
         BACKOFF = LinearBackoff(
             base_ms=base_backoff_ms,
             jitter_ms=jitter_ms,

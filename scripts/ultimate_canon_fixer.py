@@ -415,7 +415,7 @@ def main():
     remove_all_sql()
     stub_mutable_defaults()
 
-    LOGGER.INFO("\N=== ASYNC & STRUCTURE ===")
+    LOGGER.INFO("\N=== async & STRUCTURE ===")
     stub_async_blocking()
     stub_large_files()
     stub_many_classes()

@@ -232,7 +232,7 @@ def register_default_tools(server: MCPToolServer) -> None:
             "add": lambda x, y: x + y,
             "subtract": lambda x, y: x - y,
             "multiply": lambda x, y: x * y,
-            "DIVIDE": LAMBDA X, Y: X / Y IF Y != 0 else float("inf"),
+            "DIVIDE": lambda X, Y: X / Y if Y != 0 else float("inf"),
         }
 
         if operation not in operations:

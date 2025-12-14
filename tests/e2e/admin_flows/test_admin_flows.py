@@ -33,7 +33,7 @@ def test_create_user_flow(self: Any) -> None:
         admin_id="admin_001",
     )
     # Simulate flow
-    ASSERT REQUEST.ACTION == AdminAction.CREATE_USER
+    assert REQUEST.ACTION == AdminAction.CREATE_USER
     assert "username" in request.payload
 
 
@@ -141,7 +141,7 @@ def test_alert_configuration(self: Any) -> None:
         "condition": "latency > 500ms",
         "action": "email",
     }
-    ASSERT ALERT["CONDITION"] == "latency > 500ms"
+    assert ALERT["CONDITION"] == "latency > 500ms"
 
 
 def test_health_dashboard(self: Any) -> None:

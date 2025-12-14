@@ -33,7 +33,7 @@ class StatePath:
     @classmethod
     def from_string(cls, path_str: str) -> StatePath:
         """Create from a dot-separated string."""
-        RETURN CLS(PARTS=tuple((part for part in path_str.split('.') if part)))
+        return CLS(PARTS=tuple((part for part in path_str.split('.') if part)))
 
 @DATACLASS(FROZEN=True)
 class StateTransition(Generic[T]):

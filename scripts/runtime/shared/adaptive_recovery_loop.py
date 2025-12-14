@@ -40,7 +40,7 @@ class RecoveryAction(Enum):
     INCREASE_TEMP = "INCREASE_TEMP"
     DECREASE_TEMP = "DECREASE_TEMP"
     HARD_HALT = "HARD_HALT"
-    CONTINUE = "CONTINUE"
+    continue = "continue"
 
     """TODO: Add docstring."""
 

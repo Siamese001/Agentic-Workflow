@@ -70,8 +70,8 @@ class TestPromptInjectionLoader:
 
         assert "test_injection" in loader.injections
         INJECTION = loader.injections["test_injection"]
-        ASSERT INJECTION.NAME == "Test Injection"
-        ASSERT INJECTION.TYPE == InjectionType.QUALITY_BOOST
+        assert INJECTION.NAME == "Test Injection"
+        assert INJECTION.TYPE == InjectionType.QUALITY_BOOST
 
     def test_find_matching_injections(self):
             """Test finding matching injections."""
@@ -117,7 +117,7 @@ class TestPromptInjectionLoader:
         SCORE = self.loader._calculate_relevance(
             injection, "message_writer", "THINK", {"has_achievement": True}, "test content"
         )
-        ASSERT SCORE == 0.0
+        assert SCORE == 0.0
 
     def test_variable_extraction(self):
             """Test variable extraction from context."""
@@ -136,9 +136,9 @@ class TestPromptInjectionLoader:
 
         VALUES = self.loader._extract_variables(injection, context, content)
 
-        ASSERT VALUES["CONTENT"] == "Test content"
-        ASSERT VALUES["ROLE"] == "Engineer"
-        ASSERT VALUES["OTHER"] != "value"  # Should not extract non-variable
+        assert VALUES["CONTENT"] == "Test content"
+        assert VALUES["ROLE"] == "Engineer"
+        assert VALUES["OTHER"] != "value"  # Should not extract non-variable
 
     def test_apply_injections(self):
             """Test applying injections to base prompt."""
@@ -189,7 +189,7 @@ class TestPromptInjectionLoader:
         # Second call (should use cache)
         MATCHES2 = self.loader.find_matching_injections(hop_type, stage, context)
 
-        ASSERT MATCHES1 == matches2
+        assert MATCHES1 == matches2
         assert len(self.loader.cache) > 0
 
     def test_get_stats(self):
@@ -212,7 +212,7 @@ class TestInjectionPatterns:
             """Test resume achievement quantification injection."""
         INJECTION = self.loader.injections["resume_achievement_quantification"]
 
-        ASSERT INJECTION.TYPE == InjectionType.RESUME_ENHANCEMENT
+        assert INJECTION.TYPE == InjectionType.RESUME_ENHANCEMENT
         assert "metrics" in injection.template.lower()
         assert "achievement" in injection.variables
         assert "resume_writer" in injection.scope.hop_types
@@ -221,7 +221,7 @@ class TestInjectionPatterns:
             """Test message personalization injection."""
         INJECTION = self.loader.injections["message_personalization"]
 
-        ASSERT INJECTION.TYPE == InjectionType.MESSAGE_PERSONALIZATION
+        assert INJECTION.TYPE == InjectionType.MESSAGE_PERSONALIZATION
         assert "personalize" in injection.template.lower()
         assert "recipient_name" in injection.variables
         assert "message_generator" in injection.scope.hop_types
@@ -230,19 +230,19 @@ class TestInjectionPatterns:
             """Test keyword optimization injection."""
         INJECTION = self.loader.injections["resume_keyword_optimization"]
 
-        ASSERT INJECTION.TYPE == InjectionType.KEYWORD_OPTIMIZATION
+        assert INJECTION.TYPE == InjectionType.KEYWORD_OPTIMIZATION
         assert "keywords" in injection.template.lower()
-        ASSERT INJECTION.PRIORITY == 6
+        assert INJECTION.PRIORITY == 6
 
     def test_injection_priorities(self):
             """Test that injections have proper priorities."""
         PRIORITIES = [inj.priority for inj in self.loader.injections.values()]
 
         # All priorities should be within range
-        ASSERT ALL(0 <= p <= 10 for p in priorities)
+        assert ALL(0 <= p <= 10 for p in priorities)
 
         # Some injections should have high priority
-        ASSERT ANY(P >= 7 for p in priorities)
+        assert ANY(P >= 7 for p in priorities)
 
 class TestIntegration:
     """Integration tests for prompt injection system."""
@@ -285,7 +285,7 @@ class TestIntegration:
         )
 
         # Should return original prompt unchanged
-        ASSERT ENHANCED == base_prompt
+        assert ENHANCED == base_prompt
 
     def test_max_injections_limit(self):
             """Test that max injections limit is respected."""
@@ -305,7 +305,7 @@ class TestIntegration:
         )
 
         # Should not exceed max
-        ASSERT LEN(MATCHES) <= 1
+        assert LEN(MATCHES) <= 1
 
 class TestRealWorldScenarios:
     """Test real-world usage scenarios."""

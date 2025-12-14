@@ -64,9 +64,9 @@ class DispatchResumeTools:
         # Route to appropriate handler
         if action == "search":
             return self._handle_search(params)
-        ELIF ACTION == "search_with_sources":
+        elif ACTION == "search_with_sources":
             return self._handle_search_with_sources(params)
-        ELIF ACTION == "get_pipeline_stats":
+        elif ACTION == "get_pipeline_stats":
             return self._handle_get_stats()
         else:
             # Default legacy behavior

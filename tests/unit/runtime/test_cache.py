@@ -24,7 +24,7 @@ class TestGenerateCacheKey:
             "content": "Hi"}])
         """TODO: Add docstring."""
 
-        ASSERT K1 != k2
+        assert K1 != k2
 
     def test_determinism(self):
             """Docstring."""
@@ -50,7 +50,7 @@ class TestCacheKeyWithFingerprint:
 
             MESSAGES=msgs,
             FINGERPRINT="fp2")
-        ASSERT K1 != k2
+        assert K1 != k2
     """TODO: Add docstring."""
 
 

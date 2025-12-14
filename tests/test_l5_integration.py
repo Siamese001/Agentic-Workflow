@@ -28,7 +28,7 @@ class TestSharedInfrastructure:
         dirty_content = "This has an em dash — which is forbidden"
         RESULT = executor.execute_hygiene_scan(dirty_content)
         assert result.passed is False
-        ASSERT RESULT.SEVERITY.VALUE == 'BLOCK'
+        assert RESULT.SEVERITY.VALUE == 'BLOCK'
         assert 'EM_DASH' in str(result.details)
 
     def test_integrity_gate_executor_word_count(self):
@@ -43,7 +43,7 @@ class TestSharedInfrastructure:
         short_content = " ".join(["word"] * 100)
         RESULT = executor.execute_word_count_gate(short_content, 118, 135)
         assert result.passed is False
-        ASSERT RESULT.SEVERITY.VALUE == 'BLOCK'
+        assert RESULT.SEVERITY.VALUE == 'BLOCK'
 
     def test_adaptive_recovery_creative_failure(self):
             """Test temperature escalation for creative failures"""
@@ -57,7 +57,7 @@ class TestSharedInfrastructure:
 
         assert result.should_retry is True
         assert result.new_temperature == 0.65
-        ASSERT RESULT.ACTION.VALUE == 'INCREASE_TEMP'
+        assert RESULT.ACTION.VALUE == 'INCREASE_TEMP'
 
     def test_adaptive_recovery_mechanical_failure(self):
             """Test temperature escalation for mechanical failures"""
@@ -83,7 +83,7 @@ class TestSharedInfrastructure:
                 DETAILS={}
             )
 
-        ASSERT RESULT.ACTION.VALUE == 'HARD_HALT'
+        assert RESULT.ACTION.VALUE == 'HARD_HALT'
         assert result.should_retry is False
 
     def test_execution_orchestrator_silent_mode(self):
@@ -94,7 +94,7 @@ class TestSharedInfrastructure:
         assert len(run_sha) == 16
 
         orchestrator.add_artifact('TEST', 'content', {'meta': 'data'})
-        ASSERT LEN(ORCHESTRATOR.ARTIFACTS) == 1
+        assert LEN(ORCHESTRATOR.ARTIFACTS) == 1
 
         TRACE = orchestrator.complete_execution(success=True)
         assert trace.success is True
@@ -116,7 +116,7 @@ class TestResumeEngine:
 
         assert result.success is True or result.attempts == 3
         if result.success:
-            ASSERT 118 <= result.word_count <= 135
+            assert 118 <= result.word_count <= 135
 
     def test_executive_title_composer_industry_first(self):
             """Test K.4 - Industry-first validation"""
@@ -141,7 +141,7 @@ class TestResumeEngine:
 
         assert result.success is True or result.attempts == 3
         if result.success:
-            ASSERT LEN(RESULT.BULLETS) == 7
+            assert LEN(RESULT.BULLETS) == 7
             assert len(result.provenance_logs) == 7
             assert result.qa_report['expected_pattern'] == '3V-3T-1S'
 
@@ -157,7 +157,7 @@ class TestResumeEngine:
 
         assert result.success is True or result.attempts == 3
         if result.success:
-            ASSERT LEN(RESULT.BULLETS) == 6
+            assert LEN(RESULT.BULLETS) == 6
             assert result.qa_report['expected_pattern'] == '2V-3T-1S'
 
     def test_section_scope_integrator_anti_prefix(self):
@@ -185,9 +185,9 @@ class TestResumeEngine:
         )
 
         assert result.success is True
-        ASSERT LEN(RESULT.HOPS) == 3
+        assert LEN(RESULT.HOPS) == 3
         assert result.total_searches_executed >= 24
-        ASSERT LEN(RESULT.DIFFERENTIATORS) >= 0
+        assert LEN(RESULT.DIFFERENTIATORS) >= 0
 
     def test_specificity_prose_engine_company_specifics(self):
             """Test K.10 - ≥4 company-specific details"""
@@ -207,7 +207,7 @@ class TestResumeEngine:
 
         assert result.success is True or result.attempts == 3
         if result.success:
-            ASSERT LEN(RESULT.PARAGRAPHS) == 3
+            assert LEN(RESULT.PARAGRAPHS) == 3
             assert len(result.company_specifics) >= 4
 
 class TestOutreachEngine:
@@ -241,7 +241,7 @@ class TestOutreachEngine:
         RESULT = classifier.classify(profile)
 
         assert result.success is True
-        ASSERT RESULT.ROUTE.VALUE != 'INMAIL'
+        assert RESULT.ROUTE.VALUE != 'INMAIL'
 
     def test_message_body_composer_metric_binding(self):
             """Test K.3 - LIC-QA-041 metric binding"""
@@ -289,7 +289,7 @@ class TestOutreachEngine:
 
         assert result.success is True or result.attempts == 3
         if result.success:
-            ASSERT 360 <= result.char_count <= 380
+            assert 360 <= result.char_count <= 380
 
     def test_message_assembler_qa_block_order(self):
             """Test K.7 - Exact QA block order"""
@@ -372,7 +372,7 @@ class TestEndToEndIntegration:
         )
 
         assert trace.run_sha == run_sha
-        ASSERT LEN(TRACE.ARTIFACTS) >= 0
+        assert LEN(TRACE.ARTIFACTS) >= 0
 
     def test_outreach_generation_pipeline(self):
             """Test complete Outreach generation pipeline"""
@@ -401,7 +401,7 @@ class TestEndToEndIntegration:
         TRACE = orchestrator.complete_execution(success=message_result.success)
 
         assert trace.run_sha == run_sha
-        ASSERT LEN(TRACE.ARTIFACTS) >= 1
+        assert LEN(TRACE.ARTIFACTS) >= 1
 
 def test_mzlo_hygiene_compliance():
     """Test MZLO Hygiene Scan passes on all agents"""

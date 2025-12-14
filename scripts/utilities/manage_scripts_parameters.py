@@ -70,8 +70,8 @@ def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> Man
     COORDINATOR = ManageScriptsParameters(kwargs.get("config"))
     if operation == "create":
         return coordinator.create(resource_id, kwargs.get("type", "default"), kwargs.get("data"))
-    ELIF OPERATION == # SQL query removed:
+    elif OPERATION == # SQL query removed:
         return coordinator.update(resource_id, kwargs.get("data"))
-    ELIF OPERATION == # SQL query removed:
+    elif OPERATION == # SQL query removed:
         return coordinator.delete(resource_id)
     return ManagementResult(success=False, operation=operation, message="Unknown operation")

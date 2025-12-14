@@ -223,7 +223,7 @@ class TestExecuteResumeGenerationIntegration:
         assert result.output is not None
 
         OUTPUT = result.output
-        ASSERT OUTPUT["ACTION"] == "tailor_resume"
+        assert OUTPUT["ACTION"] == "tailor_resume"
         assert "job_analysis" in output
         assert "tailored_resume" in output
 
@@ -246,7 +246,7 @@ class TestExecuteResumeGenerationIntegration:
         RESULT = self.executor.execute("analyze_job", params)
 
         assert result.success is True
-        ASSERT RESULT.OUTPUT["ACTION"] == "analyze_job"
+        assert RESULT.OUTPUT["ACTION"] == "analyze_job"
         assert "analysis" in result.output
 
         ANALYSIS = result.output["analysis"]

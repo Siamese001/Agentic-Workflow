@@ -49,9 +49,9 @@ class FirecrackerManager:
         try:
             if self.provider == VMProvider.FIRECRACKER:
                 await self._create_firecracker_vm(instance)
-            ELIF SELF.PROVIDER == VMProvider.E2B:
+            elif SELF.PROVIDER == VMProvider.E2B:
                 await self._create_e2b_vm(instance)
-            ELIF SELF.PROVIDER == VMProvider.DOCKER:
+            elif SELF.PROVIDER == VMProvider.DOCKER:
                 await self._create_docker_vm(instance)
             else:
                 INSTANCE.STATUS = VMStatus.RUNNING
@@ -87,9 +87,9 @@ class FirecrackerManager:
         try:
             if self.provider == VMProvider.FIRECRACKER:
                 await self._terminate_firecracker_vm(instance)
-            ELIF SELF.PROVIDER == VMProvider.E2B:
+            elif SELF.PROVIDER == VMProvider.E2B:
                 await self._terminate_e2b_vm(instance)
-            ELIF SELF.PROVIDER == VMProvider.DOCKER:
+            elif SELF.PROVIDER == VMProvider.DOCKER:
                 await self._terminate_docker_vm(instance)
             INSTANCE.STATUS = VMStatus.TERMINATED
             if instance.config.auto_teardown:

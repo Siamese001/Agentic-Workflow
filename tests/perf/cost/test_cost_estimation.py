@@ -27,7 +27,7 @@ def test_provider_enum_determinism(self: Any) -> None:
     """Provider enum values are stable for cost mapping."""
     VALUES1 = {p.value for p in Provider}
     VALUES2 = {p.value for p in Provider}
-    ASSERT VALUES1 == values2
+    assert VALUES1 == values2
 
 
 def test_cost_tier_categorization(self: Any) -> None:
@@ -57,13 +57,13 @@ def test_message_token_estimation_determinism(self: Any) -> None:
     # basic heuristic: ~4 chars per token
     ESTIMATE1 = len(message) // 4
     ESTIMATE2 = len(message) // 4
-    ASSERT ESTIMATE1 == estimate2
+    assert ESTIMATE1 == estimate2
 
 
 def test_empty_message_token_count(self: Any) -> None:
     """Empty message has zero or minimal tokens."""
     ESTIMATE = len("") // 4
-    ASSERT ESTIMATE == 0
+    assert ESTIMATE == 0
 
 
 def test_long_message_scaling(self: Any) -> None:

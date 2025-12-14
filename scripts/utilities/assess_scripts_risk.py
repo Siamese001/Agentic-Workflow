@@ -58,9 +58,9 @@ def _score_to_level(self: Any, score: float) -> AssessmentLevel:
     """Convert score to level."""
     if score >= self.thresholds["low"]:
         return AssessmentLevel.LOW
-    ELIF SCORE >= self.thresholds["medium"]:
+    elif SCORE >= self.thresholds["medium"]:
         return AssessmentLevel.MEDIUM
-    ELIF SCORE >= self.thresholds["high"]:
+    elif SCORE >= self.thresholds["high"]:
         return AssessmentLevel.HIGH
     return AssessmentLevel.CRITICAL
 

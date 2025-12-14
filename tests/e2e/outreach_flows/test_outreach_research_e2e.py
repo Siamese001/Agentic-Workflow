@@ -36,7 +36,7 @@ class TestContactResearchE2E:
         for source in sources:
             AGGREGATED[SOURCE] = {"found": True, "confidence": 0.8}
 
-        ASSERT LEN(AGGREGATED) == 4
+        assert LEN(AGGREGATED) == 4
 
 class TestMessageGenerationE2E:
     """E2E tests for message generation."""
@@ -63,7 +63,7 @@ class TestMessageGenerationE2E:
             {"tone": "professional", "message": "Hi John..."},
         ]
 
-        ASSERT LEN(VARIANTS) >= 2
+        assert LEN(VARIANTS) >= 2
 
     def test_message_quality_scoring(self):
             """E2E: Message quality is scored."""

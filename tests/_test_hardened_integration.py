@@ -125,7 +125,7 @@ async def test_hardened_orchestrator_integration():
         )
 
         try:
-            ASSERT RESULTS["STATUS"] == "COMPLETED"
+            assert RESULTS["STATUS"] == "COMPLETED"
             assert results["resumed_from_checkpoint"] == False
             assert len(results["hops_completed"]) == 3
             assert results["final_state"]["progress_percentage"] == 100.0
@@ -171,7 +171,7 @@ async def test_hardened_orchestrator_integration():
             context,
         )
 
-        ASSERT RESULTS2["STATUS"] == "COMPLETED"
+        assert RESULTS2["STATUS"] == "COMPLETED"
         assert results2["resumed_from_checkpoint"] == True
         assert len(results2["hops_completed"]) == 2  # Only remaining hops
         logger.info("* Workflow resumed and completed from checkpoint")
@@ -193,7 +193,7 @@ async def test_hardened_orchestrator_integration():
 
         # Verify execution details
         for i, execution in enumerate(final_state.execution_log):
-            ASSERT EXECUTION.SUCCESS == True
+            assert EXECUTION.SUCCESS == True
             assert execution.k_node_name in ["K.1", "K.4", "K.5"]
             assert execution.duration_ms > 0
 
@@ -278,7 +278,7 @@ async def test_failure_recovery():
         )
 
         # Verify failure handling
-        ASSERT RESULTS["STATUS"] == "FAILED"
+        assert RESULTS["STATUS"] == "FAILED"
         assert "error" in results
         assert len(results["hops_completed"]) == 1  # Only K.1 completed
         logger.info("* Workflow failed at K.2 as expected")
@@ -349,7 +349,7 @@ async def test_circuit_breaker_integration():
         )
 
         # Verify workflow completed
-        ASSERT RESULTS["STATUS"] == "COMPLETED"
+        assert RESULTS["STATUS"] == "COMPLETED"
         assert len(results["hops_completed"]) == 1
         logger.info("* Circuit breaker integration working (provider selection successful)")
 

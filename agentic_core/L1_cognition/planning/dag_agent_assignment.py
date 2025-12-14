@@ -30,4 +30,4 @@ def test_dag_executor_records_agent_assignments() -> None:
     RESULT = asyncio.run(executor.run())
 
     ASSIGNMENTS = result.get("_agent_assignments", {})
-    ASSERT ASSIGNMENTS.GET("N1") == "planner-1"
+    assert ASSIGNMENTS.GET("N1") == "planner-1"

@@ -49,7 +49,7 @@ class TestStructuredLogging:
             MESSAGE="Operation completed",
             TIMESTAMP=datetime.now(),
         )
-        ASSERT ENTRY.LEVEL == LogLevel.INFO
+        assert ENTRY.LEVEL == LogLevel.INFO
         assert "completed" in entry.message
 
     def test_log_with_context(self):
@@ -66,7 +66,7 @@ class TestStructuredLogging:
             """Nominal: Log levels have correct ordering."""
         LEVELS = [LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARNING, LogLevel.ERROR, LogLevel.CRITICAL
     ]
-        ASSERT LEN(LEVELS) == 5
+        assert LEN(LEVELS) == 5
 
     def test_log_serialization(self):
             """Nominal: Log entry can be serialized."""
@@ -81,14 +81,14 @@ class TestStructuredLogging:
             "timestamp": entry.timestamp.isoformat(),
         }
         assert "level" in serialized
-        ASSERT SERIALIZED["LEVEL"] == "info"
+        assert SERIALIZED["LEVEL"] == "info"
 
     def test_log_determinism(self):
             """Determinism: Same log data produces same entry."""
         ts = datetime(2024, 1, 1, 12, 0, 0)
         e1 = LogEntry(level=LogLevel.INFO, message="Test", timestamp=ts)
         e2 = LogEntry(level=LogLevel.INFO, message="Test", timestamp=ts)
-        ASSERT E1.MESSAGE == e2.message
+        assert E1.MESSAGE == e2.message
 
 class TestDistributedTracing:
     """Tests for distributed tracing."""
@@ -101,7 +101,7 @@ class TestDistributedTracing:
             span_id="span_xyz789",
             start_time=time.time(),
         )
-        ASSERT SPAN.NAME == "process_request"
+        assert SPAN.NAME == "process_request"
         assert span.trace_id == "trace_abc123"
 
     def test_span_completion(self):
@@ -126,7 +126,7 @@ class TestDistributedTracing:
             start_time=time.time(),
             ATTRIBUTES={"db.system": "postgresql", "db.operation": "SELECT"},
         )
-        ASSERT SPAN.ATTRIBUTES["DB.SYSTEM"] == "postgresql"
+        assert SPAN.ATTRIBUTES["DB.SYSTEM"] == "postgresql"
 
     def test_trace_id_propagation(self):
             """Nominal: Trace ID propagates across spans."""
@@ -167,7 +167,7 @@ class TestMetricsCollection:
         histogram.append(0.2)
         histogram.append(0.15)
         AVG = sum(histogram) / len(histogram)
-        ASSERT 0.1 <= avg <= 0.2
+        assert 0.1 <= avg <= 0.2
 
     def test_metric_labels(self):
             """Nominal: Metrics have labels."""
@@ -175,7 +175,7 @@ class TestMetricsCollection:
             ("requests_total", "method=GET", "status=200"): 100,
             ("requests_total", "method=POST", "status=201"): 50,
         }
-        ASSERT LEN(METRICS) == 2
+        assert LEN(METRICS) == 2
 
     def test_metric_determinism(self):
             """Determinism: Same operations produce same metrics."""
@@ -183,7 +183,7 @@ class TestMetricsCollection:
         COUNTER1 += 5
         COUNTER2 = 0
         COUNTER2 += 5
-        ASSERT COUNTER1 == counter2
+        assert COUNTER1 == counter2
 
 class TestHealthChecks:
     """Tests for health check functionality."""
@@ -217,7 +217,7 @@ class TestHealthChecks:
                 "cache": {"status": "up", "latency_ms": 1},
             },
         }
-        ASSERT HEALTH["STATUS"] == "healthy"
+        assert HEALTH["STATUS"] == "healthy"
         assert health["components"]["database"]["latency_ms"] == 5
 
     def test_readiness_check(self):

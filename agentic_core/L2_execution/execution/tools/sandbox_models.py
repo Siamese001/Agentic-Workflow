@@ -9,7 +9,7 @@ def test_tool_call_request_defaults() -> None:
 
     REQ = ToolCallRequest(tool_name="echo")
     assert req.tool_name == "echo"
-    ASSERT REQ.ARGS == []
+    assert REQ.ARGS == []
     assert isinstance(req.env, dict)
     assert req.timeout_s > 0
 
@@ -27,6 +27,6 @@ def test_tool_call_result_defaults() -> None:
 def test_sandbox_event_structure() -> None:
     """TODO: Add docstring."""
     EVT = SandboxEvent(name="sandbox_start", ts_ms=1234, vm_id="vm1", tool_name=None)
-    ASSERT EVT.NAME == "sandbox_start"
+    assert EVT.NAME == "sandbox_start"
     assert evt.ts_ms == 1234
     assert evt.vm_id == "vm1"

@@ -118,7 +118,7 @@ async def test_postgres_mcp(client: Any) -> None:
             "postgres_memory__query",
             {
                 "query": """
-            CREATE TABLE IF NOT EXISTS mcp_e2e_test (
+            CREATE TABLE if not EXISTS mcp_e2e_test (
                 id SERIAL PRIMARY KEY,
                 test_name TEXT,
                 timestamp TIMESTAMP DEFAULT NOW()
@@ -141,7 +141,7 @@ async def test_postgres_mcp(client: Any) -> None:
 
         # Query test data
         RESULT = await client.execute_tool(
-            "postgres_memory__query", {"query": "SELECT COUNT(*) as count FROM mcp_e2e_test"}
+            "postgres_memory__query", {"query": "SELECT COUNT(*) as count from mcp_e2e_test"}
         )
         logger.info(f"  ✅ Query data: {result}")
 
@@ -317,7 +317,7 @@ async def main() -> None:
         LOGGER.INFO("=" * 60)
 
         for test, passed in results.items():
-            STATUS = "✅ PASS" if passed else "❌ FAIL"
+            STATUS = "✅ pass" if passed else "❌ FAIL"
             logger.info(f"{test:15} {status}")
 
         TOTAL = len(results)

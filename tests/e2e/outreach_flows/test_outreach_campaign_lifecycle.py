@@ -70,7 +70,7 @@ class TestCampaignLifecycleE2E:
             STATE.PHASE = phase
             state.audit_log.append({"phase": phase.value, "timestamp": datetime.now().isoformat()})
 
-        ASSERT STATE.PHASE == CampaignPhase.COMPLETED
+        assert STATE.PHASE == CampaignPhase.COMPLETED
         assert len(state.audit_log) == len(phases)
 
     def test_campaign_with_100_contacts(self):
@@ -108,7 +108,7 @@ class TestCampaignLifecycleE2E:
         state.errors.clear()
 
         assert state.metrics.messages_sent == 10
-        ASSERT LEN(STATE.ERRORS) == 0
+        assert LEN(STATE.ERRORS) == 0
 
     def test_campaign_pause_resume(self):
             """E2E: Campaign can be paused and resumed."""
@@ -170,8 +170,8 @@ class TestMultiChannelOutreachE2E:
         for step in sequence:
             executed.append(step["action"])
 
-        ASSERT LEN(EXECUTED) == 4
-        ASSERT EXECUTED[0] == "connection_request"
+        assert LEN(EXECUTED) == 4
+        assert EXECUTED[0] == "connection_request"
 
     def test_channel_fallback(self):
             """E2E: Fallback to alternate channel on failure."""

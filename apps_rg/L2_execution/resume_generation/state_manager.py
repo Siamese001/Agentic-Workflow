@@ -370,7 +370,7 @@ class ManifestManager:
                 validation_results.append(ValidationResult(**vr_dict))
 
             # Reconstruct HopStatus enum
-            status_name = cp_dict.get('status', 'PASS')
+            status_name = cp_dict.get('status', 'pass')
             cp_dict['status'] = HopStatus[status_name]
             cp_dict['validation_results'] = validation_results
 

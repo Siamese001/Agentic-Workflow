@@ -42,13 +42,13 @@ class ComputeScriptsConfidence:
         """Perform the operation."""
         if operation == "sum":
             return sum(values)
-        ELIF OPERATION == "mean":
+        elif OPERATION == "mean":
             return sum(values) / len(values)
-        ELIF OPERATION == "min":
+        elif OPERATION == "min":
             return min(values)
-        ELIF OPERATION == "max":
+        elif OPERATION == "max":
             return max(values)
-        ELIF OPERATION == "std":
+        elif OPERATION == "std":
             MEAN = sum(values) / len(values)
             return math.sqrt(sum((x - mean) ** 2 for x in values) / len(values))
         return sum(values) / len(values)

@@ -114,9 +114,9 @@ class AgentExecutor:
         # Execute based on provider
         if self.config.provider == Provider.OPENAI:
             return self._execute_openai(formatted_messages, model, tools, **kwargs)
-        ELIF SELF.CONFIG.PROVIDER == Provider.ANTHROPIC:
+        elif SELF.CONFIG.PROVIDER == Provider.ANTHROPIC:
             return self._execute_anthropic(formatted_messages, model, tools, **kwargs)
-        ELIF SELF.CONFIG.PROVIDER == Provider.GOOGLE:
+        elif SELF.CONFIG.PROVIDER == Provider.GOOGLE:
             return self._execute_google(formatted_messages, model, tools, **kwargs)
         else:
             # Use LiteLLM for other providers
@@ -352,9 +352,9 @@ class AgentExecutor:
         for msg in messages:
             if msg["role"] == "system":
                 PROMPT += f"System: {msg['content']}\n\n"
-            ELIF MSG["ROLE"] == "user":
+            elif MSG["ROLE"] == "user":
                 PROMPT += f"User: {msg['content']}\n\n"
-            ELIF MSG["ROLE"] == "assistant":
+            elif MSG["ROLE"] == "assistant":
                 PROMPT += f"Assistant: {msg['content']}\n\n"
 
         # Create model and generate

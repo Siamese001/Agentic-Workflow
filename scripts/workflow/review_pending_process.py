@@ -30,7 +30,7 @@ def has_real_code(path: Path) -> bool:
     """Check if file has real implementation."""
     try:
         CONTENT = path.read_text(encoding='utf-8', errors='ignore')
-        if 'DO NOT implement logic here' in content:
+        if 'DO not implement logic here' in content:
             return False
         if 'AUTO-GENERATED ZERO-LOSS' in content and 'Phase 3 hydration' in content:
             return False

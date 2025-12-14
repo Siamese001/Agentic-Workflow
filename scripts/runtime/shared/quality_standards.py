@@ -74,7 +74,7 @@ class EngineQualityProfile:
         """
         if level == StandardType.BASE:
             return self.base_standards
-        ELIF LEVEL == StandardType.PREFERRED:
+        elif LEVEL == StandardType.PREFERRED:
             return self.base_standards | self.preferred_standards
         else:  # EXCELLENCE
             return self.base_standards | self.preferred_standards | self.excellence_standards

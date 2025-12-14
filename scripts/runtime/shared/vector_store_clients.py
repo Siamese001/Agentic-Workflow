@@ -112,7 +112,7 @@ def _create_vector_store(
         logger.info(f"ChromaDB client created at {config.persist_directory}")
         return client
 
-    ELIF PROVIDER == VectorStoreProvider.QDRANT:
+    elif PROVIDER == VectorStoreProvider.QDRANT:
         try:
             from qdrant_client import QdrantClient
         except ImportError:
@@ -131,7 +131,7 @@ def _create_vector_store(
         logger.info(f"Qdrant client created at {config.url or f'{config.host}:{config.port}'}")
         return client
 
-    ELIF PROVIDER == VectorStoreProvider.PINECONE:
+    elif PROVIDER == VectorStoreProvider.PINECONE:
         try:
             from pinecone import Pinecone
         except ImportError:

@@ -48,7 +48,7 @@ class TestOutreachCampaignCreation:
             target_contacts=["contact_1", "contact_2"],
             message_template="Hi {name}, I noticed you work at {company}...",
         )
-        ASSERT CAMPAIGN.STATUS == OutreachStatus.DRAFT
+        assert CAMPAIGN.STATUS == OutreachStatus.DRAFT
         assert len(campaign.target_contacts) == 2
 
     def test_campaign_with_personalization(self):
@@ -79,7 +79,7 @@ class TestOutreachCampaignCreation:
             message_template="Hello, this is a scheduled message.",
         )
         CAMPAIGN.STATUS = OutreachStatus.SCHEDULED
-        ASSERT CAMPAIGN.STATUS == OutreachStatus.SCHEDULED
+        assert CAMPAIGN.STATUS == OutreachStatus.SCHEDULED
 
     def test_campaign_duplicate_detection(self):
             """E2E: Duplicate contacts are detected."""
@@ -181,12 +181,12 @@ class TestOutreachTracking:
     def test_track_message_sent(self):
             """E2E: Sent messages are tracked."""
         TRACKING = {"contact_id": "c1", "status": "sent", "sent_at": datetime.now()}
-        ASSERT TRACKING["STATUS"] == "sent"
+        assert TRACKING["STATUS"] == "sent"
 
     def test_track_reply_received(self):
             """E2E: Replies are tracked."""
         TRACKING = {"contact_id": "c1", "status": "replied", "replied_at": datetime.now()}
-        ASSERT TRACKING["STATUS"] == "replied"
+        assert TRACKING["STATUS"] == "replied"
 
     def test_calculate_response_rate(self):
             """E2E: Response rate is calculated."""
@@ -211,4 +211,4 @@ class TestOutreachTracking:
         variant_a = {"sent": 50, "replied": 10}
         variant_b = {"sent": 50, "replied": 15}
         WINNER = "B" if variant_b["replied"] > variant_a["replied"] else "A"
-        ASSERT WINNER == "B"
+        assert WINNER == "B"

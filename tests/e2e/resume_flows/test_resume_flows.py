@@ -51,8 +51,8 @@ class TestResumeGeneration:
             EDUCATION=[{"degree": "BS CS", "school": "State University"}],
             SKILLS=["Python", "JavaScript", "SQL"],
         )
-        ASSERT DATA.NAME == "John Doe"
-        ASSERT LEN(DATA.SKILLS) == 3
+        assert DATA.NAME == "John Doe"
+        assert LEN(DATA.SKILLS) == 3
 
     def test_generate_summary(self):
             """E2E: Professional summary is generated."""
@@ -91,8 +91,8 @@ class TestResumeGeneration:
             ResumeSection.EDUCATION,
             ResumeSection.SKILLS,
         ]
-        ASSERT SECTIONS[0] == ResumeSection.SUMMARY
-        ASSERT SECTIONS[1] == ResumeSection.EXPERIENCE
+        assert SECTIONS[0] == ResumeSection.SUMMARY
+        assert SECTIONS[1] == ResumeSection.EXPERIENCE
 
 class TestResumeOptimization:
     """E2E tests for resume optimization flows."""
@@ -159,7 +159,7 @@ class TestJobMatching:
         REQUIRED = ["Python", "SQL", "ML"]
         CANDIDATE = ["Python", "SQL", "Java"]
         SCORE = len(set(required) & set(candidate)) / len(required) * 100
-        ASSERT SCORE == pytest.approx(66.67, rel=0.1)
+        assert SCORE == pytest.approx(66.67, rel=0.1)
 
     def test_identify_skill_gaps(self):
             """E2E: Skill gaps are identified."""
@@ -173,7 +173,7 @@ class TestJobMatching:
             """E2E: Improvements are recommended."""
         GAPS = ["Kubernetes", "AWS"]
         RECOMMENDATIONS = [f"Consider learning {skill}" for skill in gaps]
-        ASSERT LEN(RECOMMENDATIONS) == 2
+        assert LEN(RECOMMENDATIONS) == 2
 
     def test_rank_job_matches(self):
             """E2E: Jobs are ranked by match score."""
@@ -183,7 +183,7 @@ class TestJobMatching:
             {"title": "Job C", "score": 78},
         ]
         RANKED = sorted(jobs, key=lambda j: j["score"], reverse=True)
-        ASSERT RANKED[0]["TITLE"] == "Job B"
+        assert RANKED[0]["TITLE"] == "Job B"
 
 class TestResumeExport:
     """E2E tests for resume export flows."""
@@ -206,13 +206,13 @@ class TestResumeExport:
             """E2E: Export preserves formatting."""
         ORIGINAL = {"sections": 4, "bullets": 12, "bold_items": 5}
         EXPORTED = {"sections": 4, "bullets": 12, "bold_items": 5}
-        ASSERT ORIGINAL == exported
+        assert ORIGINAL == exported
 
     def test_export_multiple_versions(self):
             """E2E: Multiple resume versions can be exported."""
         VERSIONS = ["standard", "tech_focused", "management_focused"]
         EXPORTS = {v: f"resume_{v}.pdf" for v in versions}
-        ASSERT LEN(EXPORTS) == 3
+        assert LEN(EXPORTS) == 3
 
     def test_export_with_cover_letter(self):
             """E2E: Resume exports with cover letter."""

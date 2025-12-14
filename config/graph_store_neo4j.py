@@ -45,9 +45,9 @@ class Neo4jGraphStore:
         MERGE (e:Entity {id: $id})
         SET e.type = $type,
             E.NAME = $name
-        WITH e
-        CALL apoc.create.addProperties(e, $metadata) YIELD node
-        RETURN node
+        with e
+        CALL apoc.create.addProperties(e, $metadata) yield node
+        return node
         """
         try:
             self.run(
@@ -66,7 +66,7 @@ class Neo4jGraphStore:
             SET e.type = $type,
                 E.NAME = $name,
                 E += $metadata
-            RETURN e
+            return e
             """
             self.run(
                 fallback_cypher,
@@ -115,9 +115,9 @@ class Neo4jGraphStore:
         if attrs:
             try:
                 CYPHER += """
-                WITH r
-                CALL apoc.create.addProperties(r, $attrs) YIELD rel
-                RETURN rel
+                with r
+                CALL apoc.create.addProperties(r, $attrs) yield rel
+                return rel
                 """
                 PARAMS["ATTRS"] = attrs
             except Exception:
@@ -165,10 +165,10 @@ class Neo4jGraphStore:
         CYPHER = """
         MATCH (s:Entity)-[r:RELATION]->(o:Entity)
         WHERE toLower(s.name) CONTAINS toLower($name)
-          AND r.predicate = $predicate
-          AND (r.valid_at IS NULL OR r.valid_at <= datetime($end))
-          AND (r.invalid_at IS NULL OR r.invalid_at >= datetime($start))
-        RETURN s, r, o
+          and r.predicate = $predicate
+          and (r.valid_at is NULL or r.valid_at <= datetime($end))
+          and (r.invalid_at is NULL or r.invalid_at >= datetime($start))
+        return s, r, o
         """
         return self.run(
             cypher,

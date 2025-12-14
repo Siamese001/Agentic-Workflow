@@ -31,7 +31,7 @@ def check_vscode_config() -> None:
         logger.info(f"✅ settings.json found")
         logger.info(f"   - pytest enabled: {settings.get('python.testing.pytestEnabled', False)}")
         logger.info(f"   - pytest args: {settings.get('python.testing.pytestArgs', [])}")
-        logger.info(f"   - pytest cwd: {settings.get('python.testing.cwd', 'NOT SET')}")
+        logger.info(f"   - pytest cwd: {settings.get('python.testing.cwd', 'not SET')}")
     else:
         logger.info("❌ settings.json not found!")
 

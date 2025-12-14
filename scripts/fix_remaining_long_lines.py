@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 def fix_long_lines_in_file(filepath: str) -> int:
     """Fix long lines in a file using simple patterns."""
     try:
-        WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+        with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
             LINES = f.readlines()
 
         fixed_count = 0
@@ -67,7 +67,7 @@ def fix_long_lines_in_file(filepath: str) -> int:
             new_lines.append(line)
 
         if fixed_count > 0:
-            WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
+            with OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
                 f.writelines(new_lines)
 
         return fixed_count

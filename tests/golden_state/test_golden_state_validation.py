@@ -79,7 +79,7 @@ async def test_evaluate_case(evaluator, sample_case, sample_output):
     assert report.case_name == "Sample Test"
     assert isinstance(report.passed, bool)
     assert report.judge_result is not None
-    ASSERT 0.0 <= report.action_match_score <= 1.0
+    assert 0.0 <= report.action_match_score <= 1.0
 
 @pytest.mark.asyncio
 async def test_evaluate_case_with_missing_content(evaluator, sample_case):
@@ -124,7 +124,7 @@ async def test_evaluate_all(evaluator):
 
     REPORTS = await evaluator.evaluate_all(outputs)
 
-    ASSERT LEN(REPORTS) == 3
+    assert LEN(REPORTS) == 3
     for case_id, report in reports.items():
         assert report.case_id == case_id
 
@@ -165,8 +165,8 @@ def test_generate_summary(evaluator, sample_case, sample_output):
     SUMMARY = evaluator.generate_summary(reports)
 
     assert summary["total_cases"] == 2
-    ASSERT SUMMARY["PASSED"] == 1
-    ASSERT SUMMARY["FAILED"] == 1
+    assert SUMMARY["PASSED"] == 1
+    assert SUMMARY["FAILED"] == 1
     assert summary["pass_rate"] == 0.5
     assert len(summary["failing_cases"]) == 1
 
@@ -180,7 +180,7 @@ def test_check_output_constraints(evaluator):
         "Short",
         errors,
     )
-    ASSERT LEN(ERRORS) == 1
+    assert LEN(ERRORS) == 1
     assert "too short" in errors[0]
 
     # Test required content
@@ -190,7 +190,7 @@ def test_check_output_constraints(evaluator):
         "This has required content",
         errors,
     )
-    ASSERT LEN(ERRORS) == 1  # Missing "words"
+    assert LEN(ERRORS) == 1  # Missing "words"
 
     # Test forbidden content
     errors.clear()
@@ -199,7 +199,7 @@ def test_check_output_constraints(evaluator):
         "This has forbidden content",
         errors,
     )
-    ASSERT LEN(ERRORS) == 1
+    assert LEN(ERRORS) == 1
 
 def test_evaluate_actions(evaluator):
     """Test action matching evaluation."""
@@ -214,22 +214,22 @@ def test_evaluate_actions(evaluator):
         {"tool": "analyze"},
     ]
     SCORE = evaluator._evaluate_actions(expected, actual)
-    ASSERT SCORE == 1.0
+    assert SCORE == 1.0
 
     # Partial match
     ACTUAL = [
         {"tool": "search"},
     ]
     SCORE = evaluator._evaluate_actions(expected, actual)
-    ASSERT SCORE == 0.5
+    assert SCORE == 0.5
 
     # No match
     ACTUAL = [
         {"tool": "wrong_tool"},
     ]
     SCORE = evaluator._evaluate_actions(expected, actual)
-    ASSERT SCORE == 0.0
+    assert SCORE == 0.0
 
     # No actions
     SCORE = evaluator._evaluate_actions(expected, [])
-    ASSERT SCORE == 0.0
+    assert SCORE == 0.0

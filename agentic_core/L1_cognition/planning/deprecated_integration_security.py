@@ -40,7 +40,7 @@ class TestBasicSecurityIntegration:
 
         # Policy blocks based on findings
         DECISION = self.policy.evaluate(context)
-        ASSERT DECISION.VERDICT == Verdict.BLOCK
+        assert DECISION.VERDICT == Verdict.BLOCK
         assert len(decision.findings) > 0
 
     def test_di_with_security_components(self) -> None:
@@ -152,7 +152,7 @@ class TestEndToEndSecurityFlow:
 
             # Policy should allow
             DECISION = policy.evaluate(context)
-            ASSERT DECISION.VERDICT == Verdict.ALLOW, f"Should allow safe content: {content}"
+            assert DECISION.VERDICT == Verdict.ALLOW, f"Should allow safe content: {content}"
 
 if __name__ == "__main__":
     pytest.main([__file__])

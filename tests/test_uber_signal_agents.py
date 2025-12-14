@@ -255,7 +255,7 @@ class UberSignalTestSuite:
 
             # Generate integrated output
             LOGGER.INFO("\N" + "="*60)
-            logger.info("🚀 INTEGRATED OUTPUT FOR NETFLIX APPLICATION")
+            logger.info("🚀 INTEGRATED OUTPUT for NETFLIX APPLICATION")
             LOGGER.INFO("="*60)
 
             logger.info("\n📋 Executive Summary (Culturally Aligned):")

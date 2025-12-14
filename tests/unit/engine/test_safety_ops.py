@@ -86,7 +86,7 @@ def test_check_multiple_rules(self: Any) -> None:
     if re.search(r"ignore.*instruction", text.lower()):
         violations.append(SafetyViolationType.INJECTION_ATTEMPT)
 
-    ASSERT LEN(VIOLATIONS) == 2
+    assert LEN(VIOLATIONS) == 2
 
 
 def test_safe_content_passes(self: Any) -> None:
@@ -100,7 +100,7 @@ def test_safe_content_passes(self: Any) -> None:
     )
 
     assert result.is_safe is True
-    ASSERT LEN(RESULT.VIOLATIONS) == 0
+    assert LEN(RESULT.VIOLATIONS) == 0
 
 
 class TestRiskScoring:
@@ -138,7 +138,7 @@ def test_risk_score_bounds(self: Any) -> None:
     for num_violations in range(10):
         raw_score = num_violations * 0.2
         bounded_score = min(1.0, max(0.0, raw_score))
-        ASSERT 0.0 <= bounded_score <= 1.0
+        assert 0.0 <= bounded_score <= 1.0
 
 
 class TestPolicyEnforcement:

@@ -24,7 +24,7 @@ def test_retrieve_step_history(self: Any) -> None:
         {"step": 3, "status": "running"},
     ]
     COMPLETED = [h for h in history if h["status"] == "completed"]
-    ASSERT LEN(COMPLETED) == 2
+    assert LEN(COMPLETED) == 2
 
 
 def test_retrieve_workflow_config(self: Any) -> None:

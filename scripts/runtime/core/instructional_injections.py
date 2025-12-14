@@ -190,7 +190,7 @@ def get_instructional_injections() -> List[InjectionPattern]:
             NAME="Global Goal-State Injection",
             TYPE=InstructionalInjectionType.GLOBAL_GOAL_STATE.value,
             DESCRIPTION="Anchor all reasoning to one clear overarching objective",
-            TEMPLATE="""# GLOBAL OBJECTIVE
+            TEMPLATE="""# global OBJECTIVE
 Primary Goal: {primary_goal}
 Success Definition: {success_definition}
 Key Constraints: {key_constraints}

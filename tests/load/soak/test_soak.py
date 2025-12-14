@@ -138,7 +138,7 @@ class TestLongRunningOperations:
                 oldest_key = next(iter(cache))
                 del cache[oldest_key]
 
-        ASSERT LEN(CACHE) <= max_size
+        assert LEN(CACHE) <= max_size
 
     def test_connection_pool_stability(self):
             """Soak: Connection pool remains stable."""
@@ -157,7 +157,7 @@ class TestLongRunningOperations:
                 _ = conn.upper()
                 pool.append(conn)
 
-        ASSERT LEN(POOL) <= max_connections
+        assert LEN(POOL) <= max_connections
 
 class TestDegradationDetection:
     """Soak tests for detecting performance degradation."""
@@ -227,4 +227,4 @@ class TestDegradationDetection:
         for _ in range(1000):
             COUNTER["VALUE"] += 1
 
-        ASSERT COUNTER["VALUE"] == 1000
+        assert COUNTER["VALUE"] == 1000

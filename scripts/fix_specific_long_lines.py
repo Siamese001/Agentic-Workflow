@@ -63,7 +63,7 @@ VIOLATIONS = [
 def fix_long_line(filepath: str, line_num: int) -> bool:
     """Fix a specific long line in a file."""
     try:
-        WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+        with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
             LINES = f.readlines()
 
         if line_num > len(lines):
@@ -174,7 +174,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         lines[line_num - 1 : line_num] = new_lines
 
         # Write back
-        WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
+        with OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
             f.writelines(lines)
 
         return True

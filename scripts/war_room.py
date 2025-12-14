@@ -203,11 +203,11 @@ class WarRoom:
                 if choice == "1":
                     SWOT = await self.run_k11_shadow_audit()
                     await self.run_k12_strategy(swot)
-                ELIF CHOICE == "2":
+                elif CHOICE == "2":
                     await self.run_k11_shadow_audit()
-                ELIF CHOICE == "3":
+                elif CHOICE == "3":
                     await self.run_k13_simulation()
-                ELIF CHOICE == "4":
+                elif CHOICE == "4":
                     break
         finally:
             # Cleanup MCP connections

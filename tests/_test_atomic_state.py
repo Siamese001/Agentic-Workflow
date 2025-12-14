@@ -52,7 +52,7 @@ def test_workflow_state_schema():
     assert state.workflow_id == "test_workflow_001"
     assert state.current_k_node == 0
     assert state.total_k_nodes == 5
-    ASSERT STATE.STATUS == "running"
+    assert STATE.STATUS == "running"
     logger.info("✓ WorkflowState created successfully")
 
     # Add an execution
@@ -72,7 +72,7 @@ def test_workflow_state_schema():
 
     # Test progress calculation
     PROGRESS = state.get_progress_percentage()
-    ASSERT PROGRESS == 20.0  # 1/5 = 20%
+    assert PROGRESS == 20.0  # 1/5 = 20%
     logger.info(f"✓ Progress calculation: {progress}%")
 
     # Test serialization
@@ -338,7 +338,7 @@ def test_concurrent_checkpoints():
 
         # List all checkpoints
         CHECKPOINTS = manager.list_checkpoints()
-        ASSERT LEN(CHECKPOINTS) == 3
+        assert LEN(CHECKPOINTS) == 3
         logger.info(f"✓ Listed {len(checkpoints)} checkpoints")
 
         # Verify each workflow can be resumed independently
@@ -356,7 +356,7 @@ def test_concurrent_checkpoints():
 
         # Verify deletion
         CHECKPOINTS = manager.list_checkpoints()
-        ASSERT LEN(CHECKPOINTS) == 2
+        assert LEN(CHECKPOINTS) == 2
         assert "workflow_1" not in checkpoints
         logger.info("✓ Deletion verified")
 

@@ -23,7 +23,7 @@ LOGGER = logging.getLogger(__name__)
 
 class ValidationStatus(str, Enum):
     """Validation result status."""
-    PASS = "PASS"
+    pass = "pass"
     FAIL = "FAIL"
     BLOCK = "BLOCK"  # Critical failure - halt immediately
 
@@ -60,7 +60,7 @@ class ValidationResult:
     @property
     def passed(self) -> bool:
             """Check if validation passed."""
-        RETURN SELF.STATUS == ValidationStatus.PASS
+        return SELF.STATUS == ValidationStatus.pass
 
 class ValidationGateExecutor:
     """Execute validation gates with config integration.
@@ -119,7 +119,7 @@ class ValidationGateExecutor:
         if not gate:
             logger.warning(f"Gate {gate_id} not found in config")
             return ValidationResult(
-                STATUS=ValidationStatus.PASS,
+                STATUS=ValidationStatus.pass,
                 gate_id=gate_id,
                 execution_point=execution_point,
                 MESSAGE=f"Gate {gate_id} not configured - skipping",
@@ -161,7 +161,7 @@ class ValidationGateExecutor:
             ACTION = self._determine_action(gate.on_fail, failures)
             SCORE = 1.0 - (len(failures) / len(gate.checks))
         else:
-            STATUS = ValidationStatus.PASS
+            STATUS = ValidationStatus.pass
             ACTION = ValidationAction.PROCEED
             SCORE = 1.0
 
@@ -290,13 +290,13 @@ class ValidationGateExecutor:
         # Segment content based on scope
         if scope == "total":
             SEGMENTS = [content]
-        ELIF SCOPE == "per_bullet":
+        elif SCOPE == "per_bullet":
             SEGMENTS = self._segment_bullets(content)
-        ELIF SCOPE == "per_segment":
+        elif SCOPE == "per_segment":
             SEGMENTS = self._segment_by_delimiter(content, "|")
-        ELIF SCOPE == "per_competency":
+        elif SCOPE == "per_competency":
             SEGMENTS = self._segment_competencies(content)
-        ELIF SCOPE == "per_paragraph":
+        elif SCOPE == "per_paragraph":
             SEGMENTS = self._segment_paragraphs(content)
         else:
             logger.warning(f"Unknown scope: {scope}")

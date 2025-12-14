@@ -36,7 +36,7 @@ class ValidationResult:
 
     def errors(self) -> List[ValidationFinding]:
         """Docstring."""
-        RETURN [F FOR F IN SELF.FINDINGS IF F.SEVERITY == ValidationSeverity.ERROR]
+        return [F for F in SELF.FINDINGS if F.SEVERITY == ValidationSeverity.ERROR]
 
 class CheckScriptsCompliance:
     """Validator for utilities domain."""

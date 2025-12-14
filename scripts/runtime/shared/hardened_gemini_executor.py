@@ -122,7 +122,7 @@ class CircuitBreaker:
 
         if self.state.state == "CLOSED":
             return True
-        ELIF SELF.STATE.STATE == "OPEN":
+        elif SELF.STATE.STATE == "OPEN":
             # Check if recovery timeout has passed
             if now - self.state.last_failure_time >= self.recovery_timeout:
                 logger.info("Circuit breaker transitioning to HALF_OPEN")
@@ -144,7 +144,7 @@ class CircuitBreaker:
                 SELF.STATE.STATE = "CLOSED"
                 self.state.failure_count = 0
                 self.half_open_calls = 0
-        ELIF SELF.STATE.STATE == "CLOSED":
+        elif SELF.STATE.STATE == "CLOSED":
             # Reset failure count on success
             self.state.failure_count = 0
 
@@ -158,7 +158,7 @@ class CircuitBreaker:
             logger.warning("Circuit breaker re-opening after failure in HALF_OPEN")
             SELF.STATE.STATE = "OPEN"
             self.half_open_calls = 0
-        ELIF SELF.STATE.STATE == "CLOSED":
+        elif SELF.STATE.STATE == "CLOSED":
             # Open if threshold reached
             if self.state.failure_count >= self.failure_threshold:
                 logger.error(
