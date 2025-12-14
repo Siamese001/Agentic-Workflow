@@ -37,6 +37,7 @@ EXCLUDED_DIRS = {
 
 EXCLUDED_FILES = {
     'canon_validator.py', # Don't validate the validator itself
+    'canon_validator_backup.py', # Don't validate the backup
     'auto_canon.py',
     '.DS_Store'
 }
@@ -102,6 +103,45 @@ class ValidationContext:
 # ==============================================================================
 # 2. THE ATOMIC AGENT (Base Class)
 # ==============================================================================
+class CanonPathEnforcer:
+    """
+    ROLE: The Zoning Officer.
+    LOGIC: Ensures all new file paths obey Key 41 (Min Depth 2, No Root Files).
+    """
+    @staticmethod
+    def get_compliant_path(original_path, new_suffix):
+        """
+        Input:  'main_script.py', 'utils'
+        Output: 'scripts/runtime/main_script_utils.py' (Compliant)
+        """
+        # 1. Break path into parts
+        parts = original_path.replace("\\", "/").split("/")
+        filename = parts[-1]
+        base_name = filename.replace(".py", "")
+        
+        # 2. Construct new filename
+        new_filename = f"{base_name}_{new_suffix}.py"
+        
+        # 3. Analyze Depth
+        # If original file is in Root (Depth 1) or Shallow (Depth 2), we must push it deeper.
+        current_depth = len(parts)
+        
+        if current_depth < 3:
+            # VIOLATION DETECTED: Source is too shallow.
+            # Force relocation to a 'canon_compliant' directory structure.
+            # Strategy: Move to 'scripts/reorganized/<original_name>/'
+            new_dir = f"scripts/reorganized/{base_name}"
+            return f"{new_dir}/{new_filename}"
+            
+        else:
+            # COMPLIANT: Keep in same directory
+            directory = "/".join(parts[:-1])
+            return f"{directory}/{new_filename}"
+
+    @staticmethod
+    def is_root_violation(path):
+        return "/" not in path.replace("\\", "/")
+
 class DependencyGrapher(ast.NodeVisitor):
     """
     Helper: Walks the AST to find which functions call which other functions.
@@ -145,6 +185,66 @@ class SubAtomicAgent:
 # ==============================================================================
 # 3. THE SPECIALIST AGENTS
 # ==============================================================================
+
+class GenerativeGuard(SubAtomicAgent):
+    """
+    KEYS: 45 (Dead Code), 46 (Duplicate Code) - Used as the enforcement vehicle.
+    ROLE: The Watchdog. Identifies and deletes recursively-generated files.
+    """
+    # Configuration: Patterns that signal runaway generation
+    GENERATIVE_PATTERNS = [
+        r"\_impl\_impl\_",      # Matches the specific failure: impl_impl_impl
+        r"\_v\d+\_v\d+",        # Matches double-versioning: v1_v2
+        r"\_copy\_\d+",         # Matches multiple copies: file_copy_1_copy_2
+    ]
+
+    def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
+        violations = []
+        
+        # Get all files in the repository
+        all_files = []
+        for root, dirs, files in os.walk("."):
+            # Skip excluded directories
+            dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+            for file in files:
+                file_path = os.path.join(root, file)
+                all_files.append(file_path)
+        
+        for file_path in all_files:
+            for pattern in self.GENERATIVE_PATTERNS:
+                if re.search(pattern, file_path):
+                    violations.append(file_path)
+                    break
+
+        if violations:
+            print(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
+            self.ctx.report(self.name, 45, False, violations) # Report as Dead Code/Violation
+            
+            # Check for purge flag
+            purge_runaway = "--purge-runaway" in sys.argv
+            
+            # --- INTELLIGENT ACTION: SELF-CORRECT ---
+            for file_path in violations:
+                if purge_runaway:
+                    print(f"      🗑️  DELETING NON-COMPLIANT FILE: {file_path}")
+                    try:
+                        os.remove(file_path)
+                        print(f"         ✅ File deleted")
+                    except Exception as e:
+                        print(f"         ❌ Failed to delete {file_path}: {e}")
+                else:
+                    print(f"      🗑️  WOULD DELETE: {file_path}")
+                    print(f"         (Run with --purge-runaway to enable deletion)")
+                
+            # Block structural changes until files are cleaned
+            if not purge_runaway:
+                self.ctx.signals.add("GENERATIVE_FAIL") 
+            else:
+                self.ctx.signals.add("GENERATIVE_CLEAN")
+        else:
+            self.ctx.report(self.name, 45, True, [])
+            self.ctx.signals.add("GENERATIVE_CLEAN")
 
 class SystemArchitect(SubAtomicAgent):
     """
@@ -305,11 +405,11 @@ class StructuralEngineer(SubAtomicAgent):
     ROLE: Heavy Refactoring with Semantic Intelligence.
     """
     def can_run(self):
-        # Needs Syntax + Semantics to be safe
-        return "AST_VALID" in self.ctx.signals and "SEMANTICS_READY" in self.ctx.signals
+        # Needs Syntax + Semantics + Clean Generative Policy to be safe
+        return "PLAN_READY" in self.ctx.signals and "GENERATIVE_CLEAN" in self.ctx.signals
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Executing Refactoring Strategy...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
         
         # Run standard checks first
         try:
@@ -337,68 +437,44 @@ class StructuralEngineer(SubAtomicAgent):
             self.ctx.report(self.name, 42, False, [str(e)])
         
         # Now use semantic plans for intelligent refactoring
-        if not hasattr(self.ctx, 'refactor_plans') or not self.ctx.refactor_plans:
-            print("   ⚠️ No semantic plan found. Skipping automated surgery.")
+        if not hasattr(self.ctx, 'refactor_plan') or not self.ctx.refactor_plan:
+            print("   ✅ No structural changes pending.")
             return
         
-        print("\n   🧠 SEMANTIC REFACTORING ANALYSIS:")
-        for file_path, plan in self.ctx.refactor_plans.items():
-            print(f"\n   📁 File: {file_path}")
+        print("\n   SEMANTIC REFACTORING PROPOSALS:")
+        for fpath, plan in self.ctx.refactor_plan.items():
+            print(f"\n   File: {fpath}")
+            print(f"       Strategy: {plan['action']}")
+            print(f"       Analysis: {plan['total_functions']} functions, {plan['call_edges']} call relationships")
             
-            # Analyze globals
-            globals_count = len(plan.get('globals', []))
-            if globals_count > 0:
-                print(f"      🔧 ACTION REQUIRED: {globals_count} global variables found.")
-                print(f"      👉 PROPOSAL: Move vars {plan['globals'][:3]}{'...' if len(plan['globals']) > 3 else ''} to a 'config.py' dataclass.")
+            # Report each move with compliant paths
+            if 'moves' in plan:
+                for move in plan['moves']:
+                    print(f"\n       Cluster '{move['cluster']}' ({len(move['functions'])} functions):")
+                    print(f"          Functions: {move['functions'][:5]}{'...' if len(move['functions']) > 5 else ''}")
+                    print(f"          -> Moving to: {move['target_path']}")
+                    print(f"          Internal calls: These functions work together")
+            else:
+                # Fallback for old format
+                for cluster_id, funcs in plan['clusters'].items():
+                    print(f"\n       Cluster '{cluster_id}' ({len(funcs)} functions):")
+                    print(f"          Functions: {funcs[:5]}{'...' if len(funcs) > 5 else ''}")
+                    
+                    # Suggest module name
+                    base_name = os.path.splitext(os.path.basename(fpath))[0]
+                    suggested_module = f"{base_name}_{cluster_id.lower()}_utils.py"
+                    print(f"          -> Move to: {suggested_module}")
+                    
+                    # Show call relationships within cluster
+                    print(f"          Internal calls: These functions work together")
                 
-                # Suggest config creation
-                self._suggest_config_creation(file_path, plan['globals'])
-            
-            # Analyze large functions
-            large_funcs = plan.get('large_functions', [])
-            if large_funcs:
-                print(f"      🔧 ACTION REQUIRED: {len(large_funcs)} large functions found.")
-                for func in large_funcs[:3]:  # Show top 3
-                    print(f"      👉 PROPOSAL: Extract '{func['name']}' ({func['size']} lines) into separate module.")
-                
-                # Suggest function extraction
-                self._suggest_function_extraction(file_path, large_funcs)
-            
-            # Analyze function clusters
-            clusters = plan.get('function_clusters', [])
-            if clusters:
-                print(f"      💡 OPTIMIZATION: {len(clusters)} function clusters identified for potential module split.")
-                for i, cluster in enumerate(clusters[:2]):  # Show top 2
-                    print(f"      👉 Cluster {i+1}: {', '.join(cluster[:3])}{'...' if len(cluster) > 3 else ''}")
-            
-            # Analyze classes
-            classes = plan.get('classes', [])
-            if len(classes) > 3:
-                print(f"      💡 OPTIMIZATION: {len(classes)} classes in one file. Consider splitting by domain.")
-    
-    def _suggest_config_creation(self, file_path: str, globals_list: List[str]):
-        """Suggest creating a config file for global variables."""
-        config_path = file_path.replace('.py', '_config.py')
-        print(f"      📝 Create '{config_path}' with:")
-        print(f"         ```python")
-        print(f"         from dataclasses import dataclass")
-        print(f"         ")
-        print(f"         @dataclass")
-        print(f"         class {Path(file_path).stem.title()}Config:")
-        for var in globals_list[:5]:
-            print(f"             {var}: type = None  # TODO: Add proper type")
-        if len(globals_list) > 5:
-            print(f"             # ... and {len(globals_list) - 5} more globals")
-        print(f"         ```")
-    
-    def _suggest_function_extraction(self, file_path: str, large_funcs: List[Dict]):
-        """Suggest extracting large functions into separate modules."""
-        base_name = Path(file_path).stem
-        for func in large_funcs[:2]:  # Suggest for top 2 largest
-            module_name = f"{base_name}_{func['name'].lower()}.py"
-            print(f"      📝 Create '{module_name}' with extracted function")
-            print(f"         - Keep related helper functions together (see semantic clusters)")
-            print(f"         - Import and re-export in original file to maintain API")
+            print(f"\n       Implementation Steps:")
+            print(f"          1. Create new module files for each cluster")
+            print(f"          2. Move clustered functions with their dependencies")
+            print(f"          3. Import and re-export in original file to maintain API")
+            print(f"          4. Run tests to verify no breaking changes")
+        
+        print(f"\n   ✅ Refactoring plans ready. {len(self.ctx.refactor_plan)} file(s) identified for restructuring.")
 
 class DependencyAgent(SubAtomicAgent):
     """
@@ -484,12 +560,12 @@ class SemanticMapper(SubAtomicAgent):
         
         self.ctx.refactor_plan = {}
         
-        # 1. Target the largest files (Key 42 Violations or >500 lines)
+        # 1. Target the largest files (Key 42 Violations or >300 lines)
         large_files = []
         for fpath in self.ctx.python_files:
             try:
                 with open(fpath, 'r', encoding='utf-8') as f:
-                    if len(f.readlines()) > 500: 
+                    if len(f.readlines()) > 300: 
                         large_files.append(fpath)
             except: 
                 continue
@@ -543,9 +619,28 @@ class SemanticMapper(SubAtomicAgent):
                 major_clusters = {k: v for k, v in grouped.items() if len(v) > 1}
                 
                 if major_clusters:
+                    # Create refactoring plan with compliant paths
+                    moves = []
+                    for cluster_id, funcs in major_clusters.items():
+                        # Use CanonPathEnforcer to ensure Key 41 compliance
+                        compliant_path = CanonPathEnforcer.get_compliant_path(fpath, cluster_id)
+                        
+                        # Log the intervention if we changed the directory
+                        original_dir = os.path.dirname(fpath)
+                        compliant_dir = os.path.dirname(compliant_path)
+                        if original_dir != compliant_dir:
+                            print(f"      🛡️  Canon Enforcer Intervened: Relocating to {compliant_dir} to satisfy Key 41.")
+                        
+                        moves.append({
+                            "cluster": cluster_id,
+                            "functions": funcs,
+                            "target_path": compliant_path
+                        })
+                    
                     self.ctx.refactor_plan[fpath] = {
                         "action": "SPLIT_MODULE",
                         "clusters": major_clusters,
+                        "moves": moves,
                         "total_functions": len(grapher.functions),
                         "call_edges": len(grapher.edges)
                     }
@@ -564,163 +659,7 @@ class SemanticMapper(SubAtomicAgent):
         else:
             print("\n   ℹ No refactoring opportunities identified.")
     
-    def _find_target_files(self):
-        """Find files that need semantic analysis based on previous validation results."""
-        targets = []
-        
-        # Check for large files (Key 42 violations)
-        if 42 in self.ctx.results and not self.ctx.results[42]["passed"]:
-            # For now, we'll look for a few known large files
-            # In a real implementation, we'd extract from the validation details
-            potential_targets = [
-                "canon_validator.py",  # The validator itself is large
-                "agentic_core/L1_cognition/episodic_memory.py",
-                "scripts/fix_long_lines.py"
-            ]
-            
-            for target in potential_targets:
-                if os.path.exists(target):
-                    targets.append(target)
-        
-        # Check for large functions (Key 17 violations) - this is the key fix
-        if 17 in self.ctx.results and not self.ctx.results[17]["passed"]:
-            print("   🎯 Large function violations detected - analyzing top files...")
-            
-            # Always include canon_validator.py since it has many functions
-            if "canon_validator.py" not in targets and os.path.exists("canon_validator.py"):
-                targets.append("canon_validator.py")
-            
-            # Add a few more files that might have large functions
-            for file_path in self.ctx.python_files[:5]:
-                if file_path.endswith('.py') and file_path not in targets:
-                    # Check if file is reasonably large (>200 lines)
-                    try:
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            line_count = sum(1 for _ in f)
-                            if line_count > 200:
-                                targets.append(file_path)
-                    except:
-                        pass
-        
-        # If no violations found, still analyze the validator as an example
-        if not targets and os.path.exists("canon_validator.py"):
-            targets.append("canon_validator.py")
-        
-        return targets[:3]  # Limit to 3 files for now
-    
-    def _analyze_file_structure(self, tree: ast.AST, content: str) -> Dict[str, Any]:
-        """Analyze file structure using AST to find refactoring opportunities."""
-        analysis = {
-            "globals": [],
-            "large_functions": [],
-            "function_clusters": [],
-            "classes": [],
-            "imports": [],
-            "dependencies": {}
-        }
-        
-        # Track global variables
-        for node in tree.body:
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        analysis["globals"].append(target.id)
-            elif isinstance(node, ast.Import):
-                for alias in node.names:
-                    analysis["imports"].append(alias.name)
-            elif isinstance(node, ast.ImportFrom):
-                module = node.module or ""
-                for alias in node.names:
-                    analysis["imports"].append(f"{module}.{alias.name}")
-        
-        # Analyze functions and their relationships
-        functions = {}
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef):
-                # Get function size
-                if hasattr(node, 'end_lineno') and node.end_lineno:
-                    size = node.end_lineno - node.lineno
-                    if size > 50:  # Large function threshold
-                        analysis["large_functions"].append({
-                            "name": node.name,
-                            "line": node.lineno,
-                            "size": size
-                        })
-                
-                # Find function calls within this function
-                calls = []
-                for child in ast.walk(node):
-                    if isinstance(child, ast.Call):
-                        if isinstance(child.func, ast.Name):
-                            calls.append(child.func.id)
-                        elif isinstance(child.func, ast.Attribute):
-                            # Handle method calls like self.method()
-                            if isinstance(child.func.value, ast.Name):
-                                calls.append(f"{child.func.value.id}.{child.func.attr}")
-                
-                functions[node.name] = {
-                    "calls": calls,
-                    "line": node.lineno,
-                    "size": size if 'size' in locals() else 0
-                }
-        
-        # Build dependency graph
-        analysis["dependencies"] = functions
-        
-        # Create function clusters based on call relationships
-        clusters = self._create_function_clusters(functions)
-        analysis["function_clusters"] = clusters
-        
-        # Analyze classes
-        for node in tree.body:
-            if isinstance(node, ast.ClassDef):
-                class_info = {
-                    "name": node.name,
-                    "line": node.lineno,
-                    "methods": [n.name for n in node.body if isinstance(n, ast.FunctionDef)]
-                }
-                analysis["classes"].append(class_info)
-        
-        return analysis
-    
-    def _create_function_clusters(self, functions: Dict[str, Dict]) -> List[List[str]]:
-        """Create clusters of related functions based on call relationships."""
-        if not functions:
-            return []
-        
-        # Simple clustering: group functions that call each other
-        clusters = []
-        processed = set()
-        
-        for func_name, func_info in functions.items():
-            if func_name in processed:
-                continue
-            
-            cluster = [func_name]
-            processed.add(func_name)
-            
-            # Find functions called by this function
-            for called in func_info["calls"]:
-                if called in functions and called not in processed:
-                    cluster.append(called)
-                    processed.add(called)
-            
-            # Find functions that call this function
-            for other_name, other_info in functions.items():
-                if other_name not in processed and func_name in other_info["calls"]:
-                    cluster.append(other_name)
-                    processed.add(other_name)
-            
-            if len(cluster) > 1:
-                clusters.append(cluster)
-            elif len(cluster) == 1:
-                # Single function clusters might still be useful for very large functions
-                if functions[func_name]["size"] > 100:
-                    clusters.append(cluster)
-        
-        return clusters
-
-# ==============================================================================
+    # ==============================================================================
 # 4. THE INTELLIGENT ORCHESTRATOR
 # ==============================================================================
 class IntelligentOrchestrator:
@@ -728,14 +667,15 @@ class IntelligentOrchestrator:
         self.ctx = ValidationContext()
         self.swarm = [
             SystemArchitect(self.ctx),   # 1. Structure (Blocker)
-            CodeJanitor(self.ctx),       # 2. Syntax (Signal: AST_VALID)
-            DependencyAgent(self.ctx),   # 3. Imports (Signal: DEPS_VALID)
-            SafetyInspector(self.ctx),   # 4. Secrets (Signal: SECURE)
-            DocumentationAgent(self.ctx),# 5. Docs (Parallel)
-            NamingAgent(self.ctx),       # 6. Style (Parallel)
-            TypeMechanic(self.ctx),      # 7. Types (Requires AST_VALID + DEPS_VALID)
-            SemanticAnalyzer(self.ctx),  # 8. Semantics (Signal: SEMANTICS_READY)
-            StructuralEngineer(self.ctx) # 9. Complexity (Final Pass, needs SEMANTICS_READY)
+            GenerativeGuard(self.ctx),   # 2. Generative Policy (Signal: GENERATIVE_CLEAN)
+            CodeJanitor(self.ctx),       # 3. Syntax (Signal: AST_VALID)
+            DependencyAgent(self.ctx),   # 4. Imports (Signal: DEPS_VALID)
+            SafetyInspector(self.ctx),   # 5. Secrets (Signal: SECURE)
+            DocumentationAgent(self.ctx),# 6. Docs (Parallel)
+            NamingAgent(self.ctx),       # 7. Style (Parallel)
+            TypeMechanic(self.ctx),      # 8. Types (Requires AST_VALID + DEPS_VALID)
+            SemanticMapper(self.ctx),    # 9. Semantics (Signal: PLAN_READY)
+            StructuralEngineer(self.ctx) # 10. Complexity (Final Pass, needs PLAN_READY + GENERATIVE_CLEAN)
         ]
 
     def run_mission(self):
