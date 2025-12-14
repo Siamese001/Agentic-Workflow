@@ -7,6 +7,7 @@ import asyncio
 import logging
 from datetime import datetime
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class SemanticGatekeeper:

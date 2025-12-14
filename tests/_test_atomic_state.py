@@ -433,11 +433,11 @@ def test_fsync_durability():
 
 def main():
     """Run all tests."""
-    LOGGER.INFO("=" * 60)
+    logger.info("=" * 60)
     logger.info("ATOMIC STATE PERSISTENCE TEST SUITE (ACID GUARANTEES)")
-    LOGGER.INFO("=" * 60)
+    logger.info("=" * 60)
 
-    TESTS = [
+    tests = [
         test_workflow_state_schema,
         test_atomic_checkpoint,
         test_rollback_on_failure,

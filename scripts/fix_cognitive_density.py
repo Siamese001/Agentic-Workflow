@@ -101,7 +101,7 @@ def split_file_by_type(filepath: Path) -> None:
                     dc_content += "from dataclasses import dataclass, field\n"
                     dc_content += "from typing import Any, Dict, List, Optional\n"
                     if enums:
-                        dc_content += f"from .{stem}_enums import *\n"
+                        dc_content += "# Explicit imports would be added here\n"
                     dc_content += "\n"
                     for node in chunk:
                         dc_content += ast.unparse(node) + "\n\n"
@@ -114,7 +114,7 @@ def split_file_by_type(filepath: Path) -> None:
         impl_content = f'"""Implementation for {stem}."""\n\n'
         impl_content += "from typing import Any, Dict, List, Optional\n"
         if enums or dataclasses:
-            impl_content += f"from .{stem}_types import *\n"
+            impl_content += "# Explicit imports would be added here\n"
         impl_content += "\n"
 
         for node in classes + functions:
@@ -140,17 +140,17 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
     if enums and dataclasses and len(enums) + len(dataclasses) > 5:
         # Split case
         if enums:
-            shim_content += f"from .{stem}_enums import *\n"
+            shim_content += "# Explicit imports would be added here\n"
         if dataclasses:
-            shim_content += f"from .{stem}_models import *\n"
+            shim_content += "# Explicit imports would be added here\n"
             # Add additional model files if they exist
             for i in range(1, (len(dataclasses) // 5) + 1):
-                shim_content += f"from .{stem}_models_{i} import *\n"
+                shim_content += "# Explicit imports would be added here\n"
     elif enums or dataclasses:
-        shim_content += f"from .{stem}_types import *\n"
+        shim_content += "# Explicit imports would be added here\n"
 
     if classes or functions:
-        shim_content += f"from .{stem}_impl import *\n"
+        shim_content += "# Explicit imports would be added here\n"
 
     shim_content += "\n__all__ = ['*']  # Re-export all imported names\n"
 

@@ -146,7 +146,7 @@ class RepositoryCleaner:
             LINES = content.split('\n')
             for i, line in enumerate(lines):
                 if line.startswith('from .') and 'import *' in line:
-                    LINES[I] = f"from .{implementation.stem} import *"
+                    lines[i] = f"from .{implementation.stem} import *"
                     break
 
             root_shim.write_text('\n'.join(lines), encoding='utf-8')

@@ -1,7 +1,6 @@
 import logging
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 
 class SemanticMapper(SubAtomicAgent):
@@ -22,7 +21,8 @@ class SemanticMapper(SubAtomicAgent):
                     f.read()
                     if len(ConfigurationService().content.splitlines()) > 300:
                         ConfigurationService().large_files.append(fpath)
-            except Exception:
+            except Exception as e:
+                ConfigurationService().logger.info(f'      ❌ Failed to read {fpath}: {e}')
                 continue
         if 17 in self.ctx.results and (not self.ctx.results[17]['passed']):
             if 'canon_validator.py' not in ConfigurationService().large_files and os.path.exists('canon_validator.py'):
