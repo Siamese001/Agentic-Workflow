@@ -1,18 +1,21 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 # FILE: tests/contracts/test_typed_contracts.py
 
-from __future__ import annotations
 
-# from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel  # TODO: Fix invalid module name
+# from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel  # A...
 
-# from archives.legacy_root_folders.meta.schema_validation import validate_schema_version  # DEPRECATED: Archive import removed to protect archives from validation edits
-
+# from archives.legacy_root_folders.meta.schema_validation import validate_schema_version  # DEPR...
 
 def test_core_models_have_v1_schema_version_defaults() -> None:
     """Test that core models have v1 schema version defaults."""
     # Simple models with safe defaults can be instantiated without args.
     simple_plans = [StrategyPlan, DraftingPlan, QAPlan, SafetyPlan, RAGPlan]
     for cls in simple_plans:
-        obj = cls()  # type: ignore[call-arg]
+        OBJ = cls()  # type: ignore[call-arg]
         assert getattr(obj, "schema_version", "v1") == "v1"
 
     # Results require required list fields.
@@ -32,32 +35,34 @@ def test_core_models_have_v1_schema_version_defaults() -> None:
     assert rag_res.schema_version == "v1"
 
     # WorkflowPlanBundle and L2ResultBundle require explicit nested models.
-    bundle = WorkflowPlanBundle(
-        strategy=StrategyPlan(),
-        rag=RAGPlan(),
-        drafting=DraftingPlan(),
+    BUNDLE = WorkflowPlanBundle(
+        STRATEGY=StrategyPlan(),
+        RAG=RAGPlan(),
+        DRAFTING=DraftingPlan(),
         qa=QAPlan(),
-        safety=SafetyPlan(),
+        SAFETY=SafetyPlan(),
     )
     assert bundle.schema_version == "v1"
 
     l2_result = L2ResultBundle(
-        strategy=StrategyResult(branches=[]),
-        rag=RAGResult(evidence=[], used_hyde=False),
-        drafting=DraftingResult(sections=[]),
+        STRATEGY=StrategyResult(branches=[]),
+        RAG=RAGResult(evidence=[], used_hyde=False),
+        DRAFTING=DraftingResult(sections=[]),
         qa=QAResult(findings=[]),
-        safety=SafetyResult(findings=[]),
+        SAFETY=SafetyResult(findings=[]),
     )
     assert l2_result.schema_version == "v1"
 
 
 def test_validate_schema_version_accepts_matching_models() -> None:
-    bundle = WorkflowPlanBundle(
-        strategy=StrategyPlan(),
-        rag=RAGPlan(),
-        drafting=DraftingPlan(),
+    """TODO: Add docstring."""
+
+    BUNDLE = WorkflowPlanBundle(
+        STRATEGY=StrategyPlan(),
+        RAG=RAGPlan(),
+        DRAFTING=DraftingPlan(),
         qa=QAPlan(),
-        safety=SafetyPlan(),
+        SAFETY=SafetyPlan(),
     )
 
     # Should not raise for matching version.
@@ -66,7 +71,10 @@ def test_validate_schema_version_accepts_matching_models() -> None:
 
 def test_validate_schema_version_rejects_mismatched_version() -> None:
     """Test that validate_schema_version rejects mismatched versions."""
+    """TODO: Add docstring."""
+
     class DummyModel(BaseModel):
+        """Docstring."""
         schema_version: str = "v2"  # wrong version
 
     m = DummyModel()
@@ -78,10 +86,3 @@ def test_validate_schema_version_rejects_mismatched_version() -> None:
         raise AssertionError(
             "validate_schema_version did not reject mismatched version"
         )
-
-
-
-
-
-
-

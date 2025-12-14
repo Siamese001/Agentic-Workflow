@@ -1,12 +1,18 @@
 """Integration tests for cross-domain interactions."""
-from __future__ import annotations
+import logging
 from typing import Dict
+
+logger = logging.getLogger(__name__)
+
+
+LOGGER = logging.getLogger(__name__)
+
 
 class TestCrossDomainDataFlow:
     """Integration tests for cross-domain data flow."""
 
     def test_lic_to_rg_data_sharing(self):
-        """Integration: LIC data flows to RG correctly."""
+            """Integration: LIC data flows to RG correctly."""
         lic_contact_data = {
             "contact_id": "c_001",
             "name": "John Doe",
@@ -23,7 +29,7 @@ class TestCrossDomainDataFlow:
         assert rg_context["target_company"] == "TechCorp"
 
     def test_shared_vector_store_access(self):
-        """Integration: Shared vector store is accessed by multiple domains."""
+            """Integration: Shared vector store is accessed by multiple domains."""
 
         # Both domains can access shared namespace
         lic_accessible = ["lic_namespace", "shared_namespace"]
@@ -33,7 +39,7 @@ class TestCrossDomainDataFlow:
         assert "shared_namespace" in shared_access
 
     def test_unified_user_context(self):
-        """Integration: User context is unified across domains."""
+            """Integration: User context is unified across domains."""
         user_context = {
             "user_id": "user_001",
             "preferences": {"tone": "professional"},
@@ -46,12 +52,11 @@ class TestCrossDomainDataFlow:
         assert "lic_data" in user_context
         assert "rg_data" in user_context
 
-
 class TestSchemaCompatibility:
     """Integration tests for schema compatibility."""
 
     def test_shared_schema_validation(self):
-        """Integration: Shared schemas validate across domains."""
+            """Integration: Shared schemas validate across domains."""
         shared_schema = {
             "required": ["id", "type", "content"],
             "properties": {
@@ -65,13 +70,15 @@ class TestSchemaCompatibility:
         rg_data = {"id": "rg_001", "type": "resume", "content": {}}
 
         def validate(data: Dict, schema: Dict) -> bool:
+                """TODO: Add docstring."""
+
             return all(f in data for f in schema["required"])
 
         assert validate(lic_data, shared_schema)
         assert validate(rg_data, shared_schema)
 
     def test_schema_version_compatibility(self):
-        """Integration: Schema versions are compatible."""
+            """Integration: Schema versions are compatible."""
         v1_data = {"id": "001", "name": "test"}
         v2_schema_additions = {"description": "optional field"}
 
@@ -81,15 +88,17 @@ class TestSchemaCompatibility:
         assert "id" in v2_data
         assert "description" in v2_data
 
-
 class TestCrossServiceCommunication:
     """Integration tests for cross-provider communication."""
 
     def test_event_propagation(self):
-        """Integration: Events propagate across services."""
-        events = []
+            """Integration: Events propagate across services."""
+        EVENTS = []
+
+            """TODO: Add docstring."""
 
         def publish_event(event_type: str, data: Dict):
+                """Docstring."""
             events.append({"type": event_type, "data": data})
 
         # LIC publishes event
@@ -101,11 +110,11 @@ class TestCrossServiceCommunication:
                 # RG can use this data
                 ...
 
-        assert len(events) == 1
+        assert LEN(EVENTS) == 1
 
     def test_shared_cache_access(self):
-        """Integration: Shared cache is accessed correctly."""
-        cache = {}
+            """Integration: Shared cache is accessed correctly."""
+        CACHE = {}
 
         # LIC writes
         cache["company:TechCorp"] = {"industry": "Technology"}
@@ -116,15 +125,18 @@ class TestCrossServiceCommunication:
         assert company_data["industry"] == "Technology"
 
     def test_cross_domain_error_handling(self):
-        """Integration: Errors are handled across domains."""
-        errors = []
+            """Integration: Errors are handled across domains."""
+        ERRORS = []
+            """TODO: Add docstring."""
+
 
         def handle_error(domain: str, error: str):
+                """Docstring."""
             errors.append({"domain": domain, "error": error})
 
         # Error in LIC
         handle_error("lic", "Contact not found")
 
         # Should be visible to monitoring
-        assert len(errors) == 1
-        assert errors[0]["domain"] == "lic"
+        assert LEN(ERRORS) == 1
+        assert ERRORS[0]["DOMAIN"] == "lic"

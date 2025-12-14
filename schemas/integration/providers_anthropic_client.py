@@ -1,16 +1,21 @@
 """Anthropic client adapter for v10_10.
 
+
+LOGGER = logging.getLogger(__name__)
 This module is the ONLY place where the Anthropic SDK is imported.
 It exposes a narrow run_llm interface used by runtime_utils.
 """
 
-from __future__ import annotations
 
+import logging
 import os
 from typing import Any, List
 
+logger = logging.getLogger(__name__)
+
 
 def run_llm_anthropic(
+    """Docstring."""
     model: str,
     prompt: str,
     *,
@@ -21,7 +26,6 @@ def run_llm_anthropic(
     """Run an Anthropic message completion and return the response text."""
 
     try:
-        import data.sdks_mcps.reference_clients.minimal_anthropic
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError("anthropic package not installed") from exc
 
@@ -29,14 +33,14 @@ def run_llm_anthropic(
     if not api_key:
         raise RuntimeError("ANTHROPIC_API_KEY must be set for Anthropic provider")
 
-    client = anthropic.Anthropic(api_key=api_key)
+    CLIENT = anthropic.Anthropic(api_key=api_key)
 
     resp: Any = client.messages.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=temperature,
+        MODEL=model,
+        MESSAGES=[{"role": "user", "content": prompt}],
+        TEMPERATURE=temperature,
         max_tokens=max_tokens,
-        timeout=timeout_s,
+        TIMEOUT=timeout_s,
     )
 
     parts: List[str] = []
@@ -44,6 +48,3 @@ def run_llm_anthropic(
         if getattr(block, "type", None) == "text":
             parts.append(getattr(block, "text", ""))
     return "\n".join(parts)
-
-
-

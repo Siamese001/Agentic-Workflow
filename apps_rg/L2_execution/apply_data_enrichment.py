@@ -1,3 +1,4 @@
+
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg
@@ -8,13 +9,10 @@ Data enrichment for resume generation HOP-2.
 Enriches bullet pool with canonical verbs and deduplication.
 """
 
-
+import logging
 from typing import Dict, List, Optional, Tuple
 
-from shared.types.models import ValidationResult, ValidationSeverity
-
-from apps_rg.L2_execution.apply_verb_canonicalization import VerbCanonicalizer
-from apps_rg.L5_safety.check_duplicate_content import DuplicateDetector
+logger = logging.getLogger(__name__)
 
 
 class DataEnricher:
@@ -26,6 +24,7 @@ class DataEnricher:
         self.duplicate_detector = DuplicateDetector()
 
     def enrich(
+        """Docstring."""
         self,
         extracted_data: Dict,
         thematic_analysis: Optional[Dict] = None,
@@ -45,37 +44,37 @@ class DataEnricher:
                 bullet_text = bullet.get("bullet_text", "")
                 bullet["canonical_verbs"] = self.verb_canonicalizer.canonicalize(bullet_text)
 
-                forbidden = self.verb_canonicalizer.check_for_forbidden_verbs(bullet_text)
+                FORBIDDEN = self.verb_canonicalizer.check_for_forbidden_verbs(bullet_text)
                 if forbidden:
                     validation_results.append(
                         ValidationResult(
                             rule_id="FORBIDDEN_VERB_USAGE",
-                            passed=False,
-                            severity=ValidationSeverity.MEDIUM,
-                            message=f"Forbidden verb(s): {', '.join(forbidden)}",
-                            details={"bullet_text": bullet_text[:100]},
+                            PASSED=False,
+                            SEVERITY=ValidationSeverity.MEDIUM,
+                            MESSAGE=f"Forbidden verb(s): {', '.join(forbidden)}",
+                            DETAILS={"bullet_text": bullet_text[:100]},
                         )
                     )
                 all_bullets.append(bullet)
 
-        duplicates = self.duplicate_detector.find_duplicates(all_bullets)
+        DUPLICATES = self.duplicate_detector.find_duplicates(all_bullets)
         if duplicates:
             validation_results.append(
                 ValidationResult(
                     rule_id="DUPLICATE_BULLETS",
-                    passed=False,
-                    severity=ValidationSeverity.MEDIUM,
-                    message=f"Found {len(duplicates)} potential duplicate bullets",
-                    details={"duplicates": duplicates[:5]},
+                    PASSED=False,
+                    SEVERITY=ValidationSeverity.MEDIUM,
+                    MESSAGE=f"Found {len(duplicates)} potential duplicate bullets",
+                    DETAILS={"duplicates": duplicates[:5]},
                 )
             )
         else:
             validation_results.append(
                 ValidationResult(
                     rule_id="DUPLICATE_CHECK",
-                    passed=True,
-                    severity=ValidationSeverity.INFO,
-                    message="No duplicate bullets detected",
+                    PASSED=True,
+                    SEVERITY=ValidationSeverity.INFO,
+                    MESSAGE="No duplicate bullets detected",
                 )
             )
 

@@ -1,11 +1,16 @@
+
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # ======================================================================
 
 """Module implementation."""
 
+import logging
 import sys
-# import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types  # DEPRECATED: Archive import removed to protect archives from validation edits
+# import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types  # DEPRECATED: Archive import...
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = REPO_ROOT / "tests"
@@ -16,18 +21,17 @@ SOURCE_PATH = REPO_ROOT / SOURCE_REL_PATH
 # Embedded canonical source
 EMBEDDED_SOURCES = {
     SOURCE_REL_PATH: """from models import MainGraphState
-from state_adapter_stack import StateAdapterStack
-
 
 def test_safety_fields_persist_via_patch() -> None:
-    foundation = MainGraphState()
-    patch = {
+    """Docstring."""
+    FOUNDATION = MainGraphState()
+    PATCH = {
         "safety_report": {"is_safe": True, "findings": []},
         "policy_decision": {"allowed": True, "reason": None},
         "constitutional_review": {"passed": True, "violations": []},
     }
 
-    adapter = StateAdapterStack(context=None, debug_mode=False)
+    ADAPTER = StateAdapterStack(context=None, debug_mode=False)
     new_state = adapter.apply_patch(foundation, patch)
 
     assert new_state.safety_report == patch["safety_report"]
@@ -41,30 +45,36 @@ FLAT_MODULE_NAME = "tests_flat.state__test_safety_state_persistence"
 
 
 def _ensure_import_roots() -> None:
-    root = str(REPO_ROOT)
+    ROOT = str(REPO_ROOT)
     flat_root = str(OUTPUT_ROOT)
     for candidate in (root, flat_root):
         if candidate not in sys.path:
             sys.path.insert(0, candidate)
     tests_pkg = sys.modules.setdefault("tests", types.ModuleType("tests"))
-    tests_pkg.__path__ = list({*(getattr(tests_pkg, "__path__", []) or []), str(SOURCE_ROOT), flat_root})
+    tests_pkg.__path__ = list({*(getattr(tests_pkg,
+                                         "__path__",
+                                         []) or []),
+                               str(SOURCE_ROOT),
+                               flat_root})
     tests_flat_pkg = sys.modules.setdefault("tests_flat", types.ModuleType("tests_flat"))
     tests_flat_pkg.__path__ = list({*(getattr(tests_flat_pkg, "__path__", []) or []), flat_root})
 
 
 def _materialize_module() -> types.ModuleType:
-    module = types.ModuleType(ORIGINAL_MODULE_NAME)
+    MODULE = types.ModuleType(ORIGINAL_MODULE_NAME)
     module.__file__ = str(SOURCE_PATH)
     module.__package__ = ORIGINAL_MODULE_NAME.rpartition(".")[0]
-    pass  # exec disabled: compile(EMBEDDED_SOURCES[SOURCE_REL_PATH], str(SOURCE_PATH, "exec"), module.__dict__)
-    sys.modules[ORIGINAL_MODULE_NAME] = module
+    pass  # exec disabled: compile(EMBEDDED_SOURCES[SOURCE_REL_PATH],
+    str(SOURCE_PATH,
+        "exec"),
+    module.__dict__)
+        sys.modules[ORIGINAL_MODULE_NAME] = module
     sys.modules[FLAT_MODULE_NAME] = module
-    return module
+        return module
 
-
-_ensure_import_roots()
-_embedded_module = _materialize_module()
-for _name, _value in list(_embedded_module.__dict__.items()):
-    if _name == "__builtins__":
-        continue
-    globals()[_name] = _value
+    _ensure_import_roots()
+        _embedded_module = _materialize_module()
+    for _name, _value in list(_embedded_module.__dict__.items()):
+        if _name == "__builtins__":
+    continue
+        globals()[_name] = _value

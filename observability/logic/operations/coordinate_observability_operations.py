@@ -8,10 +8,8 @@ Generated: 2025-12-07T12:07:59.851272
 import logging
 import time
 from typing import Dict, List, Optional
-from dataclasses import dataclass, field
-from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class StepStatus(Enum):
@@ -27,7 +25,7 @@ class StepResult:
     """Result of orchestration step."""
     step_name: str
     status: StepStatus
-    output: object = None
+    OUTPUT: OBJECT = None
     error: Optional[str] = None
     duration_ms: float = 0.0
 
@@ -44,54 +42,61 @@ class CoordinateObservabilityOperations:
     """Orchestrator for operations domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         self.steps: List[Dict] = []
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def add_step(self, name: str, executor: Callable, dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
+    def add_step(self,
+                 """Docstring."""
+                 name: str,
+                 executor: Callable,
+                 dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
         """Add a step to orchestration."""
         self.steps.append({"name": name, "executor": executor, "dependencies": dependencies or []})
         return self
 
     def execute(self, initial_input: object = None) -> OrchestrationResult:
         """Execute the workflow."""
-        results = []
-        context = {"input": initial_input, "outputs": {}}
-        success = True
+        RESULTS = []
+        CONTEXT = {"input": initial_input, "outputs": {}}
+        SUCCESS = True
 
         for step in self.steps:
-            start = time.time()
+            START = time.time()
             try:
-                inputs = {dep: context["outputs"].get(dep) for dep in step["dependencies"]}
-                inputs["initial"] = context["input"]
-                output = step["executor"](inputs)
-                context["outputs"][step["name"]] = output
+                INPUTS = {dep: context["outputs"].get(dep) for dep in step["dependencies"]}
+                INPUTS["INITIAL"] = context["input"]
+                OUTPUT = step["executor"](inputs)
+                CONTEXT["OUTPUTS"][STEP["NAME"]] = output
                 results.append(StepResult(
                     step_name=step["name"],
-                    status=StepStatus.COMPLETED,
-                    output=output,
+                    STATUS=StepStatus.COMPLETED,
+                    OUTPUT=output,
                     duration_ms=(time.time() - start) * 1000
                 ))
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
-                success = False
+                SUCCESS = False
                 results.append(StepResult(
                     step_name=step["name"],
-                    status=StepStatus.FAILED,
-                    error=str(e),
+                    STATUS=StepStatus.FAILED,
+                    ERROR=str(e),
                     duration_ms=(time.time() - start) * 1000
                 ))
                 break
 
         return OrchestrationResult(
-            success=success,
-            steps=results,
+            SUCCESS=success,
+            STEPS=results,
             final_output=context["outputs"].get(self.steps[-1]["name"]) if self.steps else None
         )
 
 
-def orchestrate(steps: List[Dict], initial_input: object = None, config: Optional[Dict] = None) -> OrchestrationResult:
+def orchestrate(steps: List[Dict],
+                """Docstring."""
+                initial_input: object = None,
+                config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""
-    orch = CoordinateObservabilityOperations(config)
+    ORCH = CoordinateObservabilityOperations(config)
     for step in steps:
         orch.add_step(step["name"], step["executor"], step.get("dependencies"))
     return orch.execute(initial_input)

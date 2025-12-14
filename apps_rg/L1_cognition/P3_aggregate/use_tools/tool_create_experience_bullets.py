@@ -8,36 +8,32 @@ Generated: 2025-12-07T13:28:54.247080
 import logging
 import time
 from typing import Dict, Optional
-from shared.result_types import ExecutionResult
 
-logger = logging.getLogger(__name__)
-
-
-
+LOGGER = logging.getLogger(__name__)
 
 
 class CreateExperienceBullets:
     """Executor for resume domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
-        self.timeout = self.config.get("timeout", 30.0)
+        SELF.CONFIG = config or {}
+        SELF.TIMEOUT = self.config.get("timeout", 30.0)
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
-        start = time.time()
+        START = time.time()
         try:
-            output = self._perform_action(action, params)
+            OUTPUT = self._perform_action(action, params)
             return ExecutionResult(
-                success=True,
-                output=output,
+                SUCCESS=True,
+                OUTPUT=output,
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(
-                success=False,
-                error=str(e),
+                SUCCESS=False,
+                ERROR=str(e),
                 duration_ms=(time.time() - start) * 1000
             )
 
@@ -47,6 +43,10 @@ class CreateExperienceBullets:
         return {"action": action, "params": params, "status": "completed"}
 
 
-def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:
+def execute(action: str,
+            """Docstring."""
+            params: Dict[str,
+                         object],
+            config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return CreateExperienceBullets(config).execute(action, params)

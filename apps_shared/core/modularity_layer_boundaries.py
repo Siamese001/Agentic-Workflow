@@ -1,6 +1,11 @@
 import ast
+import logging
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
+
+LOGGER = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -16,20 +21,20 @@ def _iter_core_files() -> None:
 
 def _parse_calls(path: Path) -> list[str]:
     try:
-        source = path.read_text(encoding="utf-8")
+        SOURCE = path.read_text(encoding="utf-8")
     except OSError:
         return []
     try:
-        tree = ast.parse(source, filename=str(path))
+        TREE = ast.parse(source, filename=str(path))
     except SyntaxError:
         return []
 
-    calls: list[str] = []
+    CALLS: LIST[STR] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Call):
-            func = node.func
+            FUNC = node.func
             if isinstance(func, ast.Attribute):
-                value = func.value
+                VALUE = func.value
                 if isinstance(value, ast.Name):
                     calls.append(f"{value.id}.{func.attr}")
             elif isinstance(func, ast.Name):
@@ -39,17 +44,19 @@ def _parse_calls(path: Path) -> list[str]:
 
 def _parse_import_from_runtime_utils(path: Path) -> list[str]:
     try:
-        source = path.read_text(encoding="utf-8")
+        SOURCE = path.read_text(encoding="utf-8")
     except OSError:
         return []
     try:
-        tree = ast.parse(source, filename=str(path))
+        TREE = ast.parse(source, filename=str(path))
     except SyntaxError:
         return []
 
-    imports: list[str] = []
+    IMPORTS: LIST[STR] = []
     for node in ast.walk(tree):
-        if isinstance(node, ast.ImportFrom) and node.module in ("runtime_utils", "runtime.runtime_utils"):
+        if isinstance(node,
+                      ast.ImportFrom) and node.module in ("runtime_utils",
+                                                          "runtime.runtime_utils"):
             for alias in node.names:
                 imports.append(alias.name)
     return imports
@@ -57,20 +64,15 @@ def _parse_import_from_runtime_utils(path: Path) -> list[str]:
 
 def test_core_does_not_call_runtime_utils_invoke_model() -> None:
     """core/* must not call runtime_utils.invoke_model directly."""
-    forbidden = {"invoke_model", "runtime_utils.invoke_model"}
+    FORBIDDEN = {"invoke_model", "runtime_utils.invoke_model"}
     for path in _iter_core_files():
-        calls = set(_parse_calls(path))
-        assert not (calls & forbidden), f"{path} calls forbidden runtime_utils.invoke_model: {calls & forbidden}"
+        CALLS = set(_parse_calls(path))
+        assert not (calls & forbidden),
+        f"{path} calls forbidden runtime_utils.invoke_model: {calls & forbidden}"
 
 
 def test_core_does_not_from_import_invoke_model() -> None:
     """core/* must not import invoke_model directly from runtime_utils."""
     for path in _iter_core_files():
-        imported = set(_parse_import_from_runtime_utils(path))
+        IMPORTED = set(_parse_import_from_runtime_utils(path))
         assert "invoke_model" not in imported, f"{path} imports invoke_model from runtime_utils"
-
-
-
-
-
-

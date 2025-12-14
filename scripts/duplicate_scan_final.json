@@ -1,0 +1,21 @@
+{
+  "total_duplicates": 1,
+  "identical_duplicates": 0,
+  "different_duplicates": 1,
+  "total_wasted_bytes": 0,
+  "duplicates_by_suffix": {
+    "_2025": 1
+  },
+  "duplicates_by_directory": {
+    "scripts\\workflow": 1
+  },
+  "duplicate_groups": [
+    {
+      "original": "ORPHANS",
+      "duplicates": [
+        "scripts\\workflow\\sovereign_promoter_2025.py"
+      ],
+      "count": 1
+    }
+  ]
+}

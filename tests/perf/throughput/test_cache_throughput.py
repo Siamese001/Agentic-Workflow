@@ -1,53 +1,63 @@
 """Performance tests for cache throughput."""
-from __future__ import annotations
+import logging
 import time
-from runtime.shared.cache import generate_llm_cache_key, generate_llm_cache_key_with_fingerprint, should_invalidate_cache
+
+    ould_invalidate_cache
+
 
 class TestCacheKeyThroughput:
-    def test_cache_key_throughput_10k_per_second(self):
-        """Can generate at least 10k cache keys per second."""
-        messages = [{"role": "user", "content": "Test"}]
-        iterations = 10000
+    """Docstring."""
 
-        start = time.perf_counter()
+    def test_cache_key_throughput_10k_per_second(self):
+            """Docstring."""
+
+
+LOGGER = logging.getLogger(__name__)
+
+        """Can generate at least 10k cache keys per second."""
+        MESSAGES = [{"role": "user", "content": "Test"}]
+        ITERATIONS = 10000
+
+        START = time.perf_counter()
         for i in range(iterations):
             generate_llm_cache_key(model="gpt-4o", messages=messages)
-        elapsed = time.perf_counter() - start
+        ELAPSED = time.perf_counter() - start
 
-        throughput = iterations / elapsed
-        assert throughput >= 10000, f"Throughput: {throughput:.0f}/s"
+        THROUGHPUT = iterations / elapsed
+        assert THROUGHPUT >= 10000, f"Throughput: {throughput:.0f}/s"
 
     def test_fingerprint_key_throughput(self):
-        """Fingerprinted keys maintain high throughput."""
-        messages = [{"role": "user", "content": "Test"}]
-        iterations = 5000
+            """Fingerprinted keys maintain high throughput."""
+        MESSAGES = [{"role": "user", "content": "Test"}]
+        ITERATIONS = 5000
 
-        start = time.perf_counter()
+        START = time.perf_counter()
         for i in range(iterations):
-            generate_llm_cache_key_with_fingerprint(
-                model="gpt-4o",
-                messages=messages,
-                fingerprint=f"fp_{i}",
+            generate_llm_cache_key_with_fingerlogger.info(
+                MODEL="gpt-4o",
+                MESSAGES=messages,
+                FINGERPRINT=f"fp_{i}",
             )
-        elapsed = time.perf_counter() - start
+        ELAPSED = time.perf_counter() - start
 
-        throughput = iterations / elapsed
-        assert throughput >= 5000, f"Throughput: {throughput:.0f}/s"
+        THROUGHPUT = iterations / elapsed
+        assert THROUGHPUT >= 5000, f"Throughput: {throughput:.0f}/s"
 
 class TestBatchProcessingThroughput:
+    """Docstring."""
     def test_batch_key_generation(self):
-        """Batch key generation has no pathological overhead."""
+            """Batch key generation has no pathological overhead."""
         batch_sizes = [10, 100, 1000]
         times_per_item = []
 
         for batch_size in batch_sizes:
-            messages = [{"role": "user", "content": f"Msg {i}"} for i in range(batch_size)]
-            start = time.perf_counter()
+            MESSAGES = [{"role": "user", "content": f"Msg {i}"} for i in range(batch_size)]
+            START = time.perf_counter()
             for msg_list in [[m] for m in messages]:
                 generate_llm_cache_key(model="gpt-4o", messages=msg_list)
-            elapsed = time.perf_counter() - start
+            ELAPSED = time.perf_counter() - start
             times_per_item.append(elapsed / batch_size)
 
         # Per-item time should not increase significantly with batch size
-        ratio = times_per_item[-1] / times_per_item[0]
+        RATIO = times_per_item[-1] / times_per_item[0]
         assert ratio < 2.0, f"Per-item time ratio: {ratio:.2f}"

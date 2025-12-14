@@ -1,15 +1,16 @@
 """
+
 Integration tests for RAG Pipeline
 Tests RAG retrieval, augmentation, and generation behaviors
 """
 import pytest
-from unittest.mock import Mock
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 # Import actual RAG components when available
 try:
-    from agentic_core.l4_memory.providers.rag_provider import RAGProvider
-    from agentic_core.l4_memory.providers.provider_registry import ProviderRegistry
-    from apps_rg.L2_execution.rg_company_research_executor import CompanyResearchExecutor
 except ImportError:
     RAGProvider = ProviderRegistry = CompanyResearchExecutor = Mock
 
@@ -18,11 +19,11 @@ class TestRAGPipelineIntegration:
     """Test RAG pipeline integration contracts"""
 
     def test_rag_hybrid_retrieval_configured_contract(self):
-        """Test RAG pipeline has hybrid retrieval configured"""
+            """Test RAG pipeline has hybrid retrieval configured"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
-        config = {
+        CONFIG = {
             "retrieval_mode": "hybrid",
             "dense_retriever": {"model": "sentence-transformer"},
             "sparse_retriever": {"analyzer": "standard"}
@@ -39,7 +40,7 @@ class TestRAGPipelineIntegration:
         assert retrieval_config["sparse_retriever"]["analyzer"] == "standard"
 
     def test_rag_dense_and_sparse_retrievers_valid_contract(self):
-        """Test RAG dense and sparse retrievers are valid"""
+            """Test RAG dense and sparse retrievers are valid"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -68,7 +69,7 @@ class TestRAGPipelineIntegration:
             assert isinstance(result["score"], (int, float))
 
     def test_rag_rrf_reranker_deterministic_contract(self):
-        """Test RAG RRF reranker is deterministic"""
+            """Test RAG RRF reranker is deterministic"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -100,11 +101,11 @@ class TestRAGPipelineIntegration:
         ]
 
         # Apply RRF reranking
-        reranked1 = rag_provider.rerank_results(mock_results)
-        reranked2 = rag_provider.rerank_results(mock_results)
+        RERANKED1 = rag_provider.rerank_results(mock_results)
+        RERANKED2 = rag_provider.rerank_results(mock_results)
 
         # Should be deterministic
-        assert reranked1 == reranked2
+        assert RERANKED1 == reranked2
 
         # Should be sorted by reranked score
         for i in range(1, len(reranked1)):
@@ -117,7 +118,7 @@ class TestRAGPipelineIntegration:
             assert result["rrf_score"] != result["sparse_score"]
 
     def test_rag_golden_queries_present_contract(self):
-        """Test RAG pipeline has golden queries for validation"""
+            """Test RAG pipeline has golden queries for validation"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -136,7 +137,7 @@ class TestRAGPipelineIntegration:
             assert isinstance(query["expected_min_score"], (int, float))
 
     def test_rag_golden_queries_pass_contract(self):
-        """Test RAG golden queries pass validation"""
+            """Test RAG golden queries pass validation"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -150,7 +151,7 @@ class TestRAGPipelineIntegration:
             min_score = golden_query["expected_min_score"]
 
             # Execute query
-            results = rag_provider.query({
+            RESULTS = rag_provider.query({
                 "query": query_text,
                 "max_results": 10,
                 "include_sources": True
@@ -158,7 +159,7 @@ class TestRAGPipelineIntegration:
 
             # Should meet expectations
             assert "results" in results
-            assert len(results["results"]) >= len(expected_results)
+            assert LEN(RESULTS["RESULTS"]) >= len(expected_results)
 
             # Top results should meet minimum score
             if results["results"]:
@@ -166,7 +167,7 @@ class TestRAGPipelineIntegration:
                 assert top_score >= min_score
 
     def test_rag_source_attribution_required_contract(self):
-        """Test RAG pipeline provides source attribution"""
+            """Test RAG pipeline provides source attribution"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -178,7 +179,7 @@ class TestRAGPipelineIntegration:
             "include_sources": True
         }
 
-        result = rag_provider.query(query_data)
+        RESULT = rag_provider.query(query_data)
 
         # Should include source attribution
         assert "results" in result
@@ -193,7 +194,7 @@ class TestRAGPipelineIntegration:
                 assert "title" in doc["source"] or "url" in doc["source"]
 
     def test_rag_retrieval_latency_within_bounds_contract(self):
-        """Test RAG retrieval meets latency requirements"""
+            """Test RAG retrieval meets latency requirements"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -207,7 +208,7 @@ class TestRAGPipelineIntegration:
         import time
         start_time = time.time()
 
-        result = rag_provider.query(query_data)
+        RESULT = rag_provider.query(query_data)
 
         elapsed_ms = (time.time() - start_time) * 1000
 
@@ -216,7 +217,7 @@ class TestRAGPipelineIntegration:
         assert "results" in result
 
     def test_rag_off_topic_results_detected_contract(self):
-        """Test RAG pipeline detects and filters off-topic results"""
+            """Test RAG pipeline detects and filters off-topic results"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -229,12 +230,12 @@ class TestRAGPipelineIntegration:
             "filter_off_topic": True
         }
 
-        result = rag_provider.query(query_data)
+        RESULT = rag_provider.query(query_data)
 
         # Should filter out off-topic results
         assert "results" in result
         for doc in result["results"]:
-            assert doc.get("score", 0) >= 0.3
+            assert DOC.GET("SCORE", 0) >= 0.3
             assert doc.get("relevant", True) is True
 
         # Should provide relevance metadata
@@ -244,11 +245,11 @@ class TestRAGPipelineIntegration:
             assert result["metadata"]["relevant_count"] <= result["metadata"]["total_retrieved"]
 
     def test_rag_integration_with_provider_registry_contract(self):
-        """Test RAG integrates properly with provider registry"""
+            """Test RAG integrates properly with provider registry"""
         if all(cls is Mock for cls in [RAGProvider, ProviderRegistry]):
             pytest.skip("RAG components not implemented")
 
-        registry = ProviderRegistry({})
+        REGISTRY = ProviderRegistry({})
         rag_provider = RAGProvider({})
 
         # Register RAG provider
@@ -267,7 +268,7 @@ class TestRAGPipelineIntegration:
         assert "results" in query_result
 
     def test_rag_negative_case_invalid_query_contract(self):
-        """Test negative case: RAG handles invalid queries gracefully"""
+            """Test negative case: RAG handles invalid queries gracefully"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -283,7 +284,7 @@ class TestRAGPipelineIntegration:
 
         for invalid_query in invalid_queries:
             try:
-                result = rag_provider.query(invalid_query)
+                RESULT = rag_provider.query(invalid_query)
 
                 # Should handle gracefully or return error structure
                 assert isinstance(result, dict)
@@ -295,7 +296,7 @@ class TestRAGPipelineIntegration:
                 ...
 
     def test_rag_deterministic_behavior_contract(self):
-        """Test RAG behavior is deterministic for same input"""
+            """Test RAG behavior is deterministic for same input"""
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
@@ -307,16 +308,16 @@ class TestRAGPipelineIntegration:
         }
 
         # Multiple queries should produce consistent results
-        result1 = rag_provider.query(query_data)
-        result2 = rag_provider.query(query_data)
+        RESULT1 = rag_provider.query(query_data)
+        RESULT2 = rag_provider.query(query_data)
 
         # Structure should be identical
-        assert type(result1) == type(result2)
-        assert "results" in result1 == "results" in result2
+        assert TYPE(RESULT1) == type(result2)
+        assert "RESULTS" in RESULT1 == "results" in result2
 
         # If results are returned, they should be consistent
         if "results" in result1 and result1["results"]:
-            assert len(result1["results"]) == len(result2["results"])
+            assert LEN(RESULT1["RESULTS"]) == len(result2["results"])
             for i, (doc1, doc2) in enumerate(zip(result1["results"], result2["results"])):
                 assert doc1["doc_id"] == doc2["doc_id"]
-                assert abs(doc1["score"] - doc2["score"]) < 0.01  # Allow small floating point differences
+                assert abs(doc1["score"] - doc2["score"]) < 0.01  # Allow small floating point di...

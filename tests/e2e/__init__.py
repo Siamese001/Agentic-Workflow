@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-End-to-End Tests.
-
-Full workflow tests covering complete user journeys.
-Structure governed by META YAML domain_invariants.tests.allowed_structure.
-"""
+import logging
+logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+'\nEnd-to-End Tests.\n\nFull workflow tests covering complete user journeys.\nStructure governed by META YAML domain_invariants.tests.allowed_structure.\n'

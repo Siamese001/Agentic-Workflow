@@ -1,15 +1,17 @@
-# scripts/enforce_verb_noun.py
-import scripts.validation.check_canonical_structure
+import logging
 import shutil
 import sys
 from pathlib import Path
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+_logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 for f in sys.argv[1:]:
     p = Path(f)
-    if re.match(r"^[a-z]+_[a-z_]+\.py$", p.name):
+    if re.match('^[a-z]+_[a-z_]+\\.py$', ConfigurationService().p.name):
         continue
-    if p.parent.name.startswith("L2_"):
-        new = p.parent / f"invoke_{p.stem}.py"
+    if ConfigurationService().p.parent.name.startswith('L2_'):
+        NEW = ConfigurationService().p.parent / f'invoke_{ConfigurationService().p.stem}.py'
     else:
-        new = p.parent / f"retrieve_{p.stem}.py"
-    shutil.move(p, new)
+        NEW = ConfigurationService().p.parent / f'retrieve_{ConfigurationService().p.stem}.py'
+    shutil.move(ConfigurationService().p, new)

@@ -1,0 +1,155 @@
+# MCP Server Mappings Configuration
+# Defines which Agent Roles get access to which MCP Servers
+
+# Global Servers (Available to all agents by default)
+defaults:
+  - server: "filesystem"
+    command: "npx"
+    args: ["-y", "@modelcontextprotocol/server-filesystem", "./"]
+    description: "Local filesystem access for reading/writing files"
+  
+  - server: "memory"
+    command: "npx"
+    args: ["-y", "@modelcontextprotocol/server-memory"]
+    description: "Persistent memory storage for agent context"
+
+# Role-Specific Mappings
+# Each role gets default servers + their specific servers
+roles:
+  # DEBUGGER role has full access to telemetry for introspection and self-correction
+  DEBUGGER:
+    - server: "telemetry"
+      command: "python"
+      args: ["servers/telemetry_server.py"]
+      description: "Telemetry and introspection tools for debugging"
+      env:
+        PYTHONPATH: "."
+    - server: "filesystem"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "./"]
+      description: "File system access"
+
+  # MANAGER role can oversee all operations with telemetry
+  MANAGER:
+    - server: "telemetry"
+      command: "python"
+      args: ["servers/telemetry_server.py"]
+      description: "Telemetry and performance monitoring"
+      env:
+        PYTHONPATH: "."
+    - server: "filesystem"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "./"]
+      description: "File system access"
+
+  # CODER gets access to telemetry for self-correction loops
+  CODER:
+    - server: "telemetry"
+      command: "python"
+      args: ["servers/telemetry_server.py"]
+      description: "Telemetry for self-correction and debugging"
+      env:
+        PYTHONPATH: "."
+    - server: "github"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-github"]
+      env:
+        GITHUB_TOKEN: "${GITHUB_TOKEN}"
+      description: "GitHub repository access and operations"
+    
+    - server: "git"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-git"]
+      description: "Local git operations"
+
+  # REVIEWER needs telemetry to check quality metrics
+  REVIEWER:
+    - server: "telemetry"
+      command: "python"
+      args: ["servers/telemetry_server.py"]
+      description: "Quality metrics and performance data"
+      env:
+        PYTHONPATH: "."
+    - server: "filesystem"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "./"]
+      description: "Read generated files for validation"
+
+  RESEARCHER:
+    - server: "brave-search"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-brave-search"]
+      env:
+        BRAVE_API_KEY: "${BRAVE_API_KEY}"
+      description: "Web search capabilities via Brave Search API"
+    
+    - server: "fetch"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-fetch"]
+      description: "HTTP fetch for retrieving web content"
+
+  DATA_ANALYST:
+    - server: "postgres"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost/mydb"]
+      env:
+        DATABASE_URL: "${DATABASE_URL}"
+      description: "PostgreSQL database access"
+    
+    - server: "sqlite"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-sqlite", "./data/analytics.db"]
+      description: "SQLite database for local analytics"
+
+  CONTEXT_GATHERER:
+    - server: "github"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-github"]
+      env:
+        GITHUB_TOKEN: "${GITHUB_TOKEN}"
+      description: "Scan repositories for code context"
+    
+    - server: "fetch"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-fetch"]
+      description: "Scrape company websites for context"
+
+  QUALITY_CRITIC:
+    - server: "filesystem"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "./"]
+      description: "Read generated files for validation"
+
+  PROTOCOL_ENFORCER:
+    - server: "postgres"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-postgres"]
+      env:
+        DATABASE_URL: "${DATABASE_URL}"
+      description: "Check interaction history in database"
+
+  K25_DEEP_RESEARCHER:
+    - server: "brave-search"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-brave-search"]
+      env:
+        BRAVE_API_KEY: "${BRAVE_API_KEY}"
+      description: "Deep web research capabilities"
+    
+    - server: "fetch"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-fetch"]
+      description: "Navigate to 10-K filings and technical docs"
+    
+    - server: "filesystem"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "./research_cache"]
+      description: "Save research notes for citation"
+
+# Environment variable templates
+# These should be set in .env or system environment
+env_templates:
+  BRAVE_API_KEY: "Required for Brave Search access"
+  GITHUB_TOKEN: "Required for GitHub API access"
+  DATABASE_URL: "PostgreSQL connection string"
+  PYTHONPATH: "Python path for MCP servers"

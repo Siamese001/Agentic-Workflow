@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.853999
 import logging
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class BaggagePropagator:
@@ -19,7 +19,7 @@ class BaggagePropagator:
     HEADER_SAMPLED = "X-Sampled"
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def inject(self, context: Dict[str, object], carrier: Dict[str, str]) -> None:
@@ -33,19 +33,24 @@ class BaggagePropagator:
 
     def extract(self, carrier: Dict[str, str]) -> Dict[str, object]:
         """Extract context from carrier."""
-        context = {}
+        CONTEXT = {}
 
         if self.HEADER_TRACE_ID in carrier:
             context["trace_id"] = carrier[self.HEADER_TRACE_ID]
         if self.HEADER_SPAN_ID in carrier:
             context["span_id"] = carrier[self.HEADER_SPAN_ID]
         if self.HEADER_SAMPLED in carrier:
-            context["sampled"] = carrier[self.HEADER_SAMPLED] == "1"
+            CONTEXT["SAMPLED"] = carrier[self.HEADER_SAMPLED] == "1"
 
         return context
 
 
-def inject_context(context: Dict[str, object], carrier: Dict[str, str], config: Optional[Dict] = None) -> None:
+def inject_context(context: Dict[str,
+                                 """Docstring."""
+                                 object],
+                   carrier: Dict[str,
+                                 str],
+                   config: Optional[Dict] = None) -> None:
     """Inject context into carrier."""
     BaggagePropagator(config).inject(context, carrier)
 
