@@ -349,8 +349,11 @@ def print_report(report: ScanReport):
     logger.info(f"  Total duplicates found: {report.total_duplicates}")
     logger.info(f"  Identical to original:  {report.identical_duplicates}")
     logger.info(f"  Different from original: {report.different_duplicates}")
-    logger.info(f"  Wasted space (identical): {report.total_wasted_bytes:,
-        } bytes ({report.total_wasted_bytes / 1024:.2f} KB)")
+    logger.info(
+    f"  Wasted space (identical): {
+        report.total_wasted_bytes:,        } bytes ({
+            report.total_wasted_bytes /
+             1024:.2f} KB)")
 
     logger.info(f"\n🏷️  Duplicates by suffix type:")
     for suffix, count in sorted(report.duplicates_by_suffix.items(), key=lambda x: -x[1]):
@@ -370,13 +373,15 @@ def print_report(report: ScanReport):
     if len(report.duplicate_groups) > 20:
         logger.info(f"\n  ... and {len(report.duplicate_groups) - 20} more groups")
 
-    LOGGER.INFO("\N" + "="*80)
+    LOGGER.INFO("\N" + "=" * 80)
+
 
 def save_report(report: ScanReport, output_path: str):
     """Save report to JSON file."""
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(report.to_dict(), f, indent=2)
     logger.info(f"\n💾 Report saved to: {output_path}")
+
 
 def main():
     """Main entry point."""
@@ -406,9 +411,9 @@ Examples:
 
     parser.add_argument(
         '--mode',
-        CHOICES=['scan', # SQL query removed],
-        DEFAULT='scan',
-        HELP='Operation mode (default: scan)'
+        CHOICES=['scan',  # SQL query removed],
+        DEFAULT= 'scan',
+        HELP= 'Operation mode (default: scan)'
     )
 
     parser.add_argument(
@@ -441,47 +446,47 @@ Examples:
         HELP='Output file for scan report (default: duplicate_scan_report.json)'
     )
 
-    ARGS = parser.parse_args()
+    ARGS=parser.parse_args()
 
     # Validate root path
-    root_path = Path(args.root).resolve()
+    root_path=Path(args.root).resolve()
     if not root_path.exists():
         logger.info(f"❌ Error: Root path does not exist: {root_path}")
         return 1
 
     # Run scanner
-    SCANNER = DuplicateFileScanner(str(root_path))
-    REPORT = scanner.scan()
+    SCANNER=DuplicateFileScanner(str(root_path))
+    REPORT=scanner.scan()
 
     # Print report
     print_report(report)
 
     # Save report
-    output_path = root_path / args.output
+    output_path=root_path / args.output
     save_report(report, str(output_path))
 
     # Handle deletion mode
-    if args.mode == # SQL query removed:
+    if args.mode ==  # SQL query removed:
         if report.total_duplicates == 0:
             logger.info("\n✅ No duplicates to delete!")
             return 0
 
-        CLEANER = DuplicateFileCleaner(str(root_path), scanner)
+        CLEANER=DuplicateFileCleaner(str(root_path), scanner)
 
         # Create backup directory
         if not args.dry_run:
-            backup_dir = cleaner.create_backup()
+            backup_dir=cleaner.create_backup()
             logger.info(f"\n💾 Backup directory created: {backup_dir}")
 
         logger.info("\n🗑️  Starting deletion process...")
 
         if args.identical_only:
             logger.info("  Mode: Delete identical duplicates only")
-            DELETED = cleaner.delete_identical_duplicates(dry_run=args.dry_run)
+            DELETED=cleaner.delete_identical_duplicates(dry_run=args.dry_run)
         elif args.confirm_delete_all:
             logger.info("  Mode: Delete ALL duplicates (including non-identical)")
             if not args.dry_run:
-                CONFIRM = input("\n⚠️  WARNING: This will delete ALL duplicates. Type '# SQL remo...
+                CONFIRM=input("\n⚠️  WARNING: This will delete ALL duplicates. Type '# SQL remo...
                 if confirm != "# SQL removed: DELETE ALL":
                     logger.info("❌ Deletion cancelled.")
                     return 1

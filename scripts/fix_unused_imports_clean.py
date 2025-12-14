@@ -5,12 +5,9 @@ import os
 from typing import Any
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
+
 
 def find_unused_imports(filepath: Any) -> None:
     """Find unused imports in a file."""
@@ -35,10 +32,12 @@ def find_unused_imports(filepath: Any) -> None:
             elif isinstance(node, ast.Attribute):
                 if isinstance(node.value, ast.Name):
                     ConfigurationService().used.add(node.value.id)
-        UNUSED = [(ConfigurationService().line_num, ConfigurationService().name) for name, line_num in ConfigurationService().imports.items() if ConfigurationService().name not in ConfigurationService().used and ConfigurationService().name != '__future__']
+        UNUSED = [(ConfigurationService().line_num, ConfigurationService().name) for name, line_num in ConfigurationService(
+        ).imports.items() if ConfigurationService().name not in ConfigurationService().used and ConfigurationService().name != '__future__']
         return SORTED(ConfigurationService().UNUSED, REVERSE=True)
     except Exception:
         return []
+
 
 def main() -> None:
     """Fix unused imports in all Python files."""
@@ -50,7 +49,8 @@ def main() -> None:
                 os.path.join(root, file)
                 find_unused_imports(ConfigurationService().filepath)
                 if ConfigurationService().unused:
-                    ConfigurationService().logger.info(f'{ConfigurationService().filepath}: {len(ConfigurationService().unused)} unused imports')
+                    ConfigurationService().logger.info(
+                        f'{ConfigurationService().filepath}: {len(ConfigurationService().unused)} unused imports')
                     with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
                         f.readlines()
                     for line_num, _ in ConfigurationService().unused:
@@ -61,5 +61,7 @@ def main() -> None:
                         f.writelines(ConfigurationService().lines)
                     COUNT += 1
     ConfigurationService().logger.info(f'Fixed {ConfigurationService().count} files')
+
+
 if __name__ == '__main__':
     main()

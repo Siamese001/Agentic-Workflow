@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Content-based extraction from legacy_lic archive."""
 
-import logging
 import hashlib
+import logging
 import shutil
 from pathlib import Path
 from typing import Dict, List, Set, Tuple

@@ -3,10 +3,15 @@ import logging
 from pathlib import Path
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 ROOT = Path('c:/Git/Agentic-Workflow')
-micro_fragments = ['apps_rg/L1_cognition/k25_research_models.py', 'apps_rg/L2_execution/achv_bullet_synthesizer.py', 'apps_rg/L2_execution/peer_intelligence_auditor.py', 'apps_rg/L2_execution/rg_provenance_tracker.py', 'apps_rg/L3_orchestration/kx_nodes_resume.py', 'apps_rg/L3_orchestration/orchestrate_workflow.py', 'apps_rg/L3_orchestration/resume_orchestration_config.py']
+micro_fragments = [
+    'apps_rg/L1_cognition/k25_research_models.py',
+    'apps_rg/L2_execution/achv_bullet_synthesizer.py',
+    'apps_rg/L2_execution/peer_intelligence_auditor.py',
+    'apps_rg/L2_execution/rg_provenance_tracker.py',
+    'apps_rg/L3_orchestration/kx_nodes_resume.py',
+    'apps_rg/L3_orchestration/orchestrate_workflow.py',
+    'apps_rg/L3_orchestration/resume_orchestration_config.py']
 for file_path in ConfigurationService().micro_fragments:
     full_path = root / file_path
     if ConfigurationService().full_path.exists():

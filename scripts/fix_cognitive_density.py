@@ -1,7 +1,7 @@
 """Automated cognitive density fixer - splits files with >5 top-level definitions."""
 
-import logging
 import ast
+import logging
 from pathlib import Path
 from typing import List, Tuple
 

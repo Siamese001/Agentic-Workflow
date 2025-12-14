@@ -1,11 +1,7 @@
-from pathlib import Path
-import sys
-import shutil
 import logging
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+import shutil
+import sys
+from pathlib import Path
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)

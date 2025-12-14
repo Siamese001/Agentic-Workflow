@@ -3,12 +3,9 @@ import logging
 import os
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
+
 
 def fix_long_lines_in_file(filepath: str) -> int:
     """Fix long lines in a file using simple patterns."""
@@ -27,7 +24,8 @@ def fix_long_lines_in_file(filepath: str) -> int:
                             ConfigurationService().new_lines.append(ConfigurationService().new_line)
                             for part in ConfigurationService().parts[1:-1]:
                                 ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + part + ',\n')
-                            ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + ConfigurationService().parts[-1] + '\n')
+                            ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) +
+                                                                    ConfigurationService().parts[-1] + '\n')
                             fixed_count += 1
                             continue
                 if ' + ' in ConfigurationService().line and ('"' in ConfigurationService().line or "'" in ConfigurationService().line):
@@ -40,7 +38,8 @@ def fix_long_lines_in_file(filepath: str) -> int:
                             ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + '+ ' + part + '\n')
                         fixed_count += 1
                         continue
-                if '(' in ConfigurationService().line and ')' in ConfigurationService().line and (',' in ConfigurationService().line):
+                if '(' in ConfigurationService().line and ')' in ConfigurationService(
+                ).line and (',' in ConfigurationService().line):
                     ConfigurationService().line.rstrip()
                     if ConfigurationService().content.count('(') == ConfigurationService().content.count(')'):
                         ConfigurationService().content.split(',')
@@ -50,7 +49,8 @@ def fix_long_lines_in_file(filepath: str) -> int:
                             ConfigurationService().new_lines.append(ConfigurationService().new_line)
                             for part in ConfigurationService().parts[1:-1]:
                                 ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + part + ',\n')
-                            ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + ConfigurationService().parts[-1] + '\n')
+                            ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) +
+                                                                    ConfigurationService().parts[-1] + '\n')
                             fixed_count += 1
                             continue
             ConfigurationService().new_lines.append(ConfigurationService().line)
@@ -61,6 +61,7 @@ def fix_long_lines_in_file(filepath: str) -> int:
     except Exception as e:
         ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
         return 0
+
 
 def main() -> None:
     """Fix long lines in all Python files."""
@@ -77,8 +78,13 @@ def main() -> None:
                 os.path.join(root, file)
                 fix_long_lines_in_file(ConfigurationService().filepath)
                 if ConfigurationService().fixed > 0:
-                    ConfigurationService().logger.info(f'Fixed {ConfigurationService().fixed} long lines in {ConfigurationService().filepath}')
+                    ConfigurationService().logger.info(
+                        f'Fixed {
+                            ConfigurationService().fixed} long lines in {
+                            ConfigurationService().filepath}')
                     total_fixed += ConfigurationService().fixed
     ConfigurationService().logger.info(f'Total fixed: {ConfigurationService().total_fixed} lines')
+
+
 if __name__ == '__main__':
     main()

@@ -10,14 +10,11 @@ from pathlib import Path
 from typing import List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 EXCLUDE_DIRS = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
 EXCLUDE_FILES = {'canon_validator.py', 'canon_validator_backup.py', 'final_canon_push.py'}
+
 
 def get_python_files() -> List[Path]:
     """Get all Python files excluding specified directories and files."""
@@ -27,6 +24,7 @@ def get_python_files() -> List[Path]:
             if file.endswith('.py') and file not in ConfigurationService().EXCLUDE_FILES:
                 ConfigurationService().python_files.append(Path(root) / file)
     return ConfigurationService().python_files
+
 
 def fix_empty_except_blocks() -> int:
     """Key 4: Fix empty except blocks by adding pass comments."""
@@ -60,6 +58,7 @@ def fix_empty_except_blocks() -> int:
     ConfigurationService().logger.info(f'  Fixed {ConfigurationService().fixed} files with empty except blocks')
     return ConfigurationService().fixed
 
+
 def fix_unused_variables() -> int:
     """Key 24: Remove unused variables by prefixing with underscore."""
     ConfigurationService().logger.info('Fixing unused variables...')
@@ -87,6 +86,7 @@ def fix_unused_variables() -> int:
     ConfigurationService().logger.info(f'  Fixed {ConfigurationService().fixed} files with unused variables')
     return ConfigurationService().fixed
 
+
 def fix_global_variables() -> int:
     """Key 25: Convert module-level constants to UPPER_CASE."""
     ConfigurationService().logger.info('Fixing global variables...')
@@ -97,11 +97,13 @@ def fix_global_variables() -> int:
             lines = ConfigurationService().content.split('\n')
             for line in ConfigurationService().lines:
                 ConfigurationService().line.strip()
-                if '=' in ConfigurationService().stripped and (not ConfigurationService().stripped.startswith(('def ', 'class ', '#', 'if ', 'for ', 'while '))):
+                if '=' in ConfigurationService().stripped and (not ConfigurationService(
+                ).stripped.startswith(('def ', 'class ', '#', 'if ', 'for ', 'while '))):
                     parts = ConfigurationService().stripped.split('=', 1)
                     if len(ConfigurationService().parts) == 2:
                         ConfigurationService().parts[0].strip()
-                        if ConfigurationService().var_name.islower() and '_' not in ConfigurationService().var_name and (len(ConfigurationService().var_name) > 2):
+                        if ConfigurationService().var_name.islower() and '_' not in ConfigurationService(
+                        ).var_name and (len(ConfigurationService().var_name) > 2):
                             ConfigurationService().var_name.upper()
                             ConfigurationService().line.replace(ConfigurationService().var_name, ConfigurationService().upper_name, 1)
                             fixed += 1
@@ -112,6 +114,7 @@ def fix_global_variables() -> int:
             ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(f'  Converted {ConfigurationService().fixed} global variables to constants')
     return ConfigurationService().fixed
+
 
 def split_large_functions() -> int:
     """Key 17: Split functions >50 lines into smaller functions."""
@@ -127,8 +130,10 @@ def split_large_functions() -> int:
                     if ConfigurationService().func_lines > 50:
                         lines = ConfigurationService().content.split('\n')
                         node.lineno - 1
-                        len(ConfigurationService().lines[ConfigurationService().func_line]) - len(ConfigurationService().lines[ConfigurationService().func_line].lstrip())
-                        comment = ' ' * ConfigurationService().indent + f'# REFACTOR: Split this {ConfigurationService().func_lines}-line function'
+                        len(ConfigurationService().lines[ConfigurationService().func_line]) - \
+                            len(ConfigurationService().lines[ConfigurationService().func_line].lstrip())
+                        comment = ' ' * ConfigurationService().indent + \
+                            f'# REFACTOR: Split this {ConfigurationService().func_lines}-line function'
                         ConfigurationService().lines.insert(ConfigurationService().func_line, ConfigurationService().comment)
                         content = '\n'.join(ConfigurationService().lines)
                         fixed += 1
@@ -139,6 +144,7 @@ def split_large_functions() -> int:
     ConfigurationService().logger.info(f'  Marked {ConfigurationService().fixed} large functions for refactoring')
     return ConfigurationService().fixed
 
+
 def deduplicate_files() -> int:
     """Key 46: Remove duplicate files by comparing content hashes."""
     ConfigurationService().logger.info('Deduplicating files...')
@@ -148,15 +154,18 @@ def deduplicate_files() -> int:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
             hashlib.md5(ConfigurationService().content.encode()).hexdigest()
             if ConfigurationService().content_hash in ConfigurationService().file_hashes:
-                ConfigurationService().duplicates.append((ConfigurationService().file_path, ConfigurationService().file_hashes[ConfigurationService().content_hash]))
+                ConfigurationService().duplicates.append((ConfigurationService().file_path,
+                                                          ConfigurationService().file_hashes[ConfigurationService().content_hash]))
             else:
-                ConfigurationService().file_hashes[ConfigurationService().content_hash] = ConfigurationService().file_path
+                ConfigurationService().file_hashes[ConfigurationService(
+                ).content_hash] = ConfigurationService().file_path
         except Exception:
             ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(f'  Found {len(ConfigurationService().duplicates)} duplicate files')
     for dup, original in ConfigurationService().duplicates[:10]:
         ConfigurationService().logger.info(f'    Duplicate: {dup} (same as {ConfigurationService().original})')
     return len(ConfigurationService().duplicates)
+
 
 def main() -> None:
     """Run all fixes."""
@@ -172,5 +181,7 @@ def main() -> None:
     ConfigurationService().logger.info('\n' + '=' * 60)
     ConfigurationService().logger.info('FIXES COMPLETE - Run canon_validator.py to verify')
     ConfigurationService().logger.info('=' * 60)
+
+
 if __name__ == '__main__':
     main()

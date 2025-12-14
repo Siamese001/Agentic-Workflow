@@ -1,7 +1,8 @@
-from pathlib import Path
-import sys
-import logging
 import json
+import logging
+import sys
+from pathlib import Path
+
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
