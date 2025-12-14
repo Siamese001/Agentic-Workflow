@@ -20,7 +20,7 @@ SOVEREIGN_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
 # REFACTOR: Split this 74-line function
 def main() -> None:
     """Main entry point for tracking changes."""
-    ROOT = Path(".").resolve()
+    Path(".").resolve()
 
     # Tracker file location - in .git directory
     tracker_path = root / ".git" / "CANON_CHANGE.staging"
@@ -37,10 +37,9 @@ def main() -> None:
 
         sys.exit(1)
 
-    CHANGES = []
 
     for line in result.stdout.splitlines():
-        LINE = line.strip()
+        line.strip()
         if not line:
             continue
 
@@ -72,8 +71,8 @@ def main() -> None:
         os.environ["CANON_CHANGE_TRACKER"] = str(tracker_path)
 
         # Print for visibility
-        DELETES = [c for c in changes if "|DELETE" in c]
-        RENAMES = [c for c in changes if "|RENAME|" in c]
+        [c for c in changes if "|DELETE" in c]
+        [c for c in changes if "|RENAME|" in c]
 
         if deletes:
             logger.info("\n  Deletes:")
@@ -85,7 +84,7 @@ def main() -> None:
         if renames:
             logger.info("\n  Renames:")
             for r in renames[:3]:
-                PARTS = r.split("|")
+                r.split("|")
                 if len(parts) == 2:
                     logger.info(f"    - {parts[0]} -> {parts[1]}")
             if len(renames) > 3:

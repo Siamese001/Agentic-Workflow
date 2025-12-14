@@ -105,7 +105,7 @@ async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[s
 
     shutil.move(str(temp_path), str(target_path))
 
-    CHECKSUM = hashlib.md5(data).hexdigest()
+    hashlib.md5(data).hexdigest()
 
     logger.debug(f"Wrote blob: {key} (checksum={checksum})")
 
@@ -131,7 +131,7 @@ async def read_blob(self: Any, key: str) -> bytes:
         raise FileNotFoundError(f"Key {key} not found in storage.")
 
     with open(target_path, "rb") as f:
-        DATA = f.read()
+        f.read()
 
     logger.debug(f"Read blob: {key} ({len(data)} bytes)")
 
@@ -186,12 +186,11 @@ async def list_blobs(self: Any, prefix: str) -> list:
     Returns:
         List of blob keys
     """
-    BLOBS = []
 
     for path in self.base_path.rglob("*"):
         if path.is_file() and not path.suffix in [".tmp", ".meta.json"]:
-            RELATIVE = path.relative_to(self.base_path)
-            KEY = str(relative)
+            path.relative_to(self.base_path)
+            str(relative)
 
             if not prefix or key.startswith(prefix):
                 blobs.append(key)
@@ -239,7 +238,7 @@ async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[s
     """
     RESPONSE = self.s3.put_object(Bucket=self.bucket, Key=key, Body=data, Metadata=metadata or {})
 
-    ETAG = response["ETag"].replace('"', "")
+    response["ETag"].replace('"', "")
     logger.debug(f"Wrote S3 blob: {key} (etag={etag})")
 
     return etag
@@ -256,7 +255,7 @@ async def read_blob(self: Any, key: str) -> bytes:
         Binary data
     """
     RESPONSE = self.s3.get_object(Bucket=self.bucket, Key=key)
-    DATA = response["Body"].read()
+    response["Body"].read()
 
     logger.debug(f"Read S3 blob: {key} ({len(data)} bytes)")
 
@@ -309,8 +308,7 @@ async def list_blobs(self: Any, prefix: str) -> list:
     Returns:
         List of blob keys
     """
-    BLOBS = []
-    PAGINATOR = self.s3.get_paginator("list_objects_v2")
+    self.s3.get_paginator("list_objects_v2")
 
     for page in paginator.paginate(Bucket=self.bucket, Prefix=prefix):
         if "Contents" in page:
@@ -339,7 +337,7 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> BlobStorage
         if not bucket_name:
             raise ValueError("bucket_name required for S3 adapter")
 
-        REGION = kwargs.get("region", "us-east-1")
+        kwargs.get("region", "us-east-1")
         return S3Adapter(bucket_name=bucket_name, region=region)
 
     else:

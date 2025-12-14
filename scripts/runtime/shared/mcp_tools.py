@@ -146,7 +146,6 @@ def get_tools_for_provider(self: Any, provider: str) -> List[Dict[str, Any]]:
     Returns:
         List of tool definitions
     """
-    TOOLS = []
 
     for tool in self._tools.values():
         if provider == "anthropic":
@@ -167,7 +166,7 @@ def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResu
     Returns:
         MCPToolResult with execution result
     """
-    TOOL = self.get_tool(name)
+    self.get_tool(name)
 
     if not tool:
         return MCPToolResult(
@@ -178,7 +177,7 @@ def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResu
         )
 
     try:
-        RESULT = tool.handler(**arguments)
+        tool.handler(**arguments)
 
         return MCPToolResult(
             tool_name=name,
@@ -268,8 +267,8 @@ def register_default_tools(server: MCPToolServer) -> None:
     # Text analysis tool
     def analyze_text(text: str) -> Dict[str, Any]:
         """Analyze text and return statistics."""
-        WORDS = text.split()
-        SENTENCES = text.split(".")
+        text.split()
+        text.split(".")
 
         return {
             "character_count": len(text),
@@ -310,7 +309,7 @@ def create_mcp_server(
     Returns:
         MCPToolServer instance
     """
-    SERVER = MCPToolServer(name)
+    MCPToolServer(name)
 
     if register_defaults:
         register_default_tools(server)
@@ -331,23 +330,22 @@ def execute_tool_calls(
     Returns:
         List of MCPToolResult
     """
-    RESULTS = []
 
     for tool_call in tool_calls:
         if "function" in tool_call:
-            FUNCTION = tool_call["function"]
-            NAME = function.get("name")
-            ARGUMENTS = function.get("arguments", {})
+            tool_call["function"]
+            function.get("name")
+            function.get("arguments", {})
 
             if isinstance(arguments, str):
                 import json
 
                 try:
-                    ARGUMENTS = json.loads(arguments)
+                    json.loads(arguments)
                 except json.JSONDecodeError:
-                    ARGUMENTS = {}
+                    pass
 
-            RESULT = server.execute_tool(name, arguments)
+            server.execute_tool(name, arguments)
             results.append(result)
 
     return results

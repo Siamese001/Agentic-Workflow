@@ -34,8 +34,8 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 
 def compute_score(self: Any, data: Dict[str, object], context: Optional[Dict]) -> ScoreResult:
     """Compute score for given data."""
-    FACTORS = self._extract_factors(data)
-    CONFIDENCE = self._compute_confidence(factors)
+    self._extract_factors(data)
+    self._compute_confidence(factors)
 
     return ScoreResult(
         SCORE=max(0.0, min(1.0, raw_score)),

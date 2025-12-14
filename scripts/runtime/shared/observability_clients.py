@@ -53,11 +53,11 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> None:
         return
 
     if config is None:
-        CONFIG = TracingConfig()
+        TracingConfig()
 
     # Override from environment
     service_name = os.getenv("OTEL_SERVICE_NAME", config.service_name)
-    ENVIRONMENT = os.getenv("ENVIRONMENT", config.environment)
+    os.getenv("ENVIRONMENT", config.environment)
 
     # Create resource
     RESOURCE = Resource.create(
@@ -126,13 +126,13 @@ def create_span(
     Returns:
         Span context manager
     """
-    TRACER = get_tracer()
+    get_tracer()
 
     if tracer is None:
         # Return dummy context manager if tracing not available
         return nullcontext()
 
-    SPAN = tracer.start_as_current_span(name)
+    tracer.start_as_current_span(name)
 
     if attributes:
         for key, value in attributes.items():

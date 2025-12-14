@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 def test_choose_agents_for_strategy_task_prefers_planner() -> None:
     """TODO: Add docstring."""
 
-    REGISTRY = AgentRegistry()
+    AgentRegistry()
 
     PLANNER = AgentCard(agent_id="planner-1", role=AgentRole.PLANNER, agent_type="planner")
     RESEARCHER = AgentCard(
@@ -20,5 +20,5 @@ def test_choose_agents_for_strategy_task_prefers_planner() -> None:
     registry.register_agent(planner)
     registry.register_agent(researcher)
 
-    CHOSEN = choose_agents_for_task("strategy", registry)
+    choose_agents_for_task("strategy", registry)
     assert planner in chosen

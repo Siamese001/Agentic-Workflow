@@ -131,11 +131,11 @@ async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
         )
 
     # Generate headline
-    RESPONSE = await self._call_llm(prompt)
-    HEADLINE = response.strip()
+    await self._call_llm(prompt)
+    response.strip()
 
     # Parse segments
-    SEGMENTS = self._parse_segments(headline)
+    self._parse_segments(headline)
 
     # Validate Industry-First compliance
     tech_keywords_in_seg1 = self._check_technology_keywords(segments[0])
@@ -286,7 +286,7 @@ def _parse_segments(self: Any, headline: str) -> List[str]:
         List of 3 segments [Domain, Leadership, Value Prop]
     """
     # Split by pipe delimiter
-    SEGMENTS = [s.strip() for s in headline.split("|")]
+    [s.strip() for s in headline.split("|")]
 
     # Ensure exactly 3 segments
     while len(segments) < 3:

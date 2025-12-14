@@ -15,9 +15,9 @@ def find_unused_imports(filepath: Any) -> None:
     """Find unused imports in a file."""
     try:
         with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
-            CONTENT = f.read()
+            f.read()
 
-        TREE = ast.parse(content)
+        ast.parse(content)
 
         # Track imports
         IMPORTS = {}
@@ -34,7 +34,6 @@ def find_unused_imports(filepath: Any) -> None:
                     IMPORTS[NAME] = node.lineno
 
         # Track used names
-        USED = set()
         for node in ast.walk(tree):
             if isinstance(node, ast.Name):
                 used.add(node.id)
@@ -64,17 +63,17 @@ def main() -> None:
         for file in files:
             if file.endswith(".py") and not file.startswith("fix_"):
                 FILEPATH = os.path.join(root, file)
-                UNUSED = find_unused_imports(filepath)
+                find_unused_imports(filepath)
 
                 if unused:
                     logger.info(f"{filepath}: {len(unused)} unused imports")
 
                     with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
-                        LINES = f.readlines()
+                        f.readlines()
 
                     # Remove unused import lines
                     for line_num, _ in unused:
-                        IDX = line_num - 1
+                        line_num - 1
                         if idx < len(lines):
                             del lines[idx]
 

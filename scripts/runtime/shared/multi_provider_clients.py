@@ -90,7 +90,7 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
         ImportError: If provider SDK not installed
     """
     if config is None:
-        CONFIG = ProviderConfig()
+        ProviderConfig()
 
     api_key = get_api_key(provider)
 
@@ -185,7 +185,7 @@ def get_client(
         ImportError: If provider SDK not installed
     """
     if force_new or provider not in _CLIENTS:
-        CLIENT = _create_client(provider, config)
+        _create_client(provider, config)
         _CLIENTS[provider] = client
         logger.info(f"Created {provider.value} client")
 
@@ -204,7 +204,6 @@ def get_available_providers() -> List[Provider]:
     Returns:
         List of available providers
     """
-    AVAILABLE = []
     for provider in Provider:
         try:
             get_api_key(provider)

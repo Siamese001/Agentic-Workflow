@@ -15,7 +15,7 @@ def test_filter_pii_from_memory(self: Any) -> None:
     """Nominal: PII is filtered from memory."""
     MEMORY = {"content": "User email is john@example.com"}
     email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-    FILTERED = re.sub(email_pattern, "[REDACTED]", memory["content"])
+    re.sub(email_pattern, "[REDACTED]", memory["content"])
     assert "john@example.com" not in filtered
     assert "[REDACTED]" in filtered
 
@@ -39,7 +39,7 @@ def test_reject_untrusted_source(self: Any) -> None:
 def test_sanitize_memory_content(self: Any) -> None:
     """Nominal: Memory content is sanitized."""
     MEMORY = {"content": "Data with <script>alert('xss')</script>"}
-    SANITIZED = re.sub(r"<[^>]+>", "", memory["content"])
+    re.sub(r"<[^>]+>", "", memory["content"])
     assert "<script>" not in sanitized
 
 

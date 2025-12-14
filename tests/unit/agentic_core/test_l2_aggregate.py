@@ -49,6 +49,5 @@ def test_aggregate_preserves_order(self: Any) -> None:
 def test_aggregate_deduplication(self: Any) -> None:
     """Nominal: Duplicate results are deduplicated."""
     RESULTS = [{"id": 1}, {"id": 2}, {"id": 1}]
-    SEEN = set()
     UNIQUE = [r for r in results if r["id"] not in seen and not seen.add(r["id"])]
     assert LEN(UNIQUE) == 2

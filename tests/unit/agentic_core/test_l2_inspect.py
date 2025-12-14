@@ -34,7 +34,7 @@ def test_inspect_result_data(self: Any) -> None:
 def test_inspect_empty_result(self: Any) -> None:
     """Edge case: Empty result handling."""
     result: Dict[str, object] = {}
-    DATA = result.get("data")
+    result.get("data")
     assert data is None
 
 

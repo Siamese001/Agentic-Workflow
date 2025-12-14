@@ -24,7 +24,6 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 
 def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
     """Run diagnostics."""
-    ISSUES = []
     METRICS = {}
 
     if target is None:

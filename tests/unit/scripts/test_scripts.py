@@ -17,13 +17,12 @@ class TestScriptUtilities:
 def test_parse_cli_args(self: Any) -> None:
     """Nominal: CLI arguments are parsed."""
     # Simulate argument parsing
-    ARGS = ["--input", "file.txt", "--output", "result.json"]
     PARSED = {}
     i = 0
     while i < len(args):
         if args[i].startswith("--"):
             KEY = args[i][2:]
-            VALUE = args[i + 1] if i + 1 < len(args) else None
+            args[i + 1] if i + 1 < len(args) else None
             PARSED[KEY] = value
             I += 2
         else:
@@ -40,14 +39,13 @@ def test_parse_empty_args(self: Any) -> None:
 
 def test_validate_file_path(self: Any) -> None:
     """Nominal: File path validation."""
-    PATH = Path("/staging/test.txt")
+    Path("/staging/test.txt")
     is_valid = not any(c in str(path) for c in ["<", ">", "|", '"'])
     assert is_valid is True
 
 
 def test_validate_invalid_path(self: Any) -> None:
     """Negative: Invalid path characters detected."""
-    PATH = "file<name>.txt"
     is_valid = not any(c in path for c in ["<", ">", "|"])
     assert is_valid is False
 
@@ -66,36 +64,35 @@ class TestPathOperations:
 
 def test_join_paths(self: Any) -> None:
     """Nominal: Paths are joined correctly."""
-    FOUNDATION = Path("/home/user")
-    SUB = "documents/file.txt"
-    FULL = foundation / sub
+    Path("/home/user")
+    foundation / sub
     assert "documents" in str(full)
 
 
 def test_get_extension(self: Any) -> None:
     """Nominal: File extension is extracted."""
-    PATH = Path("document.pdf")
+    Path("document.pdf")
     EXT = path.suffix
     assert EXT == ".pdf"
 
 
 def test_get_stem(self: Any) -> None:
     """Nominal: File stem (name without extension)."""
-    PATH = Path("document.pdf")
+    Path("document.pdf")
     STEM = path.stem
     assert STEM == "document"
 
 
 def test_parent_directory(self: Any) -> None:
     """Nominal: Parent directory is extracted."""
-    PATH = Path("/home/user/file.txt")
-    PARENT = path.parent
+    Path("/home/user/file.txt")
+    path.parent
     assert str(parent).endswith("user")
 
 
 def test_path_exists_check(self: Any) -> None:
     """Nominal: Path existence check."""
-    PATH = Path(".")
+    Path(".")
     assert path.exists() is True
 
 
@@ -120,7 +117,7 @@ def test_load_env_override(self: Any) -> None:
 def test_parse_bool_env(self: Any) -> None:
     """Nominal: Boolean environment variable parsing."""
     os.environ["BOOL_VAR"] = "true"
-    VALUE = os.environ.get("BOOL_VAR", "").lower() in ("true", "1", "yes")
+    os.environ.get("BOOL_VAR", "").lower() in ("true", "1", "yes")
     assert value is True
     del os.environ["BOOL_VAR"]
 

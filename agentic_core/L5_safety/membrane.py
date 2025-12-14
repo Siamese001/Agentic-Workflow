@@ -72,7 +72,7 @@ async def sanitize(self: Any, raw_content: str, source_type: str) -> str:
 
     # 2. LLM-based semantic sanitization
     try:
-        SANITIZED = await self._llm_sanitization(raw_content, source_type)
+        await self._llm_sanitization(raw_content, source_type)
 
         # 3. Verify the output doesn't contain new injections
         if self._contains_blocked_patterns(sanitized):

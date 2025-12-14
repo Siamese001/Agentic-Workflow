@@ -24,7 +24,7 @@ def test_retrieve_tool_definitions(self: Any) -> None:
 def test_retrieve_missing_tool(self: Any) -> None:
     """Negative: Missing tool returns None."""
     tools: Dict[str, object] = {}
-    RETRIEVED = tools.get("nonexistent")
+    tools.get("nonexistent")
     assert retrieved is None
 
 
@@ -52,6 +52,6 @@ def test_retrieve_with_filters(self: Any) -> None:
 def test_retrieve_determinism(self: Any) -> None:
     """Determinism: Same query returns same results."""
     DATA = {"key": "value"}
-    r1 = data.get("key")
+    data.get("key")
     r2 = data.get("key")
     assert R1 == r2

@@ -5,7 +5,6 @@ from typing import Any, Dict
 from pydantic import BaseModel
 
 LOGGER = logging.getLogger(__name__)
-import logging
 
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent
 
@@ -188,7 +187,7 @@ async def _execute_think_stage_with_consensus(self: Any,
         risk_level = self._assess_task_risk(context.get("task", ""))
 
         # Query telemetry to see if we failed this before
-        similar_failures = await self._check_past_failures(context.get("task", ""))
+        await self._check_past_failures(context.get("task", ""))
 
         # Generate consensus decision
         try:
@@ -266,7 +265,6 @@ async def _execute_act_stage_with_airlock(self: Any,
      trace_id: str) -> tuple[list,
      float]:
         """Execute the action stage with airlock protection."""
-        RESULTS = []
         total_cost = 0.0
 
         for call in plan.tool_calls:
@@ -280,15 +278,15 @@ async def _execute_act_stage_with_airlock(self: Any,
                 # Execute the tool
                 if tool_name == 'run_python' or tool_args.get('code'):
                     # Run in sandbox
-                    CODE = tool_args.get('code', '')
-                    RESULT = self.sandbox.run_code(code)
+                    tool_args.get('code', '')
+                    self.sandbox.run_code(code)
                     results.append({"tool": "sandbox", "result": result})
                 else:
                     # Call MCP tool
-                    RESULT = await self.mcp.call_tool(tool_name, tool_args)
+                    await self.mcp.call_tool(tool_name, tool_args)
                     # Sanitize the result through membrane
                     if isinstance(result, str):
-                        RESULT = await self.membrane.sanitize(result, f"tool_output_{tool_name}")
+                        await self.membrane.sanitize(result, f"tool_output_{tool_name}")
                     results.append({"tool": tool_name, "result": result})
 
                 # Track cost

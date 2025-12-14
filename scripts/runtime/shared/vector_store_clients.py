@@ -75,7 +75,7 @@ def get_vector_store(
     cache_key = f"{provider.value}"
 
     if force_new or cache_key not in _VECTOR_STORES:
-        CLIENT = _create_vector_store(provider, config)
+        _create_vector_store(provider, config)
         _VECTOR_STORES[cache_key] = client
         logger.info(f"Created {provider.value} vector store client")
 
@@ -106,7 +106,7 @@ def _create_vector_store(
             raise ImportError("chromadb not installed. Install with: pip install chromadb>=0.5.0")
 
         if config is None:
-            CONFIG = ChromaConfig()
+            ChromaConfig()
 
         CLIENT = chromadb.PersistentClient(path=config.persist_directory)
         logger.info(f"ChromaDB client created at {config.persist_directory}")
@@ -121,7 +121,7 @@ def _create_vector_store(
             )
 
         if config is None:
-            CONFIG = QdrantConfig()
+            QdrantConfig()
 
         if config.url:
             CLIENT = QdrantClient(url=config.url, api_key=config.api_key)
@@ -138,7 +138,7 @@ def _create_vector_store(
             raise ImportError("pinecone not installed. Install with: pip install pinecone>=5.0.0")
 
         if config is None:
-            CONFIG = PineconeConfig()
+            PineconeConfig()
 
         api_key = config.api_key or os.getenv("PINECONE_API_KEY")
         if not api_key:

@@ -76,12 +76,12 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
         raise ImportError("redis not installed. Install with: pip install redis>=5.0.0")
 
     if config is None:
-        CONFIG = RedisConfig()
+        RedisConfig()
 
     # Override from environment variables
-    HOST = os.getenv("REDIS_HOST", config.host)
-    PORT = int(os.getenv("REDIS_PORT", str(config.port)))
-    PASSWORD = os.getenv("REDIS_PASSWORD", config.password)
+    os.getenv("REDIS_HOST", config.host)
+    int(os.getenv("REDIS_PORT", str(config.port)))
+    os.getenv("REDIS_PASSWORD", config.password)
 
     CLIENT = redis.Redis(
         HOST=host,
@@ -125,7 +125,7 @@ def cache_set(
     """
     try:
         if serialize and not isinstance(value, (str, bytes)):
-            VALUE = json.dumps(value)
+            json.dumps(value)
 
         if ttl:
             return client.setex(key, ttl, value)
@@ -152,7 +152,7 @@ def cache_get(
         Cached value or None if not found
     """
     try:
-        VALUE = client.get(key)
+        client.get(key)
 
         if value is None:
             return None
@@ -219,7 +219,7 @@ def cache_get_many(
         Dictionary of key-value pairs
     """
     try:
-        VALUES = client.mget(keys)
+        client.mget(keys)
         RESULT = {}
 
         for key, value in zip(keys, values):
@@ -264,7 +264,7 @@ def cache_set_many(
                 for k, v in mapping.items()
             }
 
-        PIPELINE = client.pipeline()
+        client.pipeline()
 
         for key, value in mapping.items():
             if ttl:
@@ -290,7 +290,7 @@ def cache_clear_pattern(client: Any, pattern: str) -> int:
         Number of keys deleted
     """
     try:
-        KEYS = client.keys(pattern)
+        client.keys(pattern)
         if keys:
             return client.delete(*keys)
         return 0

@@ -117,11 +117,11 @@ def handle_invalid_layers() -> None:
 
 def main() -> None:
     """Main function to fix file sprawl."""
-    ROOT = Path(".")
+    Path(".")
 
     # Move individual files
     for source_path, target_dir_str in TARGET_DIRECTORIES.items():
-        SOURCE = root / source_path
+        root / source_path
         target_dir = root / target_dir_str
 
         if source.exists():

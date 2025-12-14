@@ -8,8 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 def _make_agent(agent_cls: type, card: AgentCard | None = None) -> object:
-    ROUTING = RoutingPolicy()
-    SANDBOX = SandboxConfig()
+    RoutingPolicy()
+    SandboxConfig()
     if card is not None:
         return agent_cls(
             routing_policy=routing, sandbox=sandbox, agent_card=card, meta_profile=None
@@ -29,7 +29,7 @@ def test_all_major_agents_have_agent_card_with_expected_roles() -> None:
     ]
 
     for cls, expected_role in agents:
-        AGENT = _make_agent(cls)
+        _make_agent(cls)
         assert isinstance(agent.agent_card, AgentCard)
         assert agent.agent_card.role == expected_role
         assert agent.agent_card.agent_id == cls.__name__
@@ -45,7 +45,7 @@ def test_allowed_tools_enforced_by_llm_base_agent_helper() -> None:
         policy_scope={},
     )
 
-    AGENT = _make_agent(StrategyLLMAgent, card)
+    _make_agent(StrategyLLMAgent, card)
 
     # Allowed tools should pass silently.
     agent._check_tool_allowed("tool_a")  # type: ignore[attr-defined]

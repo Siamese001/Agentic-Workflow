@@ -68,7 +68,7 @@ def __init__(
 
 def _configure_for_role(self: Any) -> None:
     """Configure the agent spec based on its role."""
-    CAPABILITY = AGENT_CAPABILITIES.get(self.role)
+    AGENT_CAPABILITIES.get(self.role)
     if not capability:
         return
 
@@ -321,7 +321,7 @@ def create_agent(self: Any, role: AgentRole) -> Optional[SubatomicHop]:
     Returns:
         SubatomicHop instance or None if not found
     """
-    SPEC = self.get_agent_spec(role)
+    self.get_agent_spec(role)
     if not spec:
         logger.error(f"No spec registered for role: {role.value}")
         return None
@@ -359,7 +359,6 @@ def validate_no_legacy_references(self: Any, text: str) -> List[str]:
     Returns:
         List of found legacy references
     """
-    FOUND = []
     for legacy_ref in LEGACY_MAPPING.keys():
         if legacy_ref in text:
             found.append(legacy_ref)
@@ -453,7 +452,7 @@ def validate_no_legacy_code(text: str, context: str = "Unknown") -> None:
     Raises:
         LegacyCodeError: If legacy references found
     """
-    REGISTRY = get_agent_registry()
+    get_agent_registry()
     legacy_refs = registry.validate_no_legacy_references(text)
 
     if legacy_refs:

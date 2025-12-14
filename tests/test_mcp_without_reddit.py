@@ -58,11 +58,11 @@ async def test_mcp() -> None:
         json.dump(config, f)
 
     # Test with temporary config
-    CLIENT = UniversalMCPClient("config/test_mcp_config.json")
+    UniversalMCPClient("config/test_mcp_config.json")
 
     try:
         await client.connect_all()
-        TOOLS = await client.get_tools_for_llm()
+        await client.get_tools_for_llm()
 
         logger.info("✅ Connected MCP servers:")
         for tool in tools:

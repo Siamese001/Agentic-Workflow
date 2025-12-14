@@ -142,12 +142,12 @@ async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
         CANDIDATES = await self._call_llm_with_self_consistency(
             PROMPT, K=self.config.self_consistency
         )
-        RESPONSE = self._select_best_candidate(candidates, "length")
+        self._select_best_candidate(candidates, "length")
     else:
-        RESPONSE = await self._call_llm(prompt)
+        await self._call_llm(prompt)
 
     # Parse body components
-    BODY = response.strip()
+    response.strip()
 
     # Extract transition phrase
     transition_phrase = self._extract_transition_phrase(body, company_name)

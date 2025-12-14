@@ -23,8 +23,8 @@ def __init__(self: Any, config: Optional[Dict[str, str]]) -> None:
 
 def format(self: Any, data: Union[str, Dict], target: Optional[str]) -> FormatResult:
     """Format input data into the required output structure."""
-    FMT = target or self.format_type
-    TRANSFORMED = self._transform(data)
+    target or self.format_type
+    self._transform(data)
     return FormatResult(data=transformed, format_type=fmt)
 
 

@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 def test_agent_bus_send_and_get() -> None:
     """Test basic agent bus send and get message operations."""
-    BUS = AgentBus()
+    AgentBus()
 
     MSG = AgentMessage(
         message_id="m1",
@@ -20,7 +20,7 @@ def test_agent_bus_send_and_get() -> None:
 
     bus.send(msg)
 
-    INBOX = bus.get_for("qa-1")
+    bus.get_for("qa-1")
     assert msg in inbox
 
     bus.clear()

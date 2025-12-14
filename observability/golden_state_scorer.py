@@ -16,7 +16,7 @@ def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
     """
 
     vs = list(verdicts)
-    TOTAL = len(vs)
+    len(vs)
     if not total:
         return {"avg_score": 0.0, "pass_count": 0.0, "fail_count": 0.0, "total": 0.0}
 

@@ -67,15 +67,16 @@ def get_python_files() -> List[str]:
 # ==============================================================================
 @dataclass
 class ValidationContext:
-    """Shared memory for all agents - optimized for minimal context pressure."""
+    """Shared memory for all agents."""
     results: Dict[int, Any] = field(default_factory=dict)
     signals: Set[str] = field(default_factory=set)
     modified_files: Set[str] = field(default_factory=set)
+    python_files: List[str] = field(default_factory=list)
     refactor_plans: Dict[str, Any] = field(default_factory=dict)
 
-    def get_python_files(self) -> List[str]:
-        """On-demand file discovery - prevents context bloat."""
-        return get_python_files()
+    def __post_init__(self):
+        self.python_files = get_python_files()
+        print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
         """Report validation result to blackboard."""
@@ -227,7 +228,7 @@ class CodeJanitor(SubAtomicAgent):
     def check_key_11_no_trailing_whitespace(self) -> Tuple[bool, List[str]]:
         """Check for trailing whitespace."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
@@ -241,7 +242,7 @@ class CodeJanitor(SubAtomicAgent):
     def check_key_12_no_missing_newline(self) -> Tuple[bool, List[str]]:
         """Check for missing final newline."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -254,7 +255,7 @@ class CodeJanitor(SubAtomicAgent):
     def check_key_13_no_tabs(self) -> Tuple[bool, List[str]]:
         """Check for tab characters."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -352,7 +353,7 @@ class DependencySentinel(SubAtomicAgent):
     def check_key_07_no_star_imports(self) -> Tuple[bool, List[str]]:
         """Check for star imports."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
@@ -366,7 +367,7 @@ class DependencySentinel(SubAtomicAgent):
     def check_key_08_no_relative_imports(self) -> Tuple[bool, List[str]]:
         """Check for relative imports."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
@@ -382,7 +383,7 @@ class DependencySentinel(SubAtomicAgent):
         violations = []
         import_map = {}
         
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -471,7 +472,7 @@ class SafetyInspector(SubAtomicAgent):
             r"token\s*=\s*['\"].*['\"]",
         ]
         
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -489,7 +490,7 @@ class SafetyInspector(SubAtomicAgent):
         violations = []
         todo_patterns = [r"#\s*TODO", r"#\s*FIXME", r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
         
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -506,7 +507,7 @@ class SafetyInspector(SubAtomicAgent):
     def check_key_02_no_print_statements(self) -> Tuple[bool, List[str]]:
         """Check for print statements."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
@@ -526,7 +527,7 @@ class SafetyInspector(SubAtomicAgent):
         violations = []
         debug_patterns = ["breakpoint()", "pdb.set_trace()", "import pdb", "import ipdb", "import pudb"]
         
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -542,7 +543,7 @@ class SafetyInspector(SubAtomicAgent):
     def check_key_04_no_empty_except_blocks(self) -> Tuple[bool, List[str]]:
         """Check for empty except blocks."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -560,7 +561,7 @@ class SafetyInspector(SubAtomicAgent):
     def check_key_05_no_bare_except(self) -> Tuple[bool, List[str]]:
         """Check for bare except clauses."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -578,7 +579,7 @@ class SafetyInspector(SubAtomicAgent):
     def check_key_06_no_eval_exec(self) -> Tuple[bool, List[str]]:
         """Check for eval/exec usage."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -611,7 +612,7 @@ class DocumentationAgent(SubAtomicAgent):
     def check_key_21_no_missing_docstrings(self) -> Tuple[bool, List[str]]:
         """Check for missing docstrings."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -667,7 +668,7 @@ class TypeMechanic(SubAtomicAgent):
     def check_key_22_no_missing_type_hints(self) -> Tuple[bool, List[str]]:
         """Check for missing type hints."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -685,7 +686,7 @@ class TypeMechanic(SubAtomicAgent):
     def check_key_23_no_unreachable_code(self) -> Tuple[bool, List[str]]:
         """Check for unreachable code."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -705,51 +706,31 @@ class TypeMechanic(SubAtomicAgent):
         return (len(violations) == 0, violations)
     
     def check_key_24_no_unused_variables(self) -> Tuple[bool, List[str]]:
-        """Check for unused variables - ISOLATED EXECUTION (file-by-file)."""
+        """Check for unused variables."""
         violations = []
-        violation_count = 0
-        
-        # Process files one at a time to minimize context pressure
-        for file_path in self.ctx.get_python_files():
-            # Isolated scope - only this file's context loaded
-            file_violations = self._check_single_file_unused_vars(file_path)
-            
-            if file_violations:
-                violation_count += len(file_violations)
-                # Report immediately, don't accumulate in memory
-                violations.extend(file_violations[:5])  # Limit per-file reporting
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
                 
-                # Early exit if too many violations (prevent context explosion)
-                if violation_count > 1000:
-                    violations.append(f"... and {violation_count - len(violations)} more violations")
-                    break
+                assigned = set()
+                used = set()
+                
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Assign):
+                        for target in node.targets:
+                            if isinstance(target, ast.Name):
+                                assigned.add(target.id)
+                    elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+                        used.add(node.id)
+                
+                unused = assigned - used
+                if unused:
+                    violations.extend([f"{file_path}:{var}" for var in list(unused)[:10]])
+            except Exception:
+                continue
         
         return (len(violations) == 0, violations)
-    
-    def _check_single_file_unused_vars(self, file_path: str) -> List[str]:
-        """Isolated helper: Check single file for unused variables."""
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                tree = ast.parse(f.read())
-            
-            assigned = set()
-            used = set()
-            
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Assign):
-                    for target in node.targets:
-                        if isinstance(target, ast.Name):
-                            assigned.add(target.id)
-                elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
-                    used.add(node.id)
-            
-            unused = assigned - used
-            if unused:
-                # Return violations for this file only
-                return [f"{file_path}:{var}" for var in list(unused)[:10]]
-            return []
-        except Exception:
-            return []
 
 class BudgetAgent(SubAtomicAgent):
     """
@@ -774,7 +755,7 @@ class BudgetAgent(SubAtomicAgent):
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """Check for large functions (>50 lines)."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -842,7 +823,7 @@ class StructuralEngineer(SubAtomicAgent):
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """Check for large functions (>50 lines)."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -861,7 +842,7 @@ class StructuralEngineer(SubAtomicAgent):
     def check_key_25_no_global_variables(self) -> Tuple[bool, List[str]]:
         """Check for global variables."""
         violations = []
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -882,7 +863,7 @@ class StructuralEngineer(SubAtomicAgent):
         violations = []
         file_hashes = {}
         
-        for file_path in self.ctx.get_python_files():
+        for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "rb") as f:
                     content_hash = hashlib.md5(f.read()).hexdigest()
@@ -921,7 +902,7 @@ class SemanticMapper(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Calculating Dependency Graphs...")
         
         # Analyze large files for refactoring opportunities
-        for file_path in self.ctx.get_python_files()[:3]:
+        for file_path in self.ctx.python_files[:3]:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     ast.parse(f.read())
@@ -937,16 +918,10 @@ class SemanticMapper(SubAtomicAgent):
 # 4. THE INTELLIGENT ORCHESTRATOR
 # ==============================================================================
 class IntelligentOrchestrator:
-    """Orchestrates all validation agents in dependency order - Subatomic Isolation Architecture."""
+    """Orchestrates all validation agents in dependency order."""
     
     def __init__(self):
         self.ctx = ValidationContext()
-        
-        # Print file count using on-demand method (prevents context bloat)
-        file_count = len(self.ctx.get_python_files())
-        print(f"   [CTX] Blackboard initialized with {file_count} valid source files.")
-        print(f"   [CTX] Subatomic Isolation: Files loaded on-demand per agent.")
-        
         self.swarm = [
             SystemArchitect(self.ctx),      # 1. Structure (Blocker)
             GenerativeGuard(self.ctx),      # 2. Generative Policy

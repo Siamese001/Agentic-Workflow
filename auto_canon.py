@@ -1,7 +1,7 @@
+import logging
+import re
 import subprocess
 import sys
-import re
-import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -40,7 +40,7 @@ def fix_name_error(traceback_str):
     key_id = key_match.group(1)
 
     # Read the validator code
-    CODE = read_file(VALIDATOR_SCRIPT)
+    read_file(VALIDATOR_SCRIPT)
 
     # Find all ACTUAL function definitions for this key
     # Pattern: def check_key_22_something(...)
@@ -79,7 +79,7 @@ def run_fixers(output):
 
     if "[04]" in output and "canon_validator.py" in output:  # Empty except in validator
          # Quick hack to fix the validator's own empty except
-         CODE = read_file(VALIDATOR_SCRIPT)
+         read_file(VALIDATOR_SCRIPT)
          if "except:" in code:
              logger.info("   >>> 🔧 SELF-REPAIR: Fixing bare 'except:' in validator")
              new_code = code.replace("except:", "except Exception as e: print(e)")
@@ -105,7 +105,7 @@ def main():
             TEXT=True
         )
 
-        OUTPUT = result.stdout + result.stderr
+        result.stdout + result.stderr
         logger.info(output[-1000:] if len(output) > 1000 else output)  # Print tail of logs
 
         # CASE 1: CRASH (Python Traceback)

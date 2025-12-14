@@ -40,9 +40,8 @@ def fix_todo_comments(file_path: str) -> bool:
     """Remove TODO/FIXME comments."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            CONTENT = f.read()
+            f.read()
 
-        ORIGINAL = content
         PATTERNS = [
             r"#\s*TODO[^\n]*",
             r"#\s*FIXME[^\n]*",
@@ -52,7 +51,7 @@ def fix_todo_comments(file_path: str) -> bool:
         ]
 
         for pattern in patterns:
-            CONTENT = re.sub(pattern, "", content)
+            re.sub(pattern, "", content)
 
         if content != original:
             with open(file_path, "w", encoding="utf-8") as f:
@@ -68,9 +67,8 @@ def fix_print_statements(file_path: str) -> bool:
     """Replace print statements with logger calls."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            LINES = f.readlines()
+            f.readlines()
 
-        MODIFIED = False
         has_logging = False
         has_logger = False
 
@@ -90,14 +88,13 @@ def fix_print_statements(file_path: str) -> bool:
 
             # Replace print statements
             if re.match(r"\s*print\s*\(", line):
-                INDENT = len(line) - len(line.lstrip())
+                len(line) - len(line.lstrip())
                 # Extract the print content
                 MATCH = re.search(r"print\s*\((.*)\)", line)
                 if match:
-                    CONTENT = match.group(1)
+                    match.group(1)
                     new_line = " " * indent + f"logger.info({content})\n"
                     new_lines.append(new_line)
-                    MODIFIED = True
                     continue
 
             new_lines.append(line)
@@ -126,7 +123,7 @@ def fix_empty_except(file_path: str) -> bool:
     """Fix empty except blocks."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            CONTENT = f.read()
+            f.read()
 
         # Replace empty except blocks with pass
         PATTERN = r"except\s+([^:]+):\s*\n(\s*)\n"
@@ -146,14 +143,13 @@ def fix_trailing_whitespace(file_path: str) -> bool:
     """Remove trailing whitespace."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            LINES = f.readlines()
+            f.readlines()
 
-        MODIFIED = False
         new_lines = []
         for line in lines:
             STRIPPED = line.rstrip() + "\n"
             if stripped != line:
-                MODIFIED = True
+                pass
             new_lines.append(stripped)
 
         if modified:
@@ -168,20 +164,18 @@ def fix_duplicate_imports(file_path: str) -> bool:
     """Remove duplicate imports."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            LINES = f.readlines()
+            f.readlines()
 
-        SEEN = set()
         new_lines = []
-        MODIFIED = False
 
         for line in lines:
             if line.strip().startswith(("import ", "from ")):
-                NORMALIZED = line.strip()
+                line.strip()
                 if normalized not in seen:
                     seen.add(normalized)
                     new_lines.append(line)
                 else:
-                    MODIFIED = True
+                    pass
             else:
                 new_lines.append(line)
 

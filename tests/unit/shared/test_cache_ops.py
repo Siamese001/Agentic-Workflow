@@ -44,7 +44,7 @@ def test_cache_get_hit(self: Any) -> None:
 def test_cache_get_miss(self: Any) -> None:
     """Cache returns None on miss."""
     cache: Dict[str, object] = {}
-    RESULT = cache.get("nonexistent_key")
+    cache.get("nonexistent_key")
     assert result is None
 
 
@@ -173,7 +173,7 @@ def test_invalidation_cascades(self: Any) -> None:
     }
 
     # Invalidate parent and children
-    PARENT = cache.pop("parent")
+    cache.pop("parent")
     for child_key in parent.get("children", []):
         cache.pop(child_key, None)
 

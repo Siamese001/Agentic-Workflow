@@ -147,11 +147,10 @@ async def main() -> None:
     LOGGER.INFO("=" * 60)
 
     start_time = time.time()
-    ORCHESTRATOR = None
 
     try:
-        ORCHESTRATOR = _initialize_orchestrator()
-        CONTEXT = _prepare_workflow_context()
+        _initialize_orchestrator()
+        _prepare_workflow_context()
 
         updated_context = orchestrator.initialize_or_resume_workflow(
             workflow_id=TEST_JOB_ID, total_k_nodes=5, context=context
@@ -162,10 +161,10 @@ async def main() -> None:
         else:
             logger.info("🆕 Started new workflow")
 
-        RESULT = await _execute_workflow(orchestrator, updated_context)
+        await _execute_workflow(orchestrator, updated_context)
         logger.info("📦 Received workflow results")
 
-        CONTENT = _extract_result_content(result)
+        _extract_result_content(result)
         _display_results(content)
 
         state_location = _get_state_location(orchestrator)

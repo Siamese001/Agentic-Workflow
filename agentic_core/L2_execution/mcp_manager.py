@@ -52,7 +52,7 @@ def __init__(self: Any, mappings: Dict[str, Any]) -> None:
 
 async def connect(self: Any, role: str) -> None:
     """Connects to all servers defined for this role."""
-    CONFIGS = self.mappings.get("global", []) + self.mappings.get("roles", {}).get(role, [])
+    self.mappings.get("global", []) + self.mappings.get("roles", {}).get(role, [])
 
     for cfg in configs:
         PARAMS = StdioServerParameters(
@@ -60,7 +60,7 @@ async def connect(self: Any, role: str) -> None:
         )
 
         # Context Manager Magic
-        TRANSPORT = await self.exit_stack.enter_async_context(stdio_client(params))
+        await self.exit_stack.enter_async_context(stdio_client(params))
         SESSION = await self.exit_stack.enter_async_context(
             ClientSession(transport[0], transport[1])
         )
@@ -106,7 +106,7 @@ def load_mcp_config(config_path: str = "config/mcp_mappings.yaml") -> Dict[str, 
         return {"defaults": [], "roles": {}}
 
     with open(config_file, "r") as f:
-        CONFIG = yaml.safe_load(f)
+        yaml.safe_load(f)
 
     logger.info(f"Loaded MCP configuration from {config_path}")
     return config
@@ -125,7 +125,7 @@ async def create_mcp_manager(
     Returns:
         Connected MCPConnectionManager instance
     """
-    CONFIG = load_mcp_config(config_path)
-    MANAGER = MCPConnectionManager(config)
+    load_mcp_config(config_path)
+    MCPConnectionManager(config)
     await manager.connect_servers(role)
     return manager

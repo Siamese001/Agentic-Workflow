@@ -17,7 +17,7 @@ def test_sandbox_observability_events_include_vm_id(self: Any) -> None:
     exec_in_vm(vm, req)
     teardown_vm(vm)
 
-    EVENTS = get_all_events()
+    get_all_events()
     vm_ids = {
         e.attributes.get("vm_id")
         for e in events

@@ -48,5 +48,5 @@ def test_detect_resource_abuse(self: Any) -> None:
 def test_sanitize_tool_output(self: Any) -> None:
     """Nominal: Tool output is sanitized."""
     OUTPUT = "Result: <script>alert('xss')</script>"
-    SANITIZED = re.sub(r"<[^>]+>", "", output)
+    re.sub(r"<[^>]+>", "", output)
     assert "<script>" not in sanitized

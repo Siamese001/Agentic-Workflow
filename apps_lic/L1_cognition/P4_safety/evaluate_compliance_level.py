@@ -23,9 +23,9 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 
 def score(self: Any, data: Dict[str, object]) -> ScoreResult:
     """Compute score for data."""
-    FACTORS = self._extract_factors(data)
+    self._extract_factors(data)
     raw_score = self._compute_weighted(factors)
-    CONFIDENCE = self._compute_confidence(factors)
+    self._compute_confidence(factors)
     return ScoreResult(score=max(0, min(1, raw_score)), confidence=confidence, factors=factors)
 
 
@@ -45,7 +45,7 @@ def _compute_weighted(self: Any, factors: Dict[str, float]) -> float:
     if not factors:
         return 0.5
     total_w = sum(self.weights.get(k, 1.0) for k in factors)
-    WEIGHTED = sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
+    sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
     return weighted / total_w if total_w else 0.5
 
 

@@ -33,9 +33,9 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 
 def format(self: Any, data: object, target_format: Optional[str]) -> FormattedOutput:
     """Format data to target structure."""
-    FMT = target_format or self.output_format
-    TRANSFORMED = self._transform(data)
-    FORMATTED = self._format_to_target(transformed, fmt)
+    target_format or self.output_format
+    self._transform(data)
+    self._format_to_target(transformed, fmt)
 
     return FormattedOutput(
         DATA=formatted, format_type=fmt, metadata={"original_type": type(data).__name__}
@@ -58,7 +58,6 @@ def _format_to_target(self: Any, data: object, fmt: str) -> object:
 
 def _flatten(self: Any, data: Dict, prefix: str) -> Dict[str, object]:
     """Flatten nested dict."""
-    RESULT = {}
     for key, value in data.items():
         new_key = f"{prefix}.{key}" if prefix else key
         if isinstance(value, dict):

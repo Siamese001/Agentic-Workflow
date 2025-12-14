@@ -17,7 +17,7 @@ def test_rules_engine_detects_pii_email() -> None:
         )
     ]
 
-    RESULT = evaluate_rules(ctx, rules)
+    evaluate_rules(ctx, rules)
 
     assert result.matches
     assert result.max_severity == "medium"

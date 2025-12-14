@@ -39,7 +39,7 @@ def track_operation(
     self: Any, operation: str, model: str, tokens: int, duration: float
 ) -> CostMetrics:
     """Track a cost operation."""
-    COST = self.calculate_cost(model, tokens)
+    self.calculate_cost(model, tokens)
     METRIC = CostMetrics(
         OPERATION=operation,
         COST=cost,

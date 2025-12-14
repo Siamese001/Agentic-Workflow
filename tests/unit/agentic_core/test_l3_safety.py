@@ -36,7 +36,6 @@ def test_detect_infinite_loop(self: Any) -> None:
 
 def test_validate_output_safety(self: Any) -> None:
     """Nominal: Output safety is validated."""
-    OUTPUT = "Safe output content"
     unsafe_patterns = ["password", "secret", "api_key"]
     is_safe = not any(p in output.lower() for p in unsafe_patterns)
     assert is_safe is True
