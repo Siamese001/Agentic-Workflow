@@ -214,5 +214,53 @@
     "details": "['.\\\\canon_validator_legacy_backup.py:1051 check_key_04_no_empty_except_blocks() (complexity: 11)', '.\\\\canon_validator_legacy_backup.py:1182 check_key_09_no_unused_imports() (complexity: 14)', '.\\\\ca",
     "reviewed": false,
     "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:29:52.878013",
+    "agent": "DocumentationAgent",
+    "key": 21,
+    "details": "['.\\\\canon_validator_legacy_backup.py:43', '.\\\\canon_validator_legacy_backup.py:68', '.\\\\canon_validator_legacy_backup.py:171', '.\\\\canon_validator_legacy_backup.py:859', '.\\\\canon_validator_legacy_ba",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:29:54.497331",
+    "agent": "BudgetAgent",
+    "key": 17,
+    "details": "['.\\\\canon_validator_legacy_backup.py:1861 (54 lines)', '.\\\\canon_validator_legacy_backup.py:499 (81 lines)', '.\\\\canon_validator_legacy_backup.py:650 (65 lines)', '.\\\\canon_validator_legacy_backup.py",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:29:55.253268",
+    "agent": "BudgetAgent",
+    "key": 19,
+    "details": "['.\\\\canon_validator_legacy_backup.py:1051 check_key_04_no_empty_except_blocks() (complexity: 11)', '.\\\\canon_validator_legacy_backup.py:1182 check_key_09_no_unused_imports() (complexity: 14)', '.\\\\ca",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:36:38.805846",
+    "agent": "DocumentationAgent",
+    "key": 21,
+    "details": "['.\\\\canon_validator_legacy_backup.py:43', '.\\\\canon_validator_legacy_backup.py:68', '.\\\\canon_validator_legacy_backup.py:171', '.\\\\canon_validator_legacy_backup.py:859', '.\\\\canon_validator_legacy_ba",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:36:40.485648",
+    "agent": "BudgetAgent",
+    "key": 17,
+    "details": "['.\\\\canon_validator_legacy_backup.py:1861 (54 lines)', '.\\\\canon_validator_legacy_backup.py:499 (81 lines)', '.\\\\canon_validator_legacy_backup.py:650 (65 lines)', '.\\\\canon_validator_legacy_backup.py",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:36:41.334549",
+    "agent": "BudgetAgent",
+    "key": 19,
+    "details": "['.\\\\canon_validator_legacy_backup.py:1051 check_key_04_no_empty_except_blocks() (complexity: 11)', '.\\\\canon_validator_legacy_backup.py:1182 check_key_09_no_unused_imports() (complexity: 14)', '.\\\\ca",
+    "reviewed": false,
+    "is_false_positive": null
   }
 ]

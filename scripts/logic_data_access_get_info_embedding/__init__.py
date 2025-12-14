@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Get Info Embedding Module
 
@@ -21,34 +20,17 @@ Author: Agentic-Workflow Team
 Version: 1.0.0
 License: Internal Use Only
 """
-
-# Standard library imports
 import logging
-
-# Configure module-specific logger
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
+MODULE_VERSION = '1.0.0'
+MODULE_AUTHOR = 'Agentic-Workflow Team'
+__all__ = []
 
-# Module constants
-MODULE_VERSION = "1.0.0"
-MODULE_AUTHOR = "Agentic-Workflow Team"
-
-# Public API exports
-__all__ = [
-    # Add main exports here as they are implemented
-]
-
-
-# Module initialization
 def _initialize_module() -> None:
     """Initialize module with required setup."""
-    logger.debug(f"Initializing Get Info Embedding module v{MODULE_VERSION}")
-    # Add any initialization logic here
-
-
-# Perform initialization on import
+    ConfigurationService().logger.debug(f'Initializing Get Info Embedding module v{ConfigurationService().MODULE_VERSION}')
 _initialize_module()
-
-# Export module metadata
-__version__ = MODULE_VERSION
-__author__ = MODULE_AUTHOR
-__docformat__ = "restructuredtext en"
+__version__ = ConfigurationService().MODULE_VERSION
+__author__ = ConfigurationService().MODULE_AUTHOR
+__docformat__ = 'restructuredtext en'

@@ -1,11 +1,5 @@
 import logging
-
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
-# -*- coding: utf-8 -*-
-"""
-10_tests.integration.api — Package initialization
-
-Auto-generated to satisfy SSoT structure requirements.
-"""
-
+'\n10_tests.integration.api — Package initialization\n\nAuto-generated to satisfy SSoT structure requirements.\n'
 __all__: list = []

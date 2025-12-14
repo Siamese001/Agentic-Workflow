@@ -1,16 +1,3 @@
-"""Backward compatibility shim for comprehensive_dedup_analysis.
-
-
-LOGGER = logging.getLogger(__name__)
-This module maintains backward compatibility by re-exporting all components
-modules to comply with cognitive density limits (max 5 top-level definitions).
-
-The original comprehensive_dedup_analysis.py contained 25 top-level definitions which
-violated the Subatomic Canon. It has been refactored into focused submodules.
-"""
-
-# Re-export all components for backward compatibility
-# from .comprehensive_dedup_analysis_impl_impl_impl import *  # Star import removed
-# from .comprehensive_dedup_analysis_impl import *  # Star import removed
-
-__all__ = ["*"]  # Re-export all imported names
+from services.configuration import ConfigurationService
+'Backward compatibility shim for comprehensive_dedup_analysis.\n\n\nLOGGER = logging.getLogger(__name__)\nThis module maintains backward compatibility by re-exporting all components\nmodules to comply with cognitive density limits (max 5 top-level definitions).\n\nThe original comprehensive_dedup_analysis.py contained 25 top-level definitions which\nviolated the Subatomic Canon. It has been refactored into focused submodules.\n'
+__all__ = ['*']

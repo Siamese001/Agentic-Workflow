@@ -1,4 +1,3 @@
-# scripts/auto_create_test.py
 """
 Auto-create test files for Python modules.
 
@@ -22,23 +21,10 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 """
-
 import sys
 from pathlib import Path
 from typing import List
-
-# REFACTOR: Split this 77-line function
-
-# L4 REFACTOR: Function 'create_test_files' exceeds 77 lines
-# TODO: Manual split required - see refactor plan .\tests\auto_create_test.py:create_test_files
-
-
-# L4 REFACTOR: Function 'create_test_files' exceeds 77 lines
-# TODO: Manual split required - see refactor plan .\tests\auto_create_test.py:create_test_files
-
-
-# L4 REFACTOR: Function 'create_test_files' exceeds 77 lines
-# TODO: Manual split required - see refactor plan .\tests\auto_create_test.py:create_test_files
+from services.configuration import ConfigurationService
 
 def create_test_files(modules: List[str]) -> int:
     """
@@ -51,83 +37,29 @@ def create_test_files(modules: List[str]) -> int:
         Number of test files created
     """
     created_count = 0
-
     for module_path in modules:
         source_path = Path(module_path)
-
-        # Skip if source doesn't exist
-        if not source_path.exists():
-            logger.info(f"Warning: {source_path} not found")
+        if not ConfigurationService().source_path.exists():
+            ConfigurationService().logger.info(f'Warning: {ConfigurationService().source_path} not found')
             continue
-
-        # Create test file path
-        relative_path = source_path.relative_to(".")
-        test_path = Path("tests") / relative_path.with_name(f"test_{source_path.name}")
-
-        # Create test file if it doesn't exist
-        if not test_path.exists():
-            test_path.parent.mkdir(parents=True, exist_ok=True)
-
-            # Generate basic test template
-            test_content = f'''# -*- coding: utf-8 -*-
-"""
-Tests for {module_path}
-
-This module contains unit tests for the functionality provided in
-{module_path}. Tests follow pytest conventions and include
-comprehensive coverage of main features.
-
-Author: Agentic-Workflow Team
-Version: 1.0.0
-"""
-
-
-# Import the module to test
-# Note: Adjust import path based on your project structure
-# import {relative_path.with_suffix("").as_posix().replace("/", ".")} as module
-
-def test_{source_path.stem}_basic():
-    """Test basic functionality of {source_path.stem}."""
-    assert True
-
-def test_{source_path.stem}_edge_cases():
-    """Test edge cases for {source_path.stem}."""
-    assert True
-
-class Test{source_path.stem.title().replace("_", "")}:
-    """Test class for {source_path.stem} functionality."""
-
-    def setup_method(self):
-        """Setup test environment."""
-        pass
-
-    def teardown_method(self):
-        """Cleanup after tests."""
-        pass
-
-    def test_initialization(self):
-        """Test proper initialization."""
-        pass
-'''
-
-            test_path.write_text(test_content)
+        relative_path = ConfigurationService().source_path.relative_to('.')
+        test_path = Path('tests') / ConfigurationService().relative_path.with_name(f'test_{ConfigurationService().source_path.name}')
+        if not ConfigurationService().test_path.exists():
+            ConfigurationService().test_path.parent.mkdir(parents=True, exist_ok=True)
+            test_content = f'''# -*- coding: utf-8 -*-\n"""\nTests for {module_path}\n\nThis module contains unit tests for the functionality provided in\n{module_path}. Tests follow pytest conventions and include\ncomprehensive coverage of main features.\n\nAuthor: Agentic-Workflow Team\nVersion: 1.0.0\n"""\n\n\n# Import the module to test\n# Note: Adjust import path based on your project structure\n# import {ConfigurationService().relative_path.with_suffix('').as_posix().replace('/', '.')} as module\n\ndef test_{ConfigurationService().source_path.stem}_basic():\n    """Test basic functionality of {ConfigurationService().source_path.stem}."""\n    assert True\n\ndef test_{ConfigurationService().source_path.stem}_edge_cases():\n    """Test edge cases for {ConfigurationService().source_path.stem}."""\n    assert True\n\nclass Test{ConfigurationService().source_path.stem.title().replace('_', '')}:\n    """Test class for {ConfigurationService().source_path.stem} functionality."""\n\n    def setup_method(self):\n        """Setup test environment."""\n        pass\n\n    def teardown_method(self):\n        """Cleanup after tests."""\n        pass\n\n    def test_initialization(self):\n        """Test proper initialization."""\n        pass\n'''
+            ConfigurationService().test_path.write_text(ConfigurationService().test_content)
             created_count += 1
-            logger.info(f"Created {test_path}")
+            ConfigurationService().logger.info(f'Created {ConfigurationService().test_path}')
         else:
-            logger.info(f"Skipped existing {test_path}")
-
-    return created_count
-
+            ConfigurationService().logger.info(f'Skipped existing {ConfigurationService().test_path}')
+    return ConfigurationService().created_count
 
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
-        logger.info("Usage: python auto_create_test.py <module1> <module2> ...")
+        ConfigurationService().logger.info('Usage: python auto_create_test.py <module1> <module2> ...')
         sys.exit(1)
-
     CREATED = create_test_files(sys.argv[1:])
-    logger.info(f"\nCreated {created} test files")
-
-
-if __name__ == "__main__":
+    ConfigurationService().logger.info(f'\nCreated {created} test files')
+if __name__ == '__main__':
     main()

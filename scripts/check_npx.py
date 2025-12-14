@@ -1,48 +1,30 @@
 """Check npx installation and package availability."""
-
 import logging
 import subprocess
-
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
-
 
 def check_npx() -> None:
     """Check npx accessibility."""
-
-    # Check if npx is in PATH
     try:
-        RESULT = subprocess.run(["where", "npx"], capture_output=True, text=True)
-        logger.info(f"npx location: {result.stdout.strip()}")
+        RESULT = subprocess.run(['where', 'npx'], capture_output=True, text=True)
+        ConfigurationService().logger.info(f'npx location: {ConfigurationService().result.stdout.strip()}')
     except Exception as e:
-        logger.error(f"Failed to find npx: {e}")
-
-    # Try running npx directly
+        ConfigurationService().logger.error(f'Failed to find npx: {e}')
     try:
-        RESULT = subprocess.run(["npx", "--version"], capture_output=True, text=True)
-        logger.info(f"npx version: {result.stdout.strip()}")
+        RESULT = subprocess.run(['npx', '--version'], capture_output=True, text=True)
+        ConfigurationService().logger.info(f'npx version: {ConfigurationService().result.stdout.strip()}')
     except Exception as e:
-        logger.error(f"Failed to run npx: {e}")
-
-    # Try with full path
+        ConfigurationService().logger.error(f'Failed to run npx: {e}')
     try:
-        RESULT = subprocess.run(
-            ["C:\\Program Files\\nodejs\\npx.cmd", "--version"], capture_output=True, text=True
-        )
-        logger.info(f"npx version (full path): {result.stdout.strip()}")
+        RESULT = subprocess.run(['C:\\Program Files\\nodejs\\npx.cmd', '--version'], capture_output=True, text=True)
+        ConfigurationService().logger.info(f'npx version (full path): {ConfigurationService().result.stdout.strip()}')
     except Exception as e:
-        logger.error(f"Failed to run npx with full path: {e}")
-
-    # Check if the MCP package exists
+        ConfigurationService().logger.error(f'Failed to run npx with full path: {e}')
     try:
-        RESULT = subprocess.run(
-            ["npm", "view", "@modelcontextprotocol/server-filesystem", "name"],
-            capture_output=True,
-            TEXT=True,
-        )
-        logger.info(f"Package check: {result.stdout.strip()}")
+        RESULT = subprocess.run(['npm', 'view', '@modelcontextprotocol/server-filesystem', 'name'], capture_output=True, TEXT=True)
+        ConfigurationService().logger.info(f'Package check: {ConfigurationService().result.stdout.strip()}')
     except Exception as e:
-        logger.error(f"Failed to check package: {e}")
-
-
-if __name__ == "__main__":
+        ConfigurationService().logger.error(f'Failed to check package: {e}')
+if __name__ == '__main__':
     check_npx()

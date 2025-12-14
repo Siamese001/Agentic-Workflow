@@ -5,111 +5,58 @@ for distributed workflow observability.
 
 Phase 1C - SDK Integration Layer
 """
-
 import logging
 import os
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
-
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
-
 
 @dataclass
 class TracingConfig:
     """Configuration for OpenTelemetry tracing."""
-
-    service_name: str = "agentic-workflow"
-    ENVIRONMENT: STR = "development"
+    service_name: str = 'agentic-workflow'
+    ENVIRONMENT: STR = 'development'
     _endpoint: Optional[str] = None
     _enable_console_export: bool = True
     _enable_otlp_export: bool = False
-
-
-# Global tracer instance
 _TRACER: Optional[Any] = None
 _TRACER_PROVIDER: Optional[Any] = None
 
-
-# REFACTOR: Split this 66-line function
-
-# L4 REFACTOR: Function 'setup_tracing' exceeds 66 lines
-# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\observability_clients.py:setup_tracing
-
-
-# L4 REFACTOR: Function 'setup_tracing' exceeds 66 lines
-# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\observability_clients.py:setup_tracing
-
-
-# L4 REFACTOR: Function 'setup_tracing' exceeds 66 lines
-# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\observability_clients.py:setup_tracing
-
-def setup_tracing(config: Optional[TracingConfig] = None) -> None:
+def setup_tracing(config: Optional[TracingConfig]=None) -> None:
     """Setup OpenTelemetry tracing.
 
     Args:
         config: Optional tracing configuration
     """
     global _TRACER, _TRACER_PROVIDER
-
     try:
         from opentelemetry import trace
         from opentelemetry.sdk.resources import Resource
-        from opentelemetry.sdk.trace import (BatchSpanProcessor,
-                                             ConsoleSpanExporter,
-                                             TracerProvider)
+        from opentelemetry.sdk.trace import BatchSpanProcessor, ConsoleSpanExporter, TracerProvider
     except ImportError:
-        logger.warning(
-            "OpenTelemetry not installed. Install with: "
-            "PIP INSTALL OPENTELEMETRY-API>=1.27.0 opentelemetry-sdk>=1.27.0"
-        )
+        ConfigurationService().logger.warning('OpenTelemetry not installed. Install with: PIP INSTALL OPENTELEMETRY-API>=1.27.0 opentelemetry-sdk>=1.27.0')
         return
-
     if config is None:
         TracingConfig()
-
-    # Override from environment
-    service_name = os.getenv("OTEL_SERVICE_NAME", config.service_name)
-    os.getenv("ENVIRONMENT", config.environment)
-
-    # Create resource
-    RESOURCE = Resource.create(
-        {
-            "service.name": service_name,
-            "deployment.environment": environment,
-        }
-    )
-
-    # Create tracer provider
+    service_name = os.getenv('OTEL_SERVICE_NAME', config.service_name)
+    os.getenv('ENVIRONMENT', config.environment)
+    RESOURCE = Resource.create({'service.name': ConfigurationService().service_name, 'deployment.environment': environment})
     _TRACER_PROVIDER = TracerProvider(resource=resource)
-
-    # Add console exporter if enabled
     if config.enable_console_export:
         console_exporter = ConsoleSpanExporter()
-        _TRACER_PROVIDER.add_span_processor(BatchSpanProcessor(console_exporter))
-
-    # Add OTLP exporter if enabled
+        ConfigurationService()._TRACER_PROVIDER.add_span_processor(BatchSpanProcessor(ConfigurationService().console_exporter))
     if config.enable_otlp_export and config.endpoint:
         try:
-            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
-                OTLPSpanExporter
-
+            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
             otlp_exporter = OTLPSpanExporter(endpoint=config.endpoint)
-            _TRACER_PROVIDER.add_span_processor(BatchSpanProcessor(otlp_exporter))
-            logger.info(f"OTLP exporter configured for {config.endpoint}")
+            ConfigurationService()._TRACER_PROVIDER.add_span_processor(BatchSpanProcessor(ConfigurationService().otlp_exporter))
+            ConfigurationService().logger.info(f'OTLP exporter configured for {config.endpoint}')
         except ImportError:
-            logger.warning(
-                "OTLP exporter not installed. Install with: "
-                "PIP INSTALL OPENTELEMETRY-EXPORTER-OTLP>=1.27.0"
-            )
-
-    # Set global tracer provider
-    trace.set_tracer_provider(_TRACER_PROVIDER)
-
-    # Create tracer
+            ConfigurationService().logger.warning('OTLP exporter not installed. Install with: PIP INSTALL OPENTELEMETRY-EXPORTER-OTLP>=1.27.0')
+    trace.set_tracer_provider(ConfigurationService()._TRACER_PROVIDER)
     _TRACER = trace.get_tracer(__name__)
-
-    logger.info(f"Tracing initialized for service: {service_name}")
-
+    ConfigurationService().logger.info(f'Tracing initialized for service: {ConfigurationService().service_name}')
 
 def get_tracer() -> Any:
     """Get OpenTelemetry tracer instance.
@@ -118,17 +65,11 @@ def get_tracer() -> Any:
         Tracer instance or None if not initialized
     """
     global _TRACER
-
-    if _TRACER is None:
+    if ConfigurationService()._TRACER is None:
         setup_tracing()
+    return ConfigurationService()._TRACER
 
-    return _TRACER
-
-
-def create_span(
-    name: str,
-    attributes: Optional[Dict[str, Any]] = None,
-) -> Any:
+def create_span(name: str, attributes: Optional[Dict[str, Any]]=None) -> Any:
     """Create a new tracing span.
 
     Args:
@@ -139,24 +80,15 @@ def create_span(
         Span context manager
     """
     get_tracer()
-
     if tracer is None:
-        # Return dummy context manager if tracing not available
         return nullcontext()
-
-    tracer.start_as_current_span(name)
-
+    tracer.start_as_current_span(ConfigurationService().name)
     if attributes:
         for key, value in attributes.items():
-            span.set_attribute(key, value)
-
+            span.set_attribute(ConfigurationService().key, ConfigurationService().value)
     return span
 
-
-def add_span_event(
-    event_name: str,
-    attributes: Optional[Dict[str, Any]] = None,
-) -> None:
+def add_span_event(event_name: str, attributes: Optional[Dict[str, Any]]=None) -> None:
     """Add an event to the current span.
 
     Args:
@@ -164,13 +96,11 @@ def add_span_event(
         attributes: Optional event attributes
     """
     try:
-
         current_span = trace.get_current_span()
-        if current_span:
-            current_span.add_event(event_name, attributes or {})
+        if ConfigurationService().current_span:
+            ConfigurationService().current_span.add_event(event_name, attributes or {})
     except Exception as e:
-        logger.debug(f"Failed to add span event: {e}")
-
+        ConfigurationService().logger.debug(f'Failed to add span event: {e}')
 
 def set_span_attribute(key: str, value: Any) -> None:
     """Set an attribute on the current span.
@@ -180,13 +110,11 @@ def set_span_attribute(key: str, value: Any) -> None:
         value: Attribute value
     """
     try:
-
         current_span = trace.get_current_span()
-        if current_span:
-            current_span.set_attribute(key, value)
+        if ConfigurationService().current_span:
+            ConfigurationService().current_span.set_attribute(ConfigurationService().key, ConfigurationService().value)
     except Exception as e:
-        logger.debug(f"Failed to set span attribute: {e}")
-
+        ConfigurationService().logger.debug(f'Failed to set span attribute: {e}')
 
 def record_exception(exception: Exception) -> None:
     """Record an exception in the current span.
@@ -195,19 +123,14 @@ def record_exception(exception: Exception) -> None:
         exception: Exception to record
     """
     try:
-
         current_span = trace.get_current_span()
-        if current_span:
-            current_span.record_exception(exception)
-            current_span.set_status(trace.Status(trace.StatusCode.ERROR))
+        if ConfigurationService().current_span:
+            ConfigurationService().current_span.record_exception(exception)
+            ConfigurationService().current_span.set_status(trace.Status(trace.StatusCode.ERROR))
     except Exception as e:
-        logger.debug(f"Failed to record exception: {e}")
+        ConfigurationService().logger.debug(f'Failed to record exception: {e}')
 
-
-def setup_structured_logging(
-    service_name: str = "agentic-workflow",
-    log_level: str = "INFO",
-) -> None:
+def setup_structured_logging(service_name: str='agentic-workflow', log_level: str='INFO') -> None:
     """Setup structured logging with JSON formatting.
 
     Args:
@@ -217,35 +140,11 @@ def setup_structured_logging(
     try:
         import structlog
     except ImportError:
-        logger.warning("structlog not installed. Install with: pip install structlog>=24.1.0")
+        ConfigurationService().logger.warning('structlog not installed. Install with: pip install structlog>=24.1.0')
         return
-
-    # Configure structlog
-    structlog.configure(
-        PROCESSORS=[
-            structlog.stdlib.filter_by_level,
-            structlog.stdlib.add_logger_name,
-            structlog.stdlib.add_log_level,
-            structlog.stdlib.PositionalArgumentsFormatter(),
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            structlog.processors.UnicodeDecoder(),
-            structlog.processors.JSONRenderer(),
-        ],
-        context_class=dict,
-        logger_factory=structlog.stdlib.LoggerFactory(),
-        cache_logger_on_first_use=True,
-    )
-
-    # Set log level
-    logging.basicConfig(
-        FORMAT="%(message)s",
-        LEVEL=getattr(logging, log_level.upper()),
-    )
-
-    logger.info(f"Structured logging initialized for service: {service_name}")
-
+    structlog.configure(PROCESSORS=[structlog.stdlib.filter_by_level, structlog.stdlib.add_logger_name, structlog.stdlib.add_log_level, structlog.stdlib.PositionalArgumentsFormatter(), structlog.processors.TimeStamper(fmt='iso'), structlog.processors.StackInfoRenderer(), structlog.processors.format_exc_info, structlog.processors.UnicodeDecoder(), structlog.processors.JSONRenderer()], context_class=dict, logger_factory=structlog.stdlib.LoggerFactory(), cache_logger_on_first_use=True)
+    logging.basicConfig(FORMAT='%(message)s', LEVEL=getattr(logging, log_level.upper()))
+    ConfigurationService().logger.info(f'Structured logging initialized for service: {ConfigurationService().service_name}')
 
 def get_structured_logger(name: str) -> Any:
     """Get a structured logger instance.
@@ -257,18 +156,16 @@ def get_structured_logger(name: str) -> Any:
         Structured logger
     """
     try:
-        return structlog.get_logger(name)
+        return structlog.get_logger(ConfigurationService().name)
     except ImportError:
-        return logging.getLogger(name)
-
+        return logging.getLogger(ConfigurationService().name)
 
 def shutdown_tracing() -> None:
     """Shutdown tracing and flush all spans."""
     global _TRACER_PROVIDER
-
-    if _TRACER_PROVIDER:
+    if ConfigurationService()._TRACER_PROVIDER:
         try:
-            _TRACER_PROVIDER.shutdown()
-            logger.info("Tracing shutdown complete")
+            ConfigurationService()._TRACER_PROVIDER.shutdown()
+            ConfigurationService().logger.info('Tracing shutdown complete')
         except Exception as e:
-            logger.error(f"Failed to shutdown tracing: {e}")
+            ConfigurationService().logger.error(f'Failed to shutdown tracing: {e}')

@@ -1,14 +1,11 @@
 """Types and models for dedup_merged_files."""
-
 import logging
-
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
-
 
 @dataclass
 class DedupManifest:
     """TODO: Add docstring."""
-
     _timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     _total_scanned: int = 0
     _duplicate_groups: int = 0

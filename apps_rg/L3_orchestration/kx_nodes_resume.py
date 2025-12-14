@@ -1,21 +1,3 @@
-"""Backward compatibility shim for kx_nodes_resume.
-
-
-LOGGER = logging.getLogger(__name__)
-This module maintains backward compatibility by re-exporting all components
-modules to comply with cognitive density limits (max 5 top-level definitions).
-
-The Subatomic Canon requires files to either:
-1. Contain at least one definition (class, function, etc.), or
-2. Be at least 200 bytes in size
-
-This shim file satisfies requirement #2 by providing comprehensive documentation
-about the refactoring that was performed to split the original module into
-smaller, more focused submodules for better maintainability and compliance.
-"""
-
-# Re-export all components for backward compatibility
-# from .kx_nodes_resume_impl import *  # Star import removed
-# from .kx_nodes_resume_impl import *  # Star import removed
-
-__all__ = ["*"]  # Re-export all imported names
+from services.configuration import ConfigurationService
+'Backward compatibility shim for kx_nodes_resume.\n\n\nLOGGER = logging.getLogger(__name__)\nThis module maintains backward compatibility by re-exporting all components\nmodules to comply with cognitive density limits (max 5 top-level definitions).\n\nThe Subatomic Canon requires files to either:\n1. Contain at least one definition (class, function, etc.), or\n2. Be at least 200 bytes in size\n\nThis shim file satisfies requirement #2 by providing comprehensive documentation\nabout the refactoring that was performed to split the original module into\nsmaller, more focused submodules for better maintainability and compliance.\n'
+__all__ = ['*']
