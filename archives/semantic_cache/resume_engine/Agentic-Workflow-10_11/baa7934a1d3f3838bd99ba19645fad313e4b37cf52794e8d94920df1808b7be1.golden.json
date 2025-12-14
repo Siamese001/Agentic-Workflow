@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom pydantic import BaseModel, Field\nclass BudgetProfile(BaseModel):\n\"\"\"High-level budget profile for cost/latency envelopes.\nThis duplicates some of the fields from ExecutionProfileSpec so that\nfuture callers can reason about budget in a single nested object.\n\"\"\"\nmax_cost_usd: float = Field(default=0.10, ge=0.0)\nmax_latency_ms: int = Field(default=3000, ge=0)",
-  "normalized_signature": "class:BudgetProfile",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

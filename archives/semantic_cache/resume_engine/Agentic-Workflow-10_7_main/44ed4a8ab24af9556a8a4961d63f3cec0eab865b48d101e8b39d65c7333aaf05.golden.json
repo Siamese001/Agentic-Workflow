@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Utility helpers for simulation subsystem.\"\"\"\nfrom typing import Any, Dict\ndef model_to_payload(model: Any) -> Dict[str, Any]:\n\"\"\"Return a dict of public fields from a pydantic model.\"\"\"\nif model is None:\nreturn {}\ndata = {}\nfor key, value in getattr(model, \"__dict__\", {}).items():\nif key.startswith(\"__\"):\ncontinue\ndata[key] = value\nreturn data",
-  "normalized_signature": "func:model_to_payload",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:model_to_payload",
-  "test_coverage": []
-}

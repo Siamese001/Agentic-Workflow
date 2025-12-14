@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"Snapshot-local runtime.runtime_utils shim for v10_10 tests.\nThis module allows imports of the form::\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nwhen tests are run with rootdir=Agentic-Workflow-10_10. It delegates to the\nexisting runtime_utils module at the snapshot root.\n\"\"\"\nfrom __future__ import annotations\nfrom tools.runtime_utils import ( # noqa: F401\nValidationError,\nToolExecutionError,\nModelClientError,\nSafetyException,\nLLMInvocationError,\nCircuitBreaker,\ninvoke_with_retry,\nSandboxConfig,\nget_sandbox,\nPredictiveCacheManager,\ninvoke_model,\n)\n__all__ = [\n\"ValidationError\",\n\"ToolExecutionError\",\n\"ModelClientError\",\n\"SafetyException\",\n\"LLMInvocationError\",\n\"CircuitBreaker\",\n\"invoke_with_retry\",\n\"SandboxConfig\",\n\"get_sandbox\",\n\"PredictiveCacheManager\",\n\"invoke_model\",\n]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

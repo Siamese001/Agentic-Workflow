@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom pydantic import BaseModel, Field\nfrom core.models.models import RetrievalConfig\nclass RetrievalProfile(BaseModel):\n\"\"\"Retrieval configuration profile wrapping RetrievalConfig.\nKept as a thin wrapper so that higher-level profiles can evolve\nwithout changing the RetrievalConfig schema used by META.\n\"\"\"\nretrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)",
-  "normalized_signature": "class:RetrievalProfile",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

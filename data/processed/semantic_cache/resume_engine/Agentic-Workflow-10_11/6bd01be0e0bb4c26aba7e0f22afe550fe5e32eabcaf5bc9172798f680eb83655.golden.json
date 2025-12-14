@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom typing import List, Any\nEVENTS: List[Any] = []\ndef append_event(event: Any) -> None:\n\"\"\"Append a raw event object to the in-memory agentic event buffer.\"\"\"\nEVENTS.append(event)\ndef get_events() -> List[Any]:\n\"\"\"Return a snapshot of all collected agentic events.\"\"\"\nreturn list(EVENTS)\ndef clear_events() -> None:\n\"\"\"Clear all collected agentic events.\"\"\"\nEVENTS.clear()",
-  "normalized_signature": "func:append_event;func:get_events;func:clear_events",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:append_event,get_events,clear_events",
-  "test_coverage": []
-}

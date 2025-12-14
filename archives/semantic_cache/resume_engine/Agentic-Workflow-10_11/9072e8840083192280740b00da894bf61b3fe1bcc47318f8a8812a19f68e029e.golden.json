@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nReAct reasoning framework for r\u00e9sum\u00e9 processing workflows.\nProvides step-wise reasoning with interleaved actions for comprehensive r\u00e9sum\u00e9 enhancement.\n\"\"\"\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n@dataclass\nclass ReActStep:\n\"\"\"\nRepresents reasoning-action-observation step for r\u00e9sum\u00e9 processing.\nEnables structured iterative thinking for optimal r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\nthought: str\naction: str\nobservation: str\ndef run_react_loop(task: str, max_steps: int = 3) -> List[ReActStep]:\n\"\"\"\nExecutes ReAct reasoning loop for r\u00e9sum\u00e9 processing tasks.\nProvides structured approach to complex r\u00e9sum\u00e9 enhancement problem solving.\n\"\"\"\ntask = (task or \"\").strip()\nif not task:\nreturn []\nsteps: List[ReActStep] = []\nfor i in range(max_steps):\nthought = f\"analyzing task segment {i+1}: {task[:50]}\" # truncated\naction = \"noop\"\nobservation = \"no external tools invoked (placeholder)\"\nsteps.append(ReActStep(thought=thought, action=action, observation=observation))\nreturn steps",
-  "normalized_signature": "func:run_react_loop;class:ReActStep",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:run_react_loop",
-  "test_coverage": []
-}

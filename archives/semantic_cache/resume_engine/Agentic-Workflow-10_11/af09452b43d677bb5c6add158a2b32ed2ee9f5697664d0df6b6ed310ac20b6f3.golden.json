@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Optional\nfrom core.models.models import RetrievalConfig\nfrom meta.cache.redis_cache import init_redis_client, get_llm_cache, set_llm_cache\ndef read_semantic_cache(key: str, cfg: RetrievalConfig) -> Optional[Any]:\n\"\"\"Read a value from the semantic cache if enabled.\nCurrently this delegates to the generic Redis cache using the\nRetrievalConfig.redis_cache settings.\n\"\"\"\nredis_cfg = getattr(cfg, \"redis_cache\", None)\nif not redis_cfg or not redis_cfg.enabled:\nreturn None\nclient = init_redis_client(url=redis_cfg.url)\nreturn get_llm_cache(client, key)\ndef write_semantic_cache(key: str, value: Any, cfg: RetrievalConfig) -> None:\n\"\"\"Write a value to the semantic cache if enabled.\"\"\"\nredis_cfg = getattr(cfg, \"redis_cache\", None)\nif not redis_cfg or not redis_cfg.enabled:\nreturn\nclient = init_redis_client(url=redis_cfg.url)\nset_llm_cache(client, key, value, ttl_s=redis_cfg.ttl_s)",
-  "normalized_signature": "func:read_semantic_cache;func:write_semantic_cache",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:read_semantic_cache,write_semantic_cache",
-  "test_coverage": []
-}

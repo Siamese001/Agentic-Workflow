@@ -1,9 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Dict, List\nfrom runtime.observability.collectors import get_events\ndef get_routing_trace() -> List[Dict[str, Any]]:\n\"\"\"Return a structured trace of routing decisions from telemetry.\nThis mirrors the real runtime.trace.trace_reconstruction helper but lives\ninside the Agentic-Workflow-10_10 snapshot so that\n``from runtime.trace.trace_reconstruction import get_routing_trace`` works\nwhen tests are run with rootdir=Agentic-Workflow-10_10.\n\"\"\"\ntrace: List[Dict[str, Any]] = []\ntry:\nfor evt in get_events():\nif getattr(evt, \"name\", \"\") != \"routing_decision\":\ncontinue\nattrs = getattr(evt, \"attributes\", {}) or {}\ntrace.append(\n{\n\"task\": attrs.get(\"task\"),\n\"agent_role\": attrs.get(\"agent_role\"),\n\"reason\": attrs.get(\"reason\"),\n\"has_council\": attrs.get(\"has_council\"),\n\"council_selected_id\": attrs.get(\"council_selected_id\"),\n\"council_aggregated_decision\": attrs.get(\"council_aggregated_decision\"),\n\"council_vote_count\": attrs.get(\"council_vote_count\"),\n}\n)\nexcept Exception:\npass\nreturn trace",
-  "normalized_signature": "func:get_routing_trace",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:get_routing_trace",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}
