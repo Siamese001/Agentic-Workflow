@@ -8,7 +8,7 @@ with proper error handling and authentication.
 import os
 import time
 import logging
-from typing import Dict, List, Any, Optional, Callable
+from typing import Dict, List, Any, Optional, Callable, Union
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -23,6 +23,9 @@ try:
     REDISVL_AVAILABLE = True
 except ImportError:
     REDISVL_AVAILABLE = False
+    RedisConnection = None  # Define as None if not available
+    SearchIndex = None
+    VectorQuery = None
     logging.warning("redisvl not installed - Redis functionality will be limited")
 
 try:
@@ -30,7 +33,9 @@ try:
     PINECONE_AVAILABLE = True
 except ImportError:
     PINECONE_AVAILABLE = False
-    logging.warning("pinecone-client not installed - Pinecone functionality will be disabled")
+    Pinecone = None  # Define as None if not available
+    ServerlessSpec = None
+    logging.warning("pinecone not installed - Pinecone functionality will be disabled")
 
 try:
     from sentence_transformers import SentenceTransformer
@@ -60,7 +65,7 @@ class ConnectionFactory:
     _instances: Dict[str, Any] = {}
     
     @classmethod
-    def get_redis_connection(cls) -> RedisConnection:
+    def get_redis_connection(cls) -> Union[RedisConnection, Any]:
         """
         Initialize and return RedisVL connection.
         
@@ -105,7 +110,7 @@ class ConnectionFactory:
                     raise ConnectionError(f"Failed to connect to Redis after {max_retries} attempts")
     
     @classmethod
-    def get_pinecone_connection(cls) -> Pinecone:
+    def get_pinecone_connection(cls) -> Union[Pinecone, Any]:
         """
         Initialize and return Pinecone connection.
         
@@ -240,7 +245,7 @@ class ConnectionFactory:
         return embed
     
     @classmethod
-    def create_redis_index(cls, schema: Dict[str, Any]) -> SearchIndex:
+    def create_redis_index(cls, schema: Dict[str, Any]) -> Union[SearchIndex, Any]:
         """
         Create RedisVL search index.
         

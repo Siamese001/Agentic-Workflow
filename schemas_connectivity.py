@@ -45,7 +45,7 @@ class CanonEntry(BaseModel):
     id: UUID = Field(default_factory=uuid4, description="Unique identifier")
     code_snippet: str = Field(..., description="The raw code snippet")
     ast_structure: Dict[str, Any] = Field(..., description="JSON-serialized AST structure")
-    embedding: List[float] = Field(..., min_items=768, max_items=768, description="768-dimensional embedding vector")
+    embedding: List[float] = Field(..., min_items=384, max_items=768, description="384-768 dimensional embedding vector")
     metadata: CanonMetadata = Field(..., description="Meta-learning metadata")
     
     @validator('ast_structure')
@@ -58,8 +58,8 @@ class CanonEntry(BaseModel):
     @validator('embedding')
     def validate_embedding(cls, v):
         """Validate embedding dimensions."""
-        if len(v) != 768:
-            raise ValueError(f"Embedding must have 768 dimensions, got {len(v)}")
+        if len(v) < 384 or len(v) > 768:
+            raise ValueError(f"Embedding must have 384-768 dimensions, got {len(v)}")
         return v
     
     def to_redis_fields(self) -> Dict[str, Any]:
