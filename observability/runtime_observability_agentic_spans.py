@@ -1,11 +1,10 @@
-
 from typing import Dict
 import logging
 
 
-
 logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.runtime.observability.spans import start_span, end_span  # DE...
+
 
 def start_agent_span(name: str, meta: Dict[str, object]) -> str:
     """Start an agent-level span and return its span identifier.
@@ -17,6 +16,7 @@ def start_agent_span(name: str, meta: Dict[str, object]) -> str:
     ctx = meta if isinstance(meta, dict) else {"meta": str(meta)}
     span_id = start_span(name, ctx=ctx)
     return span_id
+
 
 def end_agent_span(span_id: str) -> None:
     """End a previously-started agent span.

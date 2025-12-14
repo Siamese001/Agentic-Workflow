@@ -13,4 +13,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 # from .best_result_understand_request_impl import *  # Star import removed
 # from .best_result_understand_request_impl import *  # Star import removed
 
-__all__ = ['*']  # Re-export all imported names
+__all__ = ["*"]  # Re-export all imported names

@@ -175,7 +175,10 @@ async def _sanitize_input(self: Any, context: Dict, trace_id: str) -> Dict:
 
         return sanitized
 
-async def _execute_think_stage_with_consensus(self: Any, context: Dict, trace_id: str) -> tuple[AgentPlan, float]:
+async def _execute_think_stage_with_consensus(self: Any,
+     context: Dict,
+     trace_id: str) -> tuple[AgentPlan,
+     float]:
         float]:
         """Execute the thinking stage with multi-model consensus."""
         # Determine risk level for consensus
@@ -255,7 +258,10 @@ async def _check_past_failures(self: Any, task: str) -> str:
         except Exception:
             return "Unable to check past failures"
 
-async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: str) -> tuple[list, float]:
+async def _execute_act_stage_with_airlock(self: Any,
+     plan: AgentPlan,
+     trace_id: str) -> tuple[list,
+     float]:
         float]:
         """Execute the action stage with airlock protection."""
         results = []

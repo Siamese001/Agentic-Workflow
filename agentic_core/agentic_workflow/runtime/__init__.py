@@ -24,7 +24,6 @@ if str(shared_path) not in sys.path:
 try:
     pass
 
-
     __all__ = [
         "OpenAIClientManager",
         "get_openai_client",
@@ -37,7 +36,7 @@ try:
         "validate_sdk",
         "reset_all_clients",
         "get_vector_store",
-        "get_redis_client"
+        "get_redis_client",
     ]
 except ImportError as e:
     logger.warning(f"Warning: Could not import runtime components: {e}")

@@ -140,7 +140,10 @@ async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, 
 
         return result
 
-def _update_payload_with_processed_data(self: Any, envelope: Any, processed: Dict[str, Any]) -> None:
+def _update_payload_with_processed_data(self: Any,
+     envelope: Any,
+     processed: Dict[str,
+     Any]) -> None:
         """Update payload with processed data.
 
         Args:

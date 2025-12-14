@@ -10,10 +10,11 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def find_unused_imports(filepath: Any) -> None:
     """Find unused imports in a file."""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()
 
         tree = ast.parse(content)
@@ -23,11 +24,11 @@ def find_unused_imports(filepath: Any) -> None:
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    name = alias.asname if alias.asname else alias.name.split('.')[0]
+                    name = alias.asname if alias.asname else alias.name.split(".")[0]
                     imports[name] = node.lineno
             elif isinstance(node, ast.ImportFrom):
                 for alias in node.names:
-                    if alias.name == '*':
+                    if alias.name == "*":
                         continue
                     name = alias.asname if alias.asname else alias.name
                     imports[name] = node.lineno
@@ -42,29 +43,33 @@ def find_unused_imports(filepath: Any) -> None:
                     used.add(node.value.id)
 
         # Find unused
-        unused = [(line_num, name) for name, line_num in imports.items()
-                  if name not in used and name != '__future__']
+        unused = [
+            (line_num, name)
+            for name, line_num in imports.items()
+            if name not in used and name != "__future__"
+        ]
 
         return sorted(unused, reverse=True)
     except Exception:
         return []
 
+
 def main() -> None:
     """Fix unused imports in all Python files."""
     count = 0
-    for root, dirs, files in os.walk('.'):
+    for root, dirs, files in os.walk("."):
         # Skip hidden and special directories
-        dirs[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
+        dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
 
         for file in files:
-            if file.endswith('.py') and not file.startswith('fix_'):
+            if file.endswith(".py") and not file.startswith("fix_"):
                 filepath = os.path.join(root, file)
                 unused = find_unused_imports(filepath)
 
                 if unused:
                     logger.info(f"{filepath}: {len(unused)} unused imports")
 
-                    with open(filepath, 'r', encoding='utf-8') as f:
+                    with open(filepath, "r", encoding="utf-8") as f:
                         lines = f.readlines()
 
                     # Remove unused import lines
@@ -73,11 +78,12 @@ def main() -> None:
                         if idx < len(lines):
                             del lines[idx]
 
-                    with open(filepath, 'w', encoding='utf-8') as f:
+                    with open(filepath, "w", encoding="utf-8") as f:
                         f.writelines(lines)
                     count += 1
 
     logger.info(f"Fixed {count} files")
+
 
 if __name__ == "__main__":
     main()

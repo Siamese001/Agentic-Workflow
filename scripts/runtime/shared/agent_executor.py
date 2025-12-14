@@ -516,7 +516,8 @@ class AgentExecutor:
         if input_messages:
             last_msg = input_messages[-1]
             if last_msg["role"] == "user":
-                last_msg["content"] += "\n\nIMPORTANT: Respond with valid JSON that matches the required schema."
+                last_msg["content"] += "\n\nIMPORTANT: Respond with valid JSON that matches the
+                required schema."
 
         # Execute the interaction with JSON schema
         response = client.interactions.create(

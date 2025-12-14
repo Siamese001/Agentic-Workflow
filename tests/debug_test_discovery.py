@@ -6,11 +6,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 """
+
 import os
 import sys
 import json
 import subprocess
 from pathlib import Path
+
 
 def check_vscode_config() -> None:
     """Check VS Code configuration files."""
@@ -45,13 +47,15 @@ def check_vscode_config() -> None:
 
     return True
 
+
 def check_pytest() -> None:
     """Check pytest installation and discovery."""
     logger.info("\n=== Checking Pytest ===")
 
     # Check pytest version
-    result = subprocess.run([sys.executable, "-m", "pytest", "--version"],
-                          capture_output=True, text=True)
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest", "--version"], capture_output=True, text=True
+    )
     if result.returncode == 0:
         logger.info(f"✅ Pytest installed: {result.stdout.strip()}")
     else:
@@ -59,12 +63,13 @@ def check_pytest() -> None:
         return False
 
     # Check test discovery
-    result = subprocess.run([sys.executable, "-m", "pytest", "--collect-only", "-q"],
-                          capture_output=True, text=True)
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest", "--collect-only", "-q"], capture_output=True, text=True
+    )
     if result.returncode == 0:
-        lines = result.stdout.split('\n')
+        lines = result.stdout.split("\n")
         for line in lines:
-            if 'collected' in line and 'tests' in line:
+            if "collected" in line and "tests" in line:
                 logger.info(f"✅ Test discovery working: {line.strip()}")
                 break
     else:
@@ -74,6 +79,7 @@ def check_pytest() -> None:
 
     return True
 
+
 def check_python_path() -> None:
     """Check Python path and environment."""
     logger.info("\n=== Checking Python Environment ===")
@@ -82,7 +88,7 @@ def check_python_path() -> None:
     logger.info(f"✅ Python path: {sys.path[0]}")
 
     # Check if we can import key modules
-    key_modules = ['pytest', 'asyncio']
+    key_modules = ["pytest", "asyncio"]
     for module in key_modules:
         try:
             __import__(module)
@@ -91,6 +97,7 @@ def check_python_path() -> None:
             logger.info(f"❌ Cannot import {module}")
 
     return True
+
 
 def main() -> None:
     """Run all checks."""
@@ -116,6 +123,7 @@ def main() -> None:
     logger.info("\n📝 Next steps:")
     logger.info("   - Run: python debug_test_discovery.py")
     logger.info("   - Share the output for further debugging")
+
 
 if __name__ == "__main__":
     main()

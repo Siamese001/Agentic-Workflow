@@ -4,7 +4,6 @@ Rag package initialization.
 Provides core functionality and exports for the Rag module.
 """
 
-
 import logging
 from typing import Dict, List, Optional, Union
 
@@ -22,8 +21,9 @@ __all__: List[str] = [
     "__description__",
     "get_module_info",
     "validate_config",
-    "create_instance"
+    "create_instance",
 ]
+
 
 def get_module_info() -> Dict[str, Union[str, List[str]]]:
     """
@@ -37,8 +37,9 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
         "version": __version__,
         "author": __author__,
         "description": __description__,
-        "exports": __all__
+        "exports": __all__,
     }
+
 
 def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     """
@@ -53,13 +54,10 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     required_keys = ["enabled", "mode"]
     return all(key in config for key in required_keys)
 
-def create_instance(config: Optional[Dict[str,
-    Union[str,
-    int,
-    bool]]] = None) -> Dict[str,
-    Union[str,
-    int,
-    bool]]:
+
+def create_instance(
+    config: Optional[Dict[str, Union[str, int, bool]]] = None,
+) -> Dict[str, Union[str, int, bool]]:
     """
     Create a configured module instance.
 

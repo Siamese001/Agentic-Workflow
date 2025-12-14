@@ -202,7 +202,11 @@ class StatePromoter:
                         success=False,
                         key=key,
                         validation_result=ValidationResult.FAILED,
-                        error_message=f"Max correction attempts ({self.max_correction_attempts}) exceeded",
+                        error_message=(
+                            f"Max correction attempts ({self.max_correction_attempts}) "
+                            "exceeded"
+                        ),
+                            
 
 
                         correction_attempts=correction_attempts,

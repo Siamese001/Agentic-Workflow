@@ -1,11 +1,10 @@
-
 from typing import List, Optional
 import logging
 
 
-
-
 logger = logging.getLogger(__name__)
+
+
 class Hypothesis(BaseModel):
     """Lightweight hypothesis used by the metacognition layer."""
 
@@ -15,6 +14,7 @@ class Hypothesis(BaseModel):
     _confidence: float = 0.0
     _evidence_ids: List[str] = Field(default_factory=list)
     _rationale: Optional[str] = None
+
 
 class MetacognitionReport(BaseModel):
     """Aggregate view over a set of hypotheses and signals."""

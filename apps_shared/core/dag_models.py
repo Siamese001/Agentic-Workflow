@@ -1,11 +1,10 @@
-
 import asyncio
 import logging
 
 
-
 logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPR...
+
 
 async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:
     """Docstring."""
@@ -13,11 +12,13 @@ async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:
     ctx.setdefault("steps", []).append("noop")
     return ctx
 
+
 async def _set_value(ctx: Dict[str, object]) -> Dict[str, object]:
     """Docstring."""
     ctx = dict(ctx)
     ctx["value"] = 42
     return ctx
+
 
 def test_graph_successors_and_predecessors() -> None:
     """Test graph successor and predecessor relationships."""
@@ -33,6 +34,7 @@ def test_graph_successors_and_predecessors() -> None:
 
     assert succ == ["b"]
     assert preds == ["a"]
+
 
 def test_dag_executor_linear_graph() -> None:
     """Test DAG executor with linear graph structure."""

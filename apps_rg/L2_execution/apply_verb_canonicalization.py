@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
@@ -13,6 +11,7 @@ Canonicalizes action verbs to approved list and detects forbidden verbs.
 
 from typing import Dict, List
 import logging
+
 
 class VerbCanonicalizer:
     """Canonicalize action verbs to approved list."""
@@ -39,22 +38,24 @@ class VerbCanonicalizer:
         "transformed",
     ]
 
+
 def canonicalize(self: Any, text: str) -> List[str]:
-        """Extract and canonicalize verbs from text."""
-        canonical = []
-        text_lower = text.lower()
+    """Extract and canonicalize verbs from text."""
+    canonical = []
+    text_lower = text.lower()
 
-        for canonical_form, variants in self.CANONICAL_VERBS.items():
-            if any(variant in text_lower for variant in variants):
-                canonical.append(canonical_form)
+    for canonical_form, variants in self.CANONICAL_VERBS.items():
+        if any(variant in text_lower for variant in variants):
+            canonical.append(canonical_form)
 
-        return canonical
+    return canonical
+
 
 def check_for_forbidden_verbs(self: Any, text: str) -> List[str]:
-        """Check for forbidden verbs in the text."""
-        found_verbs = []
-        text_lower = text.lower()
-        for verb in self.FORBIDDEN_VERBS:
-            if re.search(r"\b" + verb + r"\b", text_lower):
-                found_verbs.append(verb)
-        return found_verbs
+    """Check for forbidden verbs in the text."""
+    found_verbs = []
+    text_lower = text.lower()
+    for verb in self.FORBIDDEN_VERBS:
+        if re.search(r"\b" + verb + r"\b", text_lower):
+            found_verbs.append(verb)
+    return found_verbs

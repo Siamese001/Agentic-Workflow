@@ -612,7 +612,9 @@
                     "description": "VP+ level TA leader",
                     "seniority_range": ["Director", "VP", "SVP", "EVP", "C-Suite"],
                     "domain": ["Recruiting/TA"],
-                    "typical_titles": ["VP Talent Acquisition", "Chief People Officer (if TA-focused)", "Director of Recruiting"]
+                    "typical_titles": ["VP Talent Acquisition",
+                         "Chief People Officer (if TA-focused)",
+                         "Director of Recruiting"]
                 },
                 "EXECUTIVE": {
                     "description": "VP/Director in technical/business domain",
@@ -891,7 +893,10 @@
                 }
             },
             "SENIOR_TA": {
-                "system_instructions": "You are crafting a technical message for a senior technical authority (architect, principal engineer, tech lead).",
+                "system_instructions": "You are crafting a technical message for a senior technical authority (architect,
+                     principal engineer,
+                     tech lead).",
+                    
                 "tone": "Technical peer, respectful but confident, focused on architectural decisions and technical excellence.",
                 "approach": "Reference specific technologies or patterns, demonstrate technical credibility, respect their authority on technical direction.",
                 "avoid": "Marketing language, oversimplification of technical concepts, challenging their technical decisions.",

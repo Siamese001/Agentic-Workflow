@@ -14,4 +14,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 # from .lic_cta_patterns_models import *  # Star import removed
 # from .lic_cta_patterns_impl import *  # Star import removed
 
-__all__ = ['*']  # Re-export all imported names
+__all__ = ["*"]  # Re-export all imported names

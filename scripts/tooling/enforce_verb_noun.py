@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # scripts/enforce_verb_noun.py
 import shutil

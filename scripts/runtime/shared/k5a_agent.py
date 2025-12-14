@@ -46,7 +46,11 @@ class K5AGenerationAgent(Agent):
     - Differentiator integration: Must include required differentiators
     """
 
-def __init__(self: Any, config: ReasoningConfig, provenance_rule: ProvenanceRule, word_count_min: int, word_count_max: int) -> None:
+def __init__(self: Any,
+     config: ReasoningConfig,
+     provenance_rule: ProvenanceRule,
+     word_count_min: int,
+     word_count_max: int) -> None:
         """Initialize K.5A agent.
 
         Args:
@@ -145,7 +149,10 @@ async def execute(self: Any, context: Dict[str, Any]) -> K5AOutput:
 
         return output
 
-def _build_initial_prompt(self: Any, master_bullets: List[str], differentiators: List[str], job_description: str) -> str:
+def _build_initial_prompt(self: Any,
+     master_bullets: List[str],
+     differentiators: List[str],
+     job_description: str) -> str:
         """Build initial generation prompt.
 
         Args:

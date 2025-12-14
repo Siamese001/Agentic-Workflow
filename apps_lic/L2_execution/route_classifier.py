@@ -13,4 +13,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 # from .route_classifier_impl import *  # Star import removed
 # from .route_classifier_impl import *  # Star import removed
 
-__all__ = ['*']  # Re-export all imported names
+__all__ = ["*"]  # Re-export all imported names

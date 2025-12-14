@@ -22,116 +22,134 @@ from scripts.runtime.shared.multi_provider_clients import Provider
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class WorkflowContext:
     """Context for workflow execution with SDK clients."""
+
     workflow_id: str
     agent_executor: AgentExecutor
     vector_store: Optional[Any] = None
     cache_client: Optional[Any] = None
     _metadata: Dict[str, Any] = field(default_factory=dict)
 
+
 def get_from_cache(self: Any, key: str) -> Optional[Any]:
-        """Get value from cache.
+    """Get value from cache.
 
-        Args:
-            key: Cache key
+    Args:
+        key: Cache key
 
-        Returns:
-            Cached value or None
-        """
-        if self.cache_client is None:
-            return None
+    Returns:
+        Cached value or None
+    """
+    if self.cache_client is None:
+        return None
 
-        cache_key = f"workflow:{self.workflow_id}:{key}"
-        return cache_get(self.cache_client, cache_key)
+    cache_key = f"workflow:{self.workflow_id}:{key}"
+    return cache_get(self.cache_client, cache_key)
+
 
 def set_in_cache(self: Any, key: str, value: Any, ttl: int) -> bool:
-        """Set value in cache.
+    """Set value in cache.
 
-        Args:
-            key: Cache key
-            value: Value to cache
-            ttl: Time-to-live in seconds
+    Args:
+        key: Cache key
+        value: Value to cache
+        ttl: Time-to-live in seconds
 
-        Returns:
-            True if successful
-        """
-        if self.cache_client is None:
-            return False
+    Returns:
+        True if successful
+    """
+    if self.cache_client is None:
+        return False
 
-        cache_key = f"workflow:{self.workflow_id}:{key}"
-        return cache_set(self.cache_client, cache_key, value, ttl=ttl)
+    cache_key = f"workflow:{self.workflow_id}:{key}"
+    return cache_set(self.cache_client, cache_key, value, ttl=ttl)
 
-def search_vector_store(self: Any, query_embedding: List[float], collection_name: str, n_results: int) -> List[Dict[str, Any]]:
-        """Search vector store for relevant knowledge.
 
-        Args:
-            query_embedding: Query embedding vector
-            collection_name: Name of collection to search
-            n_results: Number of results to return
+def search_vector_store(
+    self: Any, query_embedding: List[float], collection_name: str, n_results: int
+) -> List[Dict[str, Any]]:
+    """Search vector store for relevant knowledge.
 
-        Returns:
-            List of search results
-        """
-        if self.vector_store is None:
-            return []
+    Args:
+        query_embedding: Query embedding vector
+        collection_name: Name of collection to search
+        n_results: Number of results to return
 
-        collection = create_chroma_collection(self.vector_store, collection_name)
-        results = search_vectors_chroma(
-            collection,
-            query_embeddings=[query_embedding],
-            n_results=n_results,
-        )
+    Returns:
+        List of search results
+    """
+    if self.vector_store is None:
+        return []
 
-        return results
+    collection = create_chroma_collection(self.vector_store, collection_name)
+    results = search_vectors_chroma(
+        collection,
+        query_embeddings=[query_embedding],
+        n_results=n_results,
+    )
+
+    return results
+
 
 @dataclass
 class HopExecutionContext:
     """Context for individual hop execution."""
+
     hop_id: str
     workflow_context: WorkflowContext
     inputs: Dict[str, Any] = field(default_factory=dict)
     outputs: Dict[str, Any] = field(default_factory=dict)
 
-def execute_agent(self: Any, messages: List[AgentMessage], system_prompt: Optional[str], tools: Optional[List[Dict[str, Any]]]) -> Any:
-        """Execute agent with messages.
 
-        Args:
-            messages: List of conversation messages
-            system_prompt: Optional system prompt
-            tools: Optional tool definitions
+def execute_agent(
+    self: Any,
+    messages: List[AgentMessage],
+    system_prompt: Optional[str],
+    tools: Optional[List[Dict[str, Any]]],
+) -> Any:
+    """Execute agent with messages.
 
-        Returns:
-            Agent response
-        """
-        with create_span(f"hop.{self.hop_id}.agent_execute"):
-            return self.workflow_context.agent_executor.execute(
-                messages=messages,
-                system_prompt=system_prompt,
-                tools=tools,
-            )
+    Args:
+        messages: List of conversation messages
+        system_prompt: Optional system prompt
+        tools: Optional tool definitions
+
+    Returns:
+        Agent response
+    """
+    with create_span(f"hop.{self.hop_id}.agent_execute"):
+        return self.workflow_context.agent_executor.execute(
+            messages=messages,
+            system_prompt=system_prompt,
+            tools=tools,
+        )
+
 
 def get_input(self: Any, key: str, default: Any) -> Any:
-        """Get input value.
+    """Get input value.
 
-        Args:
-            key: Input key
-            default: Default value if not found
+    Args:
+        key: Input key
+        default: Default value if not found
 
-        Returns:
-            Input value
-        """
-        return self.inputs.get(key, default)
+    Returns:
+        Input value
+    """
+    return self.inputs.get(key, default)
+
 
 def set_output(self: Any, key: str, value: Any) -> None:
-        """Set output value.
+    """Set output value.
 
-        Args:
-            key: Output key
-            value: Output value
-        """
-        self.outputs[key] = value
+    Args:
+        key: Output key
+        value: Output value
+    """
+    self.outputs[key] = value
+
 
 def create_workflow_context(
     workflow_id: str,
@@ -170,6 +188,7 @@ def create_workflow_context(
     if enable_cache:
         try:
             from scripts.runtime.shared.cache_clients import get_redis_client
+
             cache_client = get_redis_client()
             logger.info("Redis cache enabled for workflow")
         except Exception as e:
@@ -190,6 +209,7 @@ def create_workflow_context(
         vector_store=vector_store,
         cache_client=cache_client,
     )
+
 
 def execute_hop_with_agent(
     hop_id: str,
@@ -227,65 +247,73 @@ def execute_hop_with_agent(
             logger.error(f"Hop {hop_id} failed: {e}")
             raise
 
+
 class WorkflowOrchestrator:
     """Workflow orchestrator with SDK integration."""
 
+
 def __init__(self: Any, workflow_id: str, provider: Provider, model: Optional[str]) -> None:
-        """Initialize workflow orchestrator.
+    """Initialize workflow orchestrator.
 
-        Args:
-            workflow_id: Unique workflow identifier
-            provider: LLM provider to use
-            model: Optional model name
-        """
-        self.workflow_id = workflow_id
-        self.context = create_workflow_context(
-            workflow_id=workflow_id,
-            provider=provider,
-            model=model,
-        )
-        self.hops: List[Dict[str, Any]] = []
+    Args:
+        workflow_id: Unique workflow identifier
+        provider: LLM provider to use
+        model: Optional model name
+    """
+    self.workflow_id = workflow_id
+    self.context = create_workflow_context(
+        workflow_id=workflow_id,
+        provider=provider,
+        model=model,
+    )
+    self.hops: List[Dict[str, Any]] = []
 
-def register_hop(self: Any, hop_id: str, hop_function: Any, dependencies: Optional[List[str]]) -> None:
-        """Register a hop in the workflow.
 
-        Args:
-            hop_id: Hop identifier
-            hop_function: Hop execution function
-            dependencies: Optional list of dependency hop IDs
-        """
-        self.hops.append({
+def register_hop(
+    self: Any, hop_id: str, hop_function: Any, dependencies: Optional[List[str]]
+) -> None:
+    """Register a hop in the workflow.
+
+    Args:
+        hop_id: Hop identifier
+        hop_function: Hop execution function
+        dependencies: Optional list of dependency hop IDs
+    """
+    self.hops.append(
+        {
             "id": hop_id,
             "function": hop_function,
             "dependencies": dependencies or [],
-        })
+        }
+    )
+
 
 def execute(self: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
-        """Execute the workflow.
+    """Execute the workflow.
 
-        Args:
-            inputs: Initial workflow inputs
+    Args:
+        inputs: Initial workflow inputs
 
-        Returns:
-            Final workflow outputs
-        """
-        with create_span(f"workflow.{self.workflow_id}") as span:
-            # Simple sequential execution for now
-            # Add dependency resolution and parallel execution
-            current_inputs = inputs
-            outputs = {}
+    Returns:
+        Final workflow outputs
+    """
+    with create_span(f"workflow.{self.workflow_id}") as span:
+        # Simple sequential execution for now
+        # Add dependency resolution and parallel execution
+        current_inputs = inputs
+        outputs = {}
 
-            for hop in self.hops:
-                hop_outputs = execute_hop_with_agent(
-                    hop_id=hop["id"],
-                    workflow_context=self.context,
-                    hop_function=hop["function"],
-                    inputs=current_inputs,
-                )
-                outputs.update(hop_outputs)
-                current_inputs = hop_outputs
+        for hop in self.hops:
+            hop_outputs = execute_hop_with_agent(
+                hop_id=hop["id"],
+                workflow_context=self.context,
+                hop_function=hop["function"],
+                inputs=current_inputs,
+            )
+            outputs.update(hop_outputs)
+            current_inputs = hop_outputs
 
-            return outputs
+        return outputs
 
 
 def create_workflow_orchestrator(

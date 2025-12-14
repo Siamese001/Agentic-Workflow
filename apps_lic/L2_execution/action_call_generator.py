@@ -71,9 +71,11 @@ class ActionCallGenerator:
         r'\b(?:next|this)\s+(?:week|tuesday|wednesday|thursday|friday|monday)\b',
         r'\b(?:tomorrow|today)\b',
         r'\b\d{1,2}(?:am|pm)\b',
-        r'\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,
-
-            2}\b'
+        (
+            r'\b(?:january|february|march|april|may|june)' +
+            r'|(july|august|september|october|november|december)' +
+            r'\s+\d{1,2}\b'
+        )
     ]
 
     SPECIFIC_ACTION_PATTERNS = [
@@ -211,15 +213,23 @@ class ActionCallGenerator:
         if route_type == RouteType.CONNECTION_REQ:
             return "Would you be open to connecting to discuss potential synergies?"
         elif route_type == RouteType.SHORT_NEW:
-            return "I'd welcome the opportunity to schedule a brief call next Tuesday or Wednesday t
-    o explore how my experience aligns with your team's priorities. Are you available for a 15-minute conversation?"
+            return (
+                "I'd welcome the opportunity to schedule a brief call next Tuesday or Wednesday "
+                "to explore how my experience aligns with your team's priorities. "
+                "Are you available for a 15-minute conversation?"
+            )
         elif route_type == RouteType.INMAIL:
-            return "I'd appreciate the opportunity to discuss how my background in scaling technolog
-    y organizations could support your strategic initiatives. Would you be available for a brief cal
-        l next week? I'm flexible on timing and happy to work around your schedule."
+            return (
+                "I'd appreciate the opportunity to discuss how my background in scaling "
+                "technology organizations could support your strategic initiatives. "
+                "Would you be available for a brief call next week? I'm flexible on timing "
+                "and happy to work around your schedule."
+            )
         else:
-            return "Looking forward to continuing our conversation. Are you available for a quick ca
-    ll this week?"
+            return (
+                "Looking forward to continuing our conversation. "
+                "Are you available for a quick call this week?"
+            )
 
     def _validate_character_limit(
         self,
@@ -240,7 +250,10 @@ class ActionCallGenerator:
                     gate_id='VG_CTA_CHAR_LIMIT',
                     passed=True,
                     severity='INFO',
-                    message=f"Character limit satisfied: {char_count} chars ({min_chars}-{max_chars})",
+                    message=(
+                        f"Character limit satisfied: {char_count} chars "
+                        f"({min_chars}-{max_chars})"
+                    ),
 
 
                     signature=f"CHARLIMIT:OK:{char_count}"
@@ -250,7 +263,10 @@ class ActionCallGenerator:
                 gate_id='VG_CTA_CHAR_LIMIT',
                 passed=False,
                 severity='BLOCK',
-                message=f"BLOCKED: Character count {char_count} outside range ({min_chars}-{max_chars})",
+                message=(
+                        f"BLOCKED: Character count {char_count} "
+                        f"outside range ({min_chars}-{max_chars})"
+                    ),
 
 
                 details={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': rout

@@ -4,6 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest, ToolCallResult, ...
 
+
 def test_tool_call_request_defaults() -> None:
     """TODO: Add docstring."""
 
@@ -14,6 +15,7 @@ def test_tool_call_request_defaults() -> None:
     assert req.timeout_s > 0
 
     """TODO: Add docstring."""
+
 
 def test_tool_call_result_defaults() -> None:
     """TODO: Add docstring."""

@@ -5,6 +5,7 @@ logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Ar...
 # from archives.legacy_root_folders.meta.metacognition.uncertainty import compute_uncertainty  # ...
 
+
 def test_uncertainty_increases_with_signals() -> None:
     """TODO: Add docstring."""
 

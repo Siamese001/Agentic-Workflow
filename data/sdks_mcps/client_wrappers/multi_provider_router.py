@@ -312,7 +312,9 @@ class MultiProviderRouter:
 
         return results
 
-    def _select_providers(self, providers: Optional[List[Provider]], strategy: str) -> List[Provider]:
+    def _select_providers(self,
+         providers: Optional[List[Provider]],
+         strategy: str) -> List[Provider]:
         """Select providers based on strategy and health."""
         if providers:
             candidate_providers = [p for p in providers if p in self.clients]
@@ -344,7 +346,12 @@ class MultiProviderRouter:
         else:
             return healthy_providers
 
-    def _distribute_batch_requests(self, requests: List[Dict[str, object]], strategy: str) -> Dict[Provider, List[Dict[str, object]]]:
+    def _distribute_batch_requests(self,
+         requests: List[Dict[str,
+         object]],
+         strategy: str) -> Dict[Provider,
+         List[Dict[str,
+         object]]]:
         """Distribute batch requests across providers."""
         available_providers = self._select_providers(None, strategy)
 
@@ -376,7 +383,12 @@ class MultiProviderRouter:
 
         return distribution
 
-    def _call_provider(self, provider: Provider, messages: List[Dict[str, object]], **kwargs: Dict[str, object]) -> Any:
+    def _call_provider(self,
+         provider: Provider,
+         messages: List[Dict[str,
+         object]],
+         **kwargs: Dict[str,
+         object]) -> Any:
         """Call the specific provider with appropriate format."""
         client = self.clients[provider]
 
@@ -444,7 +456,8 @@ class MultiProviderRouter:
 
             # Update average latency
             total_requests = stats["requests"]
-            stats["avg_latency"] = (stats["avg_latency"] * (total_requests - 1) + latency) / total_requests
+            stats["avg_latency"] = (stats["avg_latency"] * (total_requests - 1)
+                + latency) / total_requests
 
             # Reset circuit breaker if it was failing
             circuit = self.circuit_breakers[provider]

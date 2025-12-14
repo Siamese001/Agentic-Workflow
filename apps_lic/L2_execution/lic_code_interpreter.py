@@ -13,4 +13,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 # from .lic_code_interpreter_impl import *  # Star import removed
 # from .lic_code_interpreter_impl import *  # Star import removed
 
-__all__ = ['*']  # Re-export all imported names
+__all__ = ["*"]  # Re-export all imported names

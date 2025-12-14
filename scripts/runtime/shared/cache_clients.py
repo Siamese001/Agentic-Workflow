@@ -14,9 +14,11 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class RedisConfig:
     """Configuration for Redis client."""
+
     host: str = "localhost"
     port: int = 6379
     _db: int = 0
@@ -26,8 +28,10 @@ class RedisConfig:
     _socket_connect_timeout: float = 5.0
     _max_connections: int = 50
 
+
 # Singleton Redis client
 _REDIS_CLIENT: Optional[Any] = None
+
 
 def get_redis_client(
     config: Optional[RedisConfig] = None,
@@ -53,6 +57,7 @@ def get_redis_client(
 
     return _REDIS_CLIENT
 
+
 def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
     """Create a new Redis client instance.
 
@@ -68,9 +73,7 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
     try:
         import redis
     except ImportError:
-        raise ImportError(
-            "redis not installed. Install with: pip install redis>=5.0.0"
-        )
+        raise ImportError("redis not installed. Install with: pip install redis>=5.0.0")
 
     if config is None:
         config = RedisConfig()
@@ -99,6 +102,7 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
         logger.warning(f"Redis connection test failed: {e}")
 
     return client
+
 
 def cache_set(
     client: Any,
@@ -130,6 +134,7 @@ def cache_set(
     except Exception as e:
         logger.error(f"Failed to set cache key {key}: {e}")
         return False
+
 
 def cache_get(
     client: Any,
@@ -163,6 +168,7 @@ def cache_get(
         logger.error(f"Failed to get cache key {key}: {e}")
         return None
 
+
 def cache_delete(client: Any, key: str) -> bool:
     """# SQL removed: Delete a key from Redis cache.
 
@@ -179,6 +185,7 @@ def cache_delete(client: Any, key: str) -> bool:
         logger.error(f"Failed to delete cache key {key}: {e}")
         return False
 
+
 def cache_exists(client: Any, key: str) -> bool:
     """Check if a key exists in Redis cache.
 
@@ -194,6 +201,7 @@ def cache_exists(client: Any, key: str) -> bool:
     except Exception as e:
         logger.error(f"Failed to check cache key {key}: {e}")
         return False
+
 
 def cache_get_many(
     client: Any,
@@ -230,6 +238,7 @@ def cache_get_many(
     except Exception as e:
         logger.error(f"Failed to get multiple cache keys: {e}")
         return {}
+
 
 def cache_set_many(
     client: Any,
@@ -269,6 +278,7 @@ def cache_set_many(
         logger.error(f"Failed to set multiple cache keys: {e}")
         return False
 
+
 def cache_clear_pattern(client: Any, pattern: str) -> int:
     """# SQL removed: Delete all keys matching a pattern.
 
@@ -287,6 +297,7 @@ def cache_clear_pattern(client: Any, pattern: str) -> int:
     except Exception as e:
         logger.error(f"Failed to clear cache pattern {pattern}: {e}")
         return 0
+
 
 def reset_redis_client() -> None:
     """Reset cached Redis client (for testing)."""

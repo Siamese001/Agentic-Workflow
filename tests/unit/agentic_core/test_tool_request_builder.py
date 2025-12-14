@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.317503+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_tool_request_builder.py
@@ -17,21 +15,26 @@ import pytest
 from typing import Any
 import logging
 
+
 # Mock exceptions since they're zombie file dependencies
 class OrchestrationError(Exception):
     """Orchestration error for tool routing."""
+
 
 # Mock PlanObject since it's a zombie file dependency
 class PlanObject:
     """TODO: Add docstring."""
 
+
 def __init__(self: Any, mode: str) -> None:
-        self.mode = mode
+    self.mode = mode
+
 
 # Legacy L2 execution functions (zombie files) - not implemented
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_strategy
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_qa
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_safety
+
 
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_strategy_mode() -> None:
@@ -43,6 +46,7 @@ def test_route_executor_strategy_mode() -> None:
     """
     # Test routing to strategy executor
 
+
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_qa_mode() -> None:
     """Test routing to QA executor.
@@ -52,6 +56,7 @@ def test_route_executor_qa_mode() -> None:
     correctly routes to the QA executor function.
     """
     # Test routing to QA executor
+
 
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_invalid_mode() -> None:

@@ -6,6 +6,7 @@ import os
 import json
 from openai import OpenAI
 
+
 def simple_completion(prompt: str, model: str = "gpt-4o-2024-08-06") -> str:
     """Simple chat completion with OpenAI.
 
@@ -22,10 +23,11 @@ def simple_completion(prompt: str, model: str = "gpt-4o-2024-08-06") -> str:
         model=model,
         messages=[{"role": "user", "content": prompt}],
         max_tokens=1000,
-        temperature=0.7
+        temperature=0.7,
     )
 
     return response.choices[0].message.content
+
 
 def structured_completion(prompt: str, schema: dict) -> dict:
     """Structured completion with JSON schema.
@@ -44,16 +46,14 @@ def structured_completion(prompt: str, schema: dict) -> dict:
         messages=[{"role": "user", "content": prompt}],
         response_format={
             "type": "json_schema",
-            "json_schema": {
-                "name": schema.get("title", "response"),
-                "schema": schema
-            }
+            "json_schema": {"name": schema.get("title", "response"), "schema": schema},
         },
         max_tokens=2000,
-        temperature=0.3
+        temperature=0.3,
     )
 
     return json.loads(response.choices[0].message.content)
+
 
 if __name__ == "__main__":
     # Test simple completion
@@ -64,7 +64,6 @@ if __name__ == "__main__":
         "properties": {
             "topic": {"type": "string"},
             "summary": {"type": "string"},
-            "key_points": {"type": "array", "items": {"type": "string"}}
-        }
+            "key_points": {"type": "array", "items": {"type": "string"}},
+        },
     }
-

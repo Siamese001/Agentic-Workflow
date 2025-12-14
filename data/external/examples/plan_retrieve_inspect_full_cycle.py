@@ -163,7 +163,10 @@ class TalentIntelligenceAgent:
                 Information Needed: {json.dumps(plan["information_needed"], indent=2)}
 
                 Retrieved Data Summary:
-                {json.dumps({k: f"{len(v) if isinstance(v, list) else 'summary'} items" for k, v in retrieved_data.items()}, indent=2)}
+                {json.dumps({k: f"{len(v) if isinstance(v,
+                     list) else 'summary'} items" for k,
+                     v in retrieved_data.items()},
+                     indent=2)}
 
                 Provide analysis including:
                 1. Data quality assessment

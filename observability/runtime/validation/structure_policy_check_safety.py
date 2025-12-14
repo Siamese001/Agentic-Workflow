@@ -13,4 +13,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 # from .structure_policy_check_safety_types import *  # Star import removed
 # from .structure_policy_check_safety_impl import *  # Star import removed
 
-__all__ = ['*']  # Re-export all imported names
+__all__ = ["*"]  # Re-export all imported names

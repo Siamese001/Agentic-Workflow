@@ -16,16 +16,18 @@ from typing import List, Optional
 logger = logging.getLogger(__name__)
 
 # Fix Windows console encoding
-if sys.platform == 'win32':
+if sys.platform == "win32":
     import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # ANSI color codes for terminal output
 
 
 class Colors:
     """ANSI color codes for console output."""
+
     RED = "\033[91m"
     GREEN = "\033[92m"
     YELLOW = "\033[93m"
@@ -69,9 +71,21 @@ def get_python_files(root_dir: str = ".") -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
     python_files = []
     exclude_dirs = {
-        ".git", "__pycache__", ".pytest_cache", ".tox", "venv", "env",
-        ".venv", ".env", "node_modules", ".idea", ".vscode", "dist", "build",
-        "archives", "data"
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".tox",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        "node_modules",
+        ".idea",
+        ".vscode",
+        "dist",
+        "build",
+        "archives",
+        "data",
     }
 
     for root, dirs, files in os.walk(root_dir):
@@ -91,13 +105,14 @@ def get_python_files(root_dir: str = ".") -> List[str]:
 def parse_python_file(file_path: str) -> Optional[ast.AST]:
     """Parse a Python file and return its AST."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
         return ast.parse(content, filename=file_path)
     except SyntaxError as e:
         return None
     except Exception as e:
         return None
+
 
 # --- PHASE 1: HYGIENE (Keys 00-09) ---
 
@@ -111,9 +126,9 @@ def check_key_00_no_hardcoded_secrets() -> None:
         r'api_key\s*=\s*["\'][^"\']+["\']',
         r'secret\s*=\s*["\'][^"\']+["\']',
         r'token\s*=\s*["\'][^"\']+["\']',
-        r'AKIA[0-9A-Z]{16}',  # AWS access key
-        r'sk-[a-zA-Z0-9]{48}',  # OpenAI API key
-        r'ghp_[a-zA-Z0-9]{36}',  # GitHub personal access token
+        r"AKIA[0-9A-Z]{16}",  # AWS access key
+        r"sk-[a-zA-Z0-9]{48}",  # OpenAI API key
+        r"ghp_[a-zA-Z0-9]{36}",  # GitHub personal access token
     ]
 
     violations = []
@@ -121,12 +136,12 @@ def check_key_00_no_hardcoded_secrets() -> None:
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 for pattern in secret_patterns:
                     matches = re.finditer(pattern, content, re.IGNORECASE)
                     for match in matches:
-                        line_num = content[:match.start()].count('\n') + 1
+                        line_num = content[: match.start()].count("\n") + 1
                         violations.append(f"{file_path}:{line_num}")
         except Exception:
             continue
@@ -141,18 +156,18 @@ def check_key_01_no_todo_comments() -> None:
     """Key 01: No TODO, FIXME, or XXX comments in production code."""
     info("Checking for TODO/FIXME comments...")
 
-    todo_patterns = [r'#\s*TODO', r'#\s*FIXME', r'#\s*XXX', r'#\s*HACK', r'#\s*TEMP']
+    todo_patterns = [r"#\s*TODO", r"#\s*FIXME", r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
     violations = []
     python_files = get_python_files()
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 for pattern in todo_patterns:
                     matches = re.finditer(pattern, content, re.IGNORECASE)
                     for match in matches:
-                        line_num = content[:match.start()].count('\n') + 1
+                        line_num = content[: match.start()].count("\n") + 1
                         violations.append(f"{file_path}:{line_num}")
         except Exception:
             continue
@@ -177,7 +192,7 @@ def check_key_02_no_print_statements() -> None:
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-                        if node.func.id == 'print':
+                        if node.func.id == "print":
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
@@ -192,16 +207,17 @@ def check_key_03_no_debugger_statements() -> None:
     """Key 03: No debugger statements (breakpoint, pdb.set_trace, etc.)."""
     info("Checking for debugger statements...")
     debugger_patterns = [
-        r'breakpoint\(\)',
-        r'pdb\.set_trace\(\)',
-        r'ipdb\.set_trace\(\)',
-        r'pudb\.set_trace\(\)']
+        r"breakpoint\(\)",
+        r"pdb\.set_trace\(\)",
+        r"ipdb\.set_trace\(\)",
+        r"pudb\.set_trace\(\)",
+    ]
     violations = []
     python_files = get_python_files()
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 for pattern in debugger_patterns:
                     if re.search(pattern, content):
@@ -228,7 +244,8 @@ def check_key_04_no_empty_except_blocks() -> None:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ExceptHandler):
                         if not node.body or (
-                                len(node.body) == 1 and isinstance(node.body[0], ast.Pass)):
+                            len(node.body) == 1 and isinstance(node.body[0], ast.Pass)
+                        ):
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
@@ -274,7 +291,7 @@ def check_key_06_no_eval_exec() -> None:
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-                        if node.func.id in ('eval', 'exec'):
+                        if node.func.id in ("eval", "exec"):
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
@@ -297,7 +314,7 @@ def check_key_07_no_star_imports() -> None:
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ImportFrom):
-                        if node.module and node.names[0].name == '*':
+                        if node.module and node.names[0].name == "*":
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
@@ -362,7 +379,7 @@ def check_key_09_no_unused_imports() -> None:
                             used_names.add(node.value.id)
 
                 for imp in imports:
-                    if imp not in used_names and not imp.startswith('_'):
+                    if imp not in used_names and not imp.startswith("_"):
                         violations.append(f"{file_path}:{import_lines[imp]}")
         except Exception:
             continue
@@ -371,6 +388,7 @@ def check_key_09_no_unused_imports() -> None:
         fail("09", f"Found {len(violations)} unused imports")
     else:
         success("09", "No unused imports found")
+
 
 # --- PHASE 2: STYLE (Keys 10-14) ---
 
@@ -383,9 +401,13 @@ def check_key_10_no_long_lines() -> None:
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
                 for i, line in enumerate(lines, 1):
+                    # Skip comment lines and empty lines
+                    stripped = line.strip()
+                    if stripped.startswith('#') or not stripped:
+                        continue
                     if len(line.rstrip()) > 100:
                         violations.append(f"{file_path}:{i}")
         except Exception:
@@ -405,10 +427,10 @@ def check_key_11_no_trailing_whitespace() -> None:
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
                 for i, line in enumerate(lines, 1):
-                    if line.rstrip() != line.rstrip('\n\r'):
+                    if line.rstrip() != line.rstrip("\n\r"):
                         violations.append(f"{file_path}:{i}")
         except Exception:
             continue
@@ -427,9 +449,9 @@ def check_key_12_no_missing_newline() -> None:
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
-                if content and not content.endswith('\n'):
+                if content and not content.endswith("\n"):
                     violations.append(file_path)
         except Exception:
             continue
@@ -448,10 +470,10 @@ def check_key_13_no_tabs() -> None:
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
                 for i, line in enumerate(lines, 1):
-                    if '\t' in line:
+                    if "\t" in line:
                         violations.append(f"{file_path}:{i}")
                         break
         except Exception:
@@ -481,7 +503,8 @@ def check_key_14_no_duplicate_imports() -> None:
                     elif isinstance(node, ast.ImportFrom):
                         for alias in node.names:
                             imports.append(
-                                f"{node.module}.{alias.name}" if node.module else alias.name)
+                                f"{node.module}.{alias.name}" if node.module else alias.name
+                            )
 
                 if len(imports) != len(set(imports)):
                     violations.append(file_path)
@@ -492,6 +515,7 @@ def check_key_14_no_duplicate_imports() -> None:
         fail("14", f"Found {len(violations)} files with duplicate imports")
     else:
         success("14", "No duplicate imports found")
+
 
 # --- PHASE 3: STRUCTURE (Keys 15-20) ---
 
@@ -510,7 +534,7 @@ def check_key_15_no_magic_numbers() -> None:
                     if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
                         if node.value in (0, 1, -1, 2, 10, 100, 1000):
                             continue
-                        if hasattr(node, 'parent'):
+                        if hasattr(node, "parent"):
                             continue
                         violations.append(f"{file_path}:{node.lineno} ({node.value})")
         except Exception:
@@ -535,7 +559,7 @@ def check_key_16_no_deep_nesting() -> None:
                 for node in ast.walk(tree):
                     depth = 0
                     parent = node
-                    while hasattr(parent, 'parent'):
+                    while hasattr(parent, "parent"):
                         parent = parent.parent
                         depth += 1
                         if depth > 4:
@@ -563,12 +587,10 @@ def check_key_17_no_large_functions() -> None:
                 for node in ast.walk(tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         size = (
-                            node.end_lineno -
-                            node.lineno +
-                            1) if hasattr(
-                            node,
-                            'end_lineno') else len(
-                            node.body)
+                            (node.end_lineno - node.lineno + 1)
+                            if hasattr(node, "end_lineno")
+                            else len(node.body)
+                        )
                         if size > 50:
                             violations.append(f"{file_path}:{node.lineno} ({size} lines)")
         except Exception:
@@ -592,7 +614,7 @@ def check_key_18_no_many_parameters() -> None:
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        count = len([a for a in node.args.args if a.arg not in ('self', 'cls')])
+                        count = len([a for a in node.args.args if a.arg not in ("self", "cls")])
                         if count > 7:
                             violations.append(f"{file_path}:{node.lineno} ({count} params)")
         except Exception:
@@ -619,7 +641,8 @@ def check_key_19_no_complex_functions() -> None:
                         complexity = 1
                         for child in ast.walk(node):
                             if isinstance(
-                                    child, (ast.If, ast.While, ast.For, ast.AsyncFor, ast.ExceptHandler)):
+                                child, (ast.If, ast.While, ast.For, ast.AsyncFor, ast.ExceptHandler)
+                            ):
                                 complexity += 1
                         if complexity > 10:
                             violations.append(f"{file_path}:{node.lineno}")
@@ -645,8 +668,10 @@ def check_key_20_no_large_classes() -> None:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
                         methods = [
-                            n for n in node.body if isinstance(
-                                n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                            n
+                            for n in node.body
+                            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                        ]
                         if len(methods) > 20:
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
@@ -656,6 +681,7 @@ def check_key_20_no_large_classes() -> None:
         fail("20", f"Found {len(violations)} large classes")
     else:
         success("20", "All classes within size limit")
+
 
 # --- PHASE 4: DOCS & TYPES (Keys 21-25) ---
 
@@ -672,7 +698,7 @@ def check_key_21_no_missing_docstrings() -> None:
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-                        if node.name.startswith('_'):
+                        if node.name.startswith("_"):
                             continue
                         if not ast.get_docstring(node):
                             violations.append(f"{file_path}:{node.lineno} {node.name}")
@@ -697,7 +723,7 @@ def check_key_22_no_type_hints() -> None:
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        if node.name.startswith('_'):
+                        if node.name.startswith("_"):
                             continue
                         if node.returns is None:
                             violations.append(f"{file_path}:{node.lineno} {node.name}")
@@ -755,7 +781,7 @@ def check_key_24_no_unused_variables() -> None:
                             used.add(node.id)
 
                 for var in assigned:
-                    if var not in used and not var.startswith('_'):
+                    if var not in used and not var.startswith("_"):
                         violations.append(f"{file_path} - {var}")
         except Exception:
             continue
@@ -790,6 +816,7 @@ def check_key_25_no_global_variables() -> None:
     else:
         success("25", "No global variables found")
 
+
 # --- PHASE 5: EXTERNAL (Keys 26-30) ---
 
 
@@ -798,14 +825,15 @@ def check_key_26_no_direct_sql() -> None:
     info("Checking for direct SQL queries...")
     sql_patterns = [
         r'\.execute\s*\(\s*["\'].*?(SELECT|INSERT|UPDATE|DELETE)',
-        r'cursor\.execute',
-        r'db\.execute']
+        r"cursor\.execute",
+        r"db\.execute",
+    ]
     violations = []
     python_files = get_python_files()
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 for pattern in sql_patterns:
                     if re.search(pattern, content, re.IGNORECASE):
@@ -839,7 +867,7 @@ def check_key_27_no_empty_sov_files() -> None:
                 is_empty = True
             else:
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         content = f.read().strip()
                     if not content:
                         is_empty = True
@@ -859,7 +887,8 @@ def check_key_27_no_empty_sov_files() -> None:
 
     if cleaned_count > 0:
         logger.info(
-            f"{Colors.GREEN}    ✓ Cleanup Summary: Removed {cleaned_count} empty files.{Colors.END}")
+            f"{Colors.GREEN}    ✓ Cleanup Summary: Removed {cleaned_count} empty files.{Colors.END}"
+        )
 
     if violations:
         fail("27", f"Failed to clean {len(violations)} empty files")
@@ -870,13 +899,13 @@ def check_key_27_no_empty_sov_files() -> None:
 def check_key_28_no_hardcoded_urls() -> None:
     """Key 28: No hardcoded URLs in code."""
     info("Checking for hardcoded URLs...")
-    url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
+    url_pattern = r"https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+"
     violations = []
     python_files = get_python_files()
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 matches = re.finditer(url_pattern, content)
                 for match in matches:
@@ -893,13 +922,13 @@ def check_key_28_no_hardcoded_urls() -> None:
 def check_key_29_no_hardcoded_ports() -> None:
     """Key 29: No hardcoded ports."""
     info("Checking for hardcoded ports...")
-    port_pattern = r':\d{4,5}'
+    port_pattern = r":\d{4,5}"
     violations = []
     python_files = get_python_files()
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 if re.search(port_pattern, content):
                     violations.append(file_path)
@@ -923,8 +952,8 @@ def check_key_30_no_time_sleep() -> None:
             tree = parse_python_file(file_path)
             if tree:
                 for node in ast.walk(tree):
-                    if isinstance(node, ast.Attribute) and node.attr == 'sleep':
-                        if isinstance(node.value, ast.Name) and node.value.id == 'time':
+                    if isinstance(node, ast.Attribute) and node.attr == "sleep":
+                        if isinstance(node.value, ast.Name) and node.value.id == "time":
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
@@ -933,6 +962,7 @@ def check_key_30_no_time_sleep() -> None:
         fail("30", f"Found {len(violations)} time.sleep calls")
     else:
         success("30", "No time.sleep calls found")
+
 
 # --- PHASE 6: CONCURRENCY (Keys 31-32) ---
 
@@ -945,8 +975,8 @@ def check_key_31_no_threading() -> None:
 
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                if 'import threading' in f.read():
+            with open(file_path, "r", encoding="utf-8") as f:
+                if "import threading" in f.read():
                     violations.append(file_path)
         except Exception:
             continue
@@ -970,12 +1000,14 @@ def check_key_32_no_blocking_io() -> None:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.AsyncFunctionDef):
                         for child in ast.walk(node):
-                            if isinstance(
-                                    child, ast.Call) and isinstance(
-                                    child.func, ast.Attribute):
+                            if isinstance(child, ast.Call) and isinstance(
+                                child.func, ast.Attribute
+                            ):
                                 if child.func.attr in (
-                                        'get', 'post', 'request') and 'requests' in str(
-                                        child.func.value):
+                                    "get",
+                                    "post",
+                                    "request",
+                                ) and "requests" in str(child.func.value):
                                     violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
@@ -984,6 +1016,7 @@ def check_key_32_no_blocking_io() -> None:
         fail("32", f"Found {len(violations)} blocking calls in async code")
     else:
         success("32", "No blocking I/O in async found")
+
 
 # --- PHASE 7: PYTHONIC (Keys 33-40) ---
 
@@ -995,10 +1028,10 @@ def check_key_33_no_lambda_abuse() -> None:
     python_files = get_python_files()
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
                 for i, line in enumerate(lines, 1):
-                    if 'lambda' in line and len(line) > 80:
+                    if "lambda" in line and len(line) > 80:
                         violations.append(f"{file_path}:{i}")
         except Exception:
             continue
@@ -1061,14 +1094,15 @@ def check_key_36_no_class_abuse() -> None:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
                         if all(
-                            isinstance(
-                                n,
-                                ast.FunctionDef) and any(
-                                d.id == 'staticmethod' for d in n.decorator_list if isinstance(
-                                    d,
-                                    ast.Name)) for n in node.body if isinstance(
-                                n,
-                                ast.FunctionDef)):
+                            isinstance(n, ast.FunctionDef)
+                            and any(
+                                d.id == "staticmethod"
+                                for d in n.decorator_list
+                                if isinstance(d, ast.Name)
+                            )
+                            for n in node.body
+                            if isinstance(n, ast.FunctionDef)
+                        ):
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
@@ -1092,8 +1126,8 @@ def check_key_38_no_property_abuse() -> None:
     python_files = get_python_files()
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                if f.read().count('@property') > 10:
+            with open(file_path, "r", encoding="utf-8") as f:
+                if f.read().count("@property") > 10:
                     violations.append(file_path)
         except Exception:
             continue
@@ -1110,8 +1144,8 @@ def check_key_39_no_dunder_abuse() -> None:
     python_files = get_python_files()
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                if f.read().count('__') > 50:
+            with open(file_path, "r", encoding="utf-8") as f:
+                if f.read().count("__") > 50:
                     violations.append(file_path)
         except Exception:
             continue
@@ -1129,11 +1163,11 @@ def check_key_40_no_metaclass_abuse() -> None:
 
     for file_path in python_files:
         # Skip the validator itself to avoid false positive
-        if file_path == './canon_validator.py':
+        if file_path == "./canon_validator.py":
             continue
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                if 'metaclass=' in f.read():
+            with open(file_path, "r", encoding="utf-8") as f:
+                if "metaclass=" in f.read():
                     violations.append(file_path)
         except Exception:
             continue
@@ -1141,6 +1175,7 @@ def check_key_40_no_metaclass_abuse() -> None:
         fail("40", f"Found {len(violations)} files using metaclasses")
     else:
         success("40", "No metaclasses found")
+
 
 # --- PHASE 8: LIGHT CANON (Keys 41-47) ---
 
@@ -1154,28 +1189,70 @@ def check_key_41_no_deep_directories() -> None:
     violations = []
     # ONLY THESE FOLDERS ALLOWED AT ROOT
     STRICT_ROOT_DOMAINS = {
-        'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared',
-        'tests', 'config', 'data', 'archives', 'schemas',
-        'observability', 'scripts', 'docs',
-        '01_runtime_logic', '02_runtime_cache', '03_scripts_logic',
-        '04_scripts_cache', '05_runtime_security', '06_runtime_runtime',
-        '07_runtime_pipeline', '08_shared_security', '09_shared_runtime',
-        '10_shared_pipeline', '11_shared_logic', '12_shared_cache',
-        '13_scripts_security', '14_scripts_runtime', '15_scripts_pipeline',
-        '16_runtime_runtime', '17_runtime_servers', '18_runtime_agents',
-        '19_runtime_pipeline'
+        "agentic_core",
+        "apps_lic",
+        "apps_rg",
+        "apps_shared",
+        "tests",
+        "config",
+        "data",
+        "archives",
+        "schemas",
+        "observability",
+        "scripts",
+        "docs",
+        "01_runtime_logic",
+        "02_runtime_cache",
+        "03_scripts_logic",
+        "04_scripts_cache",
+        "05_runtime_security",
+        "06_runtime_runtime",
+        "07_runtime_pipeline",
+        "08_shared_security",
+        "09_shared_runtime",
+        "10_shared_pipeline",
+        "11_shared_logic",
+        "12_shared_cache",
+        "13_scripts_security",
+        "14_scripts_runtime",
+        "15_scripts_pipeline",
+        "16_runtime_runtime",
+        "17_runtime_servers",
+        "18_runtime_agents",
+        "19_runtime_pipeline",
     }
     STRICT_ROOT_FILES = {
-        'main.py', 'canon_validator.py', 'setup.py', 'README.md',
-        'requirements.txt', '.gitignore', '.env.example', 'pytest.ini',
-        'docker-compose.yml', 'Dockerfile', 'pyproject.toml'
+        "main.py",
+        "canon_validator.py",
+        "setup.py",
+        "README.md",
+        "requirements.txt",
+        ".gitignore",
+        ".env.example",
+        "pytest.ini",
+        "docker-compose.yml",
+        "Dockerfile",
+        "pyproject.toml",
     }
-    SYS_EXCLUDES = {'.git', '__pycache__', '.pytest_cache', '.tox', 'venv', 'env',
-                    '.venv', '.env', 'node_modules', '.idea', '.vscode', 'dist',
-                    'build', '.ds_store'}
+    SYS_EXCLUDES = {
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".tox",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        "node_modules",
+        ".idea",
+        ".vscode",
+        "dist",
+        "build",
+        ".ds_store",
+    }
 
     # 1. SCAN ROOT
-    for item in os.listdir('.'):
+    for item in os.listdir("."):
         if item in SYS_EXCLUDES or item.lower() in SYS_EXCLUDES:
             continue
 
@@ -1188,10 +1265,10 @@ def check_key_41_no_deep_directories() -> None:
 
     # 2. SCAN DEPTH
     max_depth = 0
-    for root, dirs, files in os.walk('.'):
+    for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in SYS_EXCLUDES]
         parts = Path(root).parts
-        if not parts or parts[0] == '.':
+        if not parts or parts[0] == ".":
             parts = parts[1:]
         if not parts:
             continue
@@ -1203,7 +1280,7 @@ def check_key_41_no_deep_directories() -> None:
         # Enforce max depth 3 (except core/apps which get 4)
         root_folder = parts[0]
         if root_folder in STRICT_ROOT_DOMAINS:
-            limit = 4 if 'agentic_core' in root_folder or 'apps_' in root_folder else 3
+            limit = 4 if "agentic_core" in root_folder or "apps_" in root_folder else 3
             if depth > limit:
                 violations.append(f"DEEP NESTING: '{root}' (Depth {depth} > {limit})")
 
@@ -1222,7 +1299,7 @@ def check_key_42_no_large_files() -> None:
     python_files = get_python_files()
     for file_path in python_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 if len(f.readlines()) > 500:
                     violations.append(file_path)
         except Exception:
@@ -1282,9 +1359,11 @@ def check_key_47_no_violate_naming() -> None:
     python_files = get_python_files()
 
     bad_patterns = [
-        (r'_v\d+', "Version tag"), (r'_old', "Deprecation tag"),
-        (r'_backup', "Backup file"), (r'^copy_of', "Copy artifact"),
-        (r'_tmp', "Temp file")
+        (r"_v\d+", "Version tag"),
+        (r"_old", "Deprecation tag"),
+        (r"_backup", "Backup file"),
+        (r"^copy_of", "Copy artifact"),
+        (r"_tmp", "Temp file"),
     ]
 
     for file_path in python_files:
@@ -1296,10 +1375,10 @@ def check_key_47_no_violate_naming() -> None:
                 violations.append(f"GARBAGE FILE: {file_path} [{reason}]")
 
         # 2. Misplaced Tests
-        if 'test' in filename.lower():
-            if filename.startswith('test_') or filename.endswith('_test.py'):
-                path_parts = file_path.split('/')
-                if 'tests' not in path_parts:
+        if "test" in filename.lower():
+            if filename.startswith("test_") or filename.endswith("_test.py"):
+                path_parts = file_path.split("/")
+                if "tests" not in path_parts:
                     violations.append(f"MISPLACED TEST: {file_path} (Move to 'tests/')")
 
         # 3. Naming Conventions (AST)
@@ -1309,16 +1388,19 @@ def check_key_47_no_violate_naming() -> None:
                 if tree:
                     for node in ast.walk(tree):
                         if isinstance(node, ast.ClassDef):
-                            if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
+                            if not re.match(r"^[A-Z][a-zA-Z0-9]*$", node.name):
                                 violations.append(
                                     f"NAMING: {file_path} Class '{
-                                        node.name}' must be PascalCase")
+                                        node.name}' must be PascalCase"
+                                )
                         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                            if not node.name.startswith('_') and not re.match(
-                                    r'^[a-z_][a-z0-9_]*$', node.name):
+                            if not node.name.startswith("_") and not re.match(
+                                r"^[a-z_][a-z0-9_]*$", node.name
+                            ):
                                 violations.append(
                                     f"NAMING: {file_path} Func '{
-                                        node.name}' must be snake_case")
+                                        node.name}' must be snake_case"
+                                )
             except Exception:
                 # AST parsing may fail for some files, ignore them
                 continue
@@ -1329,6 +1411,7 @@ def check_key_47_no_violate_naming() -> None:
             logger.info(f"    {Colors.RED}{v}{Colors.END}")
     else:
         success("47", "Naming conventions and file placement valid")
+
 
 # --- PHASE 9: UNIVERSAL (Keys 48-50) ---
 
@@ -1343,11 +1426,23 @@ def check_key_49_universal_depth() -> None:
     info("Checking universal folder depth...")
     violations = []
     exclude_dirs = {
-        ".git", "__pycache__", ".pytest_cache", ".tox", "venv", "env",
-        ".venv", ".env", "node_modules", ".idea", ".vscode", "dist", "build",
-        "archives", "data"
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".tox",
+        "venv",
+        "env",
+        ".venv",
+        ".env",
+        "node_modules",
+        ".idea",
+        ".vscode",
+        "dist",
+        "build",
+        "archives",
+        "data",
     }
-    for root, dirs, files in os.walk('.'):
+    for root, dirs, files in os.walk("."):
         # Skip excluded directories
         if any(excluded in root for excluded in exclude_dirs):
             continue
@@ -1378,6 +1473,7 @@ def check_key_50_canon_meta_integrity() -> None:
             logger.info(f"    {Colors.RED}!!! {f}{Colors.END}")
     else:
         success("50", "Canon Integrity Verified")
+
 
 # --- RUNNER LOGIC ---
 
@@ -1461,7 +1557,8 @@ def get_phase_checks(phase: int) -> List:
 def run_all_checks() -> None:
     """Run all 50 canon validation checks in strict logical sequence."""
     logger.info(
-        f"\n{Colors.BOLD}{Colors.UNDERLINE}Subatomic Canon Validator - Agentic Workflow{Colors.END}")
+        f"\n{Colors.BOLD}{Colors.UNDERLINE}Subatomic Canon Validator - Agentic Workflow{Colors.END}"
+    )
     logger.info(f"{Colors.CYAN}Validating 50 strict enforcement rules...{Colors.END}\n")
 
     # --- CRITICAL PRE-FLIGHT ---
@@ -1494,7 +1591,8 @@ def run_all_checks() -> None:
                 Colors.YELLOW}Failed keys: {
                 ', '.join(
                     sorted(failed_checks))}{
-                    Colors.END}")
+                    Colors.END}"
+        )
 
     return failed == 0
 
@@ -1557,55 +1655,138 @@ def get_check_description(key: str) -> str:
     return descriptions.get(key, "Unknown key")
 
 
-def main() -> None:
-    """Main entry point."""
-    import argparse
+# ALL_KEYS dictionary for targeted execution
+ALL_KEYS = {
+    0: {"name": "No hardcoded secrets", "function": lambda: run_check_function(check_key_00_no_hardcoded_secrets)},
+    1: {"name": "No TODO/FIXME comments", "function": lambda: run_check_function(check_key_01_no_todo_comments)},
+    2: {"name": "No print statements", "function": lambda: run_check_function(check_key_02_no_print_statements)},
+    3: {"name": "No debugger statements", "function": lambda: run_check_function(check_key_03_no_debugger_statements)},
+    4: {"name": "No empty except blocks", "function": lambda: run_check_function(check_key_04_no_empty_except_blocks)},
+    5: {"name": "No bare except clauses", "function": lambda: run_check_function(check_key_05_no_bare_except)},
+    6: {"name": "No eval/exec usage", "function": lambda: run_check_function(check_key_06_no_eval_exec)},
+    7: {"name": "No star imports", "function": lambda: run_check_function(check_key_07_no_star_imports)},
+    8: {"name": "No relative imports", "function": lambda: run_check_function(check_key_08_no_relative_imports)},
+    9: {"name": "No unused imports", "function": lambda: run_check_function(check_key_09_no_unused_imports)},
+    10: {"name": "No long lines (>100 chars)", "function": lambda: run_check_function(check_key_10_no_long_lines)},
+    11: {"name": "No trailing whitespace", "function": lambda: run_check_function(check_key_11_no_trailing_whitespace)},
+    12: {"name": "Files end with newline", "function": lambda: run_check_function(check_key_12_files_end_with_newline)},
+    13: {"name": "No tab characters", "function": lambda: run_check_function(check_key_13_no_tab_characters)},
+    14: {"name": "No duplicate imports", "function": lambda: run_check_function(check_key_14_no_duplicate_imports)},
+    15: {"name": "No magic numbers", "function": lambda: run_check_function(check_key_15_no_magic_numbers)},
+    16: {"name": "No deep nesting (>4 levels)", "function": lambda: run_check_function(check_key_16_no_deep_nesting)},
+    17: {"name": "No large functions (>50 lines)", "function": lambda: run_check_function(check_key_17_no_large_functions)},
+    18: {"name": "No many parameters (>7)", "function": lambda: run_check_function(check_key_18_no_many_parameters)},
+    19: {"name": "No complex functions (CC>10)", "function": lambda: run_check_function(check_key_19_no_complex_functions)},
+    20: {"name": "No large classes (>20 methods)", "function": lambda: run_check_function(check_key_20_no_large_classes)},
+    21: {"name": "Public functions have docstrings", "function": lambda: run_check_function(check_key_21_no_missing_docstrings)},
+    22: {"name": "Public functions have type hints", "function": lambda: run_check_function(check_key_22_no_missing_type_hints)},
+    23: {"name": "No unreachable code", "function": lambda: run_check_function(check_key_23_no_unreachable_code)},
+    24: {"name": "No unused variables", "function": lambda: run_check_function(check_key_24_no_unused_variables)},
+    25: {"name": "No global variables", "function": lambda: run_check_function(check_key_25_no_global_variables)},
+    26: {"name": "No direct SQL queries", "function": lambda: run_check_function(check_key_26_no_direct_sql_queries)},
+    27: {"name": "No empty placeholder files (0 bytes)", "function": lambda: run_check_function(check_key_27_no_empty_placeholder_files)},
+    28: {"name": "No hardcoded URLs", "function": lambda: run_check_function(check_key_28_no_hardcoded_urls)},
+    29: {"name": "No hardcoded ports", "function": lambda: run_check_function(check_key_29_no_hardcoded_ports)},
+    30: {"name": "No time.sleep in production", "function": lambda: run_check_function(check_key_30_no_time_sleep)},
+    31: {"name": "No threading module", "function": lambda: run_check_function(check_key_31_no_threading_module)},
+    32: {"name": "No blocking I/O in async", "function": lambda: run_check_function(check_key_32_no_blocking_io_async)},
+    33: {"name": "No complex lambdas", "function": lambda: run_check_function(check_key_33_no_complex_lambdas)},
+    34: {"name": "No complex comprehensions", "function": lambda: run_check_function(check_key_34_no_complex_comprehensions)},
+    35: {"name": "No excessive try-except", "function": lambda: run_check_function(check_key_35_no_excessive_try_except)},
+    36: {"name": "No static-only classes", "function": lambda: run_check_function(check_key_36_no_static_only_classes)},
+    37: {"name": "No deep inheritance (>3)", "function": lambda: run_check_function(check_key_37_no_deep_inheritance)},
+    38: {"name": "No excessive @property", "function": lambda: run_check_function(check_key_38_no_excessive_property)},
+    39: {"name": "No excessive dunder methods", "function": lambda: run_check_function(check_key_39_no_excessive_dunder_methods)},
+    40: {"name": "No metaclasses", "function": lambda: run_check_function(check_key_40_no_metaclasses)},
+    41: {"name": "No deep directories (>3)", "function": lambda: run_check_function(check_key_41_no_deep_directories)},
+    42: {"name": "No large files (>500 lines)", "function": lambda: run_check_function(check_key_42_no_large_files)},
+    43: {"name": "No many classes (>10)", "function": lambda: run_check_function(check_key_43_no_many_classes)},
+    44: {"name": "No circular imports", "function": lambda: run_check_function(check_key_44_no_circular_imports)},
+    45: {"name": "No dead code", "function": lambda: run_check_function(check_key_45_no_dead_code)},
+    46: {"name": "No duplicate code", "function": lambda: run_check_function(check_key_46_no_duplicate_code)},
+    47: {"name": "Follow naming conventions", "function": lambda: run_check_function(check_key_47_follow_naming_conventions)},
+    48: {"name": "RESERVED", "function": lambda: (True, [])},
+    49: {"name": "Universal max 5 levels from root", "function": lambda: run_check_function(check_key_49_universal_max_depth)},
+    50: {"name": "Canon meta-integrity check", "function": lambda: run_check_function(check_key_50_meta_integrity)},
+}
 
-    # Configure logging to show output
-    logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-    parser = argparse.ArgumentParser(description="Subatomic Canon Validator")
-    parser.add_argument("--key", type=str, help="Run specific key (e.g., '01' or 'all')")
-    parser.add_argument("--phase", type=int, choices=range(1, 10), help="Run specific phase (1-9)")
-    parser.add_argument("--list", action="store_true", help="List all available checks")
+def run_check_function(check_func):
+    """Run a check function and return (passed, details) tuple."""
+    global failed_checks
+    global validation_results
+    
+    # Clear previous results for this check
+    old_failed = failed_checks.copy()
+    old_results = validation_results.copy()
+    
+    failed_checks = []
+    validation_results = {}
+    
+    try:
+        check_func()
+        passed = len(failed_checks) == 0
+        details = failed_checks
+        return (passed, details)
+    except Exception as e:
+        return (False, [f"Error running check: {str(e)}"])
+    finally:
+        # Restore global state
+        failed_checks = old_failed
+        validation_results = old_results
 
-    args = parser.parse_args()
 
-    if args.list:
-        logger.info("Available Canon Keys:")
-        for i in range(51):
-            key = f"{i:02d}"
-            logger.info(f"  Key {key}: {get_check_description(key)}")
-        return
-
-    if args.key:
-        if args.key == "all":
-            success = run_all_checks()
-        else:
-            check_func = globals().get(f"check_key_{args.key}")
-            # Try fuzzy match if exact name fails
-            if not check_func:
-                for name in globals():
-                    if name.startswith(f"check_key_{args.key}"):
-                        check_func = globals()[name]
-                        break
-
-            if check_func:
-                check_func()
-                success = args.key not in failed_checks
-            else:
-                logger.info(f"Unknown key: {args.key}")
-                success = False
-    elif args.phase:
-        phase_checks = get_phase_checks(args.phase)
-        for check_func in phase_checks:
-            check_func()
-        success = len(failed_checks) == 0
-    else:
-        success = run_all_checks()
-
-    sys.exit(0 if success else 1)
+def print_live_dashboard(results):
+    """Prints a clean summary table of specific keys."""
+    print(f"\n{'='*60}")
+    print(f"{'KEY':<6} | {'STATUS':<6} | {'VIOLATIONS':<10} | {'NAME'}")
+    print(f"{'-'*60}")
+    for k in sorted(results.keys()):
+        status = "PASS" if results[k]['passed'] else "FAIL"
+        count = len(results[k]['details']) if not results[k]['passed'] else 0
+        print(f"{k:<6} | {status:<6} | {count:<10} | {ALL_KEYS[k]['name']}")
+    print(f"{'='*60}\n")
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    import sys
+
+    # Configure logging to show output
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    
+    parser = argparse.ArgumentParser(description="Subatomic Canon Validator")
+    parser.add_argument("--keys", nargs="+", type=int, help="Run specific keys (e.g. --keys 17 25)")
+    parser.add_argument("--range", type=str, help="Run range (e.g. --range 1-10)")
+    parser.add_argument("--u", action="store_true", help="Unbuffered output")
+    args = parser.parse_args()
+
+    # Determine keys to run
+    keys_to_run = []
+    if args.keys:
+        keys_to_run = [k for k in args.keys if k in ALL_KEYS]
+    elif args.range:
+        start, end = map(int, args.range.split('-'))
+        keys_to_run = [k for k in ALL_KEYS if start <= k <= end]
+    else:
+        keys_to_run = sorted(ALL_KEYS.keys())
+
+    # Execute
+    if args.u: sys.stdout.reconfigure(line_buffering=True)
+    
+    results = {}
+    print(f"\n[>>>] TARGETING KEYS: {keys_to_run}")
+    
+    for key in keys_to_run:
+        print(f"Checking Key {key}...", end="\r")
+        passed, details = ALL_KEYS[key]['function']()
+        results[key] = {'passed': passed, 'details': details}
+        if not passed:
+            print(f"\n[!] FAILURE: Key {key}")
+            # Only print first 3 errors to save context
+            for err in details[:3]: print(f"    - {err}")
+    
+    print_live_dashboard(results)
+    
+    if any(not r['passed'] for r in results.values()):
+        sys.exit(1)

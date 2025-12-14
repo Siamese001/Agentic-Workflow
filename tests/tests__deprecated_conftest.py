@@ -1,6 +1,6 @@
 """Configuration to prevent pytest from collecting deprecated tests."""
-import logging
 
+import logging
 
 
 logger = logging.getLogger(__name__)

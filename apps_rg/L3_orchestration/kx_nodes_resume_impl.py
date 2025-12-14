@@ -1,10 +1,11 @@
 """Implementation for kx_nodes_resume."""
-import logging
 
+import logging
 
 
 logger = logging.getLogger(__name__)
 # from .kx_nodes_resume_types import *  # Star import removed
+
 
 def get_resume_kx_dag() -> Dict[str, ResumeKNode]:
     """Get the complete resume K.X node DAG.
@@ -13,6 +14,7 @@ def get_resume_kx_dag() -> Dict[str, ResumeKNode]:
         Dictionary of resume K.X nodes with dependencies
     """
     return RESUME_KX_DAG.copy()
+
 
 def get_resume_execution_order() -> List[str]:
     """Get topological execution order for resume K.X nodes.
@@ -30,7 +32,7 @@ def get_resume_execution_order() -> List[str]:
     queue = [node for node, degree in in_degree.items() if degree == 0]
     order = []
     while queue:
-        queue.sort(key=lambda k: RESUME_KX_DAG[k].metadata.get('priority', 999))
+        queue.sort(key=lambda k: RESUME_KX_DAG[k].metadata.get("priority", 999))
         node = queue.pop(0)
         order.append(node)
         for neighbor in adjacency[node]:
@@ -38,8 +40,9 @@ def get_resume_execution_order() -> List[str]:
             if in_degree[neighbor] == 0:
                 queue.append(neighbor)
     if len(order) != len(RESUME_KX_DAG):
-        raise ValueError('Resume K.X DAG contains cycles')
+        raise ValueError("Resume K.X DAG contains cycles")
     return order
+
 
 def get_resume_kx_node(node_key: str) -> Optional[ResumeKNode]:
     """Get resume K.X node by key.
