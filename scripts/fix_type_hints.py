@@ -6,6 +6,10 @@ import os
 import re
 
 
+
+# L4 REFACTOR: Function 'add_type_hints_to_file' exceeds 82 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_type_hints.py:add_type_hints_to_file
+
 def add_type_hints_to_file(filepath: str) -> int:
     """Add type hints to all functions in a file."""
     try:

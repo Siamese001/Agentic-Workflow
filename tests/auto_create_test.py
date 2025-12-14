@@ -29,6 +29,10 @@ from typing import List
 
 
 # REFACTOR: Split this 77-line function
+
+# L4 REFACTOR: Function 'create_test_files' exceeds 77 lines
+# TODO: Manual split required - see refactor plan .\tests\auto_create_test.py:create_test_files
+
 def create_test_files(modules: List[str]) -> int:
     """
     Create test files for the given modules.
