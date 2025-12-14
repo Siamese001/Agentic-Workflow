@@ -292,7 +292,7 @@ Output: {{
                     processed_results.append(result)
 
             logger.info(f"(
-                Completed execution: {sum(len(r) for r in processed_results)} total results 
+                Completed execution: {sum(len(r) for r in processed_results)} total results
             )"
             return processed_results
 

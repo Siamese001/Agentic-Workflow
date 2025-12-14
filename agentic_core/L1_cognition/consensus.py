@@ -231,7 +231,7 @@ Be concise but thorough. Focus on safety and reliability.
                 dissenting_opinions=[
                     f"High risk assessed by {high_risk_count}/{len(opinions)} models"
                 ],
-                    
+
                 reasoning="Multiple models assessed high risk",
                 safe_to_proceed=False
             )

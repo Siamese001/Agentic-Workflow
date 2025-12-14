@@ -2,16 +2,17 @@
 
 from typing import Any, Dict, List
 
+
 class StrategistBioWriter:
     """Placeholder implementation."""
-    
+
     def __init__(
-        self: Any, 
-        config: Dict, 
-        word_count_min: int, 
-        word_count_max: int, 
-        sentence_count_min: int, 
-        sentence_count_max: int
+        self: Any,
+        config: Dict,
+        word_count_min: int,
+        word_count_max: int,
+        sentence_count_min: int,
+        sentence_count_max: int,
     ) -> None:
         """Initialize writer."""
         self.config = config
@@ -19,7 +20,7 @@ class StrategistBioWriter:
         self.word_count_max = word_count_max
         self.sentence_count_min = sentence_count_min
         self.sentence_count_max = sentence_count_max
-    
+
     def write_bio(self: Any, highlights: List[str]) -> str:
         """Write bio."""
         return "Bio placeholder"

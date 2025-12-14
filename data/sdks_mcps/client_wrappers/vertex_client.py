@@ -292,7 +292,7 @@ class VertexClient:
             "safety_ratings": safety_ratings,
             "finish_reason": response.candidates[0].finish_reason.name if hasattr(response.candidates[0],
                  'finish_reason') else None,
-                
+
             "usage": self._extract_usage(response)
         }
 
