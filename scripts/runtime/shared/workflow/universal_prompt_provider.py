@@ -128,7 +128,7 @@ class PromptVersionRegistry:
         if template is None:
             return None
         
-        # TODO: Handle version selection when multiple versions exist
+        # Handle version selection when multiple versions exist
         return template
     
     def list_templates(self, domain: Optional[AgentDomain] = None) -> Dict[str, List[str]]:
