@@ -74,21 +74,17 @@ class StructuredEngine:
     It automatically retries and fixes validation errors internally.
     """
 
-    def __init__(self, api_key: str, model: str = "gpt-4o"):
+    def __init__(self, client: AsyncOpenAI):
         """
-        Initialize the structured engine.
-
+        Initialize the structured engine with an OpenAI client.
+        
         Args:
-            api_key: OpenAI API key
-            model: Model to use (default: gpt-4o)
+            client: AsyncOpenAI instance
         """
-        if not INSTRUCTOR_AVAILABLE:
-            raise ImportError("Instructor library not installed. Run: pip install instructor openai")
+        self.client = instructor.patch(client)
+        self.model = "gpt-4"
 
-        self.client = instructor.patch(AsyncOpenAI(api_key=api_key))
-        self.model = model
-
-        logger.info(f"Structured engine initialized with model: {model}")
+        logger.info(f"Structured engine initialized with AsyncOpenAI client")
 
     async def think_structured(
         self,
