@@ -7,7 +7,7 @@ agent autonomy with external tools and capabilities.
 import os
 import json
 import logging
-from typing import Dict, Any, Optional, List, Callable
+from typing import Dict, Any, Optional, List
 from pathlib import Path
 from dataclasses import dataclass, field
 from enum import Enum

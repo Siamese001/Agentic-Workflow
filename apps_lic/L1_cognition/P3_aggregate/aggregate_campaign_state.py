@@ -4,7 +4,6 @@
 """Aggregate Campaign State - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class AggregateCampaignState:
     """AggregateCampaignState implementation."""

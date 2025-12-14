@@ -4,7 +4,6 @@
 """Filter Inappropriate Content - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def filter_inappropriate_content(data: Dict[str, object]) -> Dict[str, object]:
     """Process filter inappropriate content data."""

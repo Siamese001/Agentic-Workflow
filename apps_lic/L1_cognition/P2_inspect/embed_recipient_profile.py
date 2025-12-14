@@ -4,7 +4,6 @@
 """Embed Recipient Profile - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class EmbedRecipientProfile:
     """EmbedRecipientProfile implementation."""

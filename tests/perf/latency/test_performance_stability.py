@@ -19,4 +19,3 @@ def test_latency_smoke(benchmark, case):
     """
     # out = benchmark(lambda: run_workflow({"resume": case, "jd":"perf"}))
     # assert out is not None
-    pass

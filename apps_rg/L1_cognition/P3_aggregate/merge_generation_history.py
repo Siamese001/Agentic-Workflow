@@ -4,7 +4,6 @@
 """Merge Generation History - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class MergeGenerationHistory:
     """MergeGenerationHistory implementation."""

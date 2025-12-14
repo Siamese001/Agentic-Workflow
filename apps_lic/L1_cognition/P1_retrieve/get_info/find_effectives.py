@@ -4,7 +4,6 @@
 """Find Effective Templates - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class FindEffectiveTemplates:
     """FindEffectiveTemplates implementation."""

@@ -6,12 +6,11 @@ Uses cosine similarity for fast local vector search without external dependencie
 """
 
 import numpy as np
-import json
 import time
 import logging
 import pickle
-from typing import List, Dict, Optional, Tuple
-from dataclasses import dataclass, field
+from typing import List, Dict, Optional
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 

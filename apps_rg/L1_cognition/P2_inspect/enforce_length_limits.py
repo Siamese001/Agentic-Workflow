@@ -4,7 +4,6 @@
 """Enforce Length Limits - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def enforce_length_limits(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce length limits data."""

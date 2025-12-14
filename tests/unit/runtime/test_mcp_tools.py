@@ -15,8 +15,6 @@ import asyncio
 import json
 import sys
 import os
-from typing import Any, Dict, List
-from unittest.mock import Mock, patch, AsyncMock
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
@@ -579,7 +577,6 @@ class TestMCPToolServerPerformance:
             return "fast"
 
         def slow_tool():
-            import time
             await asyncio.sleep(0.1)
             return "slow"
 

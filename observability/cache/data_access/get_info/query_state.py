@@ -53,12 +53,10 @@ class UpdateObservabilityUsageSafetySafety(ABC):
     @abstractmethod
     def apply_safety(self, data: Dict[str, object]) -> UpdateObservabilityUsageSafetyResult:
         """Apply safety checks with L5 constraints"""
-        pass
 
     @abstractmethod
     def validate_safety(self, data: Dict[str, object]) -> bool:
         """L5 Safety validation - fail-closed by default"""
-        pass
 
 class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
     """
@@ -259,7 +257,6 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior"""
-    pass
 
 class UpdateObservabilityUsageSafetyInterface:
     """L5 Interface - ensures contract compliance"""

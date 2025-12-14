@@ -4,7 +4,6 @@
 """RAG configuration for resume generation."""
 
 from typing import Dict
-import logging
 
 @dataclass
 class RAGConfig:

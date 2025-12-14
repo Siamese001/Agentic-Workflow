@@ -4,7 +4,6 @@
 """Track Resume Generation Cost - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class TrackResumeGenerationCost:
     """TrackResumeGenerationCost implementation."""

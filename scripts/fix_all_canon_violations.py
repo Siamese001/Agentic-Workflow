@@ -3,8 +3,6 @@
 
 import os
 import re
-import ast
-from pathlib import Path
 from typing import List
 
 def get_python_files(root_dir: str = ".") -> List[str]:

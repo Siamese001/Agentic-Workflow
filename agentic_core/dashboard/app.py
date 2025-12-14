@@ -16,7 +16,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 try:
     import duckdb
     import plotly.express as px
-    import plotly.graph_objects as go
     DEPS_AVAILABLE = True
 except ImportError:
     DEPS_AVAILABLE = False

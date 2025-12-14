@@ -31,7 +31,6 @@ class BasePromptProvider(ABC):
         Returns:
             Formatted system prompt string
         """
-        pass
 
     @abstractmethod
     def get_constraints(self) -> str:
@@ -40,7 +39,6 @@ class BasePromptProvider(ABC):
         Returns:
             Constraints string
         """
-        pass
 
 
 class K11PromptProvider(BasePromptProvider):

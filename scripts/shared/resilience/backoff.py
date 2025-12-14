@@ -21,7 +21,6 @@ class BackoffStrategy(ABC):
         Returns:
             Backoff delay in milliseconds
         """
-        pass
 
 @dataclass
 class ExponentialBackoff(BackoffStrategy):

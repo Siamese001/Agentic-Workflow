@@ -4,7 +4,6 @@
 """Merge Outreach History - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class MergeOutreachHistory:
     """MergeOutreachHistory implementation."""

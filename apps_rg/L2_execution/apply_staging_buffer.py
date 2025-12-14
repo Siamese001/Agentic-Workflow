@@ -6,7 +6,6 @@
 import copy
 from datetime import datetime
 from typing import Dict, Optional
-import logging
 
 
 class ImmutableStagingBuffer:

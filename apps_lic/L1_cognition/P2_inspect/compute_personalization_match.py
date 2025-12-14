@@ -4,7 +4,6 @@
 """Compute Personalization Match - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class ComputePersonalizationMatch:
     """ComputePersonalizationMatch implementation."""

@@ -4,7 +4,6 @@
 """Apply Rg Execution Safety - atomic enforcement layer."""
 
 from typing import Dict
-import logging
 
 def apply_rg_execution_safety(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply rg execution safety data."""

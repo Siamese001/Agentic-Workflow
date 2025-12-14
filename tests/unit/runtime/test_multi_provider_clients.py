@@ -15,7 +15,6 @@ class TestProviderEnum:
 
     def test_provider_enum_values(self):
         """Docstring."""
-        pass
 
     def test_provider_values(self):
         """Docstring."""
@@ -29,7 +28,6 @@ class TestProviderEnum:
 
     def test_provider_comparisons(self):
         """TODO: Add docstring."""
-        pass
 
     def test_success(self):
         """Docstring."""

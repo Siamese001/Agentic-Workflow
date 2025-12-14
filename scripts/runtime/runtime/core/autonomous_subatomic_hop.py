@@ -5,23 +5,15 @@ Integrates episodic memory, reasoning kernel, dynamic tool discovery,
 and recursive planning into the SubatomicHop architecture.
 """
 
-import json
 import logging
-import time
-import uuid
 from typing import Dict, Any, Optional, Callable, List
-from pathlib import Path
-import asyncio
-from datetime import datetime
 from dataclasses import dataclass, field
 
 # Import base components
 from .subatomic_hop import (
     SubatomicHop,
     SubatomicHopConfig,
-    MicroStage,
-    HopState,
-    MutationRequired
+    MicroStage
 )
 
 # Import autonomy components
@@ -44,7 +36,6 @@ from apps_rg.L3_orchestration.recursive_agent import (
 
 # Import hardening components
 from agentic_core.L4_state.storage import create_storage_adapter
-from agentic_core.L4_state.checkpointing import create_checkpoint_manager
 from agentic_core.L2_execution.mcp_manager import create_mcp_manager
 
 logger = logging.getLogger(__name__)
@@ -380,7 +371,7 @@ class AutonomousSubatomicHop(SubatomicHop):
             hasattr(critique_result, 'score') and 
             critique_result.score < 0.5):
             
-            task_description = kwargs.get("goal", "")
+            kwargs.get("goal", "")
             
             # Analyze failure patterns
             failure_patterns = await self.episodic_memory.analyze_failure_patterns(

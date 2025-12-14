@@ -4,7 +4,6 @@
 """# SQL removed: Update Token Usage - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class UpdateTokenUsage:
     """Docstring."""

@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 class ArchiveFileAccessDeprecated:
     """Fallback class for deprecated archive imports."""
-    pass
 
 # Common fallback objects that might be imported
 ContextBudget = ArchiveFileAccessDeprecated

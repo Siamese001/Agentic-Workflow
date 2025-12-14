@@ -6,11 +6,10 @@ Aggregates tools from all servers into a single 'toolbox' for the agent.
 """
 
 import os
-import asyncio
 import logging
 import yaml
 from contextlib import AsyncExitStack
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from pathlib import Path
 
 logger = logging.getLogger(__name__)

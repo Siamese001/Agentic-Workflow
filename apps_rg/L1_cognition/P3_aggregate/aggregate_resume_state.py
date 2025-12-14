@@ -4,7 +4,6 @@
 """Aggregate Resume State - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class AggregateResumeState:
     """AggregateResumeState implementation."""

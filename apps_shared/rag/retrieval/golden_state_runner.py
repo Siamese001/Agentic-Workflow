@@ -1,4 +1,3 @@
-import logging
 
 # FILE: tests/golden_state/test_runner.py
 

@@ -9,7 +9,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 
@@ -385,7 +385,7 @@ def main():
 
     env_vars = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_CLOUD_PROJECT"]
     for var in env_vars:
-        status = "✅" if os.getenv(var) else "❌"
+        "✅" if os.getenv(var) else "❌"
 
     # Run tests
     test_results = []
@@ -396,7 +396,7 @@ def main():
             result = test_func()
             test_results.append(result)
             
-            status = "✅" if result["overall"] else "❌"
+            "✅" if result["overall"] else "❌"
 
             for test_name, test_result in result["tests"].items():
                 if "error" in test_result and not test_result.get("passed", True):
@@ -409,7 +409,7 @@ def main():
     try:
         router_result = test_multi_provider_router()
         test_results.append(router_result)
-        status = "✅" if router_result["overall"] else "❌"
+        "✅" if router_result["overall"] else "❌"
 
     except Exception as e:
             logger.error(f"Error testing router: {e}")
@@ -418,7 +418,7 @@ def main():
     try:
         ref_result = test_reference_clients()
         test_results.append(ref_result)
-        status = "✅" if ref_result["overall"] else "❌"
+        "✅" if ref_result["overall"] else "❌"
 
     except Exception as e:
         logger.error(f"Error testing reference clients: {e}")

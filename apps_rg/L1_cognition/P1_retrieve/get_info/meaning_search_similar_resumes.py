@@ -4,7 +4,6 @@
 """Search Similar Resumes - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class SearchSimilarResumes:
     """SearchSimilarResumes implementation."""

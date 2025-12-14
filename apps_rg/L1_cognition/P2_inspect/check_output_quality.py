@@ -4,7 +4,6 @@
 """Check Output Quality - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def check_output_quality(data: Dict[str, object]) -> Dict[str, object]:
     """Process check output quality data."""

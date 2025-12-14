@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_mock_detection(data: Dict[str, object]) -> Dict[str, object]:
     """Process test mock detection data."""

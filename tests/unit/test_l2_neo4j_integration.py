@@ -21,17 +21,14 @@ class TestNeo4jIntegration:
     def test_graph_query_imports(self) -> None:
         """Test that graph_query module imports correctly."""
 #         from archives.legacy_root_folders.database.graph_query import graph_query  # DEPRECATED...
-        pass
 
     def test_graph_query_without_neo4j(self) -> None:
         """Test graph_query gracefully handles missing Neo4j."""
 #         from archives.legacy_root_folders.database.graph_query import graph_query  # DEPRECATED...
-        pass
 
     def test_factual_qa_imports(self) -> None:
         """Test that factual_qa module imports correctly."""
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.factual_qa import factual_qa,...
-        pass
 
     def test_factual_qa_without_neo4j(self) -> None:
         """Test factual_qa gracefully handles missing Neo4j."""
@@ -128,7 +125,6 @@ class TestNeo4jIntegration:
         """Test that kg_ingestion_dag imports with Neo4j components."""
         try:
 #             from archives.legacy_root_folders.orchestration.kg_ingestion_dag import UnifiedKGIn...
-            pass
             assert True  # Placeholder since archive imports are removed
         except ImportError as e:
             pytest.fail(f"kg_ingestion_dag should import successfully: {e}")
@@ -137,7 +133,6 @@ class TestNeo4jIntegration:
     async def test_ingestion_dag_mirroring_methods(self):
         """Test that ingestion DAG mirroring methods exist and are callable."""
 #         from archives.legacy_root_folders.orchestration.kg_ingestion_dag import _mirror_entitie...
-        pass
 
         # These would be callable if imports were available
         # await _mirror_entities_to_neo4j({})

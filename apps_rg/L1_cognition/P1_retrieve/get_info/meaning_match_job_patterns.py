@@ -4,7 +4,6 @@
 """Match Job Patterns - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class MatchJobPatterns:
     """MatchJobPatterns implementation."""

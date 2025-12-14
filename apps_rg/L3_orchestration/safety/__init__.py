@@ -30,7 +30,6 @@ class SafetyValidator:
 class ContentFilter:
     """Stub content filter."""
     def __init__(self, *args, **kwargs: object):
-        pass
         """TODO: Add docstring."""
 
 

@@ -4,7 +4,6 @@
 """Embed Job Description - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class EmbedJobDescription:
     """EmbedJobDescription implementation."""

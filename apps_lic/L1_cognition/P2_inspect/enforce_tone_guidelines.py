@@ -4,7 +4,6 @@
 """Enforce Tone Guidelines - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def enforce_tone_guidelines(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce tone guidelines data."""

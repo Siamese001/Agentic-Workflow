@@ -15,7 +15,6 @@ import logging
 
 class TokenLimitError(Exception):
     """Raised when token budget exceeds model limits."""
-    pass
 
 class HardeningMixin:
     """Mixin that adds military-grade resilience to any executor.

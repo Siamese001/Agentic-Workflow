@@ -16,7 +16,6 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 from typing import Dict
-import logging
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ANALYSIS_DIR = REPO_ROOT / "06_data" / "dedup_analysis"
@@ -62,7 +61,7 @@ def execute_dedup(dry_run: bool = True) -> Dict:
         POINTER_DIR.mkdir(parents=True, exist_ok=True)
 
     for cluster in report['clusters']:
-        cluster_id = cluster['cluster_id']
+        cluster['cluster_id']
         canonical = cluster['canonical_path']
         merge_plan = cluster['merge_plan']
         non_canonical = merge_plan['non_canonical']

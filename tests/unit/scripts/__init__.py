@@ -16,7 +16,6 @@ Test Structure:
 """
 
 import pytest
-import logging
 
 # Common test fixtures
 @pytest.fixture

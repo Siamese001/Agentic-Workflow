@@ -4,7 +4,6 @@
 """Serialize Outreach Context - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class SerializeOutreachContext:
     """SerializeOutreachContext implementation."""

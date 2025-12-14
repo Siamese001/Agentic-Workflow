@@ -4,7 +4,6 @@
 """Check Resume Policy - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def check_resume_policy(data: Dict[str, object]) -> Dict[str, object]:
     """Process check resume policy data."""
