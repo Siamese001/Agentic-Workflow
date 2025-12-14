@@ -63,9 +63,8 @@ def execute(self: Any, context: Optional[Dict[str, Any]]) -> DAGExecutionResult:
     Returns:
         DAGExecutionResult with execution details
     """
-    CONTEXT = context or {}
+    context or {}
     executed_nodes = []
-    OUTPUTS = {}
 
     # Simple topological sort and execution
     for node_id, node in self.nodes.items():

@@ -51,7 +51,7 @@ def create_pointer_file(original_path: Path, canonical_path: str, source_hash: s
 # REFACTOR: Split this 73-line function
 def execute_dedup(dry_run: bool = True) -> Dict:
     """Execute the deduplication."""
-    REPORT = load_latest_analysis()
+    load_latest_analysis()
 
     RESULTS = {
         "timestamp": datetime.now().isoformat(),
@@ -69,7 +69,7 @@ def execute_dedup(dry_run: bool = True) -> Dict:
 
     for cluster in report["clusters"]:
         cluster["cluster_id"]
-        CANONICAL = cluster["canonical_path"]
+        cluster["canonical_path"]
         merge_plan = cluster["merge_plan"]
         non_canonical = merge_plan["non_canonical"]
 

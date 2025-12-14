@@ -40,7 +40,6 @@ class VerbCanonicalizer:
 
 def canonicalize(self: Any, text: str) -> List[str]:
     """Extract and canonicalize verbs from text."""
-    CANONICAL = []
     text_lower = text.lower()
 
     for canonical_form, variants in self.CANONICAL_VERBS.items():

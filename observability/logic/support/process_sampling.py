@@ -34,7 +34,7 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 
 def should_sample(self: Any, context: Optional[Dict]) -> SamplingDecision:
     """Determine if should sample."""
-    CTX = context or {}
+    context or {}
 
     # Check always sample conditions
     for condition in self.always_sample:

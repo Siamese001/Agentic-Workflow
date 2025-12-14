@@ -29,12 +29,12 @@ def run(self: Any, job_description: str) -> Dict[str, object]:
         raise HopExecutionError("JD validation failed")
 
     # HOP-1: Extract from master resume
-    CLERK = ClerkExtractor(self.master_resume)
+    ClerkExtractor(self.master_resume)
     extracted_data, hop1_results = clerk.extract()
     self._record_hop("HOP-1", hop1_results)
 
     # HOP-2: Enrich data
-    ENRICHER = DataEnricher()
+    DataEnricher()
     enriched_data, hop2_results = enricher.enrich(extracted_data, None, self)
     self._record_hop("HOP-2", hop2_results)
 
@@ -47,11 +47,11 @@ def run(self: Any, job_description: str) -> Dict[str, object]:
 
 def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None:
     """Record a hop checkpoint."""
-    STATUS = HopStatus.COMPLETED if all(r.passed for r in results) else HopStatus.FAILED
+    HopStatus.COMPLETED if all(r.passed for r in results) else HopStatus.FAILED
     self.hop_checkpoints.append(HopCheckpoint(hop_id=hop_id, status=status))
 
 
 def orchestrate_resume(master_resume: Dict, job_description: str) -> Dict[str, object]:
     """Single public function - pure routing between atoms."""
-    ORCHESTRATOR = ResumeOrchestrator(master_resume)
+    ResumeOrchestrator(master_resume)
     return orchestrator.run(job_description)

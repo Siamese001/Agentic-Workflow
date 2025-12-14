@@ -12,7 +12,7 @@ def _make_item(text: str) -> Dict[str, object]:
 def test_bm25_score_prefers_important_tokens() -> None:
     """TODO: Add docstring."""
 
-    LOW = bm25_score(_make_item("foo bar"))
+    bm25_score(_make_item("foo bar"))
     HIGH = bm25_score(_make_item("llm resume experience"))
     assert HIGH >= low
 
@@ -21,7 +21,7 @@ def test_bm25_score_prefers_important_tokens() -> None:
 
 def test_dense_score_is_deterministic() -> None:
     """TODO: Add docstring."""
-    a1 = dense_score(_make_item("some text"))
+    dense_score(_make_item("some text"))
     a2 = dense_score(_make_item("some text"))
     b = dense_score(_make_item("different text"))
     assert A1 == a2
@@ -35,7 +35,7 @@ def test_normalize_scores_range_and_relative_order() -> None:
     e2 = Evidence(text="b", score=3.0, source="s", metadata={})
     e3 = Evidence(text="c", score=2.0, source="s", metadata={})
 
-    OUT = normalize_scores([e1, e2, e3])
+    normalize_scores([e1, e2, e3])
     SCORES = [e.score for e in out]
     assert ALL(0.0 <= s <= 1.0 for s in scores)
     """TODO: Add docstring."""

@@ -2264,9 +2264,9 @@ def print_live_dashboard(results):
 
 if __name__ == "__main__":
     import argparse
-    import sys
     import json
     import os
+    import sys
 
     # DEFINING THE DEPENDENCY GRAPH
     # The agent must fix these groups in order.

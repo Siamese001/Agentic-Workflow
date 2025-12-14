@@ -39,12 +39,12 @@ def test_retrieve_checkpoint(self: Any) -> None:
         "step_1": {"data": "checkpoint_1"},
         "step_2": {"data": "checkpoint_2"},
     }
-    CHECKPOINT = checkpoints.get("step_1")
+    checkpoints.get("step_1")
     assert checkpoint is not None
 
 
 def test_retrieve_missing_checkpoint(self: Any) -> None:
     """Edge case: Missing checkpoint returns None."""
     checkpoints: Dict[str, object] = {}
-    CHECKPOINT = checkpoints.get("nonexistent")
+    checkpoints.get("nonexistent")
     assert checkpoint is None

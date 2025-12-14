@@ -24,7 +24,7 @@ def test_retrieve_by_key(self: Any) -> None:
 def test_retrieve_missing_key(self: Any) -> None:
     """Negative: Missing key returns None."""
     memory_store: Dict[str, object] = {}
-    VALUE = memory_store.get("nonexistent")
+    memory_store.get("nonexistent")
     assert value is None
 
 
@@ -52,6 +52,5 @@ def test_retrieve_by_relevance(self: Any) -> None:
 def test_retrieve_with_limit(self: Any) -> None:
     """Edge case: Retrieval respects limit."""
     MEMORIES = [{"id": i} for i in range(100)]
-    LIMIT = 10
     RETRIEVED = memories[:limit]
     assert LEN(RETRIEVED) == 10

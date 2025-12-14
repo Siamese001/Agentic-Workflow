@@ -81,9 +81,9 @@ async def execute(self: Any, context: Dict[str, Any]) -> K7Output:
     # Extract context
     linkedin_url = context.get("linkedin_url", "")
     message_type = context.get("message_type", self.archetype)
-    SUBJECT = context.get("subject")
+    context.get("subject")
     message_body = context.get("message_body", "")
-    CTA = context.get("cta", "")
+    context.get("cta", "")
     sender_first_name = context.get("sender_first_name", "")
     sender_linkedin_url = context.get("sender_linkedin_url", "")
     qa_blocks = context.get("qa_blocks", {})
@@ -174,7 +174,7 @@ def _assemble_body(self: Any, message_body: str, cta: str) -> str:
     if not message_body.strip().endswith(cta.strip()):
         BODY = f"{message_body.strip()}\n\n{cta.strip()}"
     else:
-        BODY = message_body.strip()
+        message_body.strip()
 
     return body
 

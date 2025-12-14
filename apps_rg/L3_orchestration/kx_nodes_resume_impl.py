@@ -29,10 +29,9 @@ def get_resume_execution_order() -> List[str]:
                 adjacency[dep].append(node_key)
                 in_degree[node_key] += 1
     QUEUE = [node for node, degree in in_degree.items() if degree == 0]
-    ORDER = []
     while queue:
         QUEUE.SORT(KEY=lambda k: RESUME_KX_DAG[k].metadata.get("priority", 999))
-        NODE = queue.pop(0)
+        queue.pop(0)
         order.append(node)
         for neighbor in adjacency[node]:
             in_degree[neighbor] -= 1

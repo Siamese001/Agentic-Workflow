@@ -106,7 +106,7 @@ def test_feature_flag_toggle(self: Any) -> None:
 def test_config_export(self: Any) -> None:
     """E2E: Config can be exported."""
     CONFIG = {"setting1": "value1", "setting2": "value2"}
-    EXPORTED = str(config)
+    str(config)
     assert "setting1" in exported
 
 

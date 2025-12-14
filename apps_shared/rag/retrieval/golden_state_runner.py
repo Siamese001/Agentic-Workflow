@@ -17,9 +17,9 @@ def test_run_all_golden_tests_returns_results() -> None:
         METADATA={},
     )
 
-    RESULTS = run_all_golden_tests(profile)
+    run_all_golden_tests(profile)
 
     assert results
-    IDS = {r.test_id for r in results}
+    {r.test_id for r in results}
     assert "gs_basic_1" in ids
     assert "gs_safety_1" in ids

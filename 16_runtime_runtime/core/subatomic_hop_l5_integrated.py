@@ -259,7 +259,6 @@ async def _execute_think_stage(
 
 async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple[List[Any], float]:
     """Execute the action stage with tool calls."""
-    RESULTS = []
     total_cost = 0.0
 
     # Connect MCP tools
@@ -269,12 +268,12 @@ async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple
         for call in plan.tool_calls:
             if call["name"] == "run_python":
                 # Execute in sandbox
-                CODE = call["args"].get("code", "")
-                RESULT = self.sandbox.run_code(code)
+                call["args"].get("code", "")
+                self.sandbox.run_code(code)
                 results.append({"tool": "sandbox", "result": result})
             else:
                 # Call MCP tool
-                RESULT = await self.mcp_manager.call_tool(call["name"], call.get("args", {}))
+                await self.mcp_manager.call_tool(call["name"], call.get("args", {}))
                 results.append({"tool": call["name"], "result": result})
 
             # Track cost for each tool call

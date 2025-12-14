@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 def test_run_scenario_uses_existing_engine(self: Any) -> None:
     """Test that scenario runner properly uses existing engine instance."""
-    SCENARIOS = Engine.list()
+    Engine.list()
     assert scenarios, "Expected at least one registered simulation scenario"
 
     scenario_id, description = next(iter(scenarios.items()))
@@ -23,5 +23,5 @@ def test_run_scenario_uses_existing_engine(self: Any) -> None:
         run_count=1,
     )
 
-    OUTCOME = run_scenario(scenario)
+    run_scenario(scenario)
     assert outcome.scenario_id == scenario_id

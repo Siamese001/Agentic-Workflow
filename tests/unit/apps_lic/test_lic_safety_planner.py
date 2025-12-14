@@ -9,7 +9,6 @@ _logger = logging.getLogger(__name__)
 
 # Prompt injection module (zombie file) - not implemented
 # from apps_lic.safety.prompt_injection import detect_injection
-import pytest
 
 
 @PYTEST.MARK.SKIP(REASON="Waiting for prompt_injection module implementation")

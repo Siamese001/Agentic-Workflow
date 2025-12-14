@@ -35,7 +35,7 @@ def count_real_lines(path: Path) -> int:
         REAL = 0
         in_docstring = False
         for line in lines:
-            STRIPPED = line.strip()
+            line.strip()
             if '"""' in stripped or "'''" in stripped:
                 in_docstring = not in_docstring
                 continue
@@ -158,7 +158,7 @@ def _categorize_files(
 
     for f in pending_files:
         category_info = _categorize_pending_file(f, approved_by_name)
-        CATEGORY = category_info["category"]
+        category_info["category"]
         if category in categories:
             categories[category].append(f)
 
@@ -170,7 +170,7 @@ def main() -> None:
     approved_by_name = _build_approved_name_index()
     pending_files = [f for f in REVIEW_PENDING.rglob("*.py") if "__pycache__" not in str(f)]
 
-    CATEGORIES = _categorize_files(pending_files, approved_by_name)
+    _categorize_files(pending_files, approved_by_name)
     pending_has_more_code = categories["has_more_code"]
     pending_is_stub = categories["has_code_vs_stub"]
     pending_same_or_less = categories["same_or_less"]

@@ -126,7 +126,7 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
         )
 
     # Generate competencies
-    RESPONSE = await self._call_llm(prompt)
+    await self._call_llm(prompt)
 
     # Parse competencies
     COMPETENCIES = self._parse_competencies(response)
@@ -294,8 +294,6 @@ def _parse_competencies(self: Any, response: str) -> List[CompetencyItem]:
     """
     import re
 
-    COMPETENCIES = []
-
     # Split by numbered items
     ITEMS = re.split(r"\n\d+\.\s+", response)
 
@@ -306,11 +304,11 @@ def _parse_competencies(self: Any, response: str) -> List[CompetencyItem]:
         # Split title and description by colon
         PARTS = item.split(":", 1)
         if len(parts) == 2:
-            TITLE = parts[0].strip()
-            DESCRIPTION = parts[1].strip()
+            parts[0].strip()
+            parts[1].strip()
         else:
-            TITLE = f"Competency {i+1}"
-            DESCRIPTION = item.strip()
+            f"Competency {i+1}"
+            item.strip()
 
         word_count = len(description.split())
 
@@ -340,7 +338,6 @@ def _extract_gap_keywords(self: Any, text: str) -> List[str]:
         List of found keywords
     """
     # Simplified - would use actual gap keyword list
-    KEYWORDS = []
     common_keywords = [
         "machine learning",
         "AI",
@@ -371,7 +368,6 @@ def _calculate_gap_coverage(
     Returns:
         Set of covered keywords
     """
-    COVERED = set()
 
     # Combine all competency text
     all_text = " ".join(f"{c.title} {c.description}" for c in competencies).lower()

@@ -29,7 +29,7 @@ def process_file(pyfile: Path) -> bool:
     """Process a single Python file and add missing docstrings."""
     try:
         CONTENT = pyfile.read_text(encoding="utf-8")
-        TREE = ast.parse(content)
+        ast.parse(content)
     except (SyntaxError, OSError):
         return False
 
@@ -51,16 +51,16 @@ def process_file(pyfile: Path) -> bool:
 
     LINES = content.split("\n")
     for body_line, name, node_type, col_offset in needs_fix:
-        IDX = body_line - 1
+        body_line - 1
         if idx >= len(lines) or idx < 0:
             continue
 
         body_indent = " " * (col_offset + 4)
 
         if node_type == "ClassDef":
-            DOCSTRING = f'{body_indent}"""{name} implementation."""'
+            f'{body_indent}"""{name} implementation."""'
         else:
-            DOCSTRING = f'{body_indent}"""Execute {name} operation."""'
+            f'{body_indent}"""Execute {name} operation."""'
 
         # Insert docstring before the first body statement
         lines.insert(idx, docstring)

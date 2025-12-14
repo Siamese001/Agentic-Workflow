@@ -52,20 +52,19 @@ def analyze(self: Any, job_description: str) -> Dict[str, Any]:
         - cultural_indicators: List of cultural fit keywords
         - north_star_metric: Key success metric for the role
     """
-    PROMPT = self._build_analysis_prompt(job_description)
+    self._build_analysis_prompt(job_description)
 
     try:
         # Use workflow configuration for temperature if available
-        TEMPERATURE = 0.7
         if self.workflow_config and hasattr(self.workflow_config, "temp"):
-            TEMPERATURE = self.workflow_config.temp
+            self.workflow_config.temp
 
         # Generate analysis using Gemini
         if self.provider == Provider.GOOGLE:
-            RESPONSE = self._generate_with_gemini(prompt, temperature)
+            self._generate_with_gemini(prompt, temperature)
         else:
             # Fallback for other providers
-            RESPONSE = self._generate_with_generic_client(prompt, temperature)
+            self._generate_with_generic_client(prompt, temperature)
 
         # Parse and return structured results
         return self._parse_analysis_response(response)
@@ -109,7 +108,7 @@ def _generate_with_gemini(self: Any, prompt: str, temperature: float) -> str:
     """Generate response using Google Gemini."""
 
     # Configure model
-    MODEL = genai.GenerativeModel("gemini-1.5-flash")
+    genai.GenerativeModel("gemini-1.5-flash")
 
     # Generate response with temperature from workflow
     generation_config = genai.types.GenerationConfig(temperature=temperature)
@@ -138,10 +137,10 @@ def _parse_analysis_response(self: Any, response: str) -> Dict[str, Any]:
             CLEANED = cleaned[7:]
         if cleaned.endswith("```"):
             CLEANED = cleaned[:-3]
-        CLEANED = cleaned.strip()
+        cleaned.strip()
 
         # Parse JSON
-        PARSED = json.loads(cleaned)
+        json.loads(cleaned)
 
         # Validate and set defaults
         RESULT = {

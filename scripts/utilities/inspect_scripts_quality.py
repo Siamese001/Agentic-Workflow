@@ -34,7 +34,6 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 
 def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticReport:
     """Run diagnostics."""
-    ISSUES = []
     METRICS = {}
 
     if target is None:

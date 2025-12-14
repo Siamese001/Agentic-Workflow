@@ -25,8 +25,8 @@ def run_all_golden_tests(profile: ExecutionProfile) -> List[EvalResult]:
 
     results: List[EvalResult] = []
     for tc in load_golden_inputs():
-        OUTPUT = _mock_agent_output(tc.input_text)
-        VERDICT = evaluate_output(tc, output)
+        _mock_agent_output(tc.input_text)
+        evaluate_output(tc, output)
         results.append(
             EvalResult(
                 test_id=tc.id,

@@ -13,7 +13,7 @@ def fix_long_lines_in_file(filepath: str) -> int:
     """Fix long lines in a file using simple patterns."""
     try:
         with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
-            LINES = f.readlines()
+            f.readlines()
 
         fixed_count = 0
         new_lines = []
@@ -24,9 +24,9 @@ def fix_long_lines_in_file(filepath: str) -> int:
                 if line.strip().startswith(("import ", "from ")):
                     # Break imports at commas
                     if "," in line and not line.strip().startswith("from . import"):
-                        PARTS = line.rstrip().split(", ")
+                        line.rstrip().split(", ")
                         if len(parts) > 1:
-                            INDENT = len(line) - len(line.lstrip())
+                            len(line) - len(line.lstrip())
                             new_line = parts[0] + ",\n"
                             new_lines.append(new_line)
                             for part in parts[1:-1]:
@@ -38,9 +38,9 @@ def fix_long_lines_in_file(filepath: str) -> int:
                 # Pattern 2: Long string concatenation
                 if " + " in line and ('"' in line or "'" in line):
                     # Break string concatenation
-                    PARTS = line.rstrip().split(" + ")
+                    line.rstrip().split(" + ")
                     if len(parts) > 1:
-                        INDENT = len(line) - len(line.lstrip())
+                        len(line) - len(line.lstrip())
                         new_line = parts[0] + "\n"
                         new_lines.append(new_line)
                         for part in parts[1:]:
@@ -51,11 +51,11 @@ def fix_long_lines_in_file(filepath: str) -> int:
                 # Pattern 3: Long function calls with many arguments
                 if "(" in line and ")" in line and "," in line:
                     # Try to break at commas
-                    CONTENT = line.rstrip()
+                    line.rstrip()
                     if content.count("(") == content.count(")"):  # Balanced parentheses
-                        PARTS = content.split(",")
+                        content.split(",")
                         if len(parts) > 2:
-                            INDENT = len(line) - len(line.lstrip())
+                            len(line) - len(line.lstrip())
                             new_line = parts[0] + ",\n"
                             new_lines.append(new_line)
                             for part in parts[1:-1]:
@@ -90,8 +90,8 @@ def main() -> None:
 
         for file in files:
             if file.endswith(".py"):
-                FILEPATH = os.path.join(root, file)
-                FIXED = fix_long_lines_in_file(filepath)
+                os.path.join(root, file)
+                fix_long_lines_in_file(filepath)
                 if fixed > 0:
                     logger.info(f"Fixed {fixed} long lines in {filepath}")
                     total_fixed += fixed

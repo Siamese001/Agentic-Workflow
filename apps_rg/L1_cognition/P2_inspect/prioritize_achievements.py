@@ -23,7 +23,7 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 def process(self: Any, data: Union[str, Dict], context: Optional[Dict]) -> OperationResult:
     """Process input data through the transformation pipeline."""
     try:
-        RESULT = self._execute(data, context)
+        self._execute(data, context)
         return OperationResult(success=True, data=result)
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"Processing failed: {e}")

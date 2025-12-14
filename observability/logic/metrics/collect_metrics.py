@@ -53,9 +53,9 @@ def get_items(self: Any, source: Optional[str]) -> List[CollectedItem]:
 def flush(self: Any, source: Optional[str]) -> List[CollectedItem]:
     """Flush and return items."""
     if source:
-        ITEMS = self.items.pop(source, [])
+        self.items.pop(source, [])
     else:
-        ITEMS = self.get_items()
+        self.get_items()
         self.items.clear()
     return items
 

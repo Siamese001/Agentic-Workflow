@@ -71,7 +71,6 @@ def test_pick_with_minimum_threshold(self: Any) -> None:
         ScoredResult(id="3", content="C", score=0.4, source="cache"),
     ]
 
-    THRESHOLD = 0.5
     QUALIFIED = [r for r in results if r.score >= threshold]
     BEST = max(qualified, key=lambda r: r.score) if qualified else None
 

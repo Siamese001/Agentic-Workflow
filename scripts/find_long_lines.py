@@ -8,7 +8,6 @@ LOGGER = logging.getLogger(__name__)
 
 def find_long_lines() -> None:
     """Find all lines longer than 100 characters."""
-    VIOLATIONS = []
 
     for root, dirs, files in os.walk('.'):
         if '.git' in dirs:

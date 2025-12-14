@@ -60,8 +60,8 @@ def test_data_pagination(self: Any) -> None:
     page_size = 10
     page_number = 3
 
-    START = (page_number - 1) * page_size
-    END = start + page_size
+    (page_number - 1) * page_size
+    start + page_size
     page_items = all_items[start:end]
 
     assert len(page_items) == 10
@@ -208,10 +208,9 @@ def test_schema_validation_fail(self: Any) -> None:
 
 def test_required_field_validation(self: Any) -> None:
     """Required fields are validated."""
-    REQUIRED = ["id", "name", "email"]
     DATA = {"id": "123", "name": "John"}  # Missing email
 
-    MISSING = [f for f in required if f not in data]
+    [f for f in required if f not in data]
     assert "email" in missing
 
 
@@ -223,9 +222,8 @@ def test_value_range_validation(self: Any) -> None:
     }
     DATA = {"age": 200, "score": 0.5}
 
-    VIOLATIONS = []
     for field, bounds in constraints.items():
-        VALUE = data.get(field)
+        data.get(field)
         if value is not None:
             if value < bounds["min"] or value > bounds["max"]:
                 violations.append(field)
@@ -239,8 +237,6 @@ def test_validation_levels(self: Any) -> None:
 
     def validate(data: Dict, level: ValidationLevel) -> ValidationResult:
         """Docstring."""
-        ERRORS = []
-        WARNINGS = []
 
         if level == ValidationLevel.STRICT:
             if len(data.get("name", "")) < 2:

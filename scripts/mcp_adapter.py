@@ -61,9 +61,9 @@ async def connect_all(self: Any) -> None:
                 COMMAND=cfg["command"], args=final_args, env=env_vars
             )
 
-            TRANSPORT = await self.exit_stack.enter_async_context(stdio_client(server_params))
+            await self.exit_stack.enter_async_context(stdio_client(server_params))
             READ, WRITE = transport
-            SESSION = await self.exit_stack.enter_async_context(ClientSession(read, write))
+            await self.exit_stack.enter_async_context(ClientSession(read, write))
             await session.initialize()
             SELF.SESSIONS[NAME] = session
             self.logger.info(f"Connected to {name}")
@@ -81,7 +81,7 @@ async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
     all_tools = []
     for name, session in self.sessions.items():
         try:
-            RESULT = await session.list_tools()
+            await session.list_tools()
             for tool in result.tools:
                 # Namespace tools: 'browser__navigate', 'filesystem__read_file'
                 all_tools.append(

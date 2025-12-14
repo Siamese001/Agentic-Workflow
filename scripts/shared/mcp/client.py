@@ -243,7 +243,7 @@ def is_stub(self: Any, name: str) -> bool:
     Returns:
         True if client is a stub
     """
-    CLIENT = self.get(name)
+    self.get(name)
     return isinstance(client, MCPClientStub)
 
 

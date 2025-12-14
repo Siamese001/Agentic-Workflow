@@ -10,10 +10,9 @@ def add_type_hints_to_file(filepath: str) -> int:
     """Add type hints to all functions in a file."""
     try:
         with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
-            CONTENT = f.read()
+            f.read()
 
-        TREE = ast.parse(content)
-        MODIFIED = False
+        ast.parse(content)
         LINES = content.split("\n")
 
         # Process nodes in reverse order to maintain line numbers
@@ -31,7 +30,6 @@ def add_type_hints_to_file(filepath: str) -> int:
                     original_line = lines[func_line]
 
                     # Build new function signature with type hints
-                    PARAMS = []
                     for arg in node.args.args:
                         PARAM = arg.arg
                         if arg.annotation is None:
@@ -68,7 +66,6 @@ def add_type_hints_to_file(filepath: str) -> int:
                     else:
                         lines[func_line] = new_signature
 
-                    MODIFIED = True
 
         if modified:
             # Add Any import if needed
@@ -108,7 +105,7 @@ def main() -> None:
 
         for file in files:
             if file.endswith(".py"):
-                FILEPATH = os.path.join(root, file)
+                os.path.join(root, file)
                 fixed_count += add_type_hints_to_file(filepath)
 
     logger.info(f"Added type hints to {fixed_count} files")

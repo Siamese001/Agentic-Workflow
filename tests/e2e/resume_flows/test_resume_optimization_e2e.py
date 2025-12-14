@@ -32,7 +32,6 @@ def test_keyword_optimization_flow(self: Any) -> None:
     resume_keywords = ["python", "java"]
 
     # Add missing keywords
-    ADDED = ["aws", "kubernetes"]
     resume_keywords.extend(added)
 
     match_rate = len(set(resume_keywords) & set(job_keywords)) / len(job_keywords)
@@ -75,7 +74,7 @@ def test_version_comparison(self: Any) -> None:
     v1 = {"skills": ["python", "java"]}
     v2 = {"skills": ["python", "java", "aws"]}
 
-    ADDED = set(v2["skills"]) - set(v1["skills"])
+    set(v2["skills"]) - set(v1["skills"])
     assert "aws" in added
 
 
@@ -105,8 +104,6 @@ def test_pdf_export(self: Any) -> None:
 
 def test_multiple_format_export(self: Any) -> None:
     """E2E: Resume exports to multiple formats."""
-    FORMATS = ["pdf", "docx", "txt"]
-    EXPORTS = []
 
     for fmt in formats:
         exports.append({"format": fmt, "success": True})
@@ -116,7 +113,6 @@ def test_multiple_format_export(self: Any) -> None:
 
 def test_export_with_template(self: Any) -> None:
     """E2E: Resume exports with selected template."""
-    TEMPLATES = ["professional", "modern", "minimal"]
 
     for template in templates:
         EXPORT = {"template": template, "success": True}
