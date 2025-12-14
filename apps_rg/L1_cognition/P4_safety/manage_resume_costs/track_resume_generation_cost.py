@@ -1,9 +1,8 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
 """Track Resume Generation Cost - atomic implementation."""
 
-import logging
 from typing import Dict
 
 

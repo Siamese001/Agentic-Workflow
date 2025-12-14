@@ -2,7 +2,7 @@
 import logging
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
     SAFETY_THRESHOLD,
     CONFIG,
     C2,
@@ -28,16 +28,16 @@ class TestConstants:
 
     def test_api_timeout_reasonable(self):
             """Docstring."""
-        assert 10 <= DEFAULT_API_TIMEOUT <= 300
+        ASSERT 10 <= DEFAULT_API_TIMEOUT <= 300
 
     def test_temperatures_in_range(self):
             """Docstring."""
-        assert 0 <= DEFAULT_GENERATION_TEMPERATURE <= 2
-        assert 0 <= DEFAULT_SYNTHESIS_TEMPERATURE <= 2
+        ASSERT 0 <= DEFAULT_GENERATION_TEMPERATURE <= 2
+        ASSERT 0 <= DEFAULT_SYNTHESIS_TEMPERATURE <= 2
 
     def test_safety_threshold_in_range(self):
             """Docstring."""
-        assert 0 <= SAFETY_THRESHOLD <= 1
+        ASSERT 0 <= SAFETY_THRESHOLD <= 1
 
     def test_constants_determinism(self):
             """Docstring."""
@@ -83,19 +83,19 @@ class TestModelConfig:
     """Docstring."""
     def test_creation(self):
             """Docstring."""
-        cfg = ModelConfig(provider=list(ModelProvider)[0], model_name="gpt-4o")
+        CFG = ModelConfig(provider=list(ModelProvider)[0], model_name="gpt-4o")
         assert cfg.model_name == "gpt-4o"
 
 class TestRAGConfig:
     """Docstring."""
     def test_creation(self):
             """Docstring."""
-        cfg = RAGConfig()
+        CFG = RAGConfig()
         assert cfg is not None
 
 class TestGovernorConfig:
     """Docstring."""
     def test_creation(self):
             """Docstring."""
-        cfg = GovernorConfig()
+        CFG = GovernorConfig()
         assert cfg is not None

@@ -7,7 +7,7 @@ numbered system. Agents are identified by their function, not by numbers.
 import logging
 from typing import Any, Callable, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class AgentRole(Enum):
@@ -57,10 +57,10 @@ def __init__(
         config: Optional SubatomicHop configuration
         **kwargs: Additional parameters
     """
-    self.role = role
+    SELF.ROLE = role
     self.hop_function = hop_function
-    self.config = config or SubatomicHopConfig(hop_id=role.value)
-    self.parameters = kwargs
+    SELF.CONFIG = config or SubatomicHopConfig(hop_id=role.value)
+    SELF.PARAMETERS = kwargs
 
     # Configure based on role
     self._configure_for_role()
@@ -68,7 +68,7 @@ def __init__(
 
 def _configure_for_role(self: Any) -> None:
     """Configure the agent spec based on its role."""
-    capability = AGENT_CAPABILITIES.get(self.role)
+    CAPABILITY = AGENT_CAPABILITIES.get(self.role)
     if not capability:
         return
 
@@ -77,7 +77,7 @@ def _configure_for_role(self: Any) -> None:
 
     # Add role-specific context
     if "context" not in self.parameters:
-        self.parameters["context"] = {}
+        SELF.PARAMETERS["CONTEXT"] = {}
 
     self.parameters["context"].update(
         {
@@ -92,7 +92,7 @@ def create_hop(self: Any) -> SubatomicHop:
     """Create a SubatomicHop instance from this spec."""
     return SubatomicHop(
         hop_function=self.hop_function,
-        config=self.config,
+        CONFIG=self.config,
         initial_context=self.parameters.get("context", {}),
     )
 
@@ -101,14 +101,14 @@ def create_hop(self: Any) -> SubatomicHop:
 AGENT_CAPABILITIES: Dict[AgentRole, AgentCapability] = {
     # Context Gathering
     AgentRole.CONTEXT_GATHERER: AgentCapability(
-        role=AgentRole.CONTEXT_GATHERER,
+        ROLE=AgentRole.CONTEXT_GATHERER,
         display_name="Titanium Researcher",
-        description="Deep research and information gathering from multiple sources",
+        DESCRIPTION="Deep research and information gathering from multiple sources",
         primary_function="Query vector and graph databases to build factual foundation",
-        inputs=["query", "context", "filters"],
-        outputs=["research_results", "sources", "confidence_scores"],
-        tools=["TitaniumRAGPipeline", "HyDEProcessor", "KnowledgeGraph"],
-        constraints=["Must cite sources", "Cannot hallucinate data"],
+        INPUTS=["query", "context", "filters"],
+        OUTPUTS=["research_results", "sources", "confidence_scores"],
+        TOOLS=["TitaniumRAGPipeline", "HyDEProcessor", "KnowledgeGraph"],
+        CONSTRAINTS=["Must cite sources", "Cannot hallucinate data"],
         system_prompt_template="""You are the Titanium Researcher.
 Your objective: Build a comprehensive factual foundation using the provided research tools.
 Your downstream consumer: Strategic Planner and Content Drafter.
@@ -122,14 +122,14 @@ Your downstream consumer: Strategic Planner and Content Drafter.
     ),
     # Strategic Planning
     AgentRole.STRATEGIC_PLANNER: AgentCapability(
-        role=AgentRole.STRATEGIC_PLANNER,
+        ROLE=AgentRole.STRATEGIC_PLANNER,
         display_name="Executive Strategist",
-        description="Creates strategic plans and briefs from research",
+        DESCRIPTION="Creates strategic plans and briefs from research",
         primary_function="Synthesize research into actionable strategic guidance",
-        inputs=["research_results", "objectives", "constraints"],
-        outputs=["strategic_plan", "creative_brief", "execution_framework"],
-        tools=["CreativeBrief", "GoalAlignmentEngine"],
-        constraints=["Must be actionable", "Consider resource constraints"],
+        INPUTS=["research_results", "objectives", "constraints"],
+        OUTPUTS=["strategic_plan", "creative_brief", "execution_framework"],
+        TOOLS=["CreativeBrief", "GoalAlignmentEngine"],
+        CONSTRAINTS=["Must be actionable", "Consider resource constraints"],
         system_prompt_template="""You are the Executive Strategist.
 Your objective: Transform research into clear, actionable strategic guidance.
 Your downstream consumer: Content Drafter and Quality Critic.
@@ -142,14 +142,14 @@ Your downstream consumer: Content Drafter and Quality Critic.
     ),
     # Content Drafting
     AgentRole.CONTENT_DRAFTER: AgentCapability(
-        role=AgentRole.CONTENT_DRAFTER,
+        ROLE=AgentRole.CONTENT_DRAFTER,
         display_name="Executive Drafter",
-        description="Synthesizes inputs into high-quality content artifacts",
+        DESCRIPTION="Synthesizes inputs into high-quality content artifacts",
         primary_function="Create polished content from strategic guidance and research",
-        inputs=["strategic_plan", "research_results", "tone_settings"],
-        outputs=["draft_content", "metadata", "source_references"],
-        tools=["ToneModel", "CulturalDecoder", "PromptOptimizer"],
-        constraints=["Match tone requirements", "Maintain factual accuracy"],
+        INPUTS=["strategic_plan", "research_results", "tone_settings"],
+        OUTPUTS=["draft_content", "metadata", "source_references"],
+        TOOLS=["ToneModel", "CulturalDecoder", "PromptOptimizer"],
+        CONSTRAINTS=["Match tone requirements", "Maintain factual accuracy"],
         system_prompt_template="""You are the Executive Drafter.
 Your objective: Create compelling, accurate content that meets strategic objectives.
 Your downstream consumer: Quality Critic and Protocol Enforcer.
@@ -162,14 +162,14 @@ Your downstream consumer: Quality Critic and Protocol Enforcer.
     ),
     # Quality Criticism
     AgentRole.QUALITY_CRITIC: AgentCapability(
-        role=AgentRole.QUALITY_CRITIC,
+        ROLE=AgentRole.QUALITY_CRITIC,
         display_name="Governance Auditor",
-        description="Reviews and validates content against quality standards",
+        DESCRIPTION="Reviews and validates content against quality standards",
         primary_function="Ensure content meets all quality and governance requirements",
-        inputs=["draft_content", "quality_criteria", "governance_rules"],
-        outputs=["quality_assessment", "feedback", "approval_status"],
-        tools=["ReflectionEngine", "GovernanceShield", "ValidationGateRegistry"],
-        constraints=["Must be thorough", "Provide specific feedback"],
+        INPUTS=["draft_content", "quality_criteria", "governance_rules"],
+        OUTPUTS=["quality_assessment", "feedback", "approval_status"],
+        TOOLS=["ReflectionEngine", "GovernanceShield", "ValidationGateRegistry"],
+        CONSTRAINTS=["Must be thorough", "Provide specific feedback"],
         system_prompt_template="""You are the Governance Auditor.
 Your objective: Verify content meets all quality standards and governance requirements.
 Your downstream consumer: Protocol Enforcer and Coordinator.
@@ -182,14 +182,14 @@ Your downstream consumer: Protocol Enforcer and Coordinator.
     ),
     # Message Crafting
     AgentRole.MESSAGE_CRAFTER: AgentCapability(
-        role=AgentRole.MESSAGE_CRAFTER,
+        ROLE=AgentRole.MESSAGE_CRAFTER,
         display_name="Message Architect",
-        description="Creates personalized messages for outreach",
+        DESCRIPTION="Creates personalized messages for outreach",
         primary_function="Craft targeted messages that resonate with recipients",
-        inputs=["recipient_profile", "message_type", "tone"],
-        outputs=["personalized_message", "personalization_tokens"],
-        tools=["PersonalizationEngine", "MessageTemplates"],
-        constraints=["Must be authentic", "Avoid spam patterns"],
+        INPUTS=["recipient_profile", "message_type", "tone"],
+        OUTPUTS=["personalized_message", "personalization_tokens"],
+        TOOLS=["PersonalizationEngine", "MessageTemplates"],
+        CONSTRAINTS=["Must be authentic", "Avoid spam patterns"],
         system_prompt_template="""You are the Message Architect.
 Your objective: Create personalized messages that build genuine connections.
 Your downstream consumer: Quality Critic.
@@ -202,14 +202,14 @@ Your downstream consumer: Quality Critic.
     ),
     # Protocol Enforcement
     AgentRole.PROTOCOL_ENFORCER: AgentCapability(
-        role=AgentRole.PROTOCOL_ENFORCER,
+        ROLE=AgentRole.PROTOCOL_ENFORCER,
         display_name="Protocol Guardian",
-        description="Ensures all outputs comply with established protocols",
+        DESCRIPTION="Ensures all outputs comply with established protocols",
         primary_function="Validate compliance with safety, legal, and brand guidelines",
-        inputs=["content", "protocol_rules", "compliance_checks"],
-        outputs=["compliance_report", "violations", "approved_content"],
-        tools=["GovernanceShield", "SafetyProtocols", "BrandGuidelines"],
-        constraints=["Zero tolerance for violations", "Document all decisions"],
+        INPUTS=["content", "protocol_rules", "compliance_checks"],
+        OUTPUTS=["compliance_report", "violations", "approved_content"],
+        TOOLS=["GovernanceShield", "SafetyProtocols", "BrandGuidelines"],
+        CONSTRAINTS=["Zero tolerance for violations", "Document all decisions"],
         system_prompt_template="""You are the Protocol Guardian.
 Your objective: Ensure 100% compliance with all established protocols.
 Your downstream consumer: Coordinator and end users.
@@ -222,14 +222,14 @@ Your downstream consumer: Coordinator and end users.
     ),
     # Resume Building
     AgentRole.RESUME_BUILDER: AgentCapability(
-        role=AgentRole.RESUME_BUILDER,
+        ROLE=AgentRole.RESUME_BUILDER,
         display_name="Resume Architect",
-        description="Specializes in creating optimized resumes",
+        DESCRIPTION="Specializes in creating optimized resumes",
         primary_function="Build resumes that pass ATS and impress recruiters",
-        inputs=["profile_data", "target_role", "industry"],
-        outputs=["optimized_resume", "ats_score", "improvement_suggestions"],
-        tools=["ResumeOptimizer", "ATSScanner", "KeywordInjector"],
-        constraints=["Must pass ATS", "Be recruiter-friendly"],
+        INPUTS=["profile_data", "target_role", "industry"],
+        OUTPUTS=["optimized_resume", "ats_score", "improvement_suggestions"],
+        TOOLS=["ResumeOptimizer", "ATSScanner", "KeywordInjector"],
+        CONSTRAINTS=["Must pass ATS", "Be recruiter-friendly"],
         system_prompt_template="""You are the Resume Architect.
 Your objective: Create resumes that get past ATS and impress recruiters.
 Your downstream consumer: Quality Critic.
@@ -321,7 +321,7 @@ def create_agent(self: Any, role: AgentRole) -> Optional[SubatomicHop]:
     Returns:
         SubatomicHop instance or None if not found
     """
-    spec = self.get_agent_spec(role)
+    SPEC = self.get_agent_spec(role)
     if not spec:
         logger.error(f"No spec registered for role: {role.value}")
         return None
@@ -359,7 +359,7 @@ def validate_no_legacy_references(self: Any, text: str) -> List[str]:
     Returns:
         List of found legacy references
     """
-    found = []
+    FOUND = []
     for legacy_ref in LEGACY_MAPPING.keys():
         if legacy_ref in text:
             found.append(legacy_ref)
@@ -422,7 +422,7 @@ def create_functional_agent(role: AgentRole, hop_function: Callable, **kwargs) -
     Returns:
         SubatomicHop instance
     """
-    spec = AgentSpec(role=role, hop_function=hop_function, **kwargs)
+    SPEC = AgentSpec(role=role, hop_function=hop_function, **kwargs)
     return spec.create_hop()
 
 
@@ -453,7 +453,7 @@ def validate_no_legacy_code(text: str, context: str = "Unknown") -> None:
     Raises:
         LegacyCodeError: If legacy references found
     """
-    registry = get_agent_registry()
+    REGISTRY = get_agent_registry()
     legacy_refs = registry.validate_no_legacy_references(text)
 
     if legacy_refs:

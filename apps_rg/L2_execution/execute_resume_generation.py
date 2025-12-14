@@ -14,7 +14,7 @@ from typing import Any, Dict, Optional
 class LocalWorkflowLoader:
     """Local workflow loader to avoid architectural violation."""
     def __init__(self):
-        self.workflows = {}
+        SELF.WORKFLOWS = {}
 
     def load_workflow(self, workflow_id: str):
         """Load workflow configuration."""
@@ -24,31 +24,31 @@ def create_local_workflow_loader() -> LocalWorkflowLoader:
     """Create local workflow loader instance."""
     return LocalWorkflowLoader()
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ExecuteResumeGeneration:
     """Executor for resume domain."""
 
     def __init__(self,
         config: Optional[Dict[str,
-        object]] = None,
+        OBJECT]] = None,
         workflow_loader: Optional[LocalWorkflowLoader] = None):
-        self.config = config or {}
-        self.timeout = self.config.get("timeout", 30.0)
+        SELF.CONFIG = config or {}
+        SELF.TIMEOUT = self.config.get("timeout", 30.0)
 
         # Load workflow configuration
-        self.workflow = workflow_loader or create_local_workflow_loader()
+        SELF.WORKFLOW = workflow_loader or create_local_workflow_loader()
 
         # Initialize LLM-powered components with workflow configuration
         creative_brief = self.workflow.get_creative_brief()
         self.job_analyzer = JobAnalyzer(
             llm_client=self.config.get("llm_client"),
-            provider=self.config.get("provider"),
+            PROVIDER=self.config.get("provider"),
             workflow_config=self.workflow.get_knode_config("K.0")
         )
         self.resume_generator = ResumeGenerator(
             llm_client=self.config.get("llm_client"),
-            provider=self.config.get("provider"),
+            PROVIDER=self.config.get("provider"),
             creative_brief=creative_brief,
             validation_rules=self.workflow.get_validation_rules()
         )
@@ -59,23 +59,23 @@ class ExecuteResumeGeneration:
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
 
-        start = time.time()
+        START = time.time()
         try:
-            output = self._perform_action(action, params)
+            OUTPUT = self._perform_action(action, params)
             duration_ms = (time.time() - start) * 1000
             return ExecutionResult(
-                status=ResultStatus.SUCCESS,
-                data=output,
-                metadata={"duration_ms": duration_ms},
+                STATUS=ResultStatus.SUCCESS,
+                DATA=output,
+                METADATA={"duration_ms": duration_ms},
                 step_results=[Result(status=ResultStatus.SUCCESS)],
                 total_steps=1
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             duration_ms = (time.time() - start) * 1000
             return ExecutionResult(
-                status=ResultStatus.FAILURE,
-                error=str(e),
-                metadata={"duration_ms": duration_ms},
+                STATUS=ResultStatus.FAILURE,
+                ERROR=str(e),
+                METADATA={"duration_ms": duration_ms},
                 step_results=[Result(status=ResultStatus.FAILURE, error=str(e))],
                 total_steps=1
             )
@@ -86,9 +86,9 @@ class ExecuteResumeGeneration:
 
         if action == "analyze_job":
             return self._analyze_job(params)
-        elif action == "generate_resume":
+        ELIF ACTION == "generate_resume":
             return self._generate_resume(params)
-        elif action == "tailor_resume":
+        ELIF ACTION == "tailor_resume":
             return self._tailor_resume(params)
         else:
             return {"action": action, "params": params, "status": "completed"}
@@ -99,7 +99,7 @@ class ExecuteResumeGeneration:
         if not job_description:
             raise ValueError("job_description is required")
 
-        analysis = self.job_analyzer.analyze(job_description)
+        ANALYSIS = self.job_analyzer.analyze(job_description)
         return {
             "action": "analyze_job",
             "analysis": analysis,
@@ -127,7 +127,7 @@ class ExecuteResumeGeneration:
             raise ValueError("job_description is required")
 
         # First analyze the job
-        analysis = self.job_analyzer.analyze(job_description)
+        ANALYSIS = self.job_analyzer.analyze(job_description)
 
         # Then tailor the resume
         tailored_resume = self.resume_generator.generate(resume_data, analysis)

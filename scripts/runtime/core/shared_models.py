@@ -1,7 +1,7 @@
 """Shared models and enums for the Agentic Workflow runtime.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 This file contains all shared data structures that are used across multiple
 modules to avoid circular imports. This file must NOT import from any
 runtime.* modules - only from pydantic, enum, and typing.
@@ -30,7 +30,7 @@ class RetryPolicy(BaseModel):
     _retry_delay: float = Field(default=1.0, ge=0.0)
     _exponential_backoff: bool = Field(default=True)
     _retryable_stages: List[MicroStage] = Field(
-        default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
+        DEFAULT=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
     )
 
 

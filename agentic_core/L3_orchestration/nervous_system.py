@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Optional
     ActionRequest,
 )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class NervousSystem(IOrchestrator):
     """Core orchestrator that coordinates cognitive and action planes.
@@ -50,16 +50,16 @@ class NervousSystem(IOrchestrator):
             action_plane: The hands (tool execution)
             config: Orchestrator configuration
         """
-        self.brain = cognitive_plane
-        self.hands = action_plane
-        self.config = config or OrchestratorConfig()
+        SELF.BRAIN = cognitive_plane
+        SELF.HANDS = action_plane
+        SELF.CONFIG = config or OrchestratorConfig()
 
         self._state: Dict[str, Any] = {}
         self._iteration = 0
 
         logger.info(
             "nervous_system_initialized",
-            extra={
+            EXTRA={
                 "cognitive_capabilities": [c.value for c in self.brain.get_capabilities()],
                 "action_capabilities": [c.value for c in self.hands.get_capabilities()],
                 "config": self.config.to_dict(),
@@ -83,7 +83,7 @@ class NervousSystem(IOrchestrator):
         self._state = context.state.copy()
 
         logger.info("execution_started",
-            extra={"mission": context.mission,
+            EXTRA={"mission": context.mission,
             "scene_keys": list(context.scene.keys())})
 
         try:
@@ -139,7 +139,7 @@ class NervousSystem(IOrchestrator):
                 errors.append(f"Think phase failed: {think_result.get('error')}")
                 break
 
-            actions = self._extract_actions(think_result)
+            ACTIONS = self._extract_actions(think_result)
             if not actions:
                 logger.info("no_actions_planned", extra={"iteration": self._iteration})
                 break
@@ -173,7 +173,7 @@ class NervousSystem(IOrchestrator):
         execution_trace: List[Dict]) -> List[Dict]:
         """Execute reflection phase."""
         reflect_result = await self.brain.reflect(execution_trace=execution_trace,
-            outcome={"state": context.state,
+            OUTCOME={"state": context.state,
             "history": context.history})
         execution_trace.append({"phase": ExecutionPhase.REFLECT.value,
             "result": reflect_result,
@@ -186,15 +186,15 @@ class NervousSystem(IOrchestrator):
         errors: List[str],
         start_time: float) -> ExecutionResult:
         """Create execution result."""
-        success = len(errors) == 0
-        result = ExecutionResult(
-            success=success, output=context.state.get("final_output"), final_state=context.state,
+        SUCCESS = len(errors) == 0
+        RESULT = ExecutionResult(
+            SUCCESS=success, output=context.state.get("final_output"), final_state=context.state,
             execution_trace=execution_trace, iterations=self._iteration, errors=errors,
-            metadata={"execution_time_seconds": time.time() - start_time,
+            METADATA={"execution_time_seconds": time.time() - start_time,
                 "total_phases": len(execution_trace)}
         )
         logger.info("execution_completed",
-            extra={"success": success,
+            EXTRA={"success": success,
             "iterations": self._iteration,
             "execution_time": result.metadata["execution_time_seconds"]})
         return result
@@ -207,9 +207,9 @@ class NervousSystem(IOrchestrator):
         """Handle execution error."""
         logger.error("execution_failed", extra={"error": str(error)}, exc_info=True)
         return ExecutionResult(
-            success=False, final_state=context.state, execution_trace=execution_trace,
-            iterations=self._iteration, errors=[f"Execution failed: {str(error)}"],
-            metadata={"execution_time_seconds": time.time() - start_time}
+            SUCCESS=False, final_state=context.state, execution_trace=execution_trace,
+            ITERATIONS=self._iteration, errors=[f"Execution failed: {str(error)}"],
+            METADATA={"execution_time_seconds": time.time() - start_time}
         )
 
     async def execute_step(
@@ -232,12 +232,12 @@ class NervousSystem(IOrchestrator):
                 "scene": context.scene,
                 "initial_state": context.state,
             }
-        elif phase == ExecutionPhase.THINK:
+        ELIF PHASE == ExecutionPhase.THINK:
             return await self.think(context)
-        elif phase == ExecutionPhase.ACT:
+        ELIF PHASE == ExecutionPhase.ACT:
             # Need actions from previous think
             return {"error": "ACT phase requires actions from THINK"}
-        elif phase == ExecutionPhase.OBSERVE:
+        ELIF PHASE == ExecutionPhase.OBSERVE:
             # Need results from previous act
             return {"error": "OBSERVE phase requires results from ACT"}
         else:
@@ -252,9 +252,9 @@ class NervousSystem(IOrchestrator):
         Returns:
             Planning result with next actions
         """
-        request = PlanningRequest(
-            task=context.mission,
-            context={
+        REQUEST = PlanningRequest(
+            TASK=context.mission,
+            CONTEXT={
                 "scene": context.scene,
                 "state": context.state,
                 "history": context.history,
@@ -263,7 +263,7 @@ class NervousSystem(IOrchestrator):
             max_steps=self.config.max_iterations - self._iteration,
         )
 
-        result = await self.brain.plan(request)
+        RESULT = await self.brain.plan(request)
 
         return {
             "success": result.success,
@@ -288,7 +288,7 @@ class NervousSystem(IOrchestrator):
         Returns:
             List of action results
         """
-        results = await self.hands.execute_batch(actions, parallel=False)
+        RESULTS = await self.hands.execute_batch(actions, parallel=False)
 
         return [r.to_dict() for r in results]
 
@@ -309,18 +309,18 @@ class NervousSystem(IOrchestrator):
         """
         # Aggregate results
         all_success = all(r.get("success", False) for r in action_results)
-        outputs = [r.get("output") for r in action_results if r.get("output")]
-        errors = [r.get("error") for r in action_results if r.get("error")]
+        OUTPUTS = [r.get("output") for r in action_results if r.get("output")]
+        ERRORS = [r.get("error") for r in action_results if r.get("error")]
 
         # Use cognitive plane to interpret results
-        interpretation = await self.brain.reason(
-            query="Interpret these action results and determine next steps",
-            context={
+        INTERPRETATION = await self.brain.reason(
+            QUERY="Interpret these action results and determine next steps",
+            CONTEXT={
                 "action_results": action_results,
                 "current_state": context.state,
                 "mission": context.mission,
             },
-            mode="react",
+            MODE="react",
         )
 
         return {
@@ -372,10 +372,10 @@ class NervousSystem(IOrchestrator):
         """
         import json
 
-        state = self.get_state()
+        STATE = self.get_state()
 
         with open(path, 'w') as f:
-            json.dump(state, f, indent=2, default=str)
+            JSON.DUMP(STATE, F, INDENT=2, default=str)
 
         logger.info("state_saved", extra={"path": path})
 
@@ -387,7 +387,7 @@ class NervousSystem(IOrchestrator):
         """
 
         with open(path, 'r') as f:
-            state = json.load(f)
+            STATE = json.load(f)
 
         self._iteration = state.get("iteration", 0)
         self._state = state.get("state", {})
@@ -405,15 +405,15 @@ class NervousSystem(IOrchestrator):
         """
         actions: List[ActionRequest] = []
 
-        plan = think_result.get("plan", [])
+        PLAN = think_result.get("plan", [])
 
         for step in plan:
             if step.get("type") == "action":
-                action = ActionRequest(
+                ACTION = ActionRequest(
                     action_type=step.get("action_type", "tool_call"),
                     tool_name=step.get("tool", "unknown"),
-                    parameters=step.get("parameters", {}),
-                    context=step.get("context", {}),
+                    PARAMETERS=step.get("parameters", {}),
+                    CONTEXT=step.get("context", {}),
                 )
                 actions.append(action)
 

@@ -1,7 +1,7 @@
 """Unit Tests for Resume Engine Logic (Mocked)
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Tests the Resume Engine functionality with mocked LLM responses to avoid API calls.
 """
 
@@ -21,7 +21,7 @@ class TestJobAnalyzerMocked:
     def setup_method(self):
             """Set up test fixtures with mocked client."""
         self.mock_client = Mock()
-        self.analyzer = JobAnalyzer(llm_client=self.mock_client)
+        SELF.ANALYZER = JobAnalyzer(llm_client=self.mock_client)
 
     def test_analyze_job_description_success(self):
             """Test successful job analysis with mocked response."""
@@ -42,7 +42,7 @@ class TestJobAnalyzerMocked:
 
             job_description = "Looking for a Senior Python Developer with Django and AWS experience.
     "
-            result = self.analyzer.analyze(job_description)
+            RESULT = self.analyzer.analyze(job_description)
 
             # Verify structure
             assert isinstance(result, dict)
@@ -69,7 +69,7 @@ class TestJobAnalyzerMocked:
         with patch('google.generativeai.GenerativeModel') as mock_model:
             mock_model.return_value.generate_content.return_value = mock_response
 
-            result = self.analyzer.analyze("Test job description")
+            RESULT = self.analyzer.analyze("Test job description")
 
             # Should return fallback structure with error
             assert "error" in result
@@ -79,7 +79,7 @@ class TestJobAnalyzerMocked:
     def test_extract_keywords(self):
             """Test keyword extraction functionality."""
         job_description = "Looking for a Python developer with React, AWS, and Docker experience."
-        keywords = self.analyzer.extract_keywords(job_description)
+        KEYWORDS = self.analyzer.extract_keywords(job_description)
 
         assert isinstance(keywords, list)
         assert "python" in keywords
@@ -92,23 +92,23 @@ class TestResumeGeneratorMocked:
     def setup_method(self):
             """Set up test fixtures with mocked client."""
         self.mock_client = Mock()
-        self.generator = ResumeGenerator(llm_client=self.mock_client)
+        SELF.GENERATOR = ResumeGenerator(llm_client=self.mock_client)
 
     def test_tailor_resume_success(self):
             """Test successful resume tailoring."""
         # Mock the LLM responses for different prompts
         def mock_generate(prompt, generation_config=None):
                 """Docstring."""
-            response = Mock()
+            RESPONSE = Mock()
             if "summary" in prompt.lower():
-                response.text = "Senior Python Developer with 5+ years of experience building scalab
+                RESPONSE.TEXT = "Senior Python Developer with 5+ years of experience building scalab
     le Django applications and
         optimizing AWS infrastructure for high-performance financial systems."
             elif "bullet" in prompt.lower():
-                response.text = "Designed and implemented scalable Django backend systems handling 1
+                RESPONSE.TEXT = "Designed and implemented scalable Django backend systems handling 1
     0K+ requests per second"
             else:
-                response.text = "Developed Python applications using Django framework"
+                RESPONSE.TEXT = "Developed Python applications using Django framework"
             return response
 
         # Patch the model to use our mock
@@ -132,7 +132,7 @@ class TestResumeGeneratorMocked:
                 "skills": ["Python", "JavaScript", "SQL", "Git", "Docker"]
             }
 
-            analysis = {
+            ANALYSIS = {
                 "hard_skills": ["Python", "Django", "PostgreSQL", "AWS", "Docker"],
                 "soft_skills": ["Communication", "Teamwork", "Problem-solving"],
                 "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optim
@@ -142,7 +142,7 @@ class TestResumeGeneratorMocked:
                 "north_star_metric": "Application performance and scalability"
             }
 
-            result = self.generator.generate(resume_data, analysis)
+            RESULT = self.generator.generate(resume_data, analysis)
 
             # Verify structure
             assert isinstance(result, dict)
@@ -152,17 +152,17 @@ class TestResumeGeneratorMocked:
             assert "_tailoring_metadata" in result
 
             # Verify tailoring
-            assert result["summary"] != resume_data["summary"]
+            ASSERT RESULT["SUMMARY"] != resume_data["summary"]
             assert "Django" in result["summary"]
             assert "financial" in result["summary"].lower()
 
             # Verify skills reordering
-            skills = result["skills"]
+            SKILLS = result["skills"]
             assert "Python" in skills[:3]
             assert "Django" in skills[:5]
 
             # Verify metadata
-            metadata = result["_tailoring_metadata"]
+            METADATA = result["_tailoring_metadata"]
             assert metadata["target_hard_skills"] == analysis["hard_skills"]
 
     def test_optimize_for_ats(self):
@@ -174,14 +174,14 @@ class TestResumeGeneratorMocked:
             "skills": ["Python", "Java"]
         }
 
-        analysis = {
+        ANALYSIS = {
             "hard_skills": ["Python", "Django", "AWS"],
             "soft_skills": ["Communication"],
             "key_responsibilities": ["Develop code"],
             "cultural_indicators": ["Teamwork"]
         }
 
-        result = self.generator.optimize_for_ats(resume_data, analysis)
+        RESULT = self.generator.optimize_for_ats(resume_data, analysis)
 
         # Should have ATS keywords
         assert "ats_keywords" in result
@@ -217,7 +217,7 @@ class TestExecuteResumeGenerationMocked:
             mock_generator_class.return_value = self.mock_generator
 
             # Pass the mock client in config to prevent real API calls
-            self.executor = ExecuteResumeGeneration(config={"llm_client": self.mock_client})
+            SELF.EXECUTOR = ExecuteResumeGeneration(config={"llm_client": self.mock_client})
 
     def test_tailor_resume_flow(self):
             """Test the complete resume tailoring flow."""
@@ -247,19 +247,19 @@ class TestExecuteResumeGenerationMocked:
             "ats_keywords": ["python", "django", "aws"]
         }
 
-        params = {
+        PARAMS = {
             "resume_data": {"summary": "Original"},
             "job_description": "Senior Python Developer"
         }
 
-        result = self.executor.execute("tailor_resume", params)
+        RESULT = self.executor.execute("tailor_resume", params)
 
         # Verify execution
         assert result.is_success() is True
         assert result.data is not None
 
-        output = result.data
-        assert output["action"] == "tailor_resume"
+        OUTPUT = result.data
+        ASSERT OUTPUT["ACTION"] == "tailor_resume"
         assert "job_analysis" in output
         assert "tailored_resume" in output
 
@@ -276,11 +276,11 @@ class TestExecuteResumeGenerationMocked:
             "experience_level": "senior"
         }
 
-        params = {"job_description": "Test job"}
-        result = self.executor.execute("analyze_job", params)
+        PARAMS = {"job_description": "Test job"}
+        RESULT = self.executor.execute("analyze_job", params)
 
         assert result.is_success() is True
-        assert result.data["action"] == "analyze_job"
+        ASSERT RESULT.DATA["ACTION"] == "analyze_job"
         assert "analysis" in result.data
 
         self.mock_analyzer.analyze.assert_called_once_with("Test job")
@@ -288,12 +288,12 @@ class TestExecuteResumeGenerationMocked:
     def test_missing_parameters(self):
             """Test error handling for missing parameters."""
         # Test missing job description
-        result = self.executor.execute("analyze_job", {})
+        RESULT = self.executor.execute("analyze_job", {})
         assert result.is_success() is False
         assert "job_description is required" in result.error
 
         # Test missing resume data
-        result = self.executor.execute("tailor_resume", {"job_description": "test"})
+        RESULT = self.executor.execute("tailor_resume", {"job_description": "test"})
         assert result.is_success() is False
         assert "resume_data is required" in result.error
 
@@ -349,11 +349,11 @@ class TestResumeEngineIntegration:
             # Mock resume generation
             def mock_generate_response(prompt, generation_config=None):
                     """Docstring."""
-                response = Mock()
+                RESPONSE = Mock()
                 if "summary" in prompt.lower():
-                    response.text = mock_tailored["summary"]
+                    RESPONSE.TEXT = mock_tailored["summary"]
                 elif "bullet" in prompt.lower():
-                    response.text = mock_tailored["experience"][0]["responsibilities"][0]
+                    RESPONSE.TEXT = mock_tailored["experience"][0]["responsibilities"][0]
                 return response
 
             # Set up side_effect to handle multiple calls
@@ -370,8 +370,8 @@ class TestResumeEngineIntegration:
 
             # Execute workflow with mock client to prevent real API calls
             mock_client = Mock()
-            executor = ExecuteResumeGeneration(config={"llm_client": mock_client})
-            result = executor.execute("tailor_resume", {
+            EXECUTOR = ExecuteResumeGeneration(config={"llm_client": mock_client})
+            RESULT = executor.execute("tailor_resume", {
                 "resume_data": {
                     "summary": "Software Developer",
                     "experience": [{"title": "Developer", "responsibilities": ["Wrote code"]}],
@@ -383,17 +383,17 @@ class TestResumeEngineIntegration:
             # Verify success
             assert result.is_success() is True
 
-            output = result.data
-            assert output["action"] == "tailor_resume"
+            OUTPUT = result.data
+            ASSERT OUTPUT["ACTION"] == "tailor_resume"
             assert "job_analysis" in output
             assert "tailored_resume" in output
 
             # Verify analysis
-            analysis = output["job_analysis"]
+            ANALYSIS = output["job_analysis"]
             assert "hard_skills" in analysis
             assert len(analysis["hard_skills"]) > 0
 
             # Verify tailored resume
-            tailored = output["tailored_resume"]
+            TAILORED = output["tailored_resume"]
             assert "_tailoring_metadata" in tailored
             assert "ats_keywords" in tailored

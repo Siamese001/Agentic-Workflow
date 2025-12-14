@@ -30,7 +30,7 @@ from agentic_core.L5_safety.governor import CostGovernor
 from agentic_core.L5_safety.overseer import ConstitutionalOverseer
 from agentic_core.L5_safety.pii_vault import PIIVault
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class AgentPlan(BaseModel):
@@ -54,14 +54,14 @@ class L5HardenedSubatomicHop:
 
 
 def __init__(self: Any, role: str, config: Dict, agent_type: str) -> None:
-    self.role = role
+    SELF.ROLE = role
     self.agent_type = agent_type
-    self.id = str(uuid.uuid4())
+    SELF.ID = str(uuid.uuid4())
     self.session_id = str(uuid.uuid4())
 
     # Initialize L5 Safety Components
-    self.storage = LocalDiskAdapter(config.get("storage_path", "./agent_data"))
-    self.genealogy = GenealogyRegistry(max_depth=config.get("max_mutation_depth", 5))
+    SELF.STORAGE = LocalDiskAdapter(config.get("storage_path", "./agent_data"))
+    SELF.GENEALOGY = GenealogyRegistry(max_depth=config.get("max_mutation_depth", 5))
     self.pii_vault = PIIVault()
     self.cost_governor = CostGovernor(
         budget_limit=config.get("budget_limit", 5.00), session_id=self.session_id
@@ -69,17 +69,17 @@ def __init__(self: Any, role: str, config: Dict, agent_type: str) -> None:
     self.canary_defense = CanaryDefense()
 
     # Constitutional Overseer (requires OpenAI client)
-    self.overseer = ConstitutionalOverseer(
-        client=config["openai_client"],
+    SELF.OVERSEER = ConstitutionalOverseer(
+        CLIENT=config["openai_client"],
         config_path=config.get("constitution_path", "config/constitution.yaml"),
     )
 
     # Execution Components
     self.mcp_manager = MCPConnectionManager(config.get("mcp_mappings", {}))
-    self.sandbox = DockerSandbox(config.get("docker_image", "python:3.10-slim"))
+    SELF.SANDBOX = DockerSandbox(config.get("docker_image", "python:3.10-slim"))
 
     # Observability
-    self.telemetry = TelemetryRecorder(config.get("telemetry_db", "flight_recorder.duckdb"))
+    SELF.TELEMETRY = TelemetryRecorder(config.get("telemetry_db", "flight_recorder.duckdb"))
 
     # State tracking
     self.active_canary: Optional[CanaryToken] = None
@@ -88,6 +88,7 @@ def __init__(self: Any, role: str, config: Dict, agent_type: str) -> None:
     logger.info(f"Initialized L5 Hardened SubatomicHop: {self.id} for role: {role}")
 
 
+# REFACTOR: Split this 66-line function
 async def run(self: Any, context: Dict) -> Dict[str, Any]:
     """
     Execute the hardened hop with full L5 safety protection.
@@ -167,10 +168,10 @@ async def _preflight_validation(self: Any, trace_id: str, context: Dict) -> None
         TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_preflight",
-            role=self.role,
+            ROLE=self.role,
             event_type="PREFLIGHT_START",
-            payload={"context_keys": list(context.keys())},
-            timestamp=time.time(),
+            PAYLOAD={"context_keys": list(context.keys())},
+            TIMESTAMP=time.time(),
         )
     )
 
@@ -197,10 +198,10 @@ async def _protect_privacy(self: Any, context: Dict) -> Tuple[Dict, Dict]:
         TraceEvent(
             trace_id=context.get("trace_id", self.id),
             span_id=f"{self.id}_pii",
-            role=self.role,
+            ROLE=self.role,
             event_type="PII_PROTECTION",
-            payload={"pii_summary": pii_summary},
-            timestamp=time.time(),
+            PAYLOAD={"pii_summary": pii_summary},
+            TIMESTAMP=time.time(),
         )
     )
 
@@ -228,12 +229,12 @@ async def _execute_think_stage(
     self: Any, system_prompt: str, user_input: str, trace_id: str
 ) -> Tuple[AgentPlan, float]:
     """Execute the thinking stage with cost tracking."""
-    start_time = time.time()
+    time.time()
 
     # This would use your actual LLM client
     # For now, returning a mock plan
-    plan = AgentPlan(
-        reasoning="Analyzed the task and determined required actions",
+    PLAN = AgentPlan(
+        REASONING="Analyzed the task and determined required actions",
         tool_calls=[{"name": "analyze", "args": {"input": user_input}}],
     )
 
@@ -246,10 +247,10 @@ async def _execute_think_stage(
         TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_think",
-            role=self.role,
+            ROLE=self.role,
             event_type="THINK_COMPLETE",
-            payload={"plan": plan.model_dump(), "cost": think_cost},
-            timestamp=time.time(),
+            PAYLOAD={"plan": plan.model_dump(), "cost": think_cost},
+            TIMESTAMP=time.time(),
         )
     )
 
@@ -258,7 +259,7 @@ async def _execute_think_stage(
 
 async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple[List[Any], float]:
     """Execute the action stage with tool calls."""
-    results = []
+    RESULTS = []
     total_cost = 0.0
 
     # Connect MCP tools
@@ -268,12 +269,12 @@ async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple
         for call in plan.tool_calls:
             if call["name"] == "run_python":
                 # Execute in sandbox
-                code = call["args"].get("code", "")
-                result = self.sandbox.run_code(code)
+                CODE = call["args"].get("code", "")
+                RESULT = self.sandbox.run_code(code)
                 results.append({"tool": "sandbox", "result": result})
             else:
                 # Call MCP tool
-                result = await self.mcp_manager.call_tool(call["name"], call.get("args", {}))
+                RESULT = await self.mcp_manager.call_tool(call["name"], call.get("args", {}))
                 results.append({"tool": call["name"], "result": result})
 
             # Track cost for each tool call
@@ -281,7 +282,7 @@ async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple
                 "tool_execution",
                 input_tokens=10,
                 output_tokens=10,
-                operation=f"tool_{call['name']}",
+                OPERATION=f"tool_{call['name']}",
             )
 
     finally:
@@ -291,10 +292,10 @@ async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple
         TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_act",
-            role=self.role,
+            ROLE=self.role,
             event_type="ACT_COMPLETE",
-            payload={"tool_count": len(plan.tool_calls), "total_cost": total_cost},
-            timestamp=time.time(),
+            PAYLOAD={"tool_count": len(plan.tool_calls), "total_cost": total_cost},
+            TIMESTAMP=time.time(),
         )
     )
 
@@ -328,10 +329,10 @@ async def _validate_constitutionally(
         TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_validate",
-            role=self.role,
+            ROLE=self.role,
             event_type="VALIDATION_COMPLETE",
-            payload={"validation": validation_result},
-            timestamp=time.time(),
+            PAYLOAD={"validation": validation_result},
+            TIMESTAMP=time.time(),
         )
     )
 
@@ -352,7 +353,7 @@ async def _commit_results(self: Any, final_output: str, trace_id: str) -> None:
     await self.storage.write_blob(
         f"hops/{self.id}.txt",
         final_output.encode(),
-        metadata={
+        METADATA={
             "trace_id": trace_id,
             "session_id": self.session_id,
             "role": self.role,
@@ -365,10 +366,10 @@ async def _commit_results(self: Any, final_output: str, trace_id: str) -> None:
         TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_commit",
-            role=self.role,
+            ROLE=self.role,
             event_type="COMMIT_COMPLETE",
-            payload={"storage_key": f"hops/{self.id}.txt"},
-            timestamp=time.time(),
+            PAYLOAD={"storage_key": f"hops/{self.id}.txt"},
+            TIMESTAMP=time.time(),
         )
     )
 
@@ -379,10 +380,10 @@ async def _handle_budget_exceeded(self: Any, trace_id: str, error: BudgetExceede
         TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_budget_error",
-            role=self.role,
+            ROLE=self.role,
             event_type="BUDGET_EXCEEDED",
-            payload={"current_spend": error.current_spend, "limit": error.limit},
-            timestamp=time.time(),
+            PAYLOAD={"current_spend": error.current_spend, "limit": error.limit},
+            TIMESTAMP=time.time(),
         )
     )
 
@@ -395,10 +396,10 @@ async def _handle_execution_error(self: Any, trace_id: str, error: Exception) ->
         TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_error",
-            role=self.role,
+            ROLE=self.role,
             event_type="EXECUTION_ERROR",
-            payload={"error": str(error), "type": type(error).__name__},
-            timestamp=time.time(),
+            PAYLOAD={"error": str(error), "type": type(error).__name__},
+            TIMESTAMP=time.time(),
         )
     )
 
@@ -420,10 +421,10 @@ async def _cleanup(self: Any, trace_id: str) -> None:
         TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_cleanup",
-            role=self.role,
+            ROLE=self.role,
             event_type="CLEANUP_COMPLETE",
-            payload={},
-            timestamp=time.time(),
+            PAYLOAD={},
+            TIMESTAMP=time.time(),
         )
     )
 
@@ -445,10 +446,8 @@ def get_security_status(self: Any) -> Dict[str, Any]:
 class SecurityError(Exception):
     """Raised when a security violation is detected."""
 
-    pass
 
 
 class ConstitutionalViolationError(Exception):
     """Raised when constitutional rules are violated."""
 
-    pass

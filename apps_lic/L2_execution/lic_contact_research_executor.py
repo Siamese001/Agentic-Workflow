@@ -1,9 +1,8 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L2_execution
 # -*- coding: utf-8 -*-
 """Lic Contact Research Executor - atomic execution layer."""
 
-import logging
 from typing import Dict
 
 

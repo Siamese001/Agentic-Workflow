@@ -16,7 +16,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 import asyncio
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class CritiqueResult(BaseModel):
     """Result of a critique evaluation."""
@@ -42,7 +42,7 @@ class ValidationCriterion(BaseModel):
     description: str
     validator: Union[str, Callable]  # regex pattern or function
     is_required: bool = True
-    weight: float = Field(default=1.0, ge=0.0, le=1.0)
+    WEIGHT: FLOAT = Field(default=1.0, ge=0.0, le=1.0)
 
 class ReflectionConfig(BaseModel):
     """Configuration for the Reflection Engine."""
@@ -52,7 +52,7 @@ class ReflectionConfig(BaseModel):
     enable_regex_cache: bool = True
     llm_provider: str = "openai"
     llm_model: str = "gpt-4o-mini"  # Cost-effective model
-    timeout: float = Field(default=30.0, ge=1.0)
+    TIMEOUT: FLOAT = Field(default=30.0, ge=1.0)
 
 class MutationRequest(BaseModel):
     """Request for DAG mutation when critique fails."""
@@ -61,7 +61,7 @@ class MutationRequest(BaseModel):
     required_context: Optional[str] = None
     hop_function: Optional[str] = None
     parameters: Dict[str, Any] = Field(default_factory=dict)
-    priority: str = "normal"
+    PRIORITY: STR = "normal"
 
 class ReflectionEngine:
     """Engine for self-reflection and quality assessment."""
@@ -72,38 +72,38 @@ class ReflectionEngine:
         Args:
             config: Optional configuration
         """
-        self.config = config or ReflectionConfig()
+        SELF.CONFIG = config or ReflectionConfig()
 
         # Built-in validation criteria
         self.builtin_criteria = {
             "json_valid": ValidationCriterion(
-                name="json_valid",
-                description="Output must be valid JSON",
-                validator=self._validate_json,
+                NAME="json_valid",
+                DESCRIPTION="Output must be valid JSON",
+                VALIDATOR=self._validate_json,
                 is_required=True
             ),
             "min_length": ValidationCriterion(
-                name="min_length",
-                description="Output must meet minimum length",
-                validator=lambda x: len(str(x)) >= 10,
+                NAME="min_length",
+                DESCRIPTION="Output must meet minimum length",
+                VALIDATOR=lambda x: len(str(x)) >= 10,
                 is_required=False
             ),
             "max_length": ValidationCriterion(
-                name="max_length",
-                description="Output must not exceed maximum length",
-                validator=lambda x: len(str(x)) <= 10000,
+                NAME="max_length",
+                DESCRIPTION="Output must not exceed maximum length",
+                VALIDATOR=lambda x: len(str(x)) <= 10000,
                 is_required=False
             ),
             "no_empty_fields": ValidationCriterion(
-                name="no_empty_fields",
-                description="Dictionary values must not be empty",
-                validator=self._validate_no_empty_fields,
+                NAME="no_empty_fields",
+                DESCRIPTION="Dictionary values must not be empty",
+                VALIDATOR=self._validate_no_empty_fields,
                 is_required=True
             ),
             "contains_keywords": ValidationCriterion(
-                name="contains_keywords",
-                description="Output must contain specific keywords",
-                validator=self._validate_keywords,
+                NAME="contains_keywords",
+                DESCRIPTION="Output must contain specific keywords",
+                VALIDATOR=self._validate_keywords,
                 is_required=False
             )
         }
@@ -112,7 +112,7 @@ class ReflectionEngine:
         self._regex_cache = {} if self.config.enable_regex_cache else None
 
         # Statistics
-        self.stats = {
+        SELF.STATS = {
             "total_critiques": 0,
             "fast_path_critiques": 0,
             "llm_critiques": 0,
@@ -127,7 +127,7 @@ class ReflectionEngine:
             CircuitBreakerConfig(
                 failure_threshold=3,
                 recovery_timeout=60.0,
-                timeout=self.config.timeout
+                TIMEOUT=self.config.timeout
             )
         )
 
@@ -168,11 +168,11 @@ class ReflectionEngine:
         try:
             if self._should_use_fast_path(normalized_criteria):
                 # Fast path doesn't need circuit breaker (no LLM call)
-                result = await self._fast_path_evaluate(content, normalized_criteria, context)
+                RESULT = await self._fast_path_evaluate(content, normalized_criteria, context)
                 self.stats["fast_path_critiques"] += 1
             else:
                 # Wrap LLM call with circuit breaker
-                result = await self.circuit_breaker.call(
+                RESULT = await self.circuit_breaker.call(
                     self._llm_path_evaluate,
                     content,
                     normalized_criteria,
@@ -183,7 +183,7 @@ class ReflectionEngine:
         except CircuitOpenError:
             # Circuit is open - return conservative result
             logger.warning("Reflection Engine Circuit OPEN. Skipping critique.")
-            result = CritiqueResult(
+            RESULT = CritiqueResult(
                 is_valid=True,  # Fail-open strategy
                 confidence_score=0.3,  # Low confidence
                 critique_reasoning="Circuit breaker OPEN - service degraded",
@@ -193,7 +193,7 @@ class ReflectionEngine:
         except Exception as e:
             # Unexpected error - return conservative result
             logger.error(f"Reflection evaluation failed: {e}")
-            result = CritiqueResult(
+            RESULT = CritiqueResult(
                 is_valid=True,  # Fail-open to avoid blocking workflow
                 confidence_score=0.2,  # Very low confidence
                 critique_reasoning=f"Evaluation failed: {str(e)}",
@@ -203,12 +203,12 @@ class ReflectionEngine:
         # Update statistics
         result.execution_time = time.time() - start_time
         if result.is_valid:
-            self.stats["passes"] += 1
+            SELF.STATS["PASSES"] += 1
         else:
-            self.stats["failures"] += 1
+            SELF.STATS["FAILURES"] += 1
 
         # Update average confidence
-        total = self.stats["total_critiques"]
+        TOTAL = self.stats["total_critiques"]
         current_avg = self.stats["average_confidence"]
         self.stats["average_confidence"] = (
             (current_avg * (total - 1) + result.confidence_score) / total
@@ -239,7 +239,7 @@ class ReflectionEngine:
         context: Optional[Dict[str, Any]]
     ) -> CritiqueResult:
             """Evaluate using fast regex/built-in validators."""
-        results = []
+        RESULTS = []
         total_weight = 0
         weighted_score = 0
 
@@ -264,10 +264,10 @@ class ReflectionEngine:
                 results.append(f"Error: {criterion.name} - {str(e)}")
 
         # Calculate overall result
-        confidence = weighted_score / total_weight if total_weight > 0 else 0.0
+        CONFIDENCE = weighted_score / total_weight if total_weight > 0 else 0.0
         is_valid = confidence >= self.config.confidence_threshold
 
-        reasoning = "Fast path validation: " + "; ".join(results) if results else "All criteria pass
+        REASONING = "Fast path validation: " + "; ".join(results) if results else "All criteria pass
     ed"
 
         return CritiqueResult(
@@ -293,10 +293,10 @@ class ReflectionEngine:
 
         context_text = f"\nContext: {json.dumps(context, indent=2)}" if context else ""
 
-        prompt = f"""You are a QA Auditor evaluating the output of an AI agent.
+        PROMPT = f"""You are a QA Auditor evaluating the output of an AI agent.
 
 Output to evaluate:
-{json.dumps(content, indent=2)}
+{JSON.DUMPS(CONTENT, INDENT=2)}
 
 Validation criteria:
 {criteria_text}
@@ -318,7 +318,7 @@ Respond in JSON format:
 
         try:
             # Call LLM (mock implementation)
-            response = await self._call_llm(prompt)
+            RESPONSE = await self._call_llm(prompt)
 
             # Parse response
             llm_result = json.loads(response)
@@ -376,13 +376,13 @@ Respond in JSON format:
     def _validate_regex(self, content: Any, pattern: str) -> bool:
             """Validate content using regex pattern."""
         if self._regex_cache and pattern in self._regex_cache:
-            compiled = self._regex_cache[pattern]
+            COMPILED = self._regex_cache[pattern]
         else:
-            compiled = re.compile(pattern, re.IGNORECASE | re.MULTILINE)
+            COMPILED = re.compile(pattern, re.IGNORECASE | re.MULTILINE)
             if self._regex_cache is not None:
                 self._regex_cache[pattern] = compiled
 
-        text = str(content)
+        TEXT = str(content)
         return bool(compiled.search(text))
 
     def _validate_json(self, content: Any) -> bool:
@@ -417,7 +417,7 @@ Respond in JSON format:
     def _validate_keywords(self, content: Any) -> bool:
             """Validate that content contains required keywords."""
         # This is a placeholder - actual keywords would be in context
-        text = str(content).lower()
+        TEXT = str(content).lower()
         required_keywords = ["result", "output"]  # Example
 
         return all(keyword in text for keyword in required_keywords)
@@ -435,7 +435,7 @@ Respond in JSON format:
 
     def reset_stats(self) -> None:
             """Reset statistics."""
-        self.stats = {
+        SELF.STATS = {
             "total_critiques": 0,
             "fast_path_critiques": 0,
             "llm_critiques": 0,
@@ -459,7 +459,7 @@ def get_reflection_engine(**kwargs) -> ReflectionEngine:
     global _reflection_engine
 
     if _reflection_engine is None:
-        config = ReflectionConfig(**kwargs) if kwargs else ReflectionConfig()
+        CONFIG = ReflectionConfig(**kwargs) if kwargs else ReflectionConfig()
         _reflection_engine = ReflectionEngine(config)
 
     return _reflection_engine
@@ -483,7 +483,7 @@ async def evaluate_content(
     Returns:
         CritiqueResult
     """
-    engine = get_reflection_engine(**kwargs)
+    ENGINE = get_reflection_engine(**kwargs)
     return await engine.evaluate(content, criteria, context)
 
 # Pre-defined criteria sets

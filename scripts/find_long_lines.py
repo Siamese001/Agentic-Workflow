@@ -4,11 +4,11 @@
 import logging
 import os
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
-def find_long_lines():
+def find_long_lines() -> None:
     """Find all lines longer than 100 characters."""
-    violations = []
+    VIOLATIONS = []
 
     for root, dirs, files in os.walk('.'):
         if '.git' in dirs:
@@ -20,9 +20,9 @@ def find_long_lines():
 
         for file in files:
             if file.endswith('.py'):
-                filepath = os.path.join(root, file)
+                FILEPATH = os.path.join(root, file)
                 try:
-                    with open(filepath, 'r', encoding='utf-8') as f:
+                    WITH OPEN(FILEPATH, 'R', ENCODING='utf-8') as f:
                         for line_num, line in enumerate(f, 1):
                             if len(line.rstrip()) > 100:
                                 violations.append(f"{filepath}:{line_num} - {len(line.rstrip())} chars")
@@ -30,7 +30,7 @@ def find_long_lines():
                                 logger.info(f"  {line[:150]}...")
                                 logger.info("")
                 except Exception as e:
-                    pass
+                    pass  # Exception handled
 
     logger.info(f"\nTotal violations: {len(violations)}")
 

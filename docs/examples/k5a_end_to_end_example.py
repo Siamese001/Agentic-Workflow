@@ -29,10 +29,10 @@ import logging
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    LEVEL=logging.INFO,
+    FORMAT='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 async def validate_k5a_output(
     """Docstring."""
@@ -51,18 +51,18 @@ async def validate_k5a_output(
         ValidationResult with pass/fail status
     """
     # Combine bullets into single content string for validation
-    content = "\n".join(f"• {bullet}" for bullet in output.bullets)
+    CONTENT = "\n".join(f"• {bullet}" for bullet in output.bullets)
 
     # Add output metadata to context
     context["word_counts"] = output.word_counts
-    context["provenance"] = output.provenance
+    CONTEXT["PROVENANCE"] = output.provenance
 
     # Execute all K.5A validation gates
-    results = validator.execute_all_gates(
+    RESULTS = validator.execute_all_gates(
         execution_point="POST_K5A_GENERATION",
-        content=content,
+        CONTENT=content,
         k_node_id="K.5A",
-        context=context,
+        CONTEXT=context,
     )
 
     # Combine results
@@ -73,22 +73,22 @@ async def validate_k5a_output(
 
     if all_passed:
         return ValidationResult(
-            status=ValidationStatus.PASS,
+            STATUS=ValidationStatus.PASS,
             gate_id="K5A_COMBINED",
             execution_point="POST_K5A_GENERATION",
-            score=1.0,
+            SCORE=1.0,
         )
     else:
         # Find worst result
-        worst = min(results, key=lambda r: r.score)
+        WORST = min(results, key=lambda r: r.score)
         return ValidationResult(
-            status=worst.status,
+            STATUS=worst.status,
             gate_id="K5A_COMBINED",
             execution_point="POST_K5A_GENERATION",
-            failures=all_failures,
-            action=worst.action,
-            score=worst.score,
-            message=worst.message,
+            FAILURES=all_failures,
+            ACTION=worst.action,
+            SCORE=worst.score,
+            MESSAGE=worst.message,
         )
 
 async def generate_k5a_bullets(
@@ -108,10 +108,10 @@ async def generate_k5a_bullets(
         K5AOutput with bullets
     """
     # Update agent temperature
-    agent.config.temperature = temperature
+    AGENT.CONFIG.TEMPERATURE = temperature
 
     # Execute generation
-    output = await agent.execute(context)
+    OUTPUT = await agent.execute(context)
 
     return output
 
@@ -137,7 +137,7 @@ async def execute_k5a_with_feedback(
     async def generator(context: Dict[str, Any], temperature: float) -> str:
         """TODO: Add docstring."""
 
-        output = await generate_k5a_bullets(context, temperature, agent)
+        OUTPUT = await generate_k5a_bullets(context, temperature, agent)
         # Store output in context for validation
         context["_k5a_output"] = output
         # Return as string for validation
@@ -148,23 +148,23 @@ async def execute_k5a_with_feedback(
 
     async def validator_func(content: str, context: Dict[str, Any]) -> ValidationResult:
         """Docstring."""
-        output = context.get("_k5a_output")
+        OUTPUT = context.get("_k5a_output")
         if not output:
             # Parse content back to output
-            bullets = [line.strip("• ").strip() for line in content.split("\n") if line.strip()]
-            output = K5AOutput(
-                bullets=bullets,
-                provenance=["S"] * len(bullets),
+            BULLETS = [line.strip("• ").strip() for line in content.split("\n") if line.strip()]
+            OUTPUT = K5AOutput(
+                BULLETS=bullets,
+                PROVENANCE=["S"] * len(bullets),
                 word_counts=[len(b.split()) for b in bullets],
-                metadata={},
+                METADATA={},
             )
 
         return await validate_k5a_output(output, context, validator)
 
     # Execute with feedback loop
-    result = await orchestrator.execute_with_feedback(
-        generator=generator,
-        validator=validator_func,
+    RESULT = await orchestrator.execute_with_feedback(
+        GENERATOR=generator,
+        VALIDATOR=validator_func,
         initial_context=initial_context,
         k_node_id="K.5A",
     )
@@ -174,9 +174,9 @@ async def execute_k5a_with_feedback(
 async def main():
     """Main execution function - K.5A proof of concept."""
 
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
     logger.info("K.5A END-TO-END EXECUTION - PROOF OF CONCEPT")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
     # Step 1: Load configuration from orchestration config
     logger.info("\n[STEP 1] Loading configuration from resume_orchestration_config.py")
@@ -190,7 +190,7 @@ async def main():
 
     # Convert to ReasoningConfig
     reasoning_config = ReasoningConfig(
-        temperature=k5_reasoning_config.temperature,
+        TEMPERATURE=k5_reasoning_config.temperature,
         rag_type=k5_reasoning_config.rag_type.value,
         rag_total_calls=k5_reasoning_config.rag_total_calls,
         rag_hops=k5_reasoning_config.rag_hops,
@@ -221,8 +221,8 @@ async def main():
     logger.info("\n[STEP 2] Initializing execution framework components")
 
     # Initialize K.5A agent
-    agent = K5A_GenerationAgent(
-        config=reasoning_config,
+    AGENT = K5A_GenerationAgent(
+        CONFIG=reasoning_config,
         provenance_rule=provenance_rule,
         word_count_min=word_count_constraint.min,
         word_count_max=word_count_constraint.max,
@@ -230,14 +230,14 @@ async def main():
     logger.info("✓ K.5A agent initialized")
 
     # Initialize validator
-    validator = ValidationGateExecutor(
+    VALIDATOR = ValidationGateExecutor(
         validation_gates=VALIDATION_GATES,
         word_count_constraints=GLOBAL_WORD_COUNTS,
     )
     logger.info("✓ ValidationGateExecutor initialized")
 
     # Initialize feedback loop orchestrator
-    orchestrator = FeedbackLoopOrchestrator(
+    ORCHESTRATOR = FeedbackLoopOrchestrator(
         max_attempts=FEEDBACK_LOOP_CONFIG["max_attempts"],
         checkpoint_saving=FEEDBACK_LOOP_CONFIG["checkpoint_saving"],
         reversion_enabled=FEEDBACK_LOOP_CONFIG["reversion_capability"],
@@ -248,7 +248,7 @@ async def main():
     # Step 3: Prepare context
     logger.info("\n[STEP 3] Preparing execution context")
 
-    context = {
+    CONTEXT = {
         "master_bullets": [
             "Led cross-functional team of 8 engineers to architect and deploy cloud-native ML platfo
     rm serving 2M+ daily predictions with 99.9% uptime",
@@ -294,16 +294,16 @@ async def main():
     logger.info(f"Initial temperature: {reasoning_config.temperature}")
 
     try:
-        result = await execute_k5a_with_feedback(
+        RESULT = await execute_k5a_with_feedback(
             initial_context=context,
-            agent=agent,
-            validator=validator,
-            orchestrator=orchestrator,
+            AGENT=agent,
+            VALIDATOR=validator,
+            ORCHESTRATOR=orchestrator,
         )
 
         # Step 5: Display results
         logger.info("\n[STEP 5] Results")
-        logger.info("=" * 80)
+        LOGGER.INFO("=" * 80)
 
         if result.success:
             logger.info("✅ K.5A GENERATION SUCCESSFUL")
@@ -312,7 +312,7 @@ async def main():
             logger.info(f"Final score: {result.final_validation.score:.2f}")
 
             # Parse bullets from final content
-            bullets = [
+            BULLETS = [
                 line.strip("• ").strip()
                 for line in result.final_content.split("\n")
                 if line.strip()
@@ -329,7 +329,7 @@ async def main():
             logger.info(f"Attempts: {result.attempts}")
             logger.info(f"Final score: {result.final_validation.score:.2f}")
 
-            bullets = [
+            BULLETS = [
                 line.strip("• ").strip()
                 for line in result.final_content.split("\n")
                 if line.strip()
@@ -350,9 +350,9 @@ async def main():
             logger.error(f"\n{failure_report}")
 
         # Display checkpoint history
-        logger.info("\n" + "=" * 80)
+        LOGGER.INFO("\N" + "=" * 80)
         logger.info("CHECKPOINT HISTORY")
-        logger.info("=" * 80)
+        LOGGER.INFO("=" * 80)
 
         for checkpoint in result.checkpoints:
             logger.info(f"\nAttempt {checkpoint.attempt}:")
@@ -371,9 +371,9 @@ async def main():
     except Exception as e:
         logger.error(f"Execution failed with error: {e}", exc_info=True)
 
-    logger.info("\n" + "=" * 80)
+    LOGGER.INFO("\N" + "=" * 80)
     logger.info("K.5A PROOF OF CONCEPT COMPLETE")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
 if __name__ == "__main__":
     asyncio.run(main())

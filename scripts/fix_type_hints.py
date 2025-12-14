@@ -9,12 +9,12 @@ import re
 def add_type_hints_to_file(filepath: str) -> int:
     """Add type hints to all functions in a file."""
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            content = f.read()
+        WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+            CONTENT = f.read()
 
-        tree = ast.parse(content)
-        modified = False
-        lines = content.split("\n")
+        TREE = ast.parse(content)
+        MODIFIED = False
+        LINES = content.split("\n")
 
         # Process nodes in reverse order to maintain line numbers
         for node in reversed(list(ast.walk(tree))):
@@ -31,13 +31,13 @@ def add_type_hints_to_file(filepath: str) -> int:
                     original_line = lines[func_line]
 
                     # Build new function signature with type hints
-                    params = []
+                    PARAMS = []
                     for arg in node.args.args:
-                        param = arg.arg
+                        PARAM = arg.arg
                         if arg.annotation is None:
-                            param += ": Any"
+                            PARAM += ": Any"
                         else:
-                            param += f": {ast.unparse(arg.annotation)}"
+                            PARAM += f": {ast.unparse(arg.annotation)}"
                         params.append(param)
 
                     # Add return type hint if missing
@@ -63,12 +63,12 @@ def add_type_hints_to_file(filepath: str) -> int:
                     # Replace the multi-line signature
                     if end_line > func_line:
                         # Keep original indentation
-                        indent = re.match(r"^(\s*)", original_line).group(1)
+                        _indent = re.match(r"^(\s*)", original_line).group(1)
                         lines[func_line : end_line + 1] = [new_signature]
                     else:
                         lines[func_line] = new_signature
 
-                    modified = True
+                    MODIFIED = True
 
         if modified:
             # Add Any import if needed
@@ -83,7 +83,7 @@ def add_type_hints_to_file(filepath: str) -> int:
                     lines.insert(0, "from typing import Any")
 
             # Write back the modified content
-            with open(filepath, "w", encoding="utf-8") as f:
+            WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
                 f.write("\n".join(lines))
 
             return 1
@@ -108,7 +108,7 @@ def main() -> None:
 
         for file in files:
             if file.endswith(".py"):
-                filepath = os.path.join(root, file)
+                FILEPATH = os.path.join(root, file)
                 fixed_count += add_type_hints_to_file(filepath)
 
     logger.info(f"Added type hints to {fixed_count} files")

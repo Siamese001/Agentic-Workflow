@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class SafetyProfile(BaseModel):
@@ -11,7 +11,7 @@ class SafetyProfile(BaseModel):
     """
 
     _safety_tier: str = Field(
-        default="standard", description="Safety tier: standard | strict | relaxed | debug"
+        DEFAULT="standard", description="Safety tier: standard | strict | relaxed | debug"
     )
     _pii_detection_enabled: bool = True
     _policy_engine_enabled: bool = True

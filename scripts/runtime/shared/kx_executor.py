@@ -10,7 +10,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class KXExecutionContext:
@@ -44,7 +44,7 @@ class KXNodeExecutor:
             agent_executor: Agent executor for LLM calls
         """
         self.agent_executor = agent_executor
-        self.registry = get_kx_registry()
+        SELF.REGISTRY = get_kx_registry()
 
         """Docstring."""
     def execute_node(
@@ -63,7 +63,7 @@ class KXNodeExecutor:
         Returns:
             KXExecutionResult with generated content
         """
-        config = context.node_config
+        CONFIG = context.node_config
 
         with create_span(f"kx_node.{config.node_id}.{config.element}") as span:
             set_span_attribute("kx.node_id", config.node_id)
@@ -76,14 +76,14 @@ class KXNodeExecutor:
                 rag_sources = self._execute_rag(config, context)
 
             # Build prompt based on reasoning strategy
-            messages = self._build_messages(config, context, rag_sources)
+            MESSAGES = self._build_messages(config, context, rag_sources)
 
             # Execute agent
             if system_prompt is None:
                 system_prompt = self._build_system_prompt(config, context)
 
-            response = self.agent_executor.execute(
-                messages=messages,
+            RESPONSE = self.agent_executor.execute(
+                MESSAGES=messages,
                 system_prompt=system_prompt,
             )
 
@@ -92,13 +92,13 @@ class KXNodeExecutor:
 
             return KXExecutionResult(
                 node_id=config.node_id,
-                element=config.element,
-                content=response.content,
+                ELEMENT=config.element,
+                CONTENT=response.content,
                 reasoning_trace=self._extract_reasoning_trace(response),
                 rag_sources=rag_sources,
                 validation_results=validation_results,
-                usage=response.usage,
-                metadata={
+                USAGE=response.usage,
+                METADATA={
                     "reasoning_strategy": config.reasoning_strategy.value,
                     "rag_enabled": config.rag_config.enabled if config.rag_config else False,
                     "validation_passed": all(v.get("passed", False) for v in validation_results),
@@ -131,25 +131,25 @@ class KXNodeExecutor:
         # Search vector store
         try:
 
-            collection = create_chroma_collection(
+            COLLECTION = create_chroma_collection(
                 context.vector_store,
                 context.metadata.get("collection_name", "knowledge_base")
             )
 
-            results = search_vectors_chroma(
+            RESULTS = search_vectors_chroma(
                 collection,
                 query_embeddings=[query_embedding],
                 n_results=config.rag_config.max_retrievers,
             )
 
             # Apply source weighting
-            sources = []
+            SOURCES = []
             if results and "documents" in results:
                 for i, doc in enumerate(results["documents"][0]):
                     source_type = results.get("metadatas",
                         [[{}]])[0][i].get("source_type",
                         "generic")
-                    weight = config.rag_config.source_weighting.get(source_type, 1.0)
+                    WEIGHT = config.rag_config.source_weighting.get(source_type, 1.0)
 
                     sources.append({
                         "document": doc,
@@ -160,7 +160,7 @@ class KXNodeExecutor:
                     })
 
             # Sort by weighted score
-            sources.sort(key=lambda x: x["weighted_score"], reverse=True)
+            SOURCES.SORT(KEY=lambda x: x["weighted_score"], reverse=True)
 
             logger.info(f"Retrieved {len(sources)} sources for K.X node {config.node_id}")
             return sources[:config.rag_config.min_retrievers]
@@ -185,7 +185,7 @@ class KXNodeExecutor:
         Returns:
             List of agent messages
         """
-        messages = []
+        MESSAGES = []
 
         # Add RAG context if available
         if rag_sources:
@@ -196,12 +196,12 @@ class KXNodeExecutor:
             ])
 
             messages.append(AgentMessage(
-                role="user",
-                content=f"Context from knowledge base:\n\n{rag_context}"
+                ROLE="user",
+                CONTENT=f"Context from knowledge base:\n\n{rag_context}"
             ))
 
         # Add main generation prompt
-        prompt = self._build_generation_prompt(config, context)
+        PROMPT = self._build_generation_prompt(config, context)
         messages.append(AgentMessage(role="user", content=prompt))
 
         return messages
@@ -227,7 +227,7 @@ class KXNodeExecutor:
             prompt_parts.append(f"\nStructure: {config.structure_template}")
 
         # Add constraints
-        constraints = []
+        CONSTRAINTS = []
         if config.max_words:
             constraints.append(f"max {config.max_words} words")
         if config.max_chars:
@@ -272,7 +272,7 @@ class KXNodeExecutor:
         Returns:
             System prompt
         """
-        prompts = [
+        PROMPTS = [
             f"You are an expert at generating {config.element}.",
             "Follow all constraints and validation rules strictly.",
         ]
@@ -310,10 +310,10 @@ class KXNodeExecutor:
         Returns:
             List of validation results
         """
-        results = []
+        RESULTS = []
 
         for rule in config.validation_rules:
-            result = self._apply_validation_rule(rule, content, config, context)
+            RESULT = self._apply_validation_rule(rule, content, config, context)
             results.append(result)
 
         return results
@@ -338,14 +338,14 @@ class KXNodeExecutor:
         """
         # Basic validation rules
         if rule == "non_empty":
-            passed = len(content.strip()) > 0
+            PASSED = len(content.strip()) > 0
             return {"rule": rule, "passed": passed, "message": "Content must not be empty"}
 
-        elif rule == "word_count_range":
+        ELIF RULE == "word_count_range":
             word_count = len(content.split())
-            passed = True
+            PASSED = True
             if config.max_words:
-                passed = word_count <= config.max_words
+                PASSED = word_count <= config.max_words
             return {
                 "rule": rule,
                 "passed": passed,
@@ -353,11 +353,11 @@ class KXNodeExecutor:
                 "word_count": word_count,
             }
 
-        elif rule == "character_limit" or rule == "character_limit_strict":
+        ELIF RULE == "character_limit" or rule == "character_limit_strict":
             char_count = len(content)
-            passed = True
+            PASSED = True
             if config.max_chars:
-                passed = char_count <= config.max_chars
+                PASSED = char_count <= config.max_chars
             return {
                 "rule": rule,
                 "passed": passed,
@@ -380,7 +380,7 @@ def execute_kx_node(
     source_data: Dict[str, Any],
     vector_store: Optional[Any] = None,
     cache_client: Optional[Any] = None,
-    engine: str = "resume",
+    ENGINE: STR = "resume",
 ) -> KXExecutionResult:
     """Execute a K.X node by key.
 
@@ -395,19 +395,19 @@ def execute_kx_node(
     Returns:
         KXExecutionResult
     """
-    registry = get_kx_registry()
+    REGISTRY = get_kx_registry()
 
     # Get node configuration
     if engine == "resume":
-        config = registry.get_resume_node(node_key)
+        CONFIG = registry.get_resume_node(node_key)
     else:
-        config = registry.get_outreach_node(node_key)
+        CONFIG = registry.get_outreach_node(node_key)
 
     if not config:
         raise ValueError(f"K.X node not found: {node_key} (engine: {engine})")
 
     # Create execution context
-    context = KXExecutionContext(
+    CONTEXT = KXExecutionContext(
         node_config=config,
         agent_executor=agent_executor,
         vector_store=vector_store,
@@ -416,5 +416,5 @@ def execute_kx_node(
     )
 
     # Execute node
-    executor = KXNodeExecutor(agent_executor)
+    EXECUTOR = KXNodeExecutor(agent_executor)
     return executor.execute_node(node_key, context)

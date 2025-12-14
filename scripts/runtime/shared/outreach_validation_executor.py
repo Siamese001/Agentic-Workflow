@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
     RuleFailure,
 )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class OutreachValidationExecutor(ValidationGateExecutor):
     """Extended validation executor for outreach-specific rules.
@@ -131,7 +131,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         found_placeholders = []
         for pattern in placeholder_patterns:
-            matches = re.findall(pattern, content, re.IGNORECASE)
+            MATCHES = re.findall(pattern, content, re.IGNORECASE)
             if matches:
                 found_placeholders.extend(matches)
 
@@ -139,10 +139,10 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return RuleFailure(
                 rule_id="LIC-QA-001",
                 rule_name="Placeholder Detection",
-                severity="CRITICAL",
-                message=f"Placeholders detected: {', '.join(set(found_placeholders))}",
-                actual=found_placeholders,
-                expected="No placeholders",
+                SEVERITY="CRITICAL",
+                MESSAGE=f"Placeholders detected: {', '.join(set(found_placeholders))}",
+                ACTUAL=found_placeholders,
+                EXPECTED="No placeholders",
             )
 
         return None
@@ -167,10 +167,10 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return RuleFailure(
                 rule_id="LIC-QA-008",
                 rule_name="Forbidden Corporate Verbs",
-                severity="MEDIUM",
-                message=f"Forbidden verbs detected: {', '.join(found_verbs)}",
-                actual=found_verbs,
-                expected="No forbidden verbs (spearheaded, leveraged, drove, etc.)",
+                SEVERITY="MEDIUM",
+                MESSAGE=f"Forbidden verbs detected: {', '.join(found_verbs)}",
+                ACTUAL=found_verbs,
+                EXPECTED="No forbidden verbs (spearheaded, leveraged, drove, etc.)",
             )
 
         return None
@@ -195,10 +195,10 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return RuleFailure(
                 rule_id="LIC-QA-009",
                 rule_name="Weak Filler Phrases",
-                severity="MEDIUM",
-                message=f"Filler phrases detected: {', '.join(found_phrases)}",
-                actual=found_phrases,
-                expected="No filler phrases ('I hope', 'I wanted to', etc.)",
+                SEVERITY="MEDIUM",
+                MESSAGE=f"Filler phrases detected: {', '.join(found_phrases)}",
+                ACTUAL=found_phrases,
+                EXPECTED="No filler phrases ('I hope', 'I wanted to', etc.)",
             )
 
         return None
@@ -233,7 +233,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         found_metrics = []
         for pattern in metric_patterns:
-            matches = re.findall(pattern, content, re.IGNORECASE)
+            MATCHES = re.findall(pattern, content, re.IGNORECASE)
             found_metrics.extend(matches)
 
         # Check if each metric has source binding
@@ -247,10 +247,10 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return RuleFailure(
                 rule_id="LIC-QA-041",
                 rule_name="Metric Source Binding",
-                severity="HIGH",
-                message=f"Unbound metrics (no source): {', '.join(unbound_metrics)}",
-                actual=unbound_metrics,
-                expected="All metrics must map to metric_source_map",
+                SEVERITY="HIGH",
+                MESSAGE=f"Unbound metrics (no source): {', '.join(unbound_metrics)}",
+                ACTUAL=unbound_metrics,
+                EXPECTED="All metrics must map to metric_source_map",
             )
 
         return None
@@ -280,7 +280,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         metric_patterns = [r'\d+%', r'\$\d+[KMB]?']
         found_metrics = []
         for pattern in metric_patterns:
-            matches = re.findall(pattern, content)
+            MATCHES = re.findall(pattern, content)
             found_metrics.extend(matches)
 
         # Check if metrics have surrounding context from RAG
@@ -302,10 +302,10 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return RuleFailure(
                 rule_id="LIC-QA-043",
                 rule_name="Metric Context Validation",
-                severity="HIGH",
-                message=f"Metrics without RAG context: {', '.join(metrics_without_context)}",
-                actual=metrics_without_context,
-                expected="Metrics must have keyword context from RAG",
+                SEVERITY="HIGH",
+                MESSAGE=f"Metrics without RAG context: {', '.join(metrics_without_context)}",
+                ACTUAL=metrics_without_context,
+                EXPECTED="Metrics must have keyword context from RAG",
             )
 
         return None
@@ -331,17 +331,17 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return None  # Not EXISTING contact
 
         # Calculate Jaccard similarity
-        jaccard = self._calculate_jaccard_similarity(content, previous_message)
+        JACCARD = self._calculate_jaccard_similarity(content, previous_message)
 
         if jaccard > 0.40:
             return RuleFailure(
                 rule_id="REDUNDANCY_GUARD_EXISTING",
                 rule_name="Redundancy Guard (EXISTING)",
-                severity="HIGH",
-                message=f"Jaccard similarity {jaccard:.2f} > 0.40 with previous message",
-                actual=jaccard,
-                expected="≤0.40",
-                context={"action": "MANDATORY_DETERMINISTIC_AUTO_REWRITE"},
+                SEVERITY="HIGH",
+                MESSAGE=f"Jaccard similarity {jaccard:.2f} > 0.40 with previous message",
+                ACTUAL=jaccard,
+                EXPECTED="≤0.40",
+                CONTEXT={"action": "MANDATORY_DETERMINISTIC_AUTO_REWRITE"},
             )
 
         return None
@@ -368,10 +368,10 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return RuleFailure(
                 rule_id="TRANSITION_PHRASE_CHECK",
                 rule_name="Transition Phrase Validation",
-                severity="HIGH",
-                message=f"Missing transition phrase: '{expected_phrase}'",
-                actual="Not found",
-                expected=expected_phrase,
+                SEVERITY="HIGH",
+                MESSAGE=f"Missing transition phrase: '{expected_phrase}'",
+                ACTUAL="Not found",
+                EXPECTED=expected_phrase,
             )
 
         return None
@@ -397,7 +397,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             RuleFailure if signature format violated
         """
         # Extract signature block (last 4 lines before fence end)
-        lines = content.split("\n")
+        LINES = content.split("\n")
 
         # Find signature (look for "Regards,")
         regards_index = -1
@@ -410,10 +410,10 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return RuleFailure(
                 rule_id="SIGNATURE_IMMUTABILITY",
                 rule_name="Signature Immutability",
-                severity="HIGH",
-                message="Signature block missing 'Regards,' line",
-                actual="Not found",
-                expected="Exact 4-line signature block",
+                SEVERITY="HIGH",
+                MESSAGE="Signature block missing 'Regards,' line",
+                ACTUAL="Not found",
+                EXPECTED="Exact 4-line signature block",
             )
 
         # Validate 4-line structure
@@ -421,10 +421,10 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return RuleFailure(
                 rule_id="SIGNATURE_IMMUTABILITY",
                 rule_name="Signature Immutability",
-                severity="HIGH",
-                message="Signature block incomplete (< 4 lines)",
-                actual=f"{len(lines) - regards_index} lines",
-                expected="4 lines",
+                SEVERITY="HIGH",
+                MESSAGE="Signature block incomplete (< 4 lines)",
+                ACTUAL=f"{len(lines) - regards_index} lines",
+                EXPECTED="4 lines",
             )
 
         return None
@@ -439,12 +439,12 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         Returns:
             Context string (5 words before and after)
         """
-        words = content.split()
+        WORDS = content.split()
 
         for i, word in enumerate(words):
             if metric in word:
-                start = max(0, i - 5)
-                end = min(len(words), i + 6)
+                START = max(0, i - 5)
+                END = min(len(words), i + 6)
                 return " ".join(words[start:end])
 
         return ""
@@ -459,11 +459,11 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         Returns:
             Jaccard similarity (0.0-1.0)
         """
-        words1 = set(text1.lower().split())
-        words2 = set(text2.lower().split())
+        WORDS1 = set(text1.lower().split())
+        WORDS2 = set(text2.lower().split())
 
-        intersection = words1.intersection(words2)
-        union = words1.union(words2)
+        INTERSECTION = words1.intersection(words2)
+        UNION = words1.union(words2)
 
         if not union:
             return 0.0

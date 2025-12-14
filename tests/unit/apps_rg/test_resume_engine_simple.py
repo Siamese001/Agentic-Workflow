@@ -1,7 +1,7 @@
 """Simple Unit Tests for Resume Engine
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Tests the Resume Engine functionality with proper mocking to avoid API calls.
 """
 import logging
@@ -34,8 +34,8 @@ def test_job_analyzer_with_mocked_client() -> None:
             mock_model.return_value.generate_content.return_value = mock_response
 
             # Test the analyzer
-            analyzer = JobAnalyzer()
-            result = analyzer.analyze("Test job description")
+            ANALYZER = JobAnalyzer()
+            RESULT = analyzer.analyze("Test job description")
 
             # Verify results
             assert "hard_skills" in result
@@ -58,14 +58,14 @@ def test_resume_generator_with_mocked_client() -> None:
     ise"
 
         # Test the generator
-        generator = ResumeGenerator()
+        GENERATOR = ResumeGenerator()
 
         resume_data = {
             "summary": "Software Developer",
             "skills": ["Python", "JavaScript"]
         }
 
-        analysis = {
+        ANALYSIS = {
             "hard_skills": ["Python", "Django"],
             "soft_skills": ["Communication"],
             "key_responsibilities": ["Develop code"],
@@ -74,7 +74,7 @@ def test_resume_generator_with_mocked_client() -> None:
             "north_star_metric": "Performance"
         }
 
-        result = generator.generate(resume_data, analysis)
+        RESULT = generator.generate(resume_data, analysis)
 
         # Verify results
         assert "summary" in result
@@ -115,18 +115,18 @@ def test_execute_resume_generation_with_mocked_components() -> None:
         }
 
         # Test the executor
-        executor = ExecuteResumeGeneration()
+        EXECUTOR = ExecuteResumeGeneration()
 
-        params = {
+        PARAMS = {
             "resume_data": {"summary": "Original"},
             "job_description": "Senior Python Developer"
         }
 
-        result = executor.execute("tailor_resume", params)
+        RESULT = executor.execute("tailor_resume", params)
 
         # Verify results
         assert result.success is True
-        assert result.output["action"] == "tailor_resume"
+        ASSERT RESULT.OUTPUT["ACTION"] == "tailor_resume"
         assert "job_analysis" in result.output
         assert "tailored_resume" in result.output
 
@@ -161,18 +161,18 @@ def test_resume_engine_with_mock_client() -> None:
         # Import and create instances
 
         # Should create without error
-        analyzer = JobAnalyzer()
-        generator = ResumeGenerator()
-        executor = ExecuteResumeGeneration()
+        ANALYZER = JobAnalyzer()
+        GENERATOR = ResumeGenerator()
+        EXECUTOR = ExecuteResumeGeneration()
 
         # Test with mock responses
-        result = analyzer.analyze("Test job")
+        RESULT = analyzer.analyze("Test job")
         assert "error" in result  # Mock client returns error
 
-        result = generator.generate({"summary": "test"}, {"hard_skills": ["Python"]})
+        RESULT = generator.generate({"summary": "test"}, {"hard_skills": ["Python"]})
         assert "summary" in result  # Should still process structure
 
-        result = executor.execute("analyze_job", {"job_description": "test"})
+        RESULT = executor.execute("analyze_job", {"job_description": "test"})
         assert result.success is True  # Should handle gracefully
 
 if __name__ == "__main__":

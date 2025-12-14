@@ -8,7 +8,7 @@ and resolved as needed throughout the application.
 import logging
 from typing import Any, Callable, Dict, Optional, Type, TypeVar
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 T = TypeVar('T')
 
@@ -32,7 +32,7 @@ class ServiceContainer:
         Args:
             name: Optional name for the container (useful for debugging)
         """
-        self.name = name
+        SELF.NAME = name
         self._services: Dict[Type, Any] = {}
         self._factories: Dict[Type, Callable[[], Any]] = {}
         self._singletons: Dict[Type, Any] = {}
@@ -44,7 +44,7 @@ class ServiceContainer:
         interface: Type[T],
         implementation: Optional[T] = None,
         factory: Optional[Callable[[], T]] = None,
-        lifecycle: str = "singleton"
+        LIFECYCLE: STR = "singleton"
     ) -> None:
             """Register a service in the container.
 
@@ -92,7 +92,7 @@ class ServiceContainer:
         if interface not in self._lifecycle:
             raise ServiceNotFoundError(f"{interface.__name__} not registered in container")
 
-        lifecycle = self._lifecycle[interface]
+        LIFECYCLE = self._lifecycle[interface]
 
         # Handle singleton lifecycle
         if lifecycle == "singleton":
@@ -101,7 +101,7 @@ class ServiceContainer:
 
             # Create singleton if not exists
             if interface in self._factories:
-                instance = self._factories[interface]()
+                INSTANCE = self._factories[interface]()
                 self._singletons[interface] = instance
                 return instance
 
@@ -115,7 +115,7 @@ class ServiceContainer:
 
             if interface in self._services:
                 # For transient, we need to create a copy if possible
-                implementation = self._services[interface]
+                IMPLEMENTATION = self._services[interface]
                 try:
                     return type(implementation)()
                 except Exception:
@@ -172,7 +172,7 @@ def register_default(
     interface: Type[T],
     implementation: Optional[T] = None,
     factory: Optional[Callable[[], T]] = None,
-    lifecycle: str = "singleton"
+    LIFECYCLE: STR = "singleton"
 ) -> None:
     """Register a service in the default container.
 

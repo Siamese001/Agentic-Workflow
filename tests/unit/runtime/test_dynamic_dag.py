@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
     DAGManager,
     DAGMutator,
     DAGMutation,
@@ -31,9 +31,9 @@ class TestDAGMutator:
 
     def setup_method(self):
             """Setup test fixtures."""
-        self.config = DAGConfig(max_depth=5, max_fan_out=3)
-        self.mutator = DAGMutator(self.config)
-        self.graph = nx.DiGraph()
+        SELF.CONFIG = DAGConfig(max_depth=5, max_fan_out=3)
+        SELF.MUTATOR = DAGMutator(self.config)
+        SELF.GRAPH = nx.DiGraph()
 
         # Create a simple test graph
         self.graph.add_node("node1", depth=0)
@@ -52,15 +52,15 @@ class TestDAGMutator:
             """Test successful predecessor spawning."""
         hop_spec = HopSpec(hop_function="test_function", hop_id="new_node")
 
-        mutation = DAGMutation(
-            action=MutationAction.SPAWN_PREDECESSOR,
+        MUTATION = DAGMutation(
+            ACTION=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="node2",
             new_hop_spec=hop_spec,
-            reason="Need additional data",
+            REASON="Need additional data",
             requester_hop_id="node1"
         )
 
-        result = self.mutator.apply_mutation(self.graph, mutation)
+        RESULT = self.mutator.apply_mutation(self.graph, mutation)
 
         assert result.success is True
         assert "new_node" in self.graph.nodes
@@ -74,15 +74,15 @@ class TestDAGMutator:
             """Test successful successor spawning."""
         hop_spec = HopSpec(hop_function="test_function", hop_id="new_node")
 
-        mutation = DAGMutation(
-            action=MutationAction.SPAWN_SUCCESSOR,
+        MUTATION = DAGMutation(
+            ACTION=MutationAction.SPAWN_SUCCESSOR,
             target_hop_id="node2",
             new_hop_spec=hop_spec,
-            reason="Need additional processing",
+            REASON="Need additional processing",
             requester_hop_id="node1"
         )
 
-        result = self.mutator.apply_mutation(self.graph, mutation)
+        RESULT = self.mutator.apply_mutation(self.graph, mutation)
 
         assert result.success is True
         assert "new_node" in self.graph.nodes
@@ -94,14 +94,14 @@ class TestDAGMutator:
 
     def test_skip_successor_success(self):
             """Test successful successor skipping."""
-        mutation = DAGMutation(
-            action=MutationAction.SKIP_SUCCESSOR,
+        MUTATION = DAGMutation(
+            ACTION=MutationAction.SKIP_SUCCESSOR,
             target_hop_id="node2",
-            reason="Node not needed",
+            REASON="Node not needed",
             requester_hop_id="node1"
         )
 
-        result = self.mutator.apply_mutation(self.graph, mutation)
+        RESULT = self.mutator.apply_mutation(self.graph, mutation)
 
         assert result.success is True
         assert ("node1", "node3") in self.graph.edges  # Bridge created
@@ -114,15 +114,15 @@ class TestDAGMutator:
             """Test successful node replacement."""
         hop_spec = HopSpec(hop_function="new_function", hop_id="replacement")
 
-        mutation = DAGMutation(
-            action=MutationAction.REPLACE_NODE,
+        MUTATION = DAGMutation(
+            ACTION=MutationAction.REPLACE_NODE,
             target_hop_id="node2",
             new_hop_spec=hop_spec,
-            reason="Upgrade node",
+            REASON="Upgrade node",
             requester_hop_id="node1"
         )
 
-        result = self.mutator.apply_mutation(self.graph, mutation)
+        RESULT = self.mutator.apply_mutation(self.graph, mutation)
 
         assert result.success is True
         assert "replacement" in self.graph.nodes
@@ -140,15 +140,15 @@ class TestDAGMutator:
 
         hop_spec = HopSpec(hop_function="test_function")
 
-        mutation = DAGMutation(
-            action=MutationAction.SPAWN_PREDECESSOR,
+        MUTATION = DAGMutation(
+            ACTION=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="deep_node",
             new_hop_spec=hop_spec,
-            reason="Would exceed depth",
+            REASON="Would exceed depth",
             requester_hop_id="node1"
         )
 
-        result = self.mutator.apply_mutation(self.graph, mutation)
+        RESULT = self.mutator.apply_mutation(self.graph, mutation)
 
         assert result.success is False
         assert "exceed max depth" in result.message.lower()
@@ -162,15 +162,15 @@ class TestDAGMutator:
 
         hop_spec = HopSpec(hop_function="test_function")
 
-        mutation = DAGMutation(
-            action=MutationAction.SPAWN_SUCCESSOR,
+        MUTATION = DAGMutation(
+            ACTION=MutationAction.SPAWN_SUCCESSOR,
             target_hop_id="node1",
             new_hop_spec=hop_spec,
-            reason="Would exceed fan-out",
+            REASON="Would exceed fan-out",
             requester_hop_id="node1"
         )
 
-        result = self.mutator.apply_mutation(self.graph, mutation)
+        RESULT = self.mutator.apply_mutation(self.graph, mutation)
 
         assert result.success is False
         assert "exceed max fan-out" in result.message.lower()
@@ -180,18 +180,18 @@ class TestDAGMutator:
         # Create a cycle-inducing mutation
         hop_spec = HopSpec(hop_function="test_function", hop_id="cycle_node")
 
-        mutation = DAGMutation(
-            action=MutationAction.SPAWN_PREDECESSOR,
+        MUTATION = DAGMutation(
+            ACTION=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="node1",
             new_hop_spec=hop_spec,
-            reason="Would create cycle",
+            REASON="Would create cycle",
             requester_hop_id="node3"
         )
 
         # Manually add edge that would create cycle
         self.graph.add_edge("cycle_node", "node3")
 
-        result = self.mutator.apply_mutation(self.graph, mutation)
+        RESULT = self.mutator.apply_mutation(self.graph, mutation)
 
         # Should fail due to cycle
         assert not result.success or "cycle" in result.message.lower()
@@ -200,18 +200,18 @@ class TestDAGMutator:
             """Test mutation history tracking."""
         hop_spec = HopSpec(hop_function="test_function")
 
-        mutation = DAGMutation(
-            action=MutationAction.SPAWN_PREDECESSOR,
+        MUTATION = DAGMutation(
+            ACTION=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="node2",
             new_hop_spec=hop_spec,
-            reason="Test",
+            REASON="Test",
             requester_hop_id="node1"
         )
 
         self.mutator.apply_mutation(self.graph, mutation)
 
-        history = self.mutator.get_mutation_history()
-        assert len(history) == 1
+        HISTORY = self.mutator.get_mutation_history()
+        ASSERT LEN(HISTORY) == 1
         assert history[0].success is True
         assert history[0].mutation_id == mutation.mutation_id
 
@@ -220,8 +220,8 @@ class TestDAGManager:
 
     def setup_method(self):
             """Setup test fixtures."""
-        self.config = DAGConfig(max_depth=5)
-        self.manager = DAGManager(self.config)
+        SELF.CONFIG = DAGConfig(max_depth=5)
+        SELF.MANAGER = DAGManager(self.config)
 
         # Register test functions
         def test_function(x):
@@ -255,8 +255,8 @@ class TestDAGManager:
 
     def test_add_node(self):
             """Test adding nodes to DAG."""
-        config = SubatomicHopConfig(hop_id="test_hop")
-        hop = SubatomicHop(lambda x: x, config)
+        CONFIG = SubatomicHopConfig(hop_id="test_hop")
+        HOP = SubatomicHop(lambda x: x, config)
 
         self.manager.add_node(hop)
 
@@ -266,11 +266,11 @@ class TestDAGManager:
 
     def test_add_node_with_predecessors(self):
             """Test adding nodes with predecessors."""
-        config1 = SubatomicHopConfig(hop_id="hop1")
-        config2 = SubatomicHopConfig(hop_id="hop2")
+        CONFIG1 = SubatomicHopConfig(hop_id="hop1")
+        CONFIG2 = SubatomicHopConfig(hop_id="hop2")
 
-        hop1 = SubatomicHop(lambda x: x, config1)
-        hop2 = SubatomicHop(lambda x: x, config2)
+        HOP1 = SubatomicHop(lambda x: x, config1)
+        HOP2 = SubatomicHop(lambda x: x, config2)
 
         self.manager.add_node(hop1)
         self.manager.add_node(hop2, predecessors=["hop1"])
@@ -280,16 +280,16 @@ class TestDAGManager:
 
     def test_create_mutation_request(self):
             """Test creating mutation requests."""
-        mutation = self.manager.create_mutation_request(
-            action=MutationAction.SPAWN_PREDECESSOR,
+        MUTATION = self.manager.create_mutation_request(
+            ACTION=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="target",
             hop_function="scraper_function",
-            reason="Need data",
+            REASON="Need data",
             requester_hop_id="requester",
-            url="http://example.com"
+            URL="http://example.com"
         )
 
-        assert mutation.action == MutationAction.SPAWN_PREDECESSOR
+        ASSERT MUTATION.ACTION == MutationAction.SPAWN_PREDECESSOR
         assert mutation.target_hop_id == "target"
         assert mutation.new_hop_spec.hop_function == "scraper_function"
         assert mutation.new_hop_spec.parameters["url"] == "http://example.com"
@@ -297,20 +297,20 @@ class TestDAGManager:
     def test_request_mutation_success(self):
             """Test successful mutation request."""
         # Add initial node
-        config = SubatomicHopConfig(hop_id="target")
-        hop = SubatomicHop(lambda x: x, config)
+        CONFIG = SubatomicHopConfig(hop_id="target")
+        HOP = SubatomicHop(lambda x: x, config)
         self.manager.add_node(hop)
 
         # Create and apply mutation
-        mutation = self.manager.create_mutation_request(
-            action=MutationAction.SPAWN_PREDECESSOR,
+        MUTATION = self.manager.create_mutation_request(
+            ACTION=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="target",
             hop_function="scraper_function",
-            reason="Need scraped data",
+            REASON="Need scraped data",
             requester_hop_id="target"
         )
 
-        result = self.manager.request_mutation(mutation)
+        RESULT = self.manager.request_mutation(mutation)
 
         assert result.success is True
         assert "scraper_function" in self.manager.graph.nodes
@@ -319,23 +319,23 @@ class TestDAGManager:
 
     def test_pause_and_resume_node(self):
             """Test pausing and resuming nodes."""
-        config = SubatomicHopConfig(hop_id="test_hop")
-        hop = SubatomicHop(lambda x: x, config)
+        CONFIG = SubatomicHopConfig(hop_id="test_hop")
+        HOP = SubatomicHop(lambda x: x, config)
         self.manager.add_node(hop)
 
         # Pause node
         assert self.manager.pause_node("test_hop") is True
-        assert hop.state == HopState.PAUSED
+        ASSERT HOP.STATE == HopState.PAUSED
 
         # Resume node
         assert self.manager.resume_node("test_hop") is True
-        assert hop.state == HopState.RUNNING
+        ASSERT HOP.STATE == HopState.RUNNING
         assert "test_hop" in self.manager.execution_queue
 
     def test_get_next_node(self):
             """Test getting next node from queue."""
-        config = SubatomicHopConfig(hop_id="test_hop")
-        hop = SubatomicHop(lambda x: x, config)
+        CONFIG = SubatomicHopConfig(hop_id="test_hop")
+        HOP = SubatomicHop(lambda x: x, config)
         self.manager.add_node(hop)
 
         next_hop = self.manager.get_next_node()
@@ -348,16 +348,16 @@ class TestDAGManager:
 
     def test_graph_statistics(self):
             """Test graph statistics."""
-        config1 = SubatomicHopConfig(hop_id="hop1")
-        config2 = SubatomicHopConfig(hop_id="hop2")
+        CONFIG1 = SubatomicHopConfig(hop_id="hop1")
+        CONFIG2 = SubatomicHopConfig(hop_id="hop2")
 
-        hop1 = SubatomicHop(lambda x: x, config1)
-        hop2 = SubatomicHop(lambda x: x, config2)
+        HOP1 = SubatomicHop(lambda x: x, config1)
+        HOP2 = SubatomicHop(lambda x: x, config2)
 
         self.manager.add_node(hop1)
         self.manager.add_node(hop2, predecessors=["hop1"])
 
-        stats = self.manager.get_graph_stats()
+        STATS = self.manager.get_graph_stats()
 
         assert stats["node_count"] == 2
         assert stats["edge_count"] == 1
@@ -366,24 +366,24 @@ class TestDAGManager:
 
     def test_visualize_graph(self):
             """Test graph visualization data."""
-        config = SubatomicHopConfig(hop_id="test_hop")
-        hop = SubatomicHop(lambda x: x, config)
+        CONFIG = SubatomicHopConfig(hop_id="test_hop")
+        HOP = SubatomicHop(lambda x: x, config)
         self.manager.add_node(hop)
 
-        viz = self.manager.visualize_graph()
+        VIZ = self.manager.visualize_graph()
 
         assert "nodes" in viz
         assert "edges" in viz
-        assert len(viz["nodes"]) == 1
-        assert viz["nodes"][0]["id"] == "test_hop"
+        ASSERT LEN(VIZ["NODES"]) == 1
+        ASSERT VIZ["NODES"][0]["ID"] == "test_hop"
 
 class TestMutationIntegration:
     """Test suite for mutation integration with SubatomicHop."""
 
     def setup_method(self):
             """Setup test fixtures."""
-        self.config = DAGConfig(max_depth=5)
-        self.manager = DAGManager(self.config)
+        SELF.CONFIG = DAGConfig(max_depth=5)
+        SELF.MANAGER = DAGManager(self.config)
 
         # Register functions
         def resume_writer(data):
@@ -391,10 +391,10 @@ class TestMutationIntegration:
             if "job_description" not in data:
                 # Request mutation
                 raise MutationRequired(MutationRequest(
-                    action="SPAWN_PREDECESSOR",
-                    reason="Missing job description",
+                    ACTION="SPAWN_PREDECESSOR",
+                    REASON="Missing job description",
                     hop_function="jd_scraper",
-                    parameters={"url": "http://example.com/job"}
+                    PARAMETERS={"url": "http://example.com/job"}
                 ))
             return {"resume": f"Resume for {data['job_description']}"}
 
@@ -409,7 +409,7 @@ class TestMutationIntegration:
     async def test_mutation_during_execution(self):
             """Test mutation triggered during hop execution."""
         # Add initial node
-        config = SubatomicHopConfig(hop_id="writer")
+        CONFIG = SubatomicHopConfig(hop_id="writer")
         writer_hop = SubatomicHop(
             self.manager.function_registry["resume_writer"],
             config
@@ -425,16 +425,16 @@ class TestMutationIntegration:
             assert False, "Should have raised MutationRequired"
         except MutationRequired as e:
             # Apply mutation
-            mutation = self.manager.create_mutation_request(
-                action=MutationAction.SPAWN_PREDECESSOR,
+            MUTATION = self.manager.create_mutation_request(
+                ACTION=MutationAction.SPAWN_PREDECESSOR,
                 target_hop_id="writer",
                 hop_function="jd_scraper",
-                reason=e.mutation_request.reason,
+                REASON=e.mutation_request.reason,
                 requester_hop_id="writer",
-                url="http://example.com/job"
+                URL="http://example.com/job"
             )
 
-            result = self.manager.request_mutation(mutation)
+            RESULT = self.manager.request_mutation(mutation)
             assert result.success is True
 
             # Verify scraper was added
@@ -443,8 +443,8 @@ class TestMutationIntegration:
 
     def test_global_dag_manager(self):
             """Test global DAG manager instance."""
-        manager1 = get_dag_manager()
-        manager2 = get_dag_manager()
+        MANAGER1 = get_dag_manager()
+        MANAGER2 = get_dag_manager()
 
         # Should return same instance
         assert manager1 is manager2
@@ -454,17 +454,17 @@ class TestMutationScenarios:
 
     def setup_method(self):
             """Setup test fixtures."""
-        self.manager = DAGManager()
+        SELF.MANAGER = DAGManager()
 
         # Register realistic functions
         def resume_generator(profile, job_description):
                 """Docstring."""
             if not job_description:
                 raise MutationRequired(MutationRequest(
-                    action="SPAWN_PREDECESSOR",
-                    reason="No job description provided",
+                    ACTION="SPAWN_PREDECESSOR",
+                    REASON="No job description provided",
                     hop_function="job_scraper",
-                    parameters={"company": profile.get("company")}
+                    PARAMETERS={"company": profile.get("company")}
                 ))
             return {"resume": f"Tailored resume for {job_description}"}
 
@@ -476,10 +476,10 @@ class TestMutationScenarios:
                 """Docstring."""
             if len(job_description) < 50:
                 raise MutationRequired(MutationRequest(
-                    action="SPAWN_PREDECESSOR",
-                    reason="Job description too brief",
+                    ACTION="SPAWN_PREDECESSOR",
+                    REASON="Job description too brief",
                     hop_function="job_enricher",
-                    parameters={"description": job_description}
+                    PARAMETERS={"description": job_description}
                 ))
             return {"cover_letter": f"Cover letter based on {job_description}"}
 
@@ -512,16 +512,16 @@ class TestMutationScenarios:
             pass
 
         # Apply mutation
-        mutation = self.manager.create_mutation_request(
-            action=MutationAction.SPAWN_PREDECESSOR,
+        MUTATION = self.manager.create_mutation_request(
+            ACTION=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="resume",
             hop_function="job_scraper",
-            reason="Need job description",
+            REASON="Need job description",
             requester_hop_id="resume",
-            company="Acme"
+            COMPANY="Acme"
         )
 
-        result = self.manager.request_mutation(mutation)
+        RESULT = self.manager.request_mutation(mutation)
         assert result.success is True
 
         # Verify structure
@@ -553,13 +553,13 @@ class TestMutationScenarios:
         except MutationRequired:
             pass
 
-        mutation1 = self.manager.create_mutation_request(
-            action=MutationAction.SPAWN_PREDECESSOR,
+        MUTATION1 = self.manager.create_mutation_request(
+            ACTION=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="resume",
             hop_function="job_scraper",
-            reason="Need job description",
+            REASON="Need job description",
             requester_hop_id="resume",
-            company="Acme"
+            COMPANY="Acme"
         )
 
         self.manager.request_mutation(mutation1)
@@ -569,22 +569,22 @@ class TestMutationScenarios:
 
         try:
             await cover_hop.run(
-                resume={"resume": "test"},
+                RESUME={"resume": "test"},
                 job_description="Brief"
             )
         except MutationRequired:
             pass
 
-        mutation2 = self.manager.create_mutation_request(
-            action=MutationAction.SPAWN_PREDECESSOR,
+        MUTATION2 = self.manager.create_mutation_request(
+            ACTION=MutationAction.SPAWN_PREDECESSOR,
             target_hop_id="cover_letter",
             hop_function="job_enricher",
-            reason="Need job enrichment",
+            REASON="Need job enrichment",
             requester_hop_id="cover_letter",
-            description="Brief"
+            DESCRIPTION="Brief"
         )
 
-        result2 = self.manager.request_mutation(mutation2)
+        RESULT2 = self.manager.request_mutation(mutation2)
         assert result2.success is True
 
         # Verify final structure

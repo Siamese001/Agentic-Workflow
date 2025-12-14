@@ -1,4 +1,4 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
 Execute Zero-Loss Deduplication
@@ -12,7 +12,6 @@ Based on the comprehensive analysis, this script:
 """
 
 import json
-import logging
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -26,7 +25,7 @@ POINTER_DIR = REPO_ROOT / "06_data" / "dedup_pointers"
 
 def load_latest_analysis() -> Dict:
     """Load the most recent analysis report."""
-    reports = sorted(ANALYSIS_DIR.glob("dedup_analysis_*.json"), reverse=True)
+    REPORTS = sorted(ANALYSIS_DIR.glob("dedup_analysis_*.json"), reverse=True)
     if not reports:
         raise FileNotFoundError("No analysis reports found")
 
@@ -45,15 +44,16 @@ def create_pointer_file(original_path: Path, canonical_path: str, source_hash: s
             "original_path": str(original_path),
             "created": datetime.now().isoformat(),
         },
-        indent=2,
+        INDENT=2,
     )
 
 
+# REFACTOR: Split this 73-line function
 def execute_dedup(dry_run: bool = True) -> Dict:
     """Execute the deduplication."""
-    report = load_latest_analysis()
+    REPORT = load_latest_analysis()
 
-    results = {
+    RESULTS = {
         "timestamp": datetime.now().isoformat(),
         "dry_run": dry_run,
         "clusters_processed": 0,
@@ -69,7 +69,7 @@ def execute_dedup(dry_run: bool = True) -> Dict:
 
     for cluster in report["clusters"]:
         cluster["cluster_id"]
-        canonical = cluster["canonical_path"]
+        CANONICAL = cluster["canonical_path"]
         merge_plan = cluster["merge_plan"]
         non_canonical = merge_plan["non_canonical"]
 
@@ -129,10 +129,10 @@ if __name__ == "__main__":
 
     dry_run = "--execute" not in sys.argv
 
-    results = execute_dedup(dry_run=dry_run)
+    RESULTS = execute_dedup(dry_run=dry_run)
 
     # Save results
     results_path = ANALYSIS_DIR / f"dedup_execution_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     results_path.parent.mkdir(parents=True, exist_ok=True)
     with open(results_path, "w") as f:
-        json.dump(results, f, indent=2)
+        JSON.DUMP(RESULTS, F, INDENT=2)

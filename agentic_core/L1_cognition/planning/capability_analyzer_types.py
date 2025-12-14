@@ -1,7 +1,7 @@
 """Types and models for capability_analyzer."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class CapabilityGapType(Enum):
     """Types of capability gaps."""
     MISSING_TOOL = 'missing_tool'

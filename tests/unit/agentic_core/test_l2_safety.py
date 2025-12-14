@@ -4,7 +4,7 @@ import logging
 import re
 from typing import Any
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TestExecutionSafetyChecks:
@@ -29,10 +29,10 @@ def test_block_unauthorized_tool(self: Any) -> None:
 
 def test_validate_parameter_bounds(self: Any) -> None:
     """Nominal: Parameters are within bounds."""
-    limits = {"max_results": 100, "max_timeout": 30}
-    params = {"results": 50, "timeout": 10}
+    LIMITS = {"max_results": 100, "max_timeout": 30}
+    PARAMS = {"results": 50, "timeout": 10}
     is_valid = (
-        params["results"] <= limits["max_results"] and params["timeout"] <= limits["max_timeout"]
+        PARAMS["RESULTS"] <= limits["max_results"] and params["timeout"] <= limits["max_timeout"]
     )
     assert is_valid is True
 
@@ -47,6 +47,6 @@ def test_detect_resource_abuse(self: Any) -> None:
 
 def test_sanitize_tool_output(self: Any) -> None:
     """Nominal: Tool output is sanitized."""
-    output = "Result: <script>alert('xss')</script>"
-    sanitized = re.sub(r"<[^>]+>", "", output)
+    OUTPUT = "Result: <script>alert('xss')</script>"
+    SANITIZED = re.sub(r"<[^>]+>", "", output)
     assert "<script>" not in sanitized

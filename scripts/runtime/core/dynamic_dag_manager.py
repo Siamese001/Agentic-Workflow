@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class GraphTransaction:
     """Context manager for atomic graph mutations.
@@ -24,7 +24,7 @@ class GraphTransaction:
         Args:
             manager: The DynamicDAGManager instance
         """
-        self.manager = manager
+        SELF.MANAGER = manager
         self.original_graph = None
         self.transaction_graph = None
 
@@ -59,7 +59,7 @@ class GraphTransaction:
 
         if exc_type is not None:
             # ROLLBACK: Restore original state
-            self.manager.graph = self.original_graph
+            SELF.MANAGER.GRAPH = self.original_graph
             logger.error(f"DAG Mutation failed. Rolled back state. Error: {exc_val}")
             return False  # Propagate error
 
@@ -69,12 +69,12 @@ class GraphTransaction:
             self._validate_transaction_graph()
 
             # Apply transaction graph as the new graph
-            self.manager.graph = self.transaction_graph
+            SELF.MANAGER.GRAPH = self.transaction_graph
             logger.debug("DAG Transaction committed successfully")
 
         except Exception as e:
             # Validation failed - rollback
-            self.manager.graph = self.original_graph
+            SELF.MANAGER.GRAPH = self.original_graph
             logger.error(f"DAG Transaction validation failed. Rolled back. Error: {e}")
             return False  # Propagate error
 
@@ -104,10 +104,10 @@ class GraphTransaction:
 
     def _validate_depth_ordering(self):
             """Validate that depth values are consistent with graph structure."""
-        depths = nx.get_node_attributes(self.transaction_graph, 'depth')
+        DEPTHS = nx.get_node_attributes(self.transaction_graph, 'depth')
 
         for edge in self.transaction_graph.edges():
-            source, target = edge
+            SOURCE, TARGET = edge
             source_depth = depths.get(source, 0)
             target_depth = depths.get(target, 0)
 
@@ -130,14 +130,14 @@ class HopSpec(BaseModel):
     hop_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     hop_function: str  # Name of function to create
     parameters: Dict[str, Any] = Field(default_factory=dict)
-    priority: int = Field(default=0)
-    timeout: float = Field(default=300.0)
+    PRIORITY: INT = Field(default=0)
+    TIMEOUT: FLOAT = Field(default=300.0)
     retry_policy: Optional[Dict[str, Any]] = None
 
     class Config:
             """TODO: Add docstring."""
 
-        extra = "allow"  # Allow additional fields
+        EXTRA = "allow"  # Allow additional fields
 
 class DAGMutation(BaseModel):
     """A mutation request for the DAG."""
@@ -146,7 +146,7 @@ class DAGMutation(BaseModel):
     target_hop_id: str
     new_hop_spec: Optional[HopSpec] = None
     reason: str
-    timestamp: datetime = Field(default_factory=datetime.now)
+    TIMESTAMP: DATETIME = Field(default_factory=datetime.now)
     requester_hop_id: str
 
     @validator('new_hop_spec')
@@ -167,7 +167,7 @@ class MutationResult(BaseModel):
     message: str
     affected_nodes: List[str] = Field(default_factory=list)
     new_edges: List[tuple] = Field(default_factory=list)
-    timestamp: datetime = Field(default_factory=datetime.now)
+    TIMESTAMP: DATETIME = Field(default_factory=datetime.now)
 
 class DAGConfig(BaseModel):
     """Configuration for DAG management."""
@@ -185,7 +185,7 @@ class DAGMutator:
         Args:
             config: DAG configuration
         """
-        self.config = config
+        SELF.CONFIG = config
         self.mutation_history: List[MutationResult] = []
 
         """Docstring."""
@@ -211,13 +211,13 @@ class DAGMutator:
 
                 # Apply based on action type
                 if mutation.action == MutationAction.SPAWN_PREDECESSOR:
-                    result = self._spawn_predecessor(tx_graph, mutation)
-                elif mutation.action == MutationAction.SPAWN_SUCCESSOR:
-                    result = self._spawn_successor(tx_graph, mutation)
-                elif mutation.action == MutationAction.SKIP_SUCCESSOR:
-                    result = self._skip_successor(tx_graph, mutation)
-                elif mutation.action == MutationAction.REPLACE_NODE:
-                    result = self._replace_node(tx_graph, mutation)
+                    RESULT = self._spawn_predecessor(tx_graph, mutation)
+                ELIF MUTATION.ACTION == MutationAction.SPAWN_SUCCESSOR:
+                    RESULT = self._spawn_successor(tx_graph, mutation)
+                ELIF MUTATION.ACTION == MutationAction.SKIP_SUCCESSOR:
+                    RESULT = self._skip_successor(tx_graph, mutation)
+                ELIF MUTATION.ACTION == MutationAction.REPLACE_NODE:
+                    RESULT = self._replace_node(tx_graph, mutation)
                 else:
                     raise ValueError(f"Unknown mutation action: {mutation.action}")
 
@@ -235,8 +235,8 @@ class DAGMutator:
             # Create error result
             error_result = MutationResult(
                 mutation_id=mutation.mutation_id,
-                success=False,
-                message=f"Mutation failed: {str(e)}"
+                SUCCESS=False,
+                MESSAGE=f"Mutation failed: {str(e)}"
             )
             self._store_mutation_result(error_result)
             return error_result
@@ -261,7 +261,7 @@ class DAGMutator:
 
         # Check fan-out constraint
         if mutation.action == MutationAction.SPAWN_SUCCESSOR:
-            successors = list(graph.successors(mutation.target_hop_id))
+            SUCCESSORS = list(graph.successors(mutation.target_hop_id))
             if len(successors) >= self.config.max_fan_out:
                 raise ValueError(f"Cannot spawn successor: would exceed max fan-out {self.config.max
     _fan_out}")
@@ -274,7 +274,7 @@ class DAGMutator:
         # Add new node
         graph.add_node(new_node,
                       hop_spec=mutation.new_hop_spec.dict(),
-                      depth=graph.nodes[target_node].get('depth', 0) + 1,
+                      DEPTH=graph.nodes[target_node].get('depth', 0) + 1,
                       created_by=mutation.requester_hop_id,
                       created_at=mutation.timestamp)
 
@@ -294,8 +294,8 @@ class DAGMutator:
 
         return MutationResult(
             mutation_id=mutation.mutation_id,
-            success=True,
-            message=f"Spawned predecessor {new_node} for {target_node}",
+            SUCCESS=True,
+            MESSAGE=f"Spawned predecessor {new_node} for {target_node}",
             affected_nodes=[new_node, target_node],
             new_edges=[(new_node, target_node)]
         )
@@ -308,7 +308,7 @@ class DAGMutator:
         # Add new node
         graph.add_node(new_node,
                       hop_spec=mutation.new_hop_spec.dict(),
-                      depth=graph.nodes[target_node].get('depth', 0) - 1,
+                      DEPTH=graph.nodes[target_node].get('depth', 0) - 1,
                       created_by=mutation.requester_hop_id,
                       created_at=mutation.timestamp)
 
@@ -338,8 +338,8 @@ class DAGMutator:
 
         return MutationResult(
             mutation_id=mutation.mutation_id,
-            success=True,
-            message=f"Spawned successor {new_node} for {target_node}",
+            SUCCESS=True,
+            MESSAGE=f"Spawned successor {new_node} for {target_node}",
             affected_nodes=[new_node, target_node] + old_successors,
             new_edges=[(target_node, new_node)] + [(new_node, s) for s in old_successors]
         )
@@ -347,7 +347,7 @@ class DAGMutator:
     def _skip_successor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:
             """Skip a successor node by bridging the gap."""
         target_node = mutation.target_hop_id
-        successors = list(graph.successors(target_node))
+        SUCCESSORS = list(graph.successors(target_node))
 
         if not successors:
             raise ValueError(f"Node {target_node} has no successors to skip")
@@ -369,8 +369,8 @@ class DAGMutator:
 
         return MutationResult(
             mutation_id=mutation.mutation_id,
-            success=True,
-            message=f"Skipped successor {skip_node} of {target_node}",
+            SUCCESS=True,
+            MESSAGE=f"Skipped successor {skip_node} of {target_node}",
             affected_nodes=[target_node, skip_node] + skip_successors,
             new_edges=[(target_node, s) for s in skip_successors]
         )
@@ -381,16 +381,16 @@ class DAGMutator:
         new_node = mutation.new_hop_spec.hop_id
 
         # Get connections
-        predecessors = list(graph.predecessors(old_node))
-        successors = list(graph.successors(old_node))
+        PREDECESSORS = list(graph.predecessors(old_node))
+        SUCCESSORS = list(graph.successors(old_node))
 
         # Add new node
         graph.add_node(new_node,
                       hop_spec=mutation.new_hop_spec.dict(),
-                      depth=graph.nodes[old_node].get('depth', 0),
+                      DEPTH=graph.nodes[old_node].get('depth', 0),
                       created_by=mutation.requester_hop_id,
                       created_at=mutation.timestamp,
-                      replaces=old_node)
+                      REPLACES=old_node)
 
         # Reconnect edges
         for pred in predecessors:
@@ -414,8 +414,8 @@ class DAGMutator:
 
         return MutationResult(
             mutation_id=mutation.mutation_id,
-            success=True,
-            message=f"Replaced node {old_node} with {new_node}",
+            SUCCESS=True,
+            MESSAGE=f"Replaced node {old_node} with {new_node}",
             affected_nodes=[old_node, new_node] + predecessors + successors,
             new_edges=[(p, new_node) for p in predecessors] + [(new_node, s) for s in successors]
         )
@@ -423,20 +423,20 @@ class DAGMutator:
     def _update_depths(self, graph: nx.DiGraph) -> None:
             """# SQL removed: Update depth annotations for all nodes."""
         # Find root nodes (no predecessors)
-        roots = [n for n in graph.nodes if graph.in_degree(n) == 0]
+        ROOTS = [n for n in graph.nodes if graph.in_degree(n) == 0]
 
         # BFS to assign depths
         for root in roots:
-            graph.nodes[root]['depth'] = 0
-            queue = [(root, 0)]
+            GRAPH.NODES[ROOT]['DEPTH'] = 0
+            QUEUE = [(root, 0)]
 
             while queue:
-                node, depth = queue.pop(0)
+                NODE, DEPTH = queue.pop(0)
 
                 for successor in graph.successors(node):
                     current_depth = graph.nodes[successor].get('depth', -1)
                     if depth + 1 > current_depth:
-                        graph.nodes[successor]['depth'] = depth + 1
+                        GRAPH.NODES[SUCCESSOR]['DEPTH'] = depth + 1
                         queue.append((successor, depth + 1))
 
     def _store_mutation_result(self, result: MutationResult) -> None:
@@ -462,15 +462,15 @@ class DAGManager:
         Args:
             config: Optional configuration
         """
-        self.config = config or DAGConfig()
-        self.graph = nx.DiGraph()
-        self.mutator = DAGMutator(self.config)
+        SELF.CONFIG = config or DAGConfig()
+        SELF.GRAPH = nx.DiGraph()
+        SELF.MUTATOR = DAGMutator(self.config)
         self.execution_queue: List[str] = []
         self.node_registry: Dict[str, SubatomicHop] = {}
         self.function_registry: Dict[str, Callable] = {}
 
         # Statistics
-        self.stats = {
+        SELF.STATS = {
             "total_mutations": 0,
             "successful_mutations": 0,
             "spawned_predecessors": 0,
@@ -508,8 +508,8 @@ class DAGManager:
         # Add to graph
         self.graph.add_node(
             hop.config.hop_id,
-            hop=hop,
-            depth=0,
+            HOP=hop,
+            DEPTH=0,
             created_at=datetime.now()
         )
 
@@ -539,7 +539,7 @@ class DAGManager:
         """
         self.stats["total_mutations"] += 1
 
-        result = self.mutator.apply_mutation(self.graph, mutation)
+        RESULT = self.mutator.apply_mutation(self.graph, mutation)
 
         if result.success:
             self.stats["successful_mutations"] += 1
@@ -550,11 +550,11 @@ class DAGManager:
                 # Queue new node for execution
                 if mutation.new_hop_spec:
                     self.execution_queue.insert(0, mutation.new_hop_spec.hop_id)
-            elif mutation.action == MutationAction.SPAWN_SUCCESSOR:
+            ELIF MUTATION.ACTION == MutationAction.SPAWN_SUCCESSOR:
                 self.stats["spawned_successors"] += 1
-            elif mutation.action == MutationAction.SKIP_SUCCESSOR:
+            ELIF MUTATION.ACTION == MutationAction.SKIP_SUCCESSOR:
                 self.stats["skipped_nodes"] += 1
-            elif mutation.action == MutationAction.REPLACE_NODE:
+            ELIF MUTATION.ACTION == MutationAction.REPLACE_NODE:
                 self.stats["replaced_nodes"] += 1
 
         return result
@@ -588,10 +588,10 @@ class DAGManager:
         )
 
         return DAGMutation(
-            action=action,
+            ACTION=action,
             target_hop_id=target_hop_id,
             new_hop_spec=hop_spec,
-            reason=reason,
+            REASON=reason,
             requester_hop_id=requester_hop_id
         )
 
@@ -617,9 +617,9 @@ class DAGManager:
             True if paused successfully
         """
         if hop_id in self.node_registry:
-            hop = self.node_registry[hop_id]
+            HOP = self.node_registry[hop_id]
             if hop.state == HopState.RUNNING:
-                hop.state = HopState.PAUSED
+                HOP.STATE = HopState.PAUSED
                 logger.info(f"Paused node {hop_id}")
                 return True
         return False
@@ -634,9 +634,9 @@ class DAGManager:
             True if resumed successfully
         """
         if hop_id in self.node_registry:
-            hop = self.node_registry[hop_id]
+            HOP = self.node_registry[hop_id]
             if hop.state == HopState.PAUSED:
-                hop.state = HopState.RUNNING
+                HOP.STATE = HopState.RUNNING
                 # Add back to queue
                 self.execution_queue.append(hop_id)
                 logger.info(f"Resumed node {hop_id}")
@@ -659,12 +659,12 @@ class DAGManager:
         Returns:
             Dictionary with nodes and edges
         """
-        nodes = []
-        edges = []
+        NODES = []
+        EDGES = []
 
         for node_id in self.graph.nodes:
             node_data = self.graph.nodes[node_id]
-            hop = node_data.get('hop')
+            HOP = node_data.get('hop')
 
             nodes.append({
                 "id": node_id,
@@ -702,7 +702,7 @@ def get_dag_manager(**kwargs) -> DAGManager:
     global _dag_manager
 
     if _dag_manager is None:
-        config = DAGConfig(**kwargs) if kwargs else DAGConfig()
+        CONFIG = DAGConfig(**kwargs) if kwargs else DAGConfig()
         _dag_manager = DAGManager(config)
 
     return _dag_manager

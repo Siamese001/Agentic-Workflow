@@ -1,7 +1,7 @@
 """Pipeline package - Extracted from unified_signal_pipeline.py for Key 42 compliance.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 This package contains the modular components of the unified signal pipeline:
 - types: Base types, enums, and abstract classes
 - input_stage: Input processing stage

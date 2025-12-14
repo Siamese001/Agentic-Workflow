@@ -11,7 +11,7 @@ import os
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -19,7 +19,7 @@ class TracingConfig:
     """Configuration for OpenTelemetry tracing."""
 
     service_name: str = "agentic-workflow"
-    environment: str = "development"
+    ENVIRONMENT: STR = "development"
     _endpoint: Optional[str] = None
     _enable_console_export: bool = True
     _enable_otlp_export: bool = False
@@ -30,6 +30,7 @@ _TRACER: Optional[Any] = None
 _TRACER_PROVIDER: Optional[Any] = None
 
 
+# REFACTOR: Split this 66-line function
 def setup_tracing(config: Optional[TracingConfig] = None) -> None:
     """Setup OpenTelemetry tracing.
 
@@ -47,19 +48,19 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> None:
     except ImportError:
         logger.warning(
             "OpenTelemetry not installed. Install with: "
-            "pip install opentelemetry-api>=1.27.0 opentelemetry-sdk>=1.27.0"
+            "PIP INSTALL OPENTELEMETRY-API>=1.27.0 opentelemetry-sdk>=1.27.0"
         )
         return
 
     if config is None:
-        config = TracingConfig()
+        CONFIG = TracingConfig()
 
     # Override from environment
     service_name = os.getenv("OTEL_SERVICE_NAME", config.service_name)
-    environment = os.getenv("ENVIRONMENT", config.environment)
+    ENVIRONMENT = os.getenv("ENVIRONMENT", config.environment)
 
     # Create resource
-    resource = Resource.create(
+    RESOURCE = Resource.create(
         {
             "service.name": service_name,
             "deployment.environment": environment,
@@ -86,7 +87,7 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> None:
         except ImportError:
             logger.warning(
                 "OTLP exporter not installed. Install with: "
-                "pip install opentelemetry-exporter-otlp>=1.27.0"
+                "PIP INSTALL OPENTELEMETRY-EXPORTER-OTLP>=1.27.0"
             )
 
     # Set global tracer provider
@@ -125,13 +126,13 @@ def create_span(
     Returns:
         Span context manager
     """
-    tracer = get_tracer()
+    TRACER = get_tracer()
 
     if tracer is None:
         # Return dummy context manager if tracing not available
         return nullcontext()
 
-    span = tracer.start_as_current_span(name)
+    SPAN = tracer.start_as_current_span(name)
 
     if attributes:
         for key, value in attributes.items():
@@ -209,7 +210,7 @@ def setup_structured_logging(
 
     # Configure structlog
     structlog.configure(
-        processors=[
+        PROCESSORS=[
             structlog.stdlib.filter_by_level,
             structlog.stdlib.add_logger_name,
             structlog.stdlib.add_log_level,
@@ -227,8 +228,8 @@ def setup_structured_logging(
 
     # Set log level
     logging.basicConfig(
-        format="%(message)s",
-        level=getattr(logging, log_level.upper()),
+        FORMAT="%(message)s",
+        LEVEL=getattr(logging, log_level.upper()),
     )
 
     logger.info(f"Structured logging initialized for service: {service_name}")

@@ -9,30 +9,30 @@ import logging
 import time
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ExecuteMessageGeneration:
     """Executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
-        self.timeout = self.config.get("timeout", 30.0)
+        SELF.CONFIG = config or {}
+        SELF.TIMEOUT = self.config.get("timeout", 30.0)
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
-        start = time.time()
+        START = time.time()
         try:
-            output = self._perform_action(action, params)
+            OUTPUT = self._perform_action(action, params)
             return ExecutionResult(
-                success=True,
-                output=output,
+                SUCCESS=True,
+                OUTPUT=output,
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(
-                success=False,
-                error=str(e),
+                SUCCESS=False,
+                ERROR=str(e),
                 duration_ms=(time.time() - start) * 1000
             )
 

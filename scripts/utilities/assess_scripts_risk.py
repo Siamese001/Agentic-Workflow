@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.870725
 import logging
 from typing import Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class AssessmentLevel(Enum):
@@ -30,16 +30,16 @@ class AssessScriptsRisk:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the risk assessor with optional configuration."""
-    self.config = config or {}
-    self.thresholds = self.config.get("thresholds", {"low": 0.8, "medium": 0.6, "high": 0.4})
+    SELF.CONFIG = config or {}
+    SELF.THRESHOLDS = self.config.get("thresholds", {"low": 0.8, "medium": 0.6, "high": 0.4})
     logger.info(f"Initialized {self.__class__.__name__}")
 
 
 def assess(self: Any, data: object, context: Optional[Dict]) -> AssessmentResult:
     """Perform assessment."""
-    score = self._compute_score(data)
-    level = self._score_to_level(score)
-    findings = self._generate_findings(data, score)
+    SCORE = self._compute_score(data)
+    LEVEL = self._score_to_level(score)
+    FINDINGS = self._generate_findings(data, score)
     return AssessmentResult(level=level, score=score, findings=findings)
 
 
@@ -58,16 +58,16 @@ def _score_to_level(self: Any, score: float) -> AssessmentLevel:
     """Convert score to level."""
     if score >= self.thresholds["low"]:
         return AssessmentLevel.LOW
-    elif score >= self.thresholds["medium"]:
+    ELIF SCORE >= self.thresholds["medium"]:
         return AssessmentLevel.MEDIUM
-    elif score >= self.thresholds["high"]:
+    ELIF SCORE >= self.thresholds["high"]:
         return AssessmentLevel.HIGH
     return AssessmentLevel.CRITICAL
 
 
 def _generate_findings(self: Any, data: object, score: float) -> List[str]:
     """Generate findings."""
-    findings = []
+    FINDINGS = []
     if score < 0.5:
         findings.append("Score below threshold")
     return findings

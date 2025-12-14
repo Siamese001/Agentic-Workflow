@@ -13,7 +13,7 @@ import logging
 import time
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class CostAlertLevel(Enum):
     """Cost alert levels."""
@@ -58,7 +58,7 @@ class CostAlert:
     message: str
     current_cost: float
     budget_limit: float
-    timestamp: float = field(default_factory=time.time)
+    TIMESTAMP: FLOAT = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -108,7 +108,7 @@ class CostTracker:
         if self.enable_logging:
             logger.info(
                 "cost_tracker_initialized",
-                extra={
+                EXTRA={
                     "default_budget": default_budget_per_agent,
                     "alert_threshold": alert_threshold_percent,
                 }
@@ -135,7 +135,7 @@ class CostTracker:
         if agent_id not in self._agent_costs:
             self._agent_costs[agent_id] = []
 
-        record = {
+        RECORD = {
             "spiffe_id": spiffe_id,
             "model_id": model_id,
             "tokens": tokens,
@@ -152,7 +152,7 @@ class CostTracker:
         if self.enable_logging:
             logger.debug(
                 "cost_recorded",
-                extra={
+                EXTRA={
                     "agent_id": agent_id,
                     "model_id": model_id,
                     "cost": cost,
@@ -171,7 +171,7 @@ class CostTracker:
         if self.enable_logging:
             logger.info(
                 "budget_set",
-                extra={
+                EXTRA={
                     "agent_id": agent_id,
                     "budget": budget,
                 }
@@ -192,7 +192,7 @@ class CostTracker:
         Returns:
             CostMetrics or None
         """
-        records = self._agent_costs.get(agent_id, [])
+        RECORDS = self._agent_costs.get(agent_id, [])
 
         if not records:
             return None
@@ -219,7 +219,7 @@ class CostTracker:
         # Get SPIFFE ID from most recent record
         spiffe_id = period_records[-1]["spiffe_id"]
 
-        metrics = CostMetrics(
+        METRICS = CostMetrics(
             agent_id=agent_id,
             spiffe_id=spiffe_id,
             total_cost=total_cost,
@@ -249,7 +249,7 @@ class CostTracker:
         all_metrics = []
 
         for agent_id in self._agent_costs.keys():
-            metrics = self.get_metrics(agent_id, period_hours)
+            METRICS = self.get_metrics(agent_id, period_hours)
             if metrics:
                 all_metrics.append(metrics)
 
@@ -270,13 +270,13 @@ class CostTracker:
         Returns:
             List of CostAlert
         """
-        alerts = self._alerts
+        ALERTS = self._alerts
 
         if agent_id:
-            alerts = [a for a in alerts if a.agent_id == agent_id]
+            ALERTS = [a for a in alerts if a.agent_id == agent_id]
 
         if level:
-            alerts = [a for a in alerts if a.level == level]
+            ALERTS = [a for a in alerts if a.level == level]
 
         return alerts
 
@@ -287,11 +287,11 @@ class CostTracker:
             agent_id: Agent identifier
             spiffe_id: SPIFFE ID
         """
-        budget = self._agent_budgets.get(agent_id)
+        BUDGET = self._agent_budgets.get(agent_id)
         if not budget:
             return
 
-        metrics = self.get_metrics(agent_id)
+        METRICS = self.get_metrics(agent_id)
         if not metrics:
             return
 
@@ -303,8 +303,8 @@ class CostTracker:
             self._create_alert(
                 agent_id=agent_id,
                 spiffe_id=spiffe_id,
-                level=CostAlertLevel.CRITICAL,
-                message=f"Budget exceeded: ${current_cost:.2f} / ${budget:.2f}",
+                LEVEL=CostAlertLevel.CRITICAL,
+                MESSAGE=f"Budget exceeded: ${current_cost:.2f} / ${budget:.2f}",
                 current_cost=current_cost,
                 budget_limit=budget,
             )
@@ -312,8 +312,8 @@ class CostTracker:
             self._create_alert(
                 agent_id=agent_id,
                 spiffe_id=spiffe_id,
-                level=CostAlertLevel.WARNING,
-                message=f"Budget at {usage_percent:.1%}: ${current_cost:.2f} / ${budget:.2f}",
+                LEVEL=CostAlertLevel.WARNING,
+                MESSAGE=f"Budget at {usage_percent:.1%}: ${current_cost:.2f} / ${budget:.2f}",
                 current_cost=current_cost,
                 budget_limit=budget,
             )
@@ -337,12 +337,12 @@ class CostTracker:
             current_cost: Current cost
             budget_limit: Budget limit
         """
-        alert = CostAlert(
+        ALERT = CostAlert(
             alert_id=f"cost_alert_{agent_id}_{int(time.time())}",
             agent_id=agent_id,
             spiffe_id=spiffe_id,
-            level=level,
-            message=message,
+            LEVEL=level,
+            MESSAGE=message,
             current_cost=current_cost,
             budget_limit=budget_limit,
         )
@@ -356,7 +356,7 @@ class CostTracker:
         if self.enable_logging:
             logger.warning(
                 "cost_alert_triggered",
-                extra={
+                EXTRA={
                     "agent_id": agent_id,
                     "level": level.value,
                     "current_cost": current_cost,

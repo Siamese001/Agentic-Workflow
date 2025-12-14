@@ -25,8 +25,8 @@ except ImportError as e:
 class AgentResponse:
     """Simple container for agent responses."""
     def __init__(self, content: str, metadata: Dict[str, Any]):
-        self.content = content
-        self.metadata = metadata
+        SELF.CONTENT = content
+        SELF.METADATA = metadata
 
 class MaxValidationRetriesError(Exception):
     """Raised when maximum validation retries are exceeded."""
@@ -50,7 +50,7 @@ async def test_validation_max_retries_exceeded():
     Ensures the system doesn't get stuck in infinite validation loops.
     """
     # Setup: Mock Orchestrator with a Validator that ALWAYS fails
-    orchestrator = HardenedOrchestrator()
+    ORCHESTRATOR = HardenedOrchestrator()
     orchestrator.max_retries = 3
 
     # Mock the Execution/Validation loop
@@ -72,7 +72,7 @@ async def test_token_budget_preflight_check():
 
     Prevents wasted API calls on oversized prompts.
     """
-    executor = HardenedOpenAIExecutor()
+    EXECUTOR = HardenedOpenAIExecutor()
     huge_prompt = "word " * 150_000  # Approx 150k tokens (exceeds standard 128k limit)
 
     # Mock tiktoken encoding to avoid massive CPU usage, just return high count
@@ -90,13 +90,13 @@ async def test_json_repair_workflow():
 
     Verifies self-repair capabilities for malformed outputs.
     """
-    orchestrator = HardenedOrchestrator()
+    ORCHESTRATOR = HardenedOrchestrator()
 
     # Scenario:
     # Attempt 1: Returns text "Here is the JSON: {broken..." (Validation Fails)
     # Attempt 2: Returns valid JSON "{ 'key': 'value' }" (Validation Passes)
 
-    responses = [
+    RESPONSES = [
         AgentResponse(content="Invalid JSON", metadata={}),
         AgentResponse(content='{"valid": true}', metadata={})
     ]
@@ -105,10 +105,10 @@ async def test_json_repair_workflow():
     orchestrator.router.execute_with_fallback = mock_execute
 
     # Run
-    result = await orchestrator.run_structured_task("Generate JSON")
+    RESULT = await orchestrator.run_structured_task("Generate JSON")
 
     # Verification
-    assert result == {"valid": True}
+    ASSERT RESULT == {"valid": True}
     assert mock_execute.call_count == 2
     # Verify the 2nd prompt included the error message
     second_call_args = mock_execute.call_args_list[1]
@@ -121,7 +121,7 @@ async def test_validation_with_fallback_strategies():
 
     Ensures comprehensive validation attempts including schema and content checks.
     """
-    orchestrator = HardenedOrchestrator()
+    ORCHESTRATOR = HardenedOrchestrator()
 
     # Mock multiple validation strategies
     validation_results = [
@@ -134,7 +134,7 @@ async def test_validation_with_fallback_strategies():
     orchestrator.validate_output = mock_validate
 
     # Execute with multiple validation attempts
-    result = await orchestrator.run_node_with_validation("Test prompt")
+    RESULT = await orchestrator.run_node_with_validation("Test prompt")
 
     # Verify all strategies were attempted
     assert mock_validate.call_count == 3
@@ -147,7 +147,7 @@ async def test_context_aware_prompt_truncation():
 
     Verifies smart context management preserves important information.
     """
-    executor = HardenedOpenAIExecutor()
+    EXECUTOR = HardenedOpenAIExecutor()
 
     # Create a prompt that's slightly over limit
     base_prompt = "This is important context that should be preserved. "
@@ -168,7 +168,7 @@ async def test_context_aware_prompt_truncation():
     with patch("tiktoken.encoding_for_model", return_value=mock_encoder), \
          patch.object(executor, "_truncate_prompt", side_effect=mock_truncate):
 
-        result = await executor.execute(full_prompt, model="gpt-4-turbo")
+        RESULT = await executor.execute(full_prompt, model="gpt-4-turbo")
 
         # Verify truncation was applied
         executor._truncate_prompt.assert_called_once()
@@ -181,14 +181,14 @@ async def test_agentic_error_recovery_with_state_preservation():
 
     Ensures partial progress isn't lost during error recovery.
     """
-    orchestrator = HardenedOrchestrator()
+    ORCHESTRATOR = HardenedOrchestrator()
 
     # Initial state
     initial_state = WorkflowState(
         workflow_id="error_recovery_test",
         current_k_node="K.3",
         completed_nodes=["K.1", "K.2"],
-        context={"partial_result": "important_data"}
+        CONTEXT={"partial_result": "important_data"}
     )
 
     # Mock execution to fail on K.3 but succeed on retry
@@ -211,7 +211,7 @@ async def test_agentic_error_recovery_with_state_preservation():
     orchestrator.save_state = mock_save_state
 
     # Run with error recovery
-    result = await orchestrator.run_with_recovery(initial_state, "K.3")
+    RESULT = await orchestrator.run_with_recovery(initial_state, "K.3")
 
     # Verify state was preserved during recovery
     assert len(saved_states) >= 1
@@ -225,12 +225,12 @@ async def test_multi_step_validation_pipeline():
 
     Verifies that all validation gates must pass for success.
     """
-    orchestrator = HardenedOrchestrator()
+    ORCHESTRATOR = HardenedOrchestrator()
 
     # Create mock validation gates
-    gate1 = AsyncMock(return_value=ValidationResult(True, ""))
-    gate2 = AsyncMock(return_value=ValidationResult(False, "Gate 2 failed"))
-    gate3 = AsyncMock(return_value=ValidationResult(True, ""))
+    GATE1 = AsyncMock(return_value=ValidationResult(True, ""))
+    GATE2 = AsyncMock(return_value=ValidationResult(False, "Gate 2 failed"))
+    GATE3 = AsyncMock(return_value=ValidationResult(True, ""))
 
     orchestrator.validation_gates = [gate1, gate2, gate3]
 
@@ -252,7 +252,7 @@ async def test_adaptive_retry_with_exponential_backoff():
 
     Prevents overwhelming services with rapid retries.
     """
-    orchestrator = HardenedOrchestrator()
+    ORCHESTRATOR = HardenedOrchestrator()
     orchestrator.retry_backoff_factor = 0.1
 
     # Track call timestamps
@@ -268,7 +268,7 @@ async def test_adaptive_retry_with_exponential_backoff():
         return "Success"
 
     with patch.object(orchestrator, "execute_step", side_effect=mock_execute_with_delay):
-        result = await orchestrator.run_with_retry("Test prompt", max_retries=3)
+        RESULT = await orchestrator.run_with_retry("Test prompt", max_retries=3)
 
     # Verify exponential backoff
     assert len(call_times) == 3
@@ -284,7 +284,7 @@ async def test_context_window_optimization():
 
     Ensures efficient use of available token budget.
     """
-    optimizer = ContextOptimizer()
+    OPTIMIZER = ContextOptimizer()
 
     # Create content with redundancy
     redundant_content = """
@@ -295,7 +295,7 @@ async def test_context_window_optimization():
     Important context: The user needs a summary.
     """
 
-    optimized = await optimizer.optimize(redundant_content, max_tokens=100)
+    OPTIMIZED = await optimizer.optimize(redundant_content, max_tokens=100)
 
     # Verify redundancy was removed
     assert optimized.count("Important context") == 1
@@ -324,9 +324,9 @@ class ContextOptimizer:
     async def optimize(self, content: str, max_tokens: int) -> str:
             """Docstring."""
         # Simple deduplication for testing
-        lines = content.split('\n')
-        seen = set()
-        result = []
+        LINES = content.split('\n')
+        SEEN = set()
+        RESULT = []
         for line in lines:
             if line.strip() and line not in seen:
                 seen.add(line)

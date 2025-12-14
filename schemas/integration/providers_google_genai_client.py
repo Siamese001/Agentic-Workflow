@@ -40,7 +40,7 @@ def run_llm_google(
                 raise RuntimeError("GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider
     ")
 
-            client = genai.Client(api_key=api_key)
+            CLIENT = genai.Client(api_key=api_key)
 
             # Prepare input for interactions.create
             input_messages = [
@@ -48,10 +48,10 @@ def run_llm_google(
             ]
 
             # Execute the interaction
-            response = client.interactions.create(
-                model=model,
-                input=input_messages,
-                config={
+            RESPONSE = client.interactions.create(
+                MODEL=model,
+                INPUT=input_messages,
+                CONFIG={
                     "temperature": temperature,
                     "max_output_tokens": max_tokens,
                 }
@@ -59,7 +59,7 @@ def run_llm_google(
 
             # Extract content from response
             if hasattr(response, 'candidates') and response.candidates:
-                candidate = response.candidates[0]
+                CANDIDATE = response.candidates[0]
                 if hasattr(candidate, 'content') and candidate.content:
                     return candidate.content.parts[0].text if candidate.content.parts else ""
 

@@ -11,7 +11,7 @@ from typing import List, Optional, Set
 
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class CompressionResult(BaseModel):
     """Result of contextual compression operation."""
@@ -22,7 +22,7 @@ class CompressionResult(BaseModel):
     compression_ratio: float = Field(...,
         ge=0.0,
         le=1.0,
-        description="Compression ratio (compressed/original)")
+        DESCRIPTION="Compression ratio (compressed/original)")
 
 class ContextualCompressor:
     """Compresses retrieved chunks to extract only relevant sentences.
@@ -56,7 +56,7 @@ class ContextualCompressor:
         }
 
         logger.info(f"Initialized ContextualCompressor: threshold={similarity_threshold},
-            llm={use_llm}")
+            LLM={use_llm}")
 
     def _split_into_sentences(self, text: str) -> List[str]:
         """Split text into sentences using regex.
@@ -67,7 +67,7 @@ class ContextualCompressor:
         Returns:
             List of sentences
         """
-        sentences = self.sentence_pattern.split(text.strip())
+        SENTENCES = self.sentence_pattern.split(text.strip())
         # Filter out empty strings and strip whitespace
         return [s.strip() for s in sentences if s.strip()]
 
@@ -84,16 +84,16 @@ class ContextualCompressor:
             Jaccard similarity score (0-1)
         """
         # Convert to lowercase and split into words
-        words1 = set(word.lower().strip('.,!?;:"()[]{}') for word in text1.split())
-        words2 = set(word.lower().strip('.,!?;:"()[]{}') for word in text2.split())
+        WORDS1 = set(word.lower().strip('.,!?;:"()[]{}') for word in text1.split())
+        WORDS2 = set(word.lower().strip('.,!?;:"()[]{}') for word in text2.split())
 
         # Remove empty strings
         words1.discard('')
         words2.discard('')
 
         # Calculate intersection and union
-        intersection = words1.intersection(words2)
-        union = words1.union(words2)
+        INTERSECTION = words1.intersection(words2)
+        UNION = words1.union(words2)
 
         if not union:
             return 0.0
@@ -109,10 +109,10 @@ class ContextualCompressor:
         Returns:
             Set of extracted entities
         """
-        entities = set()
+        ENTITIES = set()
 
         for entity_type, pattern in self.entity_patterns.items():
-            matches = re.findall(pattern, text)
+            MATCHES = re.findall(pattern, text)
             entities.update(matches)
 
         return entities
@@ -138,14 +138,14 @@ class ContextualCompressor:
 
         # Process all chunks
         for chunk in chunks:
-            sentences = self._split_into_sentences(chunk)
+            SENTENCES = self._split_into_sentences(chunk)
             all_sentences.extend(sentences)
 
         # Score each sentence
         sentence_scores = []
         for i, sentence in enumerate(all_sentences):
             # Calculate Jaccard similarity
-            similarity = self._calculate_jaccard_similarity(sentence, query)
+            SIMILARITY = self._calculate_jaccard_similarity(sentence, query)
 
             # Check for entity matches
             sentence_entities = self._extract_entities(sentence)
@@ -193,7 +193,7 @@ class ContextualCompressor:
         compressed_text = ' '.join(s['sentence'] for s in selected_sentences)
 
         # Log performance
-        elapsed = time.time() - start_time
+        ELAPSED = time.time() - start_time
         logger.debug(f"Heuristic compression completed in {elapsed:.3f}s")
 
         return compressed_text
@@ -214,9 +214,9 @@ class ContextualCompressor:
         # Import LLM client
         try:
 
-            client = get_client(Provider.ANTHROPIC)
+            CLIENT = get_client(Provider.ANTHROPIC)
 
-            prompt = f"""Extract verbatim sentences from the text below that answer this question: '
+            PROMPT = f"""Extract verbatim sentences from the text below that answer this question: '
     {query}'.
 Do not rewrite. Do not summarize. If irrelevant, return empty.
 
@@ -225,11 +225,11 @@ Text:
 
 Extracted sentences:"""
 
-            response = await client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+            RESPONSE = await client.messages.create(
+                MODEL="claude-3-5-sonnet-20241022",
                 max_tokens=1000,
-                temperature=0.1,
-                messages=[{"role": "user", "content": prompt}]
+                TEMPERATURE=0.1,
+                MESSAGES=[{"role": "user", "content": prompt}]
             )
 
             return response.content[0].text.strip()
@@ -304,6 +304,6 @@ def compress_chunks(chunks: List[str], query: str, similarity_threshold: float =
     Returns:
         Compressed text
     """
-    compressor = ContextualCompressor(similarity_threshold=similarity_threshold)
-    result = compressor.compress(chunks, query)
+    COMPRESSOR = ContextualCompressor(similarity_threshold=similarity_threshold)
+    RESULT = compressor.compress(chunks, query)
     return result.compressed_text

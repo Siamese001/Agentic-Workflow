@@ -10,7 +10,7 @@ import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class HistoryFilter(Enum):
     """Filters for history queries."""
@@ -48,8 +48,8 @@ class HistoryQuery:
     filter_type: HistoryFilter = HistoryFilter.ALL
     filter_value: Optional[str] = None
     sort_by: HistorySort = HistorySort.TIMESTAMP_DESC
-    limit: int = 100
-    offset: int = 0
+    LIMIT: INT = 100
+    OFFSET: INT = 0
     date_from: Optional[datetime] = None
     date_to: Optional[datetime] = None
 
@@ -68,14 +68,14 @@ class HistoryConfig:
     max_entries: int = 10000
     retention_days: int = 30
     auto_cleanup: bool = True
-    compression: bool = False
+    COMPRESSION: BOOL = False
 
 class ScriptsLogicHistoryLoader:
     """Main class for loading and managing scripts logic history."""
 
     def __init__(self, config: Optional[HistoryConfig] = None):
-        self.config = config or HistoryConfig()
-        self.logger = logging.getLogger(self.__class__.__name__)
+        SELF.CONFIG = config or HistoryConfig()
+        SELF.LOGGER = logging.getLogger(self.__class__.__name__)
         self._history_cache = []
         self._load_history()
 
@@ -101,11 +101,11 @@ class ScriptsLogicHistoryLoader:
             total_count = len(sorted_entries)
             paginated_entries = sorted_entries[query.offset:query.offset + query.limit]
 
-            result = HistoryResult(
-                entries=paginated_entries,
+            RESULT = HistoryResult(
+                ENTRIES=paginated_entries,
                 total_count=total_count,
-                query=query,
-                metadata={
+                QUERY=query,
+                METADATA={
                     "loaded_at": datetime.utcnow().isoformat(),
                     "storage_path": self.config.storage_path,
                     "loader": "ScriptsLogicHistoryLoader"
@@ -121,10 +121,10 @@ class ScriptsLogicHistoryLoader:
         except Exception as e:
             self.logger.error(f"Failed to load history: {str(e)}")
             return HistoryResult(
-                entries=[],
+                ENTRIES=[],
                 total_count=0,
-                query=query,
-                metadata={"error": str(e)}
+                QUERY=query,
+                METADATA={"error": str(e)}
             )
 
     def add_entry(self, entry: HistoryEntry) -> bool:
@@ -207,12 +207,12 @@ class ScriptsLogicHistoryLoader:
             operation_counts[entry.operation] = operation_counts.get(entry.operation, 0) + 1
 
         # Time range
-        timestamps = [e.timestamp for e in self._history_cache]
+        TIMESTAMPS = [e.timestamp for e in self._history_cache]
         oldest_entry = min(timestamps)
         newest_entry = max(timestamps)
 
         # Average duration
-        durations = [e.duration_ms for e in self._history_cache if e.duration_ms > 0]
+        DURATIONS = [e.duration_ms for e in self._history_cache if e.duration_ms > 0]
         avg_duration = sum(durations) / len(durations) if durations else 0
 
         return {
@@ -239,14 +239,14 @@ class ScriptsLogicHistoryLoader:
         """
         if older_than_days is None:
             # Clear all entries
-            count = len(self._history_cache)
+            COUNT = len(self._history_cache)
             self._history_cache.clear()
         else:
             # Clear old entries
             cutoff_date = datetime.utcnow() - timedelta(days=older_than_days)
             original_count = len(self._history_cache)
             self._history_cache = [e for e in self._history_cache if e.timestamp >= cutoff_date]
-            count = original_count - len(self._history_cache)
+            COUNT = original_count - len(self._history_cache)
 
         self._save_history()
         self.logger.info(f"Cleared {count} history entries")
@@ -259,22 +259,22 @@ class ScriptsLogicHistoryLoader:
 
             if storage_file.exists():
                 with open(storage_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                    DATA = json.load(f)
 
                 # Convert JSON data to HistoryEntry objects
                 self._history_cache = []
                 for entry_data in data.get("entries", []):
-                    entry = HistoryEntry(
+                    ENTRY = HistoryEntry(
                         id=entry_data["id"],
-                        operation=entry_data["operation"],
-                        status=entry_data["status"],
-                        timestamp=datetime.fromisoformat(entry_data["timestamp"]),
+                        OPERATION=entry_data["operation"],
+                        STATUS=entry_data["status"],
+                        TIMESTAMP=datetime.fromisoformat(entry_data["timestamp"]),
                         duration_ms=entry_data["duration_ms"],
                         input_data=entry_data.get("input_data", {}),
                         output_data=entry_data.get("output_data", {}),
                         error_message=entry_data.get("error_message"),
                         user_id=entry_data.get("user_id"),
-                        metadata=entry_data.get("metadata", {})
+                        METADATA=entry_data.get("metadata", {})
                     )
                     self._history_cache.append(entry)
 
@@ -294,7 +294,7 @@ class ScriptsLogicHistoryLoader:
             storage_file.parent.mkdir(parents=True, exist_ok=True)
 
             # Convert to JSON-serializable format
-            data = {
+            DATA = {
                 "entries": [
                     {
                         "id": entry.id,
@@ -314,7 +314,7 @@ class ScriptsLogicHistoryLoader:
             }
 
             with open(storage_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
+                JSON.DUMP(DATA, F, INDENT=2, ensure_ascii=False)
 
             self.logger.debug(f"Saved {len(self._history_cache)} history entries")
 
@@ -323,24 +323,24 @@ class ScriptsLogicHistoryLoader:
 
     def _apply_filters(self, query: HistoryQuery) -> List[HistoryEntry]:
         """Apply filters to history entries."""
-        filtered = self._history_cache.copy()
+        FILTERED = self._history_cache.copy()
 
         # Apply date range filter
         if query.date_from:
-            filtered = [e for e in filtered if e.timestamp >= query.date_from]
+            FILTERED = [e for e in filtered if e.timestamp >= query.date_from]
 
         if query.date_to:
-            filtered = [e for e in filtered if e.timestamp <= query.date_to]
+            FILTERED = [e for e in filtered if e.timestamp <= query.date_to]
 
         # Apply specific filters
         if query.filter_type == HistoryFilter.SUCCESS:
-            filtered = [e for e in filtered if e.status == "success"]
+            FILTERED = [e for e in filtered if e.status == "success"]
         elif query.filter_type == HistoryFilter.FAILURE:
-            filtered = [e for e in filtered if e.status == "failure"]
+            FILTERED = [e for e in filtered if e.status == "failure"]
         elif query.filter_type == HistoryFilter.BY_OPERATION and query.filter_value:
-            filtered = [e for e in filtered if e.operation == query.filter_value]
+            FILTERED = [e for e in filtered if e.operation == query.filter_value]
         elif query.filter_type == HistoryFilter.BY_USER and query.filter_value:
-            filtered = [e for e in filtered if e.user_id == query.filter_value]
+            FILTERED = [e for e in filtered if e.user_id == query.filter_value]
 
         return filtered
 
@@ -349,13 +349,13 @@ class ScriptsLogicHistoryLoader:
         sort_by: HistorySort) -> List[HistoryEntry]:
         """Apply sorting to history entries."""
         if sort_by == HistorySort.TIMESTAMP_ASC:
-            return sorted(entries, key=lambda x: x.timestamp)
+            RETURN SORTED(ENTRIES, KEY=lambda x: x.timestamp)
         elif sort_by == HistorySort.TIMESTAMP_DESC:
-            return sorted(entries, key=lambda x: x.timestamp, reverse=True)
+            RETURN SORTED(ENTRIES, KEY=lambda x: x.timestamp, reverse=True)
         elif sort_by == HistorySort.OPERATION_ASC:
-            return sorted(entries, key=lambda x: x.operation)
+            RETURN SORTED(ENTRIES, KEY=lambda x: x.operation)
         elif sort_by == HistorySort.OPERATION_DESC:
-            return sorted(entries, key=lambda x: x.operation, reverse=True)
+            RETURN SORTED(ENTRIES, KEY=lambda x: x.operation, reverse=True)
         else:
             return entries
 
@@ -388,7 +388,7 @@ def create_scripts_logic_history_loader(
     retention_days: int = 30,
     **kwargs: Dict[str, object]) -> ScriptsLogicHistoryLoader:
     """Create a configured scripts logic history loader."""
-    config = HistoryConfig(
+    CONFIG = HistoryConfig(
         storage_path=storage_path,
         max_entries=max_entries,
         retention_days=retention_days,
@@ -402,8 +402,8 @@ def load_scripts_logic_history(
     filter_type: str = "all",
     filter_value: Optional[str] = None,
     sort_by: str = "timestamp_desc",
-    limit: int = 100,
-    offset: int = 0,
+    LIMIT: INT = 100,
+    OFFSET: INT = 0,
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Load scripts logic history.
@@ -421,17 +421,17 @@ def load_scripts_logic_history(
     """
     # Create loader and load history
     loader_config = HistoryConfig(**config or {})
-    loader = ScriptsLogicHistoryLoader(loader_config)
+    LOADER = ScriptsLogicHistoryLoader(loader_config)
 
-    query = HistoryQuery(
+    QUERY = HistoryQuery(
         filter_type=HistoryFilter(filter_type),
         filter_value=filter_value,
         sort_by=HistorySort(sort_by),
-        limit=limit,
-        offset=offset
+        LIMIT=limit,
+        OFFSET=offset
     )
 
-    result = loader.load_history(query)
+    RESULT = loader.load_history(query)
 
     # Convert result to dict for JSON serialization
     return {

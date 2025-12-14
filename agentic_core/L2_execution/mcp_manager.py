@@ -13,7 +13,7 @@ from typing import Any, Dict, List
 
 import yaml
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 try:
     from mcp import ClientSession, StdioServerParameters
@@ -42,26 +42,26 @@ def __init__(self: Any, mappings: Dict[str, Any]) -> None:
     if not MCP_AVAILABLE:
         raise ImportError("MCP library not installed. Run: pip install mcp")
 
-    self.mappings = mappings
+    SELF.MAPPINGS = mappings
     self.exit_stack = AsyncExitStack()
     self.sessions: List[ClientSession] = []
-    self.tools = []
+    SELF.TOOLS = []
 
     logger.info("MCP Connection Manager initialized")
 
 
 async def connect(self: Any, role: str) -> None:
     """Connects to all servers defined for this role."""
-    configs = self.mappings.get("global", []) + self.mappings.get("roles", {}).get(role, [])
+    CONFIGS = self.mappings.get("global", []) + self.mappings.get("roles", {}).get(role, [])
 
     for cfg in configs:
-        params = StdioServerParameters(
-            command=cfg["command"], args=cfg["args"], env=os.environ | cfg.get("env", {})
+        PARAMS = StdioServerParameters(
+            COMMAND=cfg["command"], args=cfg["args"], env=os.environ | cfg.get("env", {})
         )
 
         # Context Manager Magic
-        transport = await self.exit_stack.enter_async_context(stdio_client(params))
-        session = await self.exit_stack.enter_async_context(
+        TRANSPORT = await self.exit_stack.enter_async_context(stdio_client(params))
+        SESSION = await self.exit_stack.enter_async_context(
             ClientSession(transport[0], transport[1])
         )
         await session.initialize()
@@ -106,7 +106,7 @@ def load_mcp_config(config_path: str = "config/mcp_mappings.yaml") -> Dict[str, 
         return {"defaults": [], "roles": {}}
 
     with open(config_file, "r") as f:
-        config = yaml.safe_load(f)
+        CONFIG = yaml.safe_load(f)
 
     logger.info(f"Loaded MCP configuration from {config_path}")
     return config
@@ -125,7 +125,7 @@ async def create_mcp_manager(
     Returns:
         Connected MCPConnectionManager instance
     """
-    config = load_mcp_config(config_path)
-    manager = MCPConnectionManager(config)
+    CONFIG = load_mcp_config(config_path)
+    MANAGER = MCPConnectionManager(config)
     await manager.connect_servers(role)
     return manager

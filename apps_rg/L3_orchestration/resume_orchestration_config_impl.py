@@ -2,7 +2,7 @@
 
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from .resume_orchestration_config_types import *  # Star import removed
 
 

@@ -1,7 +1,7 @@
 """Dataclass models for achv_bullet_synthesizer_types."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .achv_bullet_synthesizer_types_enums import *  # Star import removed
 
 @dataclass
@@ -36,7 +36,7 @@ class BulletSynthesizerConfig:
     and formatting options for achievement bullets.
     """
     format_type: BulletFormat = BulletFormat.UNIFY
-    temperature: float = 0.6
+    TEMPERATURE: FLOAT = 0.6
     max_attempts: int = 3
 
         """TODO: Add docstring."""

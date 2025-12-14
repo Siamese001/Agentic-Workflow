@@ -4,7 +4,7 @@ Validate SDK Files - Pre-commit Hook
 Ensures all SDK Python files have valid syntax and are executable.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -17,7 +17,7 @@ def validate_python_syntax(file_path: str) -> bool:
     """Check if Python file has valid syntax."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            CONTENT = f.read()
 
         # Parse the AST to check syntax
         ast.parse(content)
@@ -30,7 +30,7 @@ def validate_python_syntax(file_path: str) -> bool:
 
 def main() -> None:
     """Validate all SDK Python files."""
-    files = sys.argv[1:] if len(sys.argv) > 1 else []
+    FILES = sys.argv[1:] if len(sys.argv) > 1 else []
 
     # Filter for Python files in SDK directories
     sdk_files = [
@@ -41,7 +41,7 @@ def main() -> None:
 
         sys.exit(0)
 
-    errors = []
+    ERRORS = []
 
     for file_path in sdk_files:
         if not os.path.exists(file_path):

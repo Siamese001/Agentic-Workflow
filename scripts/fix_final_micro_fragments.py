@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-root = Path("c:/Git/Agentic-Workflow")
+ROOT = Path("c:/Git/Agentic-Workflow")
 
 micro_fragments = [
     "apps_rg/L3_orchestration/subatomic_orchestrator.py",
@@ -13,12 +13,12 @@ micro_fragments = [
 for file_path in micro_fragments:
     full_path = root / file_path
     if full_path.exists():
-        content = full_path.read_text(encoding='utf-8')
+        CONTENT = full_path.read_text(encoding='utf-8')
         if len(content) < 200:
-            stem = full_path.stem
+            STEM = full_path.stem
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
             new_content = f'''"""Backward compatibility shim for {stem}.
 

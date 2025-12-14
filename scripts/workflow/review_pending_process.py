@@ -5,7 +5,7 @@ Process review_pending folder:
 2. Archive the rest to 06_data/deprecated
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -29,16 +29,16 @@ def get_file_hash(path: Path) -> str:
 def has_real_code(path: Path) -> bool:
     """Check if file has real implementation."""
     try:
-        content = path.read_text(encoding='utf-8', errors='ignore')
+        CONTENT = path.read_text(encoding='utf-8', errors='ignore')
         if 'DO NOT implement logic here' in content:
             return False
         if 'AUTO-GENERATED ZERO-LOSS' in content and 'Phase 3 hydration' in content:
             return False
         # Check for substantial code
-        lines = content.split('\n')
+        LINES = content.split('\n')
         code_lines = 0
         for line in lines:
-            stripped = line.strip()
+            STRIPPED = line.strip()
             if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and n...
                 code_lines += 1
         return code_lines > 20
@@ -51,7 +51,7 @@ def _categorize_pending_file(f: Path,
     int]],
     Optional[Path]]:
     """Categorize a pending file as large real code or small/stub."""
-    size = f.stat().st_size
+    SIZE = f.stat().st_size
     h = get_file_hash(f)
 
     # Skip exact duplicates
@@ -81,7 +81,7 @@ def main() -> None:
         if '__pycache__' in str(f):
             continue
 
-        large, small = _categorize_pending_file(f, seen_hashes)
+        LARGE, SMALL = _categorize_pending_file(f, seen_hashes)
         if large:
             large_real_code.append(large)
         if small:
@@ -90,7 +90,7 @@ def main() -> None:
     # Show large files
 
     for f, size in sorted(large_real_code, key=lambda x: -x[1])[:20]:
-        rel = f.relative_to(REVIEW_PENDING)
+        REL = f.relative_to(REVIEW_PENDING)
         logger.info(f"  - {rel} ({size} bytes)")
 
     if len(large_real_code) > 20:
@@ -98,10 +98,10 @@ def main() -> None:
 
     # Find the largest unique file (likely the main Resume Engine)
     if large_real_code:
-        largest = max(large_real_code, key=lambda x: x[1])
+        LARGEST = max(large_real_code, key=lambda x: x[1])
 
         # Copy to apps_rg as resume_generation_engine.py
-        dest = REPO / '09_apps/apps_rg/resume_generation_engine.py'
+        DEST = REPO / '09_apps/apps_rg/resume_generation_engine.py'
         if not dest.exists():
             logger.info(f"\nCopying largest file to {dest.relative_to(REPO)}")
             shutil.copy2(largest[0], dest)
@@ -120,9 +120,9 @@ def main() -> None:
     files_moved = 0
     for f in REVIEW_PENDING.rglob('*'):
         if f.is_file() and '__pycache__' not in str(f):
-            rel = f.relative_to(REVIEW_PENDING)
-            dest = archive_path / rel
-            dest.parent.mkdir(parents=True, exist_ok=True)
+            REL = f.relative_to(REVIEW_PENDING)
+            DEST = archive_path / rel
+            DEST.PARENT.MKDIR(PARENTS=True, exist_ok=True)
             shutil.move(str(f), str(dest))
             files_moved += 1
 

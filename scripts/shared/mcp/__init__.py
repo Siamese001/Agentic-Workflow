@@ -1,7 +1,7 @@
 """Model Context Protocol (MCP) integration for typed contracts.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
 import logging

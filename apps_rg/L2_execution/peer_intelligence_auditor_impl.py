@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .peer_intelligence_auditor_types import *  # Star import removed
 
 class PeerIntelligenceAuditor:
@@ -19,7 +19,7 @@ class PeerIntelligenceAuditor:
     def __init__(self,
         config: Optional[PeerIntelligenceConfig]=None,
         gate_executor: Optional[IntegrityGateExecutor]=None):
-        self.config = config or PeerIntelligenceConfig()
+        SELF.CONFIG = config or PeerIntelligenceConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutor()
 
     def analyze_competitive_landscape(self,
@@ -38,29 +38,29 @@ class PeerIntelligenceAuditor:
             PeerIntelligenceResult with classified keywords and differentiators
         """
         validation_results = []
-        hops = self._execute_multi_hop_search(jd_keywords, context)
+        HOPS = self._execute_multi_hop_search(jd_keywords, context)
         search_count_result = self._validate_search_count(hops)
         validation_results.append(search_count_result)
         if not search_count_result.passed:
             return PeerIntelligenceResult(hops=hops,
                 keyword_analyses=[],
                 table_stakes=[],
-                differentiators=[],
+                DIFFERENTIATORS=[],
                 validation_results=validation_results,
-                success=False,
+                SUCCESS=False,
                 total_searches_executed=sum((len(hop.search_queries) for hop in hops)))
         keyword_analyses = self._classify_keywords(jd_keywords, hops)
         table_stakes = [analysis.keyword for analysis in keyword_analyses if analysis.classification
     == KeywordClassification.TABLE_STAKES]
-        differentiators = [analysis.keyword for analysis in keyword_analyses if analysis.classificat
-    ion == KeywordClassification.DIFFERENTIATOR]
+        DIFFERENTIATORS = [analysis.keyword for analysis in keyword_analyses if analysis.classificat
+    ION == KeywordClassification.DIFFERENTIATOR]
         classification_result = ValidationResult(gate_id='VG_KEYWORD_CLASSIFICATION',
-            passed=True,
-            severity='INFO',
-            message=f'Classified {len(jd_keywords)} keywords: {len(table_stakes)} table-stakes,
+            PASSED=True,
+            SEVERITY='INFO',
+            MESSAGE=f'Classified {len(jd_keywords)} keywords: {len(table_stakes)} table-stakes,
             {len(differentiators)} differentiators',
-            signature=f'CLASSIFY:OK:{len(differentiators)}',
-            details={'total_keywords': len(jd_keywords),
+            SIGNATURE=f'CLASSIFY:OK:{len(differentiators)}',
+            DETAILS={'total_keywords': len(jd_keywords),
             'table_stakes_count': len(table_stakes),
             'differentiators_count': len(differentiators)})
         validation_results.append(classification_result)
@@ -68,9 +68,9 @@ class PeerIntelligenceAuditor:
         return PeerIntelligenceResult(hops=hops,
             keyword_analyses=keyword_analyses,
             table_stakes=table_stakes,
-            differentiators=differentiators,
+            DIFFERENTIATORS=differentiators,
             validation_results=validation_results,
-            success=True,
+            SUCCESS=True,
             total_searches_executed=sum((len(hop.search_queries) for hop in hops)))
 
     def _execute_multi_hop_search(self,
@@ -81,17 +81,17 @@ class PeerIntelligenceAuditor:
         Execute 3-hop RAG search with 8 searches per hop.
         Placeholder for actual RAG implementation.
         """
-        hops = []
+        HOPS = []
         for hop_num in range(1, self.config.total_hops + 1):
             search_queries = self._generate_hop_queries(jd_keywords=jd_keywords,
-                context=context,
+                CONTEXT=context,
                 hop_number=hop_num,
                 previous_hops=hops)
-            results = self._execute_searches(search_queries)
+            RESULTS = self._execute_searches(search_queries)
             keywords_found = self._extract_keywords_from_results(results)
-            hop = RAGHop(hop_number=hop_num,
+            HOP = RAGHop(hop_number=hop_num,
                 search_queries=search_queries,
-                results=results,
+                RESULTS=results,
                 keywords_found=keywords_found)
             hops.append(hop)
         return hops
@@ -103,8 +103,8 @@ class PeerIntelligenceAuditor:
         hop_number: int,
         previous_hops: List[RAGHop]) -> List[str]:
         """Generate search queries for specific hop"""
-        industry = context.get('industry', 'Technology')
-        role = context.get('role', 'Executive')
+        INDUSTRY = context.get('industry', 'Technology')
+        ROLE = context.get('role', 'Executive')
         if hop_number == 1:
             return [f'{industry} {role} {kw}' for kw in jd_keywords[:8]]
         elif hop_number == 2:
@@ -122,9 +122,9 @@ class PeerIntelligenceAuditor:
 
     def _extract_keywords_from_results(self, results: List[Dict[str, Any]]) -> Set[str]:
         """Extract keywords from search results"""
-        keywords = set()
+        KEYWORDS = set()
         for result in results:
-            query = result.get('query', '')
+            QUERY = result.get('query', '')
             keywords.update(query.lower().split())
         return keywords
 
@@ -138,7 +138,7 @@ class PeerIntelligenceAuditor:
         - High frequency across hops = table-stakes
         - Low frequency but high relevance = differentiator
         """
-        analyses = []
+        ANALYSES = []
         all_keywords_found = set()
         for hop in hops:
             all_keywords_found.update(hop.keywords_found)
@@ -151,20 +151,20 @@ class PeerIntelligenceAuditor:
 
                 1)
             if frequency_score > 0.6:
-                classification = KeywordClassification.TABLE_STAKES
-                reasoning = f'High frequency ({frequency_score:.1%}) indicates common requirement'
+                CLASSIFICATION = KeywordClassification.TABLE_STAKES
+                REASONING = f'High frequency ({frequency_score:.1%}) indicates common requirement'
             elif competitive_density < self.config.differentiator_threshold:
-                classification = KeywordClassification.DIFFERENTIATOR
-                reasoning = f'Low competitive density ({competitive_density:.1%}) indicates unique p
+                CLASSIFICATION = KeywordClassification.DIFFERENTIATOR
+                REASONING = f'Low competitive density ({competitive_density:.1%}) indicates unique p
     ositioning opportunity'
             else:
-                classification = KeywordClassification.TABLE_STAKES
-                reasoning = f'Moderate metrics suggest standard requirement'
+                CLASSIFICATION = KeywordClassification.TABLE_STAKES
+                REASONING = f'Moderate metrics suggest standard requirement'
             analyses.append(KeywordAnalysis(keyword=keyword,
-                classification=classification,
+                CLASSIFICATION=classification,
                 frequency_score=frequency_score,
                 competitive_density=competitive_density,
-                reasoning=reasoning))
+                REASONING=reasoning))
         return analyses
 
     def _validate_search_count(self, hops: List[RAGHop]) -> ValidationResult:
@@ -175,29 +175,29 @@ class PeerIntelligenceAuditor:
         total_searches = sum((len(hop.search_queries) for hop in hops))
         if total_searches >= self.config.total_searches and len(hops) == self.config.total_hops:
             return ValidationResult(gate_id='VG_RAG_INTENSITY',
-                passed=True,
-                severity='INFO',
-                message=(
+                PASSED=True,
+                SEVERITY='INFO',
+                MESSAGE=(
                     f'RAG intensity satisfied: {total_searches} searches '
                     f'across {len(hops)} hops'
                 ),
 
 
-                signature=f'RAG:OK:{total_searches}',
-                details={'total_searches': total_searches,
+                SIGNATURE=f'RAG:OK:{total_searches}',
+                DETAILS={'total_searches': total_searches,
                 'total_hops': len(hops),
                 'searches_per_hop': [len(hop.search_queries) for hop in hops]})
         return ValidationResult(gate_id='VG_RAG_INTENSITY',
-            passed=False,
-            severity='BLOCK',
-            message=f'BLOCKED: Insufficient RAG intensity - {total_searches} searches across {len(ho
+            PASSED=False,
+            SEVERITY='BLOCK',
+            MESSAGE=f'BLOCKED: Insufficient RAG intensity - {total_searches} searches across {len(ho
                 ps)} hops (expected {self.
                     .config.
                     .total_searches} searches across {self.
                     .config.
                     .total_hops} hops)',
 
-            details={'total_searches': total_searches,
+            DETAILS={'total_searches': total_searches,
             'expected_searches': self.config.total_searches,
             'total_hops': len(hops),
             'expected_hops': self.config.total_hops})

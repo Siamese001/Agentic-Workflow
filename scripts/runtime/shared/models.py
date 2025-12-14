@@ -1,7 +1,7 @@
 """Shared data models for runtime components.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Provides common data structures used across the runtime shared modules.
 """
 

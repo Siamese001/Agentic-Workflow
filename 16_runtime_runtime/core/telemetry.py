@@ -4,7 +4,7 @@ from typing import Any
 
 import duckdb
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 @dataclass
 class TraceEvent:
     trace_id: str
@@ -16,7 +16,7 @@ class TraceEvent:
 
 class TelemetryRecorder:
 def __init__(self: Any, db_path: Any) -> None:
-        self.conn = duckdb.connect(db_path)
+        SELF.CONN = duckdb.connect(db_path)
         self.conn.execute("""
             CREATE TABLE IF NOT EXISTS traces
             (trace_id VARCHAR,

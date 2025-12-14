@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TestMultiAgentScenarios:
@@ -12,11 +12,11 @@ class TestMultiAgentScenarios:
 
 def test_planner_executor_coordination(self: Any) -> None:
     """Test planner-executor agent coordination."""
-    agents = ["planner", "executor", "validator"]
-    assert len(agents) == 3
+    AGENTS = ["planner", "executor", "validator"]
+    ASSERT LEN(AGENTS) == 3
 
 
 def test_parallel_agent_execution(self: Any) -> None:
     """Test parallel agent execution scenario."""
-    results = [True, True, True]
+    RESULTS = [True, True, True]
     assert all(results)

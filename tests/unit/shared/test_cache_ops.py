@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Unit tests for shared/cache_ops/
 Tests cache operations including data access and guardrails.
 """
@@ -18,33 +18,33 @@ class TestCacheDataAccess:
 
 def test_cache_key_generation(self: Any) -> None:
     """Cache keys are generated deterministically."""
-    data = {"query": "test", "model": "gpt-4o"}
-    key1 = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:32]
-    key2 = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:32]
-    assert key1 == key2, "Same data must produce same cache key"
+    DATA = {"query": "test", "model": "gpt-4o"}
+    KEY1 = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:32]
+    KEY2 = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:32]
+    ASSERT KEY1 == key2, "Same data must produce same cache key"
 
 
 def test_cache_key_uniqueness(self: Any) -> None:
     """Different data produces different cache keys."""
-    data1 = {"query": "test1"}
-    data2 = {"query": "test2"}
-    key1 = hashlib.sha256(json.dumps(data1, sort_keys=True).encode()).hexdigest()[:32]
-    key2 = hashlib.sha256(json.dumps(data2, sort_keys=True).encode()).hexdigest()[:32]
-    assert key1 != key2, "Different data must produce different keys"
+    DATA1 = {"query": "test1"}
+    DATA2 = {"query": "test2"}
+    KEY1 = hashlib.sha256(json.dumps(data1, sort_keys=True).encode()).hexdigest()[:32]
+    KEY2 = hashlib.sha256(json.dumps(data2, sort_keys=True).encode()).hexdigest()[:32]
+    ASSERT KEY1 != key2, "Different data must produce different keys"
 
 
 def test_cache_get_hit(self: Any) -> None:
     """Cache returns stored value on hit."""
     cache: Dict[str, object] = {"key_123": {"data": "cached_value"}}
-    result = cache.get("key_123")
+    RESULT = cache.get("key_123")
     assert result is not None
-    assert result["data"] == "cached_value"
+    ASSERT RESULT["DATA"] == "cached_value"
 
 
 def test_cache_get_miss(self: Any) -> None:
     """Cache returns None on miss."""
     cache: Dict[str, object] = {}
-    result = cache.get("nonexistent_key")
+    RESULT = cache.get("nonexistent_key")
     assert result is None
 
 
@@ -52,8 +52,8 @@ def test_cache_set_and_retrieve(self: Any) -> None:
     """Cache stores and retrieves values correctly."""
     cache: Dict[str, object] = {}
     cache["test_key"] = {"value": 42, "timestamp": datetime.now().isoformat()}
-    retrieved = cache.get("test_key")
-    assert retrieved["value"] == 42
+    RETRIEVED = cache.get("test_key")
+    ASSERT RETRIEVED["VALUE"] == 42
 
 
 def test_cache_ttl_expiration(self: Any) -> None:
@@ -92,7 +92,7 @@ def test_cache_size_limit_enforced(self: Any) -> None:
             del cache[oldest_key]
         cache[f"key_{i}"] = f"value_{i}"
 
-    assert len(cache) <= max_size
+    ASSERT LEN(CACHE) <= max_size
 
 
 def test_cache_value_size_limit(self: Any) -> None:
@@ -107,7 +107,7 @@ def test_cache_value_size_limit(self: Any) -> None:
 def test_cache_key_sanitization(self: Any) -> None:
     """Cache keys are sanitized."""
     unsafe_key = "key with spaces/and:special<chars>"
-    sanitized = "".join(c if c.isalnum() or c == "_" else "_" for c in unsafe_key)
+    SANITIZED = "".join(c if c.isalnum() or c == "_" else "_" for c in unsafe_key)
     assert " " not in sanitized
     assert "/" not in sanitized
 
@@ -115,7 +115,7 @@ def test_cache_key_sanitization(self: Any) -> None:
 def test_cache_prevents_injection(self: Any) -> None:
     """Cache prevents key injection attacks."""
     malicious_key = "key\x00injection"
-    sanitized = malicious_key.replace("\x00", "")
+    SANITIZED = malicious_key.replace("\x00", "")
     assert "\x00" not in sanitized
 
 
@@ -125,9 +125,9 @@ def test_cache_concurrent_access_safe(self: Any) -> None:
 
     # Simulate concurrent increments (in real code, use locks)
     for _ in range(100):
-        cache["counter"] += 1
+        CACHE["COUNTER"] += 1
 
-    assert cache["counter"] == 100
+    ASSERT CACHE["COUNTER"] == 100
 
 
 class TestCacheInvalidation:
@@ -136,7 +136,7 @@ class TestCacheInvalidation:
 
 def test_invalidate_by_key(self: Any) -> None:
     """Single key invalidation works."""
-    cache = {"key1": "value1", "key2": "value2", "key3": "value3"}
+    CACHE = {"key1": "value1", "key2": "value2", "key3": "value3"}
     del cache["key2"]
     assert "key2" not in cache
     assert "key1" in cache
@@ -144,36 +144,36 @@ def test_invalidate_by_key(self: Any) -> None:
 
 def test_invalidate_by_pattern(self: Any) -> None:
     """Pattern-based invalidation works."""
-    cache = {
+    CACHE = {
         "user_123_profile": "data",
         "user_123_settings": "data",
         "user_456_profile": "data",
     }
-    pattern = "user_123_"
+    PATTERN = "user_123_"
     keys_to_delete = [k for k in cache if k.startswith(pattern)]
     for key in keys_to_delete:
         del cache[key]
 
-    assert len([k for k in cache if k.startswith(pattern)]) == 0
+    ASSERT LEN([K FOR K IN CACHE IF K.STARTSWITH(PATTERN)]) == 0
 
 
 def test_invalidate_all(self: Any) -> None:
     """Full cache clear works."""
-    cache = {"key1": "value1", "key2": "value2"}
+    CACHE = {"key1": "value1", "key2": "value2"}
     cache.clear()
-    assert len(cache) == 0
+    ASSERT LEN(CACHE) == 0
 
 
 def test_invalidation_cascades(self: Any) -> None:
     """Dependent cache entries are invalidated."""
-    cache = {
+    CACHE = {
         "parent": {"value": "parent_data", "children": ["child1", "child2"]},
         "child1": {"value": "child1_data"},
         "child2": {"value": "child2_data"},
     }
 
     # Invalidate parent and children
-    parent = cache.pop("parent")
+    PARENT = cache.pop("parent")
     for child_key in parent.get("children", []):
         cache.pop(child_key, None)
 

@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TestWorkflowStateInspection:
@@ -12,32 +12,32 @@ class TestWorkflowStateInspection:
 
 def test_inspect_workflow_progress(self: Any) -> None:
     """Nominal: Workflow progress is calculated."""
-    state = {"current_step": 3, "total_steps": 10}
-    progress = state["current_step"] / state["total_steps"] * 100
-    assert progress == 30.0
+    STATE = {"current_step": 3, "total_steps": 10}
+    PROGRESS = state["current_step"] / state["total_steps"] * 100
+    ASSERT PROGRESS == 30.0
 
 
 def test_inspect_step_status(self: Any) -> None:
     """Nominal: Step status is inspected."""
-    steps = [
+    STEPS = [
         {"id": 1, "status": "completed"},
         {"id": 2, "status": "running"},
         {"id": 3, "status": "pending"},
     ]
-    running = [s for s in steps if s["status"] == "running"]
-    assert len(running) == 1
+    RUNNING = [s for s in steps if s["status"] == "running"]
+    ASSERT LEN(RUNNING) == 1
 
 
 def test_inspect_error_state(self: Any) -> None:
     """Nominal: Error state is detected."""
-    state = {"status": "failed", "error": "Step 2 timeout"}
+    STATE = {"status": "failed", "error": "Step 2 timeout"}
     has_error = state["status"] == "failed"
     assert has_error is True
 
 
 def test_inspect_branch_state(self: Any) -> None:
     """Nominal: Branch state is inspected."""
-    branches = {
+    BRANCHES = {
         "branch_a": {"status": "completed"},
         "branch_b": {"status": "running"},
     }
@@ -47,6 +47,6 @@ def test_inspect_branch_state(self: Any) -> None:
 
 def test_inspect_resource_usage(self: Any) -> None:
     """Nominal: Resource usage is inspected."""
-    resources = {"cpu": 45, "memory": 60, "tokens": 50}
+    RESOURCES = {"cpu": 45, "memory": 60, "tokens": 50}
     high_usage = any(v > 80 for v in resources.values())
     assert high_usage is False  # All values are below 80

@@ -2,7 +2,7 @@ import hashlib
 import logging
 from typing import Dict, Set
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class GenealogyRegistry:
     def __init__(self, max_depth: int = 5):
         self.max_depth = max_depth
@@ -15,7 +15,7 @@ class GenealogyRegistry:
         Raises RecursionError if we are spinning in circles.
         """
         # Create a unique fingerprint for this exact problem state
-        fingerprint = hashlib.sha256(f"{prompt}:{context_hash}".encode()).hexdigest()
+        FINGERPRINT = hashlib.sha256(f"{prompt}:{context_hash}".encode()).hexdigest()
 
         if fingerprint in self._fingerprints:
             raise RecursionError(f"Duplicate strategy detected for trace {trace_id}. Halting.")

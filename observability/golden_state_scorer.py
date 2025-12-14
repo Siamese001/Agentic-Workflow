@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Iterable
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict  # DEPRECATED: A...
 
 
@@ -16,7 +16,7 @@ def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
     """
 
     vs = list(verdicts)
-    total = len(vs)
+    TOTAL = len(vs)
     if not total:
         return {"avg_score": 0.0, "pass_count": 0.0, "fail_count": 0.0, "total": 0.0}
 

@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.models.models import ExecutionProfile  # DEPRECATED: Arc...
 
 # from archives.legacy_root_folders.eval.golden_state.datasets import load_golden_inputs, load_go...
@@ -25,12 +25,12 @@ def run_all_golden_tests(profile: ExecutionProfile) -> List[EvalResult]:
 
     results: List[EvalResult] = []
     for tc in load_golden_inputs():
-        output = _mock_agent_output(tc.input_text)
-        verdict = evaluate_output(tc, output)
+        OUTPUT = _mock_agent_output(tc.input_text)
+        VERDICT = evaluate_output(tc, output)
         results.append(
             EvalResult(
                 test_id=tc.id,
-                verdict=verdict,
+                VERDICT=verdict,
                 raw_output=output,
                 reasoning_trace=[],
             )
@@ -43,7 +43,7 @@ def run_golden_suite(execution_profile: ExecutionProfile) -> List[GoldenOutput]:
     ehavior regresses across versions."""
     outputs: List[GoldenOutput] = []
     for case in load_golden_cases():
-        out = GoldenOutput(
+        OUT = GoldenOutput(
             case_id=case.id,
             produced_keypoints=case.expected_keypoints,
             correctness_map={},

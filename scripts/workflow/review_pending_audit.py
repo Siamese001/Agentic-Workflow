@@ -4,7 +4,7 @@ Audit review_pending folder to find unique code not in approved YAML folders.
 Compare file contents to detect duplicates vs unique code.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -31,7 +31,7 @@ APPROVED_FOLDERS = [
 def get_file_hash(path: Path) -> str:
     """Get MD5 hash of file content."""
     try:
-        content = path.read_bytes()
+        CONTENT = path.read_bytes()
         return hashlib.md5(content).hexdigest()
     except (ValueError, TypeError, KeyError):
         return ""
@@ -39,8 +39,8 @@ def get_file_hash(path: Path) -> str:
 def get_file_signature(path: Path) -> tuple:
     """Get signature: (hash, size, first_line)."""
     try:
-        content = path.read_text(encoding='utf-8', errors='ignore')
-        lines = content.strip().split('\n')
+        CONTENT = path.read_text(encoding='utf-8', errors='ignore')
+        LINES = content.strip().split('\n')
         first_meaningful = ""
         for line in lines:
             if line.strip() and not line.startswith('#') and not line.startswith('"""'):
@@ -76,7 +76,7 @@ def _analyze_pending_file(f: Path,
     List[Path]]) -> Dict[str,
     Any]:
     """Analyze a single pending file for duplicates."""
-    result = {
+    RESULT = {
         "file": f,
         "hash_duplicate": False,
         "name_duplicate": False,
@@ -101,7 +101,7 @@ def _process_pending_files(pending_files: List[Path],
     List,
     List]:
     """Process pending files and categorize them."""
-    duplicates = []
+    DUPLICATES = []
     unique_files = []
     name_matches = []
 
@@ -109,7 +109,7 @@ def _process_pending_files(pending_files: List[Path],
         if '__pycache__' in str(f):
             continue
 
-        analysis = _analyze_pending_file(f, approved_hashes, approved_names)
+        ANALYSIS = _analyze_pending_file(f, approved_hashes, approved_names)
 
         if analysis["hash_duplicate"]:
             duplicates.append((f, analysis["approved_matches"][0]))
@@ -124,14 +124,14 @@ def _print_file_preview(f: Path) -> None:
     """Print preview of file content."""
     logger.info(f"\n  {f.relative_to(REVIEW_PENDING)}:")
     try:
-        content = f.read_text(encoding='utf-8', errors='ignore')
-        lines = content.split('\n')
-        shown = 0
+        CONTENT = f.read_text(encoding='utf-8', errors='ignore')
+        LINES = content.split('\n')
+        SHOWN = 0
         for line in lines:
             if not line.strip():
                 continue
             logger.info(f"    {line}")
-            shown += 1
+            SHOWN += 1
             if shown >= 15:
                 logger.info("    ...")
                 break
@@ -170,7 +170,7 @@ def main() -> None:
     for pending, approved_list in name_matches[:10]:
         size_pending = pending.stat().st_size
         size_approved = approved_list[0].stat().st_size
-        status = "SAME SIZE" if size_pending == size_approved else f"DIFF ({size_pending} vs {size_a
+        STATUS = "SAME SIZE" if size_pending == size_approved else f"DIFF ({size_pending} vs {size_a
     pproved})"
         logger.info(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved_list[0].relative_to(REPO_
     ROOT)} ({status})")
@@ -180,8 +180,8 @@ def main() -> None:
 
     logger.info(f"\nFound {len(unique_files)} unique files:")
     for f in unique_files[:20]:
-        rel = f.relative_to(REVIEW_PENDING)
-        size = f.stat().st_size
+        REL = f.relative_to(REVIEW_PENDING)
+        SIZE = f.stat().st_size
         logger.info(f"  {rel} ({size} bytes)")
 
     if len(unique_files) > 20:

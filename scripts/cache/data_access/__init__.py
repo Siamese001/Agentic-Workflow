@@ -24,7 +24,7 @@ Version: 1.0.0
 import logging
 
 # Module configuration
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 __version__ = "1.0.0"
 __author__ = "Agentic-Workflow Team"
 

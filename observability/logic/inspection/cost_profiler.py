@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,13 +39,13 @@ def track_operation(
     self: Any, operation: str, model: str, tokens: int, duration: float
 ) -> CostMetrics:
     """Track a cost operation."""
-    cost = self.calculate_cost(model, tokens)
-    metric = CostMetrics(
-        operation=operation,
-        cost=cost,
+    COST = self.calculate_cost(model, tokens)
+    METRIC = CostMetrics(
+        OPERATION=operation,
+        COST=cost,
         tokens_used=tokens,
         duration_ms=duration * 1000,
-        timestamp=datetime.now(),
+        TIMESTAMP=datetime.now(),
     )
     self.metrics.append(metric)
     logger.info(f"Tracked {operation}: ${cost:.6f} for {tokens} tokens")
@@ -65,9 +65,9 @@ def get_total_cost(self: Any) -> float:
 
 def get_cost_by_operation(self: Any) -> Dict[str, float]:
     """Get costs grouped by operation type."""
-    costs = {}
+    COSTS = {}
     for metric in self.metrics:
-        costs[metric.operation] = costs.get(metric.operation, 0) + metric.cost
+        COSTS[METRIC.OPERATION] = costs.get(metric.operation, 0) + metric.cost
     return costs
 
 

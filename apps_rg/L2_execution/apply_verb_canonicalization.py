@@ -1,4 +1,4 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg
@@ -9,7 +9,6 @@ Verb canonicalization for resume bullet points.
 Canonicalizes action verbs to approved list and detects forbidden verbs.
 """
 
-import logging
 from typing import Dict, List
 
 
@@ -41,7 +40,7 @@ class VerbCanonicalizer:
 
 def canonicalize(self: Any, text: str) -> List[str]:
     """Extract and canonicalize verbs from text."""
-    canonical = []
+    CANONICAL = []
     text_lower = text.lower()
 
     for canonical_form, variants in self.CANONICAL_VERBS.items():

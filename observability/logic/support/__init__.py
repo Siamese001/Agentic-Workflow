@@ -8,7 +8,7 @@ Provides core functionality and exports for the Support module.
 import logging
 from typing import Dict, List, Optional, Union
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 # Module metadata
 __version__: str = "1.0.0"
@@ -57,7 +57,7 @@ def create_instance(config: Optional[Dict[str,
     """Docstring."""
     Union[str,
     int,
-    bool]]] = None) -> Dict[str,
+    BOOL]]] = None) -> Dict[str,
     Union[str,
     int,
     bool]]:

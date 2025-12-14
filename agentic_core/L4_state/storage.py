@@ -12,7 +12,7 @@ import shutil
 from pathlib import Path
 from typing import Dict, Optional, Protocol
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class BlobStorageProvider(Protocol):
@@ -105,7 +105,7 @@ async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[s
 
     shutil.move(str(temp_path), str(target_path))
 
-    checksum = hashlib.md5(data).hexdigest()
+    CHECKSUM = hashlib.md5(data).hexdigest()
 
     logger.debug(f"Wrote blob: {key} (checksum={checksum})")
 
@@ -131,7 +131,7 @@ async def read_blob(self: Any, key: str) -> bytes:
         raise FileNotFoundError(f"Key {key} not found in storage.")
 
     with open(target_path, "rb") as f:
-        data = f.read()
+        DATA = f.read()
 
     logger.debug(f"Read blob: {key} ({len(data)} bytes)")
 
@@ -186,12 +186,12 @@ async def list_blobs(self: Any, prefix: str) -> list:
     Returns:
         List of blob keys
     """
-    blobs = []
+    BLOBS = []
 
     for path in self.base_path.rglob("*"):
         if path.is_file() and not path.suffix in [".tmp", ".meta.json"]:
-            relative = path.relative_to(self.base_path)
-            key = str(relative)
+            RELATIVE = path.relative_to(self.base_path)
+            KEY = str(relative)
 
             if not prefix or key.startswith(prefix):
                 blobs.append(key)
@@ -218,8 +218,8 @@ def __init__(self: Any, bucket_name: str, region: str) -> None:
     try:
         import boto3
 
-        self.s3 = boto3.client("s3", region_name=region)
-        self.bucket = bucket_name
+        SELF.S3 = boto3.client("s3", region_name=region)
+        SELF.BUCKET = bucket_name
         logger.info(f"S3 adapter initialized (bucket={bucket_name}, region={region})")
     except ImportError:
         raise ImportError("boto3 not installed. Run: pip install boto3")
@@ -237,9 +237,9 @@ async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[s
     Returns:
         ETag from S3
     """
-    response = self.s3.put_object(Bucket=self.bucket, Key=key, Body=data, Metadata=metadata or {})
+    RESPONSE = self.s3.put_object(Bucket=self.bucket, Key=key, Body=data, Metadata=metadata or {})
 
-    etag = response["ETag"].replace('"', "")
+    ETAG = response["ETag"].replace('"', "")
     logger.debug(f"Wrote S3 blob: {key} (etag={etag})")
 
     return etag
@@ -255,8 +255,8 @@ async def read_blob(self: Any, key: str) -> bytes:
     Returns:
         Binary data
     """
-    response = self.s3.get_object(Bucket=self.bucket, Key=key)
-    data = response["Body"].read()
+    RESPONSE = self.s3.get_object(Bucket=self.bucket, Key=key)
+    DATA = response["Body"].read()
 
     logger.debug(f"Read S3 blob: {key} ({len(data)} bytes)")
 
@@ -309,8 +309,8 @@ async def list_blobs(self: Any, prefix: str) -> list:
     Returns:
         List of blob keys
     """
-    blobs = []
-    paginator = self.s3.get_paginator("list_objects_v2")
+    BLOBS = []
+    PAGINATOR = self.s3.get_paginator("list_objects_v2")
 
     for page in paginator.paginate(Bucket=self.bucket, Prefix=prefix):
         if "Contents" in page:
@@ -339,7 +339,7 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> BlobStorage
         if not bucket_name:
             raise ValueError("bucket_name required for S3 adapter")
 
-        region = kwargs.get("region", "us-east-1")
+        REGION = kwargs.get("region", "us-east-1")
         return S3Adapter(bucket_name=bucket_name, region=region)
 
     else:

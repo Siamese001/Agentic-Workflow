@@ -6,7 +6,7 @@ Identifies all stub, placeholder, and empty files in the repository.
 Categorizes them for cleanup or implementation.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -33,7 +33,7 @@ SKIP_FOLDERS = {'.git', '__pycache__', '.venv', 'venv', 'node_modules', '06_data
 def is_stub_file(file_path: Path) -> Tuple[bool, str]:
     """Check if a file is a stub/placeholder. Returns (is_stub, reason)."""
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore').strip()
+        CONTENT = file_path.read_text(encoding='utf-8', errors='ignore').strip()
 
         # Empty file
         if not content:
@@ -76,7 +76,7 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
 
 def audit_stubs() -> Dict:
     """Audit all Python files for stubs/placeholders."""
-    report = {
+    REPORT = {
         "summary": {
             "total_py_files": 0,
             "stub_files": 0,
@@ -101,7 +101,7 @@ def audit_stubs() -> Dict:
         rel_path = str(py_file.relative_to(REPO_ROOT))
 
         # Get top-level folder
-        parts = py_file.relative_to(REPO_ROOT).parts
+        PARTS = py_file.relative_to(REPO_ROOT).parts
         top_folder = parts[0] if parts else "root"
 
         is_stub, reason = is_stub_file(py_file)
@@ -130,7 +130,7 @@ def audit_stubs() -> Dict:
     )
 
     for folder, stats in report["by_folder"].items():
-        total = stats["stubs"] + stats["real"]
+        TOTAL = stats["stubs"] + stats["real"]
         if total > 0 and stats["stubs"] / total > 0.5:
             report["recommendations"].append(
                 f"Folder '{folder}' has {stats['stubs']}/{total} stub files ({stats['stubs']/total*1
@@ -149,9 +149,9 @@ def print_report(report: Dict) -> None:
         logger.info(f"\n    {reason}: {len(files)} files")
 
     for folder, stats in sorted(report["by_folder"].items(), key=lambda x: -x[1]["stubs"]):
-        total = stats["stubs"] + stats["real"]
+        TOTAL = stats["stubs"] + stats["real"]
         if stats["stubs"] > 0:
-            pct = stats["stubs"] / total * 100 if total > 0 else 0
+            PCT = stats["stubs"] / total * 100 if total > 0 else 0
             logger.info(f"\n    {folder}: {stats['stubs']}/{total} stubs ({pct:.1f}%)")
 
     logger.info("\n    Stubs found:")
@@ -168,7 +168,7 @@ def print_report(report: Dict) -> None:
 
 def main() -> None:
     """Main entry point for stub audit."""
-    report = audit_stubs()
+    REPORT = audit_stubs()
     print_report(report)
 
     # Convert defaultdicts for JSON
@@ -178,7 +178,7 @@ def main() -> None:
     # Save report
     report_path = REPO_ROOT / "stub_audit_report.json"
     with open(report_path, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2, default=str)
+        JSON.DUMP(REPORT, F, INDENT=2, default=str)
 
     return report
 

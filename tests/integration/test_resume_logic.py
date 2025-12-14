@@ -1,7 +1,7 @@
 """Integration Tests for Resume Engine Logic
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Tests the actual LLM-powered functionality with real API calls.
 """
 
@@ -25,7 +25,7 @@ class TestJobAnalyzerIntegration:
         if not os.getenv("GOOGLE_API_KEY"):
             pytest.skip("GOOGLE_API_KEY not set, skipping integration test")
 
-        self.analyzer = JobAnalyzer()
+        SELF.ANALYZER = JobAnalyzer()
 
     def test_analyze_job_description(self):
             """Test job analysis with a real job description."""
@@ -55,7 +55,7 @@ class TestJobAnalyzerIntegration:
         We value innovation, teamwork, and continuous learning.
         """
 
-        result = self.analyzer.analyze(job_description)
+        RESULT = self.analyzer.analyze(job_description)
 
         # Verify structure
         assert isinstance(result, dict)
@@ -84,7 +84,7 @@ class TestJobAnalyzerIntegration:
     def test_extract_keywords(self):
             """Test keyword extraction."""
         job_description = "Looking for a Python developer with React, AWS, and Docker experience."
-        keywords = self.analyzer.extract_keywords(job_description)
+        KEYWORDS = self.analyzer.extract_keywords(job_description)
 
         assert isinstance(keywords, list)
         assert "python" in keywords
@@ -100,7 +100,7 @@ class TestResumeGeneratorIntegration:
         if not os.getenv("GOOGLE_API_KEY"):
             pytest.skip("GOOGLE_API_KEY not set, skipping integration test")
 
-        self.generator = ResumeGenerator()
+        SELF.GENERATOR = ResumeGenerator()
 
     def test_tailor_resume(self):
             """Test resume tailoring with real LLM."""
@@ -121,7 +121,7 @@ class TestResumeGeneratorIntegration:
             "skills": ["Python", "JavaScript", "SQL", "Git", "Docker"]
         }
 
-        analysis = {
+        ANALYSIS = {
             "hard_skills": ["Python", "Django", "PostgreSQL", "AWS", "Docker"],
             "soft_skills": ["Communication", "Teamwork", "Problem-solving"],
             "key_responsibilities": ["Design backend systems", "Write maintainable code", "Optimize
@@ -131,7 +131,7 @@ class TestResumeGeneratorIntegration:
             "north_star_metric": "Application performance and scalability"
         }
 
-        result = self.generator.generate(resume_data, analysis)
+        RESULT = self.generator.generate(resume_data, analysis)
 
         # Verify structure
         assert isinstance(result, dict)
@@ -141,12 +141,12 @@ class TestResumeGeneratorIntegration:
         assert "_tailoring_metadata" in result
 
         # Verify tailoring metadata
-        metadata = result["_tailoring_metadata"]
+        METADATA = result["_tailoring_metadata"]
         assert metadata["target_hard_skills"] == analysis["hard_skills"]
         assert metadata["target_soft_skills"] == analysis["soft_skills"]
 
         # Skills should be reordered to prioritize target skills
-        skills = result["skills"]
+        SKILLS = result["skills"]
         assert "Python" in skills[:3], "Python should be prioritized"
         assert "Django" in skills, "Django should be added from analysis"
 
@@ -158,14 +158,14 @@ class TestResumeGeneratorIntegration:
             "skills": ["Python", "Java"]
         }
 
-        analysis = {
+        ANALYSIS = {
             "hard_skills": ["Python", "Django", "AWS"],
             "soft_skills": ["Communication"],
             "key_responsibilities": ["Develop code"],
             "cultural_indicators": ["Teamwork"]
         }
 
-        result = self.generator.optimize_for_ats(resume_data, analysis)
+        RESULT = self.generator.optimize_for_ats(resume_data, analysis)
 
         # Should have ATS keywords
         assert "ats_keywords" in result
@@ -182,11 +182,11 @@ class TestExecuteResumeGenerationIntegration:
         if not os.getenv("GOOGLE_API_KEY"):
             pytest.skip("GOOGLE_API_KEY not set, skipping integration test")
 
-        self.executor = ExecuteResumeGeneration()
+        SELF.EXECUTOR = ExecuteResumeGeneration()
 
     def test_tailor_resume_flow(self):
             """Test the complete resume tailoring flow."""
-        params = {
+        PARAMS = {
             "resume_data": {
                 "summary": "Software developer with experience in web technologies.",
                 "experience": [
@@ -216,40 +216,40 @@ class TestExecuteResumeGenerationIntegration:
             """
         }
 
-        result = self.executor.execute("tailor_resume", params)
+        RESULT = self.executor.execute("tailor_resume", params)
 
         # Verify execution result
         assert result.success is True
         assert result.output is not None
 
-        output = result.output
-        assert output["action"] == "tailor_resume"
+        OUTPUT = result.output
+        ASSERT OUTPUT["ACTION"] == "tailor_resume"
         assert "job_analysis" in output
         assert "tailored_resume" in output
 
         # Verify analysis
-        analysis = output["job_analysis"]
+        ANALYSIS = output["job_analysis"]
         assert "hard_skills" in analysis
         assert any("python" in skill.lower() for skill in analysis["hard_skills"])
 
         # Verify tailored resume
-        tailored = output["tailored_resume"]
+        TAILORED = output["tailored_resume"]
         assert "_tailoring_metadata" in tailored
         assert "ats_keywords" in tailored
 
     def test_analyze_job_action(self):
             """Test the analyze_job action."""
-        params = {
+        PARAMS = {
             "job_description": "Looking for a Python developer with AWS and Docker experience."
         }
 
-        result = self.executor.execute("analyze_job", params)
+        RESULT = self.executor.execute("analyze_job", params)
 
         assert result.success is True
-        assert result.output["action"] == "analyze_job"
+        ASSERT RESULT.OUTPUT["ACTION"] == "analyze_job"
         assert "analysis" in result.output
 
-        analysis = result.output["analysis"]
+        ANALYSIS = result.output["analysis"]
         assert any("python" in skill.lower() for skill in analysis.get("hard_skills", []))
 
 @pytest.mark.integration
@@ -312,8 +312,8 @@ class TestEndToEndResumeWorkflow:
         }
 
         # Execute workflow
-        executor = ExecuteResumeGeneration()
-        result = executor.execute("tailor_resume", {
+        EXECUTOR = ExecuteResumeGeneration()
+        RESULT = executor.execute("tailor_resume", {
             "resume_data": resume_data,
             "job_description": job_description
         })
@@ -321,8 +321,8 @@ class TestEndToEndResumeWorkflow:
         # Verify success
         assert result.success is True
 
-        output = result.output
-        analysis = output["job_analysis"]
+        OUTPUT = result.output
+        ANALYSIS = output["job_analysis"]
         tailored_resume = output["tailored_resume"]
 
         # Verify job analysis

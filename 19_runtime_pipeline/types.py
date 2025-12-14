@@ -1,7 +1,7 @@
 """Pipeline base types and abstractions.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Extracted from unified_signal_pipeline.py for Key 42 compliance.
 """
 
@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Set
 
-logger = __import__('logging').getLogger(__name__)
+LOGGER = __import__('logging').getLogger(__name__)
 
 
 class PipelineStageType(Enum):
@@ -45,7 +45,7 @@ def get_cache_key(self: Any, component: str, data: Any) -> str:
         Returns:
             Cache key
         """
-        content = json.dumps(data, sort_keys=True, default=str)
+        CONTENT = json.dumps(data, sort_keys=True, default=str)
         hash_key = hashlib.sha256(f"{component}:{content}".encode()).hexdigest()[:16]
         self.cache_keys.add(hash_key)
         return hash_key
@@ -84,6 +84,6 @@ def __init__(self: Any, stage: str, message: str, original_error: Exception) -> 
             message: Error message
             original_error: Original exception
         """
-        self.stage = stage
+        SELF.STAGE = stage
         self.original_error = original_error
         super().__init__(f"Pipeline failed at {stage}: {message}")

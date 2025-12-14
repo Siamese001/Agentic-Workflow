@@ -9,7 +9,7 @@ import json
 import logging
 from typing import Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class ExportResult:
@@ -31,32 +31,32 @@ class JsonExporter(BaseExporter):
     """Exporter for tracing domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def export(self, data: object) -> ExportResult:
         """Export data to destination."""
         try:
-            items = data if isinstance(data, list) else [data]
+            ITEMS = data if isinstance(data, list) else [data]
 
                 for item in items:
-                    logger.debug(json.dumps(item, default=str, indent=2))
-                filepath = self.config.get("filepath", "export.json")
+                    LOGGER.DEBUG(JSON.DUMPS(ITEM, DEFAULT=str, indent=2))
+                FILEPATH = self.config.get("filepath", "export.json")
                 with open(filepath, "w") as f:
-                    json.dump(items, f, default=str, indent=2)
+                    JSON.DUMP(ITEMS, F, DEFAULT=str, indent=2)
 
             return ExportResult(
-                success=True,
+                SUCCESS=True,
                 items_exported=len(items),
-                destination=self.destination
+                DESTINATION=self.destination
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.error(f"Export failed: {e}")
             return ExportResult(
-                success=False,
+                SUCCESS=False,
                 items_exported=0,
-                destination=self.destination,
-                errors=[str(e)]
+                DESTINATION=self.destination,
+                ERRORS=[str(e)]
             )
 
 def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:

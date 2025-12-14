@@ -1,7 +1,7 @@
 """Section Scope Integrator Agent - Overview Synthesis (K.5B & K.6B)
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 This agent synthesizes clean overviews after bullets are generated.
 Enforces anti-prefix validation and strict deduplication constraints.
 
@@ -29,7 +29,7 @@ class SectionIntegratorConfig:
     """TODO: Add docstring."""
 
     max_similarity_threshold: float = 0.75
-    temperature: float = 0.6
+    TEMPERATURE: FLOAT = 0.6
     max_attempts: int = 3
 
 @dataclass
@@ -75,7 +75,7 @@ class SectionScopeIntegrator:
         gate_executor: Optional[IntegrityGateExecutor] = None,
         recovery_loop: Optional[AdaptiveRecoveryLoop] = None
     ):
-        self.config = config or SectionIntegratorConfig()
+        SELF.CONFIG = config or SectionIntegratorConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutor()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
             initial_temperature=self.config.temperature
@@ -103,21 +103,21 @@ class SectionScopeIntegrator:
         validation_results = []
 
         for attempt in range(1, self.config.max_attempts + 1):
-            overview = self._generate_content(
-                bullets=bullets,
-                context=context,
-                temperature=self.recovery_loop.current_temperature,
-                attempt=attempt
+            OVERVIEW = self._generate_content(
+                BULLETS=bullets,
+                CONTEXT=context,
+                TEMPERATURE=self.recovery_loop.current_temperature,
+                ATTEMPT=attempt
             )
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(overview)
             validation_results.append(hygiene_result)
 
             if not hygiene_result.passed:
-                recovery = self.recovery_loop.record_failure(
+                RECOVERY = self.recovery_loop.record_failure(
                     gate_id=hygiene_result.gate_id,
-                    message=hygiene_result.message,
-                    details=hygiene_result.details
+                    MESSAGE=hygiene_result.message,
+                    DETAILS=hygiene_result.details
                 )
                 if not recovery.should_retry:
                     break
@@ -127,10 +127,10 @@ class SectionScopeIntegrator:
             validation_results.append(prefix_result)
 
             if not prefix_result.passed:
-                recovery = self.recovery_loop.record_failure(
+                RECOVERY = self.recovery_loop.record_failure(
                     gate_id=prefix_result.gate_id,
-                    message=prefix_result.message,
-                    details=prefix_result.details
+                    MESSAGE=prefix_result.message,
+                    DETAILS=prefix_result.details
                 )
                 if not recovery.should_retry:
                     break
@@ -142,10 +142,10 @@ class SectionScopeIntegrator:
             validation_results.append(dedup_result)
 
             if not dedup_result.passed:
-                recovery = self.recovery_loop.record_failure(
+                RECOVERY = self.recovery_loop.record_failure(
                     gate_id=dedup_result.gate_id,
-                    message=dedup_result.message,
-                    details=dedup_result.details
+                    MESSAGE=dedup_result.message,
+                    DETAILS=dedup_result.details
                 )
                 if not recovery.should_retry:
                     break
@@ -154,21 +154,21 @@ class SectionScopeIntegrator:
             self.gate_executor.results = validation_results
 
             return SectionIntegratorResult(
-                overview=overview,
+                OVERVIEW=overview,
                 similarity_score=similarity_score,
                 validation_results=validation_results,
                 temperature_log=self.recovery_loop.get_temperature_log(),
-                success=True,
-                attempts=attempt
+                SUCCESS=True,
+                ATTEMPTS=attempt
             )
 
         return SectionIntegratorResult(
-            overview="",
+            OVERVIEW="",
             similarity_score=1.0,
             validation_results=validation_results,
             temperature_log=self.recovery_loop.get_temperature_log(),
-            success=False,
-            attempts=self.config.max_attempts
+            SUCCESS=False,
+            ATTEMPTS=self.config.max_attempts
         )
 
     def _generate_content(
@@ -193,14 +193,14 @@ class SectionScopeIntegrator:
         BLOCKS if forbidden prefix detected.
         """
         for pattern in self.FORBIDDEN_PREFIXES:
-            match = re.match(pattern, overview, re.IGNORECASE)
+            MATCH = re.match(pattern, overview, re.IGNORECASE)
             if match:
                 return ValidationResult(
                     gate_id='VG_OVERVIEW_ANTI_PREFIX',
-                    passed=False,
-                    severity='BLOCK',
-                    message=f"BLOCKED: Overview begins with redundant prefix: '{match.group()}'",
-                    details={
+                    PASSED=False,
+                    SEVERITY='BLOCK',
+                    MESSAGE=f"BLOCKED: Overview begins with redundant prefix: '{match.group()}'",
+                    DETAILS={
                         'matched_pattern': pattern,
                         'matched_text': match.group(),
                         'overview_preview': overview[:100]
@@ -209,10 +209,10 @@ class SectionScopeIntegrator:
 
         return ValidationResult(
             gate_id='VG_OVERVIEW_ANTI_PREFIX',
-            passed=True,
-            severity='INFO',
-            message="No redundant prefix detected",
-            signature=f"ANTIPREFIX:OK"
+            PASSED=True,
+            SEVERITY='INFO',
+            MESSAGE="No redundant prefix detected",
+            SIGNATURE=f"ANTIPREFIX:OK"
         )
 
     def _calculate_similarity(self, text1: str, text2: str) -> float:
@@ -220,14 +220,14 @@ class SectionScopeIntegrator:
         Calculate similarity score between two texts.
         Uses word overlap ratio as heuristic.
         """
-        words1 = set(re.findall(r'\b\w+\b', text1.lower()))
-        words2 = set(re.findall(r'\b\w+\b', text2.lower()))
+        WORDS1 = set(re.findall(r'\b\w+\b', text1.lower()))
+        WORDS2 = set(re.findall(r'\b\w+\b', text2.lower()))
 
         if not words1 or not words2:
             return 0.0
 
-        overlap = len(words1 & words2)
-        union = len(words1 | words2)
+        OVERLAP = len(words1 & words2)
+        UNION = len(words1 | words2)
 
         return overlap / union if union > 0 else 0.0
 
@@ -243,24 +243,24 @@ class SectionScopeIntegrator:
         if similarity_score < self.config.max_similarity_threshold:
             return ValidationResult(
                 gate_id='VG_OVERVIEW_DEDUPLICATION',
-                passed=True,
-                severity='INFO',
-                message=f"Deduplication passed: {similarity_score:.1%} similarity (threshold: <{self
+                PASSED=True,
+                SEVERITY='INFO',
+                MESSAGE=f"Deduplication passed: {similarity_score:.1%} similarity (threshold: <{self
                     .config.max_similarity_threshold:.0%})",
 
 
-                signature=f"DEDUP:OK:{int(similarity_score*100)}",
-                details={'similarity_score': similarity_score, 'threshold': self.config.max_similari
+                SIGNATURE=f"DEDUP:OK:{int(similarity_score*100)}",
+                DETAILS={'similarity_score': similarity_score, 'threshold': self.config.max_similari
     ty_threshold}
             )
 
         return ValidationResult(
             gate_id='VG_OVERVIEW_DEDUPLICATION',
-            passed=False,
-            severity='BLOCK',
-            message=f"BLOCKED: Overview similarity {similarity_score:.1%} >= threshold {self.config.
+            PASSED=False,
+            SEVERITY='BLOCK',
+            MESSAGE=f"BLOCKED: Overview similarity {similarity_score:.1%} >= threshold {self.config.
     max_similarity_threshold:.0%}",
-            details={
+            DETAILS={
                 'similarity_score': similarity_score,
                 'threshold': self.config.max_similarity_threshold,
                 'policy': 'STRICT_LESS_THAN'

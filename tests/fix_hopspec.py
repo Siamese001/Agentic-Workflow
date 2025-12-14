@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 import re
 
@@ -8,18 +8,18 @@ import re
 with open(
     "tests/integration/test_hardened_orchestrator_comprehensive.py", "r", encoding="utf-8"
 ) as f:
-    content = f.read()
+    CONTENT = f.read()
 
 # Replace all HopSpec instantiations with name= to use script= and description=
 # Pattern: HopSpec(id="...", name="...")
-content = re.sub(
+CONTENT = re.sub(
     r'HopSpec\(id="([^"]+)", name="([^"]+)"',
     r'HopSpec(id="\1", script="test_script.py", description="\2"',
     content,
 )
 
 # Pattern: HopSpec(id=f"...", name=f"...")
-content = re.sub(
+CONTENT = re.sub(
     r'HopSpec\(id=f"([^"]+)", name=f"([^"]+)"',
     r'HopSpec(id=f"\1", script="test_script.py", description=f"\2"',
     content,

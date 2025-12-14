@@ -38,7 +38,7 @@ class IntegrityGateExecutor:
         Returns:
             IntegrityGateResult: Validation result with any violations
         """
-        result = IntegrityGateResult(passed=True, depth_score=0.0)
+        RESULT = IntegrityGateResult(passed=True, depth_score=0.0)
 
         self._check_unbound_metrics(research_output, result)
         self._check_fluff_language(research_output, result)
@@ -90,7 +90,7 @@ class IntegrityGateExecutor:
             if not text:
                 continue
 
-            words = re.findall(r'\b\w+(?:-\w+)*\b', text.lower())
+            WORDS = re.findall(r'\b\w+(?:-\w+)*\b', text.lower())
 
             for i, word in enumerate(words):
                 if word in self.FLUFF_WORDS:
@@ -108,9 +108,9 @@ class IntegrityGateExecutor:
         research_output: DeepResearchOutput,
         result: IntegrityGateResult
     ) -> None:
-        initiatives = research_output.strategic_layer.strategic_initiatives
-        technologies = [t.technology_name for t in research_output.technical_layer.key_technologies]
-        executives = [e.name for e in research_output.leadership_layer.key_executives]
+        INITIATIVES = research_output.strategic_layer.strategic_initiatives
+        TECHNOLOGIES = [t.technology_name for t in research_output.technical_layer.key_technologies]
+        EXECUTIVES = [e.name for e in research_output.leadership_layer.key_executives]
 
         for initiative in initiatives:
             has_tech_link = any(tech.lower() in initiative.lower() for tech in technologies)
@@ -155,7 +155,7 @@ class IntegrityGateExecutor:
             )
 
     def _calculate_depth_score(self, research_output: DeepResearchOutput) -> float:
-        scores = []
+        SCORES = []
 
         financial_score = min(
             len(research_output.strategic_layer.financial_proof_points) / 4.0,
@@ -196,5 +196,5 @@ def validate_research_output(
     research_output: DeepResearchOutput,
     min_depth_score: float = 0.7
 ) -> IntegrityGateResult:
-    executor = IntegrityGateExecutor(min_depth_score=min_depth_score)
+    EXECUTOR = IntegrityGateExecutor(min_depth_score=min_depth_score)
     return executor.execute(research_output)

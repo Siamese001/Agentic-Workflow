@@ -1,5 +1,5 @@
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """End-to-end test for hardened orchestrator integration.
 
@@ -24,8 +24,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    LEVEL=logging.INFO,
+    FORMAT='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
 # Import hardened components
@@ -46,7 +46,7 @@ logging.basicConfig(
 
 async def test_hardened_orchestrator_integration():
     """Test the full integration of hardened orchestrator."""
-    logger.info("\n=== Testing Hardened Orchestrator Integration ===")
+    LOGGER.INFO("\N=== Testing Hardened Orchestrator Integration ===")
 
     with tempfile.TemporaryDirectory() as temp_dir:
         # Reset singletons
@@ -55,29 +55,29 @@ async def test_hardened_orchestrator_integration():
 
         # Create a simple workflow spec
         workflow_spec = WorkflowSpec(
-            name="Test Resume Generation",
-            version="1.0",
-            hops=[
+            NAME="Test Resume Generation",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(
                     id="K.1",
-                    script="test_k1.py",
-                    description="Executive Summary",
+                    SCRIPT="test_k1.py",
+                    DESCRIPTION="Executive Summary",
                 ),
                 HopSpec(
                     id="K.4",
-                    script="test_k4.py",
-                    description="Professional Headline",
+                    SCRIPT="test_k4.py",
+                    DESCRIPTION="Professional Headline",
                 ),
                 HopSpec(
                     id="K.5",
-                    script="test_k5.py",
-                    description="Experience Bullets",
+                    SCRIPT="test_k5.py",
+                    DESCRIPTION="Experience Bullets",
                 ),
             ],
         )
 
         # Create hardened orchestrator
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             run_base_dir=temp_dir,
             storage_path=temp_dir,
@@ -99,9 +99,9 @@ async def test_hardened_orchestrator_integration():
             else:
                 hop_id = "unknown"
             return AgentResponse(
-                content=mock_responses.get(hop_id, "Default response"),
+                CONTENT=mock_responses.get(hop_id, "Default response"),
                 finish_reason="stop",
-                metadata={
+                METADATA={
                     "provider": "openai",
                     "model": "gpt-4",
                     "duration_ms": 150.0,
@@ -114,18 +114,18 @@ async def test_hardened_orchestrator_integration():
         # Test 1: New workflow execution
         logger.info("\n--- Test 1: New Workflow Execution ---")
         workflow_id = "test_workflow_001"
-        context = {
+        CONTEXT = {
             "prompt": "Test prompt",
             "temperature": 0.7,
         }
 
-        results = await orchestrator.execute_workflow_with_resilience(
+        RESULTS = await orchestrator.execute_workflow_with_resilience(
             workflow_id,
             context,
         )
 
         try:
-            assert results["status"] == "COMPLETED"
+            ASSERT RESULTS["STATUS"] == "COMPLETED"
             assert results["resumed_from_checkpoint"] == False
             assert len(results["hops_completed"]) == 3
             assert results["final_state"]["progress_percentage"] == 100.0
@@ -143,7 +143,7 @@ async def test_hardened_orchestrator_integration():
 
         # Simulate partial execution by modifying state directly
         state_manager = get_state_manager()
-        state = state_manager.resume_workflow(workflow_id)
+        STATE = state_manager.resume_workflow(workflow_id)
         assert state is not None
         assert state.current_k_node == 3
 
@@ -153,7 +153,7 @@ async def test_hardened_orchestrator_integration():
         logger.info("* Simulated partial progress (1/3 hops completed)")
 
         # Create new orchestrator instance (simulating restart)
-        orchestrator2 = create_hardened_orchestrator(
+        ORCHESTRATOR2 = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             run_base_dir=temp_dir,
             storage_path=temp_dir,
@@ -166,12 +166,12 @@ async def test_hardened_orchestrator_integration():
     te else 'None'}")
 
         # Resume workflow
-        results2 = await orchestrator2.execute_workflow_with_resilience(
+        RESULTS2 = await orchestrator2.execute_workflow_with_resilience(
             workflow_id,
             context,
         )
 
-        assert results2["status"] == "COMPLETED"
+        ASSERT RESULTS2["STATUS"] == "COMPLETED"
         assert results2["resumed_from_checkpoint"] == True
         assert len(results2["hops_completed"]) == 2  # Only remaining hops
         logger.info("* Workflow resumed and completed from checkpoint")
@@ -193,7 +193,7 @@ async def test_hardened_orchestrator_integration():
 
         # Verify execution details
         for i, execution in enumerate(final_state.execution_log):
-            assert execution.success == True
+            ASSERT EXECUTION.SUCCESS == True
             assert execution.k_node_name in ["K.1", "K.4", "K.5"]
             assert execution.duration_ms > 0
 
@@ -209,7 +209,7 @@ async def test_hardened_orchestrator_integration():
         }
 
         for hop_id, expected_tier in tier_mapping.items():
-            tier = orchestrator._determine_routing_tier(hop_id, None)
+            TIER = orchestrator._determine_routing_tier(hop_id, None)
             # If no reasoning config, should default to BALANCED
             if expected_tier:
                 logger.info(f"* {hop_id} mapped to appropriate tier")
@@ -220,7 +220,7 @@ async def test_hardened_orchestrator_integration():
 
 async def test_failure_recovery():
     """Test failure recovery and rollback behavior."""
-    logger.info("\n=== Testing Failure Recovery ===")
+    LOGGER.INFO("\N=== Testing Failure Recovery ===")
 
     with tempfile.TemporaryDirectory() as temp_dir:
         # Reset singletons
@@ -229,9 +229,9 @@ async def test_failure_recovery():
 
         # Create workflow spec
         workflow_spec = WorkflowSpec(
-            name="Test Failure Recovery",
-            version="1.0",
-            hops=[
+            NAME="Test Failure Recovery",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test.py", description="Step 1"),
                 HopSpec(id="K.2", script="test.py", description="Step 2"),
                 HopSpec(id="K.3", script="test.py", description="Step 3"),
@@ -239,7 +239,7 @@ async def test_failure_recovery():
         )
 
         # Create orchestrator
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             run_base_dir=temp_dir,
             storage_path=temp_dir,
@@ -257,9 +257,9 @@ async def test_failure_recovery():
                 raise Exception("Simulated API failure")
 
             return AgentResponse(
-                content="Response for hop " + str(call_count["count"]),
+                CONTENT="Response for hop " + str(call_count["count"]),
                 finish_reason="stop",
-                metadata={
+                METADATA={
                     "provider": "openai",
                     "model": "gpt-4",
                     "duration_ms": 150.0,
@@ -270,22 +270,22 @@ async def test_failure_recovery():
 
         # Execute workflow
         workflow_id = "test_failure_001"
-        context = {"prompt": "Test"}
+        CONTEXT = {"prompt": "Test"}
 
-        results = await orchestrator.execute_workflow_with_resilience(
+        RESULTS = await orchestrator.execute_workflow_with_resilience(
             workflow_id,
             context,
         )
 
         # Verify failure handling
-        assert results["status"] == "FAILED"
+        ASSERT RESULTS["STATUS"] == "FAILED"
         assert "error" in results
         assert len(results["hops_completed"]) == 1  # Only K.1 completed
         logger.info("* Workflow failed at K.2 as expected")
 
         # Verify state is preserved
         state_manager = get_state_manager()
-        state = state_manager.resume_workflow(workflow_id)
+        STATE = state_manager.resume_workflow(workflow_id)
         assert state is not None
         assert len(state.execution_log) == 2  # K.1 succeeded, K.2 failed
 
@@ -306,7 +306,7 @@ async def test_failure_recovery():
 
 async def test_circuit_breaker_integration():
     """Test circuit breaker integration with router."""
-    logger.info("\n=== Testing Circuit Breaker Integration ===")
+    LOGGER.INFO("\N=== Testing Circuit Breaker Integration ===")
 
     with tempfile.TemporaryDirectory() as temp_dir:
         # Reset singletons
@@ -315,13 +315,13 @@ async def test_circuit_breaker_integration():
 
         # Create workflow spec
         workflow_spec = WorkflowSpec(
-            name="Test Circuit Breaker",
-            version="1.0",
-            hops=[HopSpec(id="K.1", script="test.py", description="Test")],
+            NAME="Test Circuit Breaker",
+            VERSION="1.0",
+            HOPS=[HopSpec(id="K.1", script="test.py", description="Test")],
         )
 
         # Create orchestrator
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             run_base_dir=temp_dir,
             storage_path=temp_dir,
@@ -331,9 +331,9 @@ async def test_circuit_breaker_integration():
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
                 """Docstring."""
             return AgentResponse(
-                content="Response from provider",
+                CONTENT="Response from provider",
                 finish_reason="stop",
-                metadata={
+                METADATA={
                     "provider": "openai",
                     "model": "gpt-4",
                     "duration_ms": 150.0,
@@ -343,13 +343,13 @@ async def test_circuit_breaker_integration():
         orchestrator.router.execute_with_fallback = mock_execute_with_fallback
 
         # Execute workflow
-        results = await orchestrator.execute_workflow_with_resilience(
+        RESULTS = await orchestrator.execute_workflow_with_resilience(
             "test_circuit_001",
             {"prompt": "Test"},
         )
 
         # Verify workflow completed
-        assert results["status"] == "COMPLETED"
+        ASSERT RESULTS["STATUS"] == "COMPLETED"
         assert len(results["hops_completed"]) == 1
         logger.info("* Circuit breaker integration working (provider selection successful)")
 
@@ -357,32 +357,32 @@ async def test_circuit_breaker_integration():
 
 async def main():
     """Run all integration tests."""
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info("HARDENED ORCHESTRATOR INTEGRATION TEST SUITE")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
-    tests = [
+    TESTS = [
         test_hardened_orchestrator_integration,
         test_failure_recovery,
         test_circuit_breaker_integration,
     ]
 
-    passed = 0
-    failed = 0
+    PASSED = 0
+    FAILED = 0
 
     for test in tests:
         try:
             await test()
-            passed += 1
+            PASSED += 1
         except Exception as e:
             logger.info(f"X {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()
-            failed += 1
+            FAILED += 1
 
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info(f"TEST RESULTS: {passed} passed, {failed} failed")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
     if failed == 0:
         logger.info("\n🎉 All integration tests passed!")

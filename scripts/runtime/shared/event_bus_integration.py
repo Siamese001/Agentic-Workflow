@@ -8,7 +8,7 @@ circuit breakers, and retry policies.
 import asyncio
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class HardenedEventBus:
     """Event Bus wrapped with hardened infrastructure."""
@@ -73,12 +73,12 @@ class HardenedEventBus:
         """
         try:
             # Execute through bulkhead with circuit breaker and retry
-            result = await self.bulkhead_manager.execute(
+            RESULT = await self.bulkhead_manager.execute(
                 self._publish_with_retry,
                 channel,
                 event,
                 bulkhead_name="event_publish",
-                priority=priority
+                PRIORITY=priority
             )
 
             self._stats["events_published"] += 1
@@ -88,7 +88,7 @@ class HardenedEventBus:
             self._stats["events_failed"] += 1
 
             # Send to dead letter queue
-            dlq = await get_dead_letter_queue()
+            DLQ = await get_dead_letter_queue()
             await dlq.add_failed_envelope(
                 event,  # Using event as envelope-like object
                 FailureReason.PROCESSING_ERROR,
@@ -161,7 +161,7 @@ class HardenedEventBus:
             "event_publish",
             max_concurrency=10,
             queue_size=100,
-            priority=TaskPriority.HIGH
+            PRIORITY=TaskPriority.HIGH
         )
 
         # Bulkhead for processing events
@@ -169,21 +169,21 @@ class HardenedEventBus:
             "event_process",
             max_concurrency=20,
             queue_size=200,
-            priority=TaskPriority.MEDIUM
+            PRIORITY=TaskPriority.MEDIUM
         )
 
         logger.debug("Registered event bus bulkheads")
 
     async def _register_circuit_breakers(self) -> None:
             """Register circuit breakers for event operations."""
-        registry = await get_circuit_breaker_registry()
+        REGISTRY = await get_circuit_breaker_registry()
 
         # Circuit breaker for publishing
         await registry.get_circuit_breaker(
             "event_publish",
             CircuitBreakerConfig(
                 failure_threshold=5,
-                timeout=30.0,
+                TIMEOUT=30.0,
                 failure_rate_threshold=0.5
             )
         )
@@ -193,7 +193,7 @@ class HardenedEventBus:
             "event_process",
             CircuitBreakerConfig(
                 failure_threshold=10,
-                timeout=60.0,
+                TIMEOUT=60.0,
                 failure_rate_threshold=0.3
             )
         )
@@ -202,7 +202,7 @@ class HardenedEventBus:
 
     async def _register_retry_policies(self) -> None:
             """Register retry policies for event operations."""
-        executor = await get_retry_executor()
+        EXECUTOR = await get_retry_executor()
 
         # Retry policy for publishing
         executor.register_policy(
@@ -233,12 +233,12 @@ class HardenedEventBus:
             channel: Channel name
             event: Event to publish
         """
-        executor = await get_retry_executor()
+        EXECUTOR = await get_retry_executor()
         await executor.execute(
             self.event_bus.publish,
             channel,
             event,
-            policy="event_publish"
+            POLICY="event_publish"
         )
 
     def _wrap_callback(
@@ -270,7 +270,7 @@ class HardenedEventBus:
                 logger.error(f"Failed to process event {event.id}: {e}")
 
                 # Send to dead letter queue
-                dlq = await get_dead_letter_queue()
+                DLQ = await get_dead_letter_queue()
                 await dlq.add_failed_envelope(
                     event,
                     FailureReason.PROCESSING_ERROR,
@@ -292,11 +292,11 @@ class HardenedEventBus:
             callback: Event callback
             event: Event to process
         """
-        executor = await get_retry_executor()
+        EXECUTOR = await get_retry_executor()
         await executor.execute(
             callback,
             event,
-            policy="event_process"
+            POLICY="event_process"
         )
 
 # Global hardened event bus
@@ -339,16 +339,16 @@ async def publish_hardened_event(
     """
 
     # Create event
-    event = SystemEvent(
-        type=event_type,
+    EVENT = SystemEvent(
+        TYPE=event_type,
         source_component=source_component,
-        payload=payload,
+        PAYLOAD=payload,
         trace_id=trace_id
     )
 
     # Publish through hardened bus
-    bus = await get_hardened_event_bus()
-    channel = f"events.{event_type.value.lower()}"
+    BUS = await get_hardened_event_bus()
+    CHANNEL = f"events.{event_type.value.lower()}"
 
     return await bus.publish(channel, event, priority)
 
@@ -364,8 +364,8 @@ async def subscribe_to_events(
         event_type: Type of event to subscribe to
         callback: Event callback
     """
-    bus = await get_hardened_event_bus()
-    channel = f"events.{event_type.value.lower()}"
+    BUS = await get_hardened_event_bus()
+    CHANNEL = f"events.{event_type.value.lower()}"
 
     await bus.subscribe(channel, callback)
 
@@ -402,12 +402,12 @@ def hardened_event_publisher(
                 func.__module__ + "." + func.__name__,
                 {"status": "started", "args_count": len(args)},
                 trace_id=trace_id,
-                priority=priority
+                PRIORITY=priority
             )
 
             try:
                 # Execute function
-                result = await func(*args, **kwargs)
+                RESULT = await func(*args, **kwargs)
 
                 # Publish success event
                 await publish_hardened_event(
@@ -415,7 +415,7 @@ def hardened_event_publisher(
                     func.__module__ + "." + func.__name__,
                     {"status": "completed", "success": True},
                     trace_id=trace_id,
-                    priority=priority
+                    PRIORITY=priority
                 )
 
                 return result
@@ -427,7 +427,7 @@ def hardened_event_publisher(
                     func.__module__ + "." + func.__name__,
                     {"status": "failed", "error": str(e)},
                     trace_id=trace_id,
-                    priority=TaskPriority.HIGH  # High priority for errors
+                    PRIORITY=TaskPriority.HIGH  # High priority for errors
                 )
                 raise
 

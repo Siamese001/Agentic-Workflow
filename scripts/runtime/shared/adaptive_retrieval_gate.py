@@ -10,15 +10,15 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class RetrievalDecision(BaseModel):
     """Decision about whether to retrieve from vector database."""
 
     should_retrieve: bool = Field(..., description="Whether retrieval is needed")
-    reason: str = Field(..., description="Explanation for the decision")
+    REASON: STR = Field(..., description="Explanation for the decision")
     query_type: str = Field(..., description="Type of query classified")
-    confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="Confidence in decision")
+    CONFIDENCE: FLOAT = Field(default=1.0, ge=0.0, le=1.0, description="Confidence in decision")
 
 class AdaptiveRetrievalGate:
     """Smart gate that determines if retrieval is necessary for a query.
@@ -30,7 +30,7 @@ class AdaptiveRetrievalGate:
     def __init__(self):
         """Initialize the Adaptive Retrieval Gate."""
         # Compile regex patterns for efficiency
-        self.patterns = {
+        SELF.PATTERNS = {
             # Conversational patterns that don't need retrieval
             'conversational': re.compile(
                 r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye)'
@@ -174,13 +174,13 @@ class AdaptiveRetrievalGate:
             RetrievalDecision with recommendation
         """
         # Clean and normalize query
-        query = query.strip()
+        QUERY = query.strip()
         if not query:
             return RetrievalDecision(
                 should_retrieve=False,
-                reason="Empty query",
+                REASON="Empty query",
                 query_type="EMPTY",
-                confidence=1.0
+                CONFIDENCE=1.0
             )
 
         # Classify query type
@@ -191,43 +191,43 @@ class AdaptiveRetrievalGate:
 
         # Make decision based on type and complexity
         should_retrieve = False
-        reason = ""
-        confidence = 0.9
+        REASON = ""
+        CONFIDENCE = 0.9
 
         if query_type == "CONVERSATIONAL":
             should_retrieve = False
-            reason = "Conversational query - no retrieval needed"
-            confidence = 0.95
+            REASON = "Conversational query - no retrieval needed"
+            CONFIDENCE = 0.95
 
         elif query_type == "SELF_REFERENCE":
             should_retrieve = False
-            reason = "Query about assistant - use internal knowledge"
-            confidence = 0.9
+            REASON = "Query about assistant - use internal knowledge"
+            CONFIDENCE = 0.9
 
         elif query_type == "REFERENCE":
             should_retrieve = False
-            reason = "Reference to previous context - check conversation history"
-            confidence = 0.85
+            REASON = "Reference to previous context - check conversation history"
+            CONFIDENCE = 0.85
 
         elif query_type == "CONTINUATION":
             should_retrieve = False
-            reason = "Continuation marker - context should provide information"
-            confidence = 0.8
+            REASON = "Continuation marker - context should provide information"
+            CONFIDENCE = 0.8
 
         elif query_type == "FACTUAL":
             # Factual queries might need retrieval unless very simple
             if complexity_score > 0.4:
                 should_retrieve = True
-                reason = "Factual question requiring external knowledge"
+                REASON = "Factual question requiring external knowledge"
             else:
                 should_retrieve = False
-                reason = "Simple factual query - may be handled from context"
+                REASON = "Simple factual query - may be handled from context"
 
         elif query_type == "COMPLEX":
             # Complex queries almost always need retrieval
             should_retrieve = True
-            reason = "Complex query requiring retrieval"
-            confidence = 0.85
+            REASON = "Complex query requiring retrieval"
+            CONFIDENCE = 0.85
 
         # Additional checks
         if should_retrieve:
@@ -235,8 +235,8 @@ class AdaptiveRetrievalGate:
             if len(query.split()) < 4 and
                 not any(pattern.search(query) for pattern in self.compiled_questions):
                 should_retrieve = False
-                reason = "Short query likely a clarification"
-                confidence = 0.7
+                REASON = "Short query likely a clarification"
+                CONFIDENCE = 0.7
 
         # Log decision for monitoring
         logger.info(f"Retrieval decision: {should_retrieve} | Type: {query_type} | "
@@ -244,9 +244,9 @@ class AdaptiveRetrievalGate:
 
         return RetrievalDecision(
             should_retrieve=should_retrieve,
-            reason=reason,
+            REASON=reason,
             query_type=query_type,
-            confidence=confidence
+            CONFIDENCE=confidence
         )
 
     def get_statistics(self, decisions: List[RetrievalDecision]) -> Dict[str, float]:
@@ -261,7 +261,7 @@ class AdaptiveRetrievalGate:
         if not decisions:
             return {}
 
-        total = len(decisions)
+        TOTAL = len(decisions)
         retrieve_count = sum(1 for d in decisions if d.should_retrieve)
 
         # Count by type
@@ -287,6 +287,6 @@ def should_retrieve(query: str, history: Optional[List[Dict]] = None) -> bool:
     Returns:
         Boolean indicating if retrieval is needed
     """
-    gate = AdaptiveRetrievalGate()
-    decision = gate.should_retrieve(query, history)
+    GATE = AdaptiveRetrievalGate()
+    DECISION = gate.should_retrieve(query, history)
     return decision.should_retrieve

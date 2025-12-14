@@ -7,7 +7,7 @@ outreach and resume generation.
 
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class SignalWeights(BaseModel):
     """Weight coefficients for different signal types (0.0-1.0)."""
@@ -42,7 +42,7 @@ class WeightingResult(BaseModel):
     original_score: confloat(ge=0.0, le=1.0) = Field(..., description="Original relevance score")
     adjusted_score: confloat(ge=0.0,
         le=1.0) = Field(...,
-        description="Adjusted score after weighting")
+        DESCRIPTION="Adjusted score after weighting")
     weights_applied: SignalWeights = Field(..., description="Weights that were applied")
     signal_type: str = Field(..., description="Type of signal detected")
     adjustment_factor: confloat(ge=0.0, le=1.0) = Field(..., description="Weight factor applied")
@@ -254,7 +254,7 @@ class SignalWeighter:
             if industry and industry.strip():
                 normalized_industry = industry.strip().lower()
                 if normalized_industry in self._industry_modifiers:
-                    modifiers = self._industry_modifiers[normalized_industry]
+                    MODIFIERS = self._industry_modifiers[normalized_industry]
 
                     try:
                         # Create adjusted weights
@@ -328,7 +328,7 @@ class SignalWeighter:
             signal_type = self._extract_signal_type(doc_metadata)
 
             # Get the appropriate weight
-            weight = self._get_weight_for_signal_type(signal_type, weights)
+            WEIGHT = self._get_weight_for_signal_type(signal_type, weights)
 
             # Apply weight to score
             adjusted_score = original_score * weight
@@ -336,7 +336,7 @@ class SignalWeighter:
             # Ensure score stays within bounds
             adjusted_score = max(0.0, min(1.0, adjusted_score))
 
-            result = WeightingResult(
+            RESULT = WeightingResult(
                 original_score=original_score,
                 adjusted_score=adjusted_score,
                 weights_applied=weights,
@@ -348,7 +348,7 @@ class SignalWeighter:
             logger.debug(
                 f"Reweighted score: {original_score:.3f} -> {adjusted_score:.3f} "
                 f"(signal: {signal_type}, weight: {weight:.2f})",
-                extra={"doc_id": doc_id, "signal_type": signal_type, "weight": weight}
+                EXTRA={"doc_id": doc_id, "signal_type": signal_type, "weight": weight}
             )
 
             return result
@@ -462,15 +462,15 @@ class SignalWeighter:
             List of WeightingResult objects
         """
         try:
-            weights = self.get_weights(archetype, industry)
-            results = []
+            WEIGHTS = self.get_weights(archetype, industry)
+            RESULTS = []
 
             for doc in documents:
-                score = float(doc.get("score", 0.0))
-                metadata = {k: v for k, v in doc.items() if k != "score"}
+                SCORE = float(doc.get("score", 0.0))
+                METADATA = {k: v for k, v in doc.items() if k != "score"}
                 doc_id = doc.get("doc_id") or doc.get("id")
 
-                result = self.reweight_score(score, metadata, weights, doc_id)
+                RESULT = self.reweight_score(score, metadata, weights, doc_id)
                 results.append(result)
 
             return results
@@ -507,5 +507,5 @@ def weight_results(
     Returns:
         List of WeightingResult objects
     """
-    weighter = create_signal_weighter()
+    WEIGHTER = create_signal_weighter()
     return weighter.batch_reweight(documents, archetype, industry)

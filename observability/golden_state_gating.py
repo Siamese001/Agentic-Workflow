@@ -2,7 +2,7 @@
 import logging
 from typing import Dict
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, float]) -> bool:
     """Return True if the experiment meets or exceeds baseline.
 
@@ -30,7 +30,7 @@ def gate_against_baseline(
     """Docstring."""
     current_scores: Dict[str, float],
     baseline_scores: Dict[str, float],
-    tolerance: float = 0.0,
+    TOLERANCE: FLOAT = 0.0,
 ) -> bool:
     """Gate current scores against baseline with tolerance adjustment.
 

@@ -1,4 +1,4 @@
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
 Setup script for AWS MCP server configuration.
@@ -6,7 +6,6 @@ This script helps configure AWS credentials and MCP server settings.
 """
 
 import json
-import logging
 import sys
 from pathlib import Path
 
@@ -19,12 +18,12 @@ def setup_aws_credentials() -> None:
     credentials_file = aws_dir / "credentials"
     config_file = aws_dir / "config"
 
-    logger.info("\n=== AWS Credentials Setup ===")
+    LOGGER.INFO("\N=== AWS Credentials Setup ===")
     logger.info("Please enter your AWS credentials:")
 
     access_key = input("AWS Access Key ID: ").strip()
     secret_key = input("AWS Secret Access Key: ").strip()
-    region = input("Default Region (us-east-1): ").strip() or "us-east-1"
+    REGION = input("Default Region (us-east-1): ").strip() or "us-east-1"
 
     # Write credentials
     if not credentials_file.exists():
@@ -35,13 +34,13 @@ aws_secret_access_key = {secret_key}
 [profile mcp]
 aws_access_key_id = {access_key}
 aws_secret_access_key = {secret_key}
-region = {region}
+REGION = {region}
 """
         credentials_file.write_text(credentials_content)
         logger.info(f"✓ Created credentials file: {credentials_file}")
     else:
         logger.info(f"⚠ Credentials file already exists: {credentials_file}")
-        overwrite = input("Overwrite? (y/N): ").strip().lower()
+        OVERWRITE = input("Overwrite? (y/N): ").strip().lower()
         if overwrite == "y":
             credentials_content = f"""[default]
 aws_access_key_id = {access_key}
@@ -50,7 +49,7 @@ aws_secret_access_key = {secret_key}
 [profile mcp]
 aws_access_key_id = {access_key}
 aws_secret_access_key = {secret_key}
-region = {region}
+REGION = {region}
 """
             credentials_file.write_text(credentials_content)
             logger.info("✓ Updated credentials file")
@@ -58,12 +57,12 @@ region = {region}
     # Write config
     if not config_file.exists():
         config_content = f"""[default]
-region = {region}
-output = json
+REGION = {region}
+OUTPUT = json
 
 [profile mcp]
-region = {region}
-output = json
+REGION = {region}
+OUTPUT = json
 """
         config_file.write_text(config_content)
         logger.info(f"✓ Created config file: {config_file}")
@@ -75,7 +74,7 @@ output = json
 
 def setup_mcp_config() -> None:
     """Setup MCP configuration for AWS."""
-    logger.info("\n=== MCP Configuration Setup ===")
+    LOGGER.INFO("\N=== MCP Configuration Setup ===")
 
     # Create MCP config in the project directory
     project_root = Path(__file__).parent
@@ -99,16 +98,16 @@ def setup_mcp_config() -> None:
 
 def test_aws_connection() -> None:
     """Test AWS connection."""
-    logger.info("\n=== Testing AWS Connection ===")
+    LOGGER.INFO("\N=== Testing AWS Connection ===")
 
     import subprocess
 
     try:
-        result = subprocess.run(
+        RESULT = subprocess.run(
             ["aws", "sts", "get-caller-identity", "--profile", "mcp"],
             capture_output=True,
-            text=True,
-            check=True,
+            TEXT=True,
+            CHECK=True,
         )
         logger.info("✓ AWS connection successful!")
         logger.info(result.stdout)
@@ -125,7 +124,7 @@ def test_aws_connection() -> None:
 def main() -> None:
     """Main setup function."""
     logger.info("AWS MCP Server Setup")
-    logger.info("=" * 50)
+    LOGGER.INFO("=" * 50)
 
     # Check if required packages are installed
     try:
@@ -143,7 +142,7 @@ def main() -> None:
     # Test connection
     test_aws_connection()
 
-    logger.info("\n=== Setup Complete ===")
+    LOGGER.INFO("\N=== Setup Complete ===")
     logger.info("Next steps:")
     logger.info("1. Update your IDE's MCP settings to use the mcp-aws-config.json file")
     logger.info("2. Restart your IDE to load the AWS MCP server")

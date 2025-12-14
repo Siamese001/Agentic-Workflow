@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .judge_evaluator_types import *  # Star import removed
 
 class JudgeEvaluator:
@@ -28,12 +28,12 @@ class JudgeEvaluator:
             enable_logging: Enable logging
         """
         self.llm_client = llm_client
-        self.criteria = criteria or list(JudgmentCriterion)
+        SELF.CRITERIA = criteria or list(JudgmentCriterion)
         self.pass_threshold = pass_threshold
         self.enable_logging = enable_logging
         if self.enable_logging:
             logger.info('judge_evaluator_initialized',
-                extra={'criteria_count': len(self.criteria),
+                EXTRA={'criteria_count': len(self.criteria),
                 'pass_threshold': pass_threshold})
 
     async def evaluate(self,
@@ -54,28 +54,28 @@ class JudgeEvaluator:
         """
         if self.enable_logging:
             logger.info('evaluation_started',
-                extra={'output_length': len(output),
+                EXTRA={'output_length': len(output),
                 'has_expected': expected is not None})
         verdicts: List[JudgeVerdict] = []
         for criterion in self.criteria:
-            verdict = await self._evaluate_criterion(output=output,
-                expected=expected,
-                context=context,
-                criterion=criterion)
+            VERDICT = await self._evaluate_criterion(output=output,
+                EXPECTED=expected,
+                CONTEXT=context,
+                CRITERION=criterion)
             verdicts.append(verdict)
         overall_score = sum((v.score_value for v in verdicts)) / len(verdicts)
-        passed = overall_score >= self.pass_threshold
-        summary = self._generate_summary(verdicts, overall_score, passed)
-        result = JudgeEvaluationResult(overall_score=overall_score,
-            verdicts=verdicts,
-            passed=passed,
-            threshold=self.pass_threshold,
-            summary=summary,
-            metadata={'criteria_count': len(self.criteria),
+        PASSED = overall_score >= self.pass_threshold
+        SUMMARY = self._generate_summary(verdicts, overall_score, passed)
+        RESULT = JudgeEvaluationResult(overall_score=overall_score,
+            VERDICTS=verdicts,
+            PASSED=passed,
+            THRESHOLD=self.pass_threshold,
+            SUMMARY=summary,
+            METADATA={'criteria_count': len(self.criteria),
             'output_length': len(output)})
         if self.enable_logging:
             logger.info('evaluation_completed',
-                extra={'overall_score': overall_score,
+                EXTRA={'overall_score': overall_score,
                 'passed': passed,
                 'failing_criteria': [c.value for c in result.get_failing_criteria()]})
         return result
@@ -98,23 +98,23 @@ class JudgeEvaluator:
         Returns:
             JudgeVerdict for this criterion
         """
-        prompt = self._build_evaluation_prompt(output=output,
-            expected=expected,
-            context=context,
-            criterion=criterion)
+        PROMPT = self._build_evaluation_prompt(output=output,
+            EXPECTED=expected,
+            CONTEXT=context,
+            CRITERION=criterion)
         if self.llm_client:
             try:
-                response = await self.llm_client(prompt)
-                verdict = self._parse_llm_response(response, criterion)
+                RESPONSE = await self.llm_client(prompt)
+                VERDICT = self._parse_llm_response(response, criterion)
             except Exception as e:
                 if self.enable_logging:
                     logger.error('llm_evaluation_failed',
-                        extra={'criterion': criterion.value,
+                        EXTRA={'criterion': criterion.value,
                         'error': str(e)},
                         exc_info=True)
-                verdict = self._heuristic_evaluation(output, expected, criterion)
+                VERDICT = self._heuristic_evaluation(output, expected, criterion)
         else:
-            verdict = self._heuristic_evaluation(output, expected, criterion)
+            VERDICT = self._heuristic_evaluation(output, expected, criterion)
         return verdict
 
     def _build_evaluation_prompt(self,
@@ -139,7 +139,7 @@ class JudgeEvaluator:
         if expected:
             prompt_parts.extend(['EXPECTED OUTPUT:', expected, ''])
         if context:
-            task = context.get('task', '')
+            TASK = context.get('task', '')
             if task:
                 prompt_parts.extend(['TASK:', task, ''])
         prompt_parts.extend([f"Evaluate the output's {criterion.value} on a scale of 0.0 to 1.0.",
@@ -166,11 +166,11 @@ class JudgeEvaluator:
         Returns:
             JudgeVerdict
         """
-        lines = response.strip().split('\n')
+        LINES = response.strip().split('\n')
         score_value, reasoning, evidence, suggestions = (0.5, '', [], [])
         current_section = None
         for line in lines:
-            line = line.strip()
+            LINE = line.strip()
             score_value,
                 reasoning,
                 current_section = self._parse_line(line,
@@ -217,10 +217,10 @@ class JudgeEvaluator:
         evidence: List[str],
         suggestions: List[str]) -> None:
         """Parse list item into appropriate list."""
-        item = line.lstrip('-•').strip()
+        ITEM = line.lstrip('-•').strip()
         if section == 'evidence':
             evidence.append(item)
-        elif section == 'suggestions':
+        ELIF SECTION == 'suggestions':
             suggestions.append(item)
 
     def _create_verdict(self,
@@ -231,21 +231,21 @@ class JudgeEvaluator:
         criterion: JudgmentCriterion) -> JudgeVerdict:
         """Create verdict from parsed data."""
         if score_value >= 0.9:
-            score = JudgmentScore.EXCELLENT
+            SCORE = JudgmentScore.EXCELLENT
         elif score_value >= 0.7:
-            score = JudgmentScore.GOOD
+            SCORE = JudgmentScore.GOOD
         elif score_value >= 0.5:
-            score = JudgmentScore.ACCEPTABLE
+            SCORE = JudgmentScore.ACCEPTABLE
         elif score_value >= 0.3:
-            score = JudgmentScore.POOR
+            SCORE = JudgmentScore.POOR
         else:
-            score = JudgmentScore.UNACCEPTABLE
+            SCORE = JudgmentScore.UNACCEPTABLE
         return JudgeVerdict(criterion=criterion,
-            score=score,
+            SCORE=score,
             score_value=score_value,
-            reasoning=reasoning or 'No reasoning provided',
-            evidence=evidence,
-            suggestions=suggestions)
+            REASONING=reasoning or 'No reasoning provided',
+            EVIDENCE=evidence,
+            SUGGESTIONS=suggestions)
 
     def _heuristic_evaluation(self,
         output: str,
@@ -262,51 +262,51 @@ class JudgeEvaluator:
             JudgeVerdict based on heuristics
         """
         score_value = 0.5
-        reasoning = f'Heuristic evaluation for {criterion.value}'
-        evidence = []
-        suggestions = []
+        REASONING = f'Heuristic evaluation for {criterion.value}'
+        EVIDENCE = []
+        SUGGESTIONS = []
         if criterion == JudgmentCriterion.COMPLETENESS:
             if expected:
-                ratio = len(output) / max(len(expected), 1)
+                RATIO = len(output) / max(len(expected), 1)
                 score_value = min(ratio, 1.0)
-                reasoning = f'Output length is {ratio:.1%} of expected'
+                REASONING = f'Output length is {ratio:.1%} of expected'
             else:
                 score_value = 0.7 if len(output) > 100 else 0.4
-                reasoning = f'Output length: {len(output)} characters'
-        elif criterion == JudgmentCriterion.COHERENCE:
+                REASONING = f'Output length: {len(output)} characters'
+        ELIF CRITERION == JudgmentCriterion.COHERENCE:
             has_sentences = '.' in output or '!' in output or '?' in output
             has_paragraphs = '\n' in output
             score_value = 0.8 if has_sentences and has_paragraphs else 0.5
-            reasoning = 'Basic structure check'
-        elif criterion == JudgmentCriterion.RELEVANCE:
+            REASONING = 'Basic structure check'
+        ELIF CRITERION == JudgmentCriterion.RELEVANCE:
             if expected:
                 output_words = set(output.lower().split())
                 expected_words = set(expected.lower().split())
-                overlap = len(output_words & expected_words)
+                OVERLAP = len(output_words & expected_words)
                 score_value = min(overlap / max(len(expected_words), 1), 1.0)
-                reasoning = f'Word overlap: {overlap} words'
+                REASONING = f'Word overlap: {overlap} words'
             else:
                 score_value = 0.6
-                reasoning = 'No expected output for comparison'
+                REASONING = 'No expected output for comparison'
         else:
             score_value = 0.6
-            reasoning = f'Default heuristic for {criterion.value}'
+            REASONING = f'Default heuristic for {criterion.value}'
         if score_value >= 0.9:
-            score = JudgmentScore.EXCELLENT
+            SCORE = JudgmentScore.EXCELLENT
         elif score_value >= 0.7:
-            score = JudgmentScore.GOOD
+            SCORE = JudgmentScore.GOOD
         elif score_value >= 0.5:
-            score = JudgmentScore.ACCEPTABLE
+            SCORE = JudgmentScore.ACCEPTABLE
         elif score_value >= 0.3:
-            score = JudgmentScore.POOR
+            SCORE = JudgmentScore.POOR
         else:
-            score = JudgmentScore.UNACCEPTABLE
+            SCORE = JudgmentScore.UNACCEPTABLE
         return JudgeVerdict(criterion=criterion,
-            score=score,
+            SCORE=score,
             score_value=score_value,
-            reasoning=reasoning,
-            evidence=evidence,
-            suggestions=suggestions)
+            REASONING=reasoning,
+            EVIDENCE=evidence,
+            SUGGESTIONS=suggestions)
 
     def _generate_summary(self,
         verdicts: List[JudgeVerdict],
@@ -322,12 +322,12 @@ class JudgeEvaluator:
         Returns:
             Summary string
         """
-        status = 'PASSED' if passed else 'FAILED'
-        excellent = sum((1 for v in verdicts if v.score == JudgmentScore.EXCELLENT))
-        good = sum((1 for v in verdicts if v.score == JudgmentScore.GOOD))
-        acceptable = sum((1 for v in verdicts if v.score == JudgmentScore.ACCEPTABLE))
-        poor = sum((1 for v in verdicts if v.score == JudgmentScore.POOR))
-        unacceptable = sum((1 for v in verdicts if v.score == JudgmentScore.UNACCEPTABLE))
+        STATUS = 'PASSED' if passed else 'FAILED'
+        EXCELLENT = sum((1 for v in verdicts if v.score == JudgmentScore.EXCELLENT))
+        GOOD = sum((1 for v in verdicts if v.score == JudgmentScore.GOOD))
+        ACCEPTABLE = sum((1 for v in verdicts if v.score == JudgmentScore.ACCEPTABLE))
+        POOR = sum((1 for v in verdicts if v.score == JudgmentScore.POOR))
+        UNACCEPTABLE = sum((1 for v in verdicts if v.score == JudgmentScore.UNACCEPTABLE))
         summary_parts = [f'Evaluation {status} (Score: {overall_score:.2f})',
             f'Excellent: {excellent},
             Good: {good},
@@ -335,7 +335,7 @@ class JudgeEvaluator:
             Poor: {poor},
             Unacceptable: {unacceptable}']
         if not passed:
-            failing = [v.criterion.value for v in verdicts if v.score in {JudgmentScore.POOR, Judgme
+            FAILING = [v.criterion.value for v in verdicts if v.score in {JudgmentScore.POOR, Judgme
     ntScore.UNACCEPTABLE}]
             summary_parts.append(f"Failing criteria: {', '.join(failing)}")
         return ' | '.join(summary_parts)

@@ -9,7 +9,7 @@ import logging
 import time
 from typing import Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -27,14 +27,14 @@ class LogObservabilityMetrics:
 
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    self.config = config or {}
+    SELF.CONFIG = config or {}
     self.metrics: Dict[str, List[Metric]] = defaultdict(list)
     logger.info(f"Initialized {self.__class__.__name__}")
 
 
 def record(self: Any, name: str, value: float, labels: Optional[Dict[str, str]]) -> None:
     """Record a metric."""
-    metric = Metric(name=name, value=value, labels=labels or {})
+    METRIC = Metric(name=name, value=value, labels=labels or {})
     self.metrics[name].append(metric)
     logger.debug(f"Recorded metric {name}={value}")
 
@@ -48,7 +48,7 @@ def get_metrics(self: Any, name: Optional[str]) -> List[Metric]:
 
 def get_latest(self: Any, name: str) -> Optional[Metric]:
     """Get latest metric value."""
-    metrics = self.metrics.get(name, [])
+    METRICS = self.metrics.get(name, [])
     return metrics[-1] if metrics else None
 
 

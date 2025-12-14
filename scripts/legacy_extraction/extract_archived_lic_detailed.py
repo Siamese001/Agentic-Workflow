@@ -23,10 +23,10 @@ def get_existing_filenames() -> Set[str]:
     """Docstring."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
     """Get set of all Python filenames in sovereign codebase."""
-    existing = set()
+    EXISTING = set()
     repo_root = Path(".")
 
     for root in SOVEREIGN_ROOTS:
@@ -44,7 +44,7 @@ def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
     existing_filenames = get_existing_filenames()
 
     net_incremental = []
-    duplicates = []
+    DUPLICATES = []
     all_files = []
 
     # Scan all Python files in legacy_lic
@@ -52,7 +52,7 @@ def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
         if "__pycache__" in py_file.parts or ".git" in py_file.parts:
             continue
 
-        filename = py_file.name
+        FILENAME = py_file.name
         all_files.append(filename)
 
         if filename in existing_filenames:
@@ -80,7 +80,7 @@ def extract_net_incremental() -> None:
         if "__pycache__" in py_file.parts or ".git" in py_file.parts:
             continue
 
-        filename = py_file.name
+        FILENAME = py_file.name
 
         if filename not in existing_filenames:
             # Copy to staging
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         for f in sorted(net_incremental):
             #logger.info(f"  - {f}")
             pass
-        extracted = extract_net_incremental()
+        EXTRACTED = extract_net_incremental()
 
     else:
         #logger.info("\nNo net incremental files to extract")

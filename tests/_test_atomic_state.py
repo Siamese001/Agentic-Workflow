@@ -1,5 +1,5 @@
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for atomic state persistence with ACID guarantees.
 
@@ -25,8 +25,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    LEVEL=logging.INFO,
+    FORMAT='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
 # Import state management components
@@ -40,10 +40,10 @@ logging.basicConfig(
 
 def test_workflow_state_schema():
     """Test WorkflowState schema and methods."""
-    logger.info("\n=== Testing WorkflowState Schema ===")
+    LOGGER.INFO("\N=== Testing WorkflowState Schema ===")
 
     # Create a workflow state
-    state = WorkflowState(
+    STATE = WorkflowState(
         workflow_id="test_workflow_001",
         workflow_type="resume_generation",
         total_k_nodes=5,
@@ -52,7 +52,7 @@ def test_workflow_state_schema():
     assert state.workflow_id == "test_workflow_001"
     assert state.current_k_node == 0
     assert state.total_k_nodes == 5
-    assert state.status == "running"
+    ASSERT STATE.STATUS == "running"
     logger.info("✓ WorkflowState created successfully")
 
     # Add an execution
@@ -60,9 +60,9 @@ def test_workflow_state_schema():
         k_node_index=0,
         k_node_name="extract_experience",
         input_prompt="Extract experience from resume",
-        output="Experience extracted successfully",
+        OUTPUT="Experience extracted successfully",
         duration_ms=150.5,
-        success=True,
+        SUCCESS=True,
     )
 
     assert state.current_k_node == 1
@@ -71,8 +71,8 @@ def test_workflow_state_schema():
     logger.info("✓ Execution added to state")
 
     # Test progress calculation
-    progress = state.get_progress_percentage()
-    assert progress == 20.0  # 1/5 = 20%
+    PROGRESS = state.get_progress_percentage()
+    ASSERT PROGRESS == 20.0  # 1/5 = 20%
     logger.info(f"✓ Progress calculation: {progress}%")
 
     # Test serialization
@@ -90,12 +90,12 @@ def test_workflow_state_schema():
 
 def test_atomic_checkpoint():
     """Test atomic checkpoint operation."""
-    logger.info("\n=== Testing Atomic Checkpoint ===")
+    LOGGER.INFO("\N=== Testing Atomic Checkpoint ===")
 
     # Create temporary storage
     with tempfile.TemporaryDirectory() as temp_dir:
-        manager = AtomicStateManager(
-            backend=BackendType.FILE,
+        MANAGER = AtomicStateManager(
+            BACKEND=BackendType.FILE,
             storage_path=temp_dir,
         )
 
@@ -109,7 +109,7 @@ def test_atomic_checkpoint():
             k_node_index=0,
             k_node_name="step_1",
             input_prompt="Input 1",
-            output="Output 1",
+            OUTPUT="Output 1",
             duration_ms=100.0,
         )
 
@@ -135,14 +135,14 @@ def test_atomic_checkpoint():
             k_node_index=0,
             k_node_name="step_1",
             input_prompt="Input 1",
-            output="Output 1",
+            OUTPUT="Output 1",
             duration_ms=100.0,
         )
         state_b.add_execution(
             k_node_index=1,
             k_node_name="step_2",
             input_prompt="Input 2",
-            output="Output 2",
+            OUTPUT="Output 2",
             duration_ms=150.0,
         )
 
@@ -161,11 +161,11 @@ def test_atomic_checkpoint():
 
 def test_rollback_on_failure():
     """Test that old state remains intact when checkpoint fails."""
-    logger.info("\n=== Testing Rollback on Failure ===")
+    LOGGER.INFO("\N=== Testing Rollback on Failure ===")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        manager = AtomicStateManager(
-            backend=BackendType.FILE,
+        MANAGER = AtomicStateManager(
+            BACKEND=BackendType.FILE,
             storage_path=temp_dir,
         )
 
@@ -179,7 +179,7 @@ def test_rollback_on_failure():
             k_node_index=0,
             k_node_name="step_1",
             input_prompt="Input 1",
-            output="Output 1 - VALID STATE",
+            OUTPUT="Output 1 - VALID STATE",
             duration_ms=100.0,
         )
 
@@ -202,14 +202,14 @@ def test_rollback_on_failure():
             k_node_index=0,
             k_node_name="step_1",
             input_prompt="Input 1",
-            output="Output 1",
+            OUTPUT="Output 1",
             duration_ms=100.0,
         )
         state_b.add_execution(
             k_node_index=1,
             k_node_name="step_2",
             input_prompt="Input 2",
-            output="Output 2 - CORRUPTED STATE (should not persist)",
+            OUTPUT="Output 2 - CORRUPTED STATE (should not persist)",
             duration_ms=150.0,
         )
 
@@ -249,21 +249,21 @@ def test_rollback_on_failure():
 
 def test_resume_workflow():
     """Test workflow resume functionality."""
-    logger.info("\n=== Testing Workflow Resume ===")
+    LOGGER.INFO("\N=== Testing Workflow Resume ===")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        manager = AtomicStateManager(
-            backend=BackendType.FILE,
+        MANAGER = AtomicStateManager(
+            BACKEND=BackendType.FILE,
             storage_path=temp_dir,
         )
 
         # Test resume with no checkpoint
-        state = manager.resume_workflow("nonexistent_workflow")
+        STATE = manager.resume_workflow("nonexistent_workflow")
         assert state is None
         logger.info("✓ Resume returns None for nonexistent workflow")
 
         # Create and checkpoint a workflow
-        state = WorkflowState(
+        STATE = WorkflowState(
             workflow_id="workflow_resume_test",
             workflow_type="resume_generation",
             total_k_nodes=5,
@@ -275,7 +275,7 @@ def test_resume_workflow():
                 k_node_index=i,
                 k_node_name=f"step_{i+1}",
                 input_prompt=f"Input {i+1}",
-                output=f"Output {i+1}",
+                OUTPUT=f"Output {i+1}",
                 duration_ms=100.0 + i * 10,
             )
 
@@ -295,7 +295,7 @@ def test_resume_workflow():
             k_node_index=3,
             k_node_name="step_4",
             input_prompt="Input 4",
-            output="Output 4",
+            OUTPUT="Output 4",
             duration_ms=130.0,
         )
 
@@ -306,18 +306,18 @@ def test_resume_workflow():
 
 def test_concurrent_checkpoints():
     """Test multiple workflows with concurrent checkpoints."""
-    logger.info("\n=== Testing Concurrent Checkpoints ===")
+    LOGGER.INFO("\N=== Testing Concurrent Checkpoints ===")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        manager = AtomicStateManager(
-            backend=BackendType.FILE,
+        MANAGER = AtomicStateManager(
+            BACKEND=BackendType.FILE,
             storage_path=temp_dir,
         )
 
         # Create multiple workflows
-        workflows = []
+        WORKFLOWS = []
         for i in range(3):
-            state = WorkflowState(
+            STATE = WorkflowState(
                 workflow_id=f"workflow_{i}",
                 workflow_type="test",
                 total_k_nodes=2,
@@ -326,7 +326,7 @@ def test_concurrent_checkpoints():
                 k_node_index=0,
                 k_node_name="step_1",
                 input_prompt=f"Input for workflow {i}",
-                output=f"Output for workflow {i}",
+                OUTPUT=f"Output for workflow {i}",
                 duration_ms=100.0,
             )
             workflows.append(state)
@@ -337,26 +337,26 @@ def test_concurrent_checkpoints():
         logger.info(f"✓ Checkpointed {len(workflows)} workflows")
 
         # List all checkpoints
-        checkpoints = manager.list_checkpoints()
-        assert len(checkpoints) == 3
+        CHECKPOINTS = manager.list_checkpoints()
+        ASSERT LEN(CHECKPOINTS) == 3
         logger.info(f"✓ Listed {len(checkpoints)} checkpoints")
 
         # Verify each workflow can be resumed independently
         for i in range(3):
-            state = manager.resume_workflow(f"workflow_{i}")
+            STATE = manager.resume_workflow(f"workflow_{i}")
             assert state is not None
             assert state.workflow_id == f"workflow_{i}"
             assert f"Output for workflow {i}" in state.last_successful_output
         logger.info("✓ All workflows can be resumed independently")
 
         # Delete one checkpoint
-        deleted = manager.delete_checkpoint("workflow_1")
+        DELETED = manager.delete_checkpoint("workflow_1")
         assert deleted
         logger.info("✓ Checkpoint deleted")
 
         # Verify deletion
-        checkpoints = manager.list_checkpoints()
-        assert len(checkpoints) == 2
+        CHECKPOINTS = manager.list_checkpoints()
+        ASSERT LEN(CHECKPOINTS) == 2
         assert "workflow_1" not in checkpoints
         logger.info("✓ Deletion verified")
 
@@ -364,15 +364,15 @@ def test_concurrent_checkpoints():
 
 def test_singleton_factory():
     """Test singleton factory pattern."""
-    logger.info("\n=== Testing Singleton Factory ===")
+    LOGGER.INFO("\N=== Testing Singleton Factory ===")
 
     with tempfile.TemporaryDirectory() as temp_dir:
         # Reset singleton
         reset_state_manager()
 
         # Get manager instance
-        manager1 = get_state_manager(storage_path=temp_dir)
-        manager2 = get_state_manager()
+        MANAGER1 = get_state_manager(storage_path=temp_dir)
+        MANAGER2 = get_state_manager()
 
         # Should be same instance
         assert manager1 is manager2
@@ -380,7 +380,7 @@ def test_singleton_factory():
 
         # Reset and get new instance
         reset_state_manager()
-        manager3 = get_state_manager(storage_path=temp_dir)
+        MANAGER3 = get_state_manager(storage_path=temp_dir)
 
         # Should be different instance
         assert manager3 is not manager1
@@ -390,16 +390,16 @@ def test_singleton_factory():
 
 def test_fsync_durability():
     """Test that fsync ensures durability."""
-    logger.info("\n=== Testing fsync Durability ===")
+    LOGGER.INFO("\N=== Testing fsync Durability ===")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        manager = AtomicStateManager(
-            backend=BackendType.FILE,
+        MANAGER = AtomicStateManager(
+            BACKEND=BackendType.FILE,
             storage_path=temp_dir,
         )
 
         # Create state
-        state = WorkflowState(
+        STATE = WorkflowState(
             workflow_id="durability_test",
             workflow_type="test",
             total_k_nodes=1,
@@ -408,7 +408,7 @@ def test_fsync_durability():
             k_node_index=0,
             k_node_name="step_1",
             input_prompt="Input",
-            output="Output",
+            OUTPUT="Output",
             duration_ms=100.0,
         )
 
@@ -424,7 +424,7 @@ def test_fsync_durability():
 
         # Verify content is valid JSON
         with open(file_path, 'r') as f:
-            content = f.read()
+            CONTENT = f.read()
             assert "durability_test" in content
             assert "Output" in content
         logger.info("✓ State file contains valid data")
@@ -433,11 +433,11 @@ def test_fsync_durability():
 
 def main():
     """Run all tests."""
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info("ATOMIC STATE PERSISTENCE TEST SUITE (ACID GUARANTEES)")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
-    tests = [
+    TESTS = [
         test_workflow_state_schema,
         test_atomic_checkpoint,
         test_rollback_on_failure,
@@ -447,22 +447,22 @@ def main():
         test_fsync_durability,
     ]
 
-    passed = 0
-    failed = 0
+    PASSED = 0
+    FAILED = 0
 
     for test in tests:
         try:
             test()
-            passed += 1
+            PASSED += 1
         except Exception as e:
             logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()
-            failed += 1
+            FAILED += 1
 
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info(f"TEST RESULTS: {passed} passed, {failed} failed")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
     if failed == 0:
         logger.info("🎉 All tests passed! Atomic state persistence with ACID guarantees is working co

@@ -19,7 +19,7 @@ from scripts.runtime.shared.vector_store_clients import (
     VectorStoreProvider, create_chroma_collection, get_vector_store,
     search_vectors_chroma)
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -83,8 +83,8 @@ def search_vector_store(
     if self.vector_store is None:
         return []
 
-    collection = create_chroma_collection(self.vector_store, collection_name)
-    results = search_vectors_chroma(
+    COLLECTION = create_chroma_collection(self.vector_store, collection_name)
+    RESULTS = search_vectors_chroma(
         collection,
         query_embeddings=[query_embedding],
         n_results=n_results,
@@ -121,9 +121,9 @@ def execute_agent(
     """
     with create_span(f"hop.{self.hop_id}.agent_execute"):
         return self.workflow_context.agent_executor.execute(
-            messages=messages,
+            MESSAGES=messages,
             system_prompt=system_prompt,
-            tools=tools,
+            TOOLS=tools,
         )
 
 
@@ -147,9 +147,10 @@ def set_output(self: Any, key: str, value: Any) -> None:
         key: Output key
         value: Output value
     """
-    self.outputs[key] = value
+    SELF.OUTPUTS[KEY] = value
 
 
+# REFACTOR: Split this 58-line function
 def create_workflow_context(
     workflow_id: str,
     provider: Provider = Provider.OPENAI,
@@ -177,8 +178,8 @@ def create_workflow_context(
 
     # Create agent executor
     agent_executor = create_agent_executor(
-        provider=provider,
-        model=model,
+        PROVIDER=provider,
+        MODEL=model,
         enable_tracing=enable_tracing,
     )
 
@@ -232,7 +233,7 @@ def execute_hop_with_agent(
         hop_context = HopExecutionContext(
             hop_id=hop_id,
             workflow_context=workflow_context,
-            inputs=inputs,
+            INPUTS=inputs,
         )
 
         try:
@@ -260,10 +261,10 @@ def __init__(self: Any, workflow_id: str, provider: Provider, model: Optional[st
         model: Optional model name
     """
     self.workflow_id = workflow_id
-    self.context = create_workflow_context(
+    SELF.CONTEXT = create_workflow_context(
         workflow_id=workflow_id,
-        provider=provider,
-        model=model,
+        PROVIDER=provider,
+        MODEL=model,
     )
     self.hops: List[Dict[str, Any]] = []
 
@@ -300,14 +301,14 @@ def execute(self: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
         # Simple sequential execution for now
         # Add dependency resolution and parallel execution
         current_inputs = inputs
-        outputs = {}
+        OUTPUTS = {}
 
         for hop in self.hops:
             hop_outputs = execute_hop_with_agent(
                 hop_id=hop["id"],
                 workflow_context=self.context,
                 hop_function=hop["function"],
-                inputs=current_inputs,
+                INPUTS=current_inputs,
             )
             outputs.update(hop_outputs)
             current_inputs = hop_outputs
@@ -332,6 +333,6 @@ def create_workflow_orchestrator(
     """
     return WorkflowOrchestrator(
         workflow_id=workflow_id,
-        provider=provider,
-        model=model,
+        PROVIDER=provider,
+        MODEL=model,
     )

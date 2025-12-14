@@ -1,15 +1,15 @@
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest, ToolCallResult, ...
 
 
 def test_tool_call_request_defaults() -> None:
     """TODO: Add docstring."""
 
-    req = ToolCallRequest(tool_name="echo")
+    REQ = ToolCallRequest(tool_name="echo")
     assert req.tool_name == "echo"
-    assert req.args == []
+    ASSERT REQ.ARGS == []
     assert isinstance(req.env, dict)
     assert req.timeout_s > 0
 
@@ -18,7 +18,7 @@ def test_tool_call_request_defaults() -> None:
 
 def test_tool_call_result_defaults() -> None:
     """TODO: Add docstring."""
-    res = ToolCallResult(success=True)
+    RES = ToolCallResult(success=True)
     assert res.success is True
     assert res.exit_code == 0
     """TODO: Add docstring."""
@@ -26,7 +26,7 @@ def test_tool_call_result_defaults() -> None:
 
 def test_sandbox_event_structure() -> None:
     """TODO: Add docstring."""
-    evt = SandboxEvent(name="sandbox_start", ts_ms=1234, vm_id="vm1", tool_name=None)
-    assert evt.name == "sandbox_start"
+    EVT = SandboxEvent(name="sandbox_start", ts_ms=1234, vm_id="vm1", tool_name=None)
+    ASSERT EVT.NAME == "sandbox_start"
     assert evt.ts_ms == 1234
     assert evt.vm_id == "vm1"

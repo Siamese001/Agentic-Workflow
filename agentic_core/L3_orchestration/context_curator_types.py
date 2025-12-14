@@ -1,7 +1,7 @@
 """Types and models for context_curator."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class ContextPriority(Enum):
     """Priority levels for context chunks."""
     CRITICAL = 'critical'
@@ -28,7 +28,7 @@ class ContextChunk:
     priority: ContextPriority
     token_count: int
     relevance_score: float = 0.0
-    pinned: bool = False
+    PINNED: BOOL = False
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:

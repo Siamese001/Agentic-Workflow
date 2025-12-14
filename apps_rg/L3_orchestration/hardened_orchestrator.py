@@ -40,7 +40,7 @@ from datetime import datetime
     enhance_system_prompt,
 )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
     """
@@ -70,7 +70,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
 
         # Initialize hardened components
         self.state_manager = get_state_manager(storage_path=storage_path)
-        self.router = get_resilient_router()
+        SELF.ROUTER = get_resilient_router()
 
         # State tracking
         self.workflow_state: Optional[WorkflowState] = None
@@ -116,7 +116,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 workflow_id=workflow_id,
                 workflow_type="resume_generation",
                 total_k_nodes=total_k_nodes,
-                metadata=context.copy(),
+                METADATA=context.copy(),
             )
             self.resumed_from_checkpoint = False
             logger.info(f"Starting new workflow: {workflow_id}")
@@ -147,9 +147,9 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         Returns:
             HopCheckpoint with execution results
         """
-        checkpoint = HopCheckpoint(
+        CHECKPOINT = HopCheckpoint(
             hop_id=hop_id,
-            status=HopStatus.RUNNING,
+            STATUS=HopStatus.RUNNING,
             start_time=datetime.now(),
         )
 
@@ -157,29 +157,29 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             # Get reasoning config for this hop
             reasoning_config = get_reasoning_config(hop_id)
             if reasoning_config:
-                temperature = temperature or reasoning_config.temperature
+                TEMPERATURE = temperature or reasoning_config.temperature
 
             # Inject Titanium RAG tools into context
-            context = inject_titanium_tools(context)
+            CONTEXT = inject_titanium_tools(context)
 
             # Prepare async Titanium context
-            context = await prepare_titanium_context(context)
+            CONTEXT = await prepare_titanium_context(context)
 
             # Enhance prompt with Titanium search instructions if needed
             if reasoning_config and reasoning_config.rag_type in ["HYBRID", "AGENTIC"]:
-                prompt = enhance_system_prompt(prompt)
+                PROMPT = enhance_system_prompt(prompt)
 
             # Determine routing tier based on hop requirements
-            tier = self._determine_routing_tier(hop_id, reasoning_config)
+            TIER = self._determine_routing_tier(hop_id, reasoning_config)
 
             # Execute with hardened router (includes retry and fallback)
             logger.info(f"Executing hop {hop_id} with tier {tier.value}")
 
             # Execute with resilient routing
-            response = await self.router.execute_with_fallback(
-                tier=tier,
-                prompt=prompt,
-                temperature=temperature,
+            RESPONSE = await self.router.execute_with_fallback(
+                TIER=tier,
+                PROMPT=prompt,
+                TEMPERATURE=temperature,
             )
 
             # Update workflow state
@@ -188,10 +188,10 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                     k_node_index=self.workflow_state.current_k_node,
                     k_node_name=hop_id,
                     input_prompt=prompt,
-                    output=response.content,
+                    OUTPUT=response.content,
                     duration_ms=response.metadata.get("duration_ms", 0),
-                    success=True,
-                    metadata=response.metadata,
+                    SUCCESS=True,
+                    METADATA=response.metadata,
                 )
 
                 # Atomic checkpoint after successful execution
@@ -202,7 +202,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 logger.info(f"Checkpointed after hop {hop_id}")
 
             # Update checkpoint
-            checkpoint.status = HopStatus.COMPLETED
+            CHECKPOINT.STATUS = HopStatus.COMPLETED
             checkpoint.end_time = datetime.now()
 
             # Store response in context
@@ -217,7 +217,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
 
         except Exception as e:
             # Handle failure
-            checkpoint.status = HopStatus.FAILED
+            CHECKPOINT.STATUS = HopStatus.FAILED
             checkpoint.end_time = datetime.now()
             checkpoint.error_message = str(e)
 
@@ -229,10 +229,10 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                     k_node_index=self.workflow_state.current_k_node,
                     k_node_name=hop_id,
                     input_prompt=prompt,
-                    output=None,
+                    OUTPUT=None,
                     duration_ms=0,
-                    success=False,
-                    error=str(e),
+                    SUCCESS=False,
+                    ERROR=str(e),
                 )
 
                 # Still checkpoint on failure for transparency
@@ -293,7 +293,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
 
         # Initialize or resume workflow
         total_hops = len(self.spec.hops) if self.spec else 0
-        context = self.initialize_or_resume_workflow(workflow_id, total_hops, context)
+        CONTEXT = self.initialize_or_resume_workflow(workflow_id, total_hops, context)
 
         # Get execution order
         execution_order = self.get_execution_order()
@@ -327,11 +327,11 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 raise HopExecutionError(f"Hop spec not found: {hop_id}")
 
             # Execute hop with hardening
-            checkpoint = await self.execute_hop_with_hardening(
+            CHECKPOINT = await self.execute_hop_with_hardening(
                 hop_id,
                 context,
-                prompt=context.get("prompt", f"Execute {hop_id}"),
-                temperature=context.get("temperature"),
+                PROMPT=context.get("prompt", f"Execute {hop_id}"),
+                TEMPERATURE=context.get("temperature"),
             )
 
             # Update results
@@ -346,13 +346,13 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                     self.workflow_state.current_k_node = actual_position + 1
             else:
                 results["hops_failed"].append(hop_id)
-                results["status"] = "FAILED"
-                results["error"] = checkpoint.error_message
+                RESULTS["STATUS"] = "FAILED"
+                RESULTS["ERROR"] = checkpoint.error_message
                 break
 
         # Final state update
         if results["status"] != "FAILED":
-            results["status"] = "COMPLETED"
+            RESULTS["STATUS"] = "COMPLETED"
             if self.workflow_state:
                 self.workflow_state.status = "completed"
                 self.workflow_state.last_checkpoint_at = datetime.utcnow()

@@ -11,7 +11,7 @@ planners and feeds into the hop-based K3 draft execution phase.
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class MessageSection:
@@ -192,7 +192,7 @@ class MessagePlanner:
         outreach_context = outreach_context or {}
 
         # 1. Plan sections with archetype-specific content
-        sections = self._plan_sections(content,
+        SECTIONS = self._plan_sections(content,
             archetype,
             persona_plan,
             grounding_plan,
@@ -202,7 +202,7 @@ class MessagePlanner:
         temperature_schedule = self._calculate_temperature_schedule(archetype)
 
         # 3. Determine archetype-specific constraints
-        constraints = self._determine_constraints(content, archetype, grounding_plan)
+        CONSTRAINTS = self._determine_constraints(content, archetype, grounding_plan)
 
         # 4. Set section priority order
         priority_order = self._determine_priority_order(archetype, outreach_context)
@@ -214,7 +214,7 @@ class MessagePlanner:
         confidence_score = self._calculate_confidence_score(sections, content, archetype)
 
         # 7. Build metadata
-        metadata = {
+        METADATA = {
             "archetype": archetype,
             "section_count": len(sections),
             "constraint_count": len(constraints),
@@ -225,15 +225,15 @@ class MessagePlanner:
         }
 
         # 8. Create message plan
-        plan = MessagePlan(
-            archetype=archetype,
-            sections=sections,
+        PLAN = MessagePlan(
+            ARCHETYPE=archetype,
+            SECTIONS=sections,
             temperature_schedule=temperature_schedule,
-            constraints=constraints,
+            CONSTRAINTS=constraints,
             priority_order=priority_order,
             total_target_length=total_target_length,
             confidence_score=confidence_score,
-            metadata=metadata,
+            METADATA=metadata,
         )
 
         # 9. Record telemetry (best-effort)
@@ -250,11 +250,11 @@ class MessagePlanner:
         fusion_plan: Optional[Any] = None
     ) -> Dict[str, MessageSection]:
         """Plan individual message sections with archetype-specific parameters."""
-        sections = {}
+        SECTIONS = {}
 
         for section_name, template in self.section_templates.items():
             # Create base section from template
-            section = MessageSection(
+            SECTION = MessageSection(
                 section_type=section_name,
                 max_length=template["max_length"],
                 required_elements=template["required_elements"],
@@ -268,15 +268,15 @@ class MessagePlanner:
 
             # Apply persona-based refinements
             if persona_plan:
-                section = self._apply_persona_refinements(section, persona_plan, archetype)
+                SECTION = self._apply_persona_refinements(section, persona_plan, archetype)
 
             # Apply grounding-based constraints
             if grounding_plan:
-                section = self._apply_grounding_constraints(section, grounding_plan)
+                SECTION = self._apply_grounding_constraints(section, grounding_plan)
 
             # Apply fusion-based content strategy
             if fusion_plan:
-                section = self._apply_fusion_strategy(section, fusion_plan, section_name)
+                SECTION = self._apply_fusion_strategy(section, fusion_plan, section_name)
 
             # Apply archetype-specific content strategy
             section.content_strategy = self._determine_content_strategy(section_name, archetype)
@@ -315,7 +315,7 @@ class MessagePlanner:
         if hasattr(grounding_plan, 'risk_flags') and grounding_plan.risk_flags:
             # Add constraint to avoid risky claims
             if "overclaim" in grounding_plan.risk_flags:
-                section.constraints = getattr(section, 'constraints', [])
+                SECTION.CONSTRAINTS = getattr(section, 'constraints', [])
                 section.constraints.append("avoid_unverified_claims")
                 section.style_guidelines.append("conservative_language")
 
@@ -353,7 +353,7 @@ class MessagePlanner:
 
     def _determine_content_strategy(self, section_name: str, archetype: str) -> str:
         """Determine content strategy for section based on archetype."""
-        strategies = {
+        STRATEGIES = {
             "RECRUITER": {
                 "subject": "job_focus",
                 "hook": "opportunity_highlight",
@@ -397,12 +397,12 @@ class MessagePlanner:
         }
 
         # Apply archetype adjustments
-        adjustments = self.temperature_adjustments.get(archetype, {})
-        schedule = {}
+        ADJUSTMENTS = self.temperature_adjustments.get(archetype, {})
+        SCHEDULE = {}
 
         for section, base_temp in base_schedule.items():
-            adjustment = adjustments.get(section, 0.0)
-            schedule[section] = max(0.1, min(1.0, base_temp + adjustment))
+            ADJUSTMENT = adjustments.get(section, 0.0)
+            SCHEDULE[SECTION] = max(0.1, min(1.0, base_temp + adjustment))
 
         return schedule
 
@@ -423,7 +423,7 @@ class MessagePlanner:
                 base_constraints.append("risk_aware_language")
 
         # Remove duplicates while preserving order
-        seen = set()
+        SEEN = set()
         unique_constraints = []
         for constraint in base_constraints:
             if constraint not in seen:
@@ -442,7 +442,7 @@ class MessagePlanner:
             if "value" in base_order:
                 base_order.remove("value")
                 base_order.insert(2, "value")  # After hook
-        elif archetype == "RECRUITER":
+        ELIF ARCHETYPE == "RECRUITER":
             # Move CTA earlier for recruiters
             if "cta" in base_order:
                 base_order.remove("cta")
@@ -508,7 +508,7 @@ class MessagePlanner:
 
     def validate_message_plan(self, plan: MessagePlan) -> List[str]:
         """Validate message plan and return warnings."""
-        warnings = []
+        WARNINGS = []
 
         # Check for missing required sections
         required_sections = ["subject", "hook", "value", "cta", "signature"]

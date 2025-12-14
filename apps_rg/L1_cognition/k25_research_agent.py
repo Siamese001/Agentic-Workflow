@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
     CitationMap,
     DeepResearchOutput,
     ExecutiveProfile,
@@ -40,7 +40,7 @@ class K25DeepResearchAgent:
     def __init__(self, company_name: str, company_url: Optional[str] = None):
         self.company_name = company_name
         self.company_url = company_url
-        self.config = K25_REASONING_CONFIG
+        SELF.CONFIG = K25_REASONING_CONFIG
 
         self.rag_hops = self.config.get("rag_hops", 5)
         self.prompt_template = self._load_prompt_template()
@@ -103,7 +103,7 @@ Requirements:
         return research_output
 
     def _execute_hop_1_financial_strategic(self) -> ResearchHopResult:
-        query = f"""
+        QUERY = f"""
         Research {self.company_name} financial and strategic positioning:
         - Latest quarterly/annual revenue, EBITDA, net income with YoY comparisons
         - Strategic pivot or core business thesis
@@ -111,17 +111,17 @@ Requirements:
         - Sources: 10-K, 10-Q, earnings calls, investor letters
         """
 
-        result = ResearchHopResult(
-            phase=ResearchHopPhase.FINANCIAL_STRATEGIC,
-            query=query,
-            results=[],
-            citations=[]
+        RESULT = ResearchHopResult(
+            PHASE=ResearchHopPhase.FINANCIAL_STRATEGIC,
+            QUERY=query,
+            RESULTS=[],
+            CITATIONS=[]
         )
 
         return result
 
     def _execute_hop_2_technical_product(self) -> ResearchHopResult:
-        query = f"""
+        QUERY = f"""
         Research {self.company_name} technical implementation and product details:
         - Specific model architectures, algorithms, frameworks
         - Infrastructure stack (cloud, orchestration, ML platforms)
@@ -129,17 +129,17 @@ Requirements:
         - Sources: engineering blogs, tech stack documentation, patents
         """
 
-        result = ResearchHopResult(
-            phase=ResearchHopPhase.TECHNICAL_PRODUCT,
-            query=query,
-            results=[],
-            citations=[]
+        RESULT = ResearchHopResult(
+            PHASE=ResearchHopPhase.TECHNICAL_PRODUCT,
+            QUERY=query,
+            RESULTS=[],
+            CITATIONS=[]
         )
 
         return result
 
     def _execute_hop_3_organizational_leadership(self) -> ResearchHopResult:
-        query = f"""
+        QUERY = f"""
         Research {self.company_name} organizational structure and leadership:
         - Key executives with titles and domain ownership
         - Strategic initiatives mapped to responsible leaders
@@ -147,11 +147,11 @@ Requirements:
         - Sources: LinkedIn, company leadership pages, press releases
         """
 
-        result = ResearchHopResult(
-            phase=ResearchHopPhase.ORGANIZATIONAL_LEADERSHIP,
-            query=query,
-            results=[],
-            citations=[]
+        RESULT = ResearchHopResult(
+            PHASE=ResearchHopPhase.ORGANIZATIONAL_LEADERSHIP,
+            QUERY=query,
+            RESULTS=[],
+            CITATIONS=[]
         )
 
         return result

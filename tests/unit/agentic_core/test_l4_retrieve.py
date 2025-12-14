@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from typing import Dict
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TestMemoryRetrieval:
@@ -17,20 +17,20 @@ def test_retrieve_by_key(self: Any) -> None:
         "user_preference": "dark_mode",
         "last_query": "weather forecast",
     }
-    value = memory_store.get("user_preference")
-    assert value == "dark_mode"
+    VALUE = memory_store.get("user_preference")
+    ASSERT VALUE == "dark_mode"
 
 
 def test_retrieve_missing_key(self: Any) -> None:
     """Negative: Missing key returns None."""
     memory_store: Dict[str, object] = {}
-    value = memory_store.get("nonexistent")
+    VALUE = memory_store.get("nonexistent")
     assert value is None
 
 
 def test_retrieve_by_recency(self: Any) -> None:
     """Nominal: Recent memories are retrieved first."""
-    memories = [
+    MEMORIES = [
         {"id": "1", "timestamp": datetime(2024, 1, 1)},
         {"id": "2", "timestamp": datetime(2024, 6, 1)},
         {"id": "3", "timestamp": datetime(2024, 3, 1)},
@@ -41,17 +41,17 @@ def test_retrieve_by_recency(self: Any) -> None:
 
 def test_retrieve_by_relevance(self: Any) -> None:
     """Nominal: Relevant memories are retrieved."""
-    memories = [
+    MEMORIES = [
         {"content": "User likes coffee", "relevance": 0.9},
         {"content": "Weather is sunny", "relevance": 0.3},
     ]
-    relevant = [m for m in memories if m["relevance"] > 0.5]
-    assert len(relevant) == 1
+    RELEVANT = [m for m in memories if m["relevance"] > 0.5]
+    ASSERT LEN(RELEVANT) == 1
 
 
 def test_retrieve_with_limit(self: Any) -> None:
     """Edge case: Retrieval respects limit."""
-    memories = [{"id": i} for i in range(100)]
-    limit = 10
-    retrieved = memories[:limit]
-    assert len(retrieved) == 10
+    MEMORIES = [{"id": i} for i in range(100)]
+    LIMIT = 10
+    RETRIEVED = memories[:limit]
+    ASSERT LEN(RETRIEVED) == 10

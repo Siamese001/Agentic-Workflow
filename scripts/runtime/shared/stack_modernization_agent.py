@@ -7,7 +7,7 @@ systems to modern AI architectures.
 
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class LegacyDiagnostic(BaseModel):
     """Diagnostic of legacy technology stack."""
@@ -156,13 +156,13 @@ class StackModernizationAgent:
                         all_pain_points.extend(self.pain_point_mappings.get(category, []))
 
             # Calculate modernization score
-            score = min(1.0, len(detected_tech) * 0.2)
+            SCORE = min(1.0, len(detected_tech) * 0.2)
 
             # Remove duplicates while preserving order
             unique_tech = list(dict.fromkeys(detected_tech))
             unique_pain = list(dict.fromkeys(all_pain_points))
 
-            diagnostic = LegacyDiagnostic(
+            DIAGNOSTIC = LegacyDiagnostic(
                 detected_legacy_tech=unique_tech,
                 implied_pain_points=unique_pain[:5],  # Limit to top 5
                 modernization_score=score
@@ -239,7 +239,7 @@ class StackModernizationAgent:
             modern_tech = thesis.target_state_vision.split(",
                 ")[0] if thesis.target_state_vision else "modern architecture"
 
-            hook = (
+            HOOK = (
                 f"I noticed you are transitioning from {legacy_tech}. "
                 f"At [Previous Role], I led the architecture de-risking for this exact migration, "
                 f"ensuring zero downtime while modernizing to {modern_tech} "
@@ -264,7 +264,7 @@ class StackModernizationAgent:
         """
         try:
             if thesis.is_transformative:
-                summary = (
+                SUMMARY = (
                     f"Transformation Architect specializing in legacy-to-modern migrations. "
                     f"Proven track record of {thesis.bridge_strategy.split('.')[0] if thesis.bridge_
     strategy else 'safe modernization'} "
@@ -273,7 +273,7 @@ class StackModernizationAgent:
                     f"to cutting-edge AI architectures."
                 )
             else:
-                summary = (
+                SUMMARY = (
                     "Senior AI Engineer with experience in system optimization and "
                     "strategic technology improvements."
                 )
@@ -300,17 +300,17 @@ class StackModernizationAgent:
         """
         try:
             # Respectful current state diagnosis
-            current = (
+            CURRENT = (
                 f"Mature infrastructure with established {',
                     '.join(diagnostic.detected_legacy_tech[:2])}. "
                 f"Experiencing {', '.join(diagnostic.implied_pain_points[:2])}."
             )
 
             # Target vision from playbook
-            target = f"Modern {playbook['modern']} architecture"
+            TARGET = f"Modern {playbook['modern']} architecture"
 
             # Strategy with safety-first approach
-            strategy = playbook["strategy"]
+            STRATEGY = playbook["strategy"]
 
             return MigrationThesis(
                 current_state_diagnosis=current,
@@ -341,9 +341,9 @@ def analyze_modernization_opportunity(job_description: str) -> Dict[str, Any]:
     Returns:
         Analysis results
     """
-    agent = create_stack_modernization_agent()
-    diagnostic = agent.diagnose_stack(job_description)
-    thesis = agent.generate_thesis(diagnostic)
+    AGENT = create_stack_modernization_agent()
+    DIAGNOSTIC = agent.diagnose_stack(job_description)
+    THESIS = agent.generate_thesis(diagnostic)
 
     return {
         "legacy_score": diagnostic.modernization_score,

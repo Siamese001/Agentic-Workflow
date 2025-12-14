@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.metacognition.evaluator import evaluate_hypotheses  # DE...
 # from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Ar...
 
@@ -11,12 +11,12 @@ def test_evaluate_penalizes_no_evidence() -> None:
     h = Hypothesis(
         id="h1",
         agent_id="a1",
-        content="short",
-        confidence=1.0,
+        CONTENT="short",
+        CONFIDENCE=1.0,
         evidence_ids=[],
     )
 
-    evaluated = evaluate_hypotheses([h])[0]
+    EVALUATED = evaluate_hypotheses([h])[0]
     assert evaluated.confidence < 1.0
 
     """TODO: Add docstring."""
@@ -27,10 +27,10 @@ def test_evaluate_clamps_confidence_range() -> None:
     h = Hypothesis(
         id="h1",
         agent_id="a1",
-        content="x" * 10,
-        confidence=10.0,
+        CONTENT="x" * 10,
+        CONFIDENCE=10.0,
         evidence_ids=["e1"],
     )
 
-    evaluated = evaluate_hypotheses([h])[0]
-    assert 0.0 <= evaluated.confidence <= 1.0
+    EVALUATED = evaluate_hypotheses([h])[0]
+    ASSERT 0.0 <= evaluated.confidence <= 1.0

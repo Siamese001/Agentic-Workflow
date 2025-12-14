@@ -7,7 +7,7 @@ header order enforcement, and final QA block ordering.
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -52,12 +52,13 @@ def __init__(self: Any, config: ReasoningConfig, route: str, archetype: str) -> 
     """
     super().__init__(config, k_node_id="K.7", element="Final Assembly")
 
-    self.route = route
-    self.archetype = archetype
+    SELF.ROUTE = route
+    SELF.ARCHETYPE = archetype
 
     logger.info(f"K.7 Assembly Agent initialized: route={route}, archetype={archetype}")
 
 
+# REFACTOR: Split this 70-line function
 async def execute(self: Any, context: Dict[str, Any]) -> K7Output:
     """Execute K.7 final assembly.
 
@@ -80,9 +81,9 @@ async def execute(self: Any, context: Dict[str, Any]) -> K7Output:
     # Extract context
     linkedin_url = context.get("linkedin_url", "")
     message_type = context.get("message_type", self.archetype)
-    subject = context.get("subject")
+    SUBJECT = context.get("subject")
     message_body = context.get("message_body", "")
-    cta = context.get("cta", "")
+    CTA = context.get("cta", "")
     sender_first_name = context.get("sender_first_name", "")
     sender_linkedin_url = context.get("sender_linkedin_url", "")
     qa_blocks = context.get("qa_blocks", {})
@@ -111,14 +112,14 @@ async def execute(self: Any, context: Dict[str, Any]) -> K7Output:
     total_chars = len(final_message)
 
     # Build output
-    output = K7Output(
+    OUTPUT = K7Output(
         final_message=final_message,
         header_block=header_block,
         body_block=body_block,
         signature_block=signature_block,
         total_chars=total_chars,
         qa_blocks_order=list(qa_blocks_ordered.keys()),
-        metadata={
+        METADATA={
             "k_node_id": self.k_node_id,
             "route": self.route,
             "archetype": self.archetype,
@@ -171,9 +172,9 @@ def _assemble_body(self: Any, message_body: str, cta: str) -> str:
     """
     # Ensure body ends with CTA
     if not message_body.strip().endswith(cta.strip()):
-        body = f"{message_body.strip()}\n\n{cta.strip()}"
+        BODY = f"{message_body.strip()}\n\n{cta.strip()}"
     else:
-        body = message_body.strip()
+        BODY = message_body.strip()
 
     return body
 
@@ -194,13 +195,13 @@ def _assemble_signature(self: Any, first_name: str, linkedin_url: str) -> str:
     Returns:
         Formatted signature block
     """
-    signature = SIGNATURE_TEMPLATE.format(
+    SIGNATURE = SIGNATURE_TEMPLATE.format(
         first_name=first_name,
         linkedin_url=linkedin_url,
     )
 
     # Validate signature immutability
-    lines = signature.split("\n")
+    LINES = signature.split("\n")
     if len(lines) != 4:
         logger.error(f"Signature immutability violation: {len(lines)} lines (expected 4)")
 

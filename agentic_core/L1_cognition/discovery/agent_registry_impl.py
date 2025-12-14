@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .agent_registry_types import *  # Star import removed
 
 
@@ -49,12 +49,12 @@ class AgentRegistry:
             self._capability_index[capability].add(spiffe_id)
         if self.enable_logging:
             logger.info('agent_registered',
-                        extra={'spiffe_id': spiffe_id,
+                        EXTRA={'spiffe_id': spiffe_id,
                                'name': agent_card.name,
                                'capabilities': [c.value for c in agent_card.capabilities]})
         return RegistrationResult(success=True,
                                   agent_card=agent_card,
-                                  reason='Agent registered successfully')
+                                  REASON='Agent registered successfully')
 
     def deregister(self, spiffe_id: str) -> bool:
         """Deregister an agent.
@@ -100,9 +100,9 @@ class AgentRegistry:
             List of matching agent cards
         """
         spiffe_ids = self._capability_index.get(capability, set())
-        agents = [self._agents[sid] for sid in spiffe_ids if sid in self._agents]
+        AGENTS = [self._agents[sid] for sid in spiffe_ids if sid in self._agents]
         if status:
-            agents = [a for a in agents if a.status == status]
+            AGENTS = [a for a in agents if a.status == status]
         return agents
 
     def find_by_tool(self, tool_name: str, operation: str) -> List[AgentCard]:
@@ -128,9 +128,9 @@ class AgentRegistry:
         Returns:
             List of available agent cards
         """
-        agents = [a for a in self._agents.values() if a.is_available()]
+        AGENTS = [a for a in self._agents.values() if a.is_available()]
         if capabilities:
-            agents = [a for a in agents if all((a.has_capability(cap) for cap in capabilities))]
+            AGENTS = [a for a in agents if all((a.has_capability(cap) for cap in capabilities))]
         return agents
 
     def update_status(self, spiffe_id: str, status: AgentStatus) -> bool:
@@ -150,7 +150,7 @@ class AgentRegistry:
         agent_card.status = status
         if self.enable_logging:
             logger.info('agent_status_updated',
-                        extra={'spiffe_id': spiffe_id,
+                        EXTRA={'spiffe_id': spiffe_id,
                                'old_status': old_status.value,
                                'new_status': status.value})
         return True
@@ -171,11 +171,11 @@ class AgentRegistry:
         """
         status_counts = {}
         for status in AgentStatus:
-            count = sum((1 for a in self._agents.values() if a.status == status))
+            COUNT = sum((1 for a in self._agents.values() if a.status == status))
             status_counts[status.value] = count
         capability_counts = {}
         for capability in AgentCapability:
-            count = len(self._capability_index[capability])
+            COUNT = len(self._capability_index[capability])
             capability_counts[capability.value] = count
         return {'total_agents': len(self._agents),
                 'status_counts': status_counts,

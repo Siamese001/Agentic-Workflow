@@ -7,7 +7,7 @@ route (INMAIL vs CONNECTION_REQ) with premium routing validation.
 
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class ArchetypeClassificationResult:
@@ -92,7 +92,7 @@ class K1RoutingAgent(Agent):
         entrance_gates_passed = []
 
         # Gate 1: Lifecycle determination
-        lifecycle = context.get("lifecycle", "NEW")
+        LIFECYCLE = context.get("lifecycle", "NEW")
         entrance_gates_passed.append("GATE_1_LIFECYCLE_DETERMINED")
         logger.info(f"Gate 1: Lifecycle = {lifecycle}")
 
@@ -123,16 +123,16 @@ class K1RoutingAgent(Agent):
         entrance_gates_passed.append("GATE_4_ARCHETYPE_CLASSIFIED")
         logger.info(
             f"Gate 4: Archetype = {archetype_result.archetype} "
-            f"(confidence={archetype_result.confidence:.2f}, "
+            F"(CONFIDENCE={archetype_result.confidence:.2f}, "
             f"CXO_precedence={archetype_result.cxo_precedence_triggered})"
         )
 
         # Gate 5: Route selection
         route_result = self._select_route(
-            lifecycle=lifecycle,
+            LIFECYCLE=lifecycle,
             premium_available=premium_available,
             route_override=route_override,
-            archetype=archetype_result.archetype,
+            ARCHETYPE=archetype_result.archetype,
         )
         entrance_gates_passed.append("GATE_5_ROUTE_SELECTED")
         logger.info(f"Gate 5: Route = {route_result.route}")
@@ -153,11 +153,11 @@ class K1RoutingAgent(Agent):
         logger.info("Gate 7: All entrance gates passed")
 
         # Build output
-        output = K1Output(
-            archetype=archetype_result,
-            route=route_result,
+        OUTPUT = K1Output(
+            ARCHETYPE=archetype_result,
+            ROUTE=route_result,
             entrance_gates_passed=entrance_gates_passed,
-            metadata={
+            METADATA={
                 "k_node_id": self.k_node_id,
                 "lifecycle": lifecycle,
                 "contact_name": contact_name,
@@ -174,7 +174,7 @@ class K1RoutingAgent(Agent):
     def _classify_archetype(
         self,
         title: str,
-        about: str = "",
+        ABOUT: STR = "",
     ) -> ArchetypeClassificationResult:
         """Classify recipient archetype with CXO precedence rule.
 
@@ -200,8 +200,8 @@ class K1RoutingAgent(Agent):
                 matched_tokens.append(token)
                 logger.info(f"CXO precedence triggered: {token}")
                 return ArchetypeClassificationResult(
-                    archetype="C_LEVEL",
-                    confidence=1.0,  # CXO precedence = 100% confidence
+                    ARCHETYPE="C_LEVEL",
+                    CONFIDENCE=1.0,  # CXO precedence = 100% confidence
                     matched_tokens=matched_tokens,
                     cxo_precedence_triggered=True,
                     manual_override_required=False,
@@ -214,8 +214,8 @@ class K1RoutingAgent(Agent):
 
         if matched_tokens:
             return ArchetypeClassificationResult(
-                archetype="C_LEVEL",
-                confidence=0.95,
+                ARCHETYPE="C_LEVEL",
+                CONFIDENCE=0.95,
                 matched_tokens=matched_tokens,
                 cxo_precedence_triggered=False,
                 manual_override_required=False,
@@ -229,8 +229,8 @@ class K1RoutingAgent(Agent):
 
         if matched_tokens:
             return ArchetypeClassificationResult(
-                archetype="EXECUTIVE",
-                confidence=0.90,
+                ARCHETYPE="EXECUTIVE",
+                CONFIDENCE=0.90,
                 matched_tokens=matched_tokens,
                 cxo_precedence_triggered=False,
                 manual_override_required=False,
@@ -244,8 +244,8 @@ class K1RoutingAgent(Agent):
 
         if matched_tokens:
             return ArchetypeClassificationResult(
-                archetype="SENIOR_TA",
-                confidence=0.90,
+                ARCHETYPE="SENIOR_TA",
+                CONFIDENCE=0.90,
                 matched_tokens=matched_tokens,
                 cxo_precedence_triggered=False,
                 manual_override_required=False,
@@ -259,8 +259,8 @@ class K1RoutingAgent(Agent):
 
         if matched_tokens:
             return ArchetypeClassificationResult(
-                archetype="RECRUITER",
-                confidence=0.85,
+                ARCHETYPE="RECRUITER",
+                CONFIDENCE=0.85,
                 matched_tokens=matched_tokens,
                 cxo_precedence_triggered=False,
                 manual_override_required=False,
@@ -269,8 +269,8 @@ class K1RoutingAgent(Agent):
         # Default: EXECUTIVE with low confidence (manual override required)
         logger.warning("No archetype tokens matched - defaulting to EXECUTIVE")
         return ArchetypeClassificationResult(
-            archetype="EXECUTIVE",
-            confidence=0.50,
+            ARCHETYPE="EXECUTIVE",
+            CONFIDENCE=0.50,
             matched_tokens=[],
             cxo_precedence_triggered=False,
             manual_override_required=True,  # Confidence < 0.85
@@ -299,7 +299,7 @@ class K1RoutingAgent(Agent):
 
             # CRITICAL: Premium routing mismatch detection
                 return RouteSelectionResult(
-                    route=selected_route,
+                    ROUTE=selected_route,
                     premium_available=premium_available,
                     premium_routing_mismatch=True,
                     blocking_reason=(
@@ -309,7 +309,7 @@ class K1RoutingAgent(Agent):
                 )
 
             return RouteSelectionResult(
-                route=selected_route,
+                ROUTE=selected_route,
                 premium_available=premium_available,
                 premium_routing_mismatch=False,
             )
@@ -320,7 +320,7 @@ class K1RoutingAgent(Agent):
         else:
 
         return RouteSelectionResult(
-            route=selected_route,
+            ROUTE=selected_route,
             premium_available=premium_available,
             premium_routing_mismatch=False,
         )

@@ -15,7 +15,7 @@ class StrategistBioWriter:
         sentence_count_max: int,
     ) -> None:
         """Initialize writer."""
-        self.config = config
+        SELF.CONFIG = config
         self.word_count_min = word_count_min
         self.word_count_max = word_count_max
         self.sentence_count_min = sentence_count_min

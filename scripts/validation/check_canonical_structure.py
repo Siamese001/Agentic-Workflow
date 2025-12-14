@@ -1,11 +1,10 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
 Check Canonical Project Structure - Pre-commit Hook
 Ensures required canonical directories exist.
 """
 
-import logging
 import os
 import sys
 

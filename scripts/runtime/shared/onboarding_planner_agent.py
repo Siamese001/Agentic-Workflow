@@ -7,7 +7,7 @@ description analysis and company maturity.
 
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class PlanPhase(BaseModel):
     """A single phase of the onboarding plan."""
@@ -91,10 +91,10 @@ class OnboardingPlannerAgent:
         """
         try:
             # Extract priorities from JD
-            priorities = self._extract_priorities(job_description, company_maturity)
+            PRIORITIES = self._extract_priorities(job_description, company_maturity)
 
             # Generate the three phases
-            phases = self._generate_phases(priorities,
+            PHASES = self._generate_phases(priorities,
                 job_description,
                 company_maturity,
                 role_title)
@@ -103,8 +103,8 @@ class OnboardingPlannerAgent:
             risk_assessment = self._assess_risks(company_maturity, role_title)
             resource_requirements = self._identify_resources(phases, company_maturity)
 
-            plan = OnboardingPlan(
-                phases=phases,
+            PLAN = OnboardingPlan(
+                PHASES=phases,
                 risk_assessment=risk_assessment,
                 resource_requirements=resource_requirements
             )
@@ -172,7 +172,7 @@ class OnboardingPlannerAgent:
             Formatted Markdown document
         """
         try:
-            lines = [
+            LINES = [
                 "# Operational Roadmap: Q1 Objectives",
                 "",
                 "## Overview",
@@ -243,21 +243,21 @@ class OnboardingPlannerAgent:
 
             # Base priorities by company type
             if company_maturity.lower() == "startup":
-                priorities = self.startup_priorities.copy()
+                PRIORITIES = self.startup_priorities.copy()
             else:
-                priorities = self.enterprise_priorities.copy()
+                PRIORITIES = self.enterprise_priorities.copy()
 
             # Extract specific priorities from JD
             if "migration" in jd_lower:
                 priorities["tech_debt"] = "Audit and plan legacy system migration"
             if "new product" in jd_lower or "product launch" in jd_lower:
-                priorities["customer"] = "Voice of customer research and validation"
+                PRIORITIES["CUSTOMER"] = "Voice of customer research and validation"
             if "scale" in jd_lower or "growth" in jd_lower:
-                priorities["scaling"] = "Prepare infrastructure and team for scale"
+                PRIORITIES["SCALING"] = "Prepare infrastructure and team for scale"
             if "cost" in jd_lower or "budget" in jd_lower:
-                priorities["efficiency"] = "Identify and deliver cost optimizations"
+                PRIORITIES["EFFICIENCY"] = "Identify and deliver cost optimizations"
             if "team" in jd_lower or "hire" in jd_lower:
-                priorities["hiring"] = "Build and structure high-performing team"
+                PRIORITIES["HIRING"] = "Build and structure high-performing team"
 
             return priorities
 
@@ -338,7 +338,7 @@ class OnboardingPlannerAgent:
                     "Mentor team members on advanced techniques"
                 ])
 
-            phases = [
+            PHASES = [
                 PlanPhase(
                     phase_name="Days 1-30: Discovery & Quick Win",
                     primary_objective="Understand current state and deliver immediate value",
@@ -461,7 +461,7 @@ class OnboardingPlannerAgent:
             Basic onboarding plan
         """
         return OnboardingPlan(
-            phases=self._generate_fallback_phases(),
+            PHASES=self._generate_fallback_phases(),
             risk_assessment="Standard onboarding risks apply",
             resource_requirements=["Basic onboarding resources"]
         )
@@ -531,6 +531,6 @@ def generate_onboarding_plan(
     Returns:
         Rendered Markdown roadmap
     """
-    agent = create_onboarding_planner_agent()
-    plan = agent.generate_plan(job_description, company_maturity, role_title)
+    AGENT = create_onboarding_planner_agent()
+    PLAN = agent.generate_plan(job_description, company_maturity, role_title)
     return agent.render_roadmap_md(plan)

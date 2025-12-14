@@ -11,7 +11,7 @@ K1-K7 execution pipeline for profile-driven message generation.
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class ProfileSignal:
@@ -107,7 +107,7 @@ class ProfilePlanner:
         outreach_context = outreach_context or {}
 
         # 1. Extract signals from profile
-        signals = self._extract_profile_signals(recipient_profile)
+        SIGNALS = self._extract_profile_signals(recipient_profile)
 
         # 2. Infer archetype from signals
         inferred_archetype = self._infer_archetype(signals)
@@ -123,7 +123,7 @@ class ProfilePlanner:
             inferred_archetype)
 
         # 5. Apply explicit overrides
-        overrides = outreach_context.get("overrides", {})
+        OVERRIDES = outreach_context.get("overrides", {})
         final_archetype = overrides.get("archetype", inferred_archetype)
         final_seniority = overrides.get("seniority", seniority_level)
 
@@ -133,7 +133,7 @@ class ProfilePlanner:
             final_seniority)
 
         # 7. Build metadata
-        metadata = {
+        METADATA = {
             "profile_completeness": self._assess_profile_completeness(recipient_profile),
             "signal_count": len(signals),
             "has_overrides": len(overrides) > 0,
@@ -144,16 +144,16 @@ class ProfilePlanner:
         }
 
         # 8. Create profile plan
-        plan = ProfilePlan(
+        PLAN = ProfilePlan(
             inferred_archetype=final_archetype,
             seniority_level=final_seniority,
             confidence_score=confidence_score,
-            overrides=overrides,
-            signals=signals,
+            OVERRIDES=overrides,
+            SIGNALS=signals,
             company_size=company_size,
             industry_focus=industry_focus,
             decision_authority=decision_authority,
-            metadata=metadata,
+            METADATA=metadata,
         )
 
         # 9. Record telemetry (best-effort)
@@ -163,51 +163,51 @@ class ProfilePlanner:
 
     def _extract_profile_signals(self, profile: Dict[str, object]) -> List[ProfileSignal]:
         """Extract individual signals from profile data."""
-        signals = []
+        SIGNALS = []
 
         # Title keywords signal
-        title = profile.get("title", "").lower()
+        TITLE = profile.get("title", "").lower()
         if title:
             title_keywords = self._extract_title_keywords(title)
             signals.append(ProfileSignal(
                 signal_type="title_keywords",
-                value=", ".join(title_keywords),
-                confidence=0.9,
-                metadata={"original_title": profile.get("title", "")}
+                VALUE=", ".join(title_keywords),
+                CONFIDENCE=0.9,
+                METADATA={"original_title": profile.get("title", "")}
             ))
 
         # Company size signal
-        company = profile.get("company", "").lower()
+        COMPANY = profile.get("company", "").lower()
         if company:
             size_signals = self._extract_company_signals(company)
             signals.extend(size_signals)
 
         # Industry signal
-        industry = profile.get("industry", "").lower()
+        INDUSTRY = profile.get("industry", "").lower()
         if industry:
             industry_classification = self._classify_industry_from_text(industry)
             if industry_classification:
                 signals.append(ProfileSignal(
                     signal_type="industry",
-                    value=industry_classification,
-                    confidence=0.8,
-                    metadata={"original_industry": profile.get("industry", "")}
+                    VALUE=industry_classification,
+                    CONFIDENCE=0.8,
+                    METADATA={"original_industry": profile.get("industry", "")}
                 ))
 
         # Experience level signal
-        experience = profile.get("experience", [])
+        EXPERIENCE = profile.get("experience", [])
         if experience:
             exp_signal = self._analyze_experience_level(experience)
             signals.append(exp_signal)
 
         # Skills signal
-        skills = profile.get("skills", [])
+        SKILLS = profile.get("skills", [])
         if skills:
             skills_signal = self._analyze_skills_profile(skills)
             signals.append(skills_signal)
 
         # Education signal
-        education = profile.get("education", "")
+        EDUCATION = profile.get("education", "")
         if education:
             edu_signal = self._analyze_education_level(education)
             signals.append(edu_signal)
@@ -217,7 +217,7 @@ class ProfilePlanner:
 
     def _extract_title_keywords(self, title: str) -> List[str]:
         """Extract archetype-relevant keywords from title."""
-        keywords = []
+        KEYWORDS = []
         title_lower = title.lower()
 
         # Check for executive keywords
@@ -239,7 +239,7 @@ class ProfilePlanner:
 
     def _extract_company_signals(self, company: str) -> List[ProfileSignal]:
         """Extract company-related signals."""
-        signals = []
+        SIGNALS = []
 
         # Company size
         for size, patterns in self.company_size_patterns.items():
@@ -247,9 +247,9 @@ class ProfilePlanner:
                 if pattern in company:
                     signals.append(ProfileSignal(
                         signal_type="company_size",
-                        value=size,
-                        confidence=0.7,
-                        metadata={"pattern_matched": pattern}
+                        VALUE=size,
+                        CONFIDENCE=0.7,
+                        METADATA={"pattern_matched": pattern}
                     ))
                     break
 
@@ -273,23 +273,23 @@ class ProfilePlanner:
 
         # Simple heuristic for years of experience
         if job_count > 10:
-            level = "senior"
-            confidence = 0.7
+            LEVEL = "senior"
+            CONFIDENCE = 0.7
         elif job_count > 5:
-            level = "mid_level"
-            confidence = 0.6
+            LEVEL = "mid_level"
+            CONFIDENCE = 0.6
         elif job_count > 2:
-            level = "junior"
-            confidence = 0.5
+            LEVEL = "junior"
+            CONFIDENCE = 0.5
         else:
-            level = "entry"
-            confidence = 0.3
+            LEVEL = "entry"
+            CONFIDENCE = 0.3
 
         return ProfileSignal(
             signal_type="experience_level",
-            value=level,
-            confidence=confidence,
-            metadata={"job_count": job_count}
+            VALUE=level,
+            CONFIDENCE=confidence,
+            METADATA={"job_count": job_count}
         )
 
     def _analyze_skills_profile(self, skills: List[str]) -> ProfileSignal:
@@ -297,8 +297,8 @@ class ProfilePlanner:
         if not skills:
             return ProfileSignal(
                 signal_type="skills_orientation",
-                value="unknown",
-                confidence=0.0
+                VALUE="unknown",
+                CONFIDENCE=0.0
             )
 
         skills_text = " ".join(skills).lower()
@@ -320,19 +320,19 @@ class ProfilePlanner:
         ))
 
         if technical_count > business_count:
-            orientation = "technical"
+            ORIENTATION = "technical"
         elif business_count > technical_count:
-            orientation = "business"
+            ORIENTATION = "business"
         else:
-            orientation = "balanced"
+            ORIENTATION = "balanced"
 
-        confidence = min(technical_count + business_count, 10) / 10.0
+        CONFIDENCE = min(technical_count + business_count, 10) / 10.0
 
         return ProfileSignal(
             signal_type="skills_orientation",
-            value=orientation,
-            confidence=confidence,
-            metadata={"technical_count": technical_count, "business_count": business_count}
+            VALUE=orientation,
+            CONFIDENCE=confidence,
+            METADATA={"technical_count": technical_count, "business_count": business_count}
         )
 
     def _analyze_education_level(self, education: str) -> ProfileSignal:
@@ -340,32 +340,32 @@ class ProfilePlanner:
         edu_lower = education.lower()
 
         if any(degree in edu_lower for degree in ["phd", "doctorate", "doctor"]):
-            level = "doctorate"
-            confidence = 0.9
+            LEVEL = "doctorate"
+            CONFIDENCE = 0.9
         elif any(degree in edu_lower for degree in ["master", "ms", "mba", "graduate"]):
-            level = "masters"
-            confidence = 0.8
+            LEVEL = "masters"
+            CONFIDENCE = 0.8
         elif any(degree in edu_lower for degree in ["bachelor", "bs", "ba", "undergraduate"]):
-            level = "bachelors"
-            confidence = 0.7
+            LEVEL = "bachelors"
+            CONFIDENCE = 0.7
         else:
-            level = "unknown"
-            confidence = 0.3
+            LEVEL = "unknown"
+            CONFIDENCE = 0.3
 
         return ProfileSignal(
             signal_type="education_level",
-            value=level,
-            confidence=confidence
+            VALUE=level,
+            CONFIDENCE=confidence
         )
 
     def _score_keyword(self, keyword: str, confidence: float, scores: Dict[str, float]) -> None:
         """Score a keyword against archetype categories."""
         if keyword in self.executive_keywords:
-            scores["executive"] += confidence
+            SCORES["EXECUTIVE"] += confidence
         elif keyword in self.senior_ta_keywords:
             scores["senior_ta"] += confidence
         elif keyword in self.recruiter_keywords:
-            scores["recruiter"] += confidence
+            SCORES["RECRUITER"] += confidence
 
     def _determine_archetype_from_scores(self, scores: Dict[str, float]) -> str:
         """Determine archetype from scores."""
@@ -380,12 +380,12 @@ class ProfilePlanner:
 
     def _infer_archetype(self, signals: List[ProfileSignal]) -> str:
         """Infer archetype from profile signals."""
-        scores = {"executive": 0, "senior_ta": 0, "recruiter": 0}
+        SCORES = {"executive": 0, "senior_ta": 0, "recruiter": 0}
 
         for signal in signals:
             if signal.signal_type != "title_keywords":
                 continue
-            keywords = signal.value.lower().split(", ")
+            KEYWORDS = signal.value.lower().split(", ")
             for keyword in keywords:
                 self._score_keyword(keyword, signal.confidence, scores)
 
@@ -393,7 +393,7 @@ class ProfilePlanner:
 
     def _determine_seniority(self, profile: Dict[str, object], signals: List[ProfileSignal]) -> str:
         """Determine seniority level from profile and signals."""
-        title = profile.get("title", "").lower()
+        TITLE = profile.get("title", "").lower()
 
         # Check title for seniority keywords
         if any(keyword in title for keyword in self.c_level_keywords):
@@ -431,7 +431,7 @@ class ProfilePlanner:
             return size_signal.value
 
         # Infer from company description
-        company = profile.get("company", "").lower()
+        COMPANY = profile.get("company", "").lower()
         if any(indicator in company for indicator in ["startup", "early stage", "seed"]):
             return "startup"
         elif any(indicator in company for indicator in ["fortune", "global", "multinational"]):
@@ -447,7 +447,7 @@ class ProfilePlanner:
             return industry_signal.value
 
         # Fall back to profile industry field
-        industry = profile.get("industry", "")
+        INDUSTRY = profile.get("industry", "")
         if industry:
             return self._classify_industry_from_text(industry.lower())
 
@@ -459,7 +459,7 @@ class ProfilePlanner:
             return "high"
         elif seniority in ["VP", "DIRECTOR"]:
             return "medium"
-        elif archetype == "EXECUTIVE" and company_size in ["startup", "small"]:
+        ELIF ARCHETYPE == "EXECUTIVE" and company_size in ["startup", "small"]:
             return "medium"
         else:
             return "low"
@@ -481,7 +481,7 @@ class ProfilePlanner:
         # Boost for specific seniority
         seniority_boost = 0.1 if seniority != "IC" else 0.0
 
-        confidence = avg_signal_confidence + archetype_boost + seniority_boost
+        CONFIDENCE = avg_signal_confidence + archetype_boost + seniority_boost
         return round(min(confidence, 1.0), 3)
 
     def _assess_profile_completeness(self, profile: Dict[str, object]) -> float:
@@ -494,7 +494,7 @@ class ProfilePlanner:
         optional_score = sum(1 for field in optional_fields if profile.get(field)) / len(optional_fi
     elds)
 
-        completeness = (required_score * 0.7) + (optional_score * 0.3)
+        COMPLETENESS = (required_score * 0.7) + (optional_score * 0.3)
         return round(completeness, 3)
 
     def _safe_record_telemetry(self, plan: ProfilePlan) -> None:

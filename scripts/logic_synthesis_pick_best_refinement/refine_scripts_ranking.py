@@ -56,7 +56,7 @@ def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
 def apply_strategy(
     """Docstring."""
     items: List[Dict[str, object]],
-    strategy: str = "hybrid",
+    STRATEGY: STR = "hybrid",
 ) -> List[Dict[str, object]]:
     """
     Apply a ranking strategy:
@@ -73,11 +73,11 @@ def apply_strategy(
     s = (strategy or "hybrid").lower().strip()
 
     if s == "bm25":
-        ranked = bm25(items)
-    elif s == "dense":
-        ranked = dense(items)
+        RANKED = bm25(items)
+    ELIF S == "dense":
+        RANKED = dense(items)
     else:
-        ranked = hybrid(items)
+        RANKED = hybrid(items)
 
     # Assign integer rank (1-based)
     out: List[Dict[str, object]] = []
@@ -102,17 +102,17 @@ def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, 
     All behavior purely deterministic.
     """
     flattened: List[Dict[str, object]] = []
-    seen: set[tuple[str, str]] = set()
+    SEEN: SET[TUPLE[STR, STR]] = set()
 
     for group in groups or []:
         for item in group or []:
-            key = (str(item.get("query", "")), str(item.get("evidence", "")))
+            KEY = (str(item.get("query", "")), str(item.get("evidence", "")))
             if key not in seen:
                 seen.add(key)
                 flattened.append(dict(item))
 
     flattened.sort(
-        key=lambda x: (
+        KEY=lambda x: (
             int(x.get("rank", 9_999_999)),
             str(x.get("evidence", "")).lower(),
         )
@@ -120,14 +120,14 @@ def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, 
 
     # Reassign clean ranks
     for idx, item in enumerate(flattened):
-        item["rank"] = idx + 1
+        ITEM["RANK"] = idx + 1
 
     return flattened
 
 def rank_documents(
     """Docstring."""
     items: List[Dict[str, object]],
-    strategy: str = "hybrid",
+    STRATEGY: STR = "hybrid",
 ) -> List[Dict[str, object]]:
     """
     Top-level ranking function used by RAGExecutor:
@@ -143,11 +143,11 @@ def rank_documents(
     if not items:
         return []
 
-    ranked = apply_strategy(items, strategy=strategy)
+    RANKED = apply_strategy(items, strategy=strategy)
 
     # Final stability sort
     ranked.sort(
-        key=lambda x: (
+        KEY=lambda x: (
             int(x.get("rank", 9_999_999)),
             x.get("evidence", ""),
         )

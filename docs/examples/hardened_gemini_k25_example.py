@@ -18,32 +18,32 @@ import logging
 
 # Configure structured logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(message)s'  # JSON logger outputs structured data
+    LEVEL=logging.INFO,
+    FORMAT='%(message)s'  # JSON logger outputs structured data
 )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 async def demonstrate_hardened_k25():
     """Demonstrate K.2.5 Deep Research with hardened executor."""
 
-    logger.info("=== Hardened K.2.5 Deep Research Example ===\n")
+    LOGGER.INFO("=== Hardened K.2.5 Deep Research Example ===\n")
 
     # Create hardened executor with custom config
-    config = HardenedGeminiConfig(
-        model="gemini-3-pro-preview",
-        temperature=0.3,
+    CONFIG = HardenedGeminiConfig(
+        MODEL="gemini-3-pro-preview",
+        TEMPERATURE=0.3,
         max_retries=5,
         safety_threshold_ratio=0.8,
     )
 
-    executor = create_hardened_gemini_executor(config=config)
+    EXECUTOR = create_hardened_gemini_executor(config=config)
 
     # Prepare research prompt
-    messages = [
+    MESSAGES = [
         AgentMessage(
-            role="user",
-            content="Generate a comprehensive competitive intelligence report on DoorDash, focusing
+            ROLE="user",
+            CONTENT="Generate a comprehensive competitive intelligence report on DoorDash, focusing
     on their market position, technology stack, and leadership team."
         )
     ]
@@ -62,8 +62,8 @@ You must respond with valid JSON matching the DeepResearchOutput schema."""
         logger.info("Executing K.2.5 Deep Research with titanium-grade reliability...\n")
 
         # Execute with JSON schema enforcement
-        response = await executor.execute_k_node(
-            messages=messages,
+        RESPONSE = await executor.execute_k_node(
+            MESSAGES=messages,
             system_prompt=system_prompt,
             response_schema=DeepResearchOutput.model_json_schema()
         )
@@ -98,20 +98,20 @@ You must respond with valid JSON matching the DeepResearchOutput schema."""
 async def demonstrate_stateful_continuation():
     """Demonstrate stateful continuation with retry resilience."""
 
-    logger.info("\n=== Stateful Continuation Example ===\n")
+    LOGGER.INFO("\N=== Stateful Continuation Example ===\n")
 
-    executor = create_hardened_gemini_executor(
-        model="gemini-2.5-flash",
-        temperature=0.3
+    EXECUTOR = create_hardened_gemini_executor(
+        MODEL="gemini-2.5-flash",
+        TEMPERATURE=0.3
     )
 
     # Initial request
-    messages = [
+    MESSAGES = [
         AgentMessage(role="user", content="Write a brief summary of machine learning.")
     ]
 
     logger.info("Sending initial request...")
-    response1 = await executor.execute_k_node(messages=messages)
+    RESPONSE1 = await executor.execute_k_node(messages=messages)
 
     # Parse response to get interaction ID (if available)
     try:
@@ -124,12 +124,12 @@ async def demonstrate_stateful_continuation():
 
     # Continue with refinement
     logger.info("\nSending refinement request...")
-    messages2 = [
+    MESSAGES2 = [
         AgentMessage(role="user", content="Now expand on deep learning specifically.")
     ]
 
     # In a real scenario, you'd pass the interaction_id from telemetry
-    response2 = await executor.execute_k_node(messages=messages2)
+    RESPONSE2 = await executor.execute_k_node(messages=messages2)
 
     logger.info("✅ Refinement completed!")
     logger.info(f"Refined response length: {len(response2)} characters")
@@ -137,22 +137,22 @@ async def demonstrate_stateful_continuation():
 async def demonstrate_error_handling():
     """Demonstrate error handling and retry behavior."""
 
-    logger.info("\n=== Error Handling Demonstration ===\n")
+    LOGGER.INFO("\N=== Error Handling Demonstration ===\n")
 
     # Create executor with low retry limit for demo
-    config = HardenedGeminiConfig(
-        model="gemini-3-pro-preview",
+    CONFIG = HardenedGeminiConfig(
+        MODEL="gemini-3-pro-preview",
         max_retries=2,  # Low for quick demo
         retry_min_wait=1.0,
         retry_max_wait=5.0
     )
 
-    executor = create_hardened_gemini_executor(config)
+    EXECUTOR = create_hardened_gemini_executor(config)
 
     # Create a payload that might exceed context
     large_content = "Analyze this: " + "This is test data. " * 100000
 
-    messages = [
+    MESSAGES = [
         AgentMessage(role="user", content=large_content)
     ]
 

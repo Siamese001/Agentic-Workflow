@@ -1,4 +1,4 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Unit tests for scripts module.
 
@@ -15,7 +15,6 @@ Test Structure:
 - Mock objects and fixtures are provided for complex dependencies
 """
 
-import logging
 
 import pytest
 

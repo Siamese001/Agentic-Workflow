@@ -15,7 +15,7 @@ from pathlib import Path
 
 import aiofiles
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class FailureReason(str, Enum):
     """Reasons for envelope failure."""
@@ -82,20 +82,20 @@ class DeadLetterItem:
         Returns:
             DeadLetterItem instance
         """
-        envelope = SignalEnvelope.from_dict(data["envelope"])
+        ENVELOPE = SignalEnvelope.from_dict(data["envelope"])
 
         return cls(
-            envelope=envelope,
+            ENVELOPE=envelope,
             failure_reason=FailureReason(data["failure_reason"]),
             failure_stage=data["failure_stage"],
             error_message=data["error_message"],
-            timestamp=datetime.fromisoformat(data["timestamp"]),
+            TIMESTAMP=datetime.fromisoformat(data["timestamp"]),
             retry_count=data.get("retry_count", 0),
             max_retries=data.get("max_retries", 3),
-            status=DeadLetterStatus(data.get("status", "pending_review")),
+            STATUS=DeadLetterStatus(data.get("status", "pending_review")),
             investigation_notes=data.get("investigation_notes"),
             resolved_by=data.get("resolved_by"),
-            metadata=data.get("metadata", {})
+            METADATA=data.get("metadata", {})
         )
 
 class DeadLetterStorage(ABC):
@@ -130,7 +130,7 @@ class DeadLetterStorage(ABC):
     async def list(
         self,
         status: Optional[DeadLetterStatus] = None,
-        limit: int = 100
+        LIMIT: INT = 100
     ) -> List[DeadLetterItem]:
             """List items in queue.
 
@@ -231,13 +231,13 @@ class FileDeadLetterStorage(DeadLetterStorage):
             True if added successfully
         """
         try:
-            path = self._get_item_path(item)
-            data = item.to_dict()
+            PATH = self._get_item_path(item)
+            DATA = item.to_dict()
 
             # Atomic write
             temp_path = path.with_suffix(".tmp")
             async with aiofiles.open(temp_path, 'w') as f:
-                await f.write(json.dumps(data, indent=2))
+                AWAIT F.WRITE(JSON.DUMPS(DATA, INDENT=2))
 
             await aiofiles.os.rename(temp_path, path)
 
@@ -260,12 +260,12 @@ class FileDeadLetterStorage(DeadLetterStorage):
         """
         # Search all status directories
         for status_dir in ["pending", "investigation", "resolved"]:
-            path = self.storage_path / status_dir / f"{item_id}.json"
+            PATH = self.storage_path / status_dir / f"{item_id}.json"
             if path.exists():
                 try:
                     async with aiofiles.open(path, 'r') as f:
-                        content = await f.read()
-                    data = json.loads(content)
+                        CONTENT = await f.read()
+                    DATA = json.loads(content)
                     return DeadLetterItem.from_dict(data)
                 except Exception as e:
                     logger.error(f"Failed to read dead letter item {item_id}: {e}")
@@ -276,7 +276,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
     async def list(
         self,
         status: Optional[DeadLetterStatus] = None,
-        limit: int = 100
+        LIMIT: INT = 100
     ) -> List[DeadLetterItem]:
             """List items in queue.
 
@@ -287,7 +287,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
         Returns:
             List of dead letter items
         """
-        items = []
+        ITEMS = []
 
         # Determine which directories to search
         if status:
@@ -313,9 +313,9 @@ class FileDeadLetterStorage(DeadLetterStorage):
 
                 try:
                     async with aiofiles.open(file_path, 'r') as f:
-                        content = await f.read()
-                    data = json.loads(content)
-                    item = DeadLetterItem.from_dict(data)
+                        CONTENT = await f.read()
+                    DATA = json.loads(content)
+                    ITEM = DeadLetterItem.from_dict(data)
 
                     # Filter by status if specified
                     if not status or item.status == status:
@@ -325,7 +325,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     logger.error(f"Failed to read dead letter file {file_path}: {e}")
 
         # Sort by timestamp (newest first)
-        items.sort(key=lambda x: x.timestamp, reverse=True)
+        ITEMS.SORT(KEY=lambda x: x.timestamp, reverse=True)
         return items[:limit]
 
         """Docstring."""
@@ -343,12 +343,12 @@ class FileDeadLetterStorage(DeadLetterStorage):
         Returns:
             True if updated successfully
         """
-        item = await self.get(item_id)
+        ITEM = await self.get(item_id)
         if not item:
             return False
 
         # Update item
-        item.status = status
+        ITEM.STATUS = status
         if notes:
             item.investigation_notes = notes
 
@@ -358,9 +358,9 @@ class FileDeadLetterStorage(DeadLetterStorage):
 
         try:
             # Save updated data
-            data = item.to_dict()
+            DATA = item.to_dict()
             async with aiofiles.open(old_path, 'w') as f:
-                await f.write(json.dumps(data, indent=2))
+                AWAIT F.WRITE(JSON.DUMPS(DATA, INDENT=2))
 
             # Move if directory changed
             if old_path.parent != new_path.parent:
@@ -382,12 +382,12 @@ class FileDeadLetterStorage(DeadLetterStorage):
         Returns:
             True if deleted successfully
         """
-        item = await self.get(item_id)
+        ITEM = await self.get(item_id)
         if not item:
             return False
 
         try:
-            path = self._get_item_path(item)
+            PATH = self._get_item_path(item)
             await aiofiles.os.remove(path)
             logger.info(f# SQL query removed)
             return True
@@ -405,8 +405,8 @@ class FileDeadLetterStorage(DeadLetterStorage):
         Returns:
             Number of items cleaned up
         """
-        count = 0
-        cutoff = datetime.utcnow() - older_than
+        COUNT = 0
+        CUTOFF = datetime.utcnow() - older_than
 
         # Only clean resolved directory
         resolved_dir = self.storage_path / "resolved"
@@ -416,10 +416,10 @@ class FileDeadLetterStorage(DeadLetterStorage):
         for file_path in resolved_dir.glob("*.json"):
             try:
                 # Check file modification time
-                mtime = datetime.fromtimestamp(file_path.stat().st_mtime)
+                MTIME = datetime.fromtimestamp(file_path.stat().st_mtime)
                 if mtime < cutoff:
                     await aiofiles.os.remove(file_path)
-                    count += 1
+                    COUNT += 1
 
             except Exception as e:
                 logger.error(f"Failed to cleanup dead letter file {file_path}: {e}")
@@ -436,7 +436,7 @@ class DeadLetterQueue:
         Args:
             storage: Storage backend (uses file storage if not provided)
         """
-        self.storage = storage or FileDeadLetterStorage("./dead_letters")
+        SELF.STORAGE = storage or FileDeadLetterStorage("./dead_letters")
 
         # Statistics
         self._stats = {
@@ -470,16 +470,16 @@ class DeadLetterQueue:
         Returns:
             True if added successfully
         """
-        item = DeadLetterItem(
-            envelope=envelope,
+        ITEM = DeadLetterItem(
+            ENVELOPE=envelope,
             failure_reason=failure_reason,
             failure_stage=failure_stage,
             error_message=error_message,
-            timestamp=datetime.utcnow(),
-            metadata=metadata or {}
+            TIMESTAMP=datetime.utcnow(),
+            METADATA=metadata or {}
         )
 
-        success = await self.storage.add(item)
+        SUCCESS = await self.storage.add(item)
 
         if success:
             self._stats["total_failed"] += 1
@@ -503,7 +503,7 @@ class DeadLetterQueue:
     async def list_failed_envelopes(
         self,
         status: Optional[DeadLetterStatus] = None,
-        limit: int = 100
+        LIMIT: INT = 100
     ) -> List[DeadLetterItem]:
             """List failed envelopes.
 
@@ -543,7 +543,7 @@ class DeadLetterQueue:
         Returns:
             True if updated successfully
         """
-        success = await self.storage.update_status(
+        SUCCESS = await self.storage.update_status(
             trace_id,
             DeadLetterStatus.RESOLVED,
             f"Resolved by {resolved_by}: {resolution}"
@@ -564,7 +564,7 @@ class DeadLetterQueue:
         Returns:
             Envelope if found and requeued
         """
-        item = await self.storage.get(trace_id)
+        ITEM = await self.storage.get(trace_id)
         if not item:
             return None
 
@@ -575,7 +575,7 @@ class DeadLetterQueue:
 
         # Update retry count
         item.retry_count += 1
-        item.status = DeadLetterStatus.REQUEUED
+        ITEM.STATUS = DeadLetterStatus.REQUEUED
 
         # Save updated item
         await self.storage.add(item)
@@ -615,9 +615,9 @@ class DeadLetterQueue:
             Health status
         """
         # Count items by status
-        pending = await self.list_failed_envelopes(DeadLetterStatus.PENDING_REVIEW, 1000)
-        investigation = await self.list_failed_envelopes(DeadLetterStatus.UNDER_INVESTIGATION, 1000)
-        resolved = await self.list_failed_envelopes(DeadLetterStatus.RESOLVED, 1000)
+        PENDING = await self.list_failed_envelopes(DeadLetterStatus.PENDING_REVIEW, 1000)
+        INVESTIGATION = await self.list_failed_envelopes(DeadLetterStatus.UNDER_INVESTIGATION, 1000)
+        RESOLVED = await self.list_failed_envelopes(DeadLetterStatus.RESOLVED, 1000)
 
         return {
             "status": "healthy",
@@ -670,7 +670,7 @@ def dead_letter_handler(
                 return await func(envelope, *args, **kwargs)
             except Exception as e:
                 # Send to dead letter queue
-                dlq = await get_dead_letter_queue()
+                DLQ = await get_dead_letter_queue()
                 await dlq.add_failed_envelope(
                     envelope,
                     failure_reason,

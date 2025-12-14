@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 import logging
 
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent
@@ -25,18 +25,18 @@ class AgentPlan(BaseModel):
 
 class SubatomicHop:
 def __init__(self: Any, role: str, config: Dict) -> None:
-        self.role = role
-        self.id = str(uuid.uuid4())
+        SELF.ROLE = role
+        SELF.ID = str(uuid.uuid4())
 
         # Hardened Components
-        self.storage = LocalDiskAdapter()
-        self.genealogy = GenealogyRegistry()
-        self.pii = PIIVault()
-        self.governor = CostGovernor()
-        self.overseer = ConstitutionalOverseer(config['openai_client'])
-        self.mcp = MCPConnectionManager(config['mcp_mappings'])
-        self.sandbox = DockerSandbox()
-        self.telemetry = TelemetryRecorder()
+        SELF.STORAGE = LocalDiskAdapter()
+        SELF.GENEALOGY = GenealogyRegistry()
+        SELF.PII = PIIVault()
+        SELF.GOVERNOR = CostGovernor()
+        SELF.OVERSEER = ConstitutionalOverseer(config['openai_client'])
+        SELF.MCP = MCPConnectionManager(config['mcp_mappings'])
+        SELF.SANDBOX = DockerSandbox()
+        SELF.TELEMETRY = TelemetryRecorder()
 
 async def run(self: Any, context: Dict) -> None:
         trace_id = context.get('trace_id', self.id)
@@ -49,10 +49,10 @@ async def run(self: Any, context: Dict) -> None:
 
             # 2. THINK (L1)
             # (Assuming self.llm is an Instructor client)
-            plan = await self.llm.chat.completions.create(
-                model="gpt-4",
+            PLAN = await self.llm.chat.completions.create(
+                MODEL="gpt-4",
                 response_model=AgentPlan,
-                messages=[
+                MESSAGES=[
                     {"role": "system", "content": f"You are {self.role}. Tools: {self.mcp.tools}"},
                     {"role": "user", "content": clean_context}
                 ]
@@ -65,12 +65,12 @@ async def run(self: Any, context: Dict) -> None:
                 time.time()))
 
             # 3. ACT (L2)
-            results = []
+            RESULTS = []
             for call in plan.tool_calls:
                 if call['name'] == 'run_python':
-                    res = self.sandbox.run_code(call['args']['code'])
+                    RES = self.sandbox.run_code(call['args']['code'])
                 else:
-                    res = await self.mcp.call_tool(call['name'], call['args'])
+                    RES = await self.mcp.call_tool(call['name'], call['args'])
                 results.append(res)
 
             output_text = f"Plan executed. Results: {results}"

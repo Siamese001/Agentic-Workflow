@@ -9,12 +9,12 @@ from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def fix_bare_except_clauses(directory: Any) -> None:
     """Fix bare except clauses by adding Exception."""
-    count = 0
+    COUNT = 0
 
     for filepath in glob.glob(os.path.join(directory, "**/*.py"), recursive=True):
         # Skip certain files
@@ -22,22 +22,22 @@ def fix_bare_except_clauses(directory: Any) -> None:
             continue
 
         try:
-            with open(filepath, "r", encoding="utf-8") as f:
-                content = f.read()
+            WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+                CONTENT = f.read()
 
             # Check for bare except
             bare_except_pattern = r"\bexcept\s*:\s*\n"
-            matches = re.findall(bare_except_pattern, content)
+            MATCHES = re.findall(bare_except_pattern, content)
 
             if matches:
                 logger.info(f"{filepath}: Found {len(matches)} bare except clauses")
 
                 # Fix bare except clauses
-                content = re.sub(r"\bexcept\s*:\s*\n", "except Exception:\n", content)
+                CONTENT = re.sub(r"\bexcept\s*:\s*\n", "except Exception:\n", content)
 
-                with open(filepath, "w", encoding="utf-8") as f:
+                WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
                     f.write(content)
-                count += 1
+                COUNT += 1
 
         except Exception as e:
             logger.error(f"Error processing {filepath}: {e}")

@@ -1,7 +1,7 @@
 """Cognitive Plane Interface - The Brain.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Defines the contract for all planning, reasoning, and decision-making.
 L1 Cognition: Pure thought, no side effects.
@@ -45,7 +45,7 @@ class PlanningResult:
     success: bool
     plan: List[Dict[str, Any]]
     reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
-    confidence: float = 0.0
+    CONFIDENCE: FLOAT = 0.0
     metadata: Dict[str, Any] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
 
@@ -90,7 +90,7 @@ class ICognitivePlane(ABC):
         self,
         query: str,
         context: Dict[str, Any],
-        mode: str = "react",
+        MODE: STR = "react",
     ) -> Dict[str, Any]:
         """Apply reasoning to a query.
 

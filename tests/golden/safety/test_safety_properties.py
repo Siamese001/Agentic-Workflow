@@ -1,7 +1,7 @@
 """Logic/property tests for safety escalation and thresholds."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class TestSafetyThresholdProperties:
     """TODO: Add docstring."""
 
@@ -9,7 +9,7 @@ class TestSafetyThresholdProperties:
 
     def test_threshold_in_valid_range(self):
             """Docstring."""
-        assert 0.0 <= SAFETY_THRESHOLD <= 1.0
+        ASSERT 0.0 <= SAFETY_THRESHOLD <= 1.0
         """TODO: Add docstring."""
 
 
@@ -44,8 +44,8 @@ class TestValidationSeverityOrdering:
     """Docstring."""
     def test_severity_has_levels(self):
             """Docstring."""
-        severities = list(ValidationSeverity)
-        assert len(severities) >= 2
+        SEVERITIES = list(ValidationSeverity)
+        ASSERT LEN(SEVERITIES) >= 2
 
     def test_severity_determinism(self):
             """Docstring."""

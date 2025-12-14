@@ -7,7 +7,7 @@ Part of the safety guardrail system for agentic workflows.
 import logging
 from typing import Dict, List, Tuple
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class InjectionResult:
@@ -16,7 +16,7 @@ class InjectionResult:
     severity: str  # "low" | "med" | "high"
     confidence: float
     detected_patterns: List[str]
-    rationale: str = ""
+    RATIONALE: STR = ""
     metadata: Dict[str, object] = field(default_factory=dict)
 
 def _score_prompt(prompt: str) -> Tuple[int, str]:
@@ -28,7 +28,7 @@ def _score_prompt(prompt: str) -> Tuple[int, str]:
     Returns:
         Tuple of (score: int, rationale: str)
     """
-    score = 0
+    SCORE = 0
     rationale_parts = []
 
     # Check for critical keywords first (highest priority)
@@ -38,7 +38,7 @@ def _score_prompt(prompt: str) -> Tuple[int, str]:
 
     for keyword in critical_keywords:
         if keyword.lower() in prompt.lower():
-            score += 1
+            SCORE += 1
             rationale_parts.append(f"Detected '{keyword}'")
 
     # If no critical keywords, check for high severity keywords
@@ -50,19 +50,19 @@ def _score_prompt(prompt: str) -> Tuple[int, str]:
 
         for keyword in high_keywords:
             if keyword.lower() in prompt.lower():
-                score += 1
+                SCORE += 1
                 rationale_parts.append(f"Detected '{keyword}'")
                 break  # Only count one high-severity keyword
 
     # Special case: "instructions" only counts if no other keywords found
     if score == 0 and "instructions" in prompt.lower():
-        score += 1
+        SCORE += 1
         rationale_parts.append("Detected 'instructions'")
 
     if score > 0:
-        rationale = f"Injection risk: {', '.join(rationale_parts)}"
+        RATIONALE = f"Injection risk: {', '.join(rationale_parts)}"
     else:
-        rationale = "No injection patterns detected"
+        RATIONALE = "No injection patterns detected"
 
     return score, rationale
 
@@ -78,24 +78,24 @@ def detect_injection(prompt: str) -> InjectionResult:
     logger.debug(f"Analyzing prompt for injection: length={len(prompt)}")
 
     # Score the prompt
-    score, rationale = _score_prompt(prompt)
+    SCORE, RATIONALE = _score_prompt(prompt)
 
     # Determine severity based on score and content
     if score >= 3 or any(word in prompt.lower() for word in ["exfiltrate", "secrets", "policies"]):
-        severity = "high"
-        confidence = 0.9
+        SEVERITY = "high"
+        CONFIDENCE = 0.9
         is_injection = True
-    elif score >= 2 or any(word in prompt.lower() for word in ["bypass", "workflow"]):
-        severity = "med"
-        confidence = 0.7
+    ELIF SCORE >= 2 or any(word in prompt.lower() for word in ["bypass", "workflow"]):
+        SEVERITY = "med"
+        CONFIDENCE = 0.7
         is_injection = True
-    elif score >= 1:
-        severity = "low"
-        confidence = 0.5
+    ELIF SCORE >= 1:
+        SEVERITY = "low"
+        CONFIDENCE = 0.5
         is_injection = True
     else:
-        severity = "low"
-        confidence = 0.1
+        SEVERITY = "low"
+        CONFIDENCE = 0.1
         is_injection = False
 
     # Extract detected patterns
@@ -108,11 +108,11 @@ def detect_injection(prompt: str) -> InjectionResult:
 
     return InjectionResult(
         is_injection=is_injection,
-        severity=severity,
-        confidence=confidence,
+        SEVERITY=severity,
+        CONFIDENCE=confidence,
         detected_patterns=detected_patterns,
-        rationale=rationale,
-        metadata={
+        RATIONALE=rationale,
+        METADATA={
             "prompt_length": len(prompt),
             "score": score,
             "analysis_timestamp": "2025-12-11T09:00:00Z"

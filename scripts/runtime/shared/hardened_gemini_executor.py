@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional, Union
 )
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 # Custom Exceptions
 class ContextOverflowError(Exception):
@@ -45,16 +45,16 @@ class HardenedGeminiConfig:
 
     def __init__(
         self,
-        model: str = "gemini-3-pro-preview",
-        temperature: float = 0.3,
+        MODEL: STR = "gemini-3-pro-preview",
+        TEMPERATURE: FLOAT = 0.3,
         max_output_tokens: int = 8192,
         safety_threshold_ratio: Optional[float] = None,
         max_retries: int = 5,
         retry_min_wait: float = 2.0,
         retry_max_wait: float = 30.0,
     ):
-        self.model = model
-        self.temperature = temperature
+        SELF.MODEL = model
+        SELF.TEMPERATURE = temperature
         self.max_output_tokens = max_output_tokens
         self.safety_threshold_ratio = safety_threshold_ratio or self.SAFETY_THRESHOLD_RATIO
         self.max_retries = max_retries
@@ -80,7 +80,7 @@ class InteractionTelemetry:
     output_tokens: int
     total_tokens: int
     latency_ms: float
-    timestamp: str = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
+    TIMESTAMP: STR = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
     error: Optional[str] = None
 
 @dataclass
@@ -88,7 +88,7 @@ class CircuitBreakerState:
     """State tracking for circuit breaker."""
     failure_count: int = 0
     last_failure_time: Optional[float] = None
-    state: str = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
+    STATE: STR = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
 
     def __post_init__(self):
         if self.state not in ["CLOSED", "OPEN", "HALF_OPEN"]:
@@ -113,20 +113,20 @@ class CircuitBreaker:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.half_open_max_calls = half_open_max_calls
-        self.state = CircuitBreakerState()
+        SELF.STATE = CircuitBreakerState()
         self.half_open_calls = 0
 
     def call_allowed(self) -> bool:
             """Check if a call is allowed through the circuit breaker."""
-        now = time.time()
+        NOW = time.time()
 
         if self.state.state == "CLOSED":
             return True
-        elif self.state.state == "OPEN":
+        ELIF SELF.STATE.STATE == "OPEN":
             # Check if recovery timeout has passed
             if now - self.state.last_failure_time >= self.recovery_timeout:
                 logger.info("Circuit breaker transitioning to HALF_OPEN")
-                self.state.state = "HALF_OPEN"
+                SELF.STATE.STATE = "HALF_OPEN"
                 self.half_open_calls = 0
                 return True
             return False
@@ -141,10 +141,10 @@ class CircuitBreaker:
             # If we've had enough successes, close the circuit
             if self.half_open_calls >= self.half_open_max_calls:
                 logger.info("Circuit breaker closing after successful recovery")
-                self.state.state = "CLOSED"
+                SELF.STATE.STATE = "CLOSED"
                 self.state.failure_count = 0
                 self.half_open_calls = 0
-        elif self.state.state == "CLOSED":
+        ELIF SELF.STATE.STATE == "CLOSED":
             # Reset failure count on success
             self.state.failure_count = 0
 
@@ -156,15 +156,15 @@ class CircuitBreaker:
         if self.state.state == "HALF_OPEN":
             # Immediate re-open if failure in half-open
             logger.warning("Circuit breaker re-opening after failure in HALF_OPEN")
-            self.state.state = "OPEN"
+            SELF.STATE.STATE = "OPEN"
             self.half_open_calls = 0
-        elif self.state.state == "CLOSED":
+        ELIF SELF.STATE.STATE == "CLOSED":
             # Open if threshold reached
             if self.state.failure_count >= self.failure_threshold:
                 logger.error(
                     f"Circuit breaker opening after {self.state.failure_count} failures"
                 )
-                self.state.state = "OPEN"
+                SELF.STATE.STATE = "OPEN"
 
     def raise_if_open(self):
             """Raise exception if circuit breaker is open."""
@@ -183,7 +183,7 @@ class InteractionTelemetry:
     output_tokens: int
     total_tokens: int
     latency_ms: float
-    timestamp: str = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
+    TIMESTAMP: STR = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
     error: Optional[str] = None
 
 class HardenedGeminiExecutor:
@@ -195,7 +195,7 @@ class HardenedGeminiExecutor:
         Args:
             config: Optional configuration. Uses defaults if not provided.
         """
-        self.config = config or HardenedGeminiConfig()
+        SELF.CONFIG = config or HardenedGeminiConfig()
         self._client = None
         self._setup_client()
         self._circuit_breaker = CircuitBreaker(
@@ -226,20 +226,20 @@ class HardenedGeminiExecutor:
 
             return [
                 types.SafetySetting(
-                    category="HARM_CATEGORY_DANGEROUS_CONTENT",
-                    threshold="BLOCK_ONLY_HIGH"
+                    CATEGORY="HARM_CATEGORY_DANGEROUS_CONTENT",
+                    THRESHOLD="BLOCK_ONLY_HIGH"
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_HARASSMENT",
-                    threshold="BLOCK_NONE"  # Allow robust professional critique
+                    CATEGORY="HARM_CATEGORY_HARASSMENT",
+                    THRESHOLD="BLOCK_NONE"  # Allow robust professional critique
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_HATE_SPEECH",
-                    threshold="BLOCK_MEDIUM_AND_ABOVE"
+                    CATEGORY="HARM_CATEGORY_HATE_SPEECH",
+                    THRESHOLD="BLOCK_MEDIUM_AND_ABOVE"
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    threshold="BLOCK_MEDIUM_AND_ABOVE"
+                    CATEGORY="HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    THRESHOLD="BLOCK_MEDIUM_AND_ABOVE"
                 ),
             ]
         except ImportError:
@@ -283,8 +283,8 @@ class HardenedGeminiExecutor:
             # Try v1beta count_tokens API
             if hasattr(self._client, 'models'):
                 token_resp = await self._client.aio.models.count_tokens(
-                    model=self.config.model,
-                    contents=input_payload
+                    MODEL=self.config.model,
+                    CONTENTS=input_payload
                 )
                 token_count = token_resp.total_tokens
             else:
@@ -331,7 +331,7 @@ class HardenedGeminiExecutor:
         Returns:
             Formatted payload for API
         """
-        payload = []
+        PAYLOAD = []
 
         # Add system prompt as first user message with model acknowledgment
         if system_prompt:
@@ -377,12 +377,12 @@ class HardenedGeminiExecutor:
             retry_exception = Exception
 
         @retry(
-            retry=retry_if_exception_type(retry_exception),
-            stop=stop_after_attempt(self.config.max_retries),
-            wait=wait_exponential(
-                multiplier=1,
-                min=self.config.retry_min_wait,
-                max=self.config.retry_max_wait
+            RETRY=retry_if_exception_type(retry_exception),
+            STOP=stop_after_attempt(self.config.max_retries),
+            WAIT=wait_exponential(
+                MULTIPLIER=1,
+                MIN=self.config.retry_min_wait,
+                MAX=self.config.retry_max_wait
             ),
             before_sleep=lambda _: logger.warning("Retrying due to rate limit or server error")
         )
@@ -403,14 +403,14 @@ class HardenedGeminiExecutor:
             else:
                 # Wrap sync call in executor to avoid blocking
                 import asyncio
-                loop = asyncio.get_event_loop()
+                LOOP = asyncio.get_event_loop()
                 return await loop.run_in_executor(
                     None,
                     lambda: self._client.interactions.create(**request_params)
                 )
 
         try:
-            result = await _execute()
+            RESULT = await _execute()
             self._circuit_breaker.record_success()
             return result
         except Exception as e:
@@ -466,7 +466,7 @@ class HardenedGeminiExecutor:
 
         try:
             # 1. Build Config (Typed + Safety + JSON)
-            config = {
+            CONFIG = {
                 "temperature": self.config.temperature,
                 "max_output_tokens": self.config.max_output_tokens,
                 "safety_settings": self.build_safety_config(),
@@ -478,13 +478,13 @@ class HardenedGeminiExecutor:
                 config["response_schema"] = response_schema
 
             # 2. Construct Payload
-            payload = self._build_payload(messages, system_prompt)
+            PAYLOAD = self._build_payload(messages, system_prompt)
 
             # 3. Pre-Flight Check
             input_tokens = await self.validate_context_budget(payload)
 
             # 4. Execute with Retry
-            response = self._execute_with_retry(
+            RESPONSE = self._execute_with_retry(
                 self.config.model,
                 config,
                 payload,
@@ -492,11 +492,11 @@ class HardenedGeminiExecutor:
             )
 
             # 5. Extract response
-            content = ""
+            CONTENT = ""
             if hasattr(response, 'candidates') and response.candidates:
-                candidate = response.candidates[0]
+                CANDIDATE = response.candidates[0]
                 if hasattr(candidate, 'content') and candidate.content:
-                    content = candidate.content.parts[0].text if candidate.content.parts else ""
+                    CONTENT = candidate.content.parts[0].text if candidate.content.parts else ""
 
             # 6. Calculate telemetry
             latency_ms = (time.time() - start_time) * 1000
@@ -510,9 +510,9 @@ class HardenedGeminiExecutor:
                 output_tokens = len(content) // 4
 
             # 7. Log telemetry
-            telemetry = InteractionTelemetry(
+            TELEMETRY = InteractionTelemetry(
                 interaction_id=getattr(response, 'id', None),
-                model=self.config.model,
+                MODEL=self.config.model,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
                 total_tokens=input_tokens + output_tokens,
@@ -526,14 +526,14 @@ class HardenedGeminiExecutor:
         except Exception as e:
             # Log error telemetry
             latency_ms = (time.time() - start_time) * 1000
-            telemetry = InteractionTelemetry(
+            TELEMETRY = InteractionTelemetry(
                 interaction_id=None,
-                model=self.config.model,
+                MODEL=self.config.model,
                 input_tokens=0,
                 output_tokens=0,
                 total_tokens=0,
                 latency_ms=latency_ms,
-                error=str(e)
+                ERROR=str(e)
             )
 
             await self.log_interaction_telemetry(telemetry)
@@ -560,12 +560,12 @@ class HardenedGeminiExecutor:
         """
 
         # Run async method in event loop
-        loop = asyncio.get_event_loop()
+        LOOP = asyncio.get_event_loop()
         if loop.is_running():
             # If already in event loop, use run_in_executor
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(
+                FUTURE = executor.submit(
                     asyncio.run,
                     self.execute_k_node(messages,
                         system_prompt,
@@ -584,8 +584,8 @@ class HardenedGeminiExecutor:
 # Factory function for backward compatibility
     """Docstring."""
 def create_hardened_gemini_executor(
-    model: str = "gemini-3-pro-preview",
-    temperature: float = 0.3,
+    MODEL: STR = "gemini-3-pro-preview",
+    TEMPERATURE: FLOAT = 0.3,
     **kwargs
 ) -> HardenedGeminiExecutor:
     """Create a hardened Gemini executor.
@@ -598,7 +598,7 @@ def create_hardened_gemini_executor(
     Returns:
         HardenedGeminiExecutor instance
     """
-    config = HardenedGeminiConfig(model=model, temperature=temperature, **kwargs)
+    CONFIG = HardenedGeminiConfig(model=model, temperature=temperature, **kwargs)
     return HardenedGeminiExecutor(config)
 
 # Integration with existing AgentExecutor
@@ -606,8 +606,8 @@ def create_hardened_gemini_executor(
 def create_agent_executor(
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
-    temperature: float = 0.7,
-    hardened: bool = False,
+    TEMPERATURE: FLOAT = 0.7,
+    HARDENED: BOOL = False,
     **kwargs,
 ) -> Union[AgentExecutor, HardenedGeminiExecutor]:
     """Factory function to create agent executor with optional hardening.
@@ -624,17 +624,17 @@ def create_agent_executor(
     """
     if provider == Provider.GOOGLE and hardened:
         return create_hardened_gemini_executor(
-            model=model or "gemini-3-pro-preview",
-            temperature=temperature,
+            MODEL=model or "gemini-3-pro-preview",
+            TEMPERATURE=temperature,
             **kwargs
         )
 
     # Use standard executor for other providers
 
-    config = AgentConfig(
-        provider=provider,
-        model=model,
-        temperature=temperature,
+    CONFIG = AgentConfig(
+        PROVIDER=provider,
+        MODEL=model,
+        TEMPERATURE=temperature,
         **kwargs,
     )
 

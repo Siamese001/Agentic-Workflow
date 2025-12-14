@@ -8,7 +8,7 @@ Generated: 2025-12-07T13:28:54.226505
 import logging
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class WeightExperienceMatch:
@@ -16,25 +16,25 @@ class WeightExperienceMatch:
 
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    self.config = config or {}
-    self.weights = self.config.get("weights", {})
+    SELF.CONFIG = config or {}
+    SELF.WEIGHTS = self.config.get("weights", {})
     logger.info(f"Initialized {self.__class__.__name__}")
 
 
 def score(self: Any, data: Dict[str, object]) -> ScoreResult:
     """Compute score for data."""
-    factors = self._extract_factors(data)
+    FACTORS = self._extract_factors(data)
     raw_score = self._compute_weighted(factors)
-    confidence = self._compute_confidence(factors)
+    CONFIDENCE = self._compute_confidence(factors)
     return ScoreResult(score=max(0, min(1, raw_score)), confidence=confidence, factors=factors)
 
 
 def _extract_factors(self: Any, data: Dict[str, object]) -> Dict[str, float]:
     """Extract scoring factors."""
-    factors = {}
+    FACTORS = {}
     for k, v in data.items():
         if isinstance(v, (int, float)):
-            factors[k] = float(v)
+            FACTORS[K] = float(v)
         elif isinstance(v, str):
             factors[f"{k}_len"] = min(1.0, len(v) / 100)
     return factors
@@ -45,7 +45,7 @@ def _compute_weighted(self: Any, factors: Dict[str, float]) -> float:
     if not factors:
         return 0.5
     total_w = sum(self.weights.get(k, 1.0) for k in factors)
-    weighted = sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
+    WEIGHTED = sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
     return weighted / total_w if total_w else 0.5
 
 

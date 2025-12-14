@@ -6,7 +6,7 @@ Minimal implementation for test compatibility.
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,7 +39,7 @@ def __init__(self: Any, config: Optional[Dict[str, Any]]) -> None:
     Args:
         config: Optional configuration dictionary
     """
-    self.config = config or {}
+    SELF.CONFIG = config or {}
     self.nodes: Dict[str, DAGNode] = {}
     self.execution_history: List[DAGExecutionResult] = []
 
@@ -50,7 +50,7 @@ def add_node(self: Any, node: DAGNode) -> None:
     Args:
         node: DAG node to add
     """
-    self.nodes[node.id] = node
+    SELF.NODES[NODE.ID] = node
     logger.debug(f"Added node {node.id} to DAG")
 
 
@@ -63,9 +63,9 @@ def execute(self: Any, context: Optional[Dict[str, Any]]) -> DAGExecutionResult:
     Returns:
         DAGExecutionResult with execution details
     """
-    context = context or {}
+    CONTEXT = context or {}
     executed_nodes = []
-    outputs = {}
+    OUTPUTS = {}
 
     # Simple topological sort and execution
     for node_id, node in self.nodes.items():
@@ -80,7 +80,7 @@ def execute(self: Any, context: Optional[Dict[str, Any]]) -> DAGExecutionResult:
         outputs[node_id] = f"Mock output for {node.operation}"
         logger.debug(f"Executed node {node_id}")
 
-    result = DAGExecutionResult(success=True, executed_nodes=executed_nodes, outputs=outputs)
+    RESULT = DAGExecutionResult(success=True, executed_nodes=executed_nodes, outputs=outputs)
 
     self.execution_history.append(result)
     return result

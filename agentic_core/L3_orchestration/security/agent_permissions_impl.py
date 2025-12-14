@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .agent_permissions_types import *  # Star import removed
 
 class AgentPermissionManager:
@@ -46,12 +46,12 @@ class AgentPermissionManager:
             self._permissions[spiffe_id] = []
         for existing in self._permissions[spiffe_id]:
             if existing.scope == permission.scope and existing.action == permission.action and (exis
-    ting.resource == permission.resource):
+    TING.RESOURCE == permission.resource):
                 return False
         self._permissions[spiffe_id].append(permission)
         if self.enable_logging:
             logger.info('permission_granted',
-                extra={'spiffe_id': spiffe_id,
+                EXTRA={'spiffe_id': spiffe_id,
                 'scope': permission.scope.value,
                 'action': permission.action.value,
                 'resource': permission.resource})
@@ -85,10 +85,10 @@ class AgentPermissionManager:
 
             action,
             resource)]
-        revoked = len(self._permissions[spiffe_id]) < original_count
+        REVOKED = len(self._permissions[spiffe_id]) < original_count
         if revoked and self.enable_logging:
             logger.info('permission_revoked',
-                extra={'spiffe_id': spiffe_id,
+                EXTRA={'spiffe_id': spiffe_id,
                 'scope': scope.value,
                 'action': action.value,
                 'resource': resource})
@@ -117,9 +117,9 @@ class AgentPermissionManager:
         spiffe_id = identity.spiffe_id
         if not identity.is_valid():
             return PermissionCheck(allowed=False,
-                identity=identity,
-                reason='Invalid or expired identity')
-        permissions = self._permissions.get(spiffe_id, [])
+                IDENTITY=identity,
+                REASON='Invalid or expired identity')
+        PERMISSIONS = self._permissions.get(spiffe_id, [])
         default_perms = self._default_permissions.get(identity.agent_type, [])
         all_permissions = permissions + default_perms
         matching_permission = None
@@ -129,31 +129,31 @@ class AgentPermissionManager:
                 break
         if not matching_permission:
             return PermissionCheck(allowed=False,
-                identity=identity,
-                reason='No matching permission found')
+                IDENTITY=identity,
+                REASON='No matching permission found')
         safety_decision = None
         if self.control_plane and context:
-            content = context.get('content', '')
+            CONTENT = context.get('content', '')
             if content:
                 safety_decision = self.control_plane.evaluate_input(content=content,
-                    context=context)
+                    CONTEXT=context)
                 if not safety_decision.is_safe:
                     return PermissionCheck(allowed=False,
-                        identity=identity,
-                        permission=matching_permission,
-                        reason='Safety check failed',
+                        IDENTITY=identity,
+                        PERMISSION=matching_permission,
+                        REASON='Safety check failed',
                         safety_decision=safety_decision)
         if self.enable_logging:
             logger.debug('permission_checked',
-                extra={'spiffe_id': spiffe_id,
+                EXTRA={'spiffe_id': spiffe_id,
                 'scope': scope.value,
                 'action': action.value,
                 'resource': resource,
                 'allowed': True})
         return PermissionCheck(allowed=True,
-            identity=identity,
-            permission=matching_permission,
-            reason='Permission granted',
+            IDENTITY=identity,
+            PERMISSION=matching_permission,
+            REASON='Permission granted',
             safety_decision=safety_decision)
 
     def list_permissions(self, identity: AgentIdentity) -> List[Permission]:
@@ -166,7 +166,7 @@ class AgentPermissionManager:
             List of permissions
         """
         spiffe_id = identity.spiffe_id
-        permissions = self._permissions.get(spiffe_id, []).copy()
+        PERMISSIONS = self._permissions.get(spiffe_id, []).copy()
         default_perms = self._default_permissions.get(identity.agent_type, [])
         permissions.extend(default_perms)
         return permissions
@@ -178,48 +178,48 @@ class AgentPermissionManager:
             .ORCHESTRATOR] = [Permission(scope=PermissionScope.
             .TOOL_EXECUTION,
 
-            action=PermissionAction.ADMIN,
-            resource='*'),
+            ACTION=PermissionAction.ADMIN,
+            RESOURCE='*'),
             Permission(scope=PermissionScope.AGENT_COMMUNICATION,
-            action=PermissionAction.ADMIN,
-            resource='*'),
+            ACTION=PermissionAction.ADMIN,
+            RESOURCE='*'),
             Permission(scope=PermissionScope.SYSTEM_CONFIGURATION,
-            action=PermissionAction.ADMIN,
-            resource='*')]
+            ACTION=PermissionAction.ADMIN,
+            RESOURCE='*')]
         self.
             ._default_permissions[IdentityType.
             .COGNITIVE_AGENT] = [Permission(scope=PermissionScope.
             .DATA_ACCESS,
 
-            action=PermissionAction.READ,
-            resource='*'),
+            ACTION=PermissionAction.READ,
+            RESOURCE='*'),
             Permission(scope=PermissionScope.AGENT_COMMUNICATION,
-            action=PermissionAction.READ,
-            resource='*')]
+            ACTION=PermissionAction.READ,
+            RESOURCE='*')]
         self.
             ._default_permissions[IdentityType.
             .ACTION_AGENT] = [Permission(scope=PermissionScope.
             .TOOL_EXECUTION,
 
-            action=PermissionAction.EXECUTE,
-            resource='*'),
+            ACTION=PermissionAction.EXECUTE,
+            RESOURCE='*'),
             Permission(scope=PermissionScope.DATA_ACCESS,
-            action=PermissionAction.READ,
-            resource='*')]
+            ACTION=PermissionAction.READ,
+            RESOURCE='*')]
         self.
             ._default_permissions[IdentityType.
             .TOOL_AGENT] = [Permission(scope=PermissionScope.
             .TOOL_EXECUTION,
 
-            action=PermissionAction.EXECUTE,
-            resource='assigned_tools')]
+            ACTION=PermissionAction.EXECUTE,
+            RESOURCE='assigned_tools')]
         self.
             ._default_permissions[IdentityType.
             .HUMAN_OPERATOR] = [Permission(scope=PermissionScope.
             .DATA_ACCESS,
 
-            action=PermissionAction.READ,
-            resource='*')]
+            ACTION=PermissionAction.READ,
+            RESOURCE='*')]
 
 def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> AgentPermissionManager:
     """Factory function to create permission manager.

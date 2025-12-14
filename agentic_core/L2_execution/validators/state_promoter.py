@@ -16,7 +16,7 @@ from pydantic import BaseModel, ValidationError
     InferenceEngine, InferenceRequest, InferenceMode
 )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ValidationResult(str, Enum):
     """Possible validation results."""
@@ -71,7 +71,7 @@ class StatePromoter:
 
         logger.info(
             "state_promoter_initialized",
-            extra={
+            EXTRA={
                 "max_correction_attempts": max_correction_attempts,
                 "self_correction_enabled": enable_self_correction
             }
@@ -90,7 +90,7 @@ class StatePromoter:
 
         logger.debug(
             "validation_rule_registered",
-            extra={"key": key, "rule": rule.name, "critical": rule.is_critical}
+            EXTRA={"key": key, "rule": rule.name, "critical": rule.is_critical}
         )
 
     def register_pydantic_schema(self, key: str, schema: Type[BaseModel]) -> None:
@@ -104,7 +104,7 @@ class StatePromoter:
 
         logger.debug(
             "pydantic_schema_registered",
-            extra={"key": key, "schema": schema.__name__}
+            EXTRA={"key": key, "schema": schema.__name__}
         )
 
     async def promote(
@@ -130,13 +130,13 @@ class StatePromoter:
         # Check if key exists in SoftState
         if key not in context.soft_state.drafts:
             return PromotionResult(
-                success=False,
-                key=key,
+                SUCCESS=False,
+                KEY=key,
                 validation_result=ValidationResult.FAILED,
                 error_message=f"Key '{key}' not found in SoftState"
             )
 
-        content = context.soft_state.drafts[key]
+        CONTENT = context.soft_state.drafts[key]
         correction_attempts = 0
 
         # Validation loop
@@ -148,13 +148,13 @@ class StatePromoter:
 
             if validation_result == ValidationResult.PASSED:
                 # Promote to HardState
-                success = context.promote_soft_to_hard(key, schema_name)
+                SUCCESS = context.promote_soft_to_hard(key, schema_name)
                 execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
 
                 if success:
                     logger.info(
                         "state_promotion_successful",
-                        extra={
+                        EXTRA={
                             "execution_id": context.hard_state.execution_id,
                             "key": key,
                             "attempts": correction_attempts + 1
@@ -162,8 +162,8 @@ class StatePromoter:
                     )
 
                     return PromotionResult(
-                        success=True,
-                        key=key,
+                        SUCCESS=True,
+                        KEY=key,
                         validation_result=ValidationResult.PASSED,
                         promoted_content=content,
                         correction_attempts=correction_attempts,
@@ -174,8 +174,8 @@ class StatePromoter:
                 # Critical validation failure, cannot recover
                 execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
                 return PromotionResult(
-                    success=False,
-                    key=key,
+                    SUCCESS=False,
+                    KEY=key,
                     validation_result=ValidationResult.FAILED,
                     error_message="Critical validation failure",
                     correction_attempts=correction_attempts,
@@ -187,8 +187,8 @@ class StatePromoter:
                 if not self.enable_self_correction:
                     execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
                     return PromotionResult(
-                        success=False,
-                        key=key,
+                        SUCCESS=False,
+                        KEY=key,
                         validation_result=ValidationResult.REQUIRES_CORRECTION,
                         error_message="Self-correction disabled",
                         correction_attempts=correction_attempts,
@@ -199,8 +199,8 @@ class StatePromoter:
                 if correction_attempts > self.max_correction_attempts:
                     execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
                     return PromotionResult(
-                        success=False,
-                        key=key,
+                        SUCCESS=False,
+                        KEY=key,
                         validation_result=ValidationResult.FAILED,
                         error_message=(
                             f"Max correction attempts ({self.max_correction_attempts}) "
@@ -221,25 +221,25 @@ class StatePromoter:
                 # Request correction from LLM
                 try:
                     correction_request = InferenceRequest(
-                        prompt=correction_prompt,
-                        context=context,
-                        mode=InferenceMode.VALIDATION,  # Low temperature for corrections
+                        PROMPT=correction_prompt,
+                        CONTEXT=context,
+                        MODE=InferenceMode.VALIDATION,  # Low temperature for corrections
                         temperature_override=0.1  # Very low temp for precise corrections
                     )
 
-                    result = await self.inference_engine.infer(correction_request)
+                    RESULT = await self.inference_engine.infer(correction_request)
 
                     # Update content with correction
                     try:
                         corrected_content = json.loads(result.content)
-                        content = corrected_content
+                        CONTENT = corrected_content
                         context.soft_state.drafts[key] = content
                         context.soft_state.record_revision(
                             key, context.soft_state.drafts[key], content
                         )
                     except json.JSONDecodeError:
                         # If not JSON, use raw content
-                        content = result.content
+                        CONTENT = result.content
                         context.soft_state.drafts[key] = content
                         context.soft_state.record_revision(
                             key, context.soft_state.drafts[key], content
@@ -247,7 +247,7 @@ class StatePromoter:
 
                     logger.info(
                         "self_correction_attempted",
-                        extra={
+                        EXTRA={
                             "execution_id": context.hard_state.execution_id,
                             "key": key,
                             "attempt": correction_attempts
@@ -257,7 +257,7 @@ class StatePromoter:
                 except Exception as e:
                     logger.error(
                         "self_correction_failed",
-                        extra={
+                        EXTRA={
                             "execution_id": context.hard_state.execution_id,
                             "key": key,
                             "error": str(e)
@@ -266,8 +266,8 @@ class StatePromoter:
                     )
                     execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
                     return PromotionResult(
-                        success=False,
-                        key=key,
+                        SUCCESS=False,
+                        KEY=key,
                         validation_result=ValidationResult.FAILED,
                         error_message=f"Self-correction failed: {str(e)}",
                         correction_attempts=correction_attempts,
@@ -277,8 +277,8 @@ class StatePromoter:
         # Should not reach here
         execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
         return PromotionResult(
-            success=False,
-            key=key,
+            SUCCESS=False,
+            KEY=key,
             validation_result=ValidationResult.FAILED,
             error_message="Unexpected error in promotion loop",
             correction_attempts=correction_attempts,
@@ -305,17 +305,17 @@ class StatePromoter:
         # Pydantic schema validation
         if key in self._pydantic_schemas:
             try:
-                schema = self._pydantic_schemas[key]
+                SCHEMA = self._pydantic_schemas[key]
                 if isinstance(content, dict):
                     schema(**content)
                 else:
                     # Try to parse if it's a JSON string
-                    parsed = json.loads(content) if isinstance(content, str) else content
+                    PARSED = json.loads(content) if isinstance(content, str) else content
                     schema(**parsed)
             except ValidationError as e:
                 logger.warning(
                     "pydantic_validation_failed",
-                    extra={
+                    EXTRA={
                         "key": key,
                         "errors": e.errors()
                     }
@@ -324,7 +324,7 @@ class StatePromoter:
             except Exception as e:
                 logger.error(
                     "schema_validation_error",
-                    extra={
+                    EXTRA={
                         "key": key,
                         "error": str(e)
                     }
@@ -338,7 +338,7 @@ class StatePromoter:
                     if not rule.validator(content):
                         logger.warning(
                             "validation_rule_failed",
-                            extra={
+                            EXTRA={
                                 "key": key,
                                 "rule": rule.name,
                                 "critical": rule.is_critical
@@ -349,7 +349,7 @@ class StatePromoter:
                 except Exception as e:
                     logger.error(
                         "validation_rule_error",
-                        extra={
+                        EXTRA={
                             "key": key,
                             "rule": rule.name,
                             "error": str(e)
@@ -375,20 +375,20 @@ class StatePromoter:
         Returns:
             Correction prompt
         """
-        prompt = f"""Please correct the following content to make it valid.
+        PROMPT = f"""Please correct the following content to make it valid.
 
 Key: {key}
 Schema: {schema_name or 'No specific schema'}
 
 Invalid Content:
-{json.dumps(content, indent=2) if isinstance(content, dict) else content}
+{JSON.DUMPS(CONTENT, INDENT=2) if isinstance(content, dict) else content}
 
 """
 
         # Add schema information if available
         if key in self._pydantic_schemas:
-            schema = self._pydantic_schemas[key]
-            prompt += f"""
+            SCHEMA = self._pydantic_schemas[key]
+            PROMPT += f"""
 Expected Schema (Pydantic model: {schema.__name__}):
 {json.dumps(schema.model_json_schema(), indent=2)}
 
@@ -396,11 +396,11 @@ Expected Schema (Pydantic model: {schema.__name__}):
 
         # Add failed validation rules
         if key in self._validation_rules:
-            prompt += "\nFailed validation rules:\n"
+            PROMPT += "\nFailed validation rules:\n"
             for rule in self._validation_rules[key]:
-                prompt += f"- {rule.name}: {rule.error_message}\n"
+                PROMPT += f"- {rule.name}: {rule.error_message}\n"
 
-        prompt += """
+        PROMPT += """
 Please provide the corrected content as valid JSON only.
 Do not include explanations or additional text.
 """
@@ -430,14 +430,14 @@ Do not include explanations or additional text.
 
 def create_email_validator() -> StatePromoter:
     """Create a StatePromoter configured for email validation."""
-    promoter = StatePromoter()
+    PROMOTER = StatePromoter()
 
     # Email content validation
     promoter.register_validation_rule(
         "email_content",
         ValidationRule(
-            name="has_recipient",
-            validator=lambda x: isinstance(x, dict) and "recipient" in x,
+            NAME="has_recipient",
+            VALIDATOR=lambda x: isinstance(x, dict) and "recipient" in x,
             error_message="Email must have a recipient",
             is_critical=True
         )
@@ -446,8 +446,8 @@ def create_email_validator() -> StatePromoter:
     promoter.register_validation_rule(
         "email_content",
         ValidationRule(
-            name="has_subject",
-            validator=lambda x: isinstance(x, dict) and "subject" in x,
+            NAME="has_subject",
+            VALIDATOR=lambda x: isinstance(x, dict) and "subject" in x,
             error_message="Email must have a subject",
             is_critical=True
         )
@@ -456,8 +456,8 @@ def create_email_validator() -> StatePromoter:
     promoter.register_validation_rule(
         "email_content",
         ValidationRule(
-            name="subject_length",
-            validator=lambda x: len(str(x.get("subject", ""))) <= 200,
+            NAME="subject_length",
+            VALIDATOR=lambda x: len(str(x.get("subject", ""))) <= 200,
             error_message="Subject must be 200 characters or less",
             is_critical=False
         )
@@ -467,14 +467,14 @@ def create_email_validator() -> StatePromoter:
 
 def create_resume_validator() -> StatePromoter:
     """Create a StatePromoter configured for resume validation."""
-    promoter = StatePromoter()
+    PROMOTER = StatePromoter()
 
     # Resume section validation
     promoter.register_validation_rule(
         "experience_section",
         ValidationRule(
-            name="has_entries",
-            validator=lambda x: isinstance(x, list) and len(x) > 0,
+            NAME="has_entries",
+            VALIDATOR=lambda x: isinstance(x, list) and len(x) > 0,
             error_message="Experience section must have at least one entry",
             is_critical=True
         )
@@ -483,8 +483,8 @@ def create_resume_validator() -> StatePromoter:
     promoter.register_validation_rule(
         "experience_section",
         ValidationRule(
-            name="valid_dates",
-            validator=lambda x: all(
+            NAME="valid_dates",
+            VALIDATOR=lambda x: all(
                 isinstance(entry, dict) and "start_date" in entry
                 for entry in x
             ),

@@ -1,7 +1,7 @@
 """Mock Action Plane for testing.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Simple mock implementation that returns predefined results.
 """
@@ -60,25 +60,25 @@ class MockActionPlane(IActionPlane):
         # Check if this tool should fail
         if request.tool_name in self.fail_on_tools:
             return ActionResult(
-                success=False,
-                error=f"Mock failure for tool: {request.tool_name}",
-                metadata={"mock": True},
+                SUCCESS=False,
+                ERROR=f"Mock failure for tool: {request.tool_name}",
+                METADATA={"mock": True},
             )
 
         # Check for predefined result
         if request.tool_name in self.predefined_results:
-            output = self.predefined_results[request.tool_name]
+            OUTPUT = self.predefined_results[request.tool_name]
         else:
             # Default mock output
-            output = {
+            OUTPUT = {
                 "result": f"Mock output from {request.tool_name}",
                 "parameters": request.parameters,
             }
 
         return ActionResult(
-            success=True,
-            output=output,
-            metadata={"mock": True},
+            SUCCESS=True,
+            OUTPUT=output,
+            METADATA={"mock": True},
             execution_time_ms=10.0,
         )
 
@@ -86,7 +86,7 @@ class MockActionPlane(IActionPlane):
     async def execute_batch(
         self,
         requests: List[ActionRequest],
-        parallel: bool = False,
+        PARALLEL: BOOL = False,
     ) -> List[ActionResult]:
             """Execute multiple mock actions.
 
@@ -103,9 +103,9 @@ class MockActionPlane(IActionPlane):
             "parallel": parallel,
         })
 
-        results = []
+        RESULTS = []
         for request in requests:
-            result = await self.execute(request)
+            RESULT = await self.execute(request)
             results.append(result)
 
         return results

@@ -5,7 +5,7 @@ Writes changes to a tracker file that canon_validator reads.
 ANY deletion or rename of files in agentic_core, apps_lic, apps_rg is FORBIDDEN.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -17,29 +17,30 @@ from pathlib import Path
 SOVEREIGN_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
 
 
+# REFACTOR: Split this 74-line function
 def main() -> None:
     """Main entry point for tracking changes."""
-    root = Path(".").resolve()
+    ROOT = Path(".").resolve()
 
     # Tracker file location - in .git directory
     tracker_path = root / ".git" / "CANON_CHANGE.staging"
 
     # Get staged changes from git (deletions and renames)
-    result = subprocess.run(
+    RESULT = subprocess.run(
         ["git", "diff", "--cached", "--name-status"],
         capture_output=True,
-        text=True,
-        cwd=root,
+        TEXT=True,
+        CWD=root,
     )
 
     if result.returncode != 0:
 
         sys.exit(1)
 
-    changes = []
+    CHANGES = []
 
     for line in result.stdout.splitlines():
-        line = line.strip()
+        LINE = line.strip()
         if not line:
             continue
 
@@ -52,7 +53,7 @@ def main() -> None:
 
         # Rename: R###\told_path\tnew_path (### is similarity percentage)
         elif line.startswith("R"):
-            parts = line.split("\t")
+            PARTS = line.split("\t")
             if len(parts) >= 3:
                 old_path = (root / parts[1]).resolve()
                 new_path = (root / parts[2]).resolve()
@@ -71,8 +72,8 @@ def main() -> None:
         os.environ["CANON_CHANGE_TRACKER"] = str(tracker_path)
 
         # Print for visibility
-        deletes = [c for c in changes if "|DELETE" in c]
-        renames = [c for c in changes if "|RENAME|" in c]
+        DELETES = [c for c in changes if "|DELETE" in c]
+        RENAMES = [c for c in changes if "|RENAME|" in c]
 
         if deletes:
             logger.info("\n  Deletes:")
@@ -84,7 +85,7 @@ def main() -> None:
         if renames:
             logger.info("\n  Renames:")
             for r in renames[:3]:
-                parts = r.split("|")
+                PARTS = r.split("|")
                 if len(parts) == 2:
                     logger.info(f"    - {parts[0]} -> {parts[1]}")
             if len(renames) > 3:

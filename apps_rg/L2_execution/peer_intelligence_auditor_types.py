@@ -1,7 +1,7 @@
 """Types and models for peer_intelligence_auditor."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class KeywordClassification(Enum):
     """TODO: Add docstring."""
 

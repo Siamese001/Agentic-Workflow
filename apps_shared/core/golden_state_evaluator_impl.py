@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .golden_state_evaluator_types import *  # Star import removed
 
 class GoldenStateEvaluator:
@@ -34,9 +34,9 @@ class GoldenStateEvaluator:
         """Load golden test cases from dataset."""
         try:
             with open(self.dataset_path, 'r') as f:
-                data = json.load(f)
+                DATA = json.load(f)
             for case_data in data.get('test_cases', []):
-                case = GoldenCase.from_dict(case_data)
+                CASE = GoldenCase.from_dict(case_data)
                 self.golden_cases.append(case)
             if self.enable_logging:
                 logger.info('golden_cases_loaded', extra={'count': len(self.golden_cases)})
@@ -64,22 +64,22 @@ class GoldenStateEvaluator:
         else:
             expected_str = str(expected_output) if expected_output else None
         judge_result = await self.judge_evaluator.evaluate(output=output.actual_output,
-            expected=expected_str,
-            context={'task': case.mission,
+            EXPECTED=expected_str,
+            CONTEXT={'task': case.mission,
             'category': case.category})
         action_match_score = self._evaluate_actions(expected=case.expected_actions,
-            actual=output.actions_taken)
+            ACTUAL=output.actions_taken)
         self._check_output_constraints(case.expected_output, output.actual_output, errors)
-        passed = judge_result.passed and action_match_score >= 0.5 and (len(errors) == 0)
-        report = EvaluationReport(case_id=case.id,
+        PASSED = judge_result.passed and action_match_score >= 0.5 and (len(errors) == 0)
+        REPORT = EvaluationReport(case_id=case.id,
             case_name=case.name,
-            passed=passed,
+            PASSED=passed,
             judge_result=judge_result,
             action_match_score=action_match_score,
-            errors=errors)
+            ERRORS=errors)
         if self.enable_logging:
             logger.info('case_evaluated',
-                extra={'case_id': case.id,
+                EXTRA={'case_id': case.id,
                 'passed': passed,
                 'judge_score': judge_result.overall_score,
                 'action_score': action_match_score})
@@ -107,8 +107,8 @@ class GoldenStateEvaluator:
         actual_tools = {a.get('tool') for a in actual if a.get('tool')}
         if not expected_tools:
             return 1.0
-        matches = len(expected_tools & actual_tools)
-        score = matches / len(expected_tools)
+        MATCHES = len(expected_tools & actual_tools)
+        SCORE = matches / len(expected_tools)
         return score
 
     def _check_output_constraints(self,
@@ -129,7 +129,7 @@ class GoldenStateEvaluator:
         max_length = expected.get('max_length')
         if max_length and len(actual) > max_length:
             errors.append(f'Output too long: {len(actual)} > {max_length}')
-        contains = expected.get('contains', [])
+        CONTAINS = expected.get('contains', [])
         if isinstance(contains, list):
             for required in contains:
                 if required.lower() not in actual.lower():
@@ -152,8 +152,8 @@ class GoldenStateEvaluator:
         reports: Dict[str, EvaluationReport] = {}
         for case in self.golden_cases:
             if case.id in outputs:
-                report = await self.evaluate_case(case, outputs[case.id])
-                reports[case.id] = report
+                REPORT = await self.evaluate_case(case, outputs[case.id])
+                REPORTS[CASE.ID] = report
         return reports
 
     def generate_summary(self, reports: Dict[str, EvaluationReport]) -> Dict[str, Any]:
@@ -165,9 +165,9 @@ class GoldenStateEvaluator:
         Returns:
             Summary dict
         """
-        total = len(reports)
-        passed = sum((1 for r in reports.values() if r.passed))
-        failed = total - passed
+        TOTAL = len(reports)
+        PASSED = sum((1 for r in reports.values() if r.passed))
+        FAILED = total - passed
         pass_rate = passed / total if total > 0 else 0.0
         avg_judge_score = sum((r.judge_result.overall_score for r in reports.values())) / total if t
     otal > 0 else 0.0
@@ -190,7 +190,7 @@ def load_golden_cases(dataset_path: Optional[Path]=None) -> List[GoldenCase]:
     Returns:
         List of GoldenCase objects
     """
-    evaluator = GoldenStateEvaluator(dataset_path=dataset_path)
+    EVALUATOR = GoldenStateEvaluator(dataset_path=dataset_path)
     return evaluator.golden_cases
 
 async def evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> EvaluationReport:
@@ -203,5 +203,5 @@ async def evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> Evalua
     Returns:
         EvaluationReport
     """
-    evaluator = GoldenStateEvaluator()
+    EVALUATOR = GoldenStateEvaluator()
     return await evaluator.evaluate_case(case, output)

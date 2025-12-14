@@ -1,7 +1,7 @@
 """Dataclass models for config."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 @dataclass
 class FilePathsConfig:
     """File paths for data files used by the workflow."""
@@ -23,7 +23,7 @@ class ArtistConfig:
     @classmethod
     def from_json(cls, json_path: Path=DATA_DIR / 'artist_constraints.json') -> 'ArtistConfig':
         """Load ArtistConfig from JSON file."""
-        data = _load_json_config(str(json_path), 'Artist Constraints', required=False)
+        DATA = _load_json_config(str(json_path), 'Artist Constraints', required=False)
         bullet_ranges = {}
         for section, range_list in data.get('bullet_word_count_ranges', {}).items():
             if isinstance(range_list, list) and len(range_list) == 2:
@@ -46,7 +46,7 @@ class ValidatorConfig:
     @classmethod
     def from_json(cls, json_path: Path=DATA_DIR / 'validator_rules.json') -> 'ValidatorConfig':
         """Load ValidatorConfig from JSON file."""
-        data = _load_json_config(str(json_path), 'Validator Rules', required=False)
+        DATA = _load_json_config(str(json_path), 'Validator Rules', required=False)
         return cls(forbidden_verbs=data.get('forbidden_verbs',
             []),
             required_sections=set(data.get('required_sections',
@@ -66,8 +66,8 @@ class PromptsConfig:
     @classmethod
     def from_json(cls, json_path: Path=DATA_DIR / 'prompts.json') -> 'PromptsConfig':
         """Load PromptsConfig from JSON file."""
-        data = _load_json_config(str(json_path), 'Prompts', required=True)
-        return cls(prompts=data)
+        DATA = _load_json_config(str(json_path), 'Prompts', required=True)
+        RETURN CLS(PROMPTS=data)
 
     def get_prompt(self, prompt_name: str, section: str='default') -> str:
         """
@@ -159,9 +159,9 @@ class EnricherConfig:
 @dataclass
 class RAGConfig:
     """Configuration for RAG (Retrieval Augmented Generation) system."""
-    model: str = 'gemini-2.5-pro'
+    MODEL: STR = 'gemini-2.5-pro'
     max_tokens: int = 8192
-    temperature: float = 0.7
+    TEMPERATURE: FLOAT = 0.7
     api_max_retries: int = 7
     api_timeout_seconds: int = 120
     api_initial_backoff_seconds: float = 2.0
@@ -179,7 +179,7 @@ class RAGConfig:
     chroma_persist_dir: Path = CACHE_DIR / 'chroma_memory'
     chroma_collection_name: str = 'rag_librarian_v1'
     source_weights: Dict[str,
-        float] = field(default_builder=lambda: {'SOURCE_JD': 1.8,
+        FLOAT] = field(default_builder=lambda: {'SOURCE_JD': 1.8,
         'SOURCE_COMPANY_BLOG': 1.5,
         'SOURCE_TARGET_EMPLOYEE': 1.4,
         'SOURCE_GARTNER_MQ': 1.2,
@@ -224,7 +224,7 @@ class ReasoningConfig:
     tot_branches: int = 3
     min_tot_depth: int = 2
     self_consistency: int = 3
-    reflexion: bool = True
+    REFLEXION: BOOL = True
     max_reflexion_loops: int = 3
     DEFAULT: ClassVar['ReasoningConfig']
     K0_HEADLINE_CONFIG: ClassVar['ReasoningConfig']
@@ -290,7 +290,7 @@ class PromptAddendumConfig:
     HEADER: str = '\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n'
     FOOTER: str = '\nAll directives MUST be followed in the output.\n'
     COT_DIRECTIVES: List[Tuple[int,
-        str]] = field(default_builder=lambda: [(5,
+        STR]] = field(default_builder=lambda: [(5,
         '• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\
     n'),
         (4,
@@ -298,7 +298,7 @@ class PromptAddendumConfig:
         (0,
         '• Consider multiple reasoning approaches before concluding.\n')])
     TOT_B_DIRECTIVES: List[Tuple[int,
-        str]] = field(default_builder=lambda: [(5,
+        STR]] = field(default_builder=lambda: [(5,
         '• MANDATORY: At each decision point,
         systematically evaluate {tot_b} different branches/alternatives.\n'),
         (4,
@@ -306,7 +306,7 @@ class PromptAddendumConfig:
         (0,
         '• Consider multiple decision branches at key steps.\n')])
     TOT_D_DIRECTIVES: List[Tuple[int,
-        str]] = field(default_builder=lambda: [(5,
+        STR]] = field(default_builder=lambda: [(5,
         '• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n
     '),
         (4,
@@ -317,7 +317,7 @@ class PromptAddendumConfig:
         (0,
         '• Structure reasoning with clear logical progression.\n')])
     REFLEXION_DIRECTIVES: List[Tuple[int,
-        str]] = field(default_builder=lambda: [(3,
+        STR]] = field(default_builder=lambda: [(3,
         '• MANDATORY: Review your answer {max_loops} times,
         refining on each pass. Document improvements.\n'),
         (2,

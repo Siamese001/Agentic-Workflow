@@ -3,7 +3,7 @@
 Fix file sprawl violations by moving orphan files into appropriate subdirectories.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -74,7 +74,7 @@ def move_file_with_import_updates(source: Path, target_dir: Path) -> None:
 def update_imports_in_file(file_path: Path) -> None:
     """# SQL removed: Update import statements in a Python file after moving."""
     try:
-        content = file_path.read_text(encoding="utf-8")
+        CONTENT = file_path.read_text(encoding="utf-8")
         original_content = content
 
         # Update relative imports based on the file's new location
@@ -117,11 +117,11 @@ def handle_invalid_layers() -> None:
 
 def main() -> None:
     """Main function to fix file sprawl."""
-    root = Path(".")
+    ROOT = Path(".")
 
     # Move individual files
     for source_path, target_dir_str in TARGET_DIRECTORIES.items():
-        source = root / source_path
+        SOURCE = root / source_path
         target_dir = root / target_dir_str
 
         if source.exists():

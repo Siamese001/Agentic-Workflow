@@ -10,7 +10,7 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class RateLimitStrategy(str, Enum):
     """Rate limiting strategies."""
@@ -35,9 +35,9 @@ class RateLimitExceeded(Exception):
             f"Rate limit exceeded for {identifier}: {limit} requests per {window}s. "
             f"Retry after {retry_after:.1f}s"
         )
-        self.identifier = identifier
-        self.limit = limit
-        self.window = window
+        SELF.IDENTIFIER = identifier
+        SELF.LIMIT = limit
+        SELF.WINDOW = window
         self.retry_after = retry_after
 
 @dataclass
@@ -61,7 +61,7 @@ class ClientState:
     request_count: int = 0
     window_start: float = field(default_factory=time.time)
     last_request: float = field(default_factory=time.time)
-    tokens: float = 0.0  # For token bucket
+    TOKENS: FLOAT = 0.0  # For token bucket
     last_refill: float = field(default_factory=time.time)
 
     def reset_window(self) -> None:
@@ -114,7 +114,7 @@ class TokenBucketRateLimiter(RateLimiter):
         Args:
             config: Rate limit configuration
         """
-        self.config = config
+        SELF.CONFIG = config
         self.clients: Dict[str, ClientState] = {}
         self._lock = asyncio.Lock()
         self._cleanup_task: Optional[asyncio.Task] = None
@@ -154,21 +154,21 @@ class TokenBucketRateLimiter(RateLimiter):
             Tuple of (allowed, retry_after_seconds)
         """
         async with self._lock:
-            now = time.time()
+            NOW = time.time()
 
             # Get or create client state
             if identifier not in self.clients:
-                self.clients[identifier] = ClientState(
-                    identifier=identifier,
-                    tokens=float(self.config.burst_size)
+                SELF.CLIENTS[IDENTIFIER] = ClientState(
+                    IDENTIFIER=identifier,
+                    TOKENS=float(self.config.burst_size)
                 )
 
-            client = self.clients[identifier]
+            CLIENT = self.clients[identifier]
 
             # Refill tokens based on time elapsed
             time_elapsed = now - client.last_refill
             tokens_to_add = time_elapsed * (self.config.limit / self.config.window)
-            client.tokens = min(client.tokens + tokens_to_add, self.config.burst_size)
+            CLIENT.TOKENS = min(client.tokens + tokens_to_add, self.config.burst_size)
             client.last_refill = now
 
             # Check if request is allowed
@@ -176,7 +176,7 @@ class TokenBucketRateLimiter(RateLimiter):
 
             if client.tokens >= 1:
                 # Allow request
-                client.tokens -= 1
+                CLIENT.TOKENS -= 1
                 client.last_request = now
                 self._stats["allowed_requests"] += 1
                 return True, 0.0
@@ -195,7 +195,7 @@ class TokenBucketRateLimiter(RateLimiter):
         Returns:
             Statistics dictionary
         """
-        stats = self._stats.copy()
+        STATS = self._stats.copy()
         stats["active_clients"] = len(self.clients)
 
         if stats["total_requests"] > 0:
@@ -214,8 +214,8 @@ class TokenBucketRateLimiter(RateLimiter):
             Number of clients cleaned up
         """
         async with self._lock:
-            now = time.time()
-            cutoff = now - self.config.cleanup_interval
+            NOW = time.time()
+            CUTOFF = now - self.config.cleanup_interval
 
             inactive_clients = [
                 identifier for identifier, client in self.clients.items()
@@ -264,7 +264,7 @@ class SlidingWindowRateLimiter(RateLimiter):
         Args:
             config: Rate limit configuration
         """
-        self.config = config
+        SELF.CONFIG = config
         self.clients: Dict[str, List[float]] = {}  # identifier -> list of request timestamps
         self._lock = asyncio.Lock()
 
@@ -300,17 +300,17 @@ class SlidingWindowRateLimiter(RateLimiter):
             Tuple of (allowed, retry_after_seconds)
         """
         async with self._lock:
-            now = time.time()
+            NOW = time.time()
             window_start = now - self.config.window
 
             # Get or create client request list
             if identifier not in self.clients:
-                self.clients[identifier] = []
+                SELF.CLIENTS[IDENTIFIER] = []
 
-            requests = self.clients[identifier]
+            REQUESTS = self.clients[identifier]
 
             # Remove old requests outside window
-            requests[:] = [req_time for req_time in requests if req_time > window_start]
+            REQUESTS[:] = [req_time for req_time in requests if req_time > window_start]
 
             # Check if under limit
             self._stats["total_requests"] += 1
@@ -336,7 +336,7 @@ class SlidingWindowRateLimiter(RateLimiter):
         Returns:
             Statistics dictionary
         """
-        stats = self._stats.copy()
+        STATS = self._stats.copy()
         stats["active_clients"] = len(self.clients)
 
         if stats["total_requests"] > 0:
@@ -374,13 +374,13 @@ class RateLimitManager:
 
             # Create appropriate limiter based on strategy
             if config.strategy == RateLimitStrategy.TOKEN_BUCKET:
-                limiter = TokenBucketRateLimiter(config)
-            elif config.strategy == RateLimitStrategy.SLIDING_WINDOW:
-                limiter = SlidingWindowRateLimiter(config)
+                LIMITER = TokenBucketRateLimiter(config)
+            ELIF CONFIG.STRATEGY == RateLimitStrategy.SLIDING_WINDOW:
+                LIMITER = SlidingWindowRateLimiter(config)
             else:
                 raise ValueError(f"Unsupported rate limit strategy: {config.strategy}")
 
-            self.limiters[name] = limiter
+            SELF.LIMITERS[NAME] = limiter
             logger.info(f"Added rate limiter '{name}' with {config.limit}/{config.window}s")
 
             return limiter
@@ -400,7 +400,7 @@ class RateLimitManager:
         Returns:
             Tuple of (allowed, retry_after_seconds)
         """
-        limiter = self.limiters.get(limiter_name)
+        LIMITER = self.limiters.get(limiter_name)
         if not limiter:
             raise ValueError(f"Rate limiter '{limiter_name}' not found")
 
@@ -416,7 +416,7 @@ class RateLimitManager:
         Returns:
             True if allowed
         """
-        limiter = self.limiters.get(limiter_name)
+        LIMITER = self.limiters.get(limiter_name)
         if not limiter:
             raise ValueError(f"Rate limiter '{limiter_name}' not found")
 
@@ -452,7 +452,7 @@ class RateLimitManager:
         """
         async with self._lock:
             if name in self.limiters:
-                limiter = self.limiters[name]
+                LIMITER = self.limiters[name]
 
                 # Stop cleanup tasks if applicable
                 if hasattr(limiter, 'stop'):
@@ -510,14 +510,14 @@ def rate_limit(
 
         async def async_wrapper(*args, **kwargs):
                 """Docstring."""
-            manager = await get_rate_limit_manager()
+            MANAGER = await get_rate_limit_manager()
 
             # Extract identifier
             if identifier_extractor:
-                identifier = identifier_extractor(*args, **kwargs)
+                IDENTIFIER = identifier_extractor(*args, **kwargs)
             else:
                 # Default: use first argument or 'default'
-                identifier = str(args[0]) if args else 'default'
+                IDENTIFIER = str(args[0]) if args else 'default'
 
             # Check rate limit
             allowed, retry_after = await manager.check_limit(limiter_name, identifier)
@@ -556,32 +556,32 @@ def rate_limit(
 # Predefined configurations
 RATE_LIMIT_CONFIGS = {
     "api_default": RateLimitConfig(
-        limit=100,
-        window=60,
-        strategy=RateLimitStrategy.TOKEN_BUCKET
+        LIMIT=100,
+        WINDOW=60,
+        STRATEGY=RateLimitStrategy.TOKEN_BUCKET
     ),
     "api_heavy": RateLimitConfig(
-        limit=1000,
-        window=60,
-        strategy=RateLimitStrategy.TOKEN_BUCKET,
+        LIMIT=1000,
+        WINDOW=60,
+        STRATEGY=RateLimitStrategy.TOKEN_BUCKET,
         burst_size=2000
     ),
     "api_strict": RateLimitConfig(
-        limit=10,
-        window=60,
-        strategy=RateLimitStrategy.SLIDING_WINDOW
+        LIMIT=10,
+        WINDOW=60,
+        STRATEGY=RateLimitStrategy.SLIDING_WINDOW
     ),
     "upload": RateLimitConfig(
-        limit=5,
-        window=60,
-        strategy=RateLimitStrategy.TOKEN_BUCKET
+        LIMIT=5,
+        WINDOW=60,
+        STRATEGY=RateLimitStrategy.TOKEN_BUCKET
     )
 }
 
 # Initialize default limiters
 async def init_default_rate_limits() -> None:
     """Initialize default rate limiters."""
-    manager = await get_rate_limit_manager()
+    MANAGER = await get_rate_limit_manager()
 
     for name, config in RATE_LIMIT_CONFIGS.items():
         await manager.add_limiter(name, config)

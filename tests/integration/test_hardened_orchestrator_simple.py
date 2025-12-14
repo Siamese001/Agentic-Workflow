@@ -12,7 +12,7 @@ from runtime.shared.routing.factory import reset_router
 
     kflowOrchestrator
 
-@pytest.fixture(autouse=True)
+@PYTEST.FIXTURE(AUTOUSE=True)
 def reset_singletons():
     """Reset singleton state before each test."""
     reset_state_manager()
@@ -32,7 +32,7 @@ class TestHardenedOrchestratorCore:
 
     def test_orchestrator_creation_with_storage(self, temp_state_dir):
             """Test creating a hardened orchestrator with storage path."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
         assert orchestrator is not None
@@ -42,7 +42,7 @@ class TestHardenedOrchestratorCore:
 
     def test_orchestrator_creation_without_storage(self):
             """Test creating a hardened orchestrator without storage path."""
-        orchestrator = create_hardened_orchestrator()
+        ORCHESTRATOR = create_hardened_orchestrator()
         assert orchestrator is not None
         assert isinstance(orchestrator, HardenedWorkflowOrchestrator)
         assert orchestrator.state_manager is not None
@@ -50,7 +50,7 @@ class TestHardenedOrchestratorCore:
 
     def test_state_manager_initialization(self, temp_state_dir):
             """Test that state manager is properly initialized."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
         state_manager = orchestrator.state_manager
@@ -59,10 +59,10 @@ class TestHardenedOrchestratorCore:
 
     def test_router_initialization(self, temp_state_dir):
             """Test that router is properly initialized."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
-        router = orchestrator.router
+        ROUTER = orchestrator.router
         assert router is not None
         assert isinstance(router, HardenedRouter)
 
@@ -71,23 +71,23 @@ class TestStateManagement:
 
     def test_state_manager_from_orchestrator(self, temp_state_dir):
             """Test that state manager is accessible from orchestrator."""
-        orchestrator = create_hardened_orchestrator(storage_path=temp_state_dir)
+        ORCHESTRATOR = create_hardened_orchestrator(storage_path=temp_state_dir)
         state_manager = orchestrator.state_manager
         assert state_manager is not None
         assert state_manager.storage_path == Path(temp_state_dir)
 
     def test_state_manager_reset_via_orchestrator(self, temp_state_dir):
             """Test that state manager can be reset."""
-        orchestrator1 = create_hardened_orchestrator(storage_path=temp_state_dir)
+        ORCHESTRATOR1 = create_hardened_orchestrator(storage_path=temp_state_dir)
         state_manager1 = orchestrator1.state_manager
         reset_state_manager()
-        orchestrator2 = create_hardened_orchestrator(storage_path=temp_state_dir)
+        ORCHESTRATOR2 = create_hardened_orchestrator(storage_path=temp_state_dir)
         state_manager2 = orchestrator2.state_manager
         assert state_manager1 is not state_manager2
 
     def test_state_persistence_directory_creation(self, temp_state_dir):
             """Test that state persistence creates necessary directories."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
         state_dir = Path(temp_state_dir)
@@ -99,23 +99,23 @@ class TestResilientRouting:
 
     def test_router_singleton(self):
             """Test that router follows singleton pattern."""
-        router1 = get_resilient_router()
-        router2 = get_resilient_router()
+        ROUTER1 = get_resilient_router()
+        ROUTER2 = get_resilient_router()
         assert router1 is router2
 
     def test_router_reset(self):
             """Test that router can be reset."""
-        router1 = get_resilient_router()
+        ROUTER1 = get_resilient_router()
         reset_router()
-        router2 = get_resilient_router()
+        ROUTER2 = get_resilient_router()
         assert router1 is not router2
 
     def test_router_has_execute_method(self, temp_state_dir):
             """Test that router has execute_with_fallback method."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
-        router = orchestrator.router
+        ROUTER = orchestrator.router
         assert hasattr(router, 'execute_with_fallback')
         assert callable(router.execute_with_fallback)
 
@@ -124,31 +124,31 @@ class TestAgentResponseStructure:
 
     def test_agent_response_creation(self):
             """Test creating an AgentResponse with correct parameters."""
-        response = AgentResponse(
-            content="Test response",
+        RESPONSE = AgentResponse(
+            CONTENT="Test response",
             finish_reason="stop",
-            usage={"total_tokens": 100}
+            USAGE={"total_tokens": 100}
         )
-        assert response.content == "Test response"
+        ASSERT RESPONSE.CONTENT == "Test response"
         assert response.finish_reason == "stop"
         assert response.usage["total_tokens"] == 100
 
     def test_agent_response_with_metadata(self):
             """Test creating an AgentResponse with metadata."""
-        response = AgentResponse(
-            content="Test response",
+        RESPONSE = AgentResponse(
+            CONTENT="Test response",
             finish_reason="stop",
-            usage={"total_tokens": 100},
-            metadata={"provider_used": "mock_provider"}
+            USAGE={"total_tokens": 100},
+            METADATA={"provider_used": "mock_provider"}
         )
         assert response.metadata["provider_used"] == "mock_provider"
 
     def test_agent_response_optional_fields(self):
             """Test AgentResponse with optional fields."""
-        response = AgentResponse(
-            content="Test response",
+        RESPONSE = AgentResponse(
+            CONTENT="Test response",
             finish_reason="stop",
-            usage={"total_tokens": 100},
+            USAGE={"total_tokens": 100},
             tool_calls=None,
             raw_response=None,
             interaction_id="test_id"
@@ -161,10 +161,10 @@ class TestCircuitBreakerIntegration:
 
     def test_circuit_breaker_exists(self, temp_state_dir):
             """Test that circuit breaker is integrated in router."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
-        router = orchestrator.router
+        ROUTER = orchestrator.router
         # Router should have circuit breaker functionality
         assert hasattr(router, 'configs') or hasattr(router, '_executors')
 
@@ -173,7 +173,7 @@ class TestOrchestratorIntegration:
 
     def test_orchestrator_has_all_components(self, temp_state_dir):
             """Test that orchestrator has all required components."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
 
@@ -188,10 +188,10 @@ class TestOrchestratorIntegration:
 
     def test_multiple_orchestrators_share_state(self, temp_state_dir):
             """Test that multiple orchestrators can share state."""
-        orchestrator1 = create_hardened_orchestrator(
+        ORCHESTRATOR1 = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
-        orchestrator2 = create_hardened_orchestrator(
+        ORCHESTRATOR2 = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
 
@@ -200,7 +200,7 @@ class TestOrchestratorIntegration:
 
     def test_orchestrator_storage_path_handling(self, temp_state_dir):
             """Test that orchestrator handles storage path correctly."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
 
@@ -213,7 +213,7 @@ class TestErrorHandling:
     def test_orchestrator_handles_missing_api_keys(self, temp_state_dir):
             """Test that orchestrator handles missing API keys gracefully."""
         # This should not raise an exception during initialization
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
         assert orchestrator is not None
@@ -221,7 +221,7 @@ class TestErrorHandling:
     def test_orchestrator_with_default_storage(self):
             """Test that orchestrator works with default storage."""
         # Should handle default storage path gracefully
-        orchestrator = create_hardened_orchestrator()
+        ORCHESTRATOR = create_hardened_orchestrator()
         assert orchestrator is not None
         assert orchestrator.state_manager is not None
 

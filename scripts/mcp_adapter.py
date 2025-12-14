@@ -21,8 +21,8 @@ class UniversalMCPClient:
 def __init__(self: Any, config_path: str) -> None:
     """Initialize the MCP client with the specified config path."""
     self.config_path = config_path
-    self.servers = {}
-    self.logger = logging.getLogger(__name__)
+    SELF.SERVERS = {}
+    SELF.LOGGER = logging.getLogger(__name__)
     self.exit_stack = AsyncExitStack()
     self.sessions: Dict[str, ClientSession] = {}
 
@@ -58,14 +58,14 @@ async def connect_all(self: Any) -> None:
                     final_args.append(arg)
 
             server_params = StdioServerParameters(
-                command=cfg["command"], args=final_args, env=env_vars
+                COMMAND=cfg["command"], args=final_args, env=env_vars
             )
 
-            transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
-            read, write = transport
-            session = await self.exit_stack.enter_async_context(ClientSession(read, write))
+            TRANSPORT = await self.exit_stack.enter_async_context(stdio_client(server_params))
+            READ, WRITE = transport
+            SESSION = await self.exit_stack.enter_async_context(ClientSession(read, write))
             await session.initialize()
-            self.sessions[name] = session
+            SELF.SESSIONS[NAME] = session
             self.logger.info(f"Connected to {name}")
 
         except Exception as e:
@@ -81,7 +81,7 @@ async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
     all_tools = []
     for name, session in self.sessions.items():
         try:
-            result = await session.list_tools()
+            RESULT = await session.list_tools()
             for tool in result.tools:
                 # Namespace tools: 'browser__navigate', 'filesystem__read_file'
                 all_tools.append(
@@ -111,7 +111,7 @@ async def execute_tool(self: Any, namespaced_tool_name: str, arguments: Dict[str
         if server_name not in self.sessions:
             raise ValueError(f"Server {server_name} not connected")
 
-        result = await self.sessions[server_name].call_tool(tool_name, arguments=arguments)
+        RESULT = await self.sessions[server_name].call_tool(tool_name, arguments=arguments)
         return result.content
     except Exception as e:
         return f"Error executing {namespaced_tool_name}: {str(e)}"

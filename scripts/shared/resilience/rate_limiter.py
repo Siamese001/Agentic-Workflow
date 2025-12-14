@@ -1,7 +1,7 @@
 """Rate limiting implementations for API throttling.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
@@ -31,20 +31,20 @@ class TokenBucket:
 
     capacity: float
     refill_rate: float
-    tokens: float = field(init=False)
+    TOKENS: FLOAT = field(init=False)
     last_refill: float = field(init=False)
 
     def __post_init__(self) -> None:
-        self.tokens = self.capacity
+        SELF.TOKENS = self.capacity
         self.last_refill = time.time()
 
     def _refill(self) -> None:
         """Refill tokens based on elapsed time."""
-        now = time.time()
-        elapsed = now - self.last_refill
+        NOW = time.time()
+        ELAPSED = now - self.last_refill
 
         tokens_to_add = elapsed * self.refill_rate
-        self.tokens = min(self.capacity, self.tokens + tokens_to_add)
+        SELF.TOKENS = min(self.capacity, self.tokens + tokens_to_add)
         self.last_refill = now
 
     def acquire(self, tokens: float = 1.0) -> bool:
@@ -59,7 +59,7 @@ class TokenBucket:
         self._refill()
 
         if self.tokens >= tokens:
-            self.tokens -= tokens
+            SELF.TOKENS -= tokens
             return True
 
         return False
@@ -101,7 +101,7 @@ class FixedWindow:
 
     def _reset_if_needed(self) -> None:
         """Reset window if expired."""
-        now = time.time()
+        NOW = time.time()
 
         if now - self.window_start >= self.window_s:
             self.request_count = 0
@@ -132,7 +132,7 @@ class FixedWindow:
         if self.request_count < self.max_requests:
             return 0.0
 
-        now = time.time()
+        NOW = time.time()
         return self.window_s - (now - self.window_start)
 
 class RateLimiter:
@@ -159,7 +159,7 @@ class RateLimiter:
             refill_rate: Tokens per second
         """
         self._limiters[name] = TokenBucket(
-            capacity=capacity,
+            CAPACITY=capacity,
             refill_rate=refill_rate,
         )
 
@@ -192,7 +192,7 @@ class RateLimiter:
         Raises:
             RateLimitExceeded: If rate limit exceeded
         """
-        limiter = self._limiters.get(name)
+        LIMITER = self._limiters.get(name)
 
         if not limiter:
             return
@@ -223,14 +223,14 @@ class RateLimiter:
         Returns:
             True if request would be allowed
         """
-        limiter = self._limiters.get(name)
+        LIMITER = self._limiters.get(name)
 
         if not limiter:
             return True
 
         if isinstance(limiter, TokenBucket):
             limiter._refill()
-            return limiter.tokens >= tokens
+            RETURN LIMITER.TOKENS >= tokens
 
         elif isinstance(limiter, FixedWindow):
             limiter._reset_if_needed()

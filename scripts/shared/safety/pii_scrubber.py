@@ -7,7 +7,7 @@ Migrated from archives/engines/legacy_engines/safety_enhancements.py
 import logging
 import re
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class PIIType(Enum):
     """Types of PII to detect."""
@@ -27,7 +27,7 @@ class PIIMatch:
     original: str
     redaction_token: str
     position: Tuple[int, int]
-    confidence: float = 1.0
+    CONFIDENCE: FLOAT = 1.0
 
 @dataclass
 class PIIResult:
@@ -103,17 +103,17 @@ class PIIScrubber:
         scrubbed_text = text
 
         for pii_type, pattern in self.pii_patterns.items():
-            matches = re.finditer(pattern, scrubbed_text, re.IGNORECASE)
+            MATCHES = re.finditer(pattern, scrubbed_text, re.IGNORECASE)
 
             for match in matches:
-                original = match.group()
+                ORIGINAL = match.group()
                 redaction_token = self._create_redaction_token(pii_type, original)
 
                 pii_match = PIIMatch(
                     pii_type=pii_type,
-                    original=original,
+                    ORIGINAL=original,
                     redaction_token=redaction_token,
-                    position=match.span(),
+                    POSITION=match.span(),
                 )
 
                 detected_pii.append(pii_match)
@@ -124,7 +124,7 @@ class PIIScrubber:
         if self.enable_logging and detected_pii:
             logger.warning(
                 "pii_detected",
-                extra={
+                EXTRA={
                     "pii_count": len(detected_pii),
                     "pii_types": [m.pii_type.value for m in detected_pii],
                 }
@@ -162,9 +162,9 @@ class PIIScrubber:
         Returns:
             Text with original PII restored
         """
-        text = scrubbed_text
+        TEXT = scrubbed_text
         for redaction_token, original in self.redaction_map.items():
-            text = text.replace(redaction_token, original)
+            TEXT = text.replace(redaction_token, original)
         return text
 
     def reset(self) -> None:
@@ -181,5 +181,5 @@ def scrub_pii(text: str) -> PIIResult:
     Returns:
         PIIResult with scrubbed text
     """
-    scrubber = PIIScrubber()
+    SCRUBBER = PIIScrubber()
     return scrubber.scrub_text(text)

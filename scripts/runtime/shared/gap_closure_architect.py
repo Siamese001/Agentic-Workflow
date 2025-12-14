@@ -10,7 +10,7 @@ Legacy K-Node: K.9 (K.8 in some versions)
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -82,11 +82,12 @@ def __init__(
 
     logger.info(
         f"GapClosureArchitect initialized: "
-        f"count={competency_count}, words={word_count_min}-{word_count_max}, "
+        F"COUNT={competency_count}, words={word_count_min}-{word_count_max}, "
         f"gap_coverage≥{gap_coverage_minimum:.0%}"
     )
 
 
+# REFACTOR: Split this 97-line function
 async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
     """Execute competency generation with gap filling.
 
@@ -118,17 +119,17 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
 
     # Build prompt
     if regeneration_feedback:
-        prompt = self._build_regeneration_prompt(context, regeneration_feedback)
+        PROMPT = self._build_regeneration_prompt(context, regeneration_feedback)
     else:
-        prompt = self._build_initial_prompt(
+        PROMPT = self._build_initial_prompt(
             jd_keyword_gap, authentic_phrasing, base_competency_pool, target_industry
         )
 
     # Generate competencies
-    response = await self._call_llm(prompt)
+    RESPONSE = await self._call_llm(prompt)
 
     # Parse competencies
-    competencies = self._parse_competencies(response)
+    COMPETENCIES = self._parse_competencies(response)
 
     # Ensure exactly 6 competencies
     if len(competencies) != self.competency_count:
@@ -139,14 +140,14 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
         while len(competencies) < self.competency_count:
             competencies.append(
                 CompetencyItem(
-                    title="[PLACEHOLDER]",
-                    description="[PLACEHOLDER]",
+                    TITLE="[PLACEHOLDER]",
+                    DESCRIPTION="[PLACEHOLDER]",
                     word_count=0,
                     gap_keywords_covered=[],
                     industry_first_ranking=len(competencies) + 1,
                 )
             )
-        competencies = competencies[: self.competency_count]
+        COMPETENCIES = competencies[: self.competency_count]
 
     # Calculate gap coverage
     covered_keywords = self._calculate_gap_coverage(competencies, jd_keyword_gap)
@@ -157,15 +158,15 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
     industry_first_compliant = self._check_industry_first_ranking(competencies, target_industry)
 
     # Build output
-    output = CompetenciesOutput(
-        competencies=competencies,
+    OUTPUT = CompetenciesOutput(
+        COMPETENCIES=competencies,
         total_count=len(competencies),
         gap_coverage_percentage=gap_coverage,
         total_gap_keywords=len(jd_keyword_gap),
         covered_gap_keywords=len(covered_keywords),
         missing_gap_keywords=missing_keywords,
         industry_first_compliant=industry_first_compliant,
-        metadata={
+        METADATA={
             "k_node_id": self.k_node_id,
             "temperature": self.config.temperature,
             "gap_coverage_minimum": self.gap_coverage_minimum,
@@ -185,6 +186,7 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
 
     return output
 
+# REFACTOR: Split this 57-line function
 
 def _build_initial_prompt(
     self: Any,
@@ -204,7 +206,7 @@ def _build_initial_prompt(
     Returns:
         Formatted prompt
     """
-    prompt = f"""Generate exactly {self.competency_count} Strategic & Technical Competencies wit
+    PROMPT = f"""Generate exactly {self.competency_count} Strategic & Technical Competencies wit
     h STRICT gap coverage.
 
 PRIMARY OBJECTIVE: Achieve ≥{self.gap_coverage_minimum:.0%} coverage of JD keywords NOT yet used in
@@ -257,7 +259,7 @@ def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str
     """
     previous_competencies = context.get("previous_competencies", [])
 
-    prompt = f"""REGENERATION REQUIRED
+    PROMPT = f"""REGENERATION REQUIRED
 
 {feedback}
 
@@ -292,23 +294,23 @@ def _parse_competencies(self: Any, response: str) -> List[CompetencyItem]:
     """
     import re
 
-    competencies = []
+    COMPETENCIES = []
 
     # Split by numbered items
-    items = re.split(r"\n\d+\.\s+", response)
+    ITEMS = re.split(r"\n\d+\.\s+", response)
 
     for i, item in enumerate(items):
         if not item.strip():
             continue
 
         # Split title and description by colon
-        parts = item.split(":", 1)
+        PARTS = item.split(":", 1)
         if len(parts) == 2:
-            title = parts[0].strip()
-            description = parts[1].strip()
+            TITLE = parts[0].strip()
+            DESCRIPTION = parts[1].strip()
         else:
-            title = f"Competency {i+1}"
-            description = item.strip()
+            TITLE = f"Competency {i+1}"
+            DESCRIPTION = item.strip()
 
         word_count = len(description.split())
 
@@ -317,8 +319,8 @@ def _parse_competencies(self: Any, response: str) -> List[CompetencyItem]:
 
         competencies.append(
             CompetencyItem(
-                title=title,
-                description=description,
+                TITLE=title,
+                DESCRIPTION=description,
                 word_count=word_count,
                 gap_keywords_covered=gap_keywords,
                 industry_first_ranking=i + 1,
@@ -338,7 +340,7 @@ def _extract_gap_keywords(self: Any, text: str) -> List[str]:
         List of found keywords
     """
     # Simplified - would use actual gap keyword list
-    keywords = []
+    KEYWORDS = []
     common_keywords = [
         "machine learning",
         "AI",
@@ -369,7 +371,7 @@ def _calculate_gap_coverage(
     Returns:
         Set of covered keywords
     """
-    covered = set()
+    COVERED = set()
 
     # Combine all competency text
     all_text = " ".join(f"{c.title} {c.description}" for c in competencies).lower()

@@ -3,7 +3,7 @@
 Provides high-performance cache key generation for LLM requests.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -31,7 +31,7 @@ def generate_llm_cache_key(model: str, messages: List[Dict[str, Any]]) -> str:
     }
 
     # Serialize to JSON with sorted keys for consistency
-    serialized = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
+    SERIALIZED = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
 
     # Generate SHA-256 hash
     return hashlib.sha256(serialized.encode()).hexdigest()
@@ -58,7 +58,7 @@ def generate_llm_cache_key_with_fingerlogger.info(model: str,
     }
 
     # Serialize to JSON with sorted keys
-    serialized = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
+    SERIALIZED = json.dumps(key_data, sort_keys=True, separators=(",", ":"))
 
     # Generate SHA-256 hash
     return hashlib.sha256(serialized.encode()).hexdigest()

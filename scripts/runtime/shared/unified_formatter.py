@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class FormatType(Enum):
     """Types of formatting."""
@@ -28,7 +28,7 @@ class FormatResult:
 
     data: Any
     format_type: str
-    success: bool = True
+    SUCCESS: BOOL = True
     metadata: Dict[str, Any] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
 
@@ -79,23 +79,23 @@ class DefaultFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, str):
-                formatted = data.strip()
+                FORMATTED = data.strip()
             elif isinstance(data, dict):
-                formatted = json.dumps(data, indent=2)
+                FORMATTED = json.dumps(data, indent=2)
             else:
-                formatted = str(data)
+                FORMATTED = str(data)
 
             return FormatResult(
-                data=formatted,
+                DATA=formatted,
                 format_type=self.format_name,
-                metadata={"original_type": type(data).__name__}
+                METADATA={"original_type": type(data).__name__}
             )
         except Exception as e:
             return FormatResult(
-                data=data,
+                DATA=data,
                 format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                SUCCESS=False,
+                ERRORS=[str(e)]
             )
 
     @property
@@ -118,27 +118,27 @@ class ResumeBulletFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, str):
-                bullets = self._format_text_to_bullets(data)
+                BULLETS = self._format_text_to_bullets(data)
             elif isinstance(data, list):
-                bullets = self._format_list_to_bullets(data)
+                BULLETS = self._format_list_to_bullets(data)
             else:
-                bullets = [str(data)]
+                BULLETS = [str(data)]
 
             # Apply configuration
             if config:
-                bullets = self._apply_config(bullets, config)
+                BULLETS = self._apply_config(bullets, config)
 
             return FormatResult(
-                data=bullets,
+                DATA=bullets,
                 format_type=self.format_name,
-                metadata={"bullet_count": len(bullets)}
+                METADATA={"bullet_count": len(bullets)}
             )
         except Exception as e:
             return FormatResult(
-                data=data,
+                DATA=data,
                 format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                SUCCESS=False,
+                ERRORS=[str(e)]
             )
 
     def _format_text_to_bullets(self, text: str) -> List[str]:
@@ -151,9 +151,9 @@ class ResumeBulletFormatter(FormatterStrategy):
             List of bullet points
         """
         # Split by sentences or newlines
-        sentences = [s.strip() for s in text.split('.') if s.strip()]
+        SENTENCES = [s.strip() for s in text.split('.') if s.strip()]
 
-        bullets = []
+        BULLETS = []
         for sentence in sentences:
             # Ensure it starts with action verb
             if not any(sentence.startswith(verb) for verb in ["Led",
@@ -161,9 +161,9 @@ class ResumeBulletFormatter(FormatterStrategy):
                 "Developed",
                 "Created",
                 "Implemented"]):
-                sentence = "• " + sentence
+                SENTENCE = "• " + sentence
             elif not sentence.startswith('•'):
-                sentence = "• " + sentence
+                SENTENCE = "• " + sentence
 
             bullets.append(sentence)
 
@@ -178,11 +178,11 @@ class ResumeBulletFormatter(FormatterStrategy):
         Returns:
             List of bullet points
         """
-        bullets = []
+        BULLETS = []
         for item in items:
-            bullet = "• " + str(item).strip()
+            BULLET = "• " + str(item).strip()
             if not bullet.endswith('.'):
-                bullet += '.'
+                BULLET += '.'
             bullets.append(bullet)
 
         return bullets
@@ -198,11 +198,11 @@ class ResumeBulletFormatter(FormatterStrategy):
             Modified bullets
         """
         if config.get("ensure_metrics", False):
-            bullets = [self._ensure_metrics(b) for b in bullets]
+            BULLETS = [self._ensure_metrics(b) for b in bullets]
 
         if config.get("max_length"):
             max_len = config["max_length"]
-            bullets = [b[:max_len] + "..." if len(b) > max_len else b for b in bullets]
+            BULLETS = [b[:max_len] + "..." if len(b) > max_len else b for b in bullets]
 
         return bullets
 
@@ -243,21 +243,21 @@ class ResumeSectionFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, dict):
-                formatted = self._format_dict_section(data, config)
+                FORMATTED = self._format_dict_section(data, config)
             else:
-                formatted = self._format_text_section(str(data), config)
+                FORMATTED = self._format_text_section(str(data), config)
 
             return FormatResult(
-                data=formatted,
+                DATA=formatted,
                 format_type=self.format_name,
-                metadata={"section_type": config.get("section_type", "general")}
+                METADATA={"section_type": config.get("section_type", "general")}
             )
         except Exception as e:
             return FormatResult(
-                data=data,
+                DATA=data,
                 format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                SUCCESS=False,
+                ERRORS=[str(e)]
             )
 
     def _format_dict_section(self, data: Dict, config: Optional[Dict]) -> Dict:
@@ -290,9 +290,9 @@ class ResumeSectionFormatter(FormatterStrategy):
         """
         # Ensure required fields
         if "title" not in data:
-            data["title"] = "Professional Experience"
+            DATA["TITLE"] = "Professional Experience"
         if "duration" not in data:
-            data["duration"] = "Present"
+            DATA["DURATION"] = "Present"
 
         return data
 
@@ -336,7 +336,7 @@ class ResumeSectionFormatter(FormatterStrategy):
         """
         # Add section header if needed
         if config and "section_title" in config:
-            text = f"{config['section_title']}\n\n{text}"
+            TEXT = f"{config['section_title']}\n\n{text}"
 
         return text
 
@@ -360,23 +360,23 @@ class OutreachMessageFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, str):
-                formatted = self._format_message_text(data, config)
+                FORMATTED = self._format_message_text(data, config)
             elif isinstance(data, dict):
-                formatted = self._format_message_dict(data, config)
+                FORMATTED = self._format_message_dict(data, config)
             else:
-                formatted = str(data)
+                FORMATTED = str(data)
 
             return FormatResult(
-                data=formatted,
+                DATA=formatted,
                 format_type=self.format_name,
-                metadata={"message_length": len(str(formatted))}
+                METADATA={"message_length": len(str(formatted))}
             )
         except Exception as e:
             return FormatResult(
-                data=data,
+                DATA=data,
                 format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                SUCCESS=False,
+                ERRORS=[str(e)]
             )
 
     def _format_message_text(self, text: str, config: Optional[Dict]) -> str:
@@ -391,18 +391,18 @@ class OutreachMessageFormatter(FormatterStrategy):
         """
         # Ensure proper greeting
         if not any(greeting in text.lower() for greeting in ["dear", "hi ", "hello"]):
-            text = "Dear " + (config.get("recipient_name",
+            TEXT = "Dear " + (config.get("recipient_name",
                 "Hiring Manager") if config else "Hiring Manager") + ",
                 \n\n" + text
 
         # Ensure proper closing
         if not any(closing in text.lower() for closing in ["sincerely", "regards", "best"]):
-            text += "\n\nBest regards,\n[Your Name]"
+            TEXT += "\n\nBest regards,\n[Your Name]"
 
         # Check length
         max_length = config.get("max_length", 500) if config else 500
         if len(text) > max_length:
-            text = text[:max_length-3] + "..."
+            TEXT = text[:max_length-3] + "..."
 
         return text
 
@@ -418,11 +418,11 @@ class OutreachMessageFormatter(FormatterStrategy):
         """
         # Ensure required fields
         if "greeting" not in data:
-            data["greeting"] = "Dear Hiring Manager,"
+            DATA["GREETING"] = "Dear Hiring Manager,"
         if "body" not in data:
-            data["body"] = ""
+            DATA["BODY"] = ""
         if "closing" not in data:
-            data["closing"] = "Best regards,"
+            DATA["CLOSING"] = "Best regards,"
 
         return data
 
@@ -446,21 +446,21 @@ class OutreachSubjectFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, str):
-                formatted = self._format_subject_text(data, config)
+                FORMATTED = self._format_subject_text(data, config)
             else:
-                formatted = str(data)
+                FORMATTED = str(data)
 
             return FormatResult(
-                data=formatted,
+                DATA=formatted,
                 format_type=self.format_name,
-                metadata={"subject_length": len(formatted)}
+                METADATA={"subject_length": len(formatted)}
             )
         except Exception as e:
             return FormatResult(
-                data=data,
+                DATA=data,
                 format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                SUCCESS=False,
+                ERRORS=[str(e)]
             )
 
     def _format_subject_text(self, text: str, config: Optional[Dict]) -> str:
@@ -474,15 +474,15 @@ class OutreachSubjectFormatter(FormatterStrategy):
             Formatted subject
         """
         # Capitalize first letter
-        text = text[0].upper() + text[1:] if text else text
+        TEXT = text[0].upper() + text[1:] if text else text
 
         # Remove trailing periods
-        text = text.rstrip('.')
+        TEXT = text.rstrip('.')
 
         # Check length
         max_length = config.get("max_length", 50) if config else 50
         if len(text) > max_length:
-            text = text[:max_length-3] + "..."
+            TEXT = text[:max_length-3] + "..."
 
         return text
 
@@ -508,27 +508,27 @@ class JSONFormatter(FormatterStrategy):
             if isinstance(data, str):
                 # Try to parse as JSON first
                 try:
-                    parsed = json.loads(data)
+                    PARSED = json.loads(data)
                 except Exception:
-                    parsed = {"text": data}
+                    PARSED = {"text": data}
             else:
-                parsed = data
+                PARSED = data
 
             # Format with indentation
-            indent = config.get("indent", 2) if config else 2
-            formatted = json.dumps(parsed, indent=indent, default=str)
+            INDENT = config.get("indent", 2) if config else 2
+            FORMATTED = json.dumps(parsed, indent=indent, default=str)
 
             return FormatResult(
-                data=formatted,
+                DATA=formatted,
                 format_type=self.format_name,
-                metadata={"json_keys": len(parsed) if isinstance(parsed, dict) else 0}
+                METADATA={"json_keys": len(parsed) if isinstance(parsed, dict) else 0}
             )
         except Exception as e:
             return FormatResult(
-                data=data,
+                DATA=data,
                 format_type=self.format_name,
-                success=False,
-                errors=[str(e)]
+                SUCCESS=False,
+                ERRORS=[str(e)]
             )
 
     @property
@@ -541,7 +541,7 @@ class UnifiedFormatter:
 
     def __init__(self):
             """Initialize the unified formatter."""
-        self.strategies = {
+        SELF.STRATEGIES = {
             FormatType.DEFAULT: DefaultFormatter(),
             FormatType.RESUME_BULLET: ResumeBulletFormatter(),
             FormatType.RESUME_SECTION: ResumeSectionFormatter(),
@@ -579,16 +579,16 @@ class UnifiedFormatter:
                 format_type = FormatType.DEFAULT
 
         # Get strategy
-        strategy = self.strategies.get(format_type, self.strategies[FormatType.DEFAULT])
+        STRATEGY = self.strategies.get(format_type, self.strategies[FormatType.DEFAULT])
 
         # Add engine context to config
         if engine_type and config is None:
-            config = {"engine": engine_type.value}
+            CONFIG = {"engine": engine_type.value}
         elif engine_type and config:
-            config["engine"] = engine_type.value
+            CONFIG["ENGINE"] = engine_type.value
 
         # Format data
-        result = strategy.format(data, config)
+        RESULT = strategy.format(data, config)
 
         # Add engine metadata
         if engine_type:
@@ -647,7 +647,7 @@ def format_data(
     Returns:
         Format result
     """
-    formatter = get_unified_formatter()
+    FORMATTER = get_unified_formatter()
     return formatter.format(data, format_type, engine_type, config)
 
 def format_resume_bullets(data: Union[str, List], config: Optional[Dict] = None) -> FormatResult:

@@ -1,4 +1,4 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """
 pytest configuration and fixtures
@@ -16,7 +16,6 @@ Author: Agentic-Workflow Team
 Version: 1.0.0
 """
 
-import logging
 import os
 import sys
 from pathlib import Path

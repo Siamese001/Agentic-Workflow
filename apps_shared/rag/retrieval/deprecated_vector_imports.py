@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def _can_import_pinecone() -> bool:

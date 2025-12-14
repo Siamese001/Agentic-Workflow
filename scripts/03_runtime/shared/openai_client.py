@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 from openai import AsyncOpenAI, OpenAI
 from openai.types.chat import ChatCompletion
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class OpenAIClientManager:
@@ -34,7 +34,7 @@ def __init__(self: Any, api_key: Optional[str], base_url: Optional[str]) -> None
             )
 
         # Initialize clients
-        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        SELF.CLIENT = OpenAI(api_key=self.api_key, base_url=self.base_url)
         self.async_client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
 
 def chat_completion(self: Any,
@@ -57,10 +57,10 @@ def chat_completion(self: Any,
             ChatCompletion object.
         """
         try:
-            response = self.client.chat.completions.create(
-                model=model,
-                messages=messages,
-                temperature=temperature,
+            RESPONSE = self.client.chat.completions.create(
+                MODEL=model,
+                MESSAGES=messages,
+                TEMPERATURE=temperature,
                 max_tokens=max_tokens,
                 **kwargs
             )
@@ -89,10 +89,10 @@ async def achat_completion(self: Any,
             ChatCompletion object.
         """
         try:
-            response = await self.async_client.chat.completions.create(
-                model=model,
-                messages=messages,
-                temperature=temperature,
+            RESPONSE = await self.async_client.chat.completions.create(
+                MODEL=model,
+                MESSAGES=messages,
+                TEMPERATURE=temperature,
                 max_tokens=max_tokens,
                 **kwargs
             )
@@ -114,9 +114,9 @@ def create_embedding(self: Any, input_text: str, model: str) -> list[float]:
             List of embedding values.
         """
         try:
-            response = self.client.embeddings.create(
-                model=model,
-                input=input_text,
+            RESPONSE = self.client.embeddings.create(
+                MODEL=model,
+                INPUT=input_text,
                 **kwargs
             )
             return response.data[0].embedding
@@ -127,7 +127,7 @@ def create_embedding(self: Any, input_text: str, model: str) -> list[float]:
 def list_models(self: Any) -> list[str]:
         """List available OpenAI models."""
         try:
-            models = self.client.models.list()
+            MODELS = self.client.models.list()
             return [model.id for model in models.data]
         except Exception as e:
             logger.error(f"Failed to list models: {e}")
@@ -197,7 +197,7 @@ def create_agent_prompt(
     Returns:
         Formatted messages list for OpenAI API.
     """
-    messages = [{"role": "system", "content": EXAMPLE_PROMPTS.get(task_type, "")}]
+    MESSAGES = [{"role": "system", "content": EXAMPLE_PROMPTS.get(task_type, "")}]
 
     if context:
         messages.append({"role": "system", "content": f"Context: {context}"})
@@ -212,10 +212,10 @@ def create_agent_prompt(
 def test_openai_connection():
     """Test OpenAI API connection."""
     try:
-        client = get_openai_client()
-        response = client.chat_completion(
-            messages=[{"role": "user", "content": "Say 'OpenAI connection successful!'"}],
-            model="gpt-3.5-turbo",
+        CLIENT = get_openai_client()
+        RESPONSE = client.chat_completion(
+            MESSAGES=[{"role": "user", "content": "Say 'OpenAI connection successful!'"}],
+            MODEL="gpt-3.5-turbo",
             max_tokens=50
         )
         logger.info(response.choices[0].message.content)

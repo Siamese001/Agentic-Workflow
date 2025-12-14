@@ -8,15 +8,15 @@ Generated: 2025-12-07T13:28:54.091269
 import logging
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ImplementFallbackTemplates:
     """Retry executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         self.max_retries = self.config.get("max_retries", 3)
-        self.backoff = self.config.get("backoff", 1.0)
+        SELF.BACKOFF = self.config.get("backoff", 1.0)
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, func: Callable, *args, **kwargs: Dict[str, object]) -> RetryResult:
@@ -24,7 +24,7 @@ class ImplementFallbackTemplates:
         last_error = None
         for attempt in range(self.max_retries):
             try:
-                result = func(*args, **kwargs)
+                RESULT = func(*args, **kwargs)
                 return RetryResult(success=True, attempts=attempt + 1, result=result)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 last_error = str(e)
@@ -40,7 +40,7 @@ class ImplementFallbackTemplates:
         **kwargs: Dict[str,
         object]) -> object:
         """Execute with fallback."""
-        result = self.execute(primary, *args, **kwargs)
+        RESULT = self.execute(primary, *args, **kwargs)
         if result.success:
             return result.result
         return fallback(*args, **kwargs)

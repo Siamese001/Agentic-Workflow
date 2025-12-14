@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Optional, Tuple
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class SDKCategory(Enum):
     """SDK category classification."""
@@ -46,183 +46,183 @@ def has_api_key(self: Any) -> bool:
 SDK_REGISTRY: Dict[str, SDKEntry] = {
     # Core LLM Providers
     "openai": SDKEntry(
-        name="openai",
-        category=SDKCategory.LLM_PROVIDER,
-        module="openai",
-        required=True,
+        NAME="openai",
+        CATEGORY=SDKCategory.LLM_PROVIDER,
+        MODULE="openai",
+        REQUIRED=True,
         env_var="OPENAI_API_KEY",
-        description="GPT-4o, o1, embeddings, function calling",
+        DESCRIPTION="GPT-4o, o1, embeddings, function calling",
     ),
     "anthropic": SDKEntry(
-        name="anthropic",
-        category=SDKCategory.LLM_PROVIDER,
-        module="anthropic",
+        NAME="anthropic",
+        CATEGORY=SDKCategory.LLM_PROVIDER,
+        MODULE="anthropic",
         env_var="ANTHROPIC_API_KEY",
-        fallback="openai",
-        description="Claude 3.5 Sonnet, tool use, extended context",
+        FALLBACK="openai",
+        DESCRIPTION="Claude 3.5 Sonnet, tool use, extended context",
     ),
     "google-generativeai": SDKEntry(
-        name="google-generativeai",
-        category=SDKCategory.LLM_PROVIDER,
-        module="google.generativeai",
+        NAME="google-generativeai",
+        CATEGORY=SDKCategory.LLM_PROVIDER,
+        MODULE="google.generativeai",
         env_var="GOOGLE_API_KEY",
-        fallback="openai",
-        description="Gemini 2.0, multimodal, grounding",
+        FALLBACK="openai",
+        DESCRIPTION="Gemini 2.0, multimodal, grounding",
     ),
     "mistralai": SDKEntry(
-        name="mistralai",
-        category=SDKCategory.LLM_PROVIDER,
-        module="mistralai",
+        NAME="mistralai",
+        CATEGORY=SDKCategory.LLM_PROVIDER,
+        MODULE="mistralai",
         env_var="MISTRAL_API_KEY",
-        fallback="openai",
-        description="Mistral Large, code generation, EU compliance",
+        FALLBACK="openai",
+        DESCRIPTION="Mistral Large, code generation, EU compliance",
     ),
     "cohere": SDKEntry(
-        name="cohere",
-        category=SDKCategory.LLM_PROVIDER,
-        module="cohere",
+        NAME="cohere",
+        CATEGORY=SDKCategory.LLM_PROVIDER,
+        MODULE="cohere",
         env_var="COHERE_API_KEY",
-        fallback="openai",
-        description="Command R+, RAG, reranking, embeddings",
+        FALLBACK="openai",
+        DESCRIPTION="Command R+, RAG, reranking, embeddings",
     ),
 
     # High-Performance Inference
     "groq": SDKEntry(
-        name="groq",
-        category=SDKCategory.INFERENCE,
-        module="groq",
+        NAME="groq",
+        CATEGORY=SDKCategory.INFERENCE,
+        MODULE="groq",
         env_var="GROQ_API_KEY",
-        fallback="openai",
-        description="Ultra-fast inference (Llama, Mixtral on LPU)",
+        FALLBACK="openai",
+        DESCRIPTION="Ultra-fast inference (Llama, Mixtral on LPU)",
     ),
     "together": SDKEntry(
-        name="together",
-        category=SDKCategory.INFERENCE,
-        module="together",
+        NAME="together",
+        CATEGORY=SDKCategory.INFERENCE,
+        MODULE="together",
         env_var="TOGETHER_API_KEY",
-        fallback="groq",
-        description="Cheap diversified access (Llama, Mixtral)",
+        FALLBACK="groq",
+        DESCRIPTION="Cheap diversified access (Llama, Mixtral)",
     ),
     "fireworks-ai": SDKEntry(
-        name="fireworks-ai",
-        category=SDKCategory.INFERENCE,
-        module="fireworks.client",
+        NAME="fireworks-ai",
+        CATEGORY=SDKCategory.INFERENCE,
+        MODULE="fireworks.client",
         env_var="FIREWORKS_API_KEY",
-        fallback="groq",
-        description="Strong tool-calling alternative",
+        FALLBACK="groq",
+        DESCRIPTION="Strong tool-calling alternative",
     ),
 
     # Routing & Structured Outputs
     "litellm": SDKEntry(
-        name="litellm",
-        category=SDKCategory.ROUTING,
-        module="litellm",
-        required=True,
-        description="Unified router, fallbacks, 100+ provider support",
+        NAME="litellm",
+        CATEGORY=SDKCategory.ROUTING,
+        MODULE="litellm",
+        REQUIRED=True,
+        DESCRIPTION="Unified router, fallbacks, 100+ provider support",
     ),
     "instructor": SDKEntry(
-        name="instructor",
-        category=SDKCategory.ROUTING,
-        module="instructor",
-        required=True,
-        description="Structured outputs, Pydantic validation",
+        NAME="instructor",
+        CATEGORY=SDKCategory.ROUTING,
+        MODULE="instructor",
+        REQUIRED=True,
+        DESCRIPTION="Structured outputs, Pydantic validation",
     ),
 
     # Vector Stores
     "chromadb": SDKEntry(
-        name="chromadb",
-        category=SDKCategory.VECTOR_STORE,
-        module="chromadb",
-        required=True,
-        description="Local/embedded vector DB, fast prototyping",
+        NAME="chromadb",
+        CATEGORY=SDKCategory.VECTOR_STORE,
+        MODULE="chromadb",
+        REQUIRED=True,
+        DESCRIPTION="Local/embedded vector DB, fast prototyping",
     ),
     "qdrant-client": SDKEntry(
-        name="qdrant-client",
-        category=SDKCategory.VECTOR_STORE,
-        module="qdrant_client",
-        fallback="chromadb",
-        description="Production vector DB, filtering, hybrid search",
+        NAME="qdrant-client",
+        CATEGORY=SDKCategory.VECTOR_STORE,
+        MODULE="qdrant_client",
+        FALLBACK="chromadb",
+        DESCRIPTION="Production vector DB, filtering, hybrid search",
     ),
     "pinecone": SDKEntry(
-        name="pinecone",
-        category=SDKCategory.VECTOR_STORE,
-        module="pinecone",
+        NAME="pinecone",
+        CATEGORY=SDKCategory.VECTOR_STORE,
+        MODULE="pinecone",
         env_var="PINECONE_API_KEY",
-        fallback="chromadb",
-        description="Managed vector DB, serverless scaling",
+        FALLBACK="chromadb",
+        DESCRIPTION="Managed vector DB, serverless scaling",
     ),
 
     # Caching & State
     "redis": SDKEntry(
-        name="redis",
-        category=SDKCategory.CACHE,
-        module="redis",
-        required=True,
-        description="Redis client, async support, clustering",
+        NAME="redis",
+        CATEGORY=SDKCategory.CACHE,
+        MODULE="redis",
+        REQUIRED=True,
+        DESCRIPTION="Redis client, async support, clustering",
     ),
     "hiredis": SDKEntry(
-        name="hiredis",
-        category=SDKCategory.CACHE,
-        module="hiredis",
-        description="C parser for Redis (10x faster parsing)",
+        NAME="hiredis",
+        CATEGORY=SDKCategory.CACHE,
+        MODULE="hiredis",
+        DESCRIPTION="C parser for Redis (10x faster parsing)",
     ),
 
     # Orchestration
     "langgraph": SDKEntry(
-        name="langgraph",
-        category=SDKCategory.ORCHESTRATION,
-        module="langgraph",
-        description="Stateful agent graphs, cycles, checkpointing",
+        NAME="langgraph",
+        CATEGORY=SDKCategory.ORCHESTRATION,
+        MODULE="langgraph",
+        DESCRIPTION="Stateful agent graphs, cycles, checkpointing",
     ),
     "langchain-core": SDKEntry(
-        name="langchain-core",
-        category=SDKCategory.ORCHESTRATION,
-        module="langchain_core",
-        description="Minimal abstractions (LCEL, runnables only)",
+        NAME="langchain-core",
+        CATEGORY=SDKCategory.ORCHESTRATION,
+        MODULE="langchain_core",
+        DESCRIPTION="Minimal abstractions (LCEL, runnables only)",
     ),
 
     # Observability
     "opentelemetry-api": SDKEntry(
-        name="opentelemetry-api",
-        category=SDKCategory.OBSERVABILITY,
-        module="opentelemetry.trace",
-        required=True,
-        description="Tracing API (vendor-neutral)",
+        NAME="opentelemetry-api",
+        CATEGORY=SDKCategory.OBSERVABILITY,
+        MODULE="opentelemetry.trace",
+        REQUIRED=True,
+        DESCRIPTION="Tracing API (vendor-neutral)",
     ),
     "opentelemetry-sdk": SDKEntry(
-        name="opentelemetry-sdk",
-        category=SDKCategory.OBSERVABILITY,
-        module="opentelemetry.sdk.trace",
-        required=True,
-        description="Tracing implementation",
+        NAME="opentelemetry-sdk",
+        CATEGORY=SDKCategory.OBSERVABILITY,
+        MODULE="opentelemetry.sdk.trace",
+        REQUIRED=True,
+        DESCRIPTION="Tracing implementation",
     ),
 
     # Document Processing
     "unstructured": SDKEntry(
-        name="unstructured",
-        category=SDKCategory.DOCUMENT,
-        module="unstructured",
-        description="Universal document parser (PDF, DOCX, HTML)",
+        NAME="unstructured",
+        CATEGORY=SDKCategory.DOCUMENT,
+        MODULE="unstructured",
+        DESCRIPTION="Universal document parser (PDF, DOCX, HTML)",
     ),
     "pypdf": SDKEntry(
-        name="pypdf",
-        category=SDKCategory.DOCUMENT,
-        module="pypdf",
-        description="Lightweight PDF text extraction",
+        NAME="pypdf",
+        CATEGORY=SDKCategory.DOCUMENT,
+        MODULE="pypdf",
+        DESCRIPTION="Lightweight PDF text extraction",
     ),
 
     # MCP
     "mcp": SDKEntry(
-        name="mcp",
-        category=SDKCategory.MCP,
-        module="mcp",
-        description="MCP SDK for building tool servers",
+        NAME="mcp",
+        CATEGORY=SDKCategory.MCP,
+        MODULE="mcp",
+        DESCRIPTION="MCP SDK for building tool servers",
     ),
     "fastmcp": SDKEntry(
-        name="fastmcp",
-        category=SDKCategory.MCP,
-        module="fastmcp",
-        description="FastAPI-style MCP server framework",
+        NAME="fastmcp",
+        CATEGORY=SDKCategory.MCP,
+        MODULE="fastmcp",
+        DESCRIPTION="FastAPI-style MCP server framework",
     ),
 }
 
@@ -238,7 +238,7 @@ def validate_sdk(sdk_name: str) -> Tuple[bool, Optional[str]]:
     if sdk_name not in SDK_REGISTRY:
         return False, f"Unknown SDK: {sdk_name}"
 
-    entry = SDK_REGISTRY[sdk_name]
+    ENTRY = SDK_REGISTRY[sdk_name]
 
     # Check if module is available
     if not entry.is_available():
@@ -260,7 +260,7 @@ def validate_all_sdks() -> Dict[str, Any]:
     Returns:
         Validation report with status for each SDK
     """
-    report = {
+    REPORT = {
         "total": len(SDK_REGISTRY),
         "available": 0,
         "missing": 0,
@@ -269,9 +269,9 @@ def validate_all_sdks() -> Dict[str, Any]:
     }
 
     for sdk_name, entry in SDK_REGISTRY.items():
-        success, error = validate_sdk(sdk_name)
+        SUCCESS, ERROR = validate_sdk(sdk_name)
 
-        status = {
+        STATUS = {
             "available": success,
             "required": entry.required,
             "category": entry.category.value,
@@ -279,9 +279,9 @@ def validate_all_sdks() -> Dict[str, Any]:
         }
 
         if success:
-            report["available"] += 1
+            REPORT["AVAILABLE"] += 1
         elif "not installed" in (error or ""):
-            report["missing"] += 1
+            REPORT["MISSING"] += 1
         elif "not set" in (error or ""):
             report["missing_keys"] += 1
 
@@ -314,7 +314,7 @@ def get_available_sdks() -> list[str]:
     Returns:
         List of available SDK names
     """
-    available = []
+    AVAILABLE = []
     for sdk_name in SDK_REGISTRY:
         success, _ = validate_sdk(sdk_name)
         if success:
@@ -343,7 +343,7 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
 
 def __init__(self: Any, documents: list) -> None:
             """Initialize mock collection with optional documents."""
-            self.documents = documents or []
+            SELF.DOCUMENTS = documents or []
 
 def add(self: Any, documents: list, ids: list) -> None:
             """Docstring."""
@@ -361,8 +361,8 @@ def query(self: Any, query_texts: list, n_results: int) -> None:
         """Docstring."""
 def __init__(self: Any, config: Optional[Dict[str, Any]]) -> None:
             """Initialize mock vector store with optional config."""
-            self.config = config or {}
-            self.collections = {}
+            SELF.CONFIG = config or {}
+            SELF.COLLECTIONS = {}
 
 def add_documents(self: Any, collection_name: str, documents: list, ids: list) -> None:
             """Add documents to collection."""
@@ -392,7 +392,7 @@ def similarity_search(self: Any, query: str, k: int) -> None:
 def get_or_create_collection(self: Any, name: str) -> None:
             """Get or create a collection."""
             if name not in self.collections:
-                self.collections[name] = []
+                SELF.COLLECTIONS[NAME] = []
             return MockCollection(self.collections[name])
 
     return MockVectorStore(config)
