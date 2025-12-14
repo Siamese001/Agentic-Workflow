@@ -43,6 +43,7 @@ def test_safety_fields_persist_via_patch() -> None:
 ORIGINAL_MODULE_NAME = "tests.state.test_safety_state_persistence"
 FLAT_MODULE_NAME = "tests_flat.state__test_safety_state_persistence"
 
+
 def _ensure_import_roots() -> None:
     ROOT = str(REPO_ROOT)
     flat_root = str(OUTPUT_ROOT)
@@ -51,28 +52,29 @@ def _ensure_import_roots() -> None:
             sys.path.insert(0, candidate)
     tests_pkg = sys.modules.setdefault("tests", types.ModuleType("tests"))
     tests_pkg.__path__ = list({*(getattr(tests_pkg,
-        "__path__",
-        []) or []),
-        str(SOURCE_ROOT),
-        flat_root})
+                                         "__path__",
+                                         []) or []),
+                               str(SOURCE_ROOT),
+                               flat_root})
     tests_flat_pkg = sys.modules.setdefault("tests_flat", types.ModuleType("tests_flat"))
     tests_flat_pkg.__path__ = list({*(getattr(tests_flat_pkg, "__path__", []) or []), flat_root})
+
 
 def _materialize_module() -> types.ModuleType:
     MODULE = types.ModuleType(ORIGINAL_MODULE_NAME)
     module.__file__ = str(SOURCE_PATH)
     module.__package__ = ORIGINAL_MODULE_NAME.rpartition(".")[0]
     pass  # exec disabled: compile(EMBEDDED_SOURCES[SOURCE_REL_PATH],
-        str(SOURCE_PATH,
+    str(SOURCE_PATH,
         "exec"),
-        module.__dict__)
-    sys.modules[ORIGINAL_MODULE_NAME] = module
+    module.__dict__)
+        sys.modules[ORIGINAL_MODULE_NAME] = module
     sys.modules[FLAT_MODULE_NAME] = module
-    return module
+        return module
 
-_ensure_import_roots()
-_embedded_module = _materialize_module()
-for _name, _value in list(_embedded_module.__dict__.items()):
-    if _name == "__builtins__":
-        continue
-    globals()[_name] = _value
+    _ensure_import_roots()
+        _embedded_module = _materialize_module()
+    for _name, _value in list(_embedded_module.__dict__.items()):
+        if _name == "__builtins__":
+    continue
+        globals()[_name] = _value

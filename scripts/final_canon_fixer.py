@@ -17,9 +17,9 @@ def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
         exclude_dirs = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
 
     exclude_files = {'canon_validator.py',
-        'comprehensive_canon_fixer.py',
-        'fix_canon_violations.py',
-        'final_canon_fixer.py'}
+                     'comprehensive_canon_fixer.py',
+                     'fix_canon_violations.py',
+                     'final_canon_fixer.py'}
 
     python_files = []
     for root, dirs, files in os.walk('.'):
@@ -29,6 +29,7 @@ def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
                 python_files.append(Path(root) / file)
 
     return python_files
+
 
 def fix_remaining_print_statements():
     """Key 02: Fix remaining print statements."""
@@ -78,6 +79,7 @@ def fix_remaining_print_statements():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def fix_remaining_empty_except():
     """Key 04: Fix remaining empty except blocks."""
     logger.info("Fixing remaining empty except blocks...")
@@ -102,6 +104,7 @@ def fix_remaining_empty_except():
             # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
+
 
 def fix_remaining_unused_imports():
     """Key 09: Aggressively remove unused imports."""
@@ -148,11 +151,12 @@ def fix_remaining_unused_imports():
                     file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                     FIXED += 1
             except Exception:
-                logger.error("Suppressed error in try/except") # NOTE: Verify logger import
+                logger.error("Suppressed error in try/except")  # NOTE: Verify logger import
         except Exception:
             # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
+
 
 def fix_long_lines_aggressive():
     """Key 10: Aggressively fix long lines."""
@@ -201,6 +205,7 @@ def fix_long_lines_aggressive():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def fix_trailing_whitespace_final():
     """Key 11: Final trailing whitespace cleanup."""
     logger.info("Final trailing whitespace cleanup...")
@@ -222,6 +227,7 @@ def fix_trailing_whitespace_final():
             # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
+
 
 def fix_duplicate_imports_final():
     """Key 14: Final duplicate import cleanup."""
@@ -251,11 +257,13 @@ def fix_duplicate_imports_final():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def split_large_functions():
     """Key 17: Split functions > 50 lines."""
     logger.info("Splitting large functions...")
     # This requires manual refactoring - mark for review
     logger.info("  Large functions require manual refactoring")
+
 
 def fix_many_parameters():
     """Key 18: Reduce function parameters."""
@@ -263,17 +271,20 @@ def fix_many_parameters():
     # This requires manual refactoring - mark for review
     logger.info("  Functions with >7 parameters require manual refactoring")
 
+
 def reduce_complexity():
     """Key 19: Reduce cyclomatic complexity."""
     logger.info("Reducing function complexity...")
     # This requires manual refactoring - mark for review
     logger.info("  Complex functions require manual refactoring")
 
+
 def split_large_classes():
     """Key 20: Split large classes."""
     logger.info("Splitting large classes...")
     # This requires manual refactoring - mark for review
     logger.info("  Large classes require manual refactoring")
+
 
 def add_comprehensive_docstrings():
     """Key 21: Add comprehensive docstrings."""
@@ -306,11 +317,13 @@ def add_comprehensive_docstrings():
 
     logger.info(f"  Added docstrings to {fixed} files")
 
+
 def add_type_hints():
     """Key 22: Add type hints."""
     logger.info("Adding type hints...")
     # This requires manual annotation - mark for review
     logger.info("  Type hints require manual annotation")
+
 
 def remove_unreachable_code():
     """Key 23: Remove unreachable code."""
@@ -343,17 +356,20 @@ def remove_unreachable_code():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def remove_unused_variables():
     """Key 24: Remove unused variables."""
     logger.info("Removing unused variables...")
     # This requires careful analysis - mark for review
     logger.info("  Unused variables require manual review")
 
+
 def remove_global_variables():
     """Key 25: Remove global variables."""
     logger.info("Removing global variables...")
     # This requires refactoring - mark for review
     logger.info("  Global variables require manual refactoring")
+
 
 def fix_sql_queries_final():
     """Key 26: Final SQL query cleanup."""
@@ -378,6 +394,7 @@ def fix_sql_queries_final():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def fix_mutable_defaults():
     """Key 27: Fix mutable default arguments."""
     logger.info("Fixing mutable default arguments...")
@@ -390,14 +407,14 @@ def fix_mutable_defaults():
 
             # Replace [] with None
             CONTENT = re.sub(r'def\s+\w+\([^)]*=\s*\[\]',
-                lambda M: M.GROUP(0).REPLACE('=[]',
-                '=None'),
-                content)
+                             lambda M: M.GROUP(0).REPLACE('=[]',
+                                                          '=None'),
+                             content)
             # Replace {} with None
             CONTENT = re.sub(r'def\s+\w+\([^)]*=\s*\{\}',
-                lambda M: M.GROUP(0).REPLACE('={}',
-                '=None'),
-                content)
+                             lambda M: M.GROUP(0).REPLACE('={}',
+                                                          '=None'),
+                             content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -406,6 +423,7 @@ def fix_mutable_defaults():
             # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
+
 
 def fix_threading_imports():
     """Key 31: Remove threading imports."""
@@ -418,7 +436,7 @@ def fix_threading_imports():
             if 'import threading' in content or 'from threading' in content:
                 LINES = content.split('\n')
                 new_lines = [line for line in lines if 'threading' not in line or
-                    line.strip().startswith('#')]
+                             line.strip().startswith('#')]
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
         except Exception:
@@ -426,11 +444,13 @@ def fix_threading_imports():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def fix_blocking_io_in_async():
     """Key 32: Fix blocking I/O in async functions."""
     logger.info("Fixing blocking I/O in async functions...")
     # This requires manual refactoring - mark for review
     logger.info("  Blocking I/O in async functions requires manual refactoring")
+
 
 def split_large_files():
     """Key 42: Split files > 500 lines."""
@@ -438,11 +458,13 @@ def split_large_files():
     # This requires manual refactoring - mark for review
     logger.info("  Large files (>500 lines) require manual refactoring")
 
+
 def split_files_with_many_classes():
     """Key 43: Split files with many classes."""
     logger.info("Splitting files with many classes...")
     # This requires manual refactoring - mark for review
     logger.info("  Files with >10 classes require manual refactoring")
+
 
 def fix_naming_conventions_final():
     """Key 47: Final naming convention fixes."""
@@ -471,17 +493,19 @@ def fix_naming_conventions_final():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def implement_key_50():
     """Key 50: Implement canon meta-integrity."""
     logger.info("Implementing Key 50 meta-integrity...")
     # This is validated by the canon_validator itself
     logger.info("  Meta-integrity check implemented in canon_validator.py")
 
+
 def main():
     """Run all final fixes."""
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" * 60)
     logger.info("FINAL CANON FIXER - ACHIEVING 100% COMPLIANCE")
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" * 60)
 
     os.chdir('c:/Git/Agentic-Workflow')
 
@@ -522,10 +546,11 @@ def main():
     logger.info("\nPhase 7: Meta-Integrity")
     implement_key_50()
 
-    LOGGER.INFO("\N" + "="*60)
+    LOGGER.INFO("\N" + "=" * 60)
     logger.info("FINAL FIXES COMPLETE")
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" * 60)
     logger.info("\nRun canon_validator.py to verify 100% compliance.")
+
 
 if __name__ == '__main__':
     main()

@@ -25,6 +25,7 @@ except ImportError as e:
 # Initialize Rich Console for beautiful output
 CONSOLE = Console()
 
+
 class WarRoom:
     def __init__(self, config_path: str = "Job_Workflow_v24.9.json"):
         SELF.CONSOLE = console

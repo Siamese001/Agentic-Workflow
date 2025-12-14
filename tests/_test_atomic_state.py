@@ -1,4 +1,9 @@
 
+from pathlib import Path
+import tempfile
+import sys
+import os
+import logging
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for atomic state persistence with ACID guarantees.
@@ -14,11 +19,6 @@ Usage:
     python test_atomic_state.py
 """
 
-import logging
-import os
-import sys
-import tempfile
-from pathlib import Path
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -44,9 +44,9 @@ def test_workflow_state_schema():
 
     # Create a workflow state
     STATE = WorkflowState(
-        workflow_id="test_workflow_001",
-        workflow_type="resume_generation",
-        total_k_nodes=5,
+        workflow_id = "test_workflow_001",
+        workflow_type = "resume_generation",
+        total_k_nodes = 5,
     )
 
     assert state.workflow_id == "test_workflow_001"
@@ -57,12 +57,12 @@ def test_workflow_state_schema():
 
     # Add an execution
     state.add_execution(
-        k_node_index=0,
-        k_node_name="extract_experience",
-        input_prompt="Extract experience from resume",
-        OUTPUT="Experience extracted successfully",
-        duration_ms=150.5,
-        SUCCESS=True,
+        k_node_index = 0,
+        k_node_name = "extract_experience",
+        input_prompt = "Extract experience from resume",
+        OUTPUT = "Experience extracted successfully",
+        duration_ms = 150.5,
+        SUCCESS = True,
     )
 
     assert state.current_k_node == 1
@@ -95,22 +95,22 @@ def test_atomic_checkpoint():
     # Create temporary storage
     with tempfile.TemporaryDirectory() as temp_dir:
         MANAGER = AtomicStateManager(
-            BACKEND=BackendType.FILE,
-            storage_path=temp_dir,
+            BACKEND = BackendType.FILE,
+            storage_path = temp_dir,
         )
 
         # Create initial state
         state_a = WorkflowState(
-            workflow_id="workflow_checkpoint_test",
-            workflow_type="test",
-            total_k_nodes=3,
+            workflow_id = "workflow_checkpoint_test",
+            workflow_type = "test",
+            total_k_nodes = 3,
         )
         state_a.add_execution(
-            k_node_index=0,
-            k_node_name="step_1",
-            input_prompt="Input 1",
-            OUTPUT="Output 1",
-            duration_ms=100.0,
+            k_node_index = 0,
+            k_node_name = "step_1",
+            input_prompt = "Input 1",
+            OUTPUT = "Output 1",
+            duration_ms = 100.0,
         )
 
         # Checkpoint State A
@@ -127,23 +127,23 @@ def test_atomic_checkpoint():
 
         # Create State B
         state_b = WorkflowState(
-            workflow_id="workflow_checkpoint_test",
-            workflow_type="test",
-            total_k_nodes=3,
+            workflow_id = "workflow_checkpoint_test",
+            workflow_type = "test",
+            total_k_nodes = 3,
         )
         state_b.add_execution(
-            k_node_index=0,
-            k_node_name="step_1",
-            input_prompt="Input 1",
-            OUTPUT="Output 1",
-            duration_ms=100.0,
+            k_node_index = 0,
+            k_node_name = "step_1",
+            input_prompt = "Input 1",
+            OUTPUT = "Output 1",
+            duration_ms = 100.0,
         )
         state_b.add_execution(
-            k_node_index=1,
-            k_node_name="step_2",
-            input_prompt="Input 2",
-            OUTPUT="Output 2",
-            duration_ms=150.0,
+            k_node_index = 1,
+            k_node_name = "step_2",
+            input_prompt = "Input 2",
+            OUTPUT = "Output 2",
+            duration_ms = 150.0,
         )
 
         # Checkpoint State B
@@ -165,22 +165,22 @@ def test_rollback_on_failure():
 
     with tempfile.TemporaryDirectory() as temp_dir:
         MANAGER = AtomicStateManager(
-            BACKEND=BackendType.FILE,
-            storage_path=temp_dir,
+            BACKEND = BackendType.FILE,
+            storage_path = temp_dir,
         )
 
         # Create and checkpoint State A (valid state)
         state_a = WorkflowState(
-            workflow_id="workflow_rollback_test",
-            workflow_type="test",
-            total_k_nodes=3,
+            workflow_id = "workflow_rollback_test",
+            workflow_type = "test",
+            total_k_nodes = 3,
         )
         state_a.add_execution(
-            k_node_index=0,
-            k_node_name="step_1",
-            input_prompt="Input 1",
-            OUTPUT="Output 1 - VALID STATE",
-            duration_ms=100.0,
+            k_node_index = 0,
+            k_node_name = "step_1",
+            input_prompt = "Input 1",
+            OUTPUT = "Output 1 - VALID STATE",
+            duration_ms = 100.0,
         )
 
         manager.checkpoint("workflow_rollback_test", state_a)
@@ -194,23 +194,23 @@ def test_rollback_on_failure():
         # Simulate failure during checkpoint of State B
         # We'll mock the _atomic_swap method to raise an exception
         state_b = WorkflowState(
-            workflow_id="workflow_rollback_test",
-            workflow_type="test",
-            total_k_nodes=3,
+            workflow_id = "workflow_rollback_test",
+            workflow_type = "test",
+            total_k_nodes = 3,
         )
         state_b.add_execution(
-            k_node_index=0,
-            k_node_name="step_1",
-            input_prompt="Input 1",
-            OUTPUT="Output 1",
-            duration_ms=100.0,
+            k_node_index = 0,
+            k_node_name = "step_1",
+            input_prompt = "Input 1",
+            OUTPUT = "Output 1",
+            duration_ms = 100.0,
         )
         state_b.add_execution(
-            k_node_index=1,
-            k_node_name="step_2",
-            input_prompt="Input 2",
-            OUTPUT="Output 2 - CORRUPTED STATE (should not persist)",
-            duration_ms=150.0,
+            k_node_index = 1,
+            k_node_name = "step_2",
+            input_prompt = "Input 2",
+            OUTPUT = "Output 2 - CORRUPTED STATE (should not persist)",
+            duration_ms = 150.0,
         )
 
         # Mock atomic_swap to simulate failure

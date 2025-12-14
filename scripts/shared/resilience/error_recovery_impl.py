@@ -2,7 +2,10 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .error_recovery_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .error_recovery_types import *  # Star import removed
+
 
 class ErrorRecoveryManager:
     """Manages error recovery with retry, backoff, and circuit breaking.
@@ -15,10 +18,10 @@ class ErrorRecoveryManager:
     """
 
     def __init__(self,
-        max_retries: int=3,
-        base_backoff_ms: int=200,
-        jitter_ms: int=100,
-        enable_circuit_breaker: bool=True):
+        max_retries: int = 3,
+        base_backoff_ms: int = 200,
+        jitter_ms: int = 100,
+        enable_circuit_breaker: bool = True):
         self.max_retries = max_retries
         self.base_backoff_ms = base_backoff_ms
         self.jitter_ms = jitter_ms

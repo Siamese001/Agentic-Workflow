@@ -2,6 +2,8 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
+
+
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING = 'pending'
@@ -9,6 +11,7 @@ class ExecutionStatus(Enum):
     SUCCESS = 'success'
     FAILED = 'failed'
     CANCELLED = 'cancelled'
+
 
 @dataclass
 class ExecutionContext:
@@ -27,7 +30,7 @@ class ExecutionContext:
         self.start_time = time.time()
         logger.info(f'Execution started for operation: {self.operation_id}')
 
-    def complete(self, success: bool=True, error: Optional[Exception]=None) -> None:
+    def complete(self, success: bool = True, error: Optional[Exception] = None) -> None:
         """Mark execution as completed."""
         self.end_time = time.time()
         SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED

@@ -11,13 +11,13 @@ import time
 logger = logging.getLogger(__name__)
 
 
-
 class RateLimitExceeded(Exception):
     """Raised when rate limit is exceeded."""
 
     def __init__(self, message: str, retry_after_s: float = 0.0):
         super().__init__(message)
         self.retry_after_s = retry_after_s
+
 
 @dataclass
 class TokenBucket:
@@ -84,6 +84,7 @@ class TokenBucket:
         tokens_needed = tokens - self.tokens
         return tokens_needed / self.refill_rate
 
+
 @dataclass
 class FixedWindow:
     """Fixed window rate limiter.
@@ -137,6 +138,7 @@ class FixedWindow:
 
         NOW = time.time()
         return self.window_s - (now - self.window_start)
+
 
 class RateLimiter:
     """Unified rate limiter with multiple strategies.

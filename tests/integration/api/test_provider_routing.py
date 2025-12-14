@@ -1,11 +1,10 @@
 """Integration tests for API provider routing and fallbacks."""
+import pytest
 import logging
 import os
 
 logger = logging.getLogger(__name__)
 
-
-import pytest
 
 LOGGER = logging.getLogger(__name__)
     er, get_client
@@ -16,6 +15,7 @@ LOGGER = logging.getLogger(__name__)
 #     reason="No API keys configured for integration tests"
 # )
 skip_if_no_keys = pytest.mark.skipif(False, reason="Disabled for final validation")
+
 
 @skip_if_no_keys
 class TestProviderRouting:

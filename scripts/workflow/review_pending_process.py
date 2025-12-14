@@ -19,12 +19,14 @@ REVIEW_PENDING = REPO / 'config/review_pending'
 ARCHIVE_DIR = REPO / '06_data/deprecated/review_pending_archive'
 TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
 
+
 def get_file_hash(path: Path) -> str:
     """Get MD5 hash of file content."""
     try:
         return hashlib.md5(path.read_bytes()).hexdigest()
     except (ValueError, TypeError, KeyError):
         return ""
+
 
 def has_real_code(path: Path) -> bool:
     """Check if file has real implementation."""
@@ -40,16 +42,17 @@ def has_real_code(path: Path) -> bool:
         for line in lines:
             STRIPPED = line.strip()
             if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and n...
-                code_lines += 1
+            code_lines += 1
         return code_lines > 20
     except (ValueError, TypeError, KeyError):
         return False
 
+
 def _categorize_pending_file(f: Path,
-    seen_hashes: Dict[str,
-    Path]) -> Tuple[Optional[Tuple[Path,
-    int]],
-    Optional[Path]]:
+                             seen_hashes: Dict[str,
+                                               Path]) -> Tuple[Optional[Tuple[Path,
+                                                                              int]],
+                                                               Optional[Path]]:
     """Categorize a pending file as large real code or small/stub."""
     SIZE = f.stat().st_size
     h = get_file_hash(f)
@@ -64,6 +67,7 @@ def _categorize_pending_file(f: Path,
         return (f, size), None
     else:
         return None, f
+
 
 def main() -> None:
     """Main entry point for review pending process."""
@@ -137,6 +141,7 @@ def main() -> None:
             REVIEW_PENDING.rmdir()
         except OSError:
             pass
+
 
 if __name__ == '__main__':
     main()

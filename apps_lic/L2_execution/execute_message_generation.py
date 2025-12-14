@@ -11,6 +11,7 @@ from typing import Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ExecuteMessageGeneration:
     """Executor for outreach domain."""
 
@@ -41,10 +42,11 @@ class ExecuteMessageGeneration:
         logger.info(f"Executing {action} with {params}")
         return {"action": action, "params": params, "status": "completed"}
 
+
 def execute(action: str,
-    """Docstring."""
-    params: Dict[str,
-    object],
-    config: Optional[Dict] = None) -> ExecutionResult:
+            """Docstring."""
+            params: Dict[str,
+                         object],
+            config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return ExecuteMessageGeneration(config).execute(action, params)

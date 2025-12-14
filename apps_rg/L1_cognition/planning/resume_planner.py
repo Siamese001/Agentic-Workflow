@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class ResumeAnalysisPlan:
     """Resume analysis planning configuration."""
@@ -31,6 +32,7 @@ class ResumeAnalysisPlan:
     confidence_threshold: float = 0.7
     metadata: Dict[str, object] = field(default_factory=dict)
 
+
 @dataclass
 class ResumeSectionConfig:
     """Configuration for individual resume sections."""
@@ -43,6 +45,7 @@ class ResumeSectionConfig:
     validation_rules: List[str]
     formatting_rules: List[str]
     metadata: Dict[str, object] = field(default_factory=dict)
+
 
 @dataclass
 class ResumeProcessingPlan:
@@ -60,6 +63,7 @@ class ResumeProcessingPlan:
     execution_order: List[str]
     fallback_strategies: Dict[str, str]
     metadata: Dict[str, object] = field(default_factory=dict)
+
 
 class RGPlanner:
     """Resume generation planner - L1 planning layer.

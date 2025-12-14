@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 @dataclass
 class ContactData:
     """TODO: Add docstring."""
@@ -18,8 +20,10 @@ class ContactData:
     linkedin_url: Optional[str] = None
     enrichment_data: Optional[Dict[str, object]] = None
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class CompanyData:
     """Docstring."""
@@ -28,6 +32,7 @@ class CompanyData:
     industry: str
     size: str
     recent_news: List[str]
+
 
 class TestContactDataIntegration:
     """Integration tests for contact data flows."""

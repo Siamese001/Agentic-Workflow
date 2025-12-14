@@ -9,13 +9,12 @@ This module tests complex agentic behaviors including:
 - Validation retry mechanisms
 """
 
+import pytest
 import asyncio
 import logging
 
 logger = logging.getLogger(__name__)
 
-
-import pytest
 
 # Import the modules we're testing
 # Note: These imports may need adjustment based on actual module structure
@@ -25,25 +24,33 @@ except ImportError as e:
     pytest.skip(f"Skipping agentic behaviors tests: {e}", allow_module_level=True)
 
 # Helper classes for testing
+
+
 class AgentResponse:
     """Simple container for agent responses."""
+
     def __init__(self, content: str, metadata: Dict[str, Any]):
         SELF.CONTENT = content
         SELF.METADATA = metadata
+
 
 class MaxValidationRetriesError(Exception):
     """Raised when maximum validation retries are exceeded."""
     pass
 
+
 class ContextOverflowError(Exception):
     """Raised when context exceeds token limits."""
     pass
 
+
 class ValidationResult:
     """Result of validation."""
+
     def __init__(self, is_valid: bool, error_message: str = ""):
         self.is_valid = is_valid
         self.error_message = error_message
+
 
 @pytest.mark.asyncio
 async def test_validation_max_retries_exceeded():
@@ -68,6 +75,7 @@ async def test_validation_max_retries_exceeded():
     # Verify we actually tried 3 times (initial + 2 retries)
     assert orchestrator.execute_step.call_count == 3
 
+
 @pytest.mark.asyncio
 async def test_token_budget_preflight_check():
     """
@@ -85,6 +93,7 @@ async def test_token_budget_preflight_check():
     with patch("tiktoken.encoding_for_model", return_value=mock_encoder):
         with pytest.raises(ContextOverflowError):
             await executor.execute(huge_prompt, model="gpt-4-turbo")
+
 
 @pytest.mark.asyncio
 async def test_json_repair_workflow():
@@ -117,6 +126,7 @@ async def test_json_repair_workflow():
     second_call_args = mock_execute.call_args_list[1]
     assert "Previous output failed JSON validation" in str(second_call_args)
 
+
 @pytest.mark.asyncio
 async def test_validation_with_fallback_strategies():
     """
@@ -142,6 +152,7 @@ async def test_validation_with_fallback_strategies():
     # Verify all strategies were attempted
     assert mock_validate.call_count == 3
     assert result is not None
+
 
 @pytest.mark.asyncio
 async def test_context_aware_prompt_truncation():

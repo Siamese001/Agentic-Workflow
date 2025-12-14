@@ -10,6 +10,7 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ToneVoice(str, Enum):
     """Primary voice types for brand consistency."""
     AUTHORITATIVE = "AUTHORITATIVE"  # "Led", "Drove", "Built"
@@ -17,6 +18,7 @@ class ToneVoice(str, Enum):
     TECHNICAL = "TECHNICAL"          # High jargon density
     EXECUTIVE = "EXECUTIVE"          # Strategic, high-level
     CREATIVE = "CREATIVE"            # Innovative, visionary
+
 
 class ToneSettings(BaseModel):
     """Settings for tone enforcement."""
@@ -30,6 +32,7 @@ class ToneSettings(BaseModel):
     formality_level: str = Field(default="professional")  # casual, professional, formal
     max_passive_voice_percent: float = Field(default=20.0, ge=0.0, le=100.0)
 
+
 class ToneViolation(BaseModel):
     """A tone rule violation."""
     type: str  # e.g., "sentence_length", "banned_word", "passive_voice"
@@ -38,6 +41,7 @@ class ToneViolation(BaseModel):
     location: Optional[str] = None  # Text snippet where violation occurred
     suggestion: Optional[str] = None
 
+
 class ToneAnalysisResult(BaseModel):
     """Result of tone analysis."""
     is_compliant: bool
@@ -45,6 +49,7 @@ class ToneAnalysisResult(BaseModel):
     SCORE: FLOAT = Field(ge=0.0, le=1.0)  # Overall compliance score
     voice_detected: Optional[ToneVoice] = None
     metrics: Dict[str, float] = Field(default_factory=dict)
+
 
 class ToneEnforcer:
     """Enforces tone rules across generated content."""

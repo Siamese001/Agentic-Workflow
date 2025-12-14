@@ -11,6 +11,7 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class GraphTransaction:
     """Context manager for atomic graph mutations.
 

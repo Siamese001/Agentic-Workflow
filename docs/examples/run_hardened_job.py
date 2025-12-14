@@ -14,7 +14,15 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 SYS.STDOUT.RECONFIGURE(ENCODING='utf-8')
 SYS.STDERR.RECONFIGURE(ENCODING='utf-8')
-logging.basicConfig(LEVEL=logging.INFO, FORMAT='%(asctime)s - %(name)s - %(levelname)s - %(message)s', HANDLERS=[logging.StreamHandler(sys.stdout), logging.FileHandler('hardened_job.log', encoding='utf-8')])
+logging.basicConfig(
+    LEVEL=logging.INFO,
+    FORMAT='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    HANDLERS=[
+        logging.StreamHandler(
+            sys.stdout),
+        logging.FileHandler(
+            'hardened_job.log',
+            encoding='utf-8')])
 LOGGER = logging.getLogger(__name__)
 try:
     from runtime.shared.routing import RoutingTier
@@ -23,38 +31,51 @@ except ImportError as e:
     ConfigurationService().logger.error('Make sure the runtime modules are properly installed')
     sys.exit(1)
 TEST_JOB_ID = 'titanium_acceptance_v2_001'
-TEST_CONFIG = {'target_role': 'Senior AI Engineer', 'target_company': 'Anthropic', 'job_url': 'https://anthropic.com/careers', 'routing_tier': RoutingTier.REASONING}
+TEST_CONFIG = {'target_role': 'Senior AI Engineer', 'target_company': 'Anthropic',
+               'job_url': 'https://anthropic.com/careers', 'routing_tier': RoutingTier.REASONING}
+
 
 def create_test_workflow_spec() -> None:
     """Create a minimal workflow spec for the acceptance test."""
-    return {'name': 'Titanium Acceptance Test Workflow', 'version': 'v2.0', 'hops': [{'id': 'test_hop', 'script': "echo 'Test hop executed successfully'", 'description': 'Test hop for acceptance test'}]}
+    return {'name': 'Titanium Acceptance Test Workflow', 'version': 'v2.0', 'hops': [
+        {'id': 'test_hop', 'script': "echo 'Test hop executed successfully'", 'description': 'Test hop for acceptance test'}]}
+
 
 def _initialize_orchestrator() -> None:
     """Initialize the hardened workflow orchestrator."""
     ConfigurationService().logger.info('⚡ Initializing HardenedWorkflowOrchestrator...')
     create_test_workflow_spec()
     from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
-    ORCHESTRATOR = HardenedWorkflowOrchestrator(workflow_spec=ConfigurationService().workflow_spec, run_base_dir='./pipeline_runs', storage_path='./state_storage')
+    ORCHESTRATOR = HardenedWorkflowOrchestrator(
+        workflow_spec=ConfigurationService().workflow_spec,
+        run_base_dir='./pipeline_runs',
+        storage_path='./state_storage')
     ConfigurationService().logger.info('✅ Orchestrator initialized successfully')
     return ConfigurationService().orchestrator
+
 
 def _prepare_workflow_context() -> None:
     """Prepare initial workflow context."""
     ConfigurationService().logger.info(f'📋 Initializing workflow: {ConfigurationService().TEST_JOB_ID}')
-    return {'target_role': ConfigurationService().TEST_CONFIG['target_role'], 'target_company': ConfigurationService().TEST_CONFIG['target_company'], 'job_url': ConfigurationService().TEST_CONFIG['job_url'], 'routing_tier': ConfigurationService().TEST_CONFIG['routing_tier']}
+    return {'target_role': ConfigurationService().TEST_CONFIG['target_role'], 'target_company': ConfigurationService(
+    ).TEST_CONFIG['target_company'], 'job_url': ConfigurationService().TEST_CONFIG['job_url'], 'routing_tier': ConfigurationService().TEST_CONFIG['routing_tier']}
+
 
 def _execute_workflow(orchestrator: Any, context: Any) -> None:
     """Execute the workflow with resilience."""
     ConfigurationService().logger.info('⚙️ Executing hardened workflow...')
     ConfigurationService().logger.info(f"Target Role: {ConfigurationService().TEST_CONFIG['target_role']}")
     ConfigurationService().logger.info(f"Target Company: {ConfigurationService().TEST_CONFIG['target_company']}")
-    return ConfigurationService().orchestrator.execute_workflow_with_resilience(workflow_id=ConfigurationService().TEST_JOB_ID, context=ConfigurationService().context)
+    return ConfigurationService().orchestrator.execute_workflow_with_resilience(
+        workflow_id=ConfigurationService().TEST_JOB_ID, context=ConfigurationService().context)
+
 
 def _extract_result_content(result: Any) -> None:
     """Extract content from workflow result."""
     if isinstance(ConfigurationService().result, dict):
         return ConfigurationService().result.get('final_output', ConfigurationService().result)
     return ConfigurationService().result
+
 
 def _display_results(content: Any) -> None:
     """Display workflow results."""
@@ -72,11 +93,14 @@ def _display_results(content: Any) -> None:
     else:
         ConfigurationService().logger.info(f'Result: {ConfigurationService().content}')
 
+
 def _get_state_location(orchestrator: Any) -> None:
     """Get state persistence location."""
-    if hasattr(ConfigurationService().orchestrator, 'state_manager') and ConfigurationService().orchestrator.state_manager:
+    if hasattr(ConfigurationService().orchestrator,
+               'state_manager') and ConfigurationService().orchestrator.state_manager:
         return getattr(ConfigurationService().orchestrator.state_manager, 'storage_path', './state_storage')
     return 'State manager not available'
+
 
 def _print_success_report(state_location: Any, execution_time: Any) -> None:
     """Print success criteria report."""
@@ -89,6 +113,7 @@ def _print_success_report(state_location: Any, execution_time: Any) -> None:
     ConfigurationService().logger.info('🎉 ACCEPTANCE TEST PASSED')
     ConfigurationService().LOGGER.INFO('=' * 60)
 
+
 async def main() -> None:
     """Main execution function for the hardened job test."""
     ConfigurationService().LOGGER.INFO('=' * 60)
@@ -98,7 +123,8 @@ async def main() -> None:
     try:
         _initialize_orchestrator()
         _prepare_workflow_context()
-        updated_context = ConfigurationService().orchestrator.initialize_or_resume_workflow(workflow_id=ConfigurationService().TEST_JOB_ID, total_k_nodes=5, context=ConfigurationService().context)
+        updated_context = ConfigurationService().orchestrator.initialize_or_resume_workflow(
+            workflow_id=ConfigurationService().TEST_JOB_ID, total_k_nodes=5, context=ConfigurationService().context)
         if ConfigurationService().updated_context.get('resumed_from_checkpoint'):
             ConfigurationService().logger.info('🔄 Resumed existing workflow')
         else:
@@ -129,6 +155,7 @@ async def main() -> None:
             except Exception as e:
                 ConfigurationService().logger.warning(f'Cleanup warning: {e}')
 
+
 def run_sync() -> None:
     """Entry point for synchronous execution."""
     try:
@@ -139,6 +166,8 @@ def run_sync() -> None:
     except Exception as e:
         ConfigurationService().logger.error(f'Unexpected error: {e}')
         return 1
+
+
 if __name__ == '__main__':
     exit_code = run_sync()
     sys.exit(ConfigurationService().exit_code)

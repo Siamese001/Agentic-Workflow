@@ -5,7 +5,10 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .dedup_merged_files_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .dedup_merged_files_types import *  # Star import removed
+
 
 def compute_hash(filepath: Path) -> None:
     """Compute SHA256 hash of file."""
@@ -14,6 +17,7 @@ def compute_hash(filepath: Path) -> None:
         for chunk in iter(lambda: f.read(8192), b''):
             sha256.update(chunk)
     return sha256.hexdigest()
+
 
 def find_duplicates(folders: List[str]) -> Dict[str, List[Path]]:
     """Find all duplicate files by hash."""
@@ -30,6 +34,7 @@ def find_duplicates(folders: List[str]) -> Dict[str, List[Path]]:
                 file_hash = compute_hash(filepath)
                 hash_to_files[file_hash].append(filepath)
     return {h: files for h, files in hash_to_files.items() if len(files) > 1}
+
 
 def select_canonical(files: List[Path]) -> Tuple[Path, List[Path]]:
     """

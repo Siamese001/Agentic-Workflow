@@ -1,21 +1,21 @@
 """Performance tests for SDK latency budgets."""
+from runtime.shared.sdk_registry import validate_sdk
+from runtime.shared.cache import generate_llm_cache_key
 import logging
 import time
 
 logger = logging.getLogger(__name__)
 
-
-from runtime.shared.cache import generate_llm_cache_key
-from runtime.shared.sdk_registry import validate_sdk
-
-    reset_all_clients,
-    SDK_REGISTRY,
-    get_vector_store
-import logging
+reset_all_clients,
+SDK_REGISTRY,
+get_vector_store
 
 LOGGER = logging.getLogger(__name__)
+
+
 class TestSDKValidationLatency:
     """TestSDKValidationLatency implementation."""
+
     def test_validate_sdk_under_100ms(self) -> None:
         """SDK validation completes within 100ms."""
         START = time.perf_counter()
@@ -34,8 +34,10 @@ class TestSDKValidationLatency:
         avg_us = (elapsed / 1000) * 1_000_000
         assert avg_us < 1000, f"Avg lookup took {avg_us:.2f}us"
 
+
 class TestCacheKeyLatency:
     """TestCacheKeyLatency implementation."""
+
     def test_cache_key_generation_under_1ms(self) -> None:
         """Cache key generation is sub-millisecond."""
         MESSAGES = [{"role": "user", "content": "Test message"}]
@@ -46,8 +48,10 @@ class TestCacheKeyLatency:
         avg_us = (elapsed / 1000) * 1_000_000
         assert avg_us < 1000, f"Avg key gen took {avg_us:.2f}us"
 
+
 class TestVectorStoreInitLatency:
     """TestVectorStoreInitLatency implementation."""
+
     def test_vector_store_init_under_500ms(self) -> None:
         """Vector store initialization within 500ms."""
         reset_all_clients()

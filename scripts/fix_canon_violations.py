@@ -5,6 +5,7 @@ Fix all canon violations to achieve 50/50 pass rate.
 This script renames directories and files to comply with the canon.
 """
 
+import scripts.validation.check_canonical_structure
 import logging
 import os
 import shutil
@@ -12,8 +13,6 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-
-import scripts.validation.check_canonical_structure
 
 ROOT = Path(__file__).resolve().parent
 
@@ -28,8 +27,10 @@ SOVEREIGN_DIRS = {
     "config",
 }
 
+
 def sovereign_roots():
     return [ROOT / d for d in SOVEREIGN_DIRS if (ROOT / d).is_dir()]
+
 
 def fix_smashed_directories():
     """
@@ -79,6 +80,8 @@ def fix_smashed_directories():
             shutil.move(str(d), str(new_path))
 
         Exception as e: pass
+
+
 def fix_repeated_concept_filenames():
     """
     Rename files with repeated concepts like state_update_update_safety_usage.py

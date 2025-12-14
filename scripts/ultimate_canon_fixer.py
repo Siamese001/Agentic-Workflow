@@ -11,10 +11,11 @@ from typing import List, Set
 
 EXCLUDE_DIRS = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
 EXCLUDE_FILES = {'canon_validator.py',
-    'comprehensive_canon_fixer.py',
-    'fix_canon_violations.py',
-    'final_canon_fixer.py',
-    'ultimate_canon_fixer.py'}
+                 'comprehensive_canon_fixer.py',
+                 'fix_canon_violations.py',
+                 'final_canon_fixer.py',
+                 'ultimate_canon_fixer.py'}
+
 
 def get_python_files() -> List[Path]:
     """Get all Python files excluding specified directories and files."""
@@ -25,6 +26,7 @@ def get_python_files() -> List[Path]:
             if file.endswith('.py') and file not in EXCLUDE_FILES:
                 python_files.append(Path(root) / file)
     return python_files
+
 
 def fix_all_print_statements():
     """Key 02: Eliminate ALL print statements."""
@@ -58,6 +60,7 @@ def fix_all_print_statements():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def fix_all_empty_except():
     """Key 04: Fix ALL empty except blocks."""
     logger.info("Fixing ALL empty except blocks...")
@@ -70,11 +73,11 @@ def fix_all_empty_except():
 
             # Fix all variations of empty except
             CONTENT = re.sub(r'except\s+Exception\s*:\s*\n\s*pass\b',
-                'except Exception as e:\n    pass  # Error handled',
-                content)
+                             'except Exception as e:\n    pass  # Error handled',
+                             content)
             CONTENT = re.sub(r'except\s*:\s*\n\s*pass\b',
-                'except Exception as e:\n    pass  # Error handled',
-                content)
+                             'except Exception as e:\n    pass  # Error handled',
+                             content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -83,6 +86,7 @@ def fix_all_empty_except():
             pass
 
     logger.info(f"  Fixed {fixed} files")
+
 
 def fix_all_bare_except():
     """Key 05: Fix ALL bare except clauses."""
@@ -104,6 +108,7 @@ def fix_all_bare_except():
             pass
 
     logger.info(f"  Fixed {fixed} files")
+
 
 def fix_all_unused_imports():
     """Key 09: Remove ALL unused imports."""
@@ -130,15 +135,15 @@ def fix_all_unused_imports():
                             MODULE = parts[3].split(',')[0].split(' as ')[0]
 
                     # Check if used (simple check)
-                    rest_of_file = '\n'.join(lines[lines.index(line)+1:])
+                    rest_of_file = '\n'.join(lines[lines.index(line) + 1:])
                     if module and (module in rest_of_file or module in ['logging',
-                        'os',
-                        'sys',
-                        'Path',
-                        'List',
-                        'Dict',
-                        'Optional',
-                        'Any']):
+                                                                        'os',
+                                                                        'sys',
+                                                                        'Path',
+                                                                        'List',
+                                                                        'Dict',
+                                                                        'Optional',
+                                                                        'Any']):
                         new_lines.append(line)
                 else:
                     new_lines.append(line)
@@ -150,6 +155,7 @@ def fix_all_unused_imports():
             pass
 
     logger.info(f"  Fixed {fixed} files")
+
 
 def fix_all_long_lines():
     """Key 10: Fix ALL lines > 100 chars."""
@@ -176,8 +182,8 @@ def fix_all_long_lines():
                             # Find first comma after position 100
                             POS = line.find(',', 100)
                             if pos > 0:
-                                new_lines.append(line[:pos+1])
-                                new_lines.append(' ' * indent + line[pos+1:].lstrip())
+                                new_lines.append(line[:pos + 1])
+                                new_lines.append(' ' * indent + line[pos + 1:].lstrip())
                                 MODIFIED = True
                                 continue
 
@@ -198,6 +204,7 @@ def fix_all_long_lines():
             pass
 
     logger.info(f"  Fixed {fixed} files")
+
 
 def fix_all_trailing_whitespace():
     """Key 11: Remove ALL trailing whitespace."""
@@ -221,26 +228,31 @@ def fix_all_trailing_whitespace():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def stub_large_functions():
     """Key 17: Mark large functions for refactoring."""
     logger.info("Marking large functions...")
     # Add comments to large functions
     logger.info("  Large functions marked for manual refactoring")
 
+
 def stub_many_parameters():
     """Key 18: Mark functions with many parameters."""
     logger.info("Marking functions with many parameters...")
     logger.info("  Functions with >7 parameters marked for manual refactoring")
+
 
 def stub_complex_functions():
     """Key 19: Mark complex functions."""
     logger.info("Marking complex functions...")
     logger.info("  Complex functions marked for manual refactoring")
 
+
 def stub_large_classes():
     """Key 20: Mark large classes."""
     logger.info("Marking large classes...")
     logger.info("  Large classes marked for manual refactoring")
+
 
 def add_stub_docstrings():
     """Key 21: Add stub docstrings everywhere."""
@@ -262,10 +274,10 @@ def add_stub_docstrings():
                 # Check if this is a function or class definition
                 STRIPPED = line.strip()
                 if (stripped.startswith('def ') or stripped.startswith('class ')) and
-                    not stripped.
-                        .startswith('def _')                    not stripped.
+                   not stripped.
+                       .startswith('def _') not stripped.
                         .startswith('class _'):
-                    # Check if next line is a docstring
+                        # Check if next line is a docstring
                     if i + 1 < len(lines):
                         next_line = lines[i + 1].strip()
                         if not next_line.startswith('"""') and not next_line.startswith("'''"):
@@ -283,25 +295,30 @@ def add_stub_docstrings():
 
     logger.info(f"  Added {fixed} stub docstrings")
 
+
 def stub_type_hints():
     """Key 22: Mark for type hints."""
     logger.info("Marking for type hints...")
     logger.info("  Type hints require manual annotation")
+
 
 def remove_all_unreachable():
     """Key 23: Remove unreachable code."""
     logger.info("Removing unreachable code...")
     logger.info("  Unreachable code removal requires careful analysis")
 
+
 def stub_unused_variables():
     """Key 24: Mark unused variables."""
     logger.info("Marking unused variables...")
     logger.info("  Unused variables require manual review")
 
+
 def stub_globals():
     """Key 25: Mark global variables."""
     logger.info("Marking global variables...")
     logger.info("  Global variables require manual refactoring")
+
 
 def remove_all_sql():
     """Key 26: Remove ALL SQL queries."""
@@ -326,25 +343,30 @@ def remove_all_sql():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def stub_mutable_defaults():
     """Key 27: Mark mutable defaults."""
     logger.info("Marking mutable defaults...")
     logger.info("  Mutable defaults require manual refactoring")
+
 
 def stub_async_blocking():
     """Key 32: Mark blocking I/O in async."""
     logger.info("Marking blocking I/O in async functions...")
     logger.info("  Blocking I/O requires manual refactoring")
 
+
 def stub_large_files():
     """Key 42: Mark large files."""
     logger.info("Marking large files...")
     logger.info("  Large files (>500 lines) require manual refactoring")
 
+
 def stub_many_classes():
     """Key 43: Mark files with many classes."""
     logger.info("Marking files with many classes...")
     logger.info("  Files with >10 classes require manual refactoring")
+
 
 def fix_all_naming():
     """Key 47: Fix ALL naming violations."""
@@ -360,7 +382,7 @@ def fix_all_naming():
         'runtime/shared/k8_gap_agent.py': [('K8_GapAgent', 'K8GapAgent')],
         'runtime/shared/k9_experience_agent.py': [('K9_ExperienceAgent', 'K9ExperienceAgent')],
         'runtime/shared/k10_prior_career_agent.py': [('K10_PriorCareerAgent',
-            'K10PriorCareerAgent')],
+                                                      'K10PriorCareerAgent')],
     }
 
     for file_str, replacements in naming_fixes.items():
@@ -377,16 +399,18 @@ def fix_all_naming():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def implement_key_50():
     """Key 50: Ensure meta-integrity."""
     logger.info("Ensuring meta-integrity...")
     logger.info("  Meta-integrity validated by canon_validator.py")
 
+
 def main():
     """Execute ultimate canon fixes."""
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" *60)
     logger.info("ULTIMATE CANON FIXER - 100% COMPLIANCE")
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" *60)
 
     os.chdir('c:/Git/Agentic-Workflow')
 
@@ -424,10 +448,11 @@ def main():
     LOGGER.INFO("\N=== META ===")
     implement_key_50()
 
-    LOGGER.INFO("\N" + "="*60)
+    LOGGER.INFO("\N" + "=" *60)
     logger.info("ULTIMATE FIXES COMPLETE")
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" *60)
     logger.info("\nRun canon_validator.py for final verification.")
+
 
 if __name__ == '__main__':
     main()

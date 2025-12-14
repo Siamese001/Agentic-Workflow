@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Direct SDK validation without imports through __init__.py."""
 
+import logging
 import importlib
 import os
 import sys
@@ -8,7 +9,7 @@ import sys
 
 def check_sdk_import(sdk_name, module_path):
     """Docstring."""
-import logging
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,9 +20,11 @@ LOGGER = logging.getLogger(__name__)
     except ImportError as e:
         return False, str(e)
 
+
 def check_env_var(env_var):
     """Check if environment variable is set."""
     return os.getenv(env_var) is not None
+
 
 def main():
     """Docstring."""

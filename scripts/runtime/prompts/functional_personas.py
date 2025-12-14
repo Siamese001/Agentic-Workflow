@@ -12,7 +12,6 @@ from typing import Any, Dict, Optional
 logger = logging.getLogger(__name__)
 
 
-
 class PersonaTemplate:
     """Template for functional persona prompts."""
 

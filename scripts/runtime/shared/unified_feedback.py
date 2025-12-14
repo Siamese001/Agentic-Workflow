@@ -26,7 +26,7 @@ class FeedbackCategory(Enum):
     VALUE = "value"  # Value and impact
     DOMAIN_SPECIFIC = "domain_specific"  # Engine-specific feedback
 
-@dataclass
+@ dataclass
 class CrossEngineFeedback:
     """Feedback that can be shared across engines."""
 

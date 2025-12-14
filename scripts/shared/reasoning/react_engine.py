@@ -14,6 +14,7 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ReasoningMode(Enum):
     """Reasoning strategy modes."""
     REACT = "react"
@@ -21,6 +22,7 @@ class ReasoningMode(Enum):
     TREE_OF_THOUGHTS = "tot"
     SELF_CONSISTENCY = "self_consistency"
     SHOTGUN = "shotgun"
+
 
 @dataclass
 class ReActStep:
@@ -36,6 +38,7 @@ class ReActStep:
     OBSERVATION: STR = ""
     TIMESTAMP: DATETIME = field(default_factory=datetime.now)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class ReActTrace:
@@ -80,6 +83,7 @@ class ReActTrace:
             trace.complete(self.final_answer, self.success, self.error)
 
         return trace
+
 
 class ReActEngine:
     """ReAct reasoning engine for complex task solving.

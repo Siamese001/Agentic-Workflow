@@ -13,6 +13,7 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class RetryStrategy(str, Enum):
     """Retry strategy types."""
     EXPONENTIAL_BACKOFF = "exponential_backoff"
@@ -20,13 +21,16 @@ class RetryStrategy(str, Enum):
     FIXED_DELAY = "fixed_delay"
     IMMEDIATE = "immediate"
 
+
 class RetryableError(Exception):
     """Base class for retryable errors."""
     pass
 
+
 class NonRetryableError(Exception):
     """Base class for non-retryable errors."""
     pass
+
 
 @dataclass
 class RetryConfig:

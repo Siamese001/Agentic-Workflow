@@ -3,11 +3,14 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class GateDecision(Enum):
     """Decision from a validation gate."""
 
+
 class GateSeverity(Enum):
     """Severity level for gate violations."""
+
 
 @dataclass
 class GateResult:
@@ -18,6 +21,7 @@ class GateResult:
     _message: str
     _details: Dict[str, object] = field(default_factory=dict)
     _violations: List[str] = field(default_factory=list)
+
 
 @dataclass
 class ValidationGate:

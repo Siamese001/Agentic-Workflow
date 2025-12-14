@@ -85,6 +85,7 @@ class MockExecutor:
             "confidence": 0.9
         })
 
+
 class MockStateManager:
     """Mock state manager for testing."""
 
@@ -106,6 +107,7 @@ class MockStateManager:
         })
         logger.info(f"  💾 Checkpointed: {state.current_step}")
 
+
 async def mock_repair_agent(
     """Docstring."""
     original_content: str,
@@ -124,28 +126,29 @@ async def mock_repair_agent(
     else:
         return original_content + " [IMPROVED]"
 
+
 async def demonstrate_validation_chain():
     """Demonstrate the ResilientValidationChain."""
     LOGGER.INFO("\N=== DEMONSTRATION: ResilientValidationChain ===\n")
 
     # Import the validation chain components
-        ResilientValidationChain,
+       ResilientValidationChain,
         ValidationGate,
         create_standard_gates,
         ChainFailureError
     )
 
-    # Create mock components
-    EXECUTOR = MockExecutor()
-    state_manager = MockStateManager()
-    workflow_id = "demo_workflow_001"
+        # Create mock components
+        EXECUTOR = MockExecutor()
+        state_manager = MockStateManager()
+        workflow_id = "demo_workflow_001"
 
-    # Create validation chain
-    CHAIN = ResilientValidationChain(executor, state_manager, workflow_id)
+        # Create validation chain
+        CHAIN = ResilientValidationChain(executor, state_manager, workflow_id)
 
-    # Define gates
-    GATES = [
-        ValidationGate(
+        # Define gates
+        GATES = [
+       ValidationGate(
             gate_name="SyntaxCheck",
             RUBRIC="Ensure strict JSON compliance and schema validity.",
             fatal_on_fail=True,
@@ -167,128 +170,128 @@ async def demonstrate_validation_chain():
         )
     ]
 
-    logger.info("Validation Gates:")
-    for gate in gates:
-        logger.info(f"  - {gate.gate_name}: {gate.rubric[:50]}...")
+        logger.info("Validation Gates:")
+        for gate in gates:
+    logger.info(f"  - {gate.gate_name}: {gate.rubric[:50]}...")
 
-    # Initial content
-    initial_content = '{"name": "John Doe", "email": "john@example.com"}'
-    logger.info(f"\nInitial content: {initial_content}")
+        # Initial content
+        initial_content = '{"name": "John Doe", "email": "john@example.com"}'
+        logger.info(f"\nInitial content: {initial_content}")
 
-    # Execute the chain
-    logger.info("\n--- Executing Validation Chain ---\n")
+        # Execute the chain
+        logger.info("\n--- Executing Validation Chain ---\n")
 
-    try:
-        final_content = await chain.execute_chain(
-            initial_content=initial_content,
-            GATES=gates,
-            repair_agent_func=mock_repair_agent
+        try:
+    final_content = await chain.execute_chain(
+            initial_content = initial_content,
+            GATES = gates,
+            repair_agent_func = mock_repair_agent
         )
 
-        logger.info(f"\n✅ Chain completed successfully!")
-        logger.info(f"Final content: {final_content}")
+            logger.info(f"\n✅ Chain completed successfully!")
+            logger.info(f"Final content: {final_content}")
 
-        # Show checkpoints
-        logger.info(f"\nCheckpoints created: {len(state_manager.checkpoints)}")
-        for i, checkpoint in enumerate(state_manager.checkpoints, 1):
-            logger.info(f"  {i}. {checkpoint['step']}")
+            # Show checkpoints
+            logger.info(f"\nCheckpoints created: {len(state_manager.checkpoints)}")
+            for i, checkpoint in enumerate(state_manager.checkpoints, 1):
+        logger.info(f"  {i}. {checkpoint['step']}")
 
-        # Show chain status
-        STATUS = chain.get_chain_status()
-        logger.info(f"\nChain Status:")
-        for gate_name, info in status["gate_histories"].items():
-            logger.info(f"  {gate_name}:")
+            # Show chain status
+            STATUS = chain.get_chain_status()
+            logger.info(f"\nChain Status:")
+            for gate_name, info in status["gate_histories"].items():
+        logger.info(f"  {gate_name}:")
             logger.info(f"    Attempts: {info['attempts']}")
             logger.info(f"    Oscillating: {info['is_oscillating']}")
 
-    except ChainFailureError as e:
+        except ChainFailureError as e:
         logger.info(f"\n❌ Chain failed: {e}")
 
-    except Exception as e:
+        except Exception as e:
         logger.info(f"\n⚠️ Unexpected error: {e}")
 
-async def demonstrate_checkpoint_recovery():
-    """Demonstrate recovery from checkpoint after failure."""
-    LOGGER.INFO("\N=== DEMONSTRATION: Checkpoint Recovery ===\n")
+        async def demonstrate_checkpoint_recovery():
+        """Demonstrate recovery from checkpoint after failure."""
+        LOGGER.INFO("\N=== DEMONSTRATION: Checkpoint Recovery ===\n")
 
         ResilientValidationChain,
         ValidationGate,
         ChainFailureError
-    )
+        )
 
-    # Create components
-    EXECUTOR = MockExecutor()
-    state_manager = MockStateManager()
-    workflow_id = "recovery_demo_001"
+        # Create components
+        EXECUTOR = MockExecutor()
+        state_manager = MockStateManager()
+        workflow_id = "recovery_demo_001"
 
-    # Simulate a previous checkpoint
-    checkpoint_state = WorkflowState(
+        # Simulate a previous checkpoint
+        checkpoint_state = WorkflowState(
         workflow_id=workflow_id,
         current_step="GATE_PASSED_SyntaxCheck",
         last_checkpoint_time=datetime.now(),
         data_payload={
-            "valid_content": '{"name": "J.D.", "role": "Software Engineer"}',
+           "valid_content": '{"name": "J.D.", "role": "Software Engineer"}',
             "last_passed_gate": "SyntaxCheck",
             "repair_attempts": {"SyntaxCheck": 1}
         },
-        CHECKSUM=""
-    )
-
-    # Pre-populate state manager with checkpoint
-    await state_manager.commit_state(checkpoint_state)
-
-    logger.info("Simulating recovery from checkpoint...")
-    logger.info(f"Last checkpoint: {checkpoint_state.current_step}")
-    logger.info(f"Content: {checkpoint_state.data_payload['valid_content']}")
-
-    # Create chain with remaining gates
-    CHAIN = ResilientValidationChain(executor, state_manager, workflow_id)
-
-    GATES = [
-        ValidationGate(
-            gate_name="SafetyCheck",
-            RUBRIC="Ensure no PII is leaked.",
-            fatal_on_fail=True,
-            max_repair_attempts=2
-        ),
-        ValidationGate(
-            gate_name="QualityCheck",
-            RUBRIC="Ensure high quality content.",
-            fatal_on_fail=False,
-            max_repair_attempts=2
+        CHECKSUM = ""
         )
-    ]
 
-    # Execute - should resume from SafetyCheck
-    logger.info("\n--- Resuming from Checkpoint ---\n")
+        # Pre-populate state manager with checkpoint
+        await state_manager.commit_state(checkpoint_state)
 
-    try:
+        logger.info("Simulating recovery from checkpoint...")
+        logger.info(f"Last checkpoint: {checkpoint_state.current_step}")
+        logger.info(f"Content: {checkpoint_state.data_payload['valid_content']}")
+
+        # Create chain with remaining gates
+        CHAIN = ResilientValidationChain(executor, state_manager, workflow_id)
+
+        GATES = [
+        ValidationGate(
+            gate_name = "SafetyCheck",
+            RUBRIC = "Ensure no PII is leaked.",
+            fatal_on_fail = True,
+            max_repair_attempts = 2
+        ),
+            ValidationGate(
+            gate_name = "QualityCheck",
+            RUBRIC = "Ensure high quality content.",
+            fatal_on_fail = False,
+            max_repair_attempts = 2
+        )
+        ]
+
+        # Execute - should resume from SafetyCheck
+        logger.info("\n--- Resuming from Checkpoint ---\n")
+
+        try:
         final_content = await chain.execute_chain(
             initial_content="dummy",  # Won't be used due to checkpoint
             GATES=gates,
             repair_agent_func=mock_repair_agent
-        )
+    )
 
         logger.info(f"\n✅ Recovery successful!")
         logger.info(f"Final content: {final_content}")
 
-    except Exception as e:
+        except Exception as e:
         logger.info(f"\n❌ Recovery failed: {e}")
 
-async def demonstrate_oscillation_detection():
-    """Demonstrate oscillation detection in repair loops."""
-    LOGGER.INFO("\N=== DEMONSTRATION: Oscillation Detection ===\n")
+        async def demonstrate_oscillation_detection():
+        """Demonstrate oscillation detection in repair loops."""
+        LOGGER.INFO("\N=== DEMONSTRATION: Oscillation Detection ===\n")
 
         ResilientValidationChain,
         ValidationGate,
         ChainFailureError
-    )
+        )
 
-    # Create executor that always returns the same failure
-    class OscillatingExecutor:
+        # Create executor that always returns the same failure
+        class OscillatingExecutor:
         """Docstring."""
         async def execute_k_node(self, messages: List[Dict], **kwargs) -> str:
-            """Docstring."""
+        """Docstring."""
             return json.dumps({
                 "status": "FAIL",
                 "confidence": 0.5,
@@ -296,21 +299,21 @@ async def demonstrate_oscillation_detection():
                 "retry_suggestion": "Try again"
             })
 
-    EXECUTOR = OscillatingExecutor()
-    state_manager = MockStateManager()
-    workflow_id = "oscillation_demo"
+        EXECUTOR = OscillatingExecutor()
+        state_manager = MockStateManager()
+        workflow_id = "oscillation_demo"
 
-    CHAIN = ResilientValidationChain(executor, state_manager, workflow_id)
+        CHAIN = ResilientValidationChain(executor, state_manager, workflow_id)
 
-    # Create gate with oscillation detection
-    GATE = ValidationGate(
+        # Create gate with oscillation detection
+        GATE = ValidationGate(
         gate_name="OscillatingGate",
         RUBRIC="A gate that will cause oscillation.",
         fatal_on_fail=True,
         max_repair_attempts=5,
         detect_oscillation=True,
         oscillation_threshold=3
-    )
+)
 
     logger.info("Testing oscillation detection...")
     logger.info(f"Oscillation threshold: {gate.oscillation_threshold}")
@@ -320,7 +323,7 @@ async def demonstrate_oscillation_detection():
             initial_content="test content",
             GATES=[gate],
             repair_agent_func=mock_repair_agent
-        )
+    )
 
     except ChainFailureError as e:
         logger.info(f"\n✅ Oscillation detected and handled!")
@@ -333,7 +336,7 @@ async def demonstrate_oscillation_detection():
         logger.info(f"  Total attempts: {history['attempts']}")
         logger.info(f"  Last failures: {history['last_failures']}")
 
-async def demonstrate_standard_gates():
+            async def demonstrate_standard_gates():
     """Demonstrate the standard gate configurations."""
     LOGGER.INFO("\N=== DEMONSTRATION: Standard Gates ===\n")
 
@@ -349,7 +352,7 @@ async def demonstrate_standard_gates():
         logger.info(f"     Max Repairs: {gate.max_repair_attempts}")
         logger.info(f"     Oscillation Detection: {gate.detect_oscillation}")
 
-async def main():
+            async def main():
     """Run all demonstrations."""
     LOGGER.INFO("=" * 80)
     logger.info("RESILIENT VALIDATION CHAIN DEMONSTRATION")
@@ -372,5 +375,5 @@ async def main():
     logger.info("✓ Progress persistence and resume")
     LOGGER.INFO("=" * 80)
 
-if __name__ == "__main__":
+            if __name__ == "__main__":
     asyncio.run(main())

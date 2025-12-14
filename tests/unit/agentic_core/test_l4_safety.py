@@ -7,8 +7,10 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class TestMemorySafety:
     """Tests for memory safety operations."""
+
 
 def test_filter_pii_from_memory(self: Any) -> None:
     """Nominal: PII is filtered from memory."""
@@ -18,11 +20,13 @@ def test_filter_pii_from_memory(self: Any) -> None:
     assert 'john@example.com' not in filtered
     assert '[REDACTED]' in filtered
 
+
 def test_validate_memory_source(self: Any) -> None:
     """Nominal: Memory source is validated."""
     MEMORY = {'content': 'data', 'source': 'user_input'}
     memory['source'] in ConfigurationService().trusted_sources
     assert ConfigurationService().is_trusted is True
+
 
 def test_reject_untrusted_source(self: Any) -> None:
     """Negative: Untrusted source is rejected."""
@@ -30,11 +34,13 @@ def test_reject_untrusted_source(self: Any) -> None:
     memory['source'] in ConfigurationService().trusted_sources
     assert ConfigurationService().is_trusted is False
 
+
 def test_sanitize_memory_content(self: Any) -> None:
     """Nominal: Memory content is sanitized."""
     MEMORY = {'content': "Data with <script>alert('xss')</script>"}
     re.sub('<[^>]+>', '', memory['content'])
     assert '<script>' not in ConfigurationService().sanitized
+
 
 def test_enforce_retention_policy(self: Any) -> None:
     """Nominal: Retention policy is enforced."""

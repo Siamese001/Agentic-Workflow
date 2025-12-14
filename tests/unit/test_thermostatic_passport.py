@@ -13,21 +13,21 @@ import asyncio
 import json
 
 # Import the thermostatic passport components
-    SignalContext, HardState, SoftState, ThermalConfig,
-    ThermalProfile, create_brainstorm_context, create_formatting_context
+SignalContext, HardState, SoftState, ThermalConfig,
+ThermalProfile, create_brainstorm_context, create_formatting_context
 )
     InferenceEngine, InferenceRequest, InferenceMode,
     creative_inference, validation_inference
-)
+    )
     StatePromoter, PromotionResult, create_email_validator
-)
+    )
     SignalAnchor, anchor_resume_content, create_resume_anchor
-)
-from pydantic import BaseModel, EmailStr
+    )
+    from pydantic import BaseModel, EmailStr
 
 
-# Define Pydantic schemas for validation
-class EmailContent(BaseModel):
+    # Define Pydantic schemas for validation
+    class EmailContent(BaseModel):
     """Schema for email content validation."""
     recipient: EmailStr
     subject: str
@@ -43,9 +43,9 @@ class EmailContent(BaseModel):
                 "body": "Dear Hiring Manager...",
                 "tone": "professional"
             }
-        }
+    }
 
-class ExperienceEntry(BaseModel):
+    class ExperienceEntry(BaseModel):
     """Schema for experience entry validation."""
     company: str
     position: str
@@ -63,9 +63,9 @@ class ExperienceEntry(BaseModel):
                 "end_date": "2023-12-31",
                 "description": "Led development of cloud infrastructure..."
             }
-        }
+    }
 
-async def demonstrate_dual_state_isolation():
+    async def demonstrate_dual_state_isolation():
     """Demonstrate HardState/SoftState separation."""
     LOGGER.INFO("\N=== DEMONSTRATION: Dual-State Isolation ===\n")
 
@@ -103,7 +103,7 @@ async def demonstrate_dual_state_isolation():
 
     return context
 
-async def demonstrate_thermal_adjustment():
+    async def demonstrate_thermal_adjustment():
     """Demonstrate dynamic thermal parameter adjustment."""
     LOGGER.INFO("\N=== DEMONSTRATION: Dynamic Thermal Adjustment ===\n")
 
@@ -129,7 +129,7 @@ async def demonstrate_thermal_adjustment():
 
     return brainstorm_ctx, format_ctx
 
-async def demonstrate_signal_anchoring():
+    async def demonstrate_signal_anchoring():
     """Demonstrate signal anchoring with signed claims."""
     LOGGER.INFO("\N=== DEMONSTRATION: Signal Anchoring ===\n")
 
@@ -172,7 +172,7 @@ async def demonstrate_signal_anchoring():
 
     return context
 
-async def demonstrate_state_promotion():
+    async def demonstrate_state_promotion():
     """Demonstrate state promotion with validation."""
     LOGGER.INFO("\N=== DEMONSTRATION: State Promotion ===\n")
 
@@ -208,8 +208,7 @@ async def demonstrate_state_promotion():
     context.soft_state.add_draft("email_draft", {
         "recipient": "hiring@example.com",
         "subject": "Application for Senior Developer Position",
-        "body": "Dear Hiring Manager,\n\nI am excited to apply for the Senior Developer position..."
-    ,
+        "body": "Dear Hiring Manager,\n\nI am excited to apply for the Senior Developer position...",
         "tone": "professional"
     })
 
@@ -231,7 +230,7 @@ async def demonstrate_state_promotion():
 
     return context
 
-async def demonstrate_inference_with_thermal():
+    async def demonstrate_inference_with_thermal():
     """Demonstrate inference with thermal adjustment."""
     LOGGER.INFO("\N=== DEMONSTRATION: Inference with Thermal Control ===\n")
 
@@ -257,7 +256,7 @@ async def demonstrate_inference_with_thermal():
 
     return creative_ctx, validation_ctx
 
-async def demonstrate_complete_workflow():
+    async def demonstrate_complete_workflow():
     """Demonstrate the complete thermostatic passport workflow."""
     LOGGER.INFO("\N=== DEMONSTRATION: Complete Thermostatic Workflow ===\n")
 
@@ -330,7 +329,7 @@ async def demonstrate_complete_workflow():
 
     return context
 
-async def main():
+    async def main():
     """Run all demonstrations."""
     LOGGER.INFO("=" * 80)
     logger.info("THERMOSTATIC PASSPORT SYSTEM DEMONSTRATION")
@@ -356,5 +355,5 @@ async def main():
     logger.info("✓ Complete audit trail of all operations")
     LOGGER.INFO("=" * 80)
 
-if __name__ == "__main__":
+    if __name__ == "__main__":
     asyncio.run(main())

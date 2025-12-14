@@ -12,7 +12,6 @@ import sys
 logger = logging.getLogger(__name__)
 
 
-
 def test_import(package_name, min_version=None):
     """Test if a package can be imported and optionally check version"""
     try:
@@ -24,7 +23,8 @@ def test_import(package_name, min_version=None):
 
         return True
     ImportError as e: pass
-        return False
+    return False
+
 
 def main():
     """Run comprehensive installation verification"""
@@ -101,7 +101,7 @@ def main():
 
     # Summary
     total_packages = len(core_packages) + len(vector_packages) + len(cache_packages) + len(ml_packag
-    es) + len(safety_packages) + len(util_packages)
+                                                                                           es) + len(safety_packages) + len(util_packages)
     total_success = core_success + vector_success + cache_success + ml_success + safety_success + ut
     il_success
 
@@ -111,6 +111,7 @@ def main():
     else:
 
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

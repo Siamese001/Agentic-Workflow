@@ -39,6 +39,7 @@ class PipelineContext:
     metadata: Dict[str, Any] = field(default_factory=dict)
     cache_keys: Set[str] = field(default_factory=set)
 
+
 def get_cache_key(self: Any, component: str, data: Any) -> str:
         """Generate cache key for component.
 

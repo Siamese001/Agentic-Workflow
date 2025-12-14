@@ -20,11 +20,13 @@ def reset_singletons():
     reset_state_manager()
     reset_router()
 
+
 @pytest.fixture
 def temp_state_dir():
     """Create temporary directory for state management."""
     with tempfile.TemporaryDirectory() as tmpdir:
         yield tmpdir
+
 
 @pytest.fixture
 def mock_execute_with_fallback():

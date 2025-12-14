@@ -1,4 +1,5 @@
 """Integration tests for Resume Generation + Data layer."""
+import pytest
 import logging
 from dataclasses import dataclass
 from typing import Dict, List
@@ -6,9 +7,9 @@ from typing import Dict, List
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
 LOGGER = logging.getLogger(__name__)
+
+
 @dataclass
 class JobPosting:
     """TODO: Add docstring."""
@@ -19,8 +20,10 @@ class JobPosting:
     requirements: List[str]
     keywords: List[str]
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class UserProfile:
     """Docstring."""
@@ -29,6 +32,7 @@ class UserProfile:
     skills: List[str]
     experience: List[Dict[str, object]]
     education: List[Dict[str, object]]
+
 
 class TestRGDataIntegration:
     """Integration tests for RG + data layer."""

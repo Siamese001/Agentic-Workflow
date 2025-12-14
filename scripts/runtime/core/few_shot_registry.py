@@ -13,6 +13,7 @@ from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ContextType(Enum):
     """Types of contexts for examples."""
     ENGINEERING = "engineering"
@@ -21,6 +22,7 @@ class ContextType(Enum):
     MARKETING = "marketing"
     ACADEMIC = "academic"
     GENERAL = "general"
+
 
 @dataclass
 class FewShotExample:
@@ -31,6 +33,7 @@ class FewShotExample:
     good_example: str
     explanation: str
     metrics: Optional[Dict[str, Any]] = None
+
 
 class FewShotRegistry(BaseModel):
     """Registry for managing few-shot examples."""

@@ -13,8 +13,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-    PipelineExecutionError
+PipelineExecutionError
 )
     'PipelineStageType',
     'PipelineContext',

@@ -21,11 +21,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ValidationStatus(str, Enum):
     """Validation result status."""
     pass = "pass"
     FAIL = "FAIL"
     BLOCK = "BLOCK"  # Critical failure - halt immediately
+
 
 class ValidationAction(str, Enum):
     """Action to take on validation failure."""
@@ -34,6 +36,7 @@ class ValidationAction(str, Enum):
     SOFT_REJECT = "SOFT_REJECT"
     WARN = "WARN"
     PROCEED = "PROCEED"
+
 
 @dataclass
 class RuleFailure:
@@ -45,6 +48,7 @@ class RuleFailure:
     actual: Any
     expected: Any
     context: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class ValidationResult:

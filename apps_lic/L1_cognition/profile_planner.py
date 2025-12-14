@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class ProfileSignal:
     """Individual signal extracted from profile analysis."""
@@ -20,6 +21,7 @@ class ProfileSignal:
     value: str                           # raw signal value
     confidence: float                    # confidence in this signal [0, 1]
     metadata: Dict[str, object] = field(default_factory=dict)
+
 
 @dataclass
 class ProfilePlan:
@@ -33,6 +35,7 @@ class ProfilePlan:
     industry_focus: str                  # primary industry classification
     decision_authority: str              # "high", "medium", "low"
     metadata: Dict[str, object] = field(default_factory=dict)
+
 
 class ProfilePlanner:
     """L1 pure planner for profile analysis and archetype inference.

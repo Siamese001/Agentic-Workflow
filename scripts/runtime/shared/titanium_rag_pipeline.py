@@ -46,6 +46,7 @@ from scripts.runtime.shared.signal_quality_pipeline import (
 
 LOGGER = logging.getLogger(__name__)
 
+
 class TitaniumRAGPipeline:
     """Titanium-grade RAG pipeline combining all three layers.
 
@@ -168,6 +169,7 @@ class TitaniumRAGPipeline:
                    f"GraphRAG Layer: {self.enable_graphrag}")
 
         """Docstring."""
+
     async def query(
         self,
         query: str,

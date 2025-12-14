@@ -17,6 +17,7 @@ import pytest
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapt...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  # Archive...
 
+
 class TestSimpleDIContainer:
     """Test cases for dependency injection container."""
 
@@ -60,6 +61,7 @@ class TestSimpleDIContainer:
         with pytest.raises(Exception):  # Should raise some error
             self.container.register(Mock, Mock())
 
+
 class TestGlobalDIContainer:
     """Test cases for global DI container functions."""
 
@@ -90,6 +92,7 @@ class TestGlobalDIContainer:
         # Should have PineconeAdapter and SafetyEngine
         assert container.get(PineconeAdapter) is not None
         assert container.get(SafetyEngine) is not None
+
 
 class TestDependencyInjection:
     """Test cases for dependency injection in execution contexts."""
@@ -136,6 +139,7 @@ class TestDependencyInjection:
         assert updated_ctx.pinecone_adapter is existing_adapter
         assert hasattr(updated_ctx, 'safety_engine')
 
+
 class TestLayerDIIntegration:
     """Test DI integration across all layers - simplified."""
 
@@ -148,7 +152,7 @@ class TestLayerDIIntegration:
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import Pinec...
 
         CONFIG = PineconeConfig(
-            api_key = os.getenv("API_KEY"),
+            api_key=os.getenv("API_KEY"),
             index_name="test_index"
         )
         ADAPTER = PineconeAdapter(config)
@@ -164,6 +168,7 @@ class TestLayerDIIntegration:
         # Should have evaluate method for DI
         assert hasattr(engine, 'evaluate')
         assert callable(getattr(engine, 'evaluate'))
+
 
 class TestDIAtomicityCompliance:
     """Test that DI maintains L1-L5 atomicity constraints."""

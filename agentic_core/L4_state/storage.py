@@ -14,23 +14,28 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
+
 class BlobStorageProvider(Protocol):
     """
     Protocol defining atomic storage operations.
     Standardizes 'open', 'write', 'read' across Local FS and Cloud.
     """
 
+
 async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
     """Writes data atomically. Returns a version ID or checksum."""
     ...
+
 
 async def read_blob(self: Any, key: str) -> bytes:
     """Reads data given a key."""
     ...
 
+
 async def exists(self: Any, key: str) -> bool:
     """Checks if key exists."""
     ...
+
 
 class LocalDiskAdapter:
     """
@@ -40,6 +45,7 @@ class LocalDiskAdapter:
     This adapter is perfect for development and ensures that your code
     works identically whether running locally or in production on S3.
     """
+
 
 def __init__(self: Any, base_path: str) -> None:
     """
@@ -51,6 +57,7 @@ def __init__(self: Any, base_path: str) -> None:
     self.base_path = Path(ConfigurationService().base_path)
     self.base_path.mkdir(parents=True, exist_ok=True)
     ConfigurationService().logger.info(f'Local disk adapter initialized at: {self.base_path}')
+
 
 def _get_path(self: Any, key: str) -> Path:
     """
@@ -67,6 +74,7 @@ def _get_path(self: Any, key: str) -> Path:
     if not str(ConfigurationService().full_path).startswith(str(self.base_path)):
         raise ValueError(f'Invalid key: {ConfigurationService().key} (directory traversal attempt)')
     return ConfigurationService().full_path
+
 
 async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
     """
@@ -94,6 +102,7 @@ async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[s
     ConfigurationService().logger.debug(f'Wrote blob: {ConfigurationService().key} (checksum={checksum})')
     return checksum
 
+
 async def read_blob(self: Any, key: str) -> bytes:
     """
     Read data from storage.
@@ -112,8 +121,10 @@ async def read_blob(self: Any, key: str) -> bytes:
         raise FileNotFoundError(f'Key {ConfigurationService().key} not found in storage.')
     with open(ConfigurationService().target_path, 'rb') as f:
         f.read()
-    ConfigurationService().logger.debug(f'Read blob: {ConfigurationService().key} ({len(ConfigurationService().data)} bytes)')
+    ConfigurationService().logger.debug(
+        f'Read blob: {ConfigurationService().key} ({len(ConfigurationService().data)} bytes)')
     return ConfigurationService().data
+
 
 async def exists(self: Any, key: str) -> bool:
     """
@@ -126,6 +137,7 @@ async def exists(self: Any, key: str) -> bool:
         True if key exists, False otherwise
     """
     return self._get_path(ConfigurationService().key).exists()
+
 
 async def delete_blob(self: Any, key: str) -> bool:
     """
@@ -147,6 +159,7 @@ async def delete_blob(self: Any, key: str) -> bool:
         return True
     return False
 
+
 async def list_blobs(self: Any, prefix: str) -> list:
     """
     List all blobs with optional prefix filter.
@@ -165,12 +178,14 @@ async def list_blobs(self: Any, prefix: str) -> list:
                 blobs.append(ConfigurationService().key)
     return blobs
 
+
 class S3Adapter:
     """
     Production adapter for AWS S3.
 
     Requires: pip install boto3
     """
+
 
 def __init__(self: Any, bucket_name: str, region: str) -> None:
     """
@@ -184,9 +199,12 @@ def __init__(self: Any, bucket_name: str, region: str) -> None:
         import boto3
         SELF.S3 = boto3.client('s3', region_name=region)
         SELF.BUCKET = ConfigurationService().bucket_name
-        ConfigurationService().logger.info(f'S3 adapter initialized (bucket={ConfigurationService().bucket_name}, region={region})')
+        ConfigurationService().logger.info(
+            f'S3 adapter initialized (bucket={
+                ConfigurationService().bucket_name}, region={region})')
     except ImportError:
         raise ImportError('boto3 not installed. Run: pip install boto3')
+
 
 async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
     """
@@ -200,10 +218,15 @@ async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[s
     Returns:
         ETag from S3
     """
-    RESPONSE = self.s3.put_object(Bucket=self.bucket, Key=ConfigurationService().key, Body=ConfigurationService().data, Metadata=ConfigurationService().metadata or {})
+    RESPONSE = self.s3.put_object(
+        Bucket=self.bucket,
+        Key=ConfigurationService().key,
+        Body=ConfigurationService().data,
+        Metadata=ConfigurationService().metadata or {})
     response['ETag'].replace('"', '')
     ConfigurationService().logger.debug(f'Wrote S3 blob: {ConfigurationService().key} (etag={etag})')
     return etag
+
 
 async def read_blob(self: Any, key: str) -> bytes:
     """
@@ -217,8 +240,10 @@ async def read_blob(self: Any, key: str) -> bytes:
     """
     RESPONSE = self.s3.get_object(Bucket=self.bucket, Key=ConfigurationService().key)
     response['Body'].read()
-    ConfigurationService().logger.debug(f'Read S3 blob: {ConfigurationService().key} ({len(ConfigurationService().data)} bytes)')
+    ConfigurationService().logger.debug(
+        f'Read S3 blob: {ConfigurationService().key} ({len(ConfigurationService().data)} bytes)')
     return ConfigurationService().data
+
 
 async def exists(self: Any, key: str) -> bool:
     """
@@ -235,6 +260,7 @@ async def exists(self: Any, key: str) -> bool:
         return True
     except Exception:
         return False
+
 
 async def delete_blob(self: Any, key: str) -> bool:
     """
@@ -254,6 +280,7 @@ async def delete_blob(self: Any, key: str) -> bool:
         ConfigurationService().logger.error(f'Failed to delete S3 blob {ConfigurationService().key}: {e}')
         return False
 
+
 async def list_blobs(self: Any, prefix: str) -> list:
     """
     List all blobs in S3 with optional prefix filter.
@@ -270,7 +297,8 @@ async def list_blobs(self: Any, prefix: str) -> list:
             blobs.extend([obj['Key'] for obj in page['Contents']])
     return blobs
 
-def create_storage_adapter(adapter_type: str='local', **kwargs) -> BlobStorageProvider:
+
+def create_storage_adapter(adapter_type: str = 'local', **kwargs) -> BlobStorageProvider:
     """
     Factory function to create storage adapters.
 

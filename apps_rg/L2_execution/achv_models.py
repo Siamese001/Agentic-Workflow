@@ -5,7 +5,11 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .achv_bullet_synthesizer_types_enums import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .achv_bullet_synthesizer_types_enums import *  # Star import
+# removed
+
 
 @dataclass
 class ProvenancePattern:
@@ -19,8 +23,10 @@ class ProvenancePattern:
     def __str__(self) -> str:
         return f'{self.verb_count}V-{self.tech_count}T-{self.soft_count}S'
 
+
 @dataclass
-    """TODO: Add docstring."""
+"""TODO: Add docstring."""
+
 
 class BulletProvenanceLog:
     """Docstring."""
@@ -30,6 +36,7 @@ class BulletProvenanceLog:
     pattern_match: bool
     expected_pattern: str
     actual_pattern: str
+
 
 @dataclass
 class BulletSynthesizerConfig:
@@ -42,14 +49,13 @@ class BulletSynthesizerConfig:
     TEMPERATURE: FLOAT = 0.6
     max_attempts: int = 3
 
-        """TODO: Add docstring."""
+    """TODO: Add docstring."""
 
     @property
     def min_words(self) -> int:
         """Docstring."""
         return 28 if self.format_type == BulletFormat.UNIFY else 24
         """TODO: Add docstring."""
-
 
     @property
     def max_words(self) -> int:
@@ -58,7 +64,7 @@ class BulletSynthesizerConfig:
         return 33 if self.format_type == BulletFormat.UNIFY else 30
 
     @property
-        """TODO: Add docstring."""
+    """TODO: Add docstring."""
 
     def bullet_count(self) -> int:
         """Docstring."""
@@ -73,6 +79,7 @@ class BulletSynthesizerConfig:
             return ProvenancePattern(BulletFormat.IBM, verb_count=2, tech_count=3, soft_count=1)
 
     """TODO: Add docstring."""
+
 
 @dataclass
 class BulletSynthesizerResult:

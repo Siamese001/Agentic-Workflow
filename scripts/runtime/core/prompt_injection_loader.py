@@ -29,7 +29,7 @@ LOGGER = logging.getLogger(__name__)
 class PromptInjectionLoader:
     """Loads and applies prompt injection patterns."""
 
-    def __init__(self, config: Optional[InjectionConfig] = None):
+    def __init__(self, config: Optional[InjectionConfig]=None):
             """Initialize the injection loader.
 
         Args:

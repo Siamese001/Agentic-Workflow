@@ -11,6 +11,7 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ImpactCategory(str, Enum):
     """Categories of business impact."""
     REVENUE = "REVENUE"
@@ -18,6 +19,7 @@ class ImpactCategory(str, Enum):
     CAPEX = "CAPEX"
     RISK = "RISK"
     RETENTION = "RETENTION"
+
 
 class BusinessImpact(BaseModel):
     """Business impact estimation for a technical metric."""

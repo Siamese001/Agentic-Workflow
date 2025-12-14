@@ -9,6 +9,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+
 class CompetitorMove(BaseModel):
     """Represents a recent competitive move or feature launch."""
 

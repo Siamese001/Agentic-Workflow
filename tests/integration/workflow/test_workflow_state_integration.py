@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class WorkflowState(Enum):
     """TODO: Add docstring."""
 
@@ -17,8 +19,10 @@ class WorkflowState(Enum):
     COMPLETED = "completed"
     FAILED = "failed"
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class Workflow:
     """Docstring."""
@@ -26,6 +30,7 @@ class Workflow:
     state: WorkflowState
     data: Dict[str, object] = field(default_factory=dict)
     checkpoints: List[Dict] = field(default_factory=list)
+
 
 class TestWorkflowStateIntegration:
     """Integration tests for workflow state."""

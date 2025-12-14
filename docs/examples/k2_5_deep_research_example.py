@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 def create_doordash_benchmark_example() -> DeepResearchOutput:
     """Docstring."""
     strategic_layer = StrategicLayer(
-        core_thesis="Transition from food delivery to local commerce platform achieving GAAP profita
+        core_thesis ="Transition from food delivery to local commerce platform achieving GAAP profita
     bility through efficient growth",
         financial_proof_points=[
             FinancialMetric(

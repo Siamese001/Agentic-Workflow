@@ -9,7 +9,6 @@ from typing import Dict, List, Tuple
 logger = logging.getLogger(__name__)
 
 
-
 class ClerkExtractor:
     """HOP-1: Extract structured data from master resume."""
 

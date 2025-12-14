@@ -18,8 +18,8 @@ import logging
 
 # Configure structured logging
 logging.basicConfig(
-    LEVEL=logging.INFO,
-    FORMAT='%(message)s'  # JSON logger outputs structured data
+    LEVEL = logging.INFO,
+    FORMAT = '%(message)s'  # JSON logger outputs structured data
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -31,10 +31,10 @@ async def demonstrate_hardened_k25():
 
     # Create hardened executor with custom config
     CONFIG = HardenedGeminiConfig(
-        MODEL="gemini-3-pro-preview",
-        TEMPERATURE=0.3,
-        max_retries=5,
-        safety_threshold_ratio=0.8,
+        MODEL = "gemini-3-pro-preview",
+        TEMPERATURE = 0.3,
+        max_retries = 5,
+        safety_threshold_ratio = 0.8,
     )
 
     EXECUTOR = create_hardened_gemini_executor(config=config)

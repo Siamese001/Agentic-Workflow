@@ -10,6 +10,7 @@ import re
 
 LOGGER = logging.getLogger(__name__)
 
+
 class HybridScoreResult(BaseModel):
     """Result of hybrid scoring with component scores."""
 

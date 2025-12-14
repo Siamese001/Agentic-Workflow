@@ -10,6 +10,7 @@ from typing import Dict, Optional, Union
 
 LOGGER = logging.getLogger(__name__)
 
+
 class RefineResumeRanking:
     """Refiner for resume domain."""
 
@@ -19,10 +20,10 @@ class RefineResumeRanking:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def refine(self,
-        """Docstring."""
-        data: Union[str,
-        Dict],
-        adjustments: Optional[Dict] = None) -> RefinementResult:
+               """Docstring."""
+               data: Union[str,
+                           Dict],
+               adjustments: Optional[Dict] = None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""
         CHANGES = []
         REFINED = data
@@ -37,10 +38,11 @@ class RefineResumeRanking:
 
         return RefinementResult(original=data, refined=refined, changes=changes)
 
+
 def refine(data: Union[str,
-    """Docstring."""
-    Dict],
-    adjustments: Optional[Dict] = None,
-    config: Optional[Dict] = None) -> RefinementResult:
+                       """Docstring."""
+                       Dict],
+           adjustments: Optional[Dict] = None,
+           config: Optional[Dict] = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return RefineResumeRanking(config).refine(data, adjustments)

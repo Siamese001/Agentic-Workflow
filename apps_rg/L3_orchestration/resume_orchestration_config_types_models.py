@@ -6,7 +6,11 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .resume_orchestration_config_types_enums import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .resume_orchestration_config_types_enums import *  # Star import
+# removed
+
 
 @dataclass
 class WordCountConstraint:
@@ -16,6 +20,7 @@ class WordCountConstraint:
     _scope: str = 'total'
     _unit: str = 'words'
 
+
 def validate(self: Any, count: int) -> bool:
         """Validate word count against constraints."""
         if self.min is not None and count < self.min:
@@ -24,11 +29,13 @@ def validate(self: Any, count: int) -> bool:
             return False
         return True
 
+
 @dataclass
 class CharCountConstraint:
     """Character count constraint for a section."""
     min: Optional[int] = None
     max: Optional[int] = None
+
 
 def validate(self: Any, count: int) -> bool:
         """Validate character count against constraints."""
@@ -37,6 +44,7 @@ def validate(self: Any, count: int) -> bool:
         if self.max is not None and count > self.max:
             return False
         return True
+
 
 @dataclass
 class ReasoningConfig:
@@ -53,6 +61,7 @@ class ReasoningConfig:
     _self_consistency: int = 3
     _reflexion: bool = True
     _routing_tier: Optional[RoutingTier] = None
+
 
 @dataclass
 class ProvenanceRule:

@@ -10,11 +10,13 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class FallbackStrategy(Enum):
     """Fallback strategies."""
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
     WEIGHTED = "weighted"
+
 
 @dataclass
 class ToolProvider:
@@ -45,6 +47,7 @@ class ToolProvider:
             "metadata": self.metadata,
         }
 
+
 @dataclass
 class FallbackResult:
     """Result from fallback execution."""
@@ -65,6 +68,7 @@ class FallbackResult:
             "attempts": self.attempts,
             "metadata": self.metadata,
         }
+
 
 class FallbackManager:
     """Manages automatic fallback chains for tool providers.
@@ -147,8 +151,8 @@ class FallbackManager:
 
         if not providers:
             return FallbackResult(success=False,
-                provider_used="none",
-                ERROR=f"No providers registered for tool: {tool_name}")
+                                  provider_used="none",
+                                  ERROR=f"No providers registered for tool: {tool_name}")
 
         max_attempts = max_attempts or len(providers)
         ATTEMPTS = []
@@ -170,34 +174,34 @@ class FallbackManager:
         """Log fallback execution start."""
         if self.enable_logging:
             logger.info("executing_with_fallback",
-                EXTRA={"tool_name": tool_name,
-                "provider_count": len(providers)})
+                        EXTRA={"tool_name": tool_name,
+                               "provider_count": len(providers)})
 
     def _handle_unavailable_provider(self, tool_name: str, provider, attempts: List) -> None:
         """Handle unavailable provider."""
         attempts.append({"provider": provider.name,
-            "skipped": True,
-            "reason": "Circuit breaker open"})
+                         "skipped": True,
+                         "reason": "Circuit breaker open"})
         if self.enable_logging:
             logger.warning("provider_skipped",
-                EXTRA={"tool_name": tool_name,
-                "provider": provider.name,
-                "reason": "circuit_breaker_open"})
+                           EXTRA={"tool_name": tool_name,
+                                  "provider": provider.name,
+                                  "reason": "circuit_breaker_open"})
 
     async def _try_provider(self,
-        """Docstring."""
-        tool_name: str,
-        provider,
-        parameters: Dict,
-        attempt_num: int,
-        attempts: List) -> Optional[FallbackResult]:
+                            """Docstring."""
+                            tool_name: str,
+                            provider,
+                            parameters: Dict,
+                            attempt_num: int,
+                            attempts: List) -> Optional[FallbackResult]:
         """Try executing with a provider."""
         try:
             if self.enable_logging:
                 logger.debug("trying_provider",
-                    EXTRA={"tool_name": tool_name,
-                    "provider": provider.name,
-                    "attempt": attempt_num + 1})
+                             EXTRA={"tool_name": tool_name,
+                                    "provider": provider.name,
+                                    "attempt": attempt_num + 1})
 
             OUTPUT = await provider.execute_fn(parameters)
             attempts.append({"provider": provider.name, "success": True, "output": output})
@@ -207,39 +211,39 @@ class FallbackManager:
 
             if self.enable_logging:
                 logger.info("provider_succeeded",
-                    EXTRA={"tool_name": tool_name,
-                    "provider": provider.name,
-                    "attempt": attempt_num + 1})
+                            EXTRA={"tool_name": tool_name,
+                                   "provider": provider.name,
+                                   "attempt": attempt_num + 1})
 
             return FallbackResult(success=True,
-                provider_used=provider.name,
-                OUTPUT=output,
-                ATTEMPTS=attempts,
-                METADATA={"total_attempts": len(attempts),
-                "fallback_used": attempt_num > 0})
+                                  provider_used=provider.name,
+                                  OUTPUT=output,
+                                  ATTEMPTS=attempts,
+                                  METADATA={"total_attempts": len(attempts),
+                                            "fallback_used": attempt_num > 0})
         except Exception as e:
             attempts.append({"provider": provider.name, "success": False, "error": str(e)})
             if provider.circuit_breaker:
                 provider.circuit_breaker.record_failure()
             if self.enable_logging:
                 logger.warning("provider_failed",
-                    EXTRA={"tool_name": tool_name,
-                    "provider": provider.name,
-                    "error": str(e),
-                    "attempt": attempt_num + 1})
+                               EXTRA={"tool_name": tool_name,
+                                      "provider": provider.name,
+                                      "error": str(e),
+                                      "attempt": attempt_num + 1})
             return None
 
     def _handle_all_providers_failed(self, tool_name: str, attempts: List) -> FallbackResult:
         """Handle all providers failed."""
         if self.enable_logging:
             logger.error("all_providers_failed",
-                EXTRA={"tool_name": tool_name,
-                "attempts": len(attempts)})
+                         EXTRA={"tool_name": tool_name,
+                                "attempts": len(attempts)})
         return FallbackResult(success=False,
-            provider_used="none",
-            ERROR="All providers failed",
-            ATTEMPTS=attempts,
-            METADATA={"total_attempts": len(attempts)})
+                              provider_used="none",
+                              ERROR="All providers failed",
+                              ATTEMPTS=attempts,
+                              METADATA={"total_attempts": len(attempts)})
 
     def get_chain(self, tool_name: str) -> List[ToolProvider]:
         """Get fallback chain for a tool.
@@ -267,6 +271,7 @@ class FallbackManager:
         """
         PROVIDERS = self._fallback_chains.get(tool_name, [])
         return [p for p in providers if p.is_available()]
+
 
 def create_fallback_manager(
     """Docstring."""

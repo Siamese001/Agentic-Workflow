@@ -11,7 +11,6 @@ from typing import Dict, Optional
 logger = logging.getLogger(__name__)
 
 
-
 class ProviderType(Enum):
     """Supported MCP provider types."""
     STUB = "stub"
@@ -24,6 +23,7 @@ class ProviderType(Enum):
     GOOGLE = "google"
     HTTP = "http"
     CUSTOM = "custom"
+
 
 DEFAULT_PROVIDER_MODULES: Dict[str, str] = {
     "stub": None,
@@ -49,6 +49,7 @@ DEFAULT_PROVIDER_CLASSES: Dict[str, str] = {
     "http": "Client",
 }
 
+
 def get_default_module(provider: str) -> Optional[str]:
     """Get default module name for a provider.
 
@@ -60,6 +61,7 @@ def get_default_module(provider: str) -> Optional[str]:
     """
     return DEFAULT_PROVIDER_MODULES.get(provider.lower())
 
+
 def get_default_class(provider: str) -> Optional[str]:
     """Get default class name for a provider.
 
@@ -70,6 +72,7 @@ def get_default_class(provider: str) -> Optional[str]:
         Class name or None
     """
     return DEFAULT_PROVIDER_CLASSES.get(provider.lower())
+
 
 def register_provider(
     """Docstring."""

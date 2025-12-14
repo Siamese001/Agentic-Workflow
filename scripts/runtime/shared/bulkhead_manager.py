@@ -13,12 +13,14 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class TaskPriority(str, Enum):
     """Task priority levels."""
     LOW = "LOW"
     MEDIUM = "MEDIUM"
     HIGH = "HIGH"
     CRITICAL = "CRITICAL"
+
 
 @dataclass
 class BulkheadConfig:
@@ -28,6 +30,7 @@ class BulkheadConfig:
     queue_size: int = 100
     timeout_seconds: float = 30.0
     metrics_enabled: bool = True
+
 
 @dataclass
 class BulkheadMetrics:
@@ -43,6 +46,7 @@ class BulkheadMetrics:
     max_wait_time_ms: float = 0.0
     utilization_percent: float = 0.0
     last_updated: datetime = field(default_factory=datetime.utcnow)
+
 
 class ResourceExhaustedError(Exception):
     """Raised when bulkhead resources are exhausted."""

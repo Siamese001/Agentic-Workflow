@@ -3,7 +3,6 @@ import re
 
 logger = logging.getLogger(__name__)
 
-
     DeepResearchOutput,
     IntegrityGateResult,
     ValidationRejectionReason,
@@ -29,7 +28,7 @@ class IntegrityGateExecutor:
         "service", "API", "database", "network", "protocol"
     }
 
-    def __init__(self, min_depth_score: float = 0.7):
+    def __init__(self, min_depth_score: float=0.7):
         self.min_depth_score = min_depth_score
 
     def execute(self, research_output: DeepResearchOutput) -> IntegrityGateResult:
@@ -97,7 +96,7 @@ class IntegrityGateExecutor:
 
             for i, word in enumerate(words):
                 if word in self.FLUFF_WORDS:
-                    next_words = words[i+1:i+3] if i+1 < len(words) else []
+                    next_words = words[i + 1:i + 3] if i + 1 < len(words) else []
 
                     if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
                         result.add_violation(

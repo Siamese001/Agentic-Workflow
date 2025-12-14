@@ -71,23 +71,25 @@ def clean_prompt_governance():
             LINES = content.split('\n')
             for i, line in enumerate(lines):
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     lines[i] = f"from .{import_from} import *"
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import:
+# lines[i] = f"from .{import_from} import *"
                     break
             filepath.write_text('\n'.join(lines), encoding='utf-8')
-            logger.info(f# SQL query removed)
+            logger.info(f  # SQL query removed)
 
     # Delete intermediate shims
     for filename in to_delete:
-        FILEPATH = pg_dir / filename
+        FILEPATH=pg_dir / filename
         if filepath.exists():
             filepath.unlink()
-            logger.info(f# SQL query removed)
+            logger.info(f  # SQL query removed)
 
     logger.info(f"\nCleaned prompt_governance: {len(updates)} updated, {len(to_delete)} deleted")
 
 def clean_other_directories():
     """Check and clean other directories for similar patterns."""
-    BASE = Path("c:/Git/Agentic-Workflow")
+    BASE=Path("c:/Git/Agentic-Workflow")
 
     # Check each top-level directory
     for item in base.iterdir():
@@ -98,7 +100,7 @@ def clean_other_directories():
             '.venv',
             '.vscode']:
             # Look for files with _impl patterns
-            impl_files = list(item.rglob("*_impl*.py"))
+            impl_files=list(item.rglob("*_impl*.py"))
 
             if impl_files:
                 logger.info(f"\nFound {len(impl_files)} _impl files in {item.name}:")

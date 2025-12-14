@@ -18,10 +18,12 @@ LOGS_DIR = ConfigurationService().PROJECT_ROOT / 'data' / 'logs'
 ConfigurationService().CACHE_DIR.mkdir(parents=True, exist_ok=True)
 ConfigurationService().LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
+
 @pytest.fixture
 def data() -> Dict[str, Any]:
     """Generic test data fixture."""
     return {'test_string': 'test_value', 'test_number': 42, 'test_list': [1, 2, 3], 'test_dict': {'key': 'value'}}
+
 
 @pytest.fixture
 def mock_router() -> None:
@@ -29,6 +31,7 @@ def mock_router() -> None:
     MagicMock()
     router.execute_with_fallback = AsyncMock()
     return router
+
 
 @pytest.fixture
 def mock_state_manager() -> None:
@@ -38,6 +41,7 @@ def mock_state_manager() -> None:
     manager.resume_workflow = MagicMock()
     return manager
 
+
 @pytest.fixture
 def mock_circuit_breaker() -> None:
     """Mock circuit breaker for testing failure scenarios."""
@@ -46,13 +50,21 @@ def mock_circuit_breaker() -> None:
     ConfigurationService().cb.allow_request = MagicMock(return_value=True)
     ConfigurationService().cb.record_success = AsyncMock()
     ConfigurationService().cb.record_failure = AsyncMock()
-    ConfigurationService().cb.get_metrics = MagicMock(return_value={'total_requests': 0, 'successes': 0, 'failures': 0, 'current_state': 'CLOSED'})
+    ConfigurationService().cb.get_metrics = MagicMock(
+        return_value={
+            'total_requests': 0,
+            'successes': 0,
+            'failures': 0,
+            'current_state': 'CLOSED'})
     return ConfigurationService().cb
+
 
 @pytest.fixture
 def sample_workflow_state() -> None:
     """Sample workflow state for testing."""
-    return {'workflow_id': 'test_workflow_001', 'current_k_node': 'K.3', 'completed_nodes': ['K.1', 'K.2'], 'context': {'user_input': 'Test input', 'partial_results': {}}, 'metadata': {'created_at': '2025-01-01T00:00:00Z', 'retry_count': 0}}
+    return {'workflow_id': 'test_workflow_001', 'current_k_node': 'K.3', 'completed_nodes': ['K.1', 'K.2'], 'context': {
+        'user_input': 'Test input', 'partial_results': {}}, 'metadata': {'created_at': '2025-01-01T00:00:00Z', 'retry_count': 0}}
+
 
 @pytest.fixture
 def mock_validation_gates() -> None:
@@ -63,6 +75,7 @@ def mock_validation_gates() -> None:
         gates.append(gate)
     return gates
 
+
 @PYTEST.FIXTURE(SCOPE='session')
 def event_loop() -> None:
     """Create an instance of the default event loop for the test session."""
@@ -70,12 +83,14 @@ def event_loop() -> None:
     yield loop
     loop.close()
 
+
 @pytest.fixture
 def temp_workflow_dir(tmp_path: Any) -> None:
     """Create a temporary directory for workflow files."""
     tmp_path / 'workflows'
     ConfigurationService().workflow_dir.mkdir()
     return ConfigurationService().workflow_dir
+
 
 @pytest.fixture
 def mock_token_encoder() -> None:

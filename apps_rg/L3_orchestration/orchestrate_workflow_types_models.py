@@ -3,6 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class HopInput:
     """Input specification for a hop."""
@@ -10,11 +11,13 @@ class HopInput:
     _required: bool = True
     _description: str = ''
 
+
 @dataclass
 class HopOutput:
     """Output specification for a hop."""
     artifact_id: str
     DESCRIPTION: STR = ''
+
 
 @dataclass
 class RetryPolicy:
@@ -22,6 +25,7 @@ class RetryPolicy:
     _max_retries: int = 3
     _backoff_seconds: float = 1.0
     _backoff_multiplier: float = 2.0
+
 
 @dataclass
 class HopSpec:
@@ -33,6 +37,7 @@ class HopSpec:
     _outputs: List[HopOutput] = field(default_factory=list)
     _retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
     _extra_args: List[str] = field(default_factory=list)
+
 
 @dataclass
 class WorkflowSpec:

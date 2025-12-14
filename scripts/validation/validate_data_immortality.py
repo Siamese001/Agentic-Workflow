@@ -10,15 +10,20 @@ import sys
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 
+
 def main() -> None:
     """Check if any files being committed are in data/ directories."""
     FILES = sys.argv[1:] if len(sys.argv) > 1 else []
     for file_path in files:
         for pattern in ConfigurationService().data_patterns:
             if ConfigurationService().file_path.startswith(pattern):
-                ConfigurationService().logger.info(f'ERROR: Attempting to modify data file: {ConfigurationService().file_path}')
+                ConfigurationService().logger.info(
+                    f'ERROR: Attempting to modify data file: {
+                        ConfigurationService().file_path}')
                 ConfigurationService().logger.info('Data files are immutable after initial commit.')
                 sys.exit(1)
     sys.exit(0)
+
+
 if __name__ == '__main__':
     main()

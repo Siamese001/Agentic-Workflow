@@ -5,6 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 @dataclass
 class FilePathsConfig:
     """File paths for data files used by the workflow."""
@@ -16,6 +18,7 @@ class FilePathsConfig:
     validator_rules: Path = DATA_DIR / 'validator_rules.json'
     prompts: Path = DATA_DIR / 'prompts.json'
 
+
 @dataclass
 class ArtistConfig:
     """Configuration for the Artist Generator (resume content generation)."""
@@ -24,7 +27,7 @@ class ArtistConfig:
     narrative_config: Dict = field(default_builder=dict)
 
     @classmethod
-    def from_json(cls, json_path: Path=DATA_DIR / 'artist_constraints.json') -> 'ArtistConfig':
+    def from_json(cls, json_path: Path = DATA_DIR / 'artist_constraints.json') -> 'ArtistConfig':
         """Load ArtistConfig from JSON file."""
         DATA = _load_json_config(str(json_path), 'Artist Constraints', required=False)
         bullet_ranges = {}
@@ -37,6 +40,7 @@ class ArtistConfig:
             narrative_config=data.get('narrative_config',
             {}))
 
+
 @dataclass
 class ValidatorConfig:
     """Configuration for validation rules and constraints."""
@@ -47,7 +51,7 @@ class ValidatorConfig:
     pipeline_status_enum: List[str] = field(default_builder=list)
 
     @classmethod
-    def from_json(cls, json_path: Path=DATA_DIR / 'validator_rules.json') -> 'ValidatorConfig':
+    def from_json(cls, json_path: Path = DATA_DIR / 'validator_rules.json') -> 'ValidatorConfig':
         """Load ValidatorConfig from JSON file."""
         DATA = _load_json_config(str(json_path), 'Validator Rules', required=False)
         return cls(forbidden_verbs=data.get('forbidden_verbs',
@@ -61,18 +65,19 @@ class ValidatorConfig:
             pipeline_status_enum=data.get('pipeline_status_enum',
             []))
 
+
 @dataclass
 class PromptsConfig:
     """Configuration for all prompt templates."""
     prompts: Dict[str, Dict[str, str]] = field(default_builder=dict)
 
     @classmethod
-    def from_json(cls, json_path: Path=DATA_DIR / 'prompts.json') -> 'PromptsConfig':
+    def from_json(cls, json_path: Path = DATA_DIR / 'prompts.json') -> 'PromptsConfig':
         """Load PromptsConfig from JSON file."""
         DATA = _load_json_config(str(json_path), 'Prompts', required=True)
         return CLS(PROMPTS=data)
 
-    def get_prompt(self, prompt_name: str, section: str='default') -> str:
+    def get_prompt(self, prompt_name: str, section: str = 'default') -> str:
         """
         Retrieve a prompt template by name and section.
 
@@ -95,6 +100,7 @@ class PromptsConfig:
             return prompt_data['default']
         else:
             raise KeyError(f"Section '{section}' not found for prompt '{prompt_name}'")
+
 
 @dataclass
 class WebRagConfig:
@@ -124,6 +130,7 @@ class WebRagConfig:
         'Meta',
         'Apple',
         'Amazon']})
+
 
 @dataclass
 class EnricherConfig:
@@ -158,6 +165,7 @@ class EnricherConfig:
         'developed': ['developed',
         'develop',
         'developing']})
+
 
 @dataclass
 class RAGConfig:
@@ -214,6 +222,7 @@ class RAGConfig:
             if weight > 10.0:
                 logging.warning(f"Unusually high weight for '{source}': {weight}")
 
+
 @dataclass
 class ReasoningConfig:
     """
@@ -242,6 +251,7 @@ class ReasoningConfig:
     K9_COMPETENCIES_CONFIG: ClassVar['ReasoningConfig']
     K10_SKILLS_CONFIG: ClassVar['ReasoningConfig']
     K11_COVER_LETTER_CONFIG: ClassVar['ReasoningConfig']
+
 
 @dataclass
 class ContentConstraintsConfig:
@@ -280,12 +290,14 @@ class ContentConstraintsConfig:
     COVER_LETTER_P3_WORD_COUNT_MAX: int = 100
     COVER_LETTER_JD_RELEVANCE_THRESHOLD: float = 0.35
 
+
 @dataclass
 class SignalControlConfig:
     """Signal control thresholds for quality and relevance."""
     K1_MAX_DIFFERENTIATORS: int = 4
     RESUME_MAX_JD_KEYWORDS: int = 16
     CL_MAX_JD_SIMILARITY: float = 0.65
+
 
 @dataclass
 class PromptAddendumConfig:

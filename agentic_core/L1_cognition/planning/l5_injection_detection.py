@@ -12,6 +12,7 @@ import pytest
 
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, SafetyFin...
 
+
 class TestInjectionDetector:
     """Test cases for injection detection patterns."""
 

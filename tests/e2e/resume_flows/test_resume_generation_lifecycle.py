@@ -1,4 +1,5 @@
 """E2E tests for complete resume generation lifecycle."""
+import pytest
 import logging
 import re
 from dataclasses import dataclass
@@ -8,9 +9,9 @@ from typing import Dict, List
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
 LOGGER = logging.getLogger(__name__)
+
+
 class ResumePhase(Enum):
     """TODO: Add docstring."""
 
@@ -23,8 +24,10 @@ class ResumePhase(Enum):
     EXPORT = "export"
     COMPLETED = "completed"
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class ResumeGenerationState:
     """Docstring."""
@@ -35,6 +38,7 @@ class ResumeGenerationState:
     generated_content: Dict[str, str] = field(default_factory=dict)
     scores: Dict[str, float] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
+
 
 class TestResumeGenerationLifecycleE2E:
     """E2E tests for complete resume generation lifecycle."""

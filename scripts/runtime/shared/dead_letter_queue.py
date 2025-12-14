@@ -17,6 +17,7 @@ import aiofiles
 
 LOGGER = logging.getLogger(__name__)
 
+
 class FailureReason(str, Enum):
     """Reasons for envelope failure."""
     VALIDATION_FAILED = "validation_failed"
@@ -27,6 +28,7 @@ class FailureReason(str, Enum):
     CORRUPTED_PAYLOAD = "corrupted_payload"
     UNKNOWN = "unknown"
 
+
 class DeadLetterStatus(str, Enum):
     """Status of dead letter items."""
     PENDING_REVIEW = "pending_review"
@@ -34,6 +36,7 @@ class DeadLetterStatus(str, Enum):
     RESOLVED = "resolved"
     PERMANENTLY_FAILED = "permanently_failed"
     REQUEUED = "requeued"
+
 
 @dataclass
 class DeadLetterItem:

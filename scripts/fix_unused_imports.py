@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
+
 def get_python_files(root_dir: str = ".") -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
     python_files = []
@@ -31,6 +32,7 @@ def get_python_files(root_dir: str = ".") -> List[str]:
                 python_files.append(full_path)
 
     return python_files
+
 
 def find_unused_imports(file_path: str) -> Tuple[Set[str], Dict[str, int]]:
     """Find unused imports in a Python file."""
@@ -81,6 +83,7 @@ def find_unused_imports(file_path: str) -> Tuple[Set[str], Dict[str, int]]:
         logger.info(f"Error analyzing {file_path}: {e}")
         return set(), {}
 
+
 def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
     """Remove unused imports from a file."""
     try:
@@ -98,7 +101,7 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
             for unused in unused_imports:
                 # Handle 'import x' or 'import x as y'
                 if (line_stripped.startswith(f'import {unused} ') or
-                    line_stripped == f'import {unused}'):
+                        line_stripped == f'import {unused}'):
                     should_remove = True
                     MODIFIED = True
                     break
@@ -106,7 +109,7 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
                 elif line_stripped.startswith('from ') and f' import {unused}' in line_stripped:
                     # Check if it's a single import on this line
                     if (line_stripped.endswith(f' import {unused}') or
-                        f' import {unused} as ' in line_stripped):
+                            f' import {unused} as ' in line_stripped):
                         should_remove = True
                         MODIFIED = True
                         break
@@ -118,14 +121,14 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
                             J += 1
                         if j < len(lines):
                             # Check if unused import is in this multi-line block
-                            BLOCK = ''.join(lines[i:j+1])
+                            BLOCK = ''.join(lines[i:j + 1])
                             if f'\n    {unused}\n' in block or f'\n    {unused} as ' in block:
                                 # Remove the specific line from the block
                                 block_lines = block.split('\n')
                                 new_block = []
                                 for block_line in block_lines:
                                     if not (block_line.strip() == unused or
-                                           block_line.strip().startswith(f'{unused} as ')):
+                                            block_line.strip().startswith(f'{unused} as ')):
                                         new_block.append(block_line)
                                 # If block is now empty except for from/import, remove it all
                                 if len(new_block) <= 2:
@@ -133,12 +136,12 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
                                     MODIFIED = True
                                     # Skip ahead to consume the whole block
                                     for _ in range(j - i):
-                                        LINES[I+1] = ''
+                                        LINES[I + 1] = ''
                                 else:
                                     # Replace the block with the filtered version
-                                    LINES[I:J+1] = [new_block[0] +
-                                        '\n'] +
-                                            [l + '\n' for l in new_block[1:-1]] + [new_block[-1]]
+                                    LINES[I:J + 1] = [new_block[0] +
+                                                      '\n'] +
+                                    [l + '\n' for l in new_block[1:-1]] + [new_block[-1]]
                                     MODIFIED = True
                                     break
 
@@ -154,6 +157,7 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
     except Exception as e:
         logger.info(f"Error fixing {file_path}: {e}")
         return False
+
 
 def main():
     """Main function to fix unused imports."""
@@ -179,6 +183,7 @@ def main():
                 total_removed += len(unused_imports)
 
     logger.info(f"\nRemoved {total_removed} unused imports from {files_modified} files")
+
 
 if __name__ == "__main__":
     main()

@@ -4,6 +4,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def test_agent_registry_register_and_lookup() -> None:
     """TODO: Add docstring."""
     AgentRegistry()
@@ -16,6 +17,7 @@ def test_agent_registry_register_and_lookup() -> None:
     registry.find_agents_by_type('planner')
     assert ConfigurationService().a1 in planners
     'TODO: Add docstring.'
+
 
 def test_agent_registry_find_by_capability() -> None:
     """TODO: Add docstring."""

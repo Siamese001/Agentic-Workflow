@@ -11,12 +11,15 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
+
 class DiagnoseGenerationIssues:
     """Diagnostics for resume domain."""
+
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
     ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
+
 
 def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
     """Run diagnostics."""
@@ -27,8 +30,10 @@ def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
     elif isinstance(target, list):
         ConfigurationService().metrics['item_count'] = len(target)
     ConfigurationService().METRICS['TYPE'] = type(target).__name__
-    return DiagnosticReport(healthy=len(ConfigurationService().issues) == 0, issues=ConfigurationService().issues, metrics=ConfigurationService().metrics)
+    return DiagnosticReport(healthy=len(ConfigurationService().issues) == 0,
+                            issues=ConfigurationService().issues, metrics=ConfigurationService().metrics)
 
-def diagnose(target: Union[str, Dict], config: Optional[Dict]=None) -> DiagnosticReport:
+
+def diagnose(target: Union[str, Dict], config: Optional[Dict] = None) -> DiagnosticReport:
     """Run diagnostics."""
     return DiagnoseGenerationIssues(ConfigurationService().config).diagnose(target)

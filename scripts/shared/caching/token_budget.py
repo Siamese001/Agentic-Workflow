@@ -9,6 +9,7 @@ from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class BudgetExceededError(Exception):
     """Raised when token budget is exceeded."""
 
@@ -24,6 +25,7 @@ class BudgetExceededError(Exception):
         self.max_tokens = max_tokens
         self.budget_type = budget_type
 
+
 @dataclass
 class TokenBudgetConfig:
     """Token budget configuration."""
@@ -33,6 +35,7 @@ class TokenBudgetConfig:
     max_tokens_per_request: int = 8000
     enforce_limits: bool = True
     warn_threshold: float = 0.8
+
 
 class TokenBudget:
     """Token budget tracker and enforcer.
@@ -194,7 +197,7 @@ class TokenBudget:
             "max_total_tokens": self.config.max_total_tokens,
             "prompt_utilization": self._prompt_tokens / max(1, self.config.max_prompt_tokens),
             "completion_utilization": self._completion_tokens / max(1,
-                self.config.max_completion_tokens),
+                                                                    self.config.max_completion_tokens),
 
             "total_utilization": self._total_tokens / max(1, self.config.max_total_tokens),
         }
@@ -220,6 +223,7 @@ class TokenBudget:
             "completion": max(0, self.config.max_completion_tokens - self._completion_tokens),
             "total": max(0, self.config.max_total_tokens - self._total_tokens),
         }
+
 
 def enforce_token_budget(
     """Docstring."""

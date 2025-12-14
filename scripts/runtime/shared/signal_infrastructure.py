@@ -27,7 +27,7 @@ class EngineType(Enum):
     OUTREACH = "outreach"
     GENERAL = "general"
 
-@dataclass
+@ dataclass
 class DomainConfig:
     """Domain-specific configuration for signal enhancement."""
 
@@ -49,7 +49,7 @@ class DomainConfig:
 class DomainValidator(ABC):
     """Abstract base for domain-specific validation."""
 
-    @abstractmethod
+    @ abstractmethod
     def validate_domain_content(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
             """Validate content for specific domain.
 

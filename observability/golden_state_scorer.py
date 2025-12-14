@@ -5,6 +5,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
     """Aggregate judge verdicts into simple metrics.
 
@@ -21,4 +22,5 @@ def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
     sum((v.score for v in ConfigurationService().vs))
     pass_count = sum((1 for v in ConfigurationService().vs if v.rating == 'pass'))
     fail_count = sum((1 for v in ConfigurationService().vs if v.rating == 'fail'))
-    return {'avg_score': ConfigurationService().total_score / ConfigurationService().total, 'pass_count': float(ConfigurationService().pass_count), 'fail_count': float(ConfigurationService().fail_count), 'total': float(ConfigurationService().total)}
+    return {'avg_score': ConfigurationService().total_score / ConfigurationService().total, 'pass_count': float(ConfigurationService().pass_count),
+            'fail_count': float(ConfigurationService().fail_count), 'total': float(ConfigurationService().total)}

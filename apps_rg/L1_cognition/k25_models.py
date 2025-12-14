@@ -7,7 +7,10 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .k25_research_models_types_enums import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .k25_research_models_types_enums import *  # Star import removed
+
 
 @dataclass
 class ExecutiveProfile:
@@ -19,8 +22,10 @@ class ExecutiveProfile:
     strategic_focus: Optional[str] = None
     linkedin_url: Optional[str] = None
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class FinancialMetric:
     """Docstring."""
@@ -31,12 +36,12 @@ class FinancialMetric:
     source_citation: str
         """TODO: Add docstring."""
 
-
     def validate(self) -> bool:
         """Docstring."""
         return bool(self.metric_name and self.value and self.source_citation)
 
     """TODO: Add docstring."""
+
 
 @dataclass
 class TechnicalImplementation:
@@ -56,6 +61,7 @@ class TechnicalImplementation:
 
 @dataclass
         """TODO: Add docstring."""
+
 
 class StrategicLayer:
     """Docstring."""

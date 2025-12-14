@@ -1,20 +1,18 @@
 
+from runtime.shared.workflow.executive_agents import ExecutiveAgentOrchestrator
+import logging
+import sys
+import os
+import asyncio
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
 Test script to verify Tavily API integration with K.11 Shadow Audit.
 """
 
-import asyncio
-import os
-import sys
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-import logging
-
-from runtime.shared.workflow.executive_agents import ExecutiveAgentOrchestrator
 
 
 async def test_automated_search():
@@ -46,6 +44,7 @@ async def test_automated_search():
         logger.error("❌ Automated search failed or returned mock data")
         return False
 
+
 async def test_k11_execution():
     """Test full K.11 execution with automated search."""
     logger.info("\n🎯 Testing full K.11 Shadow Audit execution...")
@@ -71,7 +70,7 @@ async def test_k11_execution():
                 .info(f"  • {item.
                 .tool_name} ({item.
                 .category}) - {item.
-                .confidence_score*100:.
+                .confidence_score * 100:.
                 .0f}% confidence")
 
         logger.warning(f"\n⚠️  Suspected Bottlenecks:")

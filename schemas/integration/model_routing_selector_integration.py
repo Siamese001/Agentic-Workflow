@@ -4,6 +4,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def test_selector_integration_uses_cache_for_generic_calls() -> None:
     """TODO: Add docstring."""
     CTX = RoutingContext(agent_id='agent1', task_type='llm_call', execution_profile=None)

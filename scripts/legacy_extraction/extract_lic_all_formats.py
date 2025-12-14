@@ -3,6 +3,7 @@
     JSON,
     and Markdown) from legacy_lic archive to staging directory."""
 
+import logging
 import hashlib
 import shutil
 from pathlib import Path
@@ -11,16 +12,17 @@ from typing import Dict, List, Set, Tuple
 
 def get_file_hash(filepath: Path) -> str:
     """Docstring."""
-import logging
+
 
 LOGGER = logging.getLogger(__name__)
 
-    """Get SHA256 hash of file content."""
-    HASHER = hashlib.sha256()
-    with open(filepath, 'rb') as f:
+ """Get SHA256 hash of file content."""
+  HASHER = hashlib.sha256()
+   with open(filepath, 'rb') as f:
         for chunk in iter(lambda: f.read(4096), b''):
             hasher.update(chunk)
     return hasher.hexdigest()
+
 
 def get_existing_file_hashes() -> Dict[str, str]:
     """Get dict of filename -> content hash for existing sovereign files."""
@@ -51,6 +53,7 @@ def get_existing_file_hashes() -> Dict[str, str]:
                 existing[file_path.name] = get_file_hash(file_path)
 
     return existing
+
 
 def analyze_and_extract() -> None:
     """Analyze legacy files and extract unique content (Python, JSON, and Markdown)."""
@@ -104,18 +107,19 @@ def analyze_and_extract() -> None:
 
     return extracted_files, unique_content_files, duplicate_files
 
+
 if __name__ == "__main__":
 
     extracted, unique_content, duplicates = analyze_and_extract()
 
     if extracted:
-        #logger.info(f"\nExtracted files ({len(extracted)}):")
+        # logger.info(f"\nExtracted files ({len(extracted)}):")
         for f in sorted(extracted):
-            #logger.info(f"  - {f}")
+            # logger.info(f"  - {f}")
             pass
 
     if unique_content:
-        #logger.info(f"\nUnique content files ({len(unique_content)}):")
+        # logger.info(f"\nUnique content files ({len(unique_content)}):")
         for orig, new in sorted(unique_content):
-            #logger.info(f"  - {orig} -> {new}")
+            # logger.info(f"  - {orig} -> {new}")
             pass

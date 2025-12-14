@@ -20,19 +20,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-    UnifiedSignalPipeline,
+UnifiedSignalPipeline,
 )
 
-__all__ = [
-    'PipelineStageType',
-    'PipelineContext',
-    'PipelineStage',
-    'PipelineExecutionError',
-    'InputProcessingStage',
-    'ContextEnrichmentStage',
-    'SignalAugmentationStage',
-    'QualityValidationStage',
-    'OutputFormattingStage',
-    'UnifiedSignalPipeline',
+    __all__ = [
+'PipelineStageType',
+'PipelineContext',
+'PipelineStage',
+'PipelineExecutionError',
+'InputProcessingStage',
+'ContextEnrichmentStage',
+'SignalAugmentationStage',
+'QualityValidationStage',
+'OutputFormattingStage',
+'UnifiedSignalPipeline',
 ]

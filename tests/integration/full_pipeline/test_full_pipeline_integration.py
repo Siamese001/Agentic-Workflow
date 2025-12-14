@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class PipelineStage(Enum):
     """TODO: Add docstring."""
 
@@ -19,8 +21,10 @@ class PipelineStage(Enum):
     SAFETY = "safety"
     OUTPUT = "output"
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class PipelineState:
     """Docstring."""
@@ -31,6 +35,7 @@ class PipelineState:
     final_output: Optional[Dict[str, object]] = None
     errors: List[str] = field(default_factory=list)
     metrics: Dict[str, float] = field(default_factory=dict)
+
 
 class TestFullPipelineIntegration:
     """Integration tests for full pipeline."""

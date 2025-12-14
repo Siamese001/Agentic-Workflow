@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 LOGGER = logging.getLogger(__name__)
 
-@dataclass
+@ dataclass
 class EnhancementConfig:
     """Configuration for prompt enhancement."""
     enable_semantic_fencing: bool = True
@@ -28,7 +28,7 @@ class EnhancementConfig:
 class PromptEnhancer:
     """Unified prompt enhancement system orchestrating all strategies."""
 
-    def __init__(self, config: Optional[EnhancementConfig] = None):
+    def __init__(self, config: Optional[EnhancementConfig]=None):
             """Initialize the prompt enhancer.
 
         Args:

@@ -23,12 +23,13 @@ STUB_PATTERNS = [
     r'raise\s+NotImplementedError',    # NotImplementedError
     r'PENDING',                           # Implementation pending
     r'PLACEHOLDER',                    # Placeholder markers
-    r'STUB',                               r'ATTENTION',                          # Implementatio...
-    r'XXX',                                r'\.\.\.(?:\s*#.*)?$',             # Ellipsis (...)
+    r'STUB', r'ATTENTION',                          # Implementatio...
+    r'XXX', r'\.\.\.(?:\s*#.*)?$',             # Ellipsis (...)
 ]
 
 # Folders to skip
 SKIP_FOLDERS = {'.git', '__pycache__', '.venv', 'venv', 'node_modules', '06_data'}
+
 
 def is_stub_file(file_path: Path) -> Tuple[bool, str]:
     """Check if a file is a stub/placeholder. Returns (is_stub, reason)."""
@@ -73,6 +74,7 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
 
     except (ValueError, TypeError, KeyError) as e:
         return False, f"error: {e}"
+
 
 def audit_stubs() -> Dict:
     """Audit all Python files for stubs/placeholders."""

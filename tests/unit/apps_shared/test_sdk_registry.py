@@ -1,22 +1,22 @@
 """Unit tests for runtime/shared/sdk_registry.py"""
+import pytest
 import logging
 from unittest.mock import MagicMock, patch
 
 logger = logging.getLogger(__name__)
 
 
-import pytest
 from runtime.shared.sdk_registry import (=, __name__, import, logger, logging,
                                          logging.getLogger)
 
-    SDK_REGISTRY,
-    SDKEntry,
-    validate_sdk,
-    reset_all_clients,
-    get_vector_store
+SDK_REGISTRY,
+SDKEntry,
+validate_sdk,
+reset_all_clients,
+get_vector_store
 )
 
-class TestSDKRegistry:
+    class TestSDKRegistry:
     """TestSDKRegistry implementation."""
     def test_contains_core_sdks(self) -> None:
         """Execute test_contains_core_sdks operation."""
@@ -33,7 +33,7 @@ class TestSDKRegistry:
         """Execute test_determinism operation."""
         assert list(SDK_REGISTRY.keys()) == list(SDK_REGISTRY.keys())
 
-class TestValidateSDK:
+    class TestValidateSDK:
     """TestValidateSDK implementation."""
     def test_installed_package(self) -> None:
         """Execute test_installed_package operation."""
@@ -50,7 +50,7 @@ class TestValidateSDK:
         assert success is False
         assert "Unknown SDK" in err
 
-class TestGetVectorStore:
+    class TestGetVectorStore:
     """TestGetVectorStore implementation."""
     def test_chromadb_singleton(self) -> None:
         """Execute test_chromadb_singleton operation."""
@@ -71,7 +71,7 @@ class TestGetVectorStore:
         RESULT = get_vector_store("invalid_db")
         assert result is not None
 
-class TestGetRedisClient:
+    class TestGetRedisClient:
     """TestGetRedisClient implementation."""
     def test_default_config(self) -> None:
         """Execute test_default_config operation."""

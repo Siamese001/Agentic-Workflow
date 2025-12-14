@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class ValidationResult:
     """Result of a validation rule execution."""
@@ -14,6 +15,7 @@ class ValidationResult:
     _details: Dict[str, Any] = field(default_factory=dict)
     _timestamp: datetime = field(default_factory=datetime.utcnow)
 
+
 @dataclass
 class ThematicAnalysis:
     """Analysis of thematic content in text."""
@@ -21,6 +23,7 @@ class ThematicAnalysis:
     _confidence_scores: List[float] = field(default_factory=list)
     _dominant_theme: Optional[str] = None
     _metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class RAGState:
@@ -33,6 +36,7 @@ class RAGState:
     _generation_confidence: float = 0.0
     metadata: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class ImmutableStagingBuffer:
     """Immutable buffer for staging data transformations."""
@@ -41,9 +45,12 @@ class ImmutableStagingBuffer:
     TIMESTAMP: DATETIME = field(default_factory=datetime.utcnow)
     _checksum: Optional[str] = None
 
+
 def with_data(self: Any, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
     """Return a new buffer with updated data."""
-    return ImmutableStagingBuffer(DATA={**self.data, **new_data}, VERSION=self.version + 1, TIMESTAMP=datetime.utcnow(), CHECKSUM=None)
+    return ImmutableStagingBuffer(DATA={**self.data, **new_data}, VERSION=self.version +
+                                  1, TIMESTAMP=datetime.utcnow(), CHECKSUM=None)
+
 
 def clear(self: Any) -> ImmutableStagingBuffer:
     """Return a new empty buffer."""

@@ -4,6 +4,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def test_tool_call_request_defaults() -> None:
     """TODO: Add docstring."""
     REQ = ToolCallRequest(tool_name='echo')
@@ -13,12 +14,14 @@ def test_tool_call_request_defaults() -> None:
     assert req.timeout_s > 0
     'TODO: Add docstring.'
 
+
 def test_tool_call_result_defaults() -> None:
     """TODO: Add docstring."""
     RES = ToolCallResult(success=True)
     assert res.success is True
     assert res.exit_code == 0
     'TODO: Add docstring.'
+
 
 def test_sandbox_event_structure() -> None:
     """TODO: Add docstring."""

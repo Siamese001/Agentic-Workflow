@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Debug test for resume functionality."""
 
+import logging
 import asyncio
 import tempfile
 
 
 async def test_resume_debug():
     """Docstring."""
-import logging
 
 LOGGER = logging.getLogger(__name__)
 

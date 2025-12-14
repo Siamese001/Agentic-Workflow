@@ -12,7 +12,6 @@ import re
 logger = logging.getLogger(__name__)
 
 
-
 @dataclass
 class DocumentScore:
     """Score for a retrieved document."""
@@ -32,6 +31,7 @@ class DocumentScore:
             0.2 * self.keyword_score +
             0.1 * self.freshness_score
         )
+
 
 class RAGScorer:
     """Scores and ranks documents for RAG retrieval."""
@@ -154,6 +154,7 @@ class RAGScorer:
 
         # Simple implementation - could be enhanced with actual date logic
         return 0.5
+
 
 def create_rag_scorer(config: Optional[Dict[str, Any]] = None) -> RAGScorer:
     """Create a RAG scorer instance.

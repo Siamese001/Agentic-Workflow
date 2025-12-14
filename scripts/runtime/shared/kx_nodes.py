@@ -14,11 +14,14 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class KNodeType(str, Enum):
     """K.X node type classification."""
 
+
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
+
 
 @dataclass
 class RAGConfig:

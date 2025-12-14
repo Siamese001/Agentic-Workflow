@@ -4,7 +4,10 @@ import logging
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .golden_state_evaluator_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .golden_state_evaluator_types import *  # Star import removed
+
 
 class GoldenStateEvaluator:
     """Evaluator for golden state test cases.
@@ -14,9 +17,9 @@ class GoldenStateEvaluator:
     """
 
     def __init__(self,
-        dataset_path: Optional[Path]=None,
-        judge_evaluator: Optional[JudgeEvaluator]=None,
-        enable_logging: bool=True):
+        dataset_path: Optional[Path] = None,
+        judge_evaluator: Optional[JudgeEvaluator] = None,
+        enable_logging: bool = True):
         """Initialize evaluator.
 
         Args:

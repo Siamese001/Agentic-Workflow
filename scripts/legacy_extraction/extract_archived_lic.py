@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Extract net incremental files from legacy_lic archive to staging directory."""
 
+import logging
 import shutil
 from pathlib import Path
 from typing import Set
@@ -19,17 +20,18 @@ SOVEREIGN_ROOTS = {
     "archives"
 }
 
+
 def get_existing_files() -> Set[str]:
     """Docstring."""
-import logging
+
 
 LOGGER = logging.getLogger(__name__)
 
-    """Get set of all Python files in sovereign codebase."""
-    EXISTING = set()
-    repo_root = Path(".")
+"""Get set of all Python files in sovereign codebase."""
+ EXISTING = set()
+  repo_root = Path(".")
 
-    for root in SOVEREIGN_ROOTS:
+   for root in SOVEREIGN_ROOTS:
         root_path = repo_root / root
         if root_path.exists():
             for py_file in root_path.rglob("*.py"):
@@ -38,6 +40,7 @@ LOGGER = logging.getLogger(__name__)
                 existing.add(str(rel_path))
 
     return existing
+
 
 def extract_net_incremental() -> None:
     """Extract files that don't exist in sovereign codebase."""
@@ -72,14 +75,15 @@ def extract_net_incremental() -> None:
 
     return extracted_files
 
+
 if __name__ == "__main__":
     EXTRACTED = extract_net_incremental()
 
     if extracted:
-        #logger.info(f"Extracted {len(extracted)} files:")
+        # logger.info(f"Extracted {len(extracted)} files:")
         for f in sorted(extracted):
-            #logger.info(f"  - {f}")
+            # logger.info(f"  - {f}")
             pass
     else:
-        #logger.info("No new files to extract")
+        # logger.info("No new files to extract")
         pass

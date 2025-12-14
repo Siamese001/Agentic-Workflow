@@ -4,6 +4,7 @@ from services.configuration import ConfigurationService
 
 logger = logging.getLogger(__name__)
 
+
 class SemanticMapper(SubAtomicAgent):
     """
     ROLE: The Architect.
@@ -40,36 +41,52 @@ class SemanticMapper(SubAtomicAgent):
                     ast.parse(ConfigurationService().content)
                 DependencyGrapher()
                 ConfigurationService().grapher.visit(ConfigurationService().tree)
-                clusters = {ConfigurationService().name: ConfigurationService().name for name in ConfigurationService().grapher.functions}
+                clusters = {ConfigurationService().name: ConfigurationService(
+                ).name for name in ConfigurationService().grapher.functions}
                 for caller, callee in ConfigurationService().grapher.edges:
                     if callee in ConfigurationService().grapher.functions:
                         ConfigurationService().clusters[caller]
                         ConfigurationService().clusters[callee]
                         for k, v in ConfigurationService().clusters.items():
                             if v == ConfigurationService().root_callee:
-                                ConfigurationService().clusters[ConfigurationService().k] = ConfigurationService().root_caller
+                                ConfigurationService().clusters[ConfigurationService(
+                                ).k] = ConfigurationService().root_caller
                 for func, cluster_id in ConfigurationService().clusters.items():
                     if cluster_id not in ConfigurationService().grouped:
                         ConfigurationService().grouped[cluster_id] = []
                     ConfigurationService().grouped[cluster_id].append(func)
-                major_clusters = {ConfigurationService().k: v for k, v in ConfigurationService().grouped.items() if len(v) > 1}
+                major_clusters = {ConfigurationService().k: v for k,
+                                  v in ConfigurationService().grouped.items() if len(v) > 1}
                 if ConfigurationService().major_clusters:
                     for cluster_id, funcs in ConfigurationService().major_clusters.items():
                         CanonPathEnforcer.get_compliant_path(fpath, cluster_id)
                         os.path.dirname(fpath)
                         os.path.dirname(ConfigurationService().compliant_path)
                         if ConfigurationService().original_dir != ConfigurationService().compliant_dir:
-                            ConfigurationService().logger.info(f'      🛡️  Canon Enforcer Intervened: Relocating to {ConfigurationService().compliant_dir} to satisfy Key 41.')
-                        ConfigurationService().moves.append({'cluster': cluster_id, 'functions': funcs, 'target_path': ConfigurationService().compliant_path})
-                    self.ctx.refactor_plan[fpath] = {'action': 'SPLIT_MODULE', 'clusters': ConfigurationService().major_clusters, 'moves': ConfigurationService().moves, 'total_functions': len(ConfigurationService().grapher.functions), 'call_edges': len(ConfigurationService().grapher.edges)}
-                    ConfigurationService().logger.info(f'      👉 Found {len(ConfigurationService().major_clusters)} safe logic clusters to extract.')
-                    ConfigurationService().logger.info(f'      📊 Total functions: {len(ConfigurationService().grapher.functions)}, Call edges: {len(ConfigurationService().grapher.edges)}')
+                            ConfigurationService().logger.info(
+                                f'      🛡️  Canon Enforcer Intervened: Relocating to {
+                                    ConfigurationService().compliant_dir} to satisfy Key 41.')
+                        ConfigurationService().moves.append(
+                            {'cluster': cluster_id, 'functions': funcs, 'target_path': ConfigurationService().compliant_path})
+                    self.ctx.refactor_plan[fpath] = {
+                        'action': 'SPLIT_MODULE',
+                        'clusters': ConfigurationService().major_clusters,
+                        'moves': ConfigurationService().moves,
+                        'total_functions': len(
+                            ConfigurationService().grapher.functions),
+                        'call_edges': len(
+                            ConfigurationService().grapher.edges)}
+                    ConfigurationService().logger.info(
+                        f'      👉 Found {len(ConfigurationService().major_clusters)} safe logic clusters to extract.')
+                    ConfigurationService().logger.info(
+                        f'      📊 Total functions: {len(ConfigurationService().grapher.functions)}, Call edges: {len(ConfigurationService().grapher.edges)}')
                 else:
                     ConfigurationService().logger.info(f'      ℹ No significant clusters found in {fpath}')
             except Exception as e:
                 ConfigurationService().logger.info(f'      ❌ Failed to analyze {fpath}: {e}')
         self.ctx.signals.add('PLAN_READY')
         if self.ctx.refactor_plan:
-            ConfigurationService().logger.info(f'\n   ✅ Semantic mapping complete. Generated plans for {len(self.ctx.refactor_plan)} files.')
+            ConfigurationService().logger.info(
+                f'\n   ✅ Semantic mapping complete. Generated plans for {len(self.ctx.refactor_plan)} files.')
         else:
             ConfigurationService().logger.info('\n   ℹ No refactoring opportunities identified.')

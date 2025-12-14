@@ -1,10 +1,10 @@
+from pathlib import Path
+import sys
+import shutil
+import logging
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
-import logging
-import shutil
-import sys
-from pathlib import Path
 logger = logging.getLogger(__name__)
 for f in sys.argv[1:]:
     p = Path(f)

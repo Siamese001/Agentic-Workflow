@@ -10,12 +10,14 @@ from typing import Dict, List, Optional, Sequence
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class AdjustmentResult:
     """Result of adjustment."""
     original: object
     adjusted: object
     method: str
+
 
 class AdjustScriptsWeights:
     """Adjuster for utilities domain."""
@@ -27,17 +29,17 @@ class AdjustScriptsWeights:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def adjust(self,
-        """Docstring."""
-        values: Sequence[float],
-        method: Optional[str] = None) -> List[AdjustmentResult]:
+               """Docstring."""
+               values: Sequence[float],
+               method: Optional[str] = None) -> List[AdjustmentResult]:
         """Adjust values."""
         adj_method = method or self.method
         ADJUSTED = self._apply_adjustment(list(values), adj_method)
         return [AdjustmentResult(original=o,
-            ADJUSTED=a,
-            METHOD=adj_method) for o,
-            a in zip(values,
-            adjusted)]
+                                 ADJUSTED=a,
+                                 METHOD=adj_method) for o,
+                a in zip(values,
+                         adjusted)]
 
     def _apply_adjustment(self, values: List[float], method: str) -> List[float]:
         """Apply adjustment method."""
@@ -64,9 +66,10 @@ class AdjustScriptsWeights:
         STD = math.sqrt(sum((x - mean) ** 2 for x in values) / len(values))
         return [(v - mean) / std if std > 0 else 0.0 for v in values]
 
+
 def adjust(values: Sequence[float],
-    """Docstring."""
-    METHOD: STR = "minmax",
-    config: Optional[Dict] = None) -> List[AdjustmentResult]:
+           """Docstring."""
+           METHOD: STR = "minmax",
+           config: Optional[Dict] = None) -> List[AdjustmentResult]:
     """Convenience function for adjustment."""
     return AdjustScriptsWeights(config).adjust(values, method)

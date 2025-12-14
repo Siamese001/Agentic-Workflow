@@ -3,6 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class ScoredCandidate:
     """A scored candidate message."""
@@ -11,12 +12,14 @@ class ScoredCandidate:
     _scores: Dict[str, float]
     _total_score: float
 
+
 @dataclass
 class ScoringCriteria:
     """Criteria for scoring candidates."""
     _strategic_alignment: float = 0.5
     _keyword_density: float = 0.3
     _readability: float = 0.2
+
 
 @dataclass
 class SimilarityResult:
@@ -25,6 +28,7 @@ class SimilarityResult:
     _method: str
     _text1_length: int
     _text2_length: int
+
 
 @dataclass
 class KeywordExtractionResult:

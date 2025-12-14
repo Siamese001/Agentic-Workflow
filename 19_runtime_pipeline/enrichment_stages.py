@@ -6,6 +6,7 @@ Extracted from unified_signal_pipeline.py for Key 42 compliance.
 Contains ContextEnrichmentStage and SignalAugmentationStage.
 """
 
+from .types import PipelineStage
 import hashlib
 import logging
 import time
@@ -13,8 +14,6 @@ from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
-
-from .types import PipelineStage
 
 LOGGER = __import__('logging').getLogger(__name__)
 
@@ -55,16 +54,16 @@ class ContextEnrichmentStage(PipelineStage):
                 return envelope
 
             cache_key = f"context_enriched_{hashlib.
-                .sha256(expanded_query.
-                .encode()).
-                .hexdigest()[:16]}"
+                                            .sha256(expanded_query.
+                                                    .encode()).
+                                            .hexdigest()[:16]}"
             CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
 
             if cached:
                 self._update_envelope_with_context(envelope, cached)
                 envelope.mark_stage_complete(stage_name,
-                    (time.time() - start_time) * 1000,
-                    METADATA={"cache_hit": True})
+                                             (time.time() - start_time) * 1000,
+                                             METADATA={"cache_hit": True})
                 return envelope
 
             rag_results = self.rag_processor.retrieve_and_rerank(
@@ -87,8 +86,8 @@ class ContextEnrichmentStage(PipelineStage):
                 self.semantic_cache.set(cache_key, enriched)
 
             envelope.mark_stage_complete(stage_name,
-                (time.time() - start_time) * 1000,
-                METADATA={"cache_hit": False})
+                                         (time.time() - start_time) * 1000,
+                                         METADATA={"cache_hit": False})
             return envelope
 
         except Exception as e:
@@ -168,8 +167,8 @@ class SignalAugmentationStage(PipelineStage):
             if cached:
                 self._update_envelope_with_augmentations(envelope, cached)
                 envelope.mark_stage_complete(stage_name,
-                    (time.time() - start_time) * 1000,
-                    METADATA={"cache_hit": True})
+                                             (time.time() - start_time) * 1000,
+                                             METADATA={"cache_hit": True})
                 return envelope
 
             AUGMENTATIONS = await self._perform_augmentations(content, envelope)
@@ -179,8 +178,8 @@ class SignalAugmentationStage(PipelineStage):
                 self.semantic_cache.set(cache_key, augmentations)
 
             envelope.mark_stage_complete(stage_name,
-                (time.time() - start_time) * 1000,
-                METADATA={"cache_hit": False})
+                                         (time.time() - start_time) * 1000,
+                                         METADATA={"cache_hit": False})
             return envelope
 
         except Exception as e:
@@ -206,7 +205,7 @@ class SignalAugmentationStage(PipelineStage):
 
         if self.prompt_optimizer:
             OPTIMIZED = self.prompt_optimizer.optimize_prompt(content,
-                envelope.payload.payload_type.value)
+                                                              envelope.payload.payload_type.value)
             result["optimized_prompt"] = optimized
 
         if self.tone_model:
@@ -216,9 +215,9 @@ class SignalAugmentationStage(PipelineStage):
         return result
 
     def _update_envelope_with_augmentations(self,
-        envelope: Any,
-        augmentations: Dict[str,
-        Any]) -> None:
+                                            envelope: Any,
+                                            augmentations: Dict[str,
+                                                                Any]) -> None:
         """Update envelope with augmentations."""
         if hasattr(envelope.payload, 'metadata'):
             envelope.payload.metadata.update(augmentations)

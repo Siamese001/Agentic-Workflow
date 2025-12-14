@@ -13,13 +13,16 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class PlanQualityError(Exception):
     """Raised when the plan fails quality checks."""
     pass
 
+
 class ConsistencyError(Exception):
     """Raised when content doesn't match the plan."""
     pass
+
 
 class ContractStage(Enum):
     """Stages of cognitive contract execution."""
@@ -27,6 +30,7 @@ class ContractStage(Enum):
     PLAN_VALIDATED = "plan_validated"
     CONTENT_GENERATED = "content_generated"
     CONTRACT_FULFILLED = "contract_fulfilled"
+
 
 @dataclass
 class Constraint:
@@ -37,6 +41,7 @@ class Constraint:
     PRIORITY: INT = 5
     VERIFIED: BOOL = False
 
+
 @dataclass
 class Plan:
     """Structured plan extracted from agent output."""
@@ -45,6 +50,7 @@ class Plan:
     key_metrics: List[str]
     pre_computation: Dict[str, Any]
     raw_text: str
+
 
 @dataclass
 class CognitiveContract:
@@ -55,6 +61,7 @@ class CognitiveContract:
     plan: Optional[Plan] = None
     content: Optional[str] = None
     validation_errors: List[str] = field(default_factory=list)
+
 
 class CognitiveContractValidator:
     """Validates cognitive contracts and ensures compliance."""

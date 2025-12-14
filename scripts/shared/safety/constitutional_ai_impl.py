@@ -2,7 +2,10 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .constitutional_ai_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .constitutional_ai_types import *  # Star import removed
+
 
 class ConstitutionalAISystem:
     """Constitutional AI System for Safety and Alignment.
@@ -11,7 +14,7 @@ class ConstitutionalAISystem:
     and content compliance checking.
     """
 
-    def __init__(self, enable_logging: bool=True):
+    def __init__(self, enable_logging: bool = True):
         """Initialize Constitutional AI system.
 
         Args:
@@ -50,7 +53,7 @@ class ConstitutionalAISystem:
         """Docstring."""
         content: str,
         context: Optional[Dict[str,
-        ANY]]=None) -> ConstitutionalReviewResult:
+        ANY]] = None) -> ConstitutionalReviewResult:
         """Review content against constitutional rules.
 
         Args:
@@ -85,7 +88,7 @@ class ConstitutionalAISystem:
     def _check_compliance(self,
         content: str,
         context: Optional[Dict[str,
-        ANY]]=None) -> List[ViolationReport]:
+        ANY]] = None) -> List[ViolationReport]:
         """Check content against all rules.
 
         Args:
@@ -108,7 +111,7 @@ class ConstitutionalAISystem:
         content: str,
         rule: ConstitutionalRule,
         context: Optional[Dict[str,
-        ANY]]=None) -> List[ViolationReport]:
+        ANY]] = None) -> List[ViolationReport]:
         """Check content against a specific rule.
 
         Args:

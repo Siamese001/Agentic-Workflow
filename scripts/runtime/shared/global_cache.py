@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
+
 class CacheEntry(BaseModel):
     """Cache entry with metadata."""
     key_hash: str

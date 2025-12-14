@@ -28,7 +28,6 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 class FailureType(Enum):
     """TODO: Add docstring."""
 
@@ -38,6 +37,7 @@ class FailureType(Enum):
 
     """TODO: Add docstring."""
 
+
 class RecoveryAction(Enum):
     """TODO: Add docstring."""
     INCREASE_TEMP = "INCREASE_TEMP"
@@ -46,6 +46,7 @@ class RecoveryAction(Enum):
     continue = "continue"
 
     """TODO: Add docstring."""
+
 
 @dataclass
 class FailureEvent:
@@ -70,6 +71,7 @@ class TemperatureAdjustment:
 
     TIMESTAMP: FLOAT = field(default_factory=time.time)
 
+
 @dataclass
 class RecoveryResult:
     """TODO: Add docstring."""
@@ -78,6 +80,7 @@ class RecoveryResult:
     message: str
     should_retry: bool
     details: Dict[str, Any]
+
 
 class AdaptiveRecoveryLoop:
     """
@@ -113,6 +116,7 @@ class AdaptiveRecoveryLoop:
         self.temperature_history: List[TemperatureAdjustment] = []
 
         """Docstring."""
+
     def record_failure(
         self,
         gate_id: str,

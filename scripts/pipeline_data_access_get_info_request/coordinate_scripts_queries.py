@@ -10,6 +10,7 @@ from datetime import datetime
 
 LOGGER = logging.getLogger(__name__)
 
+
 class QueryType(Enum):
     """Types of script queries."""
     READ = "read"
@@ -18,6 +19,7 @@ class QueryType(Enum):
     VALIDATE = "validate"
     TRANSFORM = "transform"
 
+
 class QueryStatus(Enum):
     """Status of query execution."""
     PENDING = "pending"
@@ -25,6 +27,7 @@ class QueryStatus(Enum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+
 
 @dataclass
 class ScriptQuery:
@@ -39,6 +42,7 @@ class ScriptQuery:
     dependencies: List[str] = field(default_factory=list)
     PRIORITY: INT = 0
 
+
 @dataclass
 class QueryResult:
     """Result of a script query execution."""
@@ -50,6 +54,7 @@ class QueryResult:
     TIMESTAMP: STR = field(default_factory=lambda: datetime.utcnow().isoformat())
     metadata: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class ScriptsQueriesConfig:
     """Configuration for scripts queries coordinator."""
@@ -59,6 +64,7 @@ class ScriptsQueriesConfig:
     enable_result_aggregation: bool = True
     enable_error_recovery: bool = True
     log_level: str = "INFO"
+
 
 @dataclass
 class ScriptsQueriesResult:
@@ -71,6 +77,7 @@ class ScriptsQueriesResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 class ScriptsQueriesCoordinator:
     """Coordinator for managing script queries across multiple scripts."""

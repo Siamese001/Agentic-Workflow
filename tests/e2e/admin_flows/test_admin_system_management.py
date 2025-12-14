@@ -1,4 +1,5 @@
 """E2E tests for admin system management flows."""
+import pytest
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -8,8 +9,6 @@ from typing import Dict, List
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
 LOGGER = logging.getLogger(__name__)
 # Skip E2E tests if no admin credentials are present - DISABLED for FINAL VALIDATION
 # skip_if_no_admin = pytest.mark.skipif(
@@ -17,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 #     reason="No admin credentials configured for E2E tests"
 # )
 skip_if_no_admin = pytest.mark.skipif(False, reason="Disabled for final validation")
+
 
 class SystemStatus(Enum):
     """TODO: Add docstring."""
@@ -28,6 +28,7 @@ class SystemStatus(Enum):
 
     """TODO: Add docstring."""
 
+
 class UserRole(Enum):
     """TODO: Add docstring."""
     ADMIN = "admin"
@@ -35,6 +36,7 @@ class UserRole(Enum):
     VIEWER = "viewer"
 
     """TODO: Add docstring."""
+
 
 @dataclass
 class SystemHealth:
@@ -56,6 +58,7 @@ class AuditEntry:
     action: str
     resource: str
     details: Dict[str, object]
+
 
 class TestSystemMonitoringE2E:
     """E2E tests for system monitoring."""

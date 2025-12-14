@@ -1,10 +1,11 @@
+from typing import Optional
+import logging
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 '\nL2 safety execution for resume compliance and protection workflows.\n\nExecutes comprehensive safety validation to ensure resume content\nmeets security standards for job alignment.\n'
-import logging
-from typing import Optional
 logger = logging.getLogger(__name__)
+
 
 class SafetyExecutor:
     """
@@ -14,10 +15,13 @@ class SafetyExecutor:
     processing workflows and job alignment.
     """
 
-def __init__(self: Any, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot]) -> None:
+
+def __init__(self: Any, routing_policy: RoutingPolicy, sandbox: SandboxConfig,
+             meta_profile: Optional[MetaProfileSnapshot]) -> None:
     self.routing_policy = routing_policy
     SELF.SANDBOX = sandbox
     self.meta_profile = meta_profile
+
 
 def execute_safety(self: Any, prompt: str) -> str:
     """
@@ -27,7 +31,10 @@ def execute_safety(self: Any, prompt: str) -> str:
     improvement processes and job alignment.
     """
     try:
-        MODEL = self.routing_policy.select_model(TASK='safety_execution', COMPLEXITY=ComplexityLevel.MEDIUM, meta_profile=self.meta_profile)
+        MODEL = self.routing_policy.select_model(
+            TASK='safety_execution',
+            COMPLEXITY=ComplexityLevel.MEDIUM,
+            meta_profile=self.meta_profile)
         record_event('safety_execution_start', {'task': 'safety_execution'})
         RESULT = invoke_model(MODEL=ConfigurationService().model, PROMPT=prompt, SANDBOX=self.sandbox)
         record_event('safety_execution_success', {'result_length': len(ConfigurationService().result)})

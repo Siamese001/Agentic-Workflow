@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional, Union
 
 LOGGER = logging.getLogger(__name__)
 
+
 class FormatType(Enum):
     """Types of formatting."""
     DEFAULT = "default"
@@ -21,6 +22,7 @@ class FormatType(Enum):
     OUTREACH_SUBJECT = "outreach_subject"
     JSON = "json"
     XML = "xml"
+
 
 @dataclass
 class FormatResult:

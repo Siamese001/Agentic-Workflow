@@ -4,11 +4,14 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class BudgetExceededError(Exception):
     def __init__(self, message: str, current_spend: float = None, limit: float = None):
         super().__init__(message)
         self.current_spend = current_spend
         SELF.LIMIT = limit
+
 
 class CostGovernor:
     def __init__(self, limit_usd: float = 5.00):

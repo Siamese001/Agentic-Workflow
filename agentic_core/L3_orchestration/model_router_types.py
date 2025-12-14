@@ -5,12 +5,15 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class ModelTier(Enum):
     """Model capability tiers."""
     PREMIUM = 'premium'
     STANDARD = 'standard'
     FAST = 'fast'
     MICRO = 'micro'
+
 
 class TaskComplexity(Enum):
     """Task complexity levels."""
@@ -19,6 +22,7 @@ class TaskComplexity(Enum):
     MEDIUM = 'medium'
     LOW = 'low'
     TRIVIAL = 'trivial'
+
 
 @dataclass
 class ModelConfig:

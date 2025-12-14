@@ -5,6 +5,7 @@ LOGGER = logging.getLogger(__name__)
 Extracted from unified_signal_pipeline.py for Key 42 compliance.
 """
 
+from .types import PipelineStage
 import hashlib
 import json
 import logging
@@ -14,13 +15,12 @@ from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 
-from .types import PipelineStage
-
 LOGGER = __import__('logging').getLogger(__name__)
 
 
 class InputProcessingStage(PipelineStage):
     """Processes and normalizes input data."""
+
 
 def __init__(self: Any) -> None:
         """Initialize input processing stage."""
@@ -33,6 +33,7 @@ def __init__(self: Any) -> None:
             self.semantic_cache = None
             self.hyde_processor = None
             logger.warning("SemanticCache or HyDEProcessor not available")
+
 
 async def execute(self: Any, envelope: Any) -> Any:
         """Process input data.
@@ -92,6 +93,7 @@ async def execute(self: Any, envelope: Any) -> Any:
             )
             raise
 
+
 def _extract_content_from_payload(self: Any, payload: Any) -> str:
         """Extract text content from payload.
 
@@ -114,6 +116,7 @@ def _extract_content_from_payload(self: Any, payload: Any) -> str:
             return json.dumps(payload.data)
         else:
             return str(payload)
+
 
 async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, Any]:
         """Process text content.
@@ -143,6 +146,7 @@ async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, 
             result["expanded_query"] = expanded
 
         return result
+
 
 def _update_payload_with_processed_data(self: Any,
      envelope: Any,

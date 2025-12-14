@@ -15,7 +15,6 @@ from typing import Dict, List, Optional, Tuple
 logger = logging.getLogger(__name__)
 
 
-
 class DataEnricher:
     """HOP-2: Enrich bullet pool with canonical verbs, deduplication, etc."""
 

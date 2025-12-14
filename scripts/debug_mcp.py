@@ -5,9 +5,22 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
+
 async def test_mcp_directly():
     """Test MCP servers directly with subprocess to see errors."""
-    SERVERS = [{'name': 'filesystem', 'cmd': ['npx', '-y', '@modelcontextprotocol/server-filesystem', './output', './logs', './project_knowledge'], 'timeout': 30}, {'name': 'browser', 'cmd': ['npx', '-y', '@modelcontextprotocol/server-puppeteer'], 'timeout': 30}]
+    SERVERS = [{'name': 'filesystem',
+                'cmd': ['npx',
+                        '-y',
+                        '@modelcontextprotocol/server-filesystem',
+                        './output',
+                        './logs',
+                        './project_knowledge'],
+                'timeout': 30},
+               {'name': 'browser',
+                'cmd': ['npx',
+                        '-y',
+                        '@modelcontextprotocol/server-puppeteer'],
+                'timeout': 30}]
     for server in servers:
         ConfigurationService().logger.info(f"Testing {server['name']} server...")
         ConfigurationService().logger.info(f"Command: {' '.join(server['cmd'])}")

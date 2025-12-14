@@ -25,21 +25,26 @@ if sys.platform == "win32":
 
 # --- AGENTIC ARCHITECTURE ---
 
+
 class AtomicResult:
     """Standardized result format for all agents."""
+
     def __init__(self, success, violations=None, fixable=False):
         self.success = success
         self.violations = violations or []
         self.fixable = fixable
 
+
 class AtomicAgent:
     """Base class for specialized validation agents."""
+
     def check(self) -> AtomicResult:
         """Performs the scan."""
 
     def attempt_fix(self) -> bool:
         """Runs the fix logic if available."""
         return False
+
 
 class HygieneAgent(AtomicAgent):
     """Manages Keys 09, 11, 12, 13 (Whitespace, Imports). Can self-fix."""
@@ -92,7 +97,8 @@ class HygieneAgent(AtomicAgent):
 
         # Fix trailing whitespace
         try:
-            result = subprocess.run([sys.executable, "scripts/fix_trailing_whitespace.py", "."], capture_output=True, text=True)
+            result = subprocess.run([sys.executable, "scripts/fix_trailing_whitespace.py", "."],
+                                    capture_output=True, text=True)
             if result.returncode == 0:
                 fixed = True
         except Exception as e:
@@ -101,6 +107,7 @@ class HygieneAgent(AtomicAgent):
         # Note: Other fixes would be added here
 
         return fixed
+
 
 class SecurityAgent(AtomicAgent):
     """Manages Keys 01-08 (Secrets, Debuggers). Alert only."""
@@ -125,6 +132,7 @@ class SecurityAgent(AtomicAgent):
             fixable=False  # Security issues require manual review
         )
 
+
 class ArchitectAgent(AtomicAgent):
     """Manages Keys 40, 41, 50 (Folder Structure, Metaclasses). Critical Blocker."""
 
@@ -148,6 +156,7 @@ class ArchitectAgent(AtomicAgent):
             fixable=False  # Architecture issues are critical blockers
         )
 
+
 class RefactorAgent(AtomicAgent):
     """Manages Keys 17, 25, 42 (Complexity). Reports refactoring targets."""
 
@@ -170,6 +179,7 @@ class RefactorAgent(AtomicAgent):
             violations=violations,
             fixable=False  # Refactoring requires human decision
         )
+
 
 class IntelligentValidator:
     """The intelligent control loop that manages all agents."""
@@ -2252,14 +2262,14 @@ def run_check_function(check_func):
 
 def print_live_dashboard(results):
     """Prints a clean summary table of specific keys."""
-    logger.info(f"\n{'='*60}")
+    logger.info(f"\n{'=' * 60}")
     logger.info(f"{'KEY':<6} | {'STATUS':<6} | {'VIOLATIONS':<10} | {'NAME'}")
-    logger.info(f"{'-'*60}")
+    logger.info(f"{'-' * 60}")
     for k in sorted(results.keys()):
         status = "pass" if results[k]["passed"] else "FAIL"
         count = len(results[k]["details"]) if not results[k]["passed"] else 0
         logger.info(f"{k:<6} | {status:<6} | {count:<10} | {ALL_KEYS[k]['name']}")
-    logger.info(f"{'='*60}\n")
+    logger.info(f"{'=' * 60}\n")
 
 
 if __name__ == "__main__":
@@ -2272,7 +2282,8 @@ if __name__ == "__main__":
     # The agent must fix these groups in order.
     DEPENDENCY_ORDER = [
         {"phase": "CRITICAL", "keys": [40, 41, 50], "desc": "Architecture & Hygiene"},
-        {"phase": "MECHANICAL", "keys": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], "desc": "Syntax & Imports"},
+        {"phase": "MECHANICAL", "keys": [2, 3, 4, 5, 6, 7, 8, 9, 10,
+                                         11, 12, 13, 14, 15, 16], "desc": "Syntax & Imports"},
         {"phase": "TYPE_SAFETY", "keys": [22, 24], "desc": "Types & Variables"},
         {"phase": "STRUCTURAL", "keys": [17, 25, 42], "desc": "Refactoring (Large Functions/Files)"}
     ]
@@ -2284,9 +2295,9 @@ if __name__ == "__main__":
 
     def recommend_next_action(results):
         """ INTELLIGENCE LAYER: Tells the Agent what to do next. """
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("🤖 VALIDATOR INTELLIGENCE REPORT")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
         for layer in DEPENDENCY_ORDER:
             phase_name = layer['phase']
@@ -2313,8 +2324,8 @@ if __name__ == "__main__":
                     logger.info(f"   > Initiate Surgical Refactoring for Key {failed_keys[0]}.")
                     logger.info("   > This requires 'Extract Method' or 'Move to Config' refactoring.")
 
-                logger.info("="*80 + "\n")
-                return False # Stop analysis, focus on this layer
+                logger.info("=" * 80 + "\n")
+                return False  # Stop analysis, focus on this layer
 
         logger.info("✅ ALL SYSTEMS GO. Ready for final integrity check.")
         return True
@@ -2340,7 +2351,8 @@ if __name__ == "__main__":
         keys_to_run = None
 
     # Execute
-    if args.u: sys.stdout.reconfigure(line_buffering=True)
+    if args.u:
+        sys.stdout.reconfigure(line_buffering=True)
 
     # Use the new IntelligentValidator if no specific keys requested
     if keys_to_run is None:
@@ -2357,7 +2369,8 @@ if __name__ == "__main__":
         try:
             with open('canon_state.json', 'r') as f:
                 results = json.load(f)
-        except: pass
+        except BaseException:
+            pass
 
     # Run Checks
     for key in keys_to_run:

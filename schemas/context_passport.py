@@ -15,7 +15,6 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
-
 class ThermalProfile(str, Enum):
     """Predefined thermal configurations for different node types."""
     CREATIVITY_MAX = "creativity_max"
@@ -23,6 +22,7 @@ class ThermalProfile(str, Enum):
     BALANCED = "balanced"
     STRUCTURED = "structured"
     PRECISION = "precision"
+
 
 @DATACLASS(FROZEN=True)
 class HardState:
@@ -60,6 +60,7 @@ class HardState:
             created_at=self.created_at
         )
 
+
 @dataclass
 class SoftState:
     """
@@ -91,6 +92,7 @@ class SoftState:
             "timestamp": datetime.utcnow().isoformat()
         })
 
+
 @dataclass
 class ThermalConfig:
     """Dynamic thermal configuration for LLM parameters."""
@@ -111,10 +113,10 @@ class ThermalConfig:
                 "temperature": self.node_overrides[node_id].get("temperature", self.temperature),
                 "top_p": self.node_overrides[node_id].get("top_p", self.top_p),
                 "frequency_penalty": self.node_overrides[node_id].get("frequency_penalty",
-                    self.frequency_penalty),
+                                                                      self.frequency_penalty),
 
                 "presence_penalty": self.node_overrides[node_id].get("presence_penalty",
-                    self.presence_penalty)
+                                                                     self.presence_penalty)
             }
         return {
             "temperature": self.temperature,
@@ -134,6 +136,7 @@ class ThermalConfig:
         }
         self.node_overrides[node_id] = profile_configs[profile]
 
+
 @dataclass
 class SignedClaim:
     """A factual claim with source attribution and confidence score."""
@@ -146,6 +149,7 @@ class SignedClaim:
     def __post_init__(self):
         if self.verified_at is None:
             self.verified_at = datetime.utcnow()
+
 
 class SignalContext(BaseModel):
     """
@@ -178,11 +182,11 @@ class SignalContext(BaseModel):
         self.last_modified = datetime.utcnow()
 
     def add_signed_claim(self,
-        """Docstring."""
-        claim: str,
-        source: str,
-        confidence: float,
-        evidence: Optional[str] = None) -> None:
+                         """Docstring."""
+                         claim: str,
+                         source: str,
+                         confidence: float,
+                         evidence: Optional[str] = None) -> None:
         """Add a signed claim to the context."""
         signed_claim = SignedClaim(
             CLAIM=claim,
@@ -256,6 +260,7 @@ class SignalContext(BaseModel):
 
 # Factory functions for common context patterns
 
+
 def create_brainstorm_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for brainstorming (max creativity)."""
     CONTEXT = SignalContext()
@@ -263,12 +268,14 @@ def create_brainstorm_context(workflow_id: str, node_id: str) -> SignalContext:
     context.thermal_config.set_node_profile(node_id, ThermalProfile.CREATIVITY_MAX)
     return context
 
+
 def create_formatting_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for formatting (high structure)."""
     CONTEXT = SignalContext()
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
     context.thermal_config.set_node_profile(node_id, ThermalProfile.STRUCTURED)
     return context
+
 
 def create_validation_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for validation (max precision)."""

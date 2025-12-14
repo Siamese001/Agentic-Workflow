@@ -5,6 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class JudgmentCriterion(Enum):
     """Criteria for judging output quality."""
     ACCURACY = 'accuracy'
@@ -15,6 +17,7 @@ class JudgmentCriterion(Enum):
     SAFETY = 'safety'
     HELPFULNESS = 'helpfulness'
 
+
 class JudgmentScore(Enum):
     """Judgment score levels."""
     EXCELLENT = 'excellent'
@@ -22,6 +25,7 @@ class JudgmentScore(Enum):
     ACCEPTABLE = 'acceptable'
     POOR = 'poor'
     UNACCEPTABLE = 'unacceptable'
+
 
 @dataclass
 class JudgeVerdict:
@@ -36,10 +40,11 @@ class JudgeVerdict:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'criterion': self.criterion.value, 'score': self.score.value, 'score_value': self.sc
-    ore_value,
-        'reasoning': self.reasoning,
-        'evidence': self.evidence,
-        'suggestions': self.suggestions}
+                ore_value,
+                'reasoning': self.reasoning,
+                'evidence': self.evidence,
+                'suggestions': self.suggestions}
+
 
 @dataclass
 class JudgeEvaluationResult:
@@ -54,13 +59,13 @@ class JudgeEvaluationResult:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'overall_score': self.overall_score,
-            'verdicts': [v.to_dict() for v in self.verdicts],
-            'passed': self.passed,
-            'threshold': self.threshold,
-            'summary': self.summary,
-            'metadata': self.metadata}
+                'verdicts': [v.to_dict() for v in self.verdicts],
+                'passed': self.passed,
+                'threshold': self.threshold,
+                'summary': self.summary,
+                'metadata': self.metadata}
 
     def get_failing_criteria(self) -> List[JudgmentCriterion]:
         """Get criteria that failed."""
         return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.
-    UNACCEPTABLE}]
+                                                                  UNACCEPTABLE}]

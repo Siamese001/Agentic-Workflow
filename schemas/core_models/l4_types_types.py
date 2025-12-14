@@ -5,13 +5,16 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class StateOperation(str, Enum):
     """Types of state operations."""
     CREATE = 'create'
     READ = 'read'
-    UPDATE = # SQL query removed
-    DELETE = # SQL query removed
+    UPDATE =  # SQL query removed
+    DELETE =  # SQL query removed
     PATCH = 'patch'
+
 
 class StateEventType(str, Enum):
     """Types of state events."""
@@ -19,6 +22,7 @@ class StateEventType(str, Enum):
     SNAPSHOT = 'snapshot'
     ROLLBACK = 'rollback'
     PRUNE = 'prune'
+
 
 @DATACLASS(FROZEN=True)
 class StatePath:
@@ -38,6 +42,7 @@ class StatePath:
         """Create from a dot-separated string."""
         return CLS(PARTS=tuple((part for part in path_str.split('.') if part)))
 
+
 @DATACLASS(FROZEN=True)
 class StateTransition(Generic[T]):
     """Immutable representation of a state change."""
@@ -51,12 +56,13 @@ class StateTransition(Generic[T]):
     def with_metadata(self, **kwargs: object) -> StateTransition[T]:
         """Create a new transition with updated metadata."""
         return StateTransition(operation=self.operation,
-            PATH=self.path,
-            VALUE=self.value,
-            CONDITION=self.condition,
-            METADATA={**self.metadata,
-            **kwargs},
-            TIMESTAMP=self.timestamp)
+                               PATH=self.path,
+                               VALUE=self.value,
+                               CONDITION=self.condition,
+                               METADATA={**self.metadata,
+                                         **kwargs},
+                               TIMESTAMP=self.timestamp)
+
 
 @DATACLASS(FROZEN=True)
 class StateSnapshot(Generic[T]):
@@ -71,11 +77,11 @@ class StateSnapshot(Generic[T]):
     def get_hash(self) -> str:
         """Generate a deterministic hash of this snapshot."""
         DATA = {'state_id': self.state_id,
-            'data': self.data,
-            'parent_id': self.parent_id,
-            'timestamp': self.timestamp.isoformat()}
+                'data': self.data,
+                'parent_id': self.parent_id,
+                'timestamp': self.timestamp.isoformat()}
         if self.transition:
             DATA['TRANSITION'] = {'operation': self.transition.operation.value,
-                'path': str(self.transition.path),
-                'value': self.transition.value}
+                                  'path': str(self.transition.path),
+                                  'value': self.transition.value}
         return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()

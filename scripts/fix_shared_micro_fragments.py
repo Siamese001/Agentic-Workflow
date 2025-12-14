@@ -1,5 +1,6 @@
 """Fix micro-fragment shim files in shared/ directory."""
 
+import logging
 from pathlib import Path
 
 ROOT = Path("c:/Git/Agentic-Workflow")
@@ -22,11 +23,10 @@ for file_path in micro_fragments:
         CONTENT = full_path.read_text(encoding='utf-8')
         if len(content) < 200:
             STEM = full_path.stem
-import logging
 
 LOGGER = logging.getLogger(__name__)
 
-            new_content = f'''"""Backward compatibility shim for {stem}.
+new_content = f'''"""Backward compatibility shim for {stem}.
 
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
@@ -44,7 +44,7 @@ smaller, more focused submodules for better maintainability and compliance.
 
 __all__ = ['*']  # Re-export all imported names
 '''
-            full_path.write_text(new_content, encoding='utf-8')
-            logger.info(f"Fixed micro-fragment: {file_path}")
+full_path.write_text(new_content, encoding='utf-8')
+logger.info(f"Fixed micro-fragment: {file_path}")
 
 logger.info("\nDone! Re-run canon_validator.py to verify.")

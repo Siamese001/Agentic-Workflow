@@ -9,6 +9,7 @@ import re
 
 LOGGER = logging.getLogger(__name__)
 
+
 class PIIType(Enum):
     """Types of PII to detect."""
     EMAIL = "email"
@@ -20,6 +21,7 @@ class PIIType(Enum):
     DOB = "dob"
     ADDRESS = "address"
 
+
 @dataclass
 class PIIMatch:
     """Single PII detection match."""
@@ -28,6 +30,7 @@ class PIIMatch:
     redaction_token: str
     position: Tuple[int, int]
     CONFIDENCE: FLOAT = 1.0
+
 
 @dataclass
 class PIIResult:
@@ -45,6 +48,7 @@ class PIIResult:
     def get_pii_types(self) -> List[PIIType]:
         """Get list of detected PII types."""
         return list(set(match.pii_type for match in self.detected_pii))
+
 
 class PIIScrubber:
     """Personal Information Detection and Sanitization.

@@ -13,6 +13,7 @@ from scripts.runtime.shared.health_check import (
 
 LOGGER = logging.getLogger(__name__)
 
+
 class InfrastructureOrchestrator:
     """Orchestrates all infrastructure components."""
 

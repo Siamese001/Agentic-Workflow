@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class CampaignPhase(Enum):
     """TODO: Add docstring."""
 
@@ -23,8 +25,10 @@ class CampaignPhase(Enum):
     ANALYSIS = "analysis"
     COMPLETED = "completed"
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class CampaignMetrics:
     """Docstring."""
@@ -37,6 +41,7 @@ class CampaignMetrics:
 
     """TODO: Add docstring."""
 
+
 @dataclass
 class CampaignState:
     """Docstring."""
@@ -45,6 +50,7 @@ class CampaignState:
     metrics: CampaignMetrics
     errors: List[str] = field(default_factory=list)
     audit_log: List[Dict] = field(default_factory=list)
+
 
 class TestCampaignLifecycleE2E:
     """E2E tests for complete campaign lifecycle."""

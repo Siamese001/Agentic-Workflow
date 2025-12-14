@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class CycleConfig:
     """Configuration for Think-Act-Observe cycle."""
@@ -27,6 +28,7 @@ class CycleConfig:
             "enable_state_persistence": self.enable_state_persistence,
             "react_max_steps": self.react_max_steps,
         }
+
 
 @dataclass
 class CycleState:
@@ -52,6 +54,7 @@ class CycleState:
             "reasoning_traces": self.reasoning_traces,
             "metadata": self.metadata,
         }
+
 
 class ThinkActObserveEngine:
     """Engine for executing the Think-Act-Observe cycle.
@@ -225,7 +228,7 @@ class ThinkActObserveEngine:
                     "scene": self.state.scene,
                     "iteration": self.state.iteration,
                     "previous_observations": self.state.observations[-3:] if self.state.observations
-    else [],
+                    else [],
                 }
 
                 # Run ReAct reasoning

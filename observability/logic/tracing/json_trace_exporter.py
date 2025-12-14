@@ -12,6 +12,7 @@ from typing import Dict, Generator, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class Span:
     """A trace span."""
@@ -31,6 +32,7 @@ class Span:
             return (self.end_time - self.start_time) * 1000
         return 0.0
 
+
 class JsonTraceExporter:
     """Tracer for tracing domain."""
 
@@ -42,11 +44,11 @@ class JsonTraceExporter:
 
     @contextmanager
     def start_span(self,
-        """Docstring."""
-        name: str,
-        attributes: Optional[Dict] = None) -> Generator[Span,
-        None,
-        None]:
+                   """Docstring."""
+                   name: str,
+                   attributes: Optional[Dict] = None) -> Generator[Span,
+                                                                   None,
+                                                                   None]:
         """Start a new span."""
         trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
@@ -82,8 +84,10 @@ class JsonTraceExporter:
         """Get all recorded spans."""
         return self.spans
 
+
 # Global tracer
 _tracer = JsonTraceExporter()
+
 
 @contextmanager
 def trace(name: str, attributes: Optional[Dict] = None) -> Generator[Span, None, None]:

@@ -20,6 +20,7 @@ except ImportError as e:
     TITANIUM_AVAILABLE = False
     logger.warning(f"ExecutiveBriefAgent: Titanium RAG Pipeline not available: {e}")
 
+
 class BriefSection(BaseModel):
     """A single section of an executive brief."""
 

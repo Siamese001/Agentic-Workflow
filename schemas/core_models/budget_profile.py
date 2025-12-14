@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class BudgetProfile(BaseModel):
     """High-level budget profile for cost/latency envelopes.
 

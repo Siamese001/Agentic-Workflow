@@ -12,12 +12,14 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class QueryType(Enum):
     """Types of queries for GraphRAG."""
     VECTOR_ONLY = "vector_only"
     GRAPH_ONLY = "graph_only"
     FUSION = "fusion"
     MULTI_HOP = "multi_hop"
+
 
 @dataclass
 class FusionResult:
@@ -40,6 +42,7 @@ class FusionResult:
             SELF.SOURCES = []
         if self.metadata is None:
             SELF.METADATA = {}
+
 
 class CypherQueryGenerator:
     """Generates Cypher queries from natural language patterns."""

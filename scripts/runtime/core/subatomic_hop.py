@@ -64,7 +64,7 @@ class MutationRequired(Exception):
         self.mutation_request = mutation_request
         super().__init__(f"Mutation required: {mutation_request.reason}")
 
-@dataclass
+@ dataclass
 class SubatomicHopConfig:
     """Configuration for a Subatomic Hop."""
     hop_id: str = field(default_factory=lambda: str(uuid.uuid4()))
@@ -82,9 +82,9 @@ class SubatomicHop:
     def __init__(
         self,
         hop_function: Callable,
-        config: Optional[SubatomicHopConfig] = None,
-        initial_context: Optional[Dict[str, Any]] = None,
-        container: Optional[ServiceContainer] = None
+        config: Optional[SubatomicHopConfig]=None,
+        initial_context: Optional[Dict[str, Any]]=None,
+        container: Optional[ServiceContainer]=None
     ):
             """Initialize the Subatomic Hop.
 

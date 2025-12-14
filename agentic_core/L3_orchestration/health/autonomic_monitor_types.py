@@ -5,6 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class HealthStatus(Enum):
     """Agent health status."""
     HEALTHY = 'healthy'
@@ -12,12 +14,14 @@ class HealthStatus(Enum):
     CRITICAL = 'critical'
     OFFLINE = 'offline'
 
+
 class AlertSeverity(Enum):
     """Alert severity levels."""
     INFO = 'info'
     WARNING = 'warning'
     ERROR = 'error'
     CRITICAL = 'critical'
+
 
 @dataclass
 class HealthMetrics:
@@ -32,9 +36,9 @@ class HealthMetrics:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'agent_id': self.agent_id, 'success_rate': self.success_rate, 'avg_response_time_ms'
-    : self.avg_response_time_ms, 'error_rate': self.error_rate, 'circuit_breaker_trips': self.circui
-        t_breaker_trips, 'total_requests': self.total_requests, 'timestamp': self.timestamp}
+        return {'agent_id': self.agent_id, 'success_rate': self.success_rate, 'avg_response_time_ms': self.avg_response_time_ms, 'error_rate': self.error_rate, 'circuit_breaker_trips': self.circui
+                t_breaker_trips, 'total_requests': self.total_requests, 'timestamp': self.timestamp}
+
 
 @dataclass
 class HealthAlert:
@@ -50,9 +54,9 @@ class HealthAlert:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'alert_id': self.alert_id,
-            'agent_id': self.agent_id,
-            'severity': self.severity.value,
-            'message': self.message,
-            'metrics': self.metrics.to_dict(),
-            'recommended_actions': self.recommended_actions,
-            'timestamp': self.timestamp}
+                'agent_id': self.agent_id,
+                'severity': self.severity.value,
+                'message': self.message,
+                'metrics': self.metrics.to_dict(),
+                'recommended_actions': self.recommended_actions,
+                'timestamp': self.timestamp}

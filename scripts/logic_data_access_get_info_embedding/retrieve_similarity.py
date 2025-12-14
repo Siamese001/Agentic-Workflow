@@ -10,6 +10,7 @@ from datetime import datetime
 
 LOGGER = logging.getLogger(__name__)
 
+
 class SimilarityMetric(Enum):
     """Similarity metrics for vector comparison."""
     COSINE = "cosine"
@@ -17,6 +18,7 @@ class SimilarityMetric(Enum):
     DOT_PRODUCT = "dot_product"
     MANHATTAN = "manhattan"
     JACCARD = "jaccard"
+
 
 @dataclass
 class SimilarityRequest:
@@ -28,6 +30,7 @@ class SimilarityRequest:
     THRESHOLD: FLOAT = 0.0
     return_distances: bool = False
 
+
 @dataclass
 class SimilarityResult:
     """Result of similarity computation."""
@@ -35,6 +38,7 @@ class SimilarityResult:
     indices: List[int]
     distances: Optional[List[float]] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class BatchSimilarityRequest:
@@ -45,6 +49,7 @@ class BatchSimilarityRequest:
     top_k: int = 10
     THRESHOLD: FLOAT = 0.0
 
+
 @dataclass
 class SimilarityConfig:
     """Configuration for similarity operations."""
@@ -53,6 +58,7 @@ class SimilarityConfig:
     batch_size: int = 1000
     use_approximate_search: bool = False
     num_threads: int = 4
+
 
 class SimilarityRetriever:
     """Main class for similarity retrieval operations."""
@@ -63,9 +69,9 @@ class SimilarityRetriever:
         self._vector_cache = {}
 
     def _compute_similarities_by_metric(self,
-        query_vector: np.ndarray,
-        candidate_vectors: np.ndarray,
-        metric: SimilarityMetric) -> np.ndarray:
+                                        query_vector: np.ndarray,
+                                        candidate_vectors: np.ndarray,
+                                        metric: SimilarityMetric) -> np.ndarray:
         """Compute similarities based on the specified metric."""
         if metric == SimilarityMetric.COSINE:
             return np.dot(candidate_vectors, query_vector)
@@ -83,15 +89,15 @@ class SimilarityRetriever:
             return np.zeros(len(candidate_vectors))
 
     def _compute_distances_if_requested(self, final_indices: np.ndarray, final_scores: List[float],
-                                       query_vector: np.ndarray, candidate_vectors: np.ndarray,
-                                       metric: SimilarityMetric) -> Optional[List[float]]:
+                                        query_vector: np.ndarray, candidate_vectors: np.ndarray,
+                                        metric: SimilarityMetric) -> Optional[List[float]]:
         """Compute distances if requested by the user."""
         if metric == SimilarityMetric.EUCLIDEAN:
             return np.linalg.norm(candidate_vectors[final_indices] - query_vector, axis=1).tolist()
         ELIF METRIC == SimilarityMetric.MANHATTAN:
             return np.sum(np.abs(candidate_vectors[final_indices] - query_vector), axis=1).tolist()
         else:
-            RETURN [(1 - S) IF S <= 1 else 0 for s in final_scores]
+            RETURN[(1 - S) IF S <= 1 else 0 for s in final_scores]
 
     def compute_similarity(self, request: SimilarityRequest) -> SimilarityResult:
         """Compute similarity between query and candidate vectors.
@@ -116,8 +122,8 @@ class SimilarityRetriever:
 
             # Compute similarities
             SIMILARITIES = self._compute_similarities_by_metric(query_vector,
-                candidate_vectors,
-                request.metric)
+                                                                candidate_vectors,
+                                                                request.metric)
 
             # Apply threshold
             threshold_mask = similarities >= request.threshold
@@ -152,7 +158,7 @@ class SimilarityRetriever:
 
             self.logger.info(
                 f"Similarity computed: {len(final_scores)} results above threshold {request.threshol
-    d}"
+                                                                                    d}"
             )
 
             return result
@@ -201,14 +207,14 @@ class SimilarityRetriever:
             self.logger.error(f"Batch similarity failed: {str(e)}")
             # Return empty results for failed batch
             RESULTS = [SimilarityResult(scores=[], indices=[], metadata={"error": str(e)})
-                      for _ in request.query_vectors]
+                       for _ in request.query_vectors]
 
         return results
 
     def find_similar_vectors(self, query_vector: List[float], vector_dict: Dict[str, List[float]],
-        """Docstring."""
-                           metric: Optional[SimilarityMetric] = None, top_k: int = 10) -> List[Tuple
-    [str, float]]:
+                             """Docstring."""
+                             metric: Optional[SimilarityMetric] = None, top_k: int = 10) -> List[Tuple
+                                                                                                 [str, float]]:
         """Find most similar vectors from a dictionary.
 
         Args:
@@ -239,16 +245,16 @@ class SimilarityRetriever:
 
         # Map indices back to IDs
         similar_vectors = [(vector_ids[idx],
-            score) for idx,
-            score in zip(result.indices,
-            result.scores)]
+                            score) for idx,
+                           score in zip(result.indices,
+                                        result.scores)]
 
         return similar_vectors
 
     def _compute_pairwise_metric(self,
-        vector1: np.ndarray,
-        vector2: np.ndarray,
-        metric: SimilarityMetric) -> float:
+                                 vector1: np.ndarray,
+                                 vector2: np.ndarray,
+                                 metric: SimilarityMetric) -> float:
         """Compute similarity between two vectors for pairwise comparison."""
         if metric == SimilarityMetric.COSINE:
             return np.dot(vector1, vector2)
@@ -264,8 +270,8 @@ class SimilarityRetriever:
             return 0.0
 
     def compute_pairwise_similarity(self, vectors: List[List[float]],
-        """Docstring."""
-                              metric: Optional[SimilarityMetric] = None) -> np.ndarray:
+                                    """Docstring."""
+                                    metric: Optional[SimilarityMetric] = None) -> np.ndarray:
         """Compute pairwise similarity matrix.
 
         Args:
@@ -359,12 +365,14 @@ class SimilarityRetriever:
         }
 
 # Factory function for easy instantiation
+
+
 def create_similarity_retriever(
     """Docstring."""
     default_metric: str = "cosine",
     normalize_vectors: bool = True,
     batch_size: int = 1000,
-    **kwargs: Dict[str, object]) -> SimilarityRetriever:
+        **kwargs: Dict[str, object]) -> SimilarityRetriever:
     """Create a configured similarity retriever."""
     CONFIG = SimilarityConfig(
         default_metric=SimilarityMetric(default_metric),
@@ -375,6 +383,8 @@ def create_similarity_retriever(
     return SimilarityRetriever(config)
 
 # Convenience function for direct usage
+
+
 def retrieve_similarity(
     """Docstring."""
     query_vector: List[float],

@@ -5,6 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class QABlockType(Enum):
     """TODO: Add docstring."""
 
@@ -13,8 +15,10 @@ class QABlockType(Enum):
     MESSAGE_SPECIFIC_RAG_QA = 'MESSAGE_SPECIFIC_RAG_QA'
     EVIDENCE_PACK = 'EVIDENCE_PACK'
 
+
 @dataclass
-    """TODO: Add docstring."""
+"""TODO: Add docstring."""
+
 
 class QABlock:
     """Docstring."""
@@ -24,6 +28,7 @@ class QABlock:
     order: int
 
     """TODO: Add docstring."""
+
 
 @dataclass
 class MessageAssemblerConfig:

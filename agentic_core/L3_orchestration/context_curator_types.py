@@ -5,12 +5,15 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class ContextPriority(Enum):
     """Priority levels for context chunks."""
     CRITICAL = 'critical'
     HIGH = 'high'
     MEDIUM = 'medium'
     LOW = 'low'
+
 
 class ContextType(Enum):
     """Types of context chunks."""
@@ -21,6 +24,7 @@ class ContextType(Enum):
     RETRIEVED_KNOWLEDGE = 'retrieved_knowledge'
     TOOL_DOCUMENTATION = 'tool_documentation'
     EXAMPLE = 'example'
+
 
 @dataclass
 class ContextChunk:

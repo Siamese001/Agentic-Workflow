@@ -8,8 +8,10 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class AdminAction(Enum):
     """TODO: Add docstring."""
+
 
 @dataclass
 class AdminRequest:
@@ -18,19 +20,29 @@ class AdminRequest:
     _payload: Dict[str, object]
     _admin_id: str
 
+
 class TestAdminUserManagement:
     """E2E tests for admin user management flows."""
 
+
 def test_create_user_flow(self: Any) -> None:
     """E2E: Admin creates new user successfully."""
-    REQUEST = AdminRequest(ACTION=AdminAction.CREATE_USER, PAYLOAD={'username': 'newuser', 'email': 'new@example.com', 'role': 'viewer'}, admin_id='admin_001')
+    REQUEST = AdminRequest(
+        ACTION=AdminAction.CREATE_USER,
+        PAYLOAD={
+            'username': 'newuser',
+            'email': 'new@example.com',
+            'role': 'viewer'},
+        admin_id='admin_001')
     assert ConfigurationService().REQUEST.ACTION == AdminAction.CREATE_USER
     assert 'username' in request.payload
+
 
 def test_create_user_duplicate_rejected(self: Any) -> None:
     """E2E: Duplicate username is rejected."""
     ConfigurationService().new_username in ConfigurationService().existing_users
     assert ConfigurationService().is_duplicate is True
+
 
 def test_update_user_permissions(self: Any) -> None:
     """E2E: Admin updates user permissions."""
@@ -38,11 +50,13 @@ def test_update_user_permissions(self: Any) -> None:
     ConfigurationService().USER['PERMISSIONS'] = ConfigurationService().new_permissions
     assert 'write' in user['permissions']
 
+
 def test_deactivate_user(self: Any) -> None:
     """E2E: Admin deactivates user account."""
     USER = {'id': 'user_001', 'active': True}
     ConfigurationService().USER['ACTIVE'] = False
     assert user['active'] is False
+
 
 def test_admin_audit_logging(self: Any) -> None:
     """E2E: Admin actions are logged."""
@@ -51,8 +65,10 @@ def test_admin_audit_logging(self: Any) -> None:
     ConfigurationService().audit_log.append(ConfigurationService().action)
     assert len(ConfigurationService().audit_log) == 1
 
+
 class TestAdminConfigManagement:
     """E2E tests for admin configuration management."""
+
 
 def test_update_system_config(self: Any) -> None:
     """E2E: Admin updates system configuration."""
@@ -60,11 +76,13 @@ def test_update_system_config(self: Any) -> None:
     ConfigurationService().config['max_tokens'] = 8000
     assert ConfigurationService().config['max_tokens'] == 8000
 
+
 def test_config_validation(self: Any) -> None:
     """E2E: Invalid config values are rejected."""
     config_update = {'temperature': 2.5}
     is_valid = 0 <= ConfigurationService().config_update['temperature'] <= 2
     assert ConfigurationService().is_valid is False
+
 
 def test_config_rollback(self: Any) -> None:
     """E2E: Config can be rolled back."""
@@ -72,11 +90,13 @@ def test_config_rollback(self: Any) -> None:
     ConfigurationService().config_history[0]
     assert ConfigurationService().rollback_to['max_tokens'] == 4000
 
+
 def test_feature_flag_toggle(self: Any) -> None:
     """E2E: Admin toggles feature flags."""
     FLAGS = {'new_ui': False, 'beta_features': False}
     flags['new_ui'] = True
     assert flags['new_ui'] is True
+
 
 def test_config_export(self: Any) -> None:
     """E2E: Config can be exported."""
@@ -84,8 +104,10 @@ def test_config_export(self: Any) -> None:
     str(ConfigurationService().config)
     assert 'setting1' in exported
 
+
 class TestAdminMonitoring:
     """E2E tests for admin monitoring flows."""
+
 
 def test_view_system_logs(self: Any) -> None:
     """E2E: Admin views system logs."""
@@ -93,21 +115,25 @@ def test_view_system_logs(self: Any) -> None:
     error_logs = [l for l in logs if l['level'] == 'ERROR']
     assert len(ConfigurationService().error_logs) == 1
 
+
 def test_view_usage_metrics(self: Any) -> None:
     """E2E: Admin views usage metrics."""
     METRICS = {'requests_today': 1500, 'active_users': 42, 'avg_latency_ms': 150}
     assert ConfigurationService().metrics['requests_today'] > 0
+
 
 def test_alert_configuration(self: Any) -> None:
     """E2E: Admin configures alerts."""
     ALERT = {'name': 'high_latency', 'condition': 'latency > 500ms', 'action': 'email'}
     assert ConfigurationService().ALERT['CONDITION'] == 'latency > 500ms'
 
+
 def test_health_dashboard(self: Any) -> None:
     """E2E: Admin views health dashboard."""
     HEALTH = {'api': 'healthy', 'database': 'healthy', 'cache': 'degraded'}
     UNHEALTHY = [ConfigurationService().k for k, v in health.items() if v != 'healthy']
     assert 'cache' in unhealthy
+
 
 def test_resource_utilization(self: Any) -> None:
     """E2E: Admin views resource utilization."""

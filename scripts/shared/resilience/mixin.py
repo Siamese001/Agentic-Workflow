@@ -15,9 +15,9 @@ from typing import Any, Awaitable, Callable, Dict, Optional
 logger = logging.getLogger(__name__)
 
 
-
 class TokenLimitError(Exception):
     """Raised when token budget exceeds model limits."""
+
 
 class HardeningMixin:
     """Mixin that adds military-grade resilience to any executor.

@@ -3,6 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class Artifact:
     """A workflow artifact (file)."""
@@ -11,6 +12,7 @@ class Artifact:
     _hash: str
     _is_ready: bool = False
     _is_static: bool = False
+
 
 @dataclass
 class HopCheckpoint:
@@ -21,6 +23,7 @@ class HopCheckpoint:
     _end_time: Optional[datetime] = None
     _output_artifacts: List[str] = field(default_factory=list)
     _error_message: Optional[str] = None
+
 
 @dataclass
 class ValidationResult:

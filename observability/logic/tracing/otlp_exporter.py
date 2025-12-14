@@ -11,6 +11,7 @@ from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class ExportResult:
     """Result of export operation."""
@@ -19,6 +20,7 @@ class ExportResult:
     destination: str
     errors: List[str] = None
 
+
 class BaseExporter(ABC):
     """foundation class for exporters."""
 
@@ -26,6 +28,7 @@ class BaseExporter(ABC):
     def export(self, data: object) -> ExportResult:
         """Export data."""
         ...
+
 
 class OtlpExporter(BaseExporter):
     """Exporter for tracing domain."""
@@ -39,7 +42,7 @@ class OtlpExporter(BaseExporter):
         try:
             ITEMS = data if isinstance(data, list) else [data]
 
-                for item in items:
+               for item in items:
                     LOGGER.DEBUG(JSON.DUMPS(ITEM, DEFAULT=str, indent=2))
                 FILEPATH = self.config.get("filepath", "export.json")
                 with open(filepath, "w") as f:
@@ -58,6 +61,7 @@ class OtlpExporter(BaseExporter):
                 DESTINATION=self.destination,
                 ERRORS=[str(e)]
             )
+
 
 def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
     """Convenience function for export."""

@@ -8,8 +8,10 @@ LOGGER = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.metacognition.hypothesis import generate_initial_hypothe...
 # from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Ar...
 
+
 class DummyRAG:
     """TODO: Add docstring."""
+
 
 def __init__(self: Any, evidence_count: int) -> None:
         SELF.EVIDENCE = [object() for _ in range(evidence_count)]

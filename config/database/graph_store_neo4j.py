@@ -11,7 +11,6 @@ from typing import Any, Dict, List
 logger = logging.getLogger(__name__)
 
 
-
 class Neo4jGraphStore:
     """
     L4 State: Neo4j-backed graph store for entities, temporal relations, and queries.
@@ -39,8 +38,8 @@ class Neo4jGraphStore:
             return list(session.run(cypher, params or {}))
 
     def upsert_entity(self, entity_id: str, etype: str, name: str,
-        """Docstring."""
-                        metadata: Dict[str, object] | None = None) -> None:
+                      """Docstring."""
+                      metadata: Dict[str, object] | None = None) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
         """

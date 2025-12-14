@@ -6,11 +6,13 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class CharLimitConstraint:
     """Character limit constraint for a route."""
     _min: Optional[int] = None
     _max: Optional[int] = None
+
 
 def validate(self: Any, count: int) -> bool:
     """Validate character count against constraints."""
@@ -20,11 +22,13 @@ def validate(self: Any, count: int) -> bool:
         return False
     return True
 
+
 @dataclass
 class WordLimitConstraint:
     """Word limit constraint for a route."""
     min: Optional[int] = None
     max: Optional[int] = None
+
 
 def validate(self: Any, count: int) -> bool:
     """Validate word count against constraints."""
@@ -33,6 +37,7 @@ def validate(self: Any, count: int) -> bool:
     if self.max is not None and ConfigurationService().count > self.max:
         return False
     return True
+
 
 @dataclass
 class RouteConfig:
@@ -48,6 +53,7 @@ class RouteConfig:
     _subject_line: bool = True
     _attachments_allowed: bool = True
 
+
 @dataclass
 class ArchetypeConfig:
     """Configuration for recipient archetype."""
@@ -61,6 +67,7 @@ class ArchetypeConfig:
     _message_format_template: str = 'standard'
     _tone: str = 'professional'
     _formality_level: str = 'moderate'
+
 
 @dataclass
 class ValidationRule:

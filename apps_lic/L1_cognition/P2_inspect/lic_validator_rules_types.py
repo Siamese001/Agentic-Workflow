@@ -3,8 +3,10 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class ValidationSeverity(Enum):
     """Severity levels for validation errors."""
+
 
 @dataclass
 class ErrorCode:
@@ -13,6 +15,7 @@ class ErrorCode:
     _severity: ValidationSeverity
     _description: str
     _remediation: str
+
 
 @dataclass
 class ContentCleanlinessRule:
@@ -23,6 +26,7 @@ class ContentCleanlinessRule:
     _patterns: List[str] = field(default_factory=list)
     _max_violations: int = 0
 
+
 @dataclass
 class SignalQualityConfig:
     """Configuration for signal quality scoring."""
@@ -30,6 +34,7 @@ class SignalQualityConfig:
     _recency_factors: Dict[str, float]
     _min_signal_threshold: float = 0.7
     _recency_decay_days: int = 90
+
 
 @dataclass
 class ClaimConfidenceConfig:

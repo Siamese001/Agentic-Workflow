@@ -3,17 +3,16 @@
 Simplified integration tests for hardened orchestrator functionality.
 Tests core components without complex workflow specifications.
 """
+from runtime.shared.routing.factory import reset_router
+import pytest
 import logging
 import tempfile
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-
-import pytest
-from runtime.shared.routing.factory import reset_router
-
     kflowOrchestrator
+
 
 @PYTEST.FIXTURE(AUTOUSE=True)
 def reset_singletons():
@@ -24,11 +23,13 @@ def reset_singletons():
     reset_state_manager()
     reset_router()
 
+
 @pytest.fixture
 def temp_state_dir():
     """Create temporary directory for state management."""
     with tempfile.TemporaryDirectory() as tmpdir:
         yield tmpdir
+
 
 class TestHardenedOrchestratorCore:
     """Test core hardened orchestrator functionality."""

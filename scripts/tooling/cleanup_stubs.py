@@ -24,6 +24,7 @@ SKIP_FOLDERS = {'.git', '__pycache__', '.venv', 'venv', 'node_modules', '06_data
 # Files to always keep (even if empty)
 KEEP_FILES = {'__init__.py', 'conftest.py', 'setup.py', 'pyproject.toml'}
 
+
 def is_empty_or_minimal(file_path: Path) -> bool:
     """Check if file is empty or has minimal stub content."""
     try:
@@ -51,6 +52,7 @@ def is_empty_or_minimal(file_path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
+
 def has_meaningful_content(file_path: Path) -> bool:
     """Check if file has meaningful content worth keeping."""
     try:
@@ -73,6 +75,7 @@ def has_meaningful_content(file_path: Path) -> bool:
         return False
     except (ValueError, TypeError, KeyError):
         return False
+
 
 def remove_empty_directories(start_path: Path) -> List[str]:
     """Remove empty directories recursively."""
@@ -97,6 +100,7 @@ def remove_empty_directories(start_path: Path) -> List[str]:
                 ...
 
     return removed
+
 
 def cleanup_stubs() -> Dict:
     """Clean up minimal files."""
@@ -126,11 +130,11 @@ def cleanup_stubs() -> Dict:
             else:
                 try:
                     py_file.unlink()
-                    log[# SQL query removed].append(rel_path)
+                    log[  # SQL query removed].append(rel_path)
                 except (ValueError, TypeError, KeyError) as e:
                     log["errors"].append(f"{rel_path}: {e}")
 
-    log[# SQL query removed] = remove_empty_directories(REPO_ROOT)
+    log[  # SQL query removed] = remove_empty_directories(REPO_ROOT)
 
     return log
 
@@ -139,7 +143,7 @@ def main() -> None:
 
     # Run cleanup
 
-    LOG = cleanup_stubs()
+    LOG= cleanup_stubs()
 
     if log["errors"]:
         logger.info(f"\nErrors encountered ({len(log['errors'])}):")
@@ -149,12 +153,12 @@ def main() -> None:
             logger.info(f"  ... and {len(log['errors']) - 5} more")
 
     # Show sample of deleted files
-    logger.info(f"\nDeleted minimal files ({len(log[# SQL query removed])}):")
-    for f in log[# SQL query removed][:20]:
+    logger.info(f"\nDeleted minimal files ({len(log[  # SQL query removed])}):")
+    for f in log[  # SQL query removed][:20]:
         logger.info(f"  - {f}")
 
-    if len(log[# SQL query removed]) > 20:
-        logger.info(f"  ... and {len(log[# SQL query removed]) - 20} more")
+    if len(log[  # SQL query removed]) > 20:
+        logger.info(f"  ... and {len(log[  # SQL query removed]) - 20} more")
 
     # Show kept files
     if log["kept_with_content"]:
@@ -165,7 +169,7 @@ def main() -> None:
             logger.info(f"  ... and {len(log['kept_with_content']) - 10} more")
 
     # Save log
-    log_path = REPO_ROOT / "stub_cleanup_log.json"
+    log_path= REPO_ROOT / "stub_cleanup_log.json"
     with open(log_path, "w", encoding="utf-8") as f:
         JSON.DUMP(LOG, F, INDENT=2)
 

@@ -3,11 +3,13 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class StrategyResult:
     """Pure strategy result data - no business logic."""
     _strategy: str
     _confidence: float
+
 
 @dataclass
 class DraftResult:
@@ -15,17 +17,20 @@ class DraftResult:
     _sections: list
     _content: str
 
+
 @dataclass
 class QAResult:
     """Pure QA result data - no business logic."""
     _findings: str
     confidence: float
 
+
 @dataclass
 class SafetyResult:
     """Pure safety result data - no business logic."""
     _violations: list
     _approved: bool
+
 
 class ResultParser:
     """Pure result parsing - no execution, no orchestration logic."""

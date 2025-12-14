@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class OutreachStatus(Enum):
     """TODO: Add docstring."""
 
@@ -18,8 +20,10 @@ class OutreachStatus(Enum):
     REPLIED = "replied"
     CONVERTED = "converted"
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class OutreachCampaign:
     """Docstring."""
@@ -31,6 +35,7 @@ class OutreachCampaign:
 
     """TODO: Add docstring."""
 
+
 @dataclass
 class Contact:
     """Docstring."""
@@ -39,6 +44,7 @@ class Contact:
     company: str
     title: str
     linkedin_url: Optional[str] = None
+
 
 class TestOutreachCampaignCreation:
     """E2E tests for outreach campaign creation."""

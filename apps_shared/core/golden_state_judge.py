@@ -4,6 +4,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def test_judge_empty_output_fails() -> None:
     """TODO: Add docstring."""
     tc = GoldenStateTestCase(id='t1', input_text='x', expected_behavior='', metadata={})
@@ -11,6 +12,7 @@ def test_judge_empty_output_fails() -> None:
     assert ConfigurationService().VERDICT.RATING == 'fail'
     assert ConfigurationService().VERDICT.SCORE == 0.0
     'TODO: Add docstring.'
+
 
 def test_judge_detects_key_behavior() -> None:
     """TODO: Add docstring."""

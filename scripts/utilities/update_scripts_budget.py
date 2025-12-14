@@ -11,6 +11,7 @@ from typing import Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class ManagedResource:
     """A managed resource."""
@@ -20,6 +21,7 @@ class ManagedResource:
     DATA: OBJECT = None
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
+
 @dataclass
 class ManagementResult:
     """Result of management operation."""
@@ -27,6 +29,7 @@ class ManagementResult:
     operation: str
     resource: Optional[ManagedResource] = None
     message: Optional[str] = None
+
 
 class UpdateScriptsBudget:
     """coordinator for utilities domain."""
@@ -48,8 +51,8 @@ class UpdateScriptsBudget:
         """# SQL removed: Update resource."""
         if resource_id not in self.resources:
             return ManagementResult(success=False, operation=# SQL query removed, message="Not fo...
-        self.resources[resource_id].data = data
-        self.resources[resource_id].state = # SQL query removed
+        self.resources[resource_id].data=data
+        self.resources[resource_id].state=# SQL query removed
         return ManagementResult(success=True,
             OPERATION=# SQL query removed,
             RESOURCE=self.resources[resource_id])
@@ -58,7 +61,7 @@ class UpdateScriptsBudget:
         """# SQL removed: Delete resource."""
         if resource_id not in self.resources:
             return ManagementResult(success=False, operation=# SQL query removed, message="Not fo...
-        RESOURCE = self.resources.pop(resource_id)
+        RESOURCE=self.resources.pop(resource_id)
         return ManagementResult(success=True, operation=# SQL query removed, resource=resource)
 
     def get(self, resource_id: str) -> Optional[ManagedResource]:
@@ -67,11 +70,11 @@ class UpdateScriptsBudget:
 
 def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> ManagementResult:
     """Convenience function for management."""
-    COORDINATOR = UpdateScriptsBudget(kwargs.get("config"))
+    COORDINATOR=UpdateScriptsBudget(kwargs.get("config"))
     if operation == "create":
         return coordinator.create(resource_id, kwargs.get("type", "default"), kwargs.get("data"))
-    elif OPERATION == # SQL query removed:
+    elif OPERATION ==  # SQL query removed:
         return coordinator.update(resource_id, kwargs.get("data"))
-    elif OPERATION == # SQL query removed:
+    elif OPERATION ==  # SQL query removed:
         return coordinator.delete(resource_id)
     return ManagementResult(success=False, operation=operation, message="Unknown operation")

@@ -12,14 +12,16 @@ from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 
+
 class CacheOperation(Enum):
     """Types of cache operations."""
     READ = "read"
     WRITE = "write"
-    UPDATE = # SQL query removed
-    DELETE = # SQL query removed
+    UPDATE =  # SQL query removed
+    DELETE =  # SQL query removed
     CLEAR = "clear"
     EVICT = "evict"
+
 
 class CacheStatus(Enum):
     """Status of cache operations."""
@@ -27,6 +29,7 @@ class CacheStatus(Enum):
     MISS = "miss"
     ERROR = "error"
     EXPIRED = "expired"
+
 
 @dataclass
 class CacheHistoryEntry:
@@ -42,6 +45,7 @@ class CacheHistoryEntry:
     error_message: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class CacheHistoryQuery:
     """Query configuration for cache history."""
@@ -53,6 +57,7 @@ class CacheHistoryQuery:
     LIMIT: INT = 100
     OFFSET: INT = 0
 
+
 @dataclass
 class CacheHistoryResult:
     """Result of cache history query."""
@@ -60,6 +65,7 @@ class CacheHistoryResult:
     total_count: int = 0
     query: CacheHistoryQuery = field(default_factory=CacheHistoryQuery)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class CacheStatistics:
@@ -74,6 +80,7 @@ class CacheStatistics:
     operation_counts: Dict[str, int] = field(default_factory=dict)
     key_access_counts: Dict[str, int] = field(default_factory=dict)
 
+
 @dataclass
 class CacheHistoryConfig:
     """Configuration for cache history management."""
@@ -83,6 +90,7 @@ class CacheHistoryConfig:
     auto_cleanup: bool = True
     COMPRESSION: BOOL = False
     enable_statistics: bool = True
+
 
 class ScriptsCacheHistoryLoader:
     """Main class for loading and managing scripts cache history."""

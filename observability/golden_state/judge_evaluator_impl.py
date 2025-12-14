@@ -4,7 +4,10 @@ import logging
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .judge_evaluator_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .judge_evaluator_types import *  # Star import removed
+
 
 class JudgeEvaluator:
     """LM-as-a-Judge evaluator for output quality assessment.
@@ -15,10 +18,10 @@ class JudgeEvaluator:
 
     def __init__(self,
         llm_client: Optional[Callable[[str],
-        Awaitable[str]]]=None,
-        criteria: Optional[List[JudgmentCriterion]]=None,
-        pass_threshold: float=0.7,
-        enable_logging: bool=True):
+        Awaitable[str]]] = None,
+        criteria: Optional[List[JudgmentCriterion]] = None,
+        pass_threshold: float = 0.7,
+        enable_logging: bool = True):
         """Initialize judge evaluator.
 
         Args:
@@ -39,9 +42,9 @@ class JudgeEvaluator:
     async def evaluate(self,
         """Docstring."""
         output: str,
-        expected: Optional[str]=None,
+        expected: Optional[str] = None,
         context: Optional[Dict[str,
-        Any]]=None) -> JudgeEvaluationResult:
+        Any]] = None) -> JudgeEvaluationResult:
         """Evaluate output quality.
 
         Args:

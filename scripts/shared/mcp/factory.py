@@ -9,6 +9,7 @@ from typing import Any, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
+
 def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpec]:
     """Validate and normalize MCP client specifications.
 
@@ -54,6 +55,7 @@ def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpe
         specs.append(spec)
 
     return specs
+
 
 def instantiate_mcp_client(spec: MCPClientSpec) -> object:
     """Create an MCP client instance from a validated spec.
@@ -153,6 +155,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
             client_name=spec.name,
             PROVIDER=spec.provider,
         ) from exc
+
 
 def create_mcp_registry(
     """Docstring."""

@@ -3,17 +3,17 @@
 Integration tests for RAG Pipeline
 Tests RAG retrieval, augmentation, and generation behaviors
 """
+import pytest
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
 # Import actual RAG components when available
 try:
 except ImportError:
     RAGProvider = ProviderRegistry = CompanyResearchExecutor = Mock
+
 
 class TestRAGPipelineIntegration:
     """Test RAG pipeline integration contracts"""

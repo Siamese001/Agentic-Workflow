@@ -11,6 +11,7 @@ from typing import Dict, List, Optional, Union
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class ExecutionResult:
     """Standardized operation result container."""
@@ -18,6 +19,7 @@ class ExecutionResult:
     data: Optional[Union[str, int, float, bool, List, Dict]] = None
     metadata: Dict[str, Union[str, int, float, bool, List, Dict]] = field(default_factory=dict)
     error_message: Optional[str] = None
+
 
 class InjectionPatterns:
     """
@@ -28,25 +30,25 @@ class InjectionPatterns:
     """
 
     def __init__(self,
-        config: Optional[Dict[str,
-        Union[str,
-        int,
-        float,
-        bool,
-        List,
-        Dict]]] = None):
+                 config: Optional[Dict[str,
+                                       Union[str,
+                                             int,
+                                             float,
+                                             bool,
+                                             List,
+                                             Dict]]] = None):
         SELF.CONFIG = config or {}
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     def process(self,
-        """Docstring."""
-        payload: Union[str,
-        int,
-        float,
-        bool,
-        List,
-        Dict],
-        context: Optional[Dict] = None) -> ExecutionResult:
+                """Docstring."""
+                payload: Union[str,
+                               int,
+                               float,
+                               bool,
+                               List,
+                               Dict],
+                context: Optional[Dict] = None) -> ExecutionResult:
         """
         Execute the primary logic for this module.
 
@@ -69,20 +71,21 @@ class InjectionPatterns:
             return ExecutionResult(success=False, error_message="Internal System Error")
 
     def _execute_logic(self,
-        data: Union[str,
-        int,
-        float,
-        bool,
-        List,
-        Dict],
-        context: Optional[Dict]) -> Union[str,
-        int,
-        float,
-        bool,
-        List,
-        Dict]:
+                       data: Union[str,
+                                   int,
+                                   float,
+                                   bool,
+                                   List,
+                                   Dict],
+                       context: Optional[Dict]) -> Union[str,
+                                                         int,
+                                                         float,
+                                                         bool,
+                                                         List,
+                                                         Dict]:
         """Internal execution executor to be implemented or extended."""
         return data
+
 
 def run_process(data: Union[str, int, float, bool, List, Dict]) -> ExecutionResult:
     """Module-level entry point."""

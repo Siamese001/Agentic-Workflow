@@ -5,6 +5,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def test_microvm_create_exec_teardown_emits_events(self: Any) -> None:
     """Test that microVM lifecycle operations emit appropriate events."""
     clear_events()

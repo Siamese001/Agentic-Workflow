@@ -14,6 +14,7 @@ from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 
+
 class AirlockProtocol:
     """
     Implements human authorization checkpoints for high-risk tool calls.
@@ -87,9 +88,9 @@ class AirlockProtocol:
         logger.info(f"AirlockProtocol initialized with threshold={risk_threshold}")
 
     async def acquire_permission(self,
-                                tool_name: str,
-                                args: Dict,
-                                risk_score: Optional[int] = None) -> bool:
+                                 tool_name: str,
+                                 args: Dict,
+                                 risk_score: Optional[int] = None) -> bool:
         """
         Request permission to execute a potentially dangerous action.
 
@@ -200,13 +201,13 @@ class AirlockProtocol:
             except (json.JSONDecodeError, IOError):
                 # Ticket file may be corrupted or unreadable, continue waiting
 
-            # Wait before next check
+                # Wait before next check
             await asyncio.sleep(5)
 
     def _move_ticket(self,
-                    ticket_path: Path,
-                    destination: Path,
-                    reason: Optional[str] = None):
+                     ticket_path: Path,
+                     destination: Path,
+                     reason: Optional[str] = None):
         """
         Move ticket to destination directory with optional reason.
 
@@ -287,6 +288,8 @@ class AirlockProtocol:
             raise ValueError(f"Ticket {ticket_id} not found")
 
 # Utility functions for CLI/web interface
+
+
 def create_airlock_interface():
     """Create a simple CLI interface for managing airlock requests."""
     import argparse
@@ -323,6 +326,7 @@ def create_airlock_interface():
         REASON = args.reason or "Rejected via CLI"
         airlock.reject_request(args.ticket_id, reason)
         logger.info(f"Rejected ticket {args.ticket_id}: {reason}")
+
 
 if __name__ == "__main__":
     create_airlock_interface()

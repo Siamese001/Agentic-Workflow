@@ -4,6 +4,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def test_run_in_ephemeral_vm_basic() -> None:
     """TODO: Add docstring."""
     REQ = ToolCallRequest(tool_name='echo', args=['x'], timeout_s=1.0)

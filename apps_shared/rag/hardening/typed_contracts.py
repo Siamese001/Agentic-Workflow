@@ -53,6 +53,7 @@ def test_core_models_have_v1_schema_version_defaults() -> None:
     )
     assert l2_result.schema_version == "v1"
 
+
 def test_validate_schema_version_accepts_matching_models() -> None:
     """TODO: Add docstring."""
 
@@ -67,9 +68,10 @@ def test_validate_schema_version_accepts_matching_models() -> None:
     # Should not raise for matching version.
     validate_schema_version(bundle, model_type=WorkflowPlanBundle)
 
+
 def test_validate_schema_version_rejects_mismatched_version() -> None:
     """Test that validate_schema_version rejects mismatched versions."""
-        """TODO: Add docstring."""
+    """TODO: Add docstring."""
 
     class DummyModel(BaseModel):
         """Docstring."""

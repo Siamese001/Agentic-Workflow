@@ -11,12 +11,14 @@ from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class StepStatus(Enum):
     """StepStatus implementation."""
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
+
 
 @dataclass
 class StepResult:
@@ -27,12 +29,14 @@ class StepResult:
     error: Optional[str] = None
     duration_ms: float = 0.0
 
+
 @dataclass
 class OrchestrationResult:
     """Result of orchestration."""
     success: bool
     steps: List[StepResult] = field(default_factory=list)
     final_output: object = None
+
 
 class CoordinateObservabilityOperations:
     """Orchestrator for operations domain."""
@@ -43,10 +47,10 @@ class CoordinateObservabilityOperations:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def add_step(self,
-        """Docstring."""
-        name: str,
-        executor: Callable,
-        dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
+                 """Docstring."""
+                 name: str,
+                 executor: Callable,
+                 dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
         """Add a step to orchestration."""
         self.steps.append({"name": name, "executor": executor, "dependencies": dependencies or []})
         return self
@@ -86,10 +90,11 @@ class CoordinateObservabilityOperations:
             final_output=context["outputs"].get(self.steps[-1]["name"]) if self.steps else None
         )
 
+
 def orchestrate(steps: List[Dict],
-    """Docstring."""
-    initial_input: object = None,
-    config: Optional[Dict] = None) -> OrchestrationResult:
+                """Docstring."""
+                initial_input: object = None,
+                config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     ORCH = CoordinateObservabilityOperations(config)
     for step in steps:

@@ -6,6 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, float]) -> bool:
     """Return True if the experiment meets or exceeds baseline.
 
@@ -28,6 +30,7 @@ def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, flo
             return False
 
     return True
+
 
 def gate_against_baseline(
     """Docstring."""

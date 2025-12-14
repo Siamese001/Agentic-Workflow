@@ -1,4 +1,5 @@
 """Unit tests for runtime/shared/multi_provider_clients.py"""
+import pytest
 import logging
 import os
 from unittest.mock import MagicMock, patch
@@ -6,15 +7,14 @@ from unittest.mock import MagicMock, patch
 logger = logging.getLogger(__name__)
 
 
-import pytest
-from runtime.shared.multi_provider_clients import (=, __name__, import, logger,
+from runtime.shared.multi_provider_clients import (=, __name__, import , logger,
                                                    logging, logging.getLogger)
 
-    Provider, get_api_key, get_client, reset_all_clients,
-    ProviderConfig, DEFAULT_MAX_RETRIES
+Provider, get_api_key, get_client, reset_all_clients,
+ProviderConfig, DEFAULT_MAX_RETRIES
 )
 
-class TestProviderEnum:
+    class TestProviderEnum:
     """TODO: Add docstring."""
 
     def test_provider_enum_values(self):
@@ -52,7 +52,7 @@ class TestProviderEnum:
             assert get_api_key(Provider.ANTHROPIC) == get_api_key(Provider.ANTHROPIC)
 
 
-class TestGetClient:
+    class TestGetClient:
     """Docstring."""
     def test_singleton(self):
         """Docstring."""
@@ -75,7 +75,7 @@ class TestGetClient:
                 get_api_key(Provider.OPENAI)
                 get_client(Provider.OPENAI)
 
-class TestProviderConfig:
+    class TestProviderConfig:
     """Docstring."""
     def test_defaults(self):
         """Docstring."""

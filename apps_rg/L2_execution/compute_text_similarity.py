@@ -23,6 +23,7 @@ try:
 except ImportError:
     SKLEARN_AVAILABLE = False
 
+
 class TextSimilarityCalculator:
     """Calculate TF-IDF cosine similarity between texts."""
 

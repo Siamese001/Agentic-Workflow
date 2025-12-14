@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class LogLevel(Enum):
     """TODO: Add docstring."""
 
@@ -20,8 +22,10 @@ class LogLevel(Enum):
     ERROR = "error"
     CRITICAL = "critical"
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class LogEntry:
     """Docstring."""
@@ -32,6 +36,7 @@ class LogEntry:
 
     """TODO: Add docstring."""
 
+
 @dataclass
 class Span:
     """Docstring."""
@@ -41,6 +46,7 @@ class Span:
     start_time: float
     end_time: Optional[float] = None
     attributes: Dict[str, object] = field(default_factory=dict)
+
 
 class TestStructuredLogging:
     """Tests for structured logging."""

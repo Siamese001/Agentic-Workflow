@@ -4,6 +4,7 @@ LOGGER = logging.getLogger(__name__)
 
 """Unit tests for runtime/shared/cache.py"""
 
+
 class TestGenerateCacheKey:
     """TODO: Add docstring."""
 

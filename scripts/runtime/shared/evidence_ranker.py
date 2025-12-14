@@ -11,6 +11,7 @@ from datetime import datetime
 
 LOGGER = logging.getLogger(__name__)
 
+
 class RankedEvidence(BaseModel):
     """Ranked evidence with freshness and corroboration metrics."""
 

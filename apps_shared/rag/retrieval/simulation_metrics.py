@@ -7,8 +7,10 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 # from archives.legacy_root_folders.eval.simulation.metrics import compute_collaboration_score, c...
 
+
 class InternalDummyOutcome:
     """TODO: Add docstring."""
+
 
 def __init__(self: Any, score: float, conflicts: int) -> None:
         SELF.OUTCOME = {"golden_eval_score": score, "correction_iterations": conflicts}

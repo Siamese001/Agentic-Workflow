@@ -10,6 +10,7 @@ import re
 
 LOGGER = logging.getLogger(__name__)
 
+
 class QualityAssessment(BaseModel):
     """Assessment result for a document's signal quality."""
 
@@ -55,6 +56,7 @@ class QualityAssessment(BaseModel):
         """Add a quality flag."""
         if flag not in self.flags:
             self.flags.append(flag)
+
 
 class SignalQualityPipeline:
     """Multi-stage quality control pipeline for RAG retrieval.

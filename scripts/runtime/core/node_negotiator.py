@@ -14,6 +14,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class NegotiationMessage(BaseModel):
     """A message in the negotiation protocol."""
     message_id: str = Field(default_factory=lambda: str(uuid.uuid4()))

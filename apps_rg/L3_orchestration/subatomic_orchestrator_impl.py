@@ -1,17 +1,18 @@
 """Implementation for subatomic_orchestrator."""
 
+import logging
 from typing import Any, Dict, List, Optional
 
 
 class SubatomicOrchestrator:
     """Docstring."""
-import logging
+
 
 LOGGER = logging.getLogger(__name__)
 
     """Orchestrator that builds and executes dynamic DAGs of functional agents."""
 
-    def __init__(self, registry: Optional[AgentRegistry]=None):
+    def __init__(self, registry: Optional[AgentRegistry] = None):
         """Initialize the orchestrator.
 
         Args:

@@ -1,4 +1,5 @@
 """E2E tests for resume flows - resume generation and optimization workflows."""
+import pytest
 import logging
 import re
 from dataclasses import dataclass
@@ -8,9 +9,9 @@ from typing import Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
 LOGGER = logging.getLogger(__name__)
+
+
 class ResumeSection(Enum):
     """TODO: Add docstring."""
 
@@ -20,8 +21,10 @@ class ResumeSection(Enum):
     SKILLS = "skills"
     PROJECTS = "projects"
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class ResumeData:
     """Docstring."""
@@ -34,6 +37,7 @@ class ResumeData:
 
     """TODO: Add docstring."""
 
+
 @dataclass
 class JobDescription:
     """Docstring."""
@@ -41,6 +45,7 @@ class JobDescription:
     company: str
     requirements: List[str]
     keywords: List[str]
+
 
 class TestResumeGeneration:
     """E2E tests for resume generation flows."""

@@ -310,78 +310,78 @@ class PromptSignatureRegistry:
     """Registry of DSPy signatures for different agent types."""
 
     # Common signatures that can be reused
-        "Generate robust python code based on requirements.",
-        REQUIREMENTS=dspy.InputField(),
-        CONTEXT=dspy.InputField(),
-        verified_code=dspy.OutputField(desc="Python code that passes tests")
+    "Generate robust python code based on requirements.",
+    REQUIREMENTS = dspy.InputField(),
+    CONTEXT = dspy.InputField(),
+    verified_code = dspy.OutputField(desc="Python code that passes tests")
     )
 
-        "Analyze research data and provide insights.",
-        research_data=dspy.InputField(),
-        QUESTION=dspy.InputField(),
-        ANALYSIS=dspy.OutputField(desc="Detailed analysis with citations")
+    "Analyze research data and provide insights.",
+        research_data = dspy.InputField(),
+    QUESTION = dspy.InputField(),
+        ANALYSIS = dspy.OutputField(desc="Detailed analysis with citations")
     )
 
         "Select the best tool for a given task.",
-        task_description=dspy.InputField(),
-        available_tools=dspy.InputField(),
-        selected_tool=dspy.OutputField(desc="Name of the best tool"),
-        REASONING=dspy.OutputField(desc="Why this tool was chosen")
+    task_description = dspy.InputField(),
+        available_tools = dspy.InputField(),
+    selected_tool = dspy.OutputField(desc="Name of the best tool"),
+        REASONING = dspy.OutputField(desc="Why this tool was chosen")
     )
 
         """You are an intelligent agent responsible for a single atomic task.
         Analyze the context, plan your action, and execute it using the available tools.
         """,
-        role_description=dspy.InputField(desc="Your specific role (e.g., Python Expert)"),
-        context_summary=dspy.InputField(desc="Relevant data from previous hops"),
-        task_goal=dspy.InputField(desc="What needs to be achieved in this hop"),
-        REASONING=dspy.OutputField(desc="Chain of thought analysis"),
-        action_plan=dspy.OutputField(desc="Concrete steps to take")
-    )
+    role_description = dspy.InputField(desc="Your specific role (e.g., Python Expert)"),
+        context_summary = dspy.InputField(desc="Relevant data from previous hops"),
+    task_goal = dspy.InputField(desc="What needs to be achieved in this hop"),
+        REASONING = dspy.OutputField(desc="Chain of thought analysis"),
+    action_plan = dspy.OutputField(desc="Concrete steps to take")
+        )
 
-    @classmethod
-    def get_signature(cls, agent_type: str) -> Optional[dspy.Signature]:
-        """Get a signature for a specific agent type."""
+    @ classmethod
+        def get_signature(cls, agent_type: str) -> Optional[dspy.Signature]:
+    """Get a signature for a specific agent type."""
         SIGNATURES = {
             "coder": cls.CODE_GENERATION,
             "researcher": cls.RESEARCH_ANALYSIS,
             "tool_selector": cls.TOOL_SELECTION,
             "subatomic_hop": cls.SUBATOMIC_HOP
         }
-        return signatures.get(agent_type.lower())
+    return signatures.get(agent_type.lower())
 
 
-class OptimizedHopModule(dspy.Module):
+        class OptimizedHopModule(dspy.Module):
     """The DSPy Module for Subatomic Hop optimization."""
 
-    def __init__(self):
-        super().__init__()
+        def __init__(self):
+    super().__init__()
         SELF.PROG = dspy.ChainOfThought(PromptSignatureRegistry.SUBATOMIC_HOP)
 
     def forward(self, role_description, context_summary, task_goal):
         """Execute the optimized hop reasoning."""
-        return self.prog(
+    return self.prog(
             role_description=role_description,
             context_summary=context_summary,
             task_goal=task_goal
         )
 
 
-# Common metric functions
-def code_compilation_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
+        # Common metric functions
+        def code_compilation_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
     """Metric for code generation - checks if code would compile."""
-    try:
-        CODE = predicted.get("verified_code", "")
+        try:
+    CODE = predicted.get("verified_code", "")
         if not code:
-            return 0.0
+    return 0.0
 
         # Basic syntax checks
         if "def " not in code and "class " not in code:
-            return 0.3
+    return 0.3
 
         # Check for common errors
         if "```" in code:
-            return 0.5
+    return 0.5
 
         # In practice, you'd actually try to compile the code
         return 0.8  # Mock score
@@ -389,34 +389,34 @@ def code_compilation_metric(predicted: Dict[str, Any], ground_truth: Dict[str, A
         return 0.0
 
 
-def factual_accuracy_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
-    """Metric for factual accuracy - checks key facts match."""
+    def factual_accuracy_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
+        """Metric for factual accuracy - checks key facts match."""
     pred_analysis = predicted.get("analysis", "")
-    truth_analysis = ground_truth.get("analysis", "")
+        truth_analysis = ground_truth.get("analysis", "")
 
-    # Simple overlap check
+        # Simple overlap check
     pred_words = set(pred_analysis.lower().split())
-    truth_words = set(truth_analysis.lower().split())
+        truth_words = set(truth_analysis.lower().split())
 
     if not truth_words:
         return 0.0
 
     OVERLAP = len(pred_words & truth_words)
-    return overlap / len(truth_words)
+        return overlap / len(truth_words)
 
 
-def tool_selection_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
-    """Metric for tool selection - checks if the right tool was chosen."""
+    def tool_selection_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
+        """Metric for tool selection - checks if the right tool was chosen."""
     pred_tool = predicted.get("selected_tool", "").lower()
-    truth_tool = ground_truth.get("selected_tool", "").lower()
+        truth_tool = ground_truth.get("selected_tool", "").lower()
 
     return 1.0 if pred_tool == truth_tool else 0.0
 
 
-def create_dspy_optimizer(
-    model_name: str = "gpt-4o",
-    cache_dir: str = "./optimization_cache"
-) -> DSPyOptimizer:
+        def create_dspy_optimizer(
+            model_name: str="gpt-4o",
+            cache_dir: str="./optimization_cache"
+    ) -> DSPyOptimizer:
     """
     Factory function to create a DSPy optimizer.
 
@@ -427,7 +427,7 @@ def create_dspy_optimizer(
     Returns:
         DSPyOptimizer instance
     """
-    return DSPyOptimizer(
+        return DSPyOptimizer(
         model_name=model_name,
         optimization_cache_dir=cache_dir
-    )
+        )

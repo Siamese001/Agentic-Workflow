@@ -57,6 +57,7 @@ class EpisodicMemory:
     - BlobStorageAdapter for persistent storage
     """
 
+
 def __init__(self: Any, storage_adapter: Any, embedder: Any, similarity_threshold: float) -> None:
         """
         Initialize episodic memory.
@@ -77,6 +78,7 @@ def __init__(self: Any, storage_adapter: Any, embedder: Any, similarity_threshol
         # Load existing episodes on startup
         self._load_episodes()
 
+
 async def _load_episodes(self: Any) -> None:
         """Load existing episodes from storage."""
         try:
@@ -96,6 +98,7 @@ async def _load_episodes(self: Any) -> None:
         except Exception as e:
             logger.error(f"Failed to load episodes: {e}")
 
+
 def _rebuild_embedding_matrix(self: Any) -> None:
         """Rebuild the embedding matrix for efficient similarity search."""
         if self._episodes:
@@ -104,6 +107,7 @@ def _rebuild_embedding_matrix(self: Any) -> None:
             ])
         else:
             self._embedding_matrix = None
+
 
 def _filter_episode_candidates(self: Any,
      agent_role: Optional[str],
@@ -116,11 +120,13 @@ def _filter_episode_candidates(self: Any,
                     candidates.append((i, episode))
         return candidates
 
+
 def _calculate_similarity(self: Any, query_vec: np.ndarray, episode_vec: np.ndarray) -> float:
         """Calculate cosine similarity between query and episode vectors."""
         return np.dot(query_vec, episode_vec) / (
             np.linalg.norm(query_vec) * np.linalg.norm(episode_vec)
         )
+
 
 def _find_best_match(self: Any, query_vec: np.ndarray, candidates: List[tuple]) -> tuple:
         """Find the best matching episode from candidates."""
@@ -137,6 +143,7 @@ def _find_best_match(self: Any, query_vec: np.ndarray, candidates: List[tuple]) 
 
         return best_episode, best_score
 
+
 def _format_memory_context(self: Any, episode: Episode, score: float) -> str:
         """Format episode as memory context string."""
         memory_context = (
@@ -151,6 +158,7 @@ def _format_memory_context(self: Any, episode: Episode, score: float) -> str:
             memory_context += f"PITFALLS TO AVOID: {episode.failure_notes}\n"
 
         return memory_context
+
 
 async def recall_relevant_experience(self: Any,
      current_task: str,
@@ -186,6 +194,7 @@ async def recall_relevant_experience(self: Any,
             return self._format_memory_context(best_episode, best_score)
 
         return None
+
 
 async def commit_episode(self: Any, data: EpisodeData) -> str:
         """
@@ -231,6 +240,7 @@ async def commit_episode(self: Any, data: EpisodeData) -> str:
         logger.info(f"Committed episode {episode_id} (rating={data.rating:.2f})")
         return episode_id
 
+
 async def _persist_episode(self: Any, episode: Episode) -> None:
         """Persist an episode to storage."""
         episode_key = f"episodes/{episode.episode_id}.json"
@@ -250,6 +260,7 @@ async def _persist_episode(self: Any, episode: Episode) -> None:
                 "timestamp": str(episode.timestamp)
             }
         )
+
 
 async def get_successful_patterns(self: Any,
      task_type: Optional[str],
@@ -289,6 +300,7 @@ async def get_successful_patterns(self: Any,
 
         return patterns
 
+
 async def analyze_failure_patterns(self: Any, agent_role: Optional[str]) -> Dict[str, int]:
         """
         Analyze common failure patterns.
@@ -315,6 +327,7 @@ async def analyze_failure_patterns(self: Any, agent_role: Optional[str]) -> Dict
                         failure_types["other"] = failure_types.get("other", 0) + 1
 
         return failure_types
+
 
 def get_stats(self: Any) -> Dict[str, Any]:
         """Get memory statistics."""

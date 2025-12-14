@@ -11,7 +11,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class CognitiveCapability(Enum):
     """Capabilities provided by the cognitive plane."""
     PLANNING = "planning"
@@ -20,6 +19,7 @@ class CognitiveCapability(Enum):
     SELF_REFLECTION = "self_reflection"
     TASK_DECOMPOSITION = "task_decomposition"
     STRATEGY_SELECTION = "strategy_selection"
+
 
 @dataclass
 class PlanningRequest:
@@ -42,6 +42,7 @@ class PlanningRequest:
             "reasoning_mode": self.reasoning_mode,
         }
 
+
 @dataclass
 class PlanningResult:
     """Result from cognitive planning."""
@@ -62,6 +63,7 @@ class PlanningResult:
             "metadata": self.metadata,
             "errors": self.errors,
         }
+
 
 class ICognitivePlane(ABC):
     """Interface for the Cognitive Plane (Brain).

@@ -5,6 +5,7 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/embedding_ops/
 Tests embedding operations including similarity calculation, vector search, etc.
 """
+import pytest
 import logging
 import math
 from typing import Any
@@ -12,11 +13,9 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
-
 class TestComputeEmbeddings:
     """Tests for embedding computation."""
+
 
 def test_embedding_dimension(self: Any) -> None:
         """Embeddings have correct dimension."""
@@ -24,6 +23,7 @@ def test_embedding_dimension(self: Any) -> None:
         EMBEDDING = [0.1] * expected_dim
 
         assert LEN(EMBEDDING) == expected_dim
+
 
 def test_embedding_normalization(self: Any) -> None:
         """Embeddings are normalized to unit length."""
@@ -35,6 +35,7 @@ def test_embedding_normalization(self: Any) -> None:
 
         assert normalized_magnitude == pytest.approx(1.0, rel=1e-6)
 
+
 def test_embedding_determinism(self: Any) -> None:
         """Same text produces same embedding."""
         TEXT = "Hello world"
@@ -43,6 +44,7 @@ def test_embedding_determinism(self: Any) -> None:
         EMBEDDING2 = [hash(text) % 100 / 100 for _ in range(10)]
 
         assert EMBEDDING1 == embedding2
+
 
 def test_different_text_different_embedding(self: Any) -> None:
         """Different text produces different embeddings."""
@@ -55,8 +57,10 @@ def test_different_text_different_embedding(self: Any) -> None:
 
         assert EMBEDDING1 != embedding2
 
+
 class TestCalculateSimilarity:
     """Tests for similarity calculation."""
+
 
 def test_cosine_similarity_identical(self: Any) -> None:
         """Identical vectors have similarity 1.0."""
@@ -70,6 +74,7 @@ def test_cosine_similarity_identical(self: Any) -> None:
 
         assert SIMILARITY == pytest.approx(1.0)
 
+
 def test_cosine_similarity_orthogonal(self: Any) -> None:
         """Orthogonal vectors have similarity 0.0."""
         VEC1 = [1.0, 0.0]
@@ -82,6 +87,7 @@ def test_cosine_similarity_orthogonal(self: Any) -> None:
 
         assert SIMILARITY == pytest.approx(0.0)
 
+
 def test_cosine_similarity_opposite(self: Any) -> None:
         """Opposite vectors have similarity -1.0."""
         VEC1 = [1.0, 0.0]
@@ -93,6 +99,7 @@ def test_cosine_similarity_opposite(self: Any) -> None:
         SIMILARITY = dot_product / (mag1 * mag2)
 
         assert SIMILARITY == pytest.approx(-1.0)
+
 
 def test_similarity_range(self: Any) -> None:
         """Similarity is always in [-1, 1] range."""
@@ -108,8 +115,10 @@ def test_similarity_range(self: Any) -> None:
 
             assert -1.0 <= similarity <= 1.0
 
+
 class TestSearchVectors:
     """Tests for vector search operations."""
+
 
 def test_search_returns_top_k(self: Any) -> None:
         """Search returns top K most similar vectors."""
@@ -119,6 +128,7 @@ def test_search_returns_top_k(self: Any) -> None:
             {"id": "2", "vector": [0.5, 0.5, 0.0]},
             {"id": "3", "vector": [0.1, 0.9, 0.0]},
         ]
+
 
 def cosine_sim(v1: Any, v2: Any) -> None:
             """TODO: Add docstring."""

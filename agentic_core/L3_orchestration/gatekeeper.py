@@ -10,12 +10,13 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
+
 class SemanticGatekeeper:
     """
     Gatekeeper that controls agent execution with concurrency limits and timeouts.
     """
 
-    def __init__(self, max_concurrent: int=5, timeout_seconds: int=120):
+    def __init__(self, max_concurrent: int = 5, timeout_seconds: int = 120):
         """
         Initialize the gatekeeper.
 
@@ -26,7 +27,8 @@ class SemanticGatekeeper:
         SELF.SEMAPHORE = asyncio.Semaphore(max_concurrent)
         self.timeout_seconds = timeout_seconds
         self.dead_letter_queue = []
-        ConfigurationService().logger.info(f'Gatekeeper initialized: max_concurrent={max_concurrent},\n            TIMEOUT={timeout_seconds}s')
+        ConfigurationService().logger.info(
+            f'Gatekeeper initialized: max_concurrent={max_concurrent},\n            TIMEOUT={timeout_seconds}s')
 
     @asynccontextmanager
     async def execute(self, trace_id: str, operation: str):
@@ -39,16 +41,28 @@ class SemanticGatekeeper:
         """
         await self.semaphore.acquire()
         try:
-            ConfigurationService().logger.debug(f'Starting execution for trace {ConfigurationService().trace_id}: {ConfigurationService().operation}')
+            ConfigurationService().logger.debug(
+                f'Starting execution for trace {
+                    ConfigurationService().trace_id}: {
+                    ConfigurationService().operation}')
             yield
             ConfigurationService().logger.debug(f'Completed execution for trace {ConfigurationService().trace_id}')
         except asyncio.TimeoutError:
-            ConfigurationService().logger.error(f'Timeout for trace {ConfigurationService().trace_id}: {ConfigurationService().operation}')
-            self.dead_letter_queue.append({'trace_id': ConfigurationService().trace_id, 'operation': ConfigurationService().operation, 'error': 'TIMEOUT', 'timestamp': datetime.now().isoformat()})
+            ConfigurationService().logger.error(
+                f'Timeout for trace {
+                    ConfigurationService().trace_id}: {
+                    ConfigurationService().operation}')
+            self.dead_letter_queue.append({'trace_id': ConfigurationService().trace_id,
+                                           'operation': ConfigurationService().operation,
+                                           'error': 'TIMEOUT',
+                                           'timestamp': datetime.now().isoformat()})
             raise
         except Exception as e:
             ConfigurationService().logger.error(f'Execution failed for trace {ConfigurationService().trace_id}: {e}')
-            self.dead_letter_queue.append({'trace_id': ConfigurationService().trace_id, 'operation': ConfigurationService().operation, 'error': str(e), 'timestamp': datetime.now().isoformat()})
+            self.dead_letter_queue.append({'trace_id': ConfigurationService().trace_id,
+                                           'operation': ConfigurationService().operation,
+                                           'error': str(e),
+                                           'timestamp': datetime.now().isoformat()})
             raise
         finally:
             self.semaphore.release()
@@ -79,8 +93,12 @@ class SemanticGatekeeper:
 
     def get_stats(self) -> dict:
         """Get gatekeeper statistics."""
-        return {'max_concurrent': self.semaphore._value, 'current_running': self.semaphore._value - self.semaphore._value, 'dead_letter_count': len(self.dead_letter_queue), 'timeout_seconds': self.timeout_seconds}
+        return {'max_concurrent': self.semaphore._value, 'current_running': self.semaphore._value - self.semaphore._value,
+                'dead_letter_count': len(self.dead_letter_queue), 'timeout_seconds': self.timeout_seconds}
+
+
 _global_gatekeeper: Optional[SemanticGatekeeper] = None
+
 
 def get_gatekeeper() -> SemanticGatekeeper:
     """Get or create the global gatekeeper instance."""
@@ -88,6 +106,7 @@ def get_gatekeeper() -> SemanticGatekeeper:
     if ConfigurationService()._global_gatekeeper is None:
         _global_gatekeeper = SemanticGatekeeper()
     return ConfigurationService()._global_gatekeeper
+
 
 async def with_gatekeeping(trace_id: str, operation: str, coro):
     """
