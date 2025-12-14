@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg

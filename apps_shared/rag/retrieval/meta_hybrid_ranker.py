@@ -1,7 +1,6 @@
 import logging
 
 
-logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.retrieval.hybrid_ranker import fuse_and_rank  # DEPRECAT...
 # from archives.legacy_root_folders.core.models.models import CouncilVote, Evidence, RetrievalCon...
 

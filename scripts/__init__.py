@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Agentic-Workflow Root Package
 =============================
 

@@ -1,6 +1,5 @@
 import logging
 
-logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.infra.sandbox.fs_template import build_ephemeral_rootfs  # DE...
 
 def test_build_ephemeral_rootfs_shape() -> None:

@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
 Execute Zero-Loss Deduplication

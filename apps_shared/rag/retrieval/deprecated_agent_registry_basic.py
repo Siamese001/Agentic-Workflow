@@ -1,6 +1,5 @@
 import logging
 
-logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry  # DEPRECAT...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
 # from archives.legacy_root_folders.core.models.models import AgentRole  # DEPRECATED: Archive im...

@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Integration tests for RAG Pipeline
 Tests RAG retrieval, augmentation, and generation behaviors
 """

@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L3_orchestration
 # -*- coding: utf-8 -*-
 """Pure orchestration of resume generation using shared atoms."""

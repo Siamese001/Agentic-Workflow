@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Unit tests for shared/runtime_ops/
 Tests runtime operations including data access, guardrails, synthesis, and validation.
 """

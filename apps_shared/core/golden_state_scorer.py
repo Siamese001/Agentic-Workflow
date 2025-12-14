@@ -1,6 +1,5 @@
 import logging
 
-logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict  # DEPRECATED: A...
 # from archives.legacy_root_folders.eval.golden_state.scorer import aggregate_scores  # DEPRECATE...
 

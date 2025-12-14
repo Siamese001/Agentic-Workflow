@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Test Neo4j integration for L2 execution modules
 
 Tests that Neo4j integration works correctly and gracefully handles

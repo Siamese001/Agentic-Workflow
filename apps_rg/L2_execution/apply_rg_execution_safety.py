@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Apply Rg Execution Safety - atomic enforcement layer."""

@@ -9,6 +9,7 @@ import numpy as np
 import json
 import time
 import logging
+import pickle
 from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass, field
 
@@ -167,8 +168,6 @@ class SemanticCache:
         Args:
             filepath: Path to save the cache state
         """
-        import pickle
-        
         state = {
             "entries": [
                 {
@@ -197,8 +196,6 @@ class SemanticCache:
         Args:
             filepath: Path to load the cache state from
         """
-        import pickle
-        
         with open(filepath, 'rb') as f:
             state = pickle.load(f)
         

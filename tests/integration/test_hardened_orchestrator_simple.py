@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Simplified integration tests for hardened orchestrator functionality.
 Tests core components without complex workflow specifications.
 """

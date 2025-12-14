@@ -32,17 +32,24 @@ class ExecutionResult:
 
 class DockerSandbox:
     """
-    An ephemeral execution environment.
+    An ephemeral execution environment with enhanced security.
     Spins up a container, runs the agent's code, captures output, and nukes the container.
+    Includes multiple layers of protection against dangerous actions.
     """
     
-    def __init__(self, image: str = "python:3.10-slim", network_disabled: bool = True):
+    def __init__(
+        self, 
+        image: str = "python:3.10-slim", 
+        network_disabled: bool = True,
+        enable_security_hardening: bool = True
+    ):
         """
         Initialize the Docker sandbox.
         
         Args:
             image: Docker image to use for execution
             network_disabled: Whether to disable network access (security)
+            enable_security_hardening: Enable additional security restrictions
         """
         if not DOCKER_AVAILABLE:
             raise ImportError("Docker library not installed. Run: pip install docker")
@@ -55,10 +62,88 @@ class DockerSandbox:
         
         self.image = image
         self.network_disabled = network_disabled
+        self.security_hardening = enable_security_hardening
         
         logger.info(f"Docker sandbox initialized (image={image}, network_disabled={network_disabled})")
         
         self._ensure_image_available()
+        
+        # Security: Pre-compile dangerous patterns
+        self._init_security_patterns()
+
+    def _init_security_patterns(self):
+        """Initialize security patterns for dangerous code detection."""
+        import re
+        
+        # Dangerous system commands
+        self.dangerous_patterns = [
+            # File system destruction
+            r'rm\s+-rf\s+/',
+            r'dd\s+if=/dev/zero',
+            r':\(\)\{\s*\|:\s*&\s*\}\;\s*:',
+            
+            # System access
+            r'sudo\s+',
+            r'su\s+',
+            r'chmod\s+777',
+            r'chown\s+',
+            
+            # Network access (if network disabled)
+            r'curl\s+',
+            r'wget\s+',
+            r'urllib\.request',
+            r'requests\.',
+            
+            # Process manipulation
+            r'os\.system',
+            r'subprocess\.call',
+            r'eval\s*\(',
+            r'exec\s*\(',
+            
+            # File access outside container
+            r'\.\./.*\.\.',
+            r'/etc/',
+            r'/root/',
+            r'/home/',
+        ]
+        
+        # Compile patterns for performance
+        self.compiled_patterns = [
+            re.compile(pattern, re.IGNORECASE)
+            for pattern in self.dangerous_patterns
+        ]
+        
+        logger.debug(f"Initialized {len(self.compiled_patterns)} security patterns")
+    
+    def _check_code_safety(self, code: str) -> tuple[bool, List[str]]:
+        """
+        Check code for dangerous patterns.
+        
+        Args:
+            code: Code to check
+            
+        Returns:
+            Tuple of (is_safe, list_of_violations)
+        """
+        violations = []
+        
+        if not self.security_hardening:
+            return True, violations
+        
+        for pattern in self.compiled_patterns:
+            matches = pattern.findall(code)
+            if matches:
+                violations.append(f"Dangerous pattern detected: {pattern.pattern}")
+        
+        # Additional checks
+        if 'import os' in code and 'os.remove' in code:
+            violations.append("Direct file deletion detected")
+        
+        if '__import__' in code:
+            violations.append("Dynamic import detected")
+        
+        is_safe = len(violations) == 0
+        return is_safe, violations
 
     def _ensure_image_available(self):
         """Ensure the Docker image is available locally."""
@@ -74,15 +159,17 @@ class DockerSandbox:
         self, 
         code: str, 
         inputs: Optional[Dict] = None,
-        timeout: int = 30
+        timeout: int = 30,
+        allow_dangerous: bool = False
     ) -> ExecutionResult:
         """
-        Execute code in an isolated Docker container.
+        Execute code in an isolated Docker container with security checks.
         
         Args:
             code: Python code to execute
             inputs: Optional input data to pass to the code
             timeout: Execution timeout in seconds
+            allow_dangerous: Skip safety checks if True (use with caution!)
             
         Returns:
             ExecutionResult with stdout, stderr, exit code, etc.
@@ -90,19 +177,47 @@ class DockerSandbox:
         import time
         start_time = time.time()
         
+        # Security: Check code for dangerous patterns
+        if not allow_dangerous:
+            is_safe, violations = self._check_code_safety(code)
+            if not is_safe:
+                error_msg = f"Code rejected due to security violations: {'; '.join(violations)}"
+                logger.warning(error_msg)
+                return ExecutionResult(
+                    stdout="",
+                    stderr=error_msg,
+                    exit_code=126,  # Custom exit code for security violation
+                    files_created=[],
+                    execution_time_ms=0
+                )
+        
         wrapper_code = self._create_wrapper(code, inputs or {})
         
         logger.debug(f"Executing code in sandbox (timeout={timeout}s)")
         
         try:
-            container = self.client.containers.run(
-                self.image,
-                command=["python", "-c", wrapper_code],
-                mem_limit="512m",
-                network_disabled=self.network_disabled,
-                detach=True,
-                remove=False
-            )
+            # Enhanced container security settings
+            container_config = {
+                "image": self.image,
+                "command": ["python", "-c", wrapper_code],
+                "mem_limit": "512m",
+                "cpu_quota": 50000,  # Limit to 50% CPU
+                "network_disabled": self.network_disabled,
+                "detach": True,
+                "remove": False,
+                "read_only": True,  # Read-only filesystem
+                "tmpfs": {"/tmp": "rw,noexec,nosuid,size=100m"},  # Temporary writable space
+            }
+            
+            # Add security hardening if enabled
+            if self.security_hardening:
+                container_config.update({
+                    "user": "nobody",  # Run as non-root user
+                    "cap_drop": ["ALL"],  # Drop all capabilities
+                    "security_opt": ["no-new-privileges:true"],  # Prevent privilege escalation
+                })
+            
+            container = self.client.containers.run(**container_config)
             
             try:
                 result = container.wait(timeout=timeout)
