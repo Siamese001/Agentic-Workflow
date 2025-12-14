@@ -103,10 +103,8 @@ def tool_use_message(prompt: str, tools: list) -> dict:
 
 if __name__ == "__main__":
     # Test simple message
-    result = simple_message("Explain AI in one sentence")
 
     # Test cached message
-    cached = cached_message(
         "Summarize quantum computing",
         system_prompt="You are an expert physics educator."
     )
@@ -123,4 +121,3 @@ if __name__ == "__main__":
         }
     }]
     
-    tool_result = tool_use_message("What's the weather in San Francisco?", tools)

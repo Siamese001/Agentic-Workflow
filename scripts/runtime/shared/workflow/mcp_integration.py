@@ -16,36 +16,16 @@ from enum import Enum
 class MCPCapability(Enum):
     """MCP server capabilities."""
     # DockerHub
-    SEARCH_IMAGES = "search_images"
-    GET_IMAGE_DETAILS = "get_image_details"
-    LIST_TAGS = "list_tags"
 
     # Context7
-    SEMANTIC_SEARCH = "semantic_search"
-    CONTEXT_RETRIEVAL = "context_retrieval"
-    KNOWLEDGE_GRAPH = "knowledge_graph"
 
     # Figma
-    GET_FILE = "get_file"
-    GET_COMMENTS = "get_comments"
-    GET_COMPONENTS = "get_components"
 
     # Reddit
-    SEARCH_POSTS = "search_posts"
-    GET_SUBREDDIT = "get_subreddit"
-    ANALYZE_SENTIMENT = "analyze_sentiment"
 
     # Sequential Thinking
-    CHAIN_OF_THOUGHT = "chain_of_thought"
-    STEP_BY_STEP_REASONING = "step_by_step_reasoning"
-    PROBLEM_DECOMPOSITION = "problem_decomposition"
 
     # Playwright
-    NAVIGATE = "navigate"
-    CLICK = "click"
-    FILL_FORM = "fill_form"
-    SCREENSHOT = "screenshot"
-    EXTRACT_DATA = "extract_data"
 
 
 @dataclass
@@ -310,7 +290,6 @@ class K11MCPEnhancer(MCPEnhancedAgent):
         }
 
         # Use Sequential Thinking for research strategy
-        strategy = await self.use_sequential_thinking(
             f"Create research strategy for {company_name} technical due diligence"
         )
 

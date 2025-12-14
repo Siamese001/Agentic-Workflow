@@ -296,10 +296,8 @@ class K1RoutingAgent(Agent):
         """
         # Check for route override
         if route_override:
-            selected_route = route_override
 
             # CRITICAL: Premium routing mismatch detection
-            if selected_route == "INMAIL" and not premium_available:
                 return RouteSelectionResult(
                     route=selected_route,
                     premium_available=premium_available,
@@ -318,11 +316,8 @@ class K1RoutingAgent(Agent):
 
         # Default routing logic
         if lifecycle == "EXISTING":
-            selected_route = "FOLLOW_UP"
         elif premium_available:
-            selected_route = "INMAIL"
         else:
-            selected_route = "CONNECTION_REQ"
 
         return RouteSelectionResult(
             route=selected_route,

@@ -19,10 +19,6 @@ class LLMResponse:
 
 class MessageType(str, Enum):
     """Message types for agent communication."""
-    USER = "user"
-    ASSISTANT = "assistant"
-    SYSTEM = "system"
-    TOOL = "tool"
 
 @dataclass
 class AgentMessage:
@@ -60,24 +56,12 @@ class ReasoningConfig(BaseModel):
 
 class HopStatus(str, Enum):
     """Status of hop execution."""
-    PENDING = "pending"
-    RUNNING = "running"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
 
 class GateDecision(str, Enum):
     """Decision from validation gate."""
-    PASS = "pass"
-    FAIL = "fail"
-    WARN = "warn"
 
 class ValidationSeverity(str, Enum):
     """Severity of validation issue."""
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
 
 @dataclass
 class WorkflowCheckpoint:
@@ -107,9 +91,6 @@ class RAGState:
 
 class CircuitState(str, Enum):
     """Circuit breaker state."""
-    CLOSED = "closed"
-    OPEN = "open"
-    HALF_OPEN = "half_open"
 
 # Exception classes
 class AgenticWorkflowError(Exception):

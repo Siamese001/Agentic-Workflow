@@ -17,9 +17,7 @@ class ConstitutionalPrinciple:
 
     def __post_init__(self):
         if self.examples is None:
-            self.examples = []
         if self.definition and (not self.description):
-            self.description = self.definition
 
 @dataclass
 class LLMJudgment:
@@ -33,7 +31,6 @@ class LLMJudgment:
     def __post_init__(self):
         if not self.timestamp:
             from datetime import datetime
-            self.timestamp = datetime.now().isoformat()
 
     @property
     def principle_id(self) -> str:
@@ -54,7 +51,6 @@ class ConstitutionalRule:
 
     def __post_init__(self):
         if self.keywords is None:
-            self.keywords = []
 
 @dataclass
 class ViolationReport:
@@ -77,7 +73,6 @@ class ConstitutionalReviewResult:
 
     def __post_init__(self):
         if self.metadata is None:
-            self.metadata = {}
 
     @property
     def has_violations(self) -> bool:

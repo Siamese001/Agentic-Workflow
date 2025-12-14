@@ -13,10 +13,6 @@ logger = logging.getLogger(__name__)
 class AssessmentLevel(Enum):
     """TODO: Add docstring."""
 
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
 
 @dataclass
 class AssessmentResult:

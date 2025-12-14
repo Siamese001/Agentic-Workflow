@@ -2,7 +2,6 @@
 import logging
 
 
-logger = logging.getLogger(__name__)
 class TestWorkflowSafetyChecks:
     """Tests for workflow-level safety checks."""
 

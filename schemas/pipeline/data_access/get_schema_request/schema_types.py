@@ -10,27 +10,12 @@ from typing import Dict, List, Optional, Any
 
 class SchemaType(Enum):
     """Types of schemas for different data formats."""
-    JSON = "json"
-    XML = "xml"
-    AVRO = "avro"
-    PROTOBUF = "protobuf"
-    SQL = "sql"
-    YAML = "yaml"
 
 class ValidationLevel(Enum):
     """Levels of schema validation."""
-    SYNTAX = "syntax"
-    SEMANTIC = "semantic"
-    BUSINESS = "business"
-    FULL = "full"
 
 class TransformationType(Enum):
     """Types of schema transformations."""
-    FORMAT_CONVERSION = "format_conversion"
-    FIELD_MAPPING = "field_mapping"
-    TYPE_COERCION = "type_coercion"
-    STRUCTURE_REFACTOR = "structure_refactor"
-    VERSION_MIGRATION = "version_migration"
 
 @dataclass
 class SchemaDefinition:

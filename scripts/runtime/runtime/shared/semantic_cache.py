@@ -98,7 +98,6 @@ class SemanticCache:
         if best_score >= self.threshold:
             self.stats["hits"] += 1
             best_entry.access_count += 1
-            best_entry.timestamp = time.time()
             
             logger.info(f"Cache HIT (similarity={best_score:.3f}) for query: {query_text[:50]}...")
             

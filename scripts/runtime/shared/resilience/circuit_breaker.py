@@ -14,9 +14,6 @@ logger = logging.getLogger(__name__)
 
 class CircuitState(str, Enum):
     """Circuit breaker states."""
-    CLOSED = "closed"
-    OPEN = "open"
-    HALF_OPEN = "half_open"
 
 @dataclass
 class CircuitBreakerStats:
@@ -31,7 +28,6 @@ class CircuitBreakerStats:
 
     def success_rate(self) -> float:
         """Calculate success rate."""
-        if self.total_requests == 0:
             return 1.0
         return self.successful_requests / self.total_requests
 
@@ -124,8 +120,6 @@ class CircuitBreaker:
         """Record a successful operation."""
         self._stats.total_requests += 1
         self._stats.successful_requests += 1
-        self._stats.consecutive_failures = 0
-        self._stats.last_success_time = time.time()
 
         # Transition based on current state
         if self._state == CircuitState.HALF_OPEN:
@@ -147,7 +141,6 @@ class CircuitBreaker:
         self._stats.total_requests += 1
         self._stats.failed_requests += 1
         self._stats.consecutive_failures += 1
-        self._stats.last_failure_time = time.time()
 
         # Check if we should open the circuit
         if self._state == CircuitState.CLOSED:
@@ -178,20 +171,16 @@ class CircuitBreaker:
     def _transition_to_closed(self) -> None:
         """Transition to CLOSED state."""
         self._state = CircuitState.CLOSED
-        self._stats.consecutive_failures = 0
-        self._stats.state_changed_at = time.time()
         self._half_open_calls = 0
 
     def _transition_to_open(self) -> None:
         """Transition to OPEN state."""
         self._state = CircuitState.OPEN
-        self._stats.state_changed_at = time.time()
         self._half_open_calls = 0
 
     def _transition_to_half_open(self) -> None:
         """Transition to HALF_OPEN state."""
         self._state = CircuitState.HALF_OPEN
-        self._stats.state_changed_at = time.time()
         self._half_open_calls = 0
 
         logger.info(

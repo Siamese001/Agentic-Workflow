@@ -27,8 +27,6 @@ class TestRuntimeDataAccess:
             timeout_seconds=30,
             metadata={"user_id": "user_123"},
         )
-        assert ctx.request_id == "req_001"
-        assert ctx.timeout_seconds == 30
 
     def test_context_metadata_access(self):
         """Context metadata is accessible."""

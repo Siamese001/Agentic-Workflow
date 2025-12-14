@@ -3,7 +3,6 @@ from typing import Dict
 import logging
 
 
-logger = logging.getLogger(__name__)
 class TestWorkflowContextRetrieval:
     """Tests for retrieving workflow context."""
 

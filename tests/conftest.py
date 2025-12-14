@@ -12,7 +12,6 @@ from typing import Dict, Any
 PROJECT_ROOT = Path(__file__).parent.parent
 CACHE_DIR = PROJECT_ROOT / "data" / "cache"
 LOGS_DIR = PROJECT_ROOT / "data" / "logs"
-DEFAULT_MAX_RETRIES = 3
 
 # Ensure directories exist
 CACHE_DIR.mkdir(parents=True, exist_ok=True)

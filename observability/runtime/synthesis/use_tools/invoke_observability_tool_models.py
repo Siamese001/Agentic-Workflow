@@ -3,7 +3,6 @@
 from typing import Any, Dict, List, Optional
 import logging
 
-logger = logging.getLogger(__name__)
 # from .invoke_observability_tool_enums import *  # Star import removed
 
 @dataclass

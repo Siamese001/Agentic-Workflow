@@ -2,7 +2,6 @@
 import logging
 
 
-logger = logging.getLogger(__name__)
 class TestWorkflowResultAggregation:
     """Tests for aggregating workflow results."""
 

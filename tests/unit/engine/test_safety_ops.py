@@ -11,10 +11,6 @@ from dataclasses import dataclass
 class SafetyViolationType(Enum):
     """TODO: Add docstring."""
 
-    PII_DETECTED = "pii_detected"
-    INJECTION_ATTEMPT = "injection_attempt"
-    HARMFUL_CONTENT = "harmful_content"
-    POLICY_VIOLATION = "policy_violation"
 
 @dataclass
 class SafetyCheckResult:

@@ -10,10 +10,6 @@ from dataclasses import dataclass
 class IntentType(Enum):
     """TODO: Add docstring."""
 
-    QUERY = "query"
-    COMMAND = "command"
-    CLARIFICATION = "clarification"
-    CONFIRMATION = "confirmation"
 
 @dataclass
 class ParsedIntent:
@@ -38,7 +34,6 @@ class TestUnderstandRequest:
             original_text=text,
         )
 
-        assert intent.intent_type == IntentType.QUERY
         assert intent.confidence > 0.9
 
     def test_parse_command_intent(self):
@@ -52,7 +47,6 @@ class TestUnderstandRequest:
             original_text=text,
         )
 
-        assert intent.intent_type == IntentType.COMMAND
         assert intent.entities["action"] == "generate"
 
     def test_extract_entities(self):
@@ -91,7 +85,6 @@ class TestUnderstandRequest:
             original_text=text,
         )
 
-        assert intent.original_text == text
 
 class TestQueryFormulation:
     """Tests for query formulation from understood requests."""

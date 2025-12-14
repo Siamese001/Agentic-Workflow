@@ -8,10 +8,6 @@ This module provides schema definitions for prompt validation and structure.
 
 class PromptType(str, Enum):
     """Types of prompts supported by the CMS."""
-    SIMPLE = "simple"
-    TEMPLATE = "template"
-    CONDITIONAL = "conditional"
-    CHAINED = "chained"
 
 @dataclass
 class PromptSchema:
@@ -45,7 +41,6 @@ def validate_prompt(prompt: str, schema: PromptSchema) -> ValidationResult:
         errors.append("Prompt cannot be empty")
 
     # Check required fields based on schema
-    if schema.prompt_type == PromptType.TEMPLATE:
         if "{" not in prompt or "}" not in prompt:
             errors.append("Template prompt must contain placeholder fields")
 

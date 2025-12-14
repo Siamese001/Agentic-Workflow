@@ -7,7 +7,6 @@ from archives.LIC_capabilities.reconstructed_capabilities import LIC_CAPABILITIE
 # ATOMIC 10_12-COMPLIANT LIC SPECIFICATION
 # ========================================================================
 
-ATOMIC_LIC_SPEC = {
     "routing": {
         **LIC_CAPABILITIES["routing_rules"]
     },

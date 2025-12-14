@@ -3,7 +3,6 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 @dataclass
 class StateCheckpoint:
     """Checkpoint for a HOP state."""

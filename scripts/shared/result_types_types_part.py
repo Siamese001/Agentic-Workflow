@@ -4,13 +4,8 @@ from typing import Any, Dict, List, Optional
 import logging
 
 
-logger = logging.getLogger(__name__)
 class ResultStatus(Enum):
     """Status of an operation result."""
-    SUCCESS = 'success'
-    FAILURE = 'failure'
-    PARTIAL = 'partial'
-    PENDING = 'pending'
 
 @dataclass
 class Result:
@@ -36,10 +31,6 @@ class ValidationResult(Result):
 
     def __post_init__(self):
         if self.violations is None:
-            self.violations = []
-        self.valid = len(self.violations) == 0
-        if not self.valid and self.status == ResultStatus.SUCCESS:
-            self.status = ResultStatus.FAILURE
 
 @dataclass
 class ProcessingResult(Result):
@@ -50,12 +41,10 @@ class ProcessingResult(Result):
 
     def __post_init__(self):
         if self.processed_items is None:
-            self.processed_items = []
 
     @property
     def completion_rate(self) -> float:
         """Get completion rate as percentage."""
-        if self.total_count == 0:
             return 0.0
         return self.processed_count / self.total_count * 100
 
@@ -69,7 +58,6 @@ class ActionResult(Result):
 
     def __post_init__(self):
         if self.affected_entities is None:
-            self.affected_entities = []
 
 @dataclass
 class ExecutionResult(Result):
@@ -81,11 +69,5 @@ class ExecutionResult(Result):
 
     def __post_init__(self):
         if self.step_results is None:
-            self.step_results = []
-        self.completed_steps = len([r for r in self.step_results if r.is_success()])
-        if self.completed_steps == self.total_steps and self.total_steps > 0:
-            self.status = ResultStatus.SUCCESS
         elif self.completed_steps > 0:
-            self.status = ResultStatus.PARTIAL
         else:
-            self.status = ResultStatus.FAILURE

@@ -3,7 +3,6 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 @dataclass
 class VectorDocument:
     """Document stored in vector memory."""

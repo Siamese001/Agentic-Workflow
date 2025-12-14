@@ -15,12 +15,6 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 class ModelProvider(str, Enum):
     """Available model providers."""
 
-    OPENAI = "openai"
-    ANTHROPIC = "anthropic"
-    GOOGLE = "google"
-    MISTRAL = "mistral"
-    COHERE = "cohere"
-    GROQ = "groq"
 
 @dataclass
 class ModelConfig:
@@ -92,13 +86,11 @@ class ReasoningConfig:
     DEFAULT: ClassVar[Optional[ReasoningConfig]] = None
 
 # Initialize default config
-ReasoningConfig.DEFAULT = ReasoningConfig()
 
 # Global CONFIG singleton for backward compatibility
 CONFIG = ReasoningConfig.DEFAULT
 
 # C2 variable for singleton testing
-C2 = CONFIG
 
 # Section-specific configurations
 _REASONING_CONFIGS = [
@@ -190,7 +182,6 @@ for _name, _cfg in _REASONING_CONFIGS:
         setattr(ReasoningConfig, _name, ReasoningConfig(**_cfg))
 
 # Safety threshold for guardrail validation
-SAFETY_THRESHOLD = 0.95
 
 __all__ = [
     "ModelProvider",

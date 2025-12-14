@@ -3,25 +3,14 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 class RouteType(Enum):
     """TODO: Add docstring."""
 
-    INMAIL = 'INMAIL'
-    CONNECTION_REQ = 'CONNECTION_REQ'
-    SHORT_NEW = 'SHORT_NEW'
-    FOLLOW_UP = 'FOLLOW_UP'
 
     """TODO: Add docstring."""
 
 class ArchetypeType(Enum):
     """TODO: Add docstring."""
-    C_LEVEL = 'C_LEVEL'
-    VP_LEVEL = 'VP_LEVEL'
-    DIRECTOR = 'DIRECTOR'
-    MANAGER = 'MANAGER'
-    RECRUITER = 'RECRUITER'
-    UNKNOWN = 'UNKNOWN'
 
     """TODO: Add docstring."""
 

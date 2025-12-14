@@ -153,11 +153,8 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
 
 if __name__ == "__main__":
     # Test simple generation
-    result = simple_generation("Explain AI in one sentence")
 
     # Test grounded generation
-    grounded = grounded_generation("What are the latest developments in AI?")
 
     # Test safe generation
-    safe = safe_generation("Write a professional email")
 

@@ -127,9 +127,7 @@ class ReasoningKernel:
                 critiques=critiques
             )
             
-            trace.selected_plan = best_plan
             trace.confidence = confidence
-            trace.reasoning_time_ms = (time.time() - start_time) * 1000
             
             trace.steps.append(ReasoningStep(
                 step_id="select",
@@ -146,9 +144,7 @@ class ReasoningKernel:
             logger.error(f"Deliberation failed: {e}")
             # Fallback to simple generation
             fallback_plan = await self._fallback_generation(goal, context)
-            trace.selected_plan = fallback_plan
             trace.confidence = 0.5
-            trace.reasoning_time_ms = (time.time() - start_time) * 1000
             
             return fallback_plan, trace
 
@@ -261,7 +257,6 @@ Now generate the {self.max_candidates} approaches as requested:
             if section.strip():
                 # Extract the plan content
                 lines = section.strip().split('\n')
-                plan_content = []
                 
                 for line in lines:
                     if line and not line.startswith(str(i) + ':'):

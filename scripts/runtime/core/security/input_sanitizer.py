@@ -23,7 +23,6 @@ class InputSanitizer:
     """
 
     # Attack pattern regexes for injection detection
-    ATTACK_PATTERNS = [
         # Instruction override attempts
         r"(?i)(ignore previous instructions|system override|delete all files)",
         # Tag spoofing attempts

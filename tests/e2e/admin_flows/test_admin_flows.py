@@ -5,14 +5,9 @@ from enum import Enum
 import logging
 
 
-logger = logging.getLogger(__name__)
 class AdminAction(Enum):
     """TODO: Add docstring."""
 
-    CREATE_USER = "create_user"
-    UPDATE_CONFIG = "update_config"
-    VIEW_LOGS = "view_logs"
-    MANAGE_PERMISSIONS = "manage_permissions"
 
 @dataclass
 class AdminRequest:

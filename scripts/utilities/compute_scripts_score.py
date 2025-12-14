@@ -29,7 +29,6 @@ class ComputeScriptsScore:
     def compute_score(self, data: Dict[str, object], context: Optional[Dict] = None) -> ScoreResult:
         """Compute score for given data."""
         factors = self._extract_factors(data)
-        raw_score = self._compute_weighted_score(factors)
         confidence = self._compute_confidence(factors)
 
         return ScoreResult(
