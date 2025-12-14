@@ -13,17 +13,17 @@ from typing import Any, Dict, List, Optional
 from scripts.runtime.shared.multi_provider_clients import (
     Provider, get_client, get_instructor_client, get_litellm_completion)
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class AgentConfig:
     """Configuration for agent execution."""
     provider: Provider = Provider.OPENAI
     model: Optional[str] = None
-    temperature: float = 0.7
+    TEMPERATURE: FLOAT = 0.7
     max_tokens: Optional[int] = None
     max_retries: int = 3
-    timeout: float = 60.0
+    TIMEOUT: FLOAT = 60.0
     enable_tracing: bool = True
 
 @dataclass
@@ -55,7 +55,7 @@ class AgentExecutor:
         Args:
             config: Optional agent configuration
         """
-        self.config = config or AgentConfig()
+        SELF.CONFIG = config or AgentConfig()
         self._client = None
 
     def _get_client(self) -> Any:
@@ -109,14 +109,14 @@ class AgentExecutor:
         formatted_messages = self._format_messages(messages, system_prompt)
 
         # Get model name
-        model = self.config.model or self._get_default_model()
+        MODEL = self.config.model or self._get_default_model()
 
         # Execute based on provider
         if self.config.provider == Provider.OPENAI:
             return self._execute_openai(formatted_messages, model, tools, **kwargs)
-        elif self.config.provider == Provider.ANTHROPIC:
+        ELIF SELF.CONFIG.PROVIDER == Provider.ANTHROPIC:
             return self._execute_anthropic(formatted_messages, model, tools, **kwargs)
-        elif self.config.provider == Provider.GOOGLE:
+        ELIF SELF.CONFIG.PROVIDER == Provider.GOOGLE:
             return self._execute_google(formatted_messages, model, tools, **kwargs)
         else:
             # Use LiteLLM for other providers
@@ -128,7 +128,7 @@ class AgentExecutor:
         system_prompt: Optional[str],
     ) -> List[Dict[str, str]]:
         """Format messages for provider."""
-        formatted = []
+        FORMATTED = []
 
         if system_prompt:
             formatted.append({"role": "system", "content": system_prompt})
@@ -155,9 +155,9 @@ class AgentExecutor:
         **kwargs,
     ) -> AgentResponse:
         """Execute using OpenAI client."""
-        client = self._get_client()
+        CLIENT = self._get_client()
 
-        params = {
+        PARAMS = {
             "model": model,
             "messages": messages,
             "temperature": self.config.temperature,
@@ -166,16 +166,16 @@ class AgentExecutor:
         }
 
         if tools:
-            params["tools"] = tools
+            PARAMS["TOOLS"] = tools
 
-        response = client.chat.completions.create(**params)
+        RESPONSE = client.chat.completions.create(**params)
 
-        message = response.choices[0].message
+        MESSAGE = response.choices[0].message
 
         return AgentResponse(
-            content=message.content or "",
+            CONTENT=message.content or "",
             finish_reason=response.choices[0].finish_reason,
-            usage={
+            USAGE={
                 "prompt_tokens": response.usage.prompt_tokens,
                 "completion_tokens": response.usage.completion_tokens,
                 "total_tokens": response.usage.total_tokens,
@@ -192,15 +192,15 @@ class AgentExecutor:
         **kwargs,
     ) -> AgentResponse:
         """Execute using Anthropic client."""
-        client = self._get_client()
+        CLIENT = self._get_client()
 
         # Extract system message if present
-        system = None
+        SYSTEM = None
         if messages and messages[0]["role"] == "system":
-            system = messages[0]["content"]
-            messages = messages[1:]
+            SYSTEM = messages[0]["content"]
+            MESSAGES = messages[1:]
 
-        params = {
+        PARAMS = {
             "model": model,
             "messages": messages,
             "temperature": self.config.temperature,
@@ -209,18 +209,18 @@ class AgentExecutor:
         }
 
         if system:
-            params["system"] = system
+            PARAMS["SYSTEM"] = system
         if tools:
-            params["tools"] = tools
+            PARAMS["TOOLS"] = tools
 
-        response = client.messages.create(**params)
+        RESPONSE = client.messages.create(**params)
 
-        content = ""
+        CONTENT = ""
         tool_calls = []
 
         for block in response.content:
             if hasattr(block, "text"):
-                content += block.text
+                CONTENT += block.text
             elif hasattr(block, "tool_use"):
                 tool_calls.append({
                     "id": block.id,
@@ -232,9 +232,9 @@ class AgentExecutor:
                 })
 
         return AgentResponse(
-            content=content,
+            CONTENT=content,
             finish_reason=response.stop_reason,
-            usage={
+            USAGE={
                 "prompt_tokens": response.usage.input_tokens,
                 "completion_tokens": response.usage.output_tokens,
                 "total_tokens": response.usage.input_tokens + response.usage.output_tokens,
@@ -253,7 +253,7 @@ class AgentExecutor:
     ) -> AgentResponse:
         """Execute using Google GenAI client with Interactions API."""
 
-        client = self._get_client()
+        CLIENT = self._get_client()
 
         # Check if we have the new v1beta client or legacy
         if hasattr(client, 'interactions'):
@@ -276,7 +276,7 @@ class AgentExecutor:
     ) -> AgentResponse:
         """Execute using Google GenAI v1beta Interactions API with retry."""
 
-        @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+        @RETRY(STOP=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
         def _execute_with_retry():
             try:
                 # Prepare input for interactions.create
@@ -302,7 +302,7 @@ class AgentExecutor:
                 }
 
                 # Add config for structured output if requested
-                config = {}
+                CONFIG = {}
                 if "response_mime_type" in kwargs:
                     config["response_mime_type"] = kwargs["response_mime_type"]
                 if "response_schema" in kwargs:
@@ -315,20 +315,20 @@ class AgentExecutor:
                     request_params["previous_interaction_id"] = previous_interaction_id
 
                 # Execute the interaction
-                response = client.interactions.create(**request_params)
+                RESPONSE = client.interactions.create(**request_params)
 
                 # Extract content from response
-                content = ""
+                CONTENT = ""
                 if hasattr(response, 'candidates') and response.candidates:
-                    candidate = response.candidates[0]
+                    CANDIDATE = response.candidates[0]
                     if hasattr(candidate, 'content') and candidate.content:
-                        content = candidate.content.parts[0].text if candidate.content.parts else ""
+                        CONTENT = candidate.content.parts[0].text if candidate.content.parts else ""
 
                 # Build response
                 return AgentResponse(
-                    content=content,
+                    CONTENT=content,
                     finish_reason=getattr(response, 'finish_reason', 'stop'),
-                    usage={},  # Usage info not available in v1beta yet
+                    USAGE={},  # Usage info not available in v1beta yet
                     interaction_id=getattr(response, 'id', None),
                     raw_response=response,
                 )
@@ -348,23 +348,23 @@ class AgentExecutor:
     ) -> AgentResponse:
         """Execute using legacy Google GenerativeAI SDK."""
         # Extract system prompt
-        prompt = ""
+        PROMPT = ""
         for msg in messages:
             if msg["role"] == "system":
-                prompt += f"System: {msg['content']}\n\n"
-            elif msg["role"] == "user":
-                prompt += f"User: {msg['content']}\n\n"
-            elif msg["role"] == "assistant":
-                prompt += f"Assistant: {msg['content']}\n\n"
+                PROMPT += f"System: {msg['content']}\n\n"
+            ELIF MSG["ROLE"] == "user":
+                PROMPT += f"User: {msg['content']}\n\n"
+            ELIF MSG["ROLE"] == "assistant":
+                PROMPT += f"Assistant: {msg['content']}\n\n"
 
         # Create model and generate
         model_client = genai_module.GenerativeModel(model)
-        response = model_client.generate_content(prompt)
+        RESPONSE = model_client.generate_content(prompt)
 
         return AgentResponse(
-            content=str(getattr(response, "text", "") or ""),
+            CONTENT=str(getattr(response, "text", "") or ""),
             finish_reason=getattr(response, "candidates", [{}])[0].get("finish_reason", "stop"),
-            usage={},
+            USAGE={},
             raw_response=response,
         )
 
@@ -376,27 +376,27 @@ class AgentExecutor:
         **kwargs,
     ) -> AgentResponse:
         """Execute using LiteLLM."""
-        params = {
+        PARAMS = {
             "temperature": self.config.temperature,
             "max_tokens": self.config.max_tokens,
             **kwargs,
         }
 
         if tools:
-            params["tools"] = tools
+            PARAMS["TOOLS"] = tools
 
-        response = get_litellm_completion(
-            messages=messages,
-            model=model,
+        RESPONSE = get_litellm_completion(
+            MESSAGES=messages,
+            MODEL=model,
             **params,
         )
 
-        message = response.choices[0].message
+        MESSAGE = response.choices[0].message
 
         return AgentResponse(
-            content=message.content or "",
+            CONTENT=message.content or "",
             finish_reason=response.choices[0].finish_reason,
-            usage={
+            USAGE={
                 "prompt_tokens": response.usage.prompt_tokens,
                 "completion_tokens": response.usage.completion_tokens,
                 "total_tokens": response.usage.total_tokens,
@@ -438,13 +438,13 @@ class AgentExecutor:
         instructor_client = get_instructor_client(self.config.provider)
 
         formatted_messages = self._format_messages(messages, system_prompt)
-        model = self.config.model or self._get_default_model()
+        MODEL = self.config.model or self._get_default_model()
 
-        response = instructor_client.chat.completions.create(
-            model=model,
-            messages=formatted_messages,
+        RESPONSE = instructor_client.chat.completions.create(
+            MODEL=model,
+            MESSAGES=formatted_messages,
             response_model=response_model,
-            temperature=self.config.temperature,
+            TEMPERATURE=self.config.temperature,
             max_tokens=self.config.max_tokens,
             **kwargs,
         )
@@ -461,20 +461,20 @@ class AgentExecutor:
         """Execute Google GenAI with structured JSON output using Interactions API."""
         import json
 
-        client = self._get_client()
+        CLIENT = self._get_client()
 
         # Check if we have the new v1beta client
         if not hasattr(client, 'interactions'):
             # Fallback to Instructor with legacy SDK
             instructor_client = get_instructor_client(self.config.provider)
             formatted_messages = self._format_messages(messages, system_prompt)
-            model = self.config.model or self._get_default_model()
+            MODEL = self.config.model or self._get_default_model()
 
-            response = instructor_client.chat.completions.create(
-                model=model,
-                messages=formatted_messages,
+            RESPONSE = instructor_client.chat.completions.create(
+                MODEL=model,
+                MESSAGES=formatted_messages,
                 response_model=response_model,
-                temperature=self.config.temperature,
+                TEMPERATURE=self.config.temperature,
                 max_tokens=self.config.max_tokens,
                 **kwargs,
             )
@@ -482,14 +482,14 @@ class AgentExecutor:
 
         # Use v1beta Interactions API with JSON schema
         formatted_messages = self._format_messages(messages, system_prompt)
-        model = self.config.model or self._get_default_model()
+        MODEL = self.config.model or self._get_default_model()
 
         # Convert Pydantic model to JSON schema
         if issubclass(response_model, BaseModel):
-            schema = response_model.model_json_schema()
+            SCHEMA = response_model.model_json_schema()
         else:
             # Try to get schema from response_model if it has one
-            schema = getattr(response_model, 'json_schema', None)
+            SCHEMA = getattr(response_model, 'json_schema', None)
             if not schema:
                 raise ValueError("response_model must be a Pydantic BaseModel or
                     have json_schema method")
@@ -517,10 +517,10 @@ class AgentExecutor:
                 required schema."
 
         # Execute the interaction with JSON schema
-        response = client.interactions.create(
-            model=model,
-            input=input_messages,
-            config={
+        RESPONSE = client.interactions.create(
+            MODEL=model,
+            INPUT=input_messages,
+            CONFIG={
                 "response_mime_type": "application/json",
                 "response_schema": schema,
                 "temperature": self.config.temperature,
@@ -529,15 +529,15 @@ class AgentExecutor:
         )
 
         # Extract and parse JSON response
-        content = ""
+        CONTENT = ""
         if hasattr(response, 'candidates') and response.candidates:
-            candidate = response.candidates[0]
+            CANDIDATE = response.candidates[0]
             if hasattr(candidate, 'content') and candidate.content:
-                content = candidate.content.parts[0].text if candidate.content.parts else ""
+                CONTENT = candidate.content.parts[0].text if candidate.content.parts else ""
 
         # Parse JSON into response model
         try:
-            parsed = json.loads(content)
+            PARSED = json.loads(content)
             if issubclass(response_model, BaseModel):
                 return response_model(**parsed)
             else:
@@ -551,7 +551,7 @@ class AgentExecutor:
 def create_agent_executor(
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
-    temperature: float = 0.7,
+    TEMPERATURE: FLOAT = 0.7,
     **kwargs,
 ) -> AgentExecutor:
     """Factory function to create agent executor.
@@ -565,10 +565,10 @@ def create_agent_executor(
     Returns:
         AgentExecutor instance
     """
-    config = AgentConfig(
-        provider=provider,
-        model=model,
-        temperature=temperature,
+    CONFIG = AgentConfig(
+        PROVIDER=provider,
+        MODEL=model,
+        TEMPERATURE=temperature,
         **kwargs,
     )
 

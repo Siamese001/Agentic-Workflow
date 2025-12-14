@@ -5,7 +5,7 @@ import logging
 import os
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 sovereign_dirs = [
     "agentic_core",
     "apps_lic",
@@ -28,8 +28,8 @@ def get_body_start_line(node: ast.AST) -> int:
 def process_file(pyfile: Path) -> bool:
     """Process a single Python file and add missing docstrings."""
     try:
-        content = pyfile.read_text(encoding="utf-8")
-        tree = ast.parse(content)
+        CONTENT = pyfile.read_text(encoding="utf-8")
+        TREE = ast.parse(content)
     except (SyntaxError, OSError):
         return False
 
@@ -49,18 +49,18 @@ def process_file(pyfile: Path) -> bool:
     # Sort by line number descending to avoid offset issues
     needs_fix.sort(key=lambda x: x[0], reverse=True)
 
-    lines = content.split("\n")
+    LINES = content.split("\n")
     for body_line, name, node_type, col_offset in needs_fix:
-        idx = body_line - 1
+        IDX = body_line - 1
         if idx >= len(lines) or idx < 0:
             continue
 
         body_indent = " " * (col_offset + 4)
 
         if node_type == "ClassDef":
-            docstring = f'{body_indent}"""{name} implementation."""'
+            DOCSTRING = f'{body_indent}"""{name} implementation."""'
         else:
-            docstring = f'{body_indent}"""Execute {name} operation."""'
+            DOCSTRING = f'{body_indent}"""Execute {name} operation."""'
 
         # Insert docstring before the first body statement
         lines.insert(idx, docstring)

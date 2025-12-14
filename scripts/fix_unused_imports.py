@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 def get_python_files(root_dir: str = ".") -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
@@ -21,7 +21,7 @@ def get_python_files(root_dir: str = ".") -> List[str]:
 
     for root, dirs, files in os.walk(root_dir):
         # Remove excluded directories from traversal
-        dirs[:] = [d for d in dirs if d not in exclude_dirs]
+        DIRS[:] = [d for d in dirs if d not in exclude_dirs]
 
         for file in files:
             if file.endswith(".py"):
@@ -36,25 +36,25 @@ def find_unused_imports(file_path: str) -> Tuple[Set[str], Dict[str, int]]:
     """Find unused imports in a Python file."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+            CONTENT = f.read()
 
-        tree = ast.parse(content, filename=file_path)
+        TREE = ast.parse(content, filename=file_path)
 
         # Track all imports and their line numbers
-        imports = {}
+        IMPORTS = {}
         import_lines = {}
 
         # Find all imports
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    name = alias.asname if alias.asname else alias.name
-                    imports[name] = alias.name
+                    NAME = alias.asname if alias.asname else alias.name
+                    IMPORTS[NAME] = alias.name
                     import_lines[name] = node.lineno
             elif isinstance(node, ast.ImportFrom):
                 for alias in node.names:
-                    name = alias.asname if alias.asname else alias.name
-                    imports[name] = f"{node.module}.{alias.name}" if node.module else alias.name
+                    NAME = alias.asname if alias.asname else alias.name
+                    IMPORTS[NAME] = f"{node.module}.{alias.name}" if node.module else alias.name
                     import_lines[name] = node.lineno
 
         # Find all used names
@@ -68,7 +68,7 @@ def find_unused_imports(file_path: str) -> Tuple[Set[str], Dict[str, int]]:
                     used_names.add(node.value.id)
 
         # Find unused imports (excluding special cases)
-        unused = set()
+        UNUSED = set()
         for imp in imports:
             if imp not in used_names and not imp.startswith('_'):
                 # Skip some common special cases
@@ -85,9 +85,9 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
     """Remove unused imports from a file."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
+            LINES = f.readlines()
 
-        modified = False
+        MODIFIED = False
         new_lines = []
 
         for i, line in enumerate(lines):
@@ -100,7 +100,7 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
                 if (line_stripped.startswith(f'import {unused} ') or
                     line_stripped == f'import {unused}'):
                     should_remove = True
-                    modified = True
+                    MODIFIED = True
                     break
                 # Handle 'from x import y' or 'from x import y as z'
                 elif line_stripped.startswith('from ') and f' import {unused}' in line_stripped:
@@ -108,17 +108,17 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
                     if (line_stripped.endswith(f' import {unused}') or
                         f' import {unused} as ' in line_stripped):
                         should_remove = True
-                        modified = True
+                        MODIFIED = True
                         break
                     # Handle multi-line imports
                     elif line_stripped.endswith('('):
                         # Look ahead to find the closing parenthesis
                         j = i + 1
                         while j < len(lines) and ')' not in lines[j]:
-                            j += 1
+                            J += 1
                         if j < len(lines):
                             # Check if unused import is in this multi-line block
-                            block = ''.join(lines[i:j+1])
+                            BLOCK = ''.join(lines[i:j+1])
                             if f'\n    {unused}\n' in block or f'\n    {unused} as ' in block:
                                 # Remove the specific line from the block
                                 block_lines = block.split('\n')
@@ -130,16 +130,16 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
                                 # If block is now empty except for from/import, remove it all
                                 if len(new_block) <= 2:
                                     should_remove = True
-                                    modified = True
+                                    MODIFIED = True
                                     # Skip ahead to consume the whole block
                                     for _ in range(j - i):
-                                        lines[i+1] = ''
+                                        LINES[I+1] = ''
                                 else:
                                     # Replace the block with the filtered version
-                                    lines[i:j+1] = [new_block[0] +
+                                    LINES[I:J+1] = [new_block[0] +
                                         '\n'] +
                                             [l + '\n' for l in new_block[1:-1]] + [new_block[-1]]
-                                    modified = True
+                                    MODIFIED = True
                                     break
 
             if not should_remove:

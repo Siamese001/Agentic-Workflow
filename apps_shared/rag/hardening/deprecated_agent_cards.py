@@ -2,14 +2,14 @@ import logging
 
 import pytest
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.models.models import AgentCard, AgentRole  # DEPRECATED:...
 # from archives.legacy_root_folders.core.routing import RoutingPolicy  # DEPRECATED: Archive impo...
 
 
 def _make_agent(agent_cls: type, card: AgentCard | None = None) -> object:
-    routing = RoutingPolicy()
-    sandbox = SandboxConfig()
+    ROUTING = RoutingPolicy()
+    SANDBOX = SandboxConfig()
     if card is not None:
         return agent_cls(
             routing_policy=routing, sandbox=sandbox, agent_card=card, meta_profile=None
@@ -19,7 +19,7 @@ def _make_agent(agent_cls: type, card: AgentCard | None = None) -> object:
 
 def test_all_major_agents_have_agent_card_with_expected_roles() -> None:
     """Test that all major agents have agent cards with expected role definitions."""
-    agents = [
+    AGENTS = [
         (StrategyLLMAgent, AgentRole.PLANNER),
         (DraftingGuild, AgentRole.EXECUTION),
         (SemanticQAAgent, AgentRole.QA),
@@ -29,7 +29,7 @@ def test_all_major_agents_have_agent_card_with_expected_roles() -> None:
     ]
 
     for cls, expected_role in agents:
-        agent = _make_agent(cls)
+        AGENT = _make_agent(cls)
         assert isinstance(agent.agent_card, AgentCard)
         assert agent.agent_card.role == expected_role
         assert agent.agent_card.agent_id == cls.__name__
@@ -37,15 +37,15 @@ def test_all_major_agents_have_agent_card_with_expected_roles() -> None:
 
 def test_allowed_tools_enforced_by_llm_base_agent_helper() -> None:
     """Test that allowed tools are properly enforced by LLM base agent helper."""
-    card = AgentCard(
+    CARD = AgentCard(
         agent_id="test_agent",
-        role=AgentRole.EXECUTION,
-        capabilities=["test"],
+        ROLE=AgentRole.EXECUTION,
+        CAPABILITIES=["test"],
         allowed_tools=["tool_a", "tool_b"],
         policy_scope={},
     )
 
-    agent = _make_agent(StrategyLLMAgent, card)
+    AGENT = _make_agent(StrategyLLMAgent, card)
 
     # Allowed tools should pass silently.
     agent._check_tool_allowed("tool_a")  # type: ignore[attr-defined]

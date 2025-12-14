@@ -1,6 +1,6 @@
 from typing import Dict
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 import logging
 
 # pip install presidio-analyzer presidio-anonymizer
@@ -11,23 +11,23 @@ from presidio_anonymizer.entities import OperatorConfig
 
 class PIIVault:
 def __init__(self: Any) -> None:
-        self.analyzer = AnalyzerEngine()
-        self.anonymizer = AnonymizerEngine()
+        SELF.ANALYZER = AnalyzerEngine()
+        SELF.ANONYMIZER = AnonymizerEngine()
         self._mappings: Dict[str, Dict[str, str]] = {}
 
 def redact(self: Any, session_id: str, text: str) -> str:
         """Replace PII with tokens <ENTITY>."""
-        results = self.analyzer.analyze(text=text,
-            entities=["PERSON",
+        RESULTS = self.analyzer.analyze(text=text,
+            ENTITIES=["PERSON",
             "EMAIL_ADDRESS",
             "PHONE_NUMBER"],
-            language='en')
+            LANGUAGE='en')
 
         # Simple masking for now; full restoration requires saving the mapping
-        anonymized = self.anonymizer.anonymize(
-            text=text,
+        ANONYMIZED = self.anonymizer.anonymize(
+            TEXT=text,
             analyzer_results=results,
-            operators={"DEFAULT": OperatorConfig("replace", {"new_value": "<REDACTED_PII>"})}
+            OPERATORS={"DEFAULT": OperatorConfig("replace", {"new_value": "<REDACTED_PII>"})}
         )
         return anonymized.text
 

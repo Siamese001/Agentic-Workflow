@@ -3,12 +3,12 @@
 import asyncio
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 async def test_mcp_directly():
     """Test MCP servers directly with subprocess to see errors."""
 
-    servers = [
+    SERVERS = [
         {
             "name": "filesystem",
             "cmd": ["npx",
@@ -32,17 +32,17 @@ async def test_mcp_directly():
 
         try:
             # Run with timeout to prevent hanging
-            process = await asyncio.create_subprocess_exec(
+            PROCESS = await asyncio.create_subprocess_exec(
                 *server['cmd'],
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-                cwd="c:/Git/Agentic-Workflow"
+                STDOUT=asyncio.subprocess.PIPE,
+                STDERR=asyncio.subprocess.PIPE,
+                CWD="c:/Git/Agentic-Workflow"
             )
 
             try:
-                stdout, stderr = await asyncio.wait_for(
+                STDOUT, STDERR = await asyncio.wait_for(
                     process.communicate(),
-                    timeout=server['timeout']
+                    TIMEOUT=server['timeout']
                 )
 
                 logger.info(f"Exit code: {process.returncode}")

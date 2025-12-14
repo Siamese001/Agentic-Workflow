@@ -19,7 +19,7 @@ Author: Agentic-Workflow Team
 Version: 1.0.0
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import List
 
 
+# REFACTOR: Split this 77-line function
 def create_test_files(modules: List[str]) -> int:
     """
     Create test files for the given modules.
@@ -113,7 +114,7 @@ def main() -> None:
         logger.info("Usage: python auto_create_test.py <module1> <module2> ...")
         sys.exit(1)
 
-    created = create_test_files(sys.argv[1:])
+    CREATED = create_test_files(sys.argv[1:])
     logger.info(f"\nCreated {created} test files")
 
 

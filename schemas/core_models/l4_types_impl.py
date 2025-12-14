@@ -2,7 +2,7 @@
 
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from .l4_types_types import *  # Star import removed
 
 

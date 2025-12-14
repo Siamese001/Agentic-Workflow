@@ -8,7 +8,7 @@ Generated: 2025-12-07T13:28:54.038652
 import logging
 from typing import Dict, Optional, Union
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class PrepareOutreachContext:
@@ -16,15 +16,15 @@ class PrepareOutreachContext:
 
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    self.config = config or {}
+    SELF.CONFIG = config or {}
     self.format_type = self.config.get("format", "default")
     logger.info(f"Initialized {self.__class__.__name__}")
 
 
 def format(self: Any, data: Union[str, Dict], target: Optional[str]) -> FormatResult:
     """Format input data into the required output structure."""
-    fmt = target or self.format_type
-    transformed = self._transform(data)
+    FMT = target or self.format_type
+    TRANSFORMED = self._transform(data)
     return FormatResult(data=transformed, format_type=fmt)
 
 

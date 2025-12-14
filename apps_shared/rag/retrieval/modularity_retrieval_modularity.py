@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 def test_retrieval_directory_structure_exists() -> None:
@@ -33,10 +33,10 @@ def test_meta_ranking_and_hybrid_ranker_present() -> None:
         f"Expected hybrid_ranker module missing: {hybrid_ranker_file}"
 
     retrieval_file = PROJECT_ROOT / "meta" / "retrieval" / "retrieval.py"
-    text = retrieval_file.read_text(encoding="utf-8")
+    TEXT = retrieval_file.read_text(encoding="utf-8")
 
     # Check for actual import statements (at beginning of line), not in docstrings
-    lines = text.split('\n')
+    LINES = text.split('\n')
     import_lines = [line.strip() for line in lines if line.strip().startswith('from ') or line.strip
     ().startswith('import ')]
 

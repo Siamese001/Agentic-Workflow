@@ -11,7 +11,7 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class RiskCategory(str, Enum):
     """Categories of risks for onboarding plans."""
@@ -34,13 +34,13 @@ class ImpactLevel(str, Enum):
 class FailureMode(BaseModel):
     """A potential failure mode with risk assessment."""
 
-    risk: str = Field(..., description="Description of the risk")
+    RISK: STR = Field(..., description="Description of the risk")
     category: RiskCategory = Field(..., description="Risk category")
-    probability: float = Field(..., ge=0.0, le=1.0, description="Probability of occurrence (0-1)")
+    PROBABILITY: FLOAT = Field(..., ge=0.0, le=1.0, description="Probability of occurrence (0-1)")
     impact: ImpactLevel = Field(..., description="Impact if risk materializes")
     mitigation_strategy: str = Field(..., description="Specific mitigation approach")
     early_warning_signs: List[str] = Field(default_factory=list,
-        description="Early warning indicators")
+        DESCRIPTION="Early warning indicators")
     owner: Optional[str] = Field(None, description="Who owns this risk")
 
     @property
@@ -62,10 +62,10 @@ class PreMortemReport(BaseModel):
     overall_risk_score: float = Field(..., ge=0.0, le=1.0, description="Overall plan risk score")
     go_no_go_recommendation: str = Field(..., description="Go/No-Go recommendation")
     critical_success_factors: List[str] = Field(default_factory=list,
-        description="Critical success factors")
+        DESCRIPTION="Critical success factors")
     monitoring_plan: Dict[str,
-        str] = Field(default_factory=dict,
-        description="Risk monitoring plan")
+        STR] = Field(default_factory=dict,
+        DESCRIPTION="Risk monitoring plan")
 
 class SimpleAgentBase:
     """Simple base class for standalone agents."""
@@ -77,7 +77,7 @@ class SimpleAgentBase:
             name: Agent name for logging
             model_name: LLM model to use
         """
-        self.name = name
+        SELF.NAME = name
         self.model_name = model_name
         logger.info(f"Initialized {self.__class__.__name__}: model={model_name}")
 
@@ -165,13 +165,13 @@ class PreMortemAgent(SimpleAgentBase):
         overall_risk = self._calculate_overall_risk(top_risks)
 
         # Generate recommendation
-        recommendation = self._generate_recommendation(overall_risk, top_risks)
+        RECOMMENDATION = self._generate_recommendation(overall_risk, top_risks)
 
         # Identify critical success factors
         success_factors = self._identify_success_factors(plan_text, top_risks)
 
         # Create monitoring plan
-        monitoring = self._create_monitoring_plan(top_risks)
+        MONITORING = self._create_monitoring_plan(top_risks)
 
         return PreMortemReport(
             plan_summary=self._summarize_plan(plan_text),
@@ -192,7 +192,7 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             List of identified failure modes
         """
-        prompt = f"""
+        PROMPT = f"""
         You are a cynical Chief Risk Officer reviewing a {plan_type} plan.
         Assume this plan FAILS in 6 months. List the top 7 reasons why it might fail.
 
@@ -222,17 +222,17 @@ class PreMortemAgent(SimpleAgentBase):
         """
 
         try:
-            response = await self._call_llm(prompt, temperature=0.2)
-            result = json.loads(response.content.strip())
+            RESPONSE = await self._call_llm(prompt, temperature=0.2)
+            RESULT = json.loads(response.content.strip())
 
             failure_modes = []
             for fm in result.get("failure_modes", []):
                 try:
-                    failure = FailureMode(
-                        risk=fm["risk"],
-                        category=RiskCategory(fm["category"]),
-                        probability=fm["probability"],
-                        impact=ImpactLevel(fm["impact"]),
+                    FAILURE = FailureMode(
+                        RISK=fm["risk"],
+                        CATEGORY=RiskCategory(fm["category"]),
+                        PROBABILITY=fm["probability"],
+                        IMPACT=ImpactLevel(fm["impact"]),
                         mitigation_strategy=""  # Will be filled later
                     )
                     failure_modes.append(failure)
@@ -247,10 +247,10 @@ class PreMortemAgent(SimpleAgentBase):
             # Return generic failure modes
             return [
                 FailureMode(
-                    risk="Team adoption challenges",
-                    category=RiskCategory.TEAM_ADOPTION,
-                    probability=0.6,
-                    impact=ImpactLevel.HIGH,
+                    RISK="Team adoption challenges",
+                    CATEGORY=RiskCategory.TEAM_ADOPTION,
+                    PROBABILITY=0.6,
+                    IMPACT=ImpactLevel.HIGH,
                     mitigation_strategy=""
                 )
             ]
@@ -265,7 +265,7 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             Mitigation strategy
         """
-        prompt = f"""
+        PROMPT = f"""
         For this risk, provide a specific, actionable mitigation strategy:
 
         Risk: {failure.risk}
@@ -285,7 +285,7 @@ class PreMortemAgent(SimpleAgentBase):
         """
 
         try:
-            response = await self._call_llm(prompt, temperature=0.3)
+            RESPONSE = await self._call_llm(prompt, temperature=0.3)
             return response.content.strip()
         except Exception as e:
             logger.error(f"Failed to generate mitigation: {e}")
@@ -391,7 +391,7 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             List of critical success factors
         """
-        factors = []
+        FACTORS = []
 
         # Based on risks, identify corresponding success factors
         risk_categories = set(r.category for r in risks)
@@ -426,10 +426,10 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             Monitoring plan mapping risks to monitoring actions
         """
-        monitoring = {}
+        MONITORING = {}
 
         for risk in risks[:3]:  # Top 3 risks
-            monitoring[risk.risk] = f"Weekly check-ins,
+            MONITORING[RISK.RISK] = f"Weekly check-ins,
                 track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
 
         return monitoring
@@ -455,7 +455,7 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             Formatted Markdown string
         """
-        lines = [
+        LINES = [
             "## Strategic Risk Assessment (Pre-Mortem)",
             "",
             f"**Overall Risk Score:** {report.overall_risk_score:.1%}",
@@ -468,7 +468,7 @@ class PreMortemAgent(SimpleAgentBase):
         ]
 
         for risk in report.top_risks:
-            mitigation = risk.
+            MITIGATION = risk.
                 .mitigation_strategy[:50] + ".
                 ..
                 ..
@@ -523,20 +523,20 @@ class PreMortemAgent(SimpleAgentBase):
                 Provider, get_client)
 
             # Get Anthropic client
-            client = get_client(Provider.ANTHROPIC)
+            CLIENT = get_client(Provider.ANTHROPIC)
 
             # Call LLM
-            response = await client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+            RESPONSE = await client.messages.create(
+                MODEL="claude-3-5-sonnet-20241022",
                 max_tokens=2000,
-                temperature=temperature,
-                messages=[{"role": "user", "content": prompt}]
+                TEMPERATURE=temperature,
+                MESSAGES=[{"role": "user", "content": prompt}]
             )
 
             class LLMResponseImpl:
                 """TODO: Add docstring."""
             def __init__(self, content: str):
-                self.content = content
+                SELF.CONTENT = content
 
             return LLMResponseImpl(response.content[0].text)
 
@@ -546,6 +546,6 @@ class PreMortemAgent(SimpleAgentBase):
             class LLMResponseImpl:
                 """Docstring."""
             def __init__(self, content: str):
-                self.content = content
+                SELF.CONTENT = content
 
             return LLMResponseImpl('{"failure_modes": []}')

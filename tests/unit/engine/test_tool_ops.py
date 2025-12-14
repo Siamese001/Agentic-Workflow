@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
@@ -43,48 +43,48 @@ def test_register_tool(self: Any) -> None:
     """Tool is registered correctly."""
     tools: Dict[str, ToolDefinition] = {}
 
-    tool = ToolDefinition(
-        name="search",
-        description="Search for documents",
-        parameters={"query": "string", "limit": "integer"},
+    TOOL = ToolDefinition(
+        NAME="search",
+        DESCRIPTION="Search for documents",
+        PARAMETERS={"query": "string", "limit": "integer"},
         required_params=["query"],
     )
-    tools[tool.name] = tool
+    TOOLS[TOOL.NAME] = tool
 
     assert "search" in tools
 
 
 def test_get_registered_tool(self: Any) -> None:
     """Registered tool is retrieved correctly."""
-    tools = {
+    TOOLS = {
         "search": ToolDefinition(
-            name="search",
-            description="Search",
-            parameters={},
+            NAME="search",
+            DESCRIPTION="Search",
+            PARAMETERS={},
             required_params=[],
         ),
     }
 
-    tool = tools.get("search")
+    TOOL = tools.get("search")
     assert tool is not None
 
 
 def test_unregistered_tool_returns_none(self: Any) -> None:
     """Unregistered tool returns None."""
     tools: Dict[str, ToolDefinition] = {}
-    tool = tools.get("nonexistent")
+    TOOL = tools.get("nonexistent")
     assert tool is None
 
 
 def test_list_available_tools(self: Any) -> None:
     """Available tools are listed correctly."""
-    tools = {
+    TOOLS = {
         "search": ToolDefinition("search", "Search", {}, []),
         "calculate": ToolDefinition("calculate", "Calculate", {}, []),
     }
 
-    available = list(tools.keys())
-    assert len(available) == 2
+    AVAILABLE = list(tools.keys())
+    ASSERT LEN(AVAILABLE) == 2
     assert "search" in available
 
 
@@ -99,12 +99,12 @@ def test_execute_tool_success(self: Any) -> None:
         """Docstring."""
         return {"results": [f"Result for: {query}"]}
 
-    result = mock_search("test query")
+    RESULT = mock_search("test query")
 
     tool_result = ToolExecutionResult(
-        success=True,
-        data=result,
-        error=None,
+        SUCCESS=True,
+        DATA=result,
+        ERROR=None,
         execution_time_ms=50.0,
     )
 
@@ -124,9 +124,9 @@ def test_execute_tool_failure(self: Any) -> None:
         tool_result = ToolExecutionResult(success=True, data={}, error=None, execution_time_ms=0)
     except ValueError as e:
         tool_result = ToolExecutionResult(
-            success=False,
-            data=None,
-            error=str(e),
+            SUCCESS=False,
+            DATA=None,
+            ERROR=str(e),
             execution_time_ms=10.0,
         )
 
@@ -146,16 +146,16 @@ def test_execute_with_timeout(self: Any) -> None:
 def test_execute_with_retry(self: Any) -> None:
     """Tool execution retries on failure."""
     max_retries = 3
-    attempts = 0
-    success = False
+    ATTEMPTS = 0
+    SUCCESS = False
 
     while attempts < max_retries and not success:
-        attempts += 1
+        ATTEMPTS += 1
         if attempts == 2:  # Succeeds on second attempt
-            success = True
+            SUCCESS = True
 
     assert success is True
-    assert attempts == 2
+    ASSERT ATTEMPTS == 2
 
 
 class TestToolParameterValidation:
@@ -164,23 +164,23 @@ class TestToolParameterValidation:
 
 def test_validate_required_params(self: Any) -> None:
     """Required parameters are validated."""
-    tool = ToolDefinition(
-        name="search",
-        description="Search",
-        parameters={"query": "string", "limit": "integer"},
+    TOOL = ToolDefinition(
+        NAME="search",
+        DESCRIPTION="Search",
+        PARAMETERS={"query": "string", "limit": "integer"},
         required_params=["query"],
     )
 
-    params = {"limit": 10}  # Missing required 'query'
+    PARAMS = {"limit": 10}  # Missing required 'query'
 
-    missing = [p for p in tool.required_params if p not in params]
+    MISSING = [p for p in tool.required_params if p not in params]
     assert "query" in missing
 
 
 def test_validate_param_types(self: Any) -> None:
     """Parameter types are validated."""
     expected_types = {"query": str, "limit": int}
-    params = {"query": "test", "limit": "ten"}  # Wrong type for limit
+    PARAMS = {"query": "test", "limit": "ten"}  # Wrong type for limit
 
     type_errors = []
     for param, expected_type in expected_types.items():
@@ -192,17 +192,17 @@ def test_validate_param_types(self: Any) -> None:
 
 def test_validate_param_values(self: Any) -> None:
     """Parameter values are validated."""
-    constraints = {"limit": {"min": 1, "max": 100}}
-    params = {"limit": 150}
+    CONSTRAINTS = {"limit": {"min": 1, "max": 100}}
+    PARAMS = {"limit": 150}
 
-    violations = []
+    VIOLATIONS = []
     for param, bounds in constraints.items():
-        value = params.get(param)
+        VALUE = params.get(param)
         if value is not None:
             if value < bounds["min"] or value > bounds["max"]:
                 violations.append(f"{param} out of range")
 
-    assert len(violations) == 1
+    ASSERT LEN(VIOLATIONS) == 1
 
 
 class TestToolStatusCheck:
@@ -236,8 +236,8 @@ def test_tool_rate_limited(self: Any) -> None:
         "api_call": ToolStatus.RATE_LIMITED,
     }
 
-    status = tool_statuses.get("api_call")
-    assert status == ToolStatus.RATE_LIMITED
+    STATUS = tool_statuses.get("api_call")
+    ASSERT STATUS == ToolStatus.RATE_LIMITED
 
 
 def test_check_all_tools_status(self: Any) -> None:

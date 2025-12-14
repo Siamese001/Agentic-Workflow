@@ -7,7 +7,7 @@ micro-structure enforcement, and placeholder detection blocking.
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -93,17 +93,18 @@ def __init__(
     """
     super().__init__(config, k_node_id="K.3", element="Message Body")
 
-    self.archetype = archetype
-    self.route = route
+    SELF.ARCHETYPE = archetype
+    SELF.ROUTE = route
     self.char_limit = char_limit
-    self.template = ARCHETYPE_TEMPLATES.get(archetype, ARCHETYPE_TEMPLATES["EXECUTIVE"])
+    SELF.TEMPLATE = ARCHETYPE_TEMPLATES.get(archetype, ARCHETYPE_TEMPLATES["EXECUTIVE"])
 
     logger.info(
         f"K.3 Message Body Agent initialized: "
-        f"archetype={archetype}, route={route}, char_limit={char_limit}"
+        F"ARCHETYPE={archetype}, route={route}, char_limit={char_limit}"
     )
 
 
+# REFACTOR: Split this 78-line function
 async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
     """Execute K.3 message body generation.
 
@@ -130,23 +131,23 @@ async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
 
     # Build prompt
     if regeneration_feedback:
-        prompt = self._build_regeneration_prompt(context, regeneration_feedback)
+        PROMPT = self._build_regeneration_prompt(context, regeneration_feedback)
     else:
-        prompt = self._build_initial_prompt(
+        PROMPT = self._build_initial_prompt(
             company_name, recipient_name, rag_insights, sender_bullets
         )
 
     # Generate with self-consistency if configured
     if self.config.self_consistency > 1:
-        candidates = await self._call_llm_with_self_consistency(
-            prompt, k=self.config.self_consistency
+        CANDIDATES = await self._call_llm_with_self_consistency(
+            PROMPT, K=self.config.self_consistency
         )
-        response = self._select_best_candidate(candidates, "length")
+        RESPONSE = self._select_best_candidate(candidates, "length")
     else:
-        response = await self._call_llm(prompt)
+        RESPONSE = await self._call_llm(prompt)
 
     # Parse body components
-    body = response.strip()
+    BODY = response.strip()
 
     # Extract transition phrase
     transition_phrase = self._extract_transition_phrase(body, company_name)
@@ -160,15 +161,15 @@ async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
     char_count = len(body)
 
     # Build output
-    output = K3Output(
-        body=body,
-        archetype=self.archetype,
+    OUTPUT = K3Output(
+        BODY=body,
+        ARCHETYPE=self.archetype,
         transition_phrase=transition_phrase,
         insights_count=insights_count,
         bullets_count=bullets_count,
         word_count=word_count,
         char_count=char_count,
-        metadata={
+        METADATA={
             "k_node_id": self.k_node_id,
             "route": self.route,
             "template": self.template["format"],
@@ -183,6 +184,7 @@ async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
 
     return output
 
+# REFACTOR: Split this 66-line function
 
 def _build_initial_prompt(
     self: Any,
@@ -204,9 +206,9 @@ def _build_initial_prompt(
     """
     transition_phrase = ARCHETYPE_TRANSITIONS.get(
         self.archetype, ARCHETYPE_TRANSITIONS["EXECUTIVE"]
-    ).format(company=company_name)
+    ).FORMAT(COMPANY=company_name)
 
-    prompt = f"""Generate a professional LinkedIn message body for a {self.archetype} recipient.
+    PROMPT = f"""Generate a professional LinkedIn message body for a {self.archetype} recipient.
 
 CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 1. Must include EXACT transition phrase: "{transition_phrase}"
@@ -264,7 +266,7 @@ def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str
     """
     previous_body = context.get("previous_body", "")
 
-    prompt = f"""REGENERATION REQUIRED
+    PROMPT = f"""REGENERATION REQUIRED
 
 {feedback}
 
@@ -299,7 +301,7 @@ def _extract_transition_phrase(self: Any, body: str, company_name: str) -> str:
     """
     expected_phrase = ARCHETYPE_TRANSITIONS.get(
         self.archetype, ARCHETYPE_TRANSITIONS["EXECUTIVE"]
-    ).format(company=company_name)
+    ).FORMAT(COMPANY=company_name)
 
     if expected_phrase.lower() in body.lower():
         return expected_phrase
@@ -319,7 +321,7 @@ def _count_insights(self: Any, body: str) -> int:
     import re
 
     # Count patterns like "1." and "2."
-    insights = re.findall(r"\n\d+\.\s+", body)
+    INSIGHTS = re.findall(r"\n\d+\.\s+", body)
     return len(insights)
 
 
@@ -333,5 +335,5 @@ def _count_bullets(self: Any, body: str) -> int:
         Number of bullets
     """
     # Count patterns like "•", "-", "*"
-    bullets = re.findall(r"[\n•\-\*]\s+", body)
+    BULLETS = re.findall(r"[\n•\-\*]\s+", body)
     return len(bullets)

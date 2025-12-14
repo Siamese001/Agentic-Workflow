@@ -10,7 +10,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -74,7 +74,7 @@ def __init__(self: Any, name: str) -> None:
     Args:
         name: Server name
     """
-    self.name = name
+    SELF.NAME = name
     self._tools: Dict[str, MCPTool] = {}
     logger.info(f"MCP tool server initialized: {name}")
 
@@ -106,11 +106,11 @@ def register_function(
         handler: Function to execute
         requires_approval: Whether tool requires approval
     """
-    tool = MCPTool(
-        name=name,
-        description=description,
-        parameters=parameters,
-        handler=handler,
+    TOOL = MCPTool(
+        NAME=name,
+        DESCRIPTION=description,
+        PARAMETERS=parameters,
+        HANDLER=handler,
         requires_approval=requires_approval,
     )
     self.register_tool(tool)
@@ -146,7 +146,7 @@ def get_tools_for_provider(self: Any, provider: str) -> List[Dict[str, Any]]:
     Returns:
         List of tool definitions
     """
-    tools = []
+    TOOLS = []
 
     for tool in self._tools.values():
         if provider == "anthropic":
@@ -167,23 +167,23 @@ def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResu
     Returns:
         MCPToolResult with execution result
     """
-    tool = self.get_tool(name)
+    TOOL = self.get_tool(name)
 
     if not tool:
         return MCPToolResult(
             tool_name=name,
-            success=False,
-            result=None,
-            error=f"Tool not found: {name}",
+            SUCCESS=False,
+            RESULT=None,
+            ERROR=f"Tool not found: {name}",
         )
 
     try:
-        result = tool.handler(**arguments)
+        RESULT = tool.handler(**arguments)
 
         return MCPToolResult(
             tool_name=name,
-            success=True,
-            result=result,
+            SUCCESS=True,
+            RESULT=result,
         )
 
     except Exception as e:
@@ -191,9 +191,9 @@ def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResu
 
         return MCPToolResult(
             tool_name=name,
-            success=False,
-            result=None,
-            error=str(e),
+            SUCCESS=False,
+            RESULT=None,
+            ERROR=str(e),
         )
 
 
@@ -228,11 +228,11 @@ def register_default_tools(server: MCPToolServer) -> None:
     # Calculator tool
     def calculator(operation: str, a: float, b: float) -> float:
         """Perform basic arithmetic operations."""
-        operations = {
+        OPERATIONS = {
             "add": lambda x, y: x + y,
             "subtract": lambda x, y: x - y,
             "multiply": lambda x, y: x * y,
-            "divide": lambda x, y: x / y if y != 0 else float("inf"),
+            "DIVIDE": LAMBDA X, Y: X / Y IF Y != 0 else float("inf"),
         }
 
         if operation not in operations:
@@ -241,9 +241,9 @@ def register_default_tools(server: MCPToolServer) -> None:
         return operations[operation](a, b)
 
     server.register_function(
-        name="calculator",
-        description="Perform basic arithmetic operations (add, subtract, multiply, divide)",
-        parameters={
+        NAME="calculator",
+        DESCRIPTION="Perform basic arithmetic operations (add, subtract, multiply, divide)",
+        PARAMETERS={
             "type": "object",
             "properties": {
                 "operation": {
@@ -262,14 +262,14 @@ def register_default_tools(server: MCPToolServer) -> None:
             },
             "required": ["operation", "a", "b"],
         },
-        handler=calculator,
+        HANDLER=calculator,
     )
 
     # Text analysis tool
     def analyze_text(text: str) -> Dict[str, Any]:
         """Analyze text and return statistics."""
-        words = text.split()
-        sentences = text.split(".")
+        WORDS = text.split()
+        SENTENCES = text.split(".")
 
         return {
             "character_count": len(text),
@@ -279,9 +279,9 @@ def register_default_tools(server: MCPToolServer) -> None:
         }
 
     server.register_function(
-        name="analyze_text",
-        description="Analyze text and return statistics (character count, word count, etc.)",
-        parameters={
+        NAME="analyze_text",
+        DESCRIPTION="Analyze text and return statistics (character count, word count, etc.)",
+        PARAMETERS={
             "type": "object",
             "properties": {
                 "text": {
@@ -291,14 +291,14 @@ def register_default_tools(server: MCPToolServer) -> None:
             },
             "required": ["text"],
         },
-        handler=analyze_text,
+        HANDLER=analyze_text,
     )
 
     logger.info("Registered default MCP tools")
 
 
 def create_mcp_server(
-    name: str = "agentic-workflow-tools",
+    NAME: STR = "agentic-workflow-tools",
     register_defaults: bool = True,
 ) -> MCPToolServer:
     """Factory function to create MCP tool server.
@@ -310,7 +310,7 @@ def create_mcp_server(
     Returns:
         MCPToolServer instance
     """
-    server = MCPToolServer(name)
+    SERVER = MCPToolServer(name)
 
     if register_defaults:
         register_default_tools(server)
@@ -331,23 +331,23 @@ def execute_tool_calls(
     Returns:
         List of MCPToolResult
     """
-    results = []
+    RESULTS = []
 
     for tool_call in tool_calls:
         if "function" in tool_call:
-            function = tool_call["function"]
-            name = function.get("name")
-            arguments = function.get("arguments", {})
+            FUNCTION = tool_call["function"]
+            NAME = function.get("name")
+            ARGUMENTS = function.get("arguments", {})
 
             if isinstance(arguments, str):
                 import json
 
                 try:
-                    arguments = json.loads(arguments)
+                    ARGUMENTS = json.loads(arguments)
                 except json.JSONDecodeError:
-                    arguments = {}
+                    ARGUMENTS = {}
 
-            result = server.execute_tool(name, arguments)
+            RESULT = server.execute_tool(name, arguments)
             results.append(result)
 
     return results

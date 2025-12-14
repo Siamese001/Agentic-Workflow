@@ -34,9 +34,9 @@ async def insert_entity(entity: TemporalEntity) -> None:
         if _neo4j_graph is not None:
             _neo4j_graph.upsert_entity(
                 entity_id=entity.entity_id,
-                etype=entity.entity_type,
-                name=entity.entity_id,  # Use entity_id as name for now
-                metadata={
+                ETYPE=entity.entity_type,
+                NAME=entity.entity_id,  # Use entity_id as name for now
+                METADATA={
                     "canonical_id": entity.canonical_id,
                     "aliases": list(entity.aliases),
                     "confidence": entity.confidence,
@@ -62,7 +62,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
             _neo4j_graph.upsert_relation(
                 rel_id=triplet.triplet_id,
                 subject_id=triplet.subject,
-                predicate=triplet.predicate,
+                PREDICATE=triplet.predicate,
                 object_id=triplet.object,
                 valid_at=triplet.temporal_range.valid_at.isoformat(),
                 invalid_at=triplet.
@@ -73,7 +73,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                     .invalid_at else None,
 
 
-                attrs={
+                ATTRS={
                     "confidence": triplet.confidence,
                     "source": triplet.source,
                     "status": triplet.status.value,

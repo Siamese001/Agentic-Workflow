@@ -19,7 +19,7 @@ from enum import Enum
     FeedbackType
 )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class EngineType(Enum):
     """Types of engines using shared infrastructure."""
@@ -79,7 +79,7 @@ class ResumeValidator(DomainValidator):
 
     def validate_domain_content(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
             """Validate resume content."""
-        results = {
+        RESULTS = {
             "has_achievements": self._has_achievements(content),
             "has_metrics": self._has_metrics(content),
             "action_verbs": self._count_action_verbs(content),
@@ -128,28 +128,28 @@ class ResumeValidator(DomainValidator):
             "reduced", "increased", "improved", "achieved", "delivered", "launched",
             "coordinated", "directed", "supervised", "mentored", "trained"
         }
-        words = content.lower().split()
+        WORDS = content.lower().split()
         return sum(1 for word in words if word in action_verbs)
 
     def _assess_bullet_quality(self, content: str) -> float:
             """Assess bullet point quality."""
-        bullets = [b.strip() for b in content.split('\n') if b.strip().startswith('•') or b.strip().
+        BULLETS = [b.strip() for b in content.split('\n') if b.strip().startswith('•') or b.strip().
     startswith('-')]
         if not bullets:
             return 0.0
 
         quality_scores = []
         for bullet in bullets:
-            score = 0.0
+            SCORE = 0.0
             # Has action verb
             if any(verb in bullet.lower() for verb in ["led", "managed", "developed"]):
-                score += 0.3
+                SCORE += 0.3
             # Has metric
             if any(char.isdigit() for char in bullet):
-                score += 0.4
+                SCORE += 0.4
             # Has result
             if any(word in bullet.lower() for word in ["resulted", "achieved", "led to"]):
-                score += 0.3
+                SCORE += 0.3
             quality_scores.append(score)
 
         return sum(quality_scores) / len(quality_scores) if quality_scores else 0.0
@@ -167,19 +167,19 @@ class ResumeValidator(DomainValidator):
 
     def _calculate_achievement_density(self, content: str) -> float:
             """Calculate achievement statement density."""
-        sentences = content.split('.')
-        achievements = sum(1 for s in sentences if self._has_achievements(s))
+        SENTENCES = content.split('.')
+        ACHIEVEMENTS = sum(1 for s in sentences if self._has_achievements(s))
         return achievements / len(sentences) if sentences else 0.0
 
     def _calculate_metric_usage(self, content: str) -> float:
             """Calculate metric usage frequency."""
-        sentences = content.split('.')
+        SENTENCES = content.split('.')
         with_metrics = sum(1 for s in sentences if self._has_metrics(s))
         return with_metrics / len(sentences) if sentences else 0.0
 
     def _calculate_verb_diversity(self, content: str) -> float:
             """Calculate action verb diversity."""
-        verbs = self._count_action_verbs(content)
+        VERBS = self._count_action_verbs(content)
         unique_verbs = len(set(word.lower() for word in content.split()
                              if word in ["led", "managed", "developed", "created"]))
         return unique_verbs / max(verbs, 1)
@@ -197,7 +197,7 @@ class OutreachValidator(DomainValidator):
 
     def validate_domain_content(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
             """Validate outreach content."""
-        results = {
+        RESULTS = {
             "has_personalization": self._has_personalization(content, context),
             "has_cta": self._has_call_to_action(content),
             "tone_appropriate": self._assess_tone(content, context),
@@ -341,7 +341,7 @@ class OutreachValidator(DomainValidator):
     def _calculate_clarity(self, content: str) -> float:
             """Calculate clarity score."""
         # Simple clarity based on sentence length and structure
-        sentences = [s.strip() for s in content.split('.') if s.strip()]
+        SENTENCES = [s.strip() for s in content.split('.') if s.strip()]
         if not sentences:
             return 0.0
 
@@ -389,9 +389,9 @@ class SharedSignalInfrastructure:
         enhancer_key = f"{engine_type.value}_{id(domain_config)}"
 
         if enhancer_key not in self._enhancers:
-            enhancer = SignalEnhancer(
-                name=f"{engine_type.value}_enhancer",
-                thresholds=domain_config.quality_thresholds
+            ENHANCER = SignalEnhancer(
+                NAME=f"{engine_type.value}_enhancer",
+                THRESHOLDS=domain_config.quality_thresholds
             )
 
             # Store with domain config reference
@@ -422,12 +422,12 @@ class SharedSignalInfrastructure:
             Enhanced signal assessment
         """
         # Get base assessment
-        enhancer = self.get_enhancer(engine_type, domain_config)
-        assessment = enhancer.assess_signal(content, context)
+        ENHANCER = self.get_enhancer(engine_type, domain_config)
+        ASSESSMENT = enhancer.assess_signal(content, context)
 
         # Add domain-specific validation
         if engine_type in self._validators:
-            validator = self._validators[engine_type]
+            VALIDATOR = self._validators[engine_type]
 
             # Add domain metrics
             domain_metrics = validator.extract_domain_metrics(content)
@@ -485,7 +485,7 @@ class SharedSignalInfrastructure:
         Returns:
             Domain configuration
         """
-        thresholds = custom_thresholds or QualityThresholds()
+        THRESHOLDS = custom_thresholds or QualityThresholds()
 
         # Domain-specific default configurations
         if engine_type == EngineType.RESUME:
@@ -524,7 +524,7 @@ class SharedSignalInfrastructure:
         Returns:
             Cross-engine insights
         """
-        insights = {
+        INSIGHTS = {
             "engines": {},
             "shared_patterns": {},
             "recommendations": []
@@ -535,7 +535,7 @@ class SharedSignalInfrastructure:
             if engine_type == EngineType.GENERAL:
                 continue
 
-            loop = self.get_feedback_loop(engine_type)
+            LOOP = self.get_feedback_loop(engine_type)
             engine_insights = loop.get_quality_insights()
             insights["engines"][engine_type.value] = engine_insights
 
@@ -543,7 +543,7 @@ class SharedSignalInfrastructure:
         all_thresholds = {}
         for enhancer in self._enhancers.values():
             if hasattr(enhancer, 'domain_config'):
-                engine = enhancer.domain_config.engine_type
+                ENGINE = enhancer.domain_config.engine_type
                 all_thresholds[engine.value] = enhancer.domain_config.quality_thresholds
 
         insights["shared_patterns"] = {
@@ -553,7 +553,7 @@ class SharedSignalInfrastructure:
         }
 
         # Generate recommendations
-        insights["recommendations"] = self._generate_cross_engine_recommendations(insights)
+        INSIGHTS["RECOMMENDATIONS"] = self._generate_cross_engine_recommendations(insights)
 
         return insights
 
@@ -581,7 +581,7 @@ class SharedSignalInfrastructure:
 
     def _generate_cross_engine_recommendations(self, insights: Dict[str, Any]) -> List[str]:
             """Generate recommendations based on cross-engine analysis."""
-        recommendations = []
+        RECOMMENDATIONS = []
 
         # Check for quality gaps
         for engine, engine_insights in insights["engines"].items():
@@ -633,13 +633,13 @@ def assess_resume_signal(
     Returns:
         Signal assessment
     """
-    infrastructure = get_shared_infrastructure()
+    INFRASTRUCTURE = get_shared_infrastructure()
 
     # Create resume config
-    thresholds = QualityThresholds() if strict_mode else QualityThresholds(
+    THRESHOLDS = QualityThresholds() if strict_mode else QualityThresholds(
         GOOD_MIN=0.5, MARGINAL_MIN=0.3
     )
-    config = infrastructure.create_domain_config(
+    CONFIG = infrastructure.create_domain_config(
         EngineType.RESUME,
         custom_thresholds=thresholds
     )
@@ -662,13 +662,13 @@ def assess_outreach_signal(
     Returns:
         Signal assessment
     """
-    infrastructure = get_shared_infrastructure()
+    INFRASTRUCTURE = get_shared_infrastructure()
 
     # Create outreach config
-    thresholds = QualityThresholds() if strict_mode else QualityThresholds(
+    THRESHOLDS = QualityThresholds() if strict_mode else QualityThresholds(
         GOOD_MIN=0.5, MARGINAL_MIN=0.3
     )
-    config = infrastructure.create_domain_config(
+    CONFIG = infrastructure.create_domain_config(
         EngineType.OUTREACH,
         custom_thresholds=thresholds
     )

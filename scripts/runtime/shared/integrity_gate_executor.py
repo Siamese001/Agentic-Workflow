@@ -1,7 +1,7 @@
 """Integrity Gate Executor - The Critic
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 This module implements cryptographic validation gates for both Resume and Outreach engines.
 Enforces H10.3 Cryptographic Signatures and v16.1 Hygiene Scans.
 
@@ -135,11 +135,11 @@ class IntegrityGateExecutor:
         H16.1 Hygiene Scan - Hard-coded scan for forbidden Unicode.
         BLOCKS immediately on detection.
         """
-        violations = []
+        VIOLATIONS = []
 
         for char, name in self.FORBIDDEN_UNICODE.items():
             if char in content:
-                positions = [i for i, c in enumerate(content) if c == char]
+                POSITIONS = [i for i, c in enumerate(content) if c == char]
                 violations.append({
                     'char': char,
                     'name': name,
@@ -151,18 +151,18 @@ class IntegrityGateExecutor:
         if violations:
             return ValidationResult(
                 gate_id='VG_HYGIENE_UNICODE',
-                passed=False,
-                severity=ValidationSeverity.BLOCK,
-                message=f"BLOCKED: Forbidden Unicode detected ({len(violations)} types)",
-                details={'violations': violations}
+                PASSED=False,
+                SEVERITY=ValidationSeverity.BLOCK,
+                MESSAGE=f"BLOCKED: Forbidden Unicode detected ({len(violations)} types)",
+                DETAILS={'violations': violations}
             )
 
         return ValidationResult(
             gate_id='VG_HYGIENE_UNICODE',
-            passed=True,
-            severity=ValidationSeverity.INFO,
-            message="Hygiene scan passed - no forbidden Unicode",
-            signature=self._generate_signature('VG_HYGIENE_UNICODE', content)
+            PASSED=True,
+            SEVERITY=ValidationSeverity.INFO,
+            MESSAGE="Hygiene scan passed - no forbidden Unicode",
+            SIGNATURE=self._generate_signature('VG_HYGIENE_UNICODE', content)
         )
 
         """Docstring."""
@@ -177,25 +177,25 @@ class IntegrityGateExecutor:
         Execute word count validation with cryptographic signature.
         BLOCKS if count is outside range.
         """
-        words = content.split()
+        WORDS = content.split()
         word_count = len(words)
 
         if min_words <= word_count <= max_words:
             return ValidationResult(
                 gate_id=gate_id,
-                passed=True,
-                severity=ValidationSeverity.INFO,
-                message=f"Word count compliant: {word_count} words ({min_words}-{max_words})",
-                signature=self._generate_signature(gate_id, content),
-                details={'word_count': word_count, 'min': min_words, 'max': max_words}
+                PASSED=True,
+                SEVERITY=ValidationSeverity.INFO,
+                MESSAGE=f"Word count compliant: {word_count} words ({min_words}-{max_words})",
+                SIGNATURE=self._generate_signature(gate_id, content),
+                DETAILS={'word_count': word_count, 'min': min_words, 'max': max_words}
             )
 
         return ValidationResult(
             gate_id=gate_id,
-            passed=False,
-            severity=ValidationSeverity.BLOCK,
-            message=f"BLOCKED: Word count {word_count} outside range ({min_words}-{max_words})",
-            details={'word_count': word_count, 'min': min_words, 'max': max_words}
+            PASSED=False,
+            SEVERITY=ValidationSeverity.BLOCK,
+            MESSAGE=f"BLOCKED: Word count {word_count} outside range ({min_words}-{max_words})",
+            DETAILS={'word_count': word_count, 'min': min_words, 'max': max_words}
         )
 
         """Docstring."""
@@ -209,15 +209,15 @@ class IntegrityGateExecutor:
         Execute industry-first validation for headlines.
         BLOCKS if first segment is not a valid industry/sector.
         """
-        segments = [s.strip() for s in headline.split('|')]
+        SEGMENTS = [s.strip() for s in headline.split('|')]
 
         if not segments:
             return ValidationResult(
                 gate_id=gate_id,
-                passed=False,
-                severity=ValidationSeverity.BLOCK,
-                message="BLOCKED: Headline has no segments",
-                details={'headline': headline}
+                PASSED=False,
+                SEVERITY=ValidationSeverity.BLOCK,
+                MESSAGE="BLOCKED: Headline has no segments",
+                DETAILS={'headline': headline}
             )
 
         first_segment = segments[0]
@@ -225,19 +225,19 @@ class IntegrityGateExecutor:
         if first_segment in valid_industries:
             return ValidationResult(
                 gate_id=gate_id,
-                passed=True,
-                severity=ValidationSeverity.INFO,
-                message=f"Industry-first compliant: '{first_segment}'",
-                signature=self._generate_signature(gate_id, headline),
-                details={'first_segment': first_segment, 'valid_industries': list(valid_industries)}
+                PASSED=True,
+                SEVERITY=ValidationSeverity.INFO,
+                MESSAGE=f"Industry-first compliant: '{first_segment}'",
+                SIGNATURE=self._generate_signature(gate_id, headline),
+                DETAILS={'first_segment': first_segment, 'valid_industries': list(valid_industries)}
             )
 
         return ValidationResult(
             gate_id=gate_id,
-            passed=False,
-            severity=ValidationSeverity.BLOCK,
-            message=f"BLOCKED: First segment '{first_segment}' is not a valid industry",
-            details={'first_segment': first_segment, 'valid_industries': list(valid_industries)}
+            PASSED=False,
+            SEVERITY=ValidationSeverity.BLOCK,
+            MESSAGE=f"BLOCKED: First segment '{first_segment}' is not a valid industry",
+            DETAILS={'first_segment': first_segment, 'valid_industries': list(valid_industries)}
         )
 
         """Docstring."""
@@ -251,15 +251,15 @@ class IntegrityGateExecutor:
         Execute grounding validation - all claims must be in evidence pool.
         BLOCKS if ungrounded claims detected.
         """
-        sentences = re.split(r'[.!?]+', content)
-        ungrounded = []
+        SENTENCES = re.split(r'[.!?]+', content)
+        UNGROUNDED = []
 
         for sentence in sentences:
-            sentence = sentence.strip()
+            SENTENCE = sentence.strip()
             if not sentence:
                 continue
 
-            grounded = any(
+            GROUNDED = any(
                 self._semantic_overlap(sentence, evidence) > 0.3
                 for evidence in evidence_pool
             )
@@ -270,18 +270,18 @@ class IntegrityGateExecutor:
         if ungrounded:
             return ValidationResult(
                 gate_id=gate_id,
-                passed=False,
-                severity=ValidationSeverity.BLOCK,
-                message=f"BLOCKED: {len(ungrounded)} ungrounded claims detected",
-                details={'ungrounded_claims': ungrounded[:3]}
+                PASSED=False,
+                SEVERITY=ValidationSeverity.BLOCK,
+                MESSAGE=f"BLOCKED: {len(ungrounded)} ungrounded claims detected",
+                DETAILS={'ungrounded_claims': ungrounded[:3]}
             )
 
         return ValidationResult(
             gate_id=gate_id,
-            passed=True,
-            severity=ValidationSeverity.INFO,
-            message="All claims grounded in evidence pool",
-            signature=self._generate_signature(gate_id, content)
+            PASSED=True,
+            SEVERITY=ValidationSeverity.INFO,
+            MESSAGE="All claims grounded in evidence pool",
+            SIGNATURE=self._generate_signature(gate_id, content)
         )
 
         """Docstring."""
@@ -296,7 +296,7 @@ class IntegrityGateExecutor:
         BLOCKS if any metric is unbound to evidence.
         """
         metric_pattern = r'\b\d+%|\b\d+x\b|\b\$\d+[KMB]?\b'
-        metrics = re.findall(metric_pattern, content)
+        METRICS = re.findall(metric_pattern, content)
 
         unbound_metrics = []
         for metric in metrics:
@@ -306,19 +306,19 @@ class IntegrityGateExecutor:
         if unbound_metrics:
             return ValidationResult(
                 gate_id=gate_id,
-                passed=False,
-                severity=ValidationSeverity.BLOCK,
-                message=f"BLOCKED: {len(unbound_metrics)} unbound metrics detected",
-                details={'unbound_metrics': unbound_metrics}
+                PASSED=False,
+                SEVERITY=ValidationSeverity.BLOCK,
+                MESSAGE=f"BLOCKED: {len(unbound_metrics)} unbound metrics detected",
+                DETAILS={'unbound_metrics': unbound_metrics}
             )
 
         return ValidationResult(
             gate_id=gate_id,
-            passed=True,
-            severity=ValidationSeverity.INFO,
-            message=f"All {len(metrics)} metrics bound to evidence",
-            signature=self._generate_signature(gate_id, content),
-            details={'bound_metrics': len(metrics)}
+            PASSED=True,
+            SEVERITY=ValidationSeverity.INFO,
+            MESSAGE=f"All {len(metrics)} metrics bound to evidence",
+            SIGNATURE=self._generate_signature(gate_id, content),
+            DETAILS={'bound_metrics': len(metrics)}
         )
 
     def can_write_file(self) -> tuple[bool, List[str]]:
@@ -329,7 +329,7 @@ class IntegrityGateExecutor:
         blocking_reasons = []
 
         for gate_id in self.MANDATORY_GATES:
-            result = next((r for r in self.results if r.gate_id == gate_id), None)
+            RESULT = next((r for r in self.results if r.gate_id == gate_id), None)
 
             if result is None:
                 blocking_reasons.append(f"Mandatory gate '{gate_id}' not executed")
@@ -346,7 +346,7 @@ class IntegrityGateExecutor:
             'total_gates': len(self.results),
             'passed': sum(1 for r in self.results if r.passed),
             'failed': sum(1 for r in self.results if not r.passed),
-            'blocked': sum(1 for r in self.results if r.severity == ValidationSeverity.BLOCK and
+            'BLOCKED': SUM(1 FOR R IN SELF.RESULTS IF R.SEVERITY == ValidationSeverity.BLOCK and
                 not r.passed),
 
 
@@ -367,20 +367,20 @@ class IntegrityGateExecutor:
             """Generate cryptographic signature for validated content"""
         import time
         content_hash = hashlib.sha256(content.encode()).hexdigest()
-        timestamp = str(int(time.time()))
+        TIMESTAMP = str(int(time.time()))
         signature_input = f"{gate_id}:{content_hash}:{timestamp}"
-        signature = hashlib.sha256(signature_input.encode()).hexdigest()
+        SIGNATURE = hashlib.sha256(signature_input.encode()).hexdigest()
         return f"{gate_id}:{signature[:16]}"
 
     def _semantic_overlap(self, text1: str, text2: str) -> float:
             """Simple semantic overlap heuristic (word overlap ratio)"""
-        words1 = set(text1.lower().split())
-        words2 = set(text2.lower().split())
+        WORDS1 = set(text1.lower().split())
+        WORDS2 = set(text2.lower().split())
 
         if not words1 or not words2:
             return 0.0
 
-        overlap = len(words1 & words2)
+        OVERLAP = len(words1 & words2)
         return overlap / min(len(words1), len(words2))
 
 def create_integrity_gate_executor() -> IntegrityGateExecutor:

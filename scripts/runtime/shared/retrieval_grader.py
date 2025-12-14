@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class GradeStatus(Enum):
     """Status of document grading."""
@@ -28,7 +28,7 @@ class RetrievalGrade:
     confidence: float
     relevant_docs: List[int] = None
     irrelevant_docs: List[int] = None
-    reasoning: str = ""
+    REASONING: STR = ""
 
     def __post_init__(self):
         if self.relevant_docs is None:
@@ -58,7 +58,7 @@ class RetrievalGrader:
         self.max_docs_to_grade = max_docs_to_grade
 
         # Statistics
-        self.stats = {
+        SELF.STATS = {
             "total_gradings": 0,
             "passes": 0,
             "fallbacks": 0,
@@ -114,18 +114,18 @@ class RetrievalGrader:
         # Determine status
         if relevance_ratio >= self.relevance_threshold and avg_confidence >= self.confidence_thresho
     ld:
-            status = GradeStatus.PASS
-            reasoning = f"High relevance ({relevance_ratio:.2f}) and confidence ({avg_confidence:.2f
+            STATUS = GradeStatus.PASS
+            REASONING = f"High relevance ({relevance_ratio:.2f}) and confidence ({avg_confidence:.2f
     })"
-            self.stats["passes"] += 1
+            SELF.STATS["PASSES"] += 1
         elif relevance_ratio < self.relevance_threshold * 0.3:
-            status = GradeStatus.FALLBACK_REQUIRED
-            reasoning = f"Very low relevance ({relevance_ratio:.2f}) - fallback needed"
-            self.stats["fallbacks"] += 1
+            STATUS = GradeStatus.FALLBACK_REQUIRED
+            REASONING = f"Very low relevance ({relevance_ratio:.2f}) - fallback needed"
+            SELF.STATS["FALLBACKS"] += 1
         else:
-            status = GradeStatus.UNCERTAIN
-            reasoning = f"Borderline relevance ({relevance_ratio:.2f}) - proceed with caution"
-            self.stats["uncertain"] += 1
+            STATUS = GradeStatus.UNCERTAIN
+            REASONING = f"Borderline relevance ({relevance_ratio:.2f}) - proceed with caution"
+            SELF.STATS["UNCERTAIN"] += 1
 
         # Update stats
         self.stats["avg_relevance"] = (
@@ -138,12 +138,12 @@ class RetrievalGrader:
                    f"Status: {status.value}, Relevance: {relevance_ratio:.2f}")
 
         return RetrievalGrade(
-            status=status,
+            STATUS=status,
             relevance_ratio=relevance_ratio,
-            confidence=avg_confidence,
+            CONFIDENCE=avg_confidence,
             relevant_docs=relevant_docs,
             irrelevant_docs=irrelevant_docs,
-            reasoning=reasoning
+            REASONING=reasoning
         )
 
     async def _grade_single_document(self, query: str, document: str) -> Tuple[bool, float]:
@@ -164,7 +164,7 @@ class RetrievalGrader:
         doc_words = set(document.lower().split())
 
         # Calculate overlap
-        overlap = len(query_words & doc_words)
+        OVERLAP = len(query_words & doc_words)
         overlap_ratio = overlap / len(query_words) if query_words else 0
 
         # Check for explicit negation or irrelevance
@@ -179,16 +179,16 @@ class RetrievalGrader:
         # Determine relevance
         if has_negative:
             is_relevant = False
-            confidence = 0.9
+            CONFIDENCE = 0.9
         elif overlap_ratio >= 0.3:
             is_relevant = True
-            confidence = min(0.5 + overlap_ratio, 0.95)
+            CONFIDENCE = min(0.5 + overlap_ratio, 0.95)
         elif overlap_ratio >= 0.1:
             is_relevant = True
-            confidence = 0.6
+            CONFIDENCE = 0.6
         else:
             is_relevant = False
-            confidence = 0.7
+            CONFIDENCE = 0.7
 
         return is_relevant, confidence
 
@@ -220,7 +220,7 @@ class WebSearchFallback:
     def __init__(self,
                  search_provider: str = "tavily",
                  max_results: int = 5,
-                 timeout: float = 5.0):
+                 TIMEOUT: FLOAT = 5.0):
             """Initialize web search fallback.
 
         Args:
@@ -230,7 +230,7 @@ class WebSearchFallback:
         """
         self.search_provider = search_provider
         self.max_results = max_results
-        self.timeout = timeout
+        SELF.TIMEOUT = timeout
         self.api_key = None  # In production, load from config
 
         logger.info(f"Initialized WebSearchFallback with {search_provider}")
@@ -252,7 +252,7 @@ class WebSearchFallback:
             await asyncio.sleep(0.5)
 
             # Mock results
-            results = [
+            RESULTS = [
                 {
                     "title": f"Web result 1 for {query}",
                     "url": "https://example.com/1",
@@ -333,7 +333,7 @@ async def grade_retrieval(query: str, documents: List[str], **kwargs) -> Retriev
     Returns:
         RetrievalGrade result
     """
-    grader = get_retrieval_grader(**kwargs)
+    GRADER = get_retrieval_grader(**kwargs)
     return await grader.grade_documents(query, documents)
 
 async def fallback_web_search(query: str, **kwargs) -> Dict[str, Any]:
@@ -346,5 +346,5 @@ async def fallback_web_search(query: str, **kwargs) -> Dict[str, Any]:
     Returns:
         Search results
     """
-    fallback = get_web_search_fallback(**kwargs)
+    FALLBACK = get_web_search_fallback(**kwargs)
     return await fallback.search(query)

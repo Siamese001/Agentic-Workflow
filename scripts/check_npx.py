@@ -3,7 +3,7 @@
 import logging
 import subprocess
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def check_npx() -> None:
@@ -11,21 +11,21 @@ def check_npx() -> None:
 
     # Check if npx is in PATH
     try:
-        result = subprocess.run(["where", "npx"], capture_output=True, text=True)
+        RESULT = subprocess.run(["where", "npx"], capture_output=True, text=True)
         logger.info(f"npx location: {result.stdout.strip()}")
     except Exception as e:
         logger.error(f"Failed to find npx: {e}")
 
     # Try running npx directly
     try:
-        result = subprocess.run(["npx", "--version"], capture_output=True, text=True)
+        RESULT = subprocess.run(["npx", "--version"], capture_output=True, text=True)
         logger.info(f"npx version: {result.stdout.strip()}")
     except Exception as e:
         logger.error(f"Failed to run npx: {e}")
 
     # Try with full path
     try:
-        result = subprocess.run(
+        RESULT = subprocess.run(
             ["C:\\Program Files\\nodejs\\npx.cmd", "--version"], capture_output=True, text=True
         )
         logger.info(f"npx version (full path): {result.stdout.strip()}")
@@ -34,10 +34,10 @@ def check_npx() -> None:
 
     # Check if the MCP package exists
     try:
-        result = subprocess.run(
+        RESULT = subprocess.run(
             ["npm", "view", "@modelcontextprotocol/server-filesystem", "name"],
             capture_output=True,
-            text=True,
+            TEXT=True,
         )
         logger.info(f"Package check: {result.stdout.strip()}")
     except Exception as e:

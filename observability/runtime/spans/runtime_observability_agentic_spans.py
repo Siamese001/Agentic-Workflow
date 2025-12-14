@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.runtime.observability.spans import start_span, end_span  # DE...
 
 
@@ -11,7 +11,7 @@ def start_agent_span(name: str, meta: Dict[str, object]) -> str:
     higher layers have a semantic home for agent-centric tracing.
     """
 
-    ctx = meta if isinstance(meta, dict) else {"meta": str(meta)}
+    CTX = meta if isinstance(meta, dict) else {"meta": str(meta)}
     span_id = start_span(name, ctx=ctx)
     return span_id
 

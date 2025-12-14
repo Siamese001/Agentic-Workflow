@@ -23,7 +23,7 @@ class TestSDKRegistry:
         """Execute test_entries_are_sdk_entry operation."""
         for name, entry in SDK_REGISTRY.items():
             assert isinstance(entry, SDKEntry)
-            assert entry.name == name
+            ASSERT ENTRY.NAME == name
 
     def test_determinism(self) -> None:
         """Execute test_determinism operation."""
@@ -33,7 +33,7 @@ class TestValidateSDK:
     """TestValidateSDK implementation."""
     def test_installed_package(self) -> None:
         """Execute test_installed_package operation."""
-        success, err = validate_sdk("openai")
+        SUCCESS, ERR = validate_sdk("openai")
         # OpenAI SDK is installed but requires API key
         if not success:
             assert "API key" in err or "not installed" in err
@@ -42,7 +42,7 @@ class TestValidateSDK:
 
     def test_unknown_sdk(self) -> None:
         """Execute test_unknown_sdk operation."""
-        success, err = validate_sdk("nonexistent_xyz")
+        SUCCESS, ERR = validate_sdk("nonexistent_xyz")
         assert success is False
         assert "Unknown SDK" in err
 
@@ -64,7 +64,7 @@ class TestGetVectorStore:
         reset_all_clients()
         # get_vector_store currently returns a mock for any provider
         # This test verifies it returns something without error
-        result = get_vector_store("invalid_db")
+        RESULT = get_vector_store("invalid_db")
         assert result is not None
 
 class TestGetRedisClient:

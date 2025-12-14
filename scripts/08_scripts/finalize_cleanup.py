@@ -14,7 +14,7 @@ def backup_file(file_path: Path):
     """Docstring."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
     """Backup a file before modification."""
     if file_path.exists():
@@ -33,29 +33,29 @@ def clean_merged_file(file_path: Path):
     backup_file(file_path)
 
     with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+        CONTENT = f.read()
 
     # Split by merge markers
-    parts = content.split('# ============================================')
+    PARTS = content.split('# ============================================')
 
     if len(parts) <= 1:
         logger.info(f"  ℹ No merge markers found")
         return
 
     # Keep first part (original)
-    cleaned = parts[0].rstrip()
+    CLEANED = parts[0].rstrip()
 
     # Process merged parts
     for i in range(1, len(parts)):
-        part = parts[i]
-        lines = part.split('\n')
+        PART = parts[i]
+        LINES = part.split('\n')
 
         # Skip merge comment lines
         code_lines = []
         skip_header = True
 
         for line in lines:
-            stripped = line.strip()
+            STRIPPED = line.strip()
 
             if skip_header:
                 # Skip merge comments, docstrings, and imports
@@ -73,7 +73,7 @@ def clean_merged_file(file_path: Path):
 
         # Add cleaned content
         if code_lines:
-            cleaned += '\n\n' + '\n'.join(code_lines).strip()
+            CLEANED += '\n\n' + '\n'.join(code_lines).strip()
 
     # Write cleaned content
     with open(file_path, 'w', encoding='utf-8') as f:
@@ -93,9 +93,9 @@ def rename_orphan(src: Path, dst: Path):
 
 def main():
     """Docstring."""
-    logger.info("=" * 50)
+    LOGGER.INFO("=" * 50)
     logger.info("Finalizing Duplicate File Cleanup")
-    logger.info("=" * 50)
+    LOGGER.INFO("=" * 50)
     logger.info()
 
     # Create backup directory
@@ -135,7 +135,7 @@ def main():
     logger.info("━" * 50)
     logger.info()
 
-    orphans = [
+    ORPHANS = [
         (ROOT / "apps_lic/L1_cognition/P3_aggregate/route_models_2.py",
          ROOT / "apps_lic/L1_cognition/P3_aggregate/route_models.py"),
         (ROOT / "apps_rg/L1_cognition/P3_aggregate/brief_models_2.py",

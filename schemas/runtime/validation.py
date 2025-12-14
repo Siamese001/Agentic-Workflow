@@ -8,7 +8,7 @@ within the shared application layer.
 
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class ExecutionResult:
@@ -34,7 +34,7 @@ class Validation:
         bool,
         List,
         Dict]]] = None):
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     def process(self,
@@ -58,7 +58,7 @@ class Validation:
         """
         try:
             self._logger.info("Starting processing execution")
-            result = self._execute_logic(payload, context)
+            RESULT = self._execute_logic(payload, context)
             return ExecutionResult(success=True, data=result)
         except (ValueError, TypeError, KeyError) as e:
             self._logger.error(f"Validation error during processing: {e}")
@@ -175,7 +175,7 @@ class Validation:
             result["is_valid"] = False
 
         # Check pattern if specified
-        pattern = self.config.get("string_pattern")
+        PATTERN = self.config.get("string_pattern")
         if pattern:
             import re
             if not re.match(pattern, data):
@@ -213,5 +213,5 @@ class Validation:
 
 def run_process(data: Union[str, int, float, bool, List, Dict]) -> ExecutionResult:
     """Module-level entry point."""
-    executor = Validation()
+    EXECUTOR = Validation()
     return executor.process(data)

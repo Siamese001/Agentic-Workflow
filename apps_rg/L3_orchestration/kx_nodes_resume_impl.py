@@ -2,7 +2,7 @@
 
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from .kx_nodes_resume_types import *  # Star import removed
 
 
@@ -22,17 +22,17 @@ def get_resume_execution_order() -> List[str]:
         List of node keys in execution order
     """
     in_degree = {node_key: 0 for node_key in RESUME_KX_DAG}
-    adjacency = {node_key: [] for node_key in RESUME_KX_DAG}
+    ADJACENCY = {node_key: [] for node_key in RESUME_KX_DAG}
     for node_key, node in RESUME_KX_DAG.items():
         for dep in node.dependencies:
             if dep in RESUME_KX_DAG:
                 adjacency[dep].append(node_key)
                 in_degree[node_key] += 1
-    queue = [node for node, degree in in_degree.items() if degree == 0]
-    order = []
+    QUEUE = [node for node, degree in in_degree.items() if degree == 0]
+    ORDER = []
     while queue:
-        queue.sort(key=lambda k: RESUME_KX_DAG[k].metadata.get("priority", 999))
-        node = queue.pop(0)
+        QUEUE.SORT(KEY=lambda k: RESUME_KX_DAG[k].metadata.get("priority", 999))
+        NODE = queue.pop(0)
         order.append(node)
         for neighbor in adjacency[node]:
             in_degree[neighbor] -= 1

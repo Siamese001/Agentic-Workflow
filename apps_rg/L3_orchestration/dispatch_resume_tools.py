@@ -10,7 +10,7 @@ import logging
 import time
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
@@ -28,8 +28,8 @@ class DispatchResumeTools:
     """Executor for resume domain with Titanium RAG integration."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
-        self.timeout = self.config.get("timeout", 30.0)
+        SELF.CONFIG = config or {}
+        SELF.TIMEOUT = self.config.get("timeout", 30.0)
 
         # Initialize Titanium pipeline if available
         self.titanium_enabled = self.config.get("use_titanium_search", True) and TITANIUM_AVAILABLE
@@ -42,18 +42,18 @@ class DispatchResumeTools:
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
-        start = time.time()
+        START = time.time()
         try:
-            output = self._perform_action(action, params)
+            OUTPUT = self._perform_action(action, params)
             return ExecutionResult(
-                success=True,
-                output=output,
+                SUCCESS=True,
+                OUTPUT=output,
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(
-                success=False,
-                error=str(e),
+                SUCCESS=False,
+                ERROR=str(e),
                 duration_ms=(time.time() - start) * 1000
             )
 
@@ -64,9 +64,9 @@ class DispatchResumeTools:
         # Route to appropriate handler
         if action == "search":
             return self._handle_search(params)
-        elif action == "search_with_sources":
+        ELIF ACTION == "search_with_sources":
             return self._handle_search_with_sources(params)
-        elif action == "get_pipeline_stats":
+        ELIF ACTION == "get_pipeline_stats":
             return self._handle_get_stats()
         else:
             # Default legacy behavior
@@ -77,8 +77,8 @@ class DispatchResumeTools:
         if not self.titanium_enabled:
             return {"error": "Titanium search not enabled", "results": []}
 
-        query = params.get("query", "")
-        context = params.get("context")
+        QUERY = params.get("query", "")
+        CONTEXT = params.get("context")
         max_results = params.get("max_results", 5)
         include_metadata = params.get("include_metadata", False)
 
@@ -100,8 +100,8 @@ class DispatchResumeTools:
         if not self.titanium_enabled:
             return {"error": "Titanium search not enabled", "sources": []}
 
-        query = params.get("query", "")
-        context = params.get("context")
+        QUERY = params.get("query", "")
+        CONTEXT = params.get("context")
 
         # Placeholder for async implementation
         return {

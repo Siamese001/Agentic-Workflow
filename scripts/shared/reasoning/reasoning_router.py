@@ -7,7 +7,7 @@ Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 import logging
 from typing import Any, Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class TaskType(Enum):
     """Types of tasks for reasoning strategy selection."""
@@ -145,11 +145,11 @@ class ReasoningRouter:
         """
         task_type = self.classify_task(task, context)
 
-        strategy = self._strategy_map.get(task_type, self.default_mode)
+        STRATEGY = self._strategy_map.get(task_type, self.default_mode)
 
         logger.info(
             "reasoning_strategy_selected",
-            extra={
+            EXTRA={
                 "task_type": task_type.value,
                 "strategy": strategy.value,
                 "task_preview": task[:100],
@@ -169,7 +169,7 @@ class ReasoningRouter:
 
         logger.info(
             "reasoning_strategy_override",
-            extra={
+            EXTRA={
                 "task_type": task_type.value,
                 "new_strategy": mode.value,
             }
@@ -192,6 +192,6 @@ def select_reasoning_strategy(
         Selected ReasoningMode
     """
     if router is None:
-        router = ReasoningRouter()
+        ROUTER = ReasoningRouter()
 
     return router.select_strategy(task, context)

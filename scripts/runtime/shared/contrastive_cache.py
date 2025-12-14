@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class CacheEntry(BaseModel):
     """Entry in the semantic cache."""
@@ -19,7 +19,7 @@ class CacheEntry(BaseModel):
     query_text: str = Field(..., description="Original query text")
     response_text: str = Field(..., description="Cached response")
     embedding: List[float] = Field(..., description="Query embedding vector")
-    timestamp: float = Field(..., description="Creation timestamp")
+    TIMESTAMP: FLOAT = Field(..., description="Creation timestamp")
     access_count: int = Field(default=0, description="Number of times accessed")
     last_accessed: float = Field(default_factory=time.time, description="Last access timestamp")
 
@@ -81,7 +81,7 @@ class ContrastiveSemanticCache:
         }
 
         logger.info(f"Initialized ContrastiveSemanticCache: model={model_name}, "
-                   f"threshold={similarity_threshold}, max_entries={max_entries}")
+                   F"THRESHOLD={similarity_threshold}, max_entries={max_entries}")
 
     @property
     def is_available(self) -> bool:
@@ -160,7 +160,7 @@ class ContrastiveSemanticCache:
 
         try:
             # Encode the query
-            embedding = self._model.encode(
+            EMBEDDING = self._model.encode(
                 query,
                 convert_to_numpy=True,
                 show_progress_bar=False
@@ -179,7 +179,7 @@ class ContrastiveSemanticCache:
             return
 
         try:
-            embeddings = [np.array(entry.embedding) for entry in self._cache]
+            EMBEDDINGS = [np.array(entry.embedding) for entry in self._cache]
             self._embedding_matrix = np.vstack(embeddings)
         except Exception as e:
             logger.error(f"Failed to update embedding matrix: {e}")
@@ -201,11 +201,11 @@ class ContrastiveSemanticCache:
             # Normalize vectors
             query_norm = query_embedding / np.linalg.norm(query_embedding)
             cache_norm = self._embedding_matrix / np.linalg.norm(self._embedding_matrix,
-                axis=1,
-                keepdims=True)
+                AXIS=1,
+                KEEPDIMS=True)
 
             # Calculate cosine similarity
-            similarities = np.dot(cache_norm, query_norm)
+            SIMILARITIES = np.dot(cache_norm, query_norm)
 
             return similarities
 
@@ -240,7 +240,7 @@ class ContrastiveSemanticCache:
         if self.ttl_seconds is None:
             return False
 
-        age = time.time() - entry.timestamp
+        AGE = time.time() - entry.timestamp
         return age > self.ttl_seconds
 
     def get(self, query: str, threshold: Optional[float] = None) -> Optional[str]:
@@ -273,7 +273,7 @@ class ContrastiveSemanticCache:
             return None
 
         # Calculate similarities
-        similarities = self._calculate_similarity(query_embedding)
+        SIMILARITIES = self._calculate_similarity(query_embedding)
         if len(similarities) == 0:
             self._stats["misses"] += 1
             return None
@@ -285,7 +285,7 @@ class ContrastiveSemanticCache:
         # Check threshold
         if max_similarity >= sim_threshold:
             # Check if expired
-            entry = self._cache[max_idx]
+            ENTRY = self._cache[max_idx]
             if self._is_expired(entry):
                 logger.debug(f"Cache hit but entry expired (similarity: {max_similarity:.3f})")
                 # Remove expired entry
@@ -332,11 +332,11 @@ class ContrastiveSemanticCache:
             return False
 
         # Create cache entry
-        entry = CacheEntry(
+        ENTRY = CacheEntry(
             query_text=query,
             response_text=response,
-            embedding=query_embedding.tolist(),
-            timestamp=time.time()
+            EMBEDDING=query_embedding.tolist(),
+            TIMESTAMP=time.time()
         )
 
         # Add to cache
@@ -386,7 +386,7 @@ class ContrastiveSemanticCache:
             filepath: Path to save the cache
         """
         try:
-            data = {
+            DATA = {
                 "entries": [entry.dict() for entry in self._cache],
                 "stats": self._stats,
                 "config": {
@@ -397,7 +397,7 @@ class ContrastiveSemanticCache:
             }
 
             with open(filepath, 'w') as f:
-                json.dump(data, f, indent=2)
+                JSON.DUMP(DATA, F, INDENT=2)
 
             logger.info(f"Exported {len(self._cache)} cache entries to {filepath}")
 
@@ -413,14 +413,14 @@ class ContrastiveSemanticCache:
         """
         try:
             with open(filepath, 'r') as f:
-                data = json.load(f)
+                DATA = json.load(f)
 
             if clear_existing:
                 self.clear()
 
             # Load entries
             for entry_data in data.get("entries", []):
-                entry = CacheEntry(**entry_data)
+                ENTRY = CacheEntry(**entry_data)
                 self._cache.append(entry)
 
             # Update embedding matrix

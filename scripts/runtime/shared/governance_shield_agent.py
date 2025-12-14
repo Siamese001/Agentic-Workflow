@@ -9,7 +9,7 @@ import logging
 import re
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class IndustrySensitivity(str, Enum):
     """Industry risk sensitivity levels."""
@@ -22,7 +22,7 @@ class RiskProfile(BaseModel):
 
     industry_sensitivity: IndustrySensitivity = Field(..., description="Industry risk level")
     compliance_keywords: List[str] = Field(default_factory=list,
-        description="Required compliance frameworks")
+        DESCRIPTION="Required compliance frameworks")
     data_sensitivity: List[str] = Field(default_factory=list, description="Sensitive data types")
 
     @property
@@ -37,7 +37,7 @@ class SafetyProtocol(BaseModel):
     data_privacy_approach: str = Field(..., description="Data privacy protection method")
     human_in_the_loop_policy: str = Field(..., description="Human oversight requirements")
     compliance_frameworks: List[str] = Field(default_factory=list,
-        description="Compliance standards")
+        DESCRIPTION="Compliance standards")
 
     @property
     def is_comprehensive(self) -> bool:
@@ -128,29 +128,29 @@ class GovernanceShieldAgent:
             Sanitized content
         """
         try:
-            sanitized = content
+            SANITIZED = content
 
             # Check for zero tolerance violations
             if "zero hallucinations" in sanitized.lower():
                 logger.warning("CRITICAL: 'Zero hallucinations' claim detected - immediate disqualif
     ier")
-                sanitized = self._critical_fix_zero_hallucinations(sanitized)
+                SANITIZED = self._critical_fix_zero_hallucinations(sanitized)
 
             # Apply pattern replacements
             for category, patterns in self.naive_patterns.items():
                 for pattern in patterns:
-                    matches = re.findall(pattern, sanitized, re.IGNORECASE)
+                    MATCHES = re.findall(pattern, sanitized, re.IGNORECASE)
                     if matches:
                         # Replace with senior language
-                        replacements = self.senior_replacements[category]
-                        replacement = replacements[0]  # Use first replacement
+                        REPLACEMENTS = self.senior_replacements[category]
+                        REPLACEMENT = replacements[0]  # Use first replacement
 
                         # Replace all occurrences
-                        sanitized = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
+                        SANITIZED = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
                         logger.debug(f"Replaced {category} claim with: {replacement}")
 
             # Additional privacy fixes
-            sanitized = self._fix_privacy_language(sanitized)
+            SANITIZED = self._fix_privacy_language(sanitized)
 
             return sanitized
 
@@ -192,11 +192,11 @@ class GovernanceShieldAgent:
         """
         try:
             # Run full sanitization
-            audited = self.sanitize_claims(email_draft)
+            AUDITED = self.sanitize_claims(email_draft)
 
             # Add compliance disclaimer if needed
             if any(term in audited.lower() for term in ["hipaa", "phi", "health data"]):
-                audited += "\n\n[Note: All healthcare applications maintain HIPAA compliance through
+                AUDITED += "\n\n[Note: All healthcare applications maintain HIPAA compliance through
     on-prem deployment or BAA-compliant APIs.]"
 
             return audited
@@ -221,24 +221,24 @@ class GovernanceShieldAgent:
 
             # Determine base sensitivity
             if industry_lower in ["healthcare", "health", "medical", "pharma"]:
-                sensitivity = IndustrySensitivity.HIGH
-                compliance = self.compliance_requirements["healthcare"]
+                SENSITIVITY = IndustrySensitivity.HIGH
+                COMPLIANCE = self.compliance_requirements["healthcare"]
                 data_types = ["PHI", "Patient Data", "Medical Records"]
             elif industry_lower in ["finance", "banking", "fintech", "insurance"]:
-                sensitivity = IndustrySensitivity.HIGH
-                compliance = self.compliance_requirements["finance"]
+                SENSITIVITY = IndustrySensitivity.HIGH
+                COMPLIANCE = self.compliance_requirements["finance"]
                 data_types = ["PII", "Financial Data", "Transaction Records"]
             elif industry_lower in ["legal", "law", "compliance"]:
-                sensitivity = IndustrySensitivity.HIGH
-                compliance = self.compliance_requirements["legal"]
+                SENSITIVITY = IndustrySensitivity.HIGH
+                COMPLIANCE = self.compliance_requirements["legal"]
                 data_types = ["Attorney-Client Privilege", "Legal Documents"]
             elif industry_lower in ["cybersecurity", "security", "infosec"]:
-                sensitivity = IndustrySensitivity.HIGH
-                compliance = self.compliance_requirements["cybersecurity"]
+                SENSITIVITY = IndustrySensitivity.HIGH
+                COMPLIANCE = self.compliance_requirements["cybersecurity"]
                 data_types = ["Security Logs", "Incident Data", "Threat Intelligence"]
             else:
-                sensitivity = IndustrySensitivity.MEDIUM
-                compliance = self.compliance_requirements["general"]
+                SENSITIVITY = IndustrySensitivity.MEDIUM
+                COMPLIANCE = self.compliance_requirements["general"]
                 data_types = ["User Data", "Analytics Data"]
 
             # Boost sensitivity if JD mentions compliance
@@ -248,7 +248,7 @@ class GovernanceShieldAgent:
                 "sox",
                 "hipaa"]):
                 if sensitivity == IndustrySensitivity.MEDIUM:
-                    sensitivity = IndustrySensitivity.HIGH
+                    SENSITIVITY = IndustrySensitivity.HIGH
                     logger.info("Boosted to HIGH sensitivity due to JD compliance keywords")
 
             # Extract additional compliance keywords from JD
@@ -283,18 +283,18 @@ class GovernanceShieldAgent:
             Fixed content
         """
         # Immediate replacement for zero tolerance violation
-        content = re.sub(
+        CONTENT = re.sub(
             r"zero hallucinations",
             "minimized hallucinations through rigorous validation",
             content,
-            flags=re.IGNORECASE
+            FLAGS=re.IGNORECASE
         )
 
-        content = re.sub(
+        CONTENT = re.sub(
             r"hallucination[- ]free",
             "hallucination-mitigated",
             content,
-            flags=re.IGNORECASE
+            FLAGS=re.IGNORECASE
         )
 
         return content
@@ -317,7 +317,7 @@ class GovernanceShieldAgent:
         }
 
         for pattern, replacement in privacy_fixes.items():
-            content = re.sub(pattern, replacement, content, flags=re.IGNORECASE)
+            CONTENT = re.sub(pattern, replacement, content, flags=re.IGNORECASE)
 
         return content
 
@@ -330,13 +330,13 @@ class GovernanceShieldAgent:
         Returns:
             Comprehensive safety protocol
         """
-        frameworks = risk_profile.compliance_keywords
+        FRAMEWORKS = risk_profile.compliance_keywords
 
         # Check for HIPAA requirement
         if "HIPAA" in frameworks:
-            privacy = "On-prem deployment or BAA-compliant APIs with PII redaction (Presidio)"
+            PRIVACY = "On-prem deployment or BAA-compliant APIs with PII redaction (Presidio)"
         else:
-            privacy = "End-to-end encryption with data minimization and anonymization"
+            PRIVACY = "End-to-end encryption with data minimization and anonymization"
 
         return SafetyProtocol(
             validation_strategy="Automated eval pipeline (Ragas) +
@@ -385,5 +385,5 @@ def sanitize_content(content: str) -> str:
     Returns:
         Sanitized content
     """
-    agent = create_governance_shield_agent()
+    AGENT = create_governance_shield_agent()
     return agent.sanitize_claims(content)

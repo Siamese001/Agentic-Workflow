@@ -36,7 +36,6 @@ class AtomicAgent:
     """Base class for specialized validation agents."""
     def check(self) -> AtomicResult:
         """Performs the scan."""
-        pass
 
     def attempt_fix(self) -> bool:
         """Runs the fix logic if available."""

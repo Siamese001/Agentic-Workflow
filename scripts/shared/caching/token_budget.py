@@ -7,7 +7,7 @@ Converts token budget inspector into active enforcement mechanism.
 import logging
 from typing import Any, Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class BudgetExceededError(Exception):
     """Raised when token budget is exceeded."""
@@ -52,7 +52,7 @@ class TokenBudget:
             config: Budget configuration
             enable_logging: Enable logging of budget events
         """
-        self.config = config or TokenBudgetConfig()
+        SELF.CONFIG = config or TokenBudgetConfig()
         self.enable_logging = enable_logging
 
         self._prompt_tokens = 0
@@ -115,7 +115,7 @@ class TokenBudget:
         if self.enable_logging and projected_total > warn_threshold:
             logger.warning(
                 "token_budget_warning",
-                extra={
+                EXTRA={
                     "projected_total": projected_total,
                     "max_total": self.config.max_total_tokens,
                     "utilization": projected_total / self.config.max_total_tokens,
@@ -142,7 +142,7 @@ class TokenBudget:
         if self.enable_logging:
             logger.info(
                 "token_usage_recorded",
-                extra={
+                EXTRA={
                     "prompt_tokens": prompt_tokens,
                     "completion_tokens": completion_tokens,
                     "total_tokens": self._total_tokens,

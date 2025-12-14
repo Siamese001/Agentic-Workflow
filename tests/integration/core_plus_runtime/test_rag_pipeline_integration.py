@@ -20,7 +20,7 @@ class TestRAGPipelineIntegration:
         if RAGProvider is Mock:
             pytest.skip("RAGProvider not implemented")
 
-        config = {
+        CONFIG = {
             "retrieval_mode": "hybrid",
             "dense_retriever": {"model": "sentence-transformer"},
             "sparse_retriever": {"analyzer": "standard"}
@@ -53,7 +53,7 @@ class TestRAGPipelineIntegration:
             assert "score" in result
             assert "content" in result
             assert isinstance(result["score"], (int, float))
-            assert 0 <= result["score"] <= 1
+            ASSERT 0 <= result["score"] <= 1
 
         # Test sparse retriever
         sparse_results = rag_provider.query_sparse_retriever(dense_query)
@@ -98,11 +98,11 @@ class TestRAGPipelineIntegration:
         ]
 
         # Apply RRF reranking
-        reranked1 = rag_provider.rerank_results(mock_results)
-        reranked2 = rag_provider.rerank_results(mock_results)
+        RERANKED1 = rag_provider.rerank_results(mock_results)
+        RERANKED2 = rag_provider.rerank_results(mock_results)
 
         # Should be deterministic
-        assert reranked1 == reranked2
+        ASSERT RERANKED1 == reranked2
 
         # Should be sorted by reranked score
         for i in range(1, len(reranked1)):
@@ -148,7 +148,7 @@ class TestRAGPipelineIntegration:
             min_score = golden_query["expected_min_score"]
 
             # Execute query
-            results = rag_provider.query({
+            RESULTS = rag_provider.query({
                 "query": query_text,
                 "max_results": 10,
                 "include_sources": True
@@ -156,7 +156,7 @@ class TestRAGPipelineIntegration:
 
             # Should meet expectations
             assert "results" in results
-            assert len(results["results"]) >= len(expected_results)
+            ASSERT LEN(RESULTS["RESULTS"]) >= len(expected_results)
 
             # Top results should meet minimum score
             if results["results"]:
@@ -176,7 +176,7 @@ class TestRAGPipelineIntegration:
             "include_sources": True
         }
 
-        result = rag_provider.query(query_data)
+        RESULT = rag_provider.query(query_data)
 
         # Should include source attribution
         assert "results" in result
@@ -205,7 +205,7 @@ class TestRAGPipelineIntegration:
         import time
         start_time = time.time()
 
-        result = rag_provider.query(query_data)
+        RESULT = rag_provider.query(query_data)
 
         elapsed_ms = (time.time() - start_time) * 1000
 
@@ -227,12 +227,12 @@ class TestRAGPipelineIntegration:
             "filter_off_topic": True
         }
 
-        result = rag_provider.query(query_data)
+        RESULT = rag_provider.query(query_data)
 
         # Should filter out off-topic results
         assert "results" in result
         for doc in result["results"]:
-            assert doc.get("score", 0) >= 0.3
+            ASSERT DOC.GET("SCORE", 0) >= 0.3
             assert doc.get("relevant", True) is True
 
         # Should provide relevance metadata
@@ -246,7 +246,7 @@ class TestRAGPipelineIntegration:
         if all(cls is Mock for cls in [RAGProvider, ProviderRegistry]):
             pytest.skip("RAG components not implemented")
 
-        registry = ProviderRegistry({})
+        REGISTRY = ProviderRegistry({})
         rag_provider = RAGProvider({})
 
         # Register RAG provider
@@ -281,7 +281,7 @@ class TestRAGPipelineIntegration:
 
         for invalid_query in invalid_queries:
             try:
-                result = rag_provider.query(invalid_query)
+                RESULT = rag_provider.query(invalid_query)
 
                 # Should handle gracefully or return error structure
                 assert isinstance(result, dict)
@@ -305,16 +305,16 @@ class TestRAGPipelineIntegration:
         }
 
         # Multiple queries should produce consistent results
-        result1 = rag_provider.query(query_data)
-        result2 = rag_provider.query(query_data)
+        RESULT1 = rag_provider.query(query_data)
+        RESULT2 = rag_provider.query(query_data)
 
         # Structure should be identical
-        assert type(result1) == type(result2)
-        assert "results" in result1 == "results" in result2
+        ASSERT TYPE(RESULT1) == type(result2)
+        ASSERT "RESULTS" IN RESULT1 == "results" in result2
 
         # If results are returned, they should be consistent
         if "results" in result1 and result1["results"]:
-            assert len(result1["results"]) == len(result2["results"])
+            ASSERT LEN(RESULT1["RESULTS"]) == len(result2["results"])
             for i, (doc1, doc2) in enumerate(zip(result1["results"], result2["results"])):
                 assert doc1["doc_id"] == doc2["doc_id"]
                 assert abs(doc1["score"] - doc2["score"]) < 0.01  # Allow small floating point di...

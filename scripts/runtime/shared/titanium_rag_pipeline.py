@@ -44,7 +44,7 @@ from scripts.runtime.shared.retrieval_grader import (GradeStatus,
 from scripts.runtime.shared.signal_quality_pipeline import (
     SignalQualityPipeline, create_signal_pipeline)
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class TitaniumRAGPipeline:
     """Titanium-grade RAG pipeline combining all three layers.
@@ -113,11 +113,11 @@ class TitaniumRAGPipeline:
             top_k_final: Number of top documents to return
         """
         # Initialize components if not provided
-        self.gate = gate or AdaptiveRetrievalGate()
-        self.compressor = compressor or ContextualCompressor()
-        self.decomposer = decomposer or QueryDecomposer()
-        self.scorer = scorer or HybridScorer(dynamic_alpha=True)
-        self.reranker = reranker or LateInteractionReranker()
+        SELF.GATE = gate or AdaptiveRetrievalGate()
+        SELF.COMPRESSOR = compressor or ContextualCompressor()
+        SELF.DECOMPOSER = decomposer or QueryDecomposer()
+        SELF.SCORER = scorer or HybridScorer(dynamic_alpha=True)
+        SELF.RERANKER = reranker or LateInteractionReranker()
         # self.cache = cache or ContrastiveSemanticCache()  # Commented out as class doesn't exist
 
         # Initialize security layer
@@ -146,7 +146,7 @@ class TitaniumRAGPipeline:
         self.top_k_final = top_k_final
 
         # Statistics
-        self.stats = {
+        SELF.STATS = {
             "total_queries": 0,
             "gate_blocks": 0,
             "cache_hits": 0,
@@ -216,7 +216,7 @@ class TitaniumRAGPipeline:
             elif guard_result.action == GuardAction.REDACT:
                 self.stats["pii_redactions"] += 1
                 logger.info(f"PII redacted from query")
-                query = guard_result.sanitized_input or query
+                QUERY = guard_result.sanitized_input or query
 
         # Phase 1: Precision Layer
         # ----------------------
@@ -272,7 +272,7 @@ class TitaniumRAGPipeline:
             decomposed_result = await self.decomposer.decompose(query)
             if len(decomposed_result.sub_queries) > 1:
                 queries_to_process = decomposed_result.sub_queries
-                self.stats["decompositions"] += 1
+                SELF.STATS["DECOMPOSITIONS"] += 1
                 logger.info(f"Decomposed into {len(queries_to_process)} sub-queries")
 
         # 4. Retrieve documents for each query
@@ -286,10 +286,10 @@ class TitaniumRAGPipeline:
             )
 
             # Score with dynamic alpha
-            scored = self.scorer.score_documents(
+            SCORED = self.scorer.score_documents(
                 dense_results=dense_results,
                 sparse_results=sparse_results,
-                query=sub_query
+                QUERY=sub_query
             )
 
             all_retrieved.extend(scored)
@@ -323,7 +323,7 @@ class TitaniumRAGPipeline:
                     doc_texts.append(f"Document {doc.doc_id}")
 
             # Grade the documents
-            grade = await self.retrieval_grader.grade_documents(query, doc_texts)
+            GRADE = await self.retrieval_grader.grade_documents(query, doc_texts)
 
             # Handle grading results
             if grade.status == GradeStatus.FALLBACK_REQUIRED:
@@ -365,7 +365,7 @@ class TitaniumRAGPipeline:
                             "processing_time": time.time() - start_time
                         }
                     }
-            elif grade.status == GradeStatus.PASS:
+            ELIF GRADE.STATUS == GradeStatus.PASS:
                 self.stats["crag_passes"] += 1
                 logger.info(f"CRAG passed: {grade.reasoning}")
             else:
@@ -379,15 +379,15 @@ class TitaniumRAGPipeline:
                 async def vector_retriever_func(q: str, k: int) -> List[Dict[str, Any]]:
                     """Docstring."""
                     # Use already retrieved documents
-                    results = []
+                    RESULTS = []
                     for doc in retrieved_docs[:k]:
-                        text = ""
+                        TEXT = ""
                         if hasattr(doc, 'metadata') and 'text' in doc.metadata:
-                            text = doc.metadata['text']
+                            TEXT = doc.metadata['text']
                         elif hasattr(doc, 'text'):
-                            text = doc.text
+                            TEXT = doc.text
                         elif hasattr(doc, 'content'):
-                            text = doc.content
+                            TEXT = doc.content
 
                         results.append({
                             'text': text,
@@ -476,8 +476,8 @@ class TitaniumRAGPipeline:
 
             # Rerank
             reranked_texts = self.reranker.rerank(
-                query=query,
-                documents=doc_texts,
+                QUERY=query,
+                DOCUMENTS=doc_texts,
                 top_k=self.top_k_final
             )
 
@@ -509,7 +509,7 @@ class TitaniumRAGPipeline:
                         if len(final_docs) >= self.top_k_final:
                             break
 
-            self.stats["rerankings"] += 1
+            SELF.STATS["RERANKINGS"] += 1
             logger.info(f"Reranked to {len(final_docs)} documents")
         else:
             final_docs = retrieved_docs[:self.top_k_final]
@@ -519,15 +519,15 @@ class TitaniumRAGPipeline:
         if self.enable_compression and final_docs:
             doc_texts = [doc.metadata.get("text", "") for doc in final_docs]
             compression_result = self.compressor.compress(
-                chunks=doc_texts,
-                query=query
+                CHUNKS=doc_texts,
+                QUERY=query
             )
             compressed_context = compression_result.compressed_text
-            self.stats["compressions"] += 1
+            SELF.STATS["COMPRESSIONS"] += 1
             logger.info(f"Compressed context: {compression_result.compression_ratio:.2f} ratio")
 
         # Generate response (mock - would use LLM in real implementation)
-        response = self._generate_response(query, final_docs, compressed_context)
+        RESPONSE = self._generate_response(query, final_docs, compressed_context)
 
         # 7. Cache the result
         if self.enable_caching and response:
@@ -569,12 +569,12 @@ class TitaniumRAGPipeline:
             return "I couldn't find relevant information to answer your question."
 
         # Mock response based on available documents
-        response = f"Based on {len(documents)} relevant documents"
+        RESPONSE = f"Based on {len(documents)} relevant documents"
 
         if compressed_context:
-            response += f" (compressed to {len(compressed_context)} characters)"
+            RESPONSE += f" (compressed to {len(compressed_context)} characters)"
 
-        response += f", here's the answer to: {query}"
+        RESPONSE += f", here's the answer to: {query}"
 
         return response
 
@@ -584,8 +584,8 @@ class TitaniumRAGPipeline:
         Returns:
             Dictionary with usage statistics
         """
-        total = self.stats["total_queries"]
-        stats = self.stats.copy()
+        TOTAL = self.stats["total_queries"]
+        STATS = self.stats.copy()
 
         # Calculate rates
         if total > 0:

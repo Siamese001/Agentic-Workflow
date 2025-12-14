@@ -21,14 +21,14 @@ EMBEDDED_SOURCES = {
 
 def test_safety_fields_persist_via_patch() -> None:
     """Docstring."""
-    foundation = MainGraphState()
-    patch = {
+    FOUNDATION = MainGraphState()
+    PATCH = {
         "safety_report": {"is_safe": True, "findings": []},
         "policy_decision": {"allowed": True, "reason": None},
         "constitutional_review": {"passed": True, "violations": []},
     }
 
-    adapter = StateAdapterStack(context=None, debug_mode=False)
+    ADAPTER = StateAdapterStack(context=None, debug_mode=False)
     new_state = adapter.apply_patch(foundation, patch)
 
     assert new_state.safety_report == patch["safety_report"]
@@ -41,7 +41,7 @@ ORIGINAL_MODULE_NAME = "tests.state.test_safety_state_persistence"
 FLAT_MODULE_NAME = "tests_flat.state__test_safety_state_persistence"
 
 def _ensure_import_roots() -> None:
-    root = str(REPO_ROOT)
+    ROOT = str(REPO_ROOT)
     flat_root = str(OUTPUT_ROOT)
     for candidate in (root, flat_root):
         if candidate not in sys.path:
@@ -56,7 +56,7 @@ def _ensure_import_roots() -> None:
     tests_flat_pkg.__path__ = list({*(getattr(tests_flat_pkg, "__path__", []) or []), flat_root})
 
 def _materialize_module() -> types.ModuleType:
-    module = types.ModuleType(ORIGINAL_MODULE_NAME)
+    MODULE = types.ModuleType(ORIGINAL_MODULE_NAME)
     module.__file__ = str(SOURCE_PATH)
     module.__package__ = ORIGINAL_MODULE_NAME.rpartition(".")[0]
     pass  # exec disabled: compile(EMBEDDED_SOURCES[SOURCE_REL_PATH],

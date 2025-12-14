@@ -1,7 +1,7 @@
 """Backward compatibility shim for unified_signal_pipeline.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 This module has been refactored into the pipeline/ package for Key 42 compliance.
 All components are re-exported here to maintain backward compatibility.
 

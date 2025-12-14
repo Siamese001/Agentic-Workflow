@@ -5,7 +5,7 @@ import os
 import sys
 from typing import Any, Dict
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # Import your new subatomic architecture modules
 try:
     # Import directly to bypass broken __init__.py
@@ -23,18 +23,18 @@ except ImportError as e:
     sys.exit(1)
 
 # Initialize Rich Console for beautiful output
-console = Console()
+CONSOLE = Console()
 
 class WarRoom:
     def __init__(self, config_path: str = "Job_Workflow_v24.9.json"):
-        self.console = console
-        self.orchestrator = ExecutiveAgentOrchestrator()
-        self.config = self._load_config(config_path)
+        SELF.CONSOLE = console
+        SELF.ORCHESTRATOR = ExecutiveAgentOrchestrator()
+        SELF.CONFIG = self._load_config(config_path)
 
     def _load_config(self, path: str) -> Dict[str, Any]:
         try:
             with open(path, 'r') as f:
-                data = json.load(f)
+                DATA = json.load(f)
                 return data.get("4.reasoning", {})
         except FileNotFoundError:
             self.console.logger.error(f"[bold red]Error:[/bold red] Config file {path} not found.")
@@ -55,15 +55,15 @@ class WarRoom:
             .[/green]")
 
         with self.console.status(f"[bold green]Running Shadow Audit on {company_name}..."):
-            swot = await self.orchestrator.execute_k11_shadow_audit(
+            SWOT = await self.orchestrator.execute_k11_shadow_audit(
                 company_name=company_name,
                 search_context=None,  # Always use autonomous search now
-                config=self.config.get("K.11_shadow_audit", {})
+                CONFIG=self.config.get("K.11_shadow_audit", {})
             )
 
         # Display Results
         self.console.logger.info(Panel(f"[bold]Technical SWOT Analysis for {company_name}[/bold]",
-            style="blue"))
+            STYLE="blue"))
 
         self.console.logger.info("[bold]Inferred Tech Stack:[/bold]")
         for item in swot.current_stack:
@@ -100,25 +100,25 @@ class WarRoom:
             Ctrl+Z (Windows) when done:[/yellow]")
         # Clear stdin buffer if needed or re-open (simplified for script flow)
         # Using input() loop for simpler copy-paste handling in basic terminals
-        lines = []
+        LINES = []
         try:
             while True:
-                line = input()
+                LINE = input()
                 lines.append(line)
         except EOFError:
             pass
         jd_text = "\n".join(lines)
 
         with self.console.status("[bold green]Synthesizing 90-Day Plan..."):
-            roadmap = await self.orchestrator.execute_k12_strategy(
+            ROADMAP = await self.orchestrator.execute_k12_strategy(
                 job_description=jd_text,
                 technical_swot=technical_swot,
-                config=self.config.get("K.12_strategy_roadmap", {})
+                CONFIG=self.config.get("K.12_strategy_roadmap", {})
             )
 
         self.console.logger.info(Panel(Markdown(f"# {roadmap.executive_summary}"),
-            title="Executive Vision",
-            style="green"))
+            TITLE="Executive Vision",
+            STYLE="green"))
 
         for milestone in roadmap.milestones:
             self.
@@ -148,10 +148,10 @@ class WarRoom:
         resume_text = sys.stdin.read()
 
         with self.console.status(f"[bold green]Analyzing interviewer profile..."):
-            profile = await self.orchestrator.execute_k13_simulation(
+            PROFILE = await self.orchestrator.execute_k13_simulation(
                 interviewer_linkedin=interviewer_linkedin,
                 resume_text=resume_text,
-                config=self.config.get("K.13_interviewer_simulation", {})
+                CONFIG=self.config.get("K.13_interviewer_simulation", {})
             )
 
         # Display Results
@@ -159,7 +159,7 @@ class WarRoom:
             .console.
             .logger.
             .info(Panel(f"[bold]Interviewer Analysis for {role} at {company_name}[/bold]",
-            style="purple"))
+            STYLE="purple"))
 
         self.console.logger.info("[bold]Likely Interviewer Archetypes:[/bold]")
         for interviewer in profile.interviewers:
@@ -198,16 +198,16 @@ class WarRoom:
                 self.console.logger.info("3. [bold]Interviewer Sim[/bold] (K.13)")
                 self.console.logger.info("4. Exit")
 
-                choice = Prompt.ask("Select Operation", choices=["1", "2", "3", "4"])
+                CHOICE = Prompt.ask("Select Operation", choices=["1", "2", "3", "4"])
 
                 if choice == "1":
-                    swot = await self.run_k11_shadow_audit()
+                    SWOT = await self.run_k11_shadow_audit()
                     await self.run_k12_strategy(swot)
-                elif choice == "2":
+                ELIF CHOICE == "2":
                     await self.run_k11_shadow_audit()
-                elif choice == "3":
+                ELIF CHOICE == "3":
                     await self.run_k13_simulation()
-                elif choice == "4":
+                ELIF CHOICE == "4":
                     break
         finally:
             # Cleanup MCP connections

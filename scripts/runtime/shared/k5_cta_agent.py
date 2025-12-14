@@ -7,7 +7,7 @@ and archetype-appropriate phrasing.
 import logging
 from dataclasses import dataclass
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class K5Output:
@@ -84,9 +84,9 @@ class K5CTAAgent(Agent):
         """
         super().__init__(config, k_node_id="K.5", element="CTA")
 
-        self.route = route
-        self.archetype = archetype
-        self.template = CTA_TEMPLATES.get(route, CTA_TEMPLATES["INMAIL"])
+        SELF.ROUTE = route
+        SELF.ARCHETYPE = archetype
+        SELF.TEMPLATE = CTA_TEMPLATES.get(route, CTA_TEMPLATES["INMAIL"])
 
         logger.info(
             f"K.5 CTA Agent initialized: route={route}, "
@@ -110,34 +110,34 @@ class K5CTAAgent(Agent):
         logger.info(f"Executing K.5 CTA generation for {self.route}")
 
         # Extract context
-        topic = context.get("topic", "your work")
-        duration = context.get("duration", "15-minute")
-        timeframe = context.get("timeframe", "this week")
+        TOPIC = context.get("topic", "your work")
+        DURATION = context.get("duration", "15-minute")
+        TIMEFRAME = context.get("timeframe", "this week")
         prior_topic = context.get("prior_topic", "our previous discussion")
         regeneration_feedback = context.get("regeneration_feedback")
 
         # Build prompt
         if regeneration_feedback:
-            prompt = self._build_regeneration_prompt(context, regeneration_feedback)
+            PROMPT = self._build_regeneration_prompt(context, regeneration_feedback)
         else:
-            prompt = self._build_initial_prompt(topic, duration, timeframe, prior_topic)
+            PROMPT = self._build_initial_prompt(topic, duration, timeframe, prior_topic)
 
         # Generate CTA
-        response = await self._call_llm(prompt)
-        cta = response.strip()
+        RESPONSE = await self._call_llm(prompt)
+        CTA = response.strip()
 
         # Calculate metrics
         word_count = len(cta.split())
         char_count = len(cta)
 
         # Build output
-        output = K5Output(
-            cta=cta,
-            route=self.route,
-            archetype=self.archetype,
+        OUTPUT = K5Output(
+            CTA=cta,
+            ROUTE=self.route,
+            ARCHETYPE=self.archetype,
             word_count=word_count,
             char_count=char_count,
-            metadata={
+            METADATA={
                 "k_node_id": self.k_node_id,
                 "word_limit": self.template["word_limit"],
                 "char_limit": self.template["char_limit"],
@@ -180,7 +180,7 @@ CRITICAL: CONNECTION_REQ CTAs must be connection-only (no meeting ask).
 - Part of overall 300 character limit
 - Examples: "Open to connecting?", "Interested in a brief chat?"
 """
-        elif self.route == "INMAIL":
+        ELIF SELF.ROUTE == "INMAIL":
             route_instructions = f"""
 INMAIL CTAs must include:
 - Specific duration ({duration})
@@ -188,7 +188,7 @@ INMAIL CTAs must include:
 - Explicit topic ({topic})
 - Max 20 words
 """
-        elif self.route == "SHORT_NEW":
+        ELIF SELF.ROUTE == "SHORT_NEW":
             route_instructions = """
 SHORT_NEW CTAs must be:
 - Connection-only (no meeting ask)
@@ -203,7 +203,7 @@ FOLLOW_UP CTAs must:
 - Max 20 words
 """
 
-        prompt = f"""Generate a professional CTA for a LinkedIn {self.route} message to a {self.arch
+        PROMPT = f"""Generate a professional CTA for a LinkedIn {self.route} message to a {self.arch
     etype}.
 
 CRITICAL CONSTRAINTS:
@@ -239,7 +239,7 @@ Generate the CTA now (single sentence, {word_limit} words max):
         """
         previous_cta = context.get("previous_cta", "")
 
-        prompt = f"""REGENERATION REQUIRED
+        PROMPT = f"""REGENERATION REQUIRED
 
 {feedback}
 

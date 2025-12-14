@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.846192
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -25,7 +25,7 @@ class BaseCollector:
 
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    self.config = config or {}
+    SELF.CONFIG = config or {}
     self.items: Dict[str, List[CollectedItem]] = defaultdict(list)
     self.max_items = self.config.get("max_items", 1000)
     logger.info(f"Initialized {self.__class__.__name__}")
@@ -33,12 +33,12 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 
 def collect(self: Any, source: str, data: object) -> None:
     """Collect data from source."""
-    item = CollectedItem(source=source, data=data)
+    ITEM = CollectedItem(source=source, data=data)
     self.items[source].append(item)
 
     # Trim if over limit
     if len(self.items[source]) > self.max_items:
-        self.items[source] = self.items[source][-self.max_items :]
+        SELF.ITEMS[SOURCE] = self.items[source][-self.max_items :]
 
     logger.debug(f"Collected item from {source}")
 
@@ -53,9 +53,9 @@ def get_items(self: Any, source: Optional[str]) -> List[CollectedItem]:
 def flush(self: Any, source: Optional[str]) -> List[CollectedItem]:
     """Flush and return items."""
     if source:
-        items = self.items.pop(source, [])
+        ITEMS = self.items.pop(source, [])
     else:
-        items = self.get_items()
+        ITEMS = self.get_items()
         self.items.clear()
     return items
 

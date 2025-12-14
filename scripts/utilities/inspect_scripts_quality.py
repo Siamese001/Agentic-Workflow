@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -17,7 +17,7 @@ class DiagnosticReport:
     """Diagnostic report."""
 
     _timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
-    healthy: bool = True
+    HEALTHY: BOOL = True
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)
 
@@ -28,14 +28,14 @@ class InspectScriptsQuality:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the quality inspector with optional configuration."""
-    self.config = config or {}
+    SELF.CONFIG = config or {}
     logger.info(f"Initialized {self.__class__.__name__}")
 
 
 def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticReport:
     """Run diagnostics."""
-    issues = []
-    metrics = {}
+    ISSUES = []
+    METRICS = {}
 
     if target is None:
         issues.append("Target is null")
@@ -44,8 +44,8 @@ def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticRe
     elif isinstance(target, list):
         metrics["item_count"] = len(target)
 
-    metrics["type"] = type(target).__name__
-    healthy = len(issues) == 0
+    METRICS["TYPE"] = type(target).__name__
+    HEALTHY = len(issues) == 0
 
     return DiagnosticReport(healthy=healthy, issues=issues, metrics=metrics)
 

@@ -15,7 +15,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -66,9 +66,9 @@ def __init__(self: Any, storage_adapter: Any, embedder: Any, similarity_threshol
             embedder: Embedding function for goals
             similarity_threshold: Minimum similarity for memory recall
         """
-        self.storage = storage_adapter
-        self.embedder = embedder
-        self.threshold = similarity_threshold
+        SELF.STORAGE = storage_adapter
+        SELF.EMBEDDER = embedder
+        SELF.THRESHOLD = similarity_threshold
         self._episodes: List[Episode] = []
         self._embedding_matrix: Optional[np.ndarray] = None
 
@@ -85,8 +85,8 @@ async def _load_episodes(self: Any) -> None:
 
             for file_key in episode_files:
                 if file_key.endswith('.json'):
-                    data = json.loads(await self.storage.read_blob(file_key))
-                    episode = Episode(**data)
+                    DATA = json.loads(await self.storage.read_blob(file_key))
+                    EPISODE = Episode(**data)
                     self._episodes.append(episode)
 
             if self._episodes:
@@ -109,7 +109,7 @@ def _filter_episode_candidates(self: Any,
      agent_role: Optional[str],
      min_rating: float) -> List[tuple]:
         """Filter episodes by role and rating."""
-        candidates = []
+        CANDIDATES = []
         for i, episode in enumerate(self._episodes):
             if episode.rating >= min_rating:
                 if agent_role is None or episode.agent_role == agent_role:
@@ -129,7 +129,7 @@ def _find_best_match(self: Any, query_vec: np.ndarray, candidates: List[tuple]) 
 
         for idx, episode in candidates:
             episode_vec = np.array(episode.goal_embedding)
-            similarity = self._calculate_similarity(query_vec, episode_vec)
+            SIMILARITY = self._calculate_similarity(query_vec, episode_vec)
 
             if similarity > best_score and similarity >= self.threshold:
                 best_score = similarity
@@ -173,7 +173,7 @@ async def recall_relevant_experience(self: Any,
         query_vec = await self.embedder.embed_query(current_task)
         query_vec = np.array(query_vec)
 
-        candidates = self._filter_episode_candidates(agent_role, min_rating)
+        CANDIDATES = self._filter_episode_candidates(agent_role, min_rating)
 
         if not candidates:
             logger.debug(f"No high-rated episodes found for task: {current_task[:50]}...")
@@ -202,15 +202,15 @@ async def commit_episode(self: Any, data: EpisodeData) -> str:
 
         # Create episode
         episode_id = f"ep_{int(time.time() * 1000)}_{len(self._episodes)}"
-        episode = Episode(
+        EPISODE = Episode(
             goal_embedding=goal_embedding,
             task_description=data.task,
             successful_plan=data.plan,
             tools_used=data.tools_used,
             outcome_summary=data.result,
             failure_notes=data.failure_notes or "",
-            rating=data.rating,
-            timestamp=time.time(),
+            RATING=data.rating,
+            TIMESTAMP=time.time(),
             episode_id=episode_id,
             agent_role=data.agent_role,
             execution_context=data.execution_context or {}
@@ -241,9 +241,9 @@ async def _persist_episode(self: Any, episode: Episode) -> None:
             episode_data['goal_embedding'] = episode_data['goal_embedding'].tolist()
 
         await self.storage.write_blob(
-            key=episode_key,
-            data=json.dumps(episode_data).encode('utf-8'),
-            metadata={
+            KEY=episode_key,
+            DATA=json.dumps(episode_data).encode('utf-8'),
+            METADATA={
                 "episode_id": episode.episode_id,
                 "agent_role": episode.agent_role,
                 "rating": str(episode.rating),
@@ -268,16 +268,16 @@ async def get_successful_patterns(self: Any,
             List of successful episode patterns
         """
         # Filter episodes
-        filtered = [
+        FILTERED = [
             ep for ep in self._episodes
             if ep.rating >= min_rating
         ]
 
         # Sort by rating and timestamp
-        filtered.sort(key=lambda x: (x.rating, x.timestamp), reverse=True)
+        FILTERED.SORT(KEY=lambda x: (x.rating, x.timestamp), reverse=True)
 
         # Return top patterns
-        patterns = []
+        PATTERNS = []
         for ep in filtered[:limit]:
             patterns.append({
                 "task": ep.task_description,
@@ -321,7 +321,7 @@ def get_stats(self: Any) -> Dict[str, Any]:
         if not self._episodes:
             return {"total_episodes": 0}
 
-        ratings = [ep.rating for ep in self._episodes]
+        RATINGS = [ep.rating for ep in self._episodes]
 
         return {
             "total_episodes": len(self._episodes),
@@ -351,6 +351,6 @@ def create_episodic_memory(storage_adapter: Any,
      similarity_threshold: float) -> EpisodicMemory:
     return EpisodicMemory(
         storage_adapter=storage_adapter,
-        embedder=embedder,
+        EMBEDDER=embedder,
         similarity_threshold=similarity_threshold
     )

@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from .models_enums import *  # Star import removed
 
 
@@ -48,17 +48,17 @@ class ImmutableStagingBuffer:
 
     _data: Dict[str, Any] = field(default_factory=dict)
     _version: int = 1
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    TIMESTAMP: DATETIME = field(default_factory=datetime.utcnow)
     _checksum: Optional[str] = None
 
 
 def with_data(self: Any, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
     """Return a new buffer with updated data."""
     return ImmutableStagingBuffer(
-        data={**self.data, **new_data},
-        version=self.version + 1,
-        timestamp=datetime.utcnow(),
-        checksum=None,
+        DATA={**self.data, **new_data},
+        VERSION=self.version + 1,
+        TIMESTAMP=datetime.utcnow(),
+        CHECKSUM=None,
     )
 
 

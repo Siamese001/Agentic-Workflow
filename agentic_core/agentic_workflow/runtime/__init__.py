@@ -1,6 +1,6 @@
 """
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Runtime components for Agentic Workflow.
 
 This module provides runtime logic, shared utilities, and core functionality

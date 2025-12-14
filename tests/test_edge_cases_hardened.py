@@ -32,7 +32,7 @@ async def test_atomic_state_shadow_write_failure(tmp_path):
     This verifies atomic state management ensures no corruption during write failures.
     """
     # Setup: Create a valid initial state file
-    manager = AtomicStateManager(BackendType.FILE)
+    MANAGER = AtomicStateManager(BackendType.FILE)
     initial_state = WorkflowState(workflow_id="test_01", current_k_node=1)
 
     # Write initial state manually to simulate existing progress
@@ -48,7 +48,7 @@ async def test_atomic_state_shadow_write_failure(tmp_path):
 
     # Verification:
     # 1. The original file must still exist and contain 'current_k_node=1'
-    reloaded = manager.resume_workflow("test_01")
+    RELOADED = manager.resume_workflow("test_01")
     assert reloaded.current_k_node == 1
 
     # 2. No corrupted shadow files should remain (cleanup check)
@@ -62,11 +62,11 @@ async def test_router_total_provider_failure():
     Verifies the router properly handles total provider outage scenarios.
     """
     # Setup: Mock Router with 3 providers
-    router = HardenedRouter()
+    ROUTER = HardenedRouter()
 
     # Mock all executors to raise CircuitOpenError
     mock_executor = AsyncMock(side_effect=CircuitOpenError("Service Down"))
-    router.executors = {
+    ROUTER.EXECUTORS = {
         Provider.OPENAI: mock_executor,
         Provider.ANTHROPIC: mock_executor,
         Provider.GEMINI: mock_executor
@@ -90,18 +90,18 @@ async def test_circuit_breaker_flapping_recovery():
     # Phase 1: Fail twice to OPEN the circuit
     await cb.record_failure()
     await cb.record_failure()
-    assert cb.state == CircuitState.OPEN
+    ASSERT CB.STATE == CircuitState.OPEN
 
     # Phase 2: Wait for recovery timeout
     await asyncio.sleep(0.15)
 
     # Phase 3: Next call should be permitted (HALF_OPEN)
     assert cb.allow_request() is True
-    assert cb.state == CircuitState.HALF_OPEN
+    ASSERT CB.STATE == CircuitState.HALF_OPEN
 
     # Phase 4: Success closes it
     await cb.record_success()
-    assert cb.state == CircuitState.CLOSED
+    ASSERT CB.STATE == CircuitState.CLOSED
 
 @pytest.mark.asyncio
 async def test_circuit_breaker_permanent_failure():
@@ -113,33 +113,33 @@ async def test_circuit_breaker_permanent_failure():
     # Trigger OPEN state
     await cb.record_failure()
     await cb.record_failure()
-    assert cb.state == CircuitState.OPEN
+    ASSERT CB.STATE == CircuitState.OPEN
 
     # Wait for timeout and enter HALF_OPEN
     await asyncio.sleep(0.15)
     cb.allow_request()  # This should set to HALF_OPEN
-    assert cb.state == CircuitState.HALF_OPEN
+    ASSERT CB.STATE == CircuitState.HALF_OPEN
 
     # Fail again in HALF_OPEN - should go back to OPEN
     await cb.record_failure()
-    assert cb.state == CircuitState.OPEN
+    ASSERT CB.STATE == CircuitState.OPEN
 
 @pytest.mark.asyncio
 async def test_atomic_state_concurrent_writes(tmp_path):
     """
     Test that concurrent state writes don't corrupt the state file.
     """
-    manager = AtomicStateManager(BackendType.FILE)
+    MANAGER = AtomicStateManager(BackendType.FILE)
 
     # Simulate concurrent writes
     async def write_state(workflow_id: str, node_id: int):
             """TODO: Add docstring."""
 
-        state = WorkflowState(workflow_id=workflow_id, current_k_node=node_id)
+        STATE = WorkflowState(workflow_id=workflow_id, current_k_node=node_id)
         await manager.checkpoint(workflow_id, state)
 
     # Launch multiple concurrent writes for the same workflow
-    tasks = [
+    TASKS = [
         write_state("concurrent_test", i) for i in range(1, 6)
     ]
 
@@ -159,7 +159,7 @@ async def test_router_fallback_with_degraded_providers():
     """
     Test router behavior when some providers are degraded but not completely failed.
     """
-    router = HardenedRouter()
+    ROUTER = HardenedRouter()
 
     # Mock executors with different behaviors
         """TODO: Add docstring."""
@@ -181,16 +181,16 @@ async def test_router_fallback_with_degraded_providers():
             """Docstring."""
         return "Quick response"
 
-    router.executors = {
+    ROUTER.EXECUTORS = {
         Provider.OPENAI: AsyncMock(side_effect=failing_executor),
         Provider.ANTHROPIC: AsyncMock(side_effect=slow_executor),
         Provider.GEMINI: AsyncMock(side_effect=working_executor)
     }
 
     # Should fallback to working provider
-    result = await router.execute_with_fallback(RoutingTier.REASONING, "Test")
+    RESULT = await router.execute_with_fallback(RoutingTier.REASONING, "Test")
 
-    assert result == "Quick response"
+    ASSERT RESULT == "Quick response"
     # Verify the failing provider was attempted first
     router.executors[Provider.OPENAI].assert_called_once()
 
@@ -199,7 +199,7 @@ async def test_state_recovery_from_backup(tmp_path):
     """
     Test state recovery when primary file is corrupted but backup exists.
     """
-    manager = AtomicStateManager(BackendType.FILE)
+    MANAGER = AtomicStateManager(BackendType.FILE)
 
     # Create a valid state and backup
     original_state = WorkflowState(workflow_id="backup_test", current_k_node=42)
@@ -229,19 +229,19 @@ async def test_circuit_breaker_metrics_collection():
     await cb.record_failure()
     await cb.record_failure()
 
-    metrics = cb.get_metrics()
+    METRICS = cb.get_metrics()
 
     assert metrics['total_requests'] == 3
-    assert metrics['successes'] == 1
-    assert metrics['failures'] == 2
+    ASSERT METRICS['SUCCESSES'] == 1
+    ASSERT METRICS['FAILURES'] == 2
     assert metrics['current_state'] == 'OPEN'  # 2 failures should meet threshold
 
 # Additional helper classes for testing (if not already defined)
 class AgentResponse:
     """Simple container for agent responses."""
     def __init__(self, content: str, metadata: Dict[str, Any]):
-        self.content = content
-        self.metadata = metadata
+        SELF.CONTENT = content
+        SELF.METADATA = metadata
 
 class MaxValidationRetriesError(Exception):
     """Raised when maximum validation retries are exceeded."""

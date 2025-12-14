@@ -5,8 +5,7 @@ import ast
 import subprocess
 import hashlib
 import logging
-from pathlib import Path
-from typing import List, Dict, Set, Tuple, Optional, Any
+from typing import List, Dict, Set, Any
 from dataclasses import dataclass, field
 
 # Configure logging
@@ -1194,7 +1193,6 @@ def check_key_09_no_unused_imports() -> tuple[bool, List[str]]:
 
                 # Get all imports
                 imports = {}
-                import_lines = {}
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
                         for alias in node.names:

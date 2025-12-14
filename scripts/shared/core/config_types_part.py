@@ -1,7 +1,7 @@
 """Split module 1 for config_types."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class ModelProvider(Enum):
     """TODO: Add docstring."""
 
@@ -18,7 +18,7 @@ class ModelConfig:
     provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = 'gpt-4-turbo'
     api_key: Optional[str] = None
-    temperature: float = DEFAULT_GENERATION_TEMPERATURE
+    TEMPERATURE: FLOAT = DEFAULT_GENERATION_TEMPERATURE
     max_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS
 
     """TODO: Add docstring."""
@@ -26,7 +26,7 @@ class ModelConfig:
 @dataclass
 class RAGConfig:
     """Docstring."""
-    enabled: bool = True
+    ENABLED: BOOL = True
     chunk_size: int = 1000
     chunk_overlap: int = 200
     retrieval_count: int = 5

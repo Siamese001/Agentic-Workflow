@@ -1,7 +1,7 @@
 """Integration tests for K.X nodes (Knowledge Extraction).
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Tests K.X node configuration, execution, and integration with
 agent executors and workflow orchestration.
 
@@ -28,7 +28,7 @@ class TestKXNodeRegistry:
 
     def test_registry_initialization(self):
             """Test K.X node registry initializes correctly."""
-        registry = get_kx_registry()
+        REGISTRY = get_kx_registry()
 
         assert registry is not None
         assert len(registry.list_resume_nodes()) > 0
@@ -36,7 +36,7 @@ class TestKXNodeRegistry:
 
     def test_resume_nodes_loaded(self):
             """Test all resume engine K.X nodes are loaded."""
-        registry = get_kx_registry()
+        REGISTRY = get_kx_registry()
         resume_nodes = registry.list_resume_nodes()
 
         # Check for key resume nodes
@@ -55,7 +55,7 @@ class TestKXNodeRegistry:
 
     def test_outreach_nodes_loaded(self):
             """Test all outreach engine K.X nodes are loaded."""
-        registry = get_kx_registry()
+        REGISTRY = get_kx_registry()
         outreach_nodes = registry.list_outreach_nodes()
 
         # Check for key outreach nodes
@@ -72,11 +72,11 @@ class TestKXNodeRegistry:
 
     def test_get_resume_node(self):
             """Test retrieving resume K.X node configuration."""
-        config = get_resume_kx_node("K.1_Executive_Summary")
+        CONFIG = get_resume_kx_node("K.1_Executive_Summary")
 
         assert config is not None
         assert config.node_id == "K.1"
-        assert config.element == "Executive Summary"
+        ASSERT CONFIG.ELEMENT == "Executive Summary"
         assert config.node_type == KNodeType.RESUME_SECTION
         assert config.reasoning_strategy == ReasoningStrategy.HYBRID_COT_TOT
         assert config.rag_config.enabled is True
@@ -84,18 +84,18 @@ class TestKXNodeRegistry:
 
     def test_get_outreach_node(self):
             """Test retrieving outreach K.X node configuration."""
-        config = get_outreach_kx_node("K.3_Message_Body")
+        CONFIG = get_outreach_kx_node("K.3_Message_Body")
 
         assert config is not None
         assert config.node_id == "K.3"
-        assert config.element == "Message Body - personalized content generation"
+        ASSERT CONFIG.ELEMENT == "Message Body - personalized content generation"
         assert config.node_type == KNodeType.OUTREACH_CONTENT
         assert config.reasoning_strategy == ReasoningStrategy.HYBRID_COT_TOT
         assert config.max_chars == 800
 
     def test_connection_request_variant(self):
             """Test connection request variant nodes."""
-        config = get_outreach_kx_node("CONNECTION_REQ_K.3_COMPRESSED", connection_request=True)
+        CONFIG = get_outreach_kx_node("CONNECTION_REQ_K.3_COMPRESSED", connection_request=True)
 
         assert config is not None
         assert config.max_chars == 280
@@ -104,7 +104,7 @@ class TestKXNodeRegistry:
 
     def test_nodes_by_type(self):
             """Test filtering nodes by type."""
-        registry = get_kx_registry()
+        REGISTRY = get_kx_registry()
 
         header_nodes = registry.get_nodes_by_type(KNodeType.RESUME_HEADER)
         assert len(header_nodes) >= 3  # Name, Headline, Contact
@@ -120,7 +120,7 @@ class TestKXNodeConfiguration:
 
     def test_rag_configuration(self):
             """Test RAG configuration in K.X nodes."""
-        config = get_resume_kx_node("K.2_Unify_Bullets")
+        CONFIG = get_resume_kx_node("K.2_Unify_Bullets")
 
         assert config.rag_config is not None
         assert config.rag_config.enabled is True
@@ -131,13 +131,13 @@ class TestKXNodeConfiguration:
 
     def test_decoding_parameters(self):
             """Test decoding parameters in K.X nodes."""
-        config = get_resume_kx_node("K.1_Executive_Summary")
+        CONFIG = get_resume_kx_node("K.1_Executive_Summary")
 
         assert config.decoding_params is not None
         assert config.decoding_params.temperature == 0.3
         assert config.decoding_params.top_p == 0.85
-        assert 0 <= config.decoding_params.temperature <= 1.0
-        assert 0 <= config.decoding_params.top_p <= 1.0
+        ASSERT 0 <= config.decoding_params.temperature <= 1.0
+        ASSERT 0 <= config.decoding_params.top_p <= 1.0
 
     def test_reasoning_strategies(self):
             """Test different reasoning strategies."""
@@ -152,7 +152,7 @@ class TestKXNodeConfiguration:
 
     def test_validation_rules(self):
             """Test validation rules configuration."""
-        config = get_resume_kx_node("K.2_Unify_Bullets")
+        CONFIG = get_resume_kx_node("K.2_Unify_Bullets")
 
         assert len(config.validation_rules) > 0
         assert "bullet_provenance_check" in config.validation_rules
@@ -177,13 +177,13 @@ class TestKXNodeExecution:
 
     @pytest.mark.skipif(
         not os.getenv("OPENAI_API_KEY"),
-        reason="OPENAI_API_KEY not set"
+        REASON="OPENAI_API_KEY not set"
     )
     def test_execute_resume_node(self):
             """Test executing a resume K.X node."""
-        executor = create_agent_executor(
-            provider=Provider.OPENAI,
-            temperature=0.3,
+        EXECUTOR = create_agent_executor(
+            PROVIDER=Provider.OPENAI,
+            TEMPERATURE=0.3,
             enable_tracing=False,
         )
 
@@ -198,29 +198,29 @@ class TestKXNodeExecution:
             ],
         }
 
-        result = execute_kx_node(
+        RESULT = execute_kx_node(
             node_key="K.1_Executive_Summary",
             agent_executor=executor,
             source_data=source_data,
-            engine="resume",
+            ENGINE="resume",
         )
 
         assert result is not None
         assert result.node_id == "K.1"
-        assert result.element == "Executive Summary"
+        ASSERT RESULT.ELEMENT == "Executive Summary"
         assert len(result.content) > 0
         assert result.usage.get("total_tokens", 0) > 0
         assert len(result.validation_results) > 0
 
     @pytest.mark.skipif(
         not os.getenv("OPENAI_API_KEY"),
-        reason="OPENAI_API_KEY not set"
+        REASON="OPENAI_API_KEY not set"
     )
     def test_execute_outreach_node(self):
             """Test executing an outreach K.X node."""
-        executor = create_agent_executor(
-            provider=Provider.OPENAI,
-            temperature=0.2,
+        EXECUTOR = create_agent_executor(
+            PROVIDER=Provider.OPENAI,
+            TEMPERATURE=0.2,
             enable_tracing=False,
         )
 
@@ -232,29 +232,29 @@ class TestKXNodeExecution:
             "context": "Applying for Senior Engineer role",
         }
 
-        result = execute_kx_node(
+        RESULT = execute_kx_node(
             node_key="K.5_CTA_Generation",
             agent_executor=executor,
             source_data=source_data,
-            engine="outreach",
+            ENGINE="outreach",
         )
 
         assert result is not None
         assert result.node_id == "K.5"
         assert len(result.content) > 0
-        assert len(result.content.split()) <= 30  # Max words constraint
+        ASSERT LEN(RESULT.CONTENT.SPLIT()) <= 30  # Max words constraint
 
     def test_validation_execution(self):
             """Test validation rules are executed."""
-        executor = create_agent_executor(
-            provider=Provider.OPENAI,
+        EXECUTOR = create_agent_executor(
+            PROVIDER=Provider.OPENAI,
             enable_tracing=False,
         )
 
         # Mock execution to test validation
 
-        config = get_resume_kx_node("K.0_Name")
-        context = KXExecutionContext(
+        CONFIG = get_resume_kx_node("K.0_Name")
+        CONTEXT = KXExecutionContext(
             node_config=config,
             agent_executor=executor,
             source_data={"name": "John Doe"},
@@ -278,15 +278,15 @@ class TestKXNodeMetadata:
 
     def test_resume_node_metadata(self):
             """Test resume node metadata."""
-        config = get_resume_kx_node("K.1_Executive_Summary")
+        CONFIG = get_resume_kx_node("K.1_Executive_Summary")
 
-        assert config.metadata.get("section") == "summary"
+        ASSERT CONFIG.METADATA.GET("SECTION") == "summary"
         assert config.metadata.get("required") is True
-        assert config.metadata.get("priority") == "high"
+        ASSERT CONFIG.METADATA.GET("PRIORITY") == "high"
 
     def test_outreach_node_metadata(self):
             """Test outreach node metadata."""
-        config = get_outreach_kx_node("K.1_Message_Type_Routing")
+        CONFIG = get_outreach_kx_node("K.1_Message_Type_Routing")
 
         assert config.metadata.get("routing_decision") is True
         assert "message_types" in config.metadata
@@ -294,9 +294,9 @@ class TestKXNodeMetadata:
 
     def test_connection_request_metadata(self):
             """Test connection request variant metadata."""
-        config = get_outreach_kx_node("CONNECTION_REQ_K.3_COMPRESSED", connection_request=True)
+        CONFIG = get_outreach_kx_node("CONNECTION_REQ_K.3_COMPRESSED", connection_request=True)
 
-        assert config.metadata.get("mode") == "compressed"
+        ASSERT CONFIG.METADATA.GET("MODE") == "compressed"
         assert "anti_pattern" in config.metadata
 
         micro_config = get_outreach_kx_node("CONNECTION_REQ_K.5_MICRO", connection_request=True)
@@ -310,11 +310,11 @@ class TestKXNodeCustomization:
     def test_register_custom_resume_node(self):
             """Test registering a custom resume node."""
 
-        registry = get_kx_registry()
+        REGISTRY = get_kx_registry()
 
         custom_config = KNodeConfig(
             node_id="K.12",
-            element="Custom Section",
+            ELEMENT="Custom Section",
             node_type=KNodeType.RESUME_SECTION,
             reasoning_strategy=ReasoningStrategy.COT,
             rag_config=RAGConfig(enabled=True),
@@ -323,19 +323,19 @@ class TestKXNodeCustomization:
 
         registry.register_custom_node("K.12_Custom_Section", custom_config, engine="resume")
 
-        retrieved = registry.get_resume_node("K.12_Custom_Section")
+        RETRIEVED = registry.get_resume_node("K.12_Custom_Section")
         assert retrieved is not None
         assert retrieved.node_id == "K.12"
-        assert retrieved.element == "Custom Section"
+        ASSERT RETRIEVED.ELEMENT == "Custom Section"
 
     def test_register_custom_outreach_node(self):
             """Test registering a custom outreach node."""
 
-        registry = get_kx_registry()
+        REGISTRY = get_kx_registry()
 
         custom_config = KNodeConfig(
             node_id="K.8",
-            element="Custom Outreach Element",
+            ELEMENT="Custom Outreach Element",
             node_type=KNodeType.OUTREACH_CONTENT,
             reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
             max_chars=500,
@@ -343,9 +343,9 @@ class TestKXNodeCustomization:
 
         registry.register_custom_node("K.8_Custom_Element", custom_config, engine="outreach")
 
-        retrieved = registry.get_outreach_node("K.8_Custom_Element")
+        RETRIEVED = registry.get_outreach_node("K.8_Custom_Element")
         assert retrieved is not None
-        assert retrieved.element == "Custom Outreach Element"
+        ASSERT RETRIEVED.ELEMENT == "Custom Outreach Element"
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])

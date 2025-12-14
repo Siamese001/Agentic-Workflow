@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 09_apps/apps_rg/L2_execution package initialization.
 
 Generated: 2025-12-07T13:29:00.506025

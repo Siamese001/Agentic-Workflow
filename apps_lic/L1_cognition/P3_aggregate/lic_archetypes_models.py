@@ -2,7 +2,7 @@
 
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from .lic_archetypes_enums import *  # Star import removed
 
 

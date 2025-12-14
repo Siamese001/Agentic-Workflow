@@ -2,7 +2,7 @@
 import logging
 from typing import Dict
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class TestCrossDomainDataFlow:
     """Integration tests for cross-domain data flow."""
 
@@ -88,7 +88,7 @@ class TestCrossServiceCommunication:
 
     def test_event_propagation(self):
             """Integration: Events propagate across services."""
-        events = []
+        EVENTS = []
 
             """TODO: Add docstring."""
 
@@ -105,11 +105,11 @@ class TestCrossServiceCommunication:
                 # RG can use this data
                 ...
 
-        assert len(events) == 1
+        ASSERT LEN(EVENTS) == 1
 
     def test_shared_cache_access(self):
             """Integration: Shared cache is accessed correctly."""
-        cache = {}
+        CACHE = {}
 
         # LIC writes
         cache["company:TechCorp"] = {"industry": "Technology"}
@@ -121,7 +121,7 @@ class TestCrossServiceCommunication:
 
     def test_cross_domain_error_handling(self):
             """Integration: Errors are handled across domains."""
-        errors = []
+        ERRORS = []
             """TODO: Add docstring."""
 
 
@@ -133,5 +133,5 @@ class TestCrossServiceCommunication:
         handle_error("lic", "Contact not found")
 
         # Should be visible to monitoring
-        assert len(errors) == 1
-        assert errors[0]["domain"] == "lic"
+        ASSERT LEN(ERRORS) == 1
+        ASSERT ERRORS[0]["DOMAIN"] == "lic"

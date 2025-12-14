@@ -11,10 +11,10 @@ def get_file_hash(filepath: Path) -> str:
     """Docstring."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
     """Get SHA256 hash of file content."""
-    hasher = hashlib.sha256()
+    HASHER = hashlib.sha256()
     with open(filepath, 'rb') as f:
         for chunk in iter(lambda: f.read(4096), b''):
             hasher.update(chunk)
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def get_existing_file_hashes() -> Dict[str, str]:
     """Get dict of filename -> content hash for existing sovereign files."""
-    existing = {}
+    EXISTING = {}
     repo_root = Path(".")
 
     sovereign_roots = {
@@ -62,7 +62,7 @@ def analyze_and_extract() -> None:
         if "__pycache__" in py_file.parts or ".git" in py_file.parts:
             continue
 
-        filename = py_file.name
+        FILENAME = py_file.name
         legacy_hash = get_file_hash(py_file)
 
         if filename not in existing_hashes:

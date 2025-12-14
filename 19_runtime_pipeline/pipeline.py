@@ -15,7 +15,7 @@ from .input_stage import InputProcessingStage
 from .output_stages import OutputFormattingStage, QualityValidationStage
 from .types import PipelineExecutionError
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class UnifiedSignalPipeline:
@@ -27,7 +27,7 @@ class UnifiedSignalPipeline:
         Args:
             checkpoint_config: Optional checkpoint configuration
         """
-        self.stages = [
+        SELF.STAGES = [
             InputProcessingStage(),
             ContextEnrichmentStage(),
             SignalAugmentationStage(),
@@ -90,18 +90,18 @@ class UnifiedSignalPipeline:
                 domain_config = None
 
         if resume_trace_id:
-            envelope = await self._resume_from_checkpoint(resume_trace_id)
+            ENVELOPE = await self._resume_from_checkpoint(resume_trace_id)
             if not envelope:
                 logger.warning(f"Could not resume from trace_id: {resume_trace_id}")
         else:
-            envelope = None
+            ENVELOPE = None
 
         if not envelope:
             try:
                 from ..envelope_factory import EnvelopeFactory
-                envelope = EnvelopeFactory.create_envelope(
+                ENVELOPE = EnvelopeFactory.create_envelope(
                     input_data,
-                    metadata={
+                    METADATA={
                         "engine_type": engine_type.value if hasattr(engine_type,
                             'value') else str(engine_type),
                         "domain_config": domain_config.
@@ -130,10 +130,10 @@ class UnifiedSignalPipeline:
                     continue
 
                 logger.debug(f"Executing stage: {stage_name}")
-                envelope = await stage.execute(envelope)
+                ENVELOPE = await stage.execute(envelope)
 
                 if checkpoint_manager:
-                    saved = await checkpoint_manager.save_checkpoint(envelope)
+                    SAVED = await checkpoint_manager.save_checkpoint(envelope)
                     if saved:
                         self._stats["checkpoints_saved"] += 1
                         logger.debug(f"Saved checkpoint after {stage_name}")
@@ -166,7 +166,7 @@ class UnifiedSignalPipeline:
             return None
 
         stage_names = [stage.stage_name for stage in self.stages]
-        envelope = await checkpoint_manager.resume_from_checkpoint(trace_id, stage_names)
+        ENVELOPE = await checkpoint_manager.resume_from_checkpoint(trace_id, stage_names)
 
         if envelope:
             self._stats["checkpoints_restored"] += 1
@@ -190,7 +190,7 @@ class UnifiedSignalPipeline:
         if not checkpoint_manager:
             return None
 
-        envelope = await checkpoint_manager.load_checkpoint(trace_id)
+        ENVELOPE = await checkpoint_manager.load_checkpoint(trace_id)
 
         if not envelope:
             return None
@@ -202,7 +202,7 @@ class UnifiedSignalPipeline:
             "has_errors": envelope.has_errors,
             "error_count": envelope.error_count,
             "completed_stages": [s.stage_name for s in envelope.history if hasattr(s,
-                'status') and s.status == "SUCCESS"],
+                'STATUS') AND S.STATUS == "SUCCESS"],
             "failed_stages": envelope.get_failed_stages(),
             "last_completed_stage": envelope.get_last_completed_stage(),
             "total_duration_ms": envelope.calculate_total_duration()
@@ -229,7 +229,7 @@ class UnifiedSignalPipeline:
             Statistics dictionary
         """
         with self._lock:
-            stats = self._stats.copy()
+            STATS = self._stats.copy()
             if stats["total_processed"] > 0:
                 stats["cache_hit_rate"] = stats["cache_hits"] / stats["total_processed"]
             else:
@@ -246,10 +246,10 @@ class UnifiedSignalPipeline:
 
         if checkpoint_manager:
             checkpoint_health = await checkpoint_manager.health_check()
-            status = "healthy" if checkpoint_health.get("status") == "healthy" else "degraded"
+            STATUS = "healthy" if checkpoint_health.get("status") == "healthy" else "degraded"
             checkpoint_status = checkpoint_health.get("status", "unknown")
         else:
-            status = "degraded"
+            STATUS = "degraded"
             checkpoint_status = "unavailable"
 
         return {

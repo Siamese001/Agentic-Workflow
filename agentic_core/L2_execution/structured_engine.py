@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 try:
     import instructor
@@ -28,26 +28,26 @@ class AgentThoughtProcess(BaseModel):
     """
     _reasoning_trace: List[str] = Field(
         ...,
-        description="Step-by-step logic leading to the decision. Each step should be clear and
+        DESCRIPTION="Step-by-step logic leading to the decision. Each step should be clear and
             atomic."
     )
     _relevant_context_keys: List[str] = Field(
         ...,
-        description="Which specific keys from memory/context did you use to make this decision?"
+        DESCRIPTION="Which specific keys from memory/context did you use to make this decision?"
     )
     tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
         ...,
-        description="The action type to take"
+        DESCRIPTION="The action type to take"
     )
     _tool_arguments: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Arguments for the chosen tool"
+        DESCRIPTION="Arguments for the chosen tool"
     )
     _confidence_score: float = Field(
         ...,
         ge=0.0,
         le=1.0,
-        description="Confidence in this decision (0.0 to 1.0)"
+        DESCRIPTION="Confidence in this decision (0.0 to 1.0)"
     )
 
     @field_validator('tool_arguments')
@@ -83,8 +83,8 @@ class StructuredEngine:
         Args:
             client: AsyncOpenAI instance
         """
-        self.client = instructor.patch(client)
-        self.model = "gpt-4"
+        SELF.CLIENT = instructor.patch(client)
+        SELF.MODEL = "gpt-4"
 
         logger.info(f"Structured engine initialized with AsyncOpenAI client")
 
@@ -110,10 +110,10 @@ class StructuredEngine:
         logger.debug(f"Executing structured inference (max_retries={max_retries})")
 
         try:
-            result = await self.client.chat.completions.create(
-                model=self.model,
+            RESULT = await self.client.chat.completions.create(
+                MODEL=self.model,
                 response_model=AgentThoughtProcess,
-                messages=[
+                MESSAGES=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
@@ -136,15 +136,15 @@ class CodeGenerationResult(BaseModel):
     _code: str = Field(..., description="The generated Python _code")
     _dependencies: List[str] = Field(
         default_factory=list,
-        description="Required pip packages"
+        DESCRIPTION="Required pip packages"
     )
     _test_cases: List[str] = Field(
         default_factory=list,
-        description="Test cases to verify the code"
+        DESCRIPTION="Test cases to verify the code"
     )
     _safety_notes: List[str] = Field(
         default_factory=list,
-        description="Potential safety concerns or limitations"
+        DESCRIPTION="Potential safety concerns or limitations"
     )
 
 
@@ -153,16 +153,16 @@ class ResearchResult(BaseModel):
     _query_understanding: str = Field(..., description="How you interpreted the research question")
     _sources: List[Dict[str, str]] = Field(
         ...,
-        description="List of sources with 'url' and 'relevance' keys"
+        DESCRIPTION="List of sources with 'url' and 'relevance' keys"
     )
     _key_findings: List[str] = Field(..., description="Main findings from the research")
     _confidence_level: Literal["high", "medium", "low"] = Field(
         ...,
-        description="Confidence in the research results"
+        DESCRIPTION="Confidence in the research results"
     )
     _follow_up_questions: List[str] = Field(
         default_factory=list,
-        description="Suggested follow-up research questions"
+        DESCRIPTION="Suggested follow-up research questions"
     )
 
 
@@ -172,21 +172,21 @@ class StructuredEngineFactory:
     @staticmethod
     def create_code_engine(api_key: str, model: str = "gpt-4o") -> "StructuredEngine":
         """Create an engine optimized for code generation."""
-        engine = StructuredEngine(api_key, model)
+        ENGINE = StructuredEngine(api_key, model)
         engine.response_model = CodeGenerationResult
         return engine
 
     @staticmethod
     def create_research_engine(api_key: str, model: str = "gpt-4o") -> "StructuredEngine":
         """Create an engine optimized for research tasks."""
-        engine = StructuredEngine(api_key, model)
+        ENGINE = StructuredEngine(api_key, model)
         engine.response_model = ResearchResult
         return engine
 
 
 async def create_structured_engine(
     api_key: str,
-    model: str = "gpt-4o",
+    MODEL: STR = "gpt-4o",
     engine_type: str = "default"
 ) -> StructuredEngine:
     """

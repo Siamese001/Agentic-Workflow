@@ -1,7 +1,7 @@
 """Backoff strategies for retry logic.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
@@ -37,11 +37,11 @@ class ExponentialBackoff(BackoffStrategy):
     base_ms: int = 200
     max_ms: int = 30000
     jitter_ms: int = 100
-    multiplier: float = 2.0
+    MULTIPLIER: FLOAT = 2.0
 
     def calculate(self, attempt: int) -> int:
         """Calculate exponential backoff with jitter."""
-        base = min(
+        BASE = min(
             self.base_ms * (self.multiplier ** (attempt - 1)),
             self.max_ms,
         )
@@ -49,7 +49,7 @@ class ExponentialBackoff(BackoffStrategy):
         if self.jitter_ms <= 0:
             return int(base)
 
-        jitter = random.randint(-self.jitter_ms, self.jitter_ms)
+        JITTER = random.randint(-self.jitter_ms, self.jitter_ms)
         return max(0, int(base + jitter))
 
 @dataclass
@@ -70,7 +70,7 @@ class LinearBackoff(BackoffStrategy):
 
     def calculate(self, attempt: int) -> int:
         """Calculate linear backoff with jitter."""
-        base = min(
+        BASE = min(
             self.base_ms + (self.increment_ms * (attempt - 1)),
             self.max_ms,
         )
@@ -78,7 +78,7 @@ class LinearBackoff(BackoffStrategy):
         if self.jitter_ms <= 0:
             return int(base)
 
-        jitter = random.randint(-self.jitter_ms, self.jitter_ms)
+        JITTER = random.randint(-self.jitter_ms, self.jitter_ms)
         return max(0, int(base + jitter))
 
 def calculate_backoff_ms(
@@ -86,7 +86,7 @@ def calculate_backoff_ms(
     base_backoff_ms: int,
     attempt: int,
     jitter_ms: int = 100,
-    strategy: str = "exponential",
+    STRATEGY: STR = "exponential",
 ) -> int:
     """Convenience function for calculating backoff.
 
@@ -100,12 +100,12 @@ def calculate_backoff_ms(
         Backoff delay in milliseconds
     """
     if strategy == "exponential":
-        backoff = ExponentialBackoff(
+        BACKOFF = ExponentialBackoff(
             base_ms=base_backoff_ms,
             jitter_ms=jitter_ms,
         )
-    elif strategy == "linear":
-        backoff = LinearBackoff(
+    ELIF STRATEGY == "linear":
+        BACKOFF = LinearBackoff(
             base_ms=base_backoff_ms,
             jitter_ms=jitter_ms,
         )

@@ -4,13 +4,13 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class BudgetExceededError(Exception):
     """Raised when budget limit is exceeded."""
     def __init__(self, message: str, current_spend: float, limit: float):
         self.current_spend = current_spend
-        self.limit = limit
+        SELF.LIMIT = limit
         super().__init__(message)
 
 class CostGovernor:
@@ -25,7 +25,7 @@ class CostGovernor:
                  budget_limit: float = 5.00,
                  warning_threshold: float = 0.8,
                  session_id: str = None):
-        self.limit = budget_limit
+        SELF.LIMIT = budget_limit
         self.warning_threshold = warning_threshold
         self.session_id = session_id or f"session_{int(time.time())}"
 
@@ -35,7 +35,7 @@ class CostGovernor:
         self._lock = threading.Lock()
 
         # Model pricing (per 1k tokens) - can be updated
-        self.pricing = {
+        SELF.PRICING = {
             "gpt-4": {"input": 0.03, "output": 0.06},
             "gpt-4-turbo": {"input": 0.01, "output": 0.03},
             "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
@@ -55,7 +55,7 @@ class CostGovernor:
                    model: str,
                    input_tokens: int,
                    output_tokens: int,
-                   operation: str = "completion") -> float:
+                   OPERATION: STR = "completion") -> float:
         """
         Track API usage and update costs.
 
@@ -84,13 +84,13 @@ class CostGovernor:
             self.current_spend += total_cost
 
             # Record usage
-            record = UsageRecord(
-                timestamp=time.time(),
-                model=model,
+            RECORD = UsageRecord(
+                TIMESTAMP=time.time(),
+                MODEL=model,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
-                cost=total_cost,
-                operation=operation,
+                COST=total_cost,
+                OPERATION=operation,
                 cumulative_spend=self.current_spend
             )
             self.usage_history.append(record)
@@ -170,7 +170,7 @@ class CostGovernor:
 
     def update_pricing(self, model: str, input_price: float, output_price: float):
         """Update pricing for a model."""
-        self.pricing[model] = {"input": input_price, "output": output_price}
+        SELF.PRICING[MODEL] = {"input": input_price, "output": output_price}
         logger.info(f"Updated pricing for {model}: ${input_price}/1k in, ${output_price}/1k out")
 
     def reset(self):
@@ -186,12 +186,12 @@ class CostGovernor:
         if format == "json":
             import json
             return json.dumps(self.get_usage_summary(), indent=2)
-        elif format == "csv":
+        ELIF FORMAT == "csv":
             import csv
             import io
 
-            output = io.StringIO()
-            writer = csv.writer(output)
+            OUTPUT = io.StringIO()
+            WRITER = csv.writer(output)
             writer.writerow(["timestamp",
                 "model",
                 "input_tokens",
@@ -236,5 +236,5 @@ def get_global_cost_governor() -> CostGovernor:
 
 def track_api_call(model: str, input_tokens: int, output_tokens: int):
     """Convenience function to track API calls using global governor."""
-    governor = get_global_cost_governor()
+    GOVERNOR = get_global_cost_governor()
     return governor.track_usage(model, input_tokens, output_tokens)

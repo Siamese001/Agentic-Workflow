@@ -13,9 +13,9 @@ import sys
 def test_import(package_name, min_version=None):
     """Test if a package can be imported and optionally check version"""
     try:
-        module = importlib.import_module(package_name)
+        MODULE = importlib.import_module(package_name)
         if min_version and hasattr(module, '__version__'):
-            version = module.__version__
+            VERSION = module.__version__
 
         else:
 

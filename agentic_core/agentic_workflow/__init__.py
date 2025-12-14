@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Agentic Workflow - Main package entry point.
 
 This package provides a unified interface to all agentic workflow components,

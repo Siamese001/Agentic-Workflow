@@ -11,7 +11,7 @@ import logging
 from scripts.runtime.shared.health_check import (
     HealthCheckRegistry, initialize_system_health_checks)
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class InfrastructureOrchestrator:
     """Orchestrates all infrastructure components."""
@@ -85,17 +85,17 @@ class InfrastructureOrchestrator:
 
             async def check_health(self) -> HealthCheckResult:
                     """Docstring."""
-                health = await self.event_bus.health_check()
-                status = HealthStatus.HEALTHY if health["event_bus"]["status"] == "healthy" else Hea
+                HEALTH = await self.event_bus.health_check()
+                STATUS = HealthStatus.HEALTHY if health["event_bus"]["status"] == "healthy" else Hea
     lthStatus.UNHEALTHY
 
                 return HealthCheckResult(
                     component_name="event_bus",
                     component_type=ComponentType.CUSTOM,
-                    status=status,
-                    message=f"Event bus is {health['event_bus']['status']}",
-                    timestamp=None,
-                    metrics=health
+                    STATUS=status,
+                    MESSAGE=f"Event bus is {health['event_bus']['status']}",
+                    TIMESTAMP=None,
+                    METRICS=health
                 )
 
                 """TODO: Add docstring."""
@@ -120,22 +120,22 @@ class InfrastructureOrchestrator:
         class ProvenanceHealthChecker(HealthChecker):
                 """Docstring."""
             def __init__(self, tracker: ProvenanceTracker):
-                self.tracker = tracker
+                SELF.TRACKER = tracker
 
             async def check_health(self) -> HealthCheckResult:
                     """Docstring."""
-                health = await self.tracker.health_check()
-                status = HealthStatus(health["status"])
+                HEALTH = await self.tracker.health_check()
+                STATUS = HealthStatus(health["status"])
 
                 return HealthCheckResult(
                     component_name="provenance_tracker",
                     component_type=ComponentType.CUSTOM,
-                    status=status,
-                    message=f"Provenance tracker is {health['status']}",
+                    STATUS=status,
+                    MESSAGE=f"Provenance tracker is {health['status']}",
                 """TODO: Add docstring."""
 
-                    timestamp=None,
-                    metrics=health
+                    TIMESTAMP=None,
+                    METRICS=health
                 )
                 """TODO: Add docstring."""
 
@@ -157,35 +157,35 @@ class InfrastructureOrchestrator:
         class ModelRouterHealthChecker(HealthChecker):
                 """Docstring."""
             def __init__(self, router: ModelRouter):
-                self.router = router
+                SELF.ROUTER = router
 
             async def check_health(self) -> HealthCheckResult:
                     """Docstring."""
-                stats = self.router.get_stats()
+                STATS = self.router.get_stats()
                 budget_info = stats["budget_info"]
 
                 # Determine status based on budget
                 if budget_info["remaining"] <= 0:
-                    status = HealthStatus.CRITICAL
-                    message = "Budget exceeded"
+                    STATUS = HealthStatus.CRITICAL
+                    MESSAGE = "Budget exceeded"
                 elif budget_info["remaining"] < budget_info["daily_budget"] * 0.1:
-                    status = HealthStatus.DEGRADED
-                    message = "Budget nearly exhausted"
+                    STATUS = HealthStatus.DEGRADED
+                    MESSAGE = "Budget nearly exhausted"
                 else:
-                    status = HealthStatus.HEALTHY
-                    message = "Model router operating normally"
+                    STATUS = HealthStatus.HEALTHY
+                    MESSAGE = "Model router operating normally"
 
                 return HealthCheckResult(
                 """TODO: Add docstring."""
 
                     component_name="model_router",
                     component_type=ComponentType.CUSTOM,
-                    status=status,
+                    STATUS=status,
                 """TODO: Add docstring."""
 
-                    message=message,
-                    timestamp=None,
-                    metrics=stats
+                    MESSAGE=message,
+                    TIMESTAMP=None,
+                    METRICS=stats
                 )
 
             @property
@@ -236,14 +236,14 @@ class InfrastructureOrchestrator:
         """
         try:
             # Extract artifact info
-            payload = event.payload
+            PAYLOAD = event.payload
             artifact_id = payload.get("artifact_id")
-            output = payload.get("output", "")
+            OUTPUT = payload.get("output", "")
             model_version = payload.get("model_version", "unknown")
 
             if artifact_id:
                 # Record provenance if context exists
-                sources = payload.get("sources", [])
+                SOURCES = payload.get("sources", [])
                 if sources:
                     await self.provenance_tracker.record_generation(
                         event.trace_id,
@@ -264,7 +264,7 @@ class InfrastructureOrchestrator:
         """
         try:
             # Send to dead letter queue
-            dlq = await get_dead_letter_queue()
+            DLQ = await get_dead_letter_queue()
             await dlq.add_failed_envelope(
                 event,  # Using event as envelope-like object
                 FailureReason.PROCESSING_ERROR,
@@ -283,9 +283,9 @@ class InfrastructureOrchestrator:
         """
         try:
             # Extract usage info if available
-            payload = event.payload
+            PAYLOAD = event.payload
             model_name = payload.get("model_name")
-            usage = payload.get("usage", {})
+            USAGE = payload.get("usage", {})
 
             if model_name and usage:
                 # Record with model router
@@ -338,10 +338,10 @@ class InfrastructureOrchestrator:
         await self.event_bus.publish(
             "events.workflow_started",
             SystemEvent(
-                type=EventType.WORKFLOW_STARTED,
+                TYPE=EventType.WORKFLOW_STARTED,
                 trace_id=trace_id,
                 source_component="InfrastructureOrchestrator",
-                payload={
+                PAYLOAD={
                     "task_type": task_type.value,
                     "complexity_score": complexity_score
                 }
@@ -360,26 +360,26 @@ class InfrastructureOrchestrator:
             )
 
             # Get client and generate
-            tier = self.model_router._select_model_for_tier(
+            TIER = self.model_router._select_model_for_tier(
                 self.model_router._determine_tier(
                     self.model_router._task_profiles[task_type],
                     complexity_score
                 )
             )
-            client = await self.model_router.get_client(tier)
+            CLIENT = await self.model_router.get_client(tier)
 
             # Generate response through bulkhead
-            result = await self.bulkhead_manager.execute(
+            RESULT = await self.bulkhead_manager.execute(
                 client.generate,
                 prompt,
                 bulkhead_name="model_generation",
-                priority=priority
+                PRIORITY=priority
             )
 
             # Record provenance
             if sources:
                 artifact_id = f"artifact_{int(time.time())}"
-                lineage = await self.provenance_tracker.record_generation(
+                LINEAGE = await self.provenance_tracker.record_generation(
                     trace_id,
                     artifact_id,
                     result,
@@ -391,10 +391,10 @@ class InfrastructureOrchestrator:
             await self.event_bus.publish(
                 "events.artifact_generated",
                 SystemEvent(
-                    type=EventType.ARTIFACT_GENERATED,
+                    TYPE=EventType.ARTIFACT_GENERATED,
                     trace_id=trace_id,
                     source_component="InfrastructureOrchestrator",
-                    payload={
+                    PAYLOAD={
                         "artifact_id": artifact_id if sources else None,
                         "output": result,
                         "model_version": model_config["model"],
@@ -422,22 +422,22 @@ class InfrastructureOrchestrator:
             await self.event_bus.publish(
                 "events.error_occurred",
                 SystemEvent(
-                    type=EventType.ERROR_OCCURRED,
+                    TYPE=EventType.ERROR_OCCURRED,
                     trace_id=trace_id,
                     source_component="InfrastructureOrchestrator",
-                    payload={"error": str(e)},
+                    PAYLOAD={"error": str(e)},
                     causation_id=trace_id
                 )
             )
 
             # Send to dead letter queue
-            dlq = await get_dead_letter_queue()
+            DLQ = await get_dead_letter_queue()
             await dlq.add_failed_envelope(
                 SystemEvent(
-                    type=EventType.WORKFLOW_FAILED,
+                    TYPE=EventType.WORKFLOW_FAILED,
                     trace_id=trace_id,
                     source_component="InfrastructureOrchestrator",
-                    payload={"error": str(e)}
+                    PAYLOAD={"error": str(e)}
                 ),
                 FailureReason.PROCESSING_ERROR,
                 "InfrastructureOrchestrator.execute_with_infrastructure",
@@ -456,10 +456,10 @@ class InfrastructureOrchestrator:
             await self.initialize()
 
         # Get health from registry
-        health = await self.health_registry.check_all()
+        HEALTH = await self.health_registry.check_all()
 
         # Add infrastructure-specific metrics
-        health["infrastructure"] = {
+        HEALTH["INFRASTRUCTURE"] = {
             "event_bus": await self.event_bus.health_check(),
             "provenance_tracker": self.provenance_tracker.get_stats(),
             "model_router": self.model_router.get_stats(),
@@ -522,7 +522,7 @@ async def execute_task(
     Returns:
         Execution result
     """
-    orchestrator = await get_infrastructure_orchestrator()
+    ORCHESTRATOR = await get_infrastructure_orchestrator()
     return await orchestrator.execute_with_infrastructure(
         task_type,
         prompt,
@@ -538,7 +538,7 @@ async def get_system_status() -> Dict[str, Any]:
     Returns:
         System status
     """
-    orchestrator = await get_infrastructure_orchestrator()
+    ORCHESTRATOR = await get_infrastructure_orchestrator()
     return await orchestrator.get_system_health()
 
 # Decorator for automatic infrastructure integration
@@ -566,8 +566,8 @@ def with_infrastructure(
         async def async_wrapper(*args, **kwargs):
                 """Docstring."""
             # Extract prompt and sources
-            prompt = kwargs.get("prompt", str(args[0]) if args else "")
-            sources = kwargs.get("sources", [])
+            PROMPT = kwargs.get("prompt", str(args[0]) if args else "")
+            SOURCES = kwargs.get("sources", [])
 
             # Extract trace_id from first argument if available
             trace_id = None
@@ -575,7 +575,7 @@ def with_infrastructure(
                 trace_id = args[0].trace_id
 
             # Execute with infrastructure
-            result = await execute_task(
+            RESULT = await execute_task(
                 task_type,
                 prompt,
                 sources,

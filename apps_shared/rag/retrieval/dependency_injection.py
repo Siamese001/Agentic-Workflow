@@ -2,7 +2,7 @@
 
 import os
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Tests DI container functionality and proper service injection
 across all layers to maintain L1-L5 atomicity.
 """
@@ -19,7 +19,7 @@ class TestSimpleDIContainer:
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.container = SimpleDIContainer()
+        SELF.CONTAINER = SimpleDIContainer()
 
     def test_register_and_get_service(self) -> None:
         """Test registering and retrieving services."""
@@ -28,13 +28,13 @@ class TestSimpleDIContainer:
         self.container.register(Mock, mock_service)
 
         # Retrieve the service
-        retrieved = self.container.get(Mock)
+        RETRIEVED = self.container.get(Mock)
 
         assert retrieved is mock_service
 
     def test_get_nonexistent_service(self) -> None:
         """Test getting a service that doesn't exist."""
-        result = self.container.get(Mock)
+        RESULT = self.container.get(Mock)
         assert result is None
 
     def test_clear_services(self) -> None:
@@ -63,7 +63,7 @@ class TestGlobalDIContainer:
     def setup_method(self) -> None:
         """Set up test fixtures."""
         # Clear global container before each test
-        container = get_container()
+        CONTAINER = get_container()
         container.clear()
 
     def test_global_register_and_get(self) -> None:
@@ -74,7 +74,7 @@ class TestGlobalDIContainer:
         register_service(Mock, mock_service)
 
         # Get globally
-        retrieved = get_service(Mock)
+        RETRIEVED = get_service(Mock)
 
         assert retrieved is mock_service
 
@@ -82,7 +82,7 @@ class TestGlobalDIContainer:
         """Test initialization of default services."""
         initialize_default_services()
 
-        container = get_container()
+        CONTAINER = get_container()
 
         # Should have PineconeAdapter and SafetyEngine
         assert container.get(PineconeAdapter) is not None
@@ -97,7 +97,7 @@ class TestDependencyInjection:
         initialize_default_services()
 
         # Create clean mock context
-        self.ctx = Mock()
+        SELF.CTX = Mock()
         self.ctx.user_id = "test_user"
         self.ctx.session_id = "test_session"
         # Remove any existing attributes that might interfere
@@ -144,11 +144,11 @@ class TestLayerDIIntegration:
         """Test that PineconeAdapter provides DI-compatible interface."""
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import Pinec...
 
-        config = PineconeConfig(
+        CONFIG = PineconeConfig(
             api_key = os.getenv("API_KEY"),
             index_name="test_index"
         )
-        adapter = PineconeAdapter(config)
+        ADAPTER = PineconeAdapter(config)
 
         # Should have retrieve_evidence method for DI
         assert hasattr(adapter, 'retrieve_evidence')
@@ -156,7 +156,7 @@ class TestLayerDIIntegration:
 
     def test_safety_engine_di_interface(self) -> None:
         """Test that SafetyEngine provides DI-compatible interface."""
-        engine = SafetyEngine()
+        ENGINE = SafetyEngine()
 
         # Should have evaluate method for DI
         assert hasattr(engine, 'evaluate')
@@ -178,7 +178,7 @@ class TestDIAtomicityCompliance:
             # Skip if file not found in test environment
             return
 
-        source = ''.join(source_lines)
+        SOURCE = ''.join(source_lines)
 
         # Should contain DI imports
         assert 'from infra.di_container import' in source
@@ -207,7 +207,7 @@ class TestDIAtomicityCompliance:
         except FileNotFoundError:
             return
 
-        source = ''.join(source_lines)
+        SOURCE = ''.join(source_lines)
         assert 'from infra.di_container import' in source
 
 if __name__ == "__main__":

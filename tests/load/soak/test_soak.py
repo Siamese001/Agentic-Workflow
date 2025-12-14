@@ -5,7 +5,7 @@ import time
 from dataclasses import dataclass
 from typing import Dict, List
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 @dataclass
 class SoakMetrics:
     """TODO: Add docstring."""
@@ -24,12 +24,12 @@ class TestMemoryStability:
         initial_objects = len(gc.get_objects())
 
         for _ in range(1000):
-            data = {"key": "value" * 100}
+            DATA = {"key": "value" * 100}
             _ = list(data.keys())
 
         gc.collect()
         final_objects = len(gc.get_objects())
-        growth = final_objects - initial_objects
+        GROWTH = final_objects - initial_objects
         # Allow some growth but not unbounded
         assert growth < 1000
 
@@ -58,7 +58,7 @@ class TestMemoryStability:
         for _ in range(500):
             s = ""
             for i in range(50):
-                s += str(i)
+                S += str(i)
             del s
         gc.collect()
 
@@ -69,10 +69,10 @@ class TestMemoryStability:
         class TempObject:
                 """Docstring."""
             def __init__(self, data: str):
-                self.data = data
+                SELF.DATA = data
 
         for _ in range(1000):
-            obj = TempObject("x" * 1000)
+            OBJ = TempObject("x" * 1000)
             del obj
 
         gc.collect()
@@ -82,11 +82,11 @@ class TestLongRunningOperations:
 
     def test_sustained_throughput(self):
             """Soak: Throughput remains stable over time."""
-        iterations = 100
+        ITERATIONS = 100
         latencies: List[float] = []
 
         for _ in range(iterations):
-            start = time.perf_counter()
+            START = time.perf_counter()
             # Simulate work
             _ = sum(range(1000))
             latencies.append(time.perf_counter() - start)
@@ -98,8 +98,8 @@ class TestLongRunningOperations:
 
     def test_error_rate_stability(self):
             """Soak: Error rate remains low over time."""
-        iterations = 1000
-        errors = 0
+        ITERATIONS = 1000
+        ERRORS = 0
 
         for i in range(iterations):
             try:
@@ -108,7 +108,7 @@ class TestLongRunningOperations:
                     raise ValueError("Simulated error")
                 _ = i * 2
             except ValueError:
-                errors += 1
+                ERRORS += 1
 
         error_rate = errors / iterations
         assert error_rate < 0.01  # Less than 1% error rate
@@ -117,9 +117,9 @@ class TestLongRunningOperations:
             """Soak: Resources are cleaned up properly."""
         for _ in range(100):
             # Simulate resource acquisition and release
-            resources = [f"resource_{i}" for i in range(10)]
+            RESOURCES = [f"resource_{i}" for i in range(10)]
             # Process
-            processed = [r.upper() for r in resources]
+            PROCESSED = [r.upper() for r in resources]
             # Cleanup
             resources.clear()
             processed.clear()
@@ -130,15 +130,15 @@ class TestLongRunningOperations:
         max_size = 100
 
         for i in range(1000):
-            key = f"key_{i}"
-            cache[key] = f"value_{i}"
+            KEY = f"key_{i}"
+            CACHE[KEY] = f"value_{i}"
 
             # Evict oldest if over capacity
             if len(cache) > max_size:
                 oldest_key = next(iter(cache))
                 del cache[oldest_key]
 
-        assert len(cache) <= max_size
+        ASSERT LEN(CACHE) <= max_size
 
     def test_connection_pool_stability(self):
             """Soak: Connection pool remains stable."""
@@ -152,12 +152,12 @@ class TestLongRunningOperations:
 
             # Use and release
             if pool:
-                conn = pool.pop()
+                CONN = pool.pop()
                 # Simulate use
                 _ = conn.upper()
                 pool.append(conn)
 
-        assert len(pool) <= max_connections
+        ASSERT LEN(POOL) <= max_connections
 
 class TestDegradationDetection:
     """Soak tests for detecting performance degradation."""
@@ -167,13 +167,13 @@ class TestDegradationDetection:
         latencies: List[float] = []
 
         for _ in range(1000):
-            start = time.perf_counter()
+            START = time.perf_counter()
             _ = list(range(100))
             latencies.append((time.perf_counter() - start) * 1000)
 
         sorted_latencies = sorted(latencies)
-        p50 = sorted_latencies[len(sorted_latencies) // 2]
-        p99 = sorted_latencies[int(len(sorted_latencies) * 0.99)]
+        P50 = sorted_latencies[len(sorted_latencies) // 2]
+        P99 = sorted_latencies[int(len(sorted_latencies) * 0.99)]
 
         # P99 should not be more than 10x P50
         assert p99 < p50 * 20
@@ -184,7 +184,7 @@ class TestDegradationDetection:
         batch_times: List[float] = []
 
         for batch in range(10):
-            start = time.perf_counter()
+            START = time.perf_counter()
             for _ in range(batch_size):
                 _ = sum(range(100))
             batch_times.append(time.perf_counter() - start)
@@ -200,13 +200,13 @@ class TestDegradationDetection:
 
         for _ in range(10):
             # Do some work
-            data = [i for i in range(1000)]
+            DATA = [i for i in range(1000)]
             del data
             gc.collect()
             memory_samples.append(len(gc.get_objects()))
 
         # Memory should not grow unboundedly
-        growth = memory_samples[-1] - memory_samples[0]
+        GROWTH = memory_samples[-1] - memory_samples[0]
         assert growth < 10000
 
     def test_gc_pressure_acceptable(self):
@@ -222,9 +222,9 @@ class TestDegradationDetection:
 
     def test_thread_safety_under_load(self):
             """Soak: Operations remain thread-safe under load."""
-        counter = {"value": 0}
+        COUNTER = {"value": 0}
 
         for _ in range(1000):
-            counter["value"] += 1
+            COUNTER["VALUE"] += 1
 
-        assert counter["value"] == 1000
+        ASSERT COUNTER["VALUE"] == 1000

@@ -1,7 +1,7 @@
 """Adaptive Recovery Loop - The Fixer
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 This module implements temperature escalation protocol for adaptive recovery.
 Handles both creative and mechanical failures with intelligent temperature adjustments.
 
@@ -51,7 +51,7 @@ class FailureEvent:
     failure_type: FailureType
     gate_id: str
     message: str
-    timestamp: float = field(default_factory=time.time)
+    TIMESTAMP: FLOAT = field(default_factory=time.time)
     details: Optional[Dict[str, Any]] = None
     """TODO: Add docstring."""
 
@@ -65,7 +65,7 @@ class TemperatureAdjustment:
     failure_type: FailureType
     """TODO: Add docstring."""
 
-    timestamp: float = field(default_factory=time.time)
+    TIMESTAMP: FLOAT = field(default_factory=time.time)
 
 @dataclass
 class RecoveryResult:
@@ -126,21 +126,21 @@ class AdaptiveRecoveryLoop:
         failure_type = self._classify_failure(message, details)
 
         failure_event = FailureEvent(
-            attempt=self.attempt_count,
+            ATTEMPT=self.attempt_count,
             failure_type=failure_type,
             gate_id=gate_id,
-            message=message,
-            details=details
+            MESSAGE=message,
+            DETAILS=details
         )
         self.failure_history.append(failure_event)
 
         if self.attempt_count >= self.MAX_ATTEMPTS:
             return RecoveryResult(
-                action=RecoveryAction.HARD_HALT,
+                ACTION=RecoveryAction.HARD_HALT,
                 new_temperature=self.current_temperature,
-                message=f"HARD_HALT: Max attempts ({self.MAX_ATTEMPTS}) reached",
+                MESSAGE=f"HARD_HALT: Max attempts ({self.MAX_ATTEMPTS}) reached",
                 should_retry=False,
-                details={
+                DETAILS={
                     'total_attempts': self.attempt_count,
                     'failure_history': [
                         {'attempt': f.attempt, 'type': f.failure_type.value, 'gate': f.gate_id}
@@ -150,10 +150,10 @@ class AdaptiveRecoveryLoop:
             )
 
         new_temp = self._calculate_new_temperature(failure_type)
-        adjustment = TemperatureAdjustment(
+        ADJUSTMENT = TemperatureAdjustment(
             from_temp=self.current_temperature,
             to_temp=new_temp,
-            reason=self._get_adjustment_reason(failure_type),
+            REASON=self._get_adjustment_reason(failure_type),
             failure_type=failure_type
         )
         self.temperature_history.append(adjustment)
@@ -162,11 +162,11 @@ class AdaptiveRecoveryLoop:
         self.current_temperature = new_temp
 
         return RecoveryResult(
-            action=RecoveryAction.INCREASE_TEMP,
+            ACTION=RecoveryAction.INCREASE_TEMP,
             new_temperature=new_temp,
-            message=f"Temperature adjusted: {old_temp:.2f} → {new_temp:.2f} ({failure_type.value})",
+            MESSAGE=f"Temperature adjusted: {old_temp:.2f} → {new_temp:.2f} ({failure_type.value})",
             should_retry=True,
-            details={
+            DETAILS={
                 'attempt': self.attempt_count,
                 'failure_type': failure_type.value,
                 'temperature_delta': new_temp - old_temp,

@@ -1,4 +1,4 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.317503+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_tool_request_builder.py
 # High-signal content preserved below — zero-loss migration
@@ -11,7 +11,6 @@ Tests for tool routing that maps PlanObject to L2 execution functions.
 Currently depends on legacy execution functions that need implementation.
 """
 
-import logging
 from typing import Any
 
 import pytest
@@ -28,7 +27,7 @@ class PlanObject:
 
 
 def __init__(self: Any, mode: str) -> None:
-    self.mode = mode
+    SELF.MODE = mode
 
 
 # Legacy L2 execution functions (zombie files) - not implemented
@@ -37,7 +36,7 @@ def __init__(self: Any, mode: str) -> None:
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.execution import execute_safety
 
 
-@pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
+@PYTEST.MARK.SKIP(REASON="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_strategy_mode() -> None:
     """Test routing to strategy executor.
 
@@ -48,7 +47,7 @@ def test_route_executor_strategy_mode() -> None:
     # Test routing to strategy executor
 
 
-@pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
+@PYTEST.MARK.SKIP(REASON="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_qa_mode() -> None:
     """Test routing to QA executor.
 
@@ -59,7 +58,7 @@ def test_route_executor_qa_mode() -> None:
     # Test routing to QA executor
 
 
-@pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
+@PYTEST.MARK.SKIP(REASON="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_invalid_mode() -> None:
     """Test error handling for invalid mode.
 

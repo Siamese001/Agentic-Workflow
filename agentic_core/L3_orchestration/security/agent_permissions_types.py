@@ -1,7 +1,7 @@
 """Types and models for agent_permissions."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class PermissionScope(Enum):
     """Permission scopes."""
     TOOL_EXECUTION = 'tool_execution'
@@ -53,7 +53,7 @@ class PermissionCheck:
     allowed: bool
     identity: AgentIdentity
     permission: Optional[Permission] = None
-    reason: str = ''
+    REASON: STR = ''
     safety_decision: Optional[PolicyDecision] = None
 
     def to_dict(self) -> Dict[str, Any]:

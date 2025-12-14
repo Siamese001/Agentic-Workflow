@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for agent execution."""
@@ -22,7 +22,7 @@ class ReasoningStrategy(str, Enum):
 @dataclass
 class ReasoningConfig:
     """Reasoning configuration for agent execution."""
-    temperature: float = 0.7
+    TEMPERATURE: FLOAT = 0.7
     rag_type: str = "HYBRID"
     rag_total_calls: int = 5
     rag_hops: int = 2
@@ -32,7 +32,7 @@ class ReasoningConfig:
     tot_branches: Optional[int] = 3
     min_tot_depth: Optional[int] = 2
     self_consistency: int = 3
-    reflexion: bool = True
+    REFLEXION: BOOL = True
     max_tokens: int = 2000
     top_p: float = 0.9
 
@@ -56,9 +56,9 @@ class Agent(ABC):
             k_node_id: K-node identifier (e.g., "K.5A")
             element: Element name (e.g., "Unify Bullets")
         """
-        self.config = config
+        SELF.CONFIG = config
         self.k_node_id = k_node_id
-        self.element = element
+        SELF.ELEMENT = element
 
         logger.info(
             f"Initialized {self.__class__.__name__}: "
@@ -97,8 +97,8 @@ class Agent(ABC):
             LLM response text
         """
 
-        temp = temperature if temperature is not None else self.config.temperature
-        tokens = max_tokens if max_tokens is not None else self.config.max_tokens
+        TEMP = temperature if temperature is not None else self.config.temperature
+        TOKENS = max_tokens if max_tokens is not None else self.config.max_tokens
 
         logger.debug(
             f"Calling LLM for {self.k_node_id}: temp={temp:.2f}, max_tokens={tokens}"
@@ -106,15 +106,15 @@ class Agent(ABC):
 
         try:
             # Get Anthropic client (can be made configurable)
-            client = get_client(Provider.ANTHROPIC)
+            CLIENT = get_client(Provider.ANTHROPIC)
 
             # Call LLM
-            response = await client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+            RESPONSE = await client.messages.create(
+                MODEL="claude-3-5-sonnet-20241022",
                 max_tokens=tokens,
-                temperature=temp,
+                TEMPERATURE=temp,
                 top_p=self.config.top_p,
-                messages=[{"role": "user", "content": prompt}]
+                MESSAGES=[{"role": "user", "content": prompt}]
             )
 
             return response.content[0].text
@@ -142,10 +142,10 @@ class Agent(ABC):
 
         logger.info(f"Generating {k} candidates for self-consistency")
 
-        candidates = []
+        CANDIDATES = []
         for i in range(k):
             logger.debug(f"Generating candidate {i+1}/{k}")
-            response = await self._call_llm(prompt)
+            RESPONSE = await self._call_llm(prompt)
             candidates.append(response)
 
         return candidates
@@ -167,20 +167,20 @@ class Agent(ABC):
         Returns:
             List of candidate responses from tree exploration
         """
-        branches = branches if branches is not None else self.config.tot_branches
-        depth = depth if depth is not None else self.config.min_tot_depth
+        BRANCHES = branches if branches is not None else self.config.tot_branches
+        DEPTH = depth if depth is not None else self.config.min_tot_depth
 
         logger.info(f"Generating ToT with {branches} branches, depth {depth}")
 
         # Simplified ToT: generate multiple branches at each level
-        candidates = []
+        CANDIDATES = []
 
         for level in range(depth):
             level_prompt = f"{prompt}\n\nExploration level {level+1}/{depth}"
 
             for branch in range(branches):
                 logger.debug(f"ToT level {level+1}, branch {branch+1}")
-                response = await self._call_llm(level_prompt)
+                RESPONSE = await self._call_llm(level_prompt)
                 candidates.append(response)
 
         return candidates

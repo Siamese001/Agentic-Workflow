@@ -9,7 +9,7 @@ import logging
 import re
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ImpactCategory(str, Enum):
     """Categories of business impact."""
@@ -24,7 +24,7 @@ class BusinessImpact(BaseModel):
 
     category: ImpactCategory = Field(..., description="Type of business impact")
     value_statement: str = Field(..., description="Business impact statement")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in estimation")
+    CONFIDENCE: FLOAT = Field(..., ge=0.0, le=1.0, description="Confidence in estimation")
 
     @validator('value_statement')
     def validate_conservative_language(cls, v):
@@ -56,7 +56,7 @@ class MetricAugmenter:
         Args:
             industry: Target industry for impact estimation
         """
-        self.industry = industry.lower()
+        SELF.INDUSTRY = industry.lower()
 
         # Metric type to business category mapping
         self.metric_mappings = {
@@ -207,8 +207,8 @@ class MetricAugmenter:
         # Sort by impact priority
         sorted_metrics = sorted(
             metrics,
-            key=lambda m: impact_priority.get(m["type"], 0),
-            reverse=True
+            KEY=lambda m: impact_priority.get(m["type"], 0),
+            REVERSE=True
         )
 
         return sorted_metrics[0] if sorted_metrics else metrics[0]
@@ -223,7 +223,7 @@ class MetricAugmenter:
             List of AugmentedBullet objects
         """
         try:
-            augmented = []
+            AUGMENTED = []
 
             for bullet in bullets:
                 if not bullet or not isinstance(bullet, str):
@@ -261,7 +261,7 @@ class MetricAugmenter:
             detected_metrics = []
 
             # Regex patterns for metric detection
-            patterns = {
+            PATTERNS = {
                 "latency": [
                     r"(\d+)\s*ms",
                     r"(\d+)\s*milliseconds?",
@@ -307,7 +307,7 @@ class MetricAugmenter:
             # Check each pattern and collect all matches
             for metric_type, metric_patterns in patterns.items():
                 for pattern in metric_patterns:
-                    matches = re.findall(pattern, text_lower)
+                    MATCHES = re.findall(pattern, text_lower)
                     for match in matches:
                         detected_metrics.append({
                             "type": metric_type,
@@ -317,7 +317,7 @@ class MetricAugmenter:
                         break  # Only add one match per pattern type
 
             # Check for keywords without numbers
-            keywords = {
+            KEYWORDS = {
                 "migration": ["migration", "migrated"],
                 "deployment": ["deployment", "deployed"],
                 "refactoring": ["refactor", "refactored"],
@@ -356,7 +356,7 @@ class MetricAugmenter:
         """
         try:
             # Get business category
-            category = self.metric_mappings.get(metric_type, ImpactCategory.OPEX)
+            CATEGORY = self.metric_mappings.get(metric_type, ImpactCategory.OPEX)
 
             # Use heuristic estimation
             if metric_type in ["latency", "speed", "response_time"]:
@@ -366,70 +366,70 @@ class MetricAugmenter:
                     # Every 100ms improvement ~ 10% retention
                     retention_lift = min(30, (latency_ms / 100) * 10)
                     value_statement = f"improving user retention by est. {retention_lift:.0f}%"
-                    confidence = 0.7
+                    CONFIDENCE = 0.7
                 else:
                     value_statement = "improving user experience and retention"
-                    confidence = 0.5
+                    CONFIDENCE = 0.5
 
             elif metric_type in ["accuracy", "f1", "precision", "recall"]:
                 # Accuracy improvements impact revenue
-                accuracy = self._extract_number(metric_value)
+                ACCURACY = self._extract_number(metric_value)
                 if accuracy and accuracy > 0:
                     # Every 5% accuracy ~ 2% revenue
                     revenue_lift = min(20, (accuracy / 5) * 2)
-                    multiplier = self.industry_multipliers.get(self.industry,
+                    MULTIPLIER = self.industry_multipliers.get(self.industry,
                         {}).get("revenue",
                         1.0)
                     revenue_lift *= multiplier
                     value_statement = f"enabling est. {revenue_lift:.0f}% revenue growth"
-                    confidence = 0.6
+                    CONFIDENCE = 0.6
                 else:
                     value_statement = "enhancing product quality and trust"
-                    confidence = 0.4
+                    CONFIDENCE = 0.4
 
             elif metric_type in ["storage", "compute", "infrastructure", "cloud", "cost"]:
                 # Infrastructure optimizations impact OpEx
                 if metric_value in ["significant"]:
                     value_statement = "reducing infrastructure costs by est. 20%"
-                    confidence = 0.5
+                    CONFIDENCE = 0.5
                 else:
                     cost_reduction = self._extract_number(metric_value)
                     if cost_reduction and cost_reduction > 0:
-                        multiplier = self.industry_multipliers.get(self.industry,
+                        MULTIPLIER = self.industry_multipliers.get(self.industry,
                             {}).get("cost",
                             1.0)
                         cost_reduction *= multiplier
                         value_statement = f"slashing monthly cloud spend by est. {cost_reduction:.0f
     }%"
-                        confidence = 0.7
+                        CONFIDENCE = 0.7
                     else:
                         value_statement = "optimizing operational efficiency"
-                        confidence = 0.4
+                        CONFIDENCE = 0.4
 
             elif metric_type in ["uptime", "reliability", "availability"]:
                 # Reliability impacts risk
-                uptime = self._extract_number(metric_value)
+                UPTIME = self._extract_number(metric_value)
                 if uptime and uptime >= 99:
                     value_statement = "preventing est. $100K in potential downtime costs"
-                    confidence = 0.6
+                    CONFIDENCE = 0.6
                 else:
                     value_statement = "mitigating system reliability risks"
-                    confidence = 0.4
+                    CONFIDENCE = 0.4
 
             elif metric_type in ["migration", "deployment"]:
                 # Migrations impact CapEx
                 value_statement = "deferring est. $500K in infrastructure purchases"
-                confidence = 0.5
+                CONFIDENCE = 0.5
 
             else:
                 # Default to OpEx
                 value_statement = "improving operational efficiency"
-                confidence = 0.3
+                CONFIDENCE = 0.3
 
             return BusinessImpact(
-                category=category,
+                CATEGORY=category,
                 value_statement=value_statement,
-                confidence=confidence
+                CONFIDENCE=confidence
             )
 
         except Exception as e:
@@ -474,9 +474,9 @@ class MetricAugmenter:
 
             # Add to end of original text
             if original.endswith('.'):
-                augmented = f"{original[:-1]}, {impact_text}."
+                AUGMENTED = f"{original[:-1]}, {impact_text}."
             else:
-                augmented = f"{original}, {impact_text}."
+                AUGMENTED = f"{original}, {impact_text}."
 
             return augmented
 
@@ -487,7 +487,7 @@ class MetricAugmenter:
 # Factory function for easy instantiation
     """Docstring."""
 def create_metric_augmenter(
-    industry: str = "technology"
+    INDUSTRY: STR = "technology"
 ) -> MetricAugmenter:
     """Create a MetricAugmenter instance.
 
@@ -503,7 +503,7 @@ def create_metric_augmenter(
     """Docstring."""
 def augment_metrics(
     bullets: List[str],
-    industry: str = "technology"
+    INDUSTRY: STR = "technology"
 ) -> List[str]:
     """Quickly augment a list of bullets.
 
@@ -514,6 +514,6 @@ def augment_metrics(
     Returns:
         List of augmented texts
     """
-    augmenter = create_metric_augmenter(industry=industry)
+    AUGMENTER = create_metric_augmenter(industry=industry)
     augmented_bullets = augmenter.augment_batch(bullets)
     return [b.final_text for b in augmented_bullets]

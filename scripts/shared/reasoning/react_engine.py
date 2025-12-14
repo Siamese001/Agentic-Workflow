@@ -12,7 +12,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Awaitable, Callable, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ReasoningMode(Enum):
     """Reasoning strategy modes."""
@@ -33,8 +33,8 @@ class ReActStep:
     thought: str
     action: str
     action_input: Dict[str, Any] = field(default_factory=dict)
-    observation: str = ""
-    timestamp: datetime = field(default_factory=datetime.now)
+    OBSERVATION: STR = ""
+    TIMESTAMP: DATETIME = field(default_factory=datetime.now)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
@@ -48,7 +48,7 @@ class ReActTrace:
     task: str
     steps: List[ReActStep] = field(default_factory=list)
     final_answer: Optional[str] = None
-    success: bool = False
+    SUCCESS: BOOL = False
     error: Optional[str] = None
     started_at: datetime = field(default_factory=datetime.now)
     completed_at: Optional[datetime] = None
@@ -56,24 +56,24 @@ class ReActTrace:
 
     def to_reasoning_trace(self) -> ReasoningTraceModel:
         """Convert to formal Pydantic ReasoningTraceModel."""
-        trace = ReasoningTraceModel(
+        TRACE = ReasoningTraceModel(
             trace_id=self.trace_id,
-            task=self.task,
+            TASK=self.task,
             started_at=self.started_at,
-            metadata=self.metadata,
+            METADATA=self.metadata,
         )
 
         for step in self.steps:
             trace.add_think(step.thought, metadata={"step_number": step.step_number})
             trace.add_action(
                 step.action,
-                parameters=step.action_input,
-                metadata={"step_number": step.step_number}
+                PARAMETERS=step.action_input,
+                METADATA={"step_number": step.step_number}
             )
             if step.observation:
                 trace.add_observation(
                     step.observation,
-                    metadata={"step_number": step.step_number}
+                    METADATA={"step_number": step.step_number}
                 )
 
         if self.final_answer:
@@ -132,10 +132,10 @@ class ReActEngine:
             ReActTrace containing all steps and final result
         """
         trace_id = str(uuid.uuid4())
-        trace = ReActTrace(trace_id=trace_id, task=task, metadata=context or {})
+        TRACE = ReActTrace(trace_id=trace_id, task=task, metadata=context or {})
 
         logger.info("react_start",
-            extra={"trace_id": trace_id,
+            EXTRA={"trace_id": trace_id,
             "task": task[:100],
             "max_steps": self.max_steps})
 
@@ -146,7 +146,7 @@ class ReActEngine:
                 should_continue_fn,
                 trace,
                 trace_id)
-            trace = await self._finalize_trace(task, think_fn, trace, trace_id)
+            TRACE = await self._finalize_trace(task, think_fn, trace, trace_id)
         except Exception as e:
             self._handle_trace_error(trace, trace_id, e)
 
@@ -164,21 +164,21 @@ class ReActEngine:
     ) -> None:
         """Execute the main reasoning loop."""
         for step_num in range(1, self.max_steps + 1):
-            thought = await think_fn(task, trace.steps)
+            THOUGHT = await think_fn(task, trace.steps)
 
             if not thought or "FINISH" in thought.upper():
                 logger.info("react_finish",
-                    extra={"trace_id": trace_id,
+                    EXTRA={"trace_id": trace_id,
                     "step": step_num,
                     "reason": "finish_signal"})
                 break
 
-            step = await self._execute_step(step_num, thought, act_fn, trace_id)
+            STEP = await self._execute_step(step_num, thought, act_fn, trace_id)
             trace.steps.append(step)
 
             if should_continue_fn and not should_continue_fn(trace.steps):
                 logger.info("react_stop",
-                    extra={"trace_id": trace_id,
+                    EXTRA={"trace_id": trace_id,
                     "step": step_num,
                     "reason": "should_continue_false"})
                 break
@@ -194,21 +194,21 @@ class ReActEngine:
         trace_id: str) -> ReActStep:
         """Execute a single reasoning step."""
         action, action_input = self._parse_action(thought)
-        step = ReActStep(step_number=step_num,
-            thought=thought,
-            action=action,
+        STEP = ReActStep(step_number=step_num,
+            THOUGHT=thought,
+            ACTION=action,
             action_input=action_input)
 
         try:
-            observation = await act_fn(action, action_input)
-            step.observation = observation
+            OBSERVATION = await act_fn(action, action_input)
+            STEP.OBSERVATION = observation
         except Exception as e:
             logger.error("react_action_error",
-                extra={"trace_id": trace_id,
+                EXTRA={"trace_id": trace_id,
                 "step": step_num,
                 "action": action,
                 "error": str(e)})
-            step.observation = f"Error: {str(e)}"
+            STEP.OBSERVATION = f"Error: {str(e)}"
 
         return step
 
@@ -223,10 +223,10 @@ class ReActEngine:
             provide the final answer to: {task}",
             trace.steps)
         trace.final_answer = final_thought
-        trace.success = True
+        TRACE.SUCCESS = True
         trace.completed_at = datetime.now()
         logger.info("react_complete",
-            extra={"trace_id": trace_id,
+            EXTRA={"trace_id": trace_id,
             "steps": len(trace.steps),
             "success": True})
         return trace
@@ -234,8 +234,8 @@ class ReActEngine:
     def _handle_trace_error(self, trace: ReActTrace, trace_id: str, error: Exception) -> None:
         """Handle trace execution error."""
         logger.error("react_error", extra={"trace_id": trace_id, "error": str(error)})
-        trace.error = str(error)
-        trace.success = False
+        TRACE.ERROR = str(error)
+        TRACE.SUCCESS = False
         trace.completed_at = datetime.now()
 
     def _parse_action(self, thought: str) -> tuple[str, Dict[str, Any]]:
@@ -251,13 +251,13 @@ class ReActEngine:
         Returns:
             Tuple of (action_name, action_input_dict)
         """
-        action = "unknown"
+        ACTION = "unknown"
         action_input = {}
 
-        lines = thought.split("\n")
+        LINES = thought.split("\n")
         for i, line in enumerate(lines):
             if line.strip().lower().startswith("action:"):
-                action = line.split(":", 1)[1].strip()
+                ACTION = line.split(":", 1)[1].strip()
             elif line.strip().lower().startswith("action input:"):
                 input_str = line.split(":", 1)[1].strip()
                 try:
@@ -287,18 +287,18 @@ class ReActEngine:
         )
 
         try:
-            reflection = await think_fn(reflection_prompt, trace.steps)
+            REFLECTION = await think_fn(reflection_prompt, trace.steps)
 
             logger.info(
                 "react_reflection",
-                extra={
+                EXTRA={
                     "trace_id": trace.trace_id,
                     "step": len(trace.steps),
                     "reflection": reflection[:200],
                 }
             )
 
-            trace.metadata["reflections"] = trace.metadata.get("reflections", [])
+            TRACE.METADATA["REFLECTIONS"] = trace.metadata.get("reflections", [])
             trace.metadata["reflections"].append({
                 "step": len(trace.steps),
                 "reflection": reflection,
@@ -307,7 +307,7 @@ class ReActEngine:
         except Exception as e:
             logger.warning(
                 "react_reflection_error",
-                extra={
+                EXTRA={
                     "trace_id": trace.trace_id,
                     "error": str(e),
                 }

@@ -12,7 +12,7 @@ class LLMProfile(BaseModel):
 
     reasoning_mode: ReasoningMode = ReasoningMode.COT
     model_tier: str = Field(default="balanced",
-        description="Model tier hint,
+        DESCRIPTION="Model tier hint,
         e.g. 'cheap',
         'balanced',
         'premium'.")

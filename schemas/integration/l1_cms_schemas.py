@@ -3,7 +3,7 @@ from typing import Any
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 CMS (Content Management System) schemas for prompt validation.
 
 This module provides schema definitions for prompt validation and structure.
@@ -37,19 +37,19 @@ class ValidationResult:
 def __post_init__(self: Any) -> None:
     """Initialize default values for optional fields."""
     if self.errors is None:
-        self.errors = []
+        SELF.ERRORS = []
     if self.warnings is None:
-        self.warnings = []
+        SELF.WARNINGS = []
     if self.errors is None:
-        self.errors = []
+        SELF.ERRORS = []
     if self.warnings is None:
-        self.warnings = []
+        SELF.WARNINGS = []
 
 
 def validate_prompt(prompt: str, schema: PromptSchema) -> ValidationResult:
     """Validate a prompt against a schema."""
-    errors = []
-    warnings = []
+    ERRORS = []
+    WARNINGS = []
 
     # Basic validation logic
     if not prompt:

@@ -1,6 +1,6 @@
 """
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Shared components for Agentic Workflow.
 
 This module provides shared utilities, models, and configurations

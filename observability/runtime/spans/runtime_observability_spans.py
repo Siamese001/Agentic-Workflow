@@ -2,7 +2,7 @@ import logging
 import time
 import uuid
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.models.models import TelemetryEvent  # DEPRECATED: Archi...
 # from archives.legacy_root_folders.runtime.observability.collectors import append_event, push_sp...
 
@@ -25,10 +25,10 @@ def start_span(name: str, ctx: Optional[Dict[str, object]] = None) -> Dict[str, 
 
     append_event(
         TelemetryEvent(
-            name=name,
+            NAME=name,
             span_id=span_id,
             ts_ms=record["start_ms"],
-            attributes={
+            ATTRIBUTES={
                 "event_type": "span_start",
                 "span_id": span_id,
                 "ctx": ctx or {},
@@ -56,14 +56,14 @@ def end_span(span_record: Dict[str, object]) -> None:
 
     pop_span(span_record)
     end_ms = _now_ms()
-    duration = end_ms - span_record["start_ms"]
+    DURATION = end_ms - span_record["start_ms"]
 
     append_event(
         TelemetryEvent(
-            name=span_record["name"],
+            NAME=span_record["name"],
             span_id=span_record["span_id"],
             ts_ms=end_ms,
-            attributes={
+            ATTRIBUTES={
                 "event_type": "span_end",
                 "span_id": span_record["span_id"],
                 "duration_ms": duration,

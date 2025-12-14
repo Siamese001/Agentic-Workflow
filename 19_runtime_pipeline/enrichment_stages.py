@@ -1,7 +1,7 @@
 """Context enrichment and signal augmentation stages.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Extracted from unified_signal_pipeline.py for Key 42 compliance.
 Contains ContextEnrichmentStage and SignalAugmentationStage.
 """
@@ -12,7 +12,7 @@ from typing import Any, Dict, List
 
 from .types import PipelineStage
 
-logger = __import__('logging').getLogger(__name__)
+LOGGER = __import__('logging').getLogger(__name__)
 
 
 class ContextEnrichmentStage(PipelineStage):
@@ -54,13 +54,13 @@ class ContextEnrichmentStage(PipelineStage):
                 .sha256(expanded_query.
                 .encode()).
                 .hexdigest()[:16]}"
-            cached = self.semantic_cache.get(cache_key) if self.semantic_cache else None
+            CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
 
             if cached:
                 self._update_envelope_with_context(envelope, cached)
                 envelope.mark_stage_complete(stage_name,
                     (time.time() - start_time) * 1000,
-                    metadata={"cache_hit": True})
+                    METADATA={"cache_hit": True})
                 return envelope
 
             rag_results = self.rag_processor.retrieve_and_rerank(
@@ -71,7 +71,7 @@ class ContextEnrichmentStage(PipelineStage):
                 expanded_query, envelope.payload.payload_type.value
             ) if self.kg_injector else {}
 
-            enriched = {
+            ENRICHED = {
                 "rag_results": rag_results,
                 "knowledge_graph": kg_context,
                 "combined_context": self._combine_contexts(rag_results, kg_context)
@@ -84,7 +84,7 @@ class ContextEnrichmentStage(PipelineStage):
 
             envelope.mark_stage_complete(stage_name,
                 (time.time() - start_time) * 1000,
-                metadata={"cache_hit": False})
+                METADATA={"cache_hit": False})
             return envelope
 
         except Exception as e:
@@ -152,23 +152,23 @@ class SignalAugmentationStage(PipelineStage):
         envelope.mark_stage_start(stage_name)
 
         try:
-            content = self._extract_content(envelope.payload)
+            CONTENT = self._extract_content(envelope.payload)
 
             if not content:
                 envelope.mark_stage_skipped(stage_name, "No content to augment")
                 return envelope
 
             cache_key = f"signal_augmented_{hashlib.sha256(content.encode()).hexdigest()[:16]}"
-            cached = self.semantic_cache.get(cache_key) if self.semantic_cache else None
+            CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
 
             if cached:
                 self._update_envelope_with_augmentations(envelope, cached)
                 envelope.mark_stage_complete(stage_name,
                     (time.time() - start_time) * 1000,
-                    metadata={"cache_hit": True})
+                    METADATA={"cache_hit": True})
                 return envelope
 
-            augmentations = await self._perform_augmentations(content, envelope)
+            AUGMENTATIONS = await self._perform_augmentations(content, envelope)
             self._update_envelope_with_augmentations(envelope, augmentations)
 
             if self.semantic_cache:
@@ -176,7 +176,7 @@ class SignalAugmentationStage(PipelineStage):
 
             envelope.mark_stage_complete(stage_name,
                 (time.time() - start_time) * 1000,
-                metadata={"cache_hit": False})
+                METADATA={"cache_hit": False})
             return envelope
 
         except Exception as e:
@@ -194,19 +194,19 @@ class SignalAugmentationStage(PipelineStage):
 
     async def _perform_augmentations(self, content: str, envelope: Any) -> Dict[str, Any]:
         """Perform all signal augmentations."""
-        result = {}
+        RESULT = {}
 
         if self.claim_scorer:
-            claims = self.claim_scorer.analyze_claims(content)
-            result["claims"] = claims
+            CLAIMS = self.claim_scorer.analyze_claims(content)
+            RESULT["CLAIMS"] = claims
 
         if self.prompt_optimizer:
-            optimized = self.prompt_optimizer.optimize_prompt(content,
+            OPTIMIZED = self.prompt_optimizer.optimize_prompt(content,
                 envelope.payload.payload_type.value)
             result["optimized_prompt"] = optimized
 
         if self.tone_model:
-            tone = self.tone_model.adapt_tone(content, target_formality="professional")
+            TONE = self.tone_model.adapt_tone(content, target_formality="professional")
             result["tone_adapted"] = tone
 
         return result

@@ -1,7 +1,7 @@
 """Implementation for error_recovery."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .error_recovery_types import *  # Star import removed
 
 class ErrorRecoveryManager:
@@ -33,7 +33,7 @@ class ErrorRecoveryManager:
         Returns:
             ResilienceError subclass (TransientError or PermanentError)
         """
-        msg = str(exc)
+        MSG = str(exc)
         exc_type = exc.__class__.__name__
         transient_patterns = ['timeout', 'connection', 'network', 'rate limit', 'throttle', '503', '
     502', '429']
@@ -57,10 +57,10 @@ class ErrorRecoveryManager:
         Returns:
             Backoff delay in milliseconds
         """
-        base = self.base_backoff_ms * 2 ** (attempt - 1)
+        BASE = self.base_backoff_ms * 2 ** (attempt - 1)
         if self.jitter_ms <= 0:
             return base
-        jitter = random.randint(-self.jitter_ms, self.jitter_ms)
+        JITTER = random.randint(-self.jitter_ms, self.jitter_ms)
         return max(0, base + jitter)
 
     async def invoke_with_retry(self,
@@ -83,14 +83,14 @@ class ErrorRecoveryManager:
         Raises:
             Exception: If all retries exhausted or permanent error
         """
-        breaker = self._get_circuit_breaker(breaker_name)
-        attempt = 0
+        BREAKER = self._get_circuit_breaker(breaker_name)
+        ATTEMPT = 0
         last_error: Optional[Exception] = None
         while attempt <= self.max_retries:
-            attempt += 1
+            ATTEMPT += 1
             self._check_circuit_breaker(breaker, attempt, context)
             try:
-                result = await fn()
+                RESULT = await fn()
                 self._handle_success(breaker, attempt, context)
                 return result
             except Exception as exc:
@@ -113,7 +113,7 @@ class ErrorRecoveryManager:
         """Check if circuit breaker allows execution."""
         if breaker and (not breaker.can_execute()):
             logger.warning('circuit_breaker_open',
-                extra={'breaker_name': breaker.name,
+                EXTRA={'breaker_name': breaker.name,
                 'breaker_state': breaker.state.value,
                 'attempt': attempt,
                 'context': context})
@@ -141,26 +141,26 @@ class ErrorRecoveryManager:
             breaker.record_failure()
         if isinstance(typed_error, PermanentError):
             logger.error('permanent_error',
-                extra={'error': str(exc),
+                EXTRA={'error': str(exc),
                 'error_type': exc.__class__.__name__,
                 'attempt': attempt,
                 'context': context})
             raise
         if attempt > self.max_retries:
             logger.error('retry_exhausted',
-                extra={'error': str(exc),
+                EXTRA={'error': str(exc),
                 'error_type': exc.__class__.__name__,
                 'attempts': attempt,
                 'context': context})
             raise RetryExhaustedError(
-                message=f'Retry exhausted after {attempt} attempts: {str(exc)}',
+                MESSAGE=f'Retry exhausted after {attempt} attempts: {str(exc)}',
 
 
-                code=exc.__class__.__name__,
-                attempts=attempt) from exc
+                CODE=exc.__class__.__name__,
+                ATTEMPTS=attempt) from exc
         backoff_ms = self.calculate_backoff_ms(attempt)
         logger.warning('retry_attempt',
-            extra={'error': str(exc),
+            EXTRA={'error': str(exc),
             'error_type': exc.__class__.__name__,
             'attempt': attempt,
             'max_retries': self.max_retries,

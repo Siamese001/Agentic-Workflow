@@ -20,7 +20,7 @@ from runtime.core.autonomous_subatomic_hop import (AutonomousHopConfig,
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 # Example task functions
@@ -65,40 +65,40 @@ async def demonstrate_episodic_memory():
         memory_min_rating=0.6
     )
 
-    config = AutonomousHopConfig(
-        autonomy=autonomy_config,
+    CONFIG = AutonomousHopConfig(
+        AUTONOMY=autonomy_config,
         storage_path="./demo_memory_store"
     )
 
     # Create autonomous hop
-    hop = create_autonomous_hop(
+    HOP = create_autonomous_hop(
         hop_function=research_task,
-        config=config,
+        CONFIG=config,
         initial_context={"agent_role": "RESEARCHER"}
     )
 
     # First execution - will be committed to memory
     # print("\nFirst execution (learning phase):") # NOTE: Replace with logger (Key 02)
-    result1 = await hop.run(
-        goal="Analyze market trends for AI technology",
-        context={"year": 2024}
+    RESULT1 = await hop.run(
+        GOAL="Analyze market trends for AI technology",
+        CONTEXT={"year": 2024}
     )
     # print(f"Result: {result1}") # NOTE: Replace with logger (Key 02)
 
     # Commit to memory
     await hop.commit_execution_to_memory(
-        task="Analyze market trends for AI technology",
-        plan="Research AI market trends using available tools",
-        result=result1,
-        success=True,
+        TASK="Analyze market trends for AI technology",
+        PLAN="Research AI market trends using available tools",
+        RESULT=result1,
+        SUCCESS=True,
         tools_used=["search_tool", "analysis_tool"]
     )
 
     # Second execution - will recall from memory
     # print("\nSecond execution (with memory recall):") # NOTE: Replace with logger (Key 02)
-    result2 = await hop.run(
-        goal="Research AI market trends and analysis",
-        context={"year": 2024}
+    RESULT2 = await hop.run(
+        GOAL="Research AI market trends and analysis",
+        CONTEXT={"year": 2024}
     )
     # print(f"Result: {result2}") # NOTE: Replace with logger (Key 02)
 
@@ -120,21 +120,21 @@ async def demonstrate_reasoning_kernel():
         enable_tree_of_thoughts=True
     )
 
-    config = AutonomousHopConfig(autonomy=autonomy_config)
+    CONFIG = AutonomousHopConfig(autonomy=autonomy_config)
 
     # Create autonomous hop
-    hop = create_autonomous_hop(
+    HOP = create_autonomous_hop(
         hop_function=coding_task,
-        config=config,
+        CONFIG=config,
         initial_context={"agent_role": "CODER"}
     )
 
     # Execute with reasoning
     # print("\nExecuting with System 2 thinking:") # NOTE: Replace with logger (Key 02)
-    result = await hop.run(
-        goal="Create a Python function to analyze data and generate visualizations",
-        constraints=["Must handle large datasets", "Should be memory efficient"],
-        context={"requirements": ["pandas", "matplotlib"]}
+    RESULT = await hop.run(
+        GOAL="Create a Python function to analyze data and generate visualizations",
+        CONSTRAINTS=["Must handle large datasets", "Should be memory efficient"],
+        CONTEXT={"requirements": ["pandas", "matplotlib"]}
     )
 
     # print(f"Result: {result}") # NOTE: Replace with logger (Key 02)
@@ -158,20 +158,20 @@ async def demonstrate_dynamic_tools():
         tool_min_relevance=0.6
     )
 
-    config = AutonomousHopConfig(autonomy=autonomy_config)
+    CONFIG = AutonomousHopConfig(autonomy=autonomy_config)
 
     # Create autonomous hop
-    hop = create_autonomous_hop(
+    HOP = create_autonomous_hop(
         hop_function=coding_task,
-        config=config,
+        CONFIG=config,
         initial_context={"agent_role": "CODER"}
     )
 
     # Execute with tool discovery
     # print("\nExecuting with dynamic tool discovery:") # NOTE: Replace with logger (Key 02)
-    result = await hop.run(
-        goal="Process CSV file and calculate statistics",
-        plan="Use file reading tools and calculation utilities"
+    RESULT = await hop.run(
+        GOAL="Process CSV file and calculate statistics",
+        PLAN="Use file reading tools and calculation utilities"
     )
 
     # print(f"Result: {result}") # NOTE: Replace with logger (Key 02)
@@ -193,20 +193,20 @@ async def demonstrate_recursive_planning():
         planner_max_parallel=5
     )
 
-    config = AutonomousHopConfig(autonomy=autonomy_config)
+    CONFIG = AutonomousHopConfig(autonomy=autonomy_config)
 
     # Create autonomous hop
-    hop = create_autonomous_hop(
+    HOP = create_autonomous_hop(
         hop_function=complex_analysis_task,
-        config=config,
+        CONFIG=config,
         initial_context={"agent_role": "RESEARCHER"}
     )
 
     # Execute complex task
     # print("\nExecuting complex task with recursive planning:") # NOTE: Replace with logger (Key 02)
-    result = await hop.run(
-        goal="Design and implement a complete data analysis pipeline for financial data",
-        context={
+    RESULT = await hop.run(
+        GOAL="Design and implement a complete data analysis pipeline for financial data",
+        CONTEXT={
             "data_sources": ["market_data", "company_reports"],
             "requirements": ["real-time processing", "anomaly detection"]
         }
@@ -229,24 +229,24 @@ async def demonstrate_full_autonomy():
         reasoning_critique_threshold=0.7
     )
 
-    config = AutonomousHopConfig(
-        autonomy=autonomy_config,
+    CONFIG = AutonomousHopConfig(
+        AUTONOMY=autonomy_config,
         storage_path="./full_autonomy_store"
     )
 
     # Create autonomous hop with all features
-    hop = create_autonomous_hop(
+    HOP = create_autonomous_hop(
         hop_function=complex_analysis_task,
-        config=config,
+        CONFIG=config,
         initial_context={"agent_role": "DATA_ANALYST"}
     )
 
     # Execute complex task
     # print("\nExecuting with full autonomy enabled:") # NOTE: Replace with logger (Key 02)
-    result = await hop.run(
-        goal="Build a machine learning model to predict customer churn",
-        constraints=["Must be interpretable", "Should handle imbalanced data"],
-        context={
+    RESULT = await hop.run(
+        GOAL="Build a machine learning model to predict customer churn",
+        CONSTRAINTS=["Must be interpretable", "Should handle imbalanced data"],
+        CONTEXT={
             "data": "customer_churn_dataset.csv",
             "deadline": "2 weeks",
             "team_size": 3
@@ -269,10 +269,10 @@ async def demonstrate_full_autonomy():
 
     # Commit the full execution to memory
     await hop.commit_execution_to_memory(
-        task="Build a machine learning model to predict customer churn",
-        plan="Recursive plan with data preprocessing, model training, and evaluation",
-        result=result,
-        success=True,
+        TASK="Build a machine learning model to predict customer churn",
+        PLAN="Recursive plan with data preprocessing, model training, and evaluation",
+        RESULT=result,
+        SUCCESS=True,
         tools_used=[t["name"] for t in hop.selected_tools]
     )
 

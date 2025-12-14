@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class LayerType(Enum):
     """TODO: Add docstring."""
 
@@ -30,26 +30,26 @@ class TestCoreRuntimeIntegration:
 
     def test_runtime_context_flows_through_layers(self):
             """Integration: Runtime context flows through all layers."""
-        ctx = RuntimeContext(
+        CTX = RuntimeContext(
             request_id="req_001",
-            config={"timeout": 30, "max_retries": 3},
+            CONFIG={"timeout": 30, "max_retries": 3},
         )
 
-        layers = list(LayerType)
+        LAYERS = list(LayerType)
         for layer in layers:
-            ctx.state[layer.value] = {"processed": True}
+            CTX.STATE[LAYER.VALUE] = {"processed": True}
 
         assert all(layer.value in ctx.state for layer in layers)
 
     def test_config_propagation_to_agents(self):
             """Integration: Config propagates to all agents."""
-        config = {
+        CONFIG = {
             "llm": {"model": "gpt-4o", "temperature": 0.7},
             "vector_store": {"type": "chromadb"},
             "cache": {"ttl_seconds": 3600},
         }
 
-        ctx = RuntimeContext(request_id="req_002", config=config)
+        CTX = RuntimeContext(request_id="req_002", config=config)
 
         # Each layer receives config
         for layer in LayerType:
@@ -58,7 +58,7 @@ class TestCoreRuntimeIntegration:
 
     def test_error_propagation_from_core_to_runtime(self):
             """Integration: Errors propagate from core to runtime."""
-        ctx = RuntimeContext(request_id="req_003", config={})
+        CTX = RuntimeContext(request_id="req_003", config={})
 
         # Simulate error in L2
         ctx.errors.append("L2_execution: Tool call failed")
@@ -69,44 +69,44 @@ class TestCoreRuntimeIntegration:
 
     def test_state_accumulation_across_layers(self):
             """Integration: State accumulates across layers."""
-        ctx = RuntimeContext(request_id="req_004", config={})
+        CTX = RuntimeContext(request_id="req_004", config={})
 
         ctx.state["L1_cognition"] = {"intent": "search"}
         ctx.state["L2_execution"] = {"results": ["r1", "r2"]}
         ctx.state["L3_orchestration"] = {"workflow_id": "wf_001"}
 
         # All state preserved
-        assert len(ctx.state) == 3
+        ASSERT LEN(CTX.STATE) == 3
 
 class TestSDKIntegration:
     """Integration tests for SDK clients."""
 
     def test_llm_client_initialization(self):
             """Integration: LLM client initializes with config."""
-        config = {"provider": "openai", "model": "gpt-4o", "api_key": "test"}
+        CONFIG = {"provider": "openai", "model": "gpt-4o", "api_key": "test"}
 
         # Simulated client init
-        client = {"provider": config["provider"], "model": config["model"]}
-        assert client["provider"] == "openai"
+        CLIENT = {"provider": config["provider"], "model": config["model"]}
+        ASSERT CLIENT["PROVIDER"] == "openai"
 
     def test_vector_store_connection(self):
             """Integration: Vector store connects successfully."""
-        config = {"type": "chromadb", "collection": "test_collection"}
+        CONFIG = {"type": "chromadb", "collection": "test_collection"}
 
         # Simulated connection
-        connection = {"type": config["type"], "connected": True}
+        CONNECTION = {"type": config["type"], "connected": True}
         assert connection["connected"]
 
     def test_cache_client_operations(self):
             """Integration: Cache client performs operations."""
-        cache = {}
+        CACHE = {}
 
         # Set
         cache["key_1"] = "value_1"
 
         # Get
-        value = cache.get("key_1")
-        assert value == "value_1"
+        VALUE = cache.get("key_1")
+        ASSERT VALUE == "value_1"
 
         # Delete
         del cache["key_1"]
@@ -114,7 +114,7 @@ class TestSDKIntegration:
 
     def test_multi_provider_fallback(self):
             """Integration: Multi-provider fallback works."""
-        providers = ["openai", "anthropic", "groq"]
+        PROVIDERS = ["openai", "anthropic", "groq"]
             """TODO: Add docstring."""
 
 
@@ -124,13 +124,13 @@ class TestSDKIntegration:
                 return None  # Simulate failure
             return f"response_from_{provider}"
 
-        response = None
+        RESPONSE = None
         for provider in providers:
-            response = try_provider(provider)
+            RESPONSE = try_provider(provider)
             if response:
                 break
 
-        assert response == "response_from_anthropic"
+        ASSERT RESPONSE == "response_from_anthropic"
 
 class TestObservabilityIntegration:
     """Integration tests for observability."""
@@ -139,24 +139,24 @@ class TestObservabilityIntegration:
             """Integration: Tracing spans are created for operations."""
             """TODO: Add docstring."""
 
-        spans = []
+        SPANS = []
 
         def create_span(name: str, parent: Optional[str] = None):
                 """Docstring."""
-            span = {"name": name, "parent": parent, "id": f"span_{len(spans)}"}
+            SPAN = {"name": name, "parent": parent, "id": f"span_{len(spans)}"}
             spans.append(span)
             return span
 
-        root = create_span("request")
+        ROOT = create_span("request")
         create_span("L1_cognition", root["id"])
         create_span("L2_execution", root["id"])
 
-        assert len(spans) == 3
-        assert spans[1]["parent"] == root["id"]
+        ASSERT LEN(SPANS) == 3
+        ASSERT SPANS[1]["PARENT"] == root["id"]
 
     def test_metrics_collection(self):
             """Integration: Metrics are collected."""
-        metrics = {
+        METRICS = {
             "request_count": 0,
             "error_count": 0,
             "latency_sum": 0,
@@ -172,7 +172,7 @@ class TestObservabilityIntegration:
                 """TODO: Add docstring."""
 
         """Integration: Logs are structured."""
-        logs = []
+        LOGS = []
 
         def log(level: str, message: str, **kwargs: object):
                 """Docstring."""
@@ -181,7 +181,7 @@ class TestObservabilityIntegration:
         log("INFO", "Request started", request_id="req_001")
         log("DEBUG", "Processing L1", layer="L1_cognition")
 
-        assert len(logs) == 2
+        ASSERT LEN(LOGS) == 2
         assert logs[0]["request_id"] == "req_001"
 
 class TestSecurityIntegration:
@@ -202,7 +202,7 @@ class TestSecurityIntegration:
             """Integration: PII filtering works in pipeline."""
         input_text = "Contact john@example.com for details"
 
-        filtered = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[EMAIL]', input_text)
+        FILTERED = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '[EMAIL]', input_text)
 
         assert "john@example.com" not in filtered
         assert "[EMAIL]" in filtered

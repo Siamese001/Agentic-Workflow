@@ -5,7 +5,7 @@ This example shows how the system enables high-temperature creativity
 while maintaining structural integrity through dual-state isolation.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -32,7 +32,7 @@ class EmailContent(BaseModel):
     recipient: EmailStr
     subject: str
     body: str
-    tone: str = "professional"
+    TONE: STR = "professional"
 
     class Config:
         """Docstring."""
@@ -67,10 +67,10 @@ class ExperienceEntry(BaseModel):
 
 async def demonstrate_dual_state_isolation():
     """Demonstrate HardState/SoftState separation."""
-    logger.info("\n=== DEMONSTRATION: Dual-State Isolation ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Dual-State Isolation ===\n")
 
     # Create context with brainstorming profile (high temperature)
-    context = create_brainstorm_context("workflow_123", "brainstorm_node")
+    CONTEXT = create_brainstorm_context("workflow_123", "brainstorm_node")
 
     logger.info(f"Created context with execution_id: {context.hard_state.execution_id}")
     logger.info(f"Thermal profile: {context.thermal_config.profile}")
@@ -105,7 +105,7 @@ async def demonstrate_dual_state_isolation():
 
 async def demonstrate_thermal_adjustment():
     """Demonstrate dynamic thermal parameter adjustment."""
-    logger.info("\n=== DEMONSTRATION: Dynamic Thermal Adjustment ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Dynamic Thermal Adjustment ===\n")
 
     # Create contexts for different node types
     brainstorm_ctx = create_brainstorm_context("workflow_123", "brainstorm_node")
@@ -131,10 +131,10 @@ async def demonstrate_thermal_adjustment():
 
 async def demonstrate_signal_anchoring():
     """Demonstrate signal anchoring with signed claims."""
-    logger.info("\n=== DEMONSTRATION: Signal Anchoring ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Signal Anchoring ===\n")
 
     # Create context
-    context = create_brainstorm_context("workflow_123", "rag_node")
+    CONTEXT = create_brainstorm_context("workflow_123", "rag_node")
 
     # Sample resume content
     resume_text = """
@@ -157,7 +157,7 @@ async def demonstrate_signal_anchoring():
     """
 
     # Anchor the content
-    context = anchor_resume_content(context, resume_text)
+    CONTEXT = anchor_resume_content(context, resume_text)
 
     logger.info(f"Anchored {len(context.signed_claims)} claims from resume:")
 
@@ -174,11 +174,11 @@ async def demonstrate_signal_anchoring():
 
 async def demonstrate_state_promotion():
     """Demonstrate state promotion with validation."""
-    logger.info("\n=== DEMONSTRATION: State Promotion ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: State Promotion ===\n")
 
     # Create context and validator
-    context = create_brainstorm_context("workflow_123", "draft_node")
-    promoter = create_email_validator()
+    CONTEXT = create_brainstorm_context("workflow_123", "draft_node")
+    PROMOTER = create_email_validator()
 
     # Register Pydantic schema
     promoter.register_pydantic_schema("email_draft", EmailContent)
@@ -196,7 +196,7 @@ async def demonstrate_state_promotion():
 
     # Attempt promotion (will fail validation)
     logger.info("\nAttempting state promotion...")
-    result = await promoter.promote(context, "email_draft", "email_schema")
+    RESULT = await promoter.promote(context, "email_draft", "email_schema")
 
     logger.info(f"\nPromotion Result:")
     logger.info(f"  Success: {result.success}")
@@ -217,7 +217,7 @@ async def demonstrate_state_promotion():
 
     # Attempt promotion again
     logger.info("Attempting state promotion with valid draft...")
-    result = await promoter.promote(context, "email_draft", "email_schema")
+    RESULT = await promoter.promote(context, "email_draft", "email_schema")
 
     logger.info(f"\nPromotion Result:")
     logger.info(f"  Success: {result.success}")
@@ -233,7 +233,7 @@ async def demonstrate_state_promotion():
 
 async def demonstrate_inference_with_thermal():
     """Demonstrate inference with thermal adjustment."""
-    logger.info("\n=== DEMONSTRATION: Inference with Thermal Control ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Inference with Thermal Control ===\n")
 
     # Create contexts with different thermal profiles
     creative_ctx = create_brainstorm_context("workflow_123", "creative_node")
@@ -259,11 +259,11 @@ async def demonstrate_inference_with_thermal():
 
 async def demonstrate_complete_workflow():
     """Demonstrate the complete thermostatic passport workflow."""
-    logger.info("\n=== DEMONSTRATION: Complete Thermostatic Workflow ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Complete Thermostatic Workflow ===\n")
 
     # Step 1: Initialize context for brainstorming
     logger.info("Step 1: Initialize Context for Brainstorming")
-    context = create_brainstorm_context("email_workflow", "brainstorm_node")
+    CONTEXT = create_brainstorm_context("email_workflow", "brainstorm_node")
     logger.info(f"  Execution ID: {context.hard_state.execution_id}")
     logger.info(f"  Thermal Profile: {context.thermal_config.profile}")
 
@@ -276,7 +276,7 @@ async def demonstrate_complete_workflow():
     - Led team that increased model accuracy by 35%
     - PhD in Computer Science from MIT
     """
-    context = anchor_resume_content(context, resume_text)
+    CONTEXT = anchor_resume_content(context, resume_text)
     logger.info(f"  Anchored {len(context.signed_claims)} factual claims")
 
     # Step 3: High-temperature creative drafting
@@ -296,7 +296,7 @@ async def demonstrate_complete_workflow():
 
     # Step 4: Validation and promotion
     logger.info("\nStep 4: Validation and State Promotion")
-    promoter = StatePromoter(max_correction_attempts=2)
+    PROMOTER = StatePromoter(max_correction_attempts=2)
 
     # Simulate validation failure and correction
     logger.info("  First attempt: Too creative, needs structure")
@@ -312,7 +312,7 @@ async def demonstrate_complete_workflow():
     context.soft_state.drafts["email_content"] = corrected_draft
 
     # Promote to HardState
-    result = await promoter.promote(context, "email_content")
+    RESULT = await promoter.promote(context, "email_content")
     logger.info(f"  Promotion successful: {result.success}")
 
     # Step 5: Final formatting
@@ -332,10 +332,10 @@ async def demonstrate_complete_workflow():
 
 async def main():
     """Run all demonstrations."""
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
     logger.info("THERMOSTATIC PASSPORT SYSTEM DEMONSTRATION")
     logger.info("High-Temperature Creativity with Structural Integrity")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
     # Run all demonstrations
     await demonstrate_dual_state_isolation()
@@ -345,7 +345,7 @@ async def main():
     await demonstrate_inference_with_thermal()
     await demonstrate_complete_workflow()
 
-    logger.info("\n" + "=" * 80)
+    LOGGER.INFO("\N" + "=" * 80)
     logger.info("DEMONSTRATION COMPLETE")
     logger.info("\nKey Benefits Achieved:")
     logger.info("✓ Maximum creativity in SoftState (Temperature 0.9)")
@@ -354,7 +354,7 @@ async def main():
     logger.info("✓ Signal anchoring prevents hallucinations")
     logger.info("✓ Self-correction loops for validation failures")
     logger.info("✓ Complete audit trail of all operations")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
 if __name__ == "__main__":
     asyncio.run(main())

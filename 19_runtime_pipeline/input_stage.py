@@ -1,7 +1,7 @@
 """Input processing stage for unified signal pipeline.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Extracted from unified_signal_pipeline.py for Key 42 compliance.
 """
 
@@ -12,7 +12,7 @@ from typing import Any, Dict
 
 from .types import PipelineStage
 
-logger = __import__('logging').getLogger(__name__)
+LOGGER = __import__('logging').getLogger(__name__)
 
 
 class InputProcessingStage(PipelineStage):
@@ -51,21 +51,21 @@ async def execute(self: Any, envelope: Any) -> Any:
         try:
             logger.debug(f"Processing input for {envelope.payload.payload_type}")
 
-            content = self._extract_content_from_payload(envelope.payload)
+            CONTENT = self._extract_content_from_payload(envelope.payload)
 
             cache_key = f"input_processed_{hashlib.sha256(content.encode()).hexdigest()[:16]}"
-            cached = self.semantic_cache.get(cache_key) if self.semantic_cache else None
+            CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
 
             if cached:
                 self._update_payload_with_processed_data(envelope, cached)
                 envelope.mark_stage_complete(
                     stage_name,
                     (time.time() - start_time) * 1000,
-                    metadata={"cache_hit": True}
+                    METADATA={"cache_hit": True}
                 )
                 return envelope
 
-            processed = await self._process_content(content, envelope)
+            PROCESSED = await self._process_content(content, envelope)
             self._update_payload_with_processed_data(envelope, processed)
 
             if self.semantic_cache:
@@ -74,7 +74,7 @@ async def execute(self: Any, envelope: Any) -> Any:
             envelope.mark_stage_complete(
                 stage_name,
                 (time.time() - start_time) * 1000,
-                metadata={"cache_hit": False}
+                METADATA={"cache_hit": False}
             )
 
             return envelope
@@ -121,7 +121,7 @@ async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, 
         Returns:
             Processed data
         """
-        result = {
+        RESULT = {
             "word_count": len(content.split()),
             "char_count": len(content),
             "language": "en"
@@ -129,11 +129,11 @@ async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, 
 
         if self.hyde_processor:
             if envelope.payload.payload_type.value == "resume_data":
-                query = f"resume achievements skills {content[:100]}"
+                QUERY = f"resume achievements skills {content[:100]}"
             else:
-                query = f"outreach personalization {content[:100]}"
+                QUERY = f"outreach personalization {content[:100]}"
 
-            expanded = self.hyde_processor.expand_query_with_hyde(
+            EXPANDED = self.hyde_processor.expand_query_with_hyde(
                 query, envelope.payload.payload_type.value
             )
             result["expanded_query"] = expanded

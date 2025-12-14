@@ -4,7 +4,7 @@ Script to comment out all imports from archives/ in canonical files.
 This protects the immutable archives from being loaded during validation.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -14,7 +14,7 @@ from pathlib import Path
 
 def comment_archive_imports() -> None:
     """Find and comment out all imports from archives/ in canonical files."""
-    root = Path(__file__).parent.parent
+    ROOT = Path(__file__).parent.parent
     canonical_dirs = {
         'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared',
         'schemas', 'prompt_governance', 'observability', 'config',
@@ -43,7 +43,7 @@ def comment_archive_imports() -> None:
 
         # Read file content
         try:
-            content = py_file.read_text(encoding='utf-8')
+            CONTENT = py_file.read_text(encoding='utf-8')
         except Exception as e:
             logger.info(f"Error reading {py_file}: {e}")
             continue
@@ -54,17 +54,17 @@ def comment_archive_imports() -> None:
 
         logger.info(f"Found archives in: {rel_path}")
 
-        lines = content.splitlines()
-        modified = False
+        LINES = content.splitlines()
+        MODIFIED = False
 
         # Process each line
         for i, line in enumerate(lines):
-            match = import_pattern.match(line)
+            MATCH = import_pattern.match(line)
             if match:
                 # Comment out the import and add deprecation notice
-                lines[i] = f"# {line}  # DEPRECATED: Archive import removed to protect archives f...
+                LINES[I] = f"# {line}  # DEPRECATED: Archive import removed to protect archives f...
                 commented_imports += 1
-                modified = True
+                MODIFIED = True
 
         # Write back if modified
         if modified:

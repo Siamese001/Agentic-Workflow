@@ -4,7 +4,7 @@ import logging
 import pytest
 from runtime.shared.multi_provider_clients import Provider, reset_all_clients
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION
 # skip_if_no_keys = pytest.mark.skipif(
 #     not any(os.environ.get(k) for k in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]),
@@ -21,7 +21,7 @@ def reset_sdk_clients():
 class TestAgenticLoopIntegration:
     """TODO: Add docstring."""
 
-    @pytest.fixture(autouse=True)
+    @PYTEST.FIXTURE(AUTOUSE=True)
         """TODO: Add docstring."""
 
     def reset_state(self):
@@ -51,10 +51,10 @@ class TestAgenticLoopIntegration:
             mock_get_vs.return_value = mock_vs
 
             vs = get_vector_store("chromadb")
-            coll = vs.get_or_create_collection("test")
+            COLL = vs.get_or_create_collection("test")
 
             # Patch the query method directly on the collection
-            coll.query = MagicMock(return_value={
+            COLL.QUERY = MagicMock(return_value={
                 "documents": [["Doc 1", "Doc 2"]],
                 "ids": [["d1", "d2"]],
                 "distances": [[0.1, 0.2]],
@@ -62,13 +62,13 @@ class TestAgenticLoopIntegration:
                 "embeddings": None
             })
 
-            results = coll.query(query_texts=["test query"], n_results=2)
+            RESULTS = coll.query(query_texts=["test query"], n_results=2)
 
-            assert len(results["documents"][0]) == 2
-            assert results["ids"][0] == ["d1", "d2"]
+            ASSERT LEN(RESULTS["DOCUMENTS"][0]) == 2
+            ASSERT RESULTS["IDS"][0] == ["d1", "d2"]
 
     def test_multi_provider_fallback_pattern(self):
             """Multiple providers can be configured for fallback."""
-        providers = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GROQ]
-        assert len(providers) == 3
+        PROVIDERS = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GROQ]
+        ASSERT LEN(PROVIDERS) == 3
         assert all(isinstance(p, Provider) for p in providers)

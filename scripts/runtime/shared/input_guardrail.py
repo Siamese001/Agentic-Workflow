@@ -13,7 +13,7 @@ import unicodedata
 from dataclasses import dataclass
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class GuardAction(Enum):
     """Action to take based on guardrail scan."""
@@ -190,10 +190,10 @@ class InputGuardrail:
         start_time = time.time()
 
         # Initialize result
-        result = GuardResult(
-            action=GuardAction.ALLOW,
-            reason="Input appears safe",
-            confidence=0.0,
+        RESULT = GuardResult(
+            ACTION=GuardAction.ALLOW,
+            REASON="Input appears safe",
+            CONFIDENCE=0.0,
             pii_detected=[],
             injection_patterns=[]
         )
@@ -202,39 +202,39 @@ class InputGuardrail:
             # Check rate limiting first
             if self.enable_rate_limit and user_id:
                 if self._check_rate_limit(user_id):
-                    result.action = GuardAction.BLOCK
-                    result.reason = "Rate limit exceeded"
-                    result.confidence = 1.0
+                    RESULT.ACTION = GuardAction.BLOCK
+                    RESULT.REASON = "Rate limit exceeded"
+                    RESULT.CONFIDENCE = 1.0
                     return result
 
             # Check for prompt injection
             if self.enable_injection_detection:
                 injection_result = self._check_injection(input_text)
                 if injection_result[0]:  # Found injection
-                    result.action = GuardAction.BLOCK if self.strict_mode else GuardAction.WARN
+                    RESULT.ACTION = GuardAction.BLOCK if self.strict_mode else GuardAction.WARN
                     result.injection_patterns = injection_result[1]
-                    result.reason = f"Prompt injection detected: {', '.join(injection_result[1])}"
-                    result.confidence = max(result.confidence, 0.8)
+                    RESULT.REASON = f"Prompt injection detected: {', '.join(injection_result[1])}"
+                    RESULT.CONFIDENCE = max(result.confidence, 0.8)
 
             # Check for Unicode homoglyph attacks
             if self.enable_unicode_check:
                 unicode_result = self._check_unicode_attacks(input_text)
                 if unicode_result[0]:  # Found suspicious Unicode
                     if result.action == GuardAction.ALLOW:
-                        result.action = GuardAction.WARN if not self.strict_mode else GuardAction.BL
+                        RESULT.ACTION = GuardAction.WARN if not self.strict_mode else GuardAction.BL
     OCK
-                        result.reason = f"Suspicious Unicode characters detected: {unicode_result[1]
+                        RESULT.REASON = f"Suspicious Unicode characters detected: {unicode_result[1]
     }"
-                    result.confidence = max(result.confidence, 0.7)
+                    RESULT.CONFIDENCE = max(result.confidence, 0.7)
 
             # Check for encoded payloads
             if self.enable_encoding_check:
                 encoding_result = self._check_encoded_payloads(input_text)
                 if encoding_result[0]:  # Found encoded content
                     if result.action == GuardAction.ALLOW:
-                        result.action = GuardAction.BLOCK
-                        result.reason = "Encoded payload detected - potential attack"
-                    result.confidence = max(result.confidence, 0.9)
+                        RESULT.ACTION = GuardAction.BLOCK
+                        RESULT.REASON = "Encoded payload detected - potential attack"
+                    RESULT.CONFIDENCE = max(result.confidence, 0.9)
 
             # Check for PII
             if self.enable_pii_detection:
@@ -242,19 +242,19 @@ class InputGuardrail:
                 if pii_result[0]:  # Found PII
                     result.pii_detected = pii_result[1]
                     if result.action == GuardAction.ALLOW:
-                        result.action = GuardAction.REDACT
-                        result.reason = "PII detected - will be redacted"
+                        RESULT.ACTION = GuardAction.REDACT
+                        RESULT.REASON = "PII detected - will be redacted"
                         result.sanitized_input = self._redact_pii(input_text, pii_result[1])
-                    result.confidence = max(result.confidence, 0.6)
+                    RESULT.CONFIDENCE = max(result.confidence, 0.6)
 
             # Check semantic malicious intent
             if self.enable_semantic_check:
                 semantic_score = self._check_semantic_intent(input_text)
                 if semantic_score > self.semantic_threshold:
                     if result.action == GuardAction.ALLOW:
-                        result.action = GuardAction.WARN
-                        result.reason = "Potentially malicious intent detected"
-                    result.confidence = max(result.confidence, semantic_score)
+                        RESULT.ACTION = GuardAction.WARN
+                        RESULT.REASON = "Potentially malicious intent detected"
+                    RESULT.CONFIDENCE = max(result.confidence, semantic_score)
 
             # Log the scan
             scan_time = (time.time() - start_time) * 1000
@@ -267,9 +267,9 @@ class InputGuardrail:
             logger.error(f"Error during input scan: {e}")
             # Fail safe - allow but warn
             return GuardResult(
-                action=GuardAction.WARN,
-                reason="Scan error - proceeding with caution",
-                confidence=0.0
+                ACTION=GuardAction.WARN,
+                REASON="Scan error - proceeding with caution",
+                CONFIDENCE=0.0
             )
 
     def _check_injection(self, text: str) -> Tuple[bool, List[str]]:
@@ -284,7 +284,7 @@ class InputGuardrail:
         found_patterns = []
 
         for pattern in self.compiled_injection_patterns:
-            matches = pattern.findall(text)
+            MATCHES = pattern.findall(text)
             if matches:
                 found_patterns.append(pattern.pattern)
 
@@ -302,7 +302,7 @@ class InputGuardrail:
         found_types = []
 
         for pii_type, pattern in self.pii_patterns.items():
-            matches = pattern.findall(text)
+            MATCHES = pattern.findall(text)
             if matches:
                 found_types.append(pii_type)
 
@@ -318,23 +318,23 @@ class InputGuardrail:
         Returns:
             Redacted text
         """
-        redacted = text
+        REDACTED = text
 
         for pii_type in pii_types:
             if pii_type in self.pii_patterns:
-                pattern = self.pii_patterns[pii_type]
+                PATTERN = self.pii_patterns[pii_type]
                 if pii_type == 'email':
-                    redacted = pattern.sub('[EMAIL_REDACTED]', redacted)
+                    REDACTED = pattern.sub('[EMAIL_REDACTED]', redacted)
                 elif pii_type == 'phone':
-                    redacted = pattern.sub('[PHONE_REDACTED]', redacted)
+                    REDACTED = pattern.sub('[PHONE_REDACTED]', redacted)
                 elif pii_type == 'ssn':
-                    redacted = pattern.sub('[SSN_REDACTED]', redacted)
+                    REDACTED = pattern.sub('[SSN_REDACTED]', redacted)
                 elif pii_type == 'credit_card':
-                    redacted = pattern.sub('[CARD_REDACTED]', redacted)
+                    REDACTED = pattern.sub('[CARD_REDACTED]', redacted)
                 elif pii_type == 'ip_address':
-                    redacted = pattern.sub('[IP_REDACTED]', redacted)
+                    REDACTED = pattern.sub('[IP_REDACTED]', redacted)
                 elif pii_type == 'url':
-                    redacted = pattern.sub('[URL_REDACTED]', redacted)
+                    REDACTED = pattern.sub('[URL_REDACTED]', redacted)
 
         return redacted
 
@@ -353,13 +353,13 @@ class InputGuardrail:
                           if keyword in text_lower)
 
         # Calculate confidence based on keyword density
-        confidence = min(keyword_count / len(self.malicious_keywords), 1.0)
+        CONFIDENCE = min(keyword_count / len(self.malicious_keywords), 1.0)
 
         # Boost confidence if multiple injection patterns are found
         injection_count = sum(1 for pattern in self.compiled_injection_patterns
                             if pattern.search(text))
         if injection_count > 2:
-            confidence = min(confidence + 0.3, 1.0)
+            CONFIDENCE = min(confidence + 0.3, 1.0)
 
         return confidence
 
@@ -372,7 +372,7 @@ class InputGuardrail:
         Returns:
             True if rate limit exceeded
         """
-        now = time.time()
+        NOW = time.time()
         minute_ago = now - 60
 
         # Clean old entries
@@ -433,7 +433,7 @@ class InputGuardrail:
         for match in base64_matches:
             try:
                 # Try to decode
-                decoded = base64.b64decode(match).decode('utf-8', errors='ignore')
+                DECODED = base64.b64decode(match).decode('utf-8', errors='ignore')
 
                 # Check if decoded content looks suspicious
                 decoded_lower = decoded.lower()
@@ -456,7 +456,7 @@ class InputGuardrail:
         for match in hex_matches:
             try:
                 # Try to decode as hex
-                decoded = bytes.fromhex(match).decode('utf-8', errors='ignore')
+                DECODED = bytes.fromhex(match).decode('utf-8', errors='ignore')
                 if any(keyword in decoded.lower() for keyword in self.malicious_keywords):
                     return (True, f"Hex encoded payload with malicious content")
             except Exception as e:
@@ -521,7 +521,7 @@ def scan_input(input_text: str, **kwargs) -> GuardResult:
     Returns:
         GuardResult from scan
     """
-    guardrail = get_input_guardrail(**kwargs)
+    GUARDRAIL = get_input_guardrail(**kwargs)
     return guardrail.scan(input_text)
 
 # Pre-configured guardrail presets

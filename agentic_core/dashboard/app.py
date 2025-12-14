@@ -1,6 +1,6 @@
 """
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Subatomic Flight Recorder Dashboard
 
 Visual UI to debug agents using Streamlit.
@@ -42,7 +42,7 @@ def get_connection():
         st.info(f"Looking for database at: {Path(DB_PATH).absolute()}")
         return None
 
-conn = get_connection()
+CONN = get_connection()
 
 if not conn:
     st.stop()
@@ -79,7 +79,7 @@ st.sidebar.header("🎯 Trace Selection")
 
 trace_display = traces_df.apply(
     lambda row: f"{row['trace_id']} ({row['event_count']} events, {row['duration']:.1f}s)",
-    axis=1
+    AXIS=1
 )
 
     "Select Mission Trace",
@@ -95,7 +95,7 @@ st.sidebar.metric("Total Events", traces_df['event_count'].sum())
 
 st.header(f"🛸 Mission Timeline: `{selected_trace}`")
 
-col1, col2, col3 = st.columns(3)
+COL1, COL2, COL3 = st.columns(3)
 with col1:
     st.metric("Events", traces_df.iloc[selected_idx]['event_count'])
 with col2:
@@ -118,14 +118,14 @@ if not gantt_df.empty:
     gantt_df["Finish"] = pd.to_datetime(gantt_df["Finish"], unit='s')
     gantt_df["Duration"] = (gantt_df["Finish"] - gantt_df["Start"]).dt.total_seconds()
 
-    fig = px.timeline(
+    FIG = px.timeline(
         gantt_df,
         x_start="Start",
         x_end="Finish",
         y="agent_role",
-        color="agent_role",
+        COLOR="agent_role",
         hover_data=["span_id", "Duration"],
-        title="Agent Execution Timeline (Gantt Chart)"
+        TITLE="Agent Execution Timeline (Gantt Chart)"
     )
     fig.update_yaxes(categoryorder="total ascending")
     st.plotly_chart(fig, use_container_width=True)
@@ -170,14 +170,14 @@ with col_right:
     st.subheader("🔍 Black Box Data")
 
     if selected_event_idx is not None and not events_df.empty:
-        row = events_df.loc[selected_event_idx]
+        ROW = events_df.loc[selected_event_idx]
 
         st.info(f"**Event Type:** {row['event_type']}")
         st.info(f"**Span ID:** {row['span_id']}")
         st.info(f"**Timestamp:** {row['timestamp']}")
 
         try:
-            payload = json.loads(row['payload'])
+            PAYLOAD = json.loads(row['payload'])
 
             if row['event_type'] == 'THINK_COMPLETE' and 'reasoning' in payload:
                 st.markdown("### 🧠 Agent Reasoning")
@@ -212,15 +212,15 @@ tool_stats_df = conn.execute("""
 """, [selected_trace]).df()
 
 if not tool_stats_df.empty:
-    col1, col2 = st.columns([2, 1])
+    COL1, COL2 = st.columns([2, 1])
 
     with col1:
-        fig = px.bar(
+        FIG = px.bar(
             tool_stats_df,
             x='tool_name',
             y='calls',
-            title="Tool Usage Frequency",
-            labels={'tool_name': 'Tool', 'calls': 'Number of Calls'}
+            TITLE="Tool Usage Frequency",
+            LABELS={'tool_name': 'Tool', 'calls': 'Number of Calls'}
         )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -245,7 +245,7 @@ if not error_df.empty:
     for idx, row in error_df.iterrows():
         with st.expander(f"❌ {row['event_type']} @ {row['timestamp'].strftime('%H:%M:%S')}"):
             try:
-                payload = json.loads(row['payload'])
+                PAYLOAD = json.loads(row['payload'])
                 st.error(payload.get('error_message', 'Unknown error'))
                 st.json(payload)
             except Exception:

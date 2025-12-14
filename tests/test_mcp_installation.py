@@ -4,13 +4,13 @@ import logging
 import os
 import sys
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # Add project to path
 sys.path.insert(0, os.path.dirname(__file__))
 
-logger.info("=" * 60)
+LOGGER.INFO("=" * 60)
 logger.info("MCP Installation Verification")
-logger.info("=" * 60)
+LOGGER.INFO("=" * 60)
 logger.info("")
 
 # Test 1: Node.js Installation
@@ -18,7 +18,7 @@ logger.info("1. Testing Node.js installation...")
 try:
     import subprocess
 
-    result = subprocess.run(
+    RESULT = subprocess.run(
         [r"C:\Program Files\nodejs\node.exe", "--version"], capture_output=True, text=True
     )
     if result.returncode == 0:
@@ -35,8 +35,8 @@ logger.info("2. Testing Python MCP Tools...")
 try:
     from runtime.shared.workflow.python_mcp_tools import PythonMCPToolkit
 
-    toolkit = PythonMCPToolkit()
-    tools = toolkit.get_available_tools()
+    TOOLKIT = PythonMCPToolkit()
+    TOOLS = toolkit.get_available_tools()
     logger.info(f"   ✓ Python MCP Toolkit loaded")
     logger.info(f"   ✓ Available tools: {', '.join(tools)}")
 except Exception as e:
@@ -71,7 +71,7 @@ logger.info("")
 
 # Test 5: Required Python packages
 logger.info("5. Testing required Python packages...")
-packages = {
+PACKAGES = {
     "requests": "Web requests",
     "beautifulsoup4": "HTML parsing",
     "pyyaml": "YAML parsing",
@@ -86,9 +86,9 @@ for package, description in packages.items():
         logger.info(f"   ✗ {package}: Not installed")
 
 logger.info("")
-logger.info("=" * 60)
+LOGGER.INFO("=" * 60)
 logger.info("Installation Status Summary")
-logger.info("=" * 60)
+LOGGER.INFO("=" * 60)
 logger.info("")
 logger.info("✓ Node.js v24.12.0 installed")
 logger.info("✓ Python MCP tools created")

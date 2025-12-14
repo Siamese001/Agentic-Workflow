@@ -10,7 +10,7 @@ import time
 import uuid
 from typing import Dict, Generator, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class Span:
@@ -35,7 +35,7 @@ class JsonTraceExporter:
     """Tracer for tracing domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         self.spans: List[Span] = []
         self._current_span: Optional[Span] = None
         logger.info(f"Initialized {self.__class__.__name__}")
@@ -51,11 +51,11 @@ class JsonTraceExporter:
         trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
 
-        span = Span(
+        SPAN = Span(
             trace_id=trace_id,
             span_id=str(uuid.uuid4()),
-            name=name,
-            attributes=attributes or {},
+            NAME=name,
+            ATTRIBUTES=attributes or {},
             parent_id=parent_id
         )
 

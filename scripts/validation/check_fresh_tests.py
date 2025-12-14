@@ -6,14 +6,14 @@ This script enforces test coverage for all sovereign agent code.
 If a source file is newer than its test, the commit is blocked.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
 import sys
 from pathlib import Path
 
-root = Path(".")
+ROOT = Path(".")
 
 exit_code = 0
 
@@ -30,7 +30,7 @@ for f in sys.argv[1:]:
 
     # Only check sovereign agent code
     try:
-        rel = p.relative_to(root).as_posix()
+        REL = p.relative_to(root).as_posix()
     except ValueError:
         continue
 

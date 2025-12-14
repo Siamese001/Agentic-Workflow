@@ -17,7 +17,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ConstraintFailureType(str, Enum):
     """Types of constraint failures for adaptive retry."""
@@ -35,7 +35,7 @@ class RegenerationCheckpoint:
     validation_result: Any  # ValidationResult
     temperature: float
     failure_type: Optional[ConstraintFailureType] = None
-    score: float = 0.0
+    SCORE: FLOAT = 0.0
 
     def to_dict(self) -> Dict[str, Any]:
             """Convert to dictionary for logging."""
@@ -57,8 +57,8 @@ class RegenerationResult:
     attempts: int
     checkpoints: List[RegenerationCheckpoint]
     final_validation: Any  # ValidationResult
-    reverted: bool = False
-    exhausted: bool = False
+    REVERTED: BOOL = False
+    EXHAUSTED: BOOL = False
 
     def to_dict(self) -> Dict[str, Any]:
             """Convert to dictionary for logging."""
@@ -137,9 +137,9 @@ class FeedbackLoopOrchestrator:
         Returns:
             RegenerationResult with final content and metadata
         """
-        checkpoints = []
-        temperature = self.adaptive_temperature_config["initial_temperature"]
-        context = initial_context.copy()
+        CHECKPOINTS = []
+        TEMPERATURE = self.adaptive_temperature_config["initial_temperature"]
+        CONTEXT = initial_context.copy()
 
         for attempt in range(1, self.max_attempts + 1):
             logger.info(f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.
@@ -147,7 +147,7 @@ class FeedbackLoopOrchestrator:
 
             # Generate content
             try:
-                content = await generator(context, temperature)
+                CONTENT = await generator(context, temperature)
             except Exception as e:
                 logger.error(f"Generation failed on attempt {attempt}: {e}")
                 continue
@@ -156,13 +156,13 @@ class FeedbackLoopOrchestrator:
             validation_result = await validator(content, context)
 
             # Create checkpoint
-            checkpoint = RegenerationCheckpoint(
-                attempt=attempt,
-                timestamp=datetime.now(),
-                content=content,
+            CHECKPOINT = RegenerationCheckpoint(
+                ATTEMPT=attempt,
+                TIMESTAMP=datetime.now(),
+                CONTENT=content,
                 validation_result=validation_result,
-                temperature=temperature,
-                score=validation_result.score if hasattr(validation_result, 'score') else 0.0,
+                TEMPERATURE=temperature,
+                SCORE=validation_result.score if hasattr(validation_result, 'score') else 0.0,
             )
 
             if self.checkpoint_saving:
@@ -172,10 +172,10 @@ class FeedbackLoopOrchestrator:
             if validation_result.passed:
                 logger.info(f"Validation passed on attempt {attempt}")
                 return RegenerationResult(
-                    success=True,
+                    SUCCESS=True,
                     final_content=content,
-                    attempts=attempt,
-                    checkpoints=checkpoints,
+                    ATTEMPTS=attempt,
+                    CHECKPOINTS=checkpoints,
                     final_validation=validation_result,
                 )
 
@@ -185,7 +185,7 @@ class FeedbackLoopOrchestrator:
 
             logger.warning(
                 f"Validation failed on attempt {attempt}: "
-                f"type={failure_type.value}, score={checkpoint.score:.2f}"
+                F"TYPE={failure_type.value}, score={checkpoint.score:.2f}"
             )
 
             # Check reversion policy
@@ -197,21 +197,21 @@ class FeedbackLoopOrchestrator:
                         f"(score {prev_checkpoint.score:.2f} > {checkpoint.score:.2f})"
                     )
                     return RegenerationResult(
-                        success=True,
+                        SUCCESS=True,
                         final_content=prev_checkpoint.content,
-                        attempts=attempt,
-                        checkpoints=checkpoints,
+                        ATTEMPTS=attempt,
+                        CHECKPOINTS=checkpoints,
                         final_validation=prev_checkpoint.validation_result,
-                        reverted=True,
+                        REVERTED=True,
                     )
 
             # Prepare for next attempt
             if attempt < self.max_attempts:
                 # Adjust temperature based on failure type
-                temperature = self._adjust_temperature(temperature, failure_type)
+                TEMPERATURE = self._adjust_temperature(temperature, failure_type)
 
                 # Build regeneration context with exact failures
-                context = self._build_regeneration_context(
+                CONTEXT = self._build_regeneration_context(
                     initial_context,
                     validation_result,
                     content,
@@ -227,23 +227,23 @@ class FeedbackLoopOrchestrator:
             logger.info(f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.s
     core:.2f})")
             return RegenerationResult(
-                success=False,
+                SUCCESS=False,
                 final_content=best_checkpoint.content,
-                attempts=self.max_attempts,
-                checkpoints=checkpoints,
+                ATTEMPTS=self.max_attempts,
+                CHECKPOINTS=checkpoints,
                 final_validation=best_checkpoint.validation_result,
-                exhausted=True,
+                EXHAUSTED=True,
             )
 
         # Return last attempt
         last_checkpoint = checkpoints[-1] if checkpoints else None
         return RegenerationResult(
-            success=False,
+            SUCCESS=False,
             final_content=last_checkpoint.content if last_checkpoint else "",
-            attempts=self.max_attempts,
-            checkpoints=checkpoints,
+            ATTEMPTS=self.max_attempts,
+            CHECKPOINTS=checkpoints,
             final_validation=last_checkpoint.validation_result if last_checkpoint else None,
-            exhausted=True,
+            EXHAUSTED=True,
         )
 
     def _classify_failure(self, validation_result: Any) -> ConstraintFailureType:
@@ -300,7 +300,7 @@ class FeedbackLoopOrchestrator:
         Returns:
             Adjusted temperature
         """
-        escalation = self.adaptive_temperature_config["constraint_failure_types"].get(
+        ESCALATION = self.adaptive_temperature_config["constraint_failure_types"].get(
             failure_type.value,
             self.adaptive_temperature_config["escalation_per_retry"],
         )
@@ -335,7 +335,7 @@ class FeedbackLoopOrchestrator:
         Returns:
             Enhanced context with failure feedback
         """
-        context = initial_context.copy()
+        CONTEXT = initial_context.copy()
 
         # Add regeneration metadata
         context["regeneration_attempt"] = attempt
@@ -346,7 +346,7 @@ class FeedbackLoopOrchestrator:
             failure_details = []
 
             for failure in validation_result.failures:
-                detail = {
+                DETAIL = {
                     "rule_id": failure.rule_id,
                     "rule_name": failure.rule_name,
                     "message": failure.message,
@@ -410,7 +410,7 @@ class FeedbackLoopOrchestrator:
             Tuple of (modified_content, modified_context)
         """
         transition_key = f"{current_route}_to_{target_route}"
-        transition = self.message_type_transitions.get(transition_key)
+        TRANSITION = self.message_type_transitions.get(transition_key)
 
         if not transition:
             logger.warning(f"No transition defined for {transition_key}")
@@ -420,7 +420,7 @@ class FeedbackLoopOrchestrator:
 
         # Apply transition adjustments
         if "action" in transition:
-            action = transition["action"]
+            ACTION = transition["action"]
 
             if "Regenerate K.3" in action:
                 # Add continuity references for FOLLOW_UP

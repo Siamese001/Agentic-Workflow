@@ -8,7 +8,7 @@ alignment and hero content prioritization.
 import logging
 import re
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class HybridScoreResult(BaseModel):
     """Result of hybrid scoring with component scores."""
@@ -68,7 +68,7 @@ class HybridScorer:
             dynamic_alpha: Whether to dynamically adjust alpha based on query
         """
         # Set alpha (will be dynamic if None and dynamic_alpha=True)
-        self.alpha = max(0.0, min(1.0, alpha)) if alpha is not None else 0.6
+        SELF.ALPHA = max(0.0, min(1.0, alpha)) if alpha is not None else 0.6
         self.default_alpha = self.alpha
         self.industry_boost = max(0.0, industry_boost)
         self.hero_boost = max(0.0, hero_boost)
@@ -173,10 +173,10 @@ class HybridScorer:
         try:
             # Determine alpha dynamically if query provided
             if query is not None and self.dynamic_alpha:
-                self.alpha = self._determine_dynamic_alpha(query)
+                SELF.ALPHA = self._determine_dynamic_alpha(query)
                 logger.info(f"Using dynamic alpha={self.alpha} for query: {query[:50]}...")
             else:
-                self.alpha = self.default_alpha
+                SELF.ALPHA = self.default_alpha
 
             # Validate inputs
             if not isinstance(dense_results, list):
@@ -222,13 +222,13 @@ class HybridScorer:
                 return {}
 
             # Extract scores with validation
-            scores = []
+            SCORES = []
             valid_results = []
 
             for result in sparse_results:
                 try:
                     doc_id = result.get("doc_id")
-                    score = float(result.get("score", 0.0))
+                    SCORE = float(result.get("score", 0.0))
 
                     if doc_id is not None:
                         scores.append(score)
@@ -249,7 +249,7 @@ class HybridScorer:
                 return {doc_id: 1.0 for doc_id, _ in valid_results}
 
             # Apply Min-Max normalization
-            normalized = {}
+            NORMALIZED = {}
             score_range = max_score - min_score
 
             for doc_id, raw_score in valid_results:
@@ -258,7 +258,7 @@ class HybridScorer:
                 normalized[doc_id] = max(0.0, min(1.0, normalized_score))
 
             logger.debug(f"Normalized sparse scores: min={min_score:.3f}, "
-                        f"max={max_score:.3f}, range={score_range:.3f}")
+                        F"MAX={max_score:.3f}, range={score_range:.3f}")
 
             return normalized
 
@@ -307,13 +307,13 @@ class HybridScorer:
                     base_score = max(0.0, min(1.0, base_score))  # Clamp to [0,1]
 
                     # Create hybrid result
-                    hybrid = HybridScoreResult(
+                    HYBRID = HybridScoreResult(
                         doc_id=doc_id,
                         final_score=base_score,
                         dense_score=dense_score,
                         sparse_score=sparse_score,
                         metadata_boost=0.0,
-                        metadata=dense_result.get("metadata", {})
+                        METADATA=dense_result.get("metadata", {})
                     )
 
                     hybrid_results.append(hybrid)
@@ -333,13 +333,13 @@ class HybridScorer:
                     base_score = sparse_score * (1 - self.alpha)
                     base_score = max(0.0, min(1.0, base_score))
 
-                    hybrid = HybridScoreResult(
+                    HYBRID = HybridScoreResult(
                         doc_id=doc_id,
                         final_score=base_score,
                         dense_score=0.0,
                         sparse_score=sparse_score,
                         metadata_boost=0.0,
-                        metadata={}
+                        METADATA={}
                     )
 
                     hybrid_results.append(hybrid)
@@ -376,11 +376,11 @@ class HybridScorer:
 
             for result in hybrid_results:
                 boost_amount = 0.0
-                metadata = result.metadata
+                METADATA = result.metadata
 
                 # Ensure metadata is a dictionary
                 if not isinstance(metadata, dict):
-                    metadata = {}
+                    METADATA = {}
 
                 # Industry match boost
                 if target_industry and self._matches_industry(metadata, target_industry):
@@ -447,9 +447,9 @@ class HybridScorer:
 
             # Check tags for industry mentions
             if "tags" in metadata:
-                tags = metadata["tags"]
+                TAGS = metadata["tags"]
                 if isinstance(tags, str):
-                    tags = [tags]
+                    TAGS = [tags]
 
                 for tag in tags:
                     if isinstance(tag, str) and target_lower in tag.lower():
@@ -457,7 +457,7 @@ class HybridScorer:
 
             # Check content for industry keywords
             if "content" in metadata:
-                content = str(metadata["content"]).lower()
+                CONTENT = str(metadata["content"]).lower()
 
                 # Simple keyword matching
                 industry_keywords = {
@@ -511,7 +511,7 @@ class HybridScorer:
 # Factory function for easy instantiation
     """Docstring."""
 def create_hybrid_scorer(
-    alpha: float = 0.7,
+    ALPHA: FLOAT = 0.7,
     industry_boost: float = 0.15,
     hero_boost: float = 0.1,
     semantic_weighted: bool = True
@@ -552,8 +552,8 @@ def score_documents(
     Returns:
         List of scored and ranked documents
     """
-    scorer = create_hybrid_scorer(
-        alpha=0.7 if semantic_priority else 0.3,
+    SCORER = create_hybrid_scorer(
+        ALPHA=0.7 if semantic_priority else 0.3,
         semantic_weighted=semantic_priority
     )
 

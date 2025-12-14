@@ -9,7 +9,7 @@ import logging
 import random
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class SamplingDecision:
@@ -17,8 +17,8 @@ class SamplingDecision:
 
 
 def __init__(self: Any, sampled: bool, reason: str) -> None:
-    self.sampled = sampled
-    self.reason = reason
+    SELF.SAMPLED = sampled
+    SELF.REASON = reason
 
 
 class SamplingProcessor:
@@ -26,15 +26,15 @@ class SamplingProcessor:
 
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    self.config = config or {}
-    self.rate = self.config.get("rate", 1.0)
+    SELF.CONFIG = config or {}
+    SELF.RATE = self.config.get("rate", 1.0)
     self.always_sample = self.config.get("always_sample", [])
     logger.info(f"Initialized {self.__class__.__name__} with rate={self.rate}")
 
 
 def should_sample(self: Any, context: Optional[Dict]) -> SamplingDecision:
     """Determine if should sample."""
-    ctx = context or {}
+    CTX = context or {}
 
     # Check always sample conditions
     for condition in self.always_sample:

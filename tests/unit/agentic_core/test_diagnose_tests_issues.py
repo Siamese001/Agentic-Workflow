@@ -1,10 +1,9 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
 """Test Diagnose Tests Issues - atomic execution layer."""
 
 
-import logging
 from typing import Dict
 
 

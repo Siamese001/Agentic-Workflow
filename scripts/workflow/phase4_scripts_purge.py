@@ -8,13 +8,13 @@ Generated: 2025-12-07T12:07:59.862730
 import logging
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class OperationResult:
     """Result of operation."""
     success: bool
-    data: object = None
+    DATA: OBJECT = None
     message: Optional[str] = None
     metadata: Dict[str, object] = field(default_factory=dict)
 
@@ -22,16 +22,16 @@ class Phase4108ScriptsPurge:
     """function class for 08_scripts domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, data: object, **kwargs: Dict[str, object]) -> OperationResult:
         """Execute operation."""
         try:
-            result = self._process(data, **kwargs)
+            RESULT = self._process(data, **kwargs)
             return OperationResult(success=True,
-                data=result,
-                metadata={"input_type": type(data).__name__})
+                DATA=result,
+                METADATA={"input_type": type(data).__name__})
         except (ValueError, TypeError, KeyError) as e:
             logger.error("Operation failed: %s", e)
             return OperationResult(success=False, message=str(e))

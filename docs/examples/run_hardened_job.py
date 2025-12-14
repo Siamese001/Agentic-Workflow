@@ -14,19 +14,19 @@ import time
 from typing import Any
 
 # CRITICAL: Fix Windows console crashes on Emoji/Unicode output
-sys.stdout.reconfigure(encoding="utf-8")
-sys.stderr.reconfigure(encoding="utf-8")
+SYS.STDOUT.RECONFIGURE(ENCODING="utf-8")
+SYS.STDERR.RECONFIGURE(ENCODING="utf-8")
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
+    LEVEL=logging.INFO,
+    FORMAT="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    HANDLERS=[
         logging.StreamHandler(sys.stdout),
         logging.FileHandler("hardened_job.log", encoding="utf-8"),
     ],
 )
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 # Import hardened components
 try:
@@ -69,7 +69,7 @@ def _initialize_orchestrator() -> None:
     from runtime.orchestration.hardened_orchestrator import \
         HardenedWorkflowOrchestrator
 
-    orchestrator = HardenedWorkflowOrchestrator(
+    ORCHESTRATOR = HardenedWorkflowOrchestrator(
         workflow_spec=workflow_spec, run_base_dir="./pipeline_runs", storage_path="./state_storage"
     )
     logger.info("✅ Orchestrator initialized successfully")
@@ -104,7 +104,7 @@ def _extract_result_content(result: Any) -> None:
 
 def _display_results(content: Any) -> None:
     """Display workflow results."""
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info("📄 WORKFLOW RESULTS:")
     logger.info("-" * 60)
 
@@ -129,28 +129,29 @@ def _get_state_location(orchestrator: Any) -> None:
 
 def _print_success_report(state_location: Any, execution_time: Any) -> None:
     """Print success criteria report."""
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info("[SUCCESS] TITANIUM WORKFLOW COMPLETE")
     logger.info(f"State persisted to: {state_location}")
     logger.info("Router Execution: HEALTHY")
     logger.info(f"⏱️ Total Execution Time: {execution_time:.2f} seconds")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info("🎉 ACCEPTANCE TEST PASSED")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
 
+# REFACTOR: Split this 56-line function
 async def main() -> None:
     """Main execution function for the hardened job test."""
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info("🚀 STARTING TITANIUM WORKFLOW ACCEPTANCE TEST v2")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
     start_time = time.time()
-    orchestrator = None
+    ORCHESTRATOR = None
 
     try:
-        orchestrator = _initialize_orchestrator()
-        context = _prepare_workflow_context()
+        ORCHESTRATOR = _initialize_orchestrator()
+        CONTEXT = _prepare_workflow_context()
 
         updated_context = orchestrator.initialize_or_resume_workflow(
             workflow_id=TEST_JOB_ID, total_k_nodes=5, context=context
@@ -161,10 +162,10 @@ async def main() -> None:
         else:
             logger.info("🆕 Started new workflow")
 
-        result = await _execute_workflow(orchestrator, updated_context)
+        RESULT = await _execute_workflow(orchestrator, updated_context)
         logger.info("📦 Received workflow results")
 
-        content = _extract_result_content(result)
+        CONTENT = _extract_result_content(result)
         _display_results(content)
 
         state_location = _get_state_location(orchestrator)
@@ -174,7 +175,7 @@ async def main() -> None:
         return 0
 
     except Exception as e:
-        logger.error("=" * 60)
+        LOGGER.ERROR("=" * 60)
         logger.error("❌ WORKFLOW FAILED")
         logger.error(f"Error: {type(e).__name__}: {e}")
 
@@ -183,9 +184,9 @@ async def main() -> None:
         logger.error("Stack Trace:")
         logger.error(traceback.format_exc())
 
-        logger.error("=" * 60)
+        LOGGER.ERROR("=" * 60)
         logger.error("💥 ACCEPTANCE TEST FAILED")
-        logger.error("=" * 60)
+        LOGGER.ERROR("=" * 60)
 
         return 1
 

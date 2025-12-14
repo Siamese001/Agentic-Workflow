@@ -27,7 +27,7 @@ License: Internal Use Only
 import logging
 
 # Configure module-specific logger
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 # Module constants
 MODULE_VERSION = "1.0.0"

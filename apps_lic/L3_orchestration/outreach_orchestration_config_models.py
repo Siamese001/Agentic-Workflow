@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from .outreach_orchestration_config_enums import *  # Star import removed
 
 

@@ -1,7 +1,7 @@
 """Implementation for model_router."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .model_router_types import *  # Star import removed
 
 class ModelRouter:
@@ -33,7 +33,7 @@ class ModelRouter:
         self._load_default_models()
         if self.enable_logging:
             logger.info('model_router_initialized',
-                extra={'model_count': len(self._models),
+                EXTRA={'model_count': len(self._models),
                 'cost_budget': cost_budget_per_request})
 
     def register_model(self, model: ModelConfig) -> None:
@@ -45,7 +45,7 @@ class ModelRouter:
         self._models[model.model_id] = model
         if self.enable_logging:
             logger.info('model_registered',
-                extra={'model_id': model.model_id,
+                EXTRA={'model_id': model.model_id,
                 'tier': model.tier.value})
 
     def route(self,
@@ -53,7 +53,7 @@ class ModelRouter:
         task_description: str,
         required_capabilities: Optional[List[str]]=None,
         estimated_tokens: Optional[int]=None,
-        phase: str='think') -> RoutingDecision:
+        PHASE: STR='think') -> RoutingDecision:
         """Route request to optimal model.
 
         Args:
@@ -65,25 +65,25 @@ class ModelRouter:
         Returns:
             RoutingDecision
         """
-        complexity = self._assess_complexity(task_description, phase)
-        candidates = self._filter_by_capabilities(required_capabilities or [])
+        COMPLEXITY = self._assess_complexity(task_description, phase)
+        CANDIDATES = self._filter_by_capabilities(required_capabilities or [])
         if self.cost_budget_per_request and estimated_tokens:
-            candidates = self._filter_by_budget(candidates,
+            CANDIDATES = self._filter_by_budget(candidates,
                 estimated_tokens,
                 self.cost_budget_per_request)
-        selected = self._select_model(candidates, complexity)
+        SELECTED = self._select_model(candidates, complexity)
         estimated_cost = 0.0
         if estimated_tokens:
             estimated_cost = estimated_tokens / 1000.0 * selected.cost_per_1k_tokens
-        reasoning = self._generate_reasoning(selected, complexity, phase)
-        decision = RoutingDecision(selected_model=selected,
+        REASONING = self._generate_reasoning(selected, complexity, phase)
+        DECISION = RoutingDecision(selected_model=selected,
             task_complexity=complexity,
             estimated_cost=estimated_cost,
-            reasoning=reasoning,
-            alternatives=candidates[:3])
+            REASONING=reasoning,
+            ALTERNATIVES=candidates[:3])
         if self.enable_logging:
             logger.info('model_routed',
-                extra={# SQL query removed: selected.model_id,
+                EXTRA={# SQL query removed: selected.model_id,
                 'complexity': complexity.value,
                 'phase': phase,
                 'estimated_cost': estimated_cost})
@@ -92,37 +92,37 @@ class ModelRouter:
     def _load_default_models(self) -> None:
         """Load default model configurations."""
         self._models['gpt-4'] = ModelConfig(model_id='gpt-4',
-            provider='openai',
-            tier=ModelTier.PREMIUM,
+            PROVIDER='openai',
+            TIER=ModelTier.PREMIUM,
             cost_per_1k_tokens=0.03,
             max_tokens=8192,
             avg_latency_ms=2000,
-            capabilities=['reasoning',
+            CAPABILITIES=['reasoning',
             'code',
             'analysis'])
         self._models['gpt-3.5-turbo'] = ModelConfig(model_id='gpt-3.5-turbo',
-            provider='openai',
-            tier=ModelTier.STANDARD,
+            PROVIDER='openai',
+            TIER=ModelTier.STANDARD,
             cost_per_1k_tokens=0.002,
             max_tokens=4096,
             avg_latency_ms=800,
-            capabilities=['general',
+            CAPABILITIES=['general',
             'code'])
         self._models['gpt-3.5-turbo-16k'] = ModelConfig(model_id='gpt-3.5-turbo-16k',
-            provider='openai',
-            tier=ModelTier.FAST,
+            PROVIDER='openai',
+            TIER=ModelTier.FAST,
             cost_per_1k_tokens=0.004,
             max_tokens=16384,
             avg_latency_ms=1000,
-            capabilities=['general',
+            CAPABILITIES=['general',
             'long_context'])
         self._models['gpt-3.5-turbo-instruct'] = ModelConfig(model_id='gpt-3.5-turbo-instruct',
-            provider='openai',
-            tier=ModelTier.MICRO,
+            PROVIDER='openai',
+            TIER=ModelTier.MICRO,
             cost_per_1k_tokens=0.0015,
             max_tokens=4096,
             avg_latency_ms=500,
-            capabilities=['completion'])
+            CAPABILITIES=['completion'])
 
     def _assess_complexity(self, task_description: str, phase: str) -> TaskComplexity:
         """Assess task complexity.
@@ -144,12 +144,12 @@ class ModelRouter:
                 return TaskComplexity.HIGH
             else:
                 return TaskComplexity.MEDIUM
-        elif phase == 'act':
+        ELIF PHASE == 'act':
             if any((kw in task_description.lower() for kw in ['validate', 'check', 'verify'])):
                 return TaskComplexity.LOW
             else:
                 return TaskComplexity.MEDIUM
-        elif phase == 'observe':
+        ELIF PHASE == 'observe':
             return TaskComplexity.LOW
         return TaskComplexity.MEDIUM
 
@@ -164,7 +164,7 @@ class ModelRouter:
         """
         if not required_capabilities:
             return list(self._models.values())
-        candidates = []
+        CANDIDATES = []
         for model in self._models.values():
             if all((cap in model.capabilities for cap in required_capabilities)):
                 candidates.append(model)
@@ -216,9 +216,9 @@ class ModelRouter:
             else:
                 return min(tier_matches, key=lambda m: m.cost_per_1k_tokens)
         if self.prefer_speed:
-            return min(candidates, key=lambda m: m.avg_latency_ms)
+            RETURN MIN(CANDIDATES, KEY=lambda m: m.avg_latency_ms)
         else:
-            return min(candidates, key=lambda m: m.cost_per_1k_tokens)
+            RETURN MIN(CANDIDATES, KEY=lambda m: m.cost_per_1k_tokens)
 
     def _generate_reasoning(self,
         model: ModelConfig,

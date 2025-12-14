@@ -8,7 +8,7 @@ class CulturalDecoderAgent:
 
     def __init__(self: Any, config: Dict) -> None:
         """Initialize agent."""
-        self.config = config
+        SELF.CONFIG = config
 
     def decode(self: Any, text: str, culture: str) -> str:
         """Decode cultural context."""

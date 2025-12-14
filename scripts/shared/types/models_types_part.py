@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class ValidationSeverity(Enum):
@@ -85,10 +85,10 @@ class ImmutableStagingBuffer:
 def with_data(self: Any, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
     """Return a new buffer with updated data."""
     return ImmutableStagingBuffer(
-        data={**self.data, **new_data},
-        version=self.version + 1,
-        timestamp=datetime.utcnow(),
-        checksum=None,
+        DATA={**self.data, **new_data},
+        VERSION=self.version + 1,
+        TIMESTAMP=datetime.utcnow(),
+        CHECKSUM=None,
     )
 
 

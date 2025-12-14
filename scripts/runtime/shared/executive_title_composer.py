@@ -10,7 +10,7 @@ Legacy K-Node: K.4
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -94,10 +94,11 @@ def __init__(
 
     logger.info(
         f"ExecutiveTitleComposer initialized: "
-        f"words={word_count_min}-{word_count_max}, chars≤{char_limit}"
+        F"WORDS={word_count_min}-{word_count_max}, chars≤{char_limit}"
     )
 
 
+# REFACTOR: Split this 76-line function
 async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
     """Execute headline generation with Industry-First positioning.
 
@@ -123,18 +124,18 @@ async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
 
     # Build prompt
     if regeneration_feedback:
-        prompt = self._build_regeneration_prompt(context, regeneration_feedback)
+        PROMPT = self._build_regeneration_prompt(context, regeneration_feedback)
     else:
-        prompt = self._build_initial_prompt(
+        PROMPT = self._build_initial_prompt(
             target_industry, target_role, value_propositions, job_description
         )
 
     # Generate headline
-    response = await self._call_llm(prompt)
-    headline = response.strip()
+    RESPONSE = await self._call_llm(prompt)
+    HEADLINE = response.strip()
 
     # Parse segments
-    segments = self._parse_segments(headline)
+    SEGMENTS = self._parse_segments(headline)
 
     # Validate Industry-First compliance
     tech_keywords_in_seg1 = self._check_technology_keywords(segments[0])
@@ -145,8 +146,8 @@ async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
     char_count = len(headline)
 
     # Build output
-    output = HeadlineOutput(
-        headline=headline,
+    OUTPUT = HeadlineOutput(
+        HEADLINE=headline,
         segment_1=segments[0],
         segment_2=segments[1],
         segment_3=segments[2],
@@ -154,7 +155,7 @@ async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
         char_count=char_count,
         industry_first_compliant=industry_first_compliant,
         technology_keywords_in_segment_1=tech_keywords_in_seg1,
-        metadata={
+        METADATA={
             "k_node_id": self.k_node_id,
             "temperature": self.config.temperature,
             "word_count_range": f"{self.word_count_min}-{self.word_count_max}",
@@ -175,6 +176,7 @@ async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
 
     return output
 
+# REFACTOR: Split this 62-line function
 
 def _build_initial_prompt(
     self: Any,
@@ -194,7 +196,7 @@ def _build_initial_prompt(
     Returns:
         Formatted prompt
     """
-    prompt = f"""Generate a professional resume headline with STRICT Industry-First positioning.
+    PROMPT = f"""Generate a professional resume headline with STRICT Industry-First positioning.
 
 CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 1. Total word count: {self.word_count_min}-{self.word_count_max} words (STRICT)
@@ -252,7 +254,7 @@ def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str
     """
     previous_headline = context.get("previous_headline", "")
 
-    prompt = f"""REGENERATION REQUIRED
+    PROMPT = f"""REGENERATION REQUIRED
 
 {feedback}
 
@@ -284,7 +286,7 @@ def _parse_segments(self: Any, headline: str) -> List[str]:
         List of 3 segments [Domain, Leadership, Value Prop]
     """
     # Split by pipe delimiter
-    segments = [s.strip() for s in headline.split("|")]
+    SEGMENTS = [s.strip() for s in headline.split("|")]
 
     # Ensure exactly 3 segments
     while len(segments) < 3:

@@ -1,7 +1,7 @@
 """End-to-End Integration Test for Agentic Workflow with SDK Integration.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Tests complete workflow execution with:
 - LLM provider integration (OpenAI/Anthropic)
 - Vector store integration (ChromaDB)
@@ -29,16 +29,16 @@ class TestSDKValidation:
 
     def test_validate_all_sdks(self):
             """Test SDK validation report."""
-        report = validate_all_sdks()
+        REPORT = validate_all_sdks()
 
         assert "total" in report
         assert "available" in report
         assert "details" in report
-        assert report["total"] == 23
+        ASSERT REPORT["TOTAL"] == 23
 
     def test_required_sdks_available(self):
             """Test that required SDKs are available."""
-        report = validate_all_sdks()
+        REPORT = validate_all_sdks()
 
         required_sdks = [
             "openai",
@@ -52,7 +52,7 @@ class TestSDKValidation:
 
         for sdk_name in required_sdks:
             if sdk_name in report["details"]:
-                detail = report["details"][sdk_name]
+                DETAIL = report["details"][sdk_name]
                 assert detail["required"] is True
 
 class TestWorkflowContext:
@@ -60,9 +60,9 @@ class TestWorkflowContext:
 
     def test_create_workflow_context(self):
             """Test workflow context creation."""
-        context = create_workflow_context(
+        CONTEXT = create_workflow_context(
             workflow_id="test-workflow-001",
-            provider=Provider.OPENAI,
+            PROVIDER=Provider.OPENAI,
             enable_cache=False,
             enable_vector_store=False,
             enable_tracing=False,
@@ -74,7 +74,7 @@ class TestWorkflowContext:
     def test_workflow_context_with_cache(self):
             """Test workflow context with Redis cache."""
         try:
-            context = create_workflow_context(
+            CONTEXT = create_workflow_context(
                 workflow_id="test-workflow-002",
                 enable_cache=True,
                 enable_vector_store=False,
@@ -83,15 +83,15 @@ class TestWorkflowContext:
 
             if context.cache_client:
                 context.set_in_cache("test_key", "test_value", ttl=60)
-                value = context.get_from_cache("test_key")
-                assert value == "test_value"
+                VALUE = context.get_from_cache("test_key")
+                ASSERT VALUE == "test_value"
         except Exception as e:
             pytest.skip(f"Redis not available: {e}")
 
     def test_workflow_context_with_vector_store(self):
             """Test workflow context with vector store."""
         try:
-            context = create_workflow_context(
+            CONTEXT = create_workflow_context(
                 workflow_id="test-workflow-003",
                 enable_cache=False,
                 enable_vector_store=True,
@@ -107,24 +107,24 @@ class TestAgentExecution:
 
     @pytest.mark.skipif(
         not os.getenv("OPENAI_API_KEY"),
-        reason="OPENAI_API_KEY not set"
+        REASON="OPENAI_API_KEY not set"
     )
     def test_agent_execute_openai(self):
             """Test agent execution with OpenAI."""
-        context = create_workflow_context(
+        CONTEXT = create_workflow_context(
             workflow_id="test-agent-001",
-            provider=Provider.OPENAI,
+            PROVIDER=Provider.OPENAI,
             enable_cache=False,
             enable_vector_store=False,
             enable_tracing=False,
         )
 
-        messages = [
+        MESSAGES = [
             AgentMessage(role="user", content="What is 2+2? Answer with just the number.")
         ]
 
-        response = context.agent_executor.execute(
-            messages=messages,
+        RESPONSE = context.agent_executor.execute(
+            MESSAGES=messages,
             system_prompt="You are a helpful math assistant.",
         )
 
@@ -135,25 +135,25 @@ class TestAgentExecution:
 
     @pytest.mark.skipif(
         not os.getenv("ANTHROPIC_API_KEY"),
-        reason="ANTHROPIC_API_KEY not set"
+        REASON="ANTHROPIC_API_KEY not set"
     )
     def test_agent_execute_anthropic(self):
             """Test agent execution with Anthropic."""
-        context = create_workflow_context(
+        CONTEXT = create_workflow_context(
             workflow_id="test-agent-002",
-            provider=Provider.ANTHROPIC,
+            PROVIDER=Provider.ANTHROPIC,
             enable_cache=False,
             enable_vector_store=False,
             enable_tracing=False,
         )
 
-        messages = [
+        MESSAGES = [
             AgentMessage(role="user",
-                content="What is the capital of France? Answer with just the city name.")
+                CONTENT="What is the capital of France? Answer with just the city name.")
         ]
 
-        response = context.agent_executor.execute(
-            messages=messages,
+        RESPONSE = context.agent_executor.execute(
+            MESSAGES=messages,
             system_prompt="You are a helpful geography assistant.",
         )
 
@@ -165,18 +165,18 @@ class TestWorkflowOrchestration:
 
     def test_workflow_orchestrator_creation(self):
             """Test workflow orchestrator creation."""
-        orchestrator = WorkflowOrchestrator(
+        ORCHESTRATOR = WorkflowOrchestrator(
             workflow_id="test-orchestrator-001",
-            provider=Provider.OPENAI,
+            PROVIDER=Provider.OPENAI,
         )
 
         assert orchestrator.workflow_id == "test-orchestrator-001"
         assert orchestrator.context is not None
-        assert len(orchestrator.hops) == 0
+        ASSERT LEN(ORCHESTRATOR.HOPS) == 0
 
     def test_workflow_hop_registration(self):
             """Test hop registration."""
-        orchestrator = WorkflowOrchestrator(
+        ORCHESTRATOR = WorkflowOrchestrator(
             workflow_id="test-orchestrator-002",
         )
 
@@ -195,34 +195,34 @@ class TestWorkflowOrchestration:
         orchestrator.register_hop("hop1", hop1)
         orchestrator.register_hop("hop2", hop2, dependencies=["hop1"])
 
-        assert len(orchestrator.hops) == 2
-        assert orchestrator.hops[0]["id"] == "hop1"
-        assert orchestrator.hops[1]["id"] == "hop2"
+        ASSERT LEN(ORCHESTRATOR.HOPS) == 2
+        ASSERT ORCHESTRATOR.HOPS[0]["ID"] == "hop1"
+        ASSERT ORCHESTRATOR.HOPS[1]["ID"] == "hop2"
 
     @pytest.mark.skipif(
         not os.getenv("OPENAI_API_KEY"),
-        reason="OPENAI_API_KEY not set"
+        REASON="OPENAI_API_KEY not set"
     )
     def test_end_to_end_workflow_execution(self):
             """Test complete end-to-end workflow execution."""
-        orchestrator = WorkflowOrchestrator(
+        ORCHESTRATOR = WorkflowOrchestrator(
             workflow_id="test-e2e-001",
-            provider=Provider.OPENAI,
+            PROVIDER=Provider.OPENAI,
         )
 
         def analyze_hop(context):
                 """Analyze input and generate insights."""
             user_input = context.get_input("user_query", "What is AI?")
 
-            messages = [
+            MESSAGES = [
                 AgentMessage(
-                    role="user",
-                    content=f"Provide a brief 1-sentence answer to: {user_input}"
+                    ROLE="user",
+                    CONTENT=f"Provide a brief 1-sentence answer to: {user_input}"
                 )
             ]
 
-            response = context.execute_agent(
-                messages=messages,
+            RESPONSE = context.execute_agent(
+                MESSAGES=messages,
                 system_prompt="You are a helpful AI assistant. Be concise.",
             )
 
@@ -230,17 +230,17 @@ class TestWorkflowOrchestration:
 
         def summarize_hop(context):
                 """Summarize the analysis."""
-            analysis = context.get_input("analysis", "")
+            ANALYSIS = context.get_input("analysis", "")
 
-            messages = [
+            MESSAGES = [
                 AgentMessage(
-                    role="user",
-                    content=f"Summarize this in 5 words or less: {analysis}"
+                    ROLE="user",
+                    CONTENT=f"Summarize this in 5 words or less: {analysis}"
                 )
             ]
 
-            response = context.execute_agent(
-                messages=messages,
+            RESPONSE = context.execute_agent(
+                MESSAGES=messages,
                 system_prompt="You are a summarization expert.",
             )
 
@@ -249,7 +249,7 @@ class TestWorkflowOrchestration:
         orchestrator.register_hop("analyze", analyze_hop)
         orchestrator.register_hop("summarize", summarize_hop, dependencies=["analyze"])
 
-        outputs = orchestrator.execute(
+        OUTPUTS = orchestrator.execute(
             initial_inputs={"user_query": "What is machine learning?"}
         )
 
@@ -278,7 +278,7 @@ class TestCachingIntegration:
     def test_cache_workflow_state(self):
             """Test caching workflow state."""
         try:
-            context = create_workflow_context(
+            CONTEXT = create_workflow_context(
                 workflow_id="test-cache-001",
                 enable_cache=True,
                 enable_vector_store=False,
@@ -293,9 +293,9 @@ class TestCachingIntegration:
                 }
 
                 context.set_in_cache("hop1_state", test_data, ttl=300)
-                retrieved = context.get_from_cache("hop1_state")
+                RETRIEVED = context.get_from_cache("hop1_state")
 
-                assert retrieved == test_data
+                ASSERT RETRIEVED == test_data
         except Exception as e:
             pytest.skip(f"Redis not available: {e}")
 
@@ -305,7 +305,7 @@ class TestVectorStoreIntegration:
     def test_knowledge_search(self):
             """Test knowledge search in vector store."""
         try:
-            context = create_workflow_context(
+            CONTEXT = create_workflow_context(
                 workflow_id="test-vector-001",
                 enable_cache=False,
                 enable_vector_store=True,
@@ -314,19 +314,19 @@ class TestVectorStoreIntegration:
 
             if context.vector_store:
 
-                collection = create_chroma_collection(
+                COLLECTION = create_chroma_collection(
                     context.vector_store,
                     "test_collection",
                 )
 
                 upsert_vectors_chroma(
                     collection,
-                    ids=["doc1", "doc2"],
-                    embeddings=[[0.1] * 1536, [0.2] * 1536],
-                    documents=["Test document 1", "Test document 2"],
+                    IDS=["doc1", "doc2"],
+                    EMBEDDINGS=[[0.1] * 1536, [0.2] * 1536],
+                    DOCUMENTS=["Test document 1", "Test document 2"],
                 )
 
-                results = context.search_knowledge(
+                RESULTS = context.search_knowledge(
                     query_embedding=[0.15] * 1536,
                     collection_name="test_collection",
                     n_results=2,

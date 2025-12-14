@@ -10,7 +10,7 @@ from typing import Dict, Optional, Union
 
 from shared.result_types import DiagnosticReport
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class DiagnosePersonalizationIssues:
@@ -18,14 +18,14 @@ class DiagnosePersonalizationIssues:
 
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    self.config = config or {}
+    SELF.CONFIG = config or {}
     logger.info(f"Initialized {self.__class__.__name__}")
 
 
 def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
     """Run diagnostics."""
-    issues = []
-    metrics = {}
+    ISSUES = []
+    METRICS = {}
 
     if target is None:
         issues.append("Target is null")
@@ -34,7 +34,7 @@ def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
     elif isinstance(target, list):
         metrics["item_count"] = len(target)
 
-    metrics["type"] = type(target).__name__
+    METRICS["TYPE"] = type(target).__name__
     return DiagnosticReport(healthy=len(issues) == 0, issues=issues, metrics=metrics)
 
 

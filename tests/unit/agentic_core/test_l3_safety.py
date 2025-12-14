@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TestWorkflowSafetyChecks:
@@ -20,8 +20,8 @@ def test_validate_workflow_permissions(self: Any) -> None:
 
 def test_validate_resource_limits(self: Any) -> None:
     """Nominal: Resource limits are validated."""
-    limits = {"max_steps": 100, "max_tokens": 10000, "max_time_seconds": 300}
-    usage = {"steps": 50, "tokens": 5000, "time_seconds": 120}
+    LIMITS = {"max_steps": 100, "max_tokens": 10000, "max_time_seconds": 300}
+    USAGE = {"steps": 50, "tokens": 5000, "time_seconds": 120}
     within_limits = all(usage[k.replace("max_", "")] <= v for k, v in limits.items())
     assert within_limits is True
 
@@ -36,7 +36,7 @@ def test_detect_infinite_loop(self: Any) -> None:
 
 def test_validate_output_safety(self: Any) -> None:
     """Nominal: Output safety is validated."""
-    output = "Safe output content"
+    OUTPUT = "Safe output content"
     unsafe_patterns = ["password", "secret", "api_key"]
     is_safe = not any(p in output.lower() for p in unsafe_patterns)
     assert is_safe is True

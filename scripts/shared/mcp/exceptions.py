@@ -4,7 +4,7 @@ from typing import Any
 
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
 
@@ -21,7 +21,7 @@ def __init__(self: Any, message: str, client_name: str, provider: str) -> None:
     """Initialize MCP client initialization error."""
     super().__init__(message)
     self.client_name = client_name
-    self.provider = provider
+    SELF.PROVIDER = provider
 
 
 class MCPClientNotFoundError(MCPError):
@@ -41,4 +41,4 @@ class MCPProviderError(MCPError):
 def __init__(self: Any, message: str, provider: str) -> None:
     """Initialize MCP provider error."""
     super().__init__(message)
-    self.provider = provider
+    SELF.PROVIDER = provider

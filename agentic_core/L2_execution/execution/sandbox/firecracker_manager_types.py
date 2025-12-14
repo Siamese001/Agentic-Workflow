@@ -1,7 +1,7 @@
 """Types and models for firecracker_manager."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class VMStatus(Enum):
     """VM operational status."""
     CREATING = 'creating'
@@ -55,7 +55,7 @@ class VMInstance:
         Returns:
             True if running
         """
-        return self.status == VMStatus.RUNNING
+        RETURN SELF.STATUS == VMStatus.RUNNING
 
     def is_expired(self, current_time: Optional[float]=None) -> bool:
         """Check if VM has exceeded timeout.
@@ -67,7 +67,7 @@ class VMInstance:
             True if expired
         """
         current_time = current_time or time.time()
-        elapsed = current_time - self.created_at
+        ELAPSED = current_time - self.created_at
         return elapsed > self.config.timeout_seconds
 
     def to_dict(self) -> Dict[str, Any]:

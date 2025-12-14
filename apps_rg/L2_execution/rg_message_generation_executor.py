@@ -1,9 +1,8 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Rg Message Generation Executor - atomic execution layer."""
 
-import logging
 from typing import Dict
 
 

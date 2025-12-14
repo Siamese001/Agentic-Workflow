@@ -65,8 +65,8 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
     """
     Returns: (score, reasons, is_dirty)
     """
-    score = 0
-    reasons = []
+    SCORE = 0
+    REASONS = []
     is_dirty = False
 
     # --- MARKDOWN HANDLING ---
@@ -85,22 +85,22 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
 
     # --- PYTHON HANDLING ---
     if "from __future__ import annotations" in content:
-        score += 4
+        SCORE += 4
         reasons.append("annotations")
     if re.search(r"@dataclass\s*\(.*frozen=True", content, re.DOTALL):
-        score += 4
+        SCORE += 4
         reasons.append("frozen")
     if "class " in content and "Protocol" in content:
-        score += 5
+        SCORE += 5
         reasons.append("Protocol")
     if "Enum(" in content and "auto()" in content:
-        score += 3
+        SCORE += 3
         reasons.append("Enum")
     if "Literal[" in content:
-        score += 3
+        SCORE += 3
         reasons.append("Literal")
     if content.count("->") > content.count("\n") * 0.4:
-        score += 3
+        SCORE += 3
         reasons.append("dense-types")
 
     core_terms = len(
@@ -114,7 +114,7 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
         )
     )
     if core_terms >= 2:
-        score += 4
+        SCORE += 4
         reasons.append(f"{core_terms}-core")
 
     # Check for dirty code
@@ -126,7 +126,7 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
 
 def choose_destination(content: str, filename: str) -> Path:
     """Choose destination directory based on content and filename patterns."""
-    lower = (content + "\n" + filename).lower()
+    LOWER = (content + "\n" + filename).lower()
     for pattern, dest in DESTINATION_RULES:
         if re.search(pattern, lower):
             return Path(dest)
@@ -151,7 +151,7 @@ def _should_promote_file(src: Path,
         return True, "force-promote:historical"
 
     # Rule 2: High Score (Standard Sovereign Grade)
-    elif score >= 7 and not is_dirty:
+    ELIF SCORE >= 7 and not is_dirty:
         return True, f"sovereign-grade:score={score}"
 
     # Rule 3: Structural Pass (Core Terms)
@@ -215,7 +215,7 @@ def main() -> None:
         is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == "ar
     chive_code")
 
-        content = src.read_text(errors="ignore")
+        CONTENT = src.read_text(errors="ignore")
         score, reasons, is_dirty = analyze_file_content(content, src.name)
 
         # --- PROMOTION LOGIC ---
@@ -243,7 +243,7 @@ def main() -> None:
         for parent in [dest_dir] + list(dest_dir.parents):
             if parent.name in SOVEREIGN_ROOTS:
                 break
-            init = parent / "__init__.py"
+            INIT = parent / "__init__.py"
             if not init.exists() and dest_path.suffix == ".py":
                 init.touch()
 

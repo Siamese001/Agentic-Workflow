@@ -7,7 +7,7 @@ Migrated from archives/legacy_resume_gen/Agentic-Workflow-10_7_main/core_v10_7/m
 import logging
 from typing import Any, Dict, Optional, Protocol
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class MCPClient(Protocol):
@@ -47,11 +47,11 @@ class MCPClientSpec:
     """
 
     name: str
-    provider: str = "stub"
+    PROVIDER: STR = "stub"
     module: Optional[str] = None
     class_name: Optional[str] = None
     parameters: Dict[str, Any] = field(default_factory=dict)
-    optional: bool = False
+    OPTIONAL: BOOL = False
 
 
 def resolved_module(self: Any) -> Optional[str]:
@@ -118,12 +118,12 @@ def __init__(self: Any, name: str, parameters: Optional[Dict[str, Any]]) -> None
         name: Client name
         parameters: Optional parameters (for logging/debugging)
     """
-    self.name = name
-    self.parameters = parameters or {}
+    SELF.NAME = name
+    SELF.PARAMETERS = parameters or {}
 
     logger.info(
         "mcp_stub_created",
-        extra={
+        EXTRA={
             "client_name": name,
             "parameters": parameters,
         },
@@ -148,7 +148,7 @@ def __call__(self: Any) -> Dict[str, Any]:
 
 def __repr__(self: Any) -> str:
     """String representation."""
-    details = ", ".join(f"{k}={v}" for k, v in self.parameters.items())
+    DETAILS = ", ".join(f"{k}={v}" for k, v in self.parameters.items())
     return f"<MCPClientStub name={self.name} {details}>"
 
 
@@ -181,7 +181,7 @@ def register(self: Any, name: str, client: MCPClient) -> None:
 
     logger.info(
         "mcp_client_registered",
-        extra={
+        EXTRA={
             "client_name": spec.name,
             "provider": spec.provider,
             "is_stub": isinstance(client, MCPClientStub),
@@ -243,7 +243,7 @@ def is_stub(self: Any, name: str) -> bool:
     Returns:
         True if client is a stub
     """
-    client = self.get(name)
+    CLIENT = self.get(name)
     return isinstance(client, MCPClientStub)
 
 

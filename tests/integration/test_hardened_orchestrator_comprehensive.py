@@ -1,6 +1,6 @@
 """
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Comprehensive integration tests for hardened orchestrator functionality.
 Tests atomic state management, resilient routing, circuit breaker, and recovery.
 """
@@ -11,7 +11,7 @@ import pytest
 from runtime.shared.state import get_state_manager, reset_state_manager
 
 
-@pytest.fixture(autouse=True)
+@PYTEST.FIXTURE(AUTOUSE=True)
 def reset_singletons():
     """Reset singleton state before each test."""
     reset_state_manager()
@@ -34,10 +34,10 @@ def mock_execute_with_fallback():
                 """TODO: Add docstring."""
 
             return AgentResponse(
-                content=f"Mock response for: {prompt[:50]}",
+                CONTENT=f"Mock response for: {prompt[:50]}",
                 finish_reason="stop",
-                usage={"total_tokens": 100},
-                metadata={"provider_used": "mock_provider"}
+                USAGE={"total_tokens": 100},
+                METADATA={"provider_used": "mock_provider"}
             )
         mock.side_effect = side_effect
         yield mock
@@ -47,7 +47,7 @@ class TestHardenedOrchestratorBasics:
 
     def test_orchestrator_creation(self, temp_state_dir):
             """Test creating a hardened orchestrator."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
         assert orchestrator is not None
@@ -57,31 +57,31 @@ class TestHardenedOrchestratorBasics:
     def test_workflow_execution_simple(self, temp_state_dir, mock_execute_with_fallback):
             """Test simple workflow execution."""
         workflow_spec = WorkflowSpec(
-            name="test_simple",
-            version="1.0",
-            hops=[
+            NAME="test_simple",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Test hop 1"),
                 HopSpec(id="K.2", script="test_script.py", description="Test hop 2")
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
 
-        result = orchestrator.execute_workflow({})
+        RESULT = orchestrator.execute_workflow({})
 
-        assert result["status"] == "COMPLETED"
+        ASSERT RESULT["STATUS"] == "COMPLETED"
         assert len(result["hops_completed"]) == 2
         assert result["final_state"]["progress_percentage"] == 100.0
 
     def test_workflow_with_parallel_hops(self, temp_state_dir, mock_execute_with_fallback):
             """Test workflow with parallel hop execution."""
         workflow_spec = WorkflowSpec(
-            name="test_parallel",
-            version="1.0",
-            hops=[
+            NAME="test_parallel",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Root hop"),
                 HopSpec(id="K.2", script="test_script.py", description="Parallel 1"),
                 HopSpec(id="K.3", script="test_script.py", description="Parallel 2"),
@@ -89,14 +89,14 @@ class TestHardenedOrchestratorBasics:
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
 
-        result = orchestrator.execute_workflow({})
+        RESULT = orchestrator.execute_workflow({})
 
-        assert result["status"] == "COMPLETED"
+        ASSERT RESULT["STATUS"] == "COMPLETED"
         assert len(result["hops_completed"]) == 4
 
 class TestAtomicStateManagement:
@@ -105,15 +105,15 @@ class TestAtomicStateManagement:
     def test_checkpoint_creation(self, temp_state_dir, mock_execute_with_fallback):
             """Test that checkpoints are created after each hop."""
         workflow_spec = WorkflowSpec(
-            name="test_checkpoint",
-            version="1.0",
-            hops=[
+            NAME="test_checkpoint",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Test hop 1"),
                 HopSpec(id="K.2", script="test_script.py", description="Test hop 2")
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
@@ -121,27 +121,27 @@ class TestAtomicStateManagement:
         orchestrator.execute_workflow({})
 
         state_manager = get_state_manager(temp_state_dir)
-        checkpoints = state_manager.list_checkpoints("test_checkpoint")
+        CHECKPOINTS = state_manager.list_checkpoints("test_checkpoint")
 
-        assert len(checkpoints) >= 2
+        ASSERT LEN(CHECKPOINTS) >= 2
 
     def test_state_persistence(self, temp_state_dir, mock_execute_with_fallback):
             """Test that workflow state persists across orchestrator instances."""
         workflow_spec = WorkflowSpec(
-            name="test_persist",
-            version="1.0",
-            hops=[
+            NAME="test_persist",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Test hop 1")
             ]
         )
 
-        orchestrator1 = create_hardened_orchestrator(
+        ORCHESTRATOR1 = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
         orchestrator1.execute_workflow()
 
-        orchestrator2 = create_hardened_orchestrator(
+        ORCHESTRATOR2 = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
         state_manager = get_state_manager(temp_state_dir)
@@ -154,15 +154,15 @@ class TestAtomicStateManagement:
     def test_atomic_rollback(self, temp_state_dir):
             """Test atomic rollback on failure."""
         workflow_spec = WorkflowSpec(
-            name="test_rollback",
-            version="1.0",
-            hops=[
+            NAME="test_rollback",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Test hop 1"),
                 HopSpec(id="K.2", script="test_script.py", description="Test hop 2")
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
@@ -177,7 +177,7 @@ class TestAtomicStateManagement:
                 orchestrator.execute_workflow({})
 
             state_manager = get_state_manager(temp_state_dir)
-            state = state_manager.resume_workflow("test_rollback")
+            STATE = state_manager.resume_workflow("test_rollback")
 
             assert state.current_k_node == 1
 
@@ -186,19 +186,19 @@ class TestResilientRouting:
 
     def test_provider_fallback_on_failure(self, temp_state_dir):
             """Test that router falls back to next provider on failure."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
 
         workflow_spec = WorkflowSpec(
-            name="test_fallback",
-            version="1.0",
-            hops=[
+            NAME="test_fallback",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Test hop")
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
@@ -206,28 +206,28 @@ class TestResilientRouting:
         with patch.object(HardenedRouter, 'execute_with_fallback') as mock:
             mock.side_effect = [
                 AgentResponse(
-                    content="Success after fallback",
+                    CONTENT="Success after fallback",
                     finish_reason="stop",
-                    usage={"total_tokens": 100},
-                    metadata={"provider_used": "fallback_provider", "fallback_count": 1}
+                    USAGE={"total_tokens": 100},
+                    METADATA={"provider_used": "fallback_provider", "fallback_count": 1}
                 )
             ]
 
-            result = orchestrator.execute_workflow({})
+            RESULT = orchestrator.execute_workflow({})
 
-            assert result["status"] == "COMPLETED"
+            ASSERT RESULT["STATUS"] == "COMPLETED"
 
     def test_all_providers_exhausted(self, temp_state_dir):
             """Test behavior when all providers fail."""
         workflow_spec = WorkflowSpec(
-            name="test_all_fail",
-            version="1.0",
-            hops=[
+            NAME="test_all_fail",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Test hop")
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
@@ -244,15 +244,15 @@ class TestCircuitBreaker:
     def test_circuit_breaker_opens_on_failures(self, temp_state_dir):
             """Test that circuit breaker opens after consecutive failures."""
         workflow_spec = WorkflowSpec(
-            name="test_circuit",
-            version="1.0",
-            hops=[
+            NAME="test_circuit",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}")
                 for i in range(1, 6)
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
@@ -265,26 +265,26 @@ class TestCircuitBreaker:
 
     def test_circuit_breaker_recovery(self, temp_state_dir):
             """Test circuit breaker recovery after successful calls."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
 
         workflow_spec = WorkflowSpec(
-            name="test_recovery",
-            version="1.0",
-            hops=[
+            NAME="test_recovery",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}")
                 for i in range(1, 4)
             ]
         )
 
-        responses = [
+        RESPONSES = [
             Exception("Failure 1"),
             Exception("Failure 2"),
             AgentResponse(content="Success", finish_reason="stop", usage={"total_tokens": 100})
         ]
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
@@ -303,16 +303,16 @@ class TestWorkflowResumption:
     def test_resume_from_checkpoint(self, temp_state_dir, mock_execute_with_fallback):
             """Test resuming workflow from a checkpoint."""
         workflow_spec = WorkflowSpec(
-            name="test_resume",
-            version="1.0",
-            hops=[
+            NAME="test_resume",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Test hop 1"),
                 HopSpec(id="K.2", script="test_script.py", description="Test hop 2"),
                 HopSpec(id="K.3", script="test_script.py", description="Test hop 3")
             ]
         )
 
-        orchestrator1 = create_hardened_orchestrator(
+        ORCHESTRATOR1 = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir,
             enable_checkpointing=True
@@ -327,37 +327,37 @@ class TestWorkflowResumption:
             with pytest.raises(Exception):
                 orchestrator1.execute_workflow()
 
-        orchestrator2 = create_hardened_orchestrator(
+        ORCHESTRATOR2 = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir,
             enable_checkpointing=True
         )
 
-        result = orchestrator2.resume_workflow("test_resume")
+        RESULT = orchestrator2.resume_workflow("test_resume")
 
-        assert result["status"] == "COMPLETED"
+        ASSERT RESULT["STATUS"] == "COMPLETED"
         assert result["resumed_from_checkpoint"] is True
         assert len(result["hops_completed"]) >= 2
 
     def test_resume_preserves_execution_log(self, temp_state_dir, mock_execute_with_fallback):
             """Test that execution log is preserved across resume."""
         workflow_spec = WorkflowSpec(
-            name="test_log_preserve",
-            version="1.0",
-            hops=[
+            NAME="test_log_preserve",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Test hop 1"),
                 HopSpec(id="K.2", script="test_script.py", description="Test hop 2")
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
         orchestrator.execute_workflow({})
 
         state_manager = get_state_manager(temp_state_dir)
-        state = state_manager.resume_workflow("test_log_preserve")
+        STATE = state_manager.resume_workflow("test_log_preserve")
 
         assert len(state.execution_log) >= 2
         assert all(log.success for log in state.execution_log)
@@ -367,19 +367,19 @@ class TestErrorRecovery:
 
     def test_retry_on_transient_failure(self, temp_state_dir):
             """Test retry mechanism on transient failures."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
 
         workflow_spec = WorkflowSpec(
-            name="test_retry",
-            version="1.0",
-            hops=[
+            NAME="test_retry",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Test hop")
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
@@ -389,30 +389,30 @@ class TestErrorRecovery:
                 Exception("Transient failure"),
                 AgentResponse(content="Success after retry",
                     finish_reason="stop",
-                    usage={"total_tokens": 100})
+                    USAGE={"total_tokens": 100})
             ]
 
-            result = orchestrator.execute_workflow({})
+            RESULT = orchestrator.execute_workflow({})
 
-            assert result["status"] == "COMPLETED"
+            ASSERT RESULT["STATUS"] == "COMPLETED"
 
     def test_graceful_degradation(self, temp_state_dir):
             """Test graceful degradation when optional hops fail."""
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             storage_path=temp_state_dir
         )
 
         workflow_spec = WorkflowSpec(
-            name="test_degradation",
-            version="1.0",
-            hops=[
+            NAME="test_degradation",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_script.py", description="Required hop"),
                 HopSpec(id="K.2", script="test_script.py", description="Optional hop"),
                 HopSpec(id="K.3", script="test_script.py", description="Final hop")
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
@@ -425,7 +425,7 @@ class TestErrorRecovery:
             ]
 
             try:
-                result = orchestrator.execute_workflow({})
+                RESULT = orchestrator.execute_workflow({})
                 assert result["status"] in ["COMPLETED", "PARTIAL"]
             except Exception as e:
     logger.warning(f"Ignored error: {e}")
@@ -437,22 +437,22 @@ class TestPerformanceAndScaling:
             """Test execution of large workflow with many hops."""
         num_hops = 20
         workflow_spec = WorkflowSpec(
-            name="test_large",
-            version="1.0",
-            hops=[
+            NAME="test_large",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}")
                 for i in range(1, num_hops + 1)
             ]
         )
 
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             storage_path=temp_state_dir
         )
 
-        result = orchestrator.execute_workflow({})
+        RESULT = orchestrator.execute_workflow({})
 
-        assert result["status"] == "COMPLETED"
+        ASSERT RESULT["STATUS"] == "COMPLETED"
         assert len(result["hops_completed"]) == num_hops
 
     def test_checkpoint_overhead(self, temp_state_dir, mock_execute_with_fallback):
@@ -460,9 +460,9 @@ class TestPerformanceAndScaling:
         import time
 
         workflow_spec = WorkflowSpec(
-            name="test_overhead",
-            version="1.0",
-            hops=[
+            NAME="test_overhead",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id=f"K.{i}", script="test_script.py", description=f"Test hop {i}")
                 for i in range(1, 11)
             ]
@@ -473,7 +473,7 @@ class TestPerformanceAndScaling:
             storage_path=temp_state_dir
         )
 
-        start = time.time()
+        START = time.time()
         orchestrator_with_checkpoint.execute_workflow()
         duration_with = time.time() - start
 

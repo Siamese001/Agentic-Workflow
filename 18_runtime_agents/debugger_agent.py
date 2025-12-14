@@ -14,7 +14,7 @@ import logging
 from datetime import datetime
 from typing import Any
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class DebuggerAgent:
@@ -34,7 +34,7 @@ def __init__(self: Any, mcp_manager: Any, llm_client: Any) -> None:
     """
     self.mcp_manager = mcp_manager
     self.llm_client = llm_client
-    self.role = "DEBUGGER"
+    SELF.ROLE = "DEBUGGER"
 
     # System prompt for the debugger
     self.system_prompt = """
@@ -70,7 +70,7 @@ async def run_debugging_cycle(self: Any, context: Dict[str, Any]) -> Dict[str, A
     Returns:
         Dict with analysis, fixes, and outcomes
     """
-    results = {
+    RESULTS = {
         "timestamp": datetime.now().isoformat(),
         "session_id": context.get("session_id", "unknown"),
         "errors_found": [],
@@ -83,16 +83,16 @@ async def run_debugging_cycle(self: Any, context: Dict[str, Any]) -> Dict[str, A
         # Step 1: Find errors to debug
         if "trace_id" in context:
             # Debug specific trace
-            errors = await self._debug_specific_trace(context["trace_id"])
+            ERRORS = await self._debug_specific_trace(context["trace_id"])
         else:
             # Find recent errors
-            errors = await self._find_recent_errors()
+            ERRORS = await self._find_recent_errors()
 
         results["errors_found"] = errors
 
         # Step 2: Analyze each error
         for error in errors[:3]:  # Limit to top 3 errors
-            analysis = await self._analyze_error(error)
+            ANALYSIS = await self._analyze_error(error)
             results["analyses"].append(analysis)
 
             # Step 3: Propose fix
@@ -102,20 +102,20 @@ async def run_debugging_cycle(self: Any, context: Dict[str, Any]) -> Dict[str, A
                     results["circuit_breaker_triggered"] = True
                     continue
 
-                fix = await self._propose_fix(analysis)
+                FIX = await self._propose_fix(analysis)
                 results["fixes_proposed"].append(fix)
 
                 # Step 4: Implement fix if possible
                 if fix.get("auto_applicable", False):
-                    implemented = await self._implement_fix(fix)
+                    IMPLEMENTED = await self._implement_fix(fix)
                     results["fixes_implemented"].append(implemented)
 
         # Step 5: Generate summary
-        results["summary"] = self._generate_summary(results)
+        RESULTS["SUMMARY"] = self._generate_summary(results)
 
     except Exception as e:
         logger.error(f"Error in debugging cycle: {e}")
-        results["error"] = str(e)
+        RESULTS["ERROR"] = str(e)
 
     return results
 
@@ -124,10 +124,10 @@ async def _debug_specific_trace(self: Any, trace_id: str) -> List[Dict]:
     """Debug a specific trace ID."""
     try:
         # Get trace summary
-        summary = await self.mcp_manager.call_tool("get_trace_summary", {"trace_id": trace_id})
+        SUMMARY = await self.mcp_manager.call_tool("get_trace_summary", {"trace_id": trace_id})
 
         # Analyze failure patterns
-        analysis = await self.mcp_manager.call_tool(
+        ANALYSIS = await self.mcp_manager.call_tool(
             "analyze_failure_patterns", {"trace_id": trace_id}
         )
 
@@ -153,7 +153,7 @@ async def _find_recent_errors(self: Any, limit: int) -> List[Dict]:
 
         # Parse the response to extract trace IDs
         error_traces = []
-        lines = errors_text.split("\n")
+        LINES = errors_text.split("\n")
         current_error = {}
 
         for line in lines:
@@ -186,7 +186,7 @@ async def _analyze_error(self: Any, error: Dict) -> Dict:
 
     try:
         # Get detailed analysis from telemetry
-        analysis = await self.mcp_manager.call_tool(
+        ANALYSIS = await self.mcp_manager.call_tool(
             "analyze_failure_patterns", {"trace_id": trace_id}
         )
 
@@ -209,7 +209,7 @@ async def _analyze_error(self: Any, error: Dict) -> Dict:
 
 async def _llm_analyze_error(self: Any, error: Dict, telemetry: str) -> Dict:
     """Use LLM to analyze error and categorize it."""
-    prompt = f"""
+    PROMPT = f"""
 Analyze this error from the telemetry system:
 
 ERROR DETAILS:
@@ -227,13 +227,13 @@ Provide a JSON response with:
 """
 
     try:
-        response = await self.llm_client.chat.completions.create(
-            model="gpt-4",
-            messages=[
+        RESPONSE = await self.llm_client.chat.completions.create(
+            MODEL="gpt-4",
+            MESSAGES=[
                 {"role": "system", "content": "You are an expert at debugging agentic systems."},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.1,
+            TEMPERATURE=0.1,
         )
 
         # Parse JSON response (simplified)
@@ -253,8 +253,8 @@ Provide a JSON response with:
 
 async def _propose_fix(self: Any, analysis: Dict) -> Dict:
     """Propose a specific fix based on the analysis."""
-    category = analysis.get("category", "unknown")
-    root_cause = analysis.get("root_cause", "")
+    CATEGORY = analysis.get("category", "unknown")
+    analysis.get("root_cause", "")
     trace_id = analysis.get("trace_id")
 
     fix_proposal = {
@@ -278,7 +278,7 @@ async def _propose_fix(self: Any, analysis: Dict) -> Dict:
                 ],
             }
         )
-    elif category == "config_error":
+    ELIF CATEGORY == "config_error":
         fix_proposal.update(
             {
                 "type": "config_fix",
@@ -287,7 +287,7 @@ async def _propose_fix(self: Any, analysis: Dict) -> Dict:
                 "actions": ["Update config file", "Adjust thresholds", "Fix environment variables"],
             }
         )
-    elif category == "resource_error":
+    ELIF CATEGORY == "resource_error":
         fix_proposal.update(
             {
                 "type": "resource_fix",
@@ -296,7 +296,7 @@ async def _propose_fix(self: Any, analysis: Dict) -> Dict:
                 "actions": ["Increase memory limits", "Adjust timeout values", "Scale resources"],
             }
         )
-    elif category == "policy_error":
+    ELIF CATEGORY == "policy_error":
         fix_proposal.update(
             {
                 "type": "policy_fix",
@@ -324,7 +324,7 @@ async def _propose_fix(self: Any, analysis: Dict) -> Dict:
 
 async def _implement_fix(self: Any, fix: Dict) -> Dict:
     """Implement a proposed fix if auto-applicable."""
-    implementation = {
+    IMPLEMENTATION = {
         "fix_id": f"{fix['trace_id']}_{fix['type']}",
         "implemented_at": datetime.now().isoformat(),
         "success": False,
@@ -333,25 +333,25 @@ async def _implement_fix(self: Any, fix: Dict) -> Dict:
     try:
         if fix["type"] == "code_fix":
             # Would implement code fix here
-            implementation["result"] = "Code fix placeholder - would edit actual files"
-            implementation["success"] = True
+            IMPLEMENTATION["RESULT"] = "Code fix placeholder - would edit actual files"
+            IMPLEMENTATION["SUCCESS"] = True
 
-        elif fix["type"] == "config_fix":
+        ELIF FIX["TYPE"] == "config_fix":
             # Would update config files here
-            implementation["result"] = "Config fix placeholder - would update YAML files"
-            implementation["success"] = True
+            IMPLEMENTATION["RESULT"] = "Config fix placeholder - would update YAML files"
+            IMPLEMENTATION["SUCCESS"] = True
 
         else:
-            implementation["result"] = f"Fix type {fix['type']} requires manual implementation"
+            IMPLEMENTATION["RESULT"] = f"Fix type {fix['type']} requires manual implementation"
 
     except Exception as e:
-        implementation["error"] = str(e)
+        IMPLEMENTATION["ERROR"] = str(e)
         logger.error(f"Error implementing fix: {e}")
 
     # Step 5: Verify the fix worked
     if implementation["success"]:
-        verification = await self._verify_fix(fix["trace_id"], fix)
-        implementation["verification"] = verification
+        VERIFICATION = await self._verify_fix(fix["trace_id"], fix)
+        IMPLEMENTATION["VERIFICATION"] = verification
         implementation["final_success"] = verification.get("error_resolved", False)
 
     return implementation
@@ -364,7 +364,7 @@ async def _verify_fix(self: Any, trace_id: str, fix: Dict) -> Dict:
     2. Checking if the same error occurs
     3. Recording the verification result
     """
-    verification = {
+    VERIFICATION = {
         "trace_id": trace_id,
         "verified_at": datetime.now().isoformat(),
         "method": "re_execution",
@@ -380,17 +380,17 @@ async def _verify_fix(self: Any, trace_id: str, fix: Dict) -> Dict:
         # If no new errors for this trace, consider it fixed
         if "No traces found" in recent_errors:
             verification["error_resolved"] = True
-            verification["result"] = "No new errors detected - fix appears successful"
+            VERIFICATION["RESULT"] = "No new errors detected - fix appears successful"
         else:
             verification["error_resolved"] = False
-            verification["result"] = "Error still occurs - fix may be insufficient"
+            VERIFICATION["RESULT"] = "Error still occurs - fix may be insufficient"
             verification["recent_errors"] = recent_errors
 
         # Record verification to telemetry
         await self._record_verification(trace_id, verification)
 
     except Exception as e:
-        verification["error"] = str(e)
+        VERIFICATION["ERROR"] = str(e)
         logger.error(f"Error verifying fix for {trace_id}: {e}")
 
     return verification
@@ -439,7 +439,7 @@ def _generate_summary(self: Any, results: Dict) -> str:
     fixes_proposed = len(results["fixes_proposed"])
     fixes_implemented = len(results["fixes_implemented"])
 
-    summary = f"""
+    SUMMARY = f"""
 DEBUGGER Session Summary:
 - Errors analyzed: {total_errors}
 - Detailed analyses: {total_analyses}
@@ -451,7 +451,7 @@ Effectiveness: {(fixes_implemented / max(fixes_proposed,
 """
 
     if results.get("error"):
-        summary += f"\nError encountered: {results['error']}"
+        SUMMARY += f"\nError encountered: {results['error']}"
 
     return summary
 

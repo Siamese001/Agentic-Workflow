@@ -1,6 +1,6 @@
 """
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 L5 Safety Shield - Enterprise-grade security components for agentic systems.
 
 This package provides comprehensive safety mechanisms:

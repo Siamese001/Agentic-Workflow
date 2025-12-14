@@ -1,9 +1,8 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L3_orchestration
 # -*- coding: utf-8 -*-
 """Enforce Orchestration Policy - atomic implementation."""
 
-import logging
 from typing import Dict
 
 

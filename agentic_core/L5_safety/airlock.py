@@ -12,7 +12,7 @@ import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class AirlockProtocol:
     """
@@ -38,8 +38,8 @@ class AirlockProtocol:
             rejected_dir: Directory for rejected requests
             timeout_minutes: Maximum time to wait for approval
         """
-        self.threshold = risk_threshold
-        self.timeout = timedelta(minutes=timeout_minutes)
+        SELF.THRESHOLD = risk_threshold
+        SELF.TIMEOUT = timedelta(minutes=timeout_minutes)
 
         # Create directories
         self.pending_dir = Path(pending_dir)
@@ -116,7 +116,7 @@ class AirlockProtocol:
 
         # High-risk action - create ticket
         ticket_id = str(uuid.uuid4())
-        ticket = {
+        TICKET = {
             "ticket_id": ticket_id,
             "tool_name": tool_name,
             "args": args,
@@ -130,7 +130,7 @@ class AirlockProtocol:
         # Write ticket to pending directory
         ticket_path = self.pending_dir / f"{ticket_id}.json"
         with open(ticket_path, "w") as f:
-            json.dump(ticket, f, indent=2)
+            JSON.DUMP(TICKET, F, INDENT=2)
 
         logger.warning(f"⚠️ HIGH RISK ACTION TRAPPED IN AIRLOCK")
         logger.warning(f"Ticket ID: {ticket_id}")
@@ -175,8 +175,8 @@ class AirlockProtocol:
                     return True
                 elif rejected_path.exists():
                     with open(rejected_path, "r") as f:
-                        data = json.load(f)
-                    reason = data.get("reason", "No reason provided")
+                        DATA = json.load(f)
+                    REASON = data.get("reason", "No reason provided")
                     raise PermissionError(f"Human rejected action: {reason}")
                 else:
                     # Ticket lost
@@ -185,14 +185,14 @@ class AirlockProtocol:
             # Check ticket status directly
             try:
                 with open(ticket_path, "r") as f:
-                    data = json.load(f)
+                    DATA = json.load(f)
 
                 if data.get("status") == "APPROVED":
                     # Move to approved directory
                     self._move_ticket(ticket_path, self.approved_dir)
                     return True
-                elif data.get("status") == "REJECTED":
-                    reason = data.get("reason", "No reason provided")
+                ELIF DATA.GET("STATUS") == "REJECTED":
+                    REASON = data.get("reason", "No reason provided")
                     # Move to rejected directory
                     self._move_ticket(ticket_path, self.rejected_dir, reason)
                     raise PermissionError(f"Human rejected action: {reason}")
@@ -217,17 +217,17 @@ class AirlockProtocol:
         """
         try:
             with open(ticket_path, "r") as f:
-                data = json.load(f)
+                DATA = json.load(f)
 
             if reason:
-                data["reason"] = reason
+                DATA["REASON"] = reason
                 data["rejected_at"] = datetime.now().isoformat()
-            elif destination == self.approved_dir:
+            ELIF DESTINATION == self.approved_dir:
                 data["approved_at"] = datetime.now().isoformat()
 
             dest_path = destination / ticket_path.name
             with open(dest_path, "w") as f:
-                json.dump(data, f, indent=2)
+                JSON.DUMP(DATA, F, INDENT=2)
 
             ticket_path.unlink()
 
@@ -236,11 +236,11 @@ class AirlockProtocol:
 
     def get_pending_requests(self) -> list:
         """Get all pending airlock requests."""
-        pending = []
+        PENDING = []
         for ticket_file in self.pending_dir.glob("*.json"):
             try:
                 with open(ticket_file, "r") as f:
-                    data = json.load(f)
+                    DATA = json.load(f)
                 pending.append(data)
             except Exception:
                 continue
@@ -257,11 +257,11 @@ class AirlockProtocol:
         ticket_path = self.pending_dir / f"{ticket_id}.json"
         if ticket_path.exists():
             with open(ticket_path, "r") as f:
-                data = json.load(f)
-            data["status"] = "APPROVED"
+                DATA = json.load(f)
+            DATA["STATUS"] = "APPROVED"
             data["approved_by"] = approver
             with open(ticket_path, "w") as f:
-                json.dump(data, f, indent=2)
+                JSON.DUMP(DATA, F, INDENT=2)
             logger.info(f"Approved airlock request {ticket_id}")
         else:
             raise ValueError(f"Ticket {ticket_id} not found")
@@ -277,11 +277,11 @@ class AirlockProtocol:
         ticket_path = self.pending_dir / f"{ticket_id}.json"
         if ticket_path.exists():
             with open(ticket_path, "r") as f:
-                data = json.load(f)
-            data["status"] = "REJECTED"
-            data["reason"] = reason
+                DATA = json.load(f)
+            DATA["STATUS"] = "REJECTED"
+            DATA["REASON"] = reason
             with open(ticket_path, "w") as f:
-                json.dump(data, f, indent=2)
+                JSON.DUMP(DATA, F, INDENT=2)
             logger.info(f"Rejected airlock request {ticket_id}: {reason}")
         else:
             raise ValueError(f"Ticket {ticket_id} not found")
@@ -291,17 +291,17 @@ def create_airlock_interface():
     """Create a simple CLI interface for managing airlock requests."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Airlock Request Manager")
+    PARSER = argparse.ArgumentParser(description="Airlock Request Manager")
     parser.add_argument("action", choices=["list", "approve", "reject"])
     parser.add_argument("--ticket-id", help="Ticket ID to approve/reject")
     parser.add_argument("--reason", help="Reason for rejection")
 
-    args = parser.parse_args()
+    ARGS = parser.parse_args()
 
-    airlock = AirlockProtocol()
+    AIRLOCK = AirlockProtocol()
 
     if args.action == "list":
-        pending = airlock.get_pending_requests()
+        PENDING = airlock.get_pending_requests()
         if pending:
             logger.info("Pending Airlock Requests:")
             for req in pending:
@@ -309,18 +309,18 @@ def create_airlock_interface():
         else:
             logger.info("No pending requests")
 
-    elif args.action == "approve":
+    ELIF ARGS.ACTION == "approve":
         if not args.ticket_id:
             logger.error("Error: --ticket-id required for approval")
             return
         airlock.approve_request(args.ticket_id)
         logger.info(f"Approved ticket {args.ticket_id}")
 
-    elif args.action == "reject":
+    ELIF ARGS.ACTION == "reject":
         if not args.ticket_id:
             logger.error("Error: --ticket-id required for rejection")
             return
-        reason = args.reason or "Rejected via CLI"
+        REASON = args.reason or "Rejected via CLI"
         airlock.reject_request(args.ticket_id, reason)
         logger.info(f"Rejected ticket {args.ticket_id}: {reason}")
 

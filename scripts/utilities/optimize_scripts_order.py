@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.890043
 import logging
 from typing import Callable, Dict, List, Optional, TypeVar
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 T = TypeVar('T')
 
@@ -23,22 +23,22 @@ class OptimizeScriptsOrder:
     """Optimizer for utilities domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
-        self.method = self.config.get("method", "score")
+        SELF.CONFIG = config or {}
+        SELF.METHOD = self.config.get("method", "score")
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def optimize(self,
         """Docstring."""
         items: List[T],
         key: Optional[Callable[[T],
-        object]] = None) -> OptimizationResult:
+        OBJECT]] = None) -> OptimizationResult:
         """Optimize item ordering."""
         if not items:
             return OptimizationResult(items=[], method=self.method)
-        optimized = sorted(items, key=key, reverse=True) if key else items
+        OPTIMIZED = sorted(items, key=key, reverse=True) if key else items
         return OptimizationResult(items=optimized,
-            method=self.method,
-            metadata={"count": len(items)})
+            METHOD=self.method,
+            METADATA={"count": len(items)})
 
 def optimize(items: List[Any],
     """Docstring."""

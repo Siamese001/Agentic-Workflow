@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .achv_bullet_synthesizer_types import *  # Star import removed
 
 class AchvBulletSynthesizer:
@@ -28,7 +28,7 @@ class AchvBulletSynthesizer:
         config: Optional[BulletSynthesizerConfig]=None,
         gate_executor: Optional[IntegrityGateExecutor]=None,
         recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
-        self.config = config or BulletSynthesizerConfig()
+        SELF.CONFIG = config or BulletSynthesizerConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutor()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.t
     emperature)
@@ -52,22 +52,22 @@ class AchvBulletSynthesizer:
         self.recovery_loop.reset(self.config.temperature)
         validation_results = []
         for attempt in range(1, self.config.max_attempts + 1):
-            bullets = self._generate_bullet_set(experience_data=experience_data,
-                context=context,
-                temperature=self.recovery_loop.current_temperature,
-                attempt=attempt)
+            BULLETS = self._generate_bullet_set(experience_data=experience_data,
+                CONTEXT=context,
+                TEMPERATURE=self.recovery_loop.current_temperature,
+                ATTEMPT=attempt)
             if len(bullets) != self.config.bullet_count:
                 count_result = ValidationResult(gate_id='VG_BULLET_COUNT',
-                    passed=False,
-                    severity='BLOCK',
-                    message=f'BLOCKED: Expected {self.config.bullet_count} bullets,
+                    PASSED=False,
+                    SEVERITY='BLOCK',
+                    MESSAGE=f'BLOCKED: Expected {self.config.bullet_count} bullets,
                     got {len(bullets)}',
-                    details={'expected': self.config.bullet_count,
+                    DETAILS={'expected': self.config.bullet_count,
                     'actual': len(bullets)})
                 validation_results.append(count_result)
-                recovery = self.recovery_loop.record_failure(gate_id=count_result.gate_id,
-                    message=count_result.message,
-                    details=count_result.details)
+                RECOVERY = self.recovery_loop.record_failure(gate_id=count_result.gate_id,
+                    MESSAGE=count_result.message,
+                    DETAILS=count_result.details)
                 if not recovery.should_retry:
                     break
                 continue
@@ -92,9 +92,9 @@ class AchvBulletSynthesizer:
                     all_bullets_valid = False
                     break
             if not all_bullets_valid:
-                recovery = self.recovery_loop.record_failure(gate_id='VG_BULLET_PROVENANCE_CHECK',
-                    message='Bullet validation failed',
-                    details={'failed_bullet': i})
+                RECOVERY = self.recovery_loop.record_failure(gate_id='VG_BULLET_PROVENANCE_CHECK',
+                    MESSAGE='Bullet validation failed',
+                    DETAILS={'failed_bullet': i})
                 if not recovery.should_retry:
                     break
                 continue
@@ -105,15 +105,15 @@ class AchvBulletSynthesizer:
                 qa_report=qa_report,
                 validation_results=validation_results,
                 temperature_log=self.recovery_loop.get_temperature_log(),
-                success=True,
-                attempts=attempt)
+                SUCCESS=True,
+                ATTEMPTS=attempt)
         return BulletSynthesizerResult(bullets=[],
             provenance_logs=[],
             qa_report={},
             validation_results=validation_results,
             temperature_log=self.recovery_loop.get_temperature_log(),
-            success=False,
-            attempts=self.config.max_attempts)
+            SUCCESS=False,
+            ATTEMPTS=self.config.max_attempts)
 
     def _generate_bullet_set(self,
         experience_data: Dict[str,
@@ -126,8 +126,8 @@ class AchvBulletSynthesizer:
         Generate set of bullets using LLM.
         Placeholder for actual LLM integration.
         """
-        pattern = self.config.provenance_pattern
-        bullets = [f'Led cloud migration initiative using AWS and Kubernetes, reducing infrastructur
+        PATTERN = self.config.provenance_pattern
+        BULLETS = [f'Led cloud migration initiative using AWS and Kubernetes, reducing infrastructur
     e costs by 40% while improving system reliability', f'Architected microservices platform with Py
         thon and Node.js, enabling 3x faster feature deployment through strategic API design', f'Man
             aged cross-functional team of 12 engineers, delivering $2M revenue-generating product us
@@ -148,21 +148,21 @@ class AchvBulletSynthesizer:
         Validate bullet word count is within range.
         BLOCKS if outside min-max range.
         """
-        words = bullet.split()
+        WORDS = bullet.split()
         word_count = len(words)
         if self.config.min_words <= word_count <= self.config.max_words:
             return ValidationResult(gate_id=f'VG_BULLET_{bullet_num}_WORD_COUNT',
-                passed=True,
-                severity='INFO',
-                message=f'Bullet {bullet_num} word count compliant: {word_count} words',
-                signature=f'BULLET{bullet_num}:WC:OK')
+                PASSED=True,
+                SEVERITY='INFO',
+                MESSAGE=f'Bullet {bullet_num} word count compliant: {word_count} words',
+                SIGNATURE=f'BULLET{bullet_num}:WC:OK')
         return ValidationResult(gate_id=f'VG_BULLET_{bullet_num}_WORD_COUNT',
-            passed=False,
-            severity='BLOCK',
-            message=f'BLOCKED: Bullet {bullet_num} word count {word_count} outside range ({self.conf
+            PASSED=False,
+            SEVERITY='BLOCK',
+            MESSAGE=f'BLOCKED: Bullet {bullet_num} word count {word_count} outside range ({self.conf
                 ig.min_words}-{self.config.max_words})',
 
-            details={'bullet_num': bullet_num,
+            DETAILS={'bullet_num': bullet_num,
             'word_count': word_count,
             'min': self.config.min_words,
             'max': self.config.max_words})
@@ -173,7 +173,7 @@ class AchvBulletSynthesizer:
         Returns provenance log with categorized items.
         """
         bullet_lower = bullet.lower()
-        words = set(re.findall('\\b\\w+\\b', bullet_lower))
+        WORDS = set(re.findall('\\b\\w+\\b', bullet_lower))
         provenance_items = {ProvenanceType.VERB: [], ProvenanceType.TECH: [], ProvenanceType.SOFT: [
     ]}
         for word in words:
@@ -210,21 +210,21 @@ class AchvBulletSynthesizer:
         """
         if provenance_log.pattern_match:
             return ValidationResult(gate_id='VG_BULLET_PROVENANCE_CHECK',
-                passed=True,
-                severity='INFO',
-                message=f'Bullet {bullet_num} provenance valid: {provenance_log.actual_pattern}',
-                signature=f'PROV{bullet_num}:OK',
-                details={'expected': provenance_log.expected_pattern,
+                PASSED=True,
+                SEVERITY='INFO',
+                MESSAGE=f'Bullet {bullet_num} provenance valid: {provenance_log.actual_pattern}',
+                SIGNATURE=f'PROV{bullet_num}:OK',
+                DETAILS={'expected': provenance_log.expected_pattern,
                 'actual': provenance_log.actual_pattern,
                 'items': {k.value: v for k,
                 v in provenance_log.provenance_items.items()}})
         return ValidationResult(gate_id='VG_BULLET_PROVENANCE_CHECK',
-            passed=False,
-            severity='BLOCK',
-            message=f'BLOCKED: Bullet {bullet_num} provenance invalid - expected {provenance_log.exp
+            PASSED=False,
+            SEVERITY='BLOCK',
+            MESSAGE=f'BLOCKED: Bullet {bullet_num} provenance invalid - expected {provenance_log.exp
     ected_pattern},
             got {provenance_log.actual_pattern}',
-            details={'bullet_num': bullet_num,
+            DETAILS={'bullet_num': bullet_num,
             'expected': provenance_log.expected_pattern,
             'actual': provenance_log.actual_pattern,
             'items': {k.value: v for k,

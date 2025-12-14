@@ -9,7 +9,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ExpansionStrategy(str, Enum):
     """Strategies for query expansion."""
@@ -242,7 +242,7 @@ class HyDEProcessor:
                     original_query=original_query,
                     expanded_query=expanded_query,
                     hypothetical_doc=hypothetical_doc,
-                    success=True,
+                    SUCCESS=True,
                     fallback_used=False
                 )
             else:
@@ -253,7 +253,7 @@ class HyDEProcessor:
                         original_query=original_query,
                         expanded_query=fallback_query,
                         hypothetical_doc=None,
-                        success=False,
+                        SUCCESS=False,
                         fallback_used=True,
                         error_message="Generated document invalid, used keyword fallback"
                     )
@@ -262,7 +262,7 @@ class HyDEProcessor:
                         original_query=original_query,
                         expanded_query=original_query,
                         hypothetical_doc=None,
-                        success=False,
+                        SUCCESS=False,
                         fallback_used=False,
                         error_message="Generated document invalid and fallback disabled"
                     )
@@ -278,7 +278,7 @@ class HyDEProcessor:
                 original_query=original_query,
                 expanded_query=fallback_query,
                 hypothetical_doc=None,
-                success=False,
+                SUCCESS=False,
                 fallback_used=self.fallback_enabled,
                 error_message=str(e)
             )
@@ -301,27 +301,27 @@ class HyDEProcessor:
             HyDEDocument or None if generation fails
         """
         # Construct the prompt
-        prompt = self._construct_prompt(query, archetype, industry)
+        PROMPT = self._construct_prompt(query, archetype, industry)
 
         # Attempt generation with retries
         for attempt in range(self.max_retries + 1):
             try:
                 if self.llm_client:
                     # Use actual LLM client
-                    content = self._call_llm(prompt)
+                    CONTENT = self._call_llm(prompt)
                 else:
                     # Mock generation for testing
-                    content = self._mock_generation(query, archetype, industry)
+                    CONTENT = self._mock_generation(query, archetype, industry)
 
                 if content:
                     # Create document
-                    doc = HyDEDocument(
-                        content=content.strip(),
-                        archetype=archetype,
-                        industry=industry,
-                        strategy=ExpansionStrategy.ARCHETYPE_SPECIFIC,
+                    DOC = HyDEDocument(
+                        CONTENT=content.strip(),
+                        ARCHETYPE=archetype,
+                        INDUSTRY=industry,
+                        STRATEGY=ExpansionStrategy.ARCHETYPE_SPECIFIC,
                         word_count=len(content.split()),
-                        metadata={"attempt": attempt + 1}
+                        METADATA={"attempt": attempt + 1}
                     )
 
                     if doc.is_valid:
@@ -353,12 +353,12 @@ class HyDEProcessor:
         normalized_archetype = self._normalize_archetype(archetype)
 
         # Get template
-        template = HYDE_TEMPLATES.get(normalized_archetype, HYDE_TEMPLATES["DEFAULT"])
+        TEMPLATE = HYDE_TEMPLATES.get(normalized_archetype, HYDE_TEMPLATES["DEFAULT"])
 
         # Fill placeholders
-        prompt = template.format(
-            keywords=query,
-            industry=industry
+        PROMPT = template.format(
+            KEYWORDS=query,
+            INDUSTRY=industry
         )
 
         return prompt
@@ -459,7 +459,7 @@ class HyDEProcessor:
         expanded_parts = [query]
 
         if industry and industry.lower() in industry_keywords:
-            keywords = industry_keywords[industry.lower()]
+            KEYWORDS = industry_keywords[industry.lower()]
             expanded_parts.append(" ".join(keywords[:3]))  # Add top 3 keywords
 
         # Add generic professional keywords
@@ -510,6 +510,6 @@ def expand_query_with_hyde(
     Returns:
         Expanded query string
     """
-    processor = create_hyde_processor(llm_client=llm_client)
-    result = processor.expand_query(query, archetype, industry)
+    PROCESSOR = create_hyde_processor(llm_client=llm_client)
+    RESULT = processor.expand_query(query, archetype, industry)
     return result.expanded_query

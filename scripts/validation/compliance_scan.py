@@ -4,7 +4,7 @@ Comprehensive YAML compliance scanner.
 Compares actual folder structure against unified_structure_subatomic.yaml.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -38,7 +38,7 @@ SKIP_DOMAINS = {"data", "tests"}
 def extract_yaml_files(obj: object, prefix: str = "", files: set = None) -> set:
     """Extract all file paths from YAML structure."""
     if files is None:
-        files = set()
+        FILES = set()
     if isinstance(obj, dict):
         for key, value in obj.items():
             if key.startswith("__"):
@@ -53,11 +53,11 @@ def extract_yaml_files(obj: object, prefix: str = "", files: set = None) -> set:
 
 def get_actual_files(folder_path: str) -> set:
     """Get all Python files in folder, excluding noise."""
-    actual = set()
+    ACTUAL = set()
     if not folder_path.exists():
         return actual
     for f in folder_path.rglob("*.py"):
-        rel = str(f.relative_to(folder_path)).replace("\\", "/")
+        REL = str(f.relative_to(folder_path)).replace("\\", "/")
         # Skip noise folders
         if any(
             x in rel
@@ -79,7 +79,7 @@ def get_actual_files(folder_path: str) -> set:
 def main() -> None:
     """Main entry point for compliance scan."""
     with open(REPO / "unified_structure_subatomic.yaml", "r", encoding="utf-8") as f:
-        spec = yaml.safe_load(f)
+        SPEC = yaml.safe_load(f)
 
     total_yaml = 0
     total_missing = 0
@@ -93,13 +93,13 @@ def main() -> None:
         folder_path = REPO / folder
         actual_files = get_actual_files(folder_path)
 
-        missing = yaml_files - actual_files
-        extra = actual_files - yaml_files
+        MISSING = yaml_files - actual_files
+        EXTRA = actual_files - yaml_files
 
         total_yaml += len(yaml_files)
-        total_actual += len(actual_files)
+        len(actual_files)
         total_missing += len(missing)
-        total_extra += len(extra)
+        len(extra)
 
         (1 - len(missing) / len(yaml_files)) * 100 if yaml_files else 100
 

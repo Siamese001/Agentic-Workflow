@@ -1,12 +1,12 @@
 """Implementation for dedup_merged_files."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .dedup_merged_files_types import *  # Star import removed
 
 def compute_hash(filepath: Path) -> None:
     """Compute SHA256 hash of file."""
-    sha256 = hashlib.sha256()
+    SHA256 = hashlib.sha256()
     with open(filepath, 'rb') as f:
         for chunk in iter(lambda: f.read(8192), b''):
             sha256.update(chunk)
@@ -55,8 +55,8 @@ def select_canonical(files: List[Path]) -> Tuple[Path, List[Path]]:
 
 def execute_dedup(dry_run: bool=False) -> DedupManifest:
     """Execute deduplication."""
-    manifest = DedupManifest()
-    duplicates = find_duplicates(SCAN_FOLDERS)
+    MANIFEST = DedupManifest()
+    DUPLICATES = find_duplicates(SCAN_FOLDERS)
     manifest.duplicate_groups = len(duplicates)
     manifest.total_scanned = sum((len(files) for files in duplicates.values()))
     if not dry_run:
@@ -94,7 +94,7 @@ def execute_dedup(dry_run: bool=False) -> DedupManifest:
             'removed_files': manifest.removed_files,
             'errors': manifest.errors},
             f,
-            indent=2)
+            INDENT=2)
     return manifest
 
 def print_summary(manifest: DedupManifest, dry_run: bool) -> None:

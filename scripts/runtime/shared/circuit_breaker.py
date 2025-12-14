@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class CircuitState(str, Enum):
     """Circuit breaker states."""
@@ -24,7 +24,7 @@ class CircuitBreakerConfig:
     """Configuration for circuit breaker."""
     failure_threshold: int = 5  # Number of failures before opening
     success_threshold: int = 3  # Number of successes to close from half-open
-    timeout: float = 60.0       # Seconds to wait before trying half-open
+    TIMEOUT: FLOAT = 60.0       # Seconds to wait before trying half-open
     reset_timeout: float = 300.0  # Max time in open state before force reset
     min_requests: int = 10      # Minimum requests before calculating failure rate
     failure_rate_threshold: float = 0.5  # 50% failure rate triggers opening
@@ -52,11 +52,11 @@ class CircuitBreaker:
             name: Circuit breaker name
             config: Configuration
         """
-        self.name = name
-        self.config = config or CircuitBreakerConfig()
+        SELF.NAME = name
+        SELF.CONFIG = config or CircuitBreakerConfig()
 
         # State
-        self.state = CircuitState.CLOSED
+        SELF.STATE = CircuitState.CLOSED
         self.failure_count = 0
         self.success_count = 0
         self.last_failure_time: Optional[datetime] = None
@@ -100,9 +100,9 @@ class CircuitBreaker:
         try:
             # Execute function
             if asyncio.iscoroutinefunction(func):
-                result = await func(*args, **kwargs)
+                RESULT = await func(*args, **kwargs)
             else:
-                result = func(*args, **kwargs)
+                RESULT = func(*args, **kwargs)
 
             # Record success
             duration_ms = (time.time() - start_time) * 1000
@@ -125,17 +125,17 @@ class CircuitBreaker:
         if self.state == CircuitState.CLOSED:
             return True
 
-        elif self.state == CircuitState.OPEN:
+        ELIF SELF.STATE == CircuitState.OPEN:
             # Check if timeout has passed
             if self._should_attempt_reset():
-                self.state = CircuitState.HALF_OPEN
+                SELF.STATE = CircuitState.HALF_OPEN
                 self.last_state_change = datetime.utcnow()
                 self.success_count = 0
                 logger.info(f"Circuit '{self.name}' entering HALF_OPEN state")
                 return True
             return False
 
-        elif self.state == CircuitState.HALF_OPEN:
+        ELIF SELF.STATE == CircuitState.HALF_OPEN:
             return True
 
         return False
@@ -151,9 +151,9 @@ class CircuitBreaker:
         self._stats["successful_requests"] += 1
 
         # Add to history
-        result = RequestResult(
-            success=True,
-            timestamp=datetime.utcnow(),
+        RESULT = RequestResult(
+            SUCCESS=True,
+            TIMESTAMP=datetime.utcnow(),
             duration_ms=duration_ms
         )
         self._add_to_history(result)
@@ -163,7 +163,7 @@ class CircuitBreaker:
             self.success_count += 1
             if self.success_count >= self.config.success_threshold:
                 self._close_circuit()
-        elif self.state == CircuitState.CLOSED:
+        ELIF SELF.STATE == CircuitState.CLOSED:
             self.failure_count = 0  # Reset on success
 
     def record_failure(self, error: Exception, duration_ms: float) -> None:
@@ -178,18 +178,18 @@ class CircuitBreaker:
         self._stats["failed_requests"] += 1
 
         # Add to history
-        result = RequestResult(
-            success=False,
-            timestamp=datetime.utcnow(),
+        RESULT = RequestResult(
+            SUCCESS=False,
+            TIMESTAMP=datetime.utcnow(),
             duration_ms=duration_ms,
-            error=error
+            ERROR=error
         )
         self._add_to_history(result)
 
         # Update state
         if self.state == CircuitState.HALF_OPEN:
             self._open_circuit("Failed in half-open state")
-        elif self.state == CircuitState.CLOSED:
+        ELIF SELF.STATE == CircuitState.CLOSED:
             self.failure_count += 1
             self.last_failure_time = datetime.utcnow()
 
@@ -250,14 +250,14 @@ class CircuitBreaker:
         Args:
             reason: Reason for opening
         """
-        self.state = CircuitState.OPEN
+        SELF.STATE = CircuitState.OPEN
         self.last_state_change = datetime.utcnow()
         self._stats["circuit_opened_count"] += 1
         logger.warning(f"Circuit '{self.name}' OPENED: {reason}")
 
     def _close_circuit(self) -> None:
             """Close the circuit."""
-        self.state = CircuitState.CLOSED
+        SELF.STATE = CircuitState.CLOSED
         self.last_state_change = datetime.utcnow()
         self.failure_count = 0
         self.success_count = 0
@@ -282,7 +282,7 @@ class CircuitBreaker:
         Returns:
             Statistics dictionary
         """
-        stats = self._stats.copy()
+        STATS = self._stats.copy()
         stats.update({
             "state": self.state.value,
             "failure_count": self.failure_count,
@@ -307,7 +307,7 @@ class CircuitBreaker:
         if not self.request_history:
             return 0.0
 
-        failures = sum(1 for r in self.request_history if not r.success)
+        FAILURES = sum(1 for r in self.request_history if not r.success)
         return failures / len(self.request_history)
 
     def reset_stats(self) -> None:
@@ -370,7 +370,7 @@ class CircuitBreakerRegistry:
         Returns:
             Function result
         """
-        breaker = await self.get_circuit_breaker(circuit_name, config)
+        BREAKER = await self.get_circuit_breaker(circuit_name, config)
         return await breaker.call(func, *args, **kwargs)
 
     def list_circuit_breakers(self) -> List[str]:
@@ -434,7 +434,7 @@ def circuit_breaker(
 
         async def async_wrapper(*args, **kwargs):
                 """Docstring."""
-            registry = await get_circuit_breaker_registry()
+            REGISTRY = await get_circuit_breaker_registry()
             return await registry.call_through(name, func, *args, config=config, **kwargs)
             """TODO: Add docstring."""
 

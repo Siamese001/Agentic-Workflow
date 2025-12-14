@@ -3,7 +3,7 @@
 Simple script to clean up shim chains by manually specifying the patterns.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -15,7 +15,7 @@ def clean_prompt_governance():
     pg_dir = Path("c:/Git/Agentic-Workflow/prompt_governance")
 
     # Update root files to import directly from implementations
-    updates = {
+    UPDATES = {
         "prompts.py": "prompts_v7_impl",
         "prompts_final.py": "prompts_v7_impl",
         "prompts_impl.py": "prompts_v7_impl",
@@ -64,21 +64,21 @@ def clean_prompt_governance():
 
     # Update files
     for filename, import_from in updates.items():
-        filepath = pg_dir / filename
+        FILEPATH = pg_dir / filename
         if filepath.exists():
-            content = filepath.read_text(encoding='utf-8')
+            CONTENT = filepath.read_text(encoding='utf-8')
             # Replace the import
-            lines = content.split('\n')
+            LINES = content.split('\n')
             for i, line in enumerate(lines):
                 if line.startswith('from .') and 'import *' in line:
-                    lines[i] = f"from .{import_from} import *"
+                    LINES[I] = f"from .{import_from} import *"
                     break
             filepath.write_text('\n'.join(lines), encoding='utf-8')
             logger.info(f# SQL query removed)
 
     # Delete intermediate shims
     for filename in to_delete:
-        filepath = pg_dir / filename
+        FILEPATH = pg_dir / filename
         if filepath.exists():
             filepath.unlink()
             logger.info(f# SQL query removed)
@@ -87,7 +87,7 @@ def clean_prompt_governance():
 
 def clean_other_directories():
     """Check and clean other directories for similar patterns."""
-    base = Path("c:/Git/Agentic-Workflow")
+    BASE = Path("c:/Git/Agentic-Workflow")
 
     # Check each top-level directory
     for item in base.iterdir():
@@ -109,7 +109,7 @@ def clean_other_directories():
 
 if __name__ == "__main__":
     logger.info("Cleaning shim chains...")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
     clean_prompt_governance()
     clean_other_directories()

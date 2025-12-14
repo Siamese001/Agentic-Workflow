@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class IdentityType(Enum):
@@ -73,7 +73,7 @@ class AgentIdentity:
         Returns:
             Namespace portion of SPIFFE ID
         """
-        parts = self.spiffe_id.split('/')
+        PARTS = self.spiffe_id.split('/')
         if len(parts) >= 4:
             return parts[3]
         return 'default'
@@ -84,7 +84,7 @@ class AgentIdentity:
         Returns:
             Agent name portion of SPIFFE ID
         """
-        parts = self.spiffe_id.split('/')
+        PARTS = self.spiffe_id.split('/')
         if len(parts) >= 5:
             return parts[4]
         return 'unknown'
@@ -95,7 +95,7 @@ class IdentityVerificationResult:
     """Result of identity verification."""
     valid: bool
     identity: Optional[AgentIdentity] = None
-    reason: str = ''
+    REASON: STR = ''
     verified_at: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:

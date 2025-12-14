@@ -5,16 +5,16 @@ import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 VALIDATOR_SCRIPT = "canon_validator.py"
 
 def read_file(path):
-    with open(path, 'r', encoding='utf-8') as f:
+    WITH OPEN(PATH, 'R', ENCODING='utf-8') as f:
         return f.read()
 
 def write_file(path, content):
-    with open(path, 'w', encoding='utf-8') as f:
+    WITH OPEN(PATH, 'W', ENCODING='utf-8') as f:
         f.write(content)
 
 def fix_name_error(traceback_str):
@@ -26,7 +26,7 @@ def fix_name_error(traceback_str):
     logger.info("   >>> 🔧 SELF-REPAIR: Attempting to fix NameError...")
 
     # Extract the missing name from traceback
-    match = re.search(r"NameError: name '(.+?)' is not defined", traceback_str)
+    MATCH = re.search(r"NameError: name '(.+?)' is not defined", traceback_str)
     if not match:
         return False
 
@@ -40,7 +40,7 @@ def fix_name_error(traceback_str):
     key_id = key_match.group(1)
 
     # Read the validator code
-    code = read_file(VALIDATOR_SCRIPT)
+    CODE = read_file(VALIDATOR_SCRIPT)
 
     # Find all ACTUAL function definitions for this key
     # Pattern: def check_key_22_something(...)
@@ -76,11 +76,10 @@ def run_fixers(output):
         # Note: We don't have this script yet, so we'll skip for now
         # subprocess.run([sys.executable, "fix_unused_imports.py"], capture_output=True)
         # fixed_something = True
-        pass
 
     if "[04]" in output and "canon_validator.py" in output:  # Empty except in validator
          # Quick hack to fix the validator's own empty except
-         code = read_file(VALIDATOR_SCRIPT)
+         CODE = read_file(VALIDATOR_SCRIPT)
          if "except:" in code:
              logger.info("   >>> 🔧 SELF-REPAIR: Fixing bare 'except:' in validator")
              new_code = code.replace("except:", "except Exception as e: print(e)")
@@ -100,13 +99,13 @@ def main():
         # Run the validator
         # We assume the "Intelligent Agent" patch from before is active (argparse)
         # We run ALL keys to flush out errors
-        result = subprocess.run(
+        RESULT = subprocess.run(
             [sys.executable, VALIDATOR_SCRIPT, "--range", "1-50", "--u"],
             capture_output=True,
-            text=True
+            TEXT=True
         )
 
-        output = result.stdout + result.stderr
+        OUTPUT = result.stdout + result.stderr
         logger.info(output[-1000:] if len(output) > 1000 else output)  # Print tail of logs
 
         # CASE 1: CRASH (Python Traceback)

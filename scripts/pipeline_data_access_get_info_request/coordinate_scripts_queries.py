@@ -8,7 +8,7 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 import logging
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class QueryType(Enum):
     """Types of script queries."""
@@ -33,11 +33,11 @@ class ScriptQuery:
     query_type: QueryType
     target_script: str
     parameters: Dict[str, Any] = field(default_factory=dict)
-    timeout: float = 30.0
+    TIMEOUT: FLOAT = 30.0
     retry_count: int = 0
     max_retries: int = 3
     dependencies: List[str] = field(default_factory=list)
-    priority: int = 0
+    PRIORITY: INT = 0
 
 @dataclass
 class QueryResult:
@@ -47,7 +47,7 @@ class QueryResult:
     result: Any = None
     error: Optional[str] = None
     execution_time: float = 0.0
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    TIMESTAMP: STR = field(default_factory=lambda: datetime.utcnow().isoformat())
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
@@ -76,8 +76,8 @@ class ScriptsQueriesCoordinator:
     """Coordinator for managing script queries across multiple scripts."""
 
     def __init__(self, config: Optional[ScriptsQueriesConfig] = None):
-        self.config = config or ScriptsQueriesConfig()
-        self.logger = logging.getLogger(self.__class__.__name__)
+        SELF.CONFIG = config or ScriptsQueriesConfig()
+        SELF.LOGGER = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
         self._query_cache = {} if self.config.enable_query_caching else None
 
@@ -110,13 +110,13 @@ class ScriptsQueriesCoordinator:
             failed_queries = [r.query_id for r in query_results if r.status == QueryStatus.FAILED]
             total_time = sum(r.execution_time for r in query_results)
 
-            result = ScriptsQueriesResult(
-                success=len(failed_queries) == 0,
+            RESULT = ScriptsQueriesResult(
+                SUCCESS=len(failed_queries) == 0,
                 query_results=query_results,
                 aggregated_results=aggregated_results,
                 failed_queries=failed_queries,
                 total_execution_time=total_time,
-                metadata={
+                METADATA={
                     "coordinated_at": datetime.utcnow().isoformat(),
                     "query_count": len(queries),
                     "success_count": len(query_results) - len(failed_queries),
@@ -131,9 +131,9 @@ class ScriptsQueriesCoordinator:
         except Exception as e:
             self.logger.error(f"Scripts queries coordination failed: {str(e)}")
             return ScriptsQueriesResult(
-                success=False,
-                errors=[str(e)],
-                metadata={
+                SUCCESS=False,
+                ERRORS=[str(e)],
+                METADATA={
                     "failed_at": datetime.utcnow().isoformat(),
                     "coordinator": "ScriptsQueriesCoordinator"
                 }
@@ -160,9 +160,9 @@ class ScriptsQueriesCoordinator:
     def _sort_queries(self, queries: List[ScriptQuery]) -> List[ScriptQuery]:
         """Sort queries by priority and resolve dependencies."""
         # Topological sort for dependency resolution
-        visited = set()
+        VISITED = set()
         visited_nodes = set()
-        result = []
+        RESULT = []
 
         def visit(query: ScriptQuery) -> None:
             """Recursively visit queries for dependency resolution."""
@@ -187,11 +187,11 @@ class ScriptsQueriesCoordinator:
                 visit(query)
 
         # Sort by priority within dependency constraints
-        return sorted(result, key=lambda q: (-q.priority, q.id))
+        RETURN SORTED(RESULT, KEY=lambda q: (-q.priority, q.id))
 
     def _execute_queries(self, queries: List[ScriptQuery]) -> List[QueryResult]:
         """Execute queries with concurrency control."""
-        results = []
+        RESULTS = []
 
         for query in queries:
             # Check cache if enabled
@@ -203,7 +203,7 @@ class ScriptsQueriesCoordinator:
                     continue
 
             # Execute query
-            result = self._execute_single_query(query)
+            RESULT = self._execute_single_query(query)
             results.append(result)
 
             # Cache result if enabled and successful
@@ -223,7 +223,7 @@ class ScriptsQueriesCoordinator:
             QueryType.TRANSFORM: lambda: f"Transformed {query.target_script}",
         }
 
-        handler = query_type_handlers.get(query.query_type)
+        HANDLER = query_type_handlers.get(query.query_type)
         if handler:
             return handler()
         else:
@@ -243,10 +243,10 @@ class ScriptsQueriesCoordinator:
 
             return QueryResult(
                 query_id=query.id,
-                status=QueryStatus.COMPLETED,
-                result=result_data,
+                STATUS=QueryStatus.COMPLETED,
+                RESULT=result_data,
                 execution_time=execution_time,
-                metadata={"script": query.target_script, "type": query.query_type.value}
+                METADATA={"script": query.target_script, "type": query.query_type.value}
             )
 
         except Exception as e:
@@ -255,10 +255,10 @@ class ScriptsQueriesCoordinator:
 
             return QueryResult(
                 query_id=query.id,
-                status=QueryStatus.FAILED,
-                error=str(e),
+                STATUS=QueryStatus.FAILED,
+                ERROR=str(e),
                 execution_time=execution_time,
-                metadata={"script": query.target_script, "type": query.query_type.value}
+                METADATA={"script": query.target_script, "type": query.query_type.value}
             )
 
     def _get_cache_key(self, query: ScriptQuery) -> str:
@@ -267,7 +267,7 @@ class ScriptsQueriesCoordinator:
 
     def _aggregate_results(self, results: List[QueryResult]) -> Dict[str, Any]:
         """Aggregate results from multiple queries."""
-        aggregated = {
+        AGGREGATED = {
             "total_queries": len(results),
             "successful_queries": len([r for r in results if r.status == QueryStatus.COMPLETED]),
             "failed_queries": len([r for r in results if r.status == QueryStatus.FAILED]),
@@ -292,7 +292,7 @@ def create_scripts_queries_coordinator(
     enable_query_caching: bool = True,
     **kwargs: Dict[str, object]) -> ScriptsQueriesCoordinator:
     """Create a configured scripts queries coordinator."""
-    config = ScriptsQueriesConfig(
+    CONFIG = ScriptsQueriesConfig(
         max_concurrent_queries=max_concurrent_queries,
         enable_query_caching=enable_query_caching,
         **kwargs
@@ -317,23 +317,23 @@ def coordinate_script_queries(
     # Convert dict queries to ScriptQuery objects
     script_queries = []
     for query_dict in queries:
-        query = ScriptQuery(
+        QUERY = ScriptQuery(
             id=query_dict["id"],
             query_type=QueryType(query_dict["query_type"]),
             target_script=query_dict["target_script"],
-            parameters=query_dict.get("parameters", {}),
-            timeout=query_dict.get("timeout", 30.0),
+            PARAMETERS=query_dict.get("parameters", {}),
+            TIMEOUT=query_dict.get("timeout", 30.0),
             retry_count=query_dict.get("retry_count", 0),
             max_retries=query_dict.get("max_retries", 3),
-            dependencies=query_dict.get("dependencies", []),
-            priority=query_dict.get("priority", 0)
+            DEPENDENCIES=query_dict.get("dependencies", []),
+            PRIORITY=query_dict.get("priority", 0)
         )
         script_queries.append(query)
 
     # Create coordinator and execute
     coordinator_config = ScriptsQueriesConfig(**config) if config else None
-    coordinator = ScriptsQueriesCoordinator(coordinator_config)
-    result = coordinator.execute(script_queries)
+    COORDINATOR = ScriptsQueriesCoordinator(coordinator_config)
+    RESULT = coordinator.execute(script_queries)
 
     # Convert result to dict for JSON serialization
     return {
@@ -382,4 +382,4 @@ if __name__ == "__main__":
         }
     ]
 
-    result = coordinate_script_queries(example_queries)
+    RESULT = coordinate_script_queries(example_queries)

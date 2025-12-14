@@ -1,51 +1,51 @@
 import asyncio
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPR...
 
 
 async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:
     """Docstring."""
-    ctx = dict(ctx)
+    CTX = dict(ctx)
     ctx.setdefault("steps", []).append("noop")
     return ctx
 
 
 async def _set_value(ctx: Dict[str, object]) -> Dict[str, object]:
     """Docstring."""
-    ctx = dict(ctx)
-    ctx["value"] = 42
+    CTX = dict(ctx)
+    CTX["VALUE"] = 42
     return ctx
 
 
 def test_graph_successors_and_predecessors() -> None:
     """Test graph successor and predecessor relationships."""
-    nodes = {
+    NODES = {
         "a": Node(id="a", fn=_noop_node, metadata={}),
         "b": Node(id="b", fn=_set_value, metadata={}),
     }
-    edges = [Edge(source="a", target="b")]
-    graph = Graph(nodes=nodes, edges=edges)
+    EDGES = [Edge(source="a", target="b")]
+    GRAPH = Graph(nodes=nodes, edges=edges)
 
-    succ = [n.id for n in graph.successors("a")]
-    preds = [n.id for n in graph.predecessors("b")]
+    SUCC = [n.id for n in graph.successors("a")]
+    PREDS = [n.id for n in graph.predecessors("b")]
 
-    assert succ == ["b"]
-    assert preds == ["a"]
+    ASSERT SUCC == ["b"]
+    ASSERT PREDS == ["a"]
 
 
 def test_dag_executor_linear_graph() -> None:
     """Test DAG executor with linear graph structure."""
-    nodes = {
+    NODES = {
         "a": Node(id="a", fn=_noop_node, metadata={}),
         "b": Node(id="b", fn=_set_value, metadata={}),
     }
-    edges = [Edge(source="a", target="b")]
-    graph = Graph(nodes=nodes, edges=edges)
+    EDGES = [Edge(source="a", target="b")]
+    GRAPH = Graph(nodes=nodes, edges=edges)
 
-    executor = DAGExecutor(graph)
-    result = asyncio.run(executor.run())
+    EXECUTOR = DAGExecutor(graph)
+    RESULT = asyncio.run(executor.run())
 
-    assert result.get("value") == 42
-    assert result.get("steps") == ["noop"]
+    ASSERT RESULT.GET("VALUE") == 42
+    ASSERT RESULT.GET("STEPS") == ["noop"]

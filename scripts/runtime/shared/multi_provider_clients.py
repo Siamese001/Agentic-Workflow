@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class Provider(str, Enum):
@@ -90,7 +90,7 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
         ImportError: If provider SDK not installed
     """
     if config is None:
-        config = ProviderConfig()
+        CONFIG = ProviderConfig()
 
     api_key = get_api_key(provider)
 
@@ -100,27 +100,27 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
         return openai.OpenAI(
             api_key=api_key,
             max_retries=config.max_retries,
-            timeout=config.timeout,
+            TIMEOUT=config.timeout,
             base_url=config.base_url,
-            organization=config.organization,
+            ORGANIZATION=config.organization,
         )
 
-    elif provider == Provider.ANTHROPIC:
+    ELIF PROVIDER == Provider.ANTHROPIC:
         import anthropic
 
         return anthropic.Anthropic(
             api_key=api_key,
             max_retries=config.max_retries,
-            timeout=config.timeout,
+            TIMEOUT=config.timeout,
             base_url=config.base_url,
         )
 
-    elif provider == Provider.GOOGLE:
+    ELIF PROVIDER == Provider.GOOGLE:
         # Try new v1beta Interactions API first, fallback to legacy
         try:
             from google import genai
 
-            client = genai.Client(api_key=api_key)
+            CLIENT = genai.Client(api_key=api_key)
             # Store both client and module for compatibility
             client._legacy_genai = __import__("google.generativeai")
             return client
@@ -129,35 +129,35 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             genai.configure(api_key=api_key)
             return genai
 
-    elif provider == Provider.MISTRAL:
+    ELIF PROVIDER == Provider.MISTRAL:
         return Mistral(
             api_key=api_key,
-            timeout=int(config.timeout),
+            TIMEOUT=int(config.timeout),
         )
 
-    elif provider == Provider.COHERE:
+    ELIF PROVIDER == Provider.COHERE:
         import cohere
 
         return cohere.Client(
             api_key=api_key,
-            timeout=config.timeout,
+            TIMEOUT=config.timeout,
         )
 
-    elif provider == Provider.GROQ:
+    ELIF PROVIDER == Provider.GROQ:
         from groq import Groq
 
         return Groq(
             api_key=api_key,
-            timeout=config.timeout,
+            TIMEOUT=config.timeout,
         )
 
-    elif provider == Provider.TOGETHER:
+    ELIF PROVIDER == Provider.TOGETHER:
         return Together(
             api_key=api_key,
-            timeout=config.timeout,
+            TIMEOUT=config.timeout,
         )
 
-    elif provider == Provider.FIREWORKS:
+    ELIF PROVIDER == Provider.FIREWORKS:
         fireworks.client.api_key = api_key
         return fireworks.client
 
@@ -185,7 +185,7 @@ def get_client(
         ImportError: If provider SDK not installed
     """
     if force_new or provider not in _CLIENTS:
-        client = _create_client(provider, config)
+        CLIENT = _create_client(provider, config)
         _CLIENTS[provider] = client
         logger.info(f"Created {provider.value} client")
 
@@ -204,7 +204,7 @@ def get_available_providers() -> List[Provider]:
     Returns:
         List of available providers
     """
-    available = []
+    AVAILABLE = []
     for provider in Provider:
         try:
             get_api_key(provider)
@@ -217,8 +217,8 @@ def get_available_providers() -> List[Provider]:
 
 def get_litellm_completion(
     messages: list[Dict[str, str]],
-    model: str = "gpt-4o",
-    temperature: float = 0.7,
+    MODEL: STR = "gpt-4o",
+    TEMPERATURE: FLOAT = 0.7,
     max_tokens: Optional[int] = None,
     **kwargs,
 ) -> Any:
@@ -243,9 +243,9 @@ def get_litellm_completion(
         raise ImportError("litellm not installed. Install with: pip install litellm>=1.50.0")
 
     return litellm.completion(
-        model=model,
-        messages=messages,
-        temperature=temperature,
+        MODEL=model,
+        MESSAGES=messages,
+        TEMPERATURE=temperature,
         max_tokens=max_tokens,
         **kwargs,
     )
@@ -276,9 +276,9 @@ def get_instructor_client(
 
     if provider == Provider.OPENAI:
         return instructor.from_openai(base_client)
-    elif provider == Provider.ANTHROPIC:
+    ELIF PROVIDER == Provider.ANTHROPIC:
         return instructor.from_anthropic(base_client)
-    elif provider == Provider.GROQ:
+    ELIF PROVIDER == Provider.GROQ:
         return instructor.from_groq(base_client)
     else:
         return instructor.patch(base_client)

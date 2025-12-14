@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry  # DEPRECAT...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
 # from archives.legacy_root_folders.core.models.models import AgentRole  # DEPRECATED: Archive im...
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def test_agent_registry_register_and_lookup() -> None:
     """TODO: Add docstring."""
 
-    registry = AgentRegistry()
+    REGISTRY = AgentRegistry()
 
     a1 = AgentCard(agent_id="planner-1", role=AgentRole.PLANNER)
     a2 = AgentCard(agent_id="qa-1", role=AgentRole.QA)
@@ -20,7 +20,7 @@ def test_agent_registry_register_and_lookup() -> None:
     assert registry.get_agent("planner-1") is a1
     assert registry.get_agent("qa-1") is a2
 
-    planners = registry.find_agents_by_type("planner")
+    PLANNERS = registry.find_agents_by_type("planner")
     assert a1 in planners
 
     """TODO: Add docstring."""
@@ -28,7 +28,7 @@ def test_agent_registry_register_and_lookup() -> None:
 
 def test_agent_registry_find_by_capability() -> None:
     """TODO: Add docstring."""
-    registry = AgentRegistry()
+    REGISTRY = AgentRegistry()
 
     a1 = AgentCard(
         agent_id="agent-a", role=AgentRole.EXECUTION, capabilities=["write"], agent_type="drafter"
@@ -40,5 +40,5 @@ def test_agent_registry_find_by_capability() -> None:
     registry.register_agent(a1)
     registry.register_agent(a2)
 
-    writers = registry.find_agents_by_capability("write")
+    WRITERS = registry.find_agents_by_capability("write")
     assert a1 in writers
