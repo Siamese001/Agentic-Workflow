@@ -1,8 +1,7 @@
 """Unit tests for L2_execution/P3_aggregate - execution result aggregation."""
 
-from typing import Dict, List
 import logging
-
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 

@@ -8,8 +8,8 @@ Phase 1C - SDK Integration Layer
 
 import logging
 import os
-from typing import Any, Dict, Optional
 from dataclasses import dataclass
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +40,10 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> None:
 
     try:
         from opentelemetry import trace
-        from opentelemetry.sdk.trace import TracerProvider, BatchSpanProcessor, ConsoleSpanExporter
         from opentelemetry.sdk.resources import Resource
+        from opentelemetry.sdk.trace import (BatchSpanProcessor,
+                                             ConsoleSpanExporter,
+                                             TracerProvider)
     except ImportError:
         logger.warning(
             "OpenTelemetry not installed. Install with: "
@@ -75,7 +77,8 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> None:
     # Add OTLP exporter if enabled
     if config.enable_otlp_export and config.endpoint:
         try:
-            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
+                OTLPSpanExporter
 
             otlp_exporter = OTLPSpanExporter(endpoint=config.endpoint)
             _TRACER_PROVIDER.add_span_processor(BatchSpanProcessor(otlp_exporter))

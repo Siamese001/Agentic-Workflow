@@ -6,8 +6,9 @@ Migrated from archives/legacy_root_folders/tools/runtime_utils.py
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
-import time
 import logging
+import time
+
 
 class CircuitBreakerState(Enum):
     """TODO: Add docstring."""

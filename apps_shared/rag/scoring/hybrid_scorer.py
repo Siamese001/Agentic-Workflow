@@ -5,10 +5,11 @@ logger = logging.getLogger(__name__)
 Combines multiple scoring strategies for optimal document ranking.
 """
 
-from typing import Any, Dict, List, Optional
+import logging
 import math
 import re
-import logging
+from typing import Any, Dict, List, Optional
+
 
 @dataclass
 class ScoringWeights:

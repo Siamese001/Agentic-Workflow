@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Enforce Message Contracts - atomic execution layer."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def enforce_message_contracts(data: Dict[str, object]) -> Dict[str, object]:

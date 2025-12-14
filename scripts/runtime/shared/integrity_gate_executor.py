@@ -20,12 +20,13 @@ Non-responsibilities:
 
 
 import hashlib
+import logging
 import re
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
-from dataclasses import dataclass
-import logging
+
 
 class ValidationSeverity(Enum):
     """TODO: Add docstring."""

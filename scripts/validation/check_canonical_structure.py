@@ -5,9 +5,9 @@ Check Canonical Project Structure - Pre-commit Hook
 Ensures required canonical directories exist.
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 
 
 def main() -> None:

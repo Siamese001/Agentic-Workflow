@@ -15,8 +15,9 @@ Test Structure:
 - Mock objects and fixtures are provided for complex dependencies
 """
 
-import pytest
 import logging
+
+import pytest
 
 
 # Common test fixtures

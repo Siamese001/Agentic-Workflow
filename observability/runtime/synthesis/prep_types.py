@@ -1,8 +1,6 @@
 """Types and models for tools_utility_prepare_information."""
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""

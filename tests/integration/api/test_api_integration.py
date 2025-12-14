@@ -1,9 +1,8 @@
 """Integration tests for API layer."""
-from typing import Dict, Optional
+import logging
 from dataclasses import dataclass
 from enum import Enum
-import logging
-
+from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 class HTTPMethod(Enum):

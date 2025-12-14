@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Apply Lic Execution Safety - atomic execution layer."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def apply_lic_execution_safety(data: Dict[str, object]) -> Dict[str, object]:

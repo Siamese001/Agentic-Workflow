@@ -5,9 +5,10 @@ logger = logging.getLogger(__name__)
 Tests the actual LLM-powered functionality with real API calls.
 """
 
-import pytest
-import os
 import logging
+import os
+
+import pytest
 
 # Import the classes we're testing
 try:

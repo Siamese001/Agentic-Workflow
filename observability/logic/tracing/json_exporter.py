@@ -5,8 +5,8 @@ Domain: tracing
 Generated: 2025-12-07T12:07:59.856505
 """
 
-import logging
 import json
+import logging
 from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)

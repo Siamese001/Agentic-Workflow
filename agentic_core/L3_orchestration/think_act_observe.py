@@ -7,7 +7,6 @@ Implements the 5-step Mission-Scene-Think-Act-Observe loop with ReAct integratio
 import logging
 from typing import Any, Dict, List, Optional
 
-
 logger = logging.getLogger(__name__)
 
 @dataclass

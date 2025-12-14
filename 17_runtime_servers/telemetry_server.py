@@ -1,8 +1,9 @@
 logger = logging.getLogger(__name__)
 # python servers/telemetry_server.py
-from mcp.server.fastmcp import FastMCP
-import duckdb
 import logging
+
+import duckdb
+from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("TelemetryServer")
 CONN = duckdb.connect("flight_recorder.duckdb", read_only=True)

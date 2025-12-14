@@ -2,11 +2,11 @@ logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Fix TODO/FIXME comments in Python files."""
 
-import os
-from typing import Any
 import glob
-import re
 import logging
+import os
+import re
+from typing import Any
 
 
 def fix_todo_comments(directory: Any) -> None:

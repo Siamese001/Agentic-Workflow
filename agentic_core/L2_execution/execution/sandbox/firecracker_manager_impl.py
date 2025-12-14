@@ -1,7 +1,6 @@
 """Implementation for firecracker_manager."""
 import logging
 
-
 logger = logging.getLogger(__name__)
 # from .firecracker_manager_types import *  # Star import removed
 

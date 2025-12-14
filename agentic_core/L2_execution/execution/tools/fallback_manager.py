@@ -6,8 +6,7 @@ Implements ordered fallback chains when primary providers fail.
 
 import logging
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Awaitable
-
+from typing import Any, Awaitable, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

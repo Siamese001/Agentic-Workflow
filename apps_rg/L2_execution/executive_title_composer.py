@@ -20,8 +20,6 @@ Non-responsibilities:
 import logging
 
 
-
-
 @dataclass
 class TitleComposerConfig:
     """TODO: Add docstring."""

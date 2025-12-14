@@ -2,12 +2,12 @@
 import time
 
 from runtime.shared.cache import generate_llm_cache_key
-from runtime.shared.sdk_registry import validate_sdk,
+from runtime.shared.sdk_registry import validate_sdk
+
     reset_all_clients,
     SDK_REGISTRY,
     get_vector_store
 import logging
-
 
 logger = logging.getLogger(__name__)
 class TestSDKValidationLatency:

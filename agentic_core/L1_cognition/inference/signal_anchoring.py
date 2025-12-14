@@ -7,12 +7,11 @@ allowing maximum creativity in narrative construction.
 """
 
 
+import hashlib
 import logging
 import re
-from enum import Enum
 from datetime import datetime
-import hashlib
-
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,6 @@
 """Implementation for error_recovery."""
 import logging
 
-
 logger = logging.getLogger(__name__)
 # from .error_recovery_types import *  # Star import removed
 

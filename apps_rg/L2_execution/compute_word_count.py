@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Text counting functions for resume generation."""
 
-from typing import List
 import logging
+from typing import List
 
 
 def count_words_ms_word_style(text: str) -> int:

@@ -2,9 +2,9 @@
 """Simple unused import remover."""
 
 import ast
-from typing import Any
-import os
 import logging
+import os
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

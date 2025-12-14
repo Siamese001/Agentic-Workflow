@@ -1,7 +1,7 @@
-import docker
-from typing import Any
 import logging
+from typing import Any
 
+import docker
 
 logger = logging.getLogger(__name__)
 class DockerSandbox:

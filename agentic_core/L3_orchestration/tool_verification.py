@@ -8,9 +8,9 @@ before execution. Acts as a pre-commit check for agent actions.
 import ast
 import logging
 import re
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

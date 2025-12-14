@@ -6,7 +6,7 @@ and resolved as needed throughout the application.
 """
 
 import logging
-from typing import Type, TypeVar, Dict, Any, Optional, Callable
+from typing import Any, Callable, Dict, Optional, Type, TypeVar
 
 logger = logging.getLogger(__name__)
 

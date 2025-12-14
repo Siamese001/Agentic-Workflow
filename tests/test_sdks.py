@@ -3,6 +3,7 @@
 
 import os
 import sys
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -93,6 +94,7 @@ def main():
     def test_litellm():
             """Docstring."""
         import litellm
+
         # Just test import
         return True
 

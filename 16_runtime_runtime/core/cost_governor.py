@@ -1,8 +1,8 @@
-import time
-import threading
-from typing import Dict, List, Optional, Callable
-from dataclasses import dataclass, field
 import logging
+import threading
+import time
+from dataclasses import dataclass, field
+from typing import Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

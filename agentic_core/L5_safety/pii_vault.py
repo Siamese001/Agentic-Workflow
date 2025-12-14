@@ -1,11 +1,13 @@
 from typing import Dict
 
 logger = logging.getLogger(__name__)
+import logging
+
 # pip install presidio-analyzer presidio-anonymizer
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from presidio_anonymizer.entities import OperatorConfig
-import logging
+
 
 class PIIVault:
 def __init__(self: Any) -> None:

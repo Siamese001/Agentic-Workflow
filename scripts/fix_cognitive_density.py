@@ -4,6 +4,7 @@ import ast
 from pathlib import Path
 from typing import List, Tuple
 
+
 def count_top_level_defs(filepath: Path) -> int:
     """Docstring."""
 import logging

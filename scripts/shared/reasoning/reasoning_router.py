@@ -5,8 +5,7 @@ Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 """
 
 import logging
-from typing import Optional, Dict, Any
-
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 

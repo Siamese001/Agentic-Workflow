@@ -3,7 +3,7 @@
 
 import shutil
 from pathlib import Path
-from typing import Set, List, Tuple
+from typing import List, Set, Tuple
 
 # Current sovereign codebase roots
 SOVEREIGN_ROOTS = {

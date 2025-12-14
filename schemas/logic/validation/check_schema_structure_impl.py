@@ -1,7 +1,8 @@
 """Implementation for check_schema_structure."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
+
 # from .check_schema_structure_types import *  # Star import removed
 
 class CheckSchemaStructure:

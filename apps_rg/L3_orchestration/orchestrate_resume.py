@@ -3,10 +3,10 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Pure orchestration of resume generation using shared atoms."""
 
+import logging
 from typing import Dict, List
 
 from shared.configuration.config import ContentConstraintsConfig
-import logging
 
 
 class ResumeOrchestrator:

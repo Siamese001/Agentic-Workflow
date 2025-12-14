@@ -21,7 +21,8 @@ class ContextEnrichmentStage(PipelineStage):
     def __init__(self):
         """Initialize context enrichment stage."""
         try:
-            from ..rag_components import SemanticCache, SelfRAGProcessor, KnowledgeGraphInjector
+            from ..rag_components import (KnowledgeGraphInjector,
+                                          SelfRAGProcessor, SemanticCache)
             self.kg_injector = KnowledgeGraphInjector()
             self.rag_processor = SelfRAGProcessor()
             self.semantic_cache = SemanticCache()
@@ -126,8 +127,8 @@ class SignalAugmentationStage(PipelineStage):
         try:
             from ..claim_confidence import ClaimConfidenceScorer
             from ..prompt_optimizer import PromptOptimizer
-            from ..tone_model import ToneModel
             from ..rag_components import SemanticCache
+            from ..tone_model import ToneModel
             self.claim_scorer = ClaimConfidenceScorer()
             self.prompt_optimizer = PromptOptimizer()
             self.tone_model = ToneModel()

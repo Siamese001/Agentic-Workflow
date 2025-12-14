@@ -11,10 +11,10 @@ Tests all MCP servers with the executive orchestrator:
 """
 
 import asyncio
-from typing import Any
 import os
 import sys
 from datetime import datetime
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(__file__))
@@ -251,7 +251,8 @@ async def test_executive_orchestrator_integration() -> None:
 
     try:
         # Import with MCP
-        from runtime.shared.workflow.executive_orchestrator import ExecutiveAgentOrchestrator
+        from runtime.shared.workflow.executive_orchestrator import \
+            ExecutiveAgentOrchestrator
 
         # Create orchestrator
         orchestrator = ExecutiveAgentOrchestrator()

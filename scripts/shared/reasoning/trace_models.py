@@ -6,9 +6,10 @@ Phase 1 - Pillar 6: Reasoning Models (Structured Reasoning)
 Formal data models for separating reasoning from action outputs.
 """
 
+import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
-import logging
+
 
 class ThinkStep(BaseModel):
     """Represents a thinking/reasoning step.

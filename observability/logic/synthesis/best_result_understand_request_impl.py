@@ -1,7 +1,8 @@
 """Implementation for best_result_understand_request."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
+
 # from .best_result_understand_request_types import *  # Star import removed
 
 class BestResultUnderstandRequest:

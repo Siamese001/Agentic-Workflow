@@ -2,6 +2,5 @@
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 # Prevent pytest from collecting any test files in this directory

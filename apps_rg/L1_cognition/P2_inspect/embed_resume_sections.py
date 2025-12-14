@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Embed Resume Sections - atomic implementation."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 class EmbedResumeSections:

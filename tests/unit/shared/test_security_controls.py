@@ -6,9 +6,10 @@ Unit tests for shared/security_controls/
 Tests security control operations including guardrails.
 """
 import re
-from typing import Dict, List
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+from typing import Dict, List
+
 
 class ThreatLevel(Enum):
     """TODO: Add docstring."""

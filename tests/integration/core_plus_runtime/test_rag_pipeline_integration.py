@@ -3,8 +3,9 @@
 Integration tests for RAG Pipeline
 Tests RAG retrieval, augmentation, and generation behaviors
 """
-import pytest
 import logging
+
+import pytest
 
 # Import actual RAG components when available
 try:

@@ -1,7 +1,6 @@
 """Implementation for autonomic_monitor."""
 import logging
 
-
 logger = logging.getLogger(__name__)
 # from .autonomic_monitor_types import *  # Star import removed
 

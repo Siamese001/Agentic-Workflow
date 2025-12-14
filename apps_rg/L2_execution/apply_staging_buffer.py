@@ -6,9 +6,9 @@ logger = logging.getLogger(__name__)
 """Immutable staging buffer for HOP-4."""
 
 import copy
+import logging
 from datetime import datetime
 from typing import Dict, Optional
-import logging
 
 
 class ImmutableStagingBuffer:

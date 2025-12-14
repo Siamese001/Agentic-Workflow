@@ -1,7 +1,7 @@
 """Check npx installation and package availability."""
 
-import subprocess
 import logging
+import subprocess
 
 logger = logging.getLogger(__name__)
 

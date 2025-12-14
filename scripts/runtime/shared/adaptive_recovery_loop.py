@@ -19,11 +19,12 @@ Non-responsibilities:
 """
 
 
+import logging
 import time
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
-import logging
+from typing import Any, Dict, List, Optional
+
 
 class FailureType(Enum):
     """TODO: Add docstring."""

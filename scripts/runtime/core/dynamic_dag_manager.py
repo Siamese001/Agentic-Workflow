@@ -9,7 +9,6 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-
 logger = logging.getLogger(__name__)
 
 class GraphTransaction:

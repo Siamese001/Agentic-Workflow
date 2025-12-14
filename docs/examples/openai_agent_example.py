@@ -5,18 +5,16 @@ Example of using OpenAI SDK with an agent.
 Demonstrates basic chat completion and structured outputs.
 """
 
-import os
-from typing import Dict, Any, List
-from pydantic import BaseModel
 import json
+import os
+from typing import Any, Dict, List
 
 # Import our OpenAI client manager
-from agentic_workflow.runtime.shared.openai_client import (
-import logging
-    get_openai_client,
-    create_agent_prompt,
-    configure_openai
-)
+from agentic_workflow.runtime.shared.openai_client import (configure_openai,
+                                                           create_agent_prompt,
+                                                           get_openai_client,
+                                                           import, logging)
+from pydantic import BaseModel
 
 
 class TaskResponse(BaseModel):

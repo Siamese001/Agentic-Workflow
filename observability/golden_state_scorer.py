@@ -1,6 +1,5 @@
-from typing import Dict, Iterable
 import logging
-
+from typing import Dict, Iterable
 
 logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict  # DEPRECATED: A...

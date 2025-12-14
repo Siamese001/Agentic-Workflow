@@ -7,6 +7,7 @@ and messages.
 
 import json
 import logging
+
     InjectionType,
     InjectionScope,
     InjectionPattern,
@@ -14,7 +15,8 @@ import logging
     InjectionConfig,
     MicroStage
 )
-from typing import Dict, List, Optional, Any, Union
+from typing import Any, Dict, List, Optional, Union
+
     get_instructional_injections,
     get_stage_applicable_injections,
     get_required_injections,

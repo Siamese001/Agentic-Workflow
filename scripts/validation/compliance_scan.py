@@ -8,8 +8,9 @@ logger = logging.getLogger(__name__)
 
 """
 
-import yaml
 from pathlib import Path
+
+import yaml
 
 REPO = Path("c:/Git/Agentic-Workflow")
 

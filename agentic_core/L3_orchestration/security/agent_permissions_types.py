@@ -1,8 +1,6 @@
 """Types and models for agent_permissions."""
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 class PermissionScope(Enum):
     """Permission scopes."""

@@ -1,9 +1,9 @@
 """Test suite for Reflection Engine integration with Subatomic Hop."""
 
-import pytest
 import asyncio
 import logging
 
+import pytest
 
 logger = logging.getLogger(__name__)
     ReflectionEngine,

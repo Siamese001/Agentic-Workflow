@@ -6,10 +6,11 @@ Unit tests for shared_engine_ops/inspection_ops/
 Tests inspection operations for content analysis.
 """
 
-import pytest
-from typing import Dict, List
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+from typing import Dict, List
+
+import pytest
 
 
 class ContentQuality(Enum):

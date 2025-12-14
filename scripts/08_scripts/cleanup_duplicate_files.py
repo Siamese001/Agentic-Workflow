@@ -19,11 +19,12 @@ logger = logging.getLogger(__name__)
 
 """
 
-import re
-import json
 import hashlib
-from pathlib import Path
+import json
+import re
 from datetime import datetime
+from pathlib import Path
+
 
 @dataclass
 class DuplicateFile:

@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Functional Behavior - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_functional_behavior(data: Dict[str, object]) -> Dict[str, object]:

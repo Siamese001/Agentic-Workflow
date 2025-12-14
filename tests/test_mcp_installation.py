@@ -1,9 +1,8 @@
 """Test script to verify MCP installation and Python tools."""
 
-import sys
-import os
 import logging
-
+import os
+import sys
 
 logger = logging.getLogger(__name__)
 # Add project to path

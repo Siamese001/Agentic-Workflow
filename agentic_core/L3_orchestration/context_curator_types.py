@@ -1,8 +1,6 @@
 """Types and models for context_curator."""
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 class ContextPriority(Enum):
     """Priority levels for context chunks."""

@@ -5,8 +5,9 @@ logger = logging.getLogger(__name__)
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
-import random
 import logging
+import random
+
 
 class BackoffStrategy(ABC):
     """Abstract base for backoff strategies."""

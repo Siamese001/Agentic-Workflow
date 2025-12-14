@@ -8,9 +8,9 @@ logger = logging.getLogger(__name__)
 
 """
 
-import sys
-import os
 import ast
+import os
+import sys
 
 
 def validate_python_syntax(file_path: str) -> bool:

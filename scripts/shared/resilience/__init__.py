@@ -1,7 +1,6 @@
 """Resilience components for error recovery and circuit breaking."""
 import logging
 
-
 logger = logging.getLogger(__name__)
     CircuitBreaker,
     CircuitBreakerState,

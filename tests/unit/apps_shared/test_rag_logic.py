@@ -7,10 +7,11 @@ logger = logging.getLogger(__name__)
 
 """
 
-import pytest
-import time
 import asyncio
+import time
 from datetime import datetime, timedelta
+
+import pytest
 
     HybridScorer,
     ScoringWeights,

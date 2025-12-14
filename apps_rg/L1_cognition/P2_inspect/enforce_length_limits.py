@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Enforce Length Limits - atomic execution layer."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def enforce_length_limits(data: Dict[str, object]) -> Dict[str, object]:

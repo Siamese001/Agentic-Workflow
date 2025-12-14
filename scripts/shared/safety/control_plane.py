@@ -6,7 +6,6 @@ Provides unified defense system for prompt generation and output processing.
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 class PolicyAction(Enum):

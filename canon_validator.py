@@ -1114,8 +1114,14 @@ def check_key_06_no_eval_exec() -> tuple[bool, List[str]]:
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
-                if "eval(" in content or "exec(" in content:
-                    violations.append(file_path)
+                tree = ast.parse(content)
+                
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Call):
+                        if isinstance(node.func, ast.Name):
+                            if node.func.id in ('eval', 'exec'):
+                                violations.append(file_path)
+                                break
         except Exception:
             continue
 

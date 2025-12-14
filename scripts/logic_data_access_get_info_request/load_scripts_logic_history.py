@@ -5,8 +5,8 @@ including operation tracking, state persistence, and historical analysis.
 Follows the functional component pattern with proper logging.
 """
 
-import logging
 import json
+import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 

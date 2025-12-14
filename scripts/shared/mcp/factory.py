@@ -7,7 +7,6 @@ import importlib
 import logging
 from typing import Any, Dict, List
 
-
 logger = logging.getLogger(__name__)
 
 def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpec]:

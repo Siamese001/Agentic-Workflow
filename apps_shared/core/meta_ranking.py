@@ -1,6 +1,5 @@
 import logging
 
-
 logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.ranking import bm25_score, dense_score, merge_scores, no...
 # from archives.legacy_root_folders.core.models.models import Evidence  # DEPRECATED: Archive imp...

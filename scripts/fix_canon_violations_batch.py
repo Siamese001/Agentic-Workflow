@@ -1,10 +1,11 @@
 import logging
+
 #!/usr/bin/env python3
 """Fix multiple canon validator violations automatically."""
 
 import os
 import re
-from typing import List, Set, Dict, Any, Optional
+from typing import Any, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
 

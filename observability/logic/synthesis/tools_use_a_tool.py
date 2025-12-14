@@ -19,10 +19,9 @@ Compliance: Subatomic Canon 2026
 
 import logging
 import sys
-import traceback
-from typing import Dict, List, Optional, Union, Any
-
 import time
+import traceback
+from typing import Any, Dict, List, Optional, Union
 
 # Configure module-specific logger
 logger = logging.getLogger(__name__)

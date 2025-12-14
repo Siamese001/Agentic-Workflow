@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 
 """
 
-import sys
 import pathlib
+import sys
 from typing import List
 
 

@@ -10,7 +10,6 @@ runtime.* modules - only from pydantic, enum, and typing.
 from enum import Enum
 from pathlib import Path
 
-
 # ============================================================================
 # SubatomicHop Models
 # ============================================================================

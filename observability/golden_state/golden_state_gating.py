@@ -1,7 +1,6 @@
 
-from typing import Dict
 import logging
-
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, float]) -> bool:

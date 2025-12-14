@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Semantic Cache Reconstruction - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_semantic_cache_reconstruction(data: Dict[str, object]) -> Dict[str, object]:

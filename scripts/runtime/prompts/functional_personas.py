@@ -6,8 +6,9 @@ This module provides sanitized prompt templates that use functional personas
 instead of numbered nodes. All references to K.X have been eliminated.
 """
 
-from typing import Dict, Any, Optional
 import logging
+from typing import Any, Dict, Optional
+
 
 class PersonaTemplate:
     """Template for functional persona prompts."""

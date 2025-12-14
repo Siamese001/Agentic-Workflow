@@ -1,7 +1,6 @@
 """Implementation for context_curator."""
 import logging
 
-
 logger = logging.getLogger(__name__)
 # from .context_curator_types import *  # Star import removed
 

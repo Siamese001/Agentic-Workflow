@@ -1,8 +1,7 @@
 """Unit tests for L2_execution/P2_inspect - execution result inspection."""
 
-from typing import Dict
 import logging
-
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 

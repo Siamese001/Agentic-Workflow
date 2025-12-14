@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 import re
 from pathlib import Path
 
+
 class RepositoryCleaner:
     """Cleans up runaway refactoring artifacts."""
 

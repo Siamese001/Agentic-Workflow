@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Contract Enforcement - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_contract_enforcement(data: Dict[str, object]) -> Dict[str, object]:

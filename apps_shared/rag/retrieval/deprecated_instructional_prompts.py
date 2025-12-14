@@ -9,8 +9,9 @@ This module validates:
 - Layer and extension functionality
 """
 
-import pytest
 from typing import Any
+
+import pytest
 
 
 class TestInstructionalPromptStructure:

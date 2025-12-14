@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Fix remaining long lines with simple patterns."""
 
-import os
 import logging
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -76,7 +76,7 @@ def fix_long_lines_in_file(filepath: str) -> int:
         return 0
 
 
-def main():
+def main() -> None:
     """Fix long lines in all Python files."""
     total_fixed = 0
 

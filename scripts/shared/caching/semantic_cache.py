@@ -5,8 +5,8 @@ Migrated from archives/legacy_lic/LIC - Python/LIC_AGENTIC_v11_4.py
 """
 
 import hashlib
-import time
 import logging
+import time
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)

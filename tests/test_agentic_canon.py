@@ -10,8 +10,9 @@ logger = logging.getLogger(__name__)
 
 """
 
-import pytest
 import asyncio
+
+import pytest
 
 # Import all components to test
     InputGuardrail,

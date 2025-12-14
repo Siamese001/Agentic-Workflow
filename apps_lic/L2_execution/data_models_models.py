@@ -2,7 +2,6 @@
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 # from .data_models_models import *  # Star import removed
 

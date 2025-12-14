@@ -3,8 +3,8 @@
 # -*- coding: utf-8 -*-
 """Clerk extraction for resume generation HOP-1."""
 
-from typing import Dict, List, Tuple
 import logging
+from typing import Dict, List, Tuple
 
 
 class ClerkExtractor:
