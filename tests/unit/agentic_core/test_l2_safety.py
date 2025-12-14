@@ -1,9 +1,8 @@
 """Unit tests for L2_execution/P4_safety - execution safety checks."""
 
+import logging
 import re
 from typing import Any
-import logging
-
 
 logger = logging.getLogger(__name__)
 

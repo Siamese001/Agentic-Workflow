@@ -14,9 +14,11 @@ logger = logging.getLogger(__name__)
 
 from pathlib import Path
 
+from apps_rg.L2_execution.executive_title_composer import (
+    TitleComp, create_executive_title_composer)
+from apps_rg.L2_execution.strategist_biowriter import (
+    BioWriterConfig, create_strategist_biowriter)
 
-from apps_rg.L2_execution.strategist_biowriter import create_strategist_biowriter, BioWriterConfig
-from apps_rg.L2_execution.executive_title_composer import create_executive_title_composer, TitleComp
     oserConfig
 
 

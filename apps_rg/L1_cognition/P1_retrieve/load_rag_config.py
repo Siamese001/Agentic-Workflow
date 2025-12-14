@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """RAG configuration for resume generation."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 @dataclass

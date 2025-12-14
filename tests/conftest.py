@@ -5,10 +5,11 @@ logger = logging.getLogger(__name__)
 Shared pytest configuration and fixtures for all tests.
 """
 
-import pytest
 import asyncio
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import pytest
 
 # Test infrastructure constants
 PROJECT_ROOT = Path(__file__).parent.parent

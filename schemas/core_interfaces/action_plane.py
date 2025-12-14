@@ -7,8 +7,9 @@ Defines the contract for all tool execution and external interactions.
 L2 Execution: Side effects allowed, but controlled and observable.
 """
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
+
 
 class ActionCapability(Enum):
     """Capabilities provided by the action plane."""

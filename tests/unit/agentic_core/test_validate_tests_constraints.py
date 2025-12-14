@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Validate Tests Constraints - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_validate_tests_constraints(data: Dict[str, object]) -> Dict[str, object]:

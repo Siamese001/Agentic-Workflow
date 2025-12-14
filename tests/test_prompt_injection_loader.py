@@ -1,11 +1,11 @@
 """Test suite for Prompt Injection Loader."""
 
-import pytest
 import json
+import logging
 import tempfile
 from pathlib import Path
-import logging
 
+import pytest
 
 logger = logging.getLogger(__name__)
     PromptInjectionLoader,

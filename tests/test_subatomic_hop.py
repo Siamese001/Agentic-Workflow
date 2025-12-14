@@ -1,12 +1,12 @@
 """Test suite for Subatomic Hop Architecture."""
 
-import pytest
 import asyncio
-import tempfile
 import json
-from pathlib import Path
 import logging
+import tempfile
+from pathlib import Path
 
+import pytest
 
 logger = logging.getLogger(__name__)
     SubatomicHop,

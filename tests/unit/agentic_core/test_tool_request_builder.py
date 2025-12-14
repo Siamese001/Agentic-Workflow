@@ -11,9 +11,10 @@ Tests for tool routing that maps PlanObject to L2 execution functions.
 Currently depends on legacy execution functions that need implementation.
 """
 
-import pytest
-from typing import Any
 import logging
+from typing import Any
+
+import pytest
 
 
 # Mock exceptions since they're zombie file dependencies

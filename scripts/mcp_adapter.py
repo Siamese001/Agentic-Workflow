@@ -4,11 +4,12 @@ Manages async lifecycle of multiple MCP servers and aggregates their tools
 for use by executive agents.
 """
 
-import os
 import json
 import logging
+import os
 from contextlib import AsyncExitStack
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 

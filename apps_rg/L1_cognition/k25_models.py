@@ -1,7 +1,7 @@
 """Dataclass models for k25_research_models_types."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 # from .k25_research_models_types_enums import *  # Star import removed

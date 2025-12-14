@@ -1,7 +1,6 @@
 import logging
 from typing import Any
 
-
 logger = logging.getLogger(__name__)
 # from archives.legacy_resume_gen.Agentic-Workflow-10_7_main.draft_simulation import Engine  # IN...
 

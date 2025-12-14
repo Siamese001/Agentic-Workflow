@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Check Message Compliance - atomic execution layer."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def check_message_compliance(data: Dict[str, object]) -> Dict[str, object]:

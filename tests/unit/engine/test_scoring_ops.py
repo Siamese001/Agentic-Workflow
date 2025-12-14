@@ -6,9 +6,10 @@ Unit tests for shared_engine_ops/scoring_ops/
 Tests scoring operations for ranking and evaluation.
 """
 
-import pytest
-from typing import Dict
 from dataclasses import dataclass
+from typing import Dict
+
+import pytest
 
 
 @dataclass

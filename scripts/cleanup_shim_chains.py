@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 import re
 from pathlib import Path
 
+
 class ShimChainCleaner:
     """Detects and cleans up shim chains."""
 

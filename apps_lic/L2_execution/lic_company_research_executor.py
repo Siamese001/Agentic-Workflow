@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Lic Company Research Executor - atomic execution layer."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def lic_company_research_executor(data: Dict[str, object]) -> Dict[str, object]:

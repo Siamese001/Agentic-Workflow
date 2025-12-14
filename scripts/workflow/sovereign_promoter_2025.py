@@ -4,13 +4,13 @@
 # Supports .py, .json, .md
 # "Capture First, Polish Later": Archive files are always promoted, never rejected.
 
+import json
+import logging
+import re
 import shutil
 import subprocess
 import sys
-import re
-import json
 from pathlib import Path
-import logging
 
 SOVEREIGN_ROOTS = {
     "agentic_core",

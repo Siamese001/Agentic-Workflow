@@ -6,7 +6,8 @@ requires retrieval from the vector database or can be handled from context.
 
 import logging
 import re
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)

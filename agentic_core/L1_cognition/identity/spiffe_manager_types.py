@@ -1,8 +1,7 @@
 """Types and models for spiffe_manager."""
 
-from typing import Any, Dict, List, Optional
 import logging
-
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

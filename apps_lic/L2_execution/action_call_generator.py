@@ -19,8 +19,8 @@ Non-responsibilities:
 """
 
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
 
 
 class RouteType(Enum):

@@ -1,8 +1,8 @@
 """Test suite for Dynamic DAG Manager and mutation capabilities."""
 
-import pytest
 import logging
 
+import pytest
 
 logger = logging.getLogger(__name__)
     DAGManager,

@@ -9,9 +9,8 @@ Data enrichment for resume generation HOP-2.
 Enriches bullet pool with canonical verbs and deduplication.
 """
 
-from typing import Dict, List, Optional, Tuple
 import logging
-
+from typing import Dict, List, Optional, Tuple
 
 
 class DataEnricher:

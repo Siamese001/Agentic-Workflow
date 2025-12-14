@@ -7,8 +7,8 @@ Contains QualityValidationStage and OutputFormattingStage.
 """
 
 import hashlib
-from typing import Any
 import time
+from typing import Any
 
 from .types import PipelineStage
 
@@ -22,8 +22,8 @@ def __init__(self: Any) -> None:
         """Initialize quality validation stage."""
         try:
             from ..bias_auditor import BiasAuditor
-            from ..pii_scrubber import PIIScrubber
             from ..constitutional_ai import ConstitutionalAISystem
+            from ..pii_scrubber import PIIScrubber
             from ..rag_components import SemanticCache
             self.bias_auditor = BiasAuditor()
             self.pii_scrubber = PIIScrubber()

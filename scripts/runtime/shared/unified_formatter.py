@@ -6,10 +6,9 @@ engines can use, eliminating the need for separate format_* modules.
 
 import json
 import logging
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
-from dataclasses import dataclass
-
 
 logger = logging.getLogger(__name__)
 

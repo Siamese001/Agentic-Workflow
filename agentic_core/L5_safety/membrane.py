@@ -5,9 +5,10 @@ Protects against prompt injection and adversarial data by sanitizing
 all external content before it enters the agent's context.
 """
 
+import logging
 import re
 from typing import Any
-import logging
+
 from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)

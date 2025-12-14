@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Prepare Tests Payload - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_prepare_tests_payload(data: Dict[str, object]) -> Dict[str, object]:

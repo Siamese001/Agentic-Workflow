@@ -5,15 +5,17 @@ logger = logging.getLogger(__name__)
 Test script to verify Tavily API integration with K.11 Shadow Audit.
 """
 
+import asyncio
 import os
 import sys
-import asyncio
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from runtime.shared.workflow.executive_agents import ExecutiveAgentOrchestrator
 import logging
+
+from runtime.shared.workflow.executive_agents import ExecutiveAgentOrchestrator
+
 
 async def test_automated_search():
     """Test the automated search functionality."""

@@ -6,9 +6,9 @@ Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
 
-from typing import Dict, List, Optional, Any
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class ToolStatus(Enum):

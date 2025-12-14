@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Compute Tests Score - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_compute_tests_score(data: Dict[str, object]) -> Dict[str, object]:

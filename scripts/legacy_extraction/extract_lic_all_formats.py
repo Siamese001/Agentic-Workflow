@@ -6,7 +6,8 @@
 import hashlib
 import shutil
 from pathlib import Path
-from typing import Dict, Set, List, Tuple
+from typing import Dict, List, Set, Tuple
+
 
 def get_file_hash(filepath: Path) -> str:
     """Docstring."""

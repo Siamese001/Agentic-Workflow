@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Enforce Tests Filters - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_enforce_tests_filters(data: Dict[str, object]) -> Dict[str, object]:

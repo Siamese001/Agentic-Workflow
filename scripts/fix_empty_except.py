@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Fix empty except blocks in Python files."""
 
-import os
-from typing import Any
 import glob
-import re
 import logging
+import os
+import re
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

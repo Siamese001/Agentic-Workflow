@@ -4,8 +4,8 @@ This module provides Neo4j integration patterns for augmenting agent capabilitie
 with graph-based reasoning, context retrieval, and state management.
 """
 
-import logging
 import json
+import logging
 
 logger = logging.getLogger(__name__)
 

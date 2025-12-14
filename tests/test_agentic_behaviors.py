@@ -9,9 +9,10 @@ This module tests complex agentic behaviors including:
 - Validation retry mechanisms
 """
 
-import pytest
 import asyncio
 import logging
+
+import pytest
 
 # Import the modules we're testing
 # Note: These imports may need adjustment based on actual module structure

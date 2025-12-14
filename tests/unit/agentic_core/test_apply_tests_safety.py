@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Apply Tests Safety - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_apply_tests_safety(data: Dict[str, object]) -> Dict[str, object]:

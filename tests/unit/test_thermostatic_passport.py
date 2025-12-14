@@ -25,6 +25,7 @@ import json
 )
 from pydantic import BaseModel, EmailStr
 
+
 # Define Pydantic schemas for validation
 class EmailContent(BaseModel):
     """Schema for email content validation."""

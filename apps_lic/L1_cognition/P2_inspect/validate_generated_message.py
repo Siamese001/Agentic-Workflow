@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Validate Generated Message - atomic execution layer."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def validate_generated_message(data: Dict[str, object]) -> Dict[str, object]:

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Fix trailing whitespace in all Python files."""
 
-import os
-from typing import Any
 import glob
 import logging
+import os
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

@@ -5,7 +5,7 @@ Defines the policy interface and implements the safety engine.
 """
 import logging
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 

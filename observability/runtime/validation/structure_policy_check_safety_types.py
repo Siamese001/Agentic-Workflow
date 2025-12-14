@@ -1,8 +1,6 @@
 """Types and models for structure_policy_check_safety."""
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""

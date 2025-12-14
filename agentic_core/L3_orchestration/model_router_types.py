@@ -1,8 +1,6 @@
 """Types and models for model_router."""
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 class ModelTier(Enum):
     """Model capability tiers."""

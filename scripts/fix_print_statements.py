@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Fix print statements by converting them to logging statements."""
 
+import logging
 import os
 import re
 import sys
-import logging
 from pathlib import Path
 
 # Configure logging

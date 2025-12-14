@@ -6,7 +6,8 @@ Generated: 2025-12-07T13:28:54.216679
 """
 
 import logging
-from typing import Union, Dict, Optional
+from typing import Dict, Optional, Union
+
 from shared.result_types import DiagnosticReport
 
 logger = logging.getLogger(__name__)

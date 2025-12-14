@@ -9,9 +9,9 @@ Writes entities, relations, and events to Neo4jGraphStore
 to support resume timeline analysis and job alignment.
 """
 
-from typing import List, Optional
-from datetime import datetime
 import logging
+from datetime import datetime
+from typing import List, Optional
 
 try:
 #     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPR...

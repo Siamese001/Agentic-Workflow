@@ -11,12 +11,12 @@ Tests cover:
 """
 
 import asyncio
-import sys
-import os
-from typing import Any, Dict, List, Optional
-from unittest.mock import Mock, AsyncMock, patch
-from dataclasses import dataclass
 import logging
+import os
+import sys
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+from unittest.mock import AsyncMock, Mock, patch
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))

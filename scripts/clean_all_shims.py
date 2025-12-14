@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 import re
 from pathlib import Path
 
+
 def find_shim_chains(directory: Path) -> Dict[str, List[Path]]:
     """Find all shim chains in a directory."""
     chains = {}

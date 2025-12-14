@@ -13,10 +13,11 @@ Primary Responsibilities:
 
 import logging
 import re
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
+
 from sklearn.metrics.pairwise import cosine_similarity
-from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 

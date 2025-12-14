@@ -1,8 +1,8 @@
 """Test that all vector search modules can be imported."""
 
-import pytest
 import logging
 
+import pytest
 
 logger = logging.getLogger(__name__)
 

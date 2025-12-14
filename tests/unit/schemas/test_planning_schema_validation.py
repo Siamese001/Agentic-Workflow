@@ -4,9 +4,10 @@ logger = logging.getLogger(__name__)
 # High-signal content preserved below — zero-loss migration
 # ================================================================================
 
-from typing import Iterable, Type
-from pydantic import BaseModel
 import logging
+from typing import Iterable, Type
+
+from pydantic import BaseModel
 
 
 def _get_schema_version(obj: object) -> str | None:

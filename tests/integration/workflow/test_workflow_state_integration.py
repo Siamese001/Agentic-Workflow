@@ -1,9 +1,8 @@
 """Integration tests for workflow state management."""
-from typing import Dict, List
+import logging
 from dataclasses import dataclass
 from enum import Enum
-import logging
-
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 class WorkflowState(Enum):

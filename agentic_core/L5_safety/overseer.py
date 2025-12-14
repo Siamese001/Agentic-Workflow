@@ -1,10 +1,10 @@
-import yaml
-from typing import Any
-from pydantic import BaseModel
-import instructor
-from openai import AsyncOpenAI
 import logging
+from typing import Any
 
+import instructor
+import yaml
+from openai import AsyncOpenAI
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 class ViolationCheck(BaseModel):

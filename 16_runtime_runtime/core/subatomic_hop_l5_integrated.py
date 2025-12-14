@@ -9,27 +9,26 @@ This is the production-ready implementation with all L5 safety features:
 5. Comprehensive Observability
 """
 
+import logging
 import time
 import uuid
-import logging
-from typing import Dict, Any, Optional, Tuple
-from pydantic import BaseModel
+from typing import Any, Dict, Optional, Tuple
 
-# L5 Safety Components
-from agentic_core.L4_state.storage import LocalDiskAdapter
-from agentic_core.L4_state.genealogy import GenealogyRegistry
-from agentic_core.L5_safety.pii_vault import PIIVault
-from agentic_core.L5_safety.governor import CostGovernor
-from agentic_core.L5_safety.overseer import ConstitutionalOverseer
-from agentic_core.L5_safety.canary_defense import CanaryDefense, CanaryToken
+from pydantic import BaseModel
+from runtime.core.cost_governor import BudgetExceededError
+# Observability
+from runtime.core.telemetry import TelemetryRecorder, TraceEvent
 
 # Execution Components
 from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
 from agentic_core.L2_execution.sandbox import DockerSandbox
-
-# Observability
-from runtime.core.telemetry import TelemetryRecorder, TraceEvent
-from runtime.core.cost_governor import BudgetExceededError
+from agentic_core.L4_state.genealogy import GenealogyRegistry
+# L5 Safety Components
+from agentic_core.L4_state.storage import LocalDiskAdapter
+from agentic_core.L5_safety.canary_defense import CanaryDefense, CanaryToken
+from agentic_core.L5_safety.governor import CostGovernor
+from agentic_core.L5_safety.overseer import ConstitutionalOverseer
+from agentic_core.L5_safety.pii_vault import PIIVault
 
 logger = logging.getLogger(__name__)
 

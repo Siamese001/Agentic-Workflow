@@ -20,9 +20,9 @@ Non-responsibilities:
 """
 
 
+import logging
 import re
 from typing import Any, Dict, List, Optional
-import logging
 
 
 @dataclass

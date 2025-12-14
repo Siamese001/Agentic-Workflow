@@ -10,64 +10,39 @@ Enhanced with adversarial defense as the outermost security layer.
 
 import logging
 import time
-from typing import List, Dict, Any, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-# Phase 1: Precision Layer
-from scripts.runtime.shared.contextual_compressor import (
-    ContextualCompressor,
-    CompressionResult,
-)
-from scripts.runtime.shared.signal_quality_pipeline import (
-    SignalQualityPipeline,
-    create_signal_pipeline,
-)
 from scripts.runtime.shared.adaptive_retrieval_gate import (
-    AdaptiveRetrievalGate,
-    RetrievalDecision,
-)
-
-# Phase 2: Reasoning Layer
-from scripts.runtime.shared.query_decomposer import (
-    QueryDecomposer,
-    DecomposedQuery,
-    decompose_query,
-)
-from scripts.runtime.shared.hybrid_scorer import (
-    HybridScorer,
-    ScoringResult,
-    create_hybrid_scorer,
-)
-
+    AdaptiveRetrievalGate, RetrievalDecision)
+# Phase 1: Precision Layer
+from scripts.runtime.shared.contextual_compressor import (CompressionResult,
+                                                          ContextualCompressor)
+from scripts.runtime.shared.graphrag_fusion import (FusionResult,
+                                                    GraphRAGFusion, QueryType,
+                                                    get_graphrag_fusion,
+                                                    graphrag_query)
+from scripts.runtime.shared.hybrid_scorer import (HybridScorer, ScoringResult,
+                                                  create_hybrid_scorer)
+# Security Layer
+from scripts.runtime.shared.input_guardrails import (GuardAction, GuardResult,
+                                                     InputGuardrail,
+                                                     get_input_guardrail)
 # Phase 3: SOTA Layer
 from scripts.runtime.shared.late_interaction_reranker import (
-    LateInteractionReranker,
-    PassThroughReranker,
-    rerank_documents,
-)
-
-# Security Layer
-from scripts.runtime.shared.input_guardrails import (
-    InputGuardrail,
-    GuardAction,
-    GuardResult,
-    get_input_guardrail,
-)
-from scripts.runtime.shared.retrieval_grader import (
-    RetrievalGrader,
-    RetrievalGrade,
-    grade_retrieval,
-    GradeStatus,
-    WebSearchFallback,
-    get_retrieval_grader,
-    get_web_search_fallback,
-)
-from scripts.runtime.shared.graphrag_fusion import (
-    GraphRAGFusion,
-    FusionResult,
-    QueryType,
-    get_graphrag_fusion,
-    graphrag_query,
-)
+    LateInteractionReranker, PassThroughReranker, rerank_documents)
+# Phase 2: Reasoning Layer
+from scripts.runtime.shared.query_decomposer import (DecomposedQuery,
+                                                     QueryDecomposer,
+                                                     decompose_query)
+from scripts.runtime.shared.retrieval_grader import (GradeStatus,
+                                                     RetrievalGrade,
+                                                     RetrievalGrader,
+                                                     WebSearchFallback,
+                                                     get_retrieval_grader,
+                                                     get_web_search_fallback,
+                                                     grade_retrieval)
+from scripts.runtime.shared.signal_quality_pipeline import (
+    SignalQualityPipeline, create_signal_pipeline)
 
 logger = logging.getLogger(__name__)
 

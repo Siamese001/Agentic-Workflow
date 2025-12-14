@@ -1,5 +1,6 @@
 """Performance tests for cache throughput."""
 import time
+
     ould_invalidate_cache
 
 class TestCacheKeyThroughput:

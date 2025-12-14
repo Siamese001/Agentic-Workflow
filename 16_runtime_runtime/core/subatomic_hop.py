@@ -1,23 +1,27 @@
 import time
 import uuid
-from typing import Dict, Any
+from typing import Any, Dict
+
 from pydantic import BaseModel
 
-
 logger = logging.getLogger(__name__)
-# Imports from L5 layers
-from agentic_core.L4_state.storage import LocalDiskAdapter
-from agentic_core.L4_state.genealogy import GenealogyRegistry
-from agentic_core.L5_safety.pii_vault import PIIVault
-from agentic_core.L5_safety.governor import CostGovernor, BudgetExceededError
-from agentic_core.L5_safety.overseer import ConstitutionalOverseer
-from agentic_core.L5_safety.membrane import InputMembrane
-from agentic_core.L5_safety.airlock import AirlockProtocol
+import logging
+
+from runtime.core.telemetry import TelemetryRecorder, TraceEvent
+
 from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
 from agentic_core.L2_execution.sandbox import DockerSandbox
-from agentic_core.L3_orchestration.gatekeeper import SemanticGatekeeper, with_gatekeeping
-from runtime.core.telemetry import TelemetryRecorder, TraceEvent
-import logging
+from agentic_core.L3_orchestration.gatekeeper import (SemanticGatekeeper,
+                                                      with_gatekeeping)
+from agentic_core.L4_state.genealogy import GenealogyRegistry
+# Imports from L5 layers
+from agentic_core.L4_state.storage import LocalDiskAdapter
+from agentic_core.L5_safety.airlock import AirlockProtocol
+from agentic_core.L5_safety.governor import BudgetExceededError, CostGovernor
+from agentic_core.L5_safety.membrane import InputMembrane
+from agentic_core.L5_safety.overseer import ConstitutionalOverseer
+from agentic_core.L5_safety.pii_vault import PIIVault
+
 
 class AgentPlan(BaseModel):
     reasoning: str

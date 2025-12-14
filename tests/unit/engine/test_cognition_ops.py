@@ -6,9 +6,9 @@ Unit tests for shared_engine_ops/cognition_ops/
 Tests cognition operations including understand_request.
 """
 
-from typing import Dict
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+from typing import Dict
 
 
 class IntentType(Enum):

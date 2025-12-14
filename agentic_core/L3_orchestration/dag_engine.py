@@ -5,7 +5,7 @@ Lightweight workflow engine for modeling task dependencies and conditional branc
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Set, Callable, Awaitable
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
 

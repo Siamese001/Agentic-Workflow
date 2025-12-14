@@ -8,7 +8,8 @@ import ast
 import os
 import re
 from pathlib import Path
-from typing import Set, List
+from typing import List, Set
+
 
 def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
     """Get all Python files excluding specified directories."""

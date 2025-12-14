@@ -3,12 +3,13 @@
 Simplified integration tests for hardened orchestrator functionality.
 Tests core components without complex workflow specifications.
 """
-import pytest
+import logging
 import tempfile
 from pathlib import Path
 
+import pytest
 from runtime.shared.routing.factory import reset_router
-import logging
+
     kflowOrchestrator
 
 @pytest.fixture(autouse=True)

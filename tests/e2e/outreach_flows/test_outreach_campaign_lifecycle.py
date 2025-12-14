@@ -1,11 +1,10 @@
 """E2E tests for complete outreach campaign lifecycle."""
-import re
-from typing import Dict, List
-from datetime import datetime, timedelta
-from dataclasses import dataclass
-from enum import Enum
 import logging
-
+import re
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 class CampaignPhase(Enum):

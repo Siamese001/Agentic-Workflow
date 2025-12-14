@@ -1,7 +1,6 @@
 import hashlib
-from typing import Dict, Set
 import logging
-
+from typing import Dict, Set
 
 logger = logging.getLogger(__name__)
 class GenealogyRegistry:

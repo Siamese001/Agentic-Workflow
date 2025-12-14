@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Embed Job Description - atomic implementation."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 class EmbedJobDescription:

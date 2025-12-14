@@ -1,7 +1,8 @@
 """Implementation for find_schema_diagnostics."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
+
 # from .find_schema_diagnostics_types import *  # Star import removed
 
 class FindSchemaDiagnostics:

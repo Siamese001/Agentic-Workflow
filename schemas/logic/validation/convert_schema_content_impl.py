@@ -1,7 +1,8 @@
 """Implementation for convert_schema_content."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
+
 # from .convert_schema_content_types import *  # Star import removed
 
 class ConvertSchemaContent:

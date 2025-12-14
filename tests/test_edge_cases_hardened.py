@@ -9,11 +9,12 @@ in the hardened infrastructure components including:
 - Circuit breaker flapping behavior
 """
 
-import pytest
 import asyncio
 import json
-from typing import Dict, Any
 import logging
+from typing import Any, Dict
+
+import pytest
 
 # Import the modules we're testing
 # Note: These imports may need adjustment based on actual module structure

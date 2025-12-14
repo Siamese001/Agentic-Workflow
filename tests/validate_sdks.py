@@ -5,8 +5,8 @@ logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Validate all SDKs and MCPs in the Agentic Workflow."""
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 

@@ -3,8 +3,8 @@
 Minimal implementation for test compatibility.
 """
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

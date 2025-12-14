@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 from pathlib import Path
 
+
 def clean_prompt_governance():
     """Clean up shim chains in prompt_governance."""
     pg_dir = Path("c:/Git/Agentic-Workflow/prompt_governance")

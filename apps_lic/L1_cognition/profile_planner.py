@@ -8,8 +8,8 @@ This is a foundational L1 planning component that feeds into the hop-based
 K1-K7 execution pipeline for profile-driven message generation.
 """
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

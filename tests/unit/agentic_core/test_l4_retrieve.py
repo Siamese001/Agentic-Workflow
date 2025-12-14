@@ -1,9 +1,8 @@
 """Unit tests for L4_memory/P1_retrieve - memory retrieval operations."""
 
-from typing import Dict
-from datetime import datetime
 import logging
-
+from datetime import datetime
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,7 @@
+import logging
 from dataclasses import dataclass
 from enum import Enum
-import logging
+
 """Cross-Engine Quality Standards - Unified quality benchmarks.
 
 

@@ -2,7 +2,6 @@
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 # from .kx_nodes_resume_types import *  # Star import removed
 

@@ -5,9 +5,9 @@ including dependency resolution, execution order, and resource allocation.
 Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
-from typing import Dict, List, Optional, Any
 import logging
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

@@ -25,9 +25,9 @@ def get_python_files() -> List[Path]:
                 python_files.append(Path(root) / file)
     return python_files
 
-def absolute_fix_print():
+def absolute_fix_logger_usage():
     """Key 02: Absolute elimination of print statements."""
-    logger.info("ABSOLUTE print elimination...")
+    logger.info("ABSOLUTE logger enforcement...")
     fixed = 0
 
     for file_path in get_python_files():
@@ -242,18 +242,16 @@ def absolute_fix_docstrings():
                 new_lines.append(line)
 
                 stripped = line.strip()
-                if (stripped.startswith('def ') or
-                    stripped.
-                        .startswith('async def ')                    stripped.
-                        .startswith('class ')) and
-                    not stripped.
-                        .startswith('def _')                    not stripped.
-                        .startswith('class _'):
+                if ((stripped.startswith('def ') or
+                    stripped.startswith('async def ') or
+                    stripped.startswith('class ')) and
+                    not stripped.startswith('def _') and
+                    not stripped.startswith('class _')):
                     # Check next line for docstring
                     if i + 1 < len(lines):
                         next_stripped = lines[i + 1].strip()
-                        if not next_stripped.startswith('"""')
-                            and not next_stripped.startswith("'''"):
+                        if (not next_stripped.startswith('"""') and
+                            not next_stripped.startswith("'''")):
                             indent = len(line) - len(line.lstrip()) + 4
                             new_lines.append(' ' * indent + '"""Docstring."""')
                             fixed += 1
@@ -302,7 +300,7 @@ def main():
     for iteration in range(3):
         logger.info(f"\n=== ITERATION {iteration + 1} ===")
 
-        absolute_fix_print()
+        absolute_fix_logger_usage()
         absolute_fix_empty_except()
         absolute_fix_bare_except()
         absolute_fix_unused_imports()

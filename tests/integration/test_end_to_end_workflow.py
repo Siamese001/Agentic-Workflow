@@ -12,9 +12,10 @@ Tests complete workflow execution with:
 Phase 1C - SDK Integration Layer
 """
 
-import os
-import pytest
 import logging
+import os
+
+import pytest
 
     AgentMessage,
     Provider,

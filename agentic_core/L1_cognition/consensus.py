@@ -8,6 +8,7 @@ preventing single-model failures or hallucinations.
 import asyncio
 import json
 import logging
+
 from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
@@ -336,6 +337,7 @@ Provide a JSON response:
     def _extract_confidence(self, text: str) -> float:
         """Extract confidence score from text."""
         import re
+
         # Look for patterns like "confidence: 0.8" or "80% confident"
         patterns = [
             r"confidence[:\s]+(\d+\.?\d*)",

@@ -9,8 +9,8 @@ Phase 1C - SDK Integration Layer
 import json
 import logging
 import os
-from typing import Any, Dict, Optional
 from dataclasses import dataclass
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 

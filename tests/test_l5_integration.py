@@ -6,9 +6,9 @@ Comprehensive test suite for all L5 agents and infrastructure.
 Validates 100% system readiness with MZLO compliance.
 """
 
-import pytest
 import logging
 
+import pytest
 
     esizerConfig, BulletFormat
 

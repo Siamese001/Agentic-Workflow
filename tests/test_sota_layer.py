@@ -11,10 +11,10 @@ logger = logging.getLogger(__name__)
 
 """
 
-import time
 import asyncio
-import tempfile
 import os
+import tempfile
+import time
 
 # Import the SOTA layer components
     LateInteractionReranker,

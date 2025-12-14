@@ -1,8 +1,6 @@
 """Types and models for get_info_embedding_compare."""
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
