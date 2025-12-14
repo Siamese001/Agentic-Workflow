@@ -4,6 +4,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 class WorkflowState(Enum):
     """TODO: Add docstring."""

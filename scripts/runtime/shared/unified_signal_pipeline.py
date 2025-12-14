@@ -18,6 +18,9 @@ Reduction: 307 lines removed (duplicated imports, comments)
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     UnifiedSignalPipeline,
 )
 

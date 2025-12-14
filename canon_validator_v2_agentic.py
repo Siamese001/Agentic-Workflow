@@ -14,6 +14,9 @@ import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Set, Tuple
 
+logger = logging.getLogger(__name__)
+
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -76,29 +79,29 @@ class ValidationContext:
 
     def __post_init__(self):
         self.python_files = get_python_files()
-        print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
+        logger.info(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
         """Report validation result to blackboard."""
         status = "PASS" if passed else "FAIL"
-        print(f"   [{agent}] Key {key}: {status}")
+        logger.info(f"   [{agent}] Key {key}: {status}")
         self.results[key] = {"passed": passed, "details": details}
 
     def signal_critical_failure(self):
         self.signals.add("CRITICAL_FAIL")
-        print("   🚨 SIGNAL: CRITICAL_FAIL asserted on Blackboard.")
+        logger.info("   🚨 SIGNAL: CRITICAL_FAIL asserted on Blackboard.")
 
     def signal_ast_valid(self):
         self.signals.add("AST_VALID")
-        print("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
+        logger.info("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
 
     def signal_deps_valid(self):
         self.signals.add("DEPS_VALID")
-        print("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
+        logger.info("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
 
     def signal_secure(self):
         self.signals.add("SECURE")
-        print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
+        logger.info("   ✅ SIGNAL: SECURE asserted on Blackboard.")
 
 # ==============================================================================
 # 2. THE ATOMIC AGENT (Base Class)
@@ -129,7 +132,7 @@ class SystemArchitect(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
 
         # Key 40: No metaclasses (stub)
         self.ctx.report(self.name, 40, True, [])
@@ -153,7 +156,7 @@ class GenerativeGuard(SubAtomicAgent):
     ]
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
         violations = []
 
         all_files = []
@@ -170,7 +173,7 @@ class GenerativeGuard(SubAtomicAgent):
                     break
 
         if violations:
-            print(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
+            logger.info(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
             self.ctx.report(self.name, 45, False, violations)
 
             purge_runaway = "--purge-runaway" in sys.argv
@@ -180,9 +183,9 @@ class GenerativeGuard(SubAtomicAgent):
                 for file_path in violations:
                     try:
                         os.remove(file_path)
-                        print(f"      🗑️  DELETED: {file_path}")
+                        logger.info(f"      🗑️  DELETED: {file_path}")
                     except Exception as e:
-                        print(f"      ❌ Failed to delete {file_path}: {e}")
+                        logger.info(f"      ❌ Failed to delete {file_path}: {e}")
                 self.ctx.signals.add("GENERATIVE_CLEAN")
         else:
             self.ctx.report(self.name, 45, True, [])
@@ -195,13 +198,13 @@ class CodeJanitor(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Sanitizing Codebase...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Sanitizing Codebase...")
 
         # Key 11: Trailing whitespace
         passed, details = self.check_key_11_no_trailing_whitespace()
         self.ctx.report(self.name, 11, passed, details)
         if not passed:
-            print("      🔧 Auto-fixing trailing whitespace...")
+            logger.info("      🔧 Auto-fixing trailing whitespace...")
             self._fix_trailing_whitespace()
             passed, details = self.check_key_11_no_trailing_whitespace()
             self.ctx.report(self.name, 11, passed, details)
@@ -271,9 +274,9 @@ class CodeJanitor(SubAtomicAgent):
             result = subprocess.run([sys.executable, "scripts/fix_trailing_whitespace.py", "."],
                                   capture_output=True, text=True)
             if result.returncode == 0:
-                print("      ✅ Trailing whitespace fixed")
+                logger.info("      ✅ Trailing whitespace fixed")
         except Exception as e:
-            print(f"      ❌ Failed to fix trailing whitespace: {e}")
+            logger.info(f"      ❌ Failed to fix trailing whitespace: {e}")
 
 class DependencySentinel(SubAtomicAgent):
     """
@@ -282,7 +285,7 @@ class DependencySentinel(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
 
         # Check for isort
         try:
@@ -290,7 +293,7 @@ class DependencySentinel(SubAtomicAgent):
             has_isort = True
         except (subprocess.CalledProcessError, FileNotFoundError):
             has_isort = False
-            print("      ⚠️  isort not installed. Install with: pip install isort")
+            logger.info("      ⚠️  isort not installed. Install with: pip install isort")
 
         # Check for autoflake
         try:
@@ -301,7 +304,7 @@ class DependencySentinel(SubAtomicAgent):
 
         # Key 9: Unused imports (auto-fix with autoflake)
         if has_autoflake:
-            print("   🔧 Running autoflake (Removes Key 9 violations)...")
+            logger.info("   🔧 Running autoflake (Removes Key 9 violations)...")
             try:
                 subprocess.run([
                     "autoflake",
@@ -320,7 +323,7 @@ class DependencySentinel(SubAtomicAgent):
 
         # Key 14: Duplicate imports (auto-fix with isort)
         if has_isort:
-            print("   🔧 Running isort (Orders and removes Key 14 duplicates)...")
+            logger.info("   🔧 Running isort (Orders and removes Key 14 duplicates)...")
             try:
                 subprocess.run([
                     "isort",
@@ -428,7 +431,7 @@ class SafetyInspector(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Scanning Security Protocols...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Scanning Security Protocols...")
 
         # Key 0: No hardcoded secrets
         passed, details = self.check_key_00_no_hardcoded_secrets()
@@ -602,7 +605,7 @@ class DocumentationAgent(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Documentation...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Documentation...")
         try:
             passed, details = self.check_key_21_no_missing_docstrings()
             self.ctx.report(self.name, 21, passed, details)
@@ -634,7 +637,7 @@ class NamingAgent(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Naming Conventions...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Naming Conventions...")
         try:
             # Stub implementation
             self.ctx.report(self.name, 47, True, [])
@@ -651,7 +654,7 @@ class TypeMechanic(SubAtomicAgent):
         return "AST_VALID" in self.ctx.signals and "DEPS_VALID" in self.ctx.signals
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Safety...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Safety...")
 
         # Key 22: Missing type hints
         passed, details = self.check_key_22_no_missing_type_hints()
@@ -739,7 +742,7 @@ class BudgetAgent(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Complexity Budgets...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Complexity Budgets...")
 
         # Key 17: Large functions
         passed, details = self.check_key_17_no_large_functions()
@@ -770,7 +773,7 @@ class BudgetAgent(SubAtomicAgent):
                 continue
 
         if violations:
-            print(f"   Budget violated. {len(violations)} large functions found.")
+            logger.info(f"   Budget violated. {len(violations)} large functions found.")
 
         return (len(violations) == 0, violations)
 
@@ -789,7 +792,7 @@ class StructuralEngineer(SubAtomicAgent):
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
 
         # Key 17: Large functions (duplicate check from BudgetAgent)
         passed, details = self.check_key_17_no_large_functions()
@@ -818,7 +821,7 @@ class StructuralEngineer(SubAtomicAgent):
         passed, details = self.check_key_46_no_duplicate_code()
         self.ctx.report(self.name, 46, passed, details)
 
-        print("   ✅ No structural changes pending.")
+        logger.info("   ✅ No structural changes pending.")
 
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """Check for large functions (>50 lines)."""
@@ -884,7 +887,7 @@ class PatternEnforcer(SubAtomicAgent):
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
 
         # All pattern checks are stubs for now
         for key in range(26, 40):
@@ -899,7 +902,7 @@ class SemanticMapper(SubAtomicAgent):
         return "AST_VALID" in self.ctx.signals
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Calculating Dependency Graphs...")
+        logger.info(f"\n[>>>] {self.name} ACTIVATED: Calculating Dependency Graphs...")
 
         # Analyze large files for refactoring opportunities
         for file_path in self.ctx.python_files[:3]:
@@ -907,12 +910,12 @@ class SemanticMapper(SubAtomicAgent):
                 with open(file_path, "r", encoding="utf-8") as f:
                     ast.parse(f.read())
 
-                print(f"   🧠 Analyzing Logic Flow: {file_path}...")
-                print(f"      ℹ No significant clusters found in {file_path}")
+                logger.info(f"   🧠 Analyzing Logic Flow: {file_path}...")
+                logger.info(f"      ℹ No significant clusters found in {file_path}")
             except Exception as e:
-                print(f"      ❌ Failed to analyze {file_path}: {e}")
+                logger.info(f"      ❌ Failed to analyze {file_path}: {e}")
 
-        print("\n   ℹ No refactoring opportunities identified.")
+        logger.info("\n   ℹ No refactoring opportunities identified.")
 
 # ==============================================================================
 # 4. THE INTELLIGENT ORCHESTRATOR
@@ -939,44 +942,44 @@ class IntelligentOrchestrator:
 
     def run_mission(self):
         """Execute all agents in sequence."""
-        print("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
+        logger.info("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
 
         for agent in self.swarm:
             if not agent.can_run():
-                print(f"   ⛔ {agent.name} STANDING DOWN (Dependencies not met).")
+                logger.info(f"   ⛔ {agent.name} STANDING DOWN (Dependencies not met).")
                 continue
 
             try:
                 agent.execute()
             except Exception as e:
-                print(f"   🚨 AGENT CRASH ({agent.name}): {str(e)}")
+                logger.info(f"   🚨 AGENT CRASH ({agent.name}): {str(e)}")
 
             if "CRITICAL_FAIL" in self.ctx.signals:
-                print("\n🛑 MISSION ABORTED: Critical Architecture Failure.")
-                print("   Action: Fix Key 40/41/50 immediately.")
+                logger.info("\n🛑 MISSION ABORTED: Critical Architecture Failure.")
+                logger.info("   Action: Fix Key 40/41/50 immediately.")
                 break
 
         self.print_mission_report()
 
     def print_mission_report(self):
         """Print final validation report."""
-        print("\n" + "="*60)
-        print("🏁 MISSION REPORT")
-        print("="*60)
+        logger.info("\n" + "="*60)
+        logger.info("🏁 MISSION REPORT")
+        logger.info("="*60)
 
         total_checks = len(self.ctx.results)
         passed_checks = sum(1 for r in self.ctx.results.values() if r["passed"])
         failed_checks = total_checks - passed_checks
 
-        print(f"Total Checks: {total_checks}")
-        print(f"Passed:       {passed_checks}")
-        print(f"Failed:       {failed_checks}")
+        logger.info(f"Total Checks: {total_checks}")
+        logger.info(f"Passed:       {passed_checks}")
+        logger.info(f"Failed:       {failed_checks}")
 
         if failed_checks > 0:
-            print(f"\n❌ OPEN VIOLATIONS:")
+            logger.info(f"\n❌ OPEN VIOLATIONS:")
             for key, result in sorted(self.ctx.results.items()):
                 if not result["passed"]:
-                    print(f"   Key {key}")
+                    logger.info(f"   Key {key}")
 
 # ==============================================================================
 # 5. MAIN EXECUTION

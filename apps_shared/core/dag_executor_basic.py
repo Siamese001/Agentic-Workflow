@@ -3,6 +3,7 @@ import logging
 import pytest
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
 async def _id_node(ctx: Dict[str, object]) -> Dict[str, object]:

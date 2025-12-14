@@ -2,6 +2,9 @@ import ast
 import logging
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 

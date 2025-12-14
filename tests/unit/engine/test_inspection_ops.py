@@ -5,12 +5,14 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/inspection_ops/
 Tests inspection operations for content analysis.
 """
+import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List
 import pytest
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 
 class ContentQuality(Enum):
     """TODO: Add docstring."""

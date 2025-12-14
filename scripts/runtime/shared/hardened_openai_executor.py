@@ -14,6 +14,9 @@ import logging
 import os
 from dataclasses import dataclass
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 
 @dataclass

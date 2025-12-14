@@ -8,6 +8,9 @@ episodic memory and reasoning systems.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     create_episodic_memory
 )
 

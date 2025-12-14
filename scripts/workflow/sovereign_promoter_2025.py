@@ -12,6 +12,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
+
 SOVEREIGN_ROOTS = {
     "agentic_core",
     "apps_lic",

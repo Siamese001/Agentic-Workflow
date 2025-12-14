@@ -8,6 +8,9 @@ Integration tests for golden state evaluation.
 
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
     GoldenStateEvaluator,

@@ -1,4 +1,8 @@
+import logging
+
 from services.configuration import ConfigurationService
+
+logger = logging.getLogger(__name__)
 
 class SemanticMapper(SubAtomicAgent):
     """
@@ -10,24 +14,25 @@ class SemanticMapper(SubAtomicAgent):
         return 'AST_VALID' in self.ctx.signals
 
     def execute(self):
-        print(f'\n[>>>] {self.name} ACTIVATED: Calculating Dependency Graphs...')
+        ConfigurationService().logger.info(f'\n[>>>] {self.name} ACTIVATED: Calculating Dependency Graphs...')
         self.ctx.refactor_plan = {}
         for fpath in self.ctx.python_files:
             try:
                 with open(fpath, 'r', encoding='utf-8') as f:
-                    if len(f.readlines()) > 300:
+                    f.read()
+                    if len(ConfigurationService().content.splitlines()) > 300:
                         ConfigurationService().large_files.append(fpath)
-            except:
+            except Exception:
                 continue
         if 17 in self.ctx.results and (not self.ctx.results[17]['passed']):
             if 'canon_validator.py' not in ConfigurationService().large_files and os.path.exists('canon_validator.py'):
                 ConfigurationService().large_files.append('canon_validator.py')
         if not ConfigurationService().large_files:
-            print('   ✅ No Semantic Analysis needed (No large files).')
+            ConfigurationService().logger.info('   No Semantic Analysis needed (No large files).')
             self.ctx.signals.add('PLAN_READY')
             return
         for fpath in ConfigurationService().large_files[:3]:
-            print(f'   🧠 Analyzing Logic Flow: {fpath}...')
+            ConfigurationService().logger.info(f'   🧠 Analyzing Logic Flow: {fpath}...')
             try:
                 with open(fpath, 'r', encoding='utf-8') as f:
                     f.read()
@@ -53,17 +58,17 @@ class SemanticMapper(SubAtomicAgent):
                         os.path.dirname(fpath)
                         os.path.dirname(ConfigurationService().compliant_path)
                         if ConfigurationService().original_dir != ConfigurationService().compliant_dir:
-                            print(f'      🛡️  Canon Enforcer Intervened: Relocating to {ConfigurationService().compliant_dir} to satisfy Key 41.')
+                            ConfigurationService().logger.info(f'      🛡️  Canon Enforcer Intervened: Relocating to {ConfigurationService().compliant_dir} to satisfy Key 41.')
                         ConfigurationService().moves.append({'cluster': cluster_id, 'functions': funcs, 'target_path': ConfigurationService().compliant_path})
                     self.ctx.refactor_plan[fpath] = {'action': 'SPLIT_MODULE', 'clusters': ConfigurationService().major_clusters, 'moves': ConfigurationService().moves, 'total_functions': len(ConfigurationService().grapher.functions), 'call_edges': len(ConfigurationService().grapher.edges)}
-                    print(f'      👉 Found {len(ConfigurationService().major_clusters)} safe logic clusters to extract.')
-                    print(f'      📊 Total functions: {len(ConfigurationService().grapher.functions)}, Call edges: {len(ConfigurationService().grapher.edges)}')
+                    ConfigurationService().logger.info(f'      👉 Found {len(ConfigurationService().major_clusters)} safe logic clusters to extract.')
+                    ConfigurationService().logger.info(f'      📊 Total functions: {len(ConfigurationService().grapher.functions)}, Call edges: {len(ConfigurationService().grapher.edges)}')
                 else:
-                    print(f'      ℹ No significant clusters found in {fpath}')
+                    ConfigurationService().logger.info(f'      ℹ No significant clusters found in {fpath}')
             except Exception as e:
-                print(f'      ❌ Failed to analyze {fpath}: {e}')
+                ConfigurationService().logger.info(f'      ❌ Failed to analyze {fpath}: {e}')
         self.ctx.signals.add('PLAN_READY')
         if self.ctx.refactor_plan:
-            print(f'\n   ✅ Semantic mapping complete. Generated plans for {len(self.ctx.refactor_plan)} files.')
+            ConfigurationService().logger.info(f'\n   ✅ Semantic mapping complete. Generated plans for {len(self.ctx.refactor_plan)} files.')
         else:
-            print('\n   ℹ No refactoring opportunities identified.')
+            ConfigurationService().logger.info('\n   ℹ No refactoring opportunities identified.')

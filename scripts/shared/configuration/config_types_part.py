@@ -1,6 +1,9 @@
 """Split module 1 for config_types."""
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 class ModelProvider(Enum):
     """TODO: Add docstring."""

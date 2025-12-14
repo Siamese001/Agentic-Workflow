@@ -9,6 +9,9 @@ instead of numbered nodes. All references to K.X have been eliminated.
 import logging
 from typing import Any, Dict, Optional
 
+logger = logging.getLogger(__name__)
+
+
 
 class PersonaTemplate:
     """Template for functional persona prompts."""

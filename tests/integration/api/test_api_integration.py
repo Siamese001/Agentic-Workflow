@@ -4,6 +4,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Optional
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 class HTTPMethod(Enum):
     """TODO: Add docstring."""

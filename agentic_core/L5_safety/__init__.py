@@ -11,6 +11,9 @@ This package provides comprehensive safety mechanisms:
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     'ConstitutionalOverseer',
     'CanaryDefense',
     'CostGovernor',

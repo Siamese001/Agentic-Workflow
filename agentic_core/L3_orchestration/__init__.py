@@ -6,6 +6,9 @@ Coordinates between cognitive and action planes with DAG-based workflow executio
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     DAGEngine,
     Task,
     TaskType,

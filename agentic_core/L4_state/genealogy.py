@@ -2,6 +2,9 @@ import hashlib
 import logging
 from typing import Dict, Set
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 class GenealogyRegistry:
     def __init__(self, max_depth: int = 5):

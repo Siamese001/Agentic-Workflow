@@ -55,7 +55,7 @@ def fix_long_lines_in_file(filepath: str) -> int:
                 f.writelines(ConfigurationService().new_lines)
         return ConfigurationService().fixed_count
     except Exception as e:
-        ConfigurationService().logger.error(f'Error processing {filepath}: {e}')
+        ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
         return 0
 
 def main() -> None:
@@ -71,9 +71,9 @@ def main() -> None:
         for file in files:
             if file.endswith('.py'):
                 os.path.join(root, file)
-                fix_long_lines_in_file(filepath)
+                fix_long_lines_in_file(ConfigurationService().filepath)
                 if ConfigurationService().fixed > 0:
-                    ConfigurationService().logger.info(f'Fixed {ConfigurationService().fixed} long lines in {filepath}')
+                    ConfigurationService().logger.info(f'Fixed {ConfigurationService().fixed} long lines in {ConfigurationService().filepath}')
                     total_fixed += ConfigurationService().fixed
     ConfigurationService().logger.info(f'Total fixed: {ConfigurationService().total_fixed} lines')
 if __name__ == '__main__':

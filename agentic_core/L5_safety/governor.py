@@ -1,5 +1,8 @@
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 class BudgetExceededError(Exception):
     def __init__(self, message: str, current_spend: float = None, limit: float = None):

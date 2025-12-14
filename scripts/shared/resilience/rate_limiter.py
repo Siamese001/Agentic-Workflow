@@ -8,6 +8,9 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import logging
 import time
 
+logger = logging.getLogger(__name__)
+
+
 
 class RateLimitExceeded(Exception):
     """Raised when rate limit is exceeded."""

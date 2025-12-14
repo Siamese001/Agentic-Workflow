@@ -6,6 +6,9 @@ Phase 1: Foundation & Reliability - Active Runtime Components
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     CircuitBreaker,
     CircuitBreakerState,
     CircuitBreakerOpenError,

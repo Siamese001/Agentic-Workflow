@@ -7,8 +7,12 @@ Contains QualityValidationStage and OutputFormattingStage.
 """
 
 import hashlib
+import logging
 import time
 from typing import Any
+
+logger = logging.getLogger(__name__)
+
 
 from .types import PipelineStage
 

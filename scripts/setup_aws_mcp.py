@@ -6,8 +6,12 @@ This script helps configure AWS credentials and MCP server settings.
 """
 
 import json
+import logging
 import sys
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
+
 
 
 def setup_aws_credentials() -> None:

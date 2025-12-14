@@ -5,6 +5,9 @@ Tests RAG retrieval, augmentation, and generation behaviors
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 # Import actual RAG components when available

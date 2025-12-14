@@ -14,6 +14,9 @@ LEVEL 5 - Unit tests for DAG fallback path and error recovery functionality
 import logging
 from typing import Any
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 

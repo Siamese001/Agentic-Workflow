@@ -6,8 +6,12 @@ Demonstrates basic chat completion and structured outputs.
 """
 
 import json
+import logging
 import os
 from typing import Any, Dict, List
+
+logger = logging.getLogger(__name__)
+
 
 # Import our OpenAI client manager
 from agentic_workflow.runtime.shared.openai_client import (configure_openai,

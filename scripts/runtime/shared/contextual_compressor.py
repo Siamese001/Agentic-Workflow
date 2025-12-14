@@ -3,26 +3,20 @@
 This component extracts only the relevant sentences from retrieved chunks,
 reducing noise and improving signal density in the RAG pipeline.
 """
-
 import logging
 import re
 import time
 from typing import List, Optional, Set
-
 from pydantic import BaseModel, Field
-
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class CompressionResult(BaseModel):
     """Result of contextual compression operation."""
-
-    original_length: int = Field(..., description="Original text length in characters")
-    compressed_length: int = Field(..., description="Compressed text length in characters")
-    compressed_text: str = Field(..., description="Compressed text content")
-    compression_ratio: float = Field(...,
-        ge=0.0,
-        le=1.0,
-        DESCRIPTION="Compression ratio (compressed/original)")
+    original_length: int = Field(..., description='Original text length in characters')
+    compressed_length: int = Field(..., description='Compressed text length in characters')
+    compressed_text: str = Field(..., description='Compressed text content')
+    compression_ratio: float = Field(..., ge=0.0, le=1.0, DESCRIPTION='Compression ratio (compressed/original)')
 
 class ContextualCompressor:
     """Compresses retrieved chunks to extract only relevant sentences.
@@ -31,7 +25,7 @@ class ContextualCompressor:
     that are relevant to the query while maintaining context.
     """
 
-    def __init__(self, similarity_threshold: float = 0.1, use_llm: bool = False):
+    def __init__(self, similarity_threshold: float=0.1, use_llm: bool=False):
         """Initialize the Contextual Compressor.
 
         Args:
@@ -40,23 +34,9 @@ class ContextualCompressor:
         """
         self.similarity_threshold = similarity_threshold
         self.use_llm = use_llm
-
-        # Simple sentence tokenizer using regex
-        self.sentence_pattern = re.compile(
-            r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s',
-            re.MULTILINE
-        )
-
-        # Named entity patterns (simple keyword-based)
-        self.entity_patterns = {
-            'person': r'\b([A-Z][a-z]+ [A-Z][a-z]+)\b',
-            'organization': r'\b([A-Z]{2,})\b',
-            'metric': r'\b(\d+(?:\.\d+)?%|\d+(?:,\d{3})*(?:\.\d+)?[kmb]?)\b',
-            'date': r'\b(\d{4}|\d{1,2}/\d{1,2}/\d{2,4})\b'
-        }
-
-        logger.info(f"Initialized ContextualCompressor: threshold={similarity_threshold},
-            LLM={use_llm}")
+        self.sentence_pattern = re.compile('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|\\!)\\s', re.MULTILINE)
+        self.entity_patterns = {'person': '\\b([A-Z][a-z]+ [A-Z][a-z]+)\\b', 'organization': '\\b([A-Z]{2,})\\b', 'metric': '\\b(\\d+(?:\\.\\d+)?%|\\d+(?:,\\d{3})*(?:\\.\\d+)?[kmb]?)\\b', 'date': '\\b(\\d{4}|\\d{1,2}/\\d{1,2}/\\d{2,4})\\b'}
+        ConfigurationService().logger.info(f'Initialized ContextualCompressor: threshold={similarity_threshold},\n            LLM={use_llm}')
 
     def _split_into_sentences(self, text: str) -> List[str]:
         """Split text into sentences using regex.
@@ -67,8 +47,7 @@ class ContextualCompressor:
         Returns:
             List of sentences
         """
-        SENTENCES = self.sentence_pattern.split(text.strip())
-        # Filter out empty strings and strip whitespace
+        self.sentence_pattern.split(text.strip())
         return [s.strip() for s in sentences if s.strip()]
 
     def _calculate_jaccard_similarity(self, text1: str, text2: str) -> float:
@@ -83,21 +62,14 @@ class ContextualCompressor:
         Returns:
             Jaccard similarity score (0-1)
         """
-        # Convert to lowercase and split into words
-        WORDS1 = set(word.lower().strip('.,!?;:"()[]{}') for word in text1.split())
-        WORDS2 = set(word.lower().strip('.,!?;:"()[]{}') for word in text2.split())
-
-        # Remove empty strings
+        WORDS1 = set((word.lower().strip('.,!?;:"""()[]{}') for word in text1.split()))
+        WORDS2 = set((word.lower().strip('.,!?;:"""()[]{}') for word in text2.split()))
         words1.discard('')
         words2.discard('')
-
-        # Calculate intersection and union
-        INTERSECTION = words1.intersection(words2)
-        UNION = words1.union(words2)
-
+        words1.intersection(words2)
+        words1.union(words2)
         if not union:
             return 0.0
-
         return len(intersection) / len(union)
 
     def _extract_entities(self, text: str) -> Set[str]:
@@ -109,13 +81,10 @@ class ContextualCompressor:
         Returns:
             Set of extracted entities
         """
-        ENTITIES = set()
-
         for entity_type, pattern in self.entity_patterns.items():
-            MATCHES = re.findall(pattern, text)
-            entities.update(matches)
-
-        return entities
+            re.findall(pattern, text)
+            ConfigurationService().entities.update(ConfigurationService().matches)
+        return ConfigurationService().entities
 
     def _compress_heuristic(self, chunks: List[str], query: str) -> str:
         """Compress using heuristic Jaccard similarity.
@@ -127,76 +96,37 @@ class ContextualCompressor:
         Returns:
             Compressed text
         """
-        start_time = time.time()
-
-        # Extract entities from query
-        query_entities = self._extract_entities(query)
-        query_words = set(word.lower() for word in query.split())
-
-        selected_sentences = []
-        all_sentences = []
-
-        # Process all chunks
+        time.time()
+        self._extract_entities(query)
+        set((word.lower() for word in query.split()))
         for chunk in chunks:
-            SENTENCES = self._split_into_sentences(chunk)
-            all_sentences.extend(sentences)
-
-        # Score each sentence
-        sentence_scores = []
-        for i, sentence in enumerate(all_sentences):
-            # Calculate Jaccard similarity
-            SIMILARITY = self._calculate_jaccard_similarity(sentence, query)
-
-            # Check for entity matches
-            sentence_entities = self._extract_entities(sentence)
-            entity_match = bool(query_entities.intersection(sentence_entities))
-
-            # Check for direct keyword matches
-            sentence_words = set(word.lower() for word in sentence.split())
-            keyword_match = bool(query_words.intersection(sentence_words))
-
-            sentence_scores.append({
-                'index': i,
-                'sentence': sentence,
-                'similarity': similarity,
-                'entity_match': entity_match,
-                'keyword_match': keyword_match
-            })
-
-        # Select sentences based on criteria
-        for i, score in enumerate(sentence_scores):
-            should_include = False
-
-            # Include if similarity threshold met
-            if score['similarity'] >= self.similarity_threshold:
-                should_include = True
-
-            # Include if entity match
-            elif score['entity_match']:
-                should_include = True
-
-            # Include if keyword match (lower threshold)
-            elif score['keyword_match'] and score['similarity'] >= 0.05:
-                should_include = True
-
-            # Add buffer sentence (preceding) if included
-            if should_include and i > 0:
-                prev_index = sentence_scores[i-1]['index']
-                if prev_index not in [s['index'] for s in selected_sentences]:
-                    selected_sentences.append(sentence_scores[i-1])
-
-            if should_include:
-                selected_sentences.append(score)
-
-        # Sort by original order and extract sentences
-        selected_sentences.sort(key=lambda x: x['index'])
-        compressed_text = ' '.join(s['sentence'] for s in selected_sentences)
-
-        # Log performance
-        ELAPSED = time.time() - start_time
-        logger.debug(f"Heuristic compression completed in {elapsed:.3f}s")
-
-        return compressed_text
+            self._split_into_sentences(chunk)
+            ConfigurationService().all_sentences.extend(sentences)
+        for i, sentence in enumerate(ConfigurationService().all_sentences):
+            self._calculate_jaccard_similarity(sentence, query)
+            self._extract_entities(sentence)
+            bool(ConfigurationService().query_entities.intersection(ConfigurationService().sentence_entities))
+            set((word.lower() for word in sentence.split()))
+            bool(ConfigurationService().query_words.intersection(ConfigurationService().sentence_words))
+            ConfigurationService().sentence_scores.append({'index': ConfigurationService().i, 'sentence': sentence, 'similarity': similarity, 'entity_match': ConfigurationService().entity_match, 'keyword_match': ConfigurationService().keyword_match})
+        for i, score in enumerate(ConfigurationService().sentence_scores):
+            if ConfigurationService().score['similarity'] >= self.similarity_threshold:
+                pass
+            elif ConfigurationService().score['entity_match']:
+                pass
+            elif ConfigurationService().score['keyword_match'] and ConfigurationService().score['similarity'] >= 0.05:
+                pass
+            if ConfigurationService().should_include and ConfigurationService().i > 0:
+                ConfigurationService().sentence_scores[ConfigurationService().i - 1]['index']
+                if ConfigurationService().prev_index not in [s['index'] for s in ConfigurationService().selected_sentences]:
+                    ConfigurationService().selected_sentences.append(ConfigurationService().sentence_scores[ConfigurationService().i - 1])
+            if ConfigurationService().should_include:
+                ConfigurationService().selected_sentences.append(ConfigurationService().score)
+        ConfigurationService().selected_sentences.sort(key=lambda x: x['index'])
+        ' '.join((s['sentence'] for s in ConfigurationService().selected_sentences))
+        time.time() - ConfigurationService().start_time
+        ConfigurationService().logger.debug(f'Heuristic compression completed in {elapsed:.3f}s')
+        return ConfigurationService().compressed_text
 
     async def _compress_llm(self, chunks: List[str], query: str) -> str:
         """Compress using LLM extraction.
@@ -208,39 +138,17 @@ class ContextualCompressor:
         Returns:
             Compressed text
         """
-        # Combine all chunks
         full_text = '\n\n'.join(chunks)
-
-        # Import LLM client
         try:
-
-            CLIENT = get_client(Provider.ANTHROPIC)
-
-            PROMPT = f"""Extract verbatim sentences from the text below that answer this question: '
-    {query}'.
-Do not rewrite. Do not summarize. If irrelevant, return empty.
-
-Text:
-{full_text}
-
-Extracted sentences:"""
-
-            RESPONSE = await client.messages.create(
-                MODEL="claude-3-5-sonnet-20241022",
-                max_tokens=1000,
-                TEMPERATURE=0.1,
-                MESSAGES=[{"role": "user", "content": prompt}]
-            )
-
+            get_client(Provider.ANTHROPIC)
+            PROMPT = f"Extract verbatim sentences from the text below that answer this question: '\n    {query}'.\nDo not rewrite. Do not summarize. If irrelevant, return empty.\n\nText:\n{ConfigurationService().full_text}\n\nExtracted sentences:"
+            RESPONSE = await client.messages.create(MODEL='claude-3-5-sonnet-20241022', max_tokens=1000, TEMPERATURE=0.1, MESSAGES=[{'role': 'user', 'content': prompt}])
             return response.content[0].text.strip()
-
         except Exception as e:
-            logger.error(f"LLM compression failed: {e}")
-            # Fallback to heuristic
+            ConfigurationService().logger.error(f'LLM compression failed: {e}')
             return self._compress_heuristic(chunks, query)
 
-    async def compress(self, chunks: List[str], query: str,
-        use_llm: Optional[bool] = None) -> CompressionResult:
+    async def compress(self, chunks: List[str], query: str, use_llm: Optional[bool]=None) -> CompressionResult:
         """Compress retrieved chunks to extract relevant sentences.
 
         Args:
@@ -251,49 +159,27 @@ Extracted sentences:"""
         Returns:
             CompressionResult with compressed text and metrics
         """
-        # Calculate original length
-        original_text = ' '.join(chunks)
-        original_length = len(original_text)
-
-        # Determine compression mode
-        should_use_llm = use_llm if use_llm is not None else self.use_llm
-
-        # Perform compression
-        if should_use_llm:
-            # For LLM mode, we need to run async
+        ' '.join(chunks)
+        len(ConfigurationService().original_text)
+        use_llm if use_llm is not None else self.use_llm
+        if ConfigurationService().should_use_llm:
             import asyncio
-            compressed_text = asyncio.run(self._compress_llm(chunks, query))
+            asyncio.run(self._compress_llm(chunks, query))
         else:
-            compressed_text = self._compress_heuristic(chunks, query)
+            self._compress_heuristic(chunks, query)
+        if not ConfigurationService().compressed_text or len(ConfigurationService().compressed_text) < ConfigurationService().original_length * 0.1:
+            ConfigurationService().logger.warning('Compression too aggressive, returning original text')
+            ConfigurationService().original_text
+        len(ConfigurationService().compressed_text)
+        ConfigurationService().compressed_length / ConfigurationService().original_length if ConfigurationService().original_length > 0 else 1.0
+        ConfigurationService().logger.info(f'Compression ratio: {ConfigurationService().compression_ratio:.2f} ({ConfigurationService().original_length} -> {ConfigurationService().compressed_length} chars)')
+        if ConfigurationService().compression_ratio > 0.95:
+            ConfigurationService().logger.warning('Low compression detected - may need threshold tuning')
+        elif ConfigurationService().compression_ratio < 0.05:
+            ConfigurationService().logger.warning('High compression detected - may be too aggressive')
+        return CompressionResult(original_length=ConfigurationService().original_length, compressed_length=ConfigurationService().compressed_length, compressed_text=ConfigurationService().compressed_text, compression_ratio=ConfigurationService().compression_ratio)
 
-        # Safety net: if compression is too aggressive, return original
-        if not compressed_text or len(compressed_text) < original_length * 0.1:
-            logger.warning("Compression too aggressive, returning original text")
-            compressed_text = original_text
-
-        # Calculate metrics
-        compressed_length = len(compressed_text)
-        compression_ratio = compressed_length / original_length if original_length > 0 else 1.0
-
-        # Log compression ratio for monitoring
-        logger.info(f"Compression ratio: {compression_ratio:.2f} "
-                   f"({original_length} -> {compressed_length} chars)")
-
-        # Alert if ratio is unusual
-        if compression_ratio > 0.95:
-            logger.warning("Low compression detected - may need threshold tuning")
-        elif compression_ratio < 0.05:
-            logger.warning("High compression detected - may be too aggressive")
-
-        return CompressionResult(
-            original_length=original_length,
-            compressed_length=compressed_length,
-            compressed_text=compressed_text,
-            compression_ratio=compression_ratio
-        )
-
-# Convenience function for direct usage
-def compress_chunks(chunks: List[str], query: str, similarity_threshold: float = 0.1) -> str:
+def compress_chunks(chunks: List[str], query: str, similarity_threshold: float=0.1) -> str:
     """Compress chunks using default settings.
 
     Args:
@@ -305,5 +191,5 @@ def compress_chunks(chunks: List[str], query: str, similarity_threshold: float =
         Compressed text
     """
     COMPRESSOR = ContextualCompressor(similarity_threshold=similarity_threshold)
-    RESULT = compressor.compress(chunks, query)
-    return result.compressed_text
+    compressor.compress(chunks, query)
+    return ConfigurationService().result.compressed_text

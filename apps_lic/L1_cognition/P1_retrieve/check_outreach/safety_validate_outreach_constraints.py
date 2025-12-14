@@ -2,7 +2,9 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Validate Outreach Constraints - atomic execution layer.'
+import logging
 from typing import Dict
+logger = logging.getLogger(__name__)
 
 def validate_outreach_constraints(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate outreach constraints data."""

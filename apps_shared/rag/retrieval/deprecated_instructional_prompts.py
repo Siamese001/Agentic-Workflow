@@ -8,10 +8,12 @@ This module validates:
 - Prompt integration with agents
 - Layer and extension functionality
 """
+import logging
 from typing import Any
 import pytest
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 
 class TestInstructionalPromptStructure:
     """Test v6 prompt structure and functionality."""

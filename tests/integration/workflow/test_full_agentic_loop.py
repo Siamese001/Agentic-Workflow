@@ -1,6 +1,9 @@
 """Integration tests for full agentic workflow loop."""
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 from runtime.shared.multi_provider_clients import Provider, reset_all_clients
 

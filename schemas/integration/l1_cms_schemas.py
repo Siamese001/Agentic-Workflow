@@ -1,6 +1,8 @@
+import logging
 from typing import Any
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 '\n\n\nLOGGER = logging.getLogger(__name__)\nCMS (Content Management System) schemas for prompt validation.\n\nThis module provides schema definitions for prompt validation and structure.\n'
 
 class PromptType(str, Enum):

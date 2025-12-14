@@ -1,5 +1,5 @@
 import logging
-from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 'Stack-specific agent implementations for v10.7.'
 __all__ = ['SpecialistDraftPacket', 'EvidenceClarificationRecord', 'EvidenceBriefRecord', 'EvidenceLiaisonPacket', 'CritiqueFindingRecord', 'CritiquePanelPacket', 'PIISanitizerAgent', 'BiasDetectorAgent', 'PromptInjectionDetectorAgent', 'ConstitutionalReviewerAgent', 'QueryComplexityClassifier', 'ToTStrategistAgent', 'PromptEngineerAgent', 'RAG_SearchAgent', 'StructureLeadAgent', 'NarrativeStylistAgent', 'ComplianceEditorAgent', 'EvidenceLiaisonAgent', 'CritiqueRoutingPanel', 'DraftingGuildCoordinator', 'BulletEntityExtractionAgent', 'BulletMetricsEnrichmentAgent', 'BulletNarrativeSynthesisAgent', 'BulletEvidenceLinkerAgent', 'BulletConfidenceScoringAgent', 'BulletCoordinatorAgent', 'BulletProvenanceAuditorAgent', 'AsyncBulletGeneratorAgent', 'AsyncBulletCritiqueAgent', 'VirtualReviewerPersonaAgent', 'VirtualReviewerCouncilAgent', 'HILFeedbackSummarizerAgent', 'HILReconciliationAgent', 'HILAmbiguityDetectorAgent', 'HILFeedbackRouterAgent']

@@ -6,10 +6,12 @@ Runtime components for Agentic Workflow.
 This module provides runtime logic, shared utilities, and core functionality
 for the agentic workflow system.
 """
+import logging
 import sys
 from pathlib import Path
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 runtime_path = Path(__file__).parent.parent.parent / '03_runtime'
 shared_path = ConfigurationService().runtime_path / 'shared'
 if str(ConfigurationService().runtime_path) not in sys.path:

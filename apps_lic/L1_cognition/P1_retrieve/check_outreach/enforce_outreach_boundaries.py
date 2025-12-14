@@ -2,7 +2,9 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Enforce Outreach Boundaries - atomic execution layer.'
+import logging
 from typing import Dict
+logger = logging.getLogger(__name__)
 
 def enforce_outreach_boundaries(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce outreach boundaries data."""

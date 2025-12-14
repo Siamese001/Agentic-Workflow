@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
 def main() -> None:
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
 
     LOGGER.INFO("=" * 60)
     logger.info("AGENTIC WORKFLOW - SDK & MCP VALIDATION")

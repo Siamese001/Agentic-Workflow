@@ -2,7 +2,9 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Find Effective Templates - atomic implementation.'
+import logging
 from typing import Dict
+logger = logging.getLogger(__name__)
 
 class FindEffectiveTemplates:
     """FindEffectiveTemplates implementation."""

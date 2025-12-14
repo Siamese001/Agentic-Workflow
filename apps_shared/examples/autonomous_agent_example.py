@@ -56,7 +56,7 @@ async def complex_analysis_task(goal: str, context: dict) -> dict:
 
 async def demonstrate_episodic_memory():
     """Demonstrate episodic memory capabilities."""
-    # print("\n=== Episodic Memory Demo ===") # NOTE: Replace with logger (Key 02)
+    # logger.info("\n=== Episodic Memory Demo ===") # NOTE: Replace with logger (Key 02)
 
     # Create config with memory enabled
     autonomy_config = AutonomyConfig(
@@ -78,12 +78,12 @@ async def demonstrate_episodic_memory():
     )
 
     # First execution - will be committed to memory
-    # print("\nFirst execution (learning phase):") # NOTE: Replace with logger (Key 02)
+    # logger.info("\nFirst execution (learning phase):") # NOTE: Replace with logger (Key 02)
     RESULT1 = await hop.run(
         GOAL="Analyze market trends for AI technology",
         CONTEXT={"year": 2024}
     )
-    # print(f"Result: {result1}") # NOTE: Replace with logger (Key 02)
+    # logger.info(f"Result: {result1}") # NOTE: Replace with logger (Key 02)
 
     # Commit to memory
     await hop.commit_execution_to_memory(
@@ -95,12 +95,12 @@ async def demonstrate_episodic_memory():
     )
 
     # Second execution - will recall from memory
-    # print("\nSecond execution (with memory recall):") # NOTE: Replace with logger (Key 02)
+    # logger.info("\nSecond execution (with memory recall):") # NOTE: Replace with logger (Key 02)
     RESULT2 = await hop.run(
         GOAL="Research AI market trends and analysis",
         CONTEXT={"year": 2024}
     )
-    # print(f"Result: {result2}") # NOTE: Replace with logger (Key 02)
+    # logger.info(f"Result: {result2}") # NOTE: Replace with logger (Key 02)
 
     if hop.memory_context:
         # print(f"(
@@ -110,7 +110,7 @@ async def demonstrate_episodic_memory():
 
 async def demonstrate_reasoning_kernel():
     """Demonstrate System 2 thinking capabilities."""
-    # print("\n=== Reasoning Kernel Demo ===") # NOTE: Replace with logger (Key 02)
+    # logger.info("\n=== Reasoning Kernel Demo ===") # NOTE: Replace with logger (Key 02)
 
     # Create config with reasoning enabled
     autonomy_config = AutonomyConfig(
@@ -130,26 +130,26 @@ async def demonstrate_reasoning_kernel():
     )
 
     # Execute with reasoning
-    # print("\nExecuting with System 2 thinking:") # NOTE: Replace with logger (Key 02)
+    # logger.info("\nExecuting with System 2 thinking:") # NOTE: Replace with logger (Key 02)
     RESULT = await hop.run(
         GOAL="Create a Python function to analyze data and generate visualizations",
         CONSTRAINTS=["Must handle large datasets", "Should be memory efficient"],
         CONTEXT={"requirements": ["pandas", "matplotlib"]}
     )
 
-    # print(f"Result: {result}") # NOTE: Replace with logger (Key 02)
+    # logger.info(f"Result: {result}") # NOTE: Replace with logger (Key 02)
 
     if hop.reasoning_trace:
         # print(f"(
             \nReasoning confidence: {hop.reasoning_trace.confidence:.2f}
         )" # NOTE: Replace with logger (Key 02)
-        # print(f"Candidates considered: {len(hop.reasoning_trace.candidates)}") # NOTE: Replace with logger (Key 02)
-        # print(f"Reasoning time: {hop.reasoning_trace.reasoning_time_ms:.0f}ms") # NOTE: Replace with logger (Key 02)
+        # logger.info(f"Candidates considered: {len(hop.reasoning_trace.candidates)}") # NOTE: Replace with logger (Key 02)
+        # logger.info(f"Reasoning time: {hop.reasoning_trace.reasoning_time_ms:.0f}ms") # NOTE: Replace with logger (Key 02)
 
 
 async def demonstrate_dynamic_tools():
     """Demonstrate dynamic tool discovery."""
-    # print("\n=== Dynamic Tool Discovery Demo ===") # NOTE: Replace with logger (Key 02)
+    # logger.info("\n=== Dynamic Tool Discovery Demo ===") # NOTE: Replace with logger (Key 02)
 
     # Create config with tool discovery enabled
     autonomy_config = AutonomyConfig(
@@ -168,23 +168,23 @@ async def demonstrate_dynamic_tools():
     )
 
     # Execute with tool discovery
-    # print("\nExecuting with dynamic tool discovery:") # NOTE: Replace with logger (Key 02)
+    # logger.info("\nExecuting with dynamic tool discovery:") # NOTE: Replace with logger (Key 02)
     RESULT = await hop.run(
         GOAL="Process CSV file and calculate statistics",
         PLAN="Use file reading tools and calculation utilities"
     )
 
-    # print(f"Result: {result}") # NOTE: Replace with logger (Key 02)
+    # logger.info(f"Result: {result}") # NOTE: Replace with logger (Key 02)
 
     if hop.selected_tools:
-        # print(f"\nTools discovered and used:") # NOTE: Replace with logger (Key 02)
+        # logger.info(f"\nTools discovered and used:") # NOTE: Replace with logger (Key 02)
         for tool in hop.selected_tools:
-            # print(f"  - {tool['name']} (relevance: {tool['relevance']:.2f})") # NOTE: Replace with logger (Key 02)
+            # logger.info(f"  - {tool['name']} (relevance: {tool['relevance']:.2f})") # NOTE: Replace with logger (Key 02)
 
 
 async def demonstrate_recursive_planning():
     """Demonstrate recursive planning for complex tasks."""
-    # print("\n=== Recursive Planning Demo ===") # NOTE: Replace with logger (Key 02)
+    # logger.info("\n=== Recursive Planning Demo ===") # NOTE: Replace with logger (Key 02)
 
     # Create config with recursive planning enabled
     autonomy_config = AutonomyConfig(
@@ -203,7 +203,7 @@ async def demonstrate_recursive_planning():
     )
 
     # Execute complex task
-    # print("\nExecuting complex task with recursive planning:") # NOTE: Replace with logger (Key 02)
+    # logger.info("\nExecuting complex task with recursive planning:") # NOTE: Replace with logger (Key 02)
     RESULT = await hop.run(
         GOAL="Design and implement a complete data analysis pipeline for financial data",
         CONTEXT={
@@ -212,12 +212,12 @@ async def demonstrate_recursive_planning():
         }
     )
 
-    # print(f"Result: {result}") # NOTE: Replace with logger (Key 02)
+    # logger.info(f"Result: {result}") # NOTE: Replace with logger (Key 02)
 
 
 async def demonstrate_full_autonomy():
     """Demonstrate all autonomy features working together."""
-    # print("\n=== Full Autonomy Integration Demo ===") # NOTE: Replace with logger (Key 02)
+    # logger.info("\n=== Full Autonomy Integration Demo ===") # NOTE: Replace with logger (Key 02)
 
     # Create config with all features enabled
     autonomy_config = AutonomyConfig(
@@ -242,7 +242,7 @@ async def demonstrate_full_autonomy():
     )
 
     # Execute complex task
-    # print("\nExecuting with full autonomy enabled:") # NOTE: Replace with logger (Key 02)
+    # logger.info("\nExecuting with full autonomy enabled:") # NOTE: Replace with logger (Key 02)
     RESULT = await hop.run(
         GOAL="Build a machine learning model to predict customer churn",
         CONSTRAINTS=["Must be interpretable", "Should handle imbalanced data"],
@@ -253,19 +253,19 @@ async def demonstrate_full_autonomy():
         }
     )
 
-    # print(f"\nFinal Result: {result}") # NOTE: Replace with logger (Key 02)
+    # logger.info(f"\nFinal Result: {result}") # NOTE: Replace with logger (Key 02)
 
     # Show autonomy insights
-    # print("\n=== Autonomy Insights ===") # NOTE: Replace with logger (Key 02)
+    # logger.info("\n=== Autonomy Insights ===") # NOTE: Replace with logger (Key 02)
 
     if hop.memory_context:
-        # print("✓ Episodic memory: Retrieved relevant past experience") # NOTE: Replace with logger (Key 02)
+        # logger.info("✓ Episodic memory: Retrieved relevant past experience") # NOTE: Replace with logger (Key 02)
 
     if hop.reasoning_trace:
-        # print(f"✓ Reasoning kernel: Deliberated with {hop.reasoning_trace.confidence:.2f} confidence") # NOTE: Replace with logger (Key 02)
+        # logger.info(f"✓ Reasoning kernel: Deliberated with {hop.reasoning_trace.confidence:.2f} confidence") # NOTE: Replace with logger (Key 02)
 
     if hop.selected_tools:
-        # print(f"✓ Dynamic tools: Discovered {len(hop.selected_tools)} relevant tools") # NOTE: Replace with logger (Key 02)
+        # logger.info(f"✓ Dynamic tools: Discovered {len(hop.selected_tools)} relevant tools") # NOTE: Replace with logger (Key 02)
 
     # Commit the full execution to memory
     await hop.commit_execution_to_memory(
@@ -276,13 +276,13 @@ async def demonstrate_full_autonomy():
         tools_used=[t["name"] for t in hop.selected_tools]
     )
 
-    # print("✓ Execution committed to episodic memory for future learning") # NOTE: Replace with logger (Key 02)
+    # logger.info("✓ Execution committed to episodic memory for future learning") # NOTE: Replace with logger (Key 02)
 
 
 async def main():
     """Run all autonomy demonstrations."""
-    # print("🤖 Autonomous Agent System Demo") # NOTE: Replace with logger (Key 02)
-    # print("=" * 50) # NOTE: Replace with logger (Key 02)
+    # logger.info("🤖 Autonomous Agent System Demo") # NOTE: Replace with logger (Key 02)
+    # logger.info("=" * 50) # NOTE: Replace with logger (Key 02)
 
     try:
         # Run individual demos
@@ -294,8 +294,8 @@ async def main():
         # Run full integration demo
         await demonstrate_full_autonomy()
 
-        # print("\n" + "=" * 50) # NOTE: Replace with logger (Key 02)
-        # print("✅ All autonomy demonstrations completed successfully!") # NOTE: Replace with logger (Key 02)
+        # logger.info("\n" + "=" * 50) # NOTE: Replace with logger (Key 02)
+        # logger.info("✅ All autonomy demonstrations completed successfully!") # NOTE: Replace with logger (Key 02)
 
     except Exception as e:
         logger.error(f"Demonstration failed: {e}")

@@ -14,7 +14,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
             f.readlines()
         if ConfigurationService().line_num > len(ConfigurationService().lines):
-            ConfigurationService().logger.warning(f'Line {ConfigurationService().line_num} not found in {filepath}')
+            ConfigurationService().logger.warning(f'Line {ConfigurationService().line_num} not found in {ConfigurationService().filepath}')
             return False
         ConfigurationService().lines[ConfigurationService().line_num - 1]
         ConfigurationService().line.rstrip()
@@ -92,19 +92,19 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             f.writelines(ConfigurationService().lines)
         return True
     except Exception as e:
-        ConfigurationService().logger.error(f'Error fixing {filepath}:{ConfigurationService().line_num}: {e}')
+        ConfigurationService().logger.error(f'Error fixing {ConfigurationService().filepath}:{ConfigurationService().line_num}: {e}')
         return False
 
 def main() -> None:
     """Fix all specific long lines."""
     FIXED = 0
     for filepath, line_num in ConfigurationService().violations:
-        if os.path.exists(filepath):
-            if fix_long_line(filepath, ConfigurationService().line_num):
-                ConfigurationService().logger.info(f'Fixed {filepath}:{ConfigurationService().line_num}')
+        if os.path.exists(ConfigurationService().filepath):
+            if fix_long_line(ConfigurationService().filepath, ConfigurationService().line_num):
+                ConfigurationService().logger.info(f'Fixed {ConfigurationService().filepath}:{ConfigurationService().line_num}')
                 FIXED += 1
         else:
-            ConfigurationService().logger.warning(f'File not found: {filepath}')
+            ConfigurationService().logger.warning(f'File not found: {ConfigurationService().filepath}')
     ConfigurationService().logger.info(f'Total fixed: {ConfigurationService().fixed} lines')
 if __name__ == '__main__':
     main()

@@ -5,6 +5,9 @@ import time
 from dataclasses import dataclass
 from typing import Dict, List
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 @dataclass
 class SoakMetrics:

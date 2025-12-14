@@ -5,12 +5,14 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/safety_ops/
 Tests safety operations including check_rules.
 """
+import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 
 class SafetyViolationType(Enum):
     """TODO: Add docstring."""

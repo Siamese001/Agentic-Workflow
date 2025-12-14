@@ -8,6 +8,9 @@ for agent state persistence.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     create_storage_adapter
 )
 

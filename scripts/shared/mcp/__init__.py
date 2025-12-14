@@ -6,6 +6,9 @@ Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     MCPClient,
     MCPClientSpec,
     MCPClientStub,

@@ -10,6 +10,9 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+logger = logging.getLogger(__name__)
+
+
 
 class ThinkStep(BaseModel):
     """Represents a thinking/reasoning step.

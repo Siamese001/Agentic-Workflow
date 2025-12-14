@@ -21,8 +21,8 @@ def find_long_lines() -> None:
                     with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
                         for line_num, line in enumerate(f, 1):
                             if len(ConfigurationService().line.rstrip()) > 100:
-                                ConfigurationService().violations.append(f'{filepath}:{ConfigurationService().line_num} - {len(ConfigurationService().line.rstrip())} chars')
-                                ConfigurationService().logger.info(f'{filepath}:{ConfigurationService().line_num} - {len(ConfigurationService().line.rstrip())} chars')
+                                ConfigurationService().violations.append(f'{ConfigurationService().filepath}:{ConfigurationService().line_num} - {len(ConfigurationService().line.rstrip())} chars')
+                                ConfigurationService().logger.info(f'{ConfigurationService().filepath}:{ConfigurationService().line_num} - {len(ConfigurationService().line.rstrip())} chars')
                                 ConfigurationService().logger.info(f'  {ConfigurationService().line[:150]}...')
                                 ConfigurationService().logger.info('')
                 except Exception as e:

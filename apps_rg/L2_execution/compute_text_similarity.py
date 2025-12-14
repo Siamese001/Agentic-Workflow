@@ -13,6 +13,9 @@ import logging
 import math
 from typing import List, Tuple
 
+logger = logging.getLogger(__name__)
+
+
 try:
     from sklearn.metrics.pairwise import cosine_similarity
 

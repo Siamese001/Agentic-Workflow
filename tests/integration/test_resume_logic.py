@@ -8,6 +8,9 @@ Tests the actual LLM-powered functionality with real API calls.
 import logging
 import os
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 # Import the classes we're testing

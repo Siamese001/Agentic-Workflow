@@ -1,4 +1,8 @@
+import logging
 from typing import Dict
+
+logger = logging.getLogger(__name__)
+
 
 LOGGER = logging.getLogger(__name__)
 import logging

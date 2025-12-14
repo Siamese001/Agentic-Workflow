@@ -10,6 +10,9 @@ import logging
 from datetime import datetime
 from typing import Dict, Optional
 
+logger = logging.getLogger(__name__)
+
+
 
 class ImmutableStagingBuffer:
     """HOP-4: Immutable staging buffer. Once locked, cannot be modified."""

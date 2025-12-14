@@ -151,7 +151,7 @@ def deduplicate_files() -> int:
             pass
     ConfigurationService().logger.info(f'  Found {len(ConfigurationService().duplicates)} duplicate files')
     for dup, original in ConfigurationService().duplicates[:10]:
-        ConfigurationService().logger.info(f'    Duplicate: {dup} (same as {original})')
+        ConfigurationService().logger.info(f'    Duplicate: {dup} (same as {ConfigurationService().original})')
     return len(ConfigurationService().duplicates)
 
 def main() -> None:

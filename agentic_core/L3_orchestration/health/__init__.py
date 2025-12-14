@@ -7,6 +7,9 @@ Autonomic immune system for runtime health monitoring and self-healing.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     AutonomicMonitor,
     HealthMetrics,
     HealthStatus,

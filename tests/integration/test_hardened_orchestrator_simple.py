@@ -7,6 +7,9 @@ import logging
 import tempfile
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 from runtime.shared.routing.factory import reset_router
 

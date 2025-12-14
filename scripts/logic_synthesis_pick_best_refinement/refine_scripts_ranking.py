@@ -31,6 +31,9 @@ This file wraps those behaviors and exposes a stable API.
 import logging
 from typing import Dict, List
 
+logger = logging.getLogger(__name__)
+
+
 # from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive i...
 
 def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:

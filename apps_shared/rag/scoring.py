@@ -9,6 +9,9 @@ import logging
 import math
 import re
 
+logger = logging.getLogger(__name__)
+
+
 
 @dataclass
 class DocumentScore:

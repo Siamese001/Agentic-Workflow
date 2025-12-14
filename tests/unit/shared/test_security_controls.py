@@ -5,14 +5,18 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared/security_controls/
 Tests security control operations including guardrails.
 """
+import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List
 
+logger = logging.getLogger(__name__)
+
+
 
 class ThreatLevel(Enum):
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
 
 
 @dataclass

@@ -14,6 +14,9 @@ import json
 import logging
 from typing import Any, Dict
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 # Import the modules we're testing

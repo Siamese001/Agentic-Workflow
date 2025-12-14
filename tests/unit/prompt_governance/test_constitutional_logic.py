@@ -7,6 +7,9 @@ Tests the LLM-based evaluation and revision functionality.
 import json
 import logging
 
+logger = logging.getLogger(__name__)
+
+
     ConstitutionalAISystem,
     ConstitutionalPrinciple,
     LLMJudgment,

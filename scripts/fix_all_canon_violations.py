@@ -23,7 +23,7 @@ def fix_todo_comments(file_path: str) -> bool:
         PATTERNS = ['#\\s*TODO[^\\n]*', '#\\s*FIXME[^\\n]*', '#\\s*XXX[^\\n]*', '#\\s*HACK[^\\n]*', '#\\s*TEMP[^\\n]*']
         for pattern in patterns:
             re.sub(pattern, '', ConfigurationService().content)
-        if ConfigurationService().content != original:
+        if ConfigurationService().content != ConfigurationService().original:
             with open(ConfigurationService().file_path, 'w', encoding='utf-8') as f:
                 f.write(ConfigurationService().content)
             return True

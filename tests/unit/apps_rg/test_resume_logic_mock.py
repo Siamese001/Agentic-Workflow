@@ -8,6 +8,9 @@ Tests the Resume Engine functionality with mocked LLM responses to avoid API cal
 
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 from apps_rg.L2_execution.execute_resume_generation import \
     ExecuteResumeGeneration
 # Import the classes we're testing

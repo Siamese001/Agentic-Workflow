@@ -184,39 +184,39 @@ class IntelligentValidator:
 
     def run_mission(self):
         """Execute the intelligent validation loop."""
-        print("🤖 INTELLIGENT CORE ONLINE. Assessing Codebase Health...")
+        logger.info("🤖 INTELLIGENT CORE ONLINE. Assessing Codebase Health...")
 
         for agent in self.agents:
-            print(f"\n[>>>] ACTIVATING: {agent.__class__.__name__}")
+            logger.info(f"\n[>>>] ACTIVATING: {agent.__class__.__name__}")
             result = agent.check()
 
             if result.success:
-                print(f"   ✅ {agent.__class__.__name__} passed.")
+                logger.info(f"   ✅ {agent.__class__.__name__} passed.")
                 continue
 
             # INTELLIGENCE: Decide what to do based on failure type
-            print(f"   ⚠️ VIOLATIONS DETECTED: {len(result.violations)}")
+            logger.info(f"   ⚠️ VIOLATIONS DETECTED: {len(result.violations)}")
             for v in result.violations[:3]:  # Show first 3 violations
-                print(f"      - {v}")
+                logger.info(f"      - {v}")
 
             if result.fixable:
-                print(f"   🔧 INITIATING AUTO-REPAIR for {agent.__class__.__name__}...")
+                logger.info(f"   🔧 INITIATING AUTO-REPAIR for {agent.__class__.__name__}...")
                 if agent.attempt_fix():
-                    print("      ✅ Repair successful. Re-checking...")
+                    logger.info("      ✅ Repair successful. Re-checking...")
                     if agent.check().success:
                         continue
                 else:
-                    print("      ❌ Repair failed.")
+                    logger.info("      ❌ Repair failed.")
 
             # CRITICAL DECISION POINT
             if isinstance(agent, ArchitectAgent):
-                print("   🛑 CRITICAL ARCHITECTURE FAILURE. Stopping mission.")
-                print("   👉 You must fix the Folder Structure or Core Definitions first.")
+                logger.info("   🛑 CRITICAL ARCHITECTURE FAILURE. Stopping mission.")
+                logger.info("   👉 You must fix the Folder Structure or Core Definitions first.")
                 sys.exit(1)
 
-            print("   ℹ️ Continuing mission (Non-blocking failure)...")
+            logger.info("   ℹ️ Continuing mission (Non-blocking failure)...")
 
-        print("\n🏁 MISSION COMPLETE. Summary Report Generated.")
+        logger.info("\n🏁 MISSION COMPLETE. Summary Report Generated.")
 
 # ANSI color codes for terminal output
 
@@ -2252,14 +2252,14 @@ def run_check_function(check_func):
 
 def print_live_dashboard(results):
     """Prints a clean summary table of specific keys."""
-    print(f"\n{'='*60}")
-    print(f"{'KEY':<6} | {'STATUS':<6} | {'VIOLATIONS':<10} | {'NAME'}")
-    print(f"{'-'*60}")
+    logger.info(f"\n{'='*60}")
+    logger.info(f"{'KEY':<6} | {'STATUS':<6} | {'VIOLATIONS':<10} | {'NAME'}")
+    logger.info(f"{'-'*60}")
     for k in sorted(results.keys()):
         status = "pass" if results[k]["passed"] else "FAIL"
         count = len(results[k]["details"]) if not results[k]["passed"] else 0
-        print(f"{k:<6} | {status:<6} | {count:<10} | {ALL_KEYS[k]['name']}")
-    print(f"{'='*60}\n")
+        logger.info(f"{k:<6} | {status:<6} | {count:<10} | {ALL_KEYS[k]['name']}")
+    logger.info(f"{'='*60}\n")
 
 
 if __name__ == "__main__":
@@ -2284,9 +2284,9 @@ if __name__ == "__main__":
 
     def recommend_next_action(results):
         """ INTELLIGENCE LAYER: Tells the Agent what to do next. """
-        print("\n" + "="*80)
-        print("🤖 VALIDATOR INTELLIGENCE REPORT")
-        print("="*80)
+        logger.info("\n" + "="*80)
+        logger.info("🤖 VALIDATOR INTELLIGENCE REPORT")
+        logger.info("="*80)
 
         for layer in DEPENDENCY_ORDER:
             phase_name = layer['phase']
@@ -2296,27 +2296,27 @@ if __name__ == "__main__":
             failed_keys = [k for k in keys if str(k) in results and not results[str(k)]['passed']]
 
             if failed_keys:
-                print(f"🛑 BLOCKER DETECTED in PHASE: {phase_name}")
-                print(f"   Failed Keys: {failed_keys}")
-                print("-" * 40)
-                print(">>> RECOMMENDED AGENT ACTION:")
+                logger.info(f"🛑 BLOCKER DETECTED in PHASE: {phase_name}")
+                logger.info(f"   Failed Keys: {failed_keys}")
+                logger.info("-" * 40)
+                logger.info(">>> RECOMMENDED AGENT ACTION:")
 
                 if phase_name == "CRITICAL":
-                    print(f"   ! STOP EVERYTHING. Fix Key {failed_keys[0]} manually or with targeted script.")
-                    print("   ! Do not attempt other keys until this passes.")
+                    logger.info(f"   ! STOP EVERYTHING. Fix Key {failed_keys[0]} manually or with targeted script.")
+                    logger.info("   ! Do not attempt other keys until this passes.")
 
                 elif phase_name == "MECHANICAL":
-                    print(f"   > Run auto-fixers for Keys {failed_keys}.")
-                    print("   > Example: `python fix_whitespace.py` or `python fix_unused_imports.py`")
+                    logger.info(f"   > Run auto-fixers for Keys {failed_keys}.")
+                    logger.info("   > Example: `python fix_whitespace.py` or `python fix_unused_imports.py`")
 
                 elif phase_name == "STRUCTURAL":
-                    print(f"   > Initiate Surgical Refactoring for Key {failed_keys[0]}.")
-                    print("   > This requires 'Extract Method' or 'Move to Config' refactoring.")
+                    logger.info(f"   > Initiate Surgical Refactoring for Key {failed_keys[0]}.")
+                    logger.info("   > This requires 'Extract Method' or 'Move to Config' refactoring.")
 
-                print("="*80 + "\n")
+                logger.info("="*80 + "\n")
                 return False # Stop analysis, focus on this layer
 
-        print("✅ ALL SYSTEMS GO. Ready for final integrity check.")
+        logger.info("✅ ALL SYSTEMS GO. Ready for final integrity check.")
         return True
 
     # Configure logging to show output
@@ -2349,7 +2349,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Legacy mode for specific key checks
-    print(f"\n[INIT] Running Intelligence Scan on Keys: {keys_to_run}...")
+    logger.info(f"\n[INIT] Running Intelligence Scan on Keys: {keys_to_run}...")
 
     results = {}
     # Load previous state if exists to maintain memory
@@ -2361,14 +2361,14 @@ if __name__ == "__main__":
 
     # Run Checks
     for key in keys_to_run:
-        print(f"Checking Key {key}...", end="\r")
+        logger.info(f"Checking Key {key}...", end="\r")
         passed, details = ALL_KEYS[key]["function"]()
         results[str(key)] = {"passed": passed, "details": details}
         if not passed:
-            print(f"\n[!] FAILURE: Key {key}")
+            logger.info(f"\n[!] FAILURE: Key {key}")
             # Only print first 3 errors to save context
             for err in details[:3]:
-                print(f"    - {err}")
+                logger.info(f"    - {err}")
 
     # Save Memory
     save_state(results)

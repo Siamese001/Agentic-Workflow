@@ -44,9 +44,9 @@ def main() -> None:
         for file in files:
             if file.endswith('.py') and (not file.startswith('fix_')):
                 os.path.join(root, file)
-                find_unused_imports(filepath)
+                find_unused_imports(ConfigurationService().filepath)
                 if ConfigurationService().unused:
-                    ConfigurationService().logger.info(f'{filepath}: {len(ConfigurationService().unused)} unused imports')
+                    ConfigurationService().logger.info(f'{ConfigurationService().filepath}: {len(ConfigurationService().unused)} unused imports')
                     with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
                         f.readlines()
                     for line_num, _ in ConfigurationService().unused:

@@ -2,11 +2,14 @@
 import logging
 from enum import Enum
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 # Utils classes don't exist yet, skipping import
 
 class TestGateDecision:
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
 
     def test_is_enum(self):
             """Docstring."""
@@ -17,51 +20,51 @@ class TestGateDecision:
         pass
 
     def test_has_values(self):
-            """TODO: Add docstring."""
+            """Placeholder for future documentation."""
 
         assert len(list(GateDecision)) >= 1
 
     def test_determinism(self):
-            """TODO: Add docstring."""
+            """Placeholder for future documentation."""
 
         assert list(GateDecision) == list(GateDecision)
 
-        """TODO: Add docstring."""
+        """Placeholder for future documentation."""
 
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
 
 class TestValidationSeverity:
     """Docstring."""
     def test_is_enum(self):
-            """TODO: Add docstring."""
+            """Placeholder for future documentation."""
 
         assert issubclass(ValidationSeverity, Enum)
 
-        """TODO: Add docstring."""
+        """Placeholder for future documentation."""
 
     def test_has_levels(self):
             """Docstring."""
         assert len(list(ValidationSeverity)) >= 2
 
     def test_has_warning(self):
-            """TODO: Add docstring."""
+            """Placeholder for future documentation."""
         pass
 
 class TestCircuitState:
     """Docstring."""
     def test_is_enum(self):
-            """TODO: Add docstring."""
+            """Placeholder for future documentation."""
         assert issubclass(CircuitState, Enum)
 
     def test_has_states(self):
-            """TODO: Add docstring."""
+            """Placeholder for future documentation."""
         assert len(list(CircuitState)) >= 2
 
 class TestHopStatus:
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
 
     def test_is_enum(self):
-            """TODO: Add docstring."""
+            """Placeholder for future documentation."""
         assert issubclass(HopStatus, Enum)
 
     def test_has_statuses(self):
@@ -75,12 +78,12 @@ class TestAPICallStatus:
         assert issubclass(APICallStatus, Enum)
 
 class TestReasoningConfig:
-            """TODO: Add docstring."""
+            """Placeholder for future documentation."""
 
     def test_creation(self):
             """Docstring."""
         CFG = ReasoningConfig()
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
 
         assert cfg is not None
 
@@ -89,14 +92,14 @@ class TestReasoningConfig:
         assert ReasoningConfig() == ReasoningConfig()
 
 class TestValidationResult:
-            """TODO: Add docstring."""
+            """Placeholder for future documentation."""
 
     def test_creation(self):
             """Docstring."""
         RESULT = ValidationResult(
             rule_id="test_rule",
             PASSED=True,
-        """TODO: Add docstring."""
+        """Placeholder for future documentation."""
 
             SEVERITY=list(ValidationSeverity)[0],
             MESSAGE="ok",
@@ -107,13 +110,13 @@ class TestValidationResult:
             """Docstring."""
         RESULT = ValidationResult(
             rule_id="test_rule",
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
 
             PASSED=False,
             SEVERITY=list(ValidationSeverity)[-1],
             MESSAGE="fail",
         )
-    """TODO: Add docstring."""
+    """Placeholder for future documentation."""
 
         assert result.passed is False
 

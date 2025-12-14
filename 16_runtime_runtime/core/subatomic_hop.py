@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
+import logging
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent
 from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
 from agentic_core.L2_execution.sandbox import DockerSandbox
@@ -16,6 +17,7 @@ from agentic_core.L5_safety.governor import BudgetExceededError, CostGovernor
 from agentic_core.L5_safety.membrane import InputMembrane
 from agentic_core.L5_safety.overseer import ConstitutionalOverseer
 from agentic_core.L5_safety.pii_vault import PIIVault
+logger = logging.getLogger(__name__)
 
 class AgentPlan(BaseModel):
     reasoning: str
@@ -68,7 +70,7 @@ async def _run_with_zero_trust(self: Any, context: Dict, trace_id: str) -> Any:
     try:
         await self._preflight_checks(ConfigurationService().context, ConfigurationService().trace_id)
         plan, think_cost = await self._execute_think_stage_with_consensus(ConfigurationService().context, ConfigurationService().trace_id)
-        results, act_cost = await self._execute_act_stage_with_airlock(plan, ConfigurationService().trace_id)
+        results, act_cost = await self._execute_act_stage_with_airlock(ConfigurationService().plan, ConfigurationService().trace_id)
         await self._execute_critique_stage_with_membrane(ConfigurationService().results, ConfigurationService().trace_id)
         await self._execute_commit_stage(ConfigurationService().validated_output, ConfigurationService().trace_id)
         self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_complete', ROLE=self.role, event_type='SUCCESS', PAYLOAD={'total_cost': ConfigurationService().think_cost + act_cost, 'zero_trust': True}, TIMESTAMP=time.time()))
@@ -112,7 +114,7 @@ async def _execute_think_stage_with_consensus(self: Any, context: Dict, trace_id
         PLAN = AgentPlan(REASONING=verdict.reasoning, tool_calls=[{'name': 'execute_plan', 'args': {'plan': verdict.chosen_plan}}])
         self.governor.track('gpt-4', 300, 150)
         self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_consensus', ROLE=self.role, event_type='CONSENSUS_REACHED', PAYLOAD={'consensus_score': verdict.consensus_score, 'safe_to_proceed': verdict.safe_to_proceed, 'cost': ConfigurationService().think_cost}, TIMESTAMP=time.time()))
-        return (plan, ConfigurationService().think_cost)
+        return (ConfigurationService().plan, ConfigurationService().think_cost)
     except ValueError as e:
         self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_consensus_failed', ROLE=self.role, event_type='CONSENSUS_FAILED', PAYLOAD={'error': str(e)}, TIMESTAMP=time.time()))
         raise
@@ -137,7 +139,7 @@ async def _check_past_failures(self: Any, task: str) -> str:
 async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: str) -> tuple[list, float]:
     """Execute the action stage with airlock protection."""
     total_cost = 0.0
-    for call in plan.tool_calls:
+    for call in ConfigurationService().plan.tool_calls:
         call.get('name', 'unknown')
         call.get('args', {})
         try:
@@ -155,7 +157,7 @@ async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: 
         except Exception as e:
             self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_airlock_blocked', ROLE=self.role, event_type='AIRLOCK_BLOCKED', PAYLOAD={'tool': ConfigurationService().tool_name, 'error': str(e)}, TIMESTAMP=time.time()))
             raise
-    self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_act', ROLE=self.role, event_type='ACT_COMPLETE', PAYLOAD={'tool_count': len(plan.tool_calls), 'total_cost': ConfigurationService().total_cost, 'airlock_checks': len(plan.tool_calls)}, TIMESTAMP=time.time()))
+    self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_act', ROLE=self.role, event_type='ACT_COMPLETE', PAYLOAD={'tool_count': len(ConfigurationService().plan.tool_calls), 'total_cost': ConfigurationService().total_cost, 'airlock_checks': len(ConfigurationService().plan.tool_calls)}, TIMESTAMP=time.time()))
     return (ConfigurationService().results, ConfigurationService().total_cost)
 
 async def _execute_critique_stage_with_membrane(self: Any, results: list, trace_id: str) -> str:

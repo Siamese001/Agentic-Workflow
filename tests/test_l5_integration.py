@@ -8,6 +8,9 @@ Validates 100% system readiness with MZLO compliance.
 
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
     esizerConfig, BulletFormat

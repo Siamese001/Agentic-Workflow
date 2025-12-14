@@ -1,7 +1,7 @@
 """Test that all vector search modules can be imported."""
 import logging
 import pytest
-from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
 def _can_import_pinecone() -> bool:

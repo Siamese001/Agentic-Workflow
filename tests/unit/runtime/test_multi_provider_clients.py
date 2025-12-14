@@ -1,6 +1,10 @@
 """Unit tests for runtime/shared/multi_provider_clients.py"""
+import logging
 import os
 from unittest.mock import MagicMock, patch
+
+logger = logging.getLogger(__name__)
+
 
 import pytest
 from runtime.shared.multi_provider_clients import (=, __name__, import, logger,

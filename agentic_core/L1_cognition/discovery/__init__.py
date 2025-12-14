@@ -6,6 +6,9 @@ Agent Card registry for multi-agent collaboration and capability discovery.
 """
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 AgentCard,
 AgentRegistry,
 AgentCapability,

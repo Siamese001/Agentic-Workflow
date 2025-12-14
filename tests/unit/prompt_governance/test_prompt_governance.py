@@ -5,6 +5,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
 LOGGER = logging.getLogger(__name__)

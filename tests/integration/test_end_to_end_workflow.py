@@ -15,6 +15,9 @@ Phase 1C - SDK Integration Layer
 import logging
 import os
 
+logger = logging.getLogger(__name__)
+
+
 import pytest
 
     AgentMessage,

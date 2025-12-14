@@ -3,6 +3,9 @@
 import logging
 from typing import Any, Dict, List, Optional
 
+logger = logging.getLogger(__name__)
+
+
 LOGGER = logging.getLogger(__name__)
 # from .peer_intelligence_auditor_types import *  # Star import removed
 

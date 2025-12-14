@@ -4,6 +4,9 @@ Check that every changed .py file has an up-to-date test.
 This script enforces test coverage for all sovereign agent code.
 If a source file is newer than its test, the commit is blocked.
 import logging
+import logging
+logger = logging.getLogger(__name__)
+
 
 LOGGER = logging.getLogger(__name__)
 
