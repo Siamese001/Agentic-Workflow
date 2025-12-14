@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 class BudgetExceededError(Exception):
     def __init__(self, message: str, current_spend: float = None, limit: float = None):
         super().__init__(message)
@@ -15,8 +18,12 @@ class CostGovernor:
         rate = self.rates.get(model, 0.01)
         cost = ((input_tok + output_tok) / 1000) * rate
         self.spend += cost
-        
+
         if self.spend > self.limit:
-            raise BudgetExceededError(f"Global budget limit ${self.limit} exceeded (Current: ${self.spend:.2f}).")
-        
+            raise BudgetExceededError(f"Global budget limit ${self.
+                .limit} exceeded (Current: ${self.
+                .spend:.
+                .2f}).
+                .")
+
         return cost

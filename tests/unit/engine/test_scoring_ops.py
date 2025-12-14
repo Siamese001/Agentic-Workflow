@@ -1,5 +1,7 @@
 """
 
+
+logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/scoring_ops/
 Tests scoring operations for ranking and evaluation.
 """

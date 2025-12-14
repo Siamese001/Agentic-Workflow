@@ -1,5 +1,7 @@
 """
 
+
+logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/inspection_ops/
 Tests inspection operations for content analysis.
 """

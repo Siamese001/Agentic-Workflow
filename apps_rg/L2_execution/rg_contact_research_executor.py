@@ -1,4 +1,6 @@
 
+
+logger = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.310145+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_rg_contact_research_executor.py
 # High-signal content preserved below — zero-loss migration
@@ -12,6 +14,7 @@ meets security standards for job alignment.
 """
 
 from typing import Optional
+import logging
 # from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig  # D...
 # from archives.legacy_root_folders.core.routing import RoutingPolicy  # DEPRECATED: Archive impo...
 # from archives.legacy_root_folders.core.models.models import ComplexityLevel  # DEPRECATED: Arch...

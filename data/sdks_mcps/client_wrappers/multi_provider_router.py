@@ -133,6 +133,7 @@ class MultiProviderRouter:
                 }
 
             except Exception as e:
+    pass
 
                 if provider_config.provider in self.health_status:
                     self.health_status[provider_config.provider]["healthy"] = False
@@ -511,6 +512,7 @@ class MultiProviderRouter:
                 self.health_status[provider]["consecutive_failures"] = 0
 
             except Exception as e:
+    pass
 
                 self.health_status[provider]["consecutive_failures"] += 1
                 if self.health_status[provider]["consecutive_failures"] >= 3:
@@ -620,3 +622,4 @@ if __name__ == "__main__":
         stats = router.get_router_stats()
 
     except Exception as e:
+    pass

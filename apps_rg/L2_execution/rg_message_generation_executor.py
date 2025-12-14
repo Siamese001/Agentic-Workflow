@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Rg Message Generation Executor - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def rg_message_generation_executor(data: Dict[str, object]) -> Dict[str, object]:
     """Process rg message generation executor data."""

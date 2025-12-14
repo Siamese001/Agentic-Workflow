@@ -16,6 +16,7 @@ import os
 from typing import Any, Dict, List, Optional
 from unittest.mock import Mock, AsyncMock, patch
 from dataclasses import dataclass
+import logging
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))

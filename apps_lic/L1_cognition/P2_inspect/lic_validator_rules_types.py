@@ -1,7 +1,10 @@
 """Types and models for lic_validator_rules."""
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 class ValidationSeverity(Enum):
     """Severity levels for validation errors."""
 

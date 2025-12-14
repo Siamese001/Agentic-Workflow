@@ -1155,7 +1155,14 @@ def check_key_41_no_deep_directories():
     STRICT_ROOT_DOMAINS = {
         'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared',
         'tests', 'config', 'data', 'archives', 'schemas',
-        'observability', 'scripts', 'docs'
+        'observability', 'scripts', 'docs',
+        '01_runtime_logic', '02_runtime_cache', '03_scripts_logic',
+        '04_scripts_cache', '05_runtime_security', '06_runtime_runtime',
+        '07_runtime_pipeline', '08_shared_security', '09_shared_runtime',
+        '10_shared_pipeline', '11_shared_logic', '12_shared_cache',
+        '13_scripts_security', '14_scripts_runtime', '15_scripts_pipeline',
+        '16_runtime_runtime', '17_runtime_servers', '18_runtime_agents',
+        '19_runtime_pipeline'
     }
     STRICT_ROOT_FILES = {
         'main.py', 'canon_validator.py', 'setup.py', 'README.md',

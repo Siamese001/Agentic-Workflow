@@ -1,8 +1,11 @@
 from typing import Any
+import logging
 """Types and models for golden_state_evaluator."""
 
 
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class GoldenCase:
     """Golden test case."""

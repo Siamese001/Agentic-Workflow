@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Enforce Tone Guidelines - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def enforce_tone_guidelines(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce tone guidelines data."""

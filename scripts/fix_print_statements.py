@@ -4,7 +4,12 @@
 import os
 import re
 import sys
+import logging
 from pathlib import Path
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def add_logging_import(content: str) -> str:
     """Add logging import if not present."""

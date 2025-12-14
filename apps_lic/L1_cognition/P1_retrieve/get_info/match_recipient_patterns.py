@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Match Recipient Patterns - atomic implementation."""
 
 from typing import Dict
+import logging
 
 class MatchRecipientPatterns:
     """MatchRecipientPatterns implementation."""

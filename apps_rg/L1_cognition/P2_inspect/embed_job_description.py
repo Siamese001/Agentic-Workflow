@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
 """Embed Job Description - atomic implementation."""
 
 from typing import Dict
+import logging
 
 class EmbedJobDescription:
     """EmbedJobDescription implementation."""

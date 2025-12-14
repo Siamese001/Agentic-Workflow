@@ -1,7 +1,8 @@
 import docker
-import tarfile
-import io
+import logging
 
+
+logger = logging.getLogger(__name__)
 class DockerSandbox:
     def __init__(self, image: str = "python:3.10-slim"):
         self.client = docker.from_env()
@@ -10,8 +11,8 @@ class DockerSandbox:
     def run_code(self, code: str, timeout: int = 30) -> str:
         """Runs python code in an ephemeral container."""
         # Wrap code to print to stdout
-        wrapped = f"try:\n{self._indent(code)}\nexcept Exception as e:\n    print(e)"
-        
+        wrapped = f"try:\n{self._indent(code)}\nexcept Exception as e:\n    logger.info(e)"
+
         try:
             container = self.client.containers.run(
                 self.image,
@@ -20,12 +21,12 @@ class DockerSandbox:
                 network_disabled=True, # L5 Hardening: No Internet
                 detach=True
             )
-            
+
             exit_code = container.wait(timeout=timeout)
             logs = container.logs().decode('utf-8')
             container.remove()
             return logs
-            
+
         except Exception as e:
             return f"Sandbox Error: {str(e)}"
 

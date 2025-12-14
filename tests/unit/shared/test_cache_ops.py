@@ -1,5 +1,7 @@
 """
 
+
+logger = logging.getLogger(__name__)
 Unit tests for shared/cache_ops/
 Tests cache operations including data access and guardrails.
 """

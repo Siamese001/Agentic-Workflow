@@ -50,6 +50,7 @@ class UberSignalTestSuite:
 
         self.test_onboarding_plan = """
         30-60-90 Day Plan for VP of Engineering:
+    pass
 
         Days 1-30:
         - Meet with all engineering teams to understand current challenges

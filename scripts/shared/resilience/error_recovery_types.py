@@ -1,7 +1,10 @@
 """Types and models for error_recovery."""
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 class RecoveryStrategy(Enum):
     """TODO: Add docstring."""
 

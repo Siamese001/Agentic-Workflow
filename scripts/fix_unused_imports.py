@@ -1,10 +1,14 @@
-import logging
 #!/usr/bin/env python3
 """Automatically remove unused imports from Python files."""
 
 import ast
+import logging
 import os
 from typing import List, Set, Dict, Any, Optional, Tuple
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def get_python_files(root_dir: str = ".") -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
@@ -53,8 +57,6 @@ def find_unused_imports(file_path: str) -> Tuple[Set[str], Dict[str, int]]:
                     imports[name] = f"{node.module}.{alias.name}" if node.module else alias.name
                     import_lines[name] = node.lineno
 
-logger = logging.getLogger(__name__)
-
         # Find all used names
         used_names = set()
         for node in ast.walk(tree):
@@ -95,16 +97,16 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
             # Check if this line contains an unused import
             for unused in unused_imports:
                 # Handle 'import x' or 'import x as y'
-                if line_stripped.startswith(f'import {unused} ') or
-                    line_stripped == f'import {unused}':
+                if (line_stripped.startswith(f'import {unused} ') or
+                    line_stripped == f'import {unused}'):
                     should_remove = True
                     modified = True
                     break
                 # Handle 'from x import y' or 'from x import y as z'
                 elif line_stripped.startswith('from ') and f' import {unused}' in line_stripped:
                     # Check if it's a single import on this line
-                    if line_stripped.endswith(f' import {unused}') or
-                        f' import {unused} as ' in line_stripped:
+                    if (line_stripped.endswith(f' import {unused}') or
+                        f' import {unused} as ' in line_stripped):
                         should_remove = True
                         modified = True
                         break

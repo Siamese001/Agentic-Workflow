@@ -1,7 +1,10 @@
 """Unit tests for L2_execution/P1_retrieve - execution context retrieval."""
 from typing import Dict
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class TestExecutionContextRetrieval:
     """Tests for retrieving execution context."""
 

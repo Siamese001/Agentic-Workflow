@@ -1,7 +1,10 @@
 """Types and models for rg_validation_gates."""
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 class GateDecision(Enum):
     """Decision from a validation gate."""
 

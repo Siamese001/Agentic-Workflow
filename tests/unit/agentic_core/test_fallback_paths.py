@@ -1,4 +1,6 @@
 
+
+logger = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.261725+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_fallback_paths.py
 # High-signal content preserved below — zero-loss migration
@@ -10,6 +12,7 @@ LEVEL 5 - Unit tests for DAG fallback path and error recovery functionality
 """
 
 import pytest
+import logging
 
 class TestFallbackPaths:
     """Test suite for DAG fallback paths and error recovery"""

@@ -60,7 +60,7 @@ def _initialize_orchestrator():
     """Initialize the hardened workflow orchestrator."""
     logger.info("⚡ Initializing HardenedWorkflowOrchestrator...")
     workflow_spec = create_test_workflow_spec()
-    
+
     from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
     orchestrator = HardenedWorkflowOrchestrator(
         workflow_spec=workflow_spec,

@@ -1,7 +1,10 @@
 """Split module 1 for workflow_types_types."""
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 class CircuitState(Enum):
     """Circuit breaker states."""
 

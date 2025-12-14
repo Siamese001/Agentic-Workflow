@@ -1,6 +1,9 @@
 """Dataclass models for lic_archetypes."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 # from .lic_archetypes_enums import *  # Star import removed
 
 @dataclass

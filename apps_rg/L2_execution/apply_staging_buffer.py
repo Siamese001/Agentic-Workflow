@@ -1,4 +1,6 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Immutable staging buffer for HOP-4."""
@@ -6,6 +8,7 @@
 import copy
 from datetime import datetime
 from typing import Dict, Optional
+import logging
 
 
 class ImmutableStagingBuffer:

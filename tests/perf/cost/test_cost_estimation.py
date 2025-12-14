@@ -1,7 +1,10 @@
 """Performance tests for cost estimation consistency."""
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 class TestCostEstimationConsistency:
     """Tests for token and cost calculation determinism."""
 

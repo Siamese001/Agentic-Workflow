@@ -147,7 +147,7 @@ def fix_remaining_unused_imports():
                     file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                     fixed += 1
             except Exception:
-                logger.error("Suppressed error in try/except") # TODO: Verify logger import
+                logger.error("Suppressed error in try/except") # NOTE: Verify logger import
         except Exception:
             pass
 

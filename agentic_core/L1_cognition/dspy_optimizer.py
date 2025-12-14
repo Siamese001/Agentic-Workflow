@@ -385,7 +385,7 @@ def code_compilation_metric(predicted: Dict[str, Any], ground_truth: Dict[str, A
 
         # In practice, you'd actually try to compile the code
         return 0.8  # Mock score
-    except:
+    except Exception:
         return 0.0
 
 

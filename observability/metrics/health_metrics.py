@@ -2,6 +2,8 @@
 """AIS health metrics helpers.
 
 
+
+logger = logging.getLogger(__name__)
 Simple aggregation utilities over error / success events that can be
 used by tests or higher-level evaluation code.
 """

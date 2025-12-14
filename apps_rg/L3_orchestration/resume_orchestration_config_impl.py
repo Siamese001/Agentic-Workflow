@@ -1,6 +1,9 @@
 """Implementation for resume_orchestration_config."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 # from .resume_orchestration_config_types import *  # Star import removed
 
 def get_word_count_constraint(k_node: str) -> Optional[WordCountConstraint]:

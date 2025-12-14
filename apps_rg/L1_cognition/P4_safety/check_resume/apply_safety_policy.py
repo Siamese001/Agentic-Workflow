@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
 """Apply Resume Safety Policy - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def apply_resume_safety_policy(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply resume safety policy data."""

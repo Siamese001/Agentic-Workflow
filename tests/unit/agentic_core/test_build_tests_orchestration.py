@@ -1,10 +1,13 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
 """Test Build Tests Orchestration - atomic execution layer."""
 
 
 from typing import Dict
+import logging
 
 def test_build_tests_orchestration(data: Dict[str, object]) -> Dict[str, object]:
     """Process test build tests orchestration data."""

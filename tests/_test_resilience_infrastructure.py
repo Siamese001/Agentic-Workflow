@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for resilience infrastructure.
 

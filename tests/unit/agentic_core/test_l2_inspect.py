@@ -1,7 +1,10 @@
 """Unit tests for L2_execution/P2_inspect - execution result inspection."""
 from typing import Dict
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class TestExecutionResultInspection:
     """Tests for inspecting execution results."""
 
