@@ -1774,14 +1774,18 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
         self.prompt += "\n\nARCHITECTURAL DIRECTIVE: Plan and execute multi-file refactoring missions. Use call-graph data to minimize dependencies. Ensure atomic transactions across all affected files."
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Executing Architectural Refactoring Missions...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Planning and Executing Architectural Refactoring Missions...")
         
         # Check if we have call-graph data from SemanticMapper
         if not hasattr(self.ctx, 'call_graph'):
             print("   ⚠️ No call-graph available - skipping architectural analysis")
             return
         
-        # Execute planned missions
+        # First, assess and plan missions
+        self._assess_global_encapsulation()
+        self._assess_class_reorganization()
+        
+        # Then execute planned missions
         self._execute_missions()
         
         print("   ✅ Architectural refactoring complete")
@@ -1793,27 +1797,44 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
             "MISSION_REORGANIZE": self._execute_class_reorganization,
         }
         
+        # Debug: Count missions
+        total_missions = 0
+        planned_missions = 0
+        multi_file_missions = 0
+        
         for plan_key, plan in list(self.ctx.refactor_plans.items()):
-            if plan.get("type") == "MULTI_FILE_REFACTOR" and plan.get("status") == "PLANNED":
-                mission = plan.get("mission")
-                if mission in mission_executors:
-                    print(f"\n   🏗️ Executing mission: {mission}")
-                    try:
-                        success, details = mission_executors[mission](plan)
-                        plan["status"] = "EXECUTED"
-                        plan["outcome"] = "SUCCESS" if success else "FAILED"
-                        plan["execution_time"] = __import__('datetime').datetime.now().isoformat()
-                        plan["execution_details"] = details
-                        
-                        if success:
-                            print(f"      ✅ Mission completed: {details}")
-                        else:
-                            print(f"      ❌ Mission failed: {details}")
-                    except Exception as e:
-                        plan["status"] = "EXECUTED"
-                        plan["outcome"] = "FAILED"
-                        plan["execution_details"] = str(e)
-                        print(f"      ❌ Mission error: {e}")
+            total_missions += 1
+            if plan.get("type") == "MULTI_FILE_REFACTOR":
+                multi_file_missions += 1
+                if plan.get("status") == "PLANNED":
+                    planned_missions += 1
+                    mission = plan.get("mission")
+                    print(f"\n   🏗️ Executing mission: {mission} (key: {plan_key})")
+                    
+                    if mission in mission_executors:
+                        try:
+                            success, details = mission_executors[mission](plan)
+                            plan["status"] = "EXECUTED"
+                            plan["outcome"] = "SUCCESS" if success else "FAILED"
+                            plan["execution_time"] = __import__('datetime').datetime.now().isoformat()
+                            plan["execution_details"] = details
+                            
+                            if success:
+                                print(f"      ✅ Mission completed: {details}")
+                            else:
+                                print(f"      ❌ Mission failed: {details}")
+                        except Exception as e:
+                            plan["status"] = "EXECUTED"
+                            plan["outcome"] = "FAILED"
+                            plan["execution_details"] = str(e)
+                            print(f"      ❌ Mission error: {e}")
+                    else:
+                        print(f"      ⚠️ No executor found for mission: {mission}")
+        
+        if total_missions == 0:
+            print("   ℹ️ No refactor plans found")
+        else:
+            print(f"\n   📊 Mission Summary: {total_missions} total, {multi_file_missions} multi-file, {planned_missions} executed")
     
     def _execute_encapsulate_globals(self, plan: dict) -> Tuple[bool, str]:
         """L5 Execute: Encapsulate all global variables into a ConfigurationService."""
@@ -1855,7 +1876,7 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
                     transaction.add_modification(file_path, updated_content)
                 
                 # Commit all changes
-                transaction.commit()
+                transaction.commit(self.ctx.modified_files)
                 
                 return True, f"Encapsulated {len(all_globals)} globals into ConfigurationService"
                 
@@ -2069,7 +2090,7 @@ config = ConfigurationService()
             # Create architectural refactoring plan
             self.ctx.refactor_plans["MISSION_ENCAPSULATE_GLOBALS"] = {
                 "type": "MULTI_FILE_REFACTOR",
-                "mission": "ENCAPSULATE_GLOBALS",
+                "mission": "MISSION_ENCAPSULATE_GLOBALS",
                 "target_files": list(self.ctx.call_graph["files"].keys()),
                 "estimated_impact": total_globals,
                 "status": "PLANNED",
@@ -2104,7 +2125,7 @@ config = ConfigurationService()
                 if service_classes or utility_classes:
                     self.ctx.refactor_plans[f"MISSION_REORGANIZE_{file_path}"] = {
                         "type": "MULTI_FILE_REFACTOR",
-                        "mission": "REORGANIZE_CLASSES",
+                        "mission": "MISSION_REORGANIZE",
                         "target_file": file_path,
                         "service_classes": service_classes,
                         "utility_classes": utility_classes,
@@ -2372,16 +2393,18 @@ class RefactorTransaction:
         """Add a new file to be created."""
         self.new_files[file_path] = content
     
-    def commit(self):
+    def commit(self, modified_files_set=None):
         """Apply all modifications to disk."""
         for file_path, content in self.modifications.items():
             Path(file_path).write_text(content, encoding="utf-8")
-            self.ctx.modified_files.add(file_path)
+            if modified_files_set is not None:
+                modified_files_set.add(file_path)
         
         for file_path, content in self.new_files.items():
             Path(file_path).parent.mkdir(parents=True, exist_ok=True)
             Path(file_path).write_text(content, encoding="utf-8")
-            self.ctx.modified_files.add(file_path)
+            if modified_files_set is not None:
+                modified_files_set.add(file_path)
 
 # ==============================================================================
 # 3. FUNCTION EXTRACTOR (L4 AST-Safe Extraction)

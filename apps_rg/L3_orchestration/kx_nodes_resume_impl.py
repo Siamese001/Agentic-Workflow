@@ -1,10 +1,7 @@
 """Implementation for kx_nodes_resume."""
-
 import logging
-
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
-# from .kx_nodes_resume_types import *  # Star import removed
-
 
 def get_resume_kx_dag() -> Dict[str, ResumeKNode]:
     """Get the complete resume K.X node DAG.
@@ -13,7 +10,6 @@ def get_resume_kx_dag() -> Dict[str, ResumeKNode]:
         Dictionary of resume K.X nodes with dependencies
     """
     return RESUME_KX_DAG.copy()
-
 
 def get_resume_execution_order() -> List[str]:
     """Get topological execution order for resume K.X nodes.
@@ -27,20 +23,19 @@ def get_resume_execution_order() -> List[str]:
         for dep in node.dependencies:
             if dep in RESUME_KX_DAG:
                 adjacency[dep].append(node_key)
-                in_degree[node_key] += 1
-    QUEUE = [node for node, degree in in_degree.items() if degree == 0]
+                ConfigurationService().in_degree[node_key] += 1
+    QUEUE = [node for node, degree in ConfigurationService().in_degree.items() if degree == 0]
     while queue:
-        QUEUE.SORT(KEY=lambda k: RESUME_KX_DAG[k].metadata.get("priority", 999))
+        ConfigurationService().QUEUE.SORT(KEY=lambda k: RESUME_KX_DAG[ConfigurationService().k].metadata.get('priority', 999))
         queue.pop(0)
         order.append(node)
         for neighbor in adjacency[node]:
-            in_degree[neighbor] -= 1
-            if in_degree[neighbor] == 0:
+            ConfigurationService().in_degree[neighbor] -= 1
+            if ConfigurationService().in_degree[neighbor] == 0:
                 queue.append(neighbor)
     if len(order) != len(RESUME_KX_DAG):
-        raise ValueError("Resume K.X DAG contains cycles")
+        raise ValueError('Resume K.X DAG contains cycles')
     return order
-
 
 def get_resume_kx_node(node_key: str) -> Optional[ResumeKNode]:
     """Get resume K.X node by key.

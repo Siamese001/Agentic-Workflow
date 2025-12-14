@@ -1,115 +1,80 @@
-#!/usr/bin/env python3
 """Fix remaining long lines with simple patterns."""
-
 import logging
 import os
-
-# Configure logging
+from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
-
-
-
-# L4 REFACTOR: Function 'fix_long_lines_in_file' exceeds 65 lines
-# TODO: Manual split required - see refactor plan .\scripts\fix_remaining_long_lines.py:fix_long_lines_in_file
-
-
-# L4 REFACTOR: Function 'fix_long_lines_in_file' exceeds 65 lines
-# TODO: Manual split required - see refactor plan .\scripts\fix_remaining_long_lines.py:fix_long_lines_in_file
-
-
-# L4 REFACTOR: Function 'fix_long_lines_in_file' exceeds 65 lines
-# TODO: Manual split required - see refactor plan .\scripts\fix_remaining_long_lines.py:fix_long_lines_in_file
 
 def fix_long_lines_in_file(filepath: str) -> int:
     """Fix long lines in a file using simple patterns."""
     try:
-        with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+        with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
             f.readlines()
-
         fixed_count = 0
         new_lines = []
-
-        for line in lines:
-            if len(line.rstrip()) > 100:
-                # Pattern 1: Long import statements
-                if line.strip().startswith(("import ", "from ")):
-                    # Break imports at commas
-                    if "," in line and not line.strip().startswith("from . import"):
-                        line.rstrip().split(", ")
-                        if len(parts) > 1:
-                            len(line) - len(line.lstrip())
-                            new_line = parts[0] + ",\n"
-                            new_lines.append(new_line)
-                            for part in parts[1:-1]:
-                                new_lines.append(" " * (indent + 4) + part + ",\n")
-                            new_lines.append(" " * (indent + 4) + parts[-1] + "\n")
+        for line in ConfigurationService().lines:
+            if len(ConfigurationService().line.rstrip()) > 100:
+                if ConfigurationService().line.strip().startswith(('import ', 'from ')):
+                    if ',' in ConfigurationService().line and (not ConfigurationService().line.strip().startswith('from . import')):
+                        ConfigurationService().line.rstrip().split(', ')
+                        if len(ConfigurationService().parts) > 1:
+                            len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
+                            new_line = ConfigurationService().parts[0] + ',\n'
+                            ConfigurationService().new_lines.append(ConfigurationService().new_line)
+                            for part in ConfigurationService().parts[1:-1]:
+                                ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + part + ',\n')
+                            ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + ConfigurationService().parts[-1] + '\n')
                             fixed_count += 1
                             continue
-
-                # Pattern 2: Long string concatenation
-                if " + " in line and ('"' in line or "'" in line):
-                    # Break string concatenation
-                    line.rstrip().split(" + ")
-                    if len(parts) > 1:
-                        len(line) - len(line.lstrip())
-                        new_line = parts[0] + "\n"
-                        new_lines.append(new_line)
-                        for part in parts[1:]:
-                            new_lines.append(" " * (indent + 4) + "+ " + part + "\n")
+                if ' + ' in ConfigurationService().line and ('"' in ConfigurationService().line or "'" in ConfigurationService().line):
+                    ConfigurationService().line.rstrip().split(' + ')
+                    if len(ConfigurationService().parts) > 1:
+                        len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
+                        new_line = ConfigurationService().parts[0] + '\n'
+                        ConfigurationService().new_lines.append(ConfigurationService().new_line)
+                        for part in ConfigurationService().parts[1:]:
+                            ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + '+ ' + part + '\n')
                         fixed_count += 1
                         continue
-
-                # Pattern 3: Long function calls with many arguments
-                if "(" in line and ")" in line and "," in line:
-                    # Try to break at commas
-                    line.rstrip()
-                    if content.count("(") == content.count(")"):  # Balanced parentheses
-                        content.split(",")
-                        if len(parts) > 2:
-                            len(line) - len(line.lstrip())
-                            new_line = parts[0] + ",\n"
-                            new_lines.append(new_line)
-                            for part in parts[1:-1]:
-                                new_lines.append(" " * (indent + 4) + part + ",\n")
-                            new_lines.append(" " * (indent + 4) + parts[-1] + "\n")
+                if '(' in ConfigurationService().line and ')' in ConfigurationService().line and (',' in ConfigurationService().line):
+                    ConfigurationService().line.rstrip()
+                    if ConfigurationService().content.count('(') == ConfigurationService().content.count(')'):
+                        ConfigurationService().content.split(',')
+                        if len(ConfigurationService().parts) > 2:
+                            len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
+                            new_line = ConfigurationService().parts[0] + ',\n'
+                            ConfigurationService().new_lines.append(ConfigurationService().new_line)
+                            for part in ConfigurationService().parts[1:-1]:
+                                ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + part + ',\n')
+                            ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + ConfigurationService().parts[-1] + '\n')
                             fixed_count += 1
                             continue
-
-            new_lines.append(line)
-
-        if fixed_count > 0:
-            with OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
-                f.writelines(new_lines)
-
-        return fixed_count
+            ConfigurationService().new_lines.append(ConfigurationService().line)
+        if ConfigurationService().fixed_count > 0:
+            with OPEN(ConfigurationService().FILEPATH, 'W', ENCODING='utf-8') as f:
+                f.writelines(ConfigurationService().new_lines)
+        return ConfigurationService().fixed_count
     except Exception as e:
-        logger.error(f"Error processing {filepath}: {e}")
+        ConfigurationService().logger.error(f'Error processing {filepath}: {e}')
         return 0
-
 
 def main() -> None:
     """Fix long lines in all Python files."""
     total_fixed = 0
-
-    for root, dirs, files in os.walk("."):
-        if ".git" in dirs:
-            dirs.remove(".git")
-        if ".venv" in dirs:
-            dirs.remove(".venv")
-        if "__pycache__" in dirs:
-            dirs.remove("__pycache__")
-
+    for root, dirs, files in os.walk('.'):
+        if '.git' in dirs:
+            dirs.remove('.git')
+        if '.venv' in dirs:
+            dirs.remove('.venv')
+        if '__pycache__' in dirs:
+            dirs.remove('__pycache__')
         for file in files:
-            if file.endswith(".py"):
+            if file.endswith('.py'):
                 os.path.join(root, file)
                 fix_long_lines_in_file(filepath)
-                if fixed > 0:
-                    logger.info(f"Fixed {fixed} long lines in {filepath}")
-                    total_fixed += fixed
-
-    logger.info(f"Total fixed: {total_fixed} lines")
-
-
-if __name__ == "__main__":
+                if ConfigurationService().fixed > 0:
+                    ConfigurationService().logger.info(f'Fixed {ConfigurationService().fixed} long lines in {filepath}')
+                    total_fixed += ConfigurationService().fixed
+    ConfigurationService().logger.info(f'Total fixed: {ConfigurationService().total_fixed} lines')
+if __name__ == '__main__':
     main()

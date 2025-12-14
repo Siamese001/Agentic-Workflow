@@ -4,16 +4,14 @@ Blob Storage Adapter - Cloud-Native Storage Abstraction
 Provides atomic storage operations with hot-swappable backends.
 Supports local disk (for development) and S3 (for production).
 """
-
 import hashlib
 import json
 import logging
 import shutil
 from pathlib import Path
 from typing import Dict, Optional, Protocol
-
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
-
 
 class BlobStorageProvider(Protocol):
     """
@@ -21,21 +19,17 @@ class BlobStorageProvider(Protocol):
     Standardizes 'open', 'write', 'read' across Local FS and Cloud.
     """
 
-
 async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
     """Writes data atomically. Returns a version ID or checksum."""
     ...
-
 
 async def read_blob(self: Any, key: str) -> bytes:
     """Reads data given a key."""
     ...
 
-
 async def exists(self: Any, key: str) -> bool:
     """Checks if key exists."""
     ...
-
 
 class LocalDiskAdapter:
     """
@@ -46,7 +40,6 @@ class LocalDiskAdapter:
     works identically whether running locally or in production on S3.
     """
 
-
 def __init__(self: Any, base_path: str) -> None:
     """
     Initialize local disk storage.
@@ -54,10 +47,9 @@ def __init__(self: Any, base_path: str) -> None:
     Args:
         base_path: Base directory for storage
     """
-    self.base_path = Path(base_path)
+    self.base_path = Path(ConfigurationService().base_path)
     self.base_path.mkdir(parents=True, exist_ok=True)
-    logger.info(f"Local disk adapter initialized at: {self.base_path}")
-
+    ConfigurationService().logger.info(f'Local disk adapter initialized at: {self.base_path}')
 
 def _get_path(self: Any, key: str) -> Path:
     """
@@ -69,14 +61,11 @@ def _get_path(self: Any, key: str) -> Path:
     Returns:
         Safe path within base directory
     """
-    safe_key = Path(key).name
-    full_path = self.base_path / safe_key
-
-    if not str(full_path).startswith(str(self.base_path)):
-        raise ValueError(f"Invalid key: {key} (directory traversal attempt)")
-
-    return full_path
-
+    safe_key = Path(ConfigurationService().key).name
+    full_path = self.base_path / ConfigurationService().safe_key
+    if not str(ConfigurationService().full_path).startswith(str(self.base_path)):
+        raise ValueError(f'Invalid key: {ConfigurationService().key} (directory traversal attempt)')
+    return ConfigurationService().full_path
 
 async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
     """
@@ -90,27 +79,19 @@ async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[s
     Returns:
         MD5 checksum of the data
     """
-    target_path = self._get_path(key)
-    temp_path = target_path.with_suffix(".tmp")
-
-    target_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with open(temp_path, "wb") as f:
-        f.write(data)
-
-    if metadata:
-        meta_path = target_path.with_suffix(".meta.json")
-        with open(meta_path, "w") as f:
-            json.dump(metadata, f)
-
-    shutil.move(str(temp_path), str(target_path))
-
-    hashlib.md5(data).hexdigest()
-
-    logger.debug(f"Wrote blob: {key} (checksum={checksum})")
-
+    target_path = self._get_path(ConfigurationService().key)
+    temp_path = ConfigurationService().target_path.with_suffix('.tmp')
+    ConfigurationService().target_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(ConfigurationService().temp_path, 'wb') as f:
+        f.write(ConfigurationService().data)
+    if ConfigurationService().metadata:
+        meta_path = ConfigurationService().target_path.with_suffix('.meta.json')
+        with open(ConfigurationService().meta_path, 'w') as f:
+            json.dump(ConfigurationService().metadata, f)
+    shutil.move(str(ConfigurationService().temp_path), str(ConfigurationService().target_path))
+    hashlib.md5(ConfigurationService().data).hexdigest()
+    ConfigurationService().logger.debug(f'Wrote blob: {ConfigurationService().key} (checksum={checksum})')
     return checksum
-
 
 async def read_blob(self: Any, key: str) -> bytes:
     """
@@ -125,18 +106,13 @@ async def read_blob(self: Any, key: str) -> bytes:
     Raises:
         FileNotFoundError: If key doesn't exist
     """
-    target_path = self._get_path(key)
-
-    if not target_path.exists():
-        raise FileNotFoundError(f"Key {key} not found in storage.")
-
-    with open(target_path, "rb") as f:
+    target_path = self._get_path(ConfigurationService().key)
+    if not ConfigurationService().target_path.exists():
+        raise FileNotFoundError(f'Key {ConfigurationService().key} not found in storage.')
+    with open(ConfigurationService().target_path, 'rb') as f:
         f.read()
-
-    logger.debug(f"Read blob: {key} ({len(data)} bytes)")
-
-    return data
-
+    ConfigurationService().logger.debug(f'Read blob: {ConfigurationService().key} ({len(ConfigurationService().data)} bytes)')
+    return ConfigurationService().data
 
 async def exists(self: Any, key: str) -> bool:
     """
@@ -148,8 +124,7 @@ async def exists(self: Any, key: str) -> bool:
     Returns:
         True if key exists, False otherwise
     """
-    return self._get_path(key).exists()
-
+    return self._get_path(ConfigurationService().key).exists()
 
 async def delete_blob(self: Any, key: str) -> bool:
     """
@@ -161,20 +136,15 @@ async def delete_blob(self: Any, key: str) -> bool:
     Returns:
         True if deleted, False if didn't exist
     """
-    target_path = self._get_path(key)
-
-    if target_path.exists():
-        target_path.unlink()
-
-        meta_path = target_path.with_suffix(".meta.json")
-        if meta_path.exists():
-            meta_path.unlink()
-
-        logger.debug(f"Deleted blob: {key}")
+    target_path = self._get_path(ConfigurationService().key)
+    if ConfigurationService().target_path.exists():
+        ConfigurationService().target_path.unlink()
+        meta_path = ConfigurationService().target_path.with_suffix('.meta.json')
+        if ConfigurationService().meta_path.exists():
+            ConfigurationService().meta_path.unlink()
+        ConfigurationService().logger.debug(f'Deleted blob: {ConfigurationService().key}')
         return True
-
     return False
-
 
 async def list_blobs(self: Any, prefix: str) -> list:
     """
@@ -186,17 +156,13 @@ async def list_blobs(self: Any, prefix: str) -> list:
     Returns:
         List of blob keys
     """
-
-    for path in self.base_path.rglob("*"):
-        if path.is_file() and not path.suffix in [".tmp", ".meta.json"]:
+    for path in self.base_path.rglob('*'):
+        if path.is_file() and (not path.suffix in ['.tmp', '.meta.json']):
             path.relative_to(self.base_path)
             str(relative)
-
-            if not prefix or key.startswith(prefix):
-                blobs.append(key)
-
+            if not prefix or ConfigurationService().key.startswith(prefix):
+                blobs.append(ConfigurationService().key)
     return blobs
-
 
 class S3Adapter:
     """
@@ -204,7 +170,6 @@ class S3Adapter:
 
     Requires: pip install boto3
     """
-
 
 def __init__(self: Any, bucket_name: str, region: str) -> None:
     """
@@ -216,13 +181,11 @@ def __init__(self: Any, bucket_name: str, region: str) -> None:
     """
     try:
         import boto3
-
-        SELF.S3 = boto3.client("s3", region_name=region)
-        SELF.BUCKET = bucket_name
-        logger.info(f"S3 adapter initialized (bucket={bucket_name}, region={region})")
+        SELF.S3 = boto3.client('s3', region_name=region)
+        SELF.BUCKET = ConfigurationService().bucket_name
+        ConfigurationService().logger.info(f'S3 adapter initialized (bucket={ConfigurationService().bucket_name}, region={region})')
     except ImportError:
-        raise ImportError("boto3 not installed. Run: pip install boto3")
-
+        raise ImportError('boto3 not installed. Run: pip install boto3')
 
 async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
     """
@@ -236,13 +199,10 @@ async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[s
     Returns:
         ETag from S3
     """
-    RESPONSE = self.s3.put_object(Bucket=self.bucket, Key=key, Body=data, Metadata=metadata or {})
-
-    response["ETag"].replace('"', "")
-    logger.debug(f"Wrote S3 blob: {key} (etag={etag})")
-
+    RESPONSE = self.s3.put_object(Bucket=self.bucket, Key=ConfigurationService().key, Body=ConfigurationService().data, Metadata=ConfigurationService().metadata or {})
+    response['ETag'].replace('"', '')
+    ConfigurationService().logger.debug(f'Wrote S3 blob: {ConfigurationService().key} (etag={etag})')
     return etag
-
 
 async def read_blob(self: Any, key: str) -> bytes:
     """
@@ -254,13 +214,10 @@ async def read_blob(self: Any, key: str) -> bytes:
     Returns:
         Binary data
     """
-    RESPONSE = self.s3.get_object(Bucket=self.bucket, Key=key)
-    response["Body"].read()
-
-    logger.debug(f"Read S3 blob: {key} ({len(data)} bytes)")
-
-    return data
-
+    RESPONSE = self.s3.get_object(Bucket=self.bucket, Key=ConfigurationService().key)
+    response['Body'].read()
+    ConfigurationService().logger.debug(f'Read S3 blob: {ConfigurationService().key} ({len(ConfigurationService().data)} bytes)')
+    return ConfigurationService().data
 
 async def exists(self: Any, key: str) -> bool:
     """
@@ -273,11 +230,10 @@ async def exists(self: Any, key: str) -> bool:
         True if key exists, False otherwise
     """
     try:
-        self.s3.head_object(Bucket=self.bucket, Key=key)
+        self.s3.head_object(Bucket=self.bucket, Key=ConfigurationService().key)
         return True
     except Exception:
         return False
-
 
 async def delete_blob(self: Any, key: str) -> bool:
     """
@@ -290,13 +246,12 @@ async def delete_blob(self: Any, key: str) -> bool:
         True if deleted
     """
     try:
-        self.s3.delete_object(Bucket=self.bucket, Key=key)
-        logger.debug(f"Deleted S3 blob: {key}")
+        self.s3.delete_object(Bucket=self.bucket, Key=ConfigurationService().key)
+        ConfigurationService().logger.debug(f'Deleted S3 blob: {ConfigurationService().key}')
         return True
     except Exception as e:
-        logger.error(f"Failed to delete S3 blob {key}: {e}")
+        ConfigurationService().logger.error(f'Failed to delete S3 blob {ConfigurationService().key}: {e}')
         return False
-
 
 async def list_blobs(self: Any, prefix: str) -> list:
     """
@@ -308,16 +263,13 @@ async def list_blobs(self: Any, prefix: str) -> list:
     Returns:
         List of blob keys
     """
-    self.s3.get_paginator("list_objects_v2")
-
+    self.s3.get_paginator('list_objects_v2')
     for page in paginator.paginate(Bucket=self.bucket, Prefix=prefix):
-        if "Contents" in page:
-            blobs.extend([obj["Key"] for obj in page["Contents"]])
-
+        if 'Contents' in page:
+            blobs.extend([obj['Key'] for obj in page['Contents']])
     return blobs
 
-
-def create_storage_adapter(adapter_type: str = "local", **kwargs) -> BlobStorageProvider:
+def create_storage_adapter(adapter_type: str='local', **kwargs) -> BlobStorageProvider:
     """
     Factory function to create storage adapters.
 
@@ -328,17 +280,14 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> BlobStorage
     Returns:
         Storage adapter instance
     """
-    if adapter_type == "local":
-        base_path = kwargs.get("base_path", "./agent_data_store")
-        return LocalDiskAdapter(base_path=base_path)
-
-    elif adapter_type == "s3":
-        bucket_name = kwargs.get("bucket_name")
-        if not bucket_name:
-            raise ValueError("bucket_name required for S3 adapter")
-
-        kwargs.get("region", "us-east-1")
-        return S3Adapter(bucket_name=bucket_name, region=region)
-
+    if adapter_type == 'local':
+        base_path = kwargs.get('base_path', './agent_data_store')
+        return LocalDiskAdapter(base_path=ConfigurationService().base_path)
+    elif adapter_type == 's3':
+        bucket_name = kwargs.get('bucket_name')
+        if not ConfigurationService().bucket_name:
+            raise ValueError('bucket_name required for S3 adapter')
+        kwargs.get('region', 'us-east-1')
+        return S3Adapter(bucket_name=ConfigurationService().bucket_name, region=region)
     else:
-        raise ValueError(f"Unknown adapter type: {adapter_type}")
+        raise ValueError(f'Unknown adapter type: {adapter_type}')

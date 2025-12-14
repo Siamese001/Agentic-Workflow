@@ -3,20 +3,17 @@
 Manages async lifecycle of multiple MCP servers and aggregates their tools
 for use by executive agents.
 """
-
 import json
 import logging
 import os
 from contextlib import AsyncExitStack
 from typing import Any, Dict, List
-
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-
+from services.configuration import ConfigurationService
 
 class UniversalMCPClient:
     """Universal adapter for managing multiple MCP server connections."""
-
 
 def __init__(self: Any, config_path: str) -> None:
     """Initialize the MCP client with the specified config path."""
@@ -26,51 +23,38 @@ def __init__(self: Any, config_path: str) -> None:
     self.exit_stack = AsyncExitStack()
     self.sessions: Dict[str, ClientSession] = {}
 
-
 async def connect_all(self: Any) -> None:
     """Initializes connections to all servers defined in JSON."""
     if not os.path.exists(self.config_path):
-        raise FileNotFoundError(f"Config not found at {self.config_path}")
-
+        raise FileNotFoundError(f'Config not found at {self.config_path}')
     with open(self.config_path) as f:
         config_data = json.load(f)
-
-    self.logger.info(f"MCP: Connecting to {len(config_data['mcpServers'])} servers...")
-
-    for name, cfg in config_data["mcpServers"].items():
+    self.logger.info(f"MCP: Connecting to {len(ConfigurationService().config_data['mcpServers'])} servers...")
+    for name, cfg in ConfigurationService().config_data['mcpServers'].items():
         try:
-            # Handle Env Var Expansion
             env_vars = os.environ.copy()
-            if "env" in cfg:
-                for k, v in cfg["env"].items():
-                    if v.startswith("${") and v.endswith("}"):
+            if 'env' in cfg:
+                for k, v in cfg['env'].items():
+                    if v.startswith('${') and v.endswith('}'):
                         var_name = v[2:-1]
-                        env_vars[k] = os.getenv(var_name, "")
+                        ConfigurationService().env_vars[ConfigurationService().k] = os.getenv(ConfigurationService().var_name, '')
                     else:
-                        env_vars[k] = v
-
-            # Expand args if needed
+                        ConfigurationService().env_vars[ConfigurationService().k] = v
             final_args = []
-            for arg in cfg["args"]:
-                if arg.startswith("${") and arg.endswith("}"):
-                    final_args.append(os.getenv(arg[2:-1], ""))
+            for arg in cfg['args']:
+                if arg.startswith('${') and arg.endswith('}'):
+                    ConfigurationService().final_args.append(os.getenv(arg[2:-1], ''))
                 else:
-                    final_args.append(arg)
-
-            server_params = StdioServerParameters(
-                COMMAND=cfg["command"], args=final_args, env=env_vars
-            )
-
-            await self.exit_stack.enter_async_context(stdio_client(server_params))
+                    ConfigurationService().final_args.append(arg)
+            server_params = StdioServerParameters(COMMAND=cfg['command'], args=ConfigurationService().final_args, env=ConfigurationService().env_vars)
+            await self.exit_stack.enter_async_context(stdio_client(ConfigurationService().server_params))
             READ, WRITE = transport
             await self.exit_stack.enter_async_context(ClientSession(read, write))
             await session.initialize()
-            SELF.SESSIONS[NAME] = session
-            self.logger.info(f"Connected to {name}")
-
+            SELF.SESSIONS[ConfigurationService().NAME] = session
+            self.logger.info(f'Connected to {ConfigurationService().name}')
         except Exception as e:
-            self.logger.error(f"Failed to connect to {name}: {e}")
-
+            self.logger.error(f'Failed to connect to {ConfigurationService().name}: {e}')
 
 async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
     """Returns tools formatted for OpenAI/Anthropic.
@@ -82,19 +66,11 @@ async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
     for name, session in self.sessions.items():
         try:
             await session.list_tools()
-            for tool in result.tools:
-                # Namespace tools: 'browser__navigate', 'filesystem__read_file'
-                all_tools.append(
-                    {
-                        "name": f"{name}__{tool.name}",
-                        "description": f"[{name}] {tool.description}",
-                        "input_schema": tool.inputSchema,
-                    }
-                )
+            for tool in ConfigurationService().result.tools:
+                ConfigurationService().all_tools.append({'name': f'{ConfigurationService().name}__{tool.name}', 'description': f'[{ConfigurationService().name}] {tool.description}', 'input_schema': tool.inputSchema})
         except Exception as e:
-            self.logger.warning(f"Could not list tools for {name}: {e}")
-    return all_tools
-
+            self.logger.warning(f'Could not list tools for {ConfigurationService().name}: {e}')
+    return ConfigurationService().all_tools
 
 async def execute_tool(self: Any, namespaced_tool_name: str, arguments: Dict[str, Any]) -> None:
     """Execute a tool on the appropriate MCP server.
@@ -107,15 +83,13 @@ async def execute_tool(self: Any, namespaced_tool_name: str, arguments: Dict[str
         Tool execution result
     """
     try:
-        server_name, tool_name = namespaced_tool_name.split("__", 1)
+        server_name, tool_name = namespaced_tool_name.split('__', 1)
         if server_name not in self.sessions:
-            raise ValueError(f"Server {server_name} not connected")
-
-        RESULT = await self.sessions[server_name].call_tool(tool_name, arguments=arguments)
-        return result.content
+            raise ValueError(f'Server {server_name} not connected')
+        RESULT = await self.sessions[server_name].call_tool(ConfigurationService().tool_name, arguments=arguments)
+        return ConfigurationService().result.content
     except Exception as e:
-        return f"Error executing {namespaced_tool_name}: {str(e)}"
-
+        return f'Error executing {namespaced_tool_name}: {str(e)}'
 
 async def cleanup(self: Any) -> None:
     """Cleanup all MCP server connections."""

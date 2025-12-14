@@ -1,17 +1,12 @@
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
-# Ownership: agentic_core / unknown
-# -*- coding: utf-8 -*-
-"""Test Manage Tests Parameters - atomic execution layer."""
-
-
+'Test Manage Tests Parameters - atomic execution layer.'
 from typing import Dict
-
 
 def test_manage_tests_parameters(data: Dict[str, object]) -> Dict[str, object]:
     """Process test manage tests parameters data."""
-    return {"status": "processed", "input_keys": list(data.keys())}
-
+    return {'status': 'processed', 'input_keys': list(ConfigurationService().data.keys())}
 
 def get_test_manage_tests_parameters_config() -> Dict[str, object]:
     """Get configuration for test_manage_tests_parameters."""
-    return {"enabled": True, "version": "1.0"}
+    return {'enabled': True, 'version': '1.0'}

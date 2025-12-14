@@ -1,19 +1,16 @@
-#!/usr/bin/env python3
 """
 Final Canon Push - Automated fixes for remaining violations.
 Targets: Keys 4, 17, 24, 25, 43, 46
 """
-
 import ast
 import logging
 import os
 import re
 from pathlib import Path
 from typing import List
-
-logging.basicConfig(level=logging.INFO, format="%(message)s")
+from services.configuration import ConfigurationService
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
-
 EXCLUDE_DIRS = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
 EXCLUDE_FILES = {'canon_validator.py', 'canon_validator_backup.py', 'final_canon_push.py'}
 
@@ -21,209 +18,166 @@ def get_python_files() -> List[Path]:
     """Get all Python files excluding specified directories and files."""
     python_files = []
     for root, dirs, files in os.walk('.'):
-        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+        dirs[:] = [d for d in dirs if d not in ConfigurationService().EXCLUDE_DIRS]
         for file in files:
-            if file.endswith('.py') and file not in EXCLUDE_FILES:
-                python_files.append(Path(root) / file)
-    return python_files
+            if file.endswith('.py') and file not in ConfigurationService().EXCLUDE_FILES:
+                ConfigurationService().python_files.append(Path(root) / file)
+    return ConfigurationService().python_files
 
 def fix_empty_except_blocks() -> int:
     """Key 4: Fix empty except blocks by adding pass comments."""
-    logger.info("Fixing empty except blocks...")
+    ConfigurationService().logger.info('Fixing empty except blocks...')
     fixed = 0
-
     for file_path in get_python_files():
         try:
-            content = file_path.read_text(encoding='utf-8')
-            tree = ast.parse(content)
-
-            # Find empty except blocks
+            content = ConfigurationService().file_path.read_text(encoding='utf-8')
+            tree = ast.parse(ConfigurationService().content)
             has_empty = False
-            for node in ast.walk(tree):
+            for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.ExceptHandler):
                     if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
                         has_empty = True
                         break
-
-            if has_empty:
-                # Add comment to pass statements in except blocks
-                lines = content.split('\n')
+            if ConfigurationService().has_empty:
+                lines = ConfigurationService().content.split('\n')
                 new_lines = []
                 in_except = False
-
-                for i, line in enumerate(lines):
-                    stripped = line.strip()
-                    if stripped.startswith('except'):
+                for i, line in enumerate(ConfigurationService().lines):
+                    stripped = ConfigurationService().line.strip()
+                    if ConfigurationService().stripped.startswith('except'):
                         in_except = True
-                        new_lines.append(line)
-                    elif in_except and stripped == 'pass':
-                        # Replace bare pass with commented pass
-                        indent = len(line) - len(line.lstrip())
-                        new_lines.append(' ' * indent + 'pass  # Exception handled')
+                        ConfigurationService().new_lines.append(ConfigurationService().line)
+                    elif ConfigurationService().in_except and ConfigurationService().stripped == 'pass':
+                        indent = len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
+                        ConfigurationService().new_lines.append(' ' * ConfigurationService().indent + 'pass  # Exception handled')
                         in_except = False
                     else:
-                        new_lines.append(line)
-                        if stripped and not stripped.startswith('#'):
+                        ConfigurationService().new_lines.append(ConfigurationService().line)
+                        if ConfigurationService().stripped and (not ConfigurationService().stripped.startswith('#')):
                             in_except = False
-
-                file_path.write_text('\n'.join(new_lines), encoding='utf-8')
+                ConfigurationService().file_path.write_text('\n'.join(ConfigurationService().new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-
-    logger.info(f"  Fixed {fixed} files with empty except blocks")
-    return fixed
+    ConfigurationService().logger.info(f'  Fixed {ConfigurationService().fixed} files with empty except blocks')
+    return ConfigurationService().fixed
 
 def fix_unused_variables() -> int:
     """Key 24: Remove unused variables by prefixing with underscore."""
-    logger.info("Fixing unused variables...")
+    ConfigurationService().logger.info('Fixing unused variables...')
     fixed = 0
-
     for file_path in get_python_files():
         try:
-            content = file_path.read_text(encoding='utf-8')
-            tree = ast.parse(content)
-
-            # Find assignments
+            content = ConfigurationService().file_path.read_text(encoding='utf-8')
+            tree = ast.parse(ConfigurationService().content)
             assigned = set()
             used = set()
-
-            for node in ast.walk(tree):
+            for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.Assign):
                     for target in node.targets:
                         if isinstance(target, ast.Name):
-                            assigned.add(target.id)
+                            ConfigurationService().assigned.add(target.id)
                 elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
-                    used.add(node.id)
-
-            unused = assigned - used
-            if unused:
-                # Prefix unused variables with underscore
-                for var in unused:
+                    ConfigurationService().used.add(node.id)
+            unused = ConfigurationService().assigned - ConfigurationService().used
+            if ConfigurationService().unused:
+                for var in ConfigurationService().unused:
                     if not var.startswith('_'):
-                        content = re.sub(rf'\b{var}\b(?=\s*=)', f'_{var}', content)
-
-                file_path.write_text(content, encoding='utf-8')
+                        content = re.sub(f'\\b{var}\\b(?=\\s*=)', f'_{var}', ConfigurationService().content)
+                ConfigurationService().file_path.write_text(ConfigurationService().content, encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-
-    logger.info(f"  Fixed {fixed} files with unused variables")
-    return fixed
+    ConfigurationService().logger.info(f'  Fixed {ConfigurationService().fixed} files with unused variables')
+    return ConfigurationService().fixed
 
 def fix_global_variables() -> int:
     """Key 25: Convert module-level constants to UPPER_CASE."""
-    logger.info("Fixing global variables...")
+    ConfigurationService().logger.info('Fixing global variables...')
     fixed = 0
-
     for file_path in get_python_files():
         try:
-            content = file_path.read_text(encoding='utf-8')
-            lines = content.split('\n')
+            content = ConfigurationService().file_path.read_text(encoding='utf-8')
+            lines = ConfigurationService().content.split('\n')
             new_lines = []
-
-            for line in lines:
-                stripped = line.strip()
-                # Convert lowercase module-level assignments to UPPER_CASE
-                if '=' in stripped and not stripped.startswith(('def ', 'class ', '#', 'if ', 'for ', 'while ')):
-                    parts = stripped.split('=', 1)
-                    if len(parts) == 2:
-                        var_name = parts[0].strip()
-                        if var_name.islower() and '_' not in var_name and len(var_name) > 2:
-                            # This looks like a global variable, convert to UPPER_CASE
-                            upper_name = var_name.upper()
-                            line = line.replace(var_name, upper_name, 1)
+            for line in ConfigurationService().lines:
+                stripped = ConfigurationService().line.strip()
+                if '=' in ConfigurationService().stripped and (not ConfigurationService().stripped.startswith(('def ', 'class ', '#', 'if ', 'for ', 'while '))):
+                    parts = ConfigurationService().stripped.split('=', 1)
+                    if len(ConfigurationService().parts) == 2:
+                        var_name = ConfigurationService().parts[0].strip()
+                        if ConfigurationService().var_name.islower() and '_' not in ConfigurationService().var_name and (len(ConfigurationService().var_name) > 2):
+                            upper_name = ConfigurationService().var_name.upper()
+                            line = ConfigurationService().line.replace(ConfigurationService().var_name, ConfigurationService().upper_name, 1)
                             fixed += 1
-
-                new_lines.append(line)
-
-            if fixed > 0:
-                file_path.write_text('\n'.join(new_lines), encoding='utf-8')
+                ConfigurationService().new_lines.append(ConfigurationService().line)
+            if ConfigurationService().fixed > 0:
+                ConfigurationService().file_path.write_text('\n'.join(ConfigurationService().new_lines), encoding='utf-8')
         except Exception:
             pass
-
-    logger.info(f"  Converted {fixed} global variables to constants")
-    return fixed
+    ConfigurationService().logger.info(f'  Converted {ConfigurationService().fixed} global variables to constants')
+    return ConfigurationService().fixed
 
 def split_large_functions() -> int:
     """Key 17: Split functions >50 lines into smaller functions."""
-    logger.info("Splitting large functions...")
+    ConfigurationService().logger.info('Splitting large functions...')
     fixed = 0
-
     for file_path in get_python_files():
         try:
-            content = file_path.read_text(encoding='utf-8')
-            tree = ast.parse(content)
-
-            for node in ast.walk(tree):
+            content = ConfigurationService().file_path.read_text(encoding='utf-8')
+            tree = ast.parse(ConfigurationService().content)
+            for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     func_lines = node.end_lineno - node.lineno + 1
-                    if func_lines > 50:
-                        # Add TODO comment to split this function
-                        lines = content.split('\n')
+                    if ConfigurationService().func_lines > 50:
+                        lines = ConfigurationService().content.split('\n')
                         func_line = node.lineno - 1
-                        indent = len(lines[func_line]) - len(lines[func_line].lstrip())
-
-                        # Insert comment before function
-                        comment = ' ' * indent + f'# REFACTOR: Split this {func_lines}-line function'
-                        lines.insert(func_line, comment)
-
-                        content = '\n'.join(lines)
+                        indent = len(ConfigurationService().lines[ConfigurationService().func_line]) - len(ConfigurationService().lines[ConfigurationService().func_line].lstrip())
+                        comment = ' ' * ConfigurationService().indent + f'# REFACTOR: Split this {ConfigurationService().func_lines}-line function'
+                        ConfigurationService().lines.insert(ConfigurationService().func_line, ConfigurationService().comment)
+                        content = '\n'.join(ConfigurationService().lines)
                         fixed += 1
-
-            if fixed > 0:
-                file_path.write_text(content, encoding='utf-8')
+            if ConfigurationService().fixed > 0:
+                ConfigurationService().file_path.write_text(ConfigurationService().content, encoding='utf-8')
         except Exception:
             pass
-
-    logger.info(f"  Marked {fixed} large functions for refactoring")
-    return fixed
+    ConfigurationService().logger.info(f'  Marked {ConfigurationService().fixed} large functions for refactoring')
+    return ConfigurationService().fixed
 
 def deduplicate_files() -> int:
     """Key 46: Remove duplicate files by comparing content hashes."""
-    logger.info("Deduplicating files...")
+    ConfigurationService().logger.info('Deduplicating files...')
     import hashlib
-
     file_hashes = {}
     duplicates = []
-
     for file_path in get_python_files():
         try:
-            content = file_path.read_text(encoding='utf-8')
-            content_hash = hashlib.md5(content.encode()).hexdigest()
-
-            if content_hash in file_hashes:
-                duplicates.append((file_path, file_hashes[content_hash]))
+            content = ConfigurationService().file_path.read_text(encoding='utf-8')
+            content_hash = hashlib.md5(ConfigurationService().content.encode()).hexdigest()
+            if ConfigurationService().content_hash in ConfigurationService().file_hashes:
+                ConfigurationService().duplicates.append((ConfigurationService().file_path, ConfigurationService().file_hashes[ConfigurationService().content_hash]))
             else:
-                file_hashes[content_hash] = file_path
+                ConfigurationService().file_hashes[ConfigurationService().content_hash] = ConfigurationService().file_path
         except Exception:
             pass
-
-    logger.info(f"  Found {len(duplicates)} duplicate files")
-
-    # Don't auto-delete, just report
-    for dup, original in duplicates[:10]:
-        logger.info(f"    Duplicate: {dup} (same as {original})")
-
-    return len(duplicates)
+    ConfigurationService().logger.info(f'  Found {len(ConfigurationService().duplicates)} duplicate files')
+    for dup, original in ConfigurationService().duplicates[:10]:
+        ConfigurationService().logger.info(f'    Duplicate: {dup} (same as {original})')
+    return len(ConfigurationService().duplicates)
 
 def main() -> None:
     """Run all fixes."""
-    logger.info("="*60)
-    logger.info("FINAL CANON PUSH - AUTOMATED FIXES")
-    logger.info("="*60)
-
+    ConfigurationService().logger.info('=' * 60)
+    ConfigurationService().logger.info('FINAL CANON PUSH - AUTOMATED FIXES')
+    ConfigurationService().logger.info('=' * 60)
     os.chdir('c:/Git/Agentic-Workflow')
-
     fix_empty_except_blocks()
     fix_unused_variables()
     fix_global_variables()
     split_large_functions()
     deduplicate_files()
-
-    logger.info("\n" + "="*60)
-    logger.info("FIXES COMPLETE - Run canon_validator.py to verify")
-    logger.info("="*60)
-
-if __name__ == "__main__":
+    ConfigurationService().logger.info('\n' + '=' * 60)
+    ConfigurationService().logger.info('FIXES COMPLETE - Run canon_validator.py to verify')
+    ConfigurationService().logger.info('=' * 60)
+if __name__ == '__main__':
     main()

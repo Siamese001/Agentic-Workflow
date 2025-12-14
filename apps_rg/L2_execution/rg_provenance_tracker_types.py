@@ -1,33 +1,26 @@
 """Types and models for rg_provenance_tracker."""
-
 import logging
-
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
-
 
 class ProvenanceType(Enum):
     """Type of provenance source."""
 
-
 class BulletCategory(Enum):
     """Category of bullet point."""
-
 
 @dataclass
 class ProvenanceSource:
     """Source information for provenance tracking."""
-
     _source_type: ProvenanceType
     _source_id: str
     _source_text: str
     _confidence: float = 1.0
     _timestamp: Optional[datetime] = None
 
-
 @dataclass
 class BulletProvenance:
     """Provenance information for a bullet point."""
-
     _bullet_id: str
     _bullet_text: str
     _category: BulletCategory
@@ -36,11 +29,9 @@ class BulletProvenance:
     _confidence_score: float = 1.0
     _created_at: datetime = field(default_factory=datetime.now)
 
-
 @dataclass
 class ProvenanceMap:
     """Map of provenance requirements by company/section."""
-
     _company: str
     _pattern: str
     _value_count: int = 0

@@ -1,10 +1,4 @@
 import logging
-
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
-# -*- coding: utf-8 -*-
-"""
-Performance Tests.
-
-Latency, throughput, and cost benchmarks.
-Structure governed by META YAML domain_invariants.tests.allowed_structure.
-"""
+'\nPerformance Tests.\n\nLatency, throughput, and cost benchmarks.\nStructure governed by META YAML domain_invariants.tests.allowed_structure.\n'

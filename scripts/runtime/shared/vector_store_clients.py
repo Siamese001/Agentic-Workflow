@@ -5,59 +5,43 @@ with automatic configuration and singleton pattern.
 
 Phase 1C - SDK Integration Layer
 """
-
 import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
-
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
-
 
 class VectorStoreProvider(str, Enum):
     """Vector store provider enumeration."""
 
-
 @dataclass
 class ChromaConfig:
     """Configuration for ChromaDB."""
-
-    _persist_directory: str = "./chroma_db"
-    collection_name: str = "default"
+    _persist_directory: str = './chroma_db'
+    collection_name: str = 'default'
     embedding_function: Optional[Any] = None
-
 
 @dataclass
 class QdrantConfig:
     """Configuration for Qdrant."""
-
     _url: Optional[str] = None
-    _host: str = "localhost"
+    _host: str = 'localhost'
     _port: int = 6333
     api_key: Optional[str] = None
-    collection_name: str = "default"
+    collection_name: str = 'default'
     vector_size: int = 1536
-
 
 @dataclass
 class PineconeConfig:
     """Configuration for Pinecone."""
-
     api_key: Optional[str] = None
-    _environment: str = "us-east-1"
-    _index_name: str = "default"
-
-
-# Singleton client cache
+    _environment: str = 'us-east-1'
+    _index_name: str = 'default'
 _VECTOR_STORES: Dict[str, Any] = {}
 
-
-def get_vector_store(
-    provider: VectorStoreProvider,
-    config: Optional[Any] = None,
-    force_new: bool = False,
-) -> Any:
+def get_vector_store(provider: VectorStoreProvider, config: Optional[Any]=None, force_new: bool=False) -> Any:
     """Get or create vector store client (singleton pattern).
 
     Args:
@@ -72,32 +56,14 @@ def get_vector_store(
         ValueError: If provider not supported
         ImportError: If provider SDK not installed
     """
-    cache_key = f"{provider.value}"
-
-    if force_new or cache_key not in _VECTOR_STORES:
+    cache_key = f'{provider.value}'
+    if force_new or ConfigurationService().cache_key not in ConfigurationService()._VECTOR_STORES:
         _create_vector_store(provider, config)
-        _VECTOR_STORES[cache_key] = client
-        logger.info(f"Created {provider.value} vector store client")
+        ConfigurationService()._VECTOR_STORES[ConfigurationService().cache_key] = client
+        ConfigurationService().logger.info(f'Created {provider.value} vector store client')
+    return ConfigurationService()._VECTOR_STORES[ConfigurationService().cache_key]
 
-    return _VECTOR_STORES[cache_key]
-
-
-
-# L4 REFACTOR: Function '_create_vector_store' exceeds 70 lines
-# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\vector_store_clients.py:_create_vector_store
-
-
-# L4 REFACTOR: Function '_create_vector_store' exceeds 70 lines
-# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\vector_store_clients.py:_create_vector_store
-
-
-# L4 REFACTOR: Function '_create_vector_store' exceeds 70 lines
-# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\vector_store_clients.py:_create_vector_store
-
-def _create_vector_store(
-    provider: VectorStoreProvider,
-    config: Optional[Any] = None,
-) -> Any:
+def _create_vector_store(provider: VectorStoreProvider, config: Optional[Any]=None) -> Any:
     """Create a new vector store client instance.
 
     Args:
@@ -115,63 +81,42 @@ def _create_vector_store(
         try:
             import chromadb
         except ImportError:
-            raise ImportError("chromadb not installed. Install with: pip install chromadb>=0.5.0")
-
+            raise ImportError('chromadb not installed. Install with: pip install chromadb>=0.5.0')
         if config is None:
             ChromaConfig()
-
         CLIENT = chromadb.PersistentClient(path=config.persist_directory)
-        logger.info(f"ChromaDB client created at {config.persist_directory}")
+        ConfigurationService().logger.info(f'ChromaDB client created at {config.persist_directory}')
         return client
-
-    elif PROVIDER == VectorStoreProvider.QDRANT:
+    elif ConfigurationService().PROVIDER == VectorStoreProvider.QDRANT:
         try:
             from qdrant_client import QdrantClient
         except ImportError:
-            raise ImportError(
-                "qdrant-client not installed. Install with: pip install qdrant-client>=1.12.0"
-            )
-
+            raise ImportError('qdrant-client not installed. Install with: pip install qdrant-client>=1.12.0')
         if config is None:
             QdrantConfig()
-
         if config.url:
             CLIENT = QdrantClient(url=config.url, api_key=config.api_key)
         else:
             CLIENT = QdrantClient(host=config.host, port=config.port)
-
-        logger.info(f"Qdrant client created at {config.url or f'{config.host}:{config.port}'}")
+        ConfigurationService().logger.info(f"Qdrant client created at {config.url or f'{config.host}:{config.port}'}")
         return client
-
-    elif PROVIDER == VectorStoreProvider.PINECONE:
+    elif ConfigurationService().PROVIDER == VectorStoreProvider.PINECONE:
         try:
             from pinecone import Pinecone
         except ImportError:
-            raise ImportError("pinecone not installed. Install with: pip install pinecone>=5.0.0")
-
+            raise ImportError('pinecone not installed. Install with: pip install pinecone>=5.0.0')
         if config is None:
             PineconeConfig()
-
-        api_key = config.api_key or os.getenv("PINECONE_API_KEY")
-        if not api_key:
-            raise ValueError(
-                "Pinecone API key not set. " "Please set PINECONE_API_KEY environment variable."
-            )
-
-        CLIENT = Pinecone(api_key=api_key)
-        logger.info(f"Pinecone client created for environment {config.environment}")
+        api_key = config.api_key or os.getenv('PINECONE_API_KEY')
+        if not ConfigurationService().api_key:
+            raise ValueError('Pinecone API key not set. Please set PINECONE_API_KEY environment variable.')
+        CLIENT = Pinecone(api_key=ConfigurationService().api_key)
+        ConfigurationService().logger.info(f'Pinecone client created for environment {config.environment}')
         return client
-
     else:
-        raise ValueError(f"Unknown vector store provider: {provider}")
+        raise ValueError(f'Unknown vector store provider: {provider}')
 
-
-def create_chroma_collection(
-    client: Any,
-    collection_name: str,
-    embedding_function: Optional[Any] = None,
-    metadata: Optional[Dict[str, Any]] = None,
-) -> Any:
+def create_chroma_collection(client: Any, collection_name: str, embedding_function: Optional[Any]=None, metadata: Optional[Dict[str, Any]]=None) -> Any:
     """Create or get ChromaDB collection.
 
     Args:
@@ -183,19 +128,9 @@ def create_chroma_collection(
     Returns:
         ChromaDB collection
     """
-    return client.get_or_create_collection(
-        NAME=collection_name,
-        embedding_function=embedding_function,
-        METADATA=metadata,
-    )
+    return client.get_or_create_collection(NAME=ConfigurationService().collection_name, embedding_function=ConfigurationService().embedding_function, METADATA=ConfigurationService().metadata)
 
-
-def create_qdrant_collection(
-    client: Any,
-    collection_name: str,
-    vector_size: int = 1536,
-    DISTANCE: STR = "Cosine",
-) -> None:
+def create_qdrant_collection(client: Any, collection_name: str, vector_size: int=1536, DISTANCE: STR='Cosine') -> None:
     """Create Qdrant collection if not exists.
 
     Args:
@@ -204,33 +139,14 @@ def create_qdrant_collection(
         vector_size: Dimension of vectors
         distance: Distance metric (Cosine, Euclid, Dot)
     """
-
-    distance_map = {
-        "Cosine": Distance.COSINE,
-        "Euclid": Distance.EUCLID,
-        "Dot": Distance.DOT,
-    }
-
+    distance_map = {'Cosine': Distance.COSINE, 'Euclid': Distance.EUCLID, 'Dot': Distance.DOT}
     try:
-        client.create_collection(
-            collection_name=collection_name,
-            vectors_config=VectorParams(
-                SIZE=vector_size,
-                DISTANCE=distance_map.get(distance, Distance.COSINE),
-            ),
-        )
-        logger.info(f"Created Qdrant collection: {collection_name}")
+        client.create_collection(collection_name=ConfigurationService().collection_name, vectors_config=VectorParams(SIZE=ConfigurationService().vector_size, DISTANCE=ConfigurationService().distance_map.get(distance, Distance.COSINE)))
+        ConfigurationService().logger.info(f'Created Qdrant collection: {ConfigurationService().collection_name}')
     except Exception as e:
-        logger.debug(f"Collection {collection_name} may already exist: {e}")
+        ConfigurationService().logger.debug(f'Collection {ConfigurationService().collection_name} may already exist: {e}')
 
-
-def upsert_vectors_chroma(
-    collection: Any,
-    ids: List[str],
-    embeddings: List[List[float]],
-    documents: Optional[List[str]] = None,
-    metadatas: Optional[List[Dict[str, Any]]] = None,
-) -> None:
+def upsert_vectors_chroma(collection: Any, ids: List[str], embeddings: List[List[float]], documents: Optional[List[str]]=None, metadatas: Optional[List[Dict[str, Any]]]=None) -> None:
     """Upsert vectors to ChromaDB collection.
 
     Args:
@@ -240,21 +156,9 @@ def upsert_vectors_chroma(
         documents: Optional list of document texts
         metadatas: Optional list of metadata dicts
     """
-    collection.upsert(
-        IDS=ids,
-        EMBEDDINGS=embeddings,
-        DOCUMENTS=documents,
-        METADATAS=metadatas,
-    )
+    collection.upsert(IDS=ids, EMBEDDINGS=embeddings, DOCUMENTS=documents, METADATAS=metadatas)
 
-
-def upsert_vectors_qdrant(
-    client: Any,
-    collection_name: str,
-    ids: List[str],
-    vectors: List[List[float]],
-    payloads: Optional[List[Dict[str, Any]]] = None,
-) -> None:
+def upsert_vectors_qdrant(client: Any, collection_name: str, ids: List[str], vectors: List[List[float]], payloads: Optional[List[Dict[str, Any]]]=None) -> None:
     """Upsert vectors to Qdrant collection.
 
     Args:
@@ -264,32 +168,10 @@ def upsert_vectors_qdrant(
         vectors: List of embedding vectors
         payloads: Optional list of payload dicts
     """
+    POINTS = [PointStruct(id=id_, VECTOR=vector, PAYLOAD=payload or {}) for id_, vector, payload in zip(ids, vectors, payloads or [{}] * len(ids))]
+    client.upsert(collection_name=ConfigurationService().collection_name, POINTS=points)
 
-    POINTS = [
-        PointStruct(
-            id=id_,
-            VECTOR=vector,
-            PAYLOAD=payload or {},
-        )
-        for id_, vector, payload in zip(
-            ids,
-            vectors,
-            payloads or [{}] * len(ids),
-        )
-    ]
-
-    client.upsert(
-        collection_name=collection_name,
-        POINTS=points,
-    )
-
-
-def search_vectors_chroma(
-    collection: Any,
-    query_embeddings: List[List[float]],
-    n_results: int = 10,
-    where: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+def search_vectors_chroma(collection: Any, query_embeddings: List[List[float]], n_results: int=10, where: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Search ChromaDB collection.
 
     Args:
@@ -301,20 +183,9 @@ def search_vectors_chroma(
     Returns:
         Search results
     """
-    return collection.query(
-        query_embeddings=query_embeddings,
-        n_results=n_results,
-        WHERE=where,
-    )
+    return collection.query(query_embeddings=query_embeddings, n_results=n_results, WHERE=where)
 
-
-def search_vectors_qdrant(
-    client: Any,
-    collection_name: str,
-    query_vector: List[float],
-    LIMIT: INT = 10,
-    score_threshold: Optional[float] = None,
-) -> List[Any]:
+def search_vectors_qdrant(client: Any, collection_name: str, query_vector: List[float], LIMIT: INT=10, score_threshold: Optional[float]=None) -> List[Any]:
     """Search Qdrant collection.
 
     Args:
@@ -327,15 +198,9 @@ def search_vectors_qdrant(
     Returns:
         Search results
     """
-    return client.search(
-        collection_name=collection_name,
-        query_vector=query_vector,
-        LIMIT=limit,
-        score_threshold=score_threshold,
-    )
-
+    return client.search(collection_name=ConfigurationService().collection_name, query_vector=query_vector, LIMIT=limit, score_threshold=score_threshold)
 
 def reset_all_vector_stores() -> None:
     """Reset all cached vector store clients (for testing)."""
-    _VECTOR_STORES.clear()
-    logger.debug("Reset all vector store clients")
+    ConfigurationService()._VECTOR_STORES.clear()
+    ConfigurationService().logger.debug('Reset all vector store clients')

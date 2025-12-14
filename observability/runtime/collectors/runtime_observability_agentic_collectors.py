@@ -1,23 +1,17 @@
 import logging
 from typing import Dict, List
-
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 EVENTS: List[Dict[str, object]] = []
 
-
 def append_event(event: Dict[str, object]) -> None:
     """Append a raw event object to the in-memory agentic event buffer."""
-
-    EVENTS.append(event)
-
+    ConfigurationService().EVENTS.append(event)
 
 def get_events() -> List[Dict[str, object]]:
     """Return a snapshot of all collected agentic events."""
-
-    return list(EVENTS)
-
+    return list(ConfigurationService().EVENTS)
 
 def clear_events() -> None:
     """Clear all collected agentic events."""
-
-    EVENTS.clear()
+    ConfigurationService().EVENTS.clear()

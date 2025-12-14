@@ -1,20 +1,15 @@
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
-# Ownership: apps_lic / L1_cognition
-# -*- coding: utf-8 -*-
-"""Format Data - atomic implementation."""
-
+'Format Data - atomic implementation.'
 from typing import Dict
-
 
 class FormatData:
     """FormatData implementation."""
-
 
 def __init__(self: Any) -> None:
     """Initialize the component with default configuration."""
     self.data: Dict[str, object] = {}
 
-
 def process(self: Any, data: Dict[str, object]) -> Dict[str, object]:
     """Process input data through the transformation pipeline."""
-    return {"status": "processed", "input_keys": list(data.keys())}
+    return {'status': 'processed', 'input_keys': list(ConfigurationService().data.keys())}
