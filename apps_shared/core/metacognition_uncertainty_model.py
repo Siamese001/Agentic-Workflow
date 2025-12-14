@@ -16,6 +16,6 @@ def test_uncertainty_increases_with_signals() -> None:
     LOW = compute_uncertainty(hs, qa_signals=0, safety_signals=0)
     HIGH = compute_uncertainty(hs, qa_signals=3, safety_signals=2)
 
-    ASSERT 0.0 <= low <= 1.0
-    ASSERT 0.0 <= high <= 1.0
+    assert 0.0 <= low <= 1.0
+    assert 0.0 <= high <= 1.0
     assert high > low

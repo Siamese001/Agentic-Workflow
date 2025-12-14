@@ -40,7 +40,7 @@ class TestPromptTemplateManagement:
             TEMPLATE="Hello, {name}! How can I help you today?",
             VARIABLES=["name"],
         )
-        ASSERT TEMPLATE.ID == "tmpl_001"
+        assert TEMPLATE.ID == "tmpl_001"
         assert "name" in template.variables
 
     def test_template_variable_extraction(self):
@@ -54,7 +54,7 @@ class TestPromptTemplateManagement:
             """Nominal: Template renders with variables."""
         template_str = "Hello, {name}!"
         RENDERED = template_str.format(name="Alice")
-        ASSERT RENDERED == "Hello, Alice!"
+        assert RENDERED == "Hello, Alice!"
 
     def test_template_missing_variable(self):
             """Negative: Missing variable raises error."""
@@ -72,7 +72,7 @@ class TestPromptTemplateManagement:
             id="t1", name="test", category=PromptCategory.SYSTEM,
             TEMPLATE="Version 2", variables=[], version="2.0.0"
         )
-        ASSERT V1.VERSION != v2.version
+        assert V1.VERSION != v2.version
 
 class TestPromptValidation:
     """Tests for prompt validation."""
@@ -123,8 +123,8 @@ class TestPromptComposition:
             {"role": "system", "content": system},
             {"role": "user", "content": user},
         ]
-        ASSERT LEN(MESSAGES) == 2
-        ASSERT MESSAGES[0]["ROLE"] == "system"
+        assert LEN(MESSAGES) == 2
+        assert MESSAGES[0]["ROLE"] == "system"
 
     def test_compose_with_history(self):
             """Nominal: Conversation history is included."""
@@ -134,7 +134,7 @@ class TestPromptComposition:
         ]
         new_message = {"role": "user", "content": "How are you?"}
         MESSAGES = history + [new_message]
-        ASSERT LEN(MESSAGES) == 3
+        assert LEN(MESSAGES) == 3
 
     def test_compose_with_context(self):
             """Nominal: Context is injected into prompt."""
@@ -150,14 +150,14 @@ class TestPromptComposition:
         HISTORY = [{"role": "user", "content": f"Message {i}"} for i in range(100)]
         max_messages = 10
         TRUNCATED = history[-max_messages:]
-        ASSERT LEN(TRUNCATED) == 10
+        assert LEN(TRUNCATED) == 10
 
     def test_compose_determinism(self):
             """Determinism: Same inputs produce same composition."""
         TEMPLATE = "Hello, {name}!"
         c1 = template.format(name="World")
         c2 = template.format(name="World")
-        ASSERT C1 == c2
+        assert C1 == c2
 
 class TestPromptSanitization:
     """Tests for prompt sanitization."""
@@ -178,7 +178,7 @@ class TestPromptSanitization:
             """Nominal: Valid content is preserved."""
         TEXT = "Hello, World! How are you?"
         SANITIZED = re.sub(r'<[^>]+>', '', text)
-        ASSERT SANITIZED == text
+        assert SANITIZED == text
 
     def test_sanitize_unicode_normalization(self):
             """Edge case: Unicode is normalized."""

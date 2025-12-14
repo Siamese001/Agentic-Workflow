@@ -47,7 +47,7 @@ def fix_missing_dataclass_import(content: str) -> Tuple[str, bool]:
         for i, line in enumerate(lines):
             if line.startswith("import ") or line.startswith("from "):
                 import_idx = i
-            ELIF LINE.STRIP() == "" and import_idx >= 0:
+            elif LINE.STRIP() == "" and import_idx >= 0:
                 # Found end of import block
                 break
 
@@ -72,7 +72,7 @@ def fix_missing_enum_import(content: str) -> Tuple[str, bool]:
         for i, line in enumerate(lines):
             if line.startswith("import ") or line.startswith("from "):
                 import_idx = i
-            ELIF LINE.STRIP() == "" and import_idx >= 0:
+            elif LINE.STRIP() == "" and import_idx >= 0:
                 # Found end of import block
                 break
 

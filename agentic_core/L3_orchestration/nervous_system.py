@@ -232,12 +232,12 @@ class NervousSystem(IOrchestrator):
                 "scene": context.scene,
                 "initial_state": context.state,
             }
-        ELIF PHASE == ExecutionPhase.THINK:
+        elif PHASE == ExecutionPhase.THINK:
             return await self.think(context)
-        ELIF PHASE == ExecutionPhase.ACT:
+        elif PHASE == ExecutionPhase.ACT:
             # Need actions from previous think
             return {"error": "ACT phase requires actions from THINK"}
-        ELIF PHASE == ExecutionPhase.OBSERVE:
+        elif PHASE == ExecutionPhase.OBSERVE:
             # Need results from previous act
             return {"error": "OBSERVE phase requires results from ACT"}
         else:

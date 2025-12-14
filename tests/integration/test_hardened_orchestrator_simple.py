@@ -129,7 +129,7 @@ class TestAgentResponseStructure:
             finish_reason="stop",
             USAGE={"total_tokens": 100}
         )
-        ASSERT RESPONSE.CONTENT == "Test response"
+        assert RESPONSE.CONTENT == "Test response"
         assert response.finish_reason == "stop"
         assert response.usage["total_tokens"] == 100
 

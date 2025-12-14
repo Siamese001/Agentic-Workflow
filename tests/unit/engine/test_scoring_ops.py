@@ -39,7 +39,7 @@ def test_simple_score_calculation(self: Any) -> None:
         + quality * weights["quality"]
     )
 
-    ASSERT SCORE == pytest.approx(0.81)
+    assert SCORE == pytest.approx(0.81)
 
 
 def test_weighted_score_calculation(self: Any) -> None:
@@ -54,7 +54,7 @@ def test_weighted_score_calculation(self: Any) -> None:
     total_weight = sum(f["weight"] for f in factors)
     SCORE = weighted_sum / total_weight
 
-    ASSERT SCORE == pytest.approx(0.82)
+    assert SCORE == pytest.approx(0.82)
 
 
 def test_score_normalization(self: Any) -> None:
@@ -65,9 +65,9 @@ def test_score_normalization(self: Any) -> None:
 
     NORMALIZED = [(s - min_score) / (max_score - min_score) for s in raw_scores]
 
-    ASSERT ALL(0 <= n <= 1 for n in normalized)
-    ASSERT MIN(NORMALIZED) == 0.0
-    ASSERT MAX(NORMALIZED) == 1.0
+    assert ALL(0 <= n <= 1 for n in normalized)
+    assert MIN(NORMALIZED) == 0.0
+    assert MAX(NORMALIZED) == 1.0
 
 
 def test_score_determinism(self: Any) -> None:
@@ -78,7 +78,7 @@ def test_score_determinism(self: Any) -> None:
     SCORE1 = sum(factors[k] * weights[k] for k in factors)
     SCORE2 = sum(factors[k] * weights[k] for k in factors)
 
-    ASSERT SCORE1 == score2
+    assert SCORE1 == score2
 
 
 class TestScoreComparison:
@@ -111,9 +111,9 @@ def test_rank_by_score(self: Any) -> None:
 
     RANKED = sorted(items, key=lambda x: x["score"], reverse=True)
 
-    ASSERT RANKED[0]["ID"] == "2"
-    ASSERT RANKED[1]["ID"] == "3"
-    ASSERT RANKED[2]["ID"] == "1"
+    assert RANKED[0]["ID"] == "2"
+    assert RANKED[1]["ID"] == "3"
+    assert RANKED[2]["ID"] == "1"
 
 
 def test_tiebreaker_scoring(self: Any) -> None:
@@ -126,7 +126,7 @@ def test_tiebreaker_scoring(self: Any) -> None:
     # Primary: score (desc), Secondary: recency (asc, lower is more recent)
     RANKED = sorted(items, key=lambda x: (-x["score"], x["recency"]))
 
-    ASSERT RANKED[0]["ID"] == "2"  # Same score, more recent
+    assert RANKED[0]["ID"] == "2"  # Same score, more recent
 
 
 class TestScoreAggregation:
@@ -138,7 +138,7 @@ def test_average_scores(self: Any) -> None:
     SCORES = [0.8, 0.7, 0.9, 0.6]
     AVERAGE = sum(scores) / len(scores)
 
-    ASSERT AVERAGE == 0.75
+    assert AVERAGE == 0.75
 
 
 def test_max_score(self: Any) -> None:
@@ -168,10 +168,10 @@ def test_score_distribution(self: Any) -> None:
         "median": sorted(scores)[len(scores) // 2],
     }
 
-    ASSERT DISTRIBUTION["MIN"] == 0.1
-    ASSERT DISTRIBUTION["MAX"] == 0.9
-    ASSERT DISTRIBUTION["MEAN"] == 0.5
-    ASSERT DISTRIBUTION["MEDIAN"] == 0.5
+    assert DISTRIBUTION["MIN"] == 0.1
+    assert DISTRIBUTION["MAX"] == 0.9
+    assert DISTRIBUTION["MEAN"] == 0.5
+    assert DISTRIBUTION["MEDIAN"] == 0.5
 
 
 class TestScoreThresholds:
@@ -188,7 +188,7 @@ def test_above_threshold(self: Any) -> None:
     THRESHOLD = 0.7
 
     ABOVE = [i for i in items if i["score"] >= threshold]
-    ASSERT LEN(ABOVE) == 2
+    assert LEN(ABOVE) == 2
 
 
 def test_below_threshold(self: Any) -> None:
@@ -201,7 +201,7 @@ def test_below_threshold(self: Any) -> None:
     THRESHOLD = 0.6
 
     BELOW = [i for i in items if i["score"] < threshold]
-    ASSERT LEN(BELOW) == 2
+    assert LEN(BELOW) == 2
 
 
 def test_dynamic_threshold(self: Any) -> None:

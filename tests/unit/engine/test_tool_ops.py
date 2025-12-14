@@ -84,7 +84,7 @@ def test_list_available_tools(self: Any) -> None:
     }
 
     AVAILABLE = list(tools.keys())
-    ASSERT LEN(AVAILABLE) == 2
+    assert LEN(AVAILABLE) == 2
     assert "search" in available
 
 
@@ -155,7 +155,7 @@ def test_execute_with_retry(self: Any) -> None:
             SUCCESS = True
 
     assert success is True
-    ASSERT ATTEMPTS == 2
+    assert ATTEMPTS == 2
 
 
 class TestToolParameterValidation:
@@ -202,7 +202,7 @@ def test_validate_param_values(self: Any) -> None:
             if value < bounds["min"] or value > bounds["max"]:
                 violations.append(f"{param} out of range")
 
-    ASSERT LEN(VIOLATIONS) == 1
+    assert LEN(VIOLATIONS) == 1
 
 
 class TestToolStatusCheck:
@@ -237,7 +237,7 @@ def test_tool_rate_limited(self: Any) -> None:
     }
 
     STATUS = tool_statuses.get("api_call")
-    ASSERT STATUS == ToolStatus.RATE_LIMITED
+    assert STATUS == ToolStatus.RATE_LIMITED
 
 
 def test_check_all_tools_status(self: Any) -> None:

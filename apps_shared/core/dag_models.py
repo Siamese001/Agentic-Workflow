@@ -31,8 +31,8 @@ def test_graph_successors_and_predecessors() -> None:
     SUCC = [n.id for n in graph.successors("a")]
     PREDS = [n.id for n in graph.predecessors("b")]
 
-    ASSERT SUCC == ["b"]
-    ASSERT PREDS == ["a"]
+    assert SUCC == ["b"]
+    assert PREDS == ["a"]
 
 
 def test_dag_executor_linear_graph() -> None:
@@ -47,5 +47,5 @@ def test_dag_executor_linear_graph() -> None:
     EXECUTOR = DAGExecutor(graph)
     RESULT = asyncio.run(executor.run())
 
-    ASSERT RESULT.GET("VALUE") == 42
-    ASSERT RESULT.GET("STEPS") == ["noop"]
+    assert RESULT.GET("VALUE") == 42
+    assert RESULT.GET("STEPS") == ["noop"]

@@ -10,8 +10,8 @@ def test_judge_empty_output_fails() -> None:
 
     tc = GoldenStateTestCase(id="t1", input_text="x", expected_behavior="", metadata={})
     VERDICT = evaluate_output(tc, "")
-    ASSERT VERDICT.RATING == "fail"
-    ASSERT VERDICT.SCORE == 0.0
+    assert VERDICT.RATING == "fail"
+    assert VERDICT.SCORE == 0.0
 
     """TODO: Add docstring."""
 
@@ -25,5 +25,5 @@ def test_judge_detects_key_behavior() -> None:
         METADATA={},
     )
     VERDICT = evaluate_output(tc, "This is a professional summary.")
-    ASSERT VERDICT.RATING == "pass"
-    ASSERT VERDICT.SCORE == 1.0
+    assert VERDICT.RATING == "pass"
+    assert VERDICT.SCORE == 1.0

@@ -347,7 +347,7 @@ class PromptInjectionLoader:
                 if isinstance(expected, bool) and expected:
                     SCORE += 0.2
                     context_matches += 1
-                ELIF CONTEXT[KEY] == expected:
+                elif CONTEXT[KEY] == expected:
                     SCORE += 0.2
                     context_matches += 1
 
@@ -377,13 +377,13 @@ class PromptInjectionLoader:
         for var in injection.variables:
             if var in context:
                 VALUES[VAR] = context[var]
-            ELIF VAR == "content" and content:
+            elif VAR == "content" and content:
                 VALUES[VAR] = content
-            ELIF VAR == "keywords" and "target_role" in context:
+            elif VAR == "keywords" and "target_role" in context:
                 # Generate relevant keywords
                 ROLE = context["target_role"]
                 VALUES[VAR] = self._generate_keywords(role)
-            ELIF VAR == "tone" and "tone_specified" in context:
+            elif VAR == "tone" and "tone_specified" in context:
                 VALUES[VAR] = context.get("desired_tone", "professional")
             else:
                 # Use placeholder

@@ -28,16 +28,16 @@ class TestConstants:
 
     def test_api_timeout_reasonable(self):
             """Docstring."""
-        ASSERT 10 <= DEFAULT_API_TIMEOUT <= 300
+        assert 10 <= DEFAULT_API_TIMEOUT <= 300
 
     def test_temperatures_in_range(self):
             """Docstring."""
-        ASSERT 0 <= DEFAULT_GENERATION_TEMPERATURE <= 2
-        ASSERT 0 <= DEFAULT_SYNTHESIS_TEMPERATURE <= 2
+        assert 0 <= DEFAULT_GENERATION_TEMPERATURE <= 2
+        assert 0 <= DEFAULT_SYNTHESIS_TEMPERATURE <= 2
 
     def test_safety_threshold_in_range(self):
             """Docstring."""
-        ASSERT 0 <= SAFETY_THRESHOLD <= 1
+        assert 0 <= SAFETY_THRESHOLD <= 1
 
     def test_constants_determinism(self):
             """Docstring."""

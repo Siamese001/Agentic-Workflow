@@ -14,7 +14,7 @@ LOGGER = logging.getLogger(__name__)
 def fix_duplicate_imports(filepath: Any) -> None:
     """Remove duplicate imports from a file."""
     try:
-        WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+        with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
             CONTENT = f.read()
 
         # Find all imports
@@ -43,7 +43,7 @@ def fix_duplicate_imports(filepath: Any) -> None:
             for idx in reversed(duplicates):
                 del lines[idx]
 
-            WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
+            with OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
                 f.write("\n".join(lines))
             return True
 

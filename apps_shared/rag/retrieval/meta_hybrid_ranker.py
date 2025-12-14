@@ -26,7 +26,7 @@ def test_fuse_and_rank_rrf_with_uniform_weights() -> None:
     TEXTS = [e.text for e in rag.evidence]
 
     # All docs appear once after fusion; ordering is defined by RRF.
-    ASSERT SET(TEXTS) == {"doc1", "doc2", "doc3"}
+    assert SET(TEXTS) == {"doc1", "doc2", "doc3"}
 
 
 def test_fuse_and_rank_truncates_to_max_hits() -> None:
@@ -37,7 +37,7 @@ def test_fuse_and_rank_truncates_to_max_hits() -> None:
     DENSE = [Evidence(text="doc2", score=0.0, source="dense", metadata={})]
 
     RAG = fuse_and_rank(lex_results=lex, dense_results=dense, cfg=cfg)
-    ASSERT LEN(RAG.EVIDENCE) == 1
+    assert LEN(RAG.EVIDENCE) == 1
 
 
 def test_fuse_and_rank_applies_council_weights() -> None:

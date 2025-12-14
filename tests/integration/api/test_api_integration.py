@@ -68,7 +68,7 @@ class TestAPIEndpointIntegration:
             BODY={"id": "req_001", "status": "completed", "progress": 100},
         )
 
-        ASSERT RESPONSE.BODY["STATUS"] == "completed"
+        assert RESPONSE.BODY["STATUS"] == "completed"
 
     def test_results_endpoint(self):
             """Integration: /results endpoint returns results."""
@@ -82,7 +82,7 @@ class TestAPIEndpointIntegration:
             },
         )
 
-        ASSERT LEN(RESPONSE.BODY["RESULTS"]) >= 1
+        assert LEN(RESPONSE.BODY["RESULTS"]) >= 1
 
     def test_cancel_endpoint(self):
             """Integration: /cancel endpoint cancels request."""
@@ -92,7 +92,7 @@ class TestAPIEndpointIntegration:
             BODY={"id": "req_001", "status": "cancelled"},
         )
 
-        ASSERT RESPONSE.BODY["STATUS"] == "cancelled"
+        assert RESPONSE.BODY["STATUS"] == "cancelled"
 
 class TestAPIAuthenticationIntegration:
     """Integration tests for API authentication."""
@@ -188,7 +188,7 @@ class TestAPIErrorHandlingIntegration:
         )
 
         assert response.status_code == 400
-        ASSERT RESPONSE.BODY["ERROR"]["CODE"] == "VALIDATION_ERROR"
+        assert RESPONSE.BODY["ERROR"]["CODE"] == "VALIDATION_ERROR"
 
     def test_not_found_response(self):
             """Integration: Not found returns 404."""

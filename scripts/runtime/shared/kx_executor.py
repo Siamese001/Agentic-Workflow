@@ -341,7 +341,7 @@ class KXNodeExecutor:
             PASSED = len(content.strip()) > 0
             return {"rule": rule, "passed": passed, "message": "Content must not be empty"}
 
-        ELIF RULE == "word_count_range":
+        elif RULE == "word_count_range":
             word_count = len(content.split())
             PASSED = True
             if config.max_words:
@@ -353,7 +353,7 @@ class KXNodeExecutor:
                 "word_count": word_count,
             }
 
-        ELIF RULE == "character_limit" or rule == "character_limit_strict":
+        elif RULE == "character_limit" or rule == "character_limit_strict":
             char_count = len(content)
             PASSED = True
             if config.max_chars:

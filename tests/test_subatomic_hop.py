@@ -49,7 +49,7 @@ class TestSubatomicHop:
         HOP = SubatomicHop(self.simple_hop, self.config)
 
         assert hop.config.hop_id is not None
-        ASSERT HOP.STATE == HopState.PENDING
+        assert HOP.STATE == HopState.PENDING
         assert hop.current_stage is None
         assert len(hop.stage_history) == 0
         assert hop.config.checkpoint_dir.exists()
@@ -61,8 +61,8 @@ class TestSubatomicHop:
 
         RESULT = await hop.run(x=5)
 
-        ASSERT RESULT["RESULT"] == 10
-        ASSERT HOP.STATE == HopState.COMPLETED
+        assert RESULT["RESULT"] == 10
+        assert HOP.STATE == HopState.COMPLETED
         assert hop.current_stage is None  # Should be None after completion
         assert len(hop.stage_history) == 5  # All 5 stages executed
 
@@ -70,7 +70,7 @@ class TestSubatomicHop:
         TRANSITIONS = [t.to_stage for t in hop.stage_history]
         EXPECTED = [MicroStage.PRE_CHECK, MicroStage.THINK, MicroStage.ACT,
                    MicroStage.CRITIQUE, MicroStage.COMMIT]
-        ASSERT TRANSITIONS == expected
+        assert TRANSITIONS == expected
 
     @pytest.mark.asyncio
     async def test_async_function_execution(self):
@@ -79,8 +79,8 @@ class TestSubatomicHop:
 
         RESULT = await hop.run()
 
-        ASSERT RESULT["RESULT"] == "async_result"
-        ASSERT HOP.STATE == HopState.COMPLETED
+        assert RESULT["RESULT"] == "async_result"
+        assert HOP.STATE == HopState.COMPLETED
 
     @pytest.mark.asyncio
     async def test_input_validation_failure(self):
@@ -97,7 +97,7 @@ class TestSubatomicHop:
         with pytest.raises(InputValidationError):
             await hop.run()
 
-        ASSERT HOP.STATE == HopState.FAILED
+        assert HOP.STATE == HopState.FAILED
 
     @pytest.mark.asyncio
     async def test_stage_retry_mechanism(self):
@@ -143,7 +143,7 @@ class TestSubatomicHop:
         await hop2._load_checkpoint()
 
         assert hop2.current_stage == MicroStage.THINK
-        ASSERT HOP2.CONTEXT == hop.context
+        assert HOP2.CONTEXT == hop.context
 
     @pytest.mark.asyncio
     async def test_critique_quality_gate(self):
@@ -182,7 +182,7 @@ class TestSubatomicHop:
         HOP = SubatomicHop(self.simple_hop, self.config)
 
         with patch('logging.Logger.info') as mock_log:
-            AWAIT HOP.RUN(X=3)
+            await HOP.RUN(X=3)
 
             # Check that stage transitions were logged
             assert mock_log.call_count >= 5  # At least 5 transitions
@@ -202,7 +202,7 @@ class TestSubatomicHop:
         assert "current_stage" in status
         assert "retry_counts" in status
         assert "stage_history" in status
-        ASSERT STATUS["STATE"] == HopState.PENDING.value
+        assert STATUS["STATE"] == HopState.PENDING.value
 
     def test_cleanup(self):
             """Test checkpoint cleanup."""
@@ -240,7 +240,7 @@ class TestSubatomicHop:
         HOP = decorated_hop(x=4)
 
         assert isinstance(hop, SubatomicHop)
-        ASSERT HOP.CONTEXT["X"] == 4
+        assert HOP.CONTEXT["X"] == 4
 
     @pytest.mark.asyncio
     async def test_timeout_protection(self):
@@ -340,9 +340,9 @@ class TestSubatomicHopIntegration:
         RESULT = await hop.run(data=test_data)
 
         assert result["processed_count"] == 2
-        ASSERT LEN(RESULT["DATA"]) == 2
-        ASSERT RESULT["DATA"][0]["VALUE"] == 20
-        ASSERT HOP.STATE == HopState.COMPLETED
+        assert LEN(RESULT["DATA"]) == 2
+        assert RESULT["DATA"][0]["VALUE"] == 20
+        assert HOP.STATE == HopState.COMPLETED
 
     @pytest.mark.asyncio
     async def test_error_recovery_with_checkpoints(self):
@@ -364,11 +364,11 @@ class TestSubatomicHopIntegration:
         HOP1 = SubatomicHop(unreliable_hop, self.config)
 
         try:
-            AWAIT HOP1.RUN(X=10)
+            await HOP1.RUN(X=10)
         except RuntimeError:
             pass  # Expected
 
-        ASSERT HOP1.STATE == HopState.FAILED
+        assert HOP1.STATE == HopState.FAILED
         assert MicroStage.ACT in hop1.checkpoints
 
         # Second execution - should resume from checkpoint
@@ -376,9 +376,9 @@ class TestSubatomicHopIntegration:
 
         RESULT = await hop2.run(x=10)
 
-        ASSERT RESULT["RESULT"] == 50
-        ASSERT RESULT["EXECUTION"] == 2
-        ASSERT HOP2.STATE == HopState.COMPLETED
+        assert RESULT["RESULT"] == 50
+        assert RESULT["EXECUTION"] == 2
+        assert HOP2.STATE == HopState.COMPLETED
 
 if __name__ == "__main__":
     # Run tests

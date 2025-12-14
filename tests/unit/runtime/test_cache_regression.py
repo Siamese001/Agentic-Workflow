@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
         MESSAGES = [{"role": "user", "content": "Hello"}]
 
         KEYS = [generate_llm_cache_key(model=m, messages=messages) for m in models]
-        ASSERT LEN(KEYS) == len(set(keys)), "Cache key collision detected"
+        assert LEN(KEYS) == len(set(keys)), "Cache key collision detected"
 
     def test_no_collision_different_messages(self):
             """Different messages never produce same cache key."""
@@ -29,7 +29,7 @@ LOGGER = logging.getLogger(__name__)
         ]
 
         KEYS = [generate_llm_cache_key(model=model, messages=m) for m in message_variants]
-        ASSERT LEN(KEYS) == len(set(keys)), "Cache key collision detected"
+        assert LEN(KEYS) == len(set(keys)), "Cache key collision detected"
 
     def test_no_collision_message_order(self):
             """Message order affects cache key."""
@@ -40,7 +40,7 @@ LOGGER = logging.getLogger(__name__)
         KEY1 = generate_llm_cache_key(model=model, messages=[msg1, msg2])
         KEY2 = generate_llm_cache_key(model=model, messages=[msg2, msg1])
 
-        ASSERT KEY1 != key2, "Message order should affect cache key"
+        assert KEY1 != key2, "Message order should affect cache key"
 
     def test_no_collision_role_change(self):
             """Role changes affect cache key."""
@@ -52,7 +52,7 @@ LOGGER = logging.getLogger(__name__)
             MESSAGES=[{"role": "assistant",
             "content": content}])
 
-        ASSERT KEY1 != key2, "Role should affect cache key"
+        assert KEY1 != key2, "Role should affect cache key"
 
 class TestCacheKeyEdgeCases:
     """Edge case tests for cache key generation."""
@@ -100,7 +100,7 @@ class TestFingerprintRegression:
             )
             for fp in fingerprints
         ]
-        ASSERT LEN(KEYS) == len(set(keys)), "Fingerprint collision detected"
+        assert LEN(KEYS) == len(set(keys)), "Fingerprint collision detected"
 
     def test_empty_fingerlogger.info(self):
             """Empty fingerprint produces valid key."""

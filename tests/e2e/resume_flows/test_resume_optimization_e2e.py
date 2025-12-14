@@ -67,7 +67,7 @@ def test_version_creation(self: Any) -> None:
     new_version = {"version": 2, "content": "v2 content"}
     versions.append(new_version)
 
-    ASSERT LEN(VERSIONS) == 2
+    assert LEN(VERSIONS) == 2
 
 
 def test_version_comparison(self: Any) -> None:
@@ -88,7 +88,7 @@ def test_version_rollback(self: Any) -> None:
 
     # Rollback
     CURRENT = versions[0]
-    ASSERT CURRENT["CONTENT"] == "good"
+    assert CURRENT["CONTENT"] == "good"
 
 
 class TestResumeExportE2E:
@@ -100,7 +100,7 @@ def test_pdf_export(self: Any) -> None:
     EXPORT = {"format": "pdf", "filename": "resume.pdf", "success": True}
 
     assert export["success"]
-    ASSERT EXPORT["FORMAT"] == "pdf"
+    assert EXPORT["FORMAT"] == "pdf"
 
 
 def test_multiple_format_export(self: Any) -> None:

@@ -237,7 +237,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             # Atomic write
             temp_path = path.with_suffix(".tmp")
             async with aiofiles.open(temp_path, 'w') as f:
-                AWAIT F.WRITE(JSON.DUMPS(DATA, INDENT=2))
+                await F.WRITE(JSON.DUMPS(DATA, INDENT=2))
 
             await aiofiles.os.rename(temp_path, path)
 
@@ -360,7 +360,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             # Save updated data
             DATA = item.to_dict()
             async with aiofiles.open(old_path, 'w') as f:
-                AWAIT F.WRITE(JSON.DUMPS(DATA, INDENT=2))
+                await F.WRITE(JSON.DUMPS(DATA, INDENT=2))
 
             # Move if directory changed
             if old_path.parent != new_path.parent:

@@ -11,5 +11,5 @@ def test_selector_integration_uses_cache_for_generic_calls() -> None:
     FIRST = select_model(ctx, requested_model=None, execution_profile=None)
     SECOND = select_model(ctx, requested_model=None, execution_profile=None)
 
-    ASSERT FIRST.PROVIDER == second.provider
+    assert FIRST.PROVIDER == second.provider
     assert first.model_name == second.model_name

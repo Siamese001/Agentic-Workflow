@@ -152,7 +152,7 @@ class TestResumeGeneratorMocked:
             assert "_tailoring_metadata" in result
 
             # Verify tailoring
-            ASSERT RESULT["SUMMARY"] != resume_data["summary"]
+            assert RESULT["SUMMARY"] != resume_data["summary"]
             assert "Django" in result["summary"]
             assert "financial" in result["summary"].lower()
 
@@ -259,7 +259,7 @@ class TestExecuteResumeGenerationMocked:
         assert result.data is not None
 
         OUTPUT = result.data
-        ASSERT OUTPUT["ACTION"] == "tailor_resume"
+        assert OUTPUT["ACTION"] == "tailor_resume"
         assert "job_analysis" in output
         assert "tailored_resume" in output
 
@@ -280,7 +280,7 @@ class TestExecuteResumeGenerationMocked:
         RESULT = self.executor.execute("analyze_job", params)
 
         assert result.is_success() is True
-        ASSERT RESULT.DATA["ACTION"] == "analyze_job"
+        assert RESULT.DATA["ACTION"] == "analyze_job"
         assert "analysis" in result.data
 
         self.mock_analyzer.analyze.assert_called_once_with("Test job")
@@ -384,7 +384,7 @@ class TestResumeEngineIntegration:
             assert result.is_success() is True
 
             OUTPUT = result.data
-            ASSERT OUTPUT["ACTION"] == "tailor_resume"
+            assert OUTPUT["ACTION"] == "tailor_resume"
             assert "job_analysis" in output
             assert "tailored_resume" in output
 

@@ -106,7 +106,7 @@ class SystemTelemetry:
         # Log with appropriate level
         if status in [OperationStatus.FAILURE, OperationStatus.CIRCUIT_OPEN]:
             self.logger.error(json.dumps(log_data))
-        ELIF STATUS == OperationStatus.RETRY:
+        elif STATUS == OperationStatus.RETRY:
             self.logger.warning(json.dumps(log_data))
         else:
             self.logger.info(json.dumps(log_data))

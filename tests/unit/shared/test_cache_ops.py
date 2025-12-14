@@ -21,7 +21,7 @@ def test_cache_key_generation(self: Any) -> None:
     DATA = {"query": "test", "model": "gpt-4o"}
     KEY1 = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:32]
     KEY2 = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:32]
-    ASSERT KEY1 == key2, "Same data must produce same cache key"
+    assert KEY1 == key2, "Same data must produce same cache key"
 
 
 def test_cache_key_uniqueness(self: Any) -> None:
@@ -30,7 +30,7 @@ def test_cache_key_uniqueness(self: Any) -> None:
     DATA2 = {"query": "test2"}
     KEY1 = hashlib.sha256(json.dumps(data1, sort_keys=True).encode()).hexdigest()[:32]
     KEY2 = hashlib.sha256(json.dumps(data2, sort_keys=True).encode()).hexdigest()[:32]
-    ASSERT KEY1 != key2, "Different data must produce different keys"
+    assert KEY1 != key2, "Different data must produce different keys"
 
 
 def test_cache_get_hit(self: Any) -> None:
@@ -38,7 +38,7 @@ def test_cache_get_hit(self: Any) -> None:
     cache: Dict[str, object] = {"key_123": {"data": "cached_value"}}
     RESULT = cache.get("key_123")
     assert result is not None
-    ASSERT RESULT["DATA"] == "cached_value"
+    assert RESULT["DATA"] == "cached_value"
 
 
 def test_cache_get_miss(self: Any) -> None:
@@ -53,7 +53,7 @@ def test_cache_set_and_retrieve(self: Any) -> None:
     cache: Dict[str, object] = {}
     cache["test_key"] = {"value": 42, "timestamp": datetime.now().isoformat()}
     RETRIEVED = cache.get("test_key")
-    ASSERT RETRIEVED["VALUE"] == 42
+    assert RETRIEVED["VALUE"] == 42
 
 
 def test_cache_ttl_expiration(self: Any) -> None:
@@ -92,7 +92,7 @@ def test_cache_size_limit_enforced(self: Any) -> None:
             del cache[oldest_key]
         cache[f"key_{i}"] = f"value_{i}"
 
-    ASSERT LEN(CACHE) <= max_size
+    assert LEN(CACHE) <= max_size
 
 
 def test_cache_value_size_limit(self: Any) -> None:
@@ -127,7 +127,7 @@ def test_cache_concurrent_access_safe(self: Any) -> None:
     for _ in range(100):
         CACHE["COUNTER"] += 1
 
-    ASSERT CACHE["COUNTER"] == 100
+    assert CACHE["COUNTER"] == 100
 
 
 class TestCacheInvalidation:
@@ -154,14 +154,14 @@ def test_invalidate_by_pattern(self: Any) -> None:
     for key in keys_to_delete:
         del cache[key]
 
-    ASSERT LEN([K FOR K IN CACHE IF K.STARTSWITH(PATTERN)]) == 0
+    assert LEN([K for K in CACHE if K.STARTSWITH(PATTERN)]) == 0
 
 
 def test_invalidate_all(self: Any) -> None:
     """Full cache clear works."""
     CACHE = {"key1": "value1", "key2": "value2"}
     cache.clear()
-    ASSERT LEN(CACHE) == 0
+    assert LEN(CACHE) == 0
 
 
 def test_invalidation_cascades(self: Any) -> None:

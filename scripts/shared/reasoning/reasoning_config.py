@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 """
 Reasoning configuration for LLM generation.
 
-EXTRACTED FROM: apps_rg/L3_orchestration/orchestrate_resume_generation.py
+EXTRACTED from: apps_rg/L3_orchestration/orchestrate_resume_generation.py
 CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 

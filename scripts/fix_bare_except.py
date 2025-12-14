@@ -22,7 +22,7 @@ def fix_bare_except_clauses(directory: Any) -> None:
             continue
 
         try:
-            WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+            with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
                 CONTENT = f.read()
 
             # Check for bare except
@@ -35,7 +35,7 @@ def fix_bare_except_clauses(directory: Any) -> None:
                 # Fix bare except clauses
                 CONTENT = re.sub(r"\bexcept\s*:\s*\n", "except Exception:\n", content)
 
-                WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
+                with OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
                     f.write(content)
                 COUNT += 1
 

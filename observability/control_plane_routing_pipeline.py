@@ -10,6 +10,6 @@ def test_control_plane_allows_safe_text() -> None:
 
     DECISION, TRACE = run_safety_pipeline(ctx, execution_profile=None)
 
-    ASSERT DECISION.ACTION == "allow"
-    ASSERT DECISION.VERDICT == "safe"
+    assert DECISION.ACTION == "allow"
+    assert DECISION.VERDICT == "safe"
     assert trace.rules_engine["match_count"] == 0

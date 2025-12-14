@@ -49,16 +49,16 @@ class PrecisionLayerTestSuite:
 
         # Test queries
         self.test_queries = [
-            # Simple conversational (should NOT retrieve)
+            # Simple conversational (should not retrieve)
             ("hi", "CONVERSATIONAL", False),
             ("Thanks!", "CONVERSATIONAL", False),
             ("hello", "CONVERSATIONAL", False),
 
-            # Reference queries (should NOT retrieve)
+            # Reference queries (should not retrieve)
             ("What was that you mentioned?", "REFERENCE", False),
             ("Can you explain the previous point?", "REFERENCE", False),
 
-            # Self-reference (should NOT retrieve)
+            # Self-reference (should not retrieve)
             ("What can you do?", "SELF_REFERENCE", False),
             ("How do you work?", "SELF_REFERENCE", False),
 

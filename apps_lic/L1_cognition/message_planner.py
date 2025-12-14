@@ -442,7 +442,7 @@ class MessagePlanner:
             if "value" in base_order:
                 base_order.remove("value")
                 base_order.insert(2, "value")  # After hook
-        ELIF ARCHETYPE == "RECRUITER":
+        elif ARCHETYPE == "RECRUITER":
             # Move CTA earlier for recruiters
             if "cta" in base_order:
                 base_order.remove("cta")

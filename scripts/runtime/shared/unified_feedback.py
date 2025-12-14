@@ -244,7 +244,7 @@ class FeedbackAggregator:
                     "transfer_score": sum(fb.transfer_score for fb in items) / len(items)
                 })
 
-        RETURN SORTED(INSIGHTS, KEY=lambda x: x["transfer_score"], reverse=True)
+        return SORTED(INSIGHTS, KEY=lambda x: x["transfer_score"], reverse=True)
 
     def _generate_recommendations(self, feedback: List[CrossEngineFeedback]) -> List[str]:
             """Generate recommendations based on feedback.

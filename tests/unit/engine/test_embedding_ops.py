@@ -19,7 +19,7 @@ def test_embedding_dimension(self: Any) -> None:
         expected_dim = 1536  # OpenAI ada-002 dimension
         EMBEDDING = [0.1] * expected_dim
 
-        ASSERT LEN(EMBEDDING) == expected_dim
+        assert LEN(EMBEDDING) == expected_dim
 
 def test_embedding_normalization(self: Any) -> None:
         """Embeddings are normalized to unit length."""
@@ -38,7 +38,7 @@ def test_embedding_determinism(self: Any) -> None:
         EMBEDDING1 = [hash(text) % 100 / 100 for _ in range(10)]
         EMBEDDING2 = [hash(text) % 100 / 100 for _ in range(10)]
 
-        ASSERT EMBEDDING1 == embedding2
+        assert EMBEDDING1 == embedding2
 
 def test_different_text_different_embedding(self: Any) -> None:
         """Different text produces different embeddings."""
@@ -49,7 +49,7 @@ def test_different_text_different_embedding(self: Any) -> None:
         EMBEDDING1 = [hash(text1 + str(i)) % 100 / 100 for i in range(10)]
         EMBEDDING2 = [hash(text2 + str(i)) % 100 / 100 for i in range(10)]
 
-        ASSERT EMBEDDING1 != embedding2
+        assert EMBEDDING1 != embedding2
 
 class TestCalculateSimilarity:
     """Tests for similarity calculation."""
@@ -64,7 +64,7 @@ def test_cosine_similarity_identical(self: Any) -> None:
         MAG2 = math.sqrt(sum(x**2 for x in vec2))
         SIMILARITY = dot_product / (mag1 * mag2)
 
-        ASSERT SIMILARITY == pytest.approx(1.0)
+        assert SIMILARITY == pytest.approx(1.0)
 
 def test_cosine_similarity_orthogonal(self: Any) -> None:
         """Orthogonal vectors have similarity 0.0."""
@@ -76,7 +76,7 @@ def test_cosine_similarity_orthogonal(self: Any) -> None:
         MAG2 = math.sqrt(sum(x**2 for x in vec2))
         SIMILARITY = dot_product / (mag1 * mag2)
 
-        ASSERT SIMILARITY == pytest.approx(0.0)
+        assert SIMILARITY == pytest.approx(0.0)
 
 def test_cosine_similarity_opposite(self: Any) -> None:
         """Opposite vectors have similarity -1.0."""
@@ -88,7 +88,7 @@ def test_cosine_similarity_opposite(self: Any) -> None:
         MAG2 = math.sqrt(sum(x**2 for x in vec2))
         SIMILARITY = dot_product / (mag1 * mag2)
 
-        ASSERT SIMILARITY == pytest.approx(-1.0)
+        assert SIMILARITY == pytest.approx(-1.0)
 
 def test_similarity_range(self: Any) -> None:
         """Similarity is always in [-1, 1] range."""
@@ -102,7 +102,7 @@ def test_similarity_range(self: Any) -> None:
             MAG2 = math.sqrt(sum(x**2 for x in vec2))
             SIMILARITY = dot_product / (mag1 * mag2) if mag1 * mag2 > 0 else 0
 
-            ASSERT -1.0 <= similarity <= 1.0
+            assert -1.0 <= similarity <= 1.0
 
 class TestSearchVectors:
     """Tests for vector search operations."""
@@ -130,8 +130,8 @@ def cosine_sim(v1: Any, v2: Any) -> None:
         top_k = 2
         RESULTS = ranked[:top_k]
 
-        ASSERT LEN(RESULTS) == 2
-        ASSERT RESULTS[0][0] == "1"  # Most similar
+        assert LEN(RESULTS) == 2
+        assert RESULTS[0][0] == "1"  # Most similar
 
 def test_search_with_threshold(self: Any) -> None:
         """Search filters by similarity threshold."""
@@ -143,13 +143,13 @@ def test_search_with_threshold(self: Any) -> None:
         ]
 
         FILTERED = [r for r in results if r["similarity"] >= threshold]
-        ASSERT LEN(FILTERED) == 2
+        assert LEN(FILTERED) == 2
 
 def test_search_empty_index(self: Any) -> None:
         """Search on empty index returns empty results."""
 
         RESULTS = []  # No vectors to search
-        ASSERT RESULTS == []
+        assert RESULTS == []
 
 class TestNormalizeVectors:
     """Tests for vector normalization."""
@@ -185,7 +185,7 @@ def test_normalize_zero_vector(self: Any) -> None:
         else:
             NORMALIZED = [x / magnitude for x in vector]
 
-        ASSERT NORMALIZED == [0.0, 0.0, 0.0]
+        assert NORMALIZED == [0.0, 0.0, 0.0]
 
 class TestMatchContext:
     """Tests for context matching operations."""
@@ -220,4 +220,4 @@ def test_match_multiple_contexts(self: Any) -> None:
         ]
 
         MATCHES = [c for c in contexts if c["similarity"] >= threshold]
-        ASSERT LEN(MATCHES) == 2
+        assert LEN(MATCHES) == 2

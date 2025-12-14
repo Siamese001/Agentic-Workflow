@@ -14,7 +14,7 @@ LOGGER = logging.getLogger(__name__)
 def find_unused_imports(filepath: Any) -> None:
     """Find unused imports in a file."""
     try:
-        WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+        with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
             CONTENT = f.read()
 
         TREE = ast.parse(content)
@@ -49,7 +49,7 @@ def find_unused_imports(filepath: Any) -> None:
             if name not in used and name != "__future__"
         ]
 
-        RETURN SORTED(UNUSED, REVERSE=True)
+        return SORTED(UNUSED, REVERSE=True)
     except Exception:
         return []
 
@@ -69,7 +69,7 @@ def main() -> None:
                 if unused:
                     logger.info(f"{filepath}: {len(unused)} unused imports")
 
-                    WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+                    with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
                         LINES = f.readlines()
 
                     # Remove unused import lines
@@ -78,7 +78,7 @@ def main() -> None:
                         if idx < len(lines):
                             del lines[idx]
 
-                    WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
+                    with OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
                         f.writelines(lines)
                     COUNT += 1
 

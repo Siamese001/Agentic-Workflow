@@ -40,7 +40,7 @@ class TestHybridScorer:
             keyword_score=0.6,
             WEIGHTS=weights
         )
-        ASSERT SCORE == pytest.approx(0.7, rel=1e-3)  # (0.8 * 0.5) + (0.6 * 0.5)
+        assert SCORE == pytest.approx(0.7, rel=1e-3)  # (0.8 * 0.5) + (0.6 * 0.5)
 
         # One score high, one low
         SCORE = self.scorer.calculate_hybrid_score(
@@ -48,7 +48,7 @@ class TestHybridScorer:
             keyword_score=0.2,
             WEIGHTS=weights
         )
-        ASSERT SCORE == pytest.approx(0.55, rel=1e-3)  # (0.9 * 0.5) + (0.2 * 0.5)
+        assert SCORE == pytest.approx(0.55, rel=1e-3)  # (0.9 * 0.5) + (0.2 * 0.5)
 
     def test_calculate_hybrid_score_prioritizes_vector(self):
             """Test that higher vector weight prioritizes vector score."""
@@ -71,8 +71,8 @@ class TestHybridScorer:
 
         # With high vector weight, the first score should be higher
         assert score1 > score2
-        ASSERT SCORE1 == pytest.approx(0.74, rel=1e-3)  # (0.9 * 0.8) + (0.1 * 0.2)
-        ASSERT SCORE2 == pytest.approx(0.26, rel=1e-3)  # (0.1 * 0.8) + (0.9 * 0.2)
+        assert SCORE1 == pytest.approx(0.74, rel=1e-3)  # (0.9 * 0.8) + (0.1 * 0.2)
+        assert SCORE2 == pytest.approx(0.26, rel=1e-3)  # (0.1 * 0.8) + (0.9 * 0.2)
 
     def test_calculate_hybrid_score_prioritizes_keyword(self):
             """Test that higher keyword weight prioritizes keyword score."""
@@ -95,8 +95,8 @@ class TestHybridScorer:
 
         # With high keyword weight, the second score should be higher
         assert score2 > score1
-        ASSERT SCORE1 == pytest.approx(0.26, rel=1e-3)  # (0.9 * 0.2) + (0.1 * 0.8)
-        ASSERT SCORE2 == pytest.approx(0.74, rel=1e-3)  # (0.1 * 0.2) + (0.9 * 0.8)
+        assert SCORE1 == pytest.approx(0.26, rel=1e-3)  # (0.9 * 0.2) + (0.1 * 0.8)
+        assert SCORE2 == pytest.approx(0.74, rel=1e-3)  # (0.1 * 0.2) + (0.9 * 0.8)
 
     def test_normalize_score_already_normalized(self):
             """Test that already normalized scores pass through unchanged."""
@@ -108,11 +108,11 @@ class TestHybridScorer:
             """Test normalization of unbounded scores using sigmoid."""
         # High positive score should be close to 1
         NORMALIZED = self.scorer._normalize_score(10.0)
-        ASSERT NORMALIZED > 0.9 AND NORMALIZED <= 1.0
+        assert NORMALIZED > 0.9 and NORMALIZED <= 1.0
 
         # Negative score should be less than 0.5
         NORMALIZED = self.scorer._normalize_score(-2.0)
-        ASSERT NORMALIZED < 0.5 AND NORMALIZED >= 0.0
+        assert NORMALIZED < 0.5 and NORMALIZED >= 0.0
 
         # Very high score should be very close to 1
         NORMALIZED = self.scorer._normalize_score(100.0)
@@ -151,14 +151,14 @@ class TestHybridScorer:
             'content': 'Latest updates from today show new developments'
         }
         BOOST = self.scorer._calculate_recency_boost(recent_metadata)
-        ASSERT BOOST == 0.7
+        assert BOOST == 0.7
 
         # Content without recent indicators
         old_metadata = {
             'content': 'Historical analysis from previous years'
         }
         BOOST = self.scorer._calculate_recency_boost(old_metadata)
-        ASSERT BOOST == 0.5
+        assert BOOST == 0.5
 
     def test_calculate_hybrid_score_with_recency_boost(self):
             """Test hybrid score calculation with recency boost enabled."""
@@ -197,14 +197,14 @@ class TestHybridScorer:
             keyword_score=-1000.0,
             WEIGHTS=weights
         )
-        ASSERT 0.0 <= score1 <= 1.0
+        assert 0.0 <= score1 <= 1.0
 
         SCORE2 = self.scorer.calculate_hybrid_score(
             vector_score=0.0,
             keyword_score=0.0,
             WEIGHTS=weights
         )
-        ASSERT 0.0 <= score2 <= 1.0
+        assert 0.0 <= score2 <= 1.0
 
 class TestEnhancedSemanticCache:
     """Test suite for EnhancedSemanticCache logic expansion."""
@@ -223,11 +223,11 @@ class TestEnhancedSemanticCache:
             "You are helpful")  # Different temp
 
         # Same inputs should generate same fingerprint
-        ASSERT FP1 == fp2
-        ASSERT LEN(FP1) == 64  # SHA256 hex length
+        assert FP1 == fp2
+        assert LEN(FP1) == 64  # SHA256 hex length
 
         # Different temperature should generate different fingerprint
-        ASSERT FP1 != fp3
+        assert FP1 != fp3
 
     def test_generate_fingerprint_temperature_sensitivity(self):
             """Test that fingerprint changes with temperature."""
@@ -290,13 +290,13 @@ class TestEnhancedSemanticCache:
         # Lookup should return the data
         RESULT = self.cache.lookup(fingerprint)
         assert result is not None
-        ASSERT RESULT['CONTENT'] == 'Generated response'
-        ASSERT RESULT['MODEL'] == 'gpt-4'
+        assert RESULT['CONTENT'] == 'Generated response'
+        assert RESULT['MODEL'] == 'gpt-4'
 
         # Returned data should be a copy (modifying shouldn't affect cache)
         RESULT['CONTENT'] = 'Modified'
         RESULT2 = self.cache.lookup(fingerprint)
-        ASSERT RESULT2['CONTENT'] == 'Generated response'  # Should be unchanged
+        assert RESULT2['CONTENT'] == 'Generated response'  # Should be unchanged
 
     def test_lookup_returns_none_on_temperature_change(self):
             """Test that changing temperature causes cache miss."""
@@ -320,7 +320,7 @@ class TestEnhancedSemanticCache:
         # But lookup with low temp fingerprint should hit
         RESULT = self.cache.lookup(fp_low_temp)
         assert result is not None
-        ASSERT RESULT['RESPONSE'] == 'Paris'
+        assert RESULT['RESPONSE'] == 'Paris'
 
     def test_cache_expiration(self):
             """Test that cache entries expire based on TTL."""
@@ -353,7 +353,7 @@ class TestEnhancedSemanticCache:
         INVALIDATED = self.cache.invalidate_by_pattern('cat')
 
         # Should invalidate 2 entries (cats and CATS)
-        ASSERT INVALIDATED == 2
+        assert INVALIDATED == 2
 
         # Check remaining entries
         assert self.cache.lookup("fp1") is None  # cats invalidated
@@ -397,7 +397,7 @@ class TestEnhancedSemanticCache:
         FP2 = self.cache.generate_fingerlogger.info(prompt, model, 0.7, system)
         FP3 = self.cache.generate_fingerlogger.info(prompt, model, 0.7, system)
 
-        ASSERT FP1 == fp2 == fp3
+        assert FP1 == fp2 == fp3
 
         # Verify whitespace is handled (stripped)
         fp_stripped = self.cache.generate_fingerlogger.info(
@@ -406,7 +406,7 @@ class TestEnhancedSemanticCache:
             0.7,
             system.strip()
         )
-        ASSERT FP1 == fp_stripped
+        assert FP1 == fp_stripped
 
 class TestRAGIntegration:
     """Integration tests for RAG components."""
@@ -447,5 +447,5 @@ class TestRAGIntegration:
             hybrid_score = cached_result['hybrid_score']
 
         # Verify we got a valid score
-        ASSERT 0.0 <= hybrid_score <= 1.0
+        assert 0.0 <= hybrid_score <= 1.0
         assert hybrid_score > 0.5  # Should be reasonably high for these scores

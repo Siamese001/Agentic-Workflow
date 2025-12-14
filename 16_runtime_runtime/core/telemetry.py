@@ -18,7 +18,7 @@ class TelemetryRecorder:
 def __init__(self: Any, db_path: Any) -> None:
         SELF.CONN = duckdb.connect(db_path)
         self.conn.execute("""
-            CREATE TABLE IF NOT EXISTS traces
+            CREATE TABLE if not EXISTS traces
             (trace_id VARCHAR,
                 span_id VARCHAR,
                 role VARCHAR,

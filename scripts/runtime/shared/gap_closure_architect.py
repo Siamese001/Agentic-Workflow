@@ -44,7 +44,7 @@ class GapClosureArchitect(Agent):
     This agent generates competencies with strict constraints:
     - Count: Exactly 6 competencies (ZERO TOLERANCE)
     - Word count: 24-30 words per description (ZERO TOLERANCE)
-    - Gap coverage: ≥85% of JD keywords NOT in K.4/K.5/K.6/K.7 (CRITICAL)
+    - Gap coverage: ≥85% of JD keywords not in K.4/K.5/K.6/K.7 (CRITICAL)
     - Industry-First ranking: Competencies ranked by industry relevance
     - Variance: Max std dev ≤3 words across descriptions
 
@@ -93,7 +93,7 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
 
     Args:
         context: Execution context with:
-            - JD_Keyword_Gap: List[str] - Keywords NOT in K.4/K.5/K.6/K.7
+            - JD_Keyword_Gap: List[str] - Keywords not in K.4/K.5/K.6/K.7
             - Authentic_Phrasing: List[str] - Authentic phrasing patterns
             - Base_Competency_Pool: List[str] - Base competencies
             - K4_Headline: str - For deduplication
@@ -209,7 +209,7 @@ def _build_initial_prompt(
     PROMPT = f"""Generate exactly {self.competency_count} Strategic & Technical Competencies wit
     h STRICT gap coverage.
 
-PRIMARY OBJECTIVE: Achieve ≥{self.gap_coverage_minimum:.0%} coverage of JD keywords NOT yet used in
+PRIMARY OBJECTIVE: Achieve ≥{self.gap_coverage_minimum:.0%} coverage of JD keywords not yet used in
     K.4/K.5/K.6/K.7.
 
 CRITICAL CONSTRAINTS (ZERO TOLERANCE):

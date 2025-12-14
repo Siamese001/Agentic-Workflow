@@ -54,7 +54,7 @@ class TestWorkflowStateIntegration:
         workflow.checkpoints.append({"step": 1, "data": {"progress": 25}})
         workflow.checkpoints.append({"step": 2, "data": {"progress": 50}})
 
-        ASSERT LEN(WORKFLOW.CHECKPOINTS) == 2
+        assert LEN(WORKFLOW.CHECKPOINTS) == 2
 
     def test_checkpoint_restore(self):
             """Integration: Workflow restores from checkpoint."""
@@ -66,7 +66,7 @@ class TestWorkflowStateIntegration:
             DATA=checkpoint["data"],
         )
 
-        ASSERT WORKFLOW.DATA["PROGRESS"] == 50
+        assert WORKFLOW.DATA["PROGRESS"] == 50
 
     def test_concurrent_workflow_isolation(self):
             """Integration: Concurrent workflows are isolated."""
@@ -75,7 +75,7 @@ class TestWorkflowStateIntegration:
 
         WF1.DATA["VALUE"] = 100
 
-        ASSERT WF2.DATA["VALUE"] == 2  # Unchanged
+        assert WF2.DATA["VALUE"] == 2  # Unchanged
 
 class TestWorkflowPersistenceIntegration:
     """Integration tests for workflow persistence."""
@@ -96,7 +96,7 @@ class TestWorkflowPersistenceIntegration:
         }
 
         LOADED = storage.get("wf_001")
-        ASSERT LOADED.STATE == WorkflowState.COMPLETED
+        assert LOADED.STATE == WorkflowState.COMPLETED
 
     def test_workflow_update(self):
             """Integration: Workflow updates are persisted."""
@@ -119,7 +119,7 @@ class TestWorkflowOrchestrationIntegration:
         for step in steps:
             executed.append(step)
 
-        ASSERT EXECUTED == steps
+        assert EXECUTED == steps
 
     def test_parallel_step_execution(self):
             """Integration: Parallel steps execute correctly."""
@@ -140,7 +140,7 @@ class TestWorkflowOrchestrationIntegration:
         else:
             BRANCH = "false_branch"
 
-        ASSERT BRANCH == "true_branch"
+        assert BRANCH == "true_branch"
 
     def test_error_handling_in_workflow(self):
             """Integration: Errors are handled in workflow."""
@@ -152,5 +152,5 @@ class TestWorkflowOrchestrationIntegration:
             WORKFLOW.STATE = WorkflowState.FAILED
             WORKFLOW.DATA["ERROR"] = str(e)
 
-        ASSERT WORKFLOW.STATE == WorkflowState.FAILED
+        assert WORKFLOW.STATE == WorkflowState.FAILED
         assert "error" in workflow.data

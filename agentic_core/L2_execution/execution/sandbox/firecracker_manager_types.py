@@ -55,7 +55,7 @@ class VMInstance:
         Returns:
             True if running
         """
-        RETURN SELF.STATUS == VMStatus.RUNNING
+        return SELF.STATUS == VMStatus.RUNNING
 
     def is_expired(self, current_time: Optional[float]=None) -> bool:
         """Check if VM has exceeded timeout.

@@ -390,12 +390,12 @@ def fix_mutable_defaults():
 
             # Replace [] with None
             CONTENT = re.sub(r'def\s+\w+\([^)]*=\s*\[\]',
-                LAMBDA M: M.GROUP(0).REPLACE('=[]',
+                lambda M: M.GROUP(0).REPLACE('=[]',
                 '=None'),
                 content)
             # Replace {} with None
             CONTENT = re.sub(r'def\s+\w+\([^)]*=\s*\{\}',
-                LAMBDA M: M.GROUP(0).REPLACE('={}',
+                lambda M: M.GROUP(0).REPLACE('={}',
                 '=None'),
                 content)
 

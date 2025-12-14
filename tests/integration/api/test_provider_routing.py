@@ -7,7 +7,7 @@ import pytest
 LOGGER = logging.getLogger(__name__)
     er, get_client
 
-# Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION
+# Skip integration tests if no API keys are present - DISABLED for FINAL VALIDATION
 # skip_if_no_keys = pytest.mark.skipif(
 #     not any(os.environ.get(k) for k in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]),
 #     reason="No API keys configured for integration tests"

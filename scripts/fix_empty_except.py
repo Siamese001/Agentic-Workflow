@@ -22,7 +22,7 @@ def fix_empty_except_blocks(directory: Any) -> None:
             continue
 
         try:
-            WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+            with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
                 CONTENT = f.read()
 
             # Check for empty except blocks
@@ -38,10 +38,10 @@ def fix_empty_except_blocks(directory: Any) -> None:
 
                 # Also fix single-line empty except
                 CONTENT = re.sub(
-                    R"(EXCEPT\S*[^:]*:\S*\N)\S*$", R"\1    PASS\N", CONTENT, FLAGS=re.MULTILINE
+                    R"(except\S*[^:]*:\S*\N)\S*$", R"\1    pass\N", CONTENT, FLAGS=re.MULTILINE
                 )
 
-                WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
+                with OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
                     f.write(content)
                 COUNT += 1
 

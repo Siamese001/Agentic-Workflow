@@ -429,7 +429,7 @@ class DAGEngine:
                 return False
             VALUE = value.get(part)
 
-        RETURN STR(VALUE) == right
+        return STR(VALUE) == right
 
     def get_task_status(self, task_id: str) -> Optional[TaskStatus]:
         """Get status of a task.

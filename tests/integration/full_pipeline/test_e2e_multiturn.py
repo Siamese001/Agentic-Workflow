@@ -13,7 +13,7 @@ class TestMultiAgentScenarios:
 def test_planner_executor_coordination(self: Any) -> None:
     """Test planner-executor agent coordination."""
     AGENTS = ["planner", "executor", "validator"]
-    ASSERT LEN(AGENTS) == 3
+    assert LEN(AGENTS) == 3
 
 
 def test_parallel_agent_execution(self: Any) -> None:

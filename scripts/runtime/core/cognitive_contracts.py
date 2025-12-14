@@ -289,7 +289,7 @@ class CognitiveContractManager:
             Prompt with contract wrapper
         """
         constraint_text = "\n".join(
-            F"  - {C.DESCRIPTION}" FOR C IN SORTED(CONSTRAINTS, KEY=lambda x: -x.priority)
+            F"  - {C.DESCRIPTION}" for C in SORTED(CONSTRAINTS, KEY=lambda x: -x.priority)
         )
 
         contract_wrapper = f"""

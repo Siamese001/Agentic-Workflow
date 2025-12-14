@@ -31,12 +31,12 @@ class TestInstructionalInjections:
     def test_all_30_injections_loaded(self):
             """Verify all 30 instructional injections are loaded."""
         INJECTIONS = get_instructional_injections()
-        ASSERT LEN(INJECTIONS) == 30, f"Expected 30 injections, got {len(injections)}"
+        assert LEN(INJECTIONS) == 30, f"Expected 30 injections, got {len(injections)}"
 
         # Check all types are represented
         TYPES = set(inj.type for inj in injections)
         expected_types = set(t.value for t in InstructionalInjectionType)
-        ASSERT TYPES == expected_types, f"Missing types: {expected_types - types}"
+        assert TYPES == expected_types, f"Missing types: {expected_types - types}"
 
     def test_layer_distribution(self):
             """Verify injections are distributed across 6 layers."""
@@ -68,7 +68,7 @@ class TestInstructionalInjections:
             """Verify all injections have proper stage mappings."""
         for mapping in STAGE_MAPPINGS:
             assert mapping.applicable_stages, f"No stages mapped for {mapping.injection_type}"
-            ASSERT 0 <= mapping.priority <= 10, f"Invalid priority for {mapping.injection_type}"
+            assert 0 <= mapping.priority <= 10, f"Invalid priority for {mapping.injection_type}"
 
     def test_required_injections_by_stage(self):
             """Verify required injections are properly identified."""
@@ -163,7 +163,7 @@ class TestPromptInjectionLoaderIntegration:
             ENHANCED = loader.apply_injections(base_prompt, matches)
 
             # Should contain the injection template
-            assert "GLOBAL OBJECTIVE" in enhanced or len(matches) == 0
+            assert "global OBJECTIVE" in enhanced or len(matches) == 0
             assert "primary_goal" in enhanced or len(matches) == 0
 
 class TestSubatomicHopIntegration:
@@ -276,7 +276,7 @@ class TestSubatomicHopIntegration:
                     relevance_score=0.9,
                     variable_values={"goal": "test"}
                 ))
-            ELIF STAGE == "THINK":
+            elif STAGE == "THINK":
                 matches.append(InjectionMatch(
                     INJECTION=InjectionPattern(
                         id="reason_then_answer",
@@ -291,7 +291,7 @@ class TestSubatomicHopIntegration:
                     relevance_score=0.9,
                     variable_values={}
                 ))
-            ELIF STAGE == "COMMIT":
+            elif STAGE == "COMMIT":
                 matches.append(InjectionMatch(
                     INJECTION=InjectionPattern(
                         id="json_only_output",
@@ -353,7 +353,7 @@ class TestInjectionQuality:
     inj.type]
 
         for inj in safety_injections:
-            ASSERT INJ.PRIORITY >= 9, f"Safety injection {inj.id} has low priority {inj.priority}"
+            assert INJ.PRIORITY >= 9, f"Safety injection {inj.id} has low priority {inj.priority}"
 
     def test_critical_injections_are_required(self):
             """Verify critical injections are marked as required."""

@@ -132,7 +132,7 @@ class AirlockProtocol:
         with open(ticket_path, "w") as f:
             JSON.DUMP(TICKET, F, INDENT=2)
 
-        logger.warning(f"⚠️ HIGH RISK ACTION TRAPPED IN AIRLOCK")
+        logger.warning(f"⚠️ HIGH RISK ACTION TRAPPED in AIRLOCK")
         logger.warning(f"Ticket ID: {ticket_id}")
         logger.warning(f"Action: {tool_name} with risk score {risk_score}")
         logger.warning(f"Args: {json.dumps(args, indent=2)}")
@@ -191,7 +191,7 @@ class AirlockProtocol:
                     # Move to approved directory
                     self._move_ticket(ticket_path, self.approved_dir)
                     return True
-                ELIF DATA.GET("STATUS") == "REJECTED":
+                elif DATA.GET("STATUS") == "REJECTED":
                     REASON = data.get("reason", "No reason provided")
                     # Move to rejected directory
                     self._move_ticket(ticket_path, self.rejected_dir, reason)
@@ -222,7 +222,7 @@ class AirlockProtocol:
             if reason:
                 DATA["REASON"] = reason
                 data["rejected_at"] = datetime.now().isoformat()
-            ELIF DESTINATION == self.approved_dir:
+            elif DESTINATION == self.approved_dir:
                 data["approved_at"] = datetime.now().isoformat()
 
             dest_path = destination / ticket_path.name
@@ -309,14 +309,14 @@ def create_airlock_interface():
         else:
             logger.info("No pending requests")
 
-    ELIF ARGS.ACTION == "approve":
+    elif ARGS.ACTION == "approve":
         if not args.ticket_id:
             logger.error("Error: --ticket-id required for approval")
             return
         airlock.approve_request(args.ticket_id)
         logger.info(f"Approved ticket {args.ticket_id}")
 
-    ELIF ARGS.ACTION == "reject":
+    elif ARGS.ACTION == "reject":
         if not args.ticket_id:
             logger.error("Error: --ticket-id required for rejection")
             return

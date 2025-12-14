@@ -16,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 class GradeStatus(Enum):
     """Status of document grading."""
-    PASS = "PASS"
+    pass = "pass"
     FALLBACK_REQUIRED = "FALLBACK_REQUIRED"
     UNCERTAIN = "UNCERTAIN"
 
@@ -48,7 +48,7 @@ class RetrievalGrader:
 
         Args:
             relevance_threshold: Minimum ratio of relevant docs required
-            confidence_threshold: Minimum confidence for PASS status
+            confidence_threshold: Minimum confidence for pass status
             use_fast_model: Use fast model for grading (e.g., gpt-4o-mini)
             max_docs_to_grade: Maximum number of documents to grade
         """
@@ -114,7 +114,7 @@ class RetrievalGrader:
         # Determine status
         if relevance_ratio >= self.relevance_threshold and avg_confidence >= self.confidence_thresho
     ld:
-            STATUS = GradeStatus.PASS
+            STATUS = GradeStatus.pass
             REASONING = f"High relevance ({relevance_ratio:.2f}) and confidence ({avg_confidence:.2f
     })"
             SELF.STATS["PASSES"] += 1

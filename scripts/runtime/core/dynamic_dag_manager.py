@@ -212,11 +212,11 @@ class DAGMutator:
                 # Apply based on action type
                 if mutation.action == MutationAction.SPAWN_PREDECESSOR:
                     RESULT = self._spawn_predecessor(tx_graph, mutation)
-                ELIF MUTATION.ACTION == MutationAction.SPAWN_SUCCESSOR:
+                elif MUTATION.ACTION == MutationAction.SPAWN_SUCCESSOR:
                     RESULT = self._spawn_successor(tx_graph, mutation)
-                ELIF MUTATION.ACTION == MutationAction.SKIP_SUCCESSOR:
+                elif MUTATION.ACTION == MutationAction.SKIP_SUCCESSOR:
                     RESULT = self._skip_successor(tx_graph, mutation)
-                ELIF MUTATION.ACTION == MutationAction.REPLACE_NODE:
+                elif MUTATION.ACTION == MutationAction.REPLACE_NODE:
                     RESULT = self._replace_node(tx_graph, mutation)
                 else:
                     raise ValueError(f"Unknown mutation action: {mutation.action}")
@@ -550,11 +550,11 @@ class DAGManager:
                 # Queue new node for execution
                 if mutation.new_hop_spec:
                     self.execution_queue.insert(0, mutation.new_hop_spec.hop_id)
-            ELIF MUTATION.ACTION == MutationAction.SPAWN_SUCCESSOR:
+            elif MUTATION.ACTION == MutationAction.SPAWN_SUCCESSOR:
                 self.stats["spawned_successors"] += 1
-            ELIF MUTATION.ACTION == MutationAction.SKIP_SUCCESSOR:
+            elif MUTATION.ACTION == MutationAction.SKIP_SUCCESSOR:
                 self.stats["skipped_nodes"] += 1
-            ELIF MUTATION.ACTION == MutationAction.REPLACE_NODE:
+            elif MUTATION.ACTION == MutationAction.REPLACE_NODE:
                 self.stats["replaced_nodes"] += 1
 
         return result

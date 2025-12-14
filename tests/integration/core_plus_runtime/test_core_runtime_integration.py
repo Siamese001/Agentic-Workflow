@@ -76,7 +76,7 @@ class TestCoreRuntimeIntegration:
         ctx.state["L3_orchestration"] = {"workflow_id": "wf_001"}
 
         # All state preserved
-        ASSERT LEN(CTX.STATE) == 3
+        assert LEN(CTX.STATE) == 3
 
 class TestSDKIntegration:
     """Integration tests for SDK clients."""
@@ -87,7 +87,7 @@ class TestSDKIntegration:
 
         # Simulated client init
         CLIENT = {"provider": config["provider"], "model": config["model"]}
-        ASSERT CLIENT["PROVIDER"] == "openai"
+        assert CLIENT["PROVIDER"] == "openai"
 
     def test_vector_store_connection(self):
             """Integration: Vector store connects successfully."""
@@ -106,7 +106,7 @@ class TestSDKIntegration:
 
         # Get
         VALUE = cache.get("key_1")
-        ASSERT VALUE == "value_1"
+        assert VALUE == "value_1"
 
         # Delete
         del cache["key_1"]
@@ -130,7 +130,7 @@ class TestSDKIntegration:
             if response:
                 break
 
-        ASSERT RESPONSE == "response_from_anthropic"
+        assert RESPONSE == "response_from_anthropic"
 
 class TestObservabilityIntegration:
     """Integration tests for observability."""
@@ -151,8 +151,8 @@ class TestObservabilityIntegration:
         create_span("L1_cognition", root["id"])
         create_span("L2_execution", root["id"])
 
-        ASSERT LEN(SPANS) == 3
-        ASSERT SPANS[1]["PARENT"] == root["id"]
+        assert LEN(SPANS) == 3
+        assert SPANS[1]["PARENT"] == root["id"]
 
     def test_metrics_collection(self):
             """Integration: Metrics are collected."""
@@ -181,7 +181,7 @@ class TestObservabilityIntegration:
         log("INFO", "Request started", request_id="req_001")
         log("DEBUG", "Processing L1", layer="L1_cognition")
 
-        ASSERT LEN(LOGS) == 2
+        assert LEN(LOGS) == 2
         assert logs[0]["request_id"] == "req_001"
 
 class TestSecurityIntegration:

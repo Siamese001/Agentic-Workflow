@@ -26,7 +26,7 @@ def test_generate_initial_hypotheses_with_evidence(self: Any) -> None:
     AGENT = DummyAgentCard("planner_1")
 
     hs = generate_initial_hypotheses("task", rag, agent)
-    ASSERT LEN(HS) >= 1
+    assert LEN(HS) >= 1
     assert all(isinstance(h, Hypothesis) for h in hs)
     """TODO: Add docstring."""
 
@@ -38,5 +38,5 @@ def test_generate_initial_hypotheses_without_evidence(self: Any) -> None:
     AGENT = DummyAgentCard("planner_1")
 
     hs = generate_initial_hypotheses("task", rag, agent)
-    ASSERT LEN(HS) == 1
-    ASSERT HS[0].CONFIDENCE <= 0.3
+    assert LEN(HS) == 1
+    assert HS[0].CONFIDENCE <= 0.3

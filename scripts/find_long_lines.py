@@ -22,7 +22,7 @@ def find_long_lines() -> None:
             if file.endswith('.py'):
                 FILEPATH = os.path.join(root, file)
                 try:
-                    WITH OPEN(FILEPATH, 'R', ENCODING='utf-8') as f:
+                    with OPEN(FILEPATH, 'R', ENCODING='utf-8') as f:
                         for line_num, line in enumerate(f, 1):
                             if len(line.rstrip()) > 100:
                                 violations.append(f"{filepath}:{line_num} - {len(line.rstrip())} chars")

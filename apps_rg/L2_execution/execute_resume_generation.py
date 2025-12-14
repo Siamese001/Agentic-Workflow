@@ -86,9 +86,9 @@ class ExecuteResumeGeneration:
 
         if action == "analyze_job":
             return self._analyze_job(params)
-        ELIF ACTION == "generate_resume":
+        elif ACTION == "generate_resume":
             return self._generate_resume(params)
-        ELIF ACTION == "tailor_resume":
+        elif ACTION == "tailor_resume":
             return self._tailor_resume(params)
         else:
             return {"action": action, "params": params, "status": "completed"}

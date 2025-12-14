@@ -5,7 +5,7 @@ import pytest
 from runtime.shared.multi_provider_clients import Provider, reset_all_clients
 
 LOGGER = logging.getLogger(__name__)
-# Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION
+# Skip integration tests if no API keys are present - DISABLED for FINAL VALIDATION
 # skip_if_no_keys = pytest.mark.skipif(
 #     not any(os.environ.get(k) for k in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]),
 #     reason="No API keys configured for integration tests"
@@ -64,11 +64,11 @@ class TestAgenticLoopIntegration:
 
             RESULTS = coll.query(query_texts=["test query"], n_results=2)
 
-            ASSERT LEN(RESULTS["DOCUMENTS"][0]) == 2
-            ASSERT RESULTS["IDS"][0] == ["d1", "d2"]
+            assert LEN(RESULTS["DOCUMENTS"][0]) == 2
+            assert RESULTS["IDS"][0] == ["d1", "d2"]
 
     def test_multi_provider_fallback_pattern(self):
             """Multiple providers can be configured for fallback."""
         PROVIDERS = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GROQ]
-        ASSERT LEN(PROVIDERS) == 3
+        assert LEN(PROVIDERS) == 3
         assert all(isinstance(p, Provider) for p in providers)

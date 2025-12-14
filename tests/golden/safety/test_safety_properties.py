@@ -9,7 +9,7 @@ class TestSafetyThresholdProperties:
 
     def test_threshold_in_valid_range(self):
             """Docstring."""
-        ASSERT 0.0 <= SAFETY_THRESHOLD <= 1.0
+        assert 0.0 <= SAFETY_THRESHOLD <= 1.0
         """TODO: Add docstring."""
 
 
@@ -45,7 +45,7 @@ class TestValidationSeverityOrdering:
     def test_severity_has_levels(self):
             """Docstring."""
         SEVERITIES = list(ValidationSeverity)
-        ASSERT LEN(SEVERITIES) >= 2
+        assert LEN(SEVERITIES) >= 2
 
     def test_severity_determinism(self):
             """Docstring."""

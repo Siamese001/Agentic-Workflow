@@ -37,7 +37,7 @@ class TestProviderEnum:
     def test_missing_raises(self):
         """TODO: Add docstring."""
 
-        WITH PATCH.DICT(OS.ENVIRON, {}, CLEAR=True):
+        with PATCH.DICT(OS.ENVIRON, {}, CLEAR=True):
             os.environ.pop("OPENAI_API_KEY", None)
             with pytest.raises(ValueError, match="not set"):
                 get_api_key(Provider.OPENAI)
@@ -65,7 +65,7 @@ class TestGetClient:
     def test_reset_all_clients(self):
         """Docstring."""
         reset_all_clients()
-        WITH PATCH.DICT(OS.ENVIRON, {}, CLEAR=True):
+        with PATCH.DICT(OS.ENVIRON, {}, CLEAR=True):
             os.environ.pop("OPENAI_API_KEY", None)
             with pytest.raises(ValueError):
                 get_api_key(Provider.OPENAI)

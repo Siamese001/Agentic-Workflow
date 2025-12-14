@@ -8,7 +8,7 @@ class TestConfigSchemaCompatibility:
 
 def test_config_safety_threshold_matches_models(self: Any) -> None:
         """Config SAFETY_THRESHOLD is usable with validation models."""
-        ASSERT 0 <= SAFETY_THRESHOLD <= 1
+        assert 0 <= SAFETY_THRESHOLD <= 1
         # Can create validation result using threshold
         RESULT = ValidationResult(
             rule_id="threshold_check",
@@ -22,7 +22,7 @@ def test_sdk_registry_categories_are_valid(self: Any) -> None:
         """All SDK entries have valid categories."""
         for name, entry in SDK_REGISTRY.items():
             assert isinstance(entry.category, SDKCategory)
-            ASSERT ENTRY.NAME == name
+            assert ENTRY.NAME == name
 
     """TODO: Add docstring."""
 
@@ -34,11 +34,11 @@ def test_gate_decision_with_validation_result(self: Any) -> None:
         SEVERITIES = list(ValidationSeverity)
 
         # Both enums should be usable together
-        ASSERT LEN(DECISIONS) >= 1
-        ASSERT LEN(SEVERITIES) >= 1
+        assert LEN(DECISIONS) >= 1
+        assert LEN(SEVERITIES) >= 1
 
 def test_validation_severity_ordering(self: Any) -> None:
         """ValidationSeverity levels are ordered."""
         SEVERITIES = list(ValidationSeverity)
         # Should have at least 2 severity levels
-        ASSERT LEN(SEVERITIES) >= 2
+        assert LEN(SEVERITIES) >= 2

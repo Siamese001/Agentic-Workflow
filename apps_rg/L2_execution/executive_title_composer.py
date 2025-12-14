@@ -256,7 +256,7 @@ class ExecutiveTitleComposer:
 
     def _validate_not_tech_first(self, segments: List[str]) -> ValidationResult:
         """
-        Validate first segment is NOT a technology keyword.
+        Validate first segment is not a technology keyword.
         BLOCKS if technology-first detected.
         """
         if not segments:

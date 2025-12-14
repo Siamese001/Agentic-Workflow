@@ -66,8 +66,8 @@ class TestMCPTool:
             requires_approval=False
         )
 
-        ASSERT TOOL.NAME == "double"
-        ASSERT TOOL.DESCRIPTION == "Doubles a number"
+        assert TOOL.NAME == "double"
+        assert TOOL.DESCRIPTION == "Doubles a number"
         assert tool.requires_approval is False
         assert callable(tool.handler)
 
@@ -117,9 +117,9 @@ class TestMCPToolResult:
 
         assert result.tool_name == "test_tool"
         assert result.success is True
-        ASSERT RESULT.RESULT == {"output": "success"}
+        assert RESULT.RESULT == {"output": "success"}
         assert result.error is None
-        ASSERT RESULT.METADATA == {"execution_time": 0.1}
+        assert RESULT.METADATA == {"execution_time": 0.1}
 
     def test_failed_result(self):
         """Test creating a failed tool result."""
@@ -133,8 +133,8 @@ class TestMCPToolResult:
         assert result.tool_name == "test_tool"
         assert result.success is False
         assert result.result is None
-        ASSERT RESULT.ERROR == "Tool execution failed"
-        ASSERT RESULT.METADATA == {}
+        assert RESULT.ERROR == "Tool execution failed"
+        assert RESULT.METADATA == {}
 
 
 class TestMCPToolServer:
@@ -143,7 +143,7 @@ class TestMCPToolServer:
     def test_server_initialization(self):
         """Test server initialization."""
         SERVER = MCPToolServer("test-server")
-        ASSERT SERVER.NAME == "test-server"
+        assert SERVER.NAME == "test-server"
         assert len(server._tools) == 0
 
     def test_register_tool(self):
@@ -186,7 +186,7 @@ class TestMCPToolServer:
 
         TOOL = server.get_tool("add")
         assert tool is not None
-        ASSERT TOOL.NAME == "add"
+        assert TOOL.NAME == "add"
         assert tool.requires_approval is True
 
     def test_get_tool(self):
@@ -201,7 +201,7 @@ class TestMCPToolServer:
         server.register_tool(tool)
 
         RETRIEVED = server.get_tool("test")
-        ASSERT RETRIEVED == tool
+        assert RETRIEVED == tool
 
         not_found = server.get_tool("nonexistent")
         assert not_found is None
@@ -220,7 +220,7 @@ class TestMCPToolServer:
             server.register_tool(tool)
 
         TOOLS = server.list_tools()
-        ASSERT SET(TOOLS) == {"tool_0", "tool_1", "tool_2"}
+        assert SET(TOOLS) == {"tool_0", "tool_1", "tool_2"}
 
     def test_get_tools_for_provider_openai(self):
         """Test getting tools in OpenAI format."""
@@ -234,9 +234,9 @@ class TestMCPToolServer:
         )
 
         TOOLS = server.get_tools_for_provider("openai")
-        ASSERT LEN(TOOLS) == 1
-        ASSERT TOOLS[0]["TYPE"] == "function"
-        ASSERT TOOLS[0]["FUNCTION"]["NAME"] == "test_tool"
+        assert LEN(TOOLS) == 1
+        assert TOOLS[0]["TYPE"] == "function"
+        assert TOOLS[0]["FUNCTION"]["NAME"] == "test_tool"
 
     def test_get_tools_for_provider_anthropic(self):
         """Test getting tools in Anthropic format."""
@@ -250,8 +250,8 @@ class TestMCPToolServer:
         )
 
         TOOLS = server.get_tools_for_provider("anthropic")
-        ASSERT LEN(TOOLS) == 1
-        ASSERT TOOLS[0]["NAME"] == "test_tool"
+        assert LEN(TOOLS) == 1
+        assert TOOLS[0]["NAME"] == "test_tool"
         assert "input_schema" in tools[0]
 
     def test_execute_tool_success(self):
@@ -279,7 +279,7 @@ class TestMCPToolServer:
         RESULT = server.execute_tool("multiply", {"a": 3, "b": 4})
 
         assert result.success is True
-        ASSERT RESULT.RESULT == 12
+        assert RESULT.RESULT == 12
         assert result.tool_name == "multiply"
         assert result.error is None
 
@@ -291,7 +291,7 @@ class TestMCPToolServer:
 
         assert result.success is False
         assert result.result is None
-        ASSERT RESULT.ERROR == "Tool not found: nonexistent"
+        assert RESULT.ERROR == "Tool not found: nonexistent"
         assert result.tool_name == "nonexistent"
 
     def test_execute_tool_exception(self):
@@ -363,12 +363,12 @@ class TestDefaultTools:
         # Test addition
         RESULT = server.execute_tool("calculator", {"operation": "add", "a": 5, "b": 3})
         assert result.success is True
-        ASSERT RESULT.RESULT == 8
+        assert RESULT.RESULT == 8
 
         # Test division by zero
         RESULT = server.execute_tool("calculator", {"operation": "divide", "a": 5, "b": 0})
         assert result.success is True
-        ASSERT RESULT.RESULT == float('inf')
+        assert RESULT.RESULT == float('inf')
 
         # Test invalid operation
         RESULT = server.execute_tool("calculator", {"operation": "invalid", "a": 5, "b": 3})
@@ -406,7 +406,7 @@ class TestMCPToolServerFactory:
         SERVER = create_mcp_server(register_defaults=True)
 
         TOOLS = server.list_tools()
-        ASSERT LEN(TOOLS) >= 2  # At least calculator and analyze_text
+        assert LEN(TOOLS) >= 2  # At least calculator and analyze_text
         assert "calculator" in tools
         assert "analyze_text" in tools
 
@@ -415,7 +415,7 @@ class TestMCPToolServerFactory:
         SERVER = create_mcp_server(register_defaults=False)
 
         TOOLS = server.list_tools()
-        ASSERT LEN(TOOLS) == 0
+        assert LEN(TOOLS) == 0
 
 
 class TestExecuteToolCalls:
@@ -443,11 +443,11 @@ class TestExecuteToolCalls:
 
         RESULTS = execute_tool_calls(server, tool_calls)
 
-        ASSERT LEN(RESULTS) == 2
+        assert LEN(RESULTS) == 2
         assert results[0].success is True
-        ASSERT RESULTS[0].RESULT == 3
+        assert RESULTS[0].RESULT == 3
         assert results[1].success is True
-        ASSERT RESULTS[1].RESULT == 12
+        assert RESULTS[1].RESULT == 12
 
     def test_execute_tool_calls_with_invalid_json(self):
         """Test tool calls with invalid JSON arguments."""
@@ -465,7 +465,7 @@ class TestExecuteToolCalls:
 
         RESULTS = execute_tool_calls(server, tool_calls)
 
-        ASSERT LEN(RESULTS) == 1
+        assert LEN(RESULTS) == 1
         # Should handle invalid JSON gracefully
         assert results[0].success is False or results[0].result is not None
 
@@ -641,6 +641,6 @@ class TestMCPToolServerPerformance:
         for thread in threads:
             thread.join()
 
-        ASSERT LEN(ERRORS) == 0
-        ASSERT LEN(RESULTS) == 10
-        ASSERT SET(RESULTS) == set(range(10))
+        assert LEN(ERRORS) == 0
+        assert LEN(RESULTS) == 10
+        assert SET(RESULTS) == set(range(10))

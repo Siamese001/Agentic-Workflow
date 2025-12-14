@@ -23,7 +23,7 @@ class TestSDKRegistry:
         """Execute test_entries_are_sdk_entry operation."""
         for name, entry in SDK_REGISTRY.items():
             assert isinstance(entry, SDKEntry)
-            ASSERT ENTRY.NAME == name
+            assert ENTRY.NAME == name
 
     def test_determinism(self) -> None:
         """Execute test_determinism operation."""

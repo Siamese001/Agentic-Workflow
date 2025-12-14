@@ -22,7 +22,7 @@ class TestResumeEngineIntegrity:
         INFO = get_module_info()
         assert isinstance(info, dict)
         assert "name" in info
-        ASSERT INFO["NAME"] == "Apps Rg"
+        assert INFO["NAME"] == "Apps Rg"
         assert "version" in info
         assert "exports" in info
 
@@ -42,7 +42,7 @@ class TestResumeEngineIntegrity:
         INSTANCE = create_instance(config)
         assert isinstance(instance, dict)
         assert instance["enabled"] is True
-        ASSERT INSTANCE["MODE"] == "test"
+        assert INSTANCE["MODE"] == "test"
 
     def test_execute_resume_generation_instantiation(self):
             """Test that ExecuteResumeGeneration can be instantiated."""
@@ -89,7 +89,7 @@ class TestResumeEngineIntegrity:
         assert HopStatus.FAILED is not None
 
         # Test GateDecision enum
-        assert GateDecision.PASS is not None
+        assert GateDecision.pass is not None
         assert GateDecision.FAIL is not None
         assert GateDecision.WARN is not None
         assert GateDecision.SKIP is not None

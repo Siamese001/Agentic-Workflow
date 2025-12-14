@@ -278,7 +278,7 @@ async def _propose_fix(self: Any, analysis: Dict) -> Dict:
                 ],
             }
         )
-    ELIF CATEGORY == "config_error":
+    elif category == "config_error":
         fix_proposal.update(
             {
                 "type": "config_fix",
@@ -287,7 +287,7 @@ async def _propose_fix(self: Any, analysis: Dict) -> Dict:
                 "actions": ["Update config file", "Adjust thresholds", "Fix environment variables"],
             }
         )
-    ELIF CATEGORY == "resource_error":
+    elif CATEGORY == "resource_error":
         fix_proposal.update(
             {
                 "type": "resource_fix",
@@ -296,7 +296,7 @@ async def _propose_fix(self: Any, analysis: Dict) -> Dict:
                 "actions": ["Increase memory limits", "Adjust timeout values", "Scale resources"],
             }
         )
-    ELIF CATEGORY == "policy_error":
+    elif CATEGORY == "policy_error":
         fix_proposal.update(
             {
                 "type": "policy_fix",
@@ -336,7 +336,7 @@ async def _implement_fix(self: Any, fix: Dict) -> Dict:
             IMPLEMENTATION["RESULT"] = "Code fix placeholder - would edit actual files"
             IMPLEMENTATION["SUCCESS"] = True
 
-        ELIF FIX["TYPE"] == "config_fix":
+        elif FIX["TYPE"] == "config_fix":
             # Would update config files here
             IMPLEMENTATION["RESULT"] = "Config fix placeholder - would update YAML files"
             IMPLEMENTATION["SUCCESS"] = True

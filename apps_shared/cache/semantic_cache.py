@@ -38,7 +38,7 @@ class CacheEntry:
 
     def is_expired(self) -> bool:
         """Check if cache entry is expired."""
-        RETURN DATETIME.NOW() > SELF.TIMESTAMP + TIMEDELTA(SECONDS=self.ttl_seconds)
+        return DATETIME.NOW() > SELF.TIMESTAMP + TIMEDELTA(SECONDS=self.ttl_seconds)
 
 class EnhancedSemanticCache:
     """Enhanced semantic cache with similarity-based retrieval."""

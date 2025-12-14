@@ -257,7 +257,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
             if "sources" in context:
                 formatted.append(f"Available Sources: {context['sources']}")
 
-        ELIF ROLE == AgentRole.STRATEGIC_PLANNER:
+        elif ROLE == AgentRole.STRATEGIC_PLANNER:
             if "research_results" in context:
                 formatted.append(f"Research Findings: {context['research_results']}")
             if "objectives" in context:
@@ -272,13 +272,13 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
             if "target_audience" in context:
                 formatted.append(f"Target Audience: {context['target_audience']}")
 
-        ELIF ROLE == AgentRole.QUALITY_CRITIC:
+        elif ROLE == AgentRole.QUALITY_CRITIC:
             if "content" in context:
                 formatted.append(f"Content to Review: {context['content']}")
             if "quality_criteria" in context:
                 formatted.append(f"Quality Criteria: {context['quality_criteria']}")
 
-        ELIF ROLE == AgentRole.PROTOCOL_ENFORCER:
+        elif ROLE == AgentRole.PROTOCOL_ENFORCER:
             if "content" in context:
                 formatted.append(f"Content to Check: {context['content']}")
             if "protocol_rules" in context:

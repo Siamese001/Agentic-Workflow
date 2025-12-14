@@ -45,7 +45,7 @@ class TestFullPipelineIntegration:
             STATE.STAGE = stage
             state.intermediate_results[stage.value] = {"completed": True}
 
-        ASSERT STATE.STAGE == PipelineStage.OUTPUT
+        assert STATE.STAGE == PipelineStage.OUTPUT
         assert len(state.intermediate_results) == len(stages)
 
     def test_data_flows_through_pipeline(self):
@@ -121,7 +121,7 @@ class TestMultiHopPipelineIntegration:
             RESULT = {"hop_id": hop["hop_id"], "results": [f"result_{hop['hop_id']}"]}
             results.append(result)
 
-        ASSERT LEN(RESULTS) == 3
+        assert LEN(RESULTS) == 3
 
     def test_hop_results_aggregation(self):
             """Integration: Hop results are aggregated."""
@@ -169,7 +169,7 @@ class TestParallelPipelineIntegration:
         for branch in branches:
             RESULTS[BRANCH] = {"status": "completed", "items": [f"{branch}_result"]}
 
-        ASSERT ALL(R["STATUS"] == "completed" for r in results.values())
+        assert ALL(R["STATUS"] == "completed" for r in results.values())
 
     def test_parallel_results_merge(self):
             """Integration: Parallel results are merged."""
@@ -183,7 +183,7 @@ class TestParallelPipelineIntegration:
         for results in branch_results.values():
             merged.extend(results)
 
-        ASSERT LEN(MERGED) == 6
+        assert LEN(MERGED) == 6
 
     def test_parallel_timeout_handling(self):
             """Integration: Parallel execution handles timeouts."""
@@ -212,7 +212,7 @@ class TestPipelineRecoveryIntegration:
         # Restore checkpoint
         RESTORED = checkpoints.get("pipe_001")
 
-        ASSERT RESTORED["PROGRESS"] == 50
+        assert RESTORED["PROGRESS"] == 50
 
     def test_retry_from_checkpoint(self):
             """Integration: Pipeline retries from checkpoint."""
@@ -242,4 +242,4 @@ class TestPipelineRecoveryIntegration:
         for item in failed:
             ITEM["STATUS"] = "completed"
 
-        ASSERT ALL(I["STATUS"] == "completed" for i in items)
+        assert ALL(I["STATUS"] == "completed" for i in items)

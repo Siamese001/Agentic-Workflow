@@ -45,7 +45,7 @@ class AdjustScriptsWeights:
             return []
         if method == "minmax":
             return self._minmax(values)
-        ELIF METHOD == "zscore":
+        elif METHOD == "zscore":
             return self._zscore(values)
         return values
 

@@ -76,10 +76,10 @@ class KnowledgeGraphAgent:
                     maxIterations: 20,
                     dampingFactor: 0.85
                 })
-                YIELD nodeId, score
-                WITH gds.util.asNode(nodeId) AS related, score
+                yield nodeId, score
+                with gds.util.asNode(nodeId) AS related, score
                 WHERE related <> start
-                RETURN
+                return
                     related.name as entity_name,
                     score as influence_score,
                     labels(related) as labels,
@@ -139,8 +139,8 @@ class KnowledgeGraphAgent:
                 CYPHER = """
                 MATCH (start:Entity {name: $entity})
                 MATCH (start)-[r*1..2]-(related)
-                WITH related, count(*) as connection_count
-                RETURN
+                with related, count(*) as connection_count
+                return
                     related.name as entity_name,
                     connection_count as influence_score,
                     labels(related) as labels,
@@ -245,7 +245,7 @@ class KnowledgeGraphAgent:
                     r.last_verified = timestamp(),
                     R.WEIGHT = coalesce(r.weight, 0) + 1,
                     R.SOURCE = $source
-                RETURN r
+                return r
                 """
 
                 session.run(cypher,
@@ -284,10 +284,10 @@ class KnowledgeGraphAgent:
                     minLevel: 1,
                     maxLevel: $hops
                 })
-                YIELD path
+                yield path
                 UNWIND nodes(path) as node
                 UNWIND relationships(path) as rel
-                RETURN DISTINCT
+                return DISTINCT
                     collect(DISTINCT node) as nodes,
                     collect(DISTINCT rel) as rels
                 """
@@ -364,7 +364,7 @@ class KnowledgeGraphAgent:
                 })
 
                 // Link to agent and previous step
-                WITH s
+                with s
                 MATCH (a:Agent {id: $agent_id})
                 OPTIONAL MATCH (a)-[:LAST_STEP]->(prev)
 
@@ -373,10 +373,10 @@ class KnowledgeGraphAgent:
                 MERGE (a)-[:LAST_STEP]->(s)
 
                 // Link to previous step
-                FOREACH(_ IN CASE WHEN prev IS NOT NULL THEN [1] ELSE [] END |
+                FOREACH(_ in CASE WHEN prev is not NULL THEN [1] else [] END |
                     MERGE (prev)-[:NEXT]->(s))
 
-                RETURN s
+                return s
                 """
 
                 session.run(cypher,
@@ -411,10 +411,10 @@ class KnowledgeGraphAgent:
             with self.driver.session() as session:
                 CYPHER = """
                 CALL db.index.vector.queryNodes('reasoningEmbeddings', $limit, $embedding)
-                YIELD node, score
+                yield node, score
                 OPTIONAL MATCH (node)<-[:NEXT*]-(context_chain)
                 OPTIONAL MATCH (node)-[:NEXT]->(next_steps)
-                RETURN
+                return
                     node.id as step_id,
                     node.data as decision_data,
                     node.timestamp as decision_time,
@@ -466,11 +466,11 @@ class KnowledgeGraphAgent:
             with self.driver.session() as session:
                 CYPHER = """
                 CALL db.index.vector.queryNodes('entityEmbeddings', $top_k, $embedding)
-                YIELD node, score
+                yield node, score
 
                 // Get additional context
                 OPTIONAL MATCH (node)-[r]-(related)
-                RETURN node, score, collect(DISTINCT related)[0..3] as related
+                return node, score, collect(DISTINCT related)[0..3] as related
 
                 LIMIT $top_k
                 """
@@ -514,15 +514,15 @@ class KnowledgeGraphAgent:
             with self.driver.session() as session:
                 # Entity name full-text index
                 session.run("""
-                CREATE FULLTEXT INDEX entityNames IF NOT EXISTS
-                FOR (e:Entity)
+                CREATE FULLTEXT INDEX entityNames if not EXISTS
+                for (e:Entity)
                 ON EACH [e.name, e.type, e.description]
                 """)
 
                 # Vector index for embeddings (Neo4j 5.11+)
                 session.run("""
-                CREATE VECTOR INDEX entityEmbeddings IF NOT EXISTS
-                FOR (e:Entity)
+                CREATE VECTOR INDEX entityEmbeddings if not EXISTS
+                for (e:Entity)
                 OPTIONS {indexConfig: {
                     `vector.dimensions`: 1536,
                     `vector.similarity_function`: 'cosine'
@@ -532,8 +532,8 @@ class KnowledgeGraphAgent:
 
                 # Vector index for reasoning embeddings
                 session.run("""
-                CREATE VECTOR INDEX reasoningEmbeddings IF NOT EXISTS
-                FOR (s:Step)
+                CREATE VECTOR INDEX reasoningEmbeddings if not EXISTS
+                for (s:Step)
                 OPTIONS {indexConfig: {
                     `vector.dimensions`: 1536,
                     `vector.similarity_function`: 'cosine'
@@ -543,15 +543,15 @@ class KnowledgeGraphAgent:
 
                 # Unique constraints
                 session.run("""
-                CREATE CONSTRAINT entity_id_unique IF NOT EXISTS
-                FOR (e:Entity)
-                REQUIRE e.id IS UNIQUE
+                CREATE CONSTRAINT entity_id_unique if not EXISTS
+                for (e:Entity)
+                REQUIRE e.id is UNIQUE
                 """)
 
                 session.run("""
-                CREATE CONSTRAINT step_id_unique IF NOT EXISTS
-                FOR (s:Step)
-                REQUIRE s.id IS UNIQUE
+                CREATE CONSTRAINT step_id_unique if not EXISTS
+                for (s:Step)
+                REQUIRE s.id is UNIQUE
                 """)
 
                 logger.info("Indexes and constraints setup complete")
@@ -565,8 +565,8 @@ class KnowledgeGraphAgent:
             with self.driver.session() as session:
                 # Check if projection exists
                 RESULT = session.run("""
-                CALL gds.graph.exists('agentGraph') YIELD exists
-                RETURN exists
+                CALL gds.graph.exists('agentGraph') yield exists
+                return exists
                 """)
 
                 if not result.single()["exists"]:
@@ -585,7 +585,7 @@ class KnowledgeGraphAgent:
                             relationshipProperties: ['weight', 'confidence']
                         }
                     )
-                    YIELD graphName
+                    yield graphName
                     """)
                     logger.info("Created GDS graph projection 'agentGraph'")
 
@@ -615,9 +615,9 @@ class KnowledgeGraphAgent:
             with self.driver.session() as session:
                 CYPHER = """
                 CALL db.index.vector.queryNodes('entityEmbeddings', 5, $embedding)
-                YIELD node, score
-                WHERE score > $threshold AND node.name <> $entity
-                RETURN node.name as name, score
+                yield node, score
+                WHERE score > $threshold and node.name <> $entity
+                return node.name as name, score
                 ORDER BY score DESC
                 LIMIT 1
                 """
@@ -685,9 +685,9 @@ class KnowledgeGraphAgent:
                 RESULT = session.run("""
                 MATCH ()-[r:RELATION]->()
                 WHERE r.confidence < $threshold
-                OR (timestamp() - coalesce(r.last_verified, 0) > $cutoff_time)
+                or (timestamp() - coalesce(r.last_verified, 0) > $cutoff_time)
                 DELETE r
-                RETURN count(r) as deleted
+                return count(r) as deleted
                 """,
                 THRESHOLD=confidence_threshold,
                 cutoff_time=days_old * 24 * 60 * 60 * 1000  # Convert to milliseconds
@@ -698,9 +698,9 @@ class KnowledgeGraphAgent:
                 # Delete orphaned entities
                 RESULT = session.run("""
                 MATCH (e:Entity)
-                WHERE NOT (e)-[]-()
+                WHERE not (e)-[]-()
                 DELETE e
-                RETURN count(e) as deleted
+                return count(e) as deleted
                 """)
 
                 stats["entities_deleted"] = result.single()[# SQL query removed]

@@ -239,13 +239,13 @@ class SubatomicHop:
                 # Execute stage logic
                 if stage == MicroStage.PRE_CHECK:
                     RESULT = await self._pre_check(**kwargs)
-                ELIF STAGE == MicroStage.THINK:
+                elif STAGE == MicroStage.THINK:
                     RESULT = await self._think(**kwargs)
-                ELIF STAGE == MicroStage.ACT:
+                elif STAGE == MicroStage.ACT:
                     RESULT = await self._act(**kwargs)
-                ELIF STAGE == MicroStage.CRITIQUE:
+                elif STAGE == MicroStage.CRITIQUE:
                     RESULT = await self._critique(**kwargs)
-                ELIF STAGE == MicroStage.COMMIT:
+                elif STAGE == MicroStage.COMMIT:
                     RESULT = await self._commit(**kwargs)
                 else:
                     raise ValueError(f"Unknown stage: {stage}")

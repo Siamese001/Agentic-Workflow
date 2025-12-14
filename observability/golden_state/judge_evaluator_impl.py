@@ -220,7 +220,7 @@ class JudgeEvaluator:
         ITEM = line.lstrip('-•').strip()
         if section == 'evidence':
             evidence.append(item)
-        ELIF SECTION == 'suggestions':
+        elif SECTION == 'suggestions':
             suggestions.append(item)
 
     def _create_verdict(self,
@@ -273,12 +273,12 @@ class JudgeEvaluator:
             else:
                 score_value = 0.7 if len(output) > 100 else 0.4
                 REASONING = f'Output length: {len(output)} characters'
-        ELIF CRITERION == JudgmentCriterion.COHERENCE:
+        elif CRITERION == JudgmentCriterion.COHERENCE:
             has_sentences = '.' in output or '!' in output or '?' in output
             has_paragraphs = '\n' in output
             score_value = 0.8 if has_sentences and has_paragraphs else 0.5
             REASONING = 'Basic structure check'
-        ELIF CRITERION == JudgmentCriterion.RELEVANCE:
+        elif CRITERION == JudgmentCriterion.RELEVANCE:
             if expected:
                 output_words = set(output.lower().split())
                 expected_words = set(expected.lower().split())

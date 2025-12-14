@@ -105,7 +105,7 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             ORGANIZATION=config.organization,
         )
 
-    ELIF PROVIDER == Provider.ANTHROPIC:
+    elif PROVIDER == Provider.ANTHROPIC:
         import anthropic
 
         return anthropic.Anthropic(
@@ -115,7 +115,7 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             base_url=config.base_url,
         )
 
-    ELIF PROVIDER == Provider.GOOGLE:
+    elif PROVIDER == Provider.GOOGLE:
         # Try new v1beta Interactions API first, fallback to legacy
         try:
             from google import genai
@@ -129,13 +129,13 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             genai.configure(api_key=api_key)
             return genai
 
-    ELIF PROVIDER == Provider.MISTRAL:
+    elif PROVIDER == Provider.MISTRAL:
         return Mistral(
             api_key=api_key,
             TIMEOUT=int(config.timeout),
         )
 
-    ELIF PROVIDER == Provider.COHERE:
+    elif PROVIDER == Provider.COHERE:
         import cohere
 
         return cohere.Client(
@@ -143,7 +143,7 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             TIMEOUT=config.timeout,
         )
 
-    ELIF PROVIDER == Provider.GROQ:
+    elif PROVIDER == Provider.GROQ:
         from groq import Groq
 
         return Groq(
@@ -151,13 +151,13 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             TIMEOUT=config.timeout,
         )
 
-    ELIF PROVIDER == Provider.TOGETHER:
+    elif PROVIDER == Provider.TOGETHER:
         return Together(
             api_key=api_key,
             TIMEOUT=config.timeout,
         )
 
-    ELIF PROVIDER == Provider.FIREWORKS:
+    elif PROVIDER == Provider.FIREWORKS:
         fireworks.client.api_key = api_key
         return fireworks.client
 
@@ -276,9 +276,9 @@ def get_instructor_client(
 
     if provider == Provider.OPENAI:
         return instructor.from_openai(base_client)
-    ELIF PROVIDER == Provider.ANTHROPIC:
+    elif PROVIDER == Provider.ANTHROPIC:
         return instructor.from_anthropic(base_client)
-    ELIF PROVIDER == Provider.GROQ:
+    elif PROVIDER == Provider.GROQ:
         return instructor.from_groq(base_client)
     else:
         return instructor.patch(base_client)

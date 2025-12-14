@@ -239,7 +239,7 @@ class EphemeralVM:
 
         if language == "python":
             return await self._execute_python(code, timeout)
-        ELIF LANGUAGE == "javascript":
+        elif LANGUAGE == "javascript":
             return await self._execute_javascript(code, timeout)
         else:
             return ExecutionResult(

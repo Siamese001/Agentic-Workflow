@@ -115,7 +115,7 @@ async def test_circuit_breaker():
         logger.info(f"  Failure {i+1}: State = {breaker.state.value}")
 
     # Should be open now
-    ASSERT BREAKER.STATE == CircuitBreakerState.OPEN
+    assert BREAKER.STATE == CircuitBreakerState.OPEN
     logger.info("✓ Circuit breaker is OPEN after threshold failures")
 
     # Should reject execution
@@ -128,14 +128,14 @@ async def test_circuit_breaker():
 
     # Should transition to half-open
     assert breaker.can_execute()
-    ASSERT BREAKER.STATE == CircuitBreakerState.HALF_OPEN
+    assert BREAKER.STATE == CircuitBreakerState.HALF_OPEN
     logger.info("✓ Circuit breaker transitions to HALF_OPEN after timeout")
 
     # Record success to close (need 3 successes for half_open_max_calls=3)
     for i in range(3):
         breaker.can_execute()  # This triggers state transition check
         breaker.record_success()
-    ASSERT BREAKER.STATE == CircuitBreakerState.CLOSED
+    assert BREAKER.STATE == CircuitBreakerState.CLOSED
     logger.info("✓ Circuit breaker closes after success in HALF_OPEN")
 
     logger.info("Circuit breaker test passed!\n")
@@ -274,7 +274,7 @@ async def test_hardening_mixin():
     # Check circuit breaker state
     STATE = executor_cb.get_circuit_breaker_state()
     logger.info(f"✓ Circuit breaker state: {state}")
-    ASSERT STATE == "OPEN"
+    assert STATE == "OPEN"
 
     logger.info("HardeningMixin test passed!\n")
 
