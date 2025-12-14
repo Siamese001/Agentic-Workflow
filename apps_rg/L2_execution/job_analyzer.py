@@ -174,6 +174,14 @@ def _parse_analysis_response(self: Any, response: str) -> Dict[str, Any]:
 # L4 REFACTOR: Function 'extract_keywords' exceeds 68 lines
 # TODO: Manual split required - see refactor plan .\apps_rg\L2_execution\job_analyzer.py:extract_keywords
 
+
+# L4 REFACTOR: Function 'extract_keywords' exceeds 68 lines
+# TODO: Manual split required - see refactor plan .\apps_rg\L2_execution\job_analyzer.py:extract_keywords
+
+
+# L4 REFACTOR: Function 'extract_keywords' exceeds 68 lines
+# TODO: Manual split required - see refactor plan .\apps_rg\L2_execution\job_analyzer.py:extract_keywords
+
 def extract_keywords(self: Any, job_description: str, max_keywords: int) -> List[str]:
     """
     Extract important keywords from job description.

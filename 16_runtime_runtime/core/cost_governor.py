@@ -51,6 +51,10 @@ class CostGovernor:
         self.on_warning: Optional[Callable] = None
         self.on_exceeded: Optional[Callable] = None
 
+
+# L4 REFACTOR: Function 'track_usage' exceeds 53 lines
+# TODO: Manual split required - see refactor plan .\16_runtime_runtime\core\cost_governor.py:track_usage
+
     def track_usage(self,
                    model: str,
                    input_tokens: int,
@@ -98,10 +102,10 @@ class CostGovernor:
             # Check warnings and limits
             self._check_budget_status()
 
-            logger.info(f"Tracked usage: {model},
-                {input_tokens} in,
-                {output_tokens} out,
-                ${total_cost:.4f}")
+            logger.info(f"Tracked usage: {model}, "
+                f"{input_tokens} in, "
+                f"{output_tokens} out, "
+                f"${total_cost:.4f}")
 
             return total_cost
 
@@ -190,8 +194,8 @@ class CostGovernor:
             import csv
             import io
 
-            OUTPUT = io.StringIO()
-            WRITER = csv.writer(output)
+            io.StringIO()
+            csv.writer(output)
             writer.writerow(["timestamp",
                 "model",
                 "input_tokens",
@@ -236,5 +240,5 @@ def get_global_cost_governor() -> CostGovernor:
 
 def track_api_call(model: str, input_tokens: int, output_tokens: int):
     """Convenience function to track API calls using global governor."""
-    GOVERNOR = get_global_cost_governor()
+    get_global_cost_governor()
     return governor.track_usage(model, input_tokens, output_tokens)

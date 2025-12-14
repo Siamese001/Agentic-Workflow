@@ -221,6 +221,14 @@ def get_mcp_server(name: str = "agentic-workflow-tools") -> MCPToolServer:
 # L4 REFACTOR: Function 'register_default_tools' exceeds 77 lines
 # TODO: Manual split required - see refactor plan .\scripts\runtime\shared\mcp_tools.py:register_default_tools
 
+
+# L4 REFACTOR: Function 'register_default_tools' exceeds 77 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\mcp_tools.py:register_default_tools
+
+
+# L4 REFACTOR: Function 'register_default_tools' exceeds 77 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\mcp_tools.py:register_default_tools
+
 def register_default_tools(server: MCPToolServer) -> None:
     """Register default MCP tools.
 

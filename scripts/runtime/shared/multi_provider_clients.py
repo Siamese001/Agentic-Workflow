@@ -79,6 +79,14 @@ def get_api_key(provider: Provider) -> str:
 # L4 REFACTOR: Function '_create_client' exceeds 88 lines
 # TODO: Manual split required - see refactor plan .\scripts\runtime\shared\multi_provider_clients.py:_create_client
 
+
+# L4 REFACTOR: Function '_create_client' exceeds 88 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\multi_provider_clients.py:_create_client
+
+
+# L4 REFACTOR: Function '_create_client' exceeds 88 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\multi_provider_clients.py:_create_client
+
 def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) -> Any:
     """Create a new client instance for provider.
 

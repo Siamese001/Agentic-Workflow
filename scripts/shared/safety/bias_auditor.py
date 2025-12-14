@@ -98,6 +98,14 @@ def __init__(self: Any, enable_logging: bool) -> None:
 # L4 REFACTOR: Function 'audit_content' exceeds 65 lines
 # TODO: Manual split required - see refactor plan .\scripts\shared\safety\bias_auditor.py:audit_content
 
+
+# L4 REFACTOR: Function 'audit_content' exceeds 65 lines
+# TODO: Manual split required - see refactor plan .\scripts\shared\safety\bias_auditor.py:audit_content
+
+
+# L4 REFACTOR: Function 'audit_content' exceeds 65 lines
+# TODO: Manual split required - see refactor plan .\scripts\shared\safety\bias_auditor.py:audit_content
+
 def audit_content(self: Any, content: str) -> BiasResult:
     """Check for biased language patterns.
 
