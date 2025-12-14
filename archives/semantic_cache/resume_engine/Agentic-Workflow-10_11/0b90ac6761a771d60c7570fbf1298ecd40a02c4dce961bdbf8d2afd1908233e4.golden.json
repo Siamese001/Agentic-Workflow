@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom pydantic import BaseModel, Field\nfrom core.models.models import ContextBudget\nclass ContextProfile(BaseModel):\n\"\"\"Profile capturing context budget hints used by planning and routing.\"\"\"\ncontext_budget: ContextBudget = Field(default_factory=ContextBudget)",
-  "normalized_signature": "class:ContextProfile",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

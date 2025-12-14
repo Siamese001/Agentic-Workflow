@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nModel routing cache for r\u00e9sum\u00e9 processing workflows.\nProvides efficient model choice caching to optimize r\u00e9sum\u00e9 improvement performance.\n\"\"\"\nfrom typing import Dict, Tuple\nfrom .models import ModelChoice, RoutingContext\n_CACHE: Dict[Tuple[str, str, str], ModelChoice] = {}\ndef _key(ctx: RoutingContext) -> Tuple[str, str, str]:\n\"\"\"\nGenerates cache key for r\u00e9sum\u00e9 processing model routing.\nEnsures consistent cache indexing for optimal r\u00e9sum\u00e9 improvement performance.\n\"\"\"\nprofile_name = ctx.execution_profile.name if ctx.execution_profile else \"default\"\nreturn (ctx.agent_id, ctx.task_type, profile_name)\ndef get_cached_choice(ctx: RoutingContext) -> ModelChoice | None:\n\"\"\"\nRetrieves cached model choice for r\u00e9sum\u00e9 processing workflows.\nOptimizes performance by avoiding redundant routing decisions for r\u00e9sum\u00e9 improvement.\n\"\"\"\nreturn _CACHE.get(_key(ctx))\ndef set_cached_choice(ctx: RoutingContext, choice: ModelChoice) -> None:\n\"\"\"\nCaches model choice for r\u00e9sum\u00e9 processing workflows.\nEnsures efficient routing for subsequent r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n_CACHE[_key(ctx)] = choice",
-  "normalized_signature": "func:_key;func:get_cached_choice;func:set_cached_choice",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:get_cached_choice,set_cached_choice",
-  "test_coverage": []
-}

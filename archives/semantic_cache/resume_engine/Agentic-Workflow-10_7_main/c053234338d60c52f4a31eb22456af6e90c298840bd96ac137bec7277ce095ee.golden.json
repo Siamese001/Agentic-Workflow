@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"v10.8 agent stack shims that delegate to the existing v10.7 agents.\"\"\"\nfrom .rag_execution_stack import RAGExecutionStack\nfrom .qa_validation_stack import QAValidationStack\nfrom .drafting_execution_stack import DraftingExecutionStack\nfrom .bullet_execution_stack import BulletExecutionStack\nfrom .prompt_builder_stack import PromptBuilderStack\nfrom .strategy_stack import StrategyStackV10_8\nfrom .safety_stack import SafetyStackV10_8\nfrom .hil_stack import HILStackV10_8\nfrom .state_adapter_stack import StateAdapterStack\nfrom .robustness_stack import RobustnessStack\n__all__ = [\n\"RAGExecutionStack\",\n\"QAValidationStack\",\n\"DraftingExecutionStack\",\n\"BulletExecutionStack\",\n\"PromptBuilderStack\",\n\"StrategyStackV10_8\",\n\"SafetyStackV10_8\",\n\"HILStackV10_8\",\n\"StateAdapterStack\",\n\"RobustnessStack\",\n]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"Lightweight workflow graph for system tests.\"\"\"\nfrom __future__ import annotations\nfrom typing import Iterable, List\n_REQUIRED_NODES: List[str] = [\n\"PromptInjectionDetector\",\n\"PIISanitizerAgent\",\n\"QAAgent\",\n\"StrategyAgent\",\n\"RAGAgent\",\n\"DraftingAgent\",\n]\n_EDGES: List[str] = [\n\"PromptInjectionDetector -> PIISanitizerAgent\",\n\"PIISanitizerAgent -> StrategyAgent\",\n\"StrategyAgent -> RAGAgent\",\n\"RAGAgent -> DraftingAgent\",\n\"DraftingAgent -> QAAgent\",\n]\ndef get_nodes() -> Iterable[str]:\n\"\"\"Return the ordered list of workflow nodes.\"\"\"\nreturn list(_REQUIRED_NODES)\ndef get_edges() -> Iterable[str]:\n\"\"\"Return labelled edges in ``node_a -> node_b`` form.\"\"\"\nreturn list(_EDGES)",
-  "normalized_signature": "func:get_nodes;func:get_edges",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:get_nodes,get_edges",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

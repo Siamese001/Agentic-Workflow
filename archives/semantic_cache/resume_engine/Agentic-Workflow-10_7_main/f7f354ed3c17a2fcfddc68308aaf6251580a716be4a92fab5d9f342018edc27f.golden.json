@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Compatibility shim that re-exports the v10.8 RAG execution stack.\"\"\"\nfrom stacks_v10_8.rag_execution import RAGExecutionStack\n__all__ = [\"RAGExecutionStack\"]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

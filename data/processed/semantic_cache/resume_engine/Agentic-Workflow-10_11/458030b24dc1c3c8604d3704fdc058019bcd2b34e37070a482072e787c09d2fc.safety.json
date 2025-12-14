@@ -1,9 +1,0 @@
-{
-  "safety_checks": [],
-  "policy_compliance": [],
-  "security_patterns": [
-    "cryptography"
-  ],
-  "data_handling": [],
-  "access_controls": []
-}
