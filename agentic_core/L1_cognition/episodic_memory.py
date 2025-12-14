@@ -1,0 +1,345 @@
+"""
+Episodic Memory System for Agent Autonomy
+
+Provides long-term memory for agent experiences, allowing agents to
+recall past successes/failures to avoid repeating errors and clone successful strategies.
+"""
+
+import json
+import time
+import logging
+from dataclasses import dataclass, asdict
+from typing import List, Dict, Optional, Any
+import numpy as np
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class Episode:
+    """A single episode in an agent's experience."""
+    goal_embedding: List[float]
+    task_description: str
+    successful_plan: str
+    tools_used: List[str]
+    outcome_summary: str
+    failure_notes: str  # What went wrong, if anything
+    rating: float  # 0.0 to 1.0 (How well did it work?)
+    timestamp: float
+    episode_id: str
+    agent_role: str
+    execution_context: Dict[str, Any]  # Additional context
+
+
+class EpisodicMemory:
+    """
+    Long-term memory for agent experiences.
+    Allows agents to clone successful plans from the past and avoid known pitfalls.
+    
+    Uses a hybrid approach:
+    - In-memory vector index for fast similarity search
+    - BlobStorageAdapter for persistent storage
+    """
+    
+    def __init__(self, storage_adapter, embedder, similarity_threshold: float = 0.85):
+        """
+        Initialize episodic memory.
+        
+        Args:
+            storage_adapter: BlobStorageAdapter for persistence
+            embedder: Embedding function for goals
+            similarity_threshold: Minimum similarity for memory recall
+        """
+        self.storage = storage_adapter
+        self.embedder = embedder
+        self.threshold = similarity_threshold
+        self._episodes: List[Episode] = []
+        self._embedding_matrix: Optional[np.ndarray] = None
+        
+        logger.info(f"Episodic memory initialized (threshold={similarity_threshold})")
+        
+        # Load existing episodes on startup
+        self._load_episodes()
+
+    async def _load_episodes(self):
+        """Load existing episodes from storage."""
+        try:
+            # List all episode files in storage
+            episode_files = await self.storage.list_blobs(prefix="episodes/")
+            
+            for file_key in episode_files:
+                if file_key.endswith('.json'):
+                    data = json.loads(await self.storage.read_blob(file_key))
+                    episode = Episode(**data)
+                    self._episodes.append(episode)
+            
+            if self._episodes:
+                self._rebuild_embedding_matrix()
+                logger.info(f"Loaded {len(self._episodes)} episodes from storage")
+            
+        except Exception as e:
+            logger.error(f"Failed to load episodes: {e}")
+
+    def _rebuild_embedding_matrix(self):
+        """Rebuild the embedding matrix for efficient similarity search."""
+        if self._episodes:
+            self._embedding_matrix = np.array([
+                ep.goal_embedding for ep in self._episodes
+            ])
+        else:
+            self._embedding_matrix = None
+
+    async def recall_relevant_experience(
+        self, 
+        current_task: str, 
+        agent_role: Optional[str] = None,
+        min_rating: float = 0.6
+    ) -> Optional[str]:
+        """
+        Retrieves the 'Lesson Learned' from the most similar past task.
+        
+        Args:
+            current_task: The current task description
+            agent_role: Optional filter for specific agent role
+            min_rating: Minimum success rating to consider
+            
+        Returns:
+            Formatted memory context string or None if no relevant experience
+        """
+        if not self._episodes:
+            return None
+        
+        # Embed the current task
+        query_vec = await self.embedder.embed_query(current_task)
+        query_vec = np.array(query_vec)
+        
+        # Filter episodes by role and rating
+        candidates = []
+        for i, episode in enumerate(self._episodes):
+            if episode.rating >= min_rating:
+                if agent_role is None or episode.agent_role == agent_role:
+                    candidates.append((i, episode))
+        
+        if not candidates:
+            logger.debug(f"No high-rated episodes found for task: {current_task[:50]}...")
+            return None
+        
+        # Calculate similarities
+        best_score = -1.0
+        best_episode = None
+        
+        for idx, episode in candidates:
+            episode_vec = np.array(episode.goal_embedding)
+            
+            # Cosine similarity
+            similarity = np.dot(query_vec, episode_vec) / (
+                np.linalg.norm(query_vec) * np.linalg.norm(episode_vec)
+            )
+            
+            if similarity > best_score and similarity >= self.threshold:
+                best_score = similarity
+                best_episode = episode
+        
+        if best_episode:
+            memory_context = (
+                f"MEMORY RECALL (similarity={best_score:.2f}):\n"
+                f"Previous Task: {best_episode.task_description}\n"
+                f"Successful Plan: {best_episode.successful_plan}\n"
+                f"Tools Used: {', '.join(best_episode.tools_used)}\n"
+                f"Outcome: {best_episode.outcome_summary}\n"
+            )
+            
+            if best_episode.failure_notes:
+                memory_context += f"PITFALLS TO AVOID: {best_episode.failure_notes}\n"
+            
+            logger.info(f"Recalled relevant episode (score={best_score:.2f})")
+            return memory_context
+        
+        return None
+
+    async def commit_episode(
+        self,
+        task: str,
+        plan: str,
+        result: str,
+        tools_used: List[str],
+        rating: float,
+        agent_role: str,
+        execution_context: Optional[Dict[str, Any]] = None,
+        failure_notes: Optional[str] = None
+    ) -> str:
+        """
+        Saves the experience for future self.
+        
+        Args:
+            task: Task description
+            plan: The plan that was executed
+            result: Outcome of the execution
+            tools_used: List of tools used
+            rating: Success rating (0.0 to 1.0)
+            agent_role: Role of the agent
+            execution_context: Additional context
+            failure_notes: What went wrong (if applicable)
+            
+        Returns:
+            Episode ID
+        """
+        # Generate embedding for the task
+        goal_embedding = await self.embedder.embed_query(task)
+        
+        # Create episode
+        episode_id = f"ep_{int(time.time() * 1000)}_{len(self._episodes)}"
+        episode = Episode(
+            goal_embedding=goal_embedding,
+            task_description=task,
+            successful_plan=plan,
+            tools_used=tools_used,
+            outcome_summary=result,
+            failure_notes=failure_notes or "",
+            rating=rating,
+            timestamp=time.time(),
+            episode_id=episode_id,
+            agent_role=agent_role,
+            execution_context=execution_context or {}
+        )
+        
+        # Store in memory
+        self._episodes.append(episode)
+        
+        # Update embedding matrix
+        if self._embedding_matrix is None:
+            self._embedding_matrix = np.array([goal_embedding])
+        else:
+            self._embedding_matrix = np.vstack([self._embedding_matrix, goal_embedding])
+        
+        # Persist to storage
+        await self._persist_episode(episode)
+        
+        logger.info(f"Committed episode {episode_id} (rating={rating:.2f})")
+        return episode_id
+
+    async def _persist_episode(self, episode: Episode):
+        """Persist an episode to storage."""
+        episode_key = f"episodes/{episode.episode_id}.json"
+        episode_data = asdict(episode)
+        
+        # Convert numpy arrays to lists for JSON serialization
+        if isinstance(episode_data['goal_embedding'], np.ndarray):
+            episode_data['goal_embedding'] = episode_data['goal_embedding'].tolist()
+        
+        await self.storage.write_blob(
+            key=episode_key,
+            data=json.dumps(episode_data).encode('utf-8'),
+            metadata={
+                "episode_id": episode.episode_id,
+                "agent_role": episode.agent_role,
+                "rating": str(episode.rating),
+                "timestamp": str(episode.timestamp)
+            }
+        )
+
+    async def get_successful_patterns(
+        self,
+        task_type: Optional[str] = None,
+        min_rating: float = 0.8,
+        limit: int = 5
+    ) -> List[Dict[str, Any]]:
+        """
+        Get successful patterns for learning.
+        
+        Args:
+            task_type: Optional task type filter
+            min_rating: Minimum success rating
+            limit: Maximum number of patterns to return
+            
+        Returns:
+            List of successful episode patterns
+        """
+        # Filter episodes
+        filtered = [
+            ep for ep in self._episodes
+            if ep.rating >= min_rating
+        ]
+        
+        # Sort by rating and timestamp
+        filtered.sort(key=lambda x: (x.rating, x.timestamp), reverse=True)
+        
+        # Return top patterns
+        patterns = []
+        for ep in filtered[:limit]:
+            patterns.append({
+                "task": ep.task_description,
+                "plan": ep.successful_plan,
+                "tools": ep.tools_used,
+                "rating": ep.rating,
+                "outcome": ep.outcome_summary
+            })
+        
+        return patterns
+
+    async def analyze_failure_patterns(
+        self,
+        agent_role: Optional[str] = None
+    ) -> Dict[str, int]:
+        """
+        Analyze common failure patterns.
+        
+        Args:
+            agent_role: Optional role filter
+            
+        Returns:
+            Dictionary of failure types and their counts
+        """
+        failure_types = {}
+        
+        for ep in self._episodes:
+            if ep.failure_notes and ep.rating < 0.5:
+                if agent_role is None or ep.agent_role == agent_role:
+                    # Simple keyword-based failure classification
+                    if "timeout" in ep.failure_notes.lower():
+                        failure_types["timeout"] = failure_types.get("timeout", 0) + 1
+                    elif "permission" in ep.failure_notes.lower():
+                        failure_types["permission"] = failure_types.get("permission", 0) + 1
+                    elif "api" in ep.failure_notes.lower():
+                        failure_types["api_error"] = failure_types.get("api_error", 0) + 1
+                    else:
+                        failure_types["other"] = failure_types.get("other", 0) + 1
+        
+        return failure_types
+
+    def get_stats(self) -> Dict[str, Any]:
+        """Get memory statistics."""
+        if not self._episodes:
+            return {"total_episodes": 0}
+        
+        ratings = [ep.rating for ep in self._episodes]
+        
+        return {
+            "total_episodes": len(self._episodes),
+            "avg_rating": np.mean(ratings),
+            "success_rate": len([r for r in ratings if r >= 0.7]) / len(ratings),
+            "agent_roles": list(set(ep.agent_role for ep in self._episodes))
+        }
+
+
+def create_episodic_memory(
+    storage_adapter,
+    embedder,
+    similarity_threshold: float = 0.85
+) -> EpisodicMemory:
+    """
+    Factory function to create an episodic memory system.
+    
+    Args:
+        storage_adapter: BlobStorageAdapter instance
+        embedder: Embedding function
+        similarity_threshold: Minimum similarity for recall
+        
+    Returns:
+        EpisodicMemory instance
+    """
+    return EpisodicMemory(
+        storage_adapter=storage_adapter,
+        embedder=embedder,
+        similarity_threshold=similarity_threshold
+    )
