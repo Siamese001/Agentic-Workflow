@@ -1,3 +1,4 @@
+from typing import Any
 """
 
 
@@ -11,10 +12,10 @@ Provides basic hallucination detection for resume generation.
 class HallucinationDetector:
     """Stub implementation of hallucination detector."""
 
-    def __init__(self, config: Dict[str, Any] = None):
+def __init__(self: Any, config: Dict[str, Any]) -> None:
         self.config = config or {}
 
-    def check(self, text: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+def check(self: Any, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Check text for potential hallucinations.
 
@@ -31,7 +32,7 @@ class HallucinationDetector:
             "issues": []
         }
 
-    def validate_resume_content(self, resume_data: Dict[str, Any]) -> Dict[str, Any]:
+def validate_resume_content(self: Any, resume_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Validate resume content for hallucinations.
 

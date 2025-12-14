@@ -29,15 +29,12 @@ class SafetyExecutor:
     processing workflows and job alignment.
     """
 
-    def __init__(self,
-        routing_policy: RoutingPolicy,
-        sandbox: SandboxConfig,
-        meta_profile: Optional[MetaProfileSnapshot] = None):
+def __init__(self: Any, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot]) -> None:
         self.routing_policy = routing_policy
         self.sandbox = sandbox
         self.meta_profile = meta_profile
 
-    def execute_safety(self, prompt: str) -> str:
+def execute_safety(self: Any, prompt: str) -> str:
         """
         Executes resume safety validation using LLM models.
 

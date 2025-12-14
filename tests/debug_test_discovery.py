@@ -12,7 +12,7 @@ import json
 import subprocess
 from pathlib import Path
 
-def check_vscode_config():
+def check_vscode_config() -> None:
     """Check VS Code configuration files."""
     logger.info("=== Checking VS Code Configuration ===")
 
@@ -45,7 +45,7 @@ def check_vscode_config():
 
     return True
 
-def check_pytest():
+def check_pytest() -> None:
     """Check pytest installation and discovery."""
     logger.info("\n=== Checking Pytest ===")
 
@@ -74,7 +74,7 @@ def check_pytest():
 
     return True
 
-def check_python_path():
+def check_python_path() -> None:
     """Check Python path and environment."""
     logger.info("\n=== Checking Python Environment ===")
     logger.info(f"✅ Python executable: {sys.executable}")
@@ -92,7 +92,7 @@ def check_python_path():
 
     return True
 
-def main():
+def main() -> None:
     """Run all checks."""
     logger.info("🔍 VS Code/Windsurf Test Discovery Debug Script")
     logger.info("=" * 50)

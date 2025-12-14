@@ -14,10 +14,7 @@ logger = logging.getLogger(__name__)
 class JobAnalyzer:
     """Analyzes job descriptions using LLM to extract key information."""
 
-    def __init__(self,
-        llm_client: Optional[Any] = None,
-        provider: Optional[Provider] = None,
-        workflow_config: Optional[Any] = None):
+def __init__(self: Any, llm_client: Optional[Any], provider: Optional[Provider], workflow_config: Optional[Any]) -> None:
         """
         Initialize JobAnalyzer.
 
@@ -32,7 +29,7 @@ class JobAnalyzer:
         if self.llm_client is None:
             raise ValueError(f"Failed to initialize LLM client for provider {self.provider}")
 
-    def analyze(self, job_description: str) -> Dict[str, Any]:
+def analyze(self: Any, job_description: str) -> Dict[str, Any]:
         """
         Analyze a job description to extract key information.
 
@@ -79,7 +76,7 @@ class JobAnalyzer:
                 "error": str(e)
             }
 
-    def _build_analysis_prompt(self, job_description: str) -> str:
+def _build_analysis_prompt(self: Any, job_description: str) -> str:
         """Build the prompt for job analysis."""
         return f"""Analyze the following job description and extract key information.
 
@@ -99,7 +96,7 @@ Please extract and return a JSON object with the following structure:
 Focus on the most important skills and requirements. Be specific and concise.
 Return ONLY the JSON object, no additional text."""
 
-    def _generate_with_gemini(self, prompt: str, temperature: float = 0.7) -> str:
+def _generate_with_gemini(self: Any, prompt: str, temperature: float) -> str:
         """Generate response using Google Gemini."""
 
         # Configure model
@@ -110,7 +107,7 @@ Return ONLY the JSON object, no additional text."""
         response = model.generate_content(prompt, generation_config=generation_config)
         return response.text
 
-    def _generate_with_generic_client(self, prompt: str, temperature: float = 0.7) -> str:
+def _generate_with_generic_client(self: Any, prompt: str, temperature: float) -> str:
         """Generate response using generic client interface."""
         # Fallback for other providers
         if hasattr(self.llm_client, 'generate'):
@@ -121,7 +118,7 @@ Return ONLY the JSON object, no additional text."""
             response = self.llm_client.complete(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
 
-    def _parse_analysis_response(self, response: str) -> Dict[str, Any]:
+def _parse_analysis_response(self: Any, response: str) -> Dict[str, Any]:
         """Parse the LLM response into structured data."""
         try:
             # Clean response - remove any markdown formatting
@@ -161,7 +158,7 @@ Return ONLY the JSON object, no additional text."""
                 "error": f"JSON parsing failed: {e}"
             }
 
-    def extract_keywords(self, job_description: str, max_keywords: int = 20) -> List[str]:
+def extract_keywords(self: Any, job_description: str, max_keywords: int) -> List[str]:
         """
         Extract important keywords from job description.
 

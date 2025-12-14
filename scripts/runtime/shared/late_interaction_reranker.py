@@ -17,7 +17,7 @@ class LateInteractionReranker:
     and document, providing superior ranking accuracy compared to bi-encoders.
     """
 
-    def __init__(self, model_name: str = "ms-marco-MiniLM-L-6-v2", lazy_load: bool = True):
+def __init__(self: Any, model_name: str, lazy_load: bool) -> None:
         """Initialize the Late Interaction Reranker.
 
         Args:
@@ -33,7 +33,7 @@ class LateInteractionReranker:
         logger.info(f"Initialized LateInteractionReranker: model={model_name}, lazy={lazy_load}")
 
     @property
-    def is_available(self) -> bool:
+def is_available(self: Any) -> bool:
         """Check if the reranker is available (model loaded or can be loaded)."""
         if self._model_loaded:
             return not self._fallback_mode
@@ -46,7 +46,7 @@ class LateInteractionReranker:
             logger.warning("sentence_transformers not available, reranker will be in fallback mode")
             return False
 
-    def _load_model(self) -> bool:
+def _load_model(self: Any) -> bool:
         """Load the cross-encoder model.
 
         Returns:
@@ -85,13 +85,7 @@ class LateInteractionReranker:
             return False
 
         """Docstring."""
-    def rerank(
-        self,
-        query: str,
-        documents: List[str],
-        top_k: Optional[int] = None,
-        batch_size: int = 32
-    ) -> List[str]:
+def rerank(self: Any, query: str, documents: List[str], top_k: Optional[int], batch_size: int) -> List[str]:
         """Rerank documents based on query relevance.
 
         Args:
@@ -171,13 +165,7 @@ class LateInteractionReranker:
             return documents[:top_k]
 
         """Docstring."""
-    def rerank_with_scores(
-        self,
-        query: str,
-        documents: List[str],
-        top_k: Optional[int] = None,
-        batch_size: int = 32
-    ) -> List[Tuple[str, float]]:
+def rerank_with_scores(self: Any, query: str, documents: List[str], top_k: Optional[int], batch_size: int) -> List[Tuple[str, float]]:
         """Rerank documents and return with scores.
 
         Args:
@@ -229,7 +217,7 @@ class LateInteractionReranker:
             logger.error(f"Reranking with scores failed: {e}")
             return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
 
-    def get_model_info(self) -> dict:
+def get_model_info(self: Any) -> dict:
         """Get information about the loaded model.
 
         Returns:
@@ -284,10 +272,10 @@ def rerank_documents(
 class PassThroughReranker:
     """Fallback reranker that returns documents in original order."""
 
-    def __init__(self, *args, **kwargs):
+def __init__(self: Any) -> None:
         """Initialize the pass-through reranker."""
         logger.warning("Using PassThroughReranker - no actual reranking will be performed")
 
-    def rerank(self, query: str, documents: List[str], top_k: Optional[int] = None) -> List[str]:
+def rerank(self: Any, query: str, documents: List[str], top_k: Optional[int]) -> List[str]:
         """Return documents in original order."""
         return documents[:top_k] if top_k else documents

@@ -1,3 +1,4 @@
+from typing import Any
 """
 
 
@@ -27,7 +28,12 @@ class ValidationResult:
     errors: List[str] = None
     warnings: List[str] = None
 
-    def __post_init__(self) -> None:
+def __post_init__(self: Any) -> None:
+        """Initialize default values for optional fields."""
+        if self.errors is None:
+            self.errors = []
+        if self.warnings is None:
+            self.warnings = []
         if self.errors is None:
             self.errors = []
         if self.warnings is None:

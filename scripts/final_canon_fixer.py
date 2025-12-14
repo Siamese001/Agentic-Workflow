@@ -73,7 +73,7 @@ def fix_remaining_print_statements():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -98,7 +98,7 @@ def fix_remaining_empty_except():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -149,7 +149,7 @@ def fix_remaining_unused_imports():
             except Exception:
                 logger.error("Suppressed error in try/except") # NOTE: Verify logger import
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -196,7 +196,7 @@ def fix_long_lines_aggressive():
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -218,7 +218,7 @@ def fix_trailing_whitespace_final():
                 file_path.write_text(new_content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -246,7 +246,7 @@ def fix_duplicate_imports_final():
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -301,7 +301,7 @@ def add_comprehensive_docstrings():
                 file_path.write_text('\n'.join(lines), encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Added docstrings to {fixed} files")
 
@@ -338,7 +338,7 @@ def remove_unreachable_code():
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -373,7 +373,7 @@ def fix_sql_queries_final():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -402,7 +402,7 @@ def fix_mutable_defaults():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -421,7 +421,7 @@ def fix_threading_imports():
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 

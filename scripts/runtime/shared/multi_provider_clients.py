@@ -196,8 +196,8 @@ def get_available_providers() -> List[Provider]:
             get_api_key(provider)
             available.append(provider)
         except ValueError:
-            # No API key configured for this provider
-            pass
+            # No API key configured for this provider, skip
+            continue
     return available
 
 def get_litellm_completion(

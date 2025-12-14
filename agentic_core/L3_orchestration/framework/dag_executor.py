@@ -27,7 +27,7 @@ class DAGExecutionResult:
 class DAGExecutor:
     """Executes Directed Acyclic Graphs of operations."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+def __init__(self: Any, config: Optional[Dict[str, Any]]) -> None:
         """Initialize DAG executor.
 
         Args:
@@ -37,7 +37,7 @@ class DAGExecutor:
         self.nodes: Dict[str, DAGNode] = {}
         self.execution_history: List[DAGExecutionResult] = []
 
-    def add_node(self, node: DAGNode) -> None:
+def add_node(self: Any, node: DAGNode) -> None:
         """Add a node to the DAG.
 
         Args:
@@ -46,7 +46,7 @@ class DAGExecutor:
         self.nodes[node.id] = node
         logger.debug(f"Added node {node.id} to DAG")
 
-    def execute(self, context: Optional[Dict[str, Any]] = None) -> DAGExecutionResult:
+def execute(self: Any, context: Optional[Dict[str, Any]]) -> DAGExecutionResult:
         """Execute the DAG.
 
         Args:
@@ -81,7 +81,7 @@ class DAGExecutor:
         self.execution_history.append(result)
         return result
 
-    def get_execution_history(self) -> List[DAGExecutionResult]:
+def get_execution_history(self: Any) -> List[DAGExecutionResult]:
         """Get history of DAG executions.
 
         Returns:

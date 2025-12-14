@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
@@ -7,7 +8,7 @@ logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.eval.simulation.models import SimScenario  # DEPRECATED: Arch...
 # from archives.legacy_root_folders.eval.simulation.simulator import run_scenario  # DEPRECATED: ...
 
-def test_run_scenario_uses_existing_engine(self) -> None:
+def test_run_scenario_uses_existing_engine(self: Any) -> None:
     """Test that scenario runner properly uses existing engine instance."""
     scenarios = Engine.list()
     assert scenarios, "Expected at least one registered simulation scenario"

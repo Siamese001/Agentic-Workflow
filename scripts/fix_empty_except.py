@@ -2,11 +2,16 @@
 """Fix empty except blocks in Python files."""
 
 import os
+from typing import Any
 import glob
 import re
-import ast
+import logging
 
-def fix_empty_except_blocks(directory="."):
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def fix_empty_except_blocks(directory: Any) -> None:
     """Fix empty except blocks by adding 'pass' or logging."""
     count = 0
 
@@ -24,7 +29,7 @@ def fix_empty_except_blocks(directory="."):
             matches = re.findall(empty_except_pattern, content)
 
             if matches:
-                print(f"{filepath}: Found {len(matches)} empty except blocks")
+                logger.info(f"{filepath}: Found {len(matches)} empty except blocks")
 
                 # Fix empty except blocks
                 # Add 'pass' statement to empty except blocks
@@ -47,9 +52,9 @@ def fix_empty_except_blocks(directory="."):
                 count += 1
 
         except Exception as e:
-            print(f"Error processing {filepath}: {e}")
+            logger.error(f"Error processing {filepath}: {e}")
 
-    print(f"Fixed empty except blocks in {count} files")
+    logger.info(f"Fixed empty except blocks in {count} files")
 
 if __name__ == "__main__":
     fix_empty_except_blocks()

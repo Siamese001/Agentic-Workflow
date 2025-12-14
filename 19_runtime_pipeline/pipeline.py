@@ -113,7 +113,10 @@ class UnifiedSignalPipeline:
                 raise PipelineExecutionError("envelope_creation", "EnvelopeFactory not available")
 
         if domain_config:
-            envelope.metadata["domain_config"] = json.dumps(domain_config.dict() if hasattr(domain_config,
+            envelope.
+                .metadata["domain_config"] = json.
+                .dumps(domain_config.
+                .dict() if hasattr(domain_config,
                 'dict') else {})
 
         checkpoint_manager = await self._get_checkpoint_manager()

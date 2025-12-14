@@ -21,12 +21,13 @@ class ScoreResult:
 class NormalizeScriptsScores:
     """Scoring engine for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
+        """Initialize the scoring engine with optional configuration."""
         self.config = config or {}
         self.weights = self.config.get("weights", {})
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def compute_score(self, data: Dict[str, object], context: Optional[Dict] = None) -> ScoreResult:
+def compute_score(self: Any, data: Dict[str, object], context: Optional[Dict]) -> ScoreResult:
         """Compute score for given data."""
         factors = self._extract_factors(data)
         confidence = self._compute_confidence(factors)
@@ -38,7 +39,7 @@ class NormalizeScriptsScores:
             metadata={"context": context}
         )
 
-    def _extract_factors(self, data: Dict[str, object]) -> Dict[str, float]:
+def _extract_factors(self: Any, data: Dict[str, object]) -> Dict[str, float]:
         """Extract scoring factors from data."""
         factors = {}
         for key, value in data.items():
@@ -46,7 +47,7 @@ class NormalizeScriptsScores:
                 factors[key] = float(value)
         return factors
 
-    def _compute_weighted_score(self, factors: Dict[str, float]) -> float:
+def _compute_weighted_score(self: Any, factors: Dict[str, float]) -> float:
         """Compute weighted score."""
         if not factors:
             return 0.5
@@ -54,7 +55,7 @@ class NormalizeScriptsScores:
         weighted_sum = sum(v * self.weights.get(k, 1.0) for k, v in factors.items())
         return weighted_sum / total_weight if total_weight > 0 else 0.5
 
-    def _compute_confidence(self, factors: Dict[str, float]) -> float:
+def _compute_confidence(self: Any, factors: Dict[str, float]) -> float:
         """Compute confidence level."""
         return min(1.0, len(factors) / 5)
 

@@ -31,7 +31,7 @@ class BiasResult:
     confidence_score: float
     recommendations: List[str]
 
-    def get_critical_biases(self) -> List[BiasMatch]:
+def get_critical_biases(self: Any) -> List[BiasMatch]:
         """Get high-severity bias matches."""
         return [m for m in self.matches if m.severity > 0.7]
 
@@ -42,7 +42,7 @@ class BiasAuditor:
     and content quality assurance.
     """
 
-    def __init__(self, enable_logging: bool = True):
+def __init__(self: Any, enable_logging: bool) -> None:
         """Initialize bias auditor.
 
         Args:
@@ -84,7 +84,7 @@ class BiasAuditor:
             ],
         }
 
-    def audit_content(self, content: str) -> BiasResult:
+def audit_content(self: Any, content: str) -> BiasResult:
         """Check for biased language patterns.
 
         Args:
@@ -148,7 +148,7 @@ class BiasAuditor:
             recommendations=recommendations,
         )
 
-    def _extract_context(self, content: str, span: tuple[int, int], window: int = 50) -> str:
+def _extract_context(self: Any, content: str, span: tuple[int, int], window: int) -> str:
         """Extract context around a match.
 
         Args:
@@ -164,7 +164,7 @@ class BiasAuditor:
         context_end = min(len(content), end + window)
         return content[context_start:context_end]
 
-    def _calculate_severity(self, bias_type: BiasType, phrase: str) -> float:
+def _calculate_severity(self: Any, bias_type: BiasType, phrase: str) -> float:
         """Calculate severity of bias match.
 
         Args:
@@ -190,7 +190,7 @@ class BiasAuditor:
 
         return 0.3
 
-    def _generate_recommendations(self, bias_types: List[BiasType]) -> List[str]:
+def _generate_recommendations(self: Any, bias_types: List[BiasType]) -> List[str]:
         """Generate recommendations based on detected bias types.
 
         Args:

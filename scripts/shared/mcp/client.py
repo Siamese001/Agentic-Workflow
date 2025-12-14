@@ -16,7 +16,7 @@ class MCPClient(Protocol):
     All MCP clients must implement this protocol for type safety.
     """
 
-    def __call__(self, *args: object, **kwargs: object) -> Dict[str, object]:
+def __call__(self: Any) -> Dict[str, object]:
         """Execute the client operation.
 
         Args:
@@ -51,7 +51,7 @@ class MCPClientSpec:
     parameters: Dict[str, Any] = field(default_factory=dict)
     optional: bool = False
 
-    def resolved_module(self) -> Optional[str]:
+def resolved_module(self: Any) -> Optional[str]:
         """Return explicit module or provider-mapped default.
 
         Returns:
@@ -61,7 +61,7 @@ class MCPClientSpec:
             return self.module
         return get_default_module(self.provider)
 
-    def resolved_class(self) -> Optional[str]:
+def resolved_class(self: Any) -> Optional[str]:
         """Return explicit class_name or provider-mapped default.
 
         Returns:
@@ -71,7 +71,7 @@ class MCPClientSpec:
             return self.class_name
         return get_default_class(self.provider)
 
-    def validate(self) -> None:
+def validate(self: Any) -> None:
         """Validate the spec configuration.
 
         Raises:
@@ -104,7 +104,7 @@ class MCPClientStub:
     while maintaining type safety.
     """
 
-    def __init__(self, name: str, parameters: Optional[Dict[str, Any]] = None):
+def __init__(self: Any, name: str, parameters: Optional[Dict[str, Any]]) -> None:
         """Initialize stub client.
 
         Args:
@@ -122,7 +122,7 @@ class MCPClientStub:
             }
         )
 
-    def __call__(self, *args, **kwargs) -> Dict[str, Any]:
+def __call__(self: Any) -> Dict[str, Any]:
         """All calls return a structured stub result.
 
         Returns:
@@ -137,7 +137,7 @@ class MCPClientStub:
             "error": self.parameters.get("error", "Stubbed MCP client."),
         }
 
-    def __repr__(self) -> str:
+def __repr__(self: Any) -> str:
         """String representation."""
         details = ", ".join(f"{k}={v}" for k, v in self.parameters.items())
         return f"<MCPClientStub name={self.name} {details}>"
@@ -149,12 +149,12 @@ class MCPClientRegistry:
     with type-safe retrieval.
     """
 
-    def __init__(self):
+def __init__(self: Any) -> None:
         """Initialize empty registry."""
         self._clients: Dict[str, MCPClient] = {}
         self._specs: Dict[str, MCPClientSpec] = {}
 
-    def register(self, name: str, client: MCPClient) -> None:
+def register(self: Any, name: str, client: MCPClient) -> None:
         """Register a client instance.
 
         Args:
@@ -176,7 +176,7 @@ class MCPClientRegistry:
             }
         )
 
-    def get(self, name: str) -> Optional[Any]:
+def get(self: Any, name: str) -> Optional[Any]:
         """Get a client by name.
 
         Args:
@@ -187,7 +187,7 @@ class MCPClientRegistry:
         """
         return self._clients.get(name)
 
-    def get_spec(self, name: str) -> Optional[MCPClientSpec]:
+def get_spec(self: Any, name: str) -> Optional[MCPClientSpec]:
         """Get a client spec by name.
 
         Args:
@@ -198,7 +198,7 @@ class MCPClientRegistry:
         """
         return self._specs.get(name)
 
-    def has(self, name: str) -> bool:
+def has(self: Any, name: str) -> bool:
         """Check if a client exists.
 
         Args:
@@ -209,7 +209,7 @@ class MCPClientRegistry:
         """
         return name in self._clients
 
-    def list_clients(self) -> list[str]:
+def list_clients(self: Any) -> list[str]:
         """List all registered client names.
 
         Returns:
@@ -217,7 +217,7 @@ class MCPClientRegistry:
         """
         return list(self._clients.keys())
 
-    def is_stub(self, name: str) -> bool:
+def is_stub(self: Any, name: str) -> bool:
         """Check if a client is a stub.
 
         Args:
@@ -229,7 +229,7 @@ class MCPClientRegistry:
         client = self.get(name)
         return isinstance(client, MCPClientStub)
 
-    def clear(self) -> None:
+def clear(self: Any) -> None:
         """Clear all registered clients."""
         self._clients.clear()
         self._specs.clear()

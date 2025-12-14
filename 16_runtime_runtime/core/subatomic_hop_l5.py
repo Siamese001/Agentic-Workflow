@@ -1,4 +1,5 @@
 import time
+from typing import Any
 import uuid
 from pydantic import BaseModel
 
@@ -20,7 +21,7 @@ class AgentPlan(BaseModel):
     tool_calls: list[dict]
 
 class SubatomicHop:
-    def __init__(self, role: str, config: Dict):
+def __init__(self: Any, role: str, config: Dict) -> None:
         self.role = role
         self.id = str(uuid.uuid4())
 
@@ -34,7 +35,7 @@ class SubatomicHop:
         self.sandbox = DockerSandbox()
         self.telemetry = TelemetryRecorder()
 
-    async def run(self, context: Dict):
+async def run(self: Any, context: Dict) -> None:
         trace_id = context.get('trace_id', self.id)
 
         try:

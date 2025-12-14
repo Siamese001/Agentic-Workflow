@@ -1,4 +1,3 @@
-from typing import Any
 """SDK Registry - Centralized SDK management and validation.
 
 Provides unified access to all 21 agentic SDKs with lazy loading,
@@ -11,7 +10,7 @@ import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,7 @@ class SDKEntry:
     _fallback: Optional[str] = None
     _description: str = ""
 
-    def is_available(self) -> bool:
+def is_available(self: Any) -> bool:
         """Check if SDK is available for import."""
         try:
             __import__(self.module)
@@ -37,7 +36,7 @@ class SDKEntry:
         except ImportError:
             return False
 
-    def has_api_key(self) -> bool:
+def has_api_key(self: Any) -> bool:
         """Check if required API key is set."""
         if not self.env_var:
             return True
@@ -342,18 +341,17 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
     class MockCollection:
         """TODO: Add docstring."""
 
-        def __init__(self, documents: list = None):
+def __init__(self: Any, documents: list) -> None:
+            """Initialize mock collection with optional documents."""
             self.documents = documents or []
 
-            """TODO: Add docstring."""
-
-        def add(self, documents: list, ids: list = None):
+def add(self: Any, documents: list, ids: list) -> None:
             """Docstring."""
             self.documents.extend(documents)
             return ids or list(range(len(documents)))
 
 
-        def query(self, query_texts: list, n_results: int = 10):
+def query(self: Any, query_texts: list, n_results: int) -> None:
             """Docstring."""
             return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
 
@@ -361,38 +359,37 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
 
     class MockVectorStore:
         """Docstring."""
-        def __init__(self, config: Optional[Dict[str, Any]] = None):
-            """TODO: Add docstring."""
-
+def __init__(self: Any, config: Optional[Dict[str, Any]]) -> None:
+            """Initialize mock vector store with optional config."""
             self.config = config or {}
             self.collections = {}
 
-        def add_documents(self, collection_name: str, documents: list, ids: list = None):
+def add_documents(self: Any, collection_name: str, documents: list, ids: list) -> None:
             """Add documents to collection."""
             if collection_name not in self.collections:
                 self.collections[collection_name] = []
             self.collections[collection_name].extend(documents)
             return ids or list(range(len(documents)))
 
-        def search(self, collection_name: str, query: str, n_results: int = 10):
+def search(self: Any, collection_name: str, query: str, n_results: int) -> None:
             """Docstring."""
             # Simple mock search
             self.collections.get(collection_name, [])
             return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
 
-        def get_collection(self, name: str):
+def get_collection(self: Any, name: str) -> None:
             """Docstring."""
             return self.collections.get(name, [])
 
-        def add_texts(self, texts: list, metadatas: list = None, ids: list = None):
+def add_texts(self: Any, texts: list, metadatas: list, ids: list) -> None:
             """Add texts to vector store."""
             return self.add_documents("default", texts, ids)
 
-        def similarity_search(self, query: str, k: int = 4):
+def similarity_search(self: Any, query: str, k: int) -> None:
             """Search for similar documents."""
             return [{"page_content": "Mock content", "metadata": {}} for _ in range(k)]
 
-        def get_or_create_collection(self, name: str):
+def get_or_create_collection(self: Any, name: str) -> None:
             """Get or create a collection."""
             if name not in self.collections:
                 self.collections[name] = []

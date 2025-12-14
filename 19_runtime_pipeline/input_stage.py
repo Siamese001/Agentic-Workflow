@@ -18,7 +18,7 @@ logger = __import__('logging').getLogger(__name__)
 class InputProcessingStage(PipelineStage):
     """Processes and normalizes input data."""
 
-    def __init__(self):
+def __init__(self: Any) -> None:
         """Initialize input processing stage."""
         try:
             from ..rag_components import SemanticCache
@@ -30,7 +30,7 @@ class InputProcessingStage(PipelineStage):
             self.hyde_processor = None
             logger.warning("SemanticCache or HyDEProcessor not available")
 
-    async def execute(self, envelope: Any) -> Any:
+async def execute(self: Any, envelope: Any) -> Any:
         """Process input data.
 
         Args:
@@ -88,7 +88,7 @@ class InputProcessingStage(PipelineStage):
             )
             raise
 
-    def _extract_content_from_payload(self, payload) -> str:
+def _extract_content_from_payload(self: Any, payload: Any) -> str:
         """Extract text content from payload.
 
         Args:
@@ -111,7 +111,7 @@ class InputProcessingStage(PipelineStage):
         else:
             return str(payload)
 
-    async def _process_content(self, content: str, envelope: Any) -> Dict[str, Any]:
+async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, Any]:
         """Process text content.
 
         Args:
@@ -140,7 +140,7 @@ class InputProcessingStage(PipelineStage):
 
         return result
 
-    def _update_payload_with_processed_data(self, envelope: Any, processed: Dict[str, Any]) -> None:
+def _update_payload_with_processed_data(self: Any, envelope: Any, processed: Dict[str, Any]) -> None:
         """Update payload with processed data.
 
         Args:
@@ -153,6 +153,6 @@ class InputProcessingStage(PipelineStage):
             envelope.metadata.update({f"processed_{k}": v for k, v in processed.items()})
 
     @property
-    def stage_name(self) -> str:
+def stage_name(self: Any) -> str:
         """Get stage name."""
         return "input_processing"

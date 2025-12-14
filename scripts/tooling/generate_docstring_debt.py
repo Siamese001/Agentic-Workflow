@@ -38,7 +38,7 @@ for f in root.rglob("*.py"):
                 if not ast.get_docstring(node):
                     missing.add(f"{rel}:{name}")
     except (ValueError, TypeError, KeyError):
-        pass
+        # Skip files that can't be parsed or have invalid structure
 
 for m in sorted(missing):
     logger.info(m)

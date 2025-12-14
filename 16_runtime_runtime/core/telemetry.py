@@ -1,4 +1,5 @@
 import duckdb
+from typing import Any
 import json
 import logging
 
@@ -14,7 +15,7 @@ class TraceEvent:
     timestamp: float
 
 class TelemetryRecorder:
-    def __init__(self, db_path="flight_recorder.duckdb"):
+def __init__(self: Any, db_path: Any) -> None:
         self.conn = duckdb.connect(db_path)
         self.conn.execute("""
             CREATE TABLE IF NOT EXISTS traces
@@ -26,7 +27,7 @@ class TelemetryRecorder:
                 timestamp DOUBLE)
         """)
 
-    def record(self, event: TraceEvent):
+def record(self: Any, event: TraceEvent) -> None:
         self.conn.execute(
             "INSERT INTO traces VALUES (?, ?, ?, ?, ?, ?)",
             (event.trace_id,

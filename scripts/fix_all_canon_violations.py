@@ -189,7 +189,7 @@ def fix_time_sleep(file_path: str) -> bool:
     except Exception:
         return False
 
-def main():
+def main() -> None:
     """Main function to fix all violations."""
     python_files = get_python_files(".")
 

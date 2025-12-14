@@ -69,7 +69,7 @@ class ImmutableStagingBuffer:
     _timestamp: datetime = field(default_factory=datetime.utcnow)
     _checksum: Optional[str] = None
 
-    def with_data(self, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
+def with_data(self: Any, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
         """Return a new buffer with updated data."""
         return ImmutableStagingBuffer(data={**self.data,
             **new_data},
@@ -77,6 +77,6 @@ class ImmutableStagingBuffer:
             timestamp=datetime.utcnow(),
             checksum=None)
 
-    def clear(self) -> ImmutableStagingBuffer:
+def clear(self: Any) -> ImmutableStagingBuffer:
         """Return a new empty buffer."""
         return ImmutableStagingBuffer(version=self.version + 1, timestamp=datetime.utcnow())

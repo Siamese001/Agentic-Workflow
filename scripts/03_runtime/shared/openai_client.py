@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class OpenAIClientManager:
     """Manages OpenAI client instances for agents."""
 
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None):
+def __init__(self: Any, api_key: Optional[str], base_url: Optional[str]) -> None:
         """
         Initialize OpenAI client manager.
 
@@ -36,14 +36,7 @@ class OpenAIClientManager:
         self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         self.async_client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
 
-    def chat_completion(
-        self,
-        messages: list[Dict[str, Any]],
-        model: str = "gpt-4-turbo-preview",
-        temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        **kwargs
-    ) -> ChatCompletion:
+def chat_completion(self: Any, messages: list[Dict[str, Any]], model: str, temperature: float, max_tokens: Optional[int]) -> ChatCompletion:
         """
         Create a chat completion.
 
@@ -70,14 +63,7 @@ class OpenAIClientManager:
             logger.error(f"OpenAI API error: {e}")
             raise
 
-    async def achat_completion(
-        self,
-        messages: list[Dict[str, Any]],
-        model: str = "gpt-4-turbo-preview",
-        temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        **kwargs
-    ) -> ChatCompletion:
+async def achat_completion(self: Any, messages: list[Dict[str, Any]], model: str, temperature: float, max_tokens: Optional[int]) -> ChatCompletion:
         """
         Create an async chat completion.
 
@@ -104,12 +90,7 @@ class OpenAIClientManager:
             logger.error(f"OpenAI API error: {e}")
             raise
 
-    def create_embedding(
-        self,
-        input_text: str,
-        model: str = "text-embedding-3-large",
-        **kwargs
-    ) -> list[float]:
+def create_embedding(self: Any, input_text: str, model: str) -> list[float]:
         """
         Create embeddings for text.
 
@@ -132,7 +113,7 @@ class OpenAIClientManager:
             logger.error(f"OpenAI embedding error: {e}")
             raise
 
-    def list_models(self) -> list[str]:
+def list_models(self: Any) -> list[str]:
         """List available OpenAI models."""
         try:
             models = self.client.models.list()
@@ -236,4 +217,4 @@ def test_openai_connection():
 if __name__ == "__main__":
     # Example usage
     logger.info("Testing OpenAI configuration...")
-    test_openai_connection()
+def test_openai_connection() -> None:
