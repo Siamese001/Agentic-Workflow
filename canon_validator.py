@@ -2205,14 +2205,20 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
     """
     L5 Multi-File Architect: Executes complex refactoring missions atomically
     ROLE: Handles multi-file missions like encapsulating globals and class reorganization.
+    
+    L5 SAFETY PROTOCOL: Maximum 5 files per execution to prevent mass corruption.
     """
+    
+    # L5 SAFETY CONSTRAINT: Never modify more than 5 files in a single execution
+    MAX_FILES_PER_RUN = 5
 
     def __init__(self, context: ValidationContext):
         super().__init__(context)
-        self.prompt += "\n\nARCHITECTURAL DIRECTIVE: Plan and execute multi-file refactoring missions. Use call-graph data to minimize dependencies. Ensure atomic transactions across all affected files."
+        self.prompt += "\n\nARCHITECTURAL DIRECTIVE: Plan and execute multi-file refactoring missions. Use call-graph data to minimize dependencies. Ensure atomic transactions across all affected files. SAFETY LIMIT: Max 5 files per run."
 
     def execute(self):
         logger.info(f"\n[>>>] {self.name} ACTIVATED: Planning and Executing Architectural Refactoring Missions...")
+        logger.info(f"   🛡️ L5 SAFETY PROTOCOL: Max {self.MAX_FILES_PER_RUN} files per execution")
 
         # Check if we have call-graph data from SemanticMapper
         if not hasattr(self.ctx, 'call_graph'):
@@ -2292,6 +2298,12 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
             return False, "No global variables found"
 
         logger.info(f"   📊 Found {len(all_globals)} global variables in {len(files_with_globals)} files")
+        
+        # L5 SAFETY PROTOCOL: Enforce MAX_FILES_PER_RUN limit
+        if len(files_with_globals) > self.MAX_FILES_PER_RUN:
+            logger.warning(f"   ⚠️ SAFETY LIMIT: Truncating targets from {len(files_with_globals)} to {self.MAX_FILES_PER_RUN} files")
+            files_with_globals = files_with_globals[:self.MAX_FILES_PER_RUN]
+            logger.info(f"   🛡️ Processing only first {self.MAX_FILES_PER_RUN} files to prevent mass corruption")
 
         # Create ConfigurationService
         service_content = self._generate_configuration_service(all_globals)
@@ -3220,8 +3232,8 @@ class MissionPlannerAgent(SubAtomicAgent):
             # Refactoring execution
             RefactoringExecutionAgent,
 
-            # Architectural refactoring
-            ArchitecturalRefactorAgent,
+            # Architectural refactoring - DISABLED due to syntax corruption risk
+            # ArchitecturalRefactorAgent,
 
             # Policy evolution (analyzes outcomes)
             PolicyEvolutionAgent,
