@@ -16,7 +16,7 @@ from mcp.client.stdio import stdio_client
 
 class UniversalMCPClient:
     """Universal adapter for managing multiple MCP server connections."""
-    
+
     def __init__(self, config_path: str = "config/mcp_server_config.json"):
         self.config_path = config_path
         self.servers = {}
@@ -28,12 +28,12 @@ class UniversalMCPClient:
         """Initializes connections to all servers defined in JSON."""
         if not os.path.exists(self.config_path):
             raise FileNotFoundError(f"Config not found at {self.config_path}")
-        
+
         with open(self.config_path) as f:
             config_data = json.load(f)
 
         self.logger.info(f"MCP: Connecting to {len(config_data['mcpServers'])} servers...")
-        
+
         for name, cfg in config_data['mcpServers'].items():
             try:
                 # Handle Env Var Expansion
@@ -45,7 +45,7 @@ class UniversalMCPClient:
                             env_vars[k] = os.getenv(var_name, "")
                         else:
                             env_vars[k] = v
-                
+
                 # Expand args if needed
                 final_args = []
                 for arg in cfg["args"]:
@@ -59,20 +59,20 @@ class UniversalMCPClient:
                     args=final_args,
                     env=env_vars
                 )
-                
+
                 transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
                 read, write = transport
                 session = await self.exit_stack.enter_async_context(ClientSession(read, write))
                 await session.initialize()
                 self.sessions[name] = session
                 self.logger.info(f"Connected to {name}")
-                
+
             except Exception as e:
                 self.logger.error(f"Failed to connect to {name}: {e}")
 
     async def get_tools_for_llm(self) -> List[Dict[str, Any]]:
         """Returns tools formatted for OpenAI/Anthropic.
-        
+
         Returns:
             List of tool definitions with namespaced names
         """
@@ -93,11 +93,11 @@ class UniversalMCPClient:
 
     async def execute_tool(self, namespaced_tool_name: str, arguments: Dict[str, Any]):
         """Execute a tool on the appropriate MCP server.
-        
+
         Args:
             namespaced_tool_name: Tool name in format 'server__tool'
             arguments: Tool arguments
-            
+
         Returns:
             Tool execution result
         """
@@ -105,7 +105,7 @@ class UniversalMCPClient:
             server_name, tool_name = namespaced_tool_name.split("__", 1)
             if server_name not in self.sessions:
                 raise ValueError(f"Server {server_name} not connected")
-            
+
             result = await self.sessions[server_name].call_tool(tool_name, arguments=arguments)
             return result.content
         except Exception as e:

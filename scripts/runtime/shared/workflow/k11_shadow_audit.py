@@ -11,14 +11,14 @@ from .prompt_providers import K11PromptProvider
 
 class K11ShadowAuditAgent(BaseExecutiveAgent):
     """K.11: Technical Due Diligence (Shadow Audit) Agent.
-    
+
     Analyzes target company's engineering blog, GitHub, and leadership
     interviews to infer technical maturity and debt.
     """
-    
+
     def __init__(self, data_source_provider=None, researcher: Optional[TavilyResearcher] = None, prompt_provider: Optional[K11PromptProvider] = None):
         """Initialize K.11 agent.
-        
+
         Args:
             data_source_provider: Optional data source provider
             researcher: Optional Tavily researcher for autonomous search
@@ -29,7 +29,7 @@ class K11ShadowAuditAgent(BaseExecutiveAgent):
         self.researcher = researcher
         self.prompt_provider = prompt_provider or K11PromptProvider()
         self.stats = {"k11_executions": 0}
-    
+
     @resilient_execution(fallback_model="gpt-4o")
     async def execute(
         self,
@@ -38,12 +38,12 @@ class K11ShadowAuditAgent(BaseExecutiveAgent):
         config: Dict[str, Any] = None
     ) -> TechnicalSWOT:
         """Execute K.11 Shadow Audit.
-        
+
         Args:
             company_name: Target company name
             search_context: Optional manual search context (if None, will use automated search)
             config: Node configuration
-            
+
         Returns:
             TechnicalSWOT analysis
         """
@@ -116,18 +116,18 @@ class K11ShadowAuditAgent(BaseExecutiveAgent):
                 ],
                 temperature=temperature
             )
-            
+
             self.logger.info(f"K.11 completed successfully for {company_name}")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"K.11 execution failed: {e}")
             raise
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get execution statistics."""
         return self.stats.copy()
-    
+
     def reset_statistics(self) -> None:
         """Reset execution statistics."""
         self.stats["k11_executions"] = 0

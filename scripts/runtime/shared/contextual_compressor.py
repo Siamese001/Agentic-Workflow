@@ -237,7 +237,7 @@ Extracted sentences:"""
             # Fallback to heuristic
             return self._compress_heuristic(chunks, query)
 
-    async def compress(self, chunks: List[str], query: str, 
+    async def compress(self, chunks: List[str], query: str,
         use_llm: Optional[bool] = None) -> CompressionResult:
         """Compress retrieved chunks to extract relevant sentences.
 

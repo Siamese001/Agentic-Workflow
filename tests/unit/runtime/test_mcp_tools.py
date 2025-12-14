@@ -75,7 +75,7 @@ class TestMCPTool:
         )
 
         openai_format = tool.to_openai_format()
-        
+
         assert openai_format["type"] == "function"
         assert openai_format["function"]["name"] == "test_tool"
         assert openai_format["function"]["description"] == "Test tool"
@@ -91,7 +91,7 @@ class TestMCPTool:
         )
 
         anthropic_format = tool.to_anthropic_format()
-        
+
         assert anthropic_format["name"] == "test_tool"
         assert anthropic_format["description"] == "Test tool"
         assert anthropic_format["input_schema"] == {"type": "object", "properties": {}}
@@ -151,14 +151,14 @@ class TestMCPToolServer:
         )
 
         server.register_tool(tool)
-        
+
         assert "test" in server._tools
         assert server._tools["test"] == tool
 
     def test_register_function(self):
         """Test registering a function as a tool."""
         server = MCPToolServer()
-        
+
         def add(a: int, b: int) -> int:
             return a + b
 
@@ -202,7 +202,7 @@ class TestMCPToolServer:
     def test_list_tools(self):
         """Test listing all registered tools."""
         server = MCPToolServer()
-        
+
         for i in range(3):
             tool = MCPTool(
                 name=f"tool_{i}",
@@ -218,7 +218,7 @@ class TestMCPToolServer:
     def test_get_tools_for_provider_openai(self):
         """Test getting tools in OpenAI format."""
         server = MCPToolServer()
-        
+
         server.register_function(
             name="test_tool",
             description="Test tool",
@@ -234,7 +234,7 @@ class TestMCPToolServer:
     def test_get_tools_for_provider_anthropic(self):
         """Test getting tools in Anthropic format."""
         server = MCPToolServer()
-        
+
         server.register_function(
             name="test_tool",
             description="Test tool",
@@ -250,7 +250,7 @@ class TestMCPToolServer:
     def test_execute_tool_success(self):
         """Test successful tool execution."""
         server = MCPToolServer()
-        
+
         def multiply(a: int, b: int) -> int:
             return a * b
 
@@ -269,7 +269,7 @@ class TestMCPToolServer:
         )
 
         result = server.execute_tool("multiply", {"a": 3, "b": 4})
-        
+
         assert result.success is True
         assert result.result == 12
         assert result.tool_name == "multiply"
@@ -278,9 +278,9 @@ class TestMCPToolServer:
     def test_execute_tool_not_found(self):
         """Test executing a non-existent tool."""
         server = MCPToolServer()
-        
+
         result = server.execute_tool("nonexistent", {})
-        
+
         assert result.success is False
         assert result.result is None
         assert result.error == "Tool not found: nonexistent"
@@ -289,7 +289,7 @@ class TestMCPToolServer:
     def test_execute_tool_exception(self):
         """Test tool execution with exception."""
         server = MCPToolServer()
-        
+
         def failing_tool():
             raise ValueError("Tool failed")
 
@@ -301,7 +301,7 @@ class TestMCPToolServer:
         )
 
         result = server.execute_tool("failing_tool", {})
-        
+
         assert result.success is False
         assert result.result is None
         assert "Tool failed" in result.error
@@ -310,7 +310,7 @@ class TestMCPToolServer:
     def test_execute_tool_with_invalid_parameters(self):
         """Test tool execution with invalid parameters."""
         server = MCPToolServer()
-        
+
         def require_params(required_param: str) -> str:
             return required_param
 
@@ -340,7 +340,7 @@ class TestDefaultTools:
         """Test registration of default tools."""
         server = MCPToolServer()
         register_default_tools(server)
-        
+
         tools = server.list_tools()
         assert "calculator" in tools
         assert "analyze_text" in tools
@@ -349,17 +349,17 @@ class TestDefaultTools:
         """Test the calculator tool."""
         server = MCPToolServer()
         register_default_tools(server)
-        
+
         # Test addition
         result = server.execute_tool("calculator", {"operation": "add", "a": 5, "b": 3})
         assert result.success is True
         assert result.result == 8
-        
+
         # Test division by zero
         result = server.execute_tool("calculator", {"operation": "divide", "a": 5, "b": 0})
         assert result.success is True
         assert result.result == float('inf')
-        
+
         # Test invalid operation
         result = server.execute_tool("calculator", {"operation": "invalid", "a": 5, "b": 3})
         assert result.success is False
@@ -369,10 +369,10 @@ class TestDefaultTools:
         """Test the text analysis tool."""
         server = MCPToolServer()
         register_default_tools(server)
-        
+
         text = "Hello world. This is a test."
         result = server.execute_tool("analyze_text", {"text": text})
-        
+
         assert result.success is True
         stats = result.result
         assert stats["character_count"] == len(text)
@@ -388,13 +388,13 @@ class TestMCPToolServerFactory:
         """Test that get_mcp_server returns singleton instance."""
         server1 = get_mcp_server()
         server2 = get_mcp_server()
-        
+
         assert server1 is server2
 
     def test_create_mcp_server_with_defaults(self):
         """Test creating MCP server with default tools."""
         server = create_mcp_server(register_defaults=True)
-        
+
         tools = server.list_tools()
         assert len(tools) >= 2  # At least calculator and analyze_text
         assert "calculator" in tools
@@ -403,7 +403,7 @@ class TestMCPToolServerFactory:
     def test_create_mcp_server_without_defaults(self):
         """Test creating MCP server without default tools."""
         server = create_mcp_server(register_defaults=False)
-        
+
         tools = server.list_tools()
         assert len(tools) == 0
 
@@ -415,7 +415,7 @@ class TestExecuteToolCalls:
         """Test executing multiple tool calls."""
         server = MCPToolServer()
         register_default_tools(server)
-        
+
         tool_calls = [
             {
                 "function": {
@@ -430,9 +430,9 @@ class TestExecuteToolCalls:
                 }
             }
         ]
-        
+
         results = execute_tool_calls(server, tool_calls)
-        
+
         assert len(results) == 2
         assert results[0].success is True
         assert results[0].result == 3
@@ -443,7 +443,7 @@ class TestExecuteToolCalls:
         """Test tool calls with invalid JSON arguments."""
         server = MCPToolServer()
         register_default_tools(server)
-        
+
         tool_calls = [
             {
                 "function": {
@@ -452,9 +452,9 @@ class TestExecuteToolCalls:
                 }
             }
         ]
-        
+
         results = execute_tool_calls(server, tool_calls)
-        
+
         assert len(results) == 1
         # Should handle invalid JSON gracefully
         assert results[0].success is False or results[0].result is not None
@@ -467,7 +467,7 @@ class TestMCPToolServerAsync:
     async def test_async_tool_execution(self):
         """Test executing async tools."""
         server = MCPToolServer()
-        
+
         async def async_tool(delay: float) -> str:
             await asyncio.sleep(delay)
             return "async result"
@@ -487,10 +487,10 @@ class TestMCPToolServerAsync:
 
         # Execute async tool
         result = server.execute_tool("async_tool", {"delay": 0.1})
-        
+
         # The result should be a coroutine
         assert asyncio.iscoroutine(result.result)
-        
+
         # Await the coroutine
         final_result = await result.result
         assert final_result == "async result"
@@ -502,7 +502,7 @@ class TestMCPToolServerSecurity:
     def test_tool_approval_flag(self):
         """Test tool approval requirement flag."""
         server = MCPToolServer()
-        
+
         def safe_tool():
             return "safe"
 
@@ -527,14 +527,14 @@ class TestMCPToolServerSecurity:
 
         safe = server.get_tool("safe_tool")
         sensitive = server.get_tool("sensitive_tool")
-        
+
         assert safe.requires_approval is False
         assert sensitive.requires_approval is True
 
     def test_tool_parameter_validation(self):
         """Test tool parameter validation."""
         server = MCPToolServer()
-        
+
         def validate_input(data: str) -> str:
             if "malicious" in data.lower():
                 raise ValueError("Malicious input detected")
@@ -556,7 +556,7 @@ class TestMCPToolServerSecurity:
         # Valid input
         result = server.execute_tool("validate_input", {"data": "safe input"})
         assert result.success is True
-        
+
         # Malicious input
         result = server.execute_tool("validate_input", {"data": "malicious code"})
         assert result.success is False
@@ -569,7 +569,7 @@ class TestMCPToolServerPerformance:
     def test_tool_execution_time(self):
         """Test tool execution time tracking."""
         server = MCPToolServer()
-        
+
         def fast_tool():
             return "fast"
 
@@ -596,7 +596,7 @@ class TestMCPToolServerPerformance:
     def test_concurrent_tool_execution(self):
         """Test concurrent tool execution."""
         server = MCPToolServer()
-        
+
         def identity(x):
             return x
 

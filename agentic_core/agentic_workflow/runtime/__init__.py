@@ -30,7 +30,7 @@ try:
         create_agent_prompt,
         test_openai_connection
     )
-    
+
     from sdk_registry import (
         SDK_REGISTRY,
         SDKEntry,
@@ -40,7 +40,7 @@ try:
         get_vector_store,
         get_redis_client
     )
-    
+
     __all__ = [
         "OpenAIClientManager",
         "get_openai_client",

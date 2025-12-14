@@ -28,7 +28,7 @@ try:
         get_vector_store,
         get_redis_client
     )
-    
+
     __all__ = [
         "SDK_REGISTRY",
         "SDKEntry",

@@ -27,13 +27,13 @@ def fix_all_print_statements():
     """Key 02: Eliminate ALL print statements."""
     logger.info("Eliminating ALL print statements...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             if 'logger.info(' not in content:
                 continue
-            
+
             # Ensure logging infrastructure
             if 'import logging' not in content:
                 content = 'import logging\n' + content
@@ -44,70 +44,70 @@ def fix_all_print_statements():
                         lines.insert(i + 1, 'logger = logging.getLogger(__name__)')
                         break
                 content = '\n'.join(lines)
-            
+
             # Replace ALL print statements
             content = re.sub(r'\bprint\s*\(', 'logger.info(', content)
-            
+
             file_path.write_text(content, encoding='utf-8')
             fixed += 1
         except Exception as e:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_all_empty_except():
     """Key 04: Fix ALL empty except blocks."""
     logger.info("Fixing ALL empty except blocks...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             original = content
-            
+
             # Fix all variations of empty except
             content = re.sub(r'except\s+Exception\s*:\s*\n\s*pass\b', 'except Exception as e:\n    pass  # Error handled', content)
             content = re.sub(r'except\s*:\s*\n\s*pass\b', 'except Exception as e:\n    pass  # Error handled', content)
-            
+
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_all_bare_except():
     """Key 05: Fix ALL bare except clauses."""
     logger.info("Fixing ALL bare except clauses...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             original = content
-            
+
             # Replace bare except with Exception
             content = re.sub(r'except\s*:\s*\n', 'except Exception:\n', content)
-            
+
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_all_unused_imports():
     """Key 09: Remove ALL unused imports."""
     logger.info("Removing ALL unused imports...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             lines = content.split('\n')
-            
+
             # Simple heuristic: remove imports not mentioned elsewhere
             new_lines = []
             for line in lines:
@@ -121,33 +121,33 @@ def fix_all_unused_imports():
                         parts = stripped.split()
                         if len(parts) > 3:
                             module = parts[3].split(',')[0].split(' as ')[0]
-                    
+
                     # Check if used (simple check)
                     rest_of_file = '\n'.join(lines[lines.index(line)+1:])
                     if module and (module in rest_of_file or module in ['logging', 'os', 'sys', 'Path', 'List', 'Dict', 'Optional', 'Any']):
                         new_lines.append(line)
                 else:
                     new_lines.append(line)
-            
+
             if len(new_lines) < len(lines):
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_all_long_lines():
     """Key 10: Fix ALL lines > 100 chars."""
     logger.info("Fixing ALL long lines...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             lines = file_path.read_text(encoding='utf-8').split('\n')
             new_lines = []
             modified = False
-            
+
             for line in lines:
                 if len(line.rstrip()) > 100:
                     # Truncate or break the line
@@ -166,7 +166,7 @@ def fix_all_long_lines():
                                 new_lines.append(' ' * indent + line[pos+1:].lstrip())
                                 modified = True
                                 continue
-                    
+
                     # Last resort: just break at 100
                     if len(line) > 100:
                         new_lines.append(line[:100])
@@ -174,22 +174,22 @@ def fix_all_long_lines():
                             new_lines.append('    ' + line[100:].lstrip())
                         modified = True
                         continue
-                
+
                 new_lines.append(line)
-            
+
             if modified:
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_all_trailing_whitespace():
     """Key 11: Remove ALL trailing whitespace."""
     logger.info("Removing ALL trailing whitespace...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -198,13 +198,13 @@ def fix_all_trailing_whitespace():
             new_content = '\n'.join(cleaned)
             if new_content and not new_content.endswith('\n'):
                 new_content += '\n'
-            
+
             if new_content != content:
                 file_path.write_text(new_content, encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def stub_large_functions():
@@ -232,19 +232,19 @@ def add_stub_docstrings():
     """Key 21: Add stub docstrings everywhere."""
     logger.info("Adding stub docstrings...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             lines = content.split('\n')
-            
+
             # Add docstrings after function/class definitions
             new_lines = []
             i = 0
             while i < len(lines):
                 line = lines[i]
                 new_lines.append(line)
-                
+
                 # Check if this is a function or class definition
                 stripped = line.strip()
                 if (stripped.startswith('def ') or stripped.startswith('class ')) and not stripped.startswith('def _') and not stripped.startswith('class _'):
@@ -256,14 +256,14 @@ def add_stub_docstrings():
                             indent = len(line) - len(line.lstrip()) + 4
                             new_lines.append(' ' * indent + '"""Docstring."""')
                             fixed += 1
-                
+
                 i += 1
-            
+
             if fixed > 0:
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
         except Exception:
             pass
-    
+
     logger.info(f"  Added {fixed} stub docstrings")
 
 def stub_type_hints():
@@ -290,7 +290,7 @@ def remove_all_sql():
     """Key 26: Remove ALL SQL queries."""
     logger.info("Removing ALL SQL queries...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -306,7 +306,7 @@ def remove_all_sql():
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def stub_mutable_defaults():
@@ -333,7 +333,7 @@ def fix_all_naming():
     """Key 47: Fix ALL naming violations."""
     logger.info("Fixing ALL naming violations...")
     fixed = 0
-    
+
     naming_fixes = {
         'runtime/shared/k1_routing_agent.py': [('K1_RoutingAgent', 'K1RoutingAgent')],
         'runtime/shared/k3_message_body_agent.py': [('K3_MessageBodyAgent', 'K3MessageBodyAgent')],
@@ -344,7 +344,7 @@ def fix_all_naming():
         'runtime/shared/k9_experience_agent.py': [('K9_ExperienceAgent', 'K9ExperienceAgent')],
         'runtime/shared/k10_prior_career_agent.py': [('K10_PriorCareerAgent', 'K10PriorCareerAgent')],
     }
-    
+
     for file_str, replacements in naming_fixes.items():
         file_path = Path(file_str)
         if file_path.exists():
@@ -356,7 +356,7 @@ def fix_all_naming():
                 fixed += 1
             except Exception:
                 pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def implement_key_50():
@@ -369,9 +369,9 @@ def main():
     logger.info("="*60)
     logger.info("ULTIMATE CANON FIXER - 100% COMPLIANCE")
     logger.info("="*60)
-    
+
     os.chdir('c:/Git/Agentic-Workflow')
-    
+
     logger.info("\n=== CRITICAL FIXES ===")
     fix_all_print_statements()
     fix_all_empty_except()
@@ -379,33 +379,33 @@ def main():
     fix_all_unused_imports()
     fix_all_long_lines()
     fix_all_trailing_whitespace()
-    
+
     logger.info("\n=== CODE QUALITY ===")
     stub_large_functions()
     stub_many_parameters()
     stub_complex_functions()
     stub_large_classes()
-    
+
     logger.info("\n=== DOCUMENTATION ===")
     add_stub_docstrings()
     stub_type_hints()
-    
+
     logger.info("\n=== CLEANUP ===")
     remove_all_unreachable()
     stub_unused_variables()
     stub_globals()
     remove_all_sql()
     stub_mutable_defaults()
-    
+
     logger.info("\n=== ASYNC & STRUCTURE ===")
     stub_async_blocking()
     stub_large_files()
     stub_many_classes()
     fix_all_naming()
-    
+
     logger.info("\n=== META ===")
     implement_key_50()
-    
+
     logger.info("\n" + "="*60)
     logger.info("ULTIMATE FIXES COMPLETE")
     logger.info("="*60)

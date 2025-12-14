@@ -10,14 +10,14 @@ from .prompt_providers import K13PromptProvider
 
 class K13InterviewerSimulationAgent(BaseExecutiveAgent):
     """K.13: Oppositional Interview Simulation Agent.
-    
+
     Simulates the specific interviewer's questioning style based on
     their public digital footprint and background.
     """
-    
+
     def __init__(self, data_source_provider=None, prompt_provider: Optional[K13PromptProvider] = None):
         """Initialize K.13 agent.
-        
+
         Args:
             data_source_provider: Optional data source provider for profile research
             prompt_provider: Optional prompt provider for dynamic prompts
@@ -26,7 +26,7 @@ class K13InterviewerSimulationAgent(BaseExecutiveAgent):
         self.data_sources = data_source_provider
         self.prompt_provider = prompt_provider or K13PromptProvider()
         self.stats = {"k13_executions": 0}
-    
+
     @resilient_execution(fallback_model="gpt-4o")
     async def execute(
         self,
@@ -35,12 +35,12 @@ class K13InterviewerSimulationAgent(BaseExecutiveAgent):
         config: Dict[str, Any]
     ) -> InterviewerProfile:
         """Execute K.13 Interviewer Simulation.
-        
+
         Args:
             interviewer_linkedin: LinkedIn profile URL
             resume_text: Candidate's resume text
             config: Node configuration
-            
+
         Returns:
             InterviewerProfile with simulation insights
         """
@@ -99,18 +99,18 @@ class K13InterviewerSimulationAgent(BaseExecutiveAgent):
                 ],
                 temperature=temperature
             )
-            
+
             self.logger.info("K.13 completed successfully")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"K.13 execution failed: {e}")
             raise
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get execution statistics."""
         return self.stats.copy()
-    
+
     def reset_statistics(self) -> None:
         """Reset execution statistics."""
         self.stats["k13_executions"] = 0
