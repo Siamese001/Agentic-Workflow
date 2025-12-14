@@ -68,9 +68,7 @@ def main() -> None:
         spec = yaml.safe_load(f)
 
     total_yaml = 0
-    total_actual = 0
     total_missing = 0
-    total_extra = 0
     all_missing = []
 
     for domain, folder in DOMAIN_TO_FOLDER.items():
@@ -90,7 +88,6 @@ def main() -> None:
         total_extra += len(extra)
 
         (1 - len(missing) / len(yaml_files)) * 100 if yaml_files else 100
-        status = 'OK' if len(missing) == 0 else 'GAP'
 
         if missing and domain not in SKIP_DOMAINS:
             all_missing.extend([(domain, folder, f) for f in sorted(missing)])

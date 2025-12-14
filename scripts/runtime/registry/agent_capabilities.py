@@ -14,29 +14,14 @@ class AgentRole(Enum):
     """Functional roles for agents in the system."""
 
     # Core Research & Analysis
-    CONTEXT_GATHERER = "context_gatherer"      # Formerly K.2/HyDE - Deep research
-    FACT_CHECKER = "fact_checker"              # Validation and verification
-    INSIGHT_ANALYZER = "insight_analyzer"      # Pattern recognition
 
     # Strategy & Planning
-    STRATEGIC_PLANNER = "strategic_planner"    # Formerly Executive Brief
-    WORKFLOW_ARCHITECT = "workflow_architect"  # DAG design
-    GAP_ANALYZER = "gap_analyzer"              # Identify missing elements
 
     # Content Creation
-    CONTENT_DRAFTER = "content_drafter"        # Formerly K.3 - Primary writer
-    MESSAGE_CRAFTER = "message_crafter"        # Specialized messaging
-    RESUME_BUILDER = "resume_builder"          # Resume-specific content
 
     # Quality & Governance
-    QUALITY_CRITIC = "quality_critic"          # Formerly K.5/Refiner
-    PROTOCOL_ENFORCER = "protocol_enforcer"    # Governance and rules
-    TUNE_ADJUSTER = "tune_adjuster"            # Tone and style optimization
 
     # Specialized Roles
-    PERSONALIZER = "personalizer"              # Customization per user
-    OPTIMIZER = "optimizer"                    # Performance improvement
-    COORDINATOR = "coordinator"                # Orchestration and sync
 
 @dataclass
 class AgentCapability:

@@ -3,7 +3,6 @@ import re
 import logging
 
 
-logger = logging.getLogger(__name__)
 class TestExecutionSafetyChecks:
     """Tests for execution-level safety checks."""
 

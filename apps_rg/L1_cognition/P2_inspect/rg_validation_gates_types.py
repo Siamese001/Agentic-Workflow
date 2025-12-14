@@ -3,21 +3,11 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 class GateDecision(Enum):
     """Decision from a validation gate."""
-    PASS = 'PASS'
-    FAIL = 'FAIL'
-    WARN = 'WARN'
-    SKIP = 'SKIP'
 
 class GateSeverity(Enum):
     """Severity level for gate violations."""
-    CRITICAL = 'CRITICAL'
-    HIGH = 'HIGH'
-    MEDIUM = 'MEDIUM'
-    LOW = 'LOW'
-    INFO = 'INFO'
 
 @dataclass
 class GateResult:

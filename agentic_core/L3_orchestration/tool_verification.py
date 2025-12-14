@@ -17,9 +17,6 @@ logger = logging.getLogger(__name__)
 
 class VerificationResult(Enum):
     """Result of tool verification."""
-    PASSED = "passed"
-    FAILED = "failed"
-    WARNING = "warning"
 
 
 @dataclass
@@ -133,8 +130,6 @@ class ToolVerifier:
             issues.extend(dry_run_issues)
         
         # Determine overall result
-        errors = [i for i in issues if i.severity == "error"]
-        warnings = [i for i in issues if i.severity == "warning"]
         
         if errors and self.strict_mode:
             result = VerificationResult.FAILED

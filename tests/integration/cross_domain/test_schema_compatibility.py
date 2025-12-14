@@ -3,7 +3,6 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 class TestConfigSchemaCompatibility:
     """TODO: Add docstring."""
 

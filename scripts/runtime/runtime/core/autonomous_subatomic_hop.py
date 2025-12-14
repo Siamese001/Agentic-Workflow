@@ -456,7 +456,6 @@ class AutonomousSubatomicHop(SubatomicHop):
         """Get workflow architect from container."""
         # Mock implementation
         class MockArchitect:
-            llm = self._get_llm_client()
         
         return MockArchitect()
     

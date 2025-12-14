@@ -16,15 +16,6 @@ logger = logging.getLogger(__name__)
 
 class SDKCategory(Enum):
     """SDK category classification."""
-    LLM_PROVIDER = "llm_provider"
-    INFERENCE = "inference"
-    ROUTING = "routing"
-    VECTOR_STORE = "vector_store"
-    CACHE = "cache"
-    ORCHESTRATION = "orchestration"
-    OBSERVABILITY = "observability"
-    DOCUMENT = "document"
-    MCP = "mcp"
 
 @dataclass
 class SDKEntry:

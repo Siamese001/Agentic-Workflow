@@ -291,9 +291,7 @@ class ToolRegistry:
             # Update success rate with exponential moving average
             alpha = 0.1
             if success:
-                tool.success_rate = (1 - alpha) * tool.success_rate + alpha * 1.0
             else:
-                tool.success_rate = (1 - alpha) * tool.success_rate + alpha * 0.0
 
     def _generate_description_from_func(self, func: Callable) -> str:
         """Generate description from function docstring."""
@@ -343,7 +341,6 @@ class ToolRegistry:
 
 
 # Predefined tool categories
-TOOL_CATEGORIES = {
     "filesystem": "File and directory operations",
     "network": "Network and API communication",
     "analysis": "Data analysis and processing",

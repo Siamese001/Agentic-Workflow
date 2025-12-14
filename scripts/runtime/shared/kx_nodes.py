@@ -16,20 +16,9 @@ logger = logging.getLogger(__name__)
 
 class KNodeType(str, Enum):
     """K.X node type classification."""
-    RESUME_HEADER = "resume_header"
-    RESUME_SECTION = "resume_section"
-    OUTREACH_ROUTING = "outreach_routing"
-    OUTREACH_CONTENT = "outreach_content"
-    OUTREACH_CTA = "outreach_cta"
 
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
-    COT = "chain_of_thought"
-    TOT = "tree_of_thought"
-    HYBRID_COT_TOT = "hybrid_cot_tot"
-    SELF_CONSISTENCY = "self_consistency"
-    REFLEXION = "reflexion"
-    SOCRATIC = "socratic"
 
 @dataclass
 class RAGConfig:
@@ -43,7 +32,6 @@ class RAGConfig:
     def __post_init__(self):
         """Initialize default source weighting."""
         if not self.source_weighting:
-            self.source_weighting = {
                 "podcast_appearance": 1.5,
                 "video_interview": 1.5,
                 "conference_talk": 1.5,
@@ -87,9 +75,7 @@ class KNodeConfig:
     def __post_init__(self):
         """Initialize default configurations."""
         if self.rag_config is None:
-            self.rag_config = RAGConfig()
         if self.decoding_params is None:
-            self.decoding_params = DecodingParams()
 
 # Resume Engine K.X Nodes (K.0 - K.11)
 RESUME_KX_NODES = {

@@ -16,9 +16,6 @@ logger = logging.getLogger(__name__)
 
 class VectorStoreProvider(str, Enum):
     """Vector store provider enumeration."""
-    CHROMA = "chromadb"
-    QDRANT = "qdrant"
-    PINECONE = "pinecone"
 
 @dataclass
 class ChromaConfig:

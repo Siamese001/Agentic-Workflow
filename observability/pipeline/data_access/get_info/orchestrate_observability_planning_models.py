@@ -2,7 +2,6 @@
 import logging
 
 
-logger = logging.getLogger(__name__)
 # from .orchestrate_observability_planning_enums import *  # Star import removed
 
 @dataclass

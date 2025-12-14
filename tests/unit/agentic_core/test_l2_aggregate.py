@@ -3,7 +3,6 @@ from typing import Dict, List
 import logging
 
 
-logger = logging.getLogger(__name__)
 class TestExecutionResultAggregation:
     """Tests for aggregating execution results."""
 

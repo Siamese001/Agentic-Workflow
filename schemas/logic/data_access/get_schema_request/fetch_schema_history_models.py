@@ -3,7 +3,6 @@
 from typing import Any, Dict, List, Optional
 import logging
 
-logger = logging.getLogger(__name__)
 # from .fetch_schema_history_enums import *  # Star import removed
 
 @dataclass

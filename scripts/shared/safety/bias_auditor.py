@@ -12,13 +12,6 @@ logger = logging.getLogger(__name__)
 
 class BiasType(Enum):
     """Types of bias to detect."""
-    GENDER = "gender"
-    AGE = "age"
-    RACE = "race"
-    DISABILITY = "disability"
-    AFFILIATION = "affiliation"
-    SOCIOECONOMIC = "socioeconomic"
-    APPEARANCE = "appearance"
 
 @dataclass
 class BiasMatch:

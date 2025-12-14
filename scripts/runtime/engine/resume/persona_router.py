@@ -13,10 +13,6 @@ logger = logging.getLogger(__name__)
 
 class ArchetypeBase(str, Enum):
     """Base psychological archetypes for hiring managers."""
-    VISIONARY = "VISIONARY"   # Focus on Future, Disruption, 0-to-1
-    OPERATOR = "OPERATOR"     # Focus on Execution, Efficiency, Scale
-    GUARDIAN = "GUARDIAN"     # Focus on Risk, Stability, Compliance
-    SCALER = "SCALER"         # Focus on Growth, Metrics, Hiring
 
 class PsychometricProfile(BaseModel):
     """Psychometric profile derived from JD analysis."""

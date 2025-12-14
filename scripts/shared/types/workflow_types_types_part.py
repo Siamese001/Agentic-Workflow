@@ -3,33 +3,17 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 class CircuitState(Enum):
     """Circuit breaker states."""
-    CLOSED = auto()
-    OPEN = auto()
-    HALF_OPEN = auto()
 
 class HopStatus(Enum):
     """Status of a workflow hop/step."""
-    PENDING = auto()
-    RUNNING = auto()
-    COMPLETED = auto()
-    FAILED = auto()
-    SKIPPED = auto()
 
 class GateDecision(Enum):
     """Decision from a workflow gate."""
-    PROCEED = auto()
-    BLOCK = auto()
-    RETRY = auto()
-    ESCALATE = auto()
 
 class BulletProvenance(Enum):
     """Source of a bullet point."""
-    Verbatim = 'verbatim'
-    Enhanced = 'enhanced'
-    Generated = 'generated'
 
 @dataclass
 class HopCheckpoint:

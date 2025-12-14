@@ -3,7 +3,6 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 @dataclass
 class StrategyResult:
     """Pure strategy result data - no business logic."""

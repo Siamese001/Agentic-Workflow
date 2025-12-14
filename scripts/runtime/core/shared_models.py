@@ -9,7 +9,6 @@ import logging
 from enum import Enum
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
 
 # ============================================================================
 # SubatomicHop Models
@@ -17,20 +16,9 @@ logger = logging.getLogger(__name__)
 
 class MicroStage(Enum):
     """The 5 atomic micro-stages of a Subatomic Hop."""
-    PRE_CHECK = "PRE_CHECK"     # Validate inputs and context
-    THINK = "THINK"             # Plan the execution (CoT)
-    ACT = "ACT"                 # Execute the tool/LLM call
-    CRITIQUE = "CRITIQUE"       # Review and validate output
-    COMMIT = "COMMIT"           # Write to state/memory
 
 class HopState(Enum):
     """Overall state of a Subatomic Hop."""
-    PENDING = "PENDING"
-    RUNNING = "RUNNING"
-    PAUSED = "PAUSED"
-    COMPLETED = "COMPLETED"
-    FAILED = "FAILED"
-    NEGOTIATING = "NEGOTIATING"  # For Phase 4
 
 class RetryPolicy(BaseModel):
     """Retry policy for micro-stages."""
@@ -64,56 +52,18 @@ class StageTransition(BaseModel):
 class InjectionType(Enum):
     """Types of prompt injections."""
     # Original built-in types
-    TONE_ENHANCEMENT = "tone_enhancement"
-    ROLE_SPECIFICATION = "role_specification"
-    CONTEXT_GROUNDING = "context_grounding"
-    FORMAT_ENHANCEMENT = "format_enhancement"
-    CONSTRAINT_ENFORCEMENT = "constraint_enforcement"
-    EXAMPLE_INJECTION = "example_injection"
-    METADATA_ENRICHMENT = "metadata_enrichment"
-    STRUCTURE_IMPROVEMENT = "structure_improvement"
 
     # Instructional injection types - Framing Layer
-    GOAL_STATE_ALIGNMENT = "goal_state_alignment"
-    SUCCESS_CRITERIA_SPECIFICATION = "success_criteria_specification"
-    TASK_MODE_SPECIFICATION = "task_mode_specification"
-    SCOPE_BOUNDARY_DEFINITION = "scope_boundary_definition"
-    COST_CONSTRAINT_SPECIFICATION = "cost_constraint_specification"
 
     # Instructional injection types - Context Layer
-    UNTRUSTED_WRAPPING_DETECTION = "untrusted_wrapping_detection"
-    CANONICALIZATION_ENFORCEMENT = "canonicalization_enforcement"
-    CONTEXTUAL_PRUNING = "contextual_pruning"
-    CONSISTENCY_VALIDATION = "consistency_validation"
-    ORDERING_PRESERVATION = "ordering_preservation"
 
     # Instructional injection types - Reasoning Layer
-    FAILURE_ANTICIPATION = "failure_anticipation"
-    MULTI_BRANCH_REASONING = "multi_branch_reasoning"
-    CONFIDENCE_CALIBRATION = "confidence_calibration"
-    REASON_THEN_ANSWER = "reason_then_answer"
-    ERROR_SIMULATION = "error_simulation"
 
     # Instructional injection types - Tooling Layer
-    FEEDBACK_LOOP_INTEGRATION = "feedback_loop_integration"
-    EVIDENCE_BINDING = "evidence_binding"
-    RECONCILIATION_ENFORCEMENT = "reconciliation_enforcement"
-    SHADOW_VALIDATION = "shadow_validation"
-    MODEL_AWARENESS = "model_awareness"
 
     # Instructional injection types - Safety Layer
-    INJECTION_SHIELDING = "injection_shielding"
-    DATA_INSTRUCTION_SEPARATION = "data_instruction_separation"
-    CONSTITUTIONAL_GUARDRAILS = "constitutional_guardrails"
-    DELEGATION_GUARDS = "delegation_guards"
-    ADVERSARIAL_MODE = "adversarial_mode"
 
     # Instructional injection types - Output Layer
-    JSON_ONLY_OUTPUT = "json_only_output"
-    SCHEMA_ENFORCEMENT = "schema_enforcement"
-    STABILITY_CONTRACTS = "stability_contracts"
-    ERROR_ENVELOPES = "error_envelopes"
-    MINIMALITY_CONSTRAINTS = "minimality_constraints"
 
 class InjectionScope(BaseModel):
     """Scope where injection should be applied."""
@@ -136,7 +86,6 @@ class InjectionPattern(BaseModel):
     class Config:
         """TODO: Add docstring."""
 
-        use_enum_values = True
 
 class InjectionMatch(BaseModel):
     """Result of matching injections to context."""
@@ -174,8 +123,3 @@ class ExecutionResult(BaseModel):
 
 # Type Aliases
 # Common type aliases for better readability
-ContextData = Dict[str, Any]
-StageData = Dict[str, Any]
-InjectionVariables = Dict[str, Any]
-HopTypes = List[str]
-StageList = List[str]

@@ -3,14 +3,9 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 class RecoveryStrategy(Enum):
     """TODO: Add docstring."""
 
-    RETRY = 'retry'
-    FAIL_FAST = 'fail_fast'
-    ESCALATE = 'escalate'
-    CIRCUIT_BREAK = 'circuit_break'
 
 @dataclass
 class ResilienceError:

@@ -16,14 +16,6 @@ logger = logging.getLogger(__name__)
 
 class Provider(str, Enum):
     """LLM provider enumeration."""
-    OPENAI = "openai"
-    ANTHROPIC = "anthropic"
-    GOOGLE = "google"
-    MISTRAL = "mistral"
-    COHERE = "cohere"
-    GROQ = "groq"
-    TOGETHER = "together"
-    FIREWORKS = "fireworks"
 
 # Provider environment variable mapping
 PROVIDER_ENV_VARS = {
