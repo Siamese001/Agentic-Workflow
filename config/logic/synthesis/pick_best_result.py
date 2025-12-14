@@ -8,7 +8,6 @@ modules to comply with cognitive density limits (max 5 top-level definitions).
 The original pick_best_result.py contained 6 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .pick_best_result_impl import *  # Star import removed

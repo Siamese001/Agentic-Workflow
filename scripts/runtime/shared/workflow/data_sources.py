@@ -1,11 +1,9 @@
 """Data source providers for executive agents."""
 
 import logging
-from typing import Optional
 from tavily import TavilyClient
 
 try:
-    from tavily import TavilyClient
     TAVILY_AVAILABLE = True
 except ImportError:
     TAVILY_AVAILABLE = False
@@ -43,7 +41,10 @@ class DataSourceProvider:
             Aggregated blog content
         """
         if not self.brave_search:
-            return f"[MOCK] Engineering blog content for {company_name}: Recent posts mention migration to microservices..."
+            return f"[MOCK] Engineering blog content for {company_name}: Recent posts mention migration to microservices.
+                ..
+                ..
+                ."
 
         queries = [
             f"{company_name} engineering blog",
@@ -73,7 +74,9 @@ class DataSourceProvider:
             Technology insights from GitHub
         """
         if not self.brave_search:
-            return f"[MOCK] GitHub scan for {company_name}: Primary repos use Python, React, Kubernetes..."
+            return f"[MOCK] GitHub scan for {company_name}: Primary repos use Python,
+                React,
+                Kubernetes..."
 
         query = f"site:github.com {company_name} organization repositories"
 
@@ -102,7 +105,9 @@ class DataSourceProvider:
             Professional background and interests
         """
         if not self.brave_search:
-            return "[MOCK] Interviewer profile: 15 years at company, technical background, loves system design..."
+            return "[MOCK] Interviewer profile: 15 years at company,
+                technical background,
+                loves system design..."
 
         # Extract name from URL if possible
         name = linkedin_url.split('/')[-1] if linkedin_url else "unknown"
@@ -134,7 +139,8 @@ class DataSourceProvider:
             Aggregated research findings from multiple sources
         """
         if not self.tavily_client:
-            return f"[MOCK] Automated research for {company_name}: Engineering blog mentions microservices migration, GitHub shows Python/React/Kubernetes stack..."
+            return f"[MOCK] Automated research for {company_name}: Engineering blog mentions microservices migration,
+                GitHub shows Python/React/Kubernetes stack..."
 
         try:
             # Define search queries for different aspects

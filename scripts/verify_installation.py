@@ -20,7 +20,7 @@ def test_import(package_name, min_version=None):
         else:
 
         return True
-    ImportError as e: pass  # TODO: Handle specific exception
+    ImportError as e: pass
         return False
 
 def main():

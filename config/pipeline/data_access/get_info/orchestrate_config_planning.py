@@ -8,7 +8,6 @@ modules to comply with cognitive density limits (max 5 top-level definitions).
 The original orchestrate_config_planning.py contained 11 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .orchestrate_config_planning_impl import *  # Star import removed

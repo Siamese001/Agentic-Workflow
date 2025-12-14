@@ -223,7 +223,6 @@ class PreMortemAgent(SimpleAgentBase):
 
         try:
             response = await self._call_llm(prompt, temperature=0.2)
-            import json
             result = json.loads(response.content.strip())
 
             failure_modes = []
@@ -370,7 +369,8 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             Recommendation string
         """
-        critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and r.probability > 0.5]
+        critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and
+            r.probability > 0.5]
 
         if critical_risks:
             return "NO-GO: Address critical risks before proceeding"
@@ -429,7 +429,8 @@ class PreMortemAgent(SimpleAgentBase):
         monitoring = {}
 
         for risk in risks[:3]:  # Top 3 risks
-            monitoring[risk.risk] = f"Weekly check-ins, track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
+            monitoring[risk.risk] = f"Weekly check-ins,
+                track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
 
         return monitoring
 
@@ -467,9 +468,23 @@ class PreMortemAgent(SimpleAgentBase):
         ]
 
         for risk in report.top_risks:
-            mitigation = risk.mitigation_strategy[:50] + "..." if len(risk.mitigation_strategy) > 50 else risk.mitigation_strategy
+            mitigation = risk.
+                .mitigation_strategy[:50] + ".
+                ..
+                ..
+                ." if len(risk.
+                .mitigation_strategy) > 50 else risk.
+                .mitigation_strategy
             lines.append(
-                f"| {risk.risk[:40]}... | {risk.category} | {risk.probability:.0%} | {risk.impact} | {mitigation} |"
+                f"| {risk.
+                    .risk[:40]}.
+                    ..
+                    ..
+                    . | {risk.
+                    .category} | {risk.
+                    .probability:.
+                    .0%} | {risk.
+                    .impact} | {mitigation} |"
             )
 
         lines.extend([

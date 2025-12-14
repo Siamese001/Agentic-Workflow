@@ -8,7 +8,6 @@ import pytest
 import asyncio
 from pathlib import Path
 from typing import Dict, Any
-import logging
 
 # Test infrastructure constants
 PROJECT_ROOT = Path(__file__).parent.parent

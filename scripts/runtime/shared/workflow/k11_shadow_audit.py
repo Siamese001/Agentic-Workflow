@@ -1,6 +1,5 @@
 """K.11 Shadow Audit Agent - Technical Due Diligence."""
 
-import logging
 from typing import Dict, Any, Optional
 from .base_agent import BaseExecutiveAgent
 from .schema_definitions import TechnicalSWOT
@@ -16,7 +15,10 @@ class K11ShadowAuditAgent(BaseExecutiveAgent):
     interviews to infer technical maturity and debt.
     """
 
-    def __init__(self, data_source_provider=None, researcher: Optional[TavilyResearcher] = None, prompt_provider: Optional[K11PromptProvider] = None):
+    def __init__(self,
+        data_source_provider=None,
+        researcher: Optional[TavilyResearcher] = None,
+        prompt_provider: Optional[K11PromptProvider] = None):
         """Initialize K.11 agent.
 
         Args:

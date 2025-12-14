@@ -52,7 +52,11 @@ class BaseExecutiveAgent:
             self.openai_client = None
             self.anthropic_client = None
 
-    def _get_client_and_model(self, config: Dict[str, Any]) -> Tuple[Optional[Union['OpenAI', 'Anthropic']], str]:
+    def _get_client_and_model(self,
+        config: Dict[str,
+        Any]) -> Tuple[Optional[Union['OpenAI',
+        'Anthropic']],
+        str]:
         """Get appropriate LLM client and model based on configuration.
 
         Args:

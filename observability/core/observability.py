@@ -14,7 +14,6 @@ Non-responsibilities:
 - Business logic
 - Layer-specific operations
 """
-import logging
 
 # FILE: observability.py
 

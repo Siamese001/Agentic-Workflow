@@ -1,7 +1,6 @@
 """Check npx installation and package availability."""
 
 import subprocess
-import sys
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,14 +24,22 @@ def check_npx():
 
     # Try with full path
     try:
-        result = subprocess.run(['C:\\Program Files\\nodejs\\npx.cmd', '--version'], capture_output=True, text=True)
+        result = subprocess.run(['C:\\Program Files\\nodejs\\npx.cmd',
+            '--version'],
+            capture_output=True,
+            text=True)
         logger.info(f"npx version (full path): {result.stdout.strip()}")
     except Exception as e:
         logger.error(f"Failed to run npx with full path: {e}")
 
     # Check if the MCP package exists
     try:
-        result = subprocess.run(['npm', 'view', '@modelcontextprotocol/server-filesystem', 'name'], capture_output=True, text=True)
+        result = subprocess.run(['npm',
+            'view',
+            '@modelcontextprotocol/server-filesystem',
+            'name'],
+            capture_output=True,
+            text=True)
         logger.info(f"Package check: {result.stdout.strip()}")
     except Exception as e:
         logger.error(f"Failed to check package: {e}")

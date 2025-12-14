@@ -9,7 +9,6 @@ import pytest
 from typing import Dict, List
 from enum import Enum
 from dataclasses import dataclass
-import logging
 
 class ValidationLevel(Enum):
     """TODO: Add docstring."""

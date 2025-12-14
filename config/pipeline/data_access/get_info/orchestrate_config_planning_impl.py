@@ -177,4 +177,15 @@ def plan_config_deployment(service: str,
     ue, 'environment': c.environment.value, 'content': c.content, 'version': c.version, 'namespace':
         c.namespace, 'description': c.description, 'tags': c.tags} for c in result.validated_configs
             ], 'deployment_plan': {'strategy': result.deployment_plan.strategy.value, 'target_enviro
-                nments': [e.value for e in result.deployment_plan.target_environments], 'rollout_percentage': result.deployment_plan.rollout_percentage, 'validation_steps': result.deployment_plan.validation_steps, 'rollback_plan': result.deployment_plan.rollback_plan, 'dependencies': result.deployment_plan.dependencies} if result.deployment_plan else None, 'validation_errors': result.validation_errors, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
+                nments': [e.value for e in result.deployment_plan.target_environments],
+                    'rollout_percentage': result.deployment_plan.rollout_percentage,
+                    'validation_steps': result.deployment_plan.validation_steps,
+                    'rollback_plan': result.deployment_plan.rollback_plan,
+                    'dependencies': result.
+                        .deployment_plan.
+                        .dependencies} if result.
+                        .deployment_plan else None,
+                    'validation_errors': result.validation_errors,
+                    'warnings': result.warnings,
+                    'errors': result.errors,
+                    'metadata': result.metadata}

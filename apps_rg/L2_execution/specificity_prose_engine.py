@@ -230,7 +230,8 @@ Throughout my career, I have consistently delivered transformative results in si
     vironments. At my previous role, I led a cloud migration initiative that reduced infrastructure
         costs by 40% while improving system reliability, directly aligning with {company_name}'s foc
             us on operational excellence. I also architected a microservices platform that enabled 3
-                x faster feature deployment, demonstrating the kind of scalable architecture that would support your expansion goals.
+                x faster feature deployment,
+                    demonstrating the kind of scalable architecture that would support your expansion goals.
 
 I would welcome the opportunity to discuss how my experience in building high-performing engineering
     teams and delivering strategic technology initiatives can contribute to {company_name}'s continu

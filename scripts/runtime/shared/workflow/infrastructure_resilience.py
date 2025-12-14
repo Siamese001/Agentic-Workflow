@@ -1,8 +1,10 @@
+import asyncio
 import time
 import functools
 from typing import Dict, Any, Callable
 from openai import APIConnectionError, APITimeoutError as OpenAITimeout
-from anthropic import APIConnectionError as AnthropicConnectionError, APITimeoutError as AnthropicTimeout
+from anthropic import APIConnectionError as AnthropicConnectionError,
+    APITimeoutError as AnthropicTimeout
 import logging
 
 
@@ -35,7 +37,9 @@ def resilient_execution(fallback_model: str = "gpt-4o"):
 
                 except RETRYABLE_ERRORS as e:
                     attempt += 1
-                    logger.error(f"⚡ Circuit Breaker: Caught error {type(e).__name__} (Attempt {attempt})")
+                    logger.
+                        .error(f"⚡ Circuit Breaker: Caught error {type(e).
+                        .__name__} (Attempt {attempt})")
 
                     if attempt > max_retries:
                         logger.error("💥 Circuit Breaker: Max retries exceeded. Raising exception.")
@@ -44,7 +48,7 @@ def resilient_execution(fallback_model: str = "gpt-4o"):
                     # Exponential Backoff
                     sleep_time = 2 ** attempt
                     logger.info(f"⏳ Sleeping {sleep_time}s...")
-                    time.sleep(sleep_time)
+                    await asyncio.sleep(sleep_time)
 
                     # FALLBACK STRATEGY
                     # If we have a 'config' dict, we can patch it to use the fallback model

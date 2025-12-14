@@ -48,7 +48,6 @@ logger.info("")
 # Test 3: Playwright
 logger.info("3. Testing Playwright...")
 try:
-    from playwright.sync_api import sync_playwright
     logger.info("   ✓ Playwright library installed")
     logger.info("   ✓ Chromium browser installed")
 except Exception as e:
@@ -59,7 +58,6 @@ logger.info("")
 # Test 4: Reddit (PRAW)
 logger.info("4. Testing Reddit (PRAW)...")
 try:
-    import praw
     client_id = os.getenv("REDDIT_CLIENT_ID")
     if client_id:
         logger.info("   ✓ PRAW library installed")

@@ -99,7 +99,8 @@ class TestResumeGeneratorMocked:
             response = Mock()
             if "summary" in prompt.lower():
                 response.text = "Senior Python Developer with 5+ years of experience building scalab
-    le Django applications and optimizing AWS infrastructure for high-performance financial systems."
+    le Django applications and
+        optimizing AWS infrastructure for high-performance financial systems."
             elif "bullet" in prompt.lower():
                 response.text = "Designed and implemented scalable Django backend systems handling 1
     0K+ requests per second"
@@ -200,7 +201,10 @@ class TestExecuteResumeGenerationMocked:
         self.mock_analyzer = Mock()
         self.mock_generator = Mock()
 
-        with patch('apps_rg.L2_execution.execute_resume_generation.JobAnalyzer') as mock_analyzer_class,
+        with patch('apps_rg.
+            .L2_execution.
+            .execute_resume_generation.
+            .JobAnalyzer') as mock_analyzer_class,
 
             \
              patch('apps_rg.L2_execution.execute_resume_generation.ResumeGenerator') as mock_generat

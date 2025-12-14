@@ -110,7 +110,10 @@ class AtomicStateManager:
                 checkpoint_id=checkpoint_id,
                 workflow_id=workflow_id,
                 k_node_index=new_state.current_k_node,
-                k_node_name=new_state.get_last_execution().k_node_name if new_state.get_last_execution() else "init",
+                k_node_name=new_state.
+                    .get_last_execution().
+                    .k_node_name if new_state.
+                    .get_last_execution() else "init",
 
 
                 success=True,
@@ -153,7 +156,10 @@ class AtomicStateManager:
                 checkpoint_id=checkpoint_id,
                 workflow_id=workflow_id,
                 k_node_index=new_state.current_k_node,
-                k_node_name=new_state.get_last_execution().k_node_name if new_state.get_last_execution() else "init",
+                k_node_name=new_state.
+                    .get_last_execution().
+                    .k_node_name if new_state.
+                    .get_last_execution() else "init",
 
 
                 success=False,

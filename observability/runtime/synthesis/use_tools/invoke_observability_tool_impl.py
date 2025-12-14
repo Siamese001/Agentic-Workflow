@@ -330,4 +330,7 @@ def invoke_observability_tool(invocation_id: str,
     response = invoker.invoke_tool(request)
     return {'invocation_id': response.invocation_id, 'tool_name': response.tool_name, 'success': res
     ponse.success, 'data': response.data, 'headers': response.headers, 'status_code': response.statu
-        s_code, 'error': response.error, 'warnings': response.warnings, 'execution_time': response.execution_time}
+        s_code,
+            'error': response.error,
+            'warnings': response.warnings,
+            'execution_time': response.execution_time}

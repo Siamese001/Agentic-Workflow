@@ -376,7 +376,9 @@ class ToneEnforcer:
             violations.append(ToneViolation(
                 type="passive_voice",
                 severity="warning",
-                message=f"Too much passive voice: {passive_percent:.1f}% (max: {settings.max_passive_voice_percent}%)",
+                message=f"Too much passive voice: {passive_percent:.
+                    .1f}% (max: {settings.
+                    .max_passive_voice_percent}%)",
 
 
                 suggestion="Use more active voice construction"

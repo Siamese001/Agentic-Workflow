@@ -75,14 +75,21 @@ def fix_smashed_directories():
             # Move the directory
             shutil.move(str(d), str(new_path))
 
-        Exception as e: pass  # TODO: Handle specific exception
+        Exception as e: pass
 def fix_repeated_concept_filenames():
     """
     Rename files with repeated concepts like state_update_update_safety_usage.py
     """
 
     pattern = re.compile(
-        r"(update.*update|check.*check|state.*state|cost.*cost|policy.*policy|rule.*rule|safety.*safety)",
+        r"(update.
+            .*update|check.
+            .*check|state.
+            .*state|cost.
+            .*cost|policy.
+            .*policy|rule.
+            .*rule|safety.
+            .*safety)",
 
         re.IGNORECASE,
     )
@@ -114,7 +121,7 @@ def fix_repeated_concept_filenames():
                     try:
                         f.rename(new_path)
 
-                    Exception as e: pass  # TODO: Handle specific exception
+                    Exception as e: pass
                 else:
 
 def create_init_files():

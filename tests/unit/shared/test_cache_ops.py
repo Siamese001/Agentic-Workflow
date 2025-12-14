@@ -8,7 +8,6 @@ from typing import Dict
 from datetime import datetime, timedelta
 import hashlib
 import json
-import logging
 
 class TestCacheDataAccess:
     """Tests for cache data access operations."""

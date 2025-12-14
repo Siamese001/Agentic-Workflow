@@ -78,7 +78,9 @@ class ConfigLoadPlanner:
                 format_mapping = {'json': ConfigFormat.JSON, 'yaml': ConfigFormat.YAML, 'toml': Conf
     igFormat.TOML, 'xml': ConfigFormat.XML, 'properties': ConfigFormat.PROPERTIES}
                 scope_mapping = {'global': ConfigScope.GLOBAL, 'region': ConfigScope.REGION, 'enviro
-    nment': ConfigScope.ENVIRONMENT, 'service': ConfigScope.SERVICE, 'instance': ConfigScope.INSTANCE}
+    nment': ConfigScope.ENVIRONMENT,
+        'service': ConfigScope.SERVICE,
+        'instance': ConfigScope.INSTANCE}
                 source = ConfigSource(id=raw_source.get('id',
                     f'source_{len(sources)}'),
                     name=raw_source.get('name',
@@ -263,4 +265,28 @@ def plan_config_load(plan_name: str,
     plan.name, 'sources': [{'id': s.id, 'name': s.name, 'config_type': s.config_type.value, 'format'
         : s.format.value, 'location': s.location, 'scope': s.scope.value, 'version': s.version, 'enc
             ryption': s.encryption, 'credentials': s.credentials} for s in result.load_plan.sources]
-                , 'validation_rules': [{'id': r.id, 'field_path': r.field_path, 'rule_type': r.rule_type, 'parameters': r.parameters, 'error_message': r.error_message} for r in result.load_plan.validation_rules], 'transformations': [{'id': t.id, 'name': t.name, 'transformation_type': t.transformation_type, 'source_fields': t.source_fields, 'target_field': t.target_field, 'parameters': t.parameters} for t in result.load_plan.transformations], 'merge_strategy': result.load_plan.merge_strategy, 'enable_validation': result.load_plan.enable_validation, 'enable_encryption': result.load_plan.enable_encryption, 'cache_ttl': result.load_plan.cache_ttl, 'metadata': result.load_plan.metadata} if result.load_plan else None, 'estimated_config_size': result.estimated_config_size, 'validation_count': result.validation_count, 'transformation_count': result.transformation_count, 'load_time_estimate': result.load_time_estimate, 'security_requirements': result.security_requirements, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
+                ,
+                    'validation_rules': [{'id': r.id,
+                    'field_path': r.field_path,
+                    'rule_type': r.rule_type,
+                    'parameters': r.parameters,
+                    'error_message': r.error_message} for r in result.load_plan.validation_rules],
+                    'transformations': [{'id': t.id,
+                    'name': t.name,
+                    'transformation_type': t.transformation_type,
+                    'source_fields': t.source_fields,
+                    'target_field': t.target_field,
+                    'parameters': t.parameters} for t in result.load_plan.transformations],
+                    'merge_strategy': result.load_plan.merge_strategy,
+                    'enable_validation': result.load_plan.enable_validation,
+                    'enable_encryption': result.load_plan.enable_encryption,
+                    'cache_ttl': result.load_plan.cache_ttl,
+                    'metadata': result.load_plan.metadata} if result.load_plan else None,
+                    'estimated_config_size': result.estimated_config_size,
+                    'validation_count': result.validation_count,
+                    'transformation_count': result.transformation_count,
+                    'load_time_estimate': result.load_time_estimate,
+                    'security_requirements': result.security_requirements,
+                    'warnings': result.warnings,
+                    'errors': result.errors,
+                    'metadata': result.metadata}

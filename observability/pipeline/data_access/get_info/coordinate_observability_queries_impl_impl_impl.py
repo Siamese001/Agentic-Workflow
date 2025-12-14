@@ -9,7 +9,6 @@ The original coordinate_observability_queries_impl_impl_impl.py contained 8 top-
     ich
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .coord_final import *  # Star import removed

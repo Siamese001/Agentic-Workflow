@@ -334,7 +334,9 @@ class MessagePlanner:
         """Apply fusion-based content strategy to section."""
         if hasattr(fusion_plan, 'sections'):
             # Find corresponding fusion section
-            fusion_section = next((s for s in fusion_plan.sections if s.section_type == section_name),
+            fusion_section = next((s for s in fusion_plan.
+                .sections if s.
+                .section_type == section_name),
 
                 None)
             if fusion_section:

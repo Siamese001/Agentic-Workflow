@@ -187,7 +187,11 @@ class PeerIntelligenceAuditor:
             passed=False,
             severity='BLOCK',
             message=f'BLOCKED: Insufficient RAG intensity - {total_searches} searches across {len(ho
-                ps)} hops (expected {self.config.total_searches} searches across {self.config.total_hops} hops)',
+                ps)} hops (expected {self.
+                    .config.
+                    .total_searches} searches across {self.
+                    .config.
+                    .total_hops} hops)',
 
             details={'total_searches': total_searches,
             'expected_searches': self.config.total_searches,

@@ -84,7 +84,10 @@ class ConfigLoadPlanner:
     def _parse_scope(self, request: Dict[str, Any]) -> ConfigScope:
         """Parse scope from request."""
         scope_mapping = {'global': ConfigScope.GLOBAL, 'organization': ConfigScope.ORGANIZATION, 'pr
-    oject': ConfigScope.PROJECT, 'service': ConfigScope.SERVICE, 'module': ConfigScope.MODULE, 'user': ConfigScope.USER}
+    oject': ConfigScope.PROJECT,
+        'service': ConfigScope.SERVICE,
+        'module': ConfigScope.MODULE,
+        'user': ConfigScope.USER}
         scope_str = request.get('scope', 'project')
         return scope_mapping.get(scope_str, ConfigScope.PROJECT)
 
@@ -222,7 +225,9 @@ class ConfigLoadPlanner:
         validation_time = len(plan.validation_rules) * 0.05
         level_multiplier = {ValidationLevel.NONE: 0.5, ValidationLevel.BASIC: 1.0, ValidationLevel.S
     TRICT: 1.5, ValidationLevel.COMPREHENSIVE: 2.0}
-        total_time = (base_time + param_time + validation_time) * level_multiplier.get(plan.validation_level,
+        total_time = (base_time + param_time + validation_time) * level_multiplier.
+            .get(plan.
+            .validation_level,
 
             1.0)
         return int(total_time)

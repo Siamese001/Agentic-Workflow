@@ -4,8 +4,6 @@ logger = logging.getLogger(__name__)
 """Automated fix for common syntax errors in Python files."""
 
 import ast
-import os
-import re
 from pathlib import Path
 from typing import List, Tuple
 import logging

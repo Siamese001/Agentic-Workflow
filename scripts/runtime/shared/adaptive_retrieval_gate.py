@@ -229,7 +229,8 @@ class AdaptiveRetrievalGate:
         # Additional checks
         if should_retrieve:
             # Check if this might be a clarification
-            if len(query.split()) < 4 and not any(pattern.search(query) for pattern in self.compiled_questions):
+            if len(query.split()) < 4 and
+                not any(pattern.search(query) for pattern in self.compiled_questions):
                 should_retrieve = False
                 reason = "Short query likely a clarification"
                 confidence = 0.7

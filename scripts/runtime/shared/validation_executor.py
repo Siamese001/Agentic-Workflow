@@ -466,7 +466,9 @@ class ValidationGateExecutor:
                     rule_id=check,
                     rule_name="Similarity Check (Strict)",
                     severity="CRITICAL",
-                    message=f"Similarity {similarity:.2%} >= threshold {threshold:.2%} (must be strictly less)",
+                    message=f"Similarity {similarity:.
+                        .2%} >= threshold {threshold:.
+                        .2%} (must be strictly less)",
 
 
                     actual=similarity,

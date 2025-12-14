@@ -35,7 +35,10 @@ class JudgeVerdict:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'criterion': self.criterion.value, 'score': self.score.value, 'score_value': self.sc
-    ore_value, 'reasoning': self.reasoning, 'evidence': self.evidence, 'suggestions': self.suggestions}
+    ore_value,
+        'reasoning': self.reasoning,
+        'evidence': self.evidence,
+        'suggestions': self.suggestions}
 
 @dataclass
 class JudgeEvaluationResult:

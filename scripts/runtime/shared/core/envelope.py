@@ -210,7 +210,8 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     stage_name=stage_name,
                     status=PipelineStageStatus.SUCCESS,
                     duration_ms=duration_ms,
-                    output_hash=output_hash or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
+                    output_hash=output_hash or
+                        hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
 
 
                     metadata=metadata or {}
@@ -222,7 +223,8 @@ class SignalEnvelope(GenericModel, Generic[T]):
                 stage_name=stage_name,
                 status=PipelineStageStatus.SUCCESS,
                 duration_ms=duration_ms,
-                output_hash=output_hash or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
+                output_hash=output_hash or
+                    hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
 
 
                 metadata=metadata or {}

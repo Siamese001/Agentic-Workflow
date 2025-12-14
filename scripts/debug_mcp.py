@@ -1,8 +1,6 @@
 """Debug MCP server connections."""
 
 import asyncio
-import subprocess
-import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,7 +11,12 @@ async def test_mcp_directly():
     servers = [
         {
             "name": "filesystem",
-            "cmd": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "./output", "./logs", "./project_knowledge"],
+            "cmd": ["npx",
+                "-y",
+                "@modelcontextprotocol/server-filesystem",
+                "./output",
+                "./logs",
+                "./project_knowledge"],
             "timeout": 30
         },
         {
@@ -50,7 +53,8 @@ async def test_mcp_directly():
                     logger.error(f"STDERR:\n{stderr.decode()}")
 
             except asyncio.TimeoutError:
-                logger.warning("Server timed out - this might be normal (MCP servers wait for stdin)")
+                logger.warning("Server timed out -
+                    this might be normal (MCP servers wait for stdin)")
                 process.terminate()
                 await process.wait()
 

@@ -4,7 +4,6 @@ Absolute Canon Fixer - Final iteration to 100% compliance
 Maximum aggression on all remaining violations.
 """
 
-import ast
 import os
 import re
 from pathlib import Path
@@ -125,7 +124,16 @@ def absolute_fix_unused_imports():
             lines = content.split('\n')
 
             # Keep only essential imports
-            essential = {'logging', 'os', 'sys', 'Path', 'List', 'Dict', 'Optional', 'Any', 'Tuple', 'Set'}
+            essential = {'logging',
+                'os',
+                'sys',
+                'Path',
+                'List',
+                'Dict',
+                'Optional',
+                'Any',
+                'Tuple',
+                'Set'}
             new_lines = []
 
             for line in lines:
@@ -234,7 +242,11 @@ def absolute_fix_docstrings():
                 new_lines.append(line)
 
                 stripped = line.strip()
-                if (stripped.startswith('def ') or stripped.startswith('async def ') or stripped.startswith('class ')) and not stripped.startswith('def _') and not stripped.startswith('class _'):
+                if (stripped.startswith('def ') or
+                    stripped.startswith('async def ')                    stripped.startswith('class ')) and
+                    not stripped.
+                        .startswith('def _')                    not stripped.
+                        .startswith('class _'):
                     # Check next line for docstring
                     if i + 1 < len(lines):
                         next_stripped = lines[i + 1].strip()

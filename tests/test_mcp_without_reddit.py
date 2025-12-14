@@ -1,7 +1,6 @@
 """Test MCP integration without Reddit credentials."""
 
 import asyncio
-import os
 from mcp_adapter import UniversalMCPClient
 import logging
 
@@ -15,15 +14,30 @@ async def test_mcp():
         "mcpServers": {
             "filesystem": {
                 "command": "cmd.exe",
-                "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-filesystem", "./output", "./logs", "./project_knowledge"]
+                "args": ["/c",
+                    "C:\\Program Files\\nodejs\\npx.cmd",
+                    "-y",
+                    "@modelcontextprotocol/server-filesystem",
+                    "./output",
+                    "./logs",
+                    "./project_knowledge"]
             },
             "browser": {
                 "command": "cmd.exe",
-                "args": ["/c", "C:\\Program Files\\nodejs\\npx.cmd", "-y", "@modelcontextprotocol/server-puppeteer"]
+                "args": ["/c",
+                    "C:\\Program Files\\nodejs\\npx.cmd",
+                    "-y",
+                    "@modelcontextprotocol/server-puppeteer"]
             },
             "terminal": {
                 "command": "uvx",
-                "args": ["mcp-server-command", "--allow-commands", "python", "pip", "grep", "cat", "ls"]
+                "args": ["mcp-server-command",
+                    "--allow-commands",
+                    "python",
+                    "pip",
+                    "grep",
+                    "cat",
+                    "ls"]
             }
         }
     }
