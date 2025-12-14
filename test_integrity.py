@@ -139,9 +139,9 @@ def test_function():
     print_step("Pinecone (Cold Memory) CRUD Cycle")
     
     try:
-        pinecone = cf.get_pinecone_connection()
+        pc = cf.get_pinecone_index()
         index_name = os.getenv("PINECONE_INDEX_NAME", "canon-memory-l2")
-        pc_index = pinecone.Index(index_name)
+        pc_index = pc.Index(index_name)
         
         # UPSERT
         pc_record = entry.to_pinecone_vector()
@@ -165,10 +165,10 @@ def test_function():
                 print_fail(f"Metadata mismatch. Got: {remote_vec['metadata']}")
                 
             # Check Dimensions
-            if len(remote_vec['values']) == 768:
-                print_success("Vector dimensions preserved (768).")
+            if len(remote_vec['values']) == 384:
+                print_success("Vector dimensions preserved (384).")
             else:
-                print_fail(f"Dimension mismatch. Expected 768, got {len(remote_vec['values'])}")
+                print_fail(f"Dimension mismatch. Expected 384, got {len(remote_vec['values'])}")
                 
             # Check vector values (exact match)
             if np.allclose(remote_vec['values'], embedding, atol=1e-6):
