@@ -3,13 +3,16 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class RouteType(Enum):
     """TODO: Add docstring."""
     'TODO: Add docstring.'
 
+
 class ArchetypeType(Enum):
     """TODO: Add docstring."""
     'TODO: Add docstring.'
+
 
 @dataclass
 class RouteClassifierConfig:
@@ -17,6 +20,7 @@ class RouteClassifierConfig:
     _temperature: float = 0.3
     _max_attempts: int = 2
     'TODO: Add docstring.'
+
 
 @dataclass
 class ClassificationResult:

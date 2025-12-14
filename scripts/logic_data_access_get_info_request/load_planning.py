@@ -11,12 +11,14 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class LoadStrategy(Enum):
     """Strategies for loading data."""
     BATCH_LOAD = "batch_load"
     STREAMING_LOAD = "streaming_load"
     INCREMENTAL_LOAD = "incremental_load"
     FULL_REFRESH = "full_refresh"
+
 
 class DataSourceType(Enum):
     """Types of data sources."""
@@ -26,6 +28,7 @@ class DataSourceType(Enum):
     STREAM = "stream"
     CLOUD_STORAGE = "cloud_storage"
 
+
 class DataFormat(Enum):
     """Supported data formats."""
     JSON = "json"
@@ -33,6 +36,7 @@ class DataFormat(Enum):
     PARQUET = "parquet"
     XML = "xml"
     BINARY = "binary"
+
 
 @dataclass
 class LoadSource:
@@ -45,6 +49,7 @@ class LoadSource:
     credentials: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class LoadTransformation:
     """Definition of a data transformation during load."""
@@ -53,6 +58,7 @@ class LoadTransformation:
     transformation_type: str  # filter, map, reduce, aggregate
     parameters: Dict[str, Any] = field(default_factory=dict)
     conditions: List[str] = field(default_factory=list)
+
 
 @dataclass
 class LoadPlan:
@@ -69,6 +75,7 @@ class LoadPlan:
     timeout_seconds: int = 300
     metadata: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class LoadPlanningConfig:
     """Configuration for load planning operations."""
@@ -78,6 +85,7 @@ class LoadPlanningConfig:
     max_sources_per_plan: int = 10
     default_batch_size: int = 1000
     log_level: str = "INFO"
+
 
 @dataclass
 class LoadPlanningResult:
@@ -90,6 +98,7 @@ class LoadPlanningResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 class ScriptsLoadPlanner:
     """Planner for scripts data loading operations."""

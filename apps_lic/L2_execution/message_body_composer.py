@@ -27,7 +27,6 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 @dataclass
 class MessageBodyConfig:
     """TODO: Add docstring."""
@@ -35,8 +34,10 @@ class MessageBodyConfig:
     TEMPERATURE: FLOAT = 0.6
     max_attempts: int = 3
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class MessageBodyResult:
     """Docstring."""
@@ -47,6 +48,7 @@ class MessageBodyResult:
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
+
 
 class MessageBodyComposer:
     """

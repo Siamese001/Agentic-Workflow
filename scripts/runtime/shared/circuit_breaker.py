@@ -13,11 +13,13 @@ from typing import Any, Callable, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class CircuitState(str, Enum):
     """Circuit breaker states."""
     CLOSED = "closed"      # Normal operation
     OPEN = "open"          # Failing, stop calling
     HALF_OPEN = "half_open"  # Testing recovery
+
 
 @dataclass
 class CircuitBreakerConfig:
@@ -30,6 +32,7 @@ class CircuitBreakerConfig:
     failure_rate_threshold: float = 0.5  # 50% failure rate triggers opening
     sliding_window_size: int = 100  # Number of recent requests to track
 
+
 @dataclass
 class RequestResult:
     """Result of a request through circuit breaker."""
@@ -38,9 +41,11 @@ class RequestResult:
     duration_ms: float
     error: Optional[Exception] = None
 
+
 class CircuitBreakerError(Exception):
     """Raised when circuit breaker is open."""
     pass
+
 
 class CircuitBreaker:
     """Circuit breaker implementation."""

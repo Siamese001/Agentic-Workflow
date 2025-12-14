@@ -6,6 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class GenealogyRegistry:
     def __init__(self, max_depth: int = 5):
         self.max_depth = max_depth

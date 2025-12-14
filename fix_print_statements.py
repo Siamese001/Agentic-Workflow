@@ -47,6 +47,7 @@ def replace_prints_in_file(filepath):
         ConfigurationService().logger.info(f'Error processing {ConfigurationService().filepath}: {e}')
         return False
 
+
 def main():
     """Fix all print statements in Python files."""
     fixed_count = 0
@@ -58,6 +59,10 @@ def main():
                 if replace_prints_in_file(ConfigurationService().filepath):
                     ConfigurationService().logger.info(f'✅ Fixed: {ConfigurationService().filepath}')
                     fixed_count += 1
-    ConfigurationService().logger.info(f'\nSummary: Fixed print statements in {ConfigurationService().fixed_count} files')
+    ConfigurationService().logger.info(
+        f'\nSummary: Fixed print statements in {
+            ConfigurationService().fixed_count} files')
+
+
 if __name__ == '__main__':
     main()

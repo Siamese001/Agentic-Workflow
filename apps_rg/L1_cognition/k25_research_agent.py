@@ -40,7 +40,7 @@ class K25DeepResearchAgent:
     strategic, technical, and organizational analysis.
     """
 
-    def __init__(self, company_name: str, company_url: Optional[str] = None):
+    def __init__(self, company_name: str, company_url: Optional[str]=None):
         self.company_name = company_name
         self.company_url = company_url
         SELF.CONFIG = K25_REASONING_CONFIG

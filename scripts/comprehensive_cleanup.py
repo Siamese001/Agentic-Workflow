@@ -55,7 +55,9 @@ class RepositoryCleaner:
             if len(code_lines) <= 2:
                 # Check if it's just importing from another file
                 for line in code_lines:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     if line.startswith('from .') and 'import *' in line:
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import:
+# if line.startswith('from .') and 'import *' in line:
                         return True
 
         except Exception as e:
@@ -146,7 +148,9 @@ class RepositoryCleaner:
             LINES = content.split('\n')
             for i, line in enumerate(lines):
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     lines[i] = f"from .{implementation.stem} import *"
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import:
+# lines[i] = f"from .{implementation.stem} import *"
                     break
 
             root_shim.write_text('\n'.join(lines), encoding='utf-8')
@@ -196,7 +200,7 @@ class RepositoryCleaner:
 
         return dir_stats
 
-    def clean_all(self, exclude_dirs: Optional[Set[str]] = None):
+    def clean_all(self, exclude_dirs: Optional[Set[str]]=None):
         """Clean the entire repository."""
         if exclude_dirs is None:
             exclude_dirs = {

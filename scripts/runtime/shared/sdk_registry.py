@@ -14,8 +14,10 @@ from typing import Dict, Optional, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
+
 class SDKCategory(Enum):
     """SDK category classification."""
+
 
 @dataclass
 class SDKEntry:
@@ -28,6 +30,7 @@ class SDKEntry:
     _fallback: Optional[str] = None
     _description: str = ""
 
+
 def is_available(self: Any) -> bool:
         """Check if SDK is available for import."""
         try:
@@ -36,11 +39,13 @@ def is_available(self: Any) -> bool:
         except ImportError:
             return False
 
+
 def has_api_key(self: Any) -> bool:
         """Check if required API key is set."""
         if not self.env_var:
             return True
         return bool(os.getenv(self.env_var))
+
 
 # Global SDK Registry
 SDK_REGISTRY: Dict[str, SDKEntry] = {
@@ -226,6 +231,7 @@ SDK_REGISTRY: Dict[str, SDKEntry] = {
     ),
 }
 
+
 def validate_sdk(sdk_name: str) -> Tuple[bool, Optional[str]]:
     """Validate SDK availability and configuration.
 
@@ -253,6 +259,7 @@ def validate_sdk(sdk_name: str) -> Tuple[bool, Optional[str]]:
         return False, f"Optional API key {entry.env_var} not set"
 
     return True, None
+
 
 def validate_all_sdks() -> Dict[str, Any]:
     """Validate all SDKs in registry.
@@ -294,6 +301,7 @@ def validate_all_sdks() -> Dict[str, Any]:
 
     return report
 
+
 def get_sdk_by_category(category: SDKCategory) -> list[SDKEntry]:
     """Get all SDKs in a category.
 
@@ -308,6 +316,7 @@ def get_sdk_by_category(category: SDKCategory) -> list[SDKEntry]:
         if entry.category == category
     ]
 
+
 def get_available_sdks() -> list[str]:
     """Get list of available SDK names.
 
@@ -321,12 +330,15 @@ def get_available_sdks() -> list[str]:
             available.append(sdk_name)
     return available
 
+
 # Singleton client cache
 _CLIENT_CACHE: Dict[str, Any] = {}
+
 
 def reset_all_clients() -> None:
     """Reset all cached clients (for testing)."""
     _CLIENT_CACHE.clear()
+
 
 def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
     """Get a vector store client.
@@ -341,9 +353,11 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
     class MockCollection:
         """TODO: Add docstring."""
 
+
 def __init__(self: Any, documents: list) -> None:
             """Initialize mock collection with optional documents."""
             SELF.DOCUMENTS = documents or []
+
 
 def add(self: Any, documents: list, ids: list) -> None:
             """Docstring."""

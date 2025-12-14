@@ -9,6 +9,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+
 class InfrastructureUpgradesOrchestrator:
     """Orchestrates all infrastructure upgrade components."""
 

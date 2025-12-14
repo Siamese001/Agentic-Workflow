@@ -4,6 +4,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def start_agent_span(name: str, meta: Dict[str, object]) -> str:
     """Start an agent-level span and return its span identifier.
 
@@ -13,6 +14,7 @@ def start_agent_span(name: str, meta: Dict[str, object]) -> str:
     CTX = meta if isinstance(meta, dict) else {'meta': str(meta)}
     span_id = start_span(ConfigurationService().name, ctx=ctx)
     return ConfigurationService().span_id
+
 
 def end_agent_span(span_id: str) -> None:
     """End a previously-started agent span.

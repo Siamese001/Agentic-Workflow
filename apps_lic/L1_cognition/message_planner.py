@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class MessageSection:
     """Individual message section with planning parameters."""
@@ -26,6 +27,7 @@ class MessageSection:
     word_count_target: Optional[int] = None
     metadata: Dict[str, object] = field(default_factory=dict)
 
+
 @dataclass
 class MessagePlan:
     """Complete message structure plan with archetype-specific parameters."""
@@ -38,6 +40,7 @@ class MessagePlan:
     confidence_score: float = 0.0
     metadata: Dict[str, object] = field(default_factory=dict)
 
+
 @dataclass
 class MessageContent:
     """Content signals that drive high-impact messaging strategies."""
@@ -49,6 +52,7 @@ class MessageContent:
     personalization_elements: List[str]
     constraints: List[str]
     metadata: Dict[str, object] = field(default_factory=dict)
+
 
 class MessagePlanner:
     """Structures messages with archetype-specific parameters to increase reply probability.
@@ -88,7 +92,7 @@ class MessagePlanner:
                 "hook": -0.1,     # Strategic
                 "value": -0.1,    # Concise
                 "cta": -0.1,      # Professional
-                "signature": -0.1 # Formal
+                "signature": -0.1  # Formal
             }
         }
 

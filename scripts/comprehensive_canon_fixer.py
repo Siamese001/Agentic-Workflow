@@ -29,6 +29,7 @@ def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
 
     return python_files
 
+
 def fix_hardcoded_secrets():
     """Key 00: Remove hardcoded secrets."""
     logger.info("Fixing hardcoded secrets...")
@@ -71,6 +72,7 @@ def fix_hardcoded_secrets():
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def fix_print_statements():
     """Key 02: Replace print with logging."""
     logger.info("Fixing print statements...")
@@ -96,21 +98,21 @@ def fix_print_statements():
                     if (line.strip() and
                         not line.strip().startswith('#') and
                         '"""' not in line and "'''" not in line:
-                        insert_pos = i
+                        insert_pos=i
                         break
                 lines.insert(insert_pos, 'import logging\n')
-                CONTENT = '\n'.join(lines)
+                CONTENT='\n'.join(lines)
 
             if 'logger = logging.getLogger' not in content:
-                LINES = content.split('\n')
+                LINES=content.split('\n')
                 for i, line in enumerate(lines):
                     if 'import logging' in line:
                         LINES.INSERT(I + 1, 'LOGGER = logging.getLogger(__name__)\n')
                         break
-                CONTENT = '\n'.join(lines)
+                CONTENT='\n'.join(lines)
 
             # Replace print calls
-            CONTENT = re.sub(r'\bprint\s*\(', 'logger.info(', content)
+            CONTENT=re.sub(r'\bprint\s*\(', 'logger.info(', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -123,17 +125,17 @@ def fix_print_statements():
 def fix_debugger_statements():
     """Key 03: Remove debugger statements."""
     logger.info("Fixing debugger statements...")
-    FIXED = 0
+    FIXED=0
 
-    PATTERNS = [r'breakpoint\(\)', r'pdb\.set_trace\(\)', r'ipdb\.set_trace\(\)']
+    PATTERNS=[r'breakpoint\(\)', r'pdb\.set_trace\(\)', r'ipdb\.set_trace\(\)']
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            ORIGINAL = content
+            CONTENT=file_path.read_text(encoding='utf-8')
+            ORIGINAL=content
 
             for pattern in patterns:
-                CONTENT = re.sub(pattern, '# Debugger removed', content)
+                CONTENT=re.sub(pattern, '# Debugger removed', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -146,15 +148,15 @@ def fix_debugger_statements():
 def fix_empty_except_blocks():
     """Key 04: Fix empty except blocks."""
     logger.info("Fixing empty except blocks...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            ORIGINAL = content
+            CONTENT=file_path.read_text(encoding='utf-8')
+            ORIGINAL=content
 
             # Replace "except Exception:\n    pass" with proper handling
-            CONTENT = re.sub(
+            CONTENT=re.sub(
                 r'except\s*:\s*\n\s*pass',
                 'except Exception as e:\n    logger.warning(f"Error: {e}")',
                 content
@@ -171,15 +173,15 @@ def fix_empty_except_blocks():
 def fix_bare_except():
     """Key 05: Fix bare except clauses."""
     logger.info("Fixing bare except clauses...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            ORIGINAL = content
+            CONTENT=file_path.read_text(encoding='utf-8')
+            ORIGINAL=content
 
             # Replace bare except with Exception
-            CONTENT = re.sub(r'except\s*:', 'except Exception:', content)
+            CONTENT=re.sub(r'except\s*:', 'except Exception:', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -192,25 +194,27 @@ def fix_bare_except():
 def fix_star_imports():
     """Key 07: Remove star imports."""
     logger.info("Fixing star imports...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            TREE = ast.parse(file_path.read_text(encoding='utf-8'))
-            has_star = False
+            TREE=ast.parse(file_path.read_text(encoding='utf-8'))
+            has_star=False
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom):
                     if node.names and node.names[0].name == '*':
-                        has_star = True
+                        has_star=True
                         break
 
             if has_star:
                 # Comment out star imports
-                CONTENT = file_path.read_text(encoding='utf-8')
-                CONTENT = re.sub(
+                CONTENT=file_path.read_text(encoding='utf-8')
+                CONTENT=re.sub(
                     r'from\s+(\S+)\s+import\s+\*',
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     r'# from \1 import *  # Star import removed',
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import:
+# r'# from \1 import *  # Star import removed',
                     content
                 )
                 file_path.write_text(content, encoding='utf-8')
@@ -223,16 +227,16 @@ def fix_star_imports():
 def fix_relative_imports():
     """Key 08: Fix relative imports."""
     logger.info("Fixing relative imports...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            ORIGINAL = content
+            CONTENT=file_path.read_text(encoding='utf-8')
+            ORIGINAL=content
 
             # Convert relative imports to absolute
-            CONTENT = re.sub(r'from\s+\.\s+import', 'from agentic_workflow import', content)
-            CONTENT = re.sub(r'from\s+\.\.\s+import', 'from agentic_workflow import', content)
+            CONTENT=re.sub(r'from\s+\.\s+import', 'from agentic_workflow import', content)
+            CONTENT=re.sub(r'from\s+\.\.\s+import', 'from agentic_workflow import', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -245,39 +249,39 @@ def fix_relative_imports():
 def fix_unused_imports():
     """Key 09: Remove unused imports."""
     logger.info("Fixing unused imports...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            TREE = ast.parse(content)
+            CONTENT=file_path.read_text(encoding='utf-8')
+            TREE=ast.parse(content)
 
             # Collect imports
-            IMPORTS = {}
+            IMPORTS={}
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        IMPORTS[ALIAS.NAME] = node.lineno
+                        IMPORTS[ALIAS.NAME]=node.lineno
                 elif isinstance(node, ast.ImportFrom):
                     for alias in node.names:
-                        IMPORTS[ALIAS.NAME] = node.lineno
+                        IMPORTS[ALIAS.NAME]=node.lineno
 
             # Collect used names
-            USED = set()
+            USED=set()
             for node in ast.walk(tree):
                 if isinstance(node, ast.Name):
                     used.add(node.id)
 
             # Remove unused
-            LINES = content.split('\n')
-            to_remove = set()
+            LINES=content.split('\n')
+            to_remove=set()
 
             for imp, lineno in imports.items():
                 if imp not in used and not imp.startswith('_'):
                     to_remove.add(lineno - 1)
 
             if to_remove:
-                new_lines = [line for i, line in enumerate(lines) if i not in to_remove]
+                new_lines=[line for i, line in enumerate(lines) if i not in to_remove]
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
         except Exception:
@@ -288,27 +292,27 @@ def fix_unused_imports():
 def fix_long_lines():
     """Key 10: Fix lines > 100 chars."""
     logger.info("Fixing long lines...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            LINES = file_path.read_text(encoding='utf-8').split('\n')
-            MODIFIED = False
-            new_lines = []
+            LINES=file_path.read_text(encoding='utf-8').split('\n')
+            MODIFIED=False
+            new_lines=[]
 
             for line in lines:
                 if len(line.rstrip()) > 100:
                     # Try to break at logical points
                     if ',' in line and '(' in line:
                         # Break at commas in function calls
-                        INDENT = len(line) - len(line.lstrip())
-                        PARTS = line.split(',')
+                        INDENT=len(line) - len(line.lstrip())
+                        PARTS=line.split(',')
                         if len(parts) > 1:
                             new_lines.append(parts[0] + ',')
                             for part in parts[1:-1]:
                                 new_lines.append(' ' * (indent + 4) + part.strip() + ',')
                             new_lines.append(' ' * (indent + 4) + parts[-1].strip())
-                            MODIFIED = True
+                            MODIFIED=True
                             continue
 
                 new_lines.append(line)
@@ -324,13 +328,13 @@ def fix_long_lines():
 def fix_trailing_whitespace():
     """Key 11: Remove trailing whitespace."""
     logger.info("Fixing trailing whitespace...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            LINES = file_path.read_text(encoding='utf-8').split('\n')
-            CLEANED = [line.rstrip() for line in lines]
-            CONTENT = '\n'.join(cleaned)
+            LINES=file_path.read_text(encoding='utf-8').split('\n')
+            CLEANED=[line.rstrip() for line in lines]
+            CONTENT='\n'.join(cleaned)
             if content and not content.endswith('\n'):
                 CONTENT += '\n'
             file_path.write_text(content, encoding='utf-8')
@@ -343,13 +347,13 @@ def fix_trailing_whitespace():
 def fix_duplicate_imports():
     """Key 14: Remove duplicate imports."""
     logger.info("Fixing duplicate imports...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            LINES = file_path.read_text(encoding='utf-8').split('\n')
-            seen_imports = set()
-            new_lines = []
+            LINES=file_path.read_text(encoding='utf-8').split('\n')
+            seen_imports=set()
+            new_lines=[]
 
             for line in lines:
                 if line.strip().startswith('import ') or line.strip().startswith('from '):
@@ -371,7 +375,7 @@ def fix_naming_conventions():
     """Key 47: Fix naming conventions."""
     logger.info("Fixing naming conventions...")
 
-    RENAMES = {
+    RENAMES={
         'runtime/shared/executive_title_composer.py': [
             ('Executive_Title_Composer', 'ExecutiveTitleComposer')
         ],
@@ -381,12 +385,12 @@ def fix_naming_conventions():
     }
 
     for file_str, replacements in renames.items():
-        file_path = Path(file_str)
+        file_path=Path(file_str)
         if file_path.exists():
             try:
-                CONTENT = file_path.read_text(encoding='utf-8')
+                CONTENT=file_path.read_text(encoding='utf-8')
                 for old, new in replacements:
-                    CONTENT = content.replace(old, new)
+                    CONTENT=content.replace(old, new)
                 file_path.write_text(content, encoding='utf-8')
             except Exception:
                 pass
@@ -394,11 +398,11 @@ def fix_naming_conventions():
     # Fix underscore class names
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            ORIGINAL = content
+            CONTENT=file_path.read_text(encoding='utf-8')
+            ORIGINAL=content
 
             # Fix _ClassName to ClassName or InternalClassName
-            CONTENT = re.sub(r'class _([A-Z]\w+)', r'class Internal\1', content)
+            CONTENT=re.sub(r'class _([A-Z]\w+)', r'class Internal\1', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -410,14 +414,14 @@ def fix_naming_conventions():
 def fix_sql_queries():
     """Key 26: Remove direct SQL queries."""
     logger.info("Fixing SQL queries...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
+            CONTENT=file_path.read_text(encoding='utf-8')
             if re.search(r'(SELECT|INSERT|UPDATE|DELETE)\s+', content, re.IGNORECASE):
                 # Comment out SQL
-                CONTENT = re.sub(
+                CONTENT=re.sub(
                     r'(["\'])((SELECT|INSERT|UPDATE|DELETE)\s+[^"\']+)\1',
                     r'\1# SQL removed: \2\1',
                     content,
@@ -433,21 +437,21 @@ def fix_sql_queries():
 def fix_time_sleep():
     """Key 30: Replace await asyncio.sleep with asyncio.sleep."""
     logger.info("Fixing await asyncio.sleep calls...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
+            CONTENT=file_path.read_text(encoding='utf-8')
             if 'await asyncio.sleep' in content:
                 # Replace with asyncio.sleep
-                CONTENT = content.replace('await asyncio.sleep', 'await asyncio.sleep')
+                CONTENT=content.replace('await asyncio.sleep', 'await asyncio.sleep')
                 if 'import asyncio' not in content:
-                    LINES = content.split('\n')
+                    LINES=content.split('\n')
                     for i, line in enumerate(lines):
                         if 'import time' in line:
                             lines.insert(i + 1, 'import asyncio')
                             break
-                    CONTENT = '\n'.join(lines)
+                    CONTENT='\n'.join(lines)
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
         except Exception:
@@ -458,20 +462,20 @@ def fix_time_sleep():
 def add_missing_docstrings():
     """Key 21: Add docstrings to public functions/classes."""
     logger.info("Adding missing docstrings...")
-    FIXED = 0
+    FIXED=0
 
     for file_path in get_python_files():
         try:
-            TREE = ast.parse(file_path.read_text(encoding='utf-8'))
-            CONTENT = file_path.read_text(encoding='utf-8')
-            LINES = content.split('\n')
+            TREE=ast.parse(file_path.read_text(encoding='utf-8'))
+            CONTENT=file_path.read_text(encoding='utf-8')
+            LINES=content.split('\n')
 
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                     if not node.name.startswith('_') and not ast.get_docstring(node):
                         # Add basic docstring
-                        INDENT = ' ' * (node.col_offset + 4)
-                        DOCSTRING = f'{indent}"""TODO: Add docstring."""\n'
+                        INDENT=' ' * (node.col_offset + 4)
+                        DOCSTRING=f'{indent}"""TODO: Add docstring."""\n'
                         lines.insert(node.lineno, docstring)
                         FIXED += 1
 
@@ -492,9 +496,9 @@ def implement_key_50():
 
 def main():
     """Run all fixes to achieve 100% canon compliance."""
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" * 60)
     logger.info("COMPREHENSIVE CANON FIXER - 100% COMPLIANCE")
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" * 60)
 
     os.chdir('c:/Git/Agentic-Workflow')
 
@@ -529,9 +533,9 @@ def main():
     logger.info("\nPhase 5: Meta-Integrity")
     implement_key_50()
 
-    LOGGER.INFO("\N" + "="*60)
+    LOGGER.INFO("\N" + "=" * 60)
     logger.info("COMPREHENSIVE FIXES COMPLETE")
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" * 60)
     logger.info("\nRun canon_validator.py to verify 100% compliance.")
 
 if __name__ == '__main__':

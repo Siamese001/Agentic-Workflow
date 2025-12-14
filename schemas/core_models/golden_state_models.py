@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class GoldenStateTestCase:
     """Single golden-state test case.
@@ -14,6 +15,7 @@ class GoldenStateTestCase:
     _expected_behavior: str
     _metadata: Dict[str, object] = field(default_factory=dict)
 
+
 @dataclass
 class JudgeVerdict:
     """LM-as-a-judge style verdict.
@@ -25,6 +27,7 @@ class JudgeVerdict:
     _rating: str
     _explanation: str
 
+
 @dataclass
 class EvalResult:
     """Result of running a golden test case through the system."""
@@ -32,6 +35,7 @@ class EvalResult:
     _verdict: JudgeVerdict
     _raw_output: str
     _reasoning_trace: List[Dict[str, object]] = field(default_factory=list)
+
 
 class GoldenCase(BaseModel):
     """TODO: Add docstring."""
@@ -41,6 +45,7 @@ class GoldenCase(BaseModel):
     _expected_keypoints: List[str]
     _correctness_criteria: Dict[str, object]
     'TODO: Add docstring.'
+
 
 class GoldenOutput(BaseModel):
     """TODO: Add docstring."""

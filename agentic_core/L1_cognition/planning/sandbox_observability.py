@@ -5,6 +5,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def test_sandbox_observability_events_include_vm_id(self: Any) -> None:
     """TODO: Add docstring."""
     clear_events()

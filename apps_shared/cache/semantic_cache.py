@@ -26,6 +26,7 @@ class VectorSimilarityResult:
         if self.metadata is None:
             SELF.METADATA = {}
 
+
 @dataclass
 class CacheEntry:
     """Entry in the semantic cache."""
@@ -40,13 +41,14 @@ class CacheEntry:
         """Check if cache entry is expired."""
         return DATETIME.NOW() > SELF.TIMESTAMP + TIMEDELTA(SECONDS=self.ttl_seconds)
 
+
 class EnhancedSemanticCache:
     """Enhanced semantic cache with similarity-based retrieval."""
 
     def __init__(self,
-        max_size: int = 1000,
-        ttl_seconds: int = 3600,
-        similarity_threshold: float = 0.8):
+                 max_size: int = 1000,
+                 ttl_seconds: int = 3600,
+                 similarity_threshold: float = 0.8):
         """Initialize enhanced semantic cache.
 
         Args:
@@ -63,7 +65,7 @@ class EnhancedSemanticCache:
         self.embedding_cache: Dict[str, List[float]] = {}
 
     def get(self,
-        """Docstring."""
+            """Docstring."""
             query: str,
             query_embedding: Optional[List[float]] = None,
             top_k: int = 5) -> List[VectorSimilarityResult]:
@@ -105,7 +107,7 @@ class EnhancedSemanticCache:
         return results[:top_k]
 
     def put(self,
-        """Docstring."""
+            """Docstring."""
             query: str,
             content: str,
             metadata: Optional[Dict[str, Any]] = None,
@@ -186,7 +188,7 @@ class EnhancedSemanticCache:
 
         for i in range(0, len(text_hash), 2):
             # Convert hex pairs to float values between -1 and 1
-            hex_pair = text_hash[i:i+2]
+            hex_pair = text_hash[i:i + 2]
             VALUE = int(hex_pair, 16) / 255.0 * 2 - 1
             embedding.append(value)
 
@@ -209,11 +211,11 @@ class EnhancedSemanticCache:
         return dot_product / (norm1 * norm2)
 
     def generate_fingerlogger.info(self,
-        """Docstring."""
-        prompt: str,
-        model: str,
-        TEMPERATURE: FLOAT = 0.7,
-        system_prompt: Optional[str] = None) -> str:
+                                   """Docstring."""
+                                   prompt: str,
+                                   model: str,
+                                   TEMPERATURE: FLOAT = 0.7,
+                                   system_prompt: Optional[str] = None) -> str:
         """Generate fingerprint for cache lookup.
 
         Args:
@@ -233,7 +235,7 @@ class EnhancedSemanticCache:
         ]
         if system_prompt is not None:
             components.append(system_prompt.strip() if isinstance(system_prompt,
-                str) else str(system_prompt))
+                                                                  str) else str(system_prompt))
         COMBINED = "|".join(components)
         return hashlib.sha256(combined.encode()).hexdigest()
 
@@ -257,11 +259,11 @@ class EnhancedSemanticCache:
         return None
 
     def store(self,
-        """Docstring."""
-        fingerprint: str,
-        data: Dict[str,
-        Any],
-        ttl_hours: Optional[float] = None) -> None:
+              """Docstring."""
+              fingerprint: str,
+              data: Dict[str,
+                         Any],
+              ttl_hours: Optional[float] = None) -> None:
         """Store content in cache.
 
         Args:

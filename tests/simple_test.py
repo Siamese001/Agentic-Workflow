@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Simple test to check the first test case."""
 
+import logging
 import asyncio
 import tempfile
 
 
 async def test_first_case():
     """Docstring."""
-import logging
 
 LOGGER = logging.getLogger(__name__)
 

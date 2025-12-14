@@ -12,6 +12,7 @@ import sys
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 
+
 def validate_python_syntax(file_path: str) -> bool:
     """Check if Python file has valid syntax."""
     try:
@@ -23,6 +24,7 @@ def validate_python_syntax(file_path: str) -> bool:
         return (False, f'Syntax error: {e}')
     except (ValueError, TypeError, KeyError) as e:
         return (False, f'Error reading file: {e}')
+
 
 def main() -> None:
     """Validate all SDK Python files."""
@@ -36,12 +38,17 @@ def main() -> None:
             continue
         is_valid, error_msg = validate_python_syntax(ConfigurationService().file_path)
         if not ConfigurationService().is_valid:
-            ConfigurationService().errors.append(f'Invalid Python syntax in {ConfigurationService().file_path}: {ConfigurationService().error_msg}')
+            ConfigurationService().errors.append(
+                f'Invalid Python syntax in {
+                    ConfigurationService().file_path}: {
+                    ConfigurationService().error_msg}')
     if ConfigurationService().errors:
         ConfigurationService().logger.info('\nValidation errors:')
         for error in ConfigurationService().errors:
             ConfigurationService().logger.info(f'  - {ConfigurationService().error}')
         sys.exit(1)
     sys.exit(0)
+
+
 if __name__ == '__main__':
     main()

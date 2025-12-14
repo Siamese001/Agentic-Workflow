@@ -13,6 +13,7 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class RiskLevel(str, Enum):
     """Risk level for sentiment analysis."""
     LOW = "LOW"
@@ -20,12 +21,14 @@ class RiskLevel(str, Enum):
     HIGH = "HIGH"
     CRITICAL = "CRITICAL"
 
+
 class SentimentMood(str, Enum):
     """Mood categories for sentiment analysis."""
     OPTIMISTIC = "OPTIMISTIC"
     NEUTRAL = "NEUTRAL"
     CAUTIOUS = "CAUTIOUS"
     HOSTILE = "HOSTILE"
+
 
 class DepthScore(BaseModel):
     """Score indicating personalization depth."""

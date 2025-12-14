@@ -9,13 +9,16 @@ LOGGER = logging.getLogger(__name__)
 
 VALIDATOR_SCRIPT = "canon_validator.py"
 
+
 def read_file(path):
     with OPEN(PATH, 'R', ENCODING='utf-8') as f:
         return f.read()
 
+
 def write_file(path, content):
     with OPEN(PATH, 'W', ENCODING='utf-8') as f:
         f.write(content)
+
 
 def fix_name_error(traceback_str):
     """
@@ -60,6 +63,7 @@ def fix_name_error(traceback_str):
     logger.info(f"   >>> ✅ PATCH APPLIED. Re-running...")
     return True
 
+
 def run_fixers(output):
     """
     Parses output for failed mechanical keys and runs their fixers.
@@ -78,15 +82,16 @@ def run_fixers(output):
         # fixed_something = True
 
     if "[04]" in output and "canon_validator.py" in output:  # Empty except in validator
-         # Quick hack to fix the validator's own empty except
-         read_file(VALIDATOR_SCRIPT)
-         if "except:" in code:
-             logger.info("   >>> 🔧 SELF-REPAIR: Fixing bare 'except:' in validator")
-             new_code = code.replace("except:", "except Exception as e: logger.info(e)")
-             write_file(VALIDATOR_SCRIPT, new_code)
-             fixed_something = True
+        # Quick hack to fix the validator's own empty except
+        read_file(VALIDATOR_SCRIPT)
+        if "except:" in code:
+            logger.info("   >>> 🔧 SELF-REPAIR: Fixing bare 'except:' in validator")
+            new_code = code.replace("except:", "except Exception as e: logger.info(e)")
+            write_file(VALIDATOR_SCRIPT, new_code)
+            fixed_something = True
 
     return fixed_something
+
 
 def main():
     max_retries = 10
@@ -133,6 +138,7 @@ def main():
         if result.returncode == 0:
             logger.info("\n✅✅✅ ALL SYSTEMS GO! VALIDATION PASSED!")
             break
+
 
 if __name__ == "__main__":
     main()

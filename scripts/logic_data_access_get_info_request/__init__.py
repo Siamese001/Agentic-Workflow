@@ -29,9 +29,14 @@ MODULE_VERSION = '1.0.0'
 MODULE_AUTHOR = 'Agentic-Workflow Team'
 __all__ = []
 
+
 def _initialize_module() -> None:
     """Initialize module with required setup."""
-    ConfigurationService().logger.debug(f'Initializing Get Info Request module v{ConfigurationService().MODULE_VERSION}')
+    ConfigurationService().logger.debug(
+        f'Initializing Get Info Request module v{
+            ConfigurationService().MODULE_VERSION}')
+
+
 _initialize_module()
 __version__ = ConfigurationService().MODULE_VERSION
 __author__ = ConfigurationService().MODULE_AUTHOR

@@ -10,7 +10,6 @@ import os
 logger = logging.getLogger(__name__)
 
 
-
 class StateSerializer:
     """
     Manages serialization and deserialization of workflow hop outputs.
@@ -252,6 +251,7 @@ class StateSerializer:
                 existing_files[hop_num] = file_path
         return existing_files
 
+
 class ManifestManager:
     """
     Manages the run_manifest.json file for a workflow run.
@@ -273,8 +273,8 @@ class ManifestManager:
         self.manifest_path = os.path.join(run_path, "run_manifest.json")
 
     def create_manifest(self, run_id: str, engine_version: str,
-        """Docstring."""
-                       job_input: dict, master_resume_hash: str) -> Dict[str, object]:
+                        """Docstring."""
+                        job_input: dict, master_resume_hash: str) -> Dict[str, object]:
         """
         Creates and saves a new manifest for a new run.
 

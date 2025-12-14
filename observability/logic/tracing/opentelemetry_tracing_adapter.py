@@ -21,6 +21,7 @@ except ImportError:
 
 LOGGER = logging.getLogger(__name__)
 
+
 class SpanType(Enum):
     """Types of execution spans."""
     ORCHESTRATOR = "orchestrator"
@@ -29,6 +30,7 @@ class SpanType(Enum):
     TOOL = "tool"
     DAG_NODE = "dag_node"
     REASONING = "reasoning"
+
 
 @dataclass
 class SpanMetadata:
@@ -46,6 +48,7 @@ class SpanMetadata:
             "layer": self.layer,
             **self.attributes,
         }
+
 
 @dataclass
 class CostMetrics:
@@ -68,6 +71,7 @@ class CostMetrics:
             "llm.latency_ms": self.latency_ms,
         }
 
+
 @dataclass
 class ResilienceMetrics:
     """Resilience metrics for action execution."""
@@ -86,6 +90,7 @@ class ResilienceMetrics:
             "resilience.backoff_ms": self.backoff_ms,
             "resilience.success": self.success,
         }
+
 
 class OpenTelemetryTracingAdapter:
     """Full OpenTelemetry tracing adapter for agentic execution.
@@ -469,8 +474,10 @@ class OpenTelemetryTracingAdapter:
         """
         return self._enabled
 
+
 # Global tracer instance
 _global_tracer: Optional[OpenTelemetryTracingAdapter] = None
+
 
 def get_tracer(
     """Docstring."""
@@ -495,6 +502,7 @@ def get_tracer(
         )
 
     return _global_tracer
+
 
 def reset_tracer():
     """Reset global tracer instance."""

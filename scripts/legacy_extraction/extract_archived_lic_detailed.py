@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Detailed extraction analysis for legacy_lic archive."""
 
+import logging
 import shutil
 from pathlib import Path
 from typing import List, Set, Tuple
@@ -19,17 +20,18 @@ SOVEREIGN_ROOTS = {
     "archives"
 }
 
+
 def get_existing_filenames() -> Set[str]:
     """Docstring."""
-import logging
+
 
 LOGGER = logging.getLogger(__name__)
 
-    """Get set of all Python filenames in sovereign codebase."""
-    EXISTING = set()
-    repo_root = Path(".")
+"""Get set of all Python filenames in sovereign codebase."""
+ EXISTING = set()
+  repo_root = Path(".")
 
-    for root in SOVEREIGN_ROOTS:
+   for root in SOVEREIGN_ROOTS:
         root_path = repo_root / root
         if root_path.exists():
             for py_file in root_path.rglob("*.py"):
@@ -37,6 +39,7 @@ LOGGER = logging.getLogger(__name__)
                 existing.add(py_file.name)
 
     return existing
+
 
 def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
     """Analyze legacy files and categorize them."""
@@ -61,6 +64,7 @@ def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
             net_incremental.append(filename)
 
     return all_files, net_incremental, duplicates
+
 
 def extract_net_incremental() -> None:
     """Extract files that don't exist in sovereign codebase."""
@@ -90,21 +94,22 @@ def extract_net_incremental() -> None:
 
     return extracted_files
 
+
 if __name__ == "__main__":
 
     all_files, net_incremental, duplicates = analyze_legacy_files()
 
     if net_incremental:
-        #logger.info(f"\nNet incremental files ({len(net_incremental)}):")
+        # logger.info(f"\nNet incremental files ({len(net_incremental)}):")
         for f in sorted(net_incremental):
-            #logger.info(f"  - {f}")
+            # logger.info(f"  - {f}")
             pass
         EXTRACTED = extract_net_incremental()
 
     else:
-        #logger.info("\nNo net incremental files to extract")
+        # logger.info("\nNo net incremental files to extract")
         if duplicates:
-            #logger.info(f"\nDuplicate files ({len(set(duplicates))}):")
+            # logger.info(f"\nDuplicate files ({len(set(duplicates))}):")
             for f in sorted(set(duplicates)):
-                #logger.info(f"  - {f}")
+                # logger.info(f"  - {f}")
                 pass

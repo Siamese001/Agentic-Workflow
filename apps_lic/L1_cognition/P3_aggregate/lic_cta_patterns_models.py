@@ -3,6 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class CTAPattern:
     """Pattern for call-to-action generation."""
@@ -13,6 +14,7 @@ class CTAPattern:
     _formality: str
     _example: str
 
+
 @dataclass
 class CTATemplate:
     """Template for CTA generation by route."""
@@ -21,6 +23,7 @@ class CTATemplate:
     _examples: List[str] = field(default_factory=list)
     _variables: Dict[str, str] = field(default_factory=dict)
 
+
 @dataclass
 class DateWindowConfig:
     """Configuration for date window generation."""
@@ -28,6 +31,7 @@ class DateWindowConfig:
     _avoid_weekends: bool = True
     _avoid_holidays: bool = True
     _date_format: str = 'EEE MMM d'
+
 
 @dataclass
 class DayBufferConfig:

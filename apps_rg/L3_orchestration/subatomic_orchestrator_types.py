@@ -3,8 +3,10 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class WorkflowType(Enum):
     """Types of predefined workflows."""
+
 
 @dataclass
 class WorkflowBlueprint:

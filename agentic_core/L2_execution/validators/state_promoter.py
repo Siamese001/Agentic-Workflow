@@ -24,7 +24,7 @@ class ValidationResult(str, Enum):
     FAILED = "failed"
     REQUIRES_CORRECTION = "requires_correction"
 
-@dataclass
+@ dataclass
 class PromotionResult:
     """Result of a state promotion attempt."""
     success: bool
@@ -35,7 +35,7 @@ class PromotionResult:
     correction_attempts: int = 0
     execution_time_ms: float = 0.0
 
-@dataclass
+@ dataclass
 class ValidationRule:
     """A validation rule for content promotion."""
     name: str
@@ -71,7 +71,7 @@ class StatePromoter:
 
         logger.info(
             "state_promoter_initialized",
-            EXTRA={
+            EXTRA = {
                 "max_correction_attempts": max_correction_attempts,
                 "self_correction_enabled": enable_self_correction
             }
@@ -90,7 +90,7 @@ class StatePromoter:
 
         logger.debug(
             "validation_rule_registered",
-            EXTRA={"key": key, "rule": rule.name, "critical": rule.is_critical}
+            EXTRA = {"key": key, "rule": rule.name, "critical": rule.is_critical}
         )
 
     def register_pydantic_schema(self, key: str, schema: Type[BaseModel]) -> None:
@@ -104,7 +104,7 @@ class StatePromoter:
 
         logger.debug(
             "pydantic_schema_registered",
-            EXTRA={"key": key, "schema": schema.__name__}
+            EXTRA = {"key": key, "schema": schema.__name__}
         )
 
     async def promote(
@@ -130,10 +130,10 @@ class StatePromoter:
         # Check if key exists in SoftState
         if key not in context.soft_state.drafts:
             return PromotionResult(
-                SUCCESS=False,
-                KEY=key,
-                validation_result=ValidationResult.FAILED,
-                error_message=f"Key '{key}' not found in SoftState"
+                SUCCESS = False,
+                KEY = key,
+                validation_result = ValidationResult.FAILED,
+                error_message = f"Key '{key}' not found in SoftState"
             )
 
         CONTENT = context.soft_state.drafts[key]
@@ -154,7 +154,7 @@ class StatePromoter:
                 if success:
                     logger.info(
                         "state_promotion_successful",
-                        EXTRA={
+                        EXTRA = {
                             "execution_id": context.hard_state.execution_id,
                             "key": key,
                             "attempts": correction_attempts + 1
@@ -162,24 +162,24 @@ class StatePromoter:
                     )
 
                     return PromotionResult(
-                        SUCCESS=True,
-                        KEY=key,
-                        validation_result=ValidationResult.PASSED,
-                        promoted_content=content,
-                        correction_attempts=correction_attempts,
-                        execution_time_ms=execution_time
+                        SUCCESS = True,
+                        KEY = key,
+                        validation_result = ValidationResult.PASSED,
+                        promoted_content = content,
+                        correction_attempts = correction_attempts,
+                        execution_time_ms = execution_time
                     )
 
             elif validation_result == ValidationResult.FAILED:
                 # Critical validation failure, cannot recover
                 execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
                 return PromotionResult(
-                    SUCCESS=False,
-                    KEY=key,
-                    validation_result=ValidationResult.FAILED,
-                    error_message="Critical validation failure",
-                    correction_attempts=correction_attempts,
-                    execution_time_ms=execution_time
+                    SUCCESS = False,
+                    KEY = key,
+                    validation_result = ValidationResult.FAILED,
+                    error_message = "Critical validation failure",
+                    correction_attempts = correction_attempts,
+                    execution_time_ms = execution_time
                 )
 
             elif validation_result == ValidationResult.REQUIRES_CORRECTION:
@@ -187,30 +187,28 @@ class StatePromoter:
                 if not self.enable_self_correction:
                     execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
                     return PromotionResult(
-                        SUCCESS=False,
-                        KEY=key,
-                        validation_result=ValidationResult.REQUIRES_CORRECTION,
-                        error_message="Self-correction disabled",
-                        correction_attempts=correction_attempts,
-                        execution_time_ms=execution_time
+                        SUCCESS = False,
+                        KEY = key,
+                        validation_result = ValidationResult.REQUIRES_CORRECTION,
+                        error_message = "Self-correction disabled",
+                        correction_attempts = correction_attempts,
+                        execution_time_ms = execution_time
                     )
 
                 correction_attempts += 1
                 if correction_attempts > self.max_correction_attempts:
                     execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
                     return PromotionResult(
-                        SUCCESS=False,
-                        KEY=key,
-                        validation_result=ValidationResult.FAILED,
-                        error_message=(
+                        SUCCESS = False,
+                        KEY = key,
+                        validation_result = ValidationResult.FAILED,
+                        error_message = (
                             f"Max correction attempts ({self.max_correction_attempts}) "
                             "exceeded"
                         ),
 
-
-
-                        correction_attempts=correction_attempts,
-                        execution_time_ms=execution_time
+                        correction_attempts = correction_attempts,
+                        execution_time_ms = execution_time
                     )
 
                 # Generate correction prompt
@@ -221,10 +219,10 @@ class StatePromoter:
                 # Request correction from LLM
                 try:
                     correction_request = InferenceRequest(
-                        PROMPT=correction_prompt,
-                        CONTEXT=context,
-                        MODE=InferenceMode.VALIDATION,  # Low temperature for corrections
-                        temperature_override=0.1  # Very low temp for precise corrections
+                        PROMPT = correction_prompt,
+                        CONTEXT = context,
+                        MODE = InferenceMode.VALIDATION,  # Low temperature for corrections
+                        temperature_override = 0.1  # Very low temp for precise corrections
                     )
 
                     RESULT = await self.inference_engine.infer(correction_request)
@@ -247,7 +245,7 @@ class StatePromoter:
 
                     logger.info(
                         "self_correction_attempted",
-                        EXTRA={
+                        EXTRA = {
                             "execution_id": context.hard_state.execution_id,
                             "key": key,
                             "attempt": correction_attempts
@@ -257,32 +255,32 @@ class StatePromoter:
                 except Exception as e:
                     logger.error(
                         "self_correction_failed",
-                        EXTRA={
+                        EXTRA = {
                             "execution_id": context.hard_state.execution_id,
                             "key": key,
                             "error": str(e)
                         },
-                        exc_info=True
+                        exc_info = True
                     )
                     execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
                     return PromotionResult(
-                        SUCCESS=False,
-                        KEY=key,
-                        validation_result=ValidationResult.FAILED,
-                        error_message=f"Self-correction failed: {str(e)}",
-                        correction_attempts=correction_attempts,
-                        execution_time_ms=execution_time
+                        SUCCESS = False,
+                        KEY = key,
+                        validation_result = ValidationResult.FAILED,
+                        error_message = f"Self-correction failed: {str(e)}",
+                        correction_attempts = correction_attempts,
+                        execution_time_ms = execution_time
                     )
 
         # Should not reach here
         execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
         return PromotionResult(
-            SUCCESS=False,
-            KEY=key,
-            validation_result=ValidationResult.FAILED,
-            error_message="Unexpected error in promotion loop",
-            correction_attempts=correction_attempts,
-            execution_time_ms=execution_time
+            SUCCESS = False,
+            KEY = key,
+            validation_result = ValidationResult.FAILED,
+            error_message = "Unexpected error in promotion loop",
+            correction_attempts = correction_attempts,
+            execution_time_ms = execution_time
         )
 
     async def _validate_content(
@@ -315,7 +313,7 @@ class StatePromoter:
             except ValidationError as e:
                 logger.warning(
                     "pydantic_validation_failed",
-                    EXTRA={
+                    EXTRA = {
                         "key": key,
                         "errors": e.errors()
                     }
@@ -324,7 +322,7 @@ class StatePromoter:
             except Exception as e:
                 logger.error(
                     "schema_validation_error",
-                    EXTRA={
+                    EXTRA = {
                         "key": key,
                         "error": str(e)
                     }
@@ -338,7 +336,7 @@ class StatePromoter:
                     if not rule.validator(content):
                         logger.warning(
                             "validation_rule_failed",
-                            EXTRA={
+                            EXTRA = {
                                 "key": key,
                                 "rule": rule.name,
                                 "critical": rule.is_critical
@@ -349,7 +347,7 @@ class StatePromoter:
                 except Exception as e:
                     logger.error(
                         "validation_rule_error",
-                        EXTRA={
+                        EXTRA = {
                             "key": key,
                             "rule": rule.name,
                             "error": str(e)

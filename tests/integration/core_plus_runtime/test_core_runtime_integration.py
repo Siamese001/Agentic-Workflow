@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class LayerType(Enum):
     """TODO: Add docstring."""
 
@@ -18,8 +20,10 @@ class LayerType(Enum):
     L4_MEMORY = "L4_memory"
     L5_SAFETY = "L5_safety"
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class RuntimeContext:
     """Docstring."""
@@ -27,6 +31,7 @@ class RuntimeContext:
     config: Dict[str, object]
     state: Dict[str, object] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
+
 
 class TestCoreRuntimeIntegration:
     """Integration tests for core + runtime."""

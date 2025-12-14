@@ -39,8 +39,10 @@ class ExecutionArtifact:
     metadata: Dict[str, Any]
     TIMESTAMP: FLOAT = field(default_factory=time.time)
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class ExecutionTrace:
     """Docstring."""
@@ -53,6 +55,7 @@ class ExecutionTrace:
     artifacts: List[ExecutionArtifact]
     success: bool
     error: Optional[str] = None
+
 
 class ExecutionOrchestrator:
     """

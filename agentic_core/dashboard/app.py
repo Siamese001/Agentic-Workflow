@@ -7,6 +7,8 @@ Visual UI to debug agents using Streamlit.
 Provides timeline views, thought process inspection, and tool performance analytics.
 """
 
+import streamlit as st
+import pandas as pd
 import json
 import logging
 import sys
@@ -14,9 +16,6 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-
-import pandas as pd
-import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -35,6 +34,7 @@ if not DEPS_AVAILABLE:
 
 DB_PATH = "flight_recorder.duckdb"
 
+
 @st.cache_resource
 def get_connection():
     """Get cached database connection."""
@@ -44,6 +44,7 @@ def get_connection():
         st.error(f"Cannot connect to database: {e}")
         st.info(f"Looking for database at: {Path(DB_PATH).absolute()}")
         return None
+
 
 CONN = get_connection()
 
@@ -85,28 +86,30 @@ trace_display = traces_df.apply(
     AXIS=1
 )
 
-    "Select Mission Trace",
-    range(len(traces_df)),
-    format_func=lambda i: trace_display.iloc[i]
+"Select Mission Trace",
+range(len(traces_df)),
+def format_func(i): return trace_display.iloc[i]
+
+
 )
 
-selected_trace = traces_df.iloc[selected_idx]['trace_id']
+    selected_trace = traces_df.iloc[selected_idx]['trace_id']
 
-st.sidebar.markdown("---")
-st.sidebar.metric("Total Traces", len(traces_df))
-st.sidebar.metric("Total Events", traces_df['event_count'].sum())
+    st.sidebar.markdown("---")
+    st.sidebar.metric("Total Traces", len(traces_df))
+    st.sidebar.metric("Total Events", traces_df['event_count'].sum())
 
-st.header(f"🛸 Mission Timeline: `{selected_trace}`")
+    st.header(f"🛸 Mission Timeline: `{selected_trace}`")
 
-COL1, COL2, COL3 = st.columns(3)
-with col1:
+    COL1, COL2, COL3 = st.columns(3)
+    with col1:
     st.metric("Events", traces_df.iloc[selected_idx]['event_count'])
-with col2:
+    with col2:
     st.metric("Duration", f"{traces_df.iloc[selected_idx]['duration']:.2f}s")
-with col3:
+    with col3:
     st.metric("Start Time", traces_df.iloc[selected_idx]['start_time'].strftime("%H:%M:%S"))
 
-gantt_df = conn.execute("""
+    gantt_df = conn.execute("""
     SELECT span_id, agent_role,
            MIN(timestamp) as Start,
            MAX(timestamp) as Finish
@@ -116,40 +119,40 @@ gantt_df = conn.execute("""
     ORDER BY Start ASC
 """, [selected_trace]).df()
 
-if not gantt_df.empty:
+    if not gantt_df.empty:
     gantt_df["Start"] = pd.to_datetime(gantt_df["Start"], unit='s')
     gantt_df["Finish"] = pd.to_datetime(gantt_df["Finish"], unit='s')
     gantt_df["Duration"] = (gantt_df["Finish"] - gantt_df["Start"]).dt.total_seconds()
 
     FIG = px.timeline(
-        gantt_df,
-        x_start="Start",
-        x_end="Finish",
-        y="agent_role",
-        COLOR="agent_role",
-        hover_data=["span_id", "Duration"],
-        TITLE="Agent Execution Timeline (Gantt Chart)"
-    )
-    fig.update_yaxes(categoryorder="total ascending")
-    st.plotly_chart(fig, use_container_width=True)
-else:
-    st.warning("No span data available for timeline visualization")
+gantt_df,
+x_start = "Start",
+x_end = "Finish",
+y = "agent_role",
+COLOR = "agent_role",
+hover_data = ["span_id", "Duration"],
+ TITLE = "Agent Execution Timeline (Gantt Chart)"
+  )
+   fig.update_yaxes(categoryorder="total ascending")
+   st.plotly_chart(fig, use_container_width=True)
+   else:
+   st.warning("No span data available for timeline visualization")
 
-st.markdown("---")
+   st.markdown("---")
 
-col_left, col_right = st.columns([1, 2])
+   col_left, col_right = st.columns([1, 2])
 
-with col_left:
-    st.subheader("📋 Event Stream")
+   with col_left:
+   st.subheader("📋 Event Stream")
 
-    events_df = conn.execute("""
+   events_df = conn.execute("""
         SELECT span_id, event_type, timestamp, payload
         from traces
         WHERE trace_id = ?
         ORDER BY timestamp ASC
     """, [selected_trace]).df()
 
-    if not events_df.empty:
+        if not events_df.empty:
         events_df['timestamp'] = pd.to_datetime(events_df['timestamp'], unit='s')
 
         event_types = ["All"] + sorted(events_df['event_type'].unique().tolist())
@@ -162,17 +165,17 @@ with col_left:
 
             "Select Event",
             filtered_events.index,
-            format_func=lambda i: f"{filtered_events.loc[i,
-                'event_type']} @ {filtered_events.loc[i,
-                'timestamp'].strftime('%H:%M:%S.%f')[:-3]}"
+            format_func = lambda i: f"{filtered_events.loc[i,
+                                                           'event_type']} @ {filtered_events.loc[i,
+                                                                                                 'timestamp'].strftime('%H:%M:%S.%f')[:-3]}"
         )
-    else:
+        else:
         st.warning("No events found")
 
-with col_right:
-    st.subheader("🔍 Black Box Data")
+        with col_right:
+        st.subheader("🔍 Black Box Data")
 
-    if selected_event_idx is not None and not events_df.empty:
+        if selected_event_idx is not None and not events_df.empty:
         ROW = events_df.loc[selected_event_idx]
 
         st.info(f"**Event Type:** {row['event_type']}")
@@ -199,13 +202,13 @@ with col_right:
 
         except json.JSONDecodeError:
             st.text(row['payload'])
-    else:
+        else:
         st.info("Select an event from the stream to view details")
 
-st.markdown("---")
-st.subheader("📊 MCP Tool Performance")
+        st.markdown("---")
+        st.subheader("📊 MCP Tool Performance")
 
-tool_stats_df = conn.execute("""
+        tool_stats_df = conn.execute("""
     SELECT json_extract_string(payload, '$.tool') as tool_name,
            COUNT(*) as calls
     from traces
@@ -214,38 +217,38 @@ tool_stats_df = conn.execute("""
     ORDER BY calls DESC
 """, [selected_trace]).df()
 
-if not tool_stats_df.empty:
-    COL1, COL2 = st.columns([2, 1])
+        if not tool_stats_df.empty:
+        COL1, COL2 = st.columns([2, 1])
 
-    with col1:
+        with col1:
         FIG = px.bar(
             tool_stats_df,
             x='tool_name',
             y='calls',
             TITLE="Tool Usage Frequency",
             LABELS={'tool_name': 'Tool', 'calls': 'Number of Calls'}
-        )
+    )
         st.plotly_chart(fig, use_container_width=True)
 
-    with col2:
+        with col2:
         st.dataframe(tool_stats_df, use_container_width=True)
-else:
-    st.info("No MCP tool calls recorded for this trace")
+        else:
+        st.info("No MCP tool calls recorded for this trace")
 
-st.markdown("---")
-st.subheader("⚠️ Error Analysis")
+        st.markdown("---")
+        st.subheader("⚠️ Error Analysis")
 
-error_df = conn.execute("""
+        error_df = conn.execute("""
     SELECT span_id, event_type, timestamp, payload
     from traces
     WHERE trace_id = ? and event_type LIKE '%ERROR%'
     ORDER BY timestamp DESC
 """, [selected_trace]).df()
 
-if not error_df.empty:
-    error_df['timestamp'] = pd.to_datetime(error_df['timestamp'], unit='s')
+        if not error_df.empty:
+        error_df['timestamp'] = pd.to_datetime(error_df['timestamp'], unit='s')
 
-    for idx, row in error_df.iterrows():
+        for idx, row in error_df.iterrows():
         with st.expander(f"❌ {row['event_type']} @ {row['timestamp'].strftime('%H:%M:%S')}"):
             try:
                 PAYLOAD = json.loads(row['payload'])
@@ -253,23 +256,23 @@ if not error_df.empty:
                 st.json(payload)
             except Exception:
                 st.text(row['payload'])
-else:
-    st.success("✅ No errors recorded for this trace")
+        else:
+        st.success("✅ No errors recorded for this trace")
 
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 📈 Global Stats")
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("### 📈 Global Stats")
 
-try:
-    total_events = conn.execute("SELECT COUNT(*) as count from traces").fetchone()[0]
-    total_traces = conn.
+        try:
+        total_events = conn.execute("SELECT COUNT(*) as count from traces").fetchone()[0]
+        total_traces = conn.
         .execute("SELECT COUNT(DISTINCT trace_id) as count from traces").
         .fetchone()[0]
 
-    st.sidebar.metric("Total Events (All Time)", f"{total_events:,}")
-    st.sidebar.metric("Total Traces (All Time)", f"{total_traces:,}")
-except Exception as e:
-    st.sidebar.error(f"Stats error: {e}")
+        st.sidebar.metric("Total Events (All Time)", f"{total_events:,}")
+        st.sidebar.metric("Total Traces (All Time)", f"{total_traces:,}")
+        except Exception as e:
+        st.sidebar.error(f"Stats error: {e}")
 
-st.sidebar.markdown("---")
-st.sidebar.markdown("**Flight Recorder v1.0**")
-st.sidebar.markdown("*Subatomic Agent Observatory*")
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("**Flight Recorder v1.0**")
+        st.sidebar.markdown("*Subatomic Agent Observatory*")

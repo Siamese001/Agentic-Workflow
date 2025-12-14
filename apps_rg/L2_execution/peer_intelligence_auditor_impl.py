@@ -7,7 +7,10 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .peer_intelligence_auditor_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .peer_intelligence_auditor_types import *  # Star import removed
+
 
 class PeerIntelligenceAuditor:
     """
@@ -20,8 +23,8 @@ class PeerIntelligenceAuditor:
     """
 
     def __init__(self,
-        config: Optional[PeerIntelligenceConfig]=None,
-        gate_executor: Optional[IntegrityGateExecutor]=None):
+        config: Optional[PeerIntelligenceConfig] = None,
+        gate_executor: Optional[IntegrityGateExecutor] = None):
         SELF.CONFIG = config or PeerIntelligenceConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutor()
 

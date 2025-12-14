@@ -1,13 +1,16 @@
 """Performance tests for cache throughput."""
+import logging
 import time
 
     ould_invalidate_cache
 
+
 class TestCacheKeyThroughput:
     """Docstring."""
+
     def test_cache_key_throughput_10k_per_second(self):
             """Docstring."""
-import logging
+
 
 LOGGER = logging.getLogger(__name__)
 

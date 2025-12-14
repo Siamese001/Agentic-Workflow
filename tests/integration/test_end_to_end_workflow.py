@@ -12,13 +12,11 @@ Tests complete workflow execution with:
 Phase 1C - SDK Integration Layer
 """
 
+import pytest
 import logging
 import os
 
 logger = logging.getLogger(__name__)
-
-
-import pytest
 
     AgentMessage,
     Provider,

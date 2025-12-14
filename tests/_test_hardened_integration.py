@@ -1,4 +1,9 @@
 
+import tempfile
+import sys
+import os
+import logging
+import asyncio
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """End-to-end test for hardened orchestrator integration.
@@ -13,11 +18,6 @@ Usage:
     python test_hardened_integration.py
 """
 
-import asyncio
-import logging
-import os
-import sys
-import tempfile
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

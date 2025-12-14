@@ -9,6 +9,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class ArchetypeClassificationResult:
     """Result of archetype classification."""
@@ -18,6 +19,7 @@ class ArchetypeClassificationResult:
     cxo_precedence_triggered: bool
     manual_override_required: bool
 
+
 @dataclass
 class RouteSelectionResult:
     """Result of route selection."""
@@ -26,6 +28,7 @@ class RouteSelectionResult:
     premium_routing_mismatch: bool
     blocking_reason: Optional[str] = None
 
+
 @dataclass
 class K1Output:
     """K.1 routing agent output."""
@@ -33,6 +36,7 @@ class K1Output:
     route: RouteSelectionResult
     entrance_gates_passed: List[str]
     metadata: Dict[str, Any]
+
 
 class K1RoutingAgent(Agent):
     """K.1 specialist agent for routing and archetype classification.

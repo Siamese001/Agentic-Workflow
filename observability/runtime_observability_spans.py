@@ -46,13 +46,13 @@ def end_span(span_record: Dict[str, object]) -> None:
     """Close a previously-started span; no-op if unknown."""
 
     #     from archives.
-        .legacy_root_folders.
-        .runtime.
-        .observability.
-        .collectors import span_stack  # DEP.
-        ..
-        ..
-        .
+    .legacy_root_folders.
+    .runtime.
+    .observability.
+    .collectors import span_stack  # DEP.
+    ..
+    ..
+    .
 
     if span_record not in span_stack():
         return

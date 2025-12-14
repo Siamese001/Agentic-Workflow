@@ -15,6 +15,7 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ExecutionStatus(Enum):
     """Status of execution."""
     PENDING = "pending"
@@ -24,6 +25,7 @@ class ExecutionStatus(Enum):
     CANCELLED = "cancelled"
     RATE_LIMITED = "rate_limited"
     CIRCUIT_OPEN = "circuit_open"
+
 
 @dataclass
 class ExecutionContext:

@@ -1,5 +1,8 @@
 
 
+import pytest
+from typing import Any
+import logging
 LOGGER = logging.getLogger(__name__)
 # MERGED from UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.281754+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_llm_guardrails.py
@@ -11,18 +14,16 @@ Test LLM Guardrails
 LEVEL 5 - Unit tests for LLM guardrails and safety enforcement functionality
 """
 
-import logging
-from typing import Any
 
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy_engine import PolicyEngine...
+
 
 class TestLLMGuardrails:
     """Test suite for LLM guardrails and safety enforcement"""
+
 
 def setup_method(self: Any) -> None:
         """Setup test fixtures"""

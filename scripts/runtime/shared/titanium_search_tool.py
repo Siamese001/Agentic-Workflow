@@ -33,9 +33,9 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
         try:
             logger.info("Initializing Titanium RAG Pipeline...")
             _TITANIUM_PIPELINE = create_titanium_pipeline(
-                enable_all=True,
-                max_retrieved_docs=20,
-                top_k_final=5
+                enable_all = True,
+                max_retrieved_docs = 20,
+                top_k_final = 5
             )
 
             # Test availability

@@ -9,6 +9,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+
 class LegacyDiagnostic(BaseModel):
     """Diagnostic of legacy technology stack."""
 

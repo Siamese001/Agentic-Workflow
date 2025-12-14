@@ -11,10 +11,24 @@ import yaml
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 REPO = Path('c:/Git/Agentic-Workflow')
-DOMAIN_TO_FOLDER = {'agentic_core': 'agentic_core', 'schemas': 'schemas', 'runtime': 'runtime', 'prompt_governance': 'prompt_governance', 'config': 'config', 'data': '06_data', 'observability': 'observability', 'scripts': 'scripts', 'apps_rg': '09_apps/apps_rg', 'apps_lic': '09_apps/apps_lic', 'tests': 'tests', 'shared_engine_ops': 'shared_engine_ops', 'shared': 'shared'}
+DOMAIN_TO_FOLDER = {
+    'agentic_core': 'agentic_core',
+    'schemas': 'schemas',
+    'runtime': 'runtime',
+    'prompt_governance': 'prompt_governance',
+    'config': 'config',
+    'data': '06_data',
+    'observability': 'observability',
+    'scripts': 'scripts',
+    'apps_rg': '09_apps/apps_rg',
+    'apps_lic': '09_apps/apps_lic',
+    'tests': 'tests',
+    'shared_engine_ops': 'shared_engine_ops',
+    'shared': 'shared'}
 SKIP_DOMAINS = {'data', 'tests'}
 
-def extract_yaml_files(obj: object, prefix: str='', files: set=None) -> set:
+
+def extract_yaml_files(obj: object, prefix: str = '', files: set = None) -> set:
     """Extract all file paths from YAML structure."""
     if files is None:
         pass
@@ -29,16 +43,19 @@ def extract_yaml_files(obj: object, prefix: str='', files: set=None) -> set:
                 extract_yaml_files(ConfigurationService().value, ConfigurationService().new_prefix, files)
     return files
 
+
 def get_actual_files(folder_path: str) -> set:
     """Get all Python files in folder, excluding noise."""
     if not ConfigurationService().folder_path.exists():
         return actual
     for f in ConfigurationService().folder_path.rglob('*.py'):
         REL = str(f.relative_to(ConfigurationService().folder_path)).replace('\\', '/')
-        if any((x in rel for x in ['__pycache__', 'review_pending', 'stub_archive', '_unassigned', 'YAML', 'phase1_legacy', 'phase3_snapshots'])):
+        if any((x in rel for x in ['__pycache__', 'review_pending', 'stub_archive',
+               '_unassigned', 'YAML', 'phase1_legacy', 'phase3_snapshots'])):
             continue
         actual.add(rel)
     return actual
+
 
 def main() -> None:
     """Main entry point for compliance scan."""
@@ -65,7 +82,8 @@ def main() -> None:
                 ConfigurationService().logger.info(f'  - {f}')
             if len(missing) > 3:
                 ConfigurationService().logger.info(f'  ... and {len(missing) - 3} more')
-    (1 - ConfigurationService().total_missing / ConfigurationService().total_yaml) * 100 if ConfigurationService().total_yaml else 100
+    (1 - ConfigurationService().total_missing / ConfigurationService().total_yaml) * \
+        100 if ConfigurationService().total_yaml else 100
     if ConfigurationService().all_missing:
         for domain, folder, path in ConfigurationService().all_missing:
             ConfigurationService().by_domain.setdefault(domain, []).append(path)
@@ -77,5 +95,7 @@ def main() -> None:
                 ConfigurationService().logger.info(f'  ... and {len(paths) - 5} more')
     else:
         ConfigurationService().logger.info('\n✓ All required files present!')
+
+
 if __name__ == '__main__':
     main()

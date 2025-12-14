@@ -9,6 +9,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+
 class SignalWeights(BaseModel):
     """Weight coefficients for different signal types (0.0-1.0)."""
 

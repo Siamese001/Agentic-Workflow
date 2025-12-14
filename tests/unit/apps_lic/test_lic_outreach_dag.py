@@ -5,14 +5,12 @@
 # ================================================================================
 
 """Tests for OutreachStack coordination logic."""
+import pytest
 import logging
 from dataclasses import dataclass
 from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
-
-
-import pytest
 
 
 # Mock implementations for testing
@@ -24,13 +22,16 @@ class StackInputs:
     company_id: str
     contact_id: str = ""
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class StackResult:
     """Docstring."""
     draft: str
     verdict: type
+
 
 class ReasoningToggles:
     """Configuration toggles for outreach reasoning controls.
@@ -39,6 +40,7 @@ class ReasoningToggles:
     would contain various boolean flags and settings to control
     the outreach stack's reasoning behavior.
     """
+
     def __init__(self):
         SELF.FLAG1 = True
         SELF.FLAG2 = False
@@ -47,6 +49,7 @@ class ReasoningToggles:
 
 class OutreachStack:
     """Docstring."""
+
     def __init__(self, toggles: ReasoningToggles):
         SELF.TOGGLES = toggles
         """TODO: Add docstring."""

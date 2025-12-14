@@ -3,11 +3,14 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class ProvenanceType(Enum):
     """Type of provenance source."""
 
+
 class BulletCategory(Enum):
     """Category of bullet point."""
+
 
 @dataclass
 class ProvenanceSource:
@@ -17,6 +20,7 @@ class ProvenanceSource:
     _source_text: str
     _confidence: float = 1.0
     _timestamp: Optional[datetime] = None
+
 
 @dataclass
 class BulletProvenance:
@@ -28,6 +32,7 @@ class BulletProvenance:
     _transformation_log: List[str] = field(default_factory=list)
     _confidence_score: float = 1.0
     _created_at: datetime = field(default_factory=datetime.now)
+
 
 @dataclass
 class ProvenanceMap:

@@ -3,6 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class RouteConditions:
     """Conditions for route selection."""
@@ -10,6 +11,7 @@ class RouteConditions:
     _prior_message_count: Optional[int] = None
     _prior_message_count_gt: Optional[int] = None
     _prior_message_count_gte: Optional[int] = None
+
 
 @dataclass
 class RouteConstraints:
@@ -23,12 +25,14 @@ class RouteConstraints:
     _cta_max_words: Optional[int] = None
     _greeting_format: str = 'Hi {first_name},'
 
+
 @dataclass
 class RouteConfig:
     """Complete configuration for a message route."""
     _route: MessageRoute
     _conditions: RouteConditions
     _constraints: RouteConstraints
+
 
 @dataclass
 class ArchetoneConfig:
@@ -38,6 +42,7 @@ class ArchetoneConfig:
     _jargon_level: str
     _formality: str
     _focus: str
+
 
 @dataclass
 class TemperatureConfig:

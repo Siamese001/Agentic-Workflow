@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 @dataclass
 class ScoringWeights:
     """Weights for different scoring components."""
@@ -21,6 +20,7 @@ class ScoringWeights:
     semantic_weight: float = 0.3
     tfidf_weight: float = 0.2
     freshness_weight: float = 0.1
+
 
 @dataclass
 class ScoringResult:
@@ -36,6 +36,7 @@ class ScoringResult:
     def __post_init__(self):
         if self.metadata is None:
             SELF.METADATA = {}
+
 
 class BM25Scorer:
     """BM25 scoring algorithm implementation."""
@@ -74,8 +75,8 @@ class BM25Scorer:
         self.avg_doc_length = sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else
     0
 
-        # Store tokenized documents for scoring
-        SELF.DOCUMENTS = all_terms
+    # Store tokenized documents for scoring
+    SELF.DOCUMENTS = all_terms
 
     def score(self, query: str, doc_idx: int) -> float:
         """Score document against query using BM25.
@@ -118,6 +119,7 @@ class BM25Scorer:
     def _tokenize(self, text: str) -> List[str]:
         """Tokenize text into terms."""
         return re.findall(r"\b\w+\b", text.lower())
+
 
 class HybridScorer:
     """Hybrid scorer combining multiple scoring strategies."""
@@ -229,13 +231,13 @@ class HybridScorer:
         return 0.5
 
     def calculate_hybrid_score(self,
-        """Docstring."""
-        vector_score: float,
-        keyword_score: float,
-        weights: Optional[Dict[str,
-        FLOAT]] = None,
-        metadata: Optional[Dict[str,
-        Any]] = None) -> float:
+                               """Docstring."""
+                               vector_score: float,
+                               keyword_score: float,
+                               weights: Optional[Dict[str,
+                                                      FLOAT]] = None,
+                               metadata: Optional[Dict[str,
+                                                       Any]] = None) -> float:
         """Calculate hybrid score from vector and keyword scores.
 
         Args:
@@ -270,9 +272,9 @@ class HybridScorer:
         return score
 
     def _normalize_score(self,
-        score: float,
-        min_score: float = 0.0,
-        max_score: float = 1.0) -> float:
+                         score: float,
+                         min_score: float = 0.0,
+                         max_score: float = 1.0) -> float:
         """Normalize score to [0, 1] range.
 
         Args:

@@ -25,7 +25,6 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 @dataclass
 class SpecificityProseConfig:
     """Docstring."""
@@ -36,12 +35,14 @@ class SpecificityProseConfig:
     TEMPERATURE: FLOAT = 0.65
     max_attempts: int = 3
 
+
 @dataclass
 class CompanySpecificDetail:
     """Docstring."""
     detail: str
     category: str
     source: str
+
 
 @dataclass
 class SpecificityProseResult:
@@ -54,6 +55,7 @@ class SpecificityProseResult:
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
+
 
 class SpecificityProseEngine:
     """

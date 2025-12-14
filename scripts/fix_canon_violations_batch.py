@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Set
 
 LOGGER = logging.getLogger(__name__)
 
+
 def get_python_files(root_dir: str = ".") -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
     python_files = []
@@ -30,6 +31,7 @@ def get_python_files(root_dir: str = ".") -> List[str]:
                 python_files.append(full_path)
 
     return python_files
+
 
 def fix_empty_except_blocks(file_path: str) -> bool:
     """Fix Key 04: Replace empty except blocks with pass statements."""

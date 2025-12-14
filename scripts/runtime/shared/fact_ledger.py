@@ -12,11 +12,13 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class FactStatus(str, Enum):
     """Status of fact verification."""
     VERIFIED = "VERIFIED"
     CONFLICT = "CONFLICT"
     UNVERIFIED = "UNVERIFIED"
+
 
 class Fact(BaseModel):
     """Verified fact from master profile."""

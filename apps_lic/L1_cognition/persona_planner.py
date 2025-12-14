@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class PersonaPlan:
     """Complete persona parameters for message generation."""
@@ -26,6 +27,7 @@ class PersonaPlan:
     time_preference: str                 # "immediate" | "considered" | "deliberate"
     confidence_score: float = 0.0        # persona match confidence
     metadata: Dict[str, object] = field(default_factory=dict)
+
 
 class PersonaPlanner:
     """L1 pure planner for persona parameter generation.

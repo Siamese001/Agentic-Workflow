@@ -26,7 +26,6 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 @dataclass
 class BioWriterConfig:
     """TODO: Add docstring."""
@@ -37,8 +36,10 @@ class BioWriterConfig:
     TEMPERATURE: FLOAT = 0.6
     max_attempts: int = 3
 
+
 @dataclass
-    """TODO: Add docstring."""
+"""TODO: Add docstring."""
+
 
 class BioWriterResult:
     """Docstring."""
@@ -48,6 +49,7 @@ class BioWriterResult:
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
+
 
 class StrategistBioWriter:
     """
@@ -241,7 +243,7 @@ Generate the executive summary now:"""
                 violations.append({
                     'pronoun': match.group(),
                     'position': match.start(),
-                    'context': content[max(0, match.start()-20):match.end()+20]
+                    'context': content[max(0, match.start() - 20):match.end() + 20]
                 })
 
         if violations:
@@ -260,6 +262,7 @@ Generate the executive summary now:"""
             MESSAGE="Voice constraint satisfied - third-person only",
             SIGNATURE=f"VOICE:OK:{hash(content) % 10000}"
         )
+
 
 def create_strategist_biowriter(
     """Docstring."""

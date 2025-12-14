@@ -5,6 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class VMStatus(Enum):
     """VM operational status."""
     CREATING = 'creating'
@@ -13,12 +15,14 @@ class VMStatus(Enum):
     FAILED = 'failed'
     TERMINATED = 'terminated'
 
+
 class VMProvider(Enum):
     """VM provider types."""
     FIRECRACKER = 'firecracker'
     E2B = 'e2b'
     DOCKER = 'docker'
     LOCAL = 'local'
+
 
 @dataclass
 class VMConfig:

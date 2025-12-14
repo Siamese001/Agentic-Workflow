@@ -10,6 +10,7 @@ import re
 
 LOGGER = logging.getLogger(__name__)
 
+
 class TalentMetrics(BaseModel):
     """Metrics describing talent acquisition and management capabilities."""
 

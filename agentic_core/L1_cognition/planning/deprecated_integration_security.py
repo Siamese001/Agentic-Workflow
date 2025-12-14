@@ -6,16 +6,16 @@ Tests integration between injection detection, dependency injection,
 and V6 prompt systems to ensure end-to-end security flows work correctly.
 """
 
+import pytest
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionD...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.types import SafetyContext, Severity,...
 # from archives.legacy_root_folders.infra.di_container import initialize_default_services, inject...
+
 
 class TestBasicSecurityIntegration:
     """Test basic integration between security components."""
@@ -87,6 +87,7 @@ class TestBasicSecurityIntegration:
         assert hasattr(updated_ctx, 'safety_engine')
         assert updated_ctx.safety_engine is not None
 
+
 class TestEndToEndSecurityFlow:
     """Test end-to-end security validation flows."""
 
@@ -124,7 +125,7 @@ class TestEndToEndSecurityFlow:
             # Policy should block
             DECISION = policy.evaluate(context)
             assert decision.verdict in [Verdict.BLOCK, Verdict.REVIEW], f"Should block attack: {atta
-    ck}"
+                                                                                                ck}"
 
     def test_safe_content_allowed(self) -> None:
         """Test that safe content is allowed through security checks."""
@@ -150,12 +151,13 @@ class TestEndToEndSecurityFlow:
             # Detector should find no critical issues
             FINDINGS = detector.detect_injections(content, context)
             critical_findings = [f for f in findings if f.severity in [Severity.HIGH, Severity.CRITI
-    CAL]]
+                                                                       CAL]]
             assert len(critical_findings) == 0, f"Should not flag safe content: {content}"
 
             # Policy should allow
             DECISION = policy.evaluate(context)
             assert DECISION.VERDICT == Verdict.ALLOW, f"Should allow safe content: {content}"
+
 
 if __name__ == "__main__":
     pytest.main([__file__])

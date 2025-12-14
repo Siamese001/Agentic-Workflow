@@ -11,12 +11,12 @@ while allowing for domain-specific customizations.
 """
 
 
-
 class StandardType(Enum):
     """Types of quality standards."""
     BASE = "base"  # Minimum acceptable for all engines
     PREFERRED = "preferred"  # Target quality for production
     EXCELLENCE = "excellence"  # Aspirational quality level
+
 
 class QualityDimension(Enum):
     """Dimensions of quality assessment."""
@@ -26,6 +26,7 @@ class QualityDimension(Enum):
     COMPLETENESS = "completeness"  # Coverage of requirements
     CONSISTENCY = "consistency"  # Internal coherence
     VALUE = "value"  # Utility and impact
+
 
 @dataclass
 class QualityStandard:

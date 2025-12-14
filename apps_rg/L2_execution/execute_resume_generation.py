@@ -13,6 +13,7 @@ from typing import Any, Dict, Optional
 # Local workflow loader to avoid L3 dependency
 class LocalWorkflowLoader:
     """Local workflow loader to avoid architectural violation."""
+
     def __init__(self):
         SELF.WORKFLOWS = {}
 
@@ -20,19 +21,22 @@ class LocalWorkflowLoader:
         """Load workflow configuration."""
         return self.workflows.get(workflow_id, {})
 
+
 def create_local_workflow_loader() -> LocalWorkflowLoader:
     """Create local workflow loader instance."""
     return LocalWorkflowLoader()
 
+
 LOGGER = logging.getLogger(__name__)
+
 
 class ExecuteResumeGeneration:
     """Executor for resume domain."""
 
     def __init__(self,
-        config: Optional[Dict[str,
-        OBJECT]] = None,
-        workflow_loader: Optional[LocalWorkflowLoader] = None):
+                 config: Optional[Dict[str,
+                                       OBJECT]] = None,
+                 workflow_loader: Optional[LocalWorkflowLoader] = None):
         SELF.CONFIG = config or {}
         SELF.TIMEOUT = self.config.get("timeout", 30.0)
 
@@ -54,7 +58,7 @@ class ExecuteResumeGeneration:
         )
 
         logger.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_versio
-    n()}")
+                                                                            n()}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
@@ -143,10 +147,11 @@ class ExecuteResumeGeneration:
             "status": "completed"
         }
 
+
 def execute(action: str,
-    """Docstring."""
-    params: Dict[str,
-    object],
-    config: Optional[Dict] = None) -> ExecutionResult:
+            """Docstring."""
+            params: Dict[str,
+                         object],
+            config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return ExecuteResumeGeneration(config).execute(action, params)

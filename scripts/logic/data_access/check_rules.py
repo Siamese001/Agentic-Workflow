@@ -21,15 +21,17 @@ from datetime import datetime
 # Configure module logger
 LOGGER = logging.getLogger(__name__)
 
+
 class ProcessingError(Exception):
     """Custom exception for processing errors."""
 
+
 def process_data(data: Dict[str,
-    """Docstring."""
-    object],
-    config: Optional[Dict[str,
-    OBJECT]] = None) -> Dict[str,
-    object]:
+                            """Docstring."""
+                            object],
+                 config: Optional[Dict[str,
+                                       OBJECT]] = None) -> Dict[str,
+                                                                object]:
     """
     Process data with optional configuration.
 
@@ -52,13 +54,17 @@ def process_data(data: Dict[str,
         raise ProcessingError("Failed to process data: {}".format(e))
 
 # Additional helper functions
+
+
 def validate_input(input_data: Dict[str, object]) -> bool:
     """Validate input data."""
     return input_data is not None
 
+
 def format_output(output_data: object) -> str:
     """Format output data for display."""
     return str(output_data)
+
 
 # Export public API
 __all__ = [

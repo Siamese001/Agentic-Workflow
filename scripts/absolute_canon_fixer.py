@@ -19,6 +19,7 @@ EXCLUDE_FILES = {
     'final_canon_fixer.py', 'ultimate_canon_fixer.py', 'absolute_canon_fixer.py'
 }
 
+
 def get_python_files() -> List[Path]:
     """Get all Python files excluding specified directories and files."""
     python_files = []
@@ -28,6 +29,7 @@ def get_python_files() -> List[Path]:
             if file.endswith('.py') and file not in EXCLUDE_FILES:
                 python_files.append(Path(root) / file)
     return python_files
+
 
 def absolute_fix_logger_usage() -> None:
     """Key 02: Absolute elimination of print statements."""
@@ -65,6 +67,7 @@ def absolute_fix_logger_usage() -> None:
 
     logger.info(f"  Eliminated print in {fixed} files")
 
+
 def absolute_fix_empty_except() -> None:
     """Key 04: Absolute elimination of empty except blocks."""
     logger.info("ABSOLUTE empty except fix...")
@@ -95,6 +98,7 @@ def absolute_fix_empty_except() -> None:
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def absolute_fix_bare_except() -> None:
     """Key 05: Absolute elimination of bare except clauses."""
     logger.info("ABSOLUTE bare except fix...")
@@ -117,6 +121,7 @@ def absolute_fix_bare_except() -> None:
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def absolute_fix_unused_imports() -> None:
     """Key 09: Absolute elimination of unused imports."""
     logger.info("ABSOLUTE unused import removal...")
@@ -129,15 +134,15 @@ def absolute_fix_unused_imports() -> None:
 
             # Keep only essential imports
             ESSENTIAL = {'logging',
-                'os',
-                'sys',
-                'Path',
-                'List',
-                'Dict',
-                'Optional',
-                'Any',
-                'Tuple',
-                'Set'}
+                         'os',
+                         'sys',
+                         'Path',
+                         'List',
+                         'Dict',
+                         'Optional',
+                         'Any',
+                         'Tuple',
+                         'Set'}
             new_lines = []
 
             for line in lines:
@@ -145,7 +150,7 @@ def absolute_fix_unused_imports() -> None:
                 if stripped.startswith('import ') or stripped.startswith('from '):
                     # Check if essential or used
                     is_essential = any(ess in stripped for ess in essential)
-                    rest_of_file = '\n'.join(lines[lines.index(line)+1:])
+                    rest_of_file = '\n'.join(lines[lines.index(line) + 1:])
 
                     # Extract imported name
                     IMPORTED = None
@@ -168,6 +173,7 @@ def absolute_fix_unused_imports() -> None:
             pass  # Exception handled
 
     logger.info(f"  Fixed {fixed} files")
+
 
 def absolute_fix_long_lines() -> None:
     """Key 10: Absolute elimination of long lines."""
@@ -207,6 +213,7 @@ def absolute_fix_long_lines() -> None:
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def absolute_fix_trailing_whitespace() -> None:
     """Key 11: Absolute elimination of trailing whitespace."""
     logger.info("ABSOLUTE trailing whitespace removal...")
@@ -229,6 +236,7 @@ def absolute_fix_trailing_whitespace() -> None:
 
     logger.info(f"  Fixed {fixed} files")
 
+
 def absolute_fix_docstrings() -> None:
     """Key 21: Absolute enforcement of docstrings."""
     logger.info("ABSOLUTE docstring addition...")
@@ -250,12 +258,12 @@ def absolute_fix_docstrings() -> None:
                     stripped.startswith('async def ') or
                     stripped.startswith('class ')) and
                     not stripped.startswith('def _') and
-                    not stripped.startswith('class _')):
+                        not stripped.startswith('class _')):
                     # Check next line for docstring
                     if i + 1 < len(lines):
                         next_stripped = lines[i + 1].strip()
                         if (not next_stripped.startswith('"""') and
-                            not next_stripped.startswith("'''")):
+                                not next_stripped.startswith("'''")):
                             INDENT = len(line) - len(line.lstrip()) + 4
                             new_lines.append(' ' * indent + '"""Docstring."""')
                             FIXED += 1
@@ -268,6 +276,7 @@ def absolute_fix_docstrings() -> None:
             pass  # Exception handled
 
     logger.info(f"  Added {fixed} docstrings")
+
 
 def absolute_fix_naming() -> None:
     """Key 47: Absolute enforcement of naming conventions."""
@@ -292,11 +301,12 @@ def absolute_fix_naming() -> None:
 
     logger.info("  Fixed naming conventions")
 
+
 def main() -> None:
     """Main entry point for absolute canon fixer."""
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" * 60)
     logger.info("ABSOLUTE CANON FIXER - FINAL PUSH TO 100%")
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" * 60)
 
     os.chdir('c:/Git/Agentic-Workflow')
 
@@ -313,10 +323,11 @@ def main() -> None:
         absolute_fix_docstrings()
         absolute_fix_naming()
 
-    LOGGER.INFO("\N" + "="*60)
+    LOGGER.INFO("\N" + "=" * 60)
     logger.info("ABSOLUTE FIXES COMPLETE")
-    LOGGER.INFO("="*60)
+    LOGGER.INFO("=" * 60)
     logger.info("\nRun canon_validator.py for final verification.")
+
 
 if __name__ == "__main__":
     main()

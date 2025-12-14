@@ -42,6 +42,7 @@ class DuplicateFile:
         """Docstring."""
         return asdict(self)
 
+
 @dataclass
 class ScanReport:
     """Scan results summary."""
@@ -56,6 +57,7 @@ class ScanReport:
     def to_dict(self) -> dict:
         """Docstring."""
         return asdict(self)
+
 
 class DuplicateFileScanner:
     """Scans project for duplicate files with version suffixes."""
@@ -236,6 +238,7 @@ class DuplicateFileScanner:
             duplicate_groups=groups,
         )
 
+
 class DuplicateFileCleaner:
     """Handles cleanup operations for duplicate files."""
 
@@ -335,11 +338,12 @@ class DuplicateFileCleaner:
         self.deleted_files.extend(deleted)
         return deleted
 
+
 def print_report(report: ScanReport):
     """Print formatted scan report."""
-    LOGGER.INFO("\N" + "="*80)
+    LOGGER.INFO("\N" + "=" * 80)
     logger.info("📊 DUPLICATE FILE SCAN REPORT")
-    LOGGER.INFO("="*80)
+    LOGGER.INFO("=" * 80)
 
     logger.info(f"\n📈 Summary:")
     logger.info(f"  Total duplicates found: {report.total_duplicates}")

@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field, validator
 
 LOGGER = logging.getLogger(__name__)
 
+
 class DecomposedQuery(BaseModel):
     """Result of query decomposition."""
 
@@ -30,6 +31,7 @@ class DecomposedQuery(BaseModel):
             raise ValueError("Maximum 4 sub-queries allowed")
         return v
 
+
 class SimpleAgentBase:
     """Simple base class for standalone agents."""
 
@@ -43,6 +45,7 @@ class SimpleAgentBase:
         SELF.NAME = name
         self.model_name = model_name
         logger.info(f"Initialized {self.__class__.__name__}: model={model_name}")
+
 
 class QueryDecomposer(SimpleAgentBase):
     """Decomposes complex queries into atomic sub-queries.
@@ -140,6 +143,7 @@ class QueryDecomposer(SimpleAgentBase):
 
             class LLMResponseImpl:
                 """Docstring."""
+
             def __init__(self, content: str):
                 SELF.CONTENT = content
 
@@ -148,8 +152,10 @@ class QueryDecomposer(SimpleAgentBase):
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
             # Return fallback response
+
             class LLMResponseImpl:
                 """Docstring."""
+
             def __init__(self, content: str):
                 SELF.CONTENT = content
 

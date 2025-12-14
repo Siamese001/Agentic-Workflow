@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def test_control_plane_allows_safe_text() -> None:
     """TODO: Add docstring."""
     CTX = SafetyContext(input_text='This is a benign sentence.')

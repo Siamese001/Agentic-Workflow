@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 class ActionCapability(Enum):
     """Capabilities provided by the action plane."""
     TOOL_EXECUTION = "tool_execution"
@@ -23,6 +22,7 @@ class ActionCapability(Enum):
     EXTERNAL_SERVICES = "external_services"
     SEARCH = "search"
     RETRIEVAL = "retrieval"
+
 
 @dataclass
 class ActionRequest:
@@ -45,6 +45,7 @@ class ActionRequest:
             "retry_policy": self.retry_policy,
         }
 
+
 @dataclass
 class ActionResult:
     """Result from action execution."""
@@ -65,6 +66,7 @@ class ActionResult:
             "execution_time_ms": self.execution_time_ms,
             "retries": self.retries,
         }
+
 
 class IActionPlane(ABC):
     """Interface for the Action Plane (Hands).

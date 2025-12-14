@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class KXExecutionContext:
     """Execution context for K.X node."""
@@ -21,6 +22,7 @@ class KXExecutionContext:
     cache_client: Optional[Any] = None
     source_data: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class KXExecutionResult:
@@ -33,6 +35,7 @@ class KXExecutionResult:
     validation_results: List[Dict[str, Any]] = field(default_factory=list)
     usage: Dict[str, int] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 class KXNodeExecutor:
     """Executor for K.X knowledge extraction nodes."""

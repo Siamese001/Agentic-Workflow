@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Optional, Union
 
 LOGGER = logging.getLogger(__name__)
 
-@dataclass
+@ dataclass
 class PromptComponents:
     """Components for prompt assembly."""
     role: str
@@ -61,7 +61,7 @@ You are {role}. Your objective is {objective}.
 {output_format}
 </OUTPUT_FORMAT>"""
 
-    def __init__(self, template: Optional[str] = None, legacy_mode: bool = False):
+    def __init__(self, template: Optional[str]=None, legacy_mode: bool=False):
             """Initialize the prompt assembler.
 
         Args:

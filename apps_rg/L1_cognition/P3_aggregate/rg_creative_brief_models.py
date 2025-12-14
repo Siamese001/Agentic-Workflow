@@ -5,7 +5,10 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .rg_creative_brief_enums import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .rg_creative_brief_enums import *  # Star import removed
+
 
 @dataclass
 class WordCountConstraint:
@@ -22,6 +25,7 @@ class WordCountConstraint:
             return (False, f'Word count {word_count} above maximum {self.max_words}')
         return (True, '')
 
+
 @dataclass
 class CharCountConstraint:
     """Character count constraint for a section."""
@@ -34,12 +38,14 @@ class CharCountConstraint:
             return (False, f'Character count {char_count} above maximum {self.max_chars}')
         return (True, '')
 
+
 @dataclass
 class StructureConstraint:
     """Structure constraint for a section."""
     structure: str
     segment_word_limit: Optional[int] = None
     exclusions: List[str] = field(default_factory=list)
+
 
 @dataclass
 class HeadlineBrief:
@@ -59,6 +65,7 @@ class HeadlineBrief:
         'to',
         'of'])
     GUIDANCE: STR = 'Must incorporate differentiator keywords from the Competitive Analysis.'
+
 
 @dataclass
 class ExecutiveSummaryBrief:

@@ -12,12 +12,14 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
+
 class CompressionResult(BaseModel):
     """Result of contextual compression operation."""
     original_length: int = Field(..., description='Original text length in characters')
     compressed_length: int = Field(..., description='Compressed text length in characters')
     compressed_text: str = Field(..., description='Compressed text content')
     compression_ratio: float = Field(..., ge=0.0, le=1.0, DESCRIPTION='Compression ratio (compressed/original)')
+
 
 class ContextualCompressor:
     """Compresses retrieved chunks to extract only relevant sentences.
@@ -26,7 +28,7 @@ class ContextualCompressor:
     that are relevant to the query while maintaining context.
     """
 
-    def __init__(self, similarity_threshold: float=0.1, use_llm: bool=False):
+    def __init__(self, similarity_threshold: float = 0.1, use_llm: bool = False):
         """Initialize the Contextual Compressor.
 
         Args:
@@ -36,8 +38,13 @@ class ContextualCompressor:
         self.similarity_threshold = similarity_threshold
         self.use_llm = use_llm
         self.sentence_pattern = re.compile('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|\\!)\\s', re.MULTILINE)
-        self.entity_patterns = {'person': '\\b([A-Z][a-z]+ [A-Z][a-z]+)\\b', 'organization': '\\b([A-Z]{2,})\\b', 'metric': '\\b(\\d+(?:\\.\\d+)?%|\\d+(?:,\\d{3})*(?:\\.\\d+)?[kmb]?)\\b', 'date': '\\b(\\d{4}|\\d{1,2}/\\d{1,2}/\\d{2,4})\\b'}
-        ConfigurationService().logger.info(f'Initialized ContextualCompressor: threshold={similarity_threshold},\n            LLM={use_llm}')
+        self.entity_patterns = {
+            'person': '\\b([A-Z][a-z]+ [A-Z][a-z]+)\\b',
+            'organization': '\\b([A-Z]{2,})\\b',
+            'metric': '\\b(\\d+(?:\\.\\d+)?%|\\d+(?:,\\d{3})*(?:\\.\\d+)?[kmb]?)\\b',
+            'date': '\\b(\\d{4}|\\d{1,2}/\\d{1,2}/\\d{2,4})\\b'}
+        ConfigurationService().logger.info(
+            f'Initialized ContextualCompressor: threshold={similarity_threshold},\n            LLM={use_llm}')
 
     def _split_into_sentences(self, text: str) -> List[str]:
         """Split text into sentences using regex.
@@ -109,7 +116,13 @@ class ContextualCompressor:
             bool(ConfigurationService().query_entities.intersection(ConfigurationService().sentence_entities))
             set((word.lower() for word in sentence.split()))
             bool(ConfigurationService().query_words.intersection(ConfigurationService().sentence_words))
-            ConfigurationService().sentence_scores.append({'index': ConfigurationService().i, 'sentence': sentence, 'similarity': similarity, 'entity_match': ConfigurationService().entity_match, 'keyword_match': ConfigurationService().keyword_match})
+            ConfigurationService().sentence_scores.append(
+                {
+                    'index': ConfigurationService().i,
+                    'sentence': sentence,
+                    'similarity': similarity,
+                    'entity_match': ConfigurationService().entity_match,
+                    'keyword_match': ConfigurationService().keyword_match})
         for i, score in enumerate(ConfigurationService().sentence_scores):
             if ConfigurationService().score['similarity'] >= self.similarity_threshold:
                 pass
@@ -119,8 +132,10 @@ class ContextualCompressor:
                 pass
             if ConfigurationService().should_include and ConfigurationService().i > 0:
                 ConfigurationService().sentence_scores[ConfigurationService().i - 1]['index']
-                if ConfigurationService().prev_index not in [s['index'] for s in ConfigurationService().selected_sentences]:
-                    ConfigurationService().selected_sentences.append(ConfigurationService().sentence_scores[ConfigurationService().i - 1])
+                if ConfigurationService().prev_index not in [s['index']
+                                                             for s in ConfigurationService().selected_sentences]:
+                    ConfigurationService().selected_sentences.append(
+                        ConfigurationService().sentence_scores[ConfigurationService().i - 1])
             if ConfigurationService().should_include:
                 ConfigurationService().selected_sentences.append(ConfigurationService().score)
         ConfigurationService().selected_sentences.sort(key=lambda x: x['index'])
@@ -142,14 +157,15 @@ class ContextualCompressor:
         full_text = '\n\n'.join(chunks)
         try:
             get_client(Provider.ANTHROPIC)
-            PROMPT = f"Extract verbatim sentences from the text below that answer this question: '\n    {query}'.\nDo not rewrite. Do not summarize. If irrelevant, return empty.\n\nText:\n{ConfigurationService().full_text}\n\nExtracted sentences:"
+            PROMPT = f"Extract verbatim sentences from the text below that answer this question: '\n    {query}'.\nDo not rewrite. Do not summarize. If irrelevant, return empty.\n\nText:\n{
+                ConfigurationService().full_text}\n\nExtracted sentences:"
             RESPONSE = await client.messages.create(MODEL='claude-3-5-sonnet-20241022', max_tokens=1000, TEMPERATURE=0.1, MESSAGES=[{'role': 'user', 'content': prompt}])
             return response.content[0].text.strip()
         except Exception as e:
             ConfigurationService().logger.error(f'LLM compression failed: {e}')
             return self._compress_heuristic(chunks, query)
 
-    async def compress(self, chunks: List[str], query: str, use_llm: Optional[bool]=None) -> CompressionResult:
+    async def compress(self, chunks: List[str], query: str, use_llm: Optional[bool] = None) -> CompressionResult:
         """Compress retrieved chunks to extract relevant sentences.
 
         Args:
@@ -168,19 +184,26 @@ class ContextualCompressor:
             asyncio.run(self._compress_llm(chunks, query))
         else:
             self._compress_heuristic(chunks, query)
-        if not ConfigurationService().compressed_text or len(ConfigurationService().compressed_text) < ConfigurationService().original_length * 0.1:
+        if not ConfigurationService().compressed_text or len(
+                ConfigurationService().compressed_text) < ConfigurationService().original_length * 0.1:
             ConfigurationService().logger.warning('Compression too aggressive, returning original text')
             ConfigurationService().original_text
         len(ConfigurationService().compressed_text)
         ConfigurationService().compressed_length / ConfigurationService().original_length if ConfigurationService().original_length > 0 else 1.0
-        ConfigurationService().logger.info(f'Compression ratio: {ConfigurationService().compression_ratio:.2f} ({ConfigurationService().original_length} -> {ConfigurationService().compressed_length} chars)')
+        ConfigurationService().logger.info(
+            f'Compression ratio: {
+                ConfigurationService().compression_ratio:.2f} ({
+                ConfigurationService().original_length} -> {
+                ConfigurationService().compressed_length} chars)')
         if ConfigurationService().compression_ratio > 0.95:
             ConfigurationService().logger.warning('Low compression detected - may need threshold tuning')
         elif ConfigurationService().compression_ratio < 0.05:
             ConfigurationService().logger.warning('High compression detected - may be too aggressive')
-        return CompressionResult(original_length=ConfigurationService().original_length, compressed_length=ConfigurationService().compressed_length, compressed_text=ConfigurationService().compressed_text, compression_ratio=ConfigurationService().compression_ratio)
+        return CompressionResult(original_length=ConfigurationService().original_length, compressed_length=ConfigurationService(
+        ).compressed_length, compressed_text=ConfigurationService().compressed_text, compression_ratio=ConfigurationService().compression_ratio)
 
-def compress_chunks(chunks: List[str], query: str, similarity_threshold: float=0.1) -> str:
+
+def compress_chunks(chunks: List[str], query: str, similarity_threshold: float = 0.1) -> str:
     """Compress chunks using default settings.
 
     Args:

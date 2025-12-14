@@ -1,5 +1,6 @@
 """Automated cognitive density fixer - splits files with >5 top-level definitions."""
 
+import logging
 import ast
 from pathlib import Path
 from typing import List, Tuple
@@ -7,7 +8,7 @@ from typing import List, Tuple
 
 def count_top_level_defs(filepath: Path) -> int:
     """Docstring."""
-import logging
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ LOGGER = logging.getLogger(__name__)
             ast.AsyncFunctionDef)))
     except Exception:
         return 0
+
 
 def split_file_by_type(filepath: Path) -> None:
     """Split a file into submodules by grouping enums, dataclasses, classes, and functions."""

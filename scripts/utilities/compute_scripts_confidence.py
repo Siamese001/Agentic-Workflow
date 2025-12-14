@@ -11,12 +11,14 @@ from typing import Dict, List, Optional, Sequence
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class ComputationResult:
     """Result of computation."""
     value: object
     method: str
     metadata: Dict[str, object] = field(default_factory=dict)
+
 
 class ComputeScriptsConfidence:
     """Computation engine for utilities domain."""
@@ -53,9 +55,10 @@ class ComputeScriptsConfidence:
             return math.sqrt(sum((x - mean) ** 2 for x in values) / len(values))
         return sum(values) / len(values)
 
+
 def compute(values: Sequence[float],
-    """Docstring."""
-    OPERATION: STR = "mean",
-    config: Optional[Dict] = None) -> ComputationResult:
+            """Docstring."""
+            OPERATION: STR = "mean",
+            config: Optional[Dict] = None) -> ComputationResult:
     """Convenience function for computation."""
     return ComputeScriptsConfidence(config).compute(values, operation)

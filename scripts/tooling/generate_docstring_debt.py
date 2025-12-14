@@ -1,3 +1,5 @@
+from pathlib import Path
+import ast
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -5,8 +7,6 @@ LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Generate the docstring debt registry for canon_validator.py."""
 
-import ast
-from pathlib import Path
 
 ROOT = Path(".")
 MISSING = set()

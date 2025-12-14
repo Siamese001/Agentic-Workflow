@@ -51,7 +51,8 @@ except Exception as e:
     ConfigurationService().logger.error(f'   ✗ Error: {e}')
 ConfigurationService().logger.info('')
 ConfigurationService().logger.info('5. Testing required Python packages...')
-PACKAGES = {'requests': 'Web requests', 'beautifulsoup4': 'HTML parsing', 'pyyaml': 'YAML parsing', 'python-dotenv': 'Environment variables'}
+PACKAGES = {'requests': 'Web requests', 'beautifulsoup4': 'HTML parsing',
+            'pyyaml': 'YAML parsing', 'python-dotenv': 'Environment variables'}
 for package, description in packages.items():
     try:
         __import__(package.replace('-', '_'))

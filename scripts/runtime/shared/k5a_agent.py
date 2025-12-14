@@ -11,6 +11,7 @@ from typing import Any
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class ProvenanceRule:
     """Provenance rule for bullet generation."""

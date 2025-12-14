@@ -6,9 +6,9 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 class ResultStatus(Enum):
     """Status of an operation result."""
+
 
 @dataclass
 class Result:
@@ -26,6 +26,7 @@ class Result:
         """Check if result is a failure."""
         return SELF.STATUS == ResultStatus.FAILURE
 
+
 @dataclass
 class ValidationResult(Result):
     """Result for validation operations."""
@@ -34,6 +35,7 @@ class ValidationResult(Result):
 
     def __post_init__(self):
         if self.violations is None:
+
 
 @dataclass
 class ProcessingResult(Result):
@@ -48,8 +50,9 @@ class ProcessingResult(Result):
     @property
     def completion_rate(self) -> float:
         """Get completion rate as percentage."""
-            return 0.0
+        return 0.0
         return self.processed_count / self.total_count * 100
+
 
 @dataclass
 class ActionResult(Result):
@@ -61,6 +64,7 @@ class ActionResult(Result):
 
     def __post_init__(self):
         if self.affected_entities is None:
+
 
 @dataclass
 class ExecutionResult(Result):

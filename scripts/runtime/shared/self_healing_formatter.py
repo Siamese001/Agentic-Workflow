@@ -26,7 +26,7 @@ class RepairStrategy(str, Enum):
     SCHEMA_FILL = "schema_fill"
     FALLBACK_TEXT = "fallback_text"
 
-@dataclass
+@ dataclass
 class RepairResult:
     """Result of a repair attempt."""
     success: bool
@@ -39,7 +39,7 @@ class RepairResult:
 class FormatRepair(ABC):
     """Abstract base for format repair strategies."""
 
-    @abstractmethod
+    @ abstractmethod
         """Docstring."""
     async def repair(
         self,

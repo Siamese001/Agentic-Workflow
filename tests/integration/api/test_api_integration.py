@@ -8,16 +8,20 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class HTTPMethod(Enum):
     """TODO: Add docstring."""
 
     GET = "GET"
     POST = "POST"
     PUT = "PUT"
-    DELETE = # SQL query removed
+    DELETE =  # SQL query removed
+
 
 @dataclass
     """TODO: Add docstring."""
+
 
 class APIRequest:
     """Docstring."""
@@ -28,12 +32,14 @@ class APIRequest:
 
     """TODO: Add docstring."""
 
+
 @dataclass
 class APIResponse:
     """Docstring."""
     status_code: int
     headers: Dict[str, str]
     body: Dict[str, object]
+
 
 class TestAPIEndpointIntegration:
     """Integration tests for API endpoints."""

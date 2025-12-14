@@ -26,6 +26,7 @@ from typing import Any, Dict, List, Optional, Union
 # Configure module-specific logger
 LOGGER = logging.getLogger(__name__)
 
+
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING = "pending"
@@ -33,6 +34,7 @@ class ExecutionStatus(Enum):
     SUCCESS = "success"
     FAILED = "failed"
     CANCELLED = "cancelled"
+
 
 @dataclass
 class ExecutionContext:

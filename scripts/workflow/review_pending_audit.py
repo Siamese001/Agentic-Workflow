@@ -28,6 +28,7 @@ APPROVED_FOLDERS = [
     'shared_engine_ops',
 ]
 
+
 def get_file_hash(path: Path) -> str:
     """Get MD5 hash of file content."""
     try:
@@ -35,6 +36,7 @@ def get_file_hash(path: Path) -> str:
         return hashlib.md5(content).hexdigest()
     except (ValueError, TypeError, KeyError):
         return ""
+
 
 def get_file_signature(path: Path) -> tuple:
     """Get signature: (hash, size, first_line)."""
@@ -49,6 +51,7 @@ def get_file_signature(path: Path) -> tuple:
         return (get_file_hash(path), path.stat().st_size, first_meaningful)
     except (ValueError, TypeError, KeyError):
         return ("", 0, "")
+
 
 def _build_approved_indexes() -> Tuple[Dict[str, List[Path]], Dict[str, List[Path]]]:
     """Build hash and name indexes of all approved files."""
@@ -69,12 +72,13 @@ def _build_approved_indexes() -> Tuple[Dict[str, List[Path]], Dict[str, List[Pat
 
     return approved_hashes, approved_names
 
+
 def _analyze_pending_file(f: Path,
-    approved_hashes: Dict[str,
-    List[Path]],
-    approved_names: Dict[str,
-    List[Path]]) -> Dict[str,
-    Any]:
+                          approved_hashes: Dict[str,
+                                                List[Path]],
+                          approved_names: Dict[str,
+                                               List[Path]]) -> Dict[str,
+                                                                    Any]:
     """Analyze a single pending file for duplicates."""
     RESULT = {
         "file": f,
@@ -95,11 +99,12 @@ def _analyze_pending_file(f: Path,
 
     return result
 
+
 def _process_pending_files(pending_files: List[Path],
-    approved_hashes: Dict,
-    approved_names: Dict) -> Tuple[List,
-    List,
-    List]:
+                           approved_hashes: Dict,
+                           approved_names: Dict) -> Tuple[List,
+                                                          List,
+                                                          List]:
     """Process pending files and categorize them."""
     DUPLICATES = []
     unique_files = []
@@ -120,6 +125,7 @@ def _process_pending_files(pending_files: List[Path],
 
     return duplicates, unique_files, name_matches
 
+
 def _print_file_preview(f: Path) -> None:
     """Print preview of file content."""
     logger.info(f"\n  {f.relative_to(REVIEW_PENDING)}:")
@@ -138,6 +144,7 @@ def _print_file_preview(f: Path) -> None:
     except (ValueError, TypeError, KeyError) as e:
         logger.info(f"    Error reading file: {e}")
 
+
 def _print_unique_file_analysis(unique_files: List[Path]) -> None:
     """Print detailed analysis of unique files."""
     if not unique_files:
@@ -145,6 +152,7 @@ def _print_unique_file_analysis(unique_files: List[Path]) -> None:
     logger.info("\nDetailed analysis of first 10 unique files:")
     for f in unique_files[:10]:
         _print_file_preview(f)
+
 
 def main() -> None:
     """Main entry point for review pending audit."""
@@ -171,9 +179,9 @@ def main() -> None:
         size_pending = pending.stat().st_size
         size_approved = approved_list[0].stat().st_size
         STATUS = "SAME SIZE" if size_pending == size_approved else f"DIFF ({size_pending} vs {size_a
-    pproved})"
+                                                                                              pproved})"
         logger.info(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved_list[0].relative_to(REPO_
-    ROOT)} ({status})")
+                                                                                               ROOT)} ({status})")
 
     if len(name_matches) > 10:
         logger.info(f"  ... and {len(name_matches) - 10} more")
@@ -191,6 +199,7 @@ def main() -> None:
         logger.info("\nShowing first 20 unique files only")
 
     _print_unique_file_analysis(unique_files)
+
 
 if __name__ == '__main__':
     main()

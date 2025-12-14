@@ -61,7 +61,7 @@ class HardenedGeminiConfig:
         self.retry_min_wait = retry_min_wait
         self.retry_max_wait = retry_max_wait
 
-    @property
+    @ property
     def max_context_tokens(self) -> int:
             """Get maximum context tokens for the model."""
         return self.MODEL_LIMITS.get(self.model, 1048576)

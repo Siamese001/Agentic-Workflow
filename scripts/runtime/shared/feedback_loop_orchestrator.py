@@ -19,12 +19,14 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ConstraintFailureType(str, Enum):
     """Types of constraint failures for adaptive retry."""
     MECHANICAL = "MECHANICAL"      # Word count, char count, structural
     CREATIVE = "CREATIVE"          # Placeholders, generic content, redundancy
     SEMANTIC = "SEMANTIC"          # Forbidden words, tone violations
     CONFLICT = "CONFLICT"          # Impossible constraint combinations
+
 
 @dataclass
 class RegenerationCheckpoint:

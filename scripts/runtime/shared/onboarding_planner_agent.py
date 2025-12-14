@@ -9,6 +9,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+
 class PlanPhase(BaseModel):
     """A single phase of the onboarding plan."""
 

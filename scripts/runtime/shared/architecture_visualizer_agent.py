@@ -10,12 +10,14 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class DiagramType(str, Enum):
     """Supported Mermaid diagram types."""
     FLOWCHART = "flowchart TD"
     SEQUENCE = "sequenceDiagram"
     C4_COMPONENT = "C4Component"
     GRAPH = "graph TD"
+
 
 class DiagramNode(BaseModel):
     """Represents a node in a Mermaid diagram."""

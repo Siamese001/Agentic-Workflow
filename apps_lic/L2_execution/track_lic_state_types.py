@@ -3,6 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 @dataclass
 class StateCheckpoint:
     """Checkpoint for a HOP state."""
@@ -11,6 +12,7 @@ class StateCheckpoint:
     _timestamp: str
     _checksum: str
     _filepath: str
+
 
 @dataclass
 class StateValidationResult:

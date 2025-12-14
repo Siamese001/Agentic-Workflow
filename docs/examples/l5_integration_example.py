@@ -19,7 +19,7 @@ from apps_rg.L2_execution.executive_title_composer import (
 from apps_rg.L2_execution.strategist_biowriter import (
     BioWriterConfig, create_strategist_biowriter)
 
-    oserConfig
+oserConfig
 
 
 def run_resume_generation_example():
@@ -32,9 +32,9 @@ def run_resume_generation_example():
     - Adaptive recovery on failures
     - Silent execution mode
     """
-    LOGGER.INFO("\N" + "="*80)
+    LOGGER.INFO("\N" + "=" * 80)
     logger.info("RESUME GENERATION - L5 HIGH-SIGNAL ARCHITECTURE")
-    LOGGER.INFO("="*80 + "\n")
+    LOGGER.INFO("=" * 80 + "\n")
 
     ORCHESTRATOR = create_execution_orchestrator(
         output_dir=Path("./output/resume"),
@@ -125,6 +125,7 @@ def run_resume_generation_example():
 
     logger.info("\n" + orchestrator.display_all_artifacts())
 
+
 def run_outreach_generation_example():
     """
     Example: LinkedIn Outreach with L5 Architecture
@@ -135,9 +136,9 @@ def run_outreach_generation_example():
     - Archetype-specific transitions
     - Premium gate enforcement
     """
-    LOGGER.INFO("\N" + "="*80)
+    LOGGER.INFO("\N" + "=" * 80)
     logger.info("OUTREACH GENERATION - L5 HIGH-SIGNAL ARCHITECTURE")
-    LOGGER.INFO("="*80 + "\n")
+    LOGGER.INFO("=" * 80 + "\n")
 
     ORCHESTRATOR = create_execution_orchestrator(
         output_dir=Path("./output/outreach"),
@@ -212,7 +213,7 @@ def run_outreach_generation_example():
         )
         logger.info(f"   ✓ Generated in {message_result.attempts} attempt(s)")
         logger.info(f"   ✓ Metrics bound: {len(message_result.evidence_bindings)}/{len(message_resul
-    t.metrics_used)}")
+                                                                                       t.metrics_used)}")
     else:
         logger.info(f"   ✗ Failed after {message_result.attempts} attempts")
         orchestrator.record_validation_failure(composer.gate_executor)
@@ -231,11 +232,12 @@ def run_outreach_generation_example():
 
     logger.info("\n" + orchestrator.display_all_artifacts())
 
+
 def main():
     """Run both Resume and Outreach examples"""
-    logger.info("\n" + "█"*80)
+    logger.info("\n" + "█" * 80)
     logger.info("L5 HIGH-SIGNAL UNIFIED ARCHITECTURE - INTEGRATION EXAMPLES")
-    logger.info("█"*80)
+    logger.info("█" * 80)
 
     run_resume_generation_example()
 
@@ -243,9 +245,9 @@ def main():
 
     run_outreach_generation_example()
 
-    logger.info("\n" + "█"*80)
+    logger.info("\n" + "█" * 80)
     logger.info("EXAMPLES COMPLETE")
-    logger.info("█"*80 + "\n")
+    logger.info("█" * 80 + "\n")
 
     logger.info("Key Features Demonstrated:")
     logger.info("  ✓ High Temperature (0.5-0.6) for creative prose")
@@ -257,6 +259,7 @@ def main():
     logger.info("\nAudit files saved to:")
     logger.info("  - ./output/resume/audit_*.json")
     logger.info("  - ./output/outreach/audit_*.json")
+
 
 if __name__ == "__main__":
     main()

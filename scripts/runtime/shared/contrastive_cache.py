@@ -13,6 +13,7 @@ import numpy as np
 
 LOGGER = logging.getLogger(__name__)
 
+
 class CacheEntry(BaseModel):
     """Entry in the semantic cache."""
 

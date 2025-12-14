@@ -2,7 +2,10 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .autonomic_monitor_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .autonomic_monitor_types import *  # Star import removed
+
 
 class AutonomicMonitor:
     """Autonomic immune system for agent health monitoring.
@@ -16,10 +19,10 @@ class AutonomicMonitor:
     """
 
     def __init__(self,
-        success_rate_threshold: float=0.8,
-        error_rate_threshold: float=0.2,
-        response_time_threshold_ms: float=5000.0,
-        enable_logging: bool=True):
+        success_rate_threshold: float = 0.8,
+        error_rate_threshold: float = 0.2,
+        response_time_threshold_ms: float = 5000.0,
+        enable_logging: bool = True):
         """Initialize autonomic monitor.
 
         Args:

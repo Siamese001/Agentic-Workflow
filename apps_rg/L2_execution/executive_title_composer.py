@@ -22,7 +22,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 @dataclass
 class TitleComposerConfig:
     """TODO: Add docstring."""
@@ -33,8 +32,10 @@ class TitleComposerConfig:
     TEMPERATURE: FLOAT = 0.5
     max_attempts: int = 3
 
+
 @dataclass
     """TODO: Add docstring."""
+
 
 class TitleComposerResult:
     """Docstring."""
@@ -46,6 +47,7 @@ class TitleComposerResult:
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
+
 
 class ExecutiveTitleComposer:
     """

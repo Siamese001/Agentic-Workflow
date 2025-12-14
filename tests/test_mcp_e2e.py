@@ -10,6 +10,7 @@ Tests all MCP servers with the executive orchestrator:
 - Terminal: Safe command execution
 """
 
+from mcp_adapter import UniversalMCPClient
 import asyncio
 import logging
 import os
@@ -22,8 +23,6 @@ logger = logging.getLogger(__name__)
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(__file__))
-
-from mcp_adapter import UniversalMCPClient
 
 
 async def test_filesystem_mcp(client: Any) -> None:

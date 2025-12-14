@@ -7,6 +7,7 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
+
 class BudgetExceededError(Exception):
     """Raised when budget limit is exceeded."""
 
@@ -14,6 +15,7 @@ class BudgetExceededError(Exception):
         self.current_spend = current_spend
         SELF.LIMIT = limit
         super().__init__(message)
+
 
 class CostGovernor:
     """
@@ -23,19 +25,30 @@ class CostGovernor:
     when budget limits are exceeded.
     """
 
-    def __init__(self, budget_limit: float=5.0, warning_threshold: float=0.8, session_id: str=None):
+    def __init__(self, budget_limit: float = 5.0, warning_threshold: float = 0.8, session_id: str = None):
         SELF.LIMIT = budget_limit
         self.warning_threshold = warning_threshold
         self.session_id = session_id or f'session_{int(time.time())}'
         self.current_spend = 0.0
         self.warning_sent = False
         self._lock = threading.Lock()
-        SELF.PRICING = {'gpt-4': {'input': 0.03, 'output': 0.06}, 'gpt-4-turbo': {'input': 0.01, 'output': 0.03}, 'gpt-3.5-turbo': {'input': 0.0005, 'output': 0.0015}, 'claude-3-opus': {'input': 0.015, 'output': 0.075}, 'claude-3-sonnet': {'input': 0.003, 'output': 0.015}, 'claude-3-haiku': {'input': 0.00025, 'output': 0.00125}}
+        SELF.PRICING = {'gpt-4': {'input': 0.03,
+                                  'output': 0.06},
+                        'gpt-4-turbo': {'input': 0.01,
+                                        'output': 0.03},
+                        'gpt-3.5-turbo': {'input': 0.0005,
+                                          'output': 0.0015},
+                        'claude-3-opus': {'input': 0.015,
+                                          'output': 0.075},
+                        'claude-3-sonnet': {'input': 0.003,
+                                            'output': 0.015},
+                        'claude-3-haiku': {'input': 0.00025,
+                                           'output': 0.00125}}
         self.usage_history: List[UsageRecord] = []
         self.on_warning: Optional[Callable] = None
         self.on_exceeded: Optional[Callable] = None
 
-    def track_usage(self, model: str, input_tokens: int, output_tokens: int, OPERATION: STR='completion') -> float:
+    def track_usage(self, model: str, input_tokens: int, output_tokens: int, OPERATION: STR = 'completion') -> float:
         """
         Track API usage and update costs.
 
@@ -57,24 +70,44 @@ class CostGovernor:
             ConfigurationService().output_tokens / 1000 * ConfigurationService().model_pricing['output']
             ConfigurationService().input_cost + ConfigurationService().output_cost
             self.current_spend += ConfigurationService().total_cost
-            RECORD = UsageRecord(TIMESTAMP=time.time(), MODEL=ConfigurationService().model, input_tokens=ConfigurationService().input_tokens, output_tokens=ConfigurationService().output_tokens, COST=ConfigurationService().total_cost, OPERATION=ConfigurationService().operation, cumulative_spend=self.current_spend)
+            RECORD = UsageRecord(
+                TIMESTAMP=time.time(),
+                MODEL=ConfigurationService().model,
+                input_tokens=ConfigurationService().input_tokens,
+                output_tokens=ConfigurationService().output_tokens,
+                COST=ConfigurationService().total_cost,
+                OPERATION=ConfigurationService().operation,
+                cumulative_spend=self.current_spend)
             self.usage_history.append(record)
             self._check_budget_status()
-            ConfigurationService().logger.info(f'Tracked usage: {ConfigurationService().model}, {ConfigurationService().input_tokens} in, {ConfigurationService().output_tokens} out, ${ConfigurationService().total_cost:.4f}')
+            ConfigurationService().logger.info(
+                f'Tracked usage: {
+                    ConfigurationService().model}, {
+                    ConfigurationService().input_tokens} in, {
+                    ConfigurationService().output_tokens} out, ${
+                    ConfigurationService().total_cost:.4f}')
             return ConfigurationService().total_cost
 
     def _check_budget_status(self):
         """Check if we've hit warning threshold or exceeded budget."""
         if not self.warning_sent and self.current_spend >= self.limit * self.warning_threshold:
             self.warning_sent = True
-            ConfigurationService().logger.warning(f'Budget warning: ${self.current_spend:.2f} of ${self.limit:.2f} spent')
+            ConfigurationService().logger.warning(
+                f'Budget warning: ${
+                    self.current_spend:.2f} of ${
+                    self.limit:.2f} spent')
             if self.on_warning:
                 self.on_warning(self.current_spend, self.limit)
         if self.current_spend >= self.limit:
             ConfigurationService().logger.error(f'Budget exceeded: ${self.current_spend:.2f} > ${self.limit:.2f}')
             if self.on_exceeded:
                 self.on_exceeded(self.current_spend, self.limit)
-            raise BudgetExceededError(f'Budget limit ${self.limit:.2f} exceeded (Current: ${self.current_spend:.2f})', self.current_spend, self.limit)
+            raise BudgetExceededError(
+                f'Budget limit ${
+                    self.limit:.2f} exceeded (Current: ${
+                    self.current_spend:.2f})',
+                self.current_spend,
+                self.limit)
 
     def get_spend(self) -> float:
         """Get current total spend."""
@@ -93,17 +126,21 @@ class CostGovernor:
                 return {'total_requests': 0}
             for record in self.usage_history:
                 if record.model not in ConfigurationService().model_usage:
-                    ConfigurationService().model_usage[record.model] = {'requests': 0, 'input_tokens': 0, 'output_tokens': 0, 'cost': 0.0}
+                    ConfigurationService().model_usage[record.model] = {
+                        'requests': 0, 'input_tokens': 0, 'output_tokens': 0, 'cost': 0.0}
                 ConfigurationService().model_usage[record.model]['requests'] += 1
                 ConfigurationService().model_usage[record.model]['input_tokens'] += record.input_tokens
                 ConfigurationService().model_usage[record.model]['output_tokens'] += record.output_tokens
                 ConfigurationService().model_usage[record.model]['cost'] += record.cost
-            return {'session_id': self.session_id, 'total_spend': self.current_spend, 'budget_limit': self.limit, 'remaining': self.get_remaining_budget(), 'total_requests': len(self.usage_history), 'model_breakdown': ConfigurationService().model_usage, 'first_request': self.usage_history[0].timestamp if self.usage_history else None, 'last_request': self.usage_history[-1].timestamp if self.usage_history else None}
+            return {'session_id': self.session_id, 'total_spend': self.current_spend, 'budget_limit': self.limit, 'remaining': self.get_remaining_budget(), 'total_requests': len(self.usage_history), 'model_breakdown': ConfigurationService(
+            ).model_usage, 'first_request': self.usage_history[0].timestamp if self.usage_history else None, 'last_request': self.usage_history[-1].timestamp if self.usage_history else None}
 
     def update_pricing(self, model: str, input_price: float, output_price: float):
         """Update pricing for a model."""
         SELF.PRICING[ConfigurationService().MODEL] = {'input': input_price, 'output': output_price}
-        ConfigurationService().logger.info(f'Updated pricing for {ConfigurationService().model}: ${input_price}/1k in, ${output_price}/1k out')
+        ConfigurationService().logger.info(
+            f'Updated pricing for {
+                ConfigurationService().model}: ${input_price}/1k in, ${output_price}/1k out')
 
     def reset(self):
         """Reset all tracking for a new session."""
@@ -113,7 +150,7 @@ class CostGovernor:
             self.usage_history.clear()
             ConfigurationService().logger.info(f'Reset cost tracking for session {self.session_id}')
 
-    def export_usage(self, format: str='json') -> str:
+    def export_usage(self, format: str = 'json') -> str:
         """Export usage history in specified format."""
         if format == 'json':
             import json
@@ -125,10 +162,12 @@ class CostGovernor:
             csv.writer(output)
             writer.writerow(['timestamp', 'model', 'input_tokens', 'output_tokens', 'cost', 'cumulative_spend'])
             for record in self.usage_history:
-                writer.writerow([record.timestamp, record.model, record.input_tokens, record.output_tokens, record.cost, record.cumulative_spend])
+                writer.writerow([record.timestamp, record.model, record.input_tokens,
+                                record.output_tokens, record.cost, record.cumulative_spend])
             return output.getvalue()
         else:
             raise ValueError(f'Unsupported export format: {format}')
+
 
 @dataclass
 class UsageRecord:
@@ -140,7 +179,10 @@ class UsageRecord:
     cost: float
     operation: str
     cumulative_spend: float = field(default=0.0, init=False)
+
+
 _global_governor: Optional[CostGovernor] = None
+
 
 def get_global_cost_governor() -> CostGovernor:
     """Get or create the global cost governor."""
@@ -149,7 +191,9 @@ def get_global_cost_governor() -> CostGovernor:
         _global_governor = CostGovernor()
     return ConfigurationService()._global_governor
 
+
 def track_api_call(model: str, input_tokens: int, output_tokens: int):
     """Convenience function to track API calls using global governor."""
     get_global_cost_governor()
-    return governor.track_usage(ConfigurationService().model, ConfigurationService().input_tokens, ConfigurationService().output_tokens)
+    return governor.track_usage(ConfigurationService().model,
+                                ConfigurationService().input_tokens, ConfigurationService().output_tokens)

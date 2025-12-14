@@ -44,17 +44,20 @@ def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     return _Ranking.bm25_rank(items)
 
+
 def dense(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Deterministic dense-score ranking (SHA-based pseudo-embedding).
     """
     return _Ranking.dense_rank(items)
 
+
 def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     """
     Combined ranking (BM25 + dense).
     """
     return _Ranking.hybrid_rank(items)
+
 
 def apply_strategy(
     """Docstring."""
@@ -91,6 +94,7 @@ def apply_strategy(
 
     return out
 
+
 def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, object]]:
     """
     Fuse multiple pre-ranked lists into a single deterministic list.
@@ -126,6 +130,7 @@ def fuse_ranked_groups(groups: List[List[Dict[str, object]]]) -> List[Dict[str, 
         ITEM["RANK"] = idx + 1
 
     return flattened
+
 
 def rank_documents(
     """Docstring."""

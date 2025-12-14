@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
+
 def test_retrieval_directory_structure_exists() -> None:
     """Ensure META retrieval directory tree exists."""
     expected_dirs = [
@@ -17,6 +18,7 @@ def test_retrieval_directory_structure_exists() -> None:
     for d in expected_dirs:
         assert d.exists(), f"Expected directory missing: {d}"
 
+
 def test_retriever_placeholders_present() -> None:
     """Ensure placeholder retriever modules exist for future implementation."""
     expected_files = [
@@ -25,6 +27,7 @@ def test_retriever_placeholders_present() -> None:
     ]
     for f in expected_files:
         assert f.exists(), f"Expected retriever module missing: {f}"
+
 
 def test_meta_ranking_and_hybrid_ranker_present() -> None:
     """Ensure META ranking + hybrid ranker modules exist and are wired."""

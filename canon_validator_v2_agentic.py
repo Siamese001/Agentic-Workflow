@@ -44,6 +44,7 @@ EXCLUDED_FILES = {
     '.DS_Store'
 }
 
+
 def is_excluded(path: str) -> bool:
     """Check if path should be excluded from validation."""
     parts = path.split(os.sep)
@@ -52,6 +53,7 @@ def is_excluded(path: str) -> bool:
     if any(p.startswith('.') and len(p) > 1 and p not in ['.github'] for p in parts):
         return True
     return False
+
 
 def get_python_files() -> List[str]:
     """Get all Python files excluding specified directories and files."""
@@ -68,6 +70,8 @@ def get_python_files() -> List[str]:
 # ==============================================================================
 # 1. THE BLACKBOARD (Shared Memory)
 # ==============================================================================
+
+
 @dataclass
 class ValidationContext:
     """Shared memory for all agents."""
@@ -106,6 +110,8 @@ class ValidationContext:
 # ==============================================================================
 # 2. THE ATOMIC AGENT (Base Class)
 # ==============================================================================
+
+
 class SubAtomicAgent:
     """Base class for all validation agents."""
 
@@ -125,6 +131,7 @@ class SubAtomicAgent:
 # 3. THE SPECIALIST AGENTS (100% Coverage of All 50 Keys)
 # ==============================================================================
 
+
 class SystemArchitect(SubAtomicAgent):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 50 (Integrity)
@@ -142,6 +149,7 @@ class SystemArchitect(SubAtomicAgent):
 
         # Key 50: Canon meta-integrity (stub)
         self.ctx.report(self.name, 50, True, [])
+
 
 class GenerativeGuard(SubAtomicAgent):
     """
@@ -190,6 +198,7 @@ class GenerativeGuard(SubAtomicAgent):
         else:
             self.ctx.report(self.name, 45, True, [])
             self.ctx.signals.add("GENERATIVE_CLEAN")
+
 
 class CodeJanitor(SubAtomicAgent):
     """
@@ -272,11 +281,12 @@ class CodeJanitor(SubAtomicAgent):
         """Auto-fix trailing whitespace."""
         try:
             result = subprocess.run([sys.executable, "scripts/fix_trailing_whitespace.py", "."],
-                                  capture_output=True, text=True)
+                                    capture_output=True, text=True)
             if result.returncode == 0:
                 logger.info("      ✅ Trailing whitespace fixed")
         except Exception as e:
             logger.info(f"      ❌ Failed to fix trailing whitespace: {e}")
+
 
 class DependencySentinel(SubAtomicAgent):
     """
@@ -423,6 +433,7 @@ class DependencySentinel(SubAtomicAgent):
                     violations.append(f"Circular import: {file_a} <-> {file_b}")
 
         return (len(violations) == 0, violations)
+
 
 class SafetyInspector(SubAtomicAgent):
     """
@@ -598,6 +609,7 @@ class SafetyInspector(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
+
 class DocumentationAgent(SubAtomicAgent):
     """
     KEYS: 21 (Missing Docstrings)
@@ -630,6 +642,7 @@ class DocumentationAgent(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
+
 class NamingAgent(SubAtomicAgent):
     """
     KEYS: 47 (Naming Conventions)
@@ -643,6 +656,7 @@ class NamingAgent(SubAtomicAgent):
             self.ctx.report(self.name, 47, True, [])
         except Exception as e:
             self.ctx.report(self.name, 47, False, [str(e)])
+
 
 class TypeMechanic(SubAtomicAgent):
     """
@@ -735,6 +749,7 @@ class TypeMechanic(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
+
 class BudgetAgent(SubAtomicAgent):
     """
     KEYS: 17 (Large Functions), 19 (Complex Functions)
@@ -781,6 +796,7 @@ class BudgetAgent(SubAtomicAgent):
         """Check for complex functions (cyclomatic complexity >10)."""
         # Stub implementation
         return (True, [])
+
 
 class StructuralEngineer(SubAtomicAgent):
     """
@@ -880,6 +896,7 @@ class StructuralEngineer(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
+
 class PatternEnforcer(SubAtomicAgent):
     """
     KEYS: 26-39 (Pattern Checks)
@@ -892,6 +909,7 @@ class PatternEnforcer(SubAtomicAgent):
         # All pattern checks are stubs for now
         for key in range(26, 40):
             self.ctx.report(self.name, key, True, [])
+
 
 class SemanticMapper(SubAtomicAgent):
     """
@@ -920,6 +938,8 @@ class SemanticMapper(SubAtomicAgent):
 # ==============================================================================
 # 4. THE INTELLIGENT ORCHESTRATOR
 # ==============================================================================
+
+
 class IntelligentOrchestrator:
     """Orchestrates all validation agents in dependency order."""
 
@@ -963,9 +983,9 @@ class IntelligentOrchestrator:
 
     def print_mission_report(self):
         """Print final validation report."""
-        logger.info("\n" + "="*60)
+        logger.info("\n" + "=" * 60)
         logger.info("🏁 MISSION REPORT")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         total_checks = len(self.ctx.results)
         passed_checks = sum(1 for r in self.ctx.results.values() if r["passed"])
@@ -980,6 +1000,7 @@ class IntelligentOrchestrator:
             for key, result in sorted(self.ctx.results.items()):
                 if not result["passed"]:
                     logger.info(f"   Key {key}")
+
 
 # ==============================================================================
 # 5. MAIN EXECUTION

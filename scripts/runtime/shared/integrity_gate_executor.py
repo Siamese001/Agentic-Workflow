@@ -30,7 +30,6 @@ from typing import Any, Dict, List, Optional, Set
 logger = logging.getLogger(__name__)
 
 
-
 class ValidationSeverity(Enum):
     """TODO: Add docstring."""
 
@@ -39,6 +38,7 @@ class ValidationSeverity(Enum):
     INFO = "INFO"
 
     """TODO: Add docstring."""
+
 
 class GateType(Enum):
     """Docstring."""
@@ -51,6 +51,7 @@ class GateType(Enum):
     CHARACTER_LIMIT = "CHARACTER_LIMIT"
 
     """TODO: Add docstring."""
+
 
 @dataclass
 class ValidationRule:
@@ -74,6 +75,7 @@ class ValidationResult:
     """TODO: Add docstring."""
 
     details: Optional[Dict[str, Any]] = None
+
 
 @dataclass
 class CryptographicSignature:

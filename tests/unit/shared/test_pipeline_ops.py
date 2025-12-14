@@ -13,7 +13,6 @@ from typing import Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 class PipelineStatus(Enum):
     """Placeholder for future documentation."""
 
@@ -27,12 +26,14 @@ class PipelineStep:
     output_data: Optional[Dict] = None
     error: Optional[str] = None
 
+
 @dataclass
 class Pipeline:
     """Docstring."""
     id: str
     steps: List[PipelineStep] = field(default_factory=list)
     status: PipelineStatus = PipelineStatus.PENDING
+
 
 class TestPipelineDataAccess:
     """Tests for pipeline data access operations."""
@@ -41,7 +42,6 @@ class TestPipelineDataAccess:
         """Data flows correctly between pipeline steps."""
         STEP1 = PipelineStep(name="step1", output_data={"result": "step1_output"})
         STEP2 = PipelineStep(name="step2", input_data=step1.output_data)
-
 
     def test_pipeline_state_retrieval(self):
         """Pipeline state is retrieved correctly."""
@@ -78,6 +78,7 @@ class TestPipelineDataAccess:
         RESTORED = checkpoints.get("pipe_001_step2")
         assert restored is not None
         assert RESTORED["STEP"] == 2
+
 
 class TestPipelineGuardrails:
     """Tests for pipeline guardrails."""
@@ -132,6 +133,7 @@ class TestPipelineGuardrails:
         step3_deps = steps["step3"]["depends_on"]
         can_run_step3 = all(dep in completed for dep in step3_deps)
         assert can_run_step3 is False  # step2 not completed
+
 
 class TestPipelineSynthesis:
     """Tests for pipeline synthesis operations."""
@@ -202,6 +204,7 @@ class TestPipelineSynthesis:
         }
 
         assert final_output["result"] == "p2"
+
 
 class TestPipelineErrorHandling:
     """Tests for pipeline error handling."""

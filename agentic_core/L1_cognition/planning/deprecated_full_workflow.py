@@ -7,13 +7,12 @@ Tests complete workflows from job input to final output,
 integrating all layers and components.
 """
 
+import pytest
 import logging
 from typing import Any
 
 logger = logging.getLogger(__name__)
 
-
-import pytest
 
 # from archives.legacy_root_folders.core.models.models import ExecutionContext, JobInput, ResumeI...
 
@@ -49,12 +48,12 @@ def test_full_workflow_with_all_components(self: Any) -> None:
 
             # Mock L2 execution
             #                 from archives.
-                .legacy_resume_gen.
-                .Agentic-Workflow-10_9.
-                .l2 import L2ResultBundle .
-                ..
-                ..
-                .
+            .legacy_resume_gen.
+            .Agentic - Workflow - 10_9.
+            .l2 import L2ResultBundle .
+            ..
+            ..
+            .
             mock_strategy = Mock()
             mock_strategy.branches = [Mock(description="Senior engineer strategy")]
 

@@ -45,6 +45,7 @@ EXCLUDED_FILES = {
     '.DS_Store'
 }
 
+
 def is_excluded(path: str) -> bool:
     """Check if path should be excluded from validation."""
     parts = path.split(os.sep)
@@ -53,6 +54,7 @@ def is_excluded(path: str) -> bool:
     if any(p.startswith('.') and len(p) > 1 and p not in ['.github'] for p in parts):
         return True
     return False
+
 
 def get_python_files() -> List[str]:
     """Get all Python files excluding specified directories and files."""
@@ -70,8 +72,10 @@ def get_python_files() -> List[str]:
 # L5 HARDENING: Syntax Resilience Layer
 # ==============================================================================
 
+
 def safe_ast_execution(func):
     """Decorator to prevent agent crashes on syntax errors."""
+
     def wrapper(self, *args, **kwargs):
         try:
             return func(self, *args, **kwargs)
@@ -79,7 +83,7 @@ def safe_ast_execution(func):
             # L5 Hardening: Catch the crash, log it, and trigger a repair plan
             logger.error(f"   🚨 SYNTAX CRASH in {self.name}: {e}")
             logger.info(f"   🚑 File: {e.filename or 'unknown'} at line {e.lineno or 'unknown'}")
-            
+
             # Dynamically register a repair plan
             filename = e.filename or "unknown_file"
             self.ctx.refactor_plans[f"SYNTAX_REPAIR_{filename}"] = {
@@ -101,6 +105,8 @@ def safe_ast_execution(func):
 # ==============================================================================
 # 1. THE BLACKBOARD (Shared Memory)
 # ==============================================================================
+
+
 @dataclass
 class ValidationContext:
     """Shared memory for all agents - optimized for minimal context pressure."""
@@ -224,13 +230,15 @@ class ValidationContext:
 # ==============================================================================
 # 2. THE ATOMIC AGENT (Base Class)
 # ==============================================================================
+
+
 class SubAtomicAgent:
     """Base class for all validation agents."""
-    
+
     def __init__(self, context: ValidationContext):
         self.ctx = context
         self.name = self.__class__.__name__
-        
+
         # L4+ Optimized Instructional Prompt - injected context for stronger agency
         self.instructional_prompt = """
 You are a SubAtomicAgent in a 100% agentic L4+ Canon Validator swarm.
@@ -249,7 +257,7 @@ GUIDELINES:
 
 Current blackboard state: {signals_summary}
         """.strip()
-        
+
         # L5+ Load evolved prompts if available
         evolved_prompts = self._load_evolved_prompts()
         evolved_directives = ""
@@ -257,24 +265,25 @@ Current blackboard state: {signals_summary}
             directives = evolved_prompts[self.name].get("learned_directives", [])
             if directives:
                 evolved_directives = "\n\nEVOLVED DIRECTIVES:\n" + "\n".join(f"- {d}" for d in directives)
-        
+
         # Render prompt with dynamic context
         base_prompt = self.instructional_prompt.format(
-            role=self.__doc__.split("ROLE:")[1].split("\n")[0].strip() if "ROLE:" in self.__doc__ else "Specialist Agent",
+            role=self.__doc__.split("ROLE:")[1].split("\n")[0].strip(
+            ) if "ROLE:" in self.__doc__ else "Specialist Agent",
             keys=self.__class__.__name__ + " keys",  # Override in subclasses for precision
             signals_summary=", ".join(sorted(self.ctx.signals)) or "clean"
         )
-        
+
         self.prompt = base_prompt + evolved_directives
-        
-        print(f"   [{self.name}] CONTEXT INJECTED: Mission brief loaded" + 
+
+        print(f"   [{self.name}] CONTEXT INJECTED: Mission brief loaded" +
               (" + evolved directives" if evolved_directives else ""))
-    
+
     def _load_evolved_prompts(self) -> dict:
         """Load evolved prompts from cache."""
         import json
         from pathlib import Path
-        
+
         prompts_path = Path("cache/evolved_prompts.json")
         if prompts_path.exists():
             try:
@@ -283,11 +292,11 @@ Current blackboard state: {signals_summary}
             except Exception:
                 pass
         return {}
-    
+
     def can_run(self) -> bool:
         """Check if agent should run based on context signals."""
         return True
-    
+
     def execute(self):
         """Execute with reinforced instructional context."""
         logger.info(f"\n[>>>] {self.name} ACTIVATED")
@@ -297,6 +306,7 @@ Current blackboard state: {signals_summary}
 # ==============================================================================
 # 3. THE SPECIALIST AGENTS (100% Coverage of All 50 Keys)
 # ==============================================================================
+
 
 class SystemArchitect(SubAtomicAgent):
     """
@@ -333,6 +343,7 @@ class SystemArchitect(SubAtomicAgent):
                 violations.append(f"{file_path} (depth: {depth})")
 
         return (len(violations) == 0, violations[:50])
+
 
 class GenerativeGuard(SubAtomicAgent):
     """
@@ -381,6 +392,7 @@ class GenerativeGuard(SubAtomicAgent):
         else:
             self.ctx.report(self.name, 45, True, [])
             self.ctx.signals.add("GENERATIVE_CLEAN")
+
 
 class WhitespaceMechanic(SubAtomicAgent):
     """
@@ -529,21 +541,22 @@ class WhitespaceMechanic(SubAtomicAgent):
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
-                
+
                 new_lines = [line.rstrip("\n\r") + "\n" for line in lines]
-                
+
                 if new_lines != lines:
                     with open(file_path, "w", encoding="utf-8") as f:
                         f.writelines(new_lines)
                     fixed_count += 1
             except Exception as e:
                 logger.info(f"      ⚠️  Failed to fix {file_path}: {e}")
-        
+
         if fixed_count > 0:
             logger.info(f"      ✅ Trailing whitespace fixed in {fixed_count} files")
             self.ctx.modified_files.update(self.ctx.get_python_files())
         else:
             logger.info("      ℹ️  No trailing whitespace to fix")
+
 
 class StructuralLinter(SubAtomicAgent):
     """
@@ -557,7 +570,7 @@ class StructuralLinter(SubAtomicAgent):
 
         # Key 10: Long lines
         passed_10, details_10 = self.check_key_10_no_long_lines()
-        
+
         # --- L5 HARDENING INJECTION START ---
         if not passed_10:
             logger.info("      🔧 Auto-fixing long lines (Key 10) via autopep8...")
@@ -617,7 +630,7 @@ class StructuralLinter(SubAtomicAgent):
                 "--exclude", ".venv,venv,archives,data",
                 "."
             ], capture_output=True, text=True)
-            
+
             if result.returncode == 0:
                 logger.info("      ✅ autopep8 run complete.")
                 self.ctx.modified_files.add("BATCH_AUTOPEP8_RUN")
@@ -664,6 +677,7 @@ class StructuralLinter(SubAtomicAgent):
 
         return (len(violations) == 0, violations[:50])
 
+
 class ConstantMechanic(SubAtomicAgent):
     """
     KEYS: 15 (Magic Numbers)
@@ -704,6 +718,7 @@ class ConstantMechanic(SubAtomicAgent):
 
         return (len(violations) == 0, violations[:50])
 
+
 class DependencySentinel(SubAtomicAgent):
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
@@ -728,15 +743,16 @@ class DependencySentinel(SubAtomicAgent):
         except (subprocess.CalledProcessError, FileNotFoundError):
             has_autoflake = False
 
-        # Key 9: Unused imports (auto-fix with autoflake) - L3 HARDENED
+        # Key 9 & 7: Unused imports & Star Imports (auto-fix with autoflake) - L3 HARDENED
         if has_autoflake:
-            logger.info("   🔧 Running autoflake (Removes Key 9 violations)...")
+            logger.info("   🔧 Running autoflake (Aggressive Mode)...")
             try:
                 result = subprocess.run([
                     "autoflake",
                     "--in-place",
                     "--remove-unused-variables",
                     "--remove-all-unused-imports",
+                    "--expand-star-imports",  # <--- NEW FLAG for Key 7
                     "--recursive",
                     "--exclude=.venv,venv,archives,data,__pycache__",
                     "."
@@ -744,7 +760,8 @@ class DependencySentinel(SubAtomicAgent):
 
                 # L3 Hardening: Verify return code
                 if result.returncode != 0:
-                    self.ctx.report(self.name, 9, False, [f"autoflake failed (returncode {result.returncode}): {result.stderr[:200]}"])
+                    self.ctx.report(self.name, 9, False, [
+                                    f"autoflake failed (returncode {result.returncode}): {result.stderr[:200]}"])
                 else:
                     self.ctx.report(self.name, 9, True, [])
             except Exception as e:
@@ -768,7 +785,8 @@ class DependencySentinel(SubAtomicAgent):
 
                 # L3 Hardening: Verify return code
                 if result.returncode != 0:
-                    self.ctx.report(self.name, 14, False, [f"isort failed (returncode {result.returncode}): {result.stderr[:200]}"])
+                    self.ctx.report(self.name, 14, False, [
+                                    f"isort failed (returncode {result.returncode}): {result.stderr[:200]}"])
                 else:
                     self.ctx.report(self.name, 14, True, [])
             except Exception as e:
@@ -843,7 +861,8 @@ class DependencySentinel(SubAtomicAgent):
                     with open(file_path, "w", encoding="utf-8") as f:
                         f.writelines(new_lines)
                     fixed += 1
-            except: pass
+            except BaseException:
+                pass
         if fixed:
             logger.info(f"      ✅ Marked {fixed} star imports for explicit replacement")
             self.ctx.modified_files.update(self.ctx.get_python_files())
@@ -890,6 +909,7 @@ class DependencySentinel(SubAtomicAgent):
                     violations.append(f"Circular import: {file_a} <-> {file_b}")
 
         return (len(violations) == 0, violations)
+
 
 class SecurityEnforcer(SubAtomicAgent):
     """
@@ -1079,14 +1099,14 @@ class SecurityEnforcer(SubAtomicAgent):
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
-                
+
                 # Use regex to replace bare except clauses
                 # This pattern matches "except:" followed by optional whitespace and newline
                 # but not "except Exception:" or other specific exceptions
                 import re
                 pattern = r'(?<!\w)except:\s*'
                 new_content = re.sub(pattern, 'except Exception:', content)
-                
+
                 if new_content != content:
                     with open(file_path, "w", encoding="utf-8") as f:
                         f.write(new_content)
@@ -1094,9 +1114,10 @@ class SecurityEnforcer(SubAtomicAgent):
                     self.ctx.modified_files.add(file_path)
             except Exception:
                 continue
-        
+
         if fixed:
             logger.info(f"      ✅ Fixed {fixed} bare except clause(s)")
+
 
 class CodeQualityAuditor(SubAtomicAgent):
     """
@@ -1117,7 +1138,7 @@ class CodeQualityAuditor(SubAtomicAgent):
 
         # Key 4: No empty except blocks
         passed_4, details_4 = self.check_key_04_no_empty_except_blocks()
-        
+
         # --- L5 HARDENING INJECTION START ---
         if not passed_4:
             logger.info("      🔧 Auto-fixing empty except blocks...")
@@ -1186,9 +1207,9 @@ class CodeQualityAuditor(SubAtomicAgent):
     def _fix_empty_except_blocks(self):
         """L5 Hardening: Rewrite 'except: pass' to 'except Exception: logger.warning(...)'"""
         import ast
-        
+
         fixed_count = 0
-        
+
         class EmptyExceptRewriter(ast.NodeTransformer):
             def __init__(self):
                 self.modified = False
@@ -1197,7 +1218,12 @@ class CodeQualityAuditor(SubAtomicAgent):
                 if len(node.body) == 1 and isinstance(node.body[0], (ast.Pass, ast.Ellipsis)):
                     new_node = ast.Expr(
                         value=ast.Call(
-                            func=ast.Attribute(value=ast.Name(id='logger', ctx=ast.Load()), attr='warning', ctx=ast.Load()),
+                            func=ast.Attribute(
+                                value=ast.Name(
+                                    id='logger',
+                                    ctx=ast.Load()),
+                                attr='warning',
+                                ctx=ast.Load()),
                             args=[ast.Constant(value="Swallowed exception")],
                             keywords=[ast.keyword(arg='exc_info', value=ast.Constant(value=True))]
                         )
@@ -1211,14 +1237,14 @@ class CodeQualityAuditor(SubAtomicAgent):
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                
+
                 rewriter = EmptyExceptRewriter()
                 new_tree = rewriter.visit(tree)
-                
+
                 if rewriter.modified:
                     # Fix line numbers
                     ast.fix_missing_locations(new_tree)
-                    
+
                     # Generate modified source
                     try:
                         source = ast.unparse(new_tree)
@@ -1226,16 +1252,17 @@ class CodeQualityAuditor(SubAtomicAgent):
                         # Fallback for Python < 3.9
                         import astor
                         source = astor.to_source(new_tree)
-                    
+
                     with open(file_path, "w", encoding="utf-8") as f:
                         f.write(source)
                     fixed_count += 1
                     self.ctx.modified_files.add(file_path)
-            except Exception: 
+            except Exception:
                 pass
-        
+
         if fixed_count > 0:
             logger.info(f"      ✅ Fixed {fixed_count} empty except blocks")
+
 
 class DocumentationAgent(SubAtomicAgent):
     """
@@ -1269,6 +1296,7 @@ class DocumentationAgent(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
+
 class NamingAgent(SubAtomicAgent):
     """
     KEYS: 47 (Naming Conventions)
@@ -1282,6 +1310,7 @@ class NamingAgent(SubAtomicAgent):
             self.ctx.report(self.name, 47, True, [])
         except Exception as e:
             self.ctx.report(self.name, 47, False, [str(e)])
+
 
 class TypeMechanic(SubAtomicAgent):
     """
@@ -1376,7 +1405,7 @@ class TypeMechanic(SubAtomicAgent):
                 unused = [v for v in unused if not v.startswith('_')]
 
                 return [f"{file_path}:{v}" for v in unused[:3]]  # Limit per file
-            except:
+            except BaseException:
                 return []
 
         # Process files in batches of 10 to prevent memory overload
@@ -1416,6 +1445,7 @@ class TypeMechanic(SubAtomicAgent):
             return []
         except Exception:
             return []
+
 
 class BudgetAgent(SubAtomicAgent):
     """
@@ -1507,6 +1537,7 @@ class BudgetAgent(SubAtomicAgent):
 
         return complexity
 
+
 class StructuralEngineer(SubAtomicAgent):
     """
     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
@@ -1561,7 +1592,7 @@ class StructuralEngineer(SubAtomicAgent):
         """Check for large functions (>50 lines) - L5 EVOLUTION ENABLED."""
         violations = []
         max_lines = 50
-        
+
         # L5 Override from evolved rules
         from pathlib import Path
         rules_path = Path("cache/evolved_rules.json")
@@ -1574,7 +1605,7 @@ class StructuralEngineer(SubAtomicAgent):
                 logger.info(f"   📏 Using evolved threshold: {max_lines} lines")
             except Exception:
                 pass
-        
+
         for file_path in self.ctx.get_python_files():
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
@@ -1643,6 +1674,7 @@ class StructuralEngineer(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
+
 class SemanticMapper(SubAtomicAgent):
     """
     KEYS: 26-40 (Pattern-based checks)
@@ -1652,40 +1684,40 @@ class SemanticMapper(SubAtomicAgent):
     def __init__(self, context: ValidationContext):
         super().__init__(context)
         self.prompt += "\n\nSEMANTIC DIRECTIVE: Build comprehensive call-graph to enable intelligent refactoring decisions. Calculate cohesion scores for logical unit identification."
-    
+
     @safe_ast_execution
     def execute(self):
         logger.info(f"\n[>>>] {self.name} ACTIVATED: Building Call-Graph...")
-        
+
         # Build project call-graph
         self.call_graph = self._build_call_graph()
-        
+
         # Cache the graph for other agents
         self._cache_call_graph()
-        
+
         # Pattern checks (stubs for now)
         for key in range(26, 40):
             self.ctx.report(self.name, key, True, [])
-        
+
         logger.info(f"   ✅ Call-graph built: {len(self.call_graph['files'])} files analyzed")
-    
+
     def _build_call_graph(self) -> dict:
         """Build a comprehensive call-graph of the entire project."""
-        
+
         graph = {
             "files": {},
             "globals": {},
             "imports": {},
             "cohesion_scores": {}
         }
-        
+
         # Analyze each Python file
         for file_path in self.ctx.get_python_files():
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
                     tree = ast.parse(content)
-                
+
                 file_info = {
                     "functions": {},
                     "classes": {},
@@ -1693,7 +1725,7 @@ class SemanticMapper(SubAtomicAgent):
                     "imports": set(),
                     "calls": set()
                 }
-                
+
                 # Track imports
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
@@ -1702,7 +1734,7 @@ class SemanticMapper(SubAtomicAgent):
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             file_info["imports"].add(node.module)
-                
+
                 # Analyze functions and classes
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef):
@@ -1716,18 +1748,18 @@ class SemanticMapper(SubAtomicAgent):
                         for target in node.targets if isinstance(node, ast.Assign) else [node.target]:
                             if isinstance(target, ast.Name):
                                 file_info["globals"].add(target.id)
-                
+
                 graph["files"][file_path] = file_info
-                
+
             except Exception as e:
                 logger.info(f"   ⚠️ Failed to analyze {file_path}: {e}")
                 continue
-        
+
         # Calculate cohesion scores
         graph["cohesion_scores"] = self._calculate_cohesion_scores(graph)
-        
+
         return graph
-    
+
     def _analyze_function(self, func_node: ast.FunctionDef, tree: ast.AST) -> dict:
         """Analyze a function for its dependencies, calls, and data flow."""
         info = {
@@ -1738,11 +1770,11 @@ class SemanticMapper(SubAtomicAgent):
             "line_count": getattr(func_node, 'end_lineno', func_node.lineno) - func_node.lineno + 1,
             "data_flow": {"inputs": set(), "outputs": set(), "internal": set()}
         }
-        
+
         # Track variable definitions and usage for data flow
         var_defs = {}
         param_names = {arg.arg for arg in func_node.args.args}
-        
+
         for node in ast.walk(func_node):
             if isinstance(node, ast.Name):
                 if isinstance(node.ctx, ast.Load):
@@ -1763,14 +1795,14 @@ class SemanticMapper(SubAtomicAgent):
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
                     info["imports"].add(node.module)
-        
+
         # Internal variables are those both read and written
         info["data_flow"]["internal"] = info["reads"] & info["writes"]
         info["data_flow"]["inputs"] -= info["data_flow"]["internal"]
         info["data_flow"]["outputs"] -= info["data_flow"]["internal"]
-        
+
         return info
-    
+
     def _analyze_class(self, class_node: ast.ClassDef, tree: ast.AST) -> dict:
         """Analyze a class for its methods, interactions, and cohesion metrics."""
         info = {
@@ -1782,12 +1814,12 @@ class SemanticMapper(SubAtomicAgent):
             "attributes": set(),
             "cohesion_metrics": {}
         }
-        
+
         # Track inheritance
         for base in class_node.bases:
             if isinstance(base, ast.Name):
                 info["inherits"].append(base.id)
-        
+
         # First pass: collect method names and attributes
         method_names = set()
         for node in class_node.body:
@@ -1797,46 +1829,46 @@ class SemanticMapper(SubAtomicAgent):
                 for target in node.targets:
                     if isinstance(target, ast.Name):
                         info["attributes"].add(target.id)
-        
+
         # Second pass: analyze methods and track calls
         for node in class_node.body:
             if isinstance(node, ast.FunctionDef):
                 method_info = self._analyze_function(node, tree)
-                
+
                 # Track internal vs external calls
                 for call in method_info["calls"]:
                     if call in method_names:
                         info["internal_calls"].add(call)
                     else:
                         info["external_calls"].add(call)
-                
+
                 # Track attribute access
                 for attr in method_info["reads"]:
                     if attr in info["attributes"]:
                         method_info["reads_attributes"] = True
-                
+
                 info["methods"][node.name] = method_info
-        
+
         # Calculate cohesion metrics
         total_calls = len(info["internal_calls"]) + len(info["external_calls"])
         if total_calls > 0:
             info["cohesion_metrics"]["internal_call_ratio"] = len(info["internal_calls"]) / total_calls
         else:
             info["cohesion_metrics"]["internal_call_ratio"] = 1.0  # No calls means fully cohesive
-        
+
         # Method cohesion: how much methods work with class attributes
         methods_using_attrs = sum(1 for m in info["methods"].values() if m.get("reads_attributes", False))
         if info["methods"]:
             info["cohesion_metrics"]["attr_usage_ratio"] = methods_using_attrs / len(info["methods"])
         else:
             info["cohesion_metrics"]["attr_usage_ratio"] = 0.0
-        
+
         return info
-    
+
     def _calculate_cohesion_scores(self, graph: dict) -> dict:
         """Calculate cohesion scores for functions and classes."""
         scores = {}
-        
+
         for file_path, file_info in graph["files"].items():
             # Calculate function cohesion
             for func_name, func_info in file_info["functions"].items():
@@ -1844,7 +1876,7 @@ class SemanticMapper(SubAtomicAgent):
                 external = func_info["reads"] - func_info["writes"]
                 cohesion = len(internal) / max(1, len(internal) + len(external))
                 scores[f"{file_path}:{func_name}"] = cohesion
-            
+
             # Calculate class cohesion
             for class_name, class_info in file_info["classes"].items():
                 all_reads = set()
@@ -1852,34 +1884,35 @@ class SemanticMapper(SubAtomicAgent):
                 for method in class_info["methods"].values():
                     all_reads.update(method["reads"])
                     all_writes.update(method["writes"])
-                
+
                 internal = all_writes
                 external = all_reads - all_writes
                 cohesion = len(internal) / max(1, len(internal) + len(external))
                 scores[f"{file_path}:{class_name}"] = cohesion
-        
+
         return scores
-    
+
     def _cache_call_graph(self):
         """Cache the call-graph for other agents to use."""
         import json
         from pathlib import Path
-        
+
         cache_dir = Path("cache")
         cache_dir.mkdir(exist_ok=True)
-        
+
         # Custom JSON encoder to handle sets
         class SetEncoder(json.JSONEncoder):
             def default(self, obj):
                 if isinstance(obj, set):
                     return list(obj)
                 return super().default(obj)
-        
+
         with open(cache_dir / "call_graph.json", "w", encoding="utf-8") as f:
             json.dump(self.call_graph, f, indent=2, cls=SetEncoder)
-        
+
         # Store in context for other agents
         self.ctx.call_graph = self.call_graph
+
 
 class RefactoringExecutionAgent(SubAtomicAgent):
     """
@@ -1936,58 +1969,58 @@ class RefactoringExecutionAgent(SubAtomicAgent):
         import shutil
         import tempfile
         from pathlib import Path
-        
+
         file_path = plan["file"]
         target_function = plan["target"]
         current_lines = plan["current_lines"]
-        
+
         # Safer backup with unique name
         backup_fd, backup_path_str = tempfile.mkstemp(suffix=".py", prefix="l4_backup_")
         os.close(backup_fd)
         backup_path = Path(backup_path_str)
         original_path = Path(file_path)
-        
+
         try:
             # Step 1: Create atomic backup
             shutil.copy2(original_path, backup_path)
-            
+
             # Step 2: Read and parse source
             with open(original_path, "r", encoding="utf-8") as f:
                 source = f.read()
-            
+
             tree = ast.parse(source)
             function_node = None
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == target_function:
                     function_node = node
                     break
-            
+
             if not function_node:
                 return False, "Function not found in AST"
-            
+
             # Step 3: L4+ Multi-block extraction with learning priority
             candidate_blocks = self._find_extractable_blocks(function_node)
             if not candidate_blocks:
                 # Fallback to comment marker if no extractable block
                 return self._fallback_marker_insertion(original_path, function_node, plan_key, current_lines)
-            
+
             # Prioritize by learned success patterns (e.g., 'with_context' succeeds more)
             insights = getattr(self.ctx, 'learning_insights', {})
             success_patterns = insights.get('successful_patterns', ['with_context', 'iterate'])
-            
+
             def priority(block):
                 name_hint = self._suggest_name(block[0], target_function)
                 return sum(1 for pat in success_patterns if pat in name_hint) * 10 + block[1]
-            
+
             candidate_blocks.sort(key=priority, reverse=True)
-            
+
             extracted = []
             # Process blocks in reverse order to preserve line numbers
             for block_node, score in candidate_blocks[:2][::-1]:  # Extract up to 2 best, reversed
                 new_func_name = self._suggest_name(block_node, target_function)
                 new_file = self._suggest_module_split(file_path, new_func_name) if len(candidate_blocks) > 1 else None
-                
+
                 # Step 6: Perform extraction using FunctionExtractor
                 extractor = FunctionExtractor()
                 result = extractor.extract(
@@ -1998,24 +2031,24 @@ class RefactoringExecutionAgent(SubAtomicAgent):
                     new_module_path=new_file,
                     file_path=file_path
                 )
-                
+
                 if not result.success:
                     continue  # Skip failed, continue with others
-                
+
                 # Step 7: Write changes atomically
                 for path, content in result.modified_files.items():
                     path_obj = Path(path)
                     path_obj.parent.mkdir(parents=True, exist_ok=True)
                     path_obj.write_text(content, encoding="utf-8")
                     self.ctx.modified_files.add(str(path))
-                
+
                 # L4 Safety: Compile check
                 for path, content in result.modified_files.items():
                     try:
                         compile(content, path, 'exec')
                     except SyntaxError as e:
                         raise Exception(f"Post-refactor syntax error in {path}: {e}")
-                
+
                 # L5+ Import Validation: Test module loading
                 import importlib.util
                 for path in result.modified_files:
@@ -2027,12 +2060,12 @@ class RefactoringExecutionAgent(SubAtomicAgent):
                                 spec.loader.exec_module(module)
                         except Exception as ie:
                             raise Exception(f"Post-refactor import error in {path}: {ie}")
-                
+
                 # L5+ Test Simulation: Validate imports and basic execution
                 for path, content in result.modified_files.items():
                     if path.endswith('.py'):
                         self._simulate_module_execution(path, content)
-                
+
                 extracted.append(new_func_name)
                 # L4+++ Critical: Refresh source + re-parse AST after each change
                 source = Path(file_path).read_text(encoding="utf-8")
@@ -2045,10 +2078,10 @@ class RefactoringExecutionAgent(SubAtomicAgent):
                         break
                 if not function_node:
                     break  # Safety
-            
+
             if not extracted:
                 return False, "All extraction attempts failed"
-            
+
             # Step 8: Verify syntax for all modified files
             for modified_file in self.ctx.modified_files:
                 try:
@@ -2056,41 +2089,43 @@ class RefactoringExecutionAgent(SubAtomicAgent):
                         ast.parse(f.read())
                 except SyntaxError as e:
                     raise Exception(f"Syntax error in {modified_file}: {e}")
-            
+
             # Step 9: Success - clean up backup
             backup_path.unlink()
-            
+
             return True, f"Extracted: {', '.join(extracted)}"
-            
+
         except Exception as e:
             # Emergency rollback
             if backup_path.exists():
                 shutil.copy2(backup_path, original_path)
                 backup_path.unlink(missing_ok=True)
             return False, f"Refactor failed: {str(e)}"
-    
-    def _fallback_marker_insertion(self, file_path: Path, func_node: ast.FunctionDef, plan_key: str, current_lines: int) -> Tuple[bool, str]:
+
+    def _fallback_marker_insertion(self, file_path: Path, func_node: ast.FunctionDef,
+                                   plan_key: str, current_lines: int) -> Tuple[bool, str]:
         """Fallback to comment marker if extraction fails."""
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-            
-            marker = f"# L4 REFACTOR: Function '{func_node.name}' exceeds {current_lines} lines - extraction attempted but no suitable block found\n"
+
+            marker = f"# L4 REFACTOR: Function '{
+                func_node.name}' exceeds {current_lines} lines - extraction attempted but no suitable block found\n"
             insert_line = func_node.lineno - 1
             lines.insert(insert_line, marker)
-            
+
             with open(file_path, "w", encoding="utf-8") as f:
                 f.writelines(lines)
-            
+
             self.ctx.modified_files.add(str(file_path))
             return True, f"Marked {func_node.name} for manual review (no extractable block)"
         except Exception as e:
             return False, f"Marker insertion failed: {e}"
-    
+
     def _find_extractable_blocks(self, func_node: ast.FunctionDef) -> List[Tuple[ast.AST, int]]:
         """L4+ Hardened: Lower thresholds + fallback to any control block >4 lines."""
         candidates = []
-        
+
         def get_scope_vars(node):
             reads = set()
             writes = set()
@@ -2101,9 +2136,10 @@ class RefactoringExecutionAgent(SubAtomicAgent):
                     elif isinstance(n.ctx, ast.Store):
                         writes.add(n.id)
             return reads, writes
-        
+
         for node in ast.walk(func_node):
-            if isinstance(node, (ast.With, ast.For, ast.While, ast.Try, ast.If, ast.FunctionDef)) and hasattr(node, 'body'):
+            if isinstance(node, (ast.With, ast.For, ast.While, ast.Try,
+                          ast.If, ast.FunctionDef)) and hasattr(node, 'body'):
                 body_size = len(node.body)
                 if body_size >= 5:  # Reduced from 8
                     reads, writes = get_scope_vars(node)
@@ -2115,15 +2151,15 @@ class RefactoringExecutionAgent(SubAtomicAgent):
                     score = body_size - penalty
                     if score > 2:  # Reduced from 5 for more opportunities
                         candidates.append((node, score))
-        
+
         # Fallback: Any block >6 lines if no scored candidates
         if not candidates:
             for node in ast.walk(func_node):
                 if hasattr(node, 'body') and len(node.body) > 6:
                     candidates.append((node, 0))
-        
+
         return sorted(candidates, key=lambda x: x[1], reverse=True)[:4]  # Up to 4
-    
+
     def _suggest_name(self, block_node: ast.AST, parent_name: str) -> str:
         """Suggest meaningful name using node type and context."""
         base = parent_name.replace("large_", "").replace("process_", "").lstrip('_')
@@ -2135,12 +2171,12 @@ class RefactoringExecutionAgent(SubAtomicAgent):
             ast.If: "handle_case",
         }.get(type(block_node), "step")
         candidate = f"{base}_{suffix}"
-        
+
         # Avoid conflicts with existing functions
         # Note: This needs access to the current function_node, which is available in the calling context
         # For now, we'll add a simple counter if conflict detected later
         return candidate
-    
+
     def _suggest_module_split(self, file_path: str, new_func_name: str) -> str | None:
         """Return new module path if file > 500 lines, else None."""
         try:
@@ -2150,10 +2186,10 @@ class RefactoringExecutionAgent(SubAtomicAgent):
                 stem = Path(file_path).stem
                 parent = Path(file_path).parent
                 return str(parent / f"{stem}_{new_func_name}.py")
-        except:
+        except BaseException:
             pass
         return None
-    
+
     def _simulate_module_execution(self, path: str, content: str):
         """L5+ Test Simulation: Validate imports and basic execution."""
         try:
@@ -2163,6 +2199,7 @@ class RefactoringExecutionAgent(SubAtomicAgent):
             exec(content, module.__dict__)
         except Exception as e:
             raise Exception(f"Module execution simulation failed for {path}: {e}")
+
 
 class ArchitecturalRefactorAgent(SubAtomicAgent):
     """
@@ -2176,33 +2213,33 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
 
     def execute(self):
         logger.info(f"\n[>>>] {self.name} ACTIVATED: Planning and Executing Architectural Refactoring Missions...")
-        
+
         # Check if we have call-graph data from SemanticMapper
         if not hasattr(self.ctx, 'call_graph'):
             logger.info("   ⚠️ No call-graph available - skipping architectural analysis")
             return
-        
+
         # First, assess and plan missions
         self._assess_global_encapsulation()
         self._assess_class_reorganization()
-        
+
         # Then execute planned missions
         self._execute_missions()
-        
+
         logger.info("   ✅ Architectural refactoring complete")
-    
+
     def _execute_missions(self):
         """Execute all planned architectural refactoring missions."""
         mission_executors = {
             "MISSION_ENCAPSULATE_GLOBALS": self._execute_encapsulate_globals,
             "MISSION_REORGANIZE": self._execute_class_reorganization,
         }
-        
+
         # Debug: Count missions
         total_missions = 0
         planned_missions = 0
         multi_file_missions = 0
-        
+
         for plan_key, plan in list(self.ctx.refactor_plans.items()):
             total_missions += 1
             if plan.get("type") == "MULTI_FILE_REFACTOR":
@@ -2211,7 +2248,7 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
                     planned_missions += 1
                     mission = plan.get("mission")
                     logger.info(f"\n   🏗️ Executing mission: {mission} (key: {plan_key})")
-                    
+
                     if mission in mission_executors:
                         try:
                             success, details = mission_executors[mission](plan)
@@ -2219,7 +2256,7 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
                             plan["outcome"] = "SUCCESS" if success else "FAILED"
                             plan["execution_time"] = __import__('datetime').datetime.now().isoformat()
                             plan["execution_details"] = details
-                            
+
                             if success:
                                 logger.info(f"      ✅ Mission completed: {details}")
                             else:
@@ -2231,12 +2268,13 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
                             logger.info(f"      ❌ Mission error: {e}")
                     else:
                         logger.info(f"      ⚠️ No executor found for mission: {mission}")
-        
+
         if total_missions == 0:
             logger.info("   ℹ️ No refactor plans found")
         else:
-            logger.info(f"\n   📊 Mission Summary: {total_missions} total, {multi_file_missions} multi-file, {planned_missions} executed")
-    
+            logger.info(
+                f"\n   📊 Mission Summary: {total_missions} total, {multi_file_missions} multi-file, {planned_missions} executed")
+
     def _execute_encapsulate_globals(self, plan: dict) -> Tuple[bool, str]:
         """L5 Execute: Encapsulate all global variables into a ConfigurationService."""
         from pathlib import Path
@@ -2244,49 +2282,49 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
         # Collect all global variables from call graph
         all_globals = set()
         files_with_globals = []
-        
+
         for file_path, file_info in self.ctx.call_graph["files"].items():
             if file_info.get("globals"):
                 all_globals.update(file_info["globals"])
                 files_with_globals.append(file_path)
-        
+
         if not all_globals:
             return False, "No global variables found"
-        
+
         logger.info(f"   📊 Found {len(all_globals)} global variables in {len(files_with_globals)} files")
-        
+
         # Create ConfigurationService
         service_content = self._generate_configuration_service(all_globals)
         service_path = "services/configuration.py"
-        
+
         # Start atomic transaction
         transaction = RefactorTransaction(backup_dir=Path(""))
         transaction.target_files = files_with_globals.copy()
-        
+
         try:
             with transaction:
                 # Add new service file
                 transaction.add_new_file(service_path, service_content)
-                
+
                 # Update each file to use the service
                 for file_path in files_with_globals:
                     updated_content = self._replace_globals_with_service(
                         file_path, service_path, all_globals
                     )
                     transaction.add_modification(file_path, updated_content)
-                
+
                 # Commit all changes
                 transaction.commit(self.ctx.modified_files)
-                
+
                 return True, f"Encapsulated {len(all_globals)} globals into ConfigurationService"
-                
+
         except Exception as e:
             return False, f"Failed to encapsulate globals: {str(e)}"
-    
+
     def _generate_configuration_service(self, globals_set: Set[str]) -> str:
         """Generate the ConfigurationService class with all global variables."""
         sorted_globals = sorted(globals_set)
-        
+
         content = '''"""
 L5 Generated Configuration Service
 Encapsulates all global variables for better architecture.
@@ -2294,32 +2332,32 @@ Encapsulates all global variables for better architecture.
 
 class ConfigurationService:
     """Centralized configuration and global state management."""
-    
+
     _instance = None
     _initialized = False
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
-    
+
     def __init__(self):
         if not self._initialized:
             self._initialized = True
             # Initialize all global variables with default values
 '''
-        
+
         for global_name in sorted_globals:
             # Skip module-level constants (all caps)
             if not global_name.isupper():
                 content += f'            self.{global_name} = None\n'
-        
+
         content += '''
     @classmethod
     def get_instance(cls):
         """Get the singleton instance."""
         return cls()
-    
+
     def reset(self):
         """Reset all configuration to defaults."""
         for attr_name in dir(self):
@@ -2329,28 +2367,28 @@ class ConfigurationService:
 # Global instance for easy access
 config = ConfigurationService()
 '''
-        
+
         # Add class-level constants for actual global constants
         for global_name in sorted_globals:
             if global_name.isupper():
                 content += f'\n# Legacy constant\n{global_name} = None\n'
-        
+
         return content
-    
+
     def _replace_globals_with_service(self, file_path: str, service_path: str, globals_set: Set[str]) -> str:
         """Replace global variable access with ConfigurationService."""
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
-        
+
         tree = ast.parse(content)
-        
+
         # Add import at the top
         import_node = ast.ImportFrom(
             module='services.configuration',
             names=[ast.alias(name='ConfigurationService', asname=None)],
             level=0
         )
-        
+
         # Find insertion point (after docstring and future imports)
         insert_idx = 0
         for i, node in enumerate(tree.body):
@@ -2361,9 +2399,9 @@ config = ConfigurationService()
                 continue
             else:
                 break
-        
+
         tree.body.insert(insert_idx, import_node)
-        
+
         # Replace global variable access
         class GlobalReplacer(ast.NodeTransformer):
             def visit_Name(self, node):
@@ -2379,50 +2417,50 @@ config = ConfigurationService()
                         ctx=node.ctx
                     )
                 return node
-        
+
         tree = GlobalReplacer().visit(tree)
         ast.fix_missing_locations(tree)
-        
+
         # Generate new source
         try:
             return ast.unparse(tree)
         except AttributeError:
             import astor
             return astor.to_source(tree)
-    
+
     def _execute_class_reorganization(self, plan: dict) -> Tuple[bool, str]:
         """L5 Execute: Reorganize classes based on cohesion scores."""
         from pathlib import Path
-        
+
         target_file = plan.get("target_file")
         service_classes = plan.get("service_classes", [])
         utility_classes = plan.get("utility_classes", [])
-        
+
         if not target_file or not (service_classes or utility_classes):
             return False, "Invalid reorganization plan"
-        
+
         logger.info(f"   📊 Reorganizing {len(service_classes)} service and {len(utility_classes)} utility classes")
-        
+
         try:
             # Read the source file
             with open(target_file, "r", encoding="utf-8") as f:
                 content = f.read()
-            
+
             tree = ast.parse(content)
-            
+
             # Extract classes to move
             classes_to_move = {}
             remaining_nodes = []
-            
+
             for node in tree.body:
                 if isinstance(node, ast.ClassDef) and node.name in (service_classes + utility_classes):
                     classes_to_move[node.name] = node
                 else:
                     remaining_nodes.append(node)
-            
+
             if not classes_to_move:
                 return False, "No classes found to move"
-            
+
             # Create new files
             base_path = Path(target_file).parent
             if service_classes:
@@ -2430,49 +2468,49 @@ config = ConfigurationService()
                 service_file = base_path / "services.py"
                 Path(service_file).write_text(service_content, encoding="utf-8")
                 self.ctx.modified_files.add(str(service_file))
-            
+
             if utility_classes:
                 utility_content = self._create_module_with_classes(classes_to_move, utility_classes)
                 utility_file = base_path / "utils.py"
                 Path(utility_file).write_text(utility_content, encoding="utf-8")
                 self.ctx.modified_files.add(str(utility_file))
-            
+
             # Update original file
             new_tree = ast.Module(body=remaining_nodes, type_ignores=[])
             ast.fix_missing_locations(new_tree)
-            
+
             try:
                 new_content = ast.unparse(new_tree)
             except AttributeError:
                 import astor
                 new_content = astor.to_source(new_tree)
-            
+
             # Add imports for moved classes
             imports = []
             if service_classes:
                 imports.append("from .services import " + ", ".join(service_classes))
             if utility_classes:
                 imports.append("from .utils import " + ", ".join(utility_classes))
-            
+
             if imports:
                 new_content = "\n".join(imports) + "\n\n" + new_content
-            
+
             with open(target_file, "w", encoding="utf-8") as f:
                 f.write(new_content)
             self.ctx.modified_files.add(target_file)
-            
+
             return True, f"Reorganized {len(classes_to_move)} classes into separate modules"
-            
+
         except Exception as e:
             return False, f"Failed to reorganize classes: {str(e)}"
-    
+
     def _create_module_with_classes(self, classes_dict: dict, class_names: List[str]) -> str:
         """Create a new module containing the specified classes."""
         selected_classes = [classes_dict[name] for name in class_names if name in classes_dict]
-        
+
         module = ast.Module(body=selected_classes, type_ignores=[])
         ast.fix_missing_locations(module)
-        
+
         try:
             return ast.unparse(module)
         except AttributeError:
@@ -2481,12 +2519,12 @@ config = ConfigurationService()
 
     def _assess_global_encapsulation(self):
         """Assess if global variables should be encapsulated into service classes."""
-        total_globals = sum(len(file_info.get("globals", [])) 
-                           for file_info in self.ctx.call_graph["files"].values())
-        
+        total_globals = sum(len(file_info.get("globals", []))
+                            for file_info in self.ctx.call_graph["files"].values())
+
         if total_globals > 50:  # Threshold for architectural intervention
             logger.info(f"   🏗️ Found {total_globals} global variables - planning encapsulation mission")
-            
+
             # Create architectural refactoring plan
             self.ctx.refactor_plans["MISSION_ENCAPSULATE_GLOBALS"] = {
                 "type": "MULTI_FILE_REFACTOR",
@@ -2496,32 +2534,32 @@ config = ConfigurationService()
                 "status": "PLANNED",
                 "priority": "HIGH"
             }
-    
+
     def _assess_class_reorganization(self):
         """Assess class density and plan coherent reorganization."""
         for file_path, file_info in self.ctx.call_graph["files"].items():
             class_count = len(file_info.get("classes", {}))
-            
+
             if class_count > 10:  # Too many classes in one file
                 logger.info(f"   🏗️ File {file_path} has {class_count} classes - planning reorganization")
-                
+
                 # Analyze class cohesion for intelligent grouping
                 cohesion_scores = self.ctx.call_graph["cohesion_scores"]
-                
+
                 # Group classes by cohesion and domain
                 service_classes = []
                 utility_classes = []
-                
+
                 for class_name in file_info["classes"]:
                     score_key = f"{file_path}:{class_name}"
                     cohesion = cohesion_scores.get(score_key, 0.5)
-                    
+
                     # Simple heuristic: high cohesion classes go to service, low to utils
                     if cohesion > 0.6:
                         service_classes.append(class_name)
                     else:
                         utility_classes.append(class_name)
-                
+
                 if service_classes or utility_classes:
                     self.ctx.refactor_plans[f"MISSION_REORGANIZE_{file_path}"] = {
                         "type": "MULTI_FILE_REFACTOR",
@@ -2532,6 +2570,7 @@ config = ConfigurationService()
                         "status": "PLANNED",
                         "priority": "MEDIUM"
                     }
+
 
 class PolicyEvolutionAgent(SubAtomicAgent):
     """
@@ -2545,33 +2584,33 @@ class PolicyEvolutionAgent(SubAtomicAgent):
 
     def execute(self):
         logger.info(f"\n[>>>] {self.name} ACTIVATED: Analyzing Outcomes & Evolving Policy...")
-        
+
         # Load execution history
         history = self._load_execution_history()
-        
+
         # Analyze outcomes and identify patterns
         analysis = self._analyze_execution_outcomes(history)
-        
+
         # Evolve validation rules based on analysis
         evolved_rules = self._evolve_validation_rules(analysis)
-        
+
         # Evolve agent prompts based on patterns
         self._evolve_agent_prompts(analysis)
-        
+
         # Store evolved data back to context for StatePersistenceAgent
         self.ctx.evolved_rules = evolved_rules
         self.ctx.policy_analysis = analysis
-        
+
         logger.info("   ✅ Policy evolution complete")
-    
+
     def _load_execution_history(self) -> dict:
         """Load execution history from cache."""
         import json
         from pathlib import Path
-        
+
         cache_dir = Path("cache")
         history_file = cache_dir / "execution_history.json"
-        
+
         history = {"executions": []}
         if history_file.exists():
             try:
@@ -2581,9 +2620,9 @@ class PolicyEvolutionAgent(SubAtomicAgent):
                     history["executions"] = []
             except Exception:
                 pass
-        
+
         return history
-    
+
     def _analyze_execution_outcomes(self, history: dict) -> dict:
         """Analyze execution outcomes to identify patterns."""
         analysis = {
@@ -2593,18 +2632,18 @@ class PolicyEvolutionAgent(SubAtomicAgent):
             "failure_patterns": [],
             "success_patterns": ["with_context", "iterate", "safe_execute"]
         }
-        
+
         for execution in history.get("executions", []):
             for plan in execution.get("plans", {}).values():
                 plan_type = plan.get("type")
                 outcome = plan.get("outcome")
-                
+
                 if plan_type == "SPLIT_FUNCTION":
                     if outcome == "SUCCESS":
                         analysis["function_splits"]["success"] += 1
                     elif outcome == "FAILED":
                         analysis["function_splits"]["failed"] += 1
-                
+
                 elif plan_type == "MULTI_FILE_REFACTOR":
                     mission = plan.get("mission")
                     if mission == "MISSION_ENCAPSULATE_GLOBALS":
@@ -2617,18 +2656,18 @@ class PolicyEvolutionAgent(SubAtomicAgent):
                             analysis["reorganization_missions"]["success"] += 1
                         elif outcome == "FAILED":
                             analysis["reorganization_missions"]["failed"] += 1
-        
+
         return analysis
-    
+
     def _evolve_validation_rules(self, analysis: dict) -> dict:
         """Evolve validation rules based on execution analysis."""
         import json
         from pathlib import Path
-        
+
         cache_dir = Path("cache")
         cache_dir.mkdir(exist_ok=True)
         rules_file = cache_dir / "evolved_rules.json"
-        
+
         # Load current rules
         rules = {
             "max_function_lines": 50,
@@ -2646,23 +2685,27 @@ class PolicyEvolutionAgent(SubAtomicAgent):
                     rules = json.load(f)
             except Exception:
                 pass
-        
+
         # Evolve function rules
         func_success = analysis["function_splits"]["success"]
         func_failed = analysis["function_splits"]["failed"]
-        
+
         if func_failed > func_success * 2:
             old_threshold = rules.get("max_function_lines", 50)
             rules["max_function_lines"] = max(30, old_threshold - 5)
-            logger.info(f"   📉 Reducing function size threshold to {rules['max_function_lines']} lines (high failure rate)")
+            logger.info(
+                f"   📉 Reducing function size threshold to {
+                    rules['max_function_lines']} lines (high failure rate)")
         elif func_success > func_failed * 3:
             old_threshold = rules.get("max_function_lines", 50)
             rules["max_function_lines"] = min(100, old_threshold + 5)
-            logger.info(f"   📈 Increasing function size threshold to {rules['max_function_lines']} lines (high success rate)")
-        
+            logger.info(
+                f"   📈 Increasing function size threshold to {
+                    rules['max_function_lines']} lines (high success rate)")
+
         # Evolve architectural rules
         architectural_confidence = rules.get("architectural_confidence", 0.5)
-        
+
         # Track persistent failures across runs
         total_runs = max(1, len(history.get("executions", [])))
         failing_keys = []
@@ -2671,11 +2714,18 @@ class PolicyEvolutionAgent(SubAtomicAgent):
                 if not v:
                     failing_keys.append(k)
         from collections import Counter
-        failure_rates = {k: count / total_runs for k, count in Counter(failing_keys).items() if count / total_runs > 0.5}
+        failure_rates = {
+            k: count /
+            total_runs for k,
+            count in Counter(failing_keys).items() if count /
+            total_runs > 0.5}
 
         if 10 in failure_rates:
             rules["max_line_length"] = max(100, rules["max_line_length"] - 10)
-            logger.info(f"   📉 Tightening line length to {rules['max_line_length']} (Key 10 persistent failure {failure_rates[10]:.0%})")
+            logger.info(
+                f"   📉 Tightening line length to {
+                    rules['max_line_length']} (Key 10 persistent failure {
+                    failure_rates[10]:.0%})")
 
         if 16 in failure_rates:
             rules["max_nesting_depth"] = max(3, rules["max_nesting_depth"] - 1)
@@ -2685,7 +2735,7 @@ class PolicyEvolutionAgent(SubAtomicAgent):
             rules["max_function_lines"] = max(40, rules["max_function_lines"] - 5)
             rules["max_complexity"] = max(8, rules["max_complexity"] - 1)
             logger.info(f"   📉 Tightening function size/complexity limits due to persistent budget violations")
-        
+
         # Global encapsulation success
         if analysis["globals_missions"]["success"] > 0:
             total = analysis["globals_missions"]["success"] + analysis["globals_missions"]["failed"]
@@ -2693,9 +2743,11 @@ class PolicyEvolutionAgent(SubAtomicAgent):
             if success_rate > 0.8:
                 old_limit = rules.get("max_globals_per_file", 10)
                 rules["max_globals_per_file"] = max(0, old_limit - 2)
-                logger.info(f"   🏗️ Tightening global variable limit to {rules['max_globals_per_file']} per file (successful encapsulation)")
+                logger.info(
+                    f"   🏗️ Tightening global variable limit to {
+                        rules['max_globals_per_file']} per file (successful encapsulation)")
                 architectural_confidence = min(1.0, architectural_confidence + 0.1)
-        
+
         # Class reorganization success
         if analysis["reorganization_missions"]["success"] > 0:
             total = analysis["reorganization_missions"]["success"] + analysis["reorganization_missions"]["failed"]
@@ -2703,17 +2755,20 @@ class PolicyEvolutionAgent(SubAtomicAgent):
             if success_rate > 0.8:
                 old_limit = rules.get("max_classes_per_file", 10)
                 rules["max_classes_per_file"] = max(5, old_limit - 1)
-                logger.info(f"   🏗️ Tightening class density limit to {rules['max_classes_per_file']} per file (successful reorganization)")
+                logger.info(
+                    f"   🏗️ Tightening class density limit to {
+                        rules['max_classes_per_file']} per file (successful reorganization)")
                 architectural_confidence = min(1.0, architectural_confidence + 0.1)
-        
+
         rules["architectural_confidence"] = architectural_confidence
         if architectural_confidence > 0.7:
-            logger.info(f"   🧬 L5 Self-Evolution: High architectural confidence ({architectural_confidence:.1%}) - system ready for complex missions")
-        
+            logger.info(
+                f"   🧬 L5 Self-Evolution: High architectural confidence ({architectural_confidence:.1%}) - system ready for complex missions")
+
         # Save evolved rules
         with open(rules_file, "w", encoding="utf-8") as f:
             json.dump(rules, f, indent=2)
-        
+
         # Store learning insights for other agents
         self.ctx.learning_insights = {
             "successful_patterns": analysis["success_patterns"],
@@ -2721,12 +2776,13 @@ class PolicyEvolutionAgent(SubAtomicAgent):
             "current_threshold": rules["max_function_lines"],
             "architectural_confidence": architectural_confidence
         }
-        
+
         return rules
-    
+
     def _evolve_agent_prompts(self, analysis: dict):
         """Evolve agent prompts based on identified patterns."""
         # Future enhancement: Dynamically adjust agent prompts based on success patterns
+
 
 class StatePersistenceAgent(SubAtomicAgent):
     """
@@ -2740,27 +2796,27 @@ class StatePersistenceAgent(SubAtomicAgent):
 
     def execute(self):
         logger.info(f"\n[>>>] {self.name} ACTIVATED: Persisting Execution State...")
-        
+
         # Persist execution history (atomic I/O)
         self._persist_execution_history()
-        
+
         # Light Canon checks (stubs)
         for key in range(41, 48):
             if key != 48:  # Key 48 is reserved
                 self.ctx.report(self.name, key, True, [])
-        
+
         logger.info("   ✅ State persisted")
-    
+
     def _persist_execution_history(self):
         """Save refactor plan outcomes for future learning."""
         import json
         from pathlib import Path
-        
+
         cache_dir = Path("cache")
         cache_dir.mkdir(exist_ok=True)
-        
+
         history_file = cache_dir / "execution_history.json"
-        
+
         # Load existing history
         history = {"executions": []}
         if history_file.exists():
@@ -2771,7 +2827,7 @@ class StatePersistenceAgent(SubAtomicAgent):
                     history["executions"] = []
             except Exception:
                 history = {"executions": []}
-        
+
         # Add current execution results
         if self.ctx.refactor_plans:
             execution_snapshot = {
@@ -2780,16 +2836,18 @@ class StatePersistenceAgent(SubAtomicAgent):
                 "modified_files": list(self.ctx.modified_files)
             }
             history["executions"].append(execution_snapshot)
-            
+
             # Keep only last 100 executions
             history["executions"] = history["executions"][-100:]
-            
+
             with open(history_file, "w", encoding="utf-8") as f:
                 json.dump(history, f, indent=2)
 
 # ==============================================================================
 # 2. L5 MULTI-FILE REFACTORING SUPPORT
 # ==============================================================================
+
+
 @dataclass
 class RefactorTransaction:
     """L5 Atomic transaction for multi-file refactoring operations."""
@@ -2797,7 +2855,7 @@ class RefactorTransaction:
     target_files: List[str] = field(default_factory=list)
     modifications: Dict[str, str] = field(default_factory=dict)
     new_files: Dict[str, str] = field(default_factory=dict)
-    
+
     def __enter__(self):
         """Enter transaction context - backup all target files."""
         import shutil
@@ -2805,19 +2863,19 @@ class RefactorTransaction:
 
         # Create temporary backup directory
         self.backup_dir = Path(tempfile.mkdtemp(prefix="l5_refactor_backup_"))
-        
+
         # Backup all target files
         for file_path in self.target_files:
             if Path(file_path).exists():
                 backup_path = self.backup_dir / Path(file_path).name
                 shutil.copy2(file_path, backup_path)
-        
+
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exit transaction - commit or rollback."""
         import shutil
-        
+
         if exc_type is not None:
             # Error occurred - rollback from backup
             logger.info(f"   🔄 Rolling back {len(self.target_files)} files...")
@@ -2825,37 +2883,37 @@ class RefactorTransaction:
                 backup_path = self.backup_dir / Path(file_path).name
                 if backup_path.exists():
                     shutil.copy2(backup_path, file_path)
-            
+
             # Remove any new files created
             for new_file in self.new_files:
                 if Path(new_file).exists():
                     Path(new_file).unlink()
-            
+
             logger.info(f"   ✅ Rollback complete")
         else:
             # Success - commit changes
             logger.info(f"   ✅ Committed {len(self.modifications)} file changes")
-        
+
         # Cleanup backup directory
         shutil.rmtree(self.backup_dir, ignore_errors=True)
-    
+
     def add_modification(self, file_path: str, new_content: str):
         """Add a file modification to the transaction."""
         self.modifications[file_path] = new_content
         if file_path not in self.target_files:
             self.target_files.append(file_path)
-    
+
     def add_new_file(self, file_path: str, content: str):
         """Add a new file to be created."""
         self.new_files[file_path] = content
-    
+
     def commit(self, modified_files_set=None):
         """Apply all modifications to disk."""
         for file_path, content in self.modifications.items():
             Path(file_path).write_text(content, encoding="utf-8")
             if modified_files_set is not None:
                 modified_files_set.add(file_path)
-        
+
         for file_path, content in self.new_files.items():
             Path(file_path).parent.mkdir(parents=True, exist_ok=True)
             Path(file_path).write_text(content, encoding="utf-8")
@@ -2865,6 +2923,8 @@ class RefactorTransaction:
 # ==============================================================================
 # 3. FUNCTION EXTRACTOR (L4 AST-Safe Extraction)
 # ==============================================================================
+
+
 @dataclass
 class ExtractionResult:
     """Result of function extraction with all modified files."""
@@ -2872,41 +2932,42 @@ class ExtractionResult:
     modified_files: Dict[str, str] = field(default_factory=dict)
     message: str = ""
 
+
 class FunctionExtractor:
     """L4 AST-Safe Function Extractor with NodeTransformer."""
-    
+
     def extract(self, source: str, func_node: ast.FunctionDef, block_node: ast.AST,
                 new_func_name: str, new_module_path: str = None, file_path: str = "original.py") -> ExtractionResult:
         """Extract a block into a new function with AST safety."""
         try:
             tree = ast.parse(source)
-            
+
             # Find the function in the tree
             target_func = None
             for node in ast.walk(tree):
                 if node is func_node:
                     target_func = node
                     break
-            
+
             if not target_func:
                 return ExtractionResult(False, message="Function node not found in tree")
-            
+
             # Analyze dependencies in the block
             reads, writes = self._analyze_block_dependencies(block_node)
-            
+
             # Build new function AST
             new_func_ast = self._build_new_function(block_node, new_func_name, reads, writes)
-            
+
             # Build replacement call
             replacement_call = self._build_replacement_call(new_func_name, reads, writes, block_node)
-            
+
             # Transform the tree
             transformer = self._create_transformer(block_node, replacement_call, new_func_ast)
             new_tree = transformer.visit(tree)
-            
+
             # Fix line numbers and locations
             ast.fix_missing_locations(new_tree)
-            
+
             # Generate modified source
             try:
                 modified_source = ast.unparse(new_tree)
@@ -2914,44 +2975,44 @@ class FunctionExtractor:
                 # Fallback for Python < 3.9
                 import astor
                 modified_source = astor.to_source(new_tree)
-            
+
             result = {"file_path": modified_source}
-            
+
             # If creating a new module, add it
             if new_module_path:
                 new_module_source = self._generate_new_module(new_func_ast, file_path)
                 result[new_module_path] = new_module_source
-            
+
             return ExtractionResult(True, result)
-            
+
         except Exception as e:
             return ExtractionResult(False, message=str(e))
-    
+
     def _analyze_block_dependencies(self, block_node: ast.AST) -> Tuple[Set[str], Set[str]]:
         """Analyze what variables the block reads and writes."""
         reads = set()
         writes = set()
-        
+
         for node in ast.walk(block_node):
             if isinstance(node, ast.Name):
                 if isinstance(node.ctx, ast.Load):
                     reads.add(node.id)
                 elif isinstance(node.ctx, ast.Store):
                     writes.add(node.id)
-        
+
         return reads, writes
-    
-    def _build_new_function(self, block_node: ast.AST, func_name: str, 
-                           reads: Set[str], writes: Set[str]) -> ast.FunctionDef:
+
+    def _build_new_function(self, block_node: ast.AST, func_name: str,
+                            reads: Set[str], writes: Set[str]) -> ast.FunctionDef:
         """Build the AST for the new extracted function."""
         # Build parameters for external dependencies
         args = []
         defaults = []
-        
+
         # Add read variables as parameters
         for var in sorted(reads - writes):
             args.append(ast.arg(arg=var, annotation=None))
-        
+
         # Build return statement for written variables
         return_stmt = None
         if writes:
@@ -2962,14 +3023,14 @@ class FunctionExtractor:
                     elts=[ast.Name(id=v, ctx=ast.Load()) for v in sorted(writes)],
                     ctx=ast.Load()
                 ))
-        
+
         # Copy the block body
         body = list(block_node.body) if hasattr(block_node, 'body') else [block_node]
-        
+
         # Add return statement at the end
         if return_stmt:
             body.append(return_stmt)
-        
+
         # Create the function
         func = ast.FunctionDef(
             name=func_name,
@@ -2986,22 +3047,22 @@ class FunctionExtractor:
             decorator_list=[],
             returns=None
         )
-        
+
         return func
-    
+
     def _build_replacement_call(self, func_name: str, reads: Set[str], writes: Set[str],
-                               block_node: ast.AST) -> ast.AST:
+                                block_node: ast.AST) -> ast.AST:
         """Build the AST for the function call that replaces the block."""
         # Build argument list
         args = [ast.Name(id=v, ctx=ast.Load()) for v in sorted(reads - writes)]
-        
+
         # Create the call
         call = ast.Call(
             func=ast.Name(id=func_name, ctx=ast.Load()),
             args=args,
             keywords=[]
         )
-        
+
         # Handle return values
         if writes:
             if len(writes) == 1:
@@ -3020,45 +3081,45 @@ class FunctionExtractor:
         else:
             # No return values, just call
             return ast.Expr(value=call)
-    
+
     def _create_transformer(self, block_node: ast.AST, replacement: ast.AST,
-                           new_func: ast.FunctionDef) -> ast.NodeTransformer:
+                            new_func: ast.FunctionDef) -> ast.NodeTransformer:
         """Create a transformer to replace the block with a function call."""
         class BlockExtractor(ast.NodeTransformer):
             def visit(self, node):
                 if node is block_node:
                     return replacement
                 return self.generic_visit(node)
-        
+
         # Also need to insert the new function
         class FunctionInserter(ast.NodeTransformer):
             def __init__(self, target_func, new_func):
                 self.target_func = target_func
                 self.new_func = new_func
                 self.inserted = False
-            
+
             def visit_FunctionDef(self, node):
                 if node is self.target_func and not self.inserted:
                     self.inserted = True
                     # Insert new function before this one
                     return [self.new_func, node]
                 return self.generic_visit(node)
-        
+
         # Combine both transformations
         class CombinedTransformer(ast.NodeTransformer):
             def __init__(self):
                 self.extractor = BlockExtractor()
                 self.inserter = FunctionInserter(target_func, new_func)
-            
+
             def visit(self, node):
                 # Apply extraction first
                 node = self.extractor.visit(node)
                 # Then insertion
                 node = self.inserter.visit(node)
                 return node
-        
+
         return CombinedTransformer()
-    
+
     def _generate_new_module(self, new_func: ast.FunctionDef, original_file: str) -> str:
         """Generate the source code for a new module containing the extracted function."""
         # Create module with imports
@@ -3066,18 +3127,18 @@ class FunctionExtractor:
             body=[new_func],
             type_ignores=[]
         )
-        
+
         # Add file header
         header = f'"""\nExtracted from {original_file}\n"""\n\n'
-        
+
         try:
             func_source = ast.unparse(module)
         except AttributeError:
             import astor
             func_source = astor.to_source(module)
-        
+
         return header + func_source
-    
+
     def _make_relative_import(self, from_file: str, to_file: str) -> str:
         """Generate a relative import statement."""
         from pathlib import Path
@@ -3085,14 +3146,14 @@ class FunctionExtractor:
         # Get relative path
         from_dir = Path(from_file).parent
         to_path = Path(to_file)
-        
+
         try:
             rel_path = to_path.relative_to(from_dir)
         except ValueError:
             # Files are in different directories, use absolute import
             module_name = to_path.stem
             return f"from {module_name} import "
-        
+
         # Build relative import
         if rel_path == Path("."):
             # Same directory
@@ -3108,6 +3169,8 @@ class FunctionExtractor:
 # ==============================================================================
 # 1. L5 VALIDATION CONTEXT
 # ==============================================================================
+
+
 class MissionPlannerAgent(SubAtomicAgent):
     """
     L5 ORCHESTRATION LAYER
@@ -3125,98 +3188,100 @@ class MissionPlannerAgent(SubAtomicAgent):
         agent_classes = [
             # Security first - critical failures halt execution
             SecurityEnforcer,
-            
+
             # Code quality auditing
             CodeQualityAuditor,
-            
+
             # Whitespace and formatting
             WhitespaceMechanic,
-            
+
             # Structural analysis
             StructuralLinter,
             ConstantMechanic,
-            
+
             # Import hygiene
             DependencySentinel,
-            
+
             # Documentation
             DocumentationAgent,
-            
+
             # Naming conventions
             NamingAgent,
-            
+
             # Semantic analysis (builds call-graph)
             SemanticMapper,
-            
+
             # Budget enforcement
             BudgetAgent,
-            
+
             # Structural engineering
             StructuralEngineer,
-            
+
             # Refactoring execution
             RefactoringExecutionAgent,
-            
+
             # Architectural refactoring
             ArchitecturalRefactorAgent,
-            
+
             # Policy evolution (analyzes outcomes)
             PolicyEvolutionAgent,
-            
+
             # State persistence (atomic I/O)
             StatePersistenceAgent,
         ]
-        
+
         return agent_classes
 
 # ==============================================================================
 # 4. MAIN EXECUTION
 # ==============================================================================
+
+
 def main():
     """L5 Orchestrator: Multi-pass execution with Zero Loss Merge."""
     logger.info("\n🚀 Canon Validator v3.0 - L5 Subatomic Swarm Governance Platform")
     logger.info("=" * 70)
-    
+
     # Initialize shared context
     ctx = ValidationContext()
-    
+
     # HARDENING: Maximum 3 passes to achieve Zero Loss Merge
     MAX_PASSES = 3
     current_pass = 1
-    
+
     while current_pass <= MAX_PASSES:
         logger.info(f"\n🔄 EXECUTION PASS {current_pass}/{MAX_PASSES}")
-        
+
         # Reset signals for this pass (keep history)
-        ctx.signals.discard("AST_VALID") 
-        
+        ctx.signals.discard("AST_VALID")
+
         # L5 Dynamic Agent Ordering via MissionPlanner
         planner = MissionPlannerAgent(ctx)
         agent_classes = planner.execute()
-        
+
         # Dynamic Re-ordering for Hardening:
         # Move WhitespaceMechanic to the END to ensure clean commit state
         if WhitespaceMechanic in agent_classes:
             agent_classes.remove(WhitespaceMechanic)
-            agent_classes.append(WhitespaceMechanic) 
+            agent_classes.append(WhitespaceMechanic)
 
         any_fixes_applied = False
         ctx.fix_history[current_pass] = []
 
         for agent_class in agent_classes:
             agent = agent_class(ctx)
-            
+
             # Check prerequisites
             if hasattr(agent, 'can_run') and not agent.can_run():
                 logger.info(f"\n⏭️  Skipping {agent.name} - prerequisites not met")
                 continue
-            
+
             # Track modified files before execution
             files_before = len(ctx.modified_files)
-            
+
             # Execute agent
             agent.execute()
-            
+
             # Check if this agent applied fixes
             if len(ctx.modified_files) > files_before:
                 any_fixes_applied = True
@@ -3226,31 +3291,31 @@ def main():
         if not any_fixes_applied:
             logger.info("✅ Stability Achieved: No further fixes required.")
             break
-            
+
         current_pass += 1
 
     # Final Summary
     logger.info("\n" + "=" * 70)
     logger.info("📊 VALIDATION SUMMARY")
     logger.info("=" * 70)
-    
+
     passed = sum(1 for r in ctx.results.values() if r["passed"])
     total = len(ctx.results)
-    
+
     logger.info(f"\n   Total Keys: {total}/50")
     logger.info(f"   Passed: {passed}")
     logger.info(f"   Failed: {total - passed}")
-    
+
     # Show fix history
     for pass_num, fixes in ctx.fix_history.items():
         if fixes:
             logger.info(f"\n   🔧 Pass {pass_num} fixes: {', '.join(fixes)}")
-    
+
     if ctx.modified_files:
         logger.info(f"\n   📝 Modified Files: {len(ctx.modified_files)}")
         for file in sorted(ctx.modified_files):
             logger.info(f"      - {file}")
-    
+
     if ctx.refactor_plans:
         logger.info(f"\n   📋 Refactor Plans: {len(ctx.refactor_plans)}")
         for key, plan in ctx.refactor_plans.items():
@@ -3259,15 +3324,15 @@ def main():
             if outcome:
                 status = f"{status} ({outcome})"
             logger.info(f"      - {key}: {status}")
-    
+
     # L4+ Meta-Learning Report
     if hasattr(ctx, 'learning_insights'):
         logger.info(f"\n   🧠 Learning Insights:")
         logger.info(f"      - Successful patterns: {', '.join(ctx.learning_insights.get('successful_patterns', []))}")
         logger.info(f"      - Current threshold: {ctx.learning_insights.get('current_threshold', 50)} lines")
-    
+
     logger.info("\n" + "=" * 70)
-    
+
     # Exit with appropriate code
     if passed == total:
         logger.info("✅ ALL KEYS PASSED - Subatomic Perfection Achieved!")
@@ -3275,6 +3340,7 @@ def main():
     else:
         logger.info(f"❌ {total - passed} keys failed - Review details above")
         return 1
+
 
 if __name__ == "__main__":
     import sys

@@ -12,12 +12,14 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class RateLimitStrategy(str, Enum):
     """Rate limiting strategies."""
     TOKEN_BUCKET = "token_bucket"
     SLIDING_WINDOW = "sliding_window"
     FIXED_WINDOW = "fixed_window"
     LEAKY_BUCKET = "leaky_bucket"
+
 
 class RateLimitExceeded(Exception):
     """Raised when rate limit is exceeded."""

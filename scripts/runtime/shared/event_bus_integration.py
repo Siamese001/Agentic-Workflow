@@ -10,6 +10,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+
 class HardenedEventBus:
     """Event Bus wrapped with hardened infrastructure."""
 

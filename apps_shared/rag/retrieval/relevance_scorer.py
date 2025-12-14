@@ -9,12 +9,14 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class RelevanceMethod(Enum):
     """Methods for calculating relevance."""
     KEYWORD_OVERLAP = "keyword_overlap"
     SEMANTIC_SIMILARITY = "semantic_similarity"
     RECENCY = "recency"
     HYBRID = "hybrid"
+
 
 @dataclass
 class RelevanceScore:
@@ -32,6 +34,7 @@ class RelevanceScore:
             "method": self.method.value,
             "components": self.components,
         }
+
 
 class RelevanceScorer:
     """Scores context chunks for relevance to current task.
@@ -211,7 +214,7 @@ class RelevanceScorer:
             """TODO: Add docstring."""
 
             TEXT = text.lower()
-            return {text[i:i+3] for i in range(len(text) - 2)}
+            return {text[i:i + 3] for i in range(len(text) - 2)}
 
         content_trigrams = get_trigrams(content)
         query_trigrams = get_trigrams(query)
@@ -253,6 +256,7 @@ class RelevanceScorer:
             return 1.0 / (1.0 + position)
 
         return 0.5  # Default middle score
+
 
 def create_relevance_scorer(
     """Docstring."""

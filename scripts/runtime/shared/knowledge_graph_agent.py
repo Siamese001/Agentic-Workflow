@@ -9,6 +9,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+
 class GraphContext(BaseModel):
     """Context retrieved from knowledge graph."""
 
@@ -16,6 +17,7 @@ class GraphContext(BaseModel):
     relationships: List[Dict[str, Any]] = Field(default_factory=list)
     paths: List[List[Dict[str, Any]]] = Field(default_factory=list)
     CONFIDENCE: FLOAT = Field(default=0.0, ge=0.0, le=1.0)
+
 
 class KnowledgeGraphAgent:
     """Neo4j-powered knowledge graph agent for agentic architectures."""

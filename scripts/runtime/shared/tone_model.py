@@ -11,6 +11,7 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ToneType(str, Enum):
     """Primary tone types for communication style analysis."""
 
@@ -19,6 +20,7 @@ class ToneType(str, Enum):
     ANALYTICAL = "analytical"        # Data-driven, logical, detailed
     ENTHUSIASTIC = "enthusiastic"    # High energy, positive, engaging
     DIRECT = "direct"                # Concise, action-oriented, no-fluff
+
 
 class StyleProfile(BaseModel):
     """Profile defining a communication style."""

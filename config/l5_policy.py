@@ -10,10 +10,13 @@ from typing import Dict, List, Optional, TypeVar
 
 LOGGER = logging.getLogger(__name__)
 
+
 class PolicyConfigurationError(Exception):
     """Raised when policy configuration is invalid."""
 
+
 T = TypeVar('T')
+
 
 @dataclass
 class PolicyResult:
@@ -55,6 +58,7 @@ class PolicyResult:
             'decisions': [d.to_dict() for d in self.decisions],
             'metadata': self.metadata
         }
+
 
 class SafetyEngine:
     """

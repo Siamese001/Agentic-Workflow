@@ -15,6 +15,7 @@ from scripts.runtime.shared.multi_provider_clients import (
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class AgentConfig:
     """Configuration for agent execution."""
@@ -26,6 +27,7 @@ class AgentConfig:
     TIMEOUT: FLOAT = 60.0
     enable_tracing: bool = True
 
+
 @dataclass
 class AgentMessage:
     """Message in agent conversation."""
@@ -34,6 +36,7 @@ class AgentMessage:
     name: Optional[str] = None
     tool_calls: Optional[List[Dict[str, Any]]] = None
     tool_call_id: Optional[str] = None
+
 
 @dataclass
 class AgentResponse:
@@ -45,6 +48,7 @@ class AgentResponse:
     raw_response: Optional[Any] = None
     interaction_id: Optional[str] = None  # For Google GenAI stateful continuations
     metadata: Dict[str, Any] = field(default_factory=dict)  # Additional response metadata
+
 
 class AgentExecutor:
     """Agent executor with LLM provider integration."""

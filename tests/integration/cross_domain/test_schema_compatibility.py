@@ -6,8 +6,11 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class TestConfigSchemaCompatibility:
     """TODO: Add docstring."""
+
 
 def test_config_safety_threshold_matches_models(self: Any) -> None:
         """Config SAFETY_THRESHOLD is usable with validation models."""
@@ -20,6 +23,7 @@ def test_config_safety_threshold_matches_models(self: Any) -> None:
             MESSAGE=f"Threshold: {SAFETY_THRESHOLD}",
         )
         assert isinstance(result.passed, bool)
+
 
 def test_sdk_registry_categories_are_valid(self: Any) -> None:
         """All SDK entries have valid categories."""

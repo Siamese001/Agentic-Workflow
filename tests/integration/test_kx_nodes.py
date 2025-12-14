@@ -8,13 +8,11 @@ agent executors and workflow orchestration.
 Phase 1C - Knowledge Extraction Integration
 """
 
+import pytest
 import logging
 import os
 
 logger = logging.getLogger(__name__)
-
-
-import pytest
 
     KNodeType,
     ReasoningStrategy,

@@ -12,9 +12,11 @@ LOGGER = logging.getLogger(__name__)
 
 T = TypeVar('T')
 
+
 class ServiceNotFoundError(Exception):
     """Raised when a requested service is not registered."""
     pass
+
 
 class ServiceContainer:
     """Simple dependency injection container.

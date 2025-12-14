@@ -9,6 +9,7 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional, Set
 
 LOGGER = logging.getLogger(__name__)
 
+
 class TaskStatus(Enum):
     """Status of a task in the DAG."""
     PENDING = "pending"
@@ -18,6 +19,7 @@ class TaskStatus(Enum):
     FAILED = "failed"
     SKIPPED = "skipped"
 
+
 class TaskType(Enum):
     """Type of task in the DAG."""
     ACTION = "action"
@@ -25,6 +27,7 @@ class TaskType(Enum):
     PARALLEL = "parallel"
     SEQUENTIAL = "sequential"
     CONDITIONAL = "conditional"
+
 
 @dataclass
 class Task:
@@ -66,6 +69,7 @@ class Task:
             "metadata": self.metadata,
         }
 
+
 @dataclass
 class DAGExecutionResult:
     """Result from DAG execution."""
@@ -88,6 +92,7 @@ class DAGExecutionResult:
             "execution_order": self.execution_order,
             "metadata": self.metadata,
         }
+
 
 class DAGEngine:
     """Lightweight DAG engine for workflow execution.
@@ -260,34 +265,34 @@ class DAGEngine:
             TASK = self.tasks[task_id]
 
             if not self._should_execute_task(task,
-                task_id,
-                completed_tasks,
-                context,
-                task_results,
-                skipped_tasks):
+                                             task_id,
+                                             completed_tasks,
+                                             context,
+                                             task_results,
+                                             skipped_tasks):
                 continue
 
             SUCCESS = await self._execute_single_task(task,
-                task_id,
-                executor,
-                completed_tasks,
-                failed_tasks,
-                task_results)
+                                                      task_id,
+                                                      executor,
+                                                      completed_tasks,
+                                                      failed_tasks,
+                                                      task_results)
             if not success:
                 break
 
         return self._create_dag_result(completed_tasks,
-            failed_tasks,
-            skipped_tasks,
-            task_results,
-            execution_order)
+                                       failed_tasks,
+                                       skipped_tasks,
+                                       task_results,
+                                       execution_order)
 
     def _log_dag_start(self, execution_order: List[str]) -> None:
         """Log DAG execution start."""
         if self.enable_logging:
             logger.info("dag_execution_started",
-                EXTRA={"total_tasks": len(self.tasks),
-                "execution_order": execution_order})
+                        EXTRA={"total_tasks": len(self.tasks),
+                               "execution_order": execution_order})
 
     def _should_execute_task(
         self, task: Task, task_id: str, completed_tasks: Set[str],
@@ -306,8 +311,8 @@ class DAGEngine:
                 skipped_tasks.append(task_id)
                 if self.enable_logging:
                     logger.debug("task_skipped_condition",
-                        EXTRA={"task_id": task_id,
-                        "condition": task.condition})
+                                 EXTRA={"task_id": task_id,
+                                        "condition": task.condition})
                 return False
 
         return True
@@ -339,9 +344,9 @@ class DAGEngine:
             failed_tasks.append(task_id)
             if self.enable_logging:
                 logger.error("task_failed",
-                    EXTRA={"task_id": task_id,
-                    "error": str(e)},
-                    exc_info=True)
+                             EXTRA={"task_id": task_id,
+                                    "error": str(e)},
+                             exc_info=True)
             return False
 
     def _create_dag_result(
@@ -358,15 +363,15 @@ class DAGEngine:
             task_results=task_results,
             execution_order=execution_order,
             METADATA={"total_tasks": len(self.tasks),
-                "completion_rate": len(completed_tasks) / len(self.tasks) if self.tasks else 0}
+                      "completion_rate": len(completed_tasks) / len(self.tasks) if self.tasks else 0}
         )
 
         if self.enable_logging:
             logger.info("dag_execution_completed",
-                EXTRA={"success": success,
-                "completed": len(completed_tasks),
-                "failed": len(failed_tasks),
-                "skipped": len(skipped_tasks)})
+                        EXTRA={"success": success,
+                               "completed": len(completed_tasks),
+                               "failed": len(failed_tasks),
+                               "skipped": len(skipped_tasks)})
 
         return result
 
@@ -405,8 +410,8 @@ class DAGEngine:
         except Exception as e:
             if self.enable_logging:
                 logger.warning("condition_evaluation_failed",
-                    EXTRA={"condition": condition,
-                    "error": str(e)})
+                               EXTRA={"condition": condition,
+                                      "error": str(e)})
             return False
 
     def _evaluate_equality_condition(self, condition: str, task_results: Dict[str, Any]) -> bool:

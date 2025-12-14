@@ -1,11 +1,10 @@
 """Integration tests for full agentic workflow loop."""
+from runtime.shared.multi_provider_clients import Provider, reset_all_clients
+import pytest
 import logging
 
 logger = logging.getLogger(__name__)
 
-
-import pytest
-from runtime.shared.multi_provider_clients import Provider, reset_all_clients
 
 LOGGER = logging.getLogger(__name__)
 # Skip integration tests if no API keys are present - DISABLED for FINAL VALIDATION
@@ -16,9 +15,12 @@ LOGGER = logging.getLogger(__name__)
 skip_if_no_keys = pytest.mark.skipif(False, reason="Disabled for final validation")
 
 # Mock function since reset_sdk_clients doesn't exist yet
+
+
 def reset_sdk_clients():
     """Placeholder for reset_sdk_clients function."""
     pass
+
 
 @skip_if_no_keys
 class TestAgenticLoopIntegration:

@@ -56,7 +56,7 @@ class ShimChainCleaner:
         except Exception as e:
     logger.warning(f"Ignored error: {e}")
 
-        return False
+    return False
 
     def find_shim_chains(self, directory: Path) -> List[List[Path]]:
         """Find all shim chains in a directory."""
@@ -150,7 +150,7 @@ class ShimChainCleaner:
             except Exception as e:
     logger.warning(f"Ignored error: {e}")
 
-        return False
+    return False
 
     def clean_chain(self, chain: List[Path]) -> bool:
         """Clean a single shim chain."""
@@ -169,7 +169,9 @@ class ShimChainCleaner:
             CONTENT = root_shim.read_text(encoding='utf-8')
 
             # Replace the import
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:             new_import = f"from .{implementation.stem} import *"
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import:
+# new_import = f"from .{implementation.stem} import *"
             CONTENT = re.sub(r'from \.\w+_impl(?:_impl)* import \*', new_import, content)
 
             # Write back
@@ -235,6 +237,7 @@ class ShimChainCleaner:
 
         return results
 
+
 def main():
     """Main entry point."""
     repo_root = Path(__file__).parent.parent
@@ -247,9 +250,9 @@ def main():
     dirs_to_check = []
     for item in repo_root.iterdir():
         if item.is_dir() and item.name not in {'.git',
-            '__pycache__',
-            '.pytest_cache',
-            'node_modules'}:
+                                               '__pycache__',
+                                               '.pytest_cache',
+                                               'node_modules'}:
             dirs_to_check.append(item.name)
 
     logger.info(f"Found {len(dirs_to_check)} directories to check")
@@ -296,6 +299,7 @@ def main():
         logger.info("\nERRORS:")
         for error in cleaner.errors:
             logger.info(f"  - {error}")
+
 
 if __name__ == "__main__":
     main()

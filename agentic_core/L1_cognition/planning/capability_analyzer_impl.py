@@ -4,7 +4,10 @@ import logging
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .capability_analyzer_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .capability_analyzer_types import *  # Star import removed
+
 
 class CapabilityAnalyzer:
     """Analyzes capability gaps and generates improvement recommendations.
@@ -17,7 +20,7 @@ class CapabilityAnalyzer:
     - Impact estimation
     """
 
-    def __init__(self, enable_logging: bool=True):
+    def __init__(self, enable_logging: bool = True):
         """Initialize capability analyzer.
 
         Args:
@@ -162,8 +165,7 @@ class CapabilityAnalyzer:
         if not failures:
             return None
         gap_type_map = {'missing_tool': CapabilityGapType.MISSING_TOOL, 'insufficient_knowledge': Ca
-    pabilityGapType.INSUFFICIENT_KNOWLEDGE, 'performance': CapabilityGapType.PERFORMANCE_DEGRADATION
-        ,
+    pabilityGapType.INSUFFICIENT_KNOWLEDGE, 'performance': CapabilityGapType.PERFORMANCE_DEGRADATION,
             'reasoning': CapabilityGapType.REASONING_LIMITATION,
             'integration': CapabilityGapType.INTEGRATION_FAILURE}
         gap_type = gap_type_map.get(pattern_type, CapabilityGapType.INTEGRATION_FAILURE)

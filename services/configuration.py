@@ -3,17 +3,18 @@ L5 Generated Configuration Service
 Encapsulates all global variables for better architecture.
 """
 
+
 class ConfigurationService:
     """Centralized configuration and global state management."""
-    
+
     _instance = None
     _initialized = False
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
-    
+
     def __init__(self):
         if not self._initialized:
             self._initialized = True
@@ -756,12 +757,13 @@ class ConfigurationService:
     def get_instance(cls):
         """Get the singleton instance."""
         return cls()
-    
+
     def reset(self):
         """Reset all configuration to defaults."""
         for attr_name in dir(self):
             if not attr_name.startswith('_'):
                 setattr(self, attr_name, None)
+
 
 # Global instance for easy access
 config = ConfigurationService()

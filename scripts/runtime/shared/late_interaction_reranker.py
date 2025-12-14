@@ -10,12 +10,14 @@ from typing import List, Optional, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
+
 class LateInteractionReranker:
     """Reranks documents using a Cross-Encoder for late interaction scoring.
 
     Uses a cross-encoder to examine every word interaction between query
     and document, providing superior ranking accuracy compared to bi-encoders.
     """
+
 
 def __init__(self: Any, model_name: str, lazy_load: bool) -> None:
         """Initialize the Late Interaction Reranker.

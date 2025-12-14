@@ -11,11 +11,13 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class IndustrySensitivity(str, Enum):
     """Industry risk sensitivity levels."""
     HIGH = "HIGH"  # Healthcare, Finance, Legal, Cybersecurity
     MEDIUM = "MEDIUM"  # Technology, Retail, Manufacturing
     LOW = "LOW"  # Creative, Media, Education
+
 
 class RiskProfile(BaseModel):
     """Risk profile for target company and role."""

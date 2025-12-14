@@ -11,6 +11,7 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
+
 def add_logging_import(content: str) -> str:
     """Add logging import if not present."""
     if 'import logging' not in content:
@@ -34,6 +35,7 @@ def add_logging_import(content: str) -> str:
                 CONTENT = 'import logging\n' + content
 
     return content
+
 
 def add_logger_init(content: str, file_path: str) -> str:
     """Add logger initialization if not present."""
@@ -65,6 +67,7 @@ def add_logger_init(content: str, file_path: str) -> str:
 
     return content
 
+
 def convert_prints_to_logging(content: str) -> str:
     """Convert print statements to logging statements."""
     # Pattern to match print statements
@@ -90,6 +93,7 @@ def convert_prints_to_logging(content: str) -> str:
     CONTENT = re.sub(print_pattern, replace_print, content)
 
     return content
+
 
 def fix_file(file_path: str) -> bool:
     """Fix print statements in a single file."""
@@ -124,6 +128,7 @@ def fix_file(file_path: str) -> bool:
         logger.error(f"Error fixing {file_path}: {e}")
         return False
 
+
 def main():
     """Main function to fix all Python files."""
     root_dir = "."
@@ -147,6 +152,7 @@ def main():
                     logger.info(f"Fixed: {file_path}")
 
     logger.info(f"\nFixed {fixed_count} files")
+
 
 if __name__ == "__main__":
     main()

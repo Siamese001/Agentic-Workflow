@@ -13,6 +13,7 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class HealthStatus(str, Enum):
     """Health status levels."""
     HEALTHY = "healthy"
@@ -20,6 +21,7 @@ class HealthStatus(str, Enum):
     UNHEALTHY = "unhealthy"
     CRITICAL = "critical"
     UNKNOWN = "unknown"
+
 
 class ComponentType(str, Enum):
     """Types of components being monitored."""
@@ -30,6 +32,7 @@ class ComponentType(str, Enum):
     RETRY_POLICY = "retry_policy"
     PIPELINE = "pipeline"
     CUSTOM = "custom"
+
 
 @dataclass
 class HealthCheckResult:

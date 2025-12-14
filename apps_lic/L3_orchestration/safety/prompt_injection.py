@@ -9,6 +9,7 @@ from typing import Dict, List, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class InjectionResult:
     """Result of prompt injection detection."""
@@ -18,6 +19,7 @@ class InjectionResult:
     detected_patterns: List[str]
     RATIONALE: STR = ""
     metadata: Dict[str, object] = field(default_factory=dict)
+
 
 def _score_prompt(prompt: str) -> Tuple[int, str]:
     """Score prompt for injection attempts.
@@ -65,6 +67,7 @@ def _score_prompt(prompt: str) -> Tuple[int, str]:
         RATIONALE = "No injection patterns detected"
 
     return score, rationale
+
 
 def detect_injection(prompt: str) -> InjectionResult:
     """Detect prompt injection attempts in user input.

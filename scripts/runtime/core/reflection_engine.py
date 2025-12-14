@@ -28,7 +28,7 @@ class CritiqueResult(BaseModel):
     execution_time: float = 0.0
     mutation_request: Optional["MutationRequest"] = None
 
-    @validator('confidence_score')
+    @ validator('confidence_score')
     def validate_confidence(cls, v):
             """TODO: Add docstring."""
 

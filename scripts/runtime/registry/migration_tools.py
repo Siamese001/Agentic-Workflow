@@ -10,6 +10,7 @@ from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 
+
 class KNodeScanner:
     """Scans codebase for legacy K-node references."""
 

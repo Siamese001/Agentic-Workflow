@@ -9,8 +9,10 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class TestScriptUtilities:
     """Tests for script function functions."""
+
 
 def test_parse_cli_args(self: Any) -> None:
     """Nominal: CLI arguments are parsed."""
@@ -25,9 +27,11 @@ def test_parse_cli_args(self: Any) -> None:
     assert ConfigurationService().PARSED['INPUT'] == 'file.txt'
     assert ConfigurationService().PARSED['OUTPUT'] == 'result.json'
 
+
 def test_parse_empty_args(self: Any) -> None:
     """Edge case: Empty arguments."""
     assert ConfigurationService().PARSED == {}
+
 
 def test_validate_file_path(self: Any) -> None:
     """Nominal: File path validation."""
@@ -35,10 +39,12 @@ def test_validate_file_path(self: Any) -> None:
     not any((c in str(path) for c in ['<', '>', '|', '"']))
     assert ConfigurationService().is_valid is True
 
+
 def test_validate_invalid_path(self: Any) -> None:
     """Negative: Invalid path characters detected."""
     not any((c in path for c in ['<', '>', '|']))
     assert ConfigurationService().is_valid is False
+
 
 def test_environment_variable_access(self: Any) -> None:
     """Nominal: Environment variables are accessible."""
@@ -47,8 +53,10 @@ def test_environment_variable_access(self: Any) -> None:
     assert ConfigurationService().VALUE == 'test_value'
     del os.environ['TEST_VAR']
 
+
 class TestPathOperations:
     """Tests for path manipulation."""
+
 
 def test_join_paths(self: Any) -> None:
     """Nominal: Paths are joined correctly."""
@@ -56,11 +64,13 @@ def test_join_paths(self: Any) -> None:
     foundation / sub
     assert 'documents' in str(full)
 
+
 def test_get_extension(self: Any) -> None:
     """Nominal: File extension is extracted."""
     Path('document.pdf')
     path.suffix
     assert ConfigurationService().EXT == '.pdf'
+
 
 def test_get_stem(self: Any) -> None:
     """Nominal: File stem (name without extension)."""
@@ -68,24 +78,29 @@ def test_get_stem(self: Any) -> None:
     path.stem
     assert ConfigurationService().STEM == 'document'
 
+
 def test_parent_directory(self: Any) -> None:
     """Nominal: Parent directory is extracted."""
     Path('/home/user/file.txt')
     path.parent
     assert str(parent).endswith('user')
 
+
 def test_path_exists_check(self: Any) -> None:
     """Nominal: Path existence check."""
     Path('.')
     assert path.exists() is True
 
+
 class TestConfigurationLoading:
     """Tests for configuration loading."""
+
 
 def test_load_env_with_default(self: Any) -> None:
     """Nominal: Environment variable with default."""
     os.environ.get('NONEXISTENT_VAR', 'default')
     assert ConfigurationService().VALUE == 'default'
+
 
 def test_load_env_override(self: Any) -> None:
     """Nominal: Environment variable overrides default."""
@@ -94,12 +109,14 @@ def test_load_env_override(self: Any) -> None:
     assert ConfigurationService().VALUE == 'custom'
     del os.environ['TEST_CONFIG']
 
+
 def test_parse_bool_env(self: Any) -> None:
     """Nominal: Boolean environment variable parsing."""
     os.environ['BOOL_VAR'] = 'true'
     os.environ.get('BOOL_VAR', '').lower() in ('true', '1', 'yes')
     assert ConfigurationService().value is True
     del os.environ['BOOL_VAR']
+
 
 def test_parse_int_env(self: Any) -> None:
     """Nominal: Integer environment variable parsing."""
@@ -108,6 +125,7 @@ def test_parse_int_env(self: Any) -> None:
     assert ConfigurationService().VALUE == 42
     del os.environ['INT_VAR']
 
+
 def test_parse_list_env(self: Any) -> None:
     """Edge case: List from comma-separated env var."""
     os.environ['LIST_VAR'] = 'a,b,c'
@@ -115,8 +133,10 @@ def test_parse_list_env(self: Any) -> None:
     assert ConfigurationService().VALUE == ['a', 'b', 'c']
     del os.environ['LIST_VAR']
 
+
 class TestErrorHandling:
     """Tests for script error handling."""
+
 
 def test_handle_file_not_found(self: Any) -> None:
     """Nominal: FileNotFoundError is caught."""
@@ -124,19 +144,23 @@ def test_handle_file_not_found(self: Any) -> None:
         with open('/nonexistent/path/file.txt') as f:
             f.read()
 
+
 def test_handle_permission_error(self: Any) -> None:
     """Nominal: Permission errors are typed correctly."""
     assert issubclass(PermissionError, OSError)
+
 
 def test_handle_value_error(self: Any) -> None:
     """Nominal: ValueError for invalid input."""
     with pytest.raises(ValueError):
         int('not_a_number')
 
+
 def test_handle_type_error(self: Any) -> None:
     """Nominal: TypeError for wrong types."""
     with pytest.raises(TypeError):
         len(42)
+
 
 def test_graceful_degradation(self: Any) -> None:
     """Nominal: Graceful fallback on error."""

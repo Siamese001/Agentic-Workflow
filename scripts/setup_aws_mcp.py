@@ -1,3 +1,7 @@
+from pathlib import Path
+import sys
+import logging
+import json
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
@@ -5,13 +9,8 @@ Setup script for AWS MCP server configuration.
 This script helps configure AWS credentials and MCP server settings.
 """
 
-import json
-import logging
-import sys
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
-
 
 
 def setup_aws_credentials() -> None:

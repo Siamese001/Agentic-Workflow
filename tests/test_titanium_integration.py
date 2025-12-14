@@ -23,22 +23,22 @@ async def test_titanium_search_tool():
 
     # Test basic search
     RESULT = await get_titanium_search_tool(
-        QUERY="machine learning optimization",
-        max_results=3
+        QUERY = "machine learning optimization",
+        max_results = 3
     )
     logger.info(f"Basic search result: {result[:100]}...")
 
     # Test search with context
     result_with_context = await get_titanium_search_tool(
-        QUERY="deep learning",
-        CONTEXT="production deployment",
-        include_metadata=True
+        QUERY = "deep learning",
+        CONTEXT = "production deployment",
+        include_metadata = True
     )
     logger.info(f"Search with context: {result_with_context[:100]}...")
 
     # Test search with sources
     sources_result = await get_titanium_search_with_sources(
-        QUERY="neural network architectures"
+        QUERY = "neural network architectures"
     )
     logger.info(f"Sources result keys: {list(sources_result.keys())}")
 
@@ -87,8 +87,8 @@ async def test_executive_brief_agent():
 
         # Initialize agent
         AGENT = ExecutiveBriefAgent(
-            candidate_name="Test Candidate",
-            candidate_background={"experience": "AI/ML Engineer"}
+            candidate_name = "Test Candidate",
+            candidate_background = {"experience": "AI/ML Engineer"}
         )
 
         # Check if Titanium is enabled
@@ -97,17 +97,17 @@ async def test_executive_brief_agent():
         # Test Titanium research
         if agent.titanium_enabled:
             RESEARCH = await agent._research_company_with_titanium(
-                company_name="TechCorp",
-                INDUSTRY="technology"
+                company_name = "TechCorp",
+                INDUSTRY = "technology"
             )
             logger.info(f"Research keys: {list(research.keys())}")
             logger.info(f"Company name: {research['name']}")
 
             # Test brief generation with Titanium
             BRIEF = await agent.generate_brief_with_titanium(
-                company_name="TechCorp",
-                INDUSTRY="technology",
-                job_description="Senior AI Engineer position"
+                company_name = "TechCorp",
+                INDUSTRY = "technology",
+                job_description = "Senior AI Engineer position"
             )
             logger.info(f"Generated brief for: {brief.company_name}")
             logger.info(f"Observation: {brief.observation.heading}")

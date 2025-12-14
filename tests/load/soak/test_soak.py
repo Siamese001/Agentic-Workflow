@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 @dataclass
 class SoakMetrics:
     """TODO: Add docstring."""
@@ -18,6 +20,7 @@ class SoakMetrics:
     memory_samples: List[int]
     error_count: int
     avg_latency_ms: float
+
 
 class TestMemoryStability:
     """Soak tests for memory stability over extended periods."""

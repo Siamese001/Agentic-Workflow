@@ -103,10 +103,10 @@ class UnifiedSignalPipeline:
                     input_data,
                     METADATA={
                         "engine_type": engine_type.value if hasattr(engine_type,
-                            'value') else str(engine_type),
+                                                                    'value') else str(engine_type),
                         "domain_config": domain_config.
-                            .__class__.
-                            .__name__ if domain_config else "None"
+                        .__class__.
+                        .__name__ if domain_config else "None"
                     }
                 )
             except ImportError:
@@ -114,10 +114,10 @@ class UnifiedSignalPipeline:
 
         if domain_config:
             envelope.
-                .metadata["domain_config"] = json.
-                .dumps(domain_config.
-                .dict() if hasattr(domain_config,
-                'dict') else {})
+            .metadata["domain_config"] = json.
+            .dumps(domain_config.
+                   .dict() if hasattr(domain_config,
+                                      'dict') else {})
 
         checkpoint_manager = await self._get_checkpoint_manager()
 
@@ -202,7 +202,7 @@ class UnifiedSignalPipeline:
             "has_errors": envelope.has_errors,
             "error_count": envelope.error_count,
             "completed_stages": [s.stage_name for s in envelope.history if hasattr(s,
-                'STATUS') and S.STATUS == "SUCCESS"],
+                                                                                   'STATUS') and S.STATUS == "SUCCESS"],
             "failed_stages": envelope.get_failed_stages(),
             "last_completed_stage": envelope.get_last_completed_stage(),
             "total_duration_ms": envelope.calculate_total_duration()

@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional, Union
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class WordCountConstraints:
     """Word count constraints for a section."""
@@ -22,6 +23,7 @@ class WordCountConstraints:
     def from_list(cls, word_range: List[int]) -> "WordCountConstraints":
         """Create from a list like [120, 140]."""
         return cls(min_words=word_range[0], max_words=word_range[1])
+
 
 @dataclass
 class KNodeConfig:
@@ -45,6 +47,7 @@ class KNodeConfig:
         if self.input_dependencies is None:
             self.input_dependencies = []
 
+
 @dataclass
 class CreativeBriefConfig:
     """Creative brief configuration."""
@@ -59,6 +62,7 @@ class CreativeBriefConfig:
     ibm_overview_word_count: WordCountConstraints
     competency_word_count: WordCountConstraints
     cover_letter_para_word_count: WordCountConstraints
+
 
 class WorkflowLoader:
     """Loads and provides access to workflow configuration from JSON."""

@@ -5,6 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class CapabilityGapType(Enum):
     """Types of capability gaps."""
     MISSING_TOOL = 'missing_tool'
@@ -13,6 +15,7 @@ class CapabilityGapType(Enum):
     REASONING_LIMITATION = 'reasoning_limitation'
     INTEGRATION_FAILURE = 'integration_failure'
 
+
 class RecommendationType(Enum):
     """Types of recommendations."""
     ADD_TOOL = 'add_tool'
@@ -20,6 +23,7 @@ class RecommendationType(Enum):
     RETRAIN_AGENT = 'retrain_agent'
     UPDATE_KNOWLEDGE = 'update_knowledge'
     OPTIMIZE_PERFORMANCE = 'optimize_performance'
+
 
 @dataclass
 class CapabilityGap:

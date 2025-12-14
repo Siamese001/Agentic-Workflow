@@ -15,6 +15,7 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ClaimType(str, Enum):
     """Types of claims that can be extracted from content."""
     SKILL = "skill"
@@ -26,6 +27,7 @@ class ClaimType(str, Enum):
     FACT = "fact"
     PREFERENCE = "preference"
 
+
 class SourceType(str, Enum):
     """Types of sources for claims."""
     RESUME = "resume"
@@ -35,6 +37,7 @@ class SourceType(str, Enum):
     ASSESSMENT = "assessment"
     REFERENCE = "reference"
     SELF_REPORTED = "self_reported"
+
 
 @dataclass
 class SourceMetadata:
@@ -47,6 +50,7 @@ class SourceMetadata:
     reliability_score: float = 0.8  # Base reliability of source
     verification_status: str = "unverified"  # unverified, verified, disputed
 
+
 @dataclass
 class ExtractedClaim:
     """A claim extracted from source content."""
@@ -57,6 +61,7 @@ class ExtractedClaim:
     evidence_snippet: Optional[str] = None
     extraction_method: str = "pattern_match"
     context_window: str = ""  # Text around the claim for context
+
 
 class ClaimExtractor:
     """
@@ -160,7 +165,7 @@ class ClaimExtractor:
             "skill": [
                 r"(?:skilled in|proficient in|expertise in|experience with)\s+([^.\n]+)",
                 r"(?:python|java|javascript|sql|aws|docker|kubernetes)"
-                    r"\s+(?:developer|engineer|specialist)",
+                r"\s+(?:developer|engineer|specialist)",
                 r"(\d+)\+?\s*years?\s+(?:of\s+)?experience\s+(?:in|with|as)\s+([^.\n]+)",
                 r"(?:certified in|certification:\s*)([^.\n]+)",
                 r"(?:fluent in|languages?:)\s+([^.\n]+)",
@@ -281,6 +286,7 @@ class ClaimExtractor:
         # Lowercase and remove non-alphanumeric
         NORMALIZED = re.sub(r'[^a-z0-9]', '', text.lower())
         return normalized
+
 
 class SignalAnchor:
     """
@@ -456,6 +462,7 @@ class SignalAnchor:
 
 # Factory functions for common anchoring patterns
 
+
 def create_resume_anchor() -> SignalAnchor:
     """Create a SignalAnchor optimized for resume content."""
     return SignalAnchor(
@@ -463,12 +470,14 @@ def create_resume_anchor() -> SignalAnchor:
         max_claims_per_source=30
     )
 
+
 def create_job_description_anchor() -> SignalAnchor:
     """Create a SignalAnchor optimized for job descriptions."""
     return SignalAnchor(
         min_confidence=0.8,  # Very high threshold for job requirements
         max_claims_per_source=20
     )
+
 
 def anchor_resume_content(
     """Docstring."""

@@ -5,6 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class PermissionScope(Enum):
     """Permission scopes."""
     TOOL_EXECUTION = 'tool_execution'
@@ -13,13 +15,15 @@ class PermissionScope(Enum):
     SYSTEM_CONFIGURATION = 'system_configuration'
     CODE_EXECUTION = 'code_execution'
 
+
 class PermissionAction(Enum):
     """Permission actions."""
     READ = 'read'
     WRITE = 'write'
     EXECUTE = 'execute'
-    DELETE = # SQL query removed
+    DELETE =  # SQL query removed
     ADMIN = 'admin'
+
 
 @dataclass
 class Permission:

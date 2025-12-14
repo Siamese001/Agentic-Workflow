@@ -15,11 +15,13 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class CostAlertLevel(Enum):
     """Cost alert levels."""
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
+
 
 @dataclass
 class CostMetrics:
@@ -48,6 +50,7 @@ class CostMetrics:
             "model_breakdown": self.model_breakdown,
         }
 
+
 @dataclass
 class CostAlert:
     """Cost alert for budget violations."""
@@ -72,6 +75,7 @@ class CostAlert:
             "budget_limit": self.budget_limit,
             "timestamp": self.timestamp,
         }
+
 
 class CostTracker:
     """Tracks costs per agent with SPIFFE identity integration.
@@ -363,6 +367,7 @@ class CostTracker:
                     "budget": budget_limit,
                 }
             )
+
 
 def create_cost_tracker(
     """Docstring."""

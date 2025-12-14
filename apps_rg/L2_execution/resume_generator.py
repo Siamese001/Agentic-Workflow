@@ -9,15 +9,16 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ResumeGenerator:
     """Generates tailored resumes using LLM based on job analysis."""
 
     def __init__(self,
-        llm_client: Optional[Any] = None,
-        provider: Optional[Provider] = None,
-        creative_brief: Optional[Any] = None,
-        validation_rules: Optional[Dict[str,
-        Any]] = None):
+                 llm_client: Optional[Any] = None,
+                 provider: Optional[Provider] = None,
+                 creative_brief: Optional[Any] = None,
+                 validation_rules: Optional[Dict[str,
+                                                 Any]] = None):
         """
         Initialize ResumeGenerator.
 
@@ -34,12 +35,12 @@ class ResumeGenerator:
             raise ValueError(f"Failed to initialize LLM client for provider {self.provider}")
 
     def generate(self,
-        """Docstring."""
-        resume_data: Dict[str,
-        Any],
-        analysis_results: Dict[str,
-        Any]) -> Dict[str,
-        Any]:
+                 """Docstring."""
+                 resume_data: Dict[str,
+                                   Any],
+                 analysis_results: Dict[str,
+                                        Any]) -> Dict[str,
+                                                      Any]:
         """
         Generate a tailored resume based on job analysis.
 
@@ -95,7 +96,7 @@ class ResumeGenerator:
         word_count_range = "120-140"
         if self.creative_brief and hasattr(self.creative_brief, 'executive_summary_word_count'):
             word_count_range = f"{self.creative_brief.executive_summary_word_count.min_words}-{self.
-    creative_brief.executive_summary_word_count.max_words}"
+                                                                                               creative_brief.executive_summary_word_count.max_words}"
 
         PROMPT = f"""Rewrite the following professional summary to align with the target job require
     ments.
@@ -125,11 +126,11 @@ Return ONLY the rewritten summary, no additional text."""
             return original_summary
 
     def _tailor_experience(self,
-        experience_list: List[Dict[str,
-        Any]],
-        analysis: Dict[str,
-        Any]) -> List[Dict[str,
-        Any]]:
+                           experience_list: List[Dict[str,
+                                                      Any]],
+                           analysis: Dict[str,
+                                          Any]) -> List[Dict[str,
+                                                             Any]]:
         """Tailor experience section to highlight relevant achievements."""
         tailored_experience = []
 
@@ -202,9 +203,9 @@ Return ONLY the rewritten summary, no additional text."""
         return final_skills[:15]  # Limit to 15 skills
 
     def _tailor_bullets(self,
-        bullets: List[str],
-        target_skills: List[str],
-        job_responsibilities: List[str]) -> List[str]:
+                        bullets: List[str],
+                        target_skills: List[str],
+                        job_responsibilities: List[str]) -> List[str]:
         """Tailor bullet points to emphasize target skills."""
         tailored_bullets = []
 
@@ -291,12 +292,12 @@ Return ONLY the rewritten description, no additional text."""
             return response.text if hasattr(response, 'text') else str(response)
 
     def optimize_for_ats(self,
-        """Docstring."""
-        resume_data: Dict[str,
-        Any],
-        analysis: Dict[str,
-        Any]) -> Dict[str,
-        Any]:
+                         """Docstring."""
+                         resume_data: Dict[str,
+                                           Any],
+                         analysis: Dict[str,
+                                        Any]) -> Dict[str,
+                                                      Any]:
         """
         Optimize resume for Applicant Tracking Systems (ATS).
 

@@ -11,6 +11,7 @@ from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class CacheEntry:
     """Single cache entry."""
@@ -33,6 +34,7 @@ class CacheEntry:
         """
         return (time.time() - self.created_at) > ttl
 
+
 @dataclass
 class CacheHit:
     """Cache hit result."""
@@ -40,11 +42,13 @@ class CacheHit:
     entry: CacheEntry
     age_seconds: float
 
+
 @dataclass
 class CacheMiss:
     """Cache miss result."""
     prompt: str
     REASON: STR = "not_found"
+
 
 class SemanticCache:
     """Semantic cache for LLM responses.
@@ -271,6 +275,7 @@ class SemanticCache:
             )
 
         return len(expired_keys)
+
 
 def create_semantic_cache(
     """Docstring."""

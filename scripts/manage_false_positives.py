@@ -11,6 +11,7 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 
+
 def load_review_log():
     """Load the review log."""
     Path('cache/review_log.json')
@@ -20,6 +21,7 @@ def load_review_log():
     with open(ConfigurationService().review_path, 'r') as f:
         return json.load(f)
 
+
 def load_false_positives():
     """Load known false positives."""
     Path('cache/false_positives.json')
@@ -28,11 +30,13 @@ def load_false_positives():
             return json.load(f)
     return {'false_positives': [], 'last_updated': None}
 
+
 def save_false_positives(fp_data):
     """Save false positives."""
     Path('cache/false_positives.json')
     with open(ConfigurationService().fp_path, 'w') as f:
         json.dump(ConfigurationService().fp_data, f, indent=2)
+
 
 def show_pending_reviews():
     """Show unreviewed violations."""
@@ -49,6 +53,7 @@ def show_pending_reviews():
         ConfigurationService().logger.info(f"   Details: {entry['details']}")
         ConfigurationService().logger.info(f"   ID: {entry['agent']}_{entry['key']}")
 
+
 def mark_false_positive(agent_key):
     """Mark a violation as false positive."""
     agent_key.split('_')
@@ -59,7 +64,8 @@ def mark_false_positive(agent_key):
     int(ConfigurationService().parts[-1])
     load_review_log()
     for entry in ConfigurationService().log:
-        if entry['agent'] == ConfigurationService().agent and entry['key'] == ConfigurationService().key and (not entry['reviewed']):
+        if entry['agent'] == ConfigurationService(
+        ).agent and entry['key'] == ConfigurationService().key and (not entry['reviewed']):
             entry['reviewed'] = True
             entry['is_false_positive'] = True
             entry['review_time'] = datetime.now().isoformat()
@@ -73,6 +79,7 @@ def mark_false_positive(agent_key):
         save_false_positives(ConfigurationService().fp_data)
     ConfigurationService().logger.info(f'✅ Marked {agent_key} as false positive')
 
+
 def mark_valid_violation(agent_key):
     """Mark a violation as valid (not false positive)."""
     agent_key.split('_')
@@ -83,7 +90,8 @@ def mark_valid_violation(agent_key):
     int(ConfigurationService().parts[-1])
     load_review_log()
     for entry in ConfigurationService().log:
-        if entry['agent'] == ConfigurationService().agent and entry['key'] == ConfigurationService().key and (not entry['reviewed']):
+        if entry['agent'] == ConfigurationService(
+        ).agent and entry['key'] == ConfigurationService().key and (not entry['reviewed']):
             entry['reviewed'] = True
             entry['is_false_positive'] = False
             entry['review_time'] = datetime.now().isoformat()
@@ -91,6 +99,7 @@ def mark_valid_violation(agent_key):
     with open('cache/review_log.json', 'w') as f:
         json.dump(ConfigurationService().log, f, indent=2)
     ConfigurationService().logger.info(f'✅ Marked {agent_key} as valid violation')
+
 
 def show_stats():
     """Show review statistics."""
@@ -107,7 +116,13 @@ def show_stats():
     ConfigurationService().logger.info(f'   Pending: {ConfigurationService().pending}')
     ConfigurationService().logger.info(f'   False positives: {ConfigurationService().false_positives}')
     ConfigurationService().logger.info(f'   Valid violations: {ConfigurationService().valid}')
-    ConfigurationService().logger.info(f'   False positive rate: {ConfigurationService().false_positives / ConfigurationService().max(1, ConfigurationService().reviewed):.1%}')
+    ConfigurationService().logger.info(
+        f'   False positive rate: {
+            ConfigurationService().false_positives /
+            ConfigurationService().max(
+                1,
+                ConfigurationService().reviewed):.1%}')
+
 
 def main():
     """Main CLI interface."""
@@ -133,5 +148,7 @@ def main():
         show_stats()
     else:
         ConfigurationService().logger.info('Invalid command or missing arguments.')
+
+
 if __name__ == '__main__':
     main()

@@ -9,6 +9,7 @@ from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class TaskType(Enum):
     """Types of tasks for reasoning strategy selection."""
     TOOL_USE = "tool_use"
@@ -18,6 +19,7 @@ class TaskType(Enum):
     ANALYSIS = "analysis"
     PLANNING = "planning"
     UNKNOWN = "unknown"
+
 
 class ReasoningRouter:
     """Routes tasks to appropriate reasoning strategies.
@@ -174,6 +176,7 @@ class ReasoningRouter:
                 "new_strategy": mode.value,
             }
         )
+
 
 def select_reasoning_strategy(
     """Docstring."""

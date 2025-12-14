@@ -12,7 +12,6 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
-
 def run_llm_google(
     """Docstring."""
     model: str,

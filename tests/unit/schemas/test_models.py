@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 # Utils classes don't exist yet, skipping import
 
+
 class TestGateDecision:
     """Placeholder for future documentation."""
 

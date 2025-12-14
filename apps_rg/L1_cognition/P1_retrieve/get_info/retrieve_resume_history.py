@@ -10,6 +10,7 @@ from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class RetrieveResumeHistory:
     """Retrieval engine for resume domain."""
 
@@ -19,10 +20,10 @@ class RetrieveResumeHistory:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
-        """Docstring."""
-        query: str,
-        filters: Optional[Dict] = None,
-        LIMIT: INT = 10) -> RetrievalResult:
+                 """Docstring."""
+                 query: str,
+                 filters: Optional[Dict] = None,
+                 LIMIT: INT = 10) -> RetrievalResult:
         """Retrieve items."""
         cache_key = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:
@@ -36,10 +37,11 @@ class RetrieveResumeHistory:
         """Execute query."""
         return []
 
+
 def retrieve(query: str,
-    """Docstring."""
-    config: Optional[Dict] = None,
-    **kwargs: Dict[str,
-    object]) -> RetrievalResult:
+             """Docstring."""
+             config: Optional[Dict] = None,
+             **kwargs: Dict[str,
+                            object]) -> RetrievalResult:
     """Retrieve items."""
     return RetrieveResumeHistory(config).retrieve(query, **kwargs)

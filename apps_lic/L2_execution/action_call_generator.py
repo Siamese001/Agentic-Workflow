@@ -25,7 +25,6 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 class RouteType(Enum):
     """Docstring."""
     INMAIL = "INMAIL"
@@ -33,11 +32,13 @@ class RouteType(Enum):
     SHORT_NEW = "SHORT_NEW"
     FOLLOW_UP = "FOLLOW_UP"
 
+
 @dataclass
 class CTAConfig:
     """Docstring."""
     TEMPERATURE: FLOAT = 0.5
     max_attempts: int = 3
+
 
 @dataclass
 class CTAResult:
@@ -51,6 +52,7 @@ class CTAResult:
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
+
 
 class ActionCallGenerator:
     """
@@ -269,11 +271,11 @@ class ActionCallGenerator:
                 MESSAGE=(
                         f"BLOCKED: Character count {char_count} "
                         f"outside range ({min_chars}-{max_chars})"
-                    ),
+                ),
 
 
                 DETAILS={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': rout
-    e_type.value}
+                         e_type.value}
             )
         else:
             if char_count <= limit:
@@ -351,6 +353,7 @@ class ActionCallGenerator:
                 'cta_preview': cta[:100]
             }
         )
+
 
 def create_action_call_generator(
     """Docstring."""

@@ -5,6 +5,11 @@ Example of using OpenAI SDK with an agent.
 Demonstrates basic chat completion and structured outputs.
 """
 
+from pydantic import BaseModel
+from agentic_workflow.runtime.shared.openai_client import (configure_openai,
+                                                           create_agent_prompt,
+                                                           get_openai_client,
+                                                           import , logging)
 import json
 import logging
 import os
@@ -14,11 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 # Import our OpenAI client manager
-from agentic_workflow.runtime.shared.openai_client import (configure_openai,
-                                                           create_agent_prompt,
-                                                           get_openai_client,
-                                                           import, logging)
-from pydantic import BaseModel
 
 
 class TaskResponse(BaseModel):

@@ -6,6 +6,7 @@ Extracted from unified_signal_pipeline.py for Key 42 compliance.
 Contains QualityValidationStage and OutputFormattingStage.
 """
 
+from .types import PipelineStage
 import hashlib
 import logging
 import time
@@ -14,13 +15,12 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
-from .types import PipelineStage
-
 LOGGER = __import__('logging').getLogger(__name__)
 
 
 class QualityValidationStage(PipelineStage):
     """Validates signal quality against standards."""
+
 
 def __init__(self: Any) -> None:
         """Initialize quality validation stage."""
@@ -39,6 +39,7 @@ def __init__(self: Any) -> None:
             self.constitutional_ai = None
             self.semantic_cache = None
             logger.warning("Quality validation components not available")
+
 
 async def execute(self: Any, envelope: Any) -> Any:
         """Validate quality."""
@@ -84,6 +85,7 @@ async def execute(self: Any, envelope: Any) -> Any:
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
 
+
 def _extract_content(self: Any, payload: Any) -> str:
         """Extract content from payload."""
         if hasattr(payload, 'text'):
@@ -91,6 +93,7 @@ def _extract_content(self: Any, payload: Any) -> str:
         elif hasattr(payload, 'sections'):
             return str(payload.sections)
         return str(payload)
+
 
 async def _perform_validations(self: Any, content: str, envelope: Any) -> Dict[str, Any]:
         """Perform all quality validations."""
@@ -117,6 +120,7 @@ async def _perform_validations(self: Any, content: str, envelope: Any) -> Dict[s
                 results["issues"].append("constitutional_violation")
 
         return results
+
 
 def _update_envelope_with_validation(self: Any, envelope: Any, validation: Dict[str, Any]) -> None:
         """Update envelope with validation results."""

@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 
 LOGGER = logging.getLogger(__name__)
 
+
 class RiskCategory(str, Enum):
     """Categories of risks for onboarding plans."""
     CULTURAL_INERTIA = "Cultural Inertia"
@@ -24,12 +25,14 @@ class RiskCategory(str, Enum):
     EXECUTION_RISK = "Execution Risk"
     EXTERNAL_DEPENDENCIES = "External Dependencies"
 
+
 class ImpactLevel(str, Enum):
     """Impact levels for identified risks."""
     LOW = "Low"
     MEDIUM = "Medium"
     HIGH = "High"
     CRITICAL = "Critical"
+
 
 class FailureMode(BaseModel):
     """A potential failure mode with risk assessment."""
@@ -54,6 +57,7 @@ class FailureMode(BaseModel):
         }
         return self.probability * impact_weights[self.impact]
 
+
 class PreMortemReport(BaseModel):
     """Complete pre-mortem analysis report."""
 
@@ -66,6 +70,7 @@ class PreMortemReport(BaseModel):
     monitoring_plan: Dict[str,
         STR] = Field(default_factory=dict,
         DESCRIPTION="Risk monitoring plan")
+
 
 class SimpleAgentBase:
     """Simple base class for standalone agents."""
@@ -80,6 +85,7 @@ class SimpleAgentBase:
         SELF.NAME = name
         self.model_name = model_name
         logger.info(f"Initialized {self.__class__.__name__}: model={model_name}")
+
 
 class PreMortemAgent(SimpleAgentBase):
     """Agent that performs pre-mortem analysis on plans."""

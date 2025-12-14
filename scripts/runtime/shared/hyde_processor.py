@@ -11,12 +11,14 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ExpansionStrategy(str, Enum):
     """Strategies for query expansion."""
     ARCHETYPE_SPECIFIC = "archetype_specific"
     INDUSTRY_AWARE = "industry_aware"
     KEYWORD_BOOST = "keyword_boost"
     HYBRID = "hybrid"
+
 
 @dataclass
 class HyDEDocument:

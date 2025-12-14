@@ -14,11 +14,13 @@ from typing import Any, Dict, List, Optional, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
+
 class GradeStatus(Enum):
     """Status of document grading."""
     pass = "pass"
     FALLBACK_REQUIRED = "FALLBACK_REQUIRED"
     UNCERTAIN = "UNCERTAIN"
+
 
 @dataclass
 class RetrievalGrade:
@@ -35,6 +37,7 @@ class RetrievalGrade:
             self.relevant_docs = []
         if self.irrelevant_docs is None:
             self.irrelevant_docs = []
+
 
 class RetrievalGrader:
     """Grades retrieved documents for relevance to the query."""

@@ -11,7 +11,6 @@ from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
-
     ICognitivePlane,
     PlanningRequest,
     PlanningResult,
@@ -25,7 +24,7 @@ class MockCognitivePlane(ICognitivePlane):
     Useful for testing orchestrator logic without real LLM calls.
     """
 
-    def __init__(self, predefined_plans: List[Dict[str, Any]] = None):
+    def __init__(self, predefined_plans: List[Dict[str, Any]]=None):
             """Initialize mock cognitive plane.
 
         Args:

@@ -6,6 +6,7 @@ Tests that Neo4j integration works correctly and gracefully handles
 missing Neo4j driver or connection issues.
 """
 
+import pytest
 import logging
 import os
 import sys
@@ -14,10 +15,9 @@ from datetime import UTC, datetime
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
 # Add project root to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+
 
 class TestNeo4jIntegration:
     """Test Neo4j integration components."""
@@ -66,7 +66,7 @@ class TestNeo4jIntegration:
             # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l2.kg_writer import insert_e...
             insert_entity = insert_triplet = insert_event = batch_process_invalidation = ingest_tran
     SCRIPT = lambda *args, **kwargs: None
-        except ImportError:
+       except ImportError:
             # Archive imports not available
             pass
         assert callable(insert_entity)
@@ -111,7 +111,7 @@ class TestNeo4jIntegration:
     def test_neo4j_graph_store_imports(self):
         """Test that Neo4jGraphStore imports correctly."""
         try:
-#             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore...
+    #             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore...
             assert Neo4jGraphStore is not None
         except ImportError:
             # Expected if neo4j driver not installed
@@ -120,7 +120,7 @@ class TestNeo4jIntegration:
     def test_neo4j_graph_store_without_driver(self):
         """Test Neo4jGraphStore gracefully handles missing driver."""
         with patch('graph_store_neo4j.GraphDatabase', None):
-#             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore...
+    #             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore...
 
             with pytest.raises(ImportError, match="Neo4j driver not installed"):
                 Neo4jGraphStore()
@@ -128,7 +128,7 @@ class TestNeo4jIntegration:
     def test_ingestion_dag_imports(self):
         """Test that kg_ingestion_dag imports with Neo4j components."""
         try:
-#             from archives.legacy_root_folders.orchestration.kg_ingestion_dag import UnifiedKGIn...
+    #             from archives.legacy_root_folders.orchestration.kg_ingestion_dag import UnifiedKGIn...
             assert True  # Placeholder since archive imports are removed
         except ImportError as e:
             pytest.fail(f"kg_ingestion_dag should import successfully: {e}")

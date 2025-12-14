@@ -3,6 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def get_word_count_constraint(k_node: str) -> Optional[WordCountConstraint]:
     """Get word count constraint for a K-node.
 
@@ -13,6 +14,7 @@ def get_word_count_constraint(k_node: str) -> Optional[WordCountConstraint]:
         WordCountConstraint or None if not defined
     """
     return GLOBAL_WORD_COUNTS.get(k_node)
+
 
 def get_char_count_constraint(k_node: str) -> Optional[CharCountConstraint]:
     """Get character count constraint for a K-node.
@@ -25,6 +27,7 @@ def get_char_count_constraint(k_node: str) -> Optional[CharCountConstraint]:
     """
     return GLOBAL_CHAR_COUNTS.get(k_node)
 
+
 def get_reasoning_config(k_node: str) -> Optional[ReasoningConfig]:
     """Get reasoning configuration for a K-node.
 
@@ -35,6 +38,7 @@ def get_reasoning_config(k_node: str) -> Optional[ReasoningConfig]:
         ReasoningConfig or None if not defined
     """
     return K_NODE_REASONING_CONFIGS.get(k_node)
+
 
 def get_validation_gates(execution_point: str) -> List[ValidationGate]:
     """Get validation gates for a specific execution point.

@@ -5,6 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
 class KeywordClassification(Enum):
     """TODO: Add docstring."""
 
@@ -12,8 +14,10 @@ class KeywordClassification(Enum):
     DIFFERENTIATOR = 'DIFFERENTIATOR'
     UNKNOWN = 'UNKNOWN'
 
+
 @dataclass
-    """TODO: Add docstring."""
+"""TODO: Add docstring."""
+
 
 class RAGHop:
     """Docstring."""
@@ -23,6 +27,7 @@ class RAGHop:
     keywords_found: Set[str]
 
     """TODO: Add docstring."""
+
 
 @dataclass
 class KeywordAnalysis:
@@ -44,6 +49,7 @@ class PeerIntelligenceConfig:
     """TODO: Add docstring."""
 
     differentiator_threshold: float = 0.3
+
 
 @dataclass
 class PeerIntelligenceResult:

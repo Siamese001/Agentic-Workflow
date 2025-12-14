@@ -3,7 +3,11 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .get_info_utility_prepare_information_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# from .get_info_utility_prepare_information_types import *  # Star import
+# removed
+
 
 class GetInfoUtilityPrepareInformation:
     """
@@ -13,7 +17,7 @@ class GetInfoUtilityPrepareInformation:
     comprehensive error handling and performance monitoring.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]]=None):
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize with optional configuration."""
         SELF.CONFIG = config or {}
         self._setup_logging()
@@ -37,15 +41,15 @@ class GetInfoUtilityPrepareInformation:
             raise ValueError(f'Missing required config keys: {missing}')
 
     def process(self,
-        """Docstring."""
-        payload: Union[str,
-        int,
-        float,
-        bool,
-        List,
-        Dict],
-        context: Optional[Dict[str,
-        Any]]=None) -> ProcessingResult:
+                """Docstring."""
+                payload: Union[str,
+                               int,
+                               float,
+                               bool,
+                               List,
+                               Dict],
+                context: Optional[Dict[str,
+                                       Any]] = None) -> ProcessingResult:
         """
         Main processing method with comprehensive error handling.
 
@@ -57,8 +61,8 @@ class GetInfoUtilityPrepareInformation:
             ProcessingResult with outcome and metadata
         """
         exec_ctx = ExecutionContext(operation_id=self.config.get('operation_id',
-            'default'),
-            METADATA=context or {})
+                                                                 'default'),
+                                    METADATA=context or {})
         try:
             exec_ctx.start()
             if payload is None:
@@ -66,34 +70,36 @@ class GetInfoUtilityPrepareInformation:
             RESULT = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
             return ProcessingResult(success=True,
-                DATA=result,
-                execution_context=exec_ctx,
-                additional_info={'processed_at': time.time(),
-                'executor': self.__class__.__name__})
+                                    DATA=result,
+                                    execution_context=exec_ctx,
+                                    additional_info={'processed_at': time.time(),
+                                                     'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
 
     def _execute_core(self,
-        data: Union[str,
-        int,
-        float,
-        bool,
-        List,
-        Dict],
-        context: Optional[Dict[str,
-        Any]]) -> Union[str,
-        int,
-        float,
-        bool,
-        List,
-        Dict]:
+                      data: Union[str,
+                                  int,
+                                  float,
+                                  bool,
+                                  List,
+                                  Dict],
+                      context: Optional[Dict[str,
+                                             Any]]) -> Union[str,
+                                                             int,
+                                                             float,
+                                                             bool,
+                                                             List,
+                                                             Dict]:
         """Core execution logic to be overridden by subclasses."""
         return data
 
-def create_processor(config: Optional[Dict[str, Any]]=None) -> GetInfoUtilityPrepareInformation:
+
+def create_processor(config: Optional[Dict[str, Any]] = None) -> GetInfoUtilityPrepareInformation:
     """module function to create configured executor instance."""
     return GetInfoUtilityPrepareInformation(config or {})
+
 
 def validate_module_config(config: Dict[str, Any]) -> bool:
     """Validate module configuration dictionary."""

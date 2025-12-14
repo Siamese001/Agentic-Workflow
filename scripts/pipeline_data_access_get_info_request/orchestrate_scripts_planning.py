@@ -11,12 +11,14 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ScriptExecutionPriority(Enum):
     """Priority levels for script execution."""
     CRITICAL = "critical"
     HIGH = "high"
     NORMAL = "normal"
     LOW = "low"
+
 
 @dataclass
 class ScriptTask:
@@ -30,6 +32,7 @@ class ScriptTask:
     retry_count: int = 0
     max_retries: int = 3
 
+
 @dataclass
 class ScriptsPlanningConfig:
     """Configuration for scripts planning orchestrator."""
@@ -39,6 +42,7 @@ class ScriptsPlanningConfig:
     enable_resource_monitoring: bool = True
     retry_failed_tasks: bool = True
     log_level: str = "INFO"
+
 
 @dataclass
 class ScriptsPlanningResult:
@@ -50,6 +54,7 @@ class ScriptsPlanningResult:
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 class ScriptsPlanningOrchestrator:
     """Orchestrator for planning script execution operations."""
@@ -171,13 +176,13 @@ class ScriptsPlanningOrchestrator:
             "max_concurrent_tasks": self.config.max_concurrent_tasks,
             "total_tasks": len(tasks),
             "critical_tasks": len([t for t in tasks if t.
-                .PRIORITY == ScriptExecutionPriority.
-                .CRITICAL]),
+                                   .PRIORITY == ScriptExecutionPriority.
+                                   .CRITICAL]),
 
 
             "high_priority_tasks": len([t for t in tasks if t.
-                .PRIORITY == ScriptExecutionPriority.
-                .HIGH]),
+                                        .PRIORITY == ScriptExecutionPriority.
+                                        .HIGH]),
 
 
             "estimated_memory_mb": len(tasks) * 50,  # Rough estimate
@@ -203,11 +208,13 @@ class ScriptsPlanningOrchestrator:
         return total
 
 # Factory function for easy instantiation
+
+
 def create_scripts_planning_orchestrator(
     """Docstring."""
     max_concurrent_tasks: int = 5,
     enable_dependency_check: bool = True,
-    **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestrator:
+        **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestrator:
     """Create a configured scripts planning orchestrator."""
     CONFIG = ScriptsPlanningConfig(
         max_concurrent_tasks=max_concurrent_tasks,
@@ -217,6 +224,8 @@ def create_scripts_planning_orchestrator(
     return ScriptsPlanningOrchestrator(config)
 
 # Convenience function for direct usage
+
+
 def plan_script_execution(
     """Docstring."""
     script_tasks: List[Dict[str, Any]],
@@ -271,6 +280,7 @@ def plan_script_execution(
         "errors": result.errors,
         "metadata": result.metadata
     }
+
 
 if __name__ == "__main__":
     # Example usage

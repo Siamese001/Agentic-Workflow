@@ -9,36 +9,35 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-    ICognitivePlane,
-    PlanningRequest,
-    PlanningResult,
-    CognitiveCapability,
+ICognitivePlane,
+PlanningRequest,
+PlanningResult,
+CognitiveCapability,
 )
     IActionPlane,
     ActionRequest,
     ActionResult,
     ActionCapability,
-)
+    )
     IOrchestrator,
     OrchestratorConfig,
     ExecutionContext,
     ExecutionResult,
     ExecutionPhase,
-)
+    )
 
-__all__ = [
-    "ICognitivePlane",
-    "PlanningRequest",
-    "PlanningResult",
-    "CognitiveCapability",
-    "IActionPlane",
-    "ActionRequest",
-    "ActionResult",
-    "ActionCapability",
-    "IOrchestrator",
-    "OrchestratorConfig",
-    "ExecutionContext",
-    "ExecutionResult",
-    "ExecutionPhase",
-]
+    __all__ = [
+        "ICognitivePlane",
+        "PlanningRequest",
+        "PlanningResult",
+        "CognitiveCapability",
+        "IActionPlane",
+        "ActionRequest",
+        "ActionResult",
+        "ActionCapability",
+        "IOrchestrator",
+        "OrchestratorConfig",
+        "ExecutionContext",
+        "ExecutionResult",
+        "ExecutionPhase",
+    ]

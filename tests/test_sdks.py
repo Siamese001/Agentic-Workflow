@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Test SDK functionality with configured API keys."""
 
+import logging
 import os
 import sys
 
@@ -9,9 +10,10 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+
 def test_provider(provider_name, module_path, test_func):
     """Docstring."""
-import logging
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,6 +25,7 @@ LOGGER = logging.getLogger(__name__)
     except Exception as e:
         logger.info(f"❌ {provider_name}: Failed - {str(e)[:100]}")
         return False, str(e)
+
 
 def main():
     """Docstring."""

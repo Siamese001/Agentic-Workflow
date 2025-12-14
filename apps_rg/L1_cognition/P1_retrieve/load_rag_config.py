@@ -1,8 +1,9 @@
+from typing import Dict
+import logging
 _logger = logging.getLogger(__name__)
 'RAG configuration for resume generation.'
-import logging
-from typing import Dict
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class RAGConfig:
@@ -27,4 +28,11 @@ class RAGConfig:
     _cache_ttl_days: int = 30
     _telemetry_enabled: bool = True
     _telemetry_log_dir: str = '/staging/rag_telemetry'
-    _source_weights: Dict[str, float] = field(default_factory=lambda: {'SOURCE_JD': 1.8, 'SOURCE_COMPANY_BLOG': 1.5, 'SOURCE_TARGET_EMPLOYEE': 1.4, 'SOURCE_GARTNER_MQ': 1.2, 'SOURCE_PEER_JD': 0.8, 'SOURCE_GENERIC_PROFILE': 0.5, 'LOCAL_NLP': 0.2})
+    _source_weights: Dict[str,
+                          float] = field(default_factory=lambda: {'SOURCE_JD': 1.8,
+                                                                  'SOURCE_COMPANY_BLOG': 1.5,
+                                                                  'SOURCE_TARGET_EMPLOYEE': 1.4,
+                                                                  'SOURCE_GARTNER_MQ': 1.2,
+                                                                  'SOURCE_PEER_JD': 0.8,
+                                                                  'SOURCE_GENERIC_PROFILE': 0.5,
+                                                                  'LOCAL_NLP': 0.2})

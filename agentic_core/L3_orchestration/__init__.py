@@ -8,26 +8,25 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-    DAGEngine,
-    Task,
-    TaskType,
-    TaskStatus,
-    DAGExecutionResult,
+DAGEngine,
+Task,
+TaskType,
+TaskStatus,
+DAGExecutionResult,
 )
     ThinkActObserveEngine,
     CycleConfig,
     CycleState,
 )
 
-__all__ = [
-    "NervousSystem",
-    "DAGEngine",
-    "Task",
-    "TaskType",
-    "TaskStatus",
-    "DAGExecutionResult",
-    "ThinkActObserveEngine",
-    "CycleConfig",
-    "CycleState",
-]
+    __all__ = [
+        "NervousSystem",
+        "DAGEngine",
+        "Task",
+        "TaskType",
+        "TaskStatus",
+        "DAGExecutionResult",
+        "ThinkActObserveEngine",
+        "CycleConfig",
+        "CycleState",
+    ]

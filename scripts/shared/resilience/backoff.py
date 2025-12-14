@@ -11,7 +11,6 @@ import random
 logger = logging.getLogger(__name__)
 
 
-
 class BackoffStrategy(ABC):
     """Abstract base for backoff strategies."""
 
@@ -25,6 +24,7 @@ class BackoffStrategy(ABC):
         Returns:
             Backoff delay in milliseconds
         """
+
 
 @dataclass
 class ExponentialBackoff(BackoffStrategy):
@@ -55,6 +55,7 @@ class ExponentialBackoff(BackoffStrategy):
         JITTER = random.randint(-self.jitter_ms, self.jitter_ms)
         return max(0, int(base + jitter))
 
+
 @dataclass
 class LinearBackoff(BackoffStrategy):
     """Linear backoff with optional jitter.
@@ -83,6 +84,7 @@ class LinearBackoff(BackoffStrategy):
 
         JITTER = random.randint(-self.jitter_ms, self.jitter_ms)
         return max(0, int(base + jitter))
+
 
 def calculate_backoff_ms(
     """Docstring."""

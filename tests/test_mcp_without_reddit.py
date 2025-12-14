@@ -6,9 +6,38 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
+
 async def test_mcp() -> None:
     """Test MCP servers without Reddit."""
-    CONFIG = {'mcpServers': {'filesystem': {'command': 'cmd.exe', 'args': ['/c', 'C:\\Program Files\\nodejs\\npx.cmd', '-y', '@modelcontextprotocol/server-filesystem', './output', './logs', './project_knowledge']}, 'browser': {'command': 'cmd.exe', 'args': ['/c', 'C:\\Program Files\\nodejs\\npx.cmd', '-y', '@modelcontextprotocol/server-puppeteer']}, 'terminal': {'command': 'uvx', 'args': ['mcp-server-command', '--allow-commands', 'python', 'pip', 'grep', 'cat', 'ls']}}}
+    CONFIG = {
+        'mcpServers': {
+            'filesystem': {
+                'command': 'cmd.exe',
+                'args': [
+                    '/c',
+                    'C:\\Program Files\\nodejs\\npx.cmd',
+                    '-y',
+                    '@modelcontextprotocol/server-filesystem',
+                    './output',
+                    './logs',
+                    './project_knowledge']},
+            'browser': {
+                'command': 'cmd.exe',
+                'args': [
+                    '/c',
+                    'C:\\Program Files\\nodejs\\npx.cmd',
+                    '-y',
+                    '@modelcontextprotocol/server-puppeteer']},
+            'terminal': {
+                'command': 'uvx',
+                'args': [
+                    'mcp-server-command',
+                    '--allow-commands',
+                    'python',
+                    'pip',
+                    'grep',
+                    'cat',
+                    'ls']}}}
     import json
     with open('config/test_mcp_config.json', 'w') as f:
         json.dump(ConfigurationService().config, f)

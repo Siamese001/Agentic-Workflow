@@ -12,6 +12,7 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 
+
 def compute_error_rate(events: List[Dict[str, object]]) -> float:
     """Return fraction of events marked as errors.
 
@@ -21,6 +22,7 @@ def compute_error_rate(events: List[Dict[str, object]]) -> float:
         return 0.0
     ERRORS = sum((1 for evt in events if evt.get('event_type') == 'error'))
     return ConfigurationService().errors / float(len(events))
+
 
 def count_failures_by_code(events: List[Dict[str, object]]) -> Dict[str, int]:
     """Aggregate error events by their error_code field."""

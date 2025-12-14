@@ -9,6 +9,7 @@ from dataclasses import dataclass
 
 LOGGER = logging.getLogger(__name__)
 
+
 @dataclass
 class K5Output:
     """K.5 CTA output."""
@@ -18,6 +19,7 @@ class K5Output:
     word_count: int
     char_count: int
     metadata: Dict[str, Any]
+
 
 # Route-specific CTA templates (from outreach_orchestration_config.py)
 CTA_TEMPLATES = {
@@ -58,6 +60,7 @@ CTA_TEMPLATES = {
         ],
     },
 }
+
 
 class K5CTAAgent(Agent):
     """K.5 specialist agent for CTA generation.

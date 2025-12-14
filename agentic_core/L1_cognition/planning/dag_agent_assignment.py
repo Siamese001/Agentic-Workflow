@@ -5,9 +5,11 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 async def _noop(ctx: Dict[str, object]) -> Dict[str, object]:
     """Docstring."""
     return dict(ctx)
+
 
 def test_dag_executor_records_agent_assignments() -> None:
     """Test that DAG executor records agent assignments correctly."""

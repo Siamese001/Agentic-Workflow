@@ -4,6 +4,7 @@ from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 def test_tool_like_call_runs_in_vm_boundary() -> None:
     """TODO: Add docstring."""
     REQ = ToolCallRequest(tool_name='echo', args=['middleware'], timeout_s=1.0)

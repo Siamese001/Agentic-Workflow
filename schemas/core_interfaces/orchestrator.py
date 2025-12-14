@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-
 class ExecutionPhase(Enum):
     """Phases of execution in the orchestration cycle."""
     MISSION = "mission"
@@ -22,6 +21,7 @@ class ExecutionPhase(Enum):
     ACT = "act"
     OBSERVE = "observe"
     REFLECT = "reflect"
+
 
 @dataclass
 class OrchestratorConfig:
@@ -42,6 +42,7 @@ class OrchestratorConfig:
             "timeout_seconds": self.timeout_seconds,
         }
 
+
 @dataclass
 class ExecutionContext:
     """Context for orchestrated execution."""
@@ -60,6 +61,7 @@ class ExecutionContext:
             "history": self.history,
             "metadata": self.metadata,
         }
+
 
 @dataclass
 class ExecutionResult:
@@ -83,6 +85,7 @@ class ExecutionResult:
             "errors": self.errors,
             "metadata": self.metadata,
         }
+
 
 class IOrchestrator(ABC):
     """Interface for the Orchestrator (Nervous System).

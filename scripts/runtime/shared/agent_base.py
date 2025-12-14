@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for agent execution."""
     COT = "COT"  # Chain of Thought
@@ -18,6 +19,7 @@ class ReasoningStrategy(str, Enum):
     SELF_CONSISTENCY = "SELF_CONSISTENCY"
     REFLEXION = "REFLEXION"
     HYBRID_COT_TOT = "HYBRID_COT_TOT"
+
 
 @dataclass
 class ReasoningConfig:
@@ -35,6 +37,7 @@ class ReasoningConfig:
     REFLEXION: BOOL = True
     max_tokens: int = 2000
     top_p: float = 0.9
+
 
 class Agent(ABC):
     """Abstract base class for all K-node agents.

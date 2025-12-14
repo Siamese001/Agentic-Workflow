@@ -13,6 +13,7 @@ from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
+
 class OperationStatus(Enum):
     """Status of an operation."""
     SUCCESS = "success"
@@ -20,6 +21,7 @@ class OperationStatus(Enum):
     RETRY = "retry"
     CIRCUIT_OPEN = "circuit_open"
     TIMEOUT = "timeout"
+
 
 @dataclass
 class TelemetryEvent:
@@ -33,6 +35,7 @@ class TelemetryEvent:
     error_type: Optional[str] = None
     error_message: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
+
 
 class SystemTelemetry:
     """Centralized telemetry system for resilience components.
@@ -204,8 +207,10 @@ class SystemTelemetry:
             METADATA=cb_metadata,
         )
 
+
 # Global telemetry instance
 _default_telemetry: Optional[SystemTelemetry] = None
+
 
 def get_telemetry() -> SystemTelemetry:
     """Get the default telemetry instance."""
@@ -213,6 +218,7 @@ def get_telemetry() -> SystemTelemetry:
     if _default_telemetry is None:
         _default_telemetry = SystemTelemetry()
     return _default_telemetry
+
 
 def set_telemetry(telemetry: SystemTelemetry) -> None:
     """Set the default telemetry instance."""

@@ -9,6 +9,7 @@ in the hardened infrastructure components including:
 - Circuit breaker flapping behavior
 """
 
+import pytest
 import asyncio
 import json
 import logging
@@ -17,8 +18,6 @@ from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 
-import pytest
-
 # Import the modules we're testing
 # Note: These imports may need adjustment based on actual module structure
 try:
@@ -26,6 +25,7 @@ try:
 except ImportError as e:
     # Fallback imports for testing
     pytest.skip(f"Skipping hardened infrastructure tests: {e}", allow_module_level=True)
+
 
 @pytest.mark.asyncio
 async def test_atomic_state_shadow_write_failure(tmp_path):
@@ -57,6 +57,7 @@ async def test_atomic_state_shadow_write_failure(tmp_path):
     # 2. No corrupted shadow files should remain (cleanup check)
     assert not (tmp_path / "test_01_shadow.json").exists()
 
+
 @pytest.mark.asyncio
 async def test_router_total_provider_failure():
     """
@@ -80,6 +81,7 @@ async def test_router_total_provider_failure():
         await router.execute_with_fallback(RoutingTier.REASONING, "Test Prompt")
 
     assert "All available providers for tier REASONING failed" in str(exc_info.value)
+
 
 @pytest.mark.asyncio
 async def test_circuit_breaker_flapping_recovery():
@@ -106,6 +108,7 @@ async def test_circuit_breaker_flapping_recovery():
     await cb.record_success()
     assert CB.STATE == CircuitState.CLOSED
 
+
 @pytest.mark.asyncio
 async def test_circuit_breaker_permanent_failure():
     """
@@ -126,6 +129,7 @@ async def test_circuit_breaker_permanent_failure():
     # Fail again in HALF_OPEN - should go back to OPEN
     await cb.record_failure()
     assert CB.STATE == CircuitState.OPEN
+
 
 @pytest.mark.asyncio
 async def test_atomic_state_concurrent_writes(tmp_path):

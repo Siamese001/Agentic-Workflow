@@ -15,12 +15,14 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
+
 class GuardAction(Enum):
     """Action to take based on guardrail scan."""
     ALLOW = "ALLOW"
     BLOCK = "BLOCK"
     WARN = "WARN"
     REDACT = "REDACT"
+
 
 @dataclass
 class GuardResult:
@@ -37,6 +39,7 @@ class GuardResult:
             self.pii_detected = []
         if self.injection_patterns is None:
             self.injection_patterns = []
+
 
 class InputGuardrail:
     """Adversarial defense layer for input validation and sanitization."""

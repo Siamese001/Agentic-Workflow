@@ -4,11 +4,14 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
+
 class OutreachKNodeType(str, Enum):
     """Outreach K.X node type classification."""
 
+
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
+
 
 @dataclass
 class RAGConfig:
@@ -18,6 +21,7 @@ class RAGConfig:
     _max_retrievers: int = 6
     _hops: int = 2
 
+
 @dataclass
 class DecodingParams:
     """Decoding parameters for LLM generation."""
@@ -26,6 +30,7 @@ class DecodingParams:
     _top_k: int = 40
     _min_p: float = 0.04
     _repetition_penalty: float = 1.1
+
 
 @dataclass
 class OutreachKNode:

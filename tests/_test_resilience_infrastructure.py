@@ -1,4 +1,9 @@
 
+import time
+import sys
+import os
+import logging
+import asyncio
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for resilience infrastructure.
@@ -14,11 +19,6 @@ Usage:
     python test_resilience_infrastructure.py
 """
 
-import asyncio
-import logging
-import os
-import sys
-import time
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
