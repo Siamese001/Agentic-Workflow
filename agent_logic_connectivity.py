@@ -144,15 +144,19 @@ class CanonValidator:
         """
         try:
             # query() expects a list of floats
+            logger.info(f"Querying Pinecone with embedding dimension: {len(entry.embedding)}")
             results = self.pinecone_index.query(
                 vector=entry.embedding,
                 top_k=1,
                 include_metadata=True
             )
             
+            logger.info(f"Pinecone raw response: {results}")
+            
             if results and results['matches']:
                 best_match = results['matches'][0]
                 score = best_match['score']
+                logger.info(f"Best match: ID={best_match['id']}, score={score}")
                 
                 if score >= self.similarity_threshold:
                     # FIX: Access metadata safely
