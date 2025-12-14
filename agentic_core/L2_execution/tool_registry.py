@@ -243,7 +243,9 @@ class ToolRegistry:
         matches = await self.find_tools_for_task(task)
 
         if not matches:
-            return "No specific tools found for this task. You may need to implement a custom solution."
+            return "No specific tools found for this task.
+                . You may need to implement a custom solution.
+                ."
 
         recommendation = f"Recommended tools for '{task}':\n\n"
 

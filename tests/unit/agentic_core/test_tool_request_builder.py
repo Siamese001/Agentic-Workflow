@@ -1,4 +1,6 @@
 
+
+logger = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.317503+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_tool_request_builder.py
 # High-signal content preserved below — zero-loss migration
@@ -12,6 +14,7 @@ Currently depends on legacy execution functions that need implementation.
 """
 
 import pytest
+import logging
 
 # Mock exceptions since they're zombie file dependencies
 class OrchestrationError(Exception):

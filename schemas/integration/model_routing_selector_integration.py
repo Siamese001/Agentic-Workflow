@@ -1,5 +1,8 @@
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 def test_selector_integration_uses_cache_for_generic_calls() -> None:
     """TODO: Add docstring."""
 

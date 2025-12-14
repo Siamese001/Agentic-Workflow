@@ -1,5 +1,7 @@
 """Shared models and enums for the Agentic Workflow runtime.
 
+
+logger = logging.getLogger(__name__)
 This file contains all shared data structures that are used across multiple
 modules to avoid circular imports. This file must NOT import from any
 runtime.* modules - only from pydantic, enum, and typing.

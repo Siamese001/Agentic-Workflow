@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Check Message Compliance - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def check_message_compliance(data: Dict[str, object]) -> Dict[str, object]:
     """Process check message compliance data."""

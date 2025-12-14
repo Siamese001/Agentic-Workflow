@@ -1,10 +1,13 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / unknown
 # -*- coding: utf-8 -*-
 """Test Rg Resume Builder - atomic execution layer."""
 
 
 from typing import Dict
+import logging
 
 def test_rg_resume_builder(data: Dict[str, object]) -> Dict[str, object]:
     """Process test rg resume builder data."""

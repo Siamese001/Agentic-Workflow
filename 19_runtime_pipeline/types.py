@@ -1,5 +1,7 @@
 """Pipeline base types and abstractions.
 
+
+logger = logging.getLogger(__name__)
 Extracted from unified_signal_pipeline.py for Key 42 compliance.
 """
 

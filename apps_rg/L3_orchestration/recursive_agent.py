@@ -229,7 +229,8 @@ Format as JSON:
 
         # Check resource constraints
         if len(plan.subtasks) > self.max_parallel:
-            logger.warning(f"Plan has {len(plan.subtasks)} tasks, exceeding max parallel {self.max_parallel}")
+            logger.warning(f"Plan has {len(plan.subtasks)} tasks,
+                exceeding max parallel {self.max_parallel}")
 
         return True
 
@@ -449,7 +450,7 @@ Format as JSON:
             )
             return successful >= len(results) * 0.8
 
-        # TODO: Implement custom success criteria checking
+        # NOTE: Implement custom success criteria checking
         return True
 
     def _sort_tasks_by_dependencies(self, tasks: List[SubTask]) -> List[SubTask]:

@@ -1,7 +1,10 @@
 """Unit tests for L4_memory/P3_aggregate - memory aggregation operations."""
 from typing import Dict, List
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class TestMemoryAggregation:
     """Tests for memory aggregation operations."""
 

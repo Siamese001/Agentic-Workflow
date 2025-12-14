@@ -1,6 +1,9 @@
 """Implementation for kx_nodes_resume."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 # from .kx_nodes_resume_types import *  # Star import removed
 
 def get_resume_kx_dag() -> Dict[str, ResumeKNode]:

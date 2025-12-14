@@ -1,6 +1,9 @@
 """Implementation for l4_types."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 # from .l4_types_types import *  # Star import removed
 
 class StateError(Exception):

@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
 """Match Job Patterns - atomic implementation."""
 
 from typing import Dict
+import logging
 
 class MatchJobPatterns:
     """MatchJobPatterns implementation."""

@@ -1,7 +1,10 @@
 """Unit tests for L2_execution/P4_safety - execution safety checks."""
 import re
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class TestExecutionSafetyChecks:
     """Tests for execution-level safety checks."""
 

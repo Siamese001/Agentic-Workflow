@@ -1,7 +1,10 @@
 
 from typing import Dict, List
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 EVENTS: List[Dict[str, object]] = []
 
 def append_event(event: Dict[str, object]) -> None:

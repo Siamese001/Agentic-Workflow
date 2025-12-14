@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """E2E Validation Script for Subatomic Pipeline"""
 
 from pathlib import Path
 import json
+import logging
 
 PROJECT_ROOT = Path(r"C:/Git/Agentic-Workflow")
 

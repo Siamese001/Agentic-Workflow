@@ -102,15 +102,19 @@ class UnifiedSignalPipeline:
                 envelope = EnvelopeFactory.create_envelope(
                     input_data,
                     metadata={
-                        "engine_type": engine_type.value if hasattr(engine_type, 'value') else str(engine_type),
-                        "domain_config": domain_config.__class__.__name__ if domain_config else "None"
+                        "engine_type": engine_type.value if hasattr(engine_type,
+                            'value') else str(engine_type),
+                        "domain_config": domain_config.
+                            .__class__.
+                            .__name__ if domain_config else "None"
                     }
                 )
             except ImportError:
                 raise PipelineExecutionError("envelope_creation", "EnvelopeFactory not available")
 
         if domain_config:
-            envelope.metadata["domain_config"] = json.dumps(domain_config.dict() if hasattr(domain_config, 'dict') else {})
+            envelope.metadata["domain_config"] = json.dumps(domain_config.dict() if hasattr(domain_config,
+                'dict') else {})
 
         checkpoint_manager = await self._get_checkpoint_manager()
 
@@ -194,7 +198,8 @@ class UnifiedSignalPipeline:
             "created_at": envelope.created_at.isoformat(),
             "has_errors": envelope.has_errors,
             "error_count": envelope.error_count,
-            "completed_stages": [s.stage_name for s in envelope.history if hasattr(s, 'status') and s.status == "SUCCESS"],
+            "completed_stages": [s.stage_name for s in envelope.history if hasattr(s,
+                'status') and s.status == "SUCCESS"],
             "failed_stages": envelope.get_failed_stages(),
             "last_completed_stage": envelope.get_last_completed_stage(),
             "total_duration_ms": envelope.calculate_total_duration()
@@ -235,7 +240,7 @@ class UnifiedSignalPipeline:
             Health status
         """
         checkpoint_manager = await self._get_checkpoint_manager()
-        
+
         if checkpoint_manager:
             checkpoint_health = await checkpoint_manager.health_check()
             status = "healthy" if checkpoint_health.get("status") == "healthy" else "degraded"

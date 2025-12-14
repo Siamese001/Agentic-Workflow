@@ -1,8 +1,11 @@
 """Types and models for kx_nodes_outreach."""
 
 from typing import Any, Dict, List, Optional
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class OutreachKNodeType(str, Enum):
     """Outreach K.X node type classification."""
 

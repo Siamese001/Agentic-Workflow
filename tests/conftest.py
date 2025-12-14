@@ -1,5 +1,7 @@
 """
 
+
+logger = logging.getLogger(__name__)
 Shared pytest configuration and fixtures for all tests.
 """
 

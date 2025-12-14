@@ -2,7 +2,10 @@ import yaml
 from pydantic import BaseModel
 import instructor
 from openai import AsyncOpenAI
+import logging
 
+
+logger = logging.getLogger(__name__)
 class ViolationCheck(BaseModel):
     is_violation: bool
     reason: str
@@ -24,6 +27,6 @@ class ConstitutionalOverseer:
                 {"role": "user", "content": f"Assess this output:\n{content}"}
             ]
         )
-        
+
         if resp.is_violation:
             raise ValueError(f"Constitutional Violation: {resp.reason}")

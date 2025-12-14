@@ -1,5 +1,7 @@
 """
 
+
+logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/safety_ops/
 Tests safety operations including check_rules.
 """

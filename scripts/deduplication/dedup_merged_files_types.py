@@ -1,7 +1,10 @@
 """Types and models for dedup_merged_files."""
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class DedupManifest:
     """TODO: Add docstring."""

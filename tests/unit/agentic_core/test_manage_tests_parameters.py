@@ -1,10 +1,13 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
 """Test Manage Tests Parameters - atomic execution layer."""
 
 
 from typing import Dict
+import logging
 
 def test_manage_tests_parameters(data: Dict[str, object]) -> Dict[str, object]:
     """Process test manage tests parameters data."""

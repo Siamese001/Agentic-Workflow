@@ -1,7 +1,10 @@
+import logging
 
 
 
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class GoldenStateTestCase:
     """Single golden-state test case.

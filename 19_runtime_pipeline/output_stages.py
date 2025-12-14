@@ -1,12 +1,13 @@
 """Quality validation and output formatting stages.
 
+
+logger = logging.getLogger(__name__)
 Extracted from unified_signal_pipeline.py for Key 42 compliance.
 Contains QualityValidationStage and OutputFormattingStage.
 """
 
 import hashlib
 import time
-from typing import Any, Dict, List
 
 from .types import PipelineStage
 
@@ -57,7 +58,9 @@ class QualityValidationStage(PipelineStage):
 
             if cached:
                 self._update_envelope_with_validation(envelope, cached)
-                envelope.mark_stage_complete(stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True})
+                envelope.mark_stage_complete(stage_name,
+                    (time.time() - start_time) * 1000,
+                    metadata={"cache_hit": True})
                 return envelope
 
             validation_results = await self._perform_validations(content, envelope)
@@ -66,7 +69,9 @@ class QualityValidationStage(PipelineStage):
             if self.semantic_cache:
                 self.semantic_cache.set(cache_key, validation_results)
 
-            envelope.mark_stage_complete(stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False})
+            envelope.mark_stage_complete(stage_name,
+                (time.time() - start_time) * 1000,
+                metadata={"cache_hit": False})
             return envelope
 
         except Exception as e:
@@ -127,7 +132,6 @@ class OutputFormattingStage(PipelineStage):
     def __init__(self):
         """Initialize output formatting stage."""
         try:
-            from ..rag_components import SemanticCache
             self.semantic_cache = SemanticCache()
         except ImportError:
             self.semantic_cache = None
@@ -156,7 +160,9 @@ class OutputFormattingStage(PipelineStage):
 
             if cached:
                 self._update_envelope_with_formatted_output(envelope, cached)
-                envelope.mark_stage_complete(stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True})
+                envelope.mark_stage_complete(stage_name,
+                    (time.time() - start_time) * 1000,
+                    metadata={"cache_hit": True})
                 return envelope
 
             formatted = await self._format_output(content, envelope)
@@ -165,7 +171,9 @@ class OutputFormattingStage(PipelineStage):
             if self.semantic_cache:
                 self.semantic_cache.set(cache_key, formatted)
 
-            envelope.mark_stage_complete(stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False})
+            envelope.mark_stage_complete(stage_name,
+                (time.time() - start_time) * 1000,
+                metadata={"cache_hit": False})
             return envelope
 
         except Exception as e:
@@ -183,7 +191,8 @@ class OutputFormattingStage(PipelineStage):
 
     async def _format_output(self, content: str, envelope: Any) -> Dict[str, Any]:
         """Format output based on engine type."""
-        payload_type = envelope.payload.payload_type.value if hasattr(envelope.payload, 'payload_type') else "unknown"
+        payload_type = envelope.payload.payload_type.value if hasattr(envelope.payload,
+            'payload_type') else "unknown"
 
         formatted = {
             "formatted_content": content,
@@ -217,7 +226,10 @@ class OutputFormattingStage(PipelineStage):
             "signature": "Best regards"
         }
 
-    def _update_envelope_with_formatted_output(self, envelope: Any, formatted: Dict[str, Any]) -> None:
+    def _update_envelope_with_formatted_output(self,
+        envelope: Any,
+        formatted: Dict[str,
+        Any]) -> None:
         """Update envelope with formatted output."""
         if hasattr(envelope.payload, 'metadata'):
             envelope.payload.metadata.update(formatted)

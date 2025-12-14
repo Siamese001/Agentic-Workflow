@@ -62,7 +62,10 @@ class AgentIdentity:
             Dictionary representation
         """
         return {'spiffe_id': self.spiffe_id, 'agent_type': self.agent_type.value, 'trust_domain': se
-                lf.trust_domain.value, 'public_key': self.public_key, 'issued_at': self.issued_at, 'expires_at':
+                lf.trust_domain.value,
+                    'public_key': self.public_key,
+                    'issued_at': self.issued_at,
+                    'expires_at':
                 self.expires_at, 'capabilities': self.capabilities, 'metadata': self.metadata}
 
     def get_namespace(self) -> str:

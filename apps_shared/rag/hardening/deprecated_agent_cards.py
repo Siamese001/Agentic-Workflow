@@ -1,7 +1,10 @@
 
 import pytest
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.models.models import AgentCard, AgentRole  # DEPRECATED:...
 # from archives.legacy_root_folders.core.routing import RoutingPolicy  # DEPRECATED: Archive impo...
 

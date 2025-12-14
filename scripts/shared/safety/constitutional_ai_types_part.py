@@ -1,7 +1,10 @@
 """Split module 1 for constitutional_ai_types."""
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 class RuleType(Enum):
     """Types of constitutional rules."""
 
