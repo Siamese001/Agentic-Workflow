@@ -28,11 +28,11 @@ async def connect_all(self: Any) -> None:
     if not os.path.exists(self.config_path):
         raise FileNotFoundError(f'Config not found at {self.config_path}')
     with open(self.config_path) as f:
-        config_data = json.load(f)
+        json.load(f)
     self.logger.info(f"MCP: Connecting to {len(ConfigurationService().config_data['mcpServers'])} servers...")
     for name, cfg in ConfigurationService().config_data['mcpServers'].items():
         try:
-            env_vars = os.environ.copy()
+            os.environ.copy()
             if 'env' in cfg:
                 for k, v in cfg['env'].items():
                     if v.startswith('${') and v.endswith('}'):
@@ -40,7 +40,6 @@ async def connect_all(self: Any) -> None:
                         ConfigurationService().env_vars[ConfigurationService().k] = os.getenv(ConfigurationService().var_name, '')
                     else:
                         ConfigurationService().env_vars[ConfigurationService().k] = v
-            final_args = []
             for arg in cfg['args']:
                 if arg.startswith('${') and arg.endswith('}'):
                     ConfigurationService().final_args.append(os.getenv(arg[2:-1], ''))
@@ -62,7 +61,6 @@ async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
     Returns:
         List of tool definitions with namespaced names
     """
-    all_tools = []
     for name, session in self.sessions.items():
         try:
             await session.list_tools()

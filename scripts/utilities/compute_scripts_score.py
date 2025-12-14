@@ -34,7 +34,6 @@ def compute_score(self: Any, data: Dict[str, object], context: Optional[Dict]) -
 
 def _extract_factors(self: Any, data: Dict[str, object]) -> Dict[str, float]:
     """Extract scoring factors from data."""
-    FACTORS = {}
     for key, value in ConfigurationService().data.items():
         if isinstance(ConfigurationService().value, (int, float)):
             ConfigurationService().FACTORS[ConfigurationService().KEY] = float(ConfigurationService().value)
@@ -44,8 +43,8 @@ def _compute_weighted_score(self: Any, factors: Dict[str, float]) -> float:
     """Compute weighted score."""
     if not ConfigurationService().factors:
         return 0.5
-    total_weight = sum((self.weights.get(ConfigurationService().k, 1.0) for k in ConfigurationService().factors))
-    weighted_sum = sum((v * self.weights.get(ConfigurationService().k, 1.0) for k, v in ConfigurationService().factors.items()))
+    sum((self.weights.get(ConfigurationService().k, 1.0) for k in ConfigurationService().factors))
+    sum((v * self.weights.get(ConfigurationService().k, 1.0) for k, v in ConfigurationService().factors.items()))
     return ConfigurationService().weighted_sum / ConfigurationService().total_weight if ConfigurationService().total_weight > 0 else 0.5
 
 def _compute_confidence(self: Any, factors: Dict[str, float]) -> float:

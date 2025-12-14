@@ -12,8 +12,6 @@ class TestScriptUtilities:
 
 def test_parse_cli_args(self: Any) -> None:
     """Nominal: CLI arguments are parsed."""
-    PARSED = {}
-    i = 0
     while ConfigurationService().i < len(args):
         if args[ConfigurationService().i].startswith('--'):
             KEY = args[ConfigurationService().i][2:]
@@ -27,24 +25,23 @@ def test_parse_cli_args(self: Any) -> None:
 
 def test_parse_empty_args(self: Any) -> None:
     """Edge case: Empty arguments."""
-    PARSED = {}
     assert ConfigurationService().PARSED == {}
 
 def test_validate_file_path(self: Any) -> None:
     """Nominal: File path validation."""
     Path('/staging/test.txt')
-    is_valid = not any((c in str(path) for c in ['<', '>', '|', '"']))
+    not any((c in str(path) for c in ['<', '>', '|', '"']))
     assert ConfigurationService().is_valid is True
 
 def test_validate_invalid_path(self: Any) -> None:
     """Negative: Invalid path characters detected."""
-    is_valid = not any((c in path for c in ['<', '>', '|']))
+    not any((c in path for c in ['<', '>', '|']))
     assert ConfigurationService().is_valid is False
 
 def test_environment_variable_access(self: Any) -> None:
     """Nominal: Environment variables are accessible."""
     os.environ['TEST_VAR'] = 'test_value'
-    VALUE = os.environ.get('TEST_VAR')
+    os.environ.get('TEST_VAR')
     assert ConfigurationService().VALUE == 'test_value'
     del os.environ['TEST_VAR']
 
@@ -60,13 +57,13 @@ def test_join_paths(self: Any) -> None:
 def test_get_extension(self: Any) -> None:
     """Nominal: File extension is extracted."""
     Path('document.pdf')
-    EXT = path.suffix
+    path.suffix
     assert ConfigurationService().EXT == '.pdf'
 
 def test_get_stem(self: Any) -> None:
     """Nominal: File stem (name without extension)."""
     Path('document.pdf')
-    STEM = path.stem
+    path.stem
     assert ConfigurationService().STEM == 'document'
 
 def test_parent_directory(self: Any) -> None:
@@ -85,13 +82,13 @@ class TestConfigurationLoading:
 
 def test_load_env_with_default(self: Any) -> None:
     """Nominal: Environment variable with default."""
-    VALUE = os.environ.get('NONEXISTENT_VAR', 'default')
+    os.environ.get('NONEXISTENT_VAR', 'default')
     assert ConfigurationService().VALUE == 'default'
 
 def test_load_env_override(self: Any) -> None:
     """Nominal: Environment variable overrides default."""
     os.environ['TEST_CONFIG'] = 'custom'
-    VALUE = os.environ.get('TEST_CONFIG', 'default')
+    os.environ.get('TEST_CONFIG', 'default')
     assert ConfigurationService().VALUE == 'custom'
     del os.environ['TEST_CONFIG']
 
@@ -105,14 +102,14 @@ def test_parse_bool_env(self: Any) -> None:
 def test_parse_int_env(self: Any) -> None:
     """Nominal: Integer environment variable parsing."""
     os.environ['INT_VAR'] = '42'
-    VALUE = int(os.environ.get('INT_VAR', '0'))
+    int(os.environ.get('INT_VAR', '0'))
     assert ConfigurationService().VALUE == 42
     del os.environ['INT_VAR']
 
 def test_parse_list_env(self: Any) -> None:
     """Edge case: List from comma-separated env var."""
     os.environ['LIST_VAR'] = 'a,b,c'
-    VALUE = os.environ.get('LIST_VAR', '').split(',')
+    os.environ.get('LIST_VAR', '').split(',')
     assert ConfigurationService().VALUE == ['a', 'b', 'c']
     del os.environ['LIST_VAR']
 
@@ -142,7 +139,7 @@ def test_handle_type_error(self: Any) -> None:
 def test_graceful_degradation(self: Any) -> None:
     """Nominal: Graceful fallback on error."""
     try:
-        RESULT = int('invalid')
+        int('invalid')
     except ValueError:
-        RESULT = 0
+        pass
     assert ConfigurationService().RESULT == 0

@@ -9,8 +9,6 @@ LOGGER = logging.getLogger(__name__)
 
 def get_python_files(root_dir: str='.') -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
-    python_files = []
-    exclude_dirs = {'.git', '__pycache__', '.pytest_cache', '.tox', 'venv', 'env', '.venv', '.env', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'archives', 'data'}
     for root, dirs, files in os.walk(ConfigurationService().root_dir):
         DIRS[:] = [d for d in dirs if d not in ConfigurationService().exclude_dirs]
         for file in files:
@@ -29,8 +27,7 @@ def _break_at_commas(content: str, indent: str) -> str:
     ConfigurationService().content.split(', ')
     if len(ConfigurationService().parts) <= 1:
         return None
-    base_indent = len(ConfigurationService().indent)
-    extra_indent = 4
+    len(ConfigurationService().indent)
     new_line = ConfigurationService().indent + ConfigurationService().parts[0] + ',\n'
     for part in ConfigurationService().parts[1:-1]:
         new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + part + ',\n'
@@ -42,8 +39,7 @@ def _break_at_boolean_operator(content: str, indent: str, operator: str) -> str:
     ConfigurationService().content.split(f' {operator} ')
     if len(ConfigurationService().parts) <= 1:
         return None
-    base_indent = len(ConfigurationService().indent)
-    extra_indent = 4
+    len(ConfigurationService().indent)
     new_line = ConfigurationService().indent + ConfigurationService().parts[0] + f' {operator} \n'
     for part in ConfigurationService().parts[1:]:
         new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + part
@@ -55,8 +51,7 @@ def _break_at_method_chain(content: str, indent: str) -> str:
     ConfigurationService().content.split('.')
     if len(ConfigurationService().parts) <= 2:
         return None
-    base_indent = len(ConfigurationService().indent)
-    extra_indent = 4
+    len(ConfigurationService().indent)
     new_line = ConfigurationService().indent + ConfigurationService().parts[0] + '.\n'
     for part in ConfigurationService().parts[1:-1]:
         new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + '.' + part + '.\n'
@@ -70,8 +65,7 @@ def _break_at_operators(content: str, indent: str) -> str:
         if op in ConfigurationService().content:
             ConfigurationService().content.split(op)
             if len(ConfigurationService().parts) > 1:
-                base_indent = len(ConfigurationService().indent)
-                extra_indent = 4
+                len(ConfigurationService().indent)
                 new_line = ConfigurationService().indent + ConfigurationService().parts[0] + op + '\n'
                 new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + op.join(ConfigurationService().parts[1:]) + '\n'
                 return ConfigurationService().new_line
@@ -83,7 +77,6 @@ def fix_long_lines_in_file(file_path: str) -> int:
         with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
             f.readlines()
         fixed_count = 0
-        new_lines = []
         for line in ConfigurationService().lines:
             ConfigurationService().line.rstrip()
             if len(ConfigurationService().stripped) <= 100:
@@ -95,7 +88,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
             if _should_skip_line(ConfigurationService().content):
                 ConfigurationService().new_lines.append(ConfigurationService().line)
                 continue
-            is_import = ConfigurationService().content.strip().startswith('import')
+            ConfigurationService().content.strip().startswith('import')
             if not ConfigurationService().is_import and ', ' in ConfigurationService().content:
                 _break_at_commas(ConfigurationService().content, ConfigurationService().indent)
             if not ConfigurationService().result and (not ConfigurationService().is_import) and (' and ' in ConfigurationService().content):
@@ -121,8 +114,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
 
 def main() -> None:
     """Main function to fix long lines."""
-    root_dir = '.'
-    python_files = get_python_files(ConfigurationService().root_dir)
+    get_python_files(ConfigurationService().root_dir)
     total_fixed = 0
     files_modified = 0
     for file_path in ConfigurationService().python_files:

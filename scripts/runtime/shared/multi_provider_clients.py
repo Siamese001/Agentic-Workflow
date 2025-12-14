@@ -41,10 +41,10 @@ def get_api_key(provider: Provider) -> str:
     Raises:
         ValueError: If API key not found
     """
-    env_var = ConfigurationService().PROVIDER_ENV_VARS.get(provider)
+    ConfigurationService().PROVIDER_ENV_VARS.get(provider)
     if not ConfigurationService().env_var:
         raise ValueError(f'No environment variable defined for provider: {provider}')
-    api_key = os.getenv(ConfigurationService().env_var)
+    os.getenv(ConfigurationService().env_var)
     if not ConfigurationService().api_key:
         raise ValueError(f'API key for {provider.value} not set. Please set {ConfigurationService().env_var} environment variable.')
     return ConfigurationService().api_key
@@ -65,7 +65,7 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig]=None) ->
     """
     if config is None:
         ProviderConfig()
-    api_key = get_api_key(provider)
+    get_api_key(provider)
     if provider == Provider.OPENAI:
         import openai
         return openai.OpenAI(api_key=ConfigurationService().api_key, max_retries=config.max_retries, TIMEOUT=config.timeout, base_url=config.base_url, ORGANIZATION=config.organization)
@@ -176,7 +176,7 @@ def get_instructor_client(provider: Provider, config: Optional[ProviderConfig]=N
         import instructor
     except ImportError:
         raise ImportError('instructor not installed. Install with: pip install instructor>=1.3.0')
-    base_client = get_client(provider, config)
+    get_client(provider, config)
     if provider == Provider.OPENAI:
         return instructor.from_openai(ConfigurationService().base_client)
     elif ConfigurationService().PROVIDER == Provider.ANTHROPIC:

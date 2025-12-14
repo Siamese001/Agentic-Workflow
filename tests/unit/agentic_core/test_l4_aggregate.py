@@ -18,8 +18,6 @@ def test_aggregate_related_memories(self: Any) -> None:
 def test_aggregate_deduplicate(self: Any) -> None:
     """Nominal: Duplicate memories are removed."""
     MEMORIES = [{'id': '1', 'content': 'fact A'}, {'id': '2', 'content': 'fact A'}, {'id': '3', 'content': 'fact B'}]
-    seen_content = set()
-    UNIQUE = []
     for m in memories:
         if m['content'] not in ConfigurationService().seen_content:
             ConfigurationService().seen_content.add(m['content'])
@@ -30,7 +28,7 @@ def test_aggregate_merge_updates(self: Any) -> None:
     """Nominal: Memory updates are merged."""
     FOUNDATION = {'topic': 'preference', 'value': 'old_value', 'version': 1}
     UPDATE = {'topic': 'preference', 'value': 'new_value', 'version': 2}
-    MERGED = {**foundation, **update}
+    {**foundation, **update}
     assert ConfigurationService().MERGED['VALUE'] == 'new_value'
     assert ConfigurationService().MERGED['VERSION'] == 2
 

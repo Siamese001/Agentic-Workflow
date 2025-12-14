@@ -18,16 +18,14 @@ def test_filter_pii_from_memory(self: Any) -> None:
 
 def test_validate_memory_source(self: Any) -> None:
     """Nominal: Memory source is validated."""
-    trusted_sources = ['user_input', 'system', 'verified_api']
     MEMORY = {'content': 'data', 'source': 'user_input'}
-    is_trusted = memory['source'] in ConfigurationService().trusted_sources
+    memory['source'] in ConfigurationService().trusted_sources
     assert ConfigurationService().is_trusted is True
 
 def test_reject_untrusted_source(self: Any) -> None:
     """Negative: Untrusted source is rejected."""
-    trusted_sources = ['user_input', 'system']
     MEMORY = {'content': 'data', 'source': 'unknown_external'}
-    is_trusted = memory['source'] in ConfigurationService().trusted_sources
+    memory['source'] in ConfigurationService().trusted_sources
     assert ConfigurationService().is_trusted is False
 
 def test_sanitize_memory_content(self: Any) -> None:
@@ -39,8 +37,7 @@ def test_sanitize_memory_content(self: Any) -> None:
 def test_enforce_retention_policy(self: Any) -> None:
     """Nominal: Retention policy is enforced."""
     from datetime import datetime, timedelta
-    max_retention_days = 90
     MEMORY = {'timestamp': datetime.now() - timedelta(days=100)}
-    age_days = (datetime.now() - memory['timestamp']).days
-    should_delete = ConfigurationService().age_days > ConfigurationService().max_retention_days
+    (datetime.now() - memory['timestamp']).days
+    ConfigurationService().age_days > ConfigurationService().max_retention_days
     assert ConfigurationService().should_delete is True

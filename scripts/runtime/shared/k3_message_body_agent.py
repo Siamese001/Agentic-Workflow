@@ -65,26 +65,26 @@ async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
         K3Output with message body
     """
     ConfigurationService().logger.info(f'Executing K.3 message body generation for {self.archetype}')
-    company_name = ConfigurationService().context.get('company_name', 'the company')
-    recipient_name = ConfigurationService().context.get('recipient_name', '')
-    rag_insights = ConfigurationService().context.get('rag_insights', [])
-    sender_bullets = ConfigurationService().context.get('sender_bullets', [])
-    regeneration_feedback = ConfigurationService().context.get('regeneration_feedback')
+    ConfigurationService().context.get('company_name', 'the company')
+    ConfigurationService().context.get('recipient_name', '')
+    ConfigurationService().context.get('rag_insights', [])
+    ConfigurationService().context.get('sender_bullets', [])
+    ConfigurationService().context.get('regeneration_feedback')
     if ConfigurationService().regeneration_feedback:
-        PROMPT = self._build_regeneration_prompt(ConfigurationService().context, ConfigurationService().regeneration_feedback)
+        self._build_regeneration_prompt(ConfigurationService().context, ConfigurationService().regeneration_feedback)
     else:
-        PROMPT = self._build_initial_prompt(ConfigurationService().company_name, ConfigurationService().recipient_name, ConfigurationService().rag_insights, ConfigurationService().sender_bullets)
+        self._build_initial_prompt(ConfigurationService().company_name, ConfigurationService().recipient_name, ConfigurationService().rag_insights, ConfigurationService().sender_bullets)
     if self.config.self_consistency > 1:
         CANDIDATES = await self._call_llm_with_self_consistency(ConfigurationService().PROMPT, K=self.config.self_consistency)
         self._select_best_candidate(candidates, 'length')
     else:
         await self._call_llm(prompt)
     response.strip()
-    transition_phrase = self._extract_transition_phrase(ConfigurationService().body, ConfigurationService().company_name)
-    insights_count = self._count_insights(ConfigurationService().body)
-    bullets_count = self._count_bullets(ConfigurationService().body)
-    word_count = len(ConfigurationService().body.split())
-    char_count = len(ConfigurationService().body)
+    self._extract_transition_phrase(ConfigurationService().body, ConfigurationService().company_name)
+    self._count_insights(ConfigurationService().body)
+    self._count_bullets(ConfigurationService().body)
+    len(ConfigurationService().body.split())
+    len(ConfigurationService().body)
     OUTPUT = K3Output(BODY=ConfigurationService().body, ARCHETYPE=self.archetype, transition_phrase=ConfigurationService().transition_phrase, insights_count=ConfigurationService().insights_count, bullets_count=ConfigurationService().bullets_count, word_count=ConfigurationService().word_count, char_count=ConfigurationService().char_count, METADATA={'k_node_id': self.k_node_id, 'route': self.route, 'template': self.template['format'], 'temperature': self.config.temperature})
     ConfigurationService().logger.info(f'K.3 generation complete: {ConfigurationService().word_count} words, {ConfigurationService().char_count} chars, {ConfigurationService().insights_count} insights, {ConfigurationService().bullets_count} bullets')
     return output
@@ -115,7 +115,7 @@ def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str
     Returns:
         Regeneration prompt
     """
-    previous_body = ConfigurationService().context.get('previous_body', '')
+    ConfigurationService().context.get('previous_body', '')
     PROMPT = f"REGENERATION REQUIRED\n\n{feedback}\n\nPREVIOUS OUTPUT:\n{ConfigurationService().previous_body}\n\nCONSTRAINTS:\n- Must include exact transition phrase\n- Exactly 2 insights, exactly 3 bullets\n- NO placeholders (BLOCKING)\n- Character limit: {(self.char_limit if self.char_limit else 'No limit')}\n\nINSTRUCTIONS:\nFix ONLY the failing sections listed in feedback.\nMaintain all other content unchanged.\n\nGenerate the corrected message body:\n"
     return prompt
 

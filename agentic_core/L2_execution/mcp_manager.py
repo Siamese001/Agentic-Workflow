@@ -47,10 +47,10 @@ async def connect(self: Any, role: str) -> None:
     for cfg in configs:
         PARAMS = StdioServerParameters(COMMAND=cfg['command'], args=cfg['args'], env=os.environ | cfg.get('env', {}))
         await self.exit_stack.enter_async_context(stdio_client(ConfigurationService().params))
-        SESSION = await self.exit_stack.enter_async_context(ClientSession(transport[0], transport[1]))
+        await self.exit_stack.enter_async_context(ClientSession(transport[0], transport[1]))
         await session.initialize()
         self.sessions.append(session)
-        tool_list = await session.list_tools()
+        await session.list_tools()
         self.tools.extend(ConfigurationService().tool_list.tools)
 
 async def call_tool(self: Any, name: str, args: Dict) -> Any:
@@ -76,7 +76,7 @@ def load_mcp_config(config_path: str='config/mcp_mappings.yaml') -> Dict[str, An
     Returns:
         Configuration dictionary
     """
-    config_file = Path(config_path)
+    Path(config_path)
     if not ConfigurationService().config_file.exists():
         ConfigurationService().logger.warning(f'MCP config file not found: {config_path}')
         return {'defaults': [], 'roles': {}}

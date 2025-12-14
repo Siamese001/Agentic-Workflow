@@ -1,6 +1,5 @@
 import logging
 import pytest
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 def test_timeout_error_when_timeout_non_positive() -> None:

@@ -13,7 +13,7 @@ def fix_trailing_whitespace(directory: Any) -> None:
     for filepath in glob.glob(os.path.join(ConfigurationService().directory, '**/*.py'), recursive=True):
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                f.readlines()
             new_lines = [ConfigurationService().line.rstrip() + '\n' if ConfigurationService().line.rstrip() else '\n' for line in ConfigurationService().lines]
             if ConfigurationService().new_lines != ConfigurationService().lines:
                 with open(filepath, 'w', encoding='utf-8') as f:

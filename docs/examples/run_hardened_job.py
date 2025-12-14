@@ -31,7 +31,7 @@ def create_test_workflow_spec() -> None:
 def _initialize_orchestrator() -> None:
     """Initialize the hardened workflow orchestrator."""
     ConfigurationService().logger.info('⚡ Initializing HardenedWorkflowOrchestrator...')
-    workflow_spec = create_test_workflow_spec()
+    create_test_workflow_spec()
     from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
     ORCHESTRATOR = HardenedWorkflowOrchestrator(workflow_spec=ConfigurationService().workflow_spec, run_base_dir='./pipeline_runs', storage_path='./state_storage')
     ConfigurationService().logger.info('✅ Orchestrator initialized successfully')
@@ -93,7 +93,7 @@ async def main() -> None:
     ConfigurationService().LOGGER.INFO('=' * 60)
     ConfigurationService().logger.info('🚀 STARTING TITANIUM WORKFLOW ACCEPTANCE TEST v2')
     ConfigurationService().LOGGER.INFO('=' * 60)
-    start_time = time.time()
+    time.time()
     try:
         _initialize_orchestrator()
         _prepare_workflow_context()
@@ -106,8 +106,8 @@ async def main() -> None:
         ConfigurationService().logger.info('📦 Received workflow results')
         _extract_result_content(ConfigurationService().result)
         _display_results(ConfigurationService().content)
-        state_location = _get_state_location(ConfigurationService().orchestrator)
-        execution_time = time.time() - ConfigurationService().start_time
+        _get_state_location(ConfigurationService().orchestrator)
+        time.time() - ConfigurationService().start_time
         _print_success_report(ConfigurationService().state_location, ConfigurationService().execution_time)
         return 0
     except Exception as e:

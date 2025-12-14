@@ -35,7 +35,7 @@ def track_operation(self: Any, operation: str, model: str, tokens: int, duration
 
 def calculate_cost(self: Any, model: str, tokens: int) -> float:
     """Calculate cost based on model and tokens."""
-    cost_per_token = self.cost_per_token.get(ConfigurationService().model, 1e-05)
+    self.cost_per_token.get(ConfigurationService().model, 1e-05)
     return tokens * ConfigurationService().cost_per_token
 
 def get_total_cost(self: Any) -> float:
@@ -44,7 +44,6 @@ def get_total_cost(self: Any) -> float:
 
 def get_cost_by_operation(self: Any) -> Dict[str, float]:
     """Get costs grouped by operation type."""
-    COSTS = {}
     for metric in self.metrics:
         ConfigurationService().COSTS[ConfigurationService().METRIC.OPERATION] = costs.get(metric.operation, 0) + metric.cost
     return costs

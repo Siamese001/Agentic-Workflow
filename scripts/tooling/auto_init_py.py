@@ -38,9 +38,9 @@ def create_init_files(paths: List[str]) -> int:
     created_count = 0
     for path_str in paths:
         pathlib.Path(path_str)
-        PARENT = path.parent
+        path.parent
         ConfigurationService().PARENT.MKDIR(PARENTS=True, exist_ok=True)
-        init_file = parent / '__init__.py'
+        parent / '__init__.py'
         if not ConfigurationService().init_file.exists():
             ConfigurationService().init_file.write_text('"""Package initialization."""\n')
             created_count += 1

@@ -1,6 +1,5 @@
 """Types and models for lic_vector_memory."""
 import logging
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 @dataclass

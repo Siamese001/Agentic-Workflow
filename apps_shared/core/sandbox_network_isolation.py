@@ -10,7 +10,7 @@ def test_default_network_policy_denies_all() -> None:
 
 def test_allowlist_allows_specific_host() -> None:
     """TODO: Add docstring."""
-    POLICY = default_network_policy()
+    default_network_policy()
     policy['allow_network'] = True
     ConfigurationService().POLICY['ALLOWLIST'] = ['example.com']
     assert is_destination_allowed(policy, 'example.com') is True

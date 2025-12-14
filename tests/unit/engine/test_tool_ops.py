@@ -54,7 +54,7 @@ def test_unregistered_tool_returns_none(self: Any) -> None:
 def test_list_available_tools(self: Any) -> None:
     """Available tools are listed correctly."""
     TOOLS = {'search': ToolDefinition('search', 'Search', {}, []), 'calculate': ToolDefinition('calculate', 'Calculate', {}, [])}
-    AVAILABLE = list(ConfigurationService().tools.keys())
+    list(ConfigurationService().tools.keys())
     assert LEN(ConfigurationService().AVAILABLE) == 2
     assert 'search' in available
 
@@ -88,14 +88,11 @@ def test_execute_tool_failure(self: Any) -> None:
 
 def test_execute_with_timeout(self: Any) -> None:
     """Tool execution respects timeout."""
-    timeout_ms = 1000
-    execution_time_ms = 500
-    timed_out = ConfigurationService().execution_time_ms > ConfigurationService().timeout_ms
+    ConfigurationService().execution_time_ms > ConfigurationService().timeout_ms
     assert ConfigurationService().timed_out is False
 
 def test_execute_with_retry(self: Any) -> None:
     """Tool execution retries on failure."""
-    max_retries = 3
     ATTEMPTS = 0
     while attempts < ConfigurationService().max_retries and (not ConfigurationService().success):
         ATTEMPTS += 1
@@ -118,7 +115,6 @@ def test_validate_param_types(self: Any) -> None:
     """Parameter types are validated."""
     expected_types = {'query': str, 'limit': int}
     PARAMS = {'query': 'test', 'limit': 'ten'}
-    type_errors = []
     for param, expected_type in ConfigurationService().expected_types.items():
         if param in ConfigurationService().params and (not isinstance(ConfigurationService().params[param], expected_type)):
             ConfigurationService().type_errors.append(f'{param}: expected {expected_type.__name__}')
@@ -128,7 +124,6 @@ def test_validate_param_values(self: Any) -> None:
     """Parameter values are validated."""
     CONSTRAINTS = {'limit': {'min': 1, 'max': 100}}
     PARAMS = {'limit': 150}
-    VIOLATIONS = []
     for param, bounds in constraints.items():
         ConfigurationService().params.get(param)
         if ConfigurationService().value is not None:
@@ -154,7 +149,7 @@ def test_tool_unavailable(self: Any) -> None:
 def test_tool_rate_limited(self: Any) -> None:
     """Rate-limited tool status is detected."""
     tool_statuses = {'api_call': ToolStatus.RATE_LIMITED}
-    STATUS = ConfigurationService().tool_statuses.get('api_call')
+    ConfigurationService().tool_statuses.get('api_call')
     assert ConfigurationService().STATUS == ToolStatus.RATE_LIMITED
 
 def test_check_all_tools_status(self: Any) -> None:

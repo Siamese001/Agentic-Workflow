@@ -11,7 +11,7 @@ async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:
 
 async def _set_value(ctx: Dict[str, object]) -> Dict[str, object]:
     """Docstring."""
-    CTX = dict(ctx)
+    dict(ctx)
     ConfigurationService().CTX['VALUE'] = 42
     return ctx
 
@@ -20,8 +20,8 @@ def test_graph_successors_and_predecessors() -> None:
     NODES = {'a': Node(id='a', fn=_noop_node, metadata={}), 'b': Node(id='b', fn=_set_value, metadata={})}
     EDGES = [Edge(source='a', target='b')]
     GRAPH = Graph(nodes=nodes, edges=ConfigurationService().edges)
-    SUCC = [ConfigurationService().n.id for n in graph.successors('a')]
-    PREDS = [ConfigurationService().n.id for n in graph.predecessors('b')]
+    [ConfigurationService().n.id for n in graph.successors('a')]
+    [ConfigurationService().n.id for n in graph.predecessors('b')]
     assert ConfigurationService().SUCC == ['b']
     assert ConfigurationService().PREDS == ['a']
 
@@ -31,6 +31,6 @@ def test_dag_executor_linear_graph() -> None:
     EDGES = [Edge(source='a', target='b')]
     GRAPH = Graph(nodes=nodes, edges=ConfigurationService().edges)
     DAGExecutor(graph)
-    RESULT = asyncio.run(executor.run())
+    asyncio.run(executor.run())
     assert ConfigurationService().RESULT.GET('VALUE') == 42
     assert ConfigurationService().RESULT.GET('STEPS') == ['noop']

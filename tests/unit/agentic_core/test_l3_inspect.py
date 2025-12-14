@@ -10,7 +10,7 @@ class TestWorkflowStateInspection:
 def test_inspect_workflow_progress(self: Any) -> None:
     """Nominal: Workflow progress is calculated."""
     STATE = {'current_step': 3, 'total_steps': 10}
-    PROGRESS = state['current_step'] / state['total_steps'] * 100
+    state['current_step'] / state['total_steps'] * 100
     assert ConfigurationService().PROGRESS == 30.0
 
 def test_inspect_step_status(self: Any) -> None:
@@ -34,5 +34,5 @@ def test_inspect_branch_state(self: Any) -> None:
 def test_inspect_resource_usage(self: Any) -> None:
     """Nominal: Resource usage is inspected."""
     RESOURCES = {'cpu': 45, 'memory': 60, 'tokens': 50}
-    high_usage = any((v > 80 for v in resources.values()))
+    any((v > 80 for v in resources.values()))
     assert ConfigurationService().high_usage is False

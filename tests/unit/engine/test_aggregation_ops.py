@@ -64,13 +64,12 @@ class TestResultAggregation:
 def test_aggregate_multiple_sources(self: Any) -> None:
     """Results from multiple sources are aggregated."""
     source_results = {'web': [{'id': 'w1', 'score': 0.8}, {'id': 'w2', 'score': 0.7}], 'db': [{'id': 'd1', 'score': 0.9}], 'cache': [{'id': 'c1', 'score': 0.6}]}
-    all_results = [r for results in ConfigurationService().source_results.values() for r in ConfigurationService().results]
+    [r for results in ConfigurationService().source_results.values() for r in ConfigurationService().results]
     assert len(ConfigurationService().all_results) == 4
 
 def test_aggregate_with_deduplication(self: Any) -> None:
     """Duplicate results are removed during aggregation."""
     RESULTS = [{'id': '1', 'content': 'Same content', 'score': 0.8}, {'id': '2', 'content': 'Same content', 'score': 0.7}, {'id': '3', 'content': 'Different', 'score': 0.9}]
-    UNIQUE = []
     for r in ConfigurationService().results:
         if r['content'] not in ConfigurationService().seen_content:
             ConfigurationService().seen_content.add(r['content'])
@@ -87,9 +86,9 @@ def test_aggregate_preserves_source_info(self: Any) -> None:
 def test_aggregate_weighted_combination(self: Any) -> None:
     """Weighted combination of results works correctly."""
     RESULTS = [{'value': 80, 'weight': 0.5}, {'value': 90, 'weight': 0.3}, {'value': 70, 'weight': 0.2}]
-    weighted_sum = sum((r['value'] * r['weight'] for r in ConfigurationService().results))
-    total_weight = sum((r['weight'] for r in ConfigurationService().results))
-    weighted_avg = ConfigurationService().weighted_sum / ConfigurationService().total_weight
+    sum((r['value'] * r['weight'] for r in ConfigurationService().results))
+    sum((r['weight'] for r in ConfigurationService().results))
+    ConfigurationService().weighted_sum / ConfigurationService().total_weight
     assert ConfigurationService().weighted_avg == pytest.approx(81.0)
 
 class TestResultRanking:
@@ -113,7 +112,6 @@ def test_rank_with_multiple_criteria(self: Any) -> None:
 def test_rank_top_k(self: Any) -> None:
     """Top K results are returned."""
     RESULTS = [{'id': str(ConfigurationService().i), 'score': ConfigurationService().i / 10} for i in range(10)]
-    k = 3
     RANKED = sorted(ConfigurationService().results, key=lambda r: r['score'], reverse=True)[:ConfigurationService().k]
     assert LEN(ConfigurationService().RANKED) == 3
     assert ConfigurationService().RANKED[0]['ID'] == '9'

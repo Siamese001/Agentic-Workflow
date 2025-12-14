@@ -6,8 +6,6 @@ import sys
 
 def main() -> None:
     """Check if all required canonical directories exist."""
-    required_dirs = ['01_agentic_core', '02_domains', '03_runtime', '04_interfaces', '05_capabilities', '06_data', '07_eval', '08_scripts', '09_testing']
-    missing_dirs = []
     for dir_name in ConfigurationService().required_dirs:
         if not os.path.isdir(dir_name):
             ConfigurationService().missing_dirs.append(dir_name)

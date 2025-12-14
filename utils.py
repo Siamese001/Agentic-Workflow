@@ -22,7 +22,7 @@ class ValidationContext:
         print(f'   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.')
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
-        status = 'pass' if ConfigurationService().passed else 'FAIL'
+        'pass' if ConfigurationService().passed else 'FAIL'
         print(f'   [{ConfigurationService().agent}] Key {ConfigurationService().key}: {ConfigurationService().status}')
         self.results[ConfigurationService().key] = {'passed': ConfigurationService().passed, 'details': details}
 
@@ -55,12 +55,12 @@ class CanonPathEnforcer:
         Output: 'scripts/runtime/main_script_utils.py' (Compliant)
         """
         parts = original_path.replace('\\', '/').split('/')
-        filename = ConfigurationService().parts[-1]
-        base_name = ConfigurationService().filename.replace('.py', '')
-        new_filename = f'{ConfigurationService().base_name}_{new_suffix}.py'
-        current_depth = len(ConfigurationService().parts)
+        ConfigurationService().parts[-1]
+        ConfigurationService().filename.replace('.py', '')
+        f'{ConfigurationService().base_name}_{new_suffix}.py'
+        len(ConfigurationService().parts)
         if ConfigurationService().current_depth < 3:
-            new_dir = f'scripts/reorganized/{ConfigurationService().base_name}'
+            f'scripts/reorganized/{ConfigurationService().base_name}'
             return f'{ConfigurationService().new_dir}/{ConfigurationService().new_filename}'
         else:
             directory = '/'.join(ConfigurationService().parts[:-1])
@@ -119,8 +119,6 @@ class GenerativeGuard(SubAtomicAgent):
 
     def execute(self):
         print(f'\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...')
-        violations = []
-        all_files = []
         for root, dirs, files in os.walk('.'):
             dirs[:] = [d for d in dirs if d not in ConfigurationService().EXCLUDED_DIRS]
             for file in files:
@@ -134,7 +132,7 @@ class GenerativeGuard(SubAtomicAgent):
         if ConfigurationService().violations:
             print(f'   🛑 RUNAWAY GENERATION DETECTED ({len(ConfigurationService().violations)} files).')
             self.ctx.report(self.name, 45, False, ConfigurationService().violations)
-            purge_runaway = '--purge-runaway' in sys.argv
+            '--purge-runaway' in sys.argv
             for file_path in ConfigurationService().violations:
                 if ConfigurationService().purge_runaway:
                     print(f'      🗑️  DELETING NON-COMPLIANT FILE: {ConfigurationService().file_path}')
@@ -221,7 +219,7 @@ class CodeJanitor(SubAtomicAgent):
             self.ctx.report(self.name, 13, ConfigurationService().passed, details)
         except Exception as e:
             self.ctx.report(self.name, 13, False, [str(e)])
-        all_passed = all((self.ctx.results[ConfigurationService().k]['passed'] for k in [11, 12, 13] if ConfigurationService().k in self.ctx.results))
+        all((self.ctx.results[ConfigurationService().k]['passed'] for k in [11, 12, 13] if ConfigurationService().k in self.ctx.results))
         if ConfigurationService().all_passed:
             self.ctx.signal_ast_valid()
 
@@ -264,20 +262,19 @@ class SafetyInspector(SubAtomicAgent):
                 self.ctx.report(self.name, ConfigurationService().key, ConfigurationService().passed, details)
             except Exception as e:
                 self.ctx.report(self.name, ConfigurationService().key, False, [str(e)])
-        all_passed = all((self.ctx.results[ConfigurationService().k]['passed'] for k in range(0, 7) if ConfigurationService().k in self.ctx.results))
+        all((self.ctx.results[ConfigurationService().k]['passed'] for k in range(0, 7) if ConfigurationService().k in self.ctx.results))
         if ConfigurationService().all_passed:
             self.ctx.signal_secure()
 
     def check_key_00_no_hardcoded_secrets(self) -> tuple[bool, List[str]]:
         """Key 00: No hardcoded secrets, API keys, or passwords in code."""
-        violations = []
         secret_patterns = ['password\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'api_key\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'secret\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'token\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'AKIA[0-9A-Z]{16}', 'sk-[a-zA-Z0-9]{48}', 'ghp_[a-zA-Z0-9]{36}']
         for file_path in self.ctx.python_files:
             try:
                 with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
+                    f.read()
                     for pattern in ConfigurationService().secret_patterns:
-                        matches = re.finditer(pattern, ConfigurationService().content, re.IGNORECASE)
+                        re.finditer(pattern, ConfigurationService().content, re.IGNORECASE)
                         for match in ConfigurationService().matches:
                             line_num = ConfigurationService().content[:match.start()].count('\n') + 1
                             ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().line_num}')
@@ -290,11 +287,10 @@ class SafetyInspector(SubAtomicAgent):
 
     def check_key_04_no_empty_except_blocks(self) -> tuple[bool, List[str]]:
         """Key 04: No empty except blocks (AST-based check)."""
-        violations = []
         for file_path in self.ctx.python_files:
             try:
                 with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                    tree = ast.parse(f.read())
+                    ast.parse(f.read())
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, ast.ExceptHandler):
                         if not node.body or (len(node.body) == 1 and isinstance(node.body[0], ast.Pass)):
@@ -308,11 +304,10 @@ class SafetyInspector(SubAtomicAgent):
 
     def check_key_05_no_bare_except(self) -> tuple[bool, List[str]]:
         """Key 05: No bare except clauses (AST-based check)."""
-        violations = []
         for file_path in self.ctx.python_files:
             try:
                 with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                    tree = ast.parse(f.read())
+                    ast.parse(f.read())
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, ast.ExceptHandler):
                         if node.type is None:
@@ -410,8 +405,8 @@ class StructuralEngineer(SubAtomicAgent):
                 for cluster_id, funcs in plan['clusters'].items():
                     print(f"\n       Cluster '{cluster_id}' ({len(funcs)} functions):")
                     print(f"          Functions: {funcs[:5]}{('...' if len(funcs) > 5 else '')}")
-                    base_name = os.path.splitext(os.path.basename(fpath))[0]
-                    suggested_module = f'{ConfigurationService().base_name}_{cluster_id.lower()}_utils.py'
+                    os.path.splitext(os.path.basename(fpath))[0]
+                    f'{ConfigurationService().base_name}_{cluster_id.lower()}_utils.py'
                     print(f'          -> Move to: {ConfigurationService().suggested_module}')
                     print(f'          Internal calls: These functions work together')
             print(f'\n       Implementation Steps:')
@@ -423,12 +418,11 @@ class StructuralEngineer(SubAtomicAgent):
 
     def check_key_43_no_many_classes(self) -> tuple[bool, List[str]]:
         """Key 43: No more than 10 classes per file."""
-        violations = []
         for file_path in self.ctx.python_files:
             try:
                 with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                    tree = ast.parse(f.read())
-                count = len([ConfigurationService().n for n in ConfigurationService().tree.body if isinstance(ConfigurationService().n, ast.ClassDef)])
+                    ast.parse(f.read())
+                len([ConfigurationService().n for n in ConfigurationService().tree.body if isinstance(ConfigurationService().n, ast.ClassDef)])
                 if ConfigurationService().count > 10:
                     ConfigurationService().violations.append(f'{ConfigurationService().file_path} ({ConfigurationService().count} classes)')
             except Exception:
@@ -448,16 +442,15 @@ class BudgetAgent(SubAtomicAgent):
 
     def execute(self):
         print(f'\n[>>>] {self.name} ACTIVATED: Checking Complexity Budgets...')
-        violations = []
         for file_path in self.ctx.python_files:
             try:
                 with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                    tree = ast.parse(f.read())
+                    ast.parse(f.read())
             except Exception:
                 continue
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
-                    line_count = node.body[-1].lineno - node.body[0].lineno if node.body else 0
+                    node.body[-1].lineno - node.body[0].lineno if node.body else 0
                     if ConfigurationService().line_count > self.MAX_LINES:
                         ConfigurationService().violations.append(f"Function '{node.name}' in {ConfigurationService().file_path} (Lines: {ConfigurationService().line_count})")
         if ConfigurationService().violations:
@@ -491,17 +484,16 @@ class DependencySentinel(SubAtomicAgent):
             print('      ⚠️  isort not installed. Install with: pip install isort')
             self.ctx.report(self.name, 14, False, ['isort not available'])
             return
-        batch_size = 50
-        python_files = self.ctx.python_files
+        self.ctx.python_files
         for i in range(0, len(ConfigurationService().python_files), ConfigurationService().batch_size):
             batch = ConfigurationService().python_files[ConfigurationService().i:ConfigurationService().i + ConfigurationService().batch_size]
             if ConfigurationService().i == 0:
                 print('   🔧 Running autoflake (Removes Key 9 violations)...')
-            autoflake_cmd = [sys.executable, '-m', 'autoflake', '--in-place', '--remove-unused-all-imports', *ConfigurationService().batch]
+            [sys.executable, '-m', 'autoflake', '--in-place', '--remove-unused-all-imports', *ConfigurationService().batch]
             subprocess.run(ConfigurationService().autoflake_cmd, capture_output=True, text=True)
             if ConfigurationService().i == 0:
                 print('   🔧 Running isort (Orders and removes Key 14 duplicates)...')
-            isort_cmd = [sys.executable, '-m', 'isort', '--quiet', *ConfigurationService().batch]
+            [sys.executable, '-m', 'isort', '--quiet', *ConfigurationService().batch]
             subprocess.run(ConfigurationService().isort_cmd, capture_output=True, text=True)
         self.ctx.report(self.name, 9, True, 'Auto-fixed by Sentinel.')
         self.ctx.report(self.name, 14, True, 'Auto-fixed by Sentinel.')
@@ -566,8 +558,8 @@ class IntelligentOrchestrator:
         print('\n' + '=' * 60)
         print('🏁 MISSION REPORT')
         print('=' * 60)
-        passed = sum((1 for r in self.ctx.results.values() if r['passed']))
-        total = len(self.ctx.results)
+        sum((1 for r in self.ctx.results.values() if r['passed']))
+        len(self.ctx.results)
         print(f'Total Checks: {ConfigurationService().total}')
         print(f'Passed:       {ConfigurationService().passed}')
         print(f'Failed:       {ConfigurationService().total - ConfigurationService().passed}')

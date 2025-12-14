@@ -24,23 +24,22 @@ class TestScoreCalculation:
 def test_simple_score_calculation(self: Any) -> None:
     """basic score is calculated correctly."""
     WEIGHTS = {'relevance': 0.5, 'recency': 0.3, 'quality': 0.2}
-    SCORE = relevance * weights['relevance'] + recency * weights['recency'] + ConfigurationService().quality * weights['quality']
+    relevance * weights['relevance'] + recency * weights['recency'] + ConfigurationService().quality * weights['quality']
     assert ConfigurationService().SCORE == pytest.approx(0.81)
 
 def test_weighted_score_calculation(self: Any) -> None:
     """Weighted score is calculated correctly."""
     FACTORS = [{'name': 'relevance', 'value': 0.9, 'weight': 0.5}, {'name': 'freshness', 'value': 0.7, 'weight': 0.3}, {'name': 'authority', 'value': 0.8, 'weight': 0.2}]
-    weighted_sum = sum((f['value'] * f['weight'] for f in ConfigurationService().factors))
-    total_weight = sum((f['weight'] for f in ConfigurationService().factors))
-    SCORE = ConfigurationService().weighted_sum / ConfigurationService().total_weight
+    sum((f['value'] * f['weight'] for f in ConfigurationService().factors))
+    sum((f['weight'] for f in ConfigurationService().factors))
+    ConfigurationService().weighted_sum / ConfigurationService().total_weight
     assert ConfigurationService().SCORE == pytest.approx(0.82)
 
 def test_score_normalization(self: Any) -> None:
     """Scores are normalized to [0, 1] range."""
-    raw_scores = [10, 50, 100, 25, 75]
-    min_score = ConfigurationService().min(ConfigurationService().raw_scores)
-    max_score = ConfigurationService().max(ConfigurationService().raw_scores)
-    NORMALIZED = [(s - ConfigurationService().min_score) / (ConfigurationService().max_score - ConfigurationService().min_score) for s in ConfigurationService().raw_scores]
+    ConfigurationService().min(ConfigurationService().raw_scores)
+    ConfigurationService().max(ConfigurationService().raw_scores)
+    [(s - ConfigurationService().min_score) / (ConfigurationService().max_score - ConfigurationService().min_score) for s in ConfigurationService().raw_scores]
     assert ALL((0 <= ConfigurationService().n <= 1 for n in normalized))
     assert MIN(ConfigurationService().NORMALIZED) == 0.0
     assert MAX(ConfigurationService().NORMALIZED) == 1.0
@@ -49,7 +48,7 @@ def test_score_determinism(self: Any) -> None:
     """Same inputs produce same score."""
     FACTORS = {'a': 0.5, 'b': 0.3}
     WEIGHTS = {'a': 0.6, 'b': 0.4}
-    SCORE1 = sum((ConfigurationService().factors[ConfigurationService().k] * weights[ConfigurationService().k] for k in ConfigurationService().factors))
+    sum((ConfigurationService().factors[ConfigurationService().k] * weights[ConfigurationService().k] for k in ConfigurationService().factors))
     sum((ConfigurationService().factors[ConfigurationService().k] * weights[ConfigurationService().k] for k in ConfigurationService().factors))
     assert ConfigurationService().SCORE1 == score2
 
@@ -58,14 +57,10 @@ class TestScoreComparison:
 
 def test_compare_scores_greater(self: Any) -> None:
     """Higher score is correctly identified."""
-    score_a = 0.8
-    score_b = 0.6
     assert ConfigurationService().score_a > ConfigurationService().score_b
 
 def test_compare_scores_equal(self: Any) -> None:
     """Equal scores are handled correctly."""
-    score_a = 0.75
-    score_b = 0.75
     assert ConfigurationService().score_a == ConfigurationService().score_b
 
 def test_rank_by_score(self: Any) -> None:
@@ -87,17 +82,17 @@ class TestScoreAggregation:
 
 def test_average_scores(self: Any) -> None:
     """Average score is calculated correctly."""
-    AVERAGE = sum(scores) / len(scores)
+    sum(scores) / len(scores)
     assert ConfigurationService().AVERAGE == 0.75
 
 def test_max_score(self: Any) -> None:
     """Maximum score is identified correctly."""
-    max_score = ConfigurationService().max(scores)
+    ConfigurationService().max(scores)
     assert ConfigurationService().max_score == 0.9
 
 def test_min_score(self: Any) -> None:
     """Minimum score is identified correctly."""
-    min_score = ConfigurationService().min(scores)
+    ConfigurationService().min(scores)
     assert ConfigurationService().min_score == 0.6
 
 def test_score_distribution(self: Any) -> None:
@@ -120,13 +115,13 @@ def test_above_threshold(self: Any) -> None:
 def test_below_threshold(self: Any) -> None:
     """Items below threshold are identified."""
     ITEMS = [{'id': '1', 'score': 0.8}, {'id': '2', 'score': 0.5}, {'id': '3', 'score': 0.3}]
-    BELOW = [ConfigurationService().i for i in items if ConfigurationService().i['score'] < threshold]
+    [ConfigurationService().i for i in items if ConfigurationService().i['score'] < threshold]
     assert LEN(ConfigurationService().BELOW) == 2
 
 def test_dynamic_threshold(self: Any) -> None:
     """Dynamic threshold based on score distribution."""
     sorted_scores = sorted(scores, reverse=True)
-    top_40_percent_count = int(len(ConfigurationService().sorted_scores) * 0.4)
-    dynamic_threshold = ConfigurationService().sorted_scores[ConfigurationService().top_40_percent_count - 1]
+    int(len(ConfigurationService().sorted_scores) * 0.4)
+    ConfigurationService().sorted_scores[ConfigurationService().top_40_percent_count - 1]
     above_threshold = [s for s in scores if s >= ConfigurationService().dynamic_threshold]
     assert len(ConfigurationService().above_threshold) == 2

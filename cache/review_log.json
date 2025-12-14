@@ -262,5 +262,85 @@
     "details": "['.\\\\canon_validator_legacy_backup.py:1051 check_key_04_no_empty_except_blocks() (complexity: 11)', '.\\\\canon_validator_legacy_backup.py:1182 check_key_09_no_unused_imports() (complexity: 14)', '.\\\\ca",
     "reviewed": false,
     "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:32.937271",
+    "agent": "SecurityEnforcer",
+    "key": 3,
+    "details": "['.\\\\canon_validator_legacy_backup.py']",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:33.576762",
+    "agent": "SecurityEnforcer",
+    "key": 5,
+    "details": "['.\\\\services.py', '.\\\\tests\\\\test_lead_agent.py']",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:34.543519",
+    "agent": "CodeQualityAuditor",
+    "key": 2,
+    "details": "['.\\\\canon_validator_legacy_backup.py:102', '.\\\\services.py:11', '.\\\\services.py:25', '.\\\\services.py:29', '.\\\\services.py:57', '.\\\\services.py:60', '.\\\\services.py:61', '.\\\\services.py:63', '.\\\\servi",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:35.174171",
+    "agent": "CodeQualityAuditor",
+    "key": 4,
+    "details": "['.\\\\scripts\\\\final_canon_push.py', '.\\\\scripts\\\\find_long_lines.py', '.\\\\scripts\\\\runtime\\\\shared\\\\mcp_tools.py', '.\\\\tests\\\\test_lead_agent.py']",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:35.362200",
+    "agent": "WhitespaceMechanic",
+    "key": 11,
+    "details": "['.\\\\services\\\\configuration.py:8', '.\\\\services\\\\configuration.py:11', '.\\\\services\\\\configuration.py:16', '.\\\\services\\\\configuration.py:1125', '.\\\\tests\\\\test_lead_agent.py:30', '.\\\\tests\\\\test_lea",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:35.623084",
+    "agent": "WhitespaceMechanic",
+    "key": 11,
+    "details": "['.\\\\services\\\\configuration.py:8', '.\\\\services\\\\configuration.py:11', '.\\\\services\\\\configuration.py:16', '.\\\\services\\\\configuration.py:1125', '.\\\\tests\\\\test_lead_agent.py:30', '.\\\\tests\\\\test_lea",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:35.767663",
+    "agent": "WhitespaceMechanic",
+    "key": 12,
+    "details": "['.\\\\canon_validator_legacy_backup.py', '.\\\\services.py', '.\\\\utils.py', '.\\\\16_runtime_runtime\\\\core\\\\cost_governor.py', '.\\\\16_runtime_runtime\\\\core\\\\subatomic_hop.py', '.\\\\16_runtime_runtime\\\\core\\",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:36.141035",
+    "agent": "StructuralLinter",
+    "key": 10,
+    "details": "['.\\\\canon_validator_legacy_backup.py:2 (287 chars)', '.\\\\canon_validator_legacy_backup.py:20 (161 chars)', '.\\\\canon_validator_legacy_backup.py:27 (181 chars)', '.\\\\canon_validator_legacy_backup.py:7",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:36.886166",
+    "agent": "StructuralLinter",
+    "key": 16,
+    "details": "['.\\\\canon_validator_legacy_backup.py:77 (nesting level: 5)', '.\\\\services.py:41 (nesting level: 5)', '.\\\\services.py:41 (nesting level: 5)', '.\\\\utils.py:256 (nesting level: 5)', '.\\\\utils.py:256 (ne",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:43:38.529362",
+    "agent": "ConstantMechanic",
+    "key": 15,
+    "details": "['.\\\\services.py:21 (magic number: 17)', '.\\\\services.py:28 (magic number: 3)', '.\\\\services.py:17 (magic number: 300)', '.\\\\services.py:21 (magic number: 17)', '.\\\\apps_lic\\\\L1_cognition\\\\P2_inspect\\",
+    "reviewed": false,
+    "is_false_positive": null
   }
 ]

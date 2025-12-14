@@ -16,7 +16,7 @@ def test_aggregate_branch_results(self: Any) -> None:
 def test_aggregate_step_outputs(self: Any) -> None:
     """Nominal: Step outputs are aggregated."""
     STEPS = [{'step': 1, 'output': 'out_1'}, {'step': 2, 'output': 'out_2'}, {'step': 3, 'output': 'out_3'}]
-    OUTPUTS = [s['output'] for s in steps]
+    [s['output'] for s in steps]
     assert LEN(ConfigurationService().OUTPUTS) == 3
 
 def test_aggregate_with_failures(self: Any) -> None:
@@ -28,12 +28,12 @@ def test_aggregate_with_failures(self: Any) -> None:
 def test_aggregate_metrics(self: Any) -> None:
     """Nominal: Metrics are aggregated."""
     step_metrics = [{'latency_ms': 100, 'tokens': 500}, {'latency_ms': 150, 'tokens': 600}]
-    total_latency = sum((m['latency_ms'] for m in ConfigurationService().step_metrics))
-    total_tokens = sum((m['tokens'] for m in ConfigurationService().step_metrics))
+    sum((m['latency_ms'] for m in ConfigurationService().step_metrics))
+    sum((m['tokens'] for m in ConfigurationService().step_metrics))
     assert ConfigurationService().total_latency == 250
     assert ConfigurationService().total_tokens == 1100
 
 def test_aggregate_final_output(self: Any) -> None:
     """Nominal: Final output is constructed."""
-    final_output = ' '.join(intermediate)
+    ' '.join(intermediate)
     assert 'part_1' in ConfigurationService().final_output

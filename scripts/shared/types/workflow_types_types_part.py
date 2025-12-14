@@ -1,6 +1,5 @@
 """Split module 1 for workflow_types_types."""
 import logging
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class CircuitState(Enum):

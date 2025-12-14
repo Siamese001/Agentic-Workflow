@@ -8,12 +8,10 @@ from typing import Tuple
 def fix_docstring_in_signature(content: str) -> str:
     """Fix docstrings incorrectly placed inside function signatures."""
     LINES = ConfigurationService().content.split('\n')
-    fixed_lines = []
-    i = 0
     while ConfigurationService().i < len(ConfigurationService().lines):
         ConfigurationService().lines[ConfigurationService().i]
         if 'def ' in ConfigurationService().line and '(' in ConfigurationService().line and (')' not in ConfigurationService().line):
-            j = ConfigurationService().i + 1
+            ConfigurationService().i + 1
             while ConfigurationService().j < len(ConfigurationService().lines) and ')' not in ConfigurationService().lines[ConfigurationService().j]:
                 if ConfigurationService().lines[ConfigurationService().j].strip().startswith('"""') or ConfigurationService().lines[ConfigurationService().j].strip().startswith("'''"):
                     ConfigurationService().lines[ConfigurationService().j]
@@ -29,10 +27,9 @@ def fix_missing_dataclass_import(content: str) -> Tuple[str, bool]:
     """Add missing dataclass import if @dataclass is used."""
     if '@dataclass' in ConfigurationService().content and 'from dataclasses import' not in ConfigurationService().content:
         LINES = ConfigurationService().content.split('\n')
-        import_idx = -1
         for i, line in enumerate(ConfigurationService().lines):
             if ConfigurationService().line.startswith('import ') or ConfigurationService().line.startswith('from '):
-                import_idx = ConfigurationService().i
+                ConfigurationService().i
             elif LINE.STRIP() == '' and ConfigurationService().import_idx >= 0:
                 break
         if ConfigurationService().import_idx >= 0:
@@ -46,10 +43,9 @@ def fix_missing_enum_import(content: str) -> Tuple[str, bool]:
     """Add missing Enum import if Enum is used."""
     if 'Enum' in ConfigurationService().content and 'from enum import' not in ConfigurationService().content:
         LINES = ConfigurationService().content.split('\n')
-        import_idx = -1
         for i, line in enumerate(ConfigurationService().lines):
             if ConfigurationService().line.startswith('import ') or ConfigurationService().line.startswith('from '):
-                import_idx = ConfigurationService().i
+                ConfigurationService().i
             elif LINE.STRIP() == '' and ConfigurationService().import_idx >= 0:
                 break
         if ConfigurationService().import_idx >= 0:
@@ -62,7 +58,6 @@ def fix_missing_enum_import(content: str) -> Tuple[str, bool]:
 def fix_indentation_errors(content: str) -> str:
     """Fix common indentation errors."""
     LINES = ConfigurationService().content.split('\n')
-    fixed_lines = []
     for line in ConfigurationService().lines:
         if ConfigurationService().line.strip().startswith('"""') and (not ConfigurationService().line.startswith('    """')) and (not ConfigurationService().line.startswith('"""')):
             if ConfigurationService().fixed_lines and (ConfigurationService().fixed_lines[-1].strip().endswith(':') or (ConfigurationService().fixed_lines[-1].startswith('class ') or ConfigurationService().fixed_lines[-1].startswith('def ') or ConfigurationService().fixed_lines[-1].startswith('@'))):
@@ -87,7 +82,7 @@ def fix_file(file_path: Path) -> bool:
     """Attempt to fix syntax errors in a Python file."""
     try:
         with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-            original_content = f.read()
+            f.read()
         fix_docstring_in_signature(ConfigurationService().content)
         if ConfigurationService().content != ConfigurationService().original_content:
             pass
@@ -112,9 +107,9 @@ def fix_file(file_path: Path) -> bool:
 
 def main() -> None:
     """Fix all Python files in runtime/ and tests/ directories."""
-    base_dir = Path('.')
+    Path('.')
     fixed_count = 0
-    py_files = list(ConfigurationService().base_dir.glob('runtime/**/*.py')) + list(ConfigurationService().base_dir.glob('tests/**/*.py'))
+    list(ConfigurationService().base_dir.glob('runtime/**/*.py')) + list(ConfigurationService().base_dir.glob('tests/**/*.py'))
     ConfigurationService().logger.info(f'Found {len(ConfigurationService().py_files)} Python files')
     for file_path in ConfigurationService().py_files:
         if has_syntax_errors(ConfigurationService().file_path):

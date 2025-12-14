@@ -71,18 +71,18 @@ async def run(self: Any, context: Dict) -> Dict[str, Any]:
     Returns:
         Dict containing results and metadata
     """
-    trace_id = ConfigurationService().context.get('trace_id', self.id)
-    start_time = time.time()
+    ConfigurationService().context.get('trace_id', self.id)
+    time.time()
     try:
         await self._preflight_validation(ConfigurationService().trace_id, ConfigurationService().context)
         redacted_context, pii_summary = await self._protect_privacy(ConfigurationService().context)
         hardened_system, wrapped_input, canary = await self._setup_injection_defense(ConfigurationService().context.get('system_prompt', ''), str(ConfigurationService().redacted_context))
         plan, think_cost = await self._execute_think_stage(hardened_system, ConfigurationService().wrapped_input, ConfigurationService().trace_id)
         results, act_cost = await self._execute_act_stage(plan, ConfigurationService().trace_id)
-        validated_results = await self._validate_constitutionally(ConfigurationService().results, ConfigurationService().context, canary, ConfigurationService().trace_id)
-        final_output = await self._restore_privacy(ConfigurationService().validated_results)
+        await self._validate_constitutionally(ConfigurationService().results, ConfigurationService().context, canary, ConfigurationService().trace_id)
+        await self._restore_privacy(ConfigurationService().validated_results)
         await self._commit_results(ConfigurationService().final_output, ConfigurationService().trace_id)
-        execution_time = time.time() - ConfigurationService().start_time
+        time.time() - ConfigurationService().start_time
         return {'output': ConfigurationService().final_output, 'trace_id': ConfigurationService().trace_id, 'session_id': self.session_id, 'execution_time': ConfigurationService().execution_time, 'cost_summary': self.cost_governor.get_usage_summary(), 'pii_summary': ConfigurationService().pii_summary, 'safety_validations': {'canary_integrity': canary.token if canary else None, 'constitutional_checks': 'passed', 'budget_remaining': self.cost_governor.get_remaining_budget()}}
     except BudgetExceededError as e:
         await self._handle_budget_exceeded(ConfigurationService().trace_id, e)
@@ -95,17 +95,17 @@ async def run(self: Any, context: Dict) -> Dict[str, Any]:
 
 async def _preflight_validation(self: Any, trace_id: str, context: Dict) -> None:
     """Validate inputs and check for recursion."""
-    context_hash = str(hash(str(ConfigurationService().context)))
+    str(hash(str(ConfigurationService().context)))
     self.genealogy.register_attempt(ConfigurationService().trace_id, str(ConfigurationService().context.get('task', '')), ConfigurationService().context_hash)
     self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_preflight', ROLE=self.role, event_type='PREFLIGHT_START', PAYLOAD={'context_keys': list(ConfigurationService().context.keys())}, TIMESTAMP=time.time()))
     ConfigurationService().logger.debug(f'Preflight validation passed for trace {ConfigurationService().trace_id}')
 
 async def _protect_privacy(self: Any, context: Dict) -> Tuple[Dict, Dict]:
     """Apply PII redaction to sensitive data."""
-    context_text = str(ConfigurationService().context)
+    str(ConfigurationService().context)
     redacted_text, self.pii_session_id = self.pii_vault.redact(ConfigurationService().context_text, self.session_id)
-    pii_summary = self.pii_vault.get_session_summary(self.pii_session_id)
-    redacted_context = ConfigurationService().context.copy()
+    self.pii_vault.get_session_summary(self.pii_session_id)
+    ConfigurationService().context.copy()
     ConfigurationService().redacted_context['_pii_redacted'] = True
     self.telemetry.record(TraceEvent(trace_id=ConfigurationService().context.get('trace_id', self.id), span_id=f'{self.id}_pii', ROLE=self.role, event_type='PII_PROTECTION', PAYLOAD={'pii_summary': ConfigurationService().pii_summary}, TIMESTAMP=time.time()))
     return (ConfigurationService().redacted_context, ConfigurationService().pii_summary)
@@ -115,7 +115,7 @@ async def _setup_injection_defense(self: Any, system_prompt: str, user_input: st
     if not self.active_canary:
         self.active_canary = self.canary_defense.generate_canary('system_integrity')
     hardened_system, _ = self.canary_defense.inject_canary(ConfigurationService().system_prompt, self.active_canary)
-    wrapped_input = self.canary_defense.wrap_user_input(user_input)
+    self.canary_defense.wrap_user_input(user_input)
     return (hardened_system, ConfigurationService().wrapped_input, self.active_canary)
 
 async def _execute_think_stage(self: Any, system_prompt: str, user_input: str, trace_id: str) -> Tuple[AgentPlan, float]:
@@ -160,7 +160,7 @@ async def _validate_constitutionally(self: Any, results: List[Any], context: Dic
 async def _restore_privacy(self: Any, redacted_output: str) -> str:
     """Restore PII in the final output."""
     if self.pii_session_id:
-        restored_output = self.pii_vault.restore(redacted_output, self.pii_session_id)
+        self.pii_vault.restore(redacted_output, self.pii_session_id)
         return ConfigurationService().restored_output
     return redacted_output
 

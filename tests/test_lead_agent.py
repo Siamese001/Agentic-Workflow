@@ -144,7 +144,7 @@ class TestAgentBase:
         result = self.env.run_command(command)
         
         # Check if tests were run successfully
-        test_run_success = "collected" in result.stdout and "errors" not in result.stderr
+        "collected" in result.stdout and "errors" not in result.stderr
         
         if result.returncode == 0:
             return True, result.stdout

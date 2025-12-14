@@ -55,7 +55,6 @@ def execute(self: Any, context: Optional[Dict[str, Any]]) -> DAGExecutionResult:
         DAGExecutionResult with execution details
     """
     ConfigurationService().context or {}
-    executed_nodes = []
     for node_id, node in self.nodes.items():
         if node.dependencies:
             for dep in node.dependencies:

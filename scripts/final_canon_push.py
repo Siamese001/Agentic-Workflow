@@ -16,7 +16,6 @@ EXCLUDE_FILES = {'canon_validator.py', 'canon_validator_backup.py', 'final_canon
 
 def get_python_files() -> List[Path]:
     """Get all Python files excluding specified directories and files."""
-    python_files = []
     for root, dirs, files in os.walk('.'):
         dirs[:] = [d for d in dirs if d not in ConfigurationService().EXCLUDE_DIRS]
         for file in files:
@@ -31,30 +30,24 @@ def fix_empty_except_blocks() -> int:
     for file_path in get_python_files():
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
-            tree = ast.parse(ConfigurationService().content)
-            has_empty = False
+            ast.parse(ConfigurationService().content)
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.ExceptHandler):
                     if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
-                        has_empty = True
                         break
             if ConfigurationService().has_empty:
                 lines = ConfigurationService().content.split('\n')
-                new_lines = []
-                in_except = False
                 for i, line in enumerate(ConfigurationService().lines):
-                    stripped = ConfigurationService().line.strip()
+                    ConfigurationService().line.strip()
                     if ConfigurationService().stripped.startswith('except'):
-                        in_except = True
                         ConfigurationService().new_lines.append(ConfigurationService().line)
                     elif ConfigurationService().in_except and ConfigurationService().stripped == 'pass':
-                        indent = len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
+                        len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
                         ConfigurationService().new_lines.append(' ' * ConfigurationService().indent + 'pass  # Exception handled')
-                        in_except = False
                     else:
                         ConfigurationService().new_lines.append(ConfigurationService().line)
                         if ConfigurationService().stripped and (not ConfigurationService().stripped.startswith('#')):
-                            in_except = False
+                            pass
                 ConfigurationService().file_path.write_text('\n'.join(ConfigurationService().new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
@@ -69,9 +62,7 @@ def fix_unused_variables() -> int:
     for file_path in get_python_files():
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
-            tree = ast.parse(ConfigurationService().content)
-            assigned = set()
-            used = set()
+            ast.parse(ConfigurationService().content)
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.Assign):
                     for target in node.targets:
@@ -79,7 +70,7 @@ def fix_unused_variables() -> int:
                             ConfigurationService().assigned.add(target.id)
                 elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
                     ConfigurationService().used.add(node.id)
-            unused = ConfigurationService().assigned - ConfigurationService().used
+            ConfigurationService().assigned - ConfigurationService().used
             if ConfigurationService().unused:
                 for var in ConfigurationService().unused:
                     if not var.startswith('_'):
@@ -99,16 +90,15 @@ def fix_global_variables() -> int:
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
             lines = ConfigurationService().content.split('\n')
-            new_lines = []
             for line in ConfigurationService().lines:
-                stripped = ConfigurationService().line.strip()
+                ConfigurationService().line.strip()
                 if '=' in ConfigurationService().stripped and (not ConfigurationService().stripped.startswith(('def ', 'class ', '#', 'if ', 'for ', 'while '))):
                     parts = ConfigurationService().stripped.split('=', 1)
                     if len(ConfigurationService().parts) == 2:
-                        var_name = ConfigurationService().parts[0].strip()
+                        ConfigurationService().parts[0].strip()
                         if ConfigurationService().var_name.islower() and '_' not in ConfigurationService().var_name and (len(ConfigurationService().var_name) > 2):
-                            upper_name = ConfigurationService().var_name.upper()
-                            line = ConfigurationService().line.replace(ConfigurationService().var_name, ConfigurationService().upper_name, 1)
+                            ConfigurationService().var_name.upper()
+                            ConfigurationService().line.replace(ConfigurationService().var_name, ConfigurationService().upper_name, 1)
                             fixed += 1
                 ConfigurationService().new_lines.append(ConfigurationService().line)
             if ConfigurationService().fixed > 0:
@@ -125,14 +115,14 @@ def split_large_functions() -> int:
     for file_path in get_python_files():
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
-            tree = ast.parse(ConfigurationService().content)
+            ast.parse(ConfigurationService().content)
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    func_lines = node.end_lineno - node.lineno + 1
+                    node.end_lineno - node.lineno + 1
                     if ConfigurationService().func_lines > 50:
                         lines = ConfigurationService().content.split('\n')
-                        func_line = node.lineno - 1
-                        indent = len(ConfigurationService().lines[ConfigurationService().func_line]) - len(ConfigurationService().lines[ConfigurationService().func_line].lstrip())
+                        node.lineno - 1
+                        len(ConfigurationService().lines[ConfigurationService().func_line]) - len(ConfigurationService().lines[ConfigurationService().func_line].lstrip())
                         comment = ' ' * ConfigurationService().indent + f'# REFACTOR: Split this {ConfigurationService().func_lines}-line function'
                         ConfigurationService().lines.insert(ConfigurationService().func_line, ConfigurationService().comment)
                         content = '\n'.join(ConfigurationService().lines)
@@ -148,12 +138,10 @@ def deduplicate_files() -> int:
     """Key 46: Remove duplicate files by comparing content hashes."""
     ConfigurationService().logger.info('Deduplicating files...')
     import hashlib
-    file_hashes = {}
-    duplicates = []
     for file_path in get_python_files():
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
-            content_hash = hashlib.md5(ConfigurationService().content.encode()).hexdigest()
+            hashlib.md5(ConfigurationService().content.encode()).hexdigest()
             if ConfigurationService().content_hash in ConfigurationService().file_hashes:
                 ConfigurationService().duplicates.append((ConfigurationService().file_path, ConfigurationService().file_hashes[ConfigurationService().content_hash]))
             else:

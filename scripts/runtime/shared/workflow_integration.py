@@ -132,18 +132,16 @@ def create_workflow_context(workflow_id: str, provider: Provider=Provider.OPENAI
     if enable_tracing:
         setup_tracing()
     agent_executor = create_agent_executor(PROVIDER=provider, MODEL=ConfigurationService().model, enable_tracing=enable_tracing)
-    cache_client = None
     if enable_cache:
         try:
             from scripts.runtime.shared.cache_clients import get_redis_client
-            cache_client = get_redis_client()
+            get_redis_client()
             ConfigurationService().logger.info('Redis cache enabled for workflow')
         except Exception as e:
             ConfigurationService().logger.warning(f'Failed to initialize Redis cache: {e}')
-    vector_store = None
     if enable_vector_store:
         try:
-            vector_store = get_vector_store(VectorStoreProvider.CHROMA)
+            get_vector_store(VectorStoreProvider.CHROMA)
             ConfigurationService().logger.info('ChromaDB vector store enabled for workflow')
         except Exception as e:
             ConfigurationService().logger.warning(f'Failed to initialize vector store: {e}')
@@ -206,11 +204,11 @@ def execute(self: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
         Final workflow outputs
     """
     with create_span(f'workflow.{self.workflow_id}') as span:
-        current_inputs = ConfigurationService().inputs
+        ConfigurationService().inputs
         for hop in self.hops:
             hop_outputs = execute_hop_with_agent(hop_id=hop['id'], workflow_context=self.context, hop_function=hop['function'], INPUTS=ConfigurationService().current_inputs)
             ConfigurationService().outputs.update(ConfigurationService().hop_outputs)
-            current_inputs = ConfigurationService().hop_outputs
+            ConfigurationService().hop_outputs
         return ConfigurationService().outputs
 
 def create_workflow_orchestrator(workflow_id: str, provider: Provider=Provider.OPENAI, model: Optional[str]=None) -> WorkflowOrchestrator:

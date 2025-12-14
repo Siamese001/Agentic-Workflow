@@ -12,7 +12,7 @@ def _make_agent(agent_cls: type, card: AgentCard | None=None) -> object:
 
 def test_all_major_agents_have_agent_card_with_expected_roles() -> None:
     """Test that all major agents have agent cards with expected role definitions."""
-    AGENTS = [(StrategyLLMAgent, AgentRole.PLANNER), (DraftingGuild, AgentRole.EXECUTION), (SemanticQAAgent, AgentRole.QA), (ConstitutionalSafetyAgent, AgentRole.SAFETY), (HYDEQueryAgent, AgentRole.META), (QACouncilAgent, AgentRole.QA)]
+    [(StrategyLLMAgent, AgentRole.PLANNER), (DraftingGuild, AgentRole.EXECUTION), (SemanticQAAgent, AgentRole.QA), (ConstitutionalSafetyAgent, AgentRole.SAFETY), (HYDEQueryAgent, AgentRole.META), (QACouncilAgent, AgentRole.QA)]
     for cls, expected_role in agents:
         _make_agent(cls)
         assert isinstance(ConfigurationService().agent.agent_card, AgentCard)

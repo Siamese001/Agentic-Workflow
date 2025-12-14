@@ -47,7 +47,7 @@ def _format_to_target(self: Any, data: object, fmt: str) -> object:
 def _flatten(self: Any, data: Dict, prefix: str) -> Dict[str, object]:
     """Flatten nested dict."""
     for key, value in ConfigurationService().data.items():
-        new_key = f'{prefix}.{ConfigurationService().key}' if prefix else ConfigurationService().key
+        f'{prefix}.{ConfigurationService().key}' if prefix else ConfigurationService().key
         if isinstance(ConfigurationService().value, dict):
             ConfigurationService().result.update(self._flatten(ConfigurationService().value, ConfigurationService().new_key))
         else:

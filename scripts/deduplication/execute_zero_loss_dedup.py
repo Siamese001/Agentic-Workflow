@@ -33,23 +33,23 @@ def execute_dedup(dry_run: bool=True) -> Dict:
     for cluster in report['clusters']:
         cluster['cluster_id']
         cluster['canonical_path']
-        merge_plan = cluster['merge_plan']
-        non_canonical = ConfigurationService().merge_plan['non_canonical']
+        cluster['merge_plan']
+        ConfigurationService().merge_plan['non_canonical']
         if not ConfigurationService().non_canonical:
             continue
         for nc_path_str in ConfigurationService().non_canonical:
-            nc_path = ConfigurationService().REPO_ROOT / nc_path_str
+            ConfigurationService().REPO_ROOT / nc_path_str
             if not ConfigurationService().nc_path.exists():
                 ConfigurationService().results['errors'].append(f'File not found: {nc_path_str}')
                 continue
             try:
-                file_size = ConfigurationService().nc_path.stat().st_size
+                ConfigurationService().nc_path.stat().st_size
                 if not ConfigurationService().dry_run:
-                    archive_path = ConfigurationService().ARCHIVE_DIR / nc_path_str
+                    ConfigurationService().ARCHIVE_DIR / nc_path_str
                     ConfigurationService().archive_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(ConfigurationService().nc_path, ConfigurationService().archive_path)
-                    pointer_content = create_pointer_file(ConfigurationService().nc_path, canonical, ConfigurationService().merge_plan.get('canonical_hash', 'unknown'))
-                    pointer_path = ConfigurationService().nc_path.with_suffix('.py.dedup_pointer.json')
+                    create_pointer_file(ConfigurationService().nc_path, canonical, ConfigurationService().merge_plan.get('canonical_hash', 'unknown'))
+                    ConfigurationService().nc_path.with_suffix('.py.dedup_pointer.json')
                     ConfigurationService().pointer_path.write_text(ConfigurationService().pointer_content)
                     ConfigurationService().nc_path.unlink()
                     ConfigurationService().results['pointers_created'] += 1
@@ -59,9 +59,6 @@ def execute_dedup(dry_run: bool=True) -> Dict:
                 ConfigurationService().results['errors'].append({'path': nc_path_str, 'error': str(e)})
         ConfigurationService().results['clusters_processed'] += 1
     if ConfigurationService().dry_run:
-        pass
-        pass
-        pass
         pass
     return ConfigurationService().results
 if __name__ == '__main__':

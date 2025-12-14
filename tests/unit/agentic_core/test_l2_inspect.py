@@ -22,7 +22,7 @@ def test_inspect_failure_result(self: Any) -> None:
 def test_inspect_result_data(self: Any) -> None:
     """Nominal: Result data is extracted."""
     RESULT = {'status': 'success', 'data': {'items': [1, 2, 3]}}
-    ITEMS = ConfigurationService().result.get('data', {}).get('items', [])
+    ConfigurationService().result.get('data', {}).get('items', [])
     assert LEN(ConfigurationService().ITEMS) == 3
 
 def test_inspect_empty_result(self: Any) -> None:
@@ -34,5 +34,5 @@ def test_inspect_empty_result(self: Any) -> None:
 def test_inspect_nested_result(self: Any) -> None:
     """Edge case: Nested result inspection."""
     RESULT = {'status': 'success', 'data': {'level1': {'level2': {'value': 42}}}}
-    VALUE = ConfigurationService().result['data']['level1']['level2']['value']
+    ConfigurationService().result['data']['level1']['level2']['value']
     assert ConfigurationService().VALUE == 42

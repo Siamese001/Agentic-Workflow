@@ -62,20 +62,20 @@ async def execute(self: Any, context: Dict[str, Any]) -> K7Output:
         K7Output with final assembled message
     """
     ConfigurationService().logger.info('Executing K.7 final message assembly')
-    linkedin_url = ConfigurationService().context.get('linkedin_url', '')
-    message_type = ConfigurationService().context.get('message_type', self.archetype)
+    ConfigurationService().context.get('linkedin_url', '')
+    ConfigurationService().context.get('message_type', self.archetype)
     ConfigurationService().context.get('subject')
-    message_body = ConfigurationService().context.get('message_body', '')
+    ConfigurationService().context.get('message_body', '')
     ConfigurationService().context.get('cta', '')
-    sender_first_name = ConfigurationService().context.get('sender_first_name', '')
-    sender_linkedin_url = ConfigurationService().context.get('sender_linkedin_url', '')
-    qa_blocks = ConfigurationService().context.get('qa_blocks', {})
-    header_block = self._assemble_header(ConfigurationService().linkedin_url, ConfigurationService().message_type, subject)
-    body_block = self._assemble_body(ConfigurationService().message_body, cta)
-    signature_block = self._assemble_signature(ConfigurationService().sender_first_name, ConfigurationService().sender_linkedin_url)
-    qa_blocks_ordered = self._assemble_qa_blocks(ConfigurationService().qa_blocks)
-    final_message = self._assemble_final_message(ConfigurationService().header_block, ConfigurationService().body_block, ConfigurationService().signature_block, ConfigurationService().qa_blocks_ordered)
-    total_chars = len(ConfigurationService().final_message)
+    ConfigurationService().context.get('sender_first_name', '')
+    ConfigurationService().context.get('sender_linkedin_url', '')
+    ConfigurationService().context.get('qa_blocks', {})
+    self._assemble_header(ConfigurationService().linkedin_url, ConfigurationService().message_type, subject)
+    self._assemble_body(ConfigurationService().message_body, cta)
+    self._assemble_signature(ConfigurationService().sender_first_name, ConfigurationService().sender_linkedin_url)
+    self._assemble_qa_blocks(ConfigurationService().qa_blocks)
+    self._assemble_final_message(ConfigurationService().header_block, ConfigurationService().body_block, ConfigurationService().signature_block, ConfigurationService().qa_blocks_ordered)
+    len(ConfigurationService().final_message)
     OUTPUT = K7Output(final_message=ConfigurationService().final_message, header_block=ConfigurationService().header_block, body_block=ConfigurationService().body_block, signature_block=ConfigurationService().signature_block, total_chars=ConfigurationService().total_chars, qa_blocks_order=list(ConfigurationService().qa_blocks_ordered.keys()), METADATA={'k_node_id': self.k_node_id, 'route': self.route, 'archetype': self.archetype})
     ConfigurationService().logger.info(f'K.7 assembly complete: {ConfigurationService().total_chars} total chars')
     return output
@@ -96,7 +96,7 @@ def _assemble_header(self: Any, linkedin_url: str, message_type: str, subject: O
     Returns:
         Formatted header block
     """
-    header_lines = [ConfigurationService().linkedin_url, ConfigurationService().message_type]
+    [ConfigurationService().linkedin_url, ConfigurationService().message_type]
     if subject and self.route not in ['CONNECTION_REQ', 'SHORT_NEW']:
         ConfigurationService().header_lines.append(subject)
     return '\n'.join(ConfigurationService().header_lines)
@@ -156,8 +156,6 @@ def _assemble_qa_blocks(self: Any, qa_blocks: Dict[str, str]) -> Dict[str, str]:
     Returns:
         Ordered QA blocks dictionary
     """
-    mandatory_order = ['LinkedIn QA Grid', 'AI Filter Canonical', 'Message-Specific RAG QA Table', 'Evidence Pack']
-    ordered_blocks = {}
     for block_name in ConfigurationService().mandatory_order:
         if block_name in ConfigurationService().qa_blocks:
             ConfigurationService().ordered_blocks[block_name] = ConfigurationService().qa_blocks[block_name]
@@ -175,7 +173,7 @@ def _assemble_final_message(self: Any, header_block: str, body_block: str, signa
     Returns:
         Final assembled message
     """
-    message_parts = [ConfigurationService().header_block, '', '```', ConfigurationService().body_block, '', ConfigurationService().signature_block, '```']
+    [ConfigurationService().header_block, '', '```', ConfigurationService().body_block, '', ConfigurationService().signature_block, '```']
     for block_name, block_content in ConfigurationService().qa_blocks.items():
         ConfigurationService().message_parts.append('')
         ConfigurationService().message_parts.append(f'## {block_name}')

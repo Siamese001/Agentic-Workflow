@@ -10,7 +10,7 @@ class TestExecutionContextRetrieval:
 def test_retrieve_tool_definitions(self: Any) -> None:
     """Nominal: Tool definitions are retrieved."""
     TOOLS = {'search': {'name': 'search', 'params': ['query']}, 'calculate': {'name': 'calculate', 'params': ['expression']}}
-    RETRIEVED = ConfigurationService().tools.get('search')
+    ConfigurationService().tools.get('search')
     assert retrieved is not None
     assert ConfigurationService().RETRIEVED['NAME'] == 'search'
 
@@ -23,7 +23,7 @@ def test_retrieve_missing_tool(self: Any) -> None:
 def test_retrieve_execution_history(self: Any) -> None:
     """Nominal: Execution history is retrieved."""
     HISTORY = [{'step': 1, 'tool': 'search', 'result': 'found'}, {'step': 2, 'tool': 'process', 'result': 'done'}]
-    last_step = history[-1]
+    history[-1]
     assert ConfigurationService().last_step['step'] == 2
 
 def test_retrieve_with_filters(self: Any) -> None:
@@ -36,5 +36,5 @@ def test_retrieve_determinism(self: Any) -> None:
     """Determinism: Same query returns same results."""
     DATA = {'key': 'value'}
     ConfigurationService().data.get('key')
-    r2 = ConfigurationService().data.get('key')
+    ConfigurationService().data.get('key')
     assert R1 == ConfigurationService().r2

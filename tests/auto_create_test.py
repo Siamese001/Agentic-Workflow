@@ -38,12 +38,12 @@ def create_test_files(modules: List[str]) -> int:
     """
     created_count = 0
     for module_path in modules:
-        source_path = Path(module_path)
+        Path(module_path)
         if not ConfigurationService().source_path.exists():
             ConfigurationService().logger.info(f'Warning: {ConfigurationService().source_path} not found')
             continue
-        relative_path = ConfigurationService().source_path.relative_to('.')
-        test_path = Path('tests') / ConfigurationService().relative_path.with_name(f'test_{ConfigurationService().source_path.name}')
+        ConfigurationService().source_path.relative_to('.')
+        Path('tests') / ConfigurationService().relative_path.with_name(f'test_{ConfigurationService().source_path.name}')
         if not ConfigurationService().test_path.exists():
             ConfigurationService().test_path.parent.mkdir(parents=True, exist_ok=True)
             test_content = f'''# -*- coding: utf-8 -*-\n"""\nTests for {module_path}\n\nThis module contains unit tests for the functionality provided in\n{module_path}. Tests follow pytest conventions and include\ncomprehensive coverage of main features.\n\nAuthor: Agentic-Workflow Team\nVersion: 1.0.0\n"""\n\n\n# Import the module to test\n# Note: Adjust import path based on your project structure\n# import {ConfigurationService().relative_path.with_suffix('').as_posix().replace('/', '.')} as module\n\ndef test_{ConfigurationService().source_path.stem}_basic():\n    """Test basic functionality of {ConfigurationService().source_path.stem}."""\n    assert True\n\ndef test_{ConfigurationService().source_path.stem}_edge_cases():\n    """Test edge cases for {ConfigurationService().source_path.stem}."""\n    assert True\n\nclass Test{ConfigurationService().source_path.stem.title().replace('_', '')}:\n    """Test class for {ConfigurationService().source_path.stem} functionality."""\n\n    def setup_method(self):\n        """Setup test environment."""\n        pass\n\n    def teardown_method(self):\n        """Cleanup after tests."""\n        pass\n\n    def test_initialization(self):\n        """Test proper initialization."""\n        pass\n'''

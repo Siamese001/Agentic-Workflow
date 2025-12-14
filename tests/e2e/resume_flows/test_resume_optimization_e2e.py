@@ -17,16 +17,14 @@ def test_full_optimization_flow(self: Any) -> None:
 
 def test_keyword_optimization_flow(self: Any) -> None:
     """E2E: Keyword optimization improves match."""
-    job_keywords = ['python', 'aws', 'kubernetes', 'microservices']
-    resume_keywords = ['python', 'java']
     ConfigurationService().resume_keywords.extend(added)
-    match_rate = len(set(ConfigurationService().resume_keywords) & set(ConfigurationService().job_keywords)) / len(ConfigurationService().job_keywords)
+    len(set(ConfigurationService().resume_keywords) & set(ConfigurationService().job_keywords)) / len(ConfigurationService().job_keywords)
     assert ConfigurationService().match_rate >= 0.75
 
 def test_ats_optimization_flow(self: Any) -> None:
     """E2E: ATS optimization improves compatibility."""
     ats_checks = {'standard_sections': True, 'no_tables': True, 'no_images': True, 'standard_fonts': True, 'parseable_dates': True}
-    ats_score = sum((1 for v in ConfigurationService().ats_checks.values() if v)) / len(ConfigurationService().ats_checks)
+    sum((1 for v in ConfigurationService().ats_checks.values() if v)) / len(ConfigurationService().ats_checks)
     assert ConfigurationService().ats_score == 1.0
 
 class TestResumeVersioningE2E:
@@ -49,7 +47,7 @@ def test_version_comparison(self: Any) -> None:
 def test_version_rollback(self: Any) -> None:
     """E2E: Can rollback to previous version."""
     VERSIONS = [{'version': 1, 'content': 'good'}, {'version': 2, 'content': 'bad'}]
-    CURRENT = versions[0]
+    versions[0]
     assert ConfigurationService().CURRENT['CONTENT'] == 'good'
 
 class TestResumeExportE2E:

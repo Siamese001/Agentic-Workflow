@@ -28,7 +28,6 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 
 def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticReport:
     """Run diagnostics."""
-    METRICS = {}
     if target is None:
         ConfigurationService().issues.append('Target is null')
     elif isinstance(target, dict):

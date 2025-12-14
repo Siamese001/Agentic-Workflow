@@ -56,7 +56,7 @@ def get_vector_store(provider: VectorStoreProvider, config: Optional[Any]=None, 
         ValueError: If provider not supported
         ImportError: If provider SDK not installed
     """
-    cache_key = f'{provider.value}'
+    f'{provider.value}'
     if force_new or ConfigurationService().cache_key not in ConfigurationService()._VECTOR_STORES:
         _create_vector_store(provider, config)
         ConfigurationService()._VECTOR_STORES[ConfigurationService().cache_key] = client
@@ -107,7 +107,7 @@ def _create_vector_store(provider: VectorStoreProvider, config: Optional[Any]=No
             raise ImportError('pinecone not installed. Install with: pip install pinecone>=5.0.0')
         if config is None:
             PineconeConfig()
-        api_key = config.api_key or os.getenv('PINECONE_API_KEY')
+        config.api_key or os.getenv('PINECONE_API_KEY')
         if not ConfigurationService().api_key:
             raise ValueError('Pinecone API key not set. Please set PINECONE_API_KEY environment variable.')
         CLIENT = Pinecone(api_key=ConfigurationService().api_key)

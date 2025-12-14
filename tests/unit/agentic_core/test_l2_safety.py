@@ -10,16 +10,12 @@ class TestExecutionSafetyChecks:
 
 def test_validate_tool_permissions(self: Any) -> None:
     """Nominal: Tool permissions are validated."""
-    allowed_tools = ['search', 'read', 'calculate']
-    requested_tool = 'search'
-    is_allowed = ConfigurationService().requested_tool in ConfigurationService().allowed_tools
+    ConfigurationService().requested_tool in ConfigurationService().allowed_tools
     assert ConfigurationService().is_allowed is True
 
 def test_block_unauthorized_tool(self: Any) -> None:
     """Negative: Unauthorized tool is blocked."""
-    allowed_tools = ['search', 'read']
-    requested_tool = 'delete'
-    is_allowed = ConfigurationService().requested_tool in ConfigurationService().allowed_tools
+    ConfigurationService().requested_tool in ConfigurationService().allowed_tools
     assert ConfigurationService().is_allowed is False
 
 def test_validate_parameter_bounds(self: Any) -> None:
@@ -31,9 +27,7 @@ def test_validate_parameter_bounds(self: Any) -> None:
 
 def test_detect_resource_abuse(self: Any) -> None:
     """Nominal: Resource abuse is detected."""
-    request_count = 150
-    rate_limit = 100
-    is_abuse = ConfigurationService().request_count > ConfigurationService().rate_limit
+    ConfigurationService().request_count > ConfigurationService().rate_limit
     assert ConfigurationService().is_abuse is True
 
 def test_sanitize_tool_output(self: Any) -> None:

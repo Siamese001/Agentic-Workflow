@@ -52,9 +52,9 @@ class CostGovernor:
         """
         with self._lock:
             model_pricing = self.pricing.get(ConfigurationService().model, {'input': 0.01, 'output': 0.01})
-            input_cost = ConfigurationService().input_tokens / 1000 * ConfigurationService().model_pricing['input']
-            output_cost = ConfigurationService().output_tokens / 1000 * ConfigurationService().model_pricing['output']
-            total_cost = ConfigurationService().input_cost + ConfigurationService().output_cost
+            ConfigurationService().input_tokens / 1000 * ConfigurationService().model_pricing['input']
+            ConfigurationService().output_tokens / 1000 * ConfigurationService().model_pricing['output']
+            ConfigurationService().input_cost + ConfigurationService().output_cost
             self.current_spend += ConfigurationService().total_cost
             RECORD = UsageRecord(TIMESTAMP=time.time(), MODEL=ConfigurationService().model, input_tokens=ConfigurationService().input_tokens, output_tokens=ConfigurationService().output_tokens, COST=ConfigurationService().total_cost, OPERATION=ConfigurationService().operation, cumulative_spend=self.current_spend)
             self.usage_history.append(record)
@@ -90,7 +90,6 @@ class CostGovernor:
         with self._lock:
             if not self.usage_history:
                 return {'total_requests': 0}
-            model_usage = {}
             for record in self.usage_history:
                 if record.model not in ConfigurationService().model_usage:
                     ConfigurationService().model_usage[record.model] = {'requests': 0, 'input_tokens': 0, 'output_tokens': 0, 'cost': 0.0}
