@@ -29,7 +29,7 @@ class WorkflowContext:
     agent_executor: AgentExecutor
     vector_store: Optional[Any] = None
     cache_client: Optional[Any] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    _metadata: Dict[str, Any] = field(default_factory=dict)
 
     def get_from_cache(self, key: str) -> Optional[Any]:
         """Get value from cache.
@@ -218,7 +218,7 @@ def execute_hop_with_agent(
     Returns:
         Hop outputs
     """
-    with create_span(f"hop.{hop_id}") as span:
+    with create_span(f"hop.{hop_id}") as _span:
         # Create hop execution context
         hop_context = HopExecutionContext(
             hop_id=hop_id,

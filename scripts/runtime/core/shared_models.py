@@ -22,28 +22,28 @@ class HopState(Enum):
 
 class RetryPolicy(BaseModel):
     """Retry policy for micro-stages."""
-    max_retries: int = Field(default=3, ge=0, le=10)
-    retry_delay: float = Field(default=1.0, ge=0.0)
-    exponential_backoff: bool = Field(default=True)
-    retryable_stages: List[MicroStage] = Field(
+    _max_retries: int = Field(default=3, ge=0, le=10)
+    _retry_delay: float = Field(default=1.0, ge=0.0)
+    _exponential_backoff: bool = Field(default=True)
+    _retryable_stages: List[MicroStage] = Field(
         default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
     )
 
 class MicroCheckpoint(BaseModel):
     """Checkpoint data for a micro-stage."""
-    hop_id: str
-    stage: MicroStage
-    timestamp: float
-    state: HopState
-    data: Dict[str, Any] = Field(default_factory=dict)
-    error: Optional[str] = None
+    _hop_id: str
+    _stage: MicroStage
+    _timestamp: float
+    _state: HopState
+    _data: Dict[str, Any] = Field(default_factory=dict)
+    _error: Optional[str] = None
 
 class StageTransition(BaseModel):
     """Record of a stage transition."""
-    from_stage: Optional[MicroStage] = None
-    to_stage: MicroStage
+    _from_stage: Optional[MicroStage] = None
+    _to_stage: MicroStage
     timestamp: float
-    reason: Optional[str] = None
+    _reason: Optional[str] = None
 
 # ============================================================================
 # Prompt Injection Models
@@ -67,21 +67,21 @@ class InjectionType(Enum):
 
 class InjectionScope(BaseModel):
     """Scope where injection should be applied."""
-    hop_types: List[str] = Field(default_factory=list)
-    stages: List[str] = Field(default_factory=list)
-    contexts: Dict[str, Any] = Field(default_factory=dict)
+    _hop_types: List[str] = Field(default_factory=list)
+    _stages: List[str] = Field(default_factory=list)
+    _contexts: Dict[str, Any] = Field(default_factory=dict)
 
 class InjectionPattern(BaseModel):
     """A single prompt injection pattern."""
-    id: str
-    name: str
-    type: InjectionType
-    description: str
-    template: str
-    variables: List[str] = Field(default_factory=list)
-    scope: InjectionScope = Field(default_factory=InjectionScope)
-    priority: int = Field(default=0, ge=0, le=10)
-    enabled: bool = True
+    _id: str
+    _name: str
+    _type: InjectionType
+    _description: str
+    _template: str
+    _variables: List[str] = Field(default_factory=list)
+    _scope: InjectionScope = Field(default_factory=InjectionScope)
+    _priority: int = Field(default=0, ge=0, le=10)
+    _enabled: bool = True
 
     class Config:
         """TODO: Add docstring."""
@@ -89,17 +89,17 @@ class InjectionPattern(BaseModel):
 
 class InjectionMatch(BaseModel):
     """Result of matching injections to context."""
-    injection: InjectionPattern
-    relevance_score: float = Field(ge=0.0, le=1.0)
-    variable_values: Dict[str, Any] = Field(default_factory=dict)
+    _injection: InjectionPattern
+    _relevance_score: float = Field(ge=0.0, le=1.0)
+    _variable_values: Dict[str, Any] = Field(default_factory=dict)
 
 class InjectionConfig(BaseModel):
     """Configuration for injection loader."""
-    injection_dir: Path = Field(default=Path("./injections"))
-    max_injections_per_hop: int = Field(default=5, ge=1, le=10)
-    relevance_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
-    enable_caching: bool = True
-    auto_reload: bool = True
+    _injection_dir: Path = Field(default=Path("./injections"))
+    _max_injections_per_hop: int = Field(default=5, ge=1, le=10)
+    _relevance_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
+    _enable_caching: bool = True
+    _auto_reload: bool = True
 
 # ============================================================================
 # Additional Shared Types
@@ -107,19 +107,19 @@ class InjectionConfig(BaseModel):
 
 class ValidationResult(BaseModel):
     """Result of a validation operation."""
-    is_valid: bool
-    confidence: float = Field(ge=0.0, le=1.0)
-    errors: List[str] = Field(default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    _is_valid: bool
+    _confidence: float = Field(ge=0.0, le=1.0)
+    _errors: List[str] = Field(default_factory=list)
+    _warnings: List[str] = Field(default_factory=list)
+    _metadata: Dict[str, Any] = Field(default_factory=dict)
 
 class ExecutionResult(BaseModel):
     """Result of an execution operation."""
-    success: bool
-    output: Optional[Any] = None
+    _success: bool
+    _output: Optional[Any] = None
     error: Optional[str] = None
-    metrics: Dict[str, Any] = Field(default_factory=dict)
-    duration_ms: Optional[float] = None
+    _metrics: Dict[str, Any] = Field(default_factory=dict)
+    _duration_ms: Optional[float] = None
 
 # Type Aliases
 # Common type aliases for better readability

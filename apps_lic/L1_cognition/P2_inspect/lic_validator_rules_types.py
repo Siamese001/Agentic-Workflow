@@ -9,35 +9,35 @@ class ValidationSeverity(Enum):
 @dataclass
 class ErrorCode:
     """LIC error code definition."""
-    code: str
-    severity: ValidationSeverity
-    description: str
-    remediation: str
+    _code: str
+    _severity: ValidationSeverity
+    _description: str
+    _remediation: str
 
 @dataclass
 class ContentCleanlinessRule:
     """Rule for content cleanliness validation."""
-    rule_id: str
+    _rule_id: str
     severity: ValidationSeverity
-    error_code: str
-    patterns: List[str] = field(default_factory=list)
-    max_violations: int = 0
+    _error_code: str
+    _patterns: List[str] = field(default_factory=list)
+    _max_violations: int = 0
 
 @dataclass
 class SignalQualityConfig:
     """Configuration for signal quality scoring."""
-    source_weights: Dict[str, float]
-    recency_factors: Dict[str, float]
-    min_signal_threshold: float = 0.7
-    recency_decay_days: int = 90
+    _source_weights: Dict[str, float]
+    _recency_factors: Dict[str, float]
+    _min_signal_threshold: float = 0.7
+    _recency_decay_days: int = 90
 
 @dataclass
 class ClaimConfidenceConfig:
     """Configuration for claim confidence scoring."""
-    min_claim_confidence: float = 0.7
-    min_overlap_words: int = 2
-    base_confidence_multiplier: float = 1.5
-    source_boost_per_source: float = 0.1
-    max_source_boost: float = 0.3
-    no_source_penalty: float = 0.5
-    min_claim_words: int = 3
+    _min_claim_confidence: float = 0.7
+    _min_overlap_words: int = 2
+    _base_confidence_multiplier: float = 1.5
+    _source_boost_per_source: float = 0.1
+    _max_source_boost: float = 0.3
+    _no_source_penalty: float = 0.5
+    _min_claim_words: int = 3

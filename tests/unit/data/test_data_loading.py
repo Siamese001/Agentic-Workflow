@@ -1,3 +1,4 @@
+from typing import Any
 """Unit tests for data loading and processing utilities."""
 from __future__ import annotations
 import pytest

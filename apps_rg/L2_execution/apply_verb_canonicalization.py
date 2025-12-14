@@ -14,7 +14,7 @@ from typing import Dict, List
 class VerbCanonicalizer:
     """Canonicalize action verbs to approved list."""
 
-    CANONICAL_VERBS: Dict[str, List[str]] = {
+    _CANONICAL_VERBS: Dict[str, List[str]] = {
         "led": ["led", "lead", "leading"],
         "built": ["built", "build", "building"],
         "drove": ["drove", "drive", "driving"],
@@ -27,7 +27,7 @@ class VerbCanonicalizer:
         "developed": ["developed", "develop", "developing"],
     }
 
-    FORBIDDEN_VERBS: List[str] = [
+    _FORBIDDEN_VERBS: List[str] = [
         "pioneered",
         "spearheaded",
         "orchestrated",

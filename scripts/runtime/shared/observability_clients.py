@@ -18,9 +18,9 @@ class TracingConfig:
     """Configuration for OpenTelemetry tracing."""
     service_name: str = "agentic-workflow"
     environment: str = "development"
-    endpoint: Optional[str] = None
-    enable_console_export: bool = True
-    enable_otlp_export: bool = False
+    _endpoint: Optional[str] = None
+    _enable_console_export: bool = True
+    _enable_otlp_export: bool = False
 
 # Global tracer instance
 _TRACER: Optional[Any] = None

@@ -7,6 +7,6 @@ import logging
 @dataclass
 class ToolCallBudget:
     """Tool call budget configuration."""
-    minimum: int = 0
-    maximum: int = 20
-    guidance: Dict[str, str] = field(default_factory=dict)
+    _minimum: int = 0
+    _maximum: int = 20
+    _guidance: Dict[str, str] = field(default_factory=dict)

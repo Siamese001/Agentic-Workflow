@@ -10,9 +10,9 @@ class RecoveryStrategy(Enum):
 @dataclass
 class ResilienceError:
     """Base descriptor for resilience errors."""
-    message: str
-    code: str
-    details: Optional[Dict[str, Any]] = None
+    _message: str
+    _code: str
+    _details: Optional[Dict[str, Any]] = None
 
 @dataclass
 class TransientError(ResilienceError):
@@ -25,4 +25,4 @@ class PermanentError(ResilienceError):
 @dataclass
 class RetryExhaustedError(ResilienceError):
     """Error indicating all retry attempts have been exhausted."""
-    attempts: int = 0
+    _attempts: int = 0

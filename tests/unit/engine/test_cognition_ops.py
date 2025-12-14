@@ -14,10 +14,10 @@ class IntentType(Enum):
 @dataclass
 class ParsedIntent:
     """Docstring."""
-    intent_type: IntentType
-    confidence: float
+    _intent_type: IntentType
+    _confidence: float
     entities: Dict[str, object]
-    original_text: str
+    _original_text: str
 
 class TestUnderstandRequest:
     """Tests for understand_request operations."""

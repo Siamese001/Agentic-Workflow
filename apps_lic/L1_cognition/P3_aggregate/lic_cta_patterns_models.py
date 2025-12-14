@@ -7,31 +7,31 @@ import logging
 @dataclass
 class CTAPattern:
     """Pattern for call-to-action generation."""
-    style: CTAStyle
-    verbs: List[str]
-    focus: str
-    tone: str
-    formality: str
-    example: str
+    _style: CTAStyle
+    _verbs: List[str]
+    _focus: str
+    _tone: str
+    _formality: str
+    _example: str
 
 @dataclass
 class CTATemplate:
     """Template for CTA generation by route."""
-    template: str
-    word_limit: Optional[int] = None
-    examples: List[str] = field(default_factory=list)
-    variables: Dict[str, str] = field(default_factory=dict)
+    _template: str
+    _word_limit: Optional[int] = None
+    _examples: List[str] = field(default_factory=list)
+    _variables: Dict[str, str] = field(default_factory=dict)
 
 @dataclass
 class DateWindowConfig:
     """Configuration for date window generation."""
-    window_size_days: int = 2
-    avoid_weekends: bool = True
-    avoid_holidays: bool = True
-    date_format: str = 'EEE MMM d'
+    _window_size_days: int = 2
+    _avoid_weekends: bool = True
+    _avoid_holidays: bool = True
+    _date_format: str = 'EEE MMM d'
 
 @dataclass
 class DayBufferConfig:
     """Buffer configuration for a specific day."""
-    min_buffer_days: int
-    suggested_pattern: str
+    _min_buffer_days: int
+    _suggested_pattern: str

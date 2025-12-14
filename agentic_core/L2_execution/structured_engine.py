@@ -25,11 +25,11 @@ class AgentThoughtProcess(BaseModel):
     Forces the agent to show its work before acting.
     This is the "Physics" of your Agent - the schema it must follow.
     """
-    reasoning_trace: List[str] = Field(
+    _reasoning_trace: List[str] = Field(
         ..., 
         description="Step-by-step logic leading to the decision. Each step should be clear and atomic."
     )
-    relevant_context_keys: List[str] = Field(
+    _relevant_context_keys: List[str] = Field(
         ..., 
         description="Which specific keys from memory/context did you use to make this decision?"
     )
@@ -37,11 +37,11 @@ class AgentThoughtProcess(BaseModel):
         ...,
         description="The action type to take"
     )
-    tool_arguments: Dict[str, Any] = Field(
+    _tool_arguments: Dict[str, Any] = Field(
         default_factory=dict,
         description="Arguments for the chosen tool"
     )
-    confidence_score: float = Field(
+    _confidence_score: float = Field(
         ..., 
         ge=0.0, 
         le=1.0,
@@ -134,17 +134,17 @@ class StructuredEngine:
 
 class CodeGenerationResult(BaseModel):
     """Schema for code generation tasks."""
-    reasoning: str = Field(..., description="Why this code solves the problem")
-    code: str = Field(..., description="The generated Python code")
-    dependencies: List[str] = Field(
+    _reasoning: str = Field(..., description="Why this code solves the problem")
+    _code: str = Field(..., description="The generated Python _code")
+    _dependencies: List[str] = Field(
         default_factory=list,
         description="Required pip packages"
     )
-    test_cases: List[str] = Field(
+    _test_cases: List[str] = Field(
         default_factory=list,
         description="Test cases to verify the code"
     )
-    safety_notes: List[str] = Field(
+    _safety_notes: List[str] = Field(
         default_factory=list,
         description="Potential safety concerns or limitations"
     )
@@ -152,17 +152,17 @@ class CodeGenerationResult(BaseModel):
 
 class ResearchResult(BaseModel):
     """Schema for research tasks."""
-    query_understanding: str = Field(..., description="How you interpreted the research question")
-    sources: List[Dict[str, str]] = Field(
+    _query_understanding: str = Field(..., description="How you interpreted the research question")
+    _sources: List[Dict[str, str]] = Field(
         ...,
         description="List of sources with 'url' and 'relevance' keys"
     )
-    key_findings: List[str] = Field(..., description="Main findings from the research")
-    confidence_level: Literal["high", "medium", "low"] = Field(
+    _key_findings: List[str] = Field(..., description="Main findings from the research")
+    _confidence_level: Literal["high", "medium", "low"] = Field(
         ...,
         description="Confidence in the research results"
     )
-    follow_up_questions: List[str] = Field(
+    _follow_up_questions: List[str] = Field(
         default_factory=list,
         description="Suggested follow-up research questions"
     )

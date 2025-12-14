@@ -9,9 +9,9 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Result:
     """Operation result."""
-    success: bool
+    _success: bool
     data: object = None
-    metadata: Dict[str, object] = field(default_factory=dict)
+    _metadata: Dict[str, object] = field(default_factory=dict)
 
 class Safety:
     """executor for shared operations."""

@@ -19,12 +19,12 @@ class RedisConfig:
     """Configuration for Redis client."""
     host: str = "localhost"
     port: int = 6379
-    db: int = 0
+    _db: int = 0
     password: Optional[str] = None
-    decode_responses: bool = True
-    socket_timeout: float = 5.0
-    socket_connect_timeout: float = 5.0
-    max_connections: int = 50
+    _decode_responses: bool = True
+    _socket_timeout: float = 5.0
+    _socket_connect_timeout: float = 5.0
+    _max_connections: int = 50
 
 # Singleton Redis client
 _REDIS_CLIENT: Optional[Any] = None

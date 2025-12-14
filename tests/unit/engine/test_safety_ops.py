@@ -15,9 +15,9 @@ class SafetyViolationType(Enum):
 @dataclass
 class SafetyCheckResult:
     """Docstring."""
-    is_safe: bool
+    _is_safe: bool
     violations: List[SafetyViolationType]
-    details: Dict[str, object]
+    _details: Dict[str, object]
     risk_score: float
 
 class TestCheckRules:

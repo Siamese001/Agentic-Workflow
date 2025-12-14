@@ -9,11 +9,11 @@ class WorkflowType(Enum):
 @dataclass
 class WorkflowBlueprint:
     """Blueprint for a workflow graph."""
-    name: str
-    description: str
-    roles: List[AgentRole]
-    edges: List[Tuple[AgentRole, AgentRole]]
-    mutation_hooks: Dict[AgentRole,
+    _name: str
+    _description: str
+    _roles: List[AgentRole]
+    _edges: List[Tuple[AgentRole, AgentRole]]
+    _mutation_hooks: Dict[AgentRole,
         List[Tuple[MutationAction,
         AgentRole]]] = field(default_factory=dict)
-    parallel_groups: List[List[AgentRole]] = field(default_factory=list)
+    _parallel_groups: List[List[AgentRole]] = field(default_factory=list)

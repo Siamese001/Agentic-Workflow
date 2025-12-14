@@ -20,7 +20,7 @@ class ExecutiveSummaryOutput:
     sentence_count: int
     first_person_violations: List[str]
     third_person_compliant: bool
-    metadata: Dict[str, Any]
+    _metadata: Dict[str, Any]
 
 # First-person patterns that MUST be blocked
 FIRST_PERSON_PATTERNS = [

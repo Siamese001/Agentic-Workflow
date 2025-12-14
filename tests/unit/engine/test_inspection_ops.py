@@ -18,7 +18,7 @@ class InspectionResult:
     quality: ContentQuality
     issues: List[str]
     metrics: Dict[str, float]
-    recommendations: List[str]
+    _recommendations: List[str]
 
 class TestContentInspection:
     """Tests for content inspection operations."""

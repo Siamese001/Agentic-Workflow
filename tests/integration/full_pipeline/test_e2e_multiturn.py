@@ -1,3 +1,4 @@
+from typing import Any
 """E2E Multi-Agent Scenario Tests."""
 import logging
 

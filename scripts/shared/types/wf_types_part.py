@@ -6,8 +6,8 @@ import logging
 @dataclass
 class RetrievalSource:
     """Metadata about a data retrieval source."""
-    id: str
-    type: str
-    confidence: float = 0.0
-    status: str = 'UNKNOWN'
-    specific_source: Optional[str] = None
+    _id: str
+    _type: str
+    _confidence: float = 0.0
+    _status: str = 'UNKNOWN'
+    _specific_source: Optional[str] = None

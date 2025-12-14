@@ -17,7 +17,7 @@ class Metric:
     name: str
     value: float
     labels: Dict[str, str] = field(default_factory=dict)
-    timestamp: float = field(default_factory=time.time)
+    _timestamp: float = field(default_factory=time.time)
 
 class MetricConfig:
     """Metrics collector for metrics domain."""

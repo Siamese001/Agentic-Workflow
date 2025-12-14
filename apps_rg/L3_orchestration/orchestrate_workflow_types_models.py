@@ -7,9 +7,9 @@ import logging
 @dataclass
 class HopInput:
     """Input specification for a hop."""
-    artifact_id: str
-    required: bool = True
-    description: str = ''
+    _artifact_id: str
+    _required: bool = True
+    _description: str = ''
 
 @dataclass
 class HopOutput:
@@ -20,24 +20,24 @@ class HopOutput:
 @dataclass
 class RetryPolicy:
     """Retry policy for a hop."""
-    max_retries: int = 3
-    backoff_seconds: float = 1.0
-    backoff_multiplier: float = 2.0
+    _max_retries: int = 3
+    _backoff_seconds: float = 1.0
+    _backoff_multiplier: float = 2.0
 
 @dataclass
 class HopSpec:
     """Specification for a workflow hop."""
-    id: str
-    script: str
+    _id: str
+    _script: str
     description: str
-    inputs: List[HopInput] = field(default_factory=list)
-    outputs: List[HopOutput] = field(default_factory=list)
-    retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
-    extra_args: List[str] = field(default_factory=list)
+    _inputs: List[HopInput] = field(default_factory=list)
+    _outputs: List[HopOutput] = field(default_factory=list)
+    _retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
+    _extra_args: List[str] = field(default_factory=list)
 
 @dataclass
 class WorkflowSpec:
     """Specification for a complete workflow."""
-    name: str
-    version: str
-    hops: List[HopSpec]
+    _name: str
+    _version: str
+    _hops: List[HopSpec]

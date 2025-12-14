@@ -12,18 +12,18 @@ class GateSeverity(Enum):
 @dataclass
 class GateResult:
     """Result from a validation gate."""
-    gate_id: str
-    decision: GateDecision
-    severity: GateSeverity
-    message: str
-    details: Dict[str, object] = field(default_factory=dict)
-    violations: List[str] = field(default_factory=list)
+    _gate_id: str
+    _decision: GateDecision
+    _severity: GateSeverity
+    _message: str
+    _details: Dict[str, object] = field(default_factory=dict)
+    _violations: List[str] = field(default_factory=list)
 
 @dataclass
 class ValidationGate:
     """Definition of a validation gate."""
     gate_id: str
-    name: str
-    description: str
+    _name: str
+    _description: str
     severity: GateSeverity
-    validator: Callable[[object, Dict[str, object]], GateResult]
+    _validator: Callable[[object, Dict[str, object]], GateResult]

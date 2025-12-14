@@ -11,9 +11,9 @@ from dataclasses import dataclass
 class ScoredItem:
     """TODO: Add docstring."""
 
-    id: str
-    raw_score: float
-    normalized_score: float
+    _id: str
+    _raw_score: float
+    _normalized_score: float
     factors: Dict[str, float]
 
 class TestScoreCalculation:

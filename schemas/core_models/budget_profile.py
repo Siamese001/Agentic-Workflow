@@ -8,5 +8,5 @@ class BudgetProfile(BaseModel):
     future callers can reason about budget in a single nested object.
     """
 
-    max_cost_usd: float = Field(default=0.10, ge=0.0)
-    max_latency_ms: int = Field(default=3000, ge=0)
+    _max_cost_usd: float = Field(default=0.10, ge=0.0)
+    _max_latency_ms: int = Field(default=3000, ge=0)

@@ -1,3 +1,4 @@
+from typing import Any
 """SDK Registry - Centralized SDK management and validation.
 
 Provides unified access to all 21 agentic SDKs with lazy loading,
@@ -22,11 +23,11 @@ class SDKEntry:
     """SDK registry entry with metadata."""
     name: str
     category: SDKCategory
-    module: str
-    required: bool = False
-    env_var: Optional[str] = None
-    fallback: Optional[str] = None
-    description: str = ""
+    _module: str
+    _required: bool = False
+    _env_var: Optional[str] = None
+    _fallback: Optional[str] = None
+    _description: str = ""
 
     def is_available(self) -> bool:
         """Check if SDK is available for import."""

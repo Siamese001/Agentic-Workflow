@@ -17,20 +17,20 @@ class CompetencyItem:
     title: str
     description: str
     word_count: int
-    gap_keywords_covered: List[str]
-    industry_first_ranking: int
+    _gap_keywords_covered: List[str]
+    _industry_first_ranking: int
 
 @dataclass
 class CompetenciesOutput:
     """Gap Closure Architect output."""
     competencies: List[CompetencyItem]
-    total_count: int
-    gap_coverage_percentage: float
-    total_gap_keywords: int
-    covered_gap_keywords: int
-    missing_gap_keywords: List[str]
+    _total_count: int
+    _gap_coverage_percentage: float
+    _total_gap_keywords: int
+    _covered_gap_keywords: int
+    _missing_gap_keywords: List[str]
     industry_first_compliant: bool
-    metadata: Dict[str, Any]
+    _metadata: Dict[str, Any]
 
 class GapClosureArchitect(Agent):
     """Gap Closure Architect agent for leadership competencies.

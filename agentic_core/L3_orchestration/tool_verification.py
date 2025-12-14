@@ -1,3 +1,4 @@
+from typing import Any
 """
 Tool Verification Loop - The "Compiler Check"
 
@@ -22,10 +23,10 @@ class VerificationResult(Enum):
 @dataclass
 class VerificationIssue:
     """An issue found during verification."""
-    severity: str  # "error", "warning", "info"
-    message: str
-    line_number: Optional[int] = None
-    suggestion: Optional[str] = None
+    _severity: str  # "error", "warning", "info"
+    _message: str
+    _line_number: Optional[int] = None
+    _suggestion: Optional[str] = None
 
 
 @dataclass
@@ -33,8 +34,8 @@ class ToolVerificationReport:
     """Complete verification report for a tool call."""
     result: VerificationResult
     issues: List[VerificationIssue]
-    verified_code: Optional[str] = None
-    execution_plan: Optional[str] = None
+    _verified_code: Optional[str] = None
+    _execution_plan: Optional[str] = None
 
 
 class ToolVerifier:
