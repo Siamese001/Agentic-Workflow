@@ -17,24 +17,30 @@ class AgentOrchestrator:
     """
     The Conductor.
     Ties the Brain (Cognitive) to the Body (Action).
+    Uses Tiered Thinking Protocol.
     """
     
-    def __init__(self, provider: str = "anthropic"):
+    def __init__(self):
         print("🚀 Initializing Agent System...")
-        self.cognitive = CognitiveNode(provider=provider)
+        self.cognitive = CognitiveNode()
         self.action = ActionNode()
-        print(f"✅ System Online with {provider.upper()} brain.")
+        print("✅ System Online with Tiered Thinking brain.")
 
     def run(self, user_goal: str):
         print(f"\n🎯 USER GOAL: {user_goal}")
         print("="*60)
+        
+        # Determine complexity based on query
+        complexity = "low" if len(user_goal.split()) < 10 else "high"
+        tier_name = "Mini (Low Tier)" if complexity == "low" else "Consensus (High Tier)"
+        print(f"🧠 Using {tier_name} for this request.")
         
         # Phase 1: THINK (Cognitive Node)
         print("\n🧠 PHASE 1: COGNITIVE PROCESSING")
         print("-" * 40)
         
         # 1. Retrieve Context & Generate Plan
-        cognitive_result = self.cognitive.generate_plan(user_goal)
+        cognitive_result = self.cognitive.think(user_goal, complexity=complexity)
         
         plan = cognitive_result.get('plan')
         if not plan:
@@ -74,13 +80,11 @@ if __name__ == "__main__":
     # Parse command line arguments
     import argparse
     parser = argparse.ArgumentParser(description="Run the Subatomic Agent Orchestrator")
-    parser.add_argument("--provider", choices=["anthropic", "openai", "google"], 
-                        default="anthropic", help="LLM provider to use")
     parser.add_argument("goal", nargs="?", 
                         default="I need to write a function that prevents hallucinations by separating thinking from doing.",
                         help="User goal for the agent")
     
     args = parser.parse_args()
     
-    orchestrator = AgentOrchestrator(provider=args.provider)
+    orchestrator = AgentOrchestrator()
     orchestrator.run(args.goal)
