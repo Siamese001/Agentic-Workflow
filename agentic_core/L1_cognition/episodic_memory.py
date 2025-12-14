@@ -9,7 +9,8 @@ import json
 import time
 import logging
 from dataclasses import dataclass, asdict
-from typing import List, Dict, Optional, Any
+from dataclasses import dataclass
+from typing import List, Dict, Any, Optional, Any
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,19 @@ class Episode:
     episode_id: str
     agent_role: str
     execution_context: Dict[str, Any]  # Additional context
+
+
+@dataclass
+class EpisodeData:
+    """Data for creating a new episode."""
+    task: str
+    plan: str
+    result: str
+    tools_used: List[str]
+    rating: float
+    agent_role: str
+    execution_context: Optional[Dict[str, Any]] = None
+    failure_notes: Optional[str] = None
 
 
 class EpisodicMemory:
@@ -157,50 +171,33 @@ class EpisodicMemory:
         
         return None
 
-    async def commit_episode(
-        self,
-        task: str,
-        plan: str,
-        result: str,
-        tools_used: List[str],
-        rating: float,
-        agent_role: str,
-        execution_context: Optional[Dict[str, Any]] = None,
-        failure_notes: Optional[str] = None
-    ) -> str:
+    async def commit_episode(self, data: EpisodeData) -> str:
         """
         Saves the experience for future self.
         
         Args:
-            task: Task description
-            plan: The plan that was executed
-            result: Outcome of the execution
-            tools_used: List of tools used
-            rating: Success rating (0.0 to 1.0)
-            agent_role: Role of the agent
-            execution_context: Additional context
-            failure_notes: What went wrong (if applicable)
+            data: EpisodeData containing all episode information
             
         Returns:
             Episode ID
         """
         # Generate embedding for the task
-        goal_embedding = await self.embedder.embed_query(task)
+        goal_embedding = await self.embedder.embed_query(data.task)
         
         # Create episode
         episode_id = f"ep_{int(time.time() * 1000)}_{len(self._episodes)}"
         episode = Episode(
             goal_embedding=goal_embedding,
-            task_description=task,
-            successful_plan=plan,
-            tools_used=tools_used,
-            outcome_summary=result,
-            failure_notes=failure_notes or "",
-            rating=rating,
+            task_description=data.task,
+            successful_plan=data.plan,
+            tools_used=data.tools_used,
+            outcome_summary=data.result,
+            failure_notes=data.failure_notes or "",
+            rating=data.rating,
             timestamp=time.time(),
             episode_id=episode_id,
-            agent_role=agent_role,
-            execution_context=execution_context or {}
+            agent_role=data.agent_role,
+            execution_context=data.execution_context or {}
         )
         
         # Store in memory
@@ -215,7 +212,7 @@ class EpisodicMemory:
         # Persist to storage
         await self._persist_episode(episode)
         
-        logger.info(f"Committed episode {episode_id} (rating={rating:.2f})")
+        logger.info(f"Committed episode {episode_id} (rating={data.rating:.2f})")
         return episode_id
 
     async def _persist_episode(self, episode: Episode):

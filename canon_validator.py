@@ -30,7 +30,10 @@ class Colors:
     GREEN = "\033[92m"
     YELLOW = "\033[93m"
     CYAN = "\033[96m"
+    PURPLE = "\033[95m"
     END = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
 
 # Global validation state

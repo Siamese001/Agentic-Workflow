@@ -291,12 +291,3 @@ class PassThroughReranker:
     def rerank(self, query: str, documents: List[str], top_k: Optional[int] = None) -> List[str]:
         """Return documents in original order."""
         return documents[:top_k] if top_k else documents
-
-        """Docstring."""
-    def rerank_with_scores(self,
-        query: str,
-        documents: List[str],
-        top_k: Optional[int] = None) -> List[Tuple[str,
-        float]]:
-        """Return documents with dummy scores."""
-        return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
