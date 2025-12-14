@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Unit tests for scripts module.
@@ -20,15 +18,13 @@ Test Structure:
 import pytest
 import logging
 
+
 # Common test fixtures
 @pytest.fixture
 def mock_script_context() -> None:
     """Provide a mock script context for testing."""
-    return {
-        "runtime": "test",
-        "environment": "unit_test",
-        "debug": True
-    }
+    return {"runtime": "test", "environment": "unit_test", "debug": True}
+
 
 # Export test utilities
 __all__ = [

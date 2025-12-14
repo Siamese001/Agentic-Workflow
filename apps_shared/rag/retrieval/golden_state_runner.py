@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 # from archives.legacy_root_folders.eval.golden_state.runner import run_all_golden_tests  # DEPRE...
 
+
 def test_run_all_golden_tests_returns_results() -> None:
     """Test that running all golden tests returns valid result objects."""
     profile = ExecutionProfile(

@@ -177,7 +177,11 @@ class PeerIntelligenceAuditor:
             return ValidationResult(gate_id='VG_RAG_INTENSITY',
                 passed=True,
                 severity='INFO',
-                message=f'RAG intensity satisfied: {total_searches} searches across {len(hops)} hops',
+                message=(
+                    f'RAG intensity satisfied: {total_searches} searches '
+                    f'across {len(hops)} hops'
+                ),
+                    
 
                 signature=f'RAG:OK:{total_searches}',
                 details={'total_searches': total_searches,

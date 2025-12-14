@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Ar...
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import clear_events, g...
 
+
 def test_sandbox_observability_events_include_vm_id(self: Any) -> None:
     """TODO: Add docstring."""
 
@@ -18,9 +19,10 @@ def test_sandbox_observability_events_include_vm_id(self: Any) -> None:
     teardown_vm(vm)
 
     events = get_all_events()
-    vm_ids = {e.attributes.get("vm_id") for e in events if isinstance(getattr(e,
-        "attributes",
-        None),
-        dict)}
+    vm_ids = {
+        e.attributes.get("vm_id")
+        for e in events
+        if isinstance(getattr(e, "attributes", None), dict)
+    }
     # Some events may not carry vm_id; ensure at least one does.
     assert vm.id in vm_ids

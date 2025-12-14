@@ -25,10 +25,12 @@ Non-responsibilities:
 # from archives.legacy_root_folders.runtime.observability.events import *  # DEPRECATED: Archive ...
 # from archives.legacy_root_folders.runtime.observability.emitters import *  # DEPRECATED: Archiv...
 
+
 def get_all_events() -> list:
     """Backward-compatible alias for get_events()."""
 
     return get_events()
+
 
 def clear_events() -> None:  # type: ignore[override]
     """Backward-compatible alias for collectors.clear_events()."""

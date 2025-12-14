@@ -27,6 +27,7 @@ import sys
 from pathlib import Path
 from typing import List
 
+
 def create_test_files(modules: List[str]) -> int:
     """
     Create test files for the given modules.
@@ -105,6 +106,7 @@ class Test{source_path.stem.title().replace("_", "")}:
 
     return created_count
 
+
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -113,6 +115,7 @@ def main() -> None:
 
     created = create_test_files(sys.argv[1:])
     logger.info(f"\nCreated {created} test files")
+
 
 if __name__ == "__main__":
     main()

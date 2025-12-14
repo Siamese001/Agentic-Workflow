@@ -27,7 +27,7 @@ try:
         "validate_sdk",
         "reset_all_clients",
         "get_vector_store",
-        "get_redis_client"
+        "get_redis_client",
     ]
 except ImportError as e:
     logger.warning(f"Warning: Could not import SDK registry: {e}")

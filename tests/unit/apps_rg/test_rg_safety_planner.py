@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # Ownership: apps_rg / unknown
 # -*- coding: utf-8 -*-
@@ -9,9 +7,11 @@ logger = logging.getLogger(__name__)
 from typing import Dict
 import logging
 
+
 def test_rg_safety_planner(data: Dict[str, object]) -> Dict[str, object]:
     """Process test rg safety planner data."""
     return {"status": "processed", "input_keys": list(data.keys())}
+
 
 def get_test_rg_safety_planner_config() -> Dict[str, object]:
     """Get configuration for test_rg_safety_planner."""

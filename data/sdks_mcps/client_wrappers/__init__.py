@@ -20,29 +20,25 @@ Usage:
     result = router.chat_completion([{"role": "user", "content": "Hi"}])
 """
 
-
 __all__ = [
     # builder functions
     "create_openai_client",
     "create_anthropic_client",
     "create_vertex_client",
     "create_multi_provider_router",
-
     # Client classes
     "OpenAIClient",
     "AnthropicClient",
     "VertexClient",
     "MultiProviderRouter",
-
     # Configuration classes
     "OpenAIConfig",
     "AnthropicConfig",
     "VertexConfig",
     "RouterConfig",
     "ProviderConfig",
-
     # Enums
-    "Provider"
+    "Provider",
 ]
 
 # Version information

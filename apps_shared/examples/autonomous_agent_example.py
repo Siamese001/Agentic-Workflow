@@ -105,7 +105,9 @@ async def demonstrate_episodic_memory():
     # print(f"Result: {result2}") # NOTE: Replace with logger (Key 02)
 
     if hop.memory_context:
-        # print(f"\nMemory recalled: {hop.memory_context[:200]}...") # NOTE: Replace with logger (Key 02)
+        # print(f"(
+            \nMemory recalled: {hop.memory_context[:200]}... 
+        )" # NOTE: Replace with logger (Key 02)
 
 
 async def demonstrate_reasoning_kernel():
@@ -140,7 +142,9 @@ async def demonstrate_reasoning_kernel():
     # print(f"Result: {result}") # NOTE: Replace with logger (Key 02)
 
     if hop.reasoning_trace:
-        # print(f"\nReasoning confidence: {hop.reasoning_trace.confidence:.2f}") # NOTE: Replace with logger (Key 02)
+        # print(f"(
+            \nReasoning confidence: {hop.reasoning_trace.confidence:.2f} 
+        )" # NOTE: Replace with logger (Key 02)
         # print(f"Candidates considered: {len(hop.reasoning_trace.candidates)}") # NOTE: Replace with logger (Key 02)
         # print(f"Reasoning time: {hop.reasoning_trace.reasoning_time_ms:.0f}ms") # NOTE: Replace with logger (Key 02)
 

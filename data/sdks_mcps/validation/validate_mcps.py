@@ -293,7 +293,9 @@ def main():
     else:
 
     # Summary statistics
-    total_files = len(python_results["files"]) + len(mcp_results["catalogs"]) + len(schema_results["schemas"])
+    total_files = len(python_results["files"])
+        + len(mcp_results["catalogs"])
+        + len(schema_results["schemas"])
     valid_files = sum(1 for f in python_results["files"].values() if f.get("valid", False))
     valid_catalogs = sum(1 for c in mcp_results["catalogs"].values() if c.get("valid", False))
     valid_schemas = sum(1 for s in schema_results["schemas"].values() if s.get("valid", False))

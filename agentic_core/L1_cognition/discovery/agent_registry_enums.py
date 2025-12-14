@@ -1,11 +1,11 @@
 """Enum types for agent_registry."""
+
 import logging
 
 
-
-
-
 logger = logging.getLogger(__name__)
+
+
 class AgentCapability(Enum):
     """Standard agent capabilities."""
 

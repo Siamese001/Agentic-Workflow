@@ -36,7 +36,12 @@ def __init__(self: Any, api_key: Optional[str], base_url: Optional[str]) -> None
         self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         self.async_client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
 
-def chat_completion(self: Any, messages: list[Dict[str, Any]], model: str, temperature: float, max_tokens: Optional[int]) -> ChatCompletion:
+def chat_completion(self: Any,
+     messages: list[Dict[str,
+     Any]],
+     model: str,
+     temperature: float,
+     max_tokens: Optional[int]) -> ChatCompletion:
         """
         Create a chat completion.
 
@@ -63,7 +68,12 @@ def chat_completion(self: Any, messages: list[Dict[str, Any]], model: str, tempe
             logger.error(f"OpenAI API error: {e}")
             raise
 
-async def achat_completion(self: Any, messages: list[Dict[str, Any]], model: str, temperature: float, max_tokens: Optional[int]) -> ChatCompletion:
+async def achat_completion(self: Any,
+     messages: list[Dict[str,
+     Any]],
+     model: str,
+     temperature: float,
+     max_tokens: Optional[int]) -> ChatCompletion:
         """
         Create an async chat completion.
 

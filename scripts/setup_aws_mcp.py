@@ -1,4 +1,3 @@
-
 logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
@@ -43,7 +42,7 @@ region = {region}
     else:
         logger.info(f"⚠ Credentials file already exists: {credentials_file}")
         overwrite = input("Overwrite? (y/N): ").strip().lower()
-        if overwrite == 'y':
+        if overwrite == "y":
             credentials_content = f"""[default]
 aws_access_key_id = {access_key}
 aws_secret_access_key = {secret_key}
@@ -87,10 +86,7 @@ def setup_mcp_config() -> None:
             "aws": {
                 "command": "python",
                 "args": ["-m", "mcp_server_aws"],
-                "env": {
-                    "AWS_PROFILE": "mcp",
-                    "AWS_REGION": "us-east-1"
-                }
+                "env": {"AWS_PROFILE": "mcp", "AWS_REGION": "us-east-1"},
             }
         }
     }
@@ -106,12 +102,13 @@ def test_aws_connection() -> None:
     logger.info("\n=== Testing AWS Connection ===")
 
     import subprocess
+
     try:
         result = subprocess.run(
             ["aws", "sts", "get-caller-identity", "--profile", "mcp"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         logger.info("✓ AWS connection successful!")
         logger.info(result.stdout)

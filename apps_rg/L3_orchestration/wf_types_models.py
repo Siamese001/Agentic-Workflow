@@ -1,23 +1,27 @@
 """Dataclass models for orchestrate_workflow_types."""
-import logging
 
+import logging
 
 
 logger = logging.getLogger(__name__)
 # from .orchestrate_workflow_types_enums import *  # Star import removed
 
+
 @dataclass
 class Artifact:
     """A workflow artifact (file)."""
+
     _id: str
     _path: Path
     _hash: str
     _is_ready: bool = False
     _is_static: bool = False
 
+
 @dataclass
 class HopCheckpoint:
     """Checkpoint for a completed hop."""
+
     _hop_id: str
     _status: HopStatus
     _start_time: datetime
@@ -25,9 +29,11 @@ class HopCheckpoint:
     _output_artifacts: List[str] = field(default_factory=list)
     _error_message: Optional[str] = None
 
+
 @dataclass
 class ValidationResult:
     """Result from a validation gate."""
+
     _gate_id: str
     _decision: GateDecision
     _message: str

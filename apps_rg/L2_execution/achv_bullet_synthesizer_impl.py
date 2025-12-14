@@ -139,7 +139,8 @@ class AchvBulletSynthesizer:
                     f'Implemented DevOps best practices with Docker and Jenkins,
                     reducing deployment time from 4 hours to 15 minutes',
                     f'Established technical mentorship program,
-                    developing 8 junior engineers into senior contributors through strategic leadership']
+                    developing 8 junior engineers into senior contributors through strategic
+                    leadership']
         return bullets[:self.config.bullet_count]
 
     def _validate_bullet_word_count(self, bullet: str, bullet_num: int) -> ValidationResult:

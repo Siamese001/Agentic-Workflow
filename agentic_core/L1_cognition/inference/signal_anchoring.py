@@ -160,10 +160,12 @@ class ClaimExtractor:
         return {
             "skill": [
                 r"(?:skilled in|proficient in|expertise in|experience with)\s+([^.\n]+)",
-                r"(?:python|java|javascript|sql|aws|docker|kubernetes)\s+(?:developer|engineer|specialist)",
-
-
-                r"(\d+)\+?\s*years?\s+(?:of\s+)?experience\s+(?:in|with|as)\s+([^.\n]+)"
+                r"(?:python|java|javascript|sql|aws|docker|kubernetes)"
+                    r"\s+(?:developer|engineer|specialist)",
+                r"(\d+)\+?\s*years?\s+(?:of\s+)?experience\s+(?:in|with|as)\s+([^.\n]+)",
+                r"(?:certified in|certification:\s*)([^.\n]+)",
+                r"(?:fluent in|languages?:)\s+([^.\n]+)",
+                r"(?:located|based)\s+(?:in|at)\s+([^.\n]+)"
             ],
             "experience": [
                 r"(?:worked at|employed by|position at)\s+([^.\n]+)",
@@ -181,10 +183,12 @@ class ClaimExtractor:
                 r"(?:award|recognition|honors?)\s+(?:for|in)\s+([^.\n]+)"
             ],
             "metric": [
-                r"(\d+%|\d+\s*(?:percent|percentage))\s+(?:increase|decrease|reduction|improvement)",
+                r"(\d+%|\d+\s*(?:percent|percentage))"
+                r"\s+(?:increase|decrease|reduction|improvement)",
 
 
-                r"(\d+(?:\.\d+)?)\s*(?:million|billion|thousand|k|m|b)\s+(?:revenue|sales|users|customers)",
+                r"(\d+(?:\.\d+)?)\s*(?:million|billion|thousand|k|m|b)"
+                r"\s+(?:revenue|sales|users|customers)",
 
 
                 r"managed\s+(?:a\s+)?team\s+of\s+(\d+)"

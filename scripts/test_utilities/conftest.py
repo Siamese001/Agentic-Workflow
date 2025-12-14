@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """
@@ -34,13 +32,16 @@ DEFAULT_CONFIG = {
     "timeout": 30,
 }
 
+
 def get_config() -> Dict[str, Any]:
     """Get default configuration."""
     return DEFAULT_CONFIG.copy()
 
+
 def setup_environment() -> None:
     """Setup the environment with required configurations."""
     os.environ.setdefault("PYTHONPATH", str(PROJECT_ROOT))
+
 
 # Initialize on import
 setup_environment()

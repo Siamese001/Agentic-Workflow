@@ -5,6 +5,7 @@ logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.eval.golden_state.models import GoldenStateTestCase  # DEPREC...
 # from archives.legacy_root_folders.eval.golden_state.judge import evaluate_output  # DEPRECATED:...
 
+
 def test_judge_empty_output_fails() -> None:
     """TODO: Add docstring."""
 
@@ -14,6 +15,7 @@ def test_judge_empty_output_fails() -> None:
     assert verdict.score == 0.0
 
     """TODO: Add docstring."""
+
 
 def test_judge_detects_key_behavior() -> None:
     """TODO: Add docstring."""

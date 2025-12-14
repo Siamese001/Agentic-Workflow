@@ -1,5 +1,3 @@
-
-
 logger = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.310145+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_rg_contact_research_executor.py
@@ -15,11 +13,13 @@ meets security standards for job alignment.
 
 from typing import Optional
 import logging
+
 # from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig  # D...
 # from archives.legacy_root_folders.core.routing import RoutingPolicy  # DEPRECATED: Archive impo...
 # from archives.legacy_root_folders.core.models.models import ComplexityLevel  # DEPRECATED: Arch...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSn...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability...
+
 
 class SafetyExecutor:
     """
@@ -29,36 +29,43 @@ class SafetyExecutor:
     processing workflows and job alignment.
     """
 
-def __init__(self: Any, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot]) -> None:
-        self.routing_policy = routing_policy
-        self.sandbox = sandbox
-        self.meta_profile = meta_profile
+
+def __init__(
+    self: Any,
+    routing_policy: RoutingPolicy,
+    sandbox: SandboxConfig,
+    meta_profile: Optional[MetaProfileSnapshot],
+) -> None:
+    self.routing_policy = routing_policy
+    self.sandbox = sandbox
+    self.meta_profile = meta_profile
+
 
 def execute_safety(self: Any, prompt: str) -> str:
-        """
-        Executes resume safety validation using LLM models.
+    """
+    Executes resume safety validation using LLM models.
 
-        Ensures content compliance and protection for secure resume
-        improvement processes and job alignment.
-        """
-        try:
-            model = self.routing_policy.select_model(
-                task="safety_execution",
-                complexity=ComplexityLevel.MEDIUM,
-                meta_profile=self.meta_profile,
-            )
+    Ensures content compliance and protection for secure resume
+    improvement processes and job alignment.
+    """
+    try:
+        model = self.routing_policy.select_model(
+            task="safety_execution",
+            complexity=ComplexityLevel.MEDIUM,
+            meta_profile=self.meta_profile,
+        )
 
-            record_event("safety_execution_start", {"task": "safety_execution"})
+        record_event("safety_execution_start", {"task": "safety_execution"})
 
-            result = invoke_model(
-                model=model,
-                prompt=prompt,
-                sandbox=self.sandbox,
-            )
+        result = invoke_model(
+            model=model,
+            prompt=prompt,
+            sandbox=self.sandbox,
+        )
 
-            record_event("safety_execution_success", {"result_length": len(result)})
-            return result
+        record_event("safety_execution_success", {"result_length": len(result)})
+        return result
 
-        except (ValueError, TypeError, RuntimeError, KeyError) as exc:
-            record_exception("safety_execution_failure", exc)
-            raise
+    except (ValueError, TypeError, RuntimeError, KeyError) as exc:
+        record_exception("safety_execution_failure", exc)
+        raise

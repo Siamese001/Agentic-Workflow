@@ -15,4 +15,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 # from .route_models_2 import *  # Star import removed
 # from .lic_routing_rules_impl import *  # Star import removed
 
-__all__ = ['*']  # Re-export all imported names
+__all__ = ["*"]  # Re-export all imported names

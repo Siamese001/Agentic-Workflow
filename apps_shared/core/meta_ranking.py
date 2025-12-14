@@ -1,14 +1,14 @@
 import logging
 
 
-
-
 logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.ranking import bm25_score, dense_score, merge_scores, no...
 # from archives.legacy_root_folders.core.models.models import Evidence  # DEPRECATED: Archive imp...
 
+
 def _make_item(text: str) -> Dict[str, object]:
     return {"text": text}
+
 
 def test_bm25_score_prefers_important_tokens() -> None:
     """TODO: Add docstring."""
@@ -18,6 +18,7 @@ def test_bm25_score_prefers_important_tokens() -> None:
     assert high >= low
 
     """TODO: Add docstring."""
+
 
 def test_dense_score_is_deterministic() -> None:
     """TODO: Add docstring."""
@@ -41,6 +42,7 @@ def test_normalize_scores_range_and_relative_order() -> None:
     """TODO: Add docstring."""
 
     assert max(scores) == 1.0
+
 
 def test_merge_scores_deduplicates_by_source_and_text() -> None:
     """TODO: Add docstring."""

@@ -218,7 +218,9 @@ class ToneEnforcer:
                 violations.append(ToneViolation(
                     type="sentence_length",
                     severity="warning",
-                    message=f"Sentence too long: {word_count} words (max: {settings.max_sentence_length})",
+                    message=f"Sentence too long: {word_count} words "
+                        f"(max: {settings.max_sentence_length})",
+                        
 
 
                     location=sentence[:50] + "..." if len(sentence) > 50 else sentence,
@@ -229,7 +231,10 @@ class ToneEnforcer:
                 violations.append(ToneViolation(
                     type="sentence_length",
                     severity="info",
-                    message=f"Sentence too short: {word_count} words (min: {settings.min_sentence_length})",
+                    message=(
+                        f"Sentence too short: {word_count} words "
+                        f"(min: {settings.min_sentence_length})"
+                    ),
 
 
                     location=sentence,

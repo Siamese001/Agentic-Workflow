@@ -290,7 +290,9 @@ class VertexClient:
             "content": response.text,
             "model": self.config.model,
             "safety_ratings": safety_ratings,
-            "finish_reason": response.candidates[0].finish_reason.name if hasattr(response.candidates[0], 'finish_reason') else None,
+            "finish_reason": response.candidates[0].finish_reason.name if hasattr(response.candidates[0],
+                 'finish_reason') else None,
+                
             "usage": self._extract_usage(response)
         }
 
@@ -333,9 +335,11 @@ class VertexClient:
                     citation = {
                         "uri": source["uri"],
                         "title": source["title"],
-                        "snippet": source["snippet"][:200] + "..." if len(source["snippet"]) > 200 else source["snippet"],
+                        "snippet": source["snippet"][:200]
+                            + "..." if len(source["snippet"]) > 200 else source["snippet"],
                         "confidence": support["score"],
-                        "referenced_text": support["segment"][:100] + "..." if len(support["segment"]) > 100 else support["segment"]
+                        "referenced_text": support["segment"][:100]
+                            + "..." if len(support["segment"]) > 100 else support["segment"]
                     }
                     citations.append(citation)
                     seen_sources.add(source["uri"])

@@ -1,16 +1,16 @@
-
 import time
 import uuid
 import logging
-
 
 
 logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.models.models import TelemetryEvent  # DEPRECATED: Archi...
 # from archives.legacy_root_folders.runtime.observability.collectors import append_event, push_sp...
 
+
 def _now_ms() -> int:
     return int(time.time() * 1000)
+
 
 def start_span(name: str, ctx: Optional[Dict[str, object]] = None) -> Dict[str, object]:
     """Create a uniquely identified span and record the start time."""
@@ -39,10 +39,18 @@ def start_span(name: str, ctx: Optional[Dict[str, object]] = None) -> Dict[str, 
 
     return record
 
+
 def end_span(span_record: Dict[str, object]) -> None:
     """Close a previously-started span; no-op if unknown."""
 
-#     from archives.legacy_root_folders.runtime.observability.collectors import span_stack  # DEP...
+    #     from archives.
+        .legacy_root_folders.
+        .runtime.
+        .observability.
+        .collectors import span_stack  # DEP.
+        ..
+        ..
+        .
 
     if span_record not in span_stack():
         return

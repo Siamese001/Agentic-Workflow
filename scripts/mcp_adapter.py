@@ -16,101 +16,106 @@ from mcp.client.stdio import stdio_client
 class UniversalMCPClient:
     """Universal adapter for managing multiple MCP server connections."""
 
+
 def __init__(self: Any, config_path: str) -> None:
-        """Initialize the MCP client with the specified config path."""
-        self.config_path = config_path
-        self.servers = {}
-        self.logger = logging.getLogger(__name__)
-        self.exit_stack = AsyncExitStack()
-        self.sessions: Dict[str, ClientSession] = {}
+    """Initialize the MCP client with the specified config path."""
+    self.config_path = config_path
+    self.servers = {}
+    self.logger = logging.getLogger(__name__)
+    self.exit_stack = AsyncExitStack()
+    self.sessions: Dict[str, ClientSession] = {}
+
 
 async def connect_all(self: Any) -> None:
-        """Initializes connections to all servers defined in JSON."""
-        if not os.path.exists(self.config_path):
-            raise FileNotFoundError(f"Config not found at {self.config_path}")
+    """Initializes connections to all servers defined in JSON."""
+    if not os.path.exists(self.config_path):
+        raise FileNotFoundError(f"Config not found at {self.config_path}")
 
-        with open(self.config_path) as f:
-            config_data = json.load(f)
+    with open(self.config_path) as f:
+        config_data = json.load(f)
 
-        self.logger.info(f"MCP: Connecting to {len(config_data['mcpServers'])} servers...")
+    self.logger.info(f"MCP: Connecting to {len(config_data['mcpServers'])} servers...")
 
-        for name, cfg in config_data['mcpServers'].items():
-            try:
-                # Handle Env Var Expansion
-                env_vars = os.environ.copy()
-                if "env" in cfg:
-                    for k, v in cfg["env"].items():
-                        if v.startswith("${") and v.endswith("}"):
-                            var_name = v[2:-1]
-                            env_vars[k] = os.getenv(var_name, "")
-                        else:
-                            env_vars[k] = v
-
-                # Expand args if needed
-                final_args = []
-                for arg in cfg["args"]:
-                    if arg.startswith("${") and arg.endswith("}"):
-                        final_args.append(os.getenv(arg[2:-1], ""))
+    for name, cfg in config_data["mcpServers"].items():
+        try:
+            # Handle Env Var Expansion
+            env_vars = os.environ.copy()
+            if "env" in cfg:
+                for k, v in cfg["env"].items():
+                    if v.startswith("${") and v.endswith("}"):
+                        var_name = v[2:-1]
+                        env_vars[k] = os.getenv(var_name, "")
                     else:
-                        final_args.append(arg)
+                        env_vars[k] = v
 
-                server_params = StdioServerParameters(
-                    command=cfg["command"],
-                    args=final_args,
-                    env=env_vars
-                )
+            # Expand args if needed
+            final_args = []
+            for arg in cfg["args"]:
+                if arg.startswith("${") and arg.endswith("}"):
+                    final_args.append(os.getenv(arg[2:-1], ""))
+                else:
+                    final_args.append(arg)
 
-                transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
-                read, write = transport
-                session = await self.exit_stack.enter_async_context(ClientSession(read, write))
-                await session.initialize()
-                self.sessions[name] = session
-                self.logger.info(f"Connected to {name}")
+            server_params = StdioServerParameters(
+                command=cfg["command"], args=final_args, env=env_vars
+            )
 
-            except Exception as e:
-                self.logger.error(f"Failed to connect to {name}: {e}")
+            transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
+            read, write = transport
+            session = await self.exit_stack.enter_async_context(ClientSession(read, write))
+            await session.initialize()
+            self.sessions[name] = session
+            self.logger.info(f"Connected to {name}")
+
+        except Exception as e:
+            self.logger.error(f"Failed to connect to {name}: {e}")
+
 
 async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
-        """Returns tools formatted for OpenAI/Anthropic.
+    """Returns tools formatted for OpenAI/Anthropic.
 
-        Returns:
-            List of tool definitions with namespaced names
-        """
-        all_tools = []
-        for name, session in self.sessions.items():
-            try:
-                result = await session.list_tools()
-                for tool in result.tools:
-                    # Namespace tools: 'browser__navigate', 'filesystem__read_file'
-                    all_tools.append({
+    Returns:
+        List of tool definitions with namespaced names
+    """
+    all_tools = []
+    for name, session in self.sessions.items():
+        try:
+            result = await session.list_tools()
+            for tool in result.tools:
+                # Namespace tools: 'browser__navigate', 'filesystem__read_file'
+                all_tools.append(
+                    {
                         "name": f"{name}__{tool.name}",
                         "description": f"[{name}] {tool.description}",
-                        "input_schema": tool.inputSchema
-                    })
-            except Exception as e:
-                self.logger.warning(f"Could not list tools for {name}: {e}")
-        return all_tools
+                        "input_schema": tool.inputSchema,
+                    }
+                )
+        except Exception as e:
+            self.logger.warning(f"Could not list tools for {name}: {e}")
+    return all_tools
+
 
 async def execute_tool(self: Any, namespaced_tool_name: str, arguments: Dict[str, Any]) -> None:
-        """Execute a tool on the appropriate MCP server.
+    """Execute a tool on the appropriate MCP server.
 
-        Args:
-            namespaced_tool_name: Tool name in format 'server__tool'
-            arguments: Tool arguments
+    Args:
+        namespaced_tool_name: Tool name in format 'server__tool'
+        arguments: Tool arguments
 
-        Returns:
-            Tool execution result
-        """
-        try:
-            server_name, tool_name = namespaced_tool_name.split("__", 1)
-            if server_name not in self.sessions:
-                raise ValueError(f"Server {server_name} not connected")
+    Returns:
+        Tool execution result
+    """
+    try:
+        server_name, tool_name = namespaced_tool_name.split("__", 1)
+        if server_name not in self.sessions:
+            raise ValueError(f"Server {server_name} not connected")
 
-            result = await self.sessions[server_name].call_tool(tool_name, arguments=arguments)
-            return result.content
-        except Exception as e:
-            return f"Error executing {namespaced_tool_name}: {str(e)}"
+        result = await self.sessions[server_name].call_tool(tool_name, arguments=arguments)
+        return result.content
+    except Exception as e:
+        return f"Error executing {namespaced_tool_name}: {str(e)}"
+
 
 async def cleanup(self: Any) -> None:
-        """Cleanup all MCP server connections."""
-        await self.exit_stack.aclose()
+    """Cleanup all MCP server connections."""
+    await self.exit_stack.aclose()

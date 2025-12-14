@@ -14,17 +14,17 @@ import sys
 import time
 
 # CRITICAL: Fix Windows console crashes on Emoji/Unicode output
-sys.stdout.reconfigure(encoding='utf-8')
-sys.stderr.reconfigure(encoding='utf-8')
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler('hardened_job.log', encoding='utf-8')
-    ]
+        logging.FileHandler("hardened_job.log", encoding="utf-8"),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -42,20 +42,24 @@ TEST_CONFIG = {
     "target_role": "Senior AI Engineer",
     "target_company": "Anthropic",
     "job_url": "https://anthropic.com/careers",
-    "routing_tier": RoutingTier.REASONING
+    "routing_tier": RoutingTier.REASONING,
 }
+
 
 def create_test_workflow_spec() -> None:
     """Create a minimal workflow spec for the acceptance test."""
     return {
         "name": "Titanium Acceptance Test Workflow",
         "version": "v2.0",
-        "hops": [{
-            "id": "test_hop",
-            "script": "echo 'Test hop executed successfully'",
-            "description": "Test hop for acceptance test"
-        }]
+        "hops": [
+            {
+                "id": "test_hop",
+                "script": "echo 'Test hop executed successfully'",
+                "description": "Test hop for acceptance test",
+            }
+        ],
     }
+
 
 def _initialize_orchestrator() -> None:
     """Initialize the hardened workflow orchestrator."""
@@ -63,13 +67,13 @@ def _initialize_orchestrator() -> None:
     workflow_spec = create_test_workflow_spec()
 
     from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
+
     orchestrator = HardenedWorkflowOrchestrator(
-        workflow_spec=workflow_spec,
-        run_base_dir="./pipeline_runs",
-        storage_path="./state_storage"
+        workflow_spec=workflow_spec, run_base_dir="./pipeline_runs", storage_path="./state_storage"
     )
     logger.info("✅ Orchestrator initialized successfully")
     return orchestrator
+
 
 def _prepare_workflow_context() -> None:
     """Prepare initial workflow context."""
@@ -78,24 +82,24 @@ def _prepare_workflow_context() -> None:
         "target_role": TEST_CONFIG["target_role"],
         "target_company": TEST_CONFIG["target_company"],
         "job_url": TEST_CONFIG["job_url"],
-        "routing_tier": TEST_CONFIG["routing_tier"]
+        "routing_tier": TEST_CONFIG["routing_tier"],
     }
+
 
 def _execute_workflow(orchestrator: Any, context: Any) -> None:
     """Execute the workflow with resilience."""
     logger.info("⚙️ Executing hardened workflow...")
     logger.info(f"Target Role: {TEST_CONFIG['target_role']}")
     logger.info(f"Target Company: {TEST_CONFIG['target_company']}")
-    return orchestrator.execute_workflow_with_resilience(
-        workflow_id=TEST_JOB_ID,
-        context=context
-    )
+    return orchestrator.execute_workflow_with_resilience(workflow_id=TEST_JOB_ID, context=context)
+
 
 def _extract_result_content(result: Any) -> None:
     """Extract content from workflow result."""
     if isinstance(result, dict):
         return result.get("final_output", result)
     return result
+
 
 def _display_results(content: Any) -> None:
     """Display workflow results."""
@@ -114,11 +118,13 @@ def _display_results(content: Any) -> None:
     else:
         logger.info(f"Result: {content}")
 
+
 def _get_state_location(orchestrator: Any) -> None:
     """Get state persistence location."""
-    if hasattr(orchestrator, 'state_manager') and orchestrator.state_manager:
-        return getattr(orchestrator.state_manager, 'storage_path', './state_storage')
+    if hasattr(orchestrator, "state_manager") and orchestrator.state_manager:
+        return getattr(orchestrator.state_manager, "storage_path", "./state_storage")
     return "State manager not available"
+
 
 def _print_success_report(state_location: Any, execution_time: Any) -> None:
     """Print success criteria report."""
@@ -130,6 +136,7 @@ def _print_success_report(state_location: Any, execution_time: Any) -> None:
     logger.info("=" * 60)
     logger.info("🎉 ACCEPTANCE TEST PASSED")
     logger.info("=" * 60)
+
 
 async def main() -> None:
     """Main execution function for the hardened job test."""
@@ -145,9 +152,7 @@ async def main() -> None:
         context = _prepare_workflow_context()
 
         updated_context = orchestrator.initialize_or_resume_workflow(
-            workflow_id=TEST_JOB_ID,
-            total_k_nodes=5,
-            context=context
+            workflow_id=TEST_JOB_ID, total_k_nodes=5, context=context
         )
 
         if updated_context.get("resumed_from_checkpoint"):
@@ -173,6 +178,7 @@ async def main() -> None:
         logger.error(f"Error: {type(e).__name__}: {e}")
 
         import traceback
+
         logger.error("Stack Trace:")
         logger.error(traceback.format_exc())
 
@@ -189,6 +195,7 @@ async def main() -> None:
             except Exception as e:
                 logger.warning(f"Cleanup warning: {e}")
 
+
 def run_sync() -> None:
     """Entry point for synchronous execution."""
     try:
@@ -200,6 +207,7 @@ def run_sync() -> None:
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return 1
+
 
 if __name__ == "__main__":
     exit_code = run_sync()

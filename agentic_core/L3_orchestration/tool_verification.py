@@ -90,7 +90,11 @@ def _init_patterns(self: Any) -> None:
             for tool, patterns in self.tool_requirements.items()
         }
 
-async def verify_tool_call(self: Any, tool_name: str, tool_args: Dict[str, Any], context: Optional[Dict]) -> ToolVerificationReport:
+async def verify_tool_call(self: Any,
+     tool_name: str,
+     tool_args: Dict[str,
+     Any],
+     context: Optional[Dict]) -> ToolVerificationReport:
         """
         Verify a tool call before execution.
 
@@ -142,7 +146,10 @@ async def verify_tool_call(self: Any, tool_name: str, tool_args: Dict[str, Any],
             execution_plan=self._generate_execution_plan(tool_name, tool_args)
         )
 
-def _validate_basic_tool_call(self: Any, tool_name: str, tool_args: Dict[str, Any]) -> List[VerificationIssue]:
+def _validate_basic_tool_call(self: Any,
+     tool_name: str,
+     tool_args: Dict[str,
+     Any]) -> List[VerificationIssue]:
         """Basic validation of tool call structure."""
         issues = []
 
@@ -236,7 +243,11 @@ async def _verify_code(self: Any, code: str) -> List[VerificationIssue]:
 
         return issues
 
-async def _verify_tool_specific(self: Any, tool_name: str, tool_args: Dict[str, Any], context: Optional[Dict]) -> List[VerificationIssue]:
+async def _verify_tool_specific(self: Any,
+     tool_name: str,
+     tool_args: Dict[str,
+     Any],
+     context: Optional[Dict]) -> List[VerificationIssue]:
         """Tool-specific verification logic."""
         issues = []
 

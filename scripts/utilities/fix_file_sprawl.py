@@ -20,14 +20,13 @@ TARGET_DIRECTORIES = {
     "observability/health_metrics.py": "observability/metrics/",
     "observability/observability.py": "observability/core/",
     "observability/repair_policies.py": "observability/policies/",
-    "observability/runtime_observability_agentic_collectors.py": "observability/runtime/collectors/"
-    ,
+    "observability/runtime_observability_agentic_collectors.py":
+    "observability/runtime/collectors/",
     "observability/runtime_observability_agentic_spans.py": "observability/runtime/spans/",
     "observability/runtime_observability_collectors.py": "observability/runtime/collectors/",
     "observability/runtime_observability_spans.py": "observability/runtime/spans/",
     "observability/security_controls.py": "observability/security/",
     "observability/simulation.py": "observability/simulation/",
-
     # config/ files
     "config/config.py": "config/core/",
     "config/graph_store_neo4j.py": "config/database/",
@@ -36,7 +35,6 @@ TARGET_DIRECTORIES = {
     "config/prompts.json": "config/prompts/",
     "config/security_controls.py": "config/security/",
     "config/tests__deprecated_conftest.py": "config/tests/",
-
     # shared/ files
     "shared/config.py": "shared/core/",
     "shared/exceptions.py": "shared/core/",
@@ -45,7 +43,6 @@ TARGET_DIRECTORIES = {
     "shared/reasoning_config.py": "shared/reasoning/",
     "shared/reasoning_prompt.py": "shared/reasoning/",
     "shared/workflow_types.py": "shared/types/",
-
     # scripts/ files
     "scripts/check_canonical_structure.py": "scripts/validation/",
     "scripts/fix_kwargs_correct.py": "scripts/validation/",
@@ -56,6 +53,7 @@ TARGET_DIRECTORIES = {
     "scripts/populate_hardened_code.py": "scripts/setup/",
     "scripts/zero_loss_merge_engine.py": "scripts/merge/",
 }
+
 
 def move_file_with_import_updates(source: Path, target_dir: Path) -> None:
     """Move a file to target directory and update its imports."""
@@ -68,27 +66,29 @@ def move_file_with_import_updates(source: Path, target_dir: Path) -> None:
     shutil.move(str(source), str(target_file))
 
     # Update imports in the moved file
-    if target_file.suffix == '.py':
+    if target_file.suffix == ".py":
         update_imports_in_file(target_file)
+
 
 def update_imports_in_file(file_path: Path) -> None:
     """# SQL removed: Update import statements in a Python file after moving."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         original_content = content
 
         # Update relative imports based on the file's new location
-        file_path.relative_to(Path('.')).parts
+        file_path.relative_to(Path(".")).parts
 
         # This is a simplified update - in practice, you'd need more sophisticated logic
         # to handle all import scenarios
 
         if content != original_content:
-            file_path.write_text(content, encoding='utf-8')
+            file_path.write_text(content, encoding="utf-8")
             # Updated imports in file_path
     except Exception as e:
         # Warning: Could not update imports in file_path
         logger.info(f"Warning: Could not update imports in {file_path}: {e}")
+
 
 def handle_invalid_layers() -> None:
     """Handle invalid layer directories in apps_lic."""
@@ -113,9 +113,10 @@ def handle_invalid_layers() -> None:
             else:
                 shutil.move(str(old_path), str(new_path))
 
+
 def main() -> None:
     """Main function to fix file sprawl."""
-    root = Path('.')
+    root = Path(".")
 
     # Move individual files
     for source_path, target_dir_str in TARGET_DIRECTORIES.items():
@@ -134,5 +135,6 @@ def main() -> None:
     # File sprawl fix complete!
     # Note: You may need to manually update import statements in other files that reference these...
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

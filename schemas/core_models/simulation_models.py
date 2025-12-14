@@ -1,10 +1,9 @@
 import logging
 
 
-
-
-
 logger = logging.getLogger(__name__)
+
+
 class SimScenario(BaseModel):
     """TODO: Add docstring."""
 
@@ -16,8 +15,10 @@ class SimScenario(BaseModel):
 
     """TODO: Add docstring."""
 
+
 class SimOutcome(BaseModel):
     """TODO: Add docstring."""
+
     _scenario_id: str
     _average_scores: Dict[str, float]
     _safety_incidents: int

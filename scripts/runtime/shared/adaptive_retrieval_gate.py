@@ -32,7 +32,9 @@ class AdaptiveRetrievalGate:
         self.patterns = {
             # Conversational patterns that don't need retrieval
             'conversational': re.compile(
-                r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye|yes|no|sure|got it|understood|cool|awesome|great|perfect)$',
+                r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye)'
+                    r'|(yes|no|sure|got it|understood|cool|awesome|great|perfect)$',
+                    
                 re.IGNORECASE
             ),
 
