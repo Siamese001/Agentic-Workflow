@@ -5,7 +5,7 @@ Provides cognitive capabilities for agent autonomy including
 episodic memory and reasoning systems.
 """
 
-from .episodic_memory import (
+from agentic_core.L1_cognition.episodic_memory import (
     Episode,
     EpisodicMemory,
     create_episodic_memory

@@ -1,11 +1,11 @@
 """K.11 Shadow Audit Agent - Technical Due Diligence."""
 
 from typing import Dict, Any, Optional
-from .base_agent import BaseExecutiveAgent
-from .schema_definitions import TechnicalSWOT
-from .research_tools import TavilyResearcher
-from .infrastructure_resilience import resilient_execution
-from .prompt_providers import K11PromptProvider
+from scripts.runtime.shared.workflow.base_agent import BaseExecutiveAgent
+from scripts.runtime.shared.workflow.schema_definitions import TechnicalSWOT
+from scripts.runtime.shared.workflow.research_tools import TavilyResearcher
+from scripts.runtime.shared.workflow.infrastructure_resilience import resilient_execution
+from scripts.runtime.shared.workflow.prompt_providers import K11PromptProvider
 
 
 class K11ShadowAuditAgent(BaseExecutiveAgent):

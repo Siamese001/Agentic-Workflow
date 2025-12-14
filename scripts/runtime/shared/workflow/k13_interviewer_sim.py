@@ -1,10 +1,10 @@
 """K.13 Interviewer Simulation Agent - Oppositional Preparation."""
 
 from typing import Dict, Any, Optional
-from .base_agent import BaseExecutiveAgent
-from .schema_definitions import InterviewerProfile
-from .infrastructure_resilience import resilient_execution
-from .prompt_providers import K13PromptProvider
+from scripts.runtime.shared.workflow.base_agent import BaseExecutiveAgent
+from scripts.runtime.shared.workflow.schema_definitions import InterviewerProfile
+from scripts.runtime.shared.workflow.infrastructure_resilience import resilient_execution
+from scripts.runtime.shared.workflow.prompt_providers import K13PromptProvider
 
 
 class K13InterviewerSimulationAgent(BaseExecutiveAgent):
