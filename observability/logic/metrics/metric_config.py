@@ -8,6 +8,7 @@ import logging
 import time
 from typing import Dict, List, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -22,7 +23,7 @@ class MetricConfig:
     """Metrics collector for metrics domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    SELF.CONFIG = config or {}
+    SELF.CONFIG = ConfigurationService().config or {}
     self.metrics: Dict[str, List[Metric]] = defaultdict(list)
     ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
 

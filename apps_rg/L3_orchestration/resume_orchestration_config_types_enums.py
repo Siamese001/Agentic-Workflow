@@ -1,5 +1,6 @@
 """Enum types for resume_orchestration_config_types."""
 import logging
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class RAGType(str, Enum):

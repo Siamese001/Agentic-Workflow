@@ -7,6 +7,7 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class JobAnalyzer:

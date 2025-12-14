@@ -1,5 +1,6 @@
 import logging
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 def test_selector_integration_uses_cache_for_generic_calls() -> None:

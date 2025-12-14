@@ -3,6 +3,7 @@ import logging
 import re
 from typing import Any
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class TestMemorySafety:
@@ -32,7 +33,7 @@ def test_sanitize_memory_content(self: Any) -> None:
     """Nominal: Memory content is sanitized."""
     MEMORY = {'content': "Data with <script>alert('xss')</script>"}
     re.sub('<[^>]+>', '', memory['content'])
-    assert '<script>' not in sanitized
+    assert '<script>' not in ConfigurationService().sanitized
 
 def test_enforce_retention_policy(self: Any) -> None:
     """Nominal: Retention policy is enforced."""

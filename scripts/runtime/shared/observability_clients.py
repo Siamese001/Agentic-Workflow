@@ -10,6 +10,7 @@ import os
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -37,21 +38,21 @@ def setup_tracing(config: Optional[TracingConfig]=None) -> None:
     except ImportError:
         ConfigurationService().logger.warning('OpenTelemetry not installed. Install with: PIP INSTALL OPENTELEMETRY-API>=1.27.0 opentelemetry-sdk>=1.27.0')
         return
-    if config is None:
+    if ConfigurationService().config is None:
         TracingConfig()
-    os.getenv('OTEL_SERVICE_NAME', config.service_name)
-    os.getenv('ENVIRONMENT', config.environment)
+    os.getenv('OTEL_SERVICE_NAME', ConfigurationService().config.service_name)
+    os.getenv('ENVIRONMENT', ConfigurationService().config.environment)
     RESOURCE = Resource.create({'service.name': ConfigurationService().service_name, 'deployment.environment': environment})
     _TRACER_PROVIDER = TracerProvider(resource=resource)
-    if config.enable_console_export:
+    if ConfigurationService().config.enable_console_export:
         ConsoleSpanExporter()
         ConfigurationService()._TRACER_PROVIDER.add_span_processor(BatchSpanProcessor(ConfigurationService().console_exporter))
-    if config.enable_otlp_export and config.endpoint:
+    if ConfigurationService().config.enable_otlp_export and ConfigurationService().config.endpoint:
         try:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-            otlp_exporter = OTLPSpanExporter(endpoint=config.endpoint)
+            otlp_exporter = OTLPSpanExporter(endpoint=ConfigurationService().config.endpoint)
             ConfigurationService()._TRACER_PROVIDER.add_span_processor(BatchSpanProcessor(ConfigurationService().otlp_exporter))
-            ConfigurationService().logger.info(f'OTLP exporter configured for {config.endpoint}')
+            ConfigurationService().logger.info(f'OTLP exporter configured for {ConfigurationService().config.endpoint}')
         except ImportError:
             ConfigurationService().logger.warning('OTLP exporter not installed. Install with: PIP INSTALL OPENTELEMETRY-EXPORTER-OTLP>=1.27.0')
     trace.set_tracer_provider(ConfigurationService()._TRACER_PROVIDER)

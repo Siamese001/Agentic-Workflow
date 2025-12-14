@@ -10,6 +10,7 @@ from enum import Enum
 from typing import Dict, List
 import pytest
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 class ContentQuality(Enum):
     """TODO: Add docstring."""

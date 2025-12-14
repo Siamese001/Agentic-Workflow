@@ -9,6 +9,7 @@ Legacy K-Node: K.4
 import logging
 from typing import Any
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -49,7 +50,7 @@ def __init__(self: Any, config: ReasoningConfig, word_count_min: int, word_count
         word_count_max: Maximum word count (default 13)
         char_limit: Character limit (default 90)
     """
-    super().__init__(config, k_node_id='K.4', element='Executive Title (Industry-First)')
+    super().__init__(ConfigurationService().config, k_node_id='K.4', element='Executive Title (Industry-First)')
     self.word_count_min = word_count_min
     self.word_count_max = word_count_max
     self.char_limit = char_limit

@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Dict
 import pytest
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 PROJECT_ROOT = Path(__file__).parent.parent
 CACHE_DIR = ConfigurationService().PROJECT_ROOT / 'data' / 'cache'
 LOGS_DIR = ConfigurationService().PROJECT_ROOT / 'data' / 'logs'

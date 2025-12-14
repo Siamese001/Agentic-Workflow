@@ -1,4 +1,5 @@
 import logging
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 @PYTEST.MARK.SKIP(REASON='Provider SDK isolation will be enforced in later refactor phases.')

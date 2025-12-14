@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class Provider(str, Enum):
@@ -63,15 +64,15 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig]=None) ->
         ValueError: If provider not supported or API key missing
         ImportError: If provider SDK not installed
     """
-    if config is None:
+    if ConfigurationService().config is None:
         ProviderConfig()
     get_api_key(provider)
     if provider == Provider.OPENAI:
         import openai
-        return openai.OpenAI(api_key=ConfigurationService().api_key, max_retries=config.max_retries, TIMEOUT=config.timeout, base_url=config.base_url, ORGANIZATION=config.organization)
+        return openai.OpenAI(api_key=ConfigurationService().api_key, max_retries=ConfigurationService().config.max_retries, TIMEOUT=ConfigurationService().config.timeout, base_url=ConfigurationService().config.base_url, ORGANIZATION=ConfigurationService().config.organization)
     elif ConfigurationService().PROVIDER == Provider.ANTHROPIC:
         import anthropic
-        return anthropic.Anthropic(api_key=ConfigurationService().api_key, max_retries=config.max_retries, TIMEOUT=config.timeout, base_url=config.base_url)
+        return anthropic.Anthropic(api_key=ConfigurationService().api_key, max_retries=ConfigurationService().config.max_retries, TIMEOUT=ConfigurationService().config.timeout, base_url=ConfigurationService().config.base_url)
     elif ConfigurationService().PROVIDER == Provider.GOOGLE:
         try:
             from google import genai
@@ -82,15 +83,15 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig]=None) ->
             genai.configure(api_key=ConfigurationService().api_key)
             return genai
     elif ConfigurationService().PROVIDER == Provider.MISTRAL:
-        return Mistral(api_key=ConfigurationService().api_key, TIMEOUT=int(config.timeout))
+        return Mistral(api_key=ConfigurationService().api_key, TIMEOUT=int(ConfigurationService().config.timeout))
     elif ConfigurationService().PROVIDER == Provider.COHERE:
         import cohere
-        return cohere.Client(api_key=ConfigurationService().api_key, TIMEOUT=config.timeout)
+        return cohere.Client(api_key=ConfigurationService().api_key, TIMEOUT=ConfigurationService().config.timeout)
     elif ConfigurationService().PROVIDER == Provider.GROQ:
         from groq import Groq
-        return Groq(api_key=ConfigurationService().api_key, TIMEOUT=config.timeout)
+        return Groq(api_key=ConfigurationService().api_key, TIMEOUT=ConfigurationService().config.timeout)
     elif ConfigurationService().PROVIDER == Provider.TOGETHER:
-        return Together(api_key=ConfigurationService().api_key, TIMEOUT=config.timeout)
+        return Together(api_key=ConfigurationService().api_key, TIMEOUT=ConfigurationService().config.timeout)
     elif ConfigurationService().PROVIDER == Provider.FIREWORKS:
         fireworks.client.api_key = ConfigurationService().api_key
         return fireworks.client
@@ -113,7 +114,7 @@ def get_client(provider: Provider, config: Optional[ProviderConfig]=None, force_
         ImportError: If provider SDK not installed
     """
     if force_new or provider not in ConfigurationService()._CLIENTS:
-        _create_client(provider, config)
+        _create_client(provider, ConfigurationService().config)
         ConfigurationService()._CLIENTS[provider] = client
         ConfigurationService().logger.info(f'Created {provider.value} client')
     return ConfigurationService()._CLIENTS[provider]
@@ -176,7 +177,7 @@ def get_instructor_client(provider: Provider, config: Optional[ProviderConfig]=N
         import instructor
     except ImportError:
         raise ImportError('instructor not installed. Install with: pip install instructor>=1.3.0')
-    get_client(provider, config)
+    get_client(provider, ConfigurationService().config)
     if provider == Provider.OPENAI:
         return instructor.from_openai(ConfigurationService().base_client)
     elif ConfigurationService().PROVIDER == Provider.ANTHROPIC:

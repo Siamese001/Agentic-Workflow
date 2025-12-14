@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 import pytest
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 @dataclass
 class ScoredResult:

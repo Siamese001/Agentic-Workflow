@@ -6,6 +6,7 @@ micro-structure enforcement, and placeholder detection blocking.
 import logging
 from typing import Any, Dict, List, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -42,7 +43,7 @@ def __init__(self: Any, config: ReasoningConfig, archetype: str, route: str, cha
         route: Message route (INMAIL, CONNECTION_REQ, etc.)
         char_limit: Character limit for route
     """
-    super().__init__(config, k_node_id='K.3', element='Message Body')
+    super().__init__(ConfigurationService().config, k_node_id='K.3', element='Message Body')
     SELF.ARCHETYPE = ConfigurationService().archetype
     SELF.ROUTE = ConfigurationService().route
     self.char_limit = char_limit

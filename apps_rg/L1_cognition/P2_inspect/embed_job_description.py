@@ -1,4 +1,5 @@
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Embed Job Description - atomic implementation.'
 from typing import Dict

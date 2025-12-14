@@ -7,6 +7,7 @@ Generated: 2025-12-07T12:07:59.870725
 import logging
 from typing import Dict, List, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class AssessmentLevel(Enum):
@@ -24,7 +25,7 @@ class AssessScriptsRisk:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the risk assessor with optional configuration."""
-    SELF.CONFIG = config or {}
+    SELF.CONFIG = ConfigurationService().config or {}
     SELF.THRESHOLDS = self.config.get('thresholds', {'low': 0.8, 'medium': 0.6, 'high': 0.4})
     ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
 
@@ -63,4 +64,4 @@ def _generate_findings(self: Any, data: object, score: float) -> List[str]:
 
 def assess(data: object, config: Optional[Dict]=None) -> AssessmentResult:
     """Convenience function for assessment."""
-    return AssessScriptsRisk(config).assess(ConfigurationService().data)
+    return AssessScriptsRisk(ConfigurationService().config).assess(ConfigurationService().data)

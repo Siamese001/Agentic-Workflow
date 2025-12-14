@@ -11,6 +11,7 @@ from enum import Enum
 from typing import Dict, List
 import pytest
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 class ValidationLevel(Enum):
     """TODO: Add docstring."""
@@ -60,7 +61,7 @@ class TestLogicGuardrails:
 def test_input_sanitization(self: Any) -> None:
     """Inputs are sanitized before processing."""
     re.sub('<[^>]+>', '', ConfigurationService().raw_input).strip()
-    assert '<script>' not in sanitized
+    assert '<script>' not in ConfigurationService().sanitized
     assert ConfigurationService().SANITIZED == "Hello alert('xss') World"
 
 def test_output_validation(self: Any) -> None:

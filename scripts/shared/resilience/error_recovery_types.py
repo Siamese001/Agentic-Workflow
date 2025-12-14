@@ -1,5 +1,6 @@
 """Types and models for error_recovery."""
 import logging
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class RecoveryStrategy(Enum):

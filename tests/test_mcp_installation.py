@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 sys.path.insert(0, os.path.dirname(__file__))
 ConfigurationService().LOGGER.INFO('=' * 60)

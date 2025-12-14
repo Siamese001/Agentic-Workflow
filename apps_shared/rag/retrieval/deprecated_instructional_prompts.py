@@ -11,6 +11,7 @@ This module validates:
 from typing import Any
 import pytest
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 class TestInstructionalPromptStructure:
     """Test v6 prompt structure and functionality."""

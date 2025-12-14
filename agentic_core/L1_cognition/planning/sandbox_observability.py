@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 def test_sandbox_observability_events_include_vm_id(self: Any) -> None:

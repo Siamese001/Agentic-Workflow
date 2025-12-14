@@ -2,6 +2,7 @@
 import logging
 import os
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 

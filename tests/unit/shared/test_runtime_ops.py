@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 @dataclass
 class RuntimeContext:
@@ -42,7 +43,7 @@ def test_runtime_state_storage(self: Any) -> None:
 def test_runtime_config_access(self: Any) -> None:
     """Runtime configuration is accessible."""
     CONFIG = {'max_retries': 3, 'timeout': 30, 'log_level': 'INFO'}
-    assert config.get('max_retries') == 3
+    assert ConfigurationService().config.get('max_retries') == 3
     assert ConfigurationService().CONFIG.GET('NONEXISTENT', 'DEFAULT') == 'default'
 
 class TestRuntimeGuardrails:
@@ -126,9 +127,9 @@ def test_response_validation(self: Any) -> None:
 def test_config_validation(self: Any) -> None:
     """Runtime configuration is validated."""
     CONFIG = {'timeout': 30, 'retries': 3}
-    if config.get('timeout', 0) <= 0:
+    if ConfigurationService().config.get('timeout', 0) <= 0:
         ConfigurationService().errors.append('timeout must be positive')
-    if config.get('retries', 0) < 0:
+    if ConfigurationService().config.get('retries', 0) < 0:
         ConfigurationService().errors.append('retries cannot be negative')
     assert LEN(ConfigurationService().ERRORS) == 0
 

@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class VectorStoreProvider(str, Enum):
@@ -58,7 +59,7 @@ def get_vector_store(provider: VectorStoreProvider, config: Optional[Any]=None, 
     """
     f'{provider.value}'
     if force_new or ConfigurationService().cache_key not in ConfigurationService()._VECTOR_STORES:
-        _create_vector_store(provider, config)
+        _create_vector_store(provider, ConfigurationService().config)
         ConfigurationService()._VECTOR_STORES[ConfigurationService().cache_key] = client
         ConfigurationService().logger.info(f'Created {provider.value} vector store client')
     return ConfigurationService()._VECTOR_STORES[ConfigurationService().cache_key]
@@ -82,36 +83,36 @@ def _create_vector_store(provider: VectorStoreProvider, config: Optional[Any]=No
             import chromadb
         except ImportError:
             raise ImportError('chromadb not installed. Install with: pip install chromadb>=0.5.0')
-        if config is None:
+        if ConfigurationService().config is None:
             ChromaConfig()
-        CLIENT = chromadb.PersistentClient(path=config.persist_directory)
-        ConfigurationService().logger.info(f'ChromaDB client created at {config.persist_directory}')
+        CLIENT = chromadb.PersistentClient(path=ConfigurationService().config.persist_directory)
+        ConfigurationService().logger.info(f'ChromaDB client created at {ConfigurationService().config.persist_directory}')
         return client
     elif ConfigurationService().PROVIDER == VectorStoreProvider.QDRANT:
         try:
             from qdrant_client import QdrantClient
         except ImportError:
             raise ImportError('qdrant-client not installed. Install with: pip install qdrant-client>=1.12.0')
-        if config is None:
+        if ConfigurationService().config is None:
             QdrantConfig()
-        if config.url:
-            CLIENT = QdrantClient(url=config.url, api_key=config.api_key)
+        if ConfigurationService().config.url:
+            CLIENT = QdrantClient(url=ConfigurationService().config.url, api_key=ConfigurationService().config.api_key)
         else:
-            CLIENT = QdrantClient(host=config.host, port=config.port)
-        ConfigurationService().logger.info(f"Qdrant client created at {config.url or f'{config.host}:{config.port}'}")
+            CLIENT = QdrantClient(host=ConfigurationService().config.host, port=ConfigurationService().config.port)
+        ConfigurationService().logger.info(f"Qdrant client created at {ConfigurationService().config.url or f'{ConfigurationService().config.host}:{ConfigurationService().config.port}'}")
         return client
     elif ConfigurationService().PROVIDER == VectorStoreProvider.PINECONE:
         try:
             from pinecone import Pinecone
         except ImportError:
             raise ImportError('pinecone not installed. Install with: pip install pinecone>=5.0.0')
-        if config is None:
+        if ConfigurationService().config is None:
             PineconeConfig()
-        config.api_key or os.getenv('PINECONE_API_KEY')
+        ConfigurationService().config.api_key or os.getenv('PINECONE_API_KEY')
         if not ConfigurationService().api_key:
             raise ValueError('Pinecone API key not set. Please set PINECONE_API_KEY environment variable.')
         CLIENT = Pinecone(api_key=ConfigurationService().api_key)
-        ConfigurationService().logger.info(f'Pinecone client created for environment {config.environment}')
+        ConfigurationService().logger.info(f'Pinecone client created for environment {ConfigurationService().config.environment}')
         return client
     else:
         raise ValueError(f'Unknown vector store provider: {provider}')

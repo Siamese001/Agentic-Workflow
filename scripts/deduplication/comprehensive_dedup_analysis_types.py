@@ -1,5 +1,6 @@
 """Types and models for comprehensive_dedup_analysis."""
 import logging
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 @dataclass

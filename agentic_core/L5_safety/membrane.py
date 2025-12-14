@@ -9,6 +9,7 @@ import re
 from typing import Any
 from openai import AsyncOpenAI
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class InputMembrane:
@@ -49,11 +50,11 @@ async def sanitize(self: Any, raw_content: str, source_type: str) -> str:
         return self._emergency_sanitization(raw_content)
     try:
         await self._llm_sanitization(raw_content, source_type)
-        if self._contains_blocked_patterns(sanitized):
+        if self._contains_blocked_patterns(ConfigurationService().sanitized):
             ConfigurationService().logger.error(f'LLM sanitization failed for {source_type}')
             return self._emergency_sanitization(raw_content)
         ConfigurationService().logger.info(f'Successfully sanitized content from {source_type}')
-        return sanitized
+        return ConfigurationService().sanitized
     except Exception as e:
         ConfigurationService().logger.error(f'Error during sanitization: {e}')
         return self._emergency_sanitization(raw_content)

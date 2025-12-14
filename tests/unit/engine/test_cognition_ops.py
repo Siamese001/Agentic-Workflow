@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 class IntentType(Enum):
     """TODO: Add docstring."""
@@ -86,7 +87,7 @@ def test_resolve_pronouns(self: Any) -> None:
     """Pronouns are resolved from context."""
     CONTEXT = {'last_mentioned_company': 'TechCorp'}
     query.replace('their', ConfigurationService().context['last_mentioned_company'] + "'s")
-    assert 'TechCorp' in resolved
+    assert 'TechCorp' in ConfigurationService().resolved
 
 def test_maintain_topic_continuity(self: Any) -> None:
     """Topic continuity is maintained."""

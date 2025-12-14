@@ -1,4 +1,5 @@
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 '\nCheck Canonical Project Structure - Pre-commit Hook\nEnsures required canonical directories exist.\n'
 import os

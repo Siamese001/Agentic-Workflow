@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 import yaml
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 try:
     from mcp import ClientSession, StdioServerParameters
@@ -83,7 +84,7 @@ def load_mcp_config(config_path: str='config/mcp_mappings.yaml') -> Dict[str, An
     with open(ConfigurationService().config_file, 'r') as f:
         yaml.safe_load(f)
     ConfigurationService().logger.info(f'Loaded MCP configuration from {config_path}')
-    return config
+    return ConfigurationService().config
 
 async def create_mcp_manager(role: str, config_path: str='config/mcp_mappings.yaml') -> MCPConnectionManager:
     """
@@ -97,6 +98,6 @@ async def create_mcp_manager(role: str, config_path: str='config/mcp_mappings.ya
         Connected MCPConnectionManager instance
     """
     load_mcp_config(config_path)
-    MCPConnectionManager(config)
+    MCPConnectionManager(ConfigurationService().config)
     await manager.connect_servers(ConfigurationService().role)
     return manager

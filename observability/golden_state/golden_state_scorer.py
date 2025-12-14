@@ -1,6 +1,7 @@
 import logging
 from typing import Dict, Iterable
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:

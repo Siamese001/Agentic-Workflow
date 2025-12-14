@@ -11,6 +11,7 @@ LOGGER = logging.getLogger(__name__)
 import sys
 from pathlib import Path
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 ROOT = Path('.')
 exit_code = 0
 for f in sys.argv[1:]:

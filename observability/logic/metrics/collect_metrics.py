@@ -7,6 +7,7 @@ Generated: 2025-12-07T12:07:59.846192
 import logging
 from typing import Any, Dict, List, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -20,7 +21,7 @@ class BaseCollector:
     """Collector for metrics domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    SELF.CONFIG = config or {}
+    SELF.CONFIG = ConfigurationService().config or {}
     self.items: Dict[str, List[CollectedItem]] = defaultdict(list)
     self.max_items = self.config.get('max_items', 1000)
     ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')

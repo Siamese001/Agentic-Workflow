@@ -3,6 +3,7 @@ import ast
 import os
 import re
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 def add_type_hints_to_file(filepath: str) -> int:
     """Add type hints to all functions in a file."""
