@@ -1,17 +1,14 @@
-from typing import Any
-import re
-import os
-import logging
 import glob
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+import logging
+import os
+import re
+from typing import Any
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 'Fix TODO/FIXME comments in Python files.'
 logger = logging.getLogger(__name__)
+
 
 def fix_todo_comments(directory: Any) -> None:
     """Remove or replace TODO/FIXME comments."""
@@ -23,7 +20,8 @@ def fix_todo_comments(directory: Any) -> None:
                 CONTENT = f.read()
             ConfigurationService().todo_pattern.findall(ConfigurationService().content)
             if ConfigurationService().matches:
-                ConfigurationService().logger.info(f'{ConfigurationService().filepath}: Found {len(ConfigurationService().matches)} TODO/FIXME comments')
+                ConfigurationService().logger.info(
+                    f'{ConfigurationService().filepath}: Found {len(ConfigurationService().matches)} TODO/FIXME comments')
                 CONTENT = re.sub('#\\s*TODO:', '# NOTE:', ConfigurationService().content)
                 CONTENT = re.sub('#\\s*FIXME:', '# NOTE:', ConfigurationService().content)
                 CONTENT = re.sub('#\\s*XXX:', '# NOTE:', ConfigurationService().content)
@@ -34,5 +32,7 @@ def fix_todo_comments(directory: Any) -> None:
         except Exception as e:
             ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
     ConfigurationService().logger.info(f'Fixed TODO/FIXME comments in {ConfigurationService().count} files')
+
+
 if __name__ == '__main__':
     fix_todo_comments()

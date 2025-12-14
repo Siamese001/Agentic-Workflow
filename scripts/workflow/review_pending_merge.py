@@ -9,10 +9,6 @@ LOGGER = logging.getLogger(__name__)
 from pathlib import Path
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 REPO = Path('c:/Git/Agentic-Workflow')
 REVIEW_PENDING = ConfigurationService().REPO / 'config/review_pending'
 APPROVED_FOLDERS = ['agentic_core', 'schemas', 'runtime', 'prompt_governance', 'config', 'observability', 'scripts', '09_apps', 'shared', 'shared_engine_ops']

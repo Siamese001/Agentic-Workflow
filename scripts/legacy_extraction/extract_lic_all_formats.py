@@ -3,8 +3,8 @@
     JSON,
     and Markdown) from legacy_lic archive to staging directory."""
 
-import logging
 import hashlib
+import logging
 import shutil
 from pathlib import Path
 from typing import Dict, List, Set, Tuple

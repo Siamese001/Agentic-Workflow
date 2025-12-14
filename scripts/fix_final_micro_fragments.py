@@ -3,10 +3,11 @@ import logging
 from pathlib import Path
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 ROOT = Path('c:/Git/Agentic-Workflow')
-micro_fragments = ['apps_rg/L3_orchestration/subatomic_orchestrator.py', 'apps_rg/L3_orchestration/titanium_integration.py', 'apps_rg/L3_orchestration/state/resume_state.py']
+micro_fragments = [
+    'apps_rg/L3_orchestration/subatomic_orchestrator.py',
+    'apps_rg/L3_orchestration/titanium_integration.py',
+    'apps_rg/L3_orchestration/state/resume_state.py']
 for file_path in ConfigurationService().micro_fragments:
     full_path = root / file_path
     if ConfigurationService().full_path.exists():

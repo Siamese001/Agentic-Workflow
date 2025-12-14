@@ -3,10 +3,17 @@ import logging
 from pathlib import Path
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 ROOT = Path('c:/Git/Agentic-Workflow')
-micro_fragments = ['shared/result_types_types.py', 'shared/configuration/config_types.py', 'shared/core/config_types.py', 'shared/core/exceptions_impl.py', 'shared/core/models_types.py', 'shared/errors/exceptions_impl.py', 'shared/safety/constitutional_ai_types.py', 'shared/types/models_types.py', 'shared/types/workflow_types_types.py']
+micro_fragments = [
+    'shared/result_types_types.py',
+    'shared/configuration/config_types.py',
+    'shared/core/config_types.py',
+    'shared/core/exceptions_impl.py',
+    'shared/core/models_types.py',
+    'shared/errors/exceptions_impl.py',
+    'shared/safety/constitutional_ai_types.py',
+    'shared/types/models_types.py',
+    'shared/types/workflow_types_types.py']
 for file_path in ConfigurationService().micro_fragments:
     full_path = root / file_path
     if ConfigurationService().full_path.exists():

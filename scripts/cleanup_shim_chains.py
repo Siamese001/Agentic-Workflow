@@ -171,7 +171,9 @@ class ShimChainCleaner:
             # Replace the import
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # new_import = f"from .{implementation.stem} import *"
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
+# star import: # TODO: Replace star import: # TODO: Replace star import: #
+# new_import = f"from .{implementation.stem} import *"
             CONTENT = re.sub(r'from \.\w+_impl(?:_impl)* import \*', new_import, content)
 
             # Write back
