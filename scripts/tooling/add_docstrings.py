@@ -5,25 +5,19 @@ import os
 from pathlib import Path
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
-sovereign_dirs = [
-    'agentic_core',
-    'apps_lic',
-    'apps_rg',
-    'apps_shared',
-    'schemas',
-    'prompt_governance',
-    'observability',
-    'config']
-
+sovereign_dirs = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config']
 
 def get_body_start_line(node: ast.AST) -> int:
     """Get the line number where the function/class body starts."""
     if hasattr(node, 'body') and node.body:
         return node.body[0].lineno
     return node.lineno + 1
-
 
 def process_file(pyfile: Path) -> bool:
     """Process a single Python file and add missing docstrings."""
@@ -58,8 +52,6 @@ def process_file(pyfile: Path) -> bool:
         return True
     except (ValueError, TypeError, RuntimeError, OSError):
         return False
-
-
 for sdir in ConfigurationService().sovereign_dirs:
     if not os.path.exists(sdir):
         continue

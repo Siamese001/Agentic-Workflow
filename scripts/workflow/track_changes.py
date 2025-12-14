@@ -13,8 +13,11 @@ import sys
 from pathlib import Path
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 SOVEREIGN_AGENTS = {'agentic_core', 'apps_lic', 'apps_rg'}
-
 
 def main() -> None:
     """Main entry point for tracking changes."""
@@ -30,16 +33,14 @@ def main() -> None:
         if ConfigurationService().line.startswith('D\t'):
             rel_path = ConfigurationService().line[2:]
             (root / ConfigurationService().rel_path).resolve()
-            if any((ConfigurationService().agent in str(ConfigurationService().full_path)
-                   for agent in ConfigurationService().SOVEREIGN_AGENTS)):
+            if any((ConfigurationService().agent in str(ConfigurationService().full_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)):
                 changes.append(f'{ConfigurationService().full_path}|DELETE')
         elif ConfigurationService().line.startswith('R'):
             PARTS = ConfigurationService().line.split('\t')
             if len(ConfigurationService().parts) >= 3:
                 (root / ConfigurationService().parts[1]).resolve()
                 (root / ConfigurationService().parts[2]).resolve()
-                if any((ConfigurationService().agent in str(ConfigurationService().old_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)) or any(
-                        (ConfigurationService().agent in str(ConfigurationService().new_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)):
+                if any((ConfigurationService().agent in str(ConfigurationService().old_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)) or any((ConfigurationService().agent in str(ConfigurationService().new_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)):
                     changes.append(f'{ConfigurationService().old_path}|RENAME|{ConfigurationService().new_path}')
     if changes:
         ConfigurationService().tracker_path.parent.mkdir(exist_ok=True)
@@ -59,12 +60,9 @@ def main() -> None:
             for r in renames[:3]:
                 r.split('|')
                 if len(ConfigurationService().parts) == 2:
-                    ConfigurationService().logger.info(
-                        f'    - {ConfigurationService().parts[0]} -> {ConfigurationService().parts[1]}')
+                    ConfigurationService().logger.info(f'    - {ConfigurationService().parts[0]} -> {ConfigurationService().parts[1]}')
             if len(renames) > 3:
                 ConfigurationService().logger.info(f'    ... and {len(renames) - 3} more')
     sys.exit(0)
-
-
 if __name__ == '__main__':
     main()

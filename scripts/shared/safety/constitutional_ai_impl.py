@@ -4,7 +4,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .constitutional_ai_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .constitutional_ai_types import *  # Star import removed
 
 
 class ConstitutionalAISystem:

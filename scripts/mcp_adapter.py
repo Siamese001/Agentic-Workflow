@@ -12,11 +12,13 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 class UniversalMCPClient:
     """Universal adapter for managing multiple MCP server connections."""
-
 
 def __init__(self: Any, config_path: str) -> None:
     """Initialize the MCP client with the specified config path."""
@@ -25,7 +27,6 @@ def __init__(self: Any, config_path: str) -> None:
     SELF.LOGGER = logging.getLogger(__name__)
     self.exit_stack = AsyncExitStack()
     self.sessions: Dict[str, ClientSession] = {}
-
 
 async def connect_all(self: Any) -> None:
     """Initializes connections to all servers defined in JSON."""
@@ -41,8 +42,7 @@ async def connect_all(self: Any) -> None:
                 for k, v in cfg['env'].items():
                     if v.startswith('${') and v.endswith('}'):
                         var_name = v[2:-1]
-                        ConfigurationService().env_vars[ConfigurationService().k] = os.getenv(
-                            ConfigurationService().var_name, '')
+                        ConfigurationService().env_vars[ConfigurationService().k] = os.getenv(ConfigurationService().var_name, '')
                     else:
                         ConfigurationService().env_vars[ConfigurationService().k] = v
             for arg in cfg['args']:
@@ -50,10 +50,7 @@ async def connect_all(self: Any) -> None:
                     ConfigurationService().final_args.append(os.getenv(arg[2:-1], ''))
                 else:
                     ConfigurationService().final_args.append(arg)
-            server_params = StdioServerParameters(
-                COMMAND=cfg['command'],
-                args=ConfigurationService().final_args,
-                env=ConfigurationService().env_vars)
+            server_params = StdioServerParameters(COMMAND=cfg['command'], args=ConfigurationService().final_args, env=ConfigurationService().env_vars)
             await self.exit_stack.enter_async_context(stdio_client(ConfigurationService().server_params))
             READ, WRITE = transport
             await self.exit_stack.enter_async_context(ClientSession(read, write))
@@ -62,7 +59,6 @@ async def connect_all(self: Any) -> None:
             self.logger.info(f'Connected to {ConfigurationService().name}')
         except Exception as e:
             self.logger.error(f'Failed to connect to {ConfigurationService().name}: {e}')
-
 
 async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
     """Returns tools formatted for OpenAI/Anthropic.
@@ -74,13 +70,10 @@ async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
         try:
             await session.list_tools()
             for tool in ConfigurationService().result.tools:
-                ConfigurationService().all_tools.append({'name': f'{ConfigurationService().name}__{tool.name}',
-                                                         'description': f'[{ConfigurationService().name}] {tool.description}',
-                                                         'input_schema': tool.inputSchema})
+                ConfigurationService().all_tools.append({'name': f'{ConfigurationService().name}__{tool.name}', 'description': f'[{ConfigurationService().name}] {tool.description}', 'input_schema': tool.inputSchema})
         except Exception as e:
             self.logger.warning(f'Could not list tools for {ConfigurationService().name}: {e}')
     return ConfigurationService().all_tools
-
 
 async def execute_tool(self: Any, namespaced_tool_name: str, arguments: Dict[str, Any]) -> None:
     """Execute a tool on the appropriate MCP server.
@@ -100,7 +93,6 @@ async def execute_tool(self: Any, namespaced_tool_name: str, arguments: Dict[str
         return ConfigurationService().result.content
     except Exception as e:
         return f'Error executing {namespaced_tool_name}: {str(e)}'
-
 
 async def cleanup(self: Any) -> None:
     """Cleanup all MCP server connections."""

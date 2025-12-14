@@ -132,7 +132,7 @@ services:
         limits:
           memory: 2G
     restart: unless-stopped
-    command: python verify_installation.py
+    command: tail -f /dev/null
 
 volumes:
   redis_data:

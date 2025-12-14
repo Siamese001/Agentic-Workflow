@@ -1,12 +1,14 @@
 """Types and models for error_recovery."""
 import logging
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
-
 class RecoveryStrategy(Enum):
     """TODO: Add docstring."""
-
 
 @dataclass
 class ResilienceError:
@@ -15,16 +17,13 @@ class ResilienceError:
     _code: str
     _details: Optional[Dict[str, Any]] = None
 
-
 @dataclass
 class TransientError(ResilienceError):
     """Temporary error that may succeed on retry."""
 
-
 @dataclass
 class PermanentError(ResilienceError):
     """Permanent error that will not succeed on retry."""
-
 
 @dataclass
 class RetryExhaustedError(ResilienceError):

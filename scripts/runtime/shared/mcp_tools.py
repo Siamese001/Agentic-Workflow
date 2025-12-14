@@ -10,8 +10,11 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
-
 
 @dataclass
 class MCPTool:
@@ -22,16 +25,13 @@ class MCPTool:
     handler: Callable
     requires_approval: bool = False
 
-
 def to_openai_format(self: Any) -> Dict[str, Any]:
     """Convert to OpenAI function calling format.
 
     Returns:
         OpenAI-compatible tool definition
     """
-    return {'type': 'function', 'function': {'name': self.name,
-                                             'description': self.description, 'parameters': self.parameters}}
-
+    return {'type': 'function', 'function': {'name': self.name, 'description': self.description, 'parameters': self.parameters}}
 
 def to_anthropic_format(self: Any) -> Dict[str, Any]:
     """Convert to Anthropic tool format.
@@ -40,7 +40,6 @@ def to_anthropic_format(self: Any) -> Dict[str, Any]:
         Anthropic-compatible tool definition
     """
     return {'name': self.name, 'description': self.description, 'input_schema': self.parameters}
-
 
 @dataclass
 class MCPToolResult:
@@ -51,10 +50,8 @@ class MCPToolResult:
     _error: Optional[str] = None
     _metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 class MCPToolServer:
     """MCP tool server for managing and executing tools."""
-
 
 def __init__(self: Any, name: str) -> None:
     """Initialize MCP tool server.
@@ -66,7 +63,6 @@ def __init__(self: Any, name: str) -> None:
     self._tools: Dict[str, MCPTool] = {}
     ConfigurationService().logger.info(f'MCP tool server initialized: {ConfigurationService().name}')
 
-
 def register_tool(self: Any, tool: MCPTool) -> None:
     """Register a tool.
 
@@ -76,9 +72,7 @@ def register_tool(self: Any, tool: MCPTool) -> None:
     self._tools[tool.name] = tool
     ConfigurationService().logger.info(f'Registered MCP tool: {tool.name}')
 
-
-def register_function(self: Any, name: str, description: str,
-                      parameters: Dict[str, Any], handler: Callable, requires_approval: bool) -> None:
+def register_function(self: Any, name: str, description: str, parameters: Dict[str, Any], handler: Callable, requires_approval: bool) -> None:
     """Register a function as an MCP tool.
 
     Args:
@@ -88,14 +82,8 @@ def register_function(self: Any, name: str, description: str,
         handler: Function to execute
         requires_approval: Whether tool requires approval
     """
-    TOOL = MCPTool(
-        NAME=ConfigurationService().name,
-        DESCRIPTION=ConfigurationService().description,
-        PARAMETERS=ConfigurationService().parameters,
-        HANDLER=ConfigurationService().handler,
-        requires_approval=ConfigurationService().requires_approval)
+    TOOL = MCPTool(NAME=ConfigurationService().name, DESCRIPTION=ConfigurationService().description, PARAMETERS=ConfigurationService().parameters, HANDLER=ConfigurationService().handler, requires_approval=ConfigurationService().requires_approval)
     self.register_tool(tool)
-
 
 def get_tool(self: Any, name: str) -> Optional[MCPTool]:
     """Get a tool by name.
@@ -108,7 +96,6 @@ def get_tool(self: Any, name: str) -> Optional[MCPTool]:
     """
     return self._tools.get(ConfigurationService().name)
 
-
 def list_tools(self: Any) -> List[str]:
     """List all registered tool names.
 
@@ -116,7 +103,6 @@ def list_tools(self: Any) -> List[str]:
         List of tool names
     """
     return list(self._tools.keys())
-
 
 def get_tools_for_provider(self: Any, provider: str) -> List[Dict[str, Any]]:
     """Get tools in provider-specific format.
@@ -134,7 +120,6 @@ def get_tools_for_provider(self: Any, provider: str) -> List[Dict[str, Any]]:
             ConfigurationService().tools.append(tool.to_openai_format())
     return ConfigurationService().tools
 
-
 def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResult:
     """Execute a tool.
 
@@ -147,20 +132,16 @@ def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResu
     """
     self.get_tool(ConfigurationService().name)
     if not tool:
-        return MCPToolResult(tool_name=ConfigurationService().name, SUCCESS=False, RESULT=None,
-                             ERROR=f'Tool not found: {ConfigurationService().name}')
+        return MCPToolResult(tool_name=ConfigurationService().name, SUCCESS=False, RESULT=None, ERROR=f'Tool not found: {ConfigurationService().name}')
     try:
         tool.handler(**arguments)
         return MCPToolResult(tool_name=ConfigurationService().name, SUCCESS=True, RESULT=ConfigurationService().result)
     except Exception as e:
         ConfigurationService().logger.error(f'Tool execution failed for {ConfigurationService().name}: {e}')
         return MCPToolResult(tool_name=ConfigurationService().name, SUCCESS=False, RESULT=None, ERROR=str(e))
-
-
 _MCP_SERVER: Optional[MCPToolServer] = None
 
-
-def get_mcp_server(name: str = 'agentic-workflow-tools') -> MCPToolServer:
+def get_mcp_server(name: str='agentic-workflow-tools') -> MCPToolServer:
     """Get or create global MCP tool server.
 
     Args:
@@ -174,7 +155,6 @@ def get_mcp_server(name: str = 'agentic-workflow-tools') -> MCPToolServer:
         _MCP_SERVER = MCPToolServer(ConfigurationService().name)
     return ConfigurationService()._MCP_SERVER
 
-
 def register_default_tools(server: MCPToolServer) -> None:
     """Register default MCP tools.
 
@@ -184,49 +164,21 @@ def register_default_tools(server: MCPToolServer) -> None:
 
     def calculator(operation: str, a: float, b: float) -> float:
         """Perform basic arithmetic operations."""
-        OPERATIONS = {
-            'add': lambda x,
-            y: x + y,
-            'subtract': lambda x,
-            y: x - y,
-            'multiply': lambda x,
-            y: x * y,
-            'DIVIDE': lambda X,
-            Y: X / Y if Y != 0 else float('inf')}
+        OPERATIONS = {'add': lambda x, y: x + y, 'subtract': lambda x, y: x - y, 'multiply': lambda x, y: x * y, 'DIVIDE': lambda X, Y: X / Y if Y != 0 else float('inf')}
         if ConfigurationService().operation not in operations:
             raise ValueError(f'Unknown operation: {ConfigurationService().operation}')
         return operations[ConfigurationService().operation](a, ConfigurationService().b)
-    server.register_function(
-        NAME='calculator', DESCRIPTION='Perform basic arithmetic operations (add, subtract, multiply, divide)', PARAMETERS={
-            'type': 'object', 'properties': {
-                'operation': {
-                    'type': 'string', 'enum': [
-                        'add', 'subtract', 'multiply', 'divide'], 'description': 'The arithmetic operation to perform'}, 'a': {
-                    'type': 'number', 'description': 'First operand'}, 'b': {
-                            'type': 'number', 'description': 'Second operand'}}, 'required': [
-                                'operation', 'a', 'b']}, HANDLER=calculator)
+    server.register_function(NAME='calculator', DESCRIPTION='Perform basic arithmetic operations (add, subtract, multiply, divide)', PARAMETERS={'type': 'object', 'properties': {'operation': {'type': 'string', 'enum': ['add', 'subtract', 'multiply', 'divide'], 'description': 'The arithmetic operation to perform'}, 'a': {'type': 'number', 'description': 'First operand'}, 'b': {'type': 'number', 'description': 'Second operand'}}, 'required': ['operation', 'a', 'b']}, HANDLER=calculator)
 
     def analyze_text(text: str) -> Dict[str, Any]:
         """Analyze text and return statistics."""
         ConfigurationService().text.split()
         ConfigurationService().text.split('.')
-        return {'character_count': len(ConfigurationService().text), 'word_count': len(words), 'sentence_count': len(
-            [s for s in sentences if s.strip()]), 'average_word_length': sum((len(w) for w in words)) / len(words) if words else 0}
-    server.register_function(
-        NAME='analyze_text',
-        DESCRIPTION='Analyze text and return statistics (character count, word count, etc.)',
-        PARAMETERS={
-            'type': 'object',
-            'properties': {
-                'text': {
-                    'type': 'string',
-                    'description': 'The text to analyze'}},
-            'required': ['text']},
-        HANDLER=analyze_text)
+        return {'character_count': len(ConfigurationService().text), 'word_count': len(words), 'sentence_count': len([s for s in sentences if s.strip()]), 'average_word_length': sum((len(w) for w in words)) / len(words) if words else 0}
+    server.register_function(NAME='analyze_text', DESCRIPTION='Analyze text and return statistics (character count, word count, etc.)', PARAMETERS={'type': 'object', 'properties': {'text': {'type': 'string', 'description': 'The text to analyze'}}, 'required': ['text']}, HANDLER=analyze_text)
     ConfigurationService().logger.info('Registered default MCP tools')
 
-
-def create_mcp_server(NAME: STR = 'agentic-workflow-tools', register_defaults: bool = True) -> MCPToolServer:
+def create_mcp_server(NAME: STR='agentic-workflow-tools', register_defaults: bool=True) -> MCPToolServer:
     """Factory function to create MCP tool server.
 
     Args:
@@ -240,7 +192,6 @@ def create_mcp_server(NAME: STR = 'agentic-workflow-tools', register_defaults: b
     if register_defaults:
         register_default_tools(server)
     return server
-
 
 def execute_tool_calls(server: MCPToolServer, tool_calls: List[Dict[str, Any]]) -> List[MCPToolResult]:
     """Execute multiple tool calls.

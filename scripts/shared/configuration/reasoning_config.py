@@ -1,14 +1,16 @@
 import logging
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 '\nReasoning configuration for LLM generation.\n\nEXTRACTED from: apps_rg/L3_orchestration/orchestrate_resume_generation.py\nCANON COMPLIANCE: Sub-atomic split for line limit enforcement\n'
 
-
 class ModelProvider(str, Enum):
     """Available model providers."""
-
 
 @dataclass
 class ModelConfig:
@@ -23,7 +25,6 @@ class ModelConfig:
     _timeout: int = 30
     _max_retries: int = 3
 
-
 @dataclass
 class RAGConfig:
     """Configuration for Retrieval-Augmented Generation."""
@@ -37,7 +38,6 @@ class RAGConfig:
     _cache_enabled: bool = True
     _cache_ttl: int = 3600
 
-
 @dataclass
 class GovernorConfig:
     """Configuration for governance and safety controls."""
@@ -49,7 +49,6 @@ class GovernorConfig:
     _audit_logging_enabled: bool = True
     _max_requests_per_minute: int = 100
     _allowed_models: List[str] = field(default_factory=lambda: ['gpt-4o', 'gpt-4o-mini', 'claude-3-5-sonnet'])
-
 
 @dataclass
 class ReasoningConfig:
@@ -73,33 +72,11 @@ class ReasoningConfig:
     _K2_SKILLS_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
     _K10_COMPETENCIES_CONFIG: ClassVar[Optional[ReasoningConfig]] = None
     _DEFAULT: ClassVar[Optional[ReasoningConfig]] = None
-
-
 _CONFIG = ReasoningConfig.DEFAULT
-_REASONING_CONFIGS = [
-    ('K0_HEADLINE_CONFIG', {
-        'cot_min_paths': 4, 'tot_branches': 3, 'min_tot_depth': 2, 'self_consistency': 6, 'reflexion': True}), ('K1_EXECUTIVE_SUMMARY_CONFIG', {
-            'cot_min_paths': 3, 'tot_branches': 3, 'min_tot_depth': 3, 'self_consistency': 12, 'reflexion': True, 'max_reflexion_loops': 2}), ('K5_UNIFY_BULLETS_CONFIG', {
-                'cot_min_paths': 4, 'tot_branches': 3, 'min_tot_depth': 3, 'self_consistency': 12, 'reflexion': True}), ('K5_UNIFY_OVERVIEW_CONFIG', None), ('K6_IBM_BULLETS_CONFIG', {
-                    'cot_min_paths': 4, 'tot_branches': 3, 'min_tot_depth': 3, 'self_consistency': 12, 'reflexion': True}), ('K6_IBM_OVERVIEW_CONFIG', {
-                        'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K8_EY_BULLETS_CONFIG', {
-                            'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K8_EY_OVERVIEW_CONFIG', {
-                                'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K9_EARLY_CAREER_BULLETS_CONFIG', {
-                                    'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K9_EARLY_CAREER_OVERVIEW_CONFIG', {
-                                        'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K2_SKILLS_CONFIG', {
-                                            'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K10_COMPETENCIES_CONFIG', {
-                                                'cot_min_paths': 3, 'tot_branches': 3, 'min_tot_depth': 2, 'self_consistency': 10, 'reflexion': True})]
+_REASONING_CONFIGS = [('K0_HEADLINE_CONFIG', {'cot_min_paths': 4, 'tot_branches': 3, 'min_tot_depth': 2, 'self_consistency': 6, 'reflexion': True}), ('K1_EXECUTIVE_SUMMARY_CONFIG', {'cot_min_paths': 3, 'tot_branches': 3, 'min_tot_depth': 3, 'self_consistency': 12, 'reflexion': True, 'max_reflexion_loops': 2}), ('K5_UNIFY_BULLETS_CONFIG', {'cot_min_paths': 4, 'tot_branches': 3, 'min_tot_depth': 3, 'self_consistency': 12, 'reflexion': True}), ('K5_UNIFY_OVERVIEW_CONFIG', None), ('K6_IBM_BULLETS_CONFIG', {'cot_min_paths': 4, 'tot_branches': 3, 'min_tot_depth': 3, 'self_consistency': 12, 'reflexion': True}), ('K6_IBM_OVERVIEW_CONFIG', {'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K8_EY_BULLETS_CONFIG', {'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K8_EY_OVERVIEW_CONFIG', {'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K9_EARLY_CAREER_BULLETS_CONFIG', {'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K9_EARLY_CAREER_OVERVIEW_CONFIG', {'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K2_SKILLS_CONFIG', {'cot_min_paths': 2, 'tot_branches': 2, 'min_tot_depth': 2, 'self_consistency': 4, 'reflexion': False}), ('K10_COMPETENCIES_CONFIG', {'cot_min_paths': 3, 'tot_branches': 3, 'min_tot_depth': 2, 'self_consistency': 10, 'reflexion': True})]
 for _name, _cfg in ConfigurationService()._REASONING_CONFIGS:
     if _cfg is None:
         setattr(ReasoningConfig, ConfigurationService()._name, ReasoningConfig.DEFAULT)
     else:
         setattr(ReasoningConfig, ConfigurationService()._name, ReasoningConfig(**_cfg))
-__all__ = [
-    'ModelProvider',
-    'ModelConfig',
-    'RAGConfig',
-    'GovernorConfig',
-    'ReasoningConfig',
-    'CONFIG',
-    'C2',
-    'SAFETY_THRESHOLD']
+__all__ = ['ModelProvider', 'ModelConfig', 'RAGConfig', 'GovernorConfig', 'ReasoningConfig', 'CONFIG', 'C2', 'SAFETY_THRESHOLD']

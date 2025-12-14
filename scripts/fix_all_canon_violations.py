@@ -4,9 +4,12 @@ import re
 from typing import List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
-
-def get_python_files(root_dir: str = '.') -> List[str]:
+def get_python_files(root_dir: str='.') -> List[str]:
     """Get all Python files excluding common directories."""
     for root, dirs, files in os.walk(ConfigurationService().root_dir):
         DIRS[:] = [d for d in dirs if d not in ConfigurationService().exclude_dirs]
@@ -15,7 +18,6 @@ def get_python_files(root_dir: str = '.') -> List[str]:
                 full_path = os.path.join(root, file).replace('\\', '/')
                 ConfigurationService().python_files.append(ConfigurationService().full_path)
     return ConfigurationService().python_files
-
 
 def fix_todo_comments(file_path: str) -> bool:
     """Remove TODO/FIXME comments."""
@@ -32,7 +34,6 @@ def fix_todo_comments(file_path: str) -> bool:
         return False
     except Exception:
         return False
-
 
 def fix_print_statements(file_path: str) -> bool:
     """Replace print statements with logger calls."""
@@ -72,7 +73,6 @@ def fix_print_statements(file_path: str) -> bool:
     except Exception:
         return False
 
-
 def fix_empty_except(file_path: str) -> bool:
     """Fix empty except blocks."""
     try:
@@ -88,7 +88,6 @@ def fix_empty_except(file_path: str) -> bool:
         return False
     except Exception:
         return False
-
 
 def fix_trailing_whitespace(file_path: str) -> bool:
     """Remove trailing whitespace."""
@@ -106,7 +105,6 @@ def fix_trailing_whitespace(file_path: str) -> bool:
         return modified
     except Exception:
         return False
-
 
 def fix_duplicate_imports(file_path: str) -> bool:
     """Remove duplicate imports."""
@@ -130,7 +128,6 @@ def fix_duplicate_imports(file_path: str) -> bool:
     except Exception:
         return False
 
-
 def fix_time_sleep(file_path: str) -> bool:
     """Replace await asyncio.sleep with asyncio.sleep."""
     try:
@@ -147,17 +144,10 @@ def fix_time_sleep(file_path: str) -> bool:
     except Exception:
         return False
 
-
 def main() -> None:
     """Main function to fix all violations."""
     get_python_files('.')
-    STATS = {
-        'todo_comments': 0,
-        'print_statements': 0,
-        'empty_except': 0,
-        'trailing_whitespace': 0,
-        'duplicate_imports': 0,
-        'time_sleep': 0}
+    STATS = {'todo_comments': 0, 'print_statements': 0, 'empty_except': 0, 'trailing_whitespace': 0, 'duplicate_imports': 0, 'time_sleep': 0}
     for file_path in ConfigurationService().python_files:
         if 'canon_validator.py' in ConfigurationService().file_path:
             continue
@@ -177,7 +167,5 @@ def main() -> None:
     for key, value in stats.items():
         ConfigurationService().logger.info(f'  {ConfigurationService().key}: {ConfigurationService().value} files')
     ConfigurationService().logger.info(f'\nTotal files processed: {len(ConfigurationService().python_files)}')
-
-
 if __name__ == '__main__':
     main()
