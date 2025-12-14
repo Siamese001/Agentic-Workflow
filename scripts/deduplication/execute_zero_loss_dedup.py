@@ -49,6 +49,10 @@ def create_pointer_file(original_path: Path, canonical_path: str, source_hash: s
 
 
 # REFACTOR: Split this 73-line function
+
+# L4 REFACTOR: Function 'execute_dedup' exceeds 73 lines
+# TODO: Manual split required - see refactor plan .\scripts\deduplication\execute_zero_loss_dedup.py:execute_dedup
+
 def execute_dedup(dry_run: bool = True) -> Dict:
     """Execute the deduplication."""
     load_latest_analysis()

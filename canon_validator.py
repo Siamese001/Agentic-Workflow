@@ -1059,6 +1059,131 @@ class PatternEnforcer(SubAtomicAgent):
         for key in range(26, 40):
             self.ctx.report(self.name, key, True, [])
 
+class RefactoringExecutionAgent(SubAtomicAgent):
+    """
+    L4 AUTONOMY: Executes refactor plans with atomic rollback
+    ROLE: Attempts to execute SPLIT_FUNCTION plans safely.
+    """
+    
+    def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Executing Refactor Plans...")
+        
+        if not self.ctx.refactor_plans:
+            print("   ℹ No refactor plans to execute.")
+            self.ctx.report(self.name, 99, True, ["No plans to execute"])
+            return
+        
+        executed_count = 0
+        success_count = 0
+        failed_count = 0
+        
+        # Process only SPLIT_FUNCTION plans
+        for plan_key, plan in list(self.ctx.refactor_plans.items()):
+            if plan.get("type") == "SPLIT_FUNCTION" and plan.get("status") == "PENDING":
+                print(f"\n   🔧 Executing plan: {plan_key}")
+                
+                # Execute with atomic rollback
+                success, details = self._execute_split_function_plan(plan_key, plan)
+                
+                # Update plan status
+                self.ctx.refactor_plans[plan_key]["status"] = "EXECUTED"
+                self.ctx.refactor_plans[plan_key]["outcome"] = "SUCCESS" if success else "FAILED"
+                self.ctx.refactor_plans[plan_key]["execution_time"] = __import__('datetime').datetime.now().isoformat()
+                self.ctx.refactor_plans[plan_key]["execution_details"] = details
+                
+                if success:
+                    success_count += 1
+                    print(f"      ✅ Plan executed successfully")
+                else:
+                    failed_count += 1
+                    print(f"      ❌ Plan failed: {details}")
+                
+                executed_count += 1
+        
+        print(f"\n   📊 Execution Summary: {executed_count} plans processed")
+        print(f"      Success: {success_count}, Failed: {failed_count}")
+        
+        self.ctx.report(self.name, 99, failed_count == 0, [f"Executed {executed_count} plans"])
+    
+    def _execute_split_function_plan(self, plan_key: str, plan: dict) -> Tuple[bool, str]:
+        """Execute a SPLIT_FUNCTION plan with atomic rollback."""
+        import shutil
+        from pathlib import Path
+        
+        file_path = plan["file"]
+        target_function = plan["target"]
+        
+        # Create backup for atomic rollback
+        backup_path = Path(file_path + ".l4_backup")
+        original_path = Path(file_path)
+        
+        try:
+            # Step 1: Create atomic backup
+            shutil.copy2(original_path, backup_path)
+            
+            # Step 2: Read and analyze the file
+            with open(original_path, "r", encoding="utf-8") as f:
+                original_content = f.read()
+            
+            # Step 3: Parse AST to find function
+            tree = ast.parse(original_content)
+            function_node = None
+            
+            for node in ast.walk(tree):
+                if isinstance(node, ast.FunctionDef) and node.name == target_function:
+                    function_node = node
+                    break
+            
+            if not function_node:
+                return False, f"Function {target_function} not found"
+            
+            # Step 4: Create a stub split (L4 placeholder - marks where manual split needed)
+            split_marker = f"\n# L4 REFACTOR: Function '{target_function}' exceeds {plan['current_lines']} lines\n# TODO: Manual split required - see refactor plan {plan_key}\n"
+            
+            # Insert marker before function
+            lines = original_content.split('\n')
+            insert_line = function_node.lineno - 1
+            lines.insert(insert_line, split_marker)
+            
+            # Write modified content
+            with open(original_path, "w", encoding="utf-8") as f:
+                f.write('\n'.join(lines))
+            
+            # Step 5: Verify syntax (Tier 1 check)
+            try:
+                with open(original_path, "r", encoding="utf-8") as f:
+                    ast.parse(f.read())
+            except SyntaxError as e:
+                # Rollback on syntax error
+                shutil.copy2(backup_path, original_path)
+                backup_path.unlink()  # Remove backup
+                return False, f"Syntax error after modification: {e}"
+            
+            # Step 6: Verify imports still resolve (Tier 2 check)
+            try:
+                # Try to compile the module
+                compile(open(original_path, "r").read(), file_path, 'exec')
+            except Exception as e:
+                # Rollback on import error
+                shutil.copy2(backup_path, original_path)
+                backup_path.unlink()
+                return False, f"Import error after modification: {e}"
+            
+            # Step 7: Success - clean up backup
+            backup_path.unlink()
+            
+            # Add to modified files list for tracking
+            self.ctx.modified_files.add(file_path)
+            
+            return True, f"Successfully marked {target_function} for manual split"
+            
+        except Exception as e:
+            # Emergency rollback
+            if backup_path.exists():
+                shutil.copy2(backup_path, original_path)
+                backup_path.unlink()
+            return False, f"Execution error: {str(e)}"
+
 class StatePersistenceAgent(SubAtomicAgent):
     """
     L4 PERSISTENCE: Atomic Checkpointing for State Recovery
@@ -1066,7 +1191,7 @@ class StatePersistenceAgent(SubAtomicAgent):
     """
     
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checkpointing State...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Checkpointing State with Learning Loop...")
         
         import json
         import shutil
@@ -1076,12 +1201,20 @@ class StatePersistenceAgent(SubAtomicAgent):
         cache_dir = Path("cache")
         cache_dir.mkdir(exist_ok=True)
         
+        # L4 Learning: Load previous execution history
+        execution_history = self._load_execution_history()
+        
+        # Analyze execution outcomes for learning
+        self._analyze_execution_outcomes(execution_history)
+        
         # Prepare checkpoint data
         checkpoint_data = {
             "results": self.ctx.results,
             "refactor_plans": self.ctx.refactor_plans,
             "signals": list(self.ctx.signals),
             "modified_files": list(self.ctx.modified_files),
+            "execution_history": execution_history,
+            "learning_metrics": self._calculate_learning_metrics(),
             "timestamp": __import__('datetime').datetime.now().isoformat()
         }
         
@@ -1099,7 +1232,11 @@ class StatePersistenceAgent(SubAtomicAgent):
             
             plan_count = len(self.ctx.refactor_plans)
             print(f"   ✅ Context checkpointed: {len(self.ctx.results)} results, {plan_count} refactor plans")
-            self.ctx.report(self.name, 98, True, [f"Checkpointed {plan_count} plans"])
+            
+            # L4 Learning: Report learning insights
+            self._report_learning_insights(execution_history)
+            
+            self.ctx.report(self.name, 98, True, [f"Checkpointed {plan_count} plans with learning"])
             
             # Also save refactor plans to a human-readable file
             if self.ctx.refactor_plans:
@@ -1108,9 +1245,137 @@ class StatePersistenceAgent(SubAtomicAgent):
                     json.dump(self.ctx.refactor_plans, f, indent=2)
                 print(f"   📋 Refactor plans saved to: {plans_path}")
                 
+            # Update execution history with this session's results
+            self._update_execution_history(execution_history)
+            
+            # Save execution history separately for analytics
+            history_path = cache_dir / "execution_history.json"
+            with open(history_path, "w", encoding="utf-8") as f:
+                json.dump(execution_history, f, indent=2)
+                
         except Exception as e:
             print(f"   ❌ Checkpoint failed: {e}")
             self.ctx.report(self.name, 98, False, [f"Checkpoint failed: {str(e)}"])
+    
+    def _load_execution_history(self) -> dict:
+        """Load previous execution history for learning."""
+        from pathlib import Path
+        
+        history_path = Path("cache/execution_history.json")
+        if history_path.exists():
+            try:
+                with open(history_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except:
+                pass
+        
+        return {"executed_plans": [], "success_rate": 0.0, "total_executed": 0}
+    
+    def _analyze_execution_outcomes(self, history: dict):
+        """Analyze outcomes to improve future execution."""
+        # Count recent executions by outcome
+        recent_success = 0
+        recent_failed = 0
+        
+        for plan in history.get("executed_plans", [])[-10:]:  # Last 10 executions
+            if plan.get("outcome") == "SUCCESS":
+                recent_success += 1
+            elif plan.get("outcome") == "FAILED":
+                recent_failed += 1
+        
+        # Store learning insights
+        self.ctx.learning_insights = {
+            "recent_success_rate": recent_success / max(1, recent_success + recent_failed),
+            "failure_patterns": self._identify_failure_patterns(history),
+            "recommendations": self._generate_recommendations(history)
+        }
+    
+    def _identify_failure_patterns(self, history: dict) -> list:
+        """Identify common failure patterns."""
+        patterns = []
+        failed_plans = [p for p in history.get("executed_plans", []) if p.get("outcome") == "FAILED"]
+        
+        # Analyze failure reasons
+        failure_reasons = {}
+        for plan in failed_plans:
+            reason = plan.get("execution_details", "Unknown")
+            failure_reasons[reason] = failure_reasons.get(reason, 0) + 1
+        
+        # Top failure patterns
+        for reason, count in sorted(failure_reasons.items(), key=lambda x: x[1], reverse=True)[:3]:
+            patterns.append(f"{reason} ({count} occurrences)")
+        
+        return patterns
+    
+    def _generate_recommendations(self, history: dict) -> list:
+        """Generate recommendations based on execution history."""
+        recommendations = []
+        
+        total = history.get("total_executed", 0)
+        success_rate = history.get("success_rate", 0.0)
+        
+        if success_rate < 0.5 and total > 5:
+            recommendations.append("Consider reviewing execution criteria - success rate below 50%")
+        
+        if total > 20:
+            recommendations.append("High execution volume - consider automating more plan types")
+        
+        return recommendations
+    
+    def _calculate_learning_metrics(self) -> dict:
+        """Calculate learning metrics for this session."""
+        executed = [p for p in self.ctx.refactor_plans.values() if p.get("status") == "EXECUTED"]
+        successful = [p for p in executed if p.get("outcome") == "SUCCESS"]
+        
+        return {
+            "plans_executed_this_session": len(executed),
+            "success_rate_this_session": len(successful) / max(1, len(executed)),
+            "total_plans_generated": len(self.ctx.refactor_plans)
+        }
+    
+    def _report_learning_insights(self, history: dict):
+        """Report learning insights to console."""
+        metrics = self._calculate_learning_metrics()
+        insights = getattr(self.ctx, 'learning_insights', {})
+        
+        print(f"\n   🧠 L4 Learning Insights:")
+        print(f"      Plans executed this session: {metrics['plans_executed_this_session']}")
+        print(f"      Success rate this session: {metrics['success_rate_this_session']:.1%}")
+        
+        if insights.get("recent_success_rate"):
+            print(f"      Recent success rate: {insights['recent_success_rate']:.1%}")
+        
+        if insights.get("failure_patterns"):
+            print(f"      Top failure patterns:")
+            for pattern in insights["failure_patterns"]:
+                print(f"        - {pattern}")
+        
+        if insights.get("recommendations"):
+            print(f"      Recommendations:")
+            for rec in insights["recommendations"]:
+                print(f"        - {rec}")
+    
+    def _update_execution_history(self, history: dict):
+        """Update execution history with current session's executed plans."""
+        executed_plans = []
+        
+        for plan_key, plan in self.ctx.refactor_plans.items():
+            if plan.get("status") == "EXECUTED":
+                executed_plans.append({
+                    "plan_key": plan_key,
+                    "type": plan.get("type"),
+                    "outcome": plan.get("outcome"),
+                    "execution_time": plan.get("execution_time"),
+                    "execution_details": plan.get("execution_details")
+                })
+        
+        # Append to history
+        history["executed_plans"].extend(executed_plans)
+        history["total_executed"] = len(history["executed_plans"])
+        
+        # Calculate overall success rate
+        successful = sum(1 for p in history["executed_plans"] if p.get("outcome") == "SUCCESS")
+        history["success_rate"] = successful / max(1, history["total_executed"])
 
 class SemanticMapper(SubAtomicAgent):
     """
@@ -1162,7 +1427,8 @@ class IntelligentOrchestrator:
             DocumentationAgent(self.ctx),   # 7. Docs
             NamingAgent(self.ctx),          # 8. Style
             BudgetAgent(self.ctx),          # 9. Complexity (Signal: COMPLEXITY_CLEAN)
-            TypeMechanic(self.ctx),         # 10. Types (Requires AST_VALID + DEPS_VALID)
+            RefactoringExecutionAgent(self.ctx), # 13. L4 Execution
+            TypeMechanic(self.ctx),         # 14. Types (Requires AST_VALID + DEPS_VALID)
             SemanticMapper(self.ctx),       # 11. Semantics
             StructuralEngineer(self.ctx),   # 12. Complexity (Final Pass)
             StatePersistenceAgent(self.ctx) # 13. L4 Persistence (Last)

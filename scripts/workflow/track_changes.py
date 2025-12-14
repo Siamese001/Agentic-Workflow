@@ -18,6 +18,10 @@ SOVEREIGN_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
 
 
 # REFACTOR: Split this 74-line function
+
+# L4 REFACTOR: Function 'main' exceeds 73 lines
+# TODO: Manual split required - see refactor plan .\scripts\workflow\track_changes.py:main
+
 def main() -> None:
     """Main entry point for tracking changes."""
     Path(".").resolve()

@@ -186,6 +186,10 @@ async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
 
 # REFACTOR: Split this 66-line function
 
+
+# L4 REFACTOR: Function '_build_initial_prompt' exceeds 66 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\k3_message_body_agent.py:_build_initial_prompt
+
 def _build_initial_prompt(
     self: Any,
     company_name: str,
