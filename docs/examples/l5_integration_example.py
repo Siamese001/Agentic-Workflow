@@ -7,7 +7,7 @@ Usage:
     python examples/l5_integration_example.py
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -32,16 +32,16 @@ def run_resume_generation_example():
     - Adaptive recovery on failures
     - Silent execution mode
     """
-    logger.info("\n" + "="*80)
+    LOGGER.INFO("\N" + "="*80)
     logger.info("RESUME GENERATION - L5 HIGH-SIGNAL ARCHITECTURE")
-    logger.info("="*80 + "\n")
+    LOGGER.INFO("="*80 + "\n")
 
-    orchestrator = create_execution_orchestrator(
+    ORCHESTRATOR = create_execution_orchestrator(
         output_dir=Path("./output/resume"),
         silent_mode=True
     )
 
-    context = {
+    CONTEXT = {
         'industry': 'FinTech',
         'seniority': 'Executive',
         'target_role': 'Chief Technology Officer'
@@ -60,18 +60,18 @@ def run_resume_generation_example():
 
     logger.info("1. Generating Executive Summary (Strategist_BioWriter)...")
     bio_config = BioWriterConfig(temperature=0.6)
-    biowriter = create_strategist_biowriter(config=bio_config)
+    BIOWRITER = create_strategist_biowriter(config=bio_config)
 
     bio_result = biowriter.generate_summary(
         bullet_pool=bullet_pool,
-        context=context
+        CONTEXT=context
     )
 
     if bio_result.success:
         orchestrator.add_artifact(
             artifact_type="EXECUTIVE_SUMMARY",
-            content=bio_result.summary,
-            metadata={
+            CONTENT=bio_result.summary,
+            METADATA={
                 'word_count': bio_result.word_count,
                 'attempts': bio_result.attempts,
                 'temperature_adjustments': len(bio_result.temperature_log)
@@ -95,8 +95,8 @@ def run_resume_generation_example():
     if title_result.success:
         orchestrator.add_artifact(
             artifact_type="HEADLINE",
-            content=title_result.headline,
-            metadata={
+            CONTENT=title_result.headline,
+            METADATA={
                 'segments': title_result.segments,
                 'word_count': title_result.word_count,
                 'char_count': title_result.char_count,
@@ -112,8 +112,8 @@ def run_resume_generation_example():
     orchestrator.record_temperature_adjustment(title_composer.recovery_loop)
     orchestrator.record_decision("TITLE_GENERATION_COMPLETE", {'success': title_result.success})
 
-    trace = orchestrator.complete_execution(
-        success=bio_result.success and title_result.success
+    TRACE = orchestrator.complete_execution(
+        SUCCESS=bio_result.success and title_result.success
     )
 
     logger.info(f"\n3. Execution Complete")
@@ -135,16 +135,16 @@ def run_outreach_generation_example():
     - Archetype-specific transitions
     - Premium gate enforcement
     """
-    logger.info("\n" + "="*80)
+    LOGGER.INFO("\N" + "="*80)
     logger.info("OUTREACH GENERATION - L5 HIGH-SIGNAL ARCHITECTURE")
-    logger.info("="*80 + "\n")
+    LOGGER.INFO("="*80 + "\n")
 
-    orchestrator = create_execution_orchestrator(
+    ORCHESTRATOR = create_execution_orchestrator(
         output_dir=Path("./output/outreach"),
         silent_mode=True
     )
 
-    profile = {
+    PROFILE = {
         'name': 'Jane Smith',
         'title': 'Chief Technology Officer',
         'company': 'Acme FinTech',
@@ -156,9 +156,9 @@ def run_outreach_generation_example():
     orchestrator.record_decision("OUTREACH_GENERATION_STARTED", profile)
 
     logger.info("1. Classifying Route & Archetype (Route_Classifier)...")
-    classifier = create_route_classifier()
+    CLASSIFIER = create_route_classifier()
 
-    classification = classifier.classify(profile=profile)
+    CLASSIFICATION = classifier.classify(profile=profile)
 
     logger.info(f"   ✓ Route: {classification.route.value}")
     logger.info(f"   ✓ Archetype: {classification.archetype.value}")
@@ -166,8 +166,8 @@ def run_outreach_generation_example():
 
     orchestrator.add_artifact(
         artifact_type="CLASSIFICATION",
-        content=f"Route: {classification.route.value}\nArchetype: {classification.archetype.value}",
-        metadata={
+        CONTENT=f"Route: {classification.route.value}\nArchetype: {classification.archetype.value}",
+        METADATA={
             'route': classification.route.value,
             'archetype': classification.archetype.value,
             'confidence': classification.confidence
@@ -186,7 +186,7 @@ def run_outreach_generation_example():
     }
 
     logger.info("\n2. Generating Message Body (Message_Body_Composer)...")
-    composer = create_message_body_composer()
+    COMPOSER = create_message_body_composer()
 
     message_context = {
         'company': profile['company'],
@@ -195,16 +195,16 @@ def run_outreach_generation_example():
     }
 
     message_result = composer.generate_message_body(
-        archetype=classification.archetype.value,
+        ARCHETYPE=classification.archetype.value,
         resume_evidence=resume_evidence,
-        context=message_context
+        CONTEXT=message_context
     )
 
     if message_result.success:
         orchestrator.add_artifact(
             artifact_type="MESSAGE_BODY",
-            content=message_result.body,
-            metadata={
+            CONTENT=message_result.body,
+            METADATA={
                 'metrics_used': message_result.metrics_used,
                 'evidence_bindings': message_result.evidence_bindings,
                 'attempts': message_result.attempts
@@ -220,7 +220,7 @@ def run_outreach_generation_example():
     orchestrator.record_temperature_adjustment(composer.recovery_loop)
     orchestrator.record_decision("MESSAGE_GENERATION_COMPLETE", {'success': message_result.success})
 
-    trace = orchestrator.complete_execution(success=message_result.success)
+    TRACE = orchestrator.complete_execution(success=message_result.success)
 
     logger.info(f"\n3. Execution Complete")
     logger.info(f"   Run SHA: {trace.run_sha}")

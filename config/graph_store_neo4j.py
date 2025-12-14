@@ -18,9 +18,9 @@ class Neo4jGraphStore:
         if GraphDatabase is None:
             raise ImportError("Neo4j driver not installed. Install with: pip install neo4j>=5.22.0")
 
-        uri = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
-        user = os.environ.get("NEO4J_USERNAME", "neo4j")
-        pwd = os.environ.get("NEO4J_PASSWORD", "password")
+        URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
+        USER = os.environ.get("NEO4J_USERNAME", "neo4j")
+        PWD = os.environ.get("NEO4J_PASSWORD", "password")
         self._driver = GraphDatabase.driver(uri, auth=(user, pwd))
 
     def close(self) -> None:
@@ -41,10 +41,10 @@ class Neo4jGraphStore:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
         """
-        cypher = """
+        CYPHER = """
         MERGE (e:Entity {id: $id})
         SET e.type = $type,
-            e.name = $name
+            E.NAME = $name
         WITH e
         CALL apoc.create.addProperties(e, $metadata) YIELD node
         RETURN node
@@ -64,8 +64,8 @@ class Neo4jGraphStore:
             fallback_cypher = """
             MERGE (e:Entity {id: $id})
             SET e.type = $type,
-                e.name = $name,
-                e += $metadata
+                E.NAME = $name,
+                E += $metadata
             RETURN e
             """
             self.run(
@@ -92,7 +92,7 @@ class Neo4jGraphStore:
         """
         MERGE a RELATION edge between two Entity nodes with temporal validity.
         """
-        cypher = """
+        CYPHER = """
         MATCH (s:Entity {id: $subject_id})
         MATCH (o:Entity {id: $object_id})
         MERGE (s)-[r:RELATION {id: $rel_id}]->(o)
@@ -106,24 +106,24 @@ class Neo4jGraphStore:
         }
 
         if valid_at is not None:
-            cypher += "\nSET r.valid_at = datetime($valid_at)"
+            CYPHER += "\nSET r.valid_at = datetime($valid_at)"
             params["valid_at"] = valid_at
         if invalid_at is not None:
-            cypher += "\nSET r.invalid_at = datetime($invalid_at)"
+            CYPHER += "\nSET r.invalid_at = datetime($invalid_at)"
             params["invalid_at"] = invalid_at
 
         if attrs:
             try:
-                cypher += """
+                CYPHER += """
                 WITH r
                 CALL apoc.create.addProperties(r, $attrs) YIELD rel
                 RETURN rel
                 """
-                params["attrs"] = attrs
+                PARAMS["ATTRS"] = attrs
             except Exception:
                 # Fallback without APOC
-                cypher += "\nSET r += $attrs"
-                params["attrs"] = attrs
+                CYPHER += "\nSET r += $attrs"
+                PARAMS["ATTRS"] = attrs
 
         self.run(cypher, params)
 
@@ -137,16 +137,16 @@ class Neo4jGraphStore:
         """
         Update invalidation fields for a RELATION (used by InvalidationAgent).
         """
-        cypher = """
+        CYPHER = """
         MATCH ()-[r:RELATION {id: $rel_id}]->()
         """
         params: Dict[str, object] = {"rel_id": rel_id}
 
         if invalid_at is not None:
-            cypher += "\nSET r.invalid_at = datetime($invalid_at)"
+            CYPHER += "\nSET r.invalid_at = datetime($invalid_at)"
             params["invalid_at"] = invalid_at
         if invalidated_by is not None:
-            cypher += "\nSET r.invalidated_by = $invalidated_by"
+            CYPHER += "\nSET r.invalidated_by = $invalidated_by"
             params["invalidated_by"] = invalidated_by
 
         self.run(cypher, params)
@@ -162,7 +162,7 @@ class Neo4jGraphStore:
         """
         Query temporal facts: subject -[RELATION]-> object filtered on time interval.
         """
-        cypher = """
+        CYPHER = """
         MATCH (s:Entity)-[r:RELATION]->(o:Entity)
         WHERE toLower(s.name) CONTAINS toLower($name)
           AND r.predicate = $predicate

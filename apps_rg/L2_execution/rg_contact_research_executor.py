@@ -1,4 +1,4 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.310145+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_rg_contact_research_executor.py
 # High-signal content preserved below — zero-loss migration
@@ -11,7 +11,6 @@ Executes comprehensive safety validation to ensure resume content
 meets security standards for job alignment.
 """
 
-import logging
 from typing import Optional
 
 # from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig  # D...
@@ -37,7 +36,7 @@ def __init__(
     meta_profile: Optional[MetaProfileSnapshot],
 ) -> None:
     self.routing_policy = routing_policy
-    self.sandbox = sandbox
+    SELF.SANDBOX = sandbox
     self.meta_profile = meta_profile
 
 
@@ -49,18 +48,18 @@ def execute_safety(self: Any, prompt: str) -> str:
     improvement processes and job alignment.
     """
     try:
-        model = self.routing_policy.select_model(
-            task="safety_execution",
-            complexity=ComplexityLevel.MEDIUM,
+        MODEL = self.routing_policy.select_model(
+            TASK="safety_execution",
+            COMPLEXITY=ComplexityLevel.MEDIUM,
             meta_profile=self.meta_profile,
         )
 
         record_event("safety_execution_start", {"task": "safety_execution"})
 
-        result = invoke_model(
-            model=model,
-            prompt=prompt,
-            sandbox=self.sandbox,
+        RESULT = invoke_model(
+            MODEL=model,
+            PROMPT=prompt,
+            SANDBOX=self.sandbox,
         )
 
         record_event("safety_execution_success", {"result_length": len(result)})

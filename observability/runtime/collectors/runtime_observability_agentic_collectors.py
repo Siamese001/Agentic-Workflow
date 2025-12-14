@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, List
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 EVENTS: List[Dict[str, object]] = []
 
 

@@ -1,7 +1,7 @@
 """Types and models for agent_gym."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class ScenarioType(Enum):
     """Types of training scenarios."""
     GOLDEN_DATASET = 'golden_dataset'

@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
     er, get_client
 
 # Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION
@@ -18,7 +18,7 @@ skip_if_no_keys = pytest.mark.skipif(False, reason="Disabled for final validatio
 class TestProviderRouting:
     """TODO: Add docstring."""
 
-    @pytest.fixture(autouse=True)
+    @PYTEST.FIXTURE(AUTOUSE=True)
         """TODO: Add docstring."""
 
     def reset_state(self):
@@ -33,7 +33,7 @@ class TestProviderRouting:
             "OPENAI_API_KEY": "sk-test",
             "ANTHROPIC_API_KEY": "sk-ant",
         }):
-            available = get_available_providers()
+            AVAILABLE = get_available_providers()
             assert Provider.OPENAI in available
             assert Provider.ANTHROPIC in available
 
@@ -42,7 +42,7 @@ class TestProviderRouting:
         with patch.dict(os.environ, {"OPENAI_API_KEY": "sk-test"}):
             with patch("openai.OpenAI") as mock:
                 mock.return_value = MagicMock()
-                client = get_client(Provider.OPENAI)
+                CLIENT = get_client(Provider.OPENAI)
                 assert client is not None
                 mock.assert_called_once()
 

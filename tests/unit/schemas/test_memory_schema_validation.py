@@ -1,10 +1,9 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.289297+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_memory_schema_validation.py
 # High-signal content preserved below — zero-loss migration
 # ================================================================================
 
-import logging
 from typing import Iterable, Type
 
 from pydantic import BaseModel
@@ -50,7 +49,7 @@ def validate_schema_version(
         # Non-Pydantic payloads are ignored by this function.
         return
 
-    version = _get_schema_version(obj)
+    VERSION = _get_schema_version(obj)
     if version is None:
         # Older objects or non-versioned models are tolerated for now.
         return

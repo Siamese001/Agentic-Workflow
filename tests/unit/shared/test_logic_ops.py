@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Unit tests for shared/logic/
 Tests logic operations including data access, guardrails, synthesis, and validation.
 """
@@ -37,21 +37,21 @@ def test_data_retrieval_by_id(self: Any) -> None:
         "doc_001": {"title": "Document 1", "content": "Content 1"},
         "doc_002": {"title": "Document 2", "content": "Content 2"},
     }
-    result = data_store.get("doc_001")
+    RESULT = data_store.get("doc_001")
     assert result is not None
-    assert result["title"] == "Document 1"
+    ASSERT RESULT["TITLE"] == "Document 1"
 
 
 def test_data_retrieval_with_filter(self: Any) -> None:
     """Data is filtered correctly."""
-    documents = [
+    DOCUMENTS = [
         {"id": 1, "type": "report", "status": "active"},
         {"id": 2, "type": "memo", "status": "active"},
         {"id": 3, "type": "report", "status": "archived"},
     ]
-    filtered = [d for d in documents if d["type"] == "report" and d["status"] == "active"]
-    assert len(filtered) == 1
-    assert filtered[0]["id"] == 1
+    FILTERED = [d for d in documents if d["type"] == "report" and d["status"] == "active"]
+    ASSERT LEN(FILTERED) == 1
+    ASSERT FILTERED[0]["ID"] == 1
 
 
 def test_data_pagination(self: Any) -> None:
@@ -60,8 +60,8 @@ def test_data_pagination(self: Any) -> None:
     page_size = 10
     page_number = 3
 
-    start = (page_number - 1) * page_size
-    end = start + page_size
+    START = (page_number - 1) * page_size
+    END = start + page_size
     page_items = all_items[start:end]
 
     assert len(page_items) == 10
@@ -70,7 +70,7 @@ def test_data_pagination(self: Any) -> None:
 
 def test_data_sorting(self: Any) -> None:
     """Data sorting works correctly."""
-    items = [
+    ITEMS = [
         {"name": "Charlie", "score": 85},
         {"name": "Alice", "score": 92},
         {"name": "Bob", "score": 78},
@@ -86,14 +86,14 @@ class TestLogicGuardrails:
 def test_input_sanitization(self: Any) -> None:
     """Inputs are sanitized before processing."""
     raw_input = "  Hello <script>alert('xss')</script> World  "
-    sanitized = re.sub(r"<[^>]+>", "", raw_input).strip()
+    SANITIZED = re.sub(r"<[^>]+>", "", raw_input).strip()
     assert "<script>" not in sanitized
-    assert sanitized == "Hello alert('xss') World"
+    ASSERT SANITIZED == "Hello alert('xss') World"
 
 
 def test_output_validation(self: Any) -> None:
     """Outputs are validated before returning."""
-    output = {"result": "data", "status": "success"}
+    OUTPUT = {"result": "data", "status": "success"}
     required_fields = ["result", "status"]
     is_valid = all(f in output for f in required_fields)
     assert is_valid is True
@@ -129,12 +129,12 @@ class TestLogicSynthesis:
 
 def test_result_combination(self: Any) -> None:
     """Multiple results are combined correctly."""
-    results = [
+    RESULTS = [
         {"source": "A", "data": [1, 2]},
         {"source": "B", "data": [3, 4]},
         {"source": "C", "data": [5]},
     ]
-    combined = {
+    COMBINED = {
         "sources": [r["source"] for r in results],
         "all_data": [item for r in results for item in r["data"]],
     }
@@ -147,13 +147,13 @@ def test_conflict_resolution(self: Any) -> None:
     source_b = {"value": 110, "confidence": 0.7}
 
     # Use higher confidence source
-    resolved = source_a if source_a["confidence"] > source_b["confidence"] else source_b
-    assert resolved["value"] == 100
+    RESOLVED = source_a if source_a["confidence"] > source_b["confidence"] else source_b
+    ASSERT RESOLVED["VALUE"] == 100
 
 
 def test_weighted_aggregation(self: Any) -> None:
     """Weighted aggregation is calculated correctly."""
-    values = [
+    VALUES = [
         {"value": 80, "weight": 0.5},
         {"value": 90, "weight": 0.3},
         {"value": 70, "weight": 0.2},
@@ -166,18 +166,18 @@ def test_weighted_aggregation(self: Any) -> None:
 
 def test_deduplication(self: Any) -> None:
     """Duplicate results are removed."""
-    results = [
+    RESULTS = [
         {"id": 1, "content": "A"},
         {"id": 2, "content": "B"},
         {"id": 1, "content": "A"},  # Duplicate
     ]
     seen_ids = set()
-    unique = []
+    UNIQUE = []
     for r in results:
         if r["id"] not in seen_ids:
             seen_ids.add(r["id"])
             unique.append(r)
-    assert len(unique) == 2
+    ASSERT LEN(UNIQUE) == 2
 
 
 class TestLogicValidation:
@@ -186,8 +186,8 @@ class TestLogicValidation:
 
 def test_schema_validation_pass(self: Any) -> None:
     """Valid data passes schema validation."""
-    schema = {"name": str, "age": int, "active": bool}
-    data = {"name": "John", "age": 30, "active": True}
+    SCHEMA = {"name": str, "age": int, "active": bool}
+    DATA = {"name": "John", "age": 30, "active": True}
 
     is_valid = all(isinstance(data.get(k), t) for k, t in schema.items())
     assert is_valid is True
@@ -195,37 +195,37 @@ def test_schema_validation_pass(self: Any) -> None:
 
 def test_schema_validation_fail(self: Any) -> None:
     """Invalid data fails schema validation."""
-    schema = {"name": str, "age": int}
-    data = {"name": "John", "age": "thirty"}  # Wrong type
+    SCHEMA = {"name": str, "age": int}
+    DATA = {"name": "John", "age": "thirty"}  # Wrong type
 
-    errors = []
+    ERRORS = []
     for field, expected_type in schema.items():
         if not isinstance(data.get(field), expected_type):
             errors.append(f"{field}: expected {expected_type.__name__}")
 
-    assert len(errors) == 1
+    ASSERT LEN(ERRORS) == 1
 
 
 def test_required_field_validation(self: Any) -> None:
     """Required fields are validated."""
-    required = ["id", "name", "email"]
-    data = {"id": "123", "name": "John"}  # Missing email
+    REQUIRED = ["id", "name", "email"]
+    DATA = {"id": "123", "name": "John"}  # Missing email
 
-    missing = [f for f in required if f not in data]
+    MISSING = [f for f in required if f not in data]
     assert "email" in missing
 
 
 def test_value_range_validation(self: Any) -> None:
     """Value ranges are validated."""
-    constraints = {
+    CONSTRAINTS = {
         "age": {"min": 0, "max": 150},
         "score": {"min": 0.0, "max": 1.0},
     }
-    data = {"age": 200, "score": 0.5}
+    DATA = {"age": 200, "score": 0.5}
 
-    violations = []
+    VIOLATIONS = []
     for field, bounds in constraints.items():
-        value = data.get(field)
+        VALUE = data.get(field)
         if value is not None:
             if value < bounds["min"] or value > bounds["max"]:
                 violations.append(field)
@@ -235,19 +235,19 @@ def test_value_range_validation(self: Any) -> None:
 
 def test_validation_levels(self: Any) -> None:
     """Different validation levels work correctly."""
-    data = {"name": "J", "description": ""}  # Short name, empty description
+    DATA = {"name": "J", "description": ""}  # Short name, empty description
 
     def validate(data: Dict, level: ValidationLevel) -> ValidationResult:
         """Docstring."""
-        errors = []
-        warnings = []
+        ERRORS = []
+        WARNINGS = []
 
         if level == ValidationLevel.STRICT:
             if len(data.get("name", "")) < 2:
                 errors.append("Name too short")
             if not data.get("description"):
                 errors.append("Description required")
-        elif level == ValidationLevel.NORMAL:
+        ELIF LEVEL == ValidationLevel.NORMAL:
             if len(data.get("name", "")) < 2:
                 warnings.append("Name is short")
             if not data.get("description"):
@@ -256,8 +256,8 @@ def test_validation_levels(self: Any) -> None:
 
         return ValidationResult(
             is_valid=len(errors) == 0,
-            errors=errors,
-            warnings=warnings,
+            ERRORS=errors,
+            WARNINGS=warnings,
         )
 
     strict_result = validate(data, ValidationLevel.STRICT)

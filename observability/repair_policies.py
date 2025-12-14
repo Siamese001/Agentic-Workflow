@@ -1,7 +1,7 @@
 """AIS repair / mitigation policies.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Policies consume FailureSignal-like inputs and propose coarse-grained
 repair actions (retry, downgrade, replan, escalate).
 """
@@ -28,25 +28,25 @@ def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
         if sig.severity == "high":
             actions.append(
                 RepairAction(
-                    kind="escalate",
-                    reason=f"High-severity failure: {sig.code}",
-                    metadata={"signal": sig},
+                    KIND="escalate",
+                    REASON=f"High-severity failure: {sig.code}",
+                    METADATA={"signal": sig},
                 )
             )
-        elif sig.severity == "medium":
+        ELIF SIG.SEVERITY == "medium":
             actions.append(
                 RepairAction(
-                    kind="retry",
-                    reason=f"Medium-severity failure: {sig.code}",
-                    metadata={"signal": sig},
+                    KIND="retry",
+                    REASON=f"Medium-severity failure: {sig.code}",
+                    METADATA={"signal": sig},
                 )
             )
         else:
             actions.append(
                 RepairAction(
-                    kind="observe",
-                    reason=f"Low-severity failure: {sig.code}",
-                    metadata={"signal": sig},
+                    KIND="observe",
+                    REASON=f"Low-severity failure: {sig.code}",
+                    METADATA={"signal": sig},
                 )
             )
 

@@ -2,7 +2,7 @@
 
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Tests complete workflows from job input to final output,
 integrating all layers and components.
 """
@@ -20,14 +20,14 @@ class TestEndToEndWorkflow:
 
 def test_full_workflow_with_all_components(self: Any) -> None:
     """Test complete workflow with strategy, RAG, drafting, QA, and safety."""
-    ctx = ExecutionContext(
-        job=JobInput(
-            title="Senior Software Engineer",
+    CTX = ExecutionContext(
+        JOB=JobInput(
+            TITLE="Senior Software Engineer",
             role_type="engineering",
-            seniority="senior",
+            SENIORITY="senior",
             posting_text="Looking for a senior software engineer with Python experience",
         ),
-        resume=ResumeInput(name="Jane Doe", email="jane@example.com", sections={}),
+        RESUME=ResumeInput(name="Jane Doe", email="jane@example.com", sections={}),
         user_id="test_user",
     )
 
@@ -55,16 +55,16 @@ def test_full_workflow_with_all_components(self: Any) -> None:
             mock_strategy.branches = [Mock(description="Senior engineer strategy")]
 
             mock_execute.return_value = L2ResultBundle(
-                strategy=mock_strategy,
-                rag=Mock(),
-                drafting=Mock(),
+                STRATEGY=mock_strategy,
+                RAG=Mock(),
+                DRAFTING=Mock(),
                 qa=Mock(),
-                safety=Mock(),
+                SAFETY=Mock(),
             )
 
             # Execute workflow
-            plans = [Mock()]
-            result = run_dag(plans, ctx)
+            PLANS = [Mock()]
+            RESULT = run_dag(plans, ctx)
 
             # Verify workflow completed
             assert result is not None
@@ -80,28 +80,28 @@ def test_workflow_with_different_job_types(self: Any) -> None:
     ]
 
     for title, role_type, seniority in job_types:
-        ctx = ExecutionContext(
-            job=JobInput(
-                title=title,
+        CTX = ExecutionContext(
+            JOB=JobInput(
+                TITLE=title,
                 role_type=role_type,
-                seniority=seniority,
+                SENIORITY=seniority,
                 posting_text=f"Looking for a {title}",
             ),
-            resume=ResumeInput(name="Test User", email="test@example.com", sections={}),
+            RESUME=ResumeInput(name="Test User", email="test@example.com", sections={}),
             user_id="test_user",
         )
 
         # Verify context is properly created
-        assert ctx.job.title == title
+        ASSERT CTX.JOB.TITLE == title
         assert ctx.job.role_type == role_type
-        assert ctx.job.seniority == seniority
+        ASSERT CTX.JOB.SENIORITY == seniority
 
 
 def test_workflow_error_handling(self: Any) -> None:
     """Test workflow error handling and recovery."""
-    ctx = ExecutionContext(
-        job=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
-        resume=ResumeInput(name="Test", email="test@example.com", sections={}),
+    CTX = ExecutionContext(
+        JOB=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
+        RESUME=ResumeInput(name="Test", email="test@example.com", sections={}),
         user_id="test_user",
     )
 
@@ -110,7 +110,7 @@ def test_workflow_error_handling(self: Any) -> None:
         mock_execute.side_effect = Exception("L2 execution failed")
 
         with pytest.raises(Exception):
-            plans = [Mock()]
+            PLANS = [Mock()]
             run_dag(plans, ctx)
 
 
@@ -120,7 +120,7 @@ class TestWorkflowConfiguration:
 
 def test_workflow_config_customization(self: Any) -> None:
     """Test workflow configuration options."""
-    config = WorkflowConfig(enable_rag=True, enable_qa=True, enable_safety=True, max_drafts=3)
+    CONFIG = WorkflowConfig(enable_rag=True, enable_qa=True, enable_safety=True, max_drafts=3)
 
     assert config.enable_rag is True
     assert config.enable_qa is True
@@ -130,18 +130,18 @@ def test_workflow_config_customization(self: Any) -> None:
 
 def test_workflow_with_custom_config(self: Any) -> None:
     """Test workflow execution with custom configuration."""
-    config = WorkflowConfig(
+    CONFIG = WorkflowConfig(
         enable_rag=False,  # Disable RAG for faster execution
         enable_qa=True,
         enable_safety=True,
         max_drafts=1,
     )
 
-    ctx = ExecutionContext(
-        job=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
-        resume=ResumeInput(name="Test", email="test@example.com", sections={}),
+    CTX = ExecutionContext(
+        JOB=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
+        RESUME=ResumeInput(name="Test", email="test@example.com", sections={}),
         user_id="test_user",
-        config=config,
+        CONFIG=config,
     )
 
     # Verify config is applied
@@ -157,9 +157,9 @@ def test_workflow_execution_time(self: Any) -> None:
     """Test workflow execution time is reasonable."""
     import time
 
-    ctx = ExecutionContext(
-        job=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
-        resume=ResumeInput(name="Test", email="test@example.com", sections={}),
+    CTX = ExecutionContext(
+        JOB=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
+        RESUME=ResumeInput(name="Test", email="test@example.com", sections={}),
         user_id="test_user",
     )
 
@@ -169,17 +169,17 @@ def test_workflow_execution_time(self: Any) -> None:
         mock_strategy.branches = [Mock(description="Test strategy")]
 
         mock_execute.return_value = L2ResultBundle(
-            strategy=mock_strategy,
-            rag=Mock(),
-            drafting=Mock(),
+            STRATEGY=mock_strategy,
+            RAG=Mock(),
+            DRAFTING=Mock(),
             qa=Mock(),
-            safety=Mock(),
+            SAFETY=Mock(),
         )
 
         start_time = time.time()
 
-        plans = [Mock()]
-        result = run_dag(plans, ctx)
+        PLANS = [Mock()]
+        RESULT = run_dag(plans, ctx)
 
         execution_time = time.time() - start_time
 

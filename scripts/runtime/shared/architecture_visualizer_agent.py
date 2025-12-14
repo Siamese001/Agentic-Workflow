@@ -8,7 +8,7 @@ import logging
 import re
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class DiagramType(str, Enum):
     """Supported Mermaid diagram types."""
@@ -20,8 +20,8 @@ class DiagramType(str, Enum):
 class DiagramNode(BaseModel):
     """Represents a node in a Mermaid diagram."""
 
-    id: str = Field(..., description="Unique node identifier")
-    label: str = Field(..., description="Display label for the node")
+    ID: STR = Field(..., description="Unique node identifier")
+    LABEL: STR = Field(..., description="Display label for the node")
     shape_code: str = Field(..., description="Mermaid shape code (e.g., '[...]', '(...)')")
     node_type: str = Field(default="default", description="Type of node (service, database, etc.)")
 
@@ -35,7 +35,7 @@ class DiagramArtifact(BaseModel):
     """A complete Mermaid diagram artifact."""
 
     mermaid_code: str = Field(..., description="Complete Mermaid diagram code")
-    caption: str = Field(..., description="Diagram caption/title")
+    CAPTION: STR = Field(..., description="Diagram caption/title")
     diagram_type: DiagramType = Field(..., description="Type of diagram")
     node_count: int = Field(..., description="Number of nodes in diagram")
     complexity_score: float = Field(default=0.0, description="Complexity score (0-1)")
@@ -50,7 +50,7 @@ class SimpleAgentBase:
             name: Agent name for logging
             model_name: LLM model to use
         """
-        self.name = name
+        SELF.NAME = name
         self.model_name = model_name
         logger.info(f"Initialized {self.__class__.__name__}: model={model_name}")
 
@@ -101,7 +101,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             Tuple of (nodes, relationships)
         """
         # Use LLM to extract components and relationships
-        prompt = f"""
+        PROMPT = f"""
         You are a System Architect. Extract the system components and their relationships from this
     description:
 
@@ -122,26 +122,26 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         """
 
         try:
-            response = await self._call_llm(prompt, temperature=0.1)
+            RESPONSE = await self._call_llm(prompt, temperature=0.1)
             # Parse JSON response
             import json
-            extracted = json.loads(response.content.strip())
+            EXTRACTED = json.loads(response.content.strip())
 
             # Create nodes
-            nodes = []
+            NODES = []
             for comp in extracted.get("components", []):
                 node_type = comp.get("type", "default")
                 shape_code = self.shape_mappings.get(node_type, self.shape_mappings["default"])
 
-                node = DiagramNode(
+                NODE = DiagramNode(
                     id=comp["id"],
-                    label=comp["label"],
+                    LABEL=comp["label"],
                     shape_code=shape_code,
                     node_type=node_type
                 )
                 nodes.append(node)
 
-            relationships = [
+            RELATIONSHIPS = [
                 (rel["from"], rel["to"], rel.get("label", ""))
                 for rel in extracted.get("relationships", [])
             ]
@@ -169,26 +169,26 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             Complete Mermaid diagram code
         """
         # Start with diagram type
-        lines = [diagram_type.value]
+        LINES = [diagram_type.value]
 
         # Add nodes
         for node in nodes:
-            shape = self.shape_mappings.get(node.node_type, self.shape_mappings["default"])
-            line = f"    {node.id}{shape.format(label=node.label)}"
+            SHAPE = self.shape_mappings.get(node.node_type, self.shape_mappings["default"])
+            LINE = f"    {node.id}{shape.format(label=node.label)}"
             lines.append(line)
 
         # Add relationships
         for rel in relationships:
             if len(rel) == 2:
                 from_node, to_node = rel
-                label = ""
+                LABEL = ""
             else:
                 from_node, to_node, label = rel
 
             if label:
-                line = f"    {from_node} -->|{label}| {to_node}"
+                LINE = f"    {from_node} -->|{label}| {to_node}"
             else:
-                line = f"    {from_node} --> {to_node}"
+                LINE = f"    {from_node} --> {to_node}"
             lines.append(line)
 
         # Add subgraphs for grouping if needed
@@ -222,26 +222,26 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
         """
         try:
             # Extract components
-            nodes, relationships = await self._extract_system_components(description)
+            NODES, RELATIONSHIPS = await self._extract_system_components(description)
 
             # Check complexity
             if len(nodes) > self.max_nodes:
                 logger.warning(f"System too complex ({len(nodes)} nodes),
                     generating high-level diagram")
                 # Simplify to high-level components only
-                nodes = nodes[:self.max_nodes]
-                relationships = relationships[:self.max_nodes]
+                NODES = nodes[:self.max_nodes]
+                RELATIONSHIPS = relationships[:self.max_nodes]
 
             # Generate Mermaid code
             mermaid_code = self._generate_mermaid_code(nodes, relationships, diagram_type)
 
             # Calculate complexity score
-            complexity = min(1.0, len(nodes) / self.max_nodes)
+            COMPLEXITY = min(1.0, len(nodes) / self.max_nodes)
 
             # Create artifact
-            artifact = DiagramArtifact(
+            ARTIFACT = DiagramArtifact(
                 mermaid_code=mermaid_code,
-                caption=caption or "System Architecture Diagram",
+                CAPTION=caption or "System Architecture Diagram",
                 diagram_type=diagram_type,
                 node_count=len(nodes),
                 complexity_score=complexity
@@ -287,9 +287,9 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return None
 
         # Generate diagram
-        artifact = await self.generate_diagram(
-            description=bullet_text,
-            caption="Technical Architecture"
+        ARTIFACT = await self.generate_diagram(
+            DESCRIPTION=bullet_text,
+            CAPTION="Technical Architecture"
         )
 
         if artifact:
@@ -311,20 +311,20 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             # Import here to avoid circular imports
 
             # Get Anthropic client
-            client = get_client(Provider.ANTHROPIC)
+            CLIENT = get_client(Provider.ANTHROPIC)
 
             # Call LLM
-            response = await client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+            RESPONSE = await client.messages.create(
+                MODEL="claude-3-5-sonnet-20241022",
                 max_tokens=2000,
-                temperature=temperature,
-                messages=[{"role": "user", "content": prompt}]
+                TEMPERATURE=temperature,
+                MESSAGES=[{"role": "user", "content": prompt}]
             )
 
             class LLMResponseImpl:
                     """Docstring."""
                 def __init__(self, content: str):
-                    self.content = content
+                    SELF.CONTENT = content
 
             return LLMResponseImpl(response.content[0].text)
 
@@ -334,6 +334,6 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             class LLMResponseImpl:
                     """Docstring."""
                 def __init__(self, content: str):
-                    self.content = content
+                    SELF.CONTENT = content
 
             return LLMResponseImpl('{"components": [], "relationships": []}')

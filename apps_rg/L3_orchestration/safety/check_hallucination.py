@@ -3,7 +3,7 @@ from typing import Any
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Hallucination checking module for apps_rg.
 
 Provides basic hallucination detection for resume generation.
@@ -15,7 +15,7 @@ class HallucinationDetector:
 
 
 def __init__(self: Any, config: Dict[str, Any]) -> None:
-    self.config = config or {}
+    SELF.CONFIG = config or {}
 
 
 def check(self: Any, text: str, context: Dict[str, Any]) -> Dict[str, Any]:

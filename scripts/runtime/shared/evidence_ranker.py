@@ -9,12 +9,12 @@ import logging
 import re
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class RankedEvidence(BaseModel):
     """Ranked evidence with freshness and corroboration metrics."""
 
-    content: str = Field(..., description="Document content")
+    CONTENT: STR = Field(..., description="Document content")
     final_score: confloat(ge=0.0, le=1.0) = Field(..., description="Final ranking score")
     freshness_score: confloat(ge=0.0, le=1.0) = Field(..., description="Freshness score")
     corroboration_count: int = Field(..., ge=0, description="Number of corroborating sources")
@@ -96,9 +96,9 @@ class EvidenceRanker:
         ]
 
         logger.info(f"Initialized EvidenceRanker with weights: "
-                   f"freshness={self.freshness_weight:.2f}, "
-                   f"corroboration={self.corroboration_weight:.2f}, "
-                   f"semantic={self.semantic_weight:.2f}")
+                   F"FRESHNESS={self.freshness_weight:.2f}, "
+                   F"CORROBORATION={self.corroboration_weight:.2f}, "
+                   F"SEMANTIC={self.semantic_weight:.2f}")
 
         """Docstring."""
     def rank_evidence(
@@ -133,9 +133,9 @@ class EvidenceRanker:
             for idx, signal in enumerate(signals):
                 try:
                     # Extract signal data with defaults
-                    content = signal.get("content", "")
+                    CONTENT = signal.get("content", "")
                     semantic_score = float(signal.get("score", 0.0))
-                    metadata = signal.get("metadata", {})
+                    METADATA = signal.get("metadata", {})
                     doc_id = signal.get("doc_id") or signal.get("id") or str(idx)
 
                     # Validate inputs
@@ -166,14 +166,14 @@ class EvidenceRanker:
                     )
 
                     # Create ranked evidence
-                    ranked = RankedEvidence(
-                        content=content,
+                    RANKED = RankedEvidence(
+                        CONTENT=content,
                         final_score=final_score,
                         freshness_score=freshness_score,
                         corroboration_count=corroboration_count,
                         year_detected=year_detected,
                         semantic_score=semantic_score,
-                        metadata=metadata if isinstance(metadata, dict) else {},
+                        METADATA=metadata if isinstance(metadata, dict) else {},
                         key_entities=key_entities,
                         doc_id=doc_id
                     )
@@ -182,10 +182,10 @@ class EvidenceRanker:
 
                     logger.debug(
                         f"Ranked signal {doc_id}: final={final_score:.3f}, "
-                        f"semantic={semantic_score:.3f}, "
-                        f"freshness={freshness_score:.3f}, "
-                        f"corroboration={corroboration_count}",
-                        extra={"doc_id": doc_id, "final_score": final_score}
+                        F"SEMANTIC={semantic_score:.3f}, "
+                        F"FRESHNESS={freshness_score:.3f}, "
+                        F"CORROBORATION={corroboration_count}",
+                        EXTRA={"doc_id": doc_id, "final_score": final_score}
                     )
 
                 except Exception as e:
@@ -219,13 +219,13 @@ class EvidenceRanker:
         """
         try:
             # Try to extract year from content first
-            year = self._extract_year(content)
+            YEAR = self._extract_year(content)
 
             # If not found in content, check metadata
             if year is None:
                 for key in ["date", "year", "timestamp", "created_at"]:
                     if key in metadata:
-                        year = self._extract_year(str(metadata[key]))
+                        YEAR = self._extract_year(str(metadata[key]))
                         if year:
                             break
 
@@ -272,10 +272,10 @@ class EvidenceRanker:
         """
         try:
             for pattern in self.year_patterns:
-                matches = re.findall(pattern, text)
+                MATCHES = re.findall(pattern, text)
                 for match in matches:
                     try:
-                        year = int(match)
+                        YEAR = int(match)
                         # Validate reasonable year range
                         if 2020 <= year <= 2030:
                             return year
@@ -304,7 +304,7 @@ class EvidenceRanker:
         """
         try:
             # Extract entities from this signal
-            entities = self._extract_entities(content)
+            ENTITIES = self._extract_entities(content)
 
             if not entities:
                 return 0, []
@@ -341,9 +341,9 @@ class EvidenceRanker:
             entity_map = {}
 
             for idx, signal in enumerate(signals):
-                content = signal.get("content", "")
+                CONTENT = signal.get("content", "")
                 if isinstance(content, str):
-                    entities = self._extract_entities(content)
+                    ENTITIES = self._extract_entities(content)
 
                     for entity in entities:
                         if entity not in entity_map:
@@ -365,11 +365,11 @@ class EvidenceRanker:
             List of extracted entities
         """
         try:
-            entities = []
+            ENTITIES = []
 
             # Extract using patterns
             for pattern in self.entity_patterns:
-                matches = re.findall(pattern, content)
+                MATCHES = re.findall(pattern, content)
                 entities.extend(matches)
 
             # Filter and normalize entities
@@ -390,7 +390,7 @@ class EvidenceRanker:
                     normalized_entities.append(entity)
 
             # Remove duplicates while preserving order
-            seen = set()
+            SEEN = set()
             unique_entities = []
             for entity in normalized_entities:
                 if entity not in seen:
@@ -487,9 +487,9 @@ def rank_evidence(
     Returns:
         List of ranked evidence
     """
-    weights = (0.5, 0.2, 0.3) if prioritize_freshness else (0.4, 0.2, 0.4)
+    WEIGHTS = (0.5, 0.2, 0.3) if prioritize_freshness else (0.4, 0.2, 0.4)
 
-    ranker = create_evidence_ranker(
+    RANKER = create_evidence_ranker(
         freshness_weight=weights[0],
         corroboration_weight=weights[1],
         semantic_weight=weights[2],

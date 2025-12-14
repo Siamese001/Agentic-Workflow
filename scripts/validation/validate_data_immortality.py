@@ -4,7 +4,7 @@ Validate Data Immortality - Pre-commit Hook
 Ensures no data files are modified after initial commit.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -13,7 +13,7 @@ import sys
 
 def main() -> None:
     """Check if any files being committed are in data/ directories."""
-    files = sys.argv[1:] if len(sys.argv) > 1 else []
+    FILES = sys.argv[1:] if len(sys.argv) > 1 else []
 
     data_patterns = ["data/", "06_data/"]
 

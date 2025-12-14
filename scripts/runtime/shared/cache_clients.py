@@ -12,15 +12,15 @@ import os
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
 class RedisConfig:
     """Configuration for Redis client."""
 
-    host: str = "localhost"
-    port: int = 6379
+    HOST: STR = "localhost"
+    PORT: INT = 6379
     _db: int = 0
     password: Optional[str] = None
     _decode_responses: bool = True
@@ -76,18 +76,18 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
         raise ImportError("redis not installed. Install with: pip install redis>=5.0.0")
 
     if config is None:
-        config = RedisConfig()
+        CONFIG = RedisConfig()
 
     # Override from environment variables
-    host = os.getenv("REDIS_HOST", config.host)
-    port = int(os.getenv("REDIS_PORT", str(config.port)))
-    password = os.getenv("REDIS_PASSWORD", config.password)
+    HOST = os.getenv("REDIS_HOST", config.host)
+    PORT = int(os.getenv("REDIS_PORT", str(config.port)))
+    PASSWORD = os.getenv("REDIS_PASSWORD", config.password)
 
-    client = redis.Redis(
-        host=host,
-        port=port,
+    CLIENT = redis.Redis(
+        HOST=host,
+        PORT=port,
         db=config.db,
-        password=password,
+        PASSWORD=password,
         decode_responses=config.decode_responses,
         socket_timeout=config.socket_timeout,
         socket_connect_timeout=config.socket_connect_timeout,
@@ -109,7 +109,7 @@ def cache_set(
     key: str,
     value: Any,
     ttl: Optional[int] = None,
-    serialize: bool = True,
+    SERIALIZE: BOOL = True,
 ) -> bool:
     """Set a value in Redis cache.
 
@@ -125,7 +125,7 @@ def cache_set(
     """
     try:
         if serialize and not isinstance(value, (str, bytes)):
-            value = json.dumps(value)
+            VALUE = json.dumps(value)
 
         if ttl:
             return client.setex(key, ttl, value)
@@ -139,7 +139,7 @@ def cache_set(
 def cache_get(
     client: Any,
     key: str,
-    deserialize: bool = True,
+    DESERIALIZE: BOOL = True,
 ) -> Optional[Any]:
     """Get a value from Redis cache.
 
@@ -152,7 +152,7 @@ def cache_get(
         Cached value or None if not found
     """
     try:
-        value = client.get(key)
+        VALUE = client.get(key)
 
         if value is None:
             return None
@@ -206,7 +206,7 @@ def cache_exists(client: Any, key: str) -> bool:
 def cache_get_many(
     client: Any,
     keys: list[str],
-    deserialize: bool = True,
+    DESERIALIZE: BOOL = True,
 ) -> Dict[str, Any]:
     """Get multiple values from Redis cache.
 
@@ -219,8 +219,8 @@ def cache_get_many(
         Dictionary of key-value pairs
     """
     try:
-        values = client.mget(keys)
-        result = {}
+        VALUES = client.mget(keys)
+        RESULT = {}
 
         for key, value in zip(keys, values):
             if value is None:
@@ -228,11 +228,11 @@ def cache_get_many(
 
             if deserialize and isinstance(value, str):
                 try:
-                    result[key] = json.loads(value)
+                    RESULT[KEY] = json.loads(value)
                 except json.JSONDecodeError:
-                    result[key] = value
+                    RESULT[KEY] = value
             else:
-                result[key] = value
+                RESULT[KEY] = value
 
         return result
     except Exception as e:
@@ -244,7 +244,7 @@ def cache_set_many(
     client: Any,
     mapping: Dict[str, Any],
     ttl: Optional[int] = None,
-    serialize: bool = True,
+    SERIALIZE: BOOL = True,
 ) -> bool:
     """Set multiple values in Redis cache.
 
@@ -259,12 +259,12 @@ def cache_set_many(
     """
     try:
         if serialize:
-            mapping = {
+            MAPPING = {
                 k: json.dumps(v) if not isinstance(v, (str, bytes)) else v
                 for k, v in mapping.items()
             }
 
-        pipeline = client.pipeline()
+        PIPELINE = client.pipeline()
 
         for key, value in mapping.items():
             if ttl:
@@ -290,7 +290,7 @@ def cache_clear_pattern(client: Any, pattern: str) -> int:
         Number of keys deleted
     """
     try:
-        keys = client.keys(pattern)
+        KEYS = client.keys(pattern)
         if keys:
             return client.delete(*keys)
         return 0

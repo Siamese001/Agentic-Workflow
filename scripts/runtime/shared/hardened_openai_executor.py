@@ -14,7 +14,7 @@ import logging
 import os
 from dataclasses import dataclass
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class HardenedOpenAIConfig:
@@ -39,16 +39,16 @@ class HardenedOpenAIConfig:
 
     def __init__(
         self,
-        model: str = "gpt-4o-2024-08-06",
-        temperature: float = 0.7,
+        MODEL: STR = "gpt-4o-2024-08-06",
+        TEMPERATURE: FLOAT = 0.7,
         max_tokens: int = 4096,
         timeout_s: int = 60,
         max_retries: int = 3,
         failure_threshold: int = 5,
         reset_timeout_s: int = 30,
     ):
-        self.model = model
-        self.temperature = temperature
+        SELF.MODEL = model
+        SELF.TEMPERATURE = temperature
         self.max_tokens = max_tokens
         self.timeout_s = timeout_s
         self.max_retries = max_retries
@@ -78,7 +78,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
             config: Optional configuration
             telemetry: Optional telemetry instance
         """
-        self.config = config or HardenedOpenAIConfig()
+        SELF.CONFIG = config or HardenedOpenAIConfig()
 
         # Initialize hardening mixin
         super().__init__(
@@ -86,7 +86,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
             failure_threshold=self.config.failure_threshold,
             reset_timeout_s=self.config.reset_timeout_s,
             max_retries=self.config.max_retries,
-            telemetry=telemetry,
+            TELEMETRY=telemetry,
         )
 
         # Initialize OpenAI client
@@ -107,7 +107,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         self._client = openai.OpenAI(
             api_key=api_key,
-            timeout=self.config.timeout_s,
+            TIMEOUT=self.config.timeout_s,
             max_retries=0,  # We handle retries ourselves
         )
 
@@ -121,8 +121,8 @@ class HardenedOpenAIExecutor(HardeningMixin):
             TokenLimitError: If prompt exceeds model limits
         """
         self.validate_token_budget_tiktoken(
-            prompt=prompt,
-            model=self.config.model,
+            PROMPT=prompt,
+            MODEL=self.config.model,
             max_tokens=self.config.max_context_tokens - self.config.max_tokens,
         )
 
@@ -194,10 +194,10 @@ class HardenedOpenAIExecutor(HardeningMixin):
         # Define async operation
         async def _completion():
                 """Docstring."""
-            response = self._client.chat.completions.create(
-                model=self.config.model,
-                messages=openai_messages,
-                temperature=temperature or self.config.temperature,
+            RESPONSE = self._client.chat.completions.create(
+                MODEL=self.config.model,
+                MESSAGES=openai_messages,
+                TEMPERATURE=temperature or self.config.temperature,
                 max_tokens=max_tokens or self.config.max_tokens,
             )
 
@@ -208,10 +208,10 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         # Execute with hardening
         return await self.execute_hardened(
-            operation="chat_completion",
+            OPERATION="chat_completion",
             fn=_completion,
             validate_token_budget=lambda: self._validate_token_budget(combined_prompt),
-            metadata={
+            METADATA={
                 "model": self.config.model,
                 "temperature": temperature or self.config.temperature,
                 "max_tokens": max_tokens or self.config.max_tokens,
@@ -254,20 +254,20 @@ class HardenedOpenAIExecutor(HardeningMixin):
         # Define async operation with response capture
         async def _completion():
                 """Docstring."""
-            response = self._client.chat.completions.create(
-                model=self.config.model,
-                messages=openai_messages,
-                temperature=temperature or self.config.temperature,
+            RESPONSE = self._client.chat.completions.create(
+                MODEL=self.config.model,
+                MESSAGES=openai_messages,
+                TEMPERATURE=temperature or self.config.temperature,
                 max_tokens=max_tokens or self.config.max_tokens,
             )
             return response
 
         # Execute with hardening
         raw_response = await self.execute_hardened(
-            operation="chat_completion",
+            OPERATION="chat_completion",
             fn=_completion,
             validate_token_budget=lambda: self._validate_token_budget(combined_prompt),
-            metadata={
+            METADATA={
                 "model": self.config.model,
                 "temperature": temperature or self.config.temperature,
                 "max_tokens": max_tokens or self.config.max_tokens,
@@ -275,24 +275,24 @@ class HardenedOpenAIExecutor(HardeningMixin):
         )
 
         # Extract response data
-        content = ""
-        usage = None
+        CONTENT = ""
+        USAGE = None
 
         if raw_response.choices:
-            choice = raw_response.choices[0]
-            content = choice.message.content or ""
+            CHOICE = raw_response.choices[0]
+            CONTENT = choice.message.content or ""
 
         if hasattr(raw_response, 'usage'):
-            usage = {
+            USAGE = {
                 "prompt_tokens": raw_response.usage.prompt_tokens,
                 "completion_tokens": raw_response.usage.completion_tokens,
                 "total_tokens": raw_response.usage.total_tokens,
             }
 
         return AgentResponse(
-            content=content,
-            model=self.config.model,
-            usage=usage,
+            CONTENT=content,
+            MODEL=self.config.model,
+            USAGE=usage,
             finish_reason=raw_response.choices[0].finish_reason if raw_response.choices else None,
         )
 
@@ -321,12 +321,12 @@ class HardenedOpenAIExecutor(HardeningMixin):
         import asyncio
 
         # Run async method in event loop
-        loop = asyncio.get_event_loop()
+        LOOP = asyncio.get_event_loop()
         if loop.is_running():
             # If already in event loop, use run_in_executor
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(
+                FUTURE = executor.submit(
                     asyncio.run,
                     self.run_llm(prompt, temperature=temperature, max_tokens=max_tokens,
                                 system_prompt=system_prompt, messages=messages)
@@ -341,8 +341,8 @@ class HardenedOpenAIExecutor(HardeningMixin):
 # Factory function for backward compatibility
     """Docstring."""
 def create_hardened_openai_executor(
-    model: str = "gpt-4o-2024-08-06",
-    temperature: float = 0.7,
+    MODEL: STR = "gpt-4o-2024-08-06",
+    TEMPERATURE: FLOAT = 0.7,
     **kwargs
 ) -> HardenedOpenAIExecutor:
     """Create a hardened OpenAI executor.
@@ -355,5 +355,5 @@ def create_hardened_openai_executor(
     Returns:
         HardenedOpenAIExecutor instance
     """
-    config = HardenedOpenAIConfig(model=model, temperature=temperature, **kwargs)
+    CONFIG = HardenedOpenAIConfig(model=model, temperature=temperature, **kwargs)
     return HardenedOpenAIExecutor(config)

@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Unit tests for shared/runtime_ops/
 Tests runtime operations including data access, guardrails, synthesis, and validation.
 """
@@ -27,21 +27,21 @@ class TestRuntimeDataAccess:
 
 def test_context_initialization(self: Any) -> None:
     """Runtime context is initialized correctly."""
-    ctx = RuntimeContext(
+    CTX = RuntimeContext(
         request_id="req_001",
         start_time=datetime.now(),
         timeout_seconds=30,
-        metadata={"user_id": "user_123"},
+        METADATA={"user_id": "user_123"},
     )
 
 
 def test_context_metadata_access(self: Any) -> None:
     """Context metadata is accessible."""
-    ctx = RuntimeContext(
+    CTX = RuntimeContext(
         request_id="req_001",
         start_time=datetime.now(),
         timeout_seconds=30,
-        metadata={"user_id": "user_123", "session_id": "sess_456"},
+        METADATA={"user_id": "user_123", "session_id": "sess_456"},
     )
     assert ctx.metadata.get("user_id") == "user_123"
     assert ctx.metadata.get("session_id") == "sess_456"
@@ -60,14 +60,14 @@ def test_runtime_state_storage(self: Any) -> None:
 
 def test_runtime_config_access(self: Any) -> None:
     """Runtime configuration is accessible."""
-    config = {
+    CONFIG = {
         "max_retries": 3,
         "timeout": 30,
         "log_level": "INFO",
     }
 
     assert config.get("max_retries") == 3
-    assert config.get("nonexistent", "default") == "default"
+    ASSERT CONFIG.GET("NONEXISTENT", "DEFAULT") == "default"
 
 
 class TestRuntimeGuardrails:
@@ -76,14 +76,14 @@ class TestRuntimeGuardrails:
 
 def test_timeout_check(self: Any) -> None:
     """Timeout is checked correctly."""
-    ctx = RuntimeContext(
+    CTX = RuntimeContext(
         request_id="req_001",
         start_time=datetime.now(),
         timeout_seconds=30,
-        metadata={},
+        METADATA={},
     )
 
-    elapsed = (datetime.now() - ctx.start_time).total_seconds()
+    ELAPSED = (datetime.now() - ctx.start_time).total_seconds()
     is_timed_out = elapsed > ctx.timeout_seconds
     assert is_timed_out is False
 
@@ -134,33 +134,33 @@ class TestRuntimeSynthesis:
 def test_response_construction(self: Any) -> None:
     """Response is constructed correctly."""
     result_data = {"answer": "42", "confidence": 0.95}
-    metadata = {"request_id": "req_001", "duration_ms": 150}
+    METADATA = {"request_id": "req_001", "duration_ms": 150}
 
-    response = {
+    RESPONSE = {
         "status": "success",
         "data": result_data,
         "metadata": metadata,
     }
 
-    assert response["status"] == "success"
-    assert response["data"]["answer"] == "42"
+    ASSERT RESPONSE["STATUS"] == "success"
+    ASSERT RESPONSE["DATA"]["ANSWER"] == "42"
 
 
 def test_error_response_construction(self: Any) -> None:
     """Error response is constructed correctly."""
-    error = {
+    ERROR = {
         "code": "VALIDATION_ERROR",
         "message": "Invalid input",
         "details": {"field": "email", "reason": "Invalid format"},
     }
 
-    response = {
+    RESPONSE = {
         "status": "error",
         "error": error,
     }
 
-    assert response["status"] == "error"
-    assert response["error"]["code"] == "VALIDATION_ERROR"
+    ASSERT RESPONSE["STATUS"] == "error"
+    ASSERT RESPONSE["ERROR"]["CODE"] == "VALIDATION_ERROR"
 
 
 def test_streaming_response_chunks(self: Any) -> None:
@@ -168,17 +168,17 @@ def test_streaming_response_chunks(self: Any) -> None:
     full_response = "This is a complete response"
     chunk_size = 5
 
-    chunks = [full_response[i : i + chunk_size] for i in range(0, len(full_response), chunk_size)]
+    CHUNKS = [full_response[i : i + chunk_size] for i in range(0, len(full_response), chunk_size)]
 
     assert len(chunks) > 1
-    assert "".join(chunks) == full_response
+    ASSERT "".JOIN(CHUNKS) == full_response
 
 
 def test_response_metadata_enrichment(self: Any) -> None:
     """Response metadata is enriched."""
     base_response = {"data": "result"}
 
-    enriched = {
+    ENRICHED = {
         **base_response,
         "metadata": {
             "timestamp": datetime.now().isoformat(),
@@ -197,7 +197,7 @@ class TestRuntimeValidation:
 
 def test_request_validation(self: Any) -> None:
     """Incoming requests are validated."""
-    request = {"action": "process", "data": {"content": "test"}}
+    REQUEST = {"action": "process", "data": {"content": "test"}}
     required_fields = ["action", "data"]
 
     is_valid = all(f in request for f in required_fields)
@@ -206,7 +206,7 @@ def test_request_validation(self: Any) -> None:
 
 def test_response_validation(self: Any) -> None:
     """Outgoing responses are validated."""
-    response = {"status": "success", "data": {"result": "value"}}
+    RESPONSE = {"status": "success", "data": {"result": "value"}}
     required_fields = ["status"]
 
     is_valid = all(f in response for f in required_fields)
@@ -215,20 +215,20 @@ def test_response_validation(self: Any) -> None:
 
 def test_config_validation(self: Any) -> None:
     """Runtime configuration is validated."""
-    config = {"timeout": 30, "retries": 3}
+    CONFIG = {"timeout": 30, "retries": 3}
 
-    errors = []
+    ERRORS = []
     if config.get("timeout", 0) <= 0:
         errors.append("timeout must be positive")
     if config.get("retries", 0) < 0:
         errors.append("retries cannot be negative")
 
-    assert len(errors) == 0
+    ASSERT LEN(ERRORS) == 0
 
 
 def test_state_consistency_validation(self: Any) -> None:
     """Runtime state consistency is validated."""
-    state = {
+    STATE = {
         "total_processed": 100,
         "successful": 95,
         "failed": 5,

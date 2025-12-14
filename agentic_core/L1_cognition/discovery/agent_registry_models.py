@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .agent_registry_enums import *  # Star import removed
 
 
@@ -13,7 +13,7 @@ class MCPContract:
     provider: str
     endpoints: List[str]
     parameters: Dict[str, Any] = field(default_factory=dict)
-    version: str = '1.0.0'
+    VERSION: STR = '1.0.0'
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -102,7 +102,7 @@ class RegistrationResult:
     """Result of agent registration."""
     success: bool
     agent_card: Optional[AgentCard] = None
-    reason: str = ''
+    REASON: STR = ''
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""

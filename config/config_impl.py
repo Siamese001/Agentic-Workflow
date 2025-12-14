@@ -1,7 +1,7 @@
 """Implementation for config."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .config_types import *  # Star import removed
 
 def _load_json_config(filename: str, description: str, required: bool=True) -> Dict[str, object]:
@@ -15,7 +15,7 @@ def _load_json_config(filename: str, description: str, required: bool=True) -> D
     if path_to_check.exists():
         try:
             with open(path_to_check, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+                DATA = json.load(f)
                 logging.info(f"Successfully loaded {description} from '{path_to_check}'.")
                 return data
         except json.JSONDecodeError as e:

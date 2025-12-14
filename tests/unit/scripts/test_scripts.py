@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TestScriptUtilities:
@@ -17,37 +17,37 @@ class TestScriptUtilities:
 def test_parse_cli_args(self: Any) -> None:
     """Nominal: CLI arguments are parsed."""
     # Simulate argument parsing
-    args = ["--input", "file.txt", "--output", "result.json"]
-    parsed = {}
+    ARGS = ["--input", "file.txt", "--output", "result.json"]
+    PARSED = {}
     i = 0
     while i < len(args):
         if args[i].startswith("--"):
-            key = args[i][2:]
-            value = args[i + 1] if i + 1 < len(args) else None
-            parsed[key] = value
-            i += 2
+            KEY = args[i][2:]
+            VALUE = args[i + 1] if i + 1 < len(args) else None
+            PARSED[KEY] = value
+            I += 2
         else:
-            i += 1
-    assert parsed["input"] == "file.txt"
-    assert parsed["output"] == "result.json"
+            I += 1
+    ASSERT PARSED["INPUT"] == "file.txt"
+    ASSERT PARSED["OUTPUT"] == "result.json"
 
 
 def test_parse_empty_args(self: Any) -> None:
     """Edge case: Empty arguments."""
-    parsed = {}
-    assert parsed == {}
+    PARSED = {}
+    ASSERT PARSED == {}
 
 
 def test_validate_file_path(self: Any) -> None:
     """Nominal: File path validation."""
-    path = Path("/staging/test.txt")
+    PATH = Path("/staging/test.txt")
     is_valid = not any(c in str(path) for c in ["<", ">", "|", '"'])
     assert is_valid is True
 
 
 def test_validate_invalid_path(self: Any) -> None:
     """Negative: Invalid path characters detected."""
-    path = "file<name>.txt"
+    PATH = "file<name>.txt"
     is_valid = not any(c in path for c in ["<", ">", "|"])
     assert is_valid is False
 
@@ -55,8 +55,8 @@ def test_validate_invalid_path(self: Any) -> None:
 def test_environment_variable_access(self: Any) -> None:
     """Nominal: Environment variables are accessible."""
     os.environ["TEST_VAR"] = "test_value"
-    value = os.environ.get("TEST_VAR")
-    assert value == "test_value"
+    VALUE = os.environ.get("TEST_VAR")
+    ASSERT VALUE == "test_value"
     del os.environ["TEST_VAR"]
 
 
@@ -66,36 +66,36 @@ class TestPathOperations:
 
 def test_join_paths(self: Any) -> None:
     """Nominal: Paths are joined correctly."""
-    foundation = Path("/home/user")
-    sub = "documents/file.txt"
-    full = foundation / sub
+    FOUNDATION = Path("/home/user")
+    SUB = "documents/file.txt"
+    FULL = foundation / sub
     assert "documents" in str(full)
 
 
 def test_get_extension(self: Any) -> None:
     """Nominal: File extension is extracted."""
-    path = Path("document.pdf")
-    ext = path.suffix
-    assert ext == ".pdf"
+    PATH = Path("document.pdf")
+    EXT = path.suffix
+    ASSERT EXT == ".pdf"
 
 
 def test_get_stem(self: Any) -> None:
     """Nominal: File stem (name without extension)."""
-    path = Path("document.pdf")
-    stem = path.stem
-    assert stem == "document"
+    PATH = Path("document.pdf")
+    STEM = path.stem
+    ASSERT STEM == "document"
 
 
 def test_parent_directory(self: Any) -> None:
     """Nominal: Parent directory is extracted."""
-    path = Path("/home/user/file.txt")
-    parent = path.parent
+    PATH = Path("/home/user/file.txt")
+    PARENT = path.parent
     assert str(parent).endswith("user")
 
 
 def test_path_exists_check(self: Any) -> None:
     """Nominal: Path existence check."""
-    path = Path(".")
+    PATH = Path(".")
     assert path.exists() is True
 
 
@@ -105,22 +105,22 @@ class TestConfigurationLoading:
 
 def test_load_env_with_default(self: Any) -> None:
     """Nominal: Environment variable with default."""
-    value = os.environ.get("NONEXISTENT_VAR", "default")
-    assert value == "default"
+    VALUE = os.environ.get("NONEXISTENT_VAR", "default")
+    ASSERT VALUE == "default"
 
 
 def test_load_env_override(self: Any) -> None:
     """Nominal: Environment variable overrides default."""
     os.environ["TEST_CONFIG"] = "custom"
-    value = os.environ.get("TEST_CONFIG", "default")
-    assert value == "custom"
+    VALUE = os.environ.get("TEST_CONFIG", "default")
+    ASSERT VALUE == "custom"
     del os.environ["TEST_CONFIG"]
 
 
 def test_parse_bool_env(self: Any) -> None:
     """Nominal: Boolean environment variable parsing."""
     os.environ["BOOL_VAR"] = "true"
-    value = os.environ.get("BOOL_VAR", "").lower() in ("true", "1", "yes")
+    VALUE = os.environ.get("BOOL_VAR", "").lower() in ("true", "1", "yes")
     assert value is True
     del os.environ["BOOL_VAR"]
 
@@ -128,16 +128,16 @@ def test_parse_bool_env(self: Any) -> None:
 def test_parse_int_env(self: Any) -> None:
     """Nominal: Integer environment variable parsing."""
     os.environ["INT_VAR"] = "42"
-    value = int(os.environ.get("INT_VAR", "0"))
-    assert value == 42
+    VALUE = int(os.environ.get("INT_VAR", "0"))
+    ASSERT VALUE == 42
     del os.environ["INT_VAR"]
 
 
 def test_parse_list_env(self: Any) -> None:
     """Edge case: List from comma-separated env var."""
     os.environ["LIST_VAR"] = "a,b,c"
-    value = os.environ.get("LIST_VAR", "").split(",")
-    assert value == ["a", "b", "c"]
+    VALUE = os.environ.get("LIST_VAR", "").split(",")
+    ASSERT VALUE == ["a", "b", "c"]
     del os.environ["LIST_VAR"]
 
 
@@ -173,7 +173,7 @@ def test_handle_type_error(self: Any) -> None:
 def test_graceful_degradation(self: Any) -> None:
     """Nominal: Graceful fallback on error."""
     try:
-        result = int("invalid")
+        RESULT = int("invalid")
     except ValueError:
-        result = 0  # Default fallback
-    assert result == 0
+        RESULT = 0  # Default fallback
+    ASSERT RESULT == 0

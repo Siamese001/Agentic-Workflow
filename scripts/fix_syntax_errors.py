@@ -1,21 +1,20 @@
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Automated fix for common syntax errors in Python files."""
 
 import ast
-import logging
 from pathlib import Path
 from typing import Tuple
 
 
 def fix_docstring_in_signature(content: str) -> str:
     """Fix docstrings incorrectly placed inside function signatures."""
-    lines = content.split("\n")
+    LINES = content.split("\n")
     fixed_lines = []
     i = 0
 
     while i < len(lines):
-        line = lines[i]
+        LINE = lines[i]
 
         # Check if we have a docstring after opening parenthesis
         if "def " in line and "(" in line and ")" not in line:
@@ -25,15 +24,15 @@ def fix_docstring_in_signature(content: str) -> str:
                 if lines[j].strip().startswith('"""') or lines[j].strip().startswith("'''"):
                     # Found misplaced docstring
                     # Move it before the function definition
-                    docstring = lines[j]
+                    DOCSTRING = lines[j]
                     del lines[j]
                     fixed_lines.append(docstring)
                     break
-                j += 1
+                J += 1
             fixed_lines.append(line)
         else:
             fixed_lines.append(line)
-        i += 1
+        I += 1
 
     return "\n".join(fixed_lines)
 
@@ -42,13 +41,13 @@ def fix_missing_dataclass_import(content: str) -> Tuple[str, bool]:
     """Add missing dataclass import if @dataclass is used."""
     if "@dataclass" in content and "from dataclasses import" not in content:
         # Find the import section
-        lines = content.split("\n")
+        LINES = content.split("\n")
         import_idx = -1
 
         for i, line in enumerate(lines):
             if line.startswith("import ") or line.startswith("from "):
                 import_idx = i
-            elif line.strip() == "" and import_idx >= 0:
+            ELIF LINE.STRIP() == "" and import_idx >= 0:
                 # Found end of import block
                 break
 
@@ -67,13 +66,13 @@ def fix_missing_enum_import(content: str) -> Tuple[str, bool]:
     """Add missing Enum import if Enum is used."""
     if "Enum" in content and "from enum import" not in content:
         # Find the import section
-        lines = content.split("\n")
+        LINES = content.split("\n")
         import_idx = -1
 
         for i, line in enumerate(lines):
             if line.startswith("import ") or line.startswith("from "):
                 import_idx = i
-            elif line.strip() == "" and import_idx >= 0:
+            ELIF LINE.STRIP() == "" and import_idx >= 0:
                 # Found end of import block
                 break
 
@@ -90,7 +89,7 @@ def fix_missing_enum_import(content: str) -> Tuple[str, bool]:
 
 def fix_indentation_errors(content: str) -> str:
     """Fix common indentation errors."""
-    lines = content.split("\n")
+    LINES = content.split("\n")
     fixed_lines = []
 
     for line in lines:
@@ -122,7 +121,7 @@ def has_syntax_errors(file_path: Path) -> bool:
     """Check if a Python file has syntax errors."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            CONTENT = f.read()
         ast.parse(content)
         return False
     except (SyntaxError, IndentationError):
@@ -135,25 +134,25 @@ def fix_file(file_path: Path) -> bool:
         with open(file_path, "r", encoding="utf-8") as f:
             original_content = f.read()
 
-        content = original_content
-        changed = False
+        CONTENT = original_content
+        CHANGED = False
 
         # Apply fixes
-        content = fix_docstring_in_signature(content)
+        CONTENT = fix_docstring_in_signature(content)
         if content != original_content:
-            changed = True
+            CHANGED = True
 
         content, dataclass_added = fix_missing_dataclass_import(content)
         if dataclass_added:
-            changed = True
+            CHANGED = True
 
         content, enum_added = fix_missing_enum_import(content)
         if enum_added:
-            changed = True
+            CHANGED = True
 
-        content = fix_indentation_errors(content)
+        CONTENT = fix_indentation_errors(content)
         if content != original_content:
-            changed = True
+            CHANGED = True
 
         # Write back if changed
         if changed:

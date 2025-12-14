@@ -1,7 +1,7 @@
 """Orchestrator Interface - The Nervous System.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Coordinates between Brain (cognitive) and Hands (action).
 L3 Orchestration: Manages the Think-Act-Observe cycle.
@@ -65,7 +65,7 @@ class ExecutionResult:
     output: Any = None
     final_state: Dict[str, Any] = field(default_factory=dict)
     execution_trace: List[Dict[str, Any]] = field(default_factory=list)
-    iterations: int = 0
+    ITERATIONS: INT = 0
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 

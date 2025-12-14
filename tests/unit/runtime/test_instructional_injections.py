@@ -1,7 +1,7 @@
 """Test suite for instructional injection system.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Tests all 30 instructional injection types across the 6 layers
 and their integration with SubatomicHop stages.
 """
@@ -30,27 +30,27 @@ class TestInstructionalInjections:
 
     def test_all_30_injections_loaded(self):
             """Verify all 30 instructional injections are loaded."""
-        injections = get_instructional_injections()
-        assert len(injections) == 30, f"Expected 30 injections, got {len(injections)}"
+        INJECTIONS = get_instructional_injections()
+        ASSERT LEN(INJECTIONS) == 30, f"Expected 30 injections, got {len(injections)}"
 
         # Check all types are represented
-        types = set(inj.type for inj in injections)
+        TYPES = set(inj.type for inj in injections)
         expected_types = set(t.value for t in InstructionalInjectionType)
-        assert types == expected_types, f"Missing types: {expected_types - types}"
+        ASSERT TYPES == expected_types, f"Missing types: {expected_types - types}"
 
     def test_layer_distribution(self):
             """Verify injections are distributed across 6 layers."""
-        injections = get_instructional_injections()
+        INJECTIONS = get_instructional_injections()
 
         layer_counts = {}
         for injection in injections:
-            layer = injection.type.split('_')[0]
+            LAYER = injection.type.split('_')[0]
             if layer not in layer_counts:
                 layer_counts[layer] = 0
             layer_counts[layer] += 1
 
         # Expected counts per layer
-        expected = {
+        EXPECTED = {
             "global": 5,      # Framing
             "untrusted": 5,   # Context
             "failure": 5,     # Reasoning
@@ -68,12 +68,12 @@ class TestInstructionalInjections:
             """Verify all injections have proper stage mappings."""
         for mapping in STAGE_MAPPINGS:
             assert mapping.applicable_stages, f"No stages mapped for {mapping.injection_type}"
-            assert 0 <= mapping.priority <= 10, f"Invalid priority for {mapping.injection_type}"
+            ASSERT 0 <= mapping.priority <= 10, f"Invalid priority for {mapping.injection_type}"
 
     def test_required_injections_by_stage(self):
             """Verify required injections are properly identified."""
         for stage in MicroStage:
-            required = get_required_injections(stage)
+            REQUIRED = get_required_injections(stage)
 
             # Safety injections should be required for all stages
             safety_required = [
@@ -95,7 +95,7 @@ class TestPromptInjectionLoaderIntegration:
     @pytest.fixture
     def loader(self):
             """Create a test injection loader."""
-        config = {
+        CONFIG = {
             "injection_dir": Path("./test_injections"),
             "max_injections_per_hop": 10,
             "relevance_threshold": 0.3
@@ -116,10 +116,10 @@ class TestPromptInjectionLoaderIntegration:
     def test_finds_stage_specific_injections(self, loader):
             """Test finding injections for specific stages."""
         # Test PRE_CHECK stage (should get Framing layer)
-        matches = loader.find_matching_injections(
+        MATCHES = loader.find_matching_injections(
             hop_type="test_hop",
-            stage="PRE_CHECK",
-            context={"test": True}
+            STAGE="PRE_CHECK",
+            CONTEXT={"test": True}
         )
 
         # Should include framing injections
@@ -135,10 +135,10 @@ class TestPromptInjectionLoaderIntegration:
     def test_required_inclusions(self, loader):
             """Test that required injections are always included."""
         # Test with empty context
-        matches = loader.find_matching_injections(
+        MATCHES = loader.find_matching_injections(
             hop_type="test_hop",
-            stage="THINK",
-            context={}
+            STAGE="THINK",
+            CONTEXT={}
         )
 
         # Should include required safety injections
@@ -152,15 +152,15 @@ class TestPromptInjectionLoaderIntegration:
     def test_applies_injections_correctly(self, loader):
             """Test injection application to prompts."""
         # Get a matching injection
-        matches = loader.find_matching_injections(
+        MATCHES = loader.find_matching_injections(
             hop_type="test_hop",
-            stage="PRE_CHECK",
-            context={"primary_goal": "test objective"}
+            STAGE="PRE_CHECK",
+            CONTEXT={"primary_goal": "test objective"}
         )
 
         if matches:
             base_prompt = "Test prompt with {primary_goal}"
-            enhanced = loader.apply_injections(base_prompt, matches)
+            ENHANCED = loader.apply_injections(base_prompt, matches)
 
             # Should contain the injection template
             assert "GLOBAL OBJECTIVE" in enhanced or len(matches) == 0
@@ -180,11 +180,11 @@ class TestSubatomicHopIntegration:
     @pytest.fixture
     def hop(self, mock_hop_function):
             """Create a test SubatomicHop with injections enabled."""
-        config = SubatomicHopConfig(
+        CONFIG = SubatomicHopConfig(
             hop_id="test_hop",
             enable_checkpoints=False  # Disable for testing
         )
-        hop = SubatomicHop(mock_hop_function, config)
+        HOP = SubatomicHop(mock_hop_function, config)
         hop.enable_prompt_injection = True
         return hop
 
@@ -193,18 +193,18 @@ class TestSubatomicHopIntegration:
             """Test that injections are applied at all stages."""
         with patch('runtime.core.prompt_injection_loader.get_injection_loader') as mock_loader:
             # Mock the loader
-            loader = Mock()
+            LOADER = Mock()
             loader.find_matching_injections.return_value = [
                 InjectionMatch(
-                    injection=InjectionPattern(
+                    INJECTION=InjectionPattern(
                         id="test_injection",
-                        name="Test",
-                        type=InjectionType.INJECTION_SHIELDING,
-                        description="Test",
-                        template="Test injection with {context}",
-                        variables=["context"],
-                        scope=InjectionScope(stages=["PRE_CHECK"]),
-                        priority=10
+                        NAME="Test",
+                        TYPE=InjectionType.INJECTION_SHIELDING,
+                        DESCRIPTION="Test",
+                        TEMPLATE="Test injection with {context}",
+                        VARIABLES=["context"],
+                        SCOPE=InjectionScope(stages=["PRE_CHECK"]),
+                        PRIORITY=10
                     ),
                     relevance_score=0.9,
                     variable_values={"context": "test"}
@@ -213,7 +213,7 @@ class TestSubatomicHopIntegration:
             mock_loader.return_value = loader
 
             # Run the hop
-            result = await hop.run(test_input="test")
+            RESULT = await hop.run(test_input="test")
 
             # Verify loader was called for each stage
             assert loader.find_matching_injections.call_count >= 1
@@ -227,26 +227,26 @@ class TestSubatomicHopIntegration:
         with patch('runtime.core.prompt_injection_loader.get_injection_loader') as mock_loader:
             # Mock loader to return safety injections
             safety_injection = InjectionMatch(
-                injection=InjectionPattern(
+                INJECTION=InjectionPattern(
                     id="injection_shielding",
-                    name="Injection Shielding",
-                    type=InjectionType.INJECTION_SHIELDING,
-                    description="Safety guard",
-                    template="Safety injection",
-                    variables=[],
-                    scope=InjectionScope(stages=list(MicroStage)),
-                    priority=10
+                    NAME="Injection Shielding",
+                    TYPE=InjectionType.INJECTION_SHIELDING,
+                    DESCRIPTION="Safety guard",
+                    TEMPLATE="Safety injection",
+                    VARIABLES=[],
+                    SCOPE=InjectionScope(stages=list(MicroStage)),
+                    PRIORITY=10
                 ),
                 relevance_score=1.0,
                 variable_values={}
             )
 
-            loader = Mock()
+            LOADER = Mock()
             loader.find_matching_injections.return_value = [safety_injection]
             mock_loader.return_value = loader
 
             # Run through all stages
-            result = await hop.run(test_input="test")
+            RESULT = await hop.run(test_input="test")
 
             # Should have been called for stages
             assert loader.find_matching_injections.call_count >= 1
@@ -258,50 +258,50 @@ class TestSubatomicHopIntegration:
 
         def track_injections(hop_type, stage, context, content=None):
                 """Docstring."""
-            matches = []
+            MATCHES = []
 
             # Mock different injections for different stages
             if stage == "PRE_CHECK":
                 matches.append(InjectionMatch(
-                    injection=InjectionPattern(
+                    INJECTION=InjectionPattern(
                         id="global_goal_state",
-                        name="Global Goal",
-                        type=InjectionType.GLOBAL_GOAL_STATE,
-                        description="Framing injection",
-                        template="Global goal: {goal}",
-                        variables=["goal"],
-                        scope=InjectionScope(stages=["PRE_CHECK"]),
-                        priority=10
+                        NAME="Global Goal",
+                        TYPE=InjectionType.GLOBAL_GOAL_STATE,
+                        DESCRIPTION="Framing injection",
+                        TEMPLATE="Global goal: {goal}",
+                        VARIABLES=["goal"],
+                        SCOPE=InjectionScope(stages=["PRE_CHECK"]),
+                        PRIORITY=10
                     ),
                     relevance_score=0.9,
                     variable_values={"goal": "test"}
                 ))
-            elif stage == "THINK":
+            ELIF STAGE == "THINK":
                 matches.append(InjectionMatch(
-                    injection=InjectionPattern(
+                    INJECTION=InjectionPattern(
                         id="reason_then_answer",
-                        name="Reason Then Answer",
-                        type=InjectionType.REASON_THEN_ANSWER,
-                        description="Reasoning injection",
-                        template="Reason first, then answer",
-                        variables=[],
-                        scope=InjectionScope(stages=["THINK"]),
-                        priority=9
+                        NAME="Reason Then Answer",
+                        TYPE=InjectionType.REASON_THEN_ANSWER,
+                        DESCRIPTION="Reasoning injection",
+                        TEMPLATE="Reason first, then answer",
+                        VARIABLES=[],
+                        SCOPE=InjectionScope(stages=["THINK"]),
+                        PRIORITY=9
                     ),
                     relevance_score=0.9,
                     variable_values={}
                 ))
-            elif stage == "COMMIT":
+            ELIF STAGE == "COMMIT":
                 matches.append(InjectionMatch(
-                    injection=InjectionPattern(
+                    INJECTION=InjectionPattern(
                         id="json_only_output",
-                        name="JSON Output",
-                        type=InjectionType.JSON_ONLY_OUTPUT,
-                        description="Output injection",
-                        template="Output must be JSON",
-                        variables=[],
-                        scope=InjectionScope(stages=["COMMIT"]),
-                        priority=8
+                        NAME="JSON Output",
+                        TYPE=InjectionType.JSON_ONLY_OUTPUT,
+                        DESCRIPTION="Output injection",
+                        TEMPLATE="Output must be JSON",
+                        VARIABLES=[],
+                        SCOPE=InjectionScope(stages=["COMMIT"]),
+                        PRIORITY=8
                     ),
                     relevance_score=0.9,
                     variable_values={}
@@ -311,7 +311,7 @@ class TestSubatomicHopIntegration:
             return matches
 
         with patch('runtime.core.prompt_injection_loader.get_injection_loader') as mock_loader:
-            loader = Mock()
+            LOADER = Mock()
             loader.find_matching_injections.side_effect = track_injections
             mock_loader.return_value = loader
 
@@ -333,11 +333,11 @@ class TestInjectionQuality:
 
     def test_injection_templates_have_variables(self):
             """Verify all injection templates have proper variable placeholders."""
-        injections = get_instructional_injections()
+        INJECTIONS = get_instructional_injections()
 
         for injection in injections:
-            template = injection.template
-            variables = injection.variables
+            TEMPLATE = injection.template
+            VARIABLES = injection.variables
 
             # Check that all declared variables are in template
             for var in variables:
@@ -346,14 +346,14 @@ class TestInjectionQuality:
 
     def test_injection_priorities_are_reasonable(self):
             """Verify injection priorities make sense."""
-        injections = get_instructional_injections()
+        INJECTIONS = get_instructional_injections()
 
         # Safety injections should have highest priority
         safety_injections = [inj for inj in injections if "shielding" in inj.type or "guardrail" in
     inj.type]
 
         for inj in safety_injections:
-            assert inj.priority >= 9, f"Safety injection {inj.id} has low priority {inj.priority}"
+            ASSERT INJ.PRIORITY >= 9, f"Safety injection {inj.id} has low priority {inj.priority}"
 
     def test_critical_injections_are_required(self):
             """Verify critical injections are marked as required."""
@@ -369,7 +369,7 @@ class TestInjectionQuality:
         ]
 
         for stage in MicroStage:
-            required = get_required_injections(stage)
+            REQUIRED = get_required_injections(stage)
             required_types = [inj.type for inj in get_instructional_injections() if inj.id in requir
     ed]
 

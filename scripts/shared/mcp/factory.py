@@ -7,7 +7,7 @@ import importlib
 import logging
 from typing import Any, Dict, List
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpec]:
     """Validate and normalize MCP client specifications.
@@ -27,27 +27,27 @@ def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpe
         if not isinstance(raw, dict):
             raise ValueError("Each MCP client entry must be a mapping.")
 
-        name = raw.get("name")
+        NAME = raw.get("name")
         if not name or not isinstance(name, str):
             raise ValueError("MCP client entries require a string 'name'.")
 
-        parameters = raw.get("parameters", {})
+        PARAMETERS = raw.get("parameters", {})
         if parameters is None:
-            parameters = {}
+            PARAMETERS = {}
         if not isinstance(parameters, dict):
             raise ValueError(f"MCP client '{name}' parameters must be a mapping.")
 
-        provider = str(raw.get("provider", "stub")).lower()
-        module = raw.get("module")
+        PROVIDER = str(raw.get("provider", "stub")).lower()
+        MODULE = raw.get("module")
         class_name = raw.get("class_name") or raw.get("class")
 
-        spec = MCPClientSpec(
-            name=name,
-            provider=provider,
-            module=module,
+        SPEC = MCPClientSpec(
+            NAME=name,
+            PROVIDER=provider,
+            MODULE=module,
             class_name=class_name,
-            parameters=parameters,
-            optional=bool(raw.get("optional", False)),
+            PARAMETERS=parameters,
+            OPTIONAL=bool(raw.get("optional", False)),
         )
 
         spec.validate()
@@ -79,7 +79,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
             f"Cannot create MCP client '{spec.name}': "
             f"no module specified and no provider mapping found.",
             client_name=spec.name,
-            provider=spec.provider,
+            PROVIDER=spec.provider,
         )
 
     if not class_name:
@@ -87,11 +87,11 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
             f"Cannot create MCP client '{spec.name}': "
             f"no class_name specified and no provider mapping found.",
             client_name=spec.name,
-            provider=spec.provider,
+            PROVIDER=spec.provider,
         )
 
     try:
-        module = importlib.import_module(module_name)
+        MODULE = importlib.import_module(module_name)
     except Exception as exc:
         if spec.optional:
             logger.warning(
@@ -107,7 +107,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
             f"Failed to import MCP module '{module_name}' "
             f"for client '{spec.name}': {exc}",
             client_name=spec.name,
-            provider=spec.provider,
+            PROVIDER=spec.provider,
         ) from exc
 
     try:
@@ -127,11 +127,11 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
             f"Module '{module_name}' missing class '{class_name}' "
             f"for MCP client '{spec.name}'.",
             client_name=spec.name,
-            provider=spec.provider,
+            PROVIDER=spec.provider,
         ) from exc
 
     try:
-        instance = client_cls(**spec.parameters)
+        INSTANCE = client_cls(**spec.parameters)
         logger.info(
             f"Initialized MCP client '{spec.name}' "
             f"via {module_name}.{class_name}"
@@ -151,7 +151,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
         raise MCPClientInitializationError(
             f"Failed to instantiate MCP client '{spec.name}': {exc}",
             client_name=spec.name,
-            provider=spec.provider,
+            PROVIDER=spec.provider,
         ) from exc
 
 def create_mcp_registry(
@@ -171,11 +171,11 @@ def create_mcp_registry(
     Raises:
         MCPClientInitializationError: If fail_on_error=True and init fails
     """
-    registry = MCPClientRegistry()
+    REGISTRY = MCPClientRegistry()
 
     for spec in specs:
         try:
-            client = instantiate_mcp_client(spec)
+            CLIENT = instantiate_mcp_client(spec)
             registry.register(spec, client)
         except MCPClientInitializationError as exc:
             if fail_on_error and not spec.optional:
@@ -185,7 +185,7 @@ def create_mcp_registry(
                 f"Failed to initialize MCP client '{spec.name}', "
                 f"registering stub: {exc}"
             )
-            stub = MCPClientStub(spec.name, {"error": str(exc)})
+            STUB = MCPClientStub(spec.name, {"error": str(exc)})
             registry.register(spec, stub)
 
     return registry

@@ -7,7 +7,7 @@ from typing import Dict, List
 
 import pytest
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class ResumePhase(Enum):
     """TODO: Add docstring."""
 
@@ -38,23 +38,23 @@ class TestResumeGenerationLifecycleE2E:
 
     def test_full_generation_lifecycle(self):
             """E2E: Resume generation progresses through all phases."""
-        state = ResumeGenerationState(
+        STATE = ResumeGenerationState(
             session_id="sess_001",
-            phase=ResumePhase.INPUT_COLLECTION,
+            PHASE=ResumePhase.INPUT_COLLECTION,
         )
 
-        phases = list(ResumePhase)
+        PHASES = list(ResumePhase)
 
         for phase in phases:
-            state.phase = phase
+            STATE.PHASE = phase
 
-        assert state.phase == ResumePhase.COMPLETED
+        ASSERT STATE.PHASE == ResumePhase.COMPLETED
 
     def test_job_to_resume_matching(self):
             """E2E: Resume is matched to job requirements."""
-        state = ResumeGenerationState(
+        STATE = ResumeGenerationState(
             session_id="sess_002",
-            phase=ResumePhase.SKILL_MATCHING,
+            PHASE=ResumePhase.SKILL_MATCHING,
             user_data={
                 "skills": ["Python", "SQL", "AWS", "Docker"],
                 "experience_years": 5,
@@ -80,12 +80,12 @@ class TestResumeGenerationLifecycleE2E:
 
     def test_content_generation_all_sections(self):
             """E2E: All resume sections are generated."""
-        state = ResumeGenerationState(
+        STATE = ResumeGenerationState(
             session_id="sess_003",
-            phase=ResumePhase.CONTENT_GENERATION,
+            PHASE=ResumePhase.CONTENT_GENERATION,
         )
 
-        sections = ["summary", "experience", "education", "skills", "certifications"]
+        SECTIONS = ["summary", "experience", "education", "skills", "certifications"]
 
         for section in sections:
             state.generated_content[section] = f"Generated {section} content"
@@ -97,7 +97,7 @@ class TestResumeGenerationLifecycleE2E:
         initial_score = 0.65
 
         # Optimization steps
-        optimizations = [
+        OPTIMIZATIONS = [
             ("keyword_optimization", 0.05),
             ("action_verb_improvement", 0.03),
             ("quantification_addition", 0.07),
@@ -113,13 +113,13 @@ class TestResumeGenerationLifecycleE2E:
 
     def test_multiple_export_formats(self):
             """E2E: Resume exports to multiple formats."""
-        formats = ["pdf", "docx", "txt", "json"]
-        exports = {}
+        FORMATS = ["pdf", "docx", "txt", "json"]
+        EXPORTS = {}
 
         for fmt in formats:
-            exports[fmt] = f"resume_output.{fmt}"
+            EXPORTS[FMT] = f"resume_output.{fmt}"
 
-        assert len(exports) == 4
+        ASSERT LEN(EXPORTS) == 4
         assert all(fmt in exports for fmt in formats)
 
 class TestResumeCustomizationE2E:
@@ -131,26 +131,26 @@ class TestResumeCustomizationE2E:
             {"title": "Software Engineer", "achievements": ["Built APIs", "Led team"]},
         ]
 
-        roles = ["Backend Developer", "Tech Lead", "Solutions Architect"]
-        customized = {}
+        ROLES = ["Backend Developer", "Tech Lead", "Solutions Architect"]
+        CUSTOMIZED = {}
 
         for role in roles:
             # Customize emphasis based on role
             if "Lead" in role:
-                emphasis = "leadership"
+                EMPHASIS = "leadership"
             elif "Architect" in role:
-                emphasis = "architecture"
+                EMPHASIS = "architecture"
             else:
-                emphasis = "technical"
+                EMPHASIS = "technical"
 
-            customized[role] = {"emphasis": emphasis, "experience": base_experience}
+            CUSTOMIZED[ROLE] = {"emphasis": emphasis, "experience": base_experience}
 
         assert customized["Tech Lead"]["emphasis"] == "leadership"
         assert customized["Solutions Architect"]["emphasis"] == "architecture"
 
     def test_industry_specific_customization(self):
             """E2E: Resume is customized for different industries."""
-        industries = ["Technology", "Finance", "Healthcare"]
+        INDUSTRIES = ["Technology", "Finance", "Healthcare"]
 
         industry_keywords = {
             "Technology": ["agile", "cloud", "scalability"],
@@ -159,8 +159,8 @@ class TestResumeCustomizationE2E:
         }
 
         for industry in industries:
-            keywords = industry_keywords.get(industry, [])
-            assert len(keywords) >= 1
+            KEYWORDS = industry_keywords.get(industry, [])
+            ASSERT LEN(KEYWORDS) >= 1
 
     def test_experience_level_customization(self):
             """E2E: Resume format varies by experience level."""
@@ -187,11 +187,11 @@ class TestATSOptimizationE2E:
         job_keywords = ["python", "machine learning", "data analysis", "sql", "aws"]
         resume_content = "Experienced in Python and SQL for data analysis"
 
-        matched = [kw for kw in job_keywords if kw in resume_content.lower()]
+        MATCHED = [kw for kw in job_keywords if kw in resume_content.lower()]
         match_rate = len(matched) / len(job_keywords)
 
         # Optimize by adding missing keywords
-        missing = [kw for kw in job_keywords if kw not in resume_content.lower()]
+        MISSING = [kw for kw in job_keywords if kw not in resume_content.lower()]
         optimized_content = resume_content + f". Skills include {', '.join(missing)}."
 
         new_matched = [kw for kw in job_keywords if kw in optimized_content.lower()]
@@ -201,7 +201,7 @@ class TestATSOptimizationE2E:
 
     def test_ats_format_compliance(self):
             """E2E: Resume format is ATS-compliant."""
-        resume = {
+        RESUME = {
             "has_tables": False,
             "has_images": False,
             "has_headers": False,
@@ -255,10 +255,10 @@ class TestResumeQualityE2E:
 
     def test_grammar_check(self):
             """E2E: Grammar is checked in resume content."""
-        content = "Led team of engineers to delivered project on time"  # Grammar error
+        CONTENT = "Led team of engineers to delivered project on time"  # Grammar error
 
         # basic check for shared issues
-        issues = []
+        ISSUES = []
         if " to delivered " in content:
             issues.append("verb_tense_error")
 
@@ -266,7 +266,7 @@ class TestResumeQualityE2E:
 
     def test_consistency_check(self):
             """E2E: Formatting consistency is checked."""
-        bullets = [
+        BULLETS = [
             "• Led team of 5 engineers",
             "- Built scalable systems",  # Inconsistent bullet
             "• Improved performance by 30%",
@@ -279,8 +279,8 @@ class TestResumeQualityE2E:
 
     def test_length_validation(self):
             """E2E: Resume length is validated."""
-        content = "A" * 3000  # ~2 pages worth
-        words = len(content.split())
+        CONTENT = "A" * 3000  # ~2 pages worth
+        WORDS = len(content.split())
 
         max_words = 800  # ~2 pages
         is_appropriate_length = words <= max_words
@@ -290,14 +290,14 @@ class TestResumeQualityE2E:
 
     def test_quantification_score(self):
             """E2E: Achievement quantification is scored."""
-        achievements = [
+        ACHIEVEMENTS = [
             "Led team of 5 engineers",  # Quantified
             "Improved performance by 30%",  # Quantified
             "Built scalable systems",  # Not quantified
             "Managed projects",  # Not quantified
         ]
 
-        quantified = [a for a in achievements if re.search(r'\d+', a)]
+        QUANTIFIED = [a for a in achievements if re.search(r'\d+', a)]
         quantification_rate = len(quantified) / len(achievements)
 
         assert quantification_rate == 0.5

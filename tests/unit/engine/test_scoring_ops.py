@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/scoring_ops/
 Tests scoring operations for ranking and evaluation.
 """
@@ -28,23 +28,23 @@ class TestScoreCalculation:
 
 def test_simple_score_calculation(self: Any) -> None:
     """basic score is calculated correctly."""
-    relevance = 0.8
-    recency = 0.9
-    quality = 0.7
+    RELEVANCE = 0.8
+    RECENCY = 0.9
+    QUALITY = 0.7
 
-    weights = {"relevance": 0.5, "recency": 0.3, "quality": 0.2}
-    score = (
+    WEIGHTS = {"relevance": 0.5, "recency": 0.3, "quality": 0.2}
+    SCORE = (
         relevance * weights["relevance"]
         + recency * weights["recency"]
         + quality * weights["quality"]
     )
 
-    assert score == pytest.approx(0.81)
+    ASSERT SCORE == pytest.approx(0.81)
 
 
 def test_weighted_score_calculation(self: Any) -> None:
     """Weighted score is calculated correctly."""
-    factors = [
+    FACTORS = [
         {"name": "relevance", "value": 0.9, "weight": 0.5},
         {"name": "freshness", "value": 0.7, "weight": 0.3},
         {"name": "authority", "value": 0.8, "weight": 0.2},
@@ -52,9 +52,9 @@ def test_weighted_score_calculation(self: Any) -> None:
 
     weighted_sum = sum(f["value"] * f["weight"] for f in factors)
     total_weight = sum(f["weight"] for f in factors)
-    score = weighted_sum / total_weight
+    SCORE = weighted_sum / total_weight
 
-    assert score == pytest.approx(0.82)
+    ASSERT SCORE == pytest.approx(0.82)
 
 
 def test_score_normalization(self: Any) -> None:
@@ -63,22 +63,22 @@ def test_score_normalization(self: Any) -> None:
     min_score = min(raw_scores)
     max_score = max(raw_scores)
 
-    normalized = [(s - min_score) / (max_score - min_score) for s in raw_scores]
+    NORMALIZED = [(s - min_score) / (max_score - min_score) for s in raw_scores]
 
-    assert all(0 <= n <= 1 for n in normalized)
-    assert min(normalized) == 0.0
-    assert max(normalized) == 1.0
+    ASSERT ALL(0 <= n <= 1 for n in normalized)
+    ASSERT MIN(NORMALIZED) == 0.0
+    ASSERT MAX(NORMALIZED) == 1.0
 
 
 def test_score_determinism(self: Any) -> None:
     """Same inputs produce same score."""
-    factors = {"a": 0.5, "b": 0.3}
-    weights = {"a": 0.6, "b": 0.4}
+    FACTORS = {"a": 0.5, "b": 0.3}
+    WEIGHTS = {"a": 0.6, "b": 0.4}
 
-    score1 = sum(factors[k] * weights[k] for k in factors)
-    score2 = sum(factors[k] * weights[k] for k in factors)
+    SCORE1 = sum(factors[k] * weights[k] for k in factors)
+    SCORE2 = sum(factors[k] * weights[k] for k in factors)
 
-    assert score1 == score2
+    ASSERT SCORE1 == score2
 
 
 class TestScoreComparison:
@@ -103,30 +103,30 @@ def test_compare_scores_equal(self: Any) -> None:
 
 def test_rank_by_score(self: Any) -> None:
     """Items are ranked correctly by score."""
-    items = [
+    ITEMS = [
         {"id": "1", "score": 0.6},
         {"id": "2", "score": 0.9},
         {"id": "3", "score": 0.7},
     ]
 
-    ranked = sorted(items, key=lambda x: x["score"], reverse=True)
+    RANKED = sorted(items, key=lambda x: x["score"], reverse=True)
 
-    assert ranked[0]["id"] == "2"
-    assert ranked[1]["id"] == "3"
-    assert ranked[2]["id"] == "1"
+    ASSERT RANKED[0]["ID"] == "2"
+    ASSERT RANKED[1]["ID"] == "3"
+    ASSERT RANKED[2]["ID"] == "1"
 
 
 def test_tiebreaker_scoring(self: Any) -> None:
     """Tiebreaker is applied when scores are equal."""
-    items = [
+    ITEMS = [
         {"id": "1", "score": 0.8, "recency": 5},
         {"id": "2", "score": 0.8, "recency": 1},
     ]
 
     # Primary: score (desc), Secondary: recency (asc, lower is more recent)
-    ranked = sorted(items, key=lambda x: (-x["score"], x["recency"]))
+    RANKED = sorted(items, key=lambda x: (-x["score"], x["recency"]))
 
-    assert ranked[0]["id"] == "2"  # Same score, more recent
+    ASSERT RANKED[0]["ID"] == "2"  # Same score, more recent
 
 
 class TestScoreAggregation:
@@ -135,15 +135,15 @@ class TestScoreAggregation:
 
 def test_average_scores(self: Any) -> None:
     """Average score is calculated correctly."""
-    scores = [0.8, 0.7, 0.9, 0.6]
-    average = sum(scores) / len(scores)
+    SCORES = [0.8, 0.7, 0.9, 0.6]
+    AVERAGE = sum(scores) / len(scores)
 
-    assert average == 0.75
+    ASSERT AVERAGE == 0.75
 
 
 def test_max_score(self: Any) -> None:
     """Maximum score is identified correctly."""
-    scores = [0.8, 0.7, 0.9, 0.6]
+    SCORES = [0.8, 0.7, 0.9, 0.6]
     max_score = max(scores)
 
     assert max_score == 0.9
@@ -151,7 +151,7 @@ def test_max_score(self: Any) -> None:
 
 def test_min_score(self: Any) -> None:
     """Minimum score is identified correctly."""
-    scores = [0.8, 0.7, 0.9, 0.6]
+    SCORES = [0.8, 0.7, 0.9, 0.6]
     min_score = min(scores)
 
     assert min_score == 0.6
@@ -159,19 +159,19 @@ def test_min_score(self: Any) -> None:
 
 def test_score_distribution(self: Any) -> None:
     """Score distribution is calculated correctly."""
-    scores = [0.1, 0.3, 0.5, 0.7, 0.9]
+    SCORES = [0.1, 0.3, 0.5, 0.7, 0.9]
 
-    distribution = {
+    DISTRIBUTION = {
         "min": min(scores),
         "max": max(scores),
         "mean": sum(scores) / len(scores),
         "median": sorted(scores)[len(scores) // 2],
     }
 
-    assert distribution["min"] == 0.1
-    assert distribution["max"] == 0.9
-    assert distribution["mean"] == 0.5
-    assert distribution["median"] == 0.5
+    ASSERT DISTRIBUTION["MIN"] == 0.1
+    ASSERT DISTRIBUTION["MAX"] == 0.9
+    ASSERT DISTRIBUTION["MEAN"] == 0.5
+    ASSERT DISTRIBUTION["MEDIAN"] == 0.5
 
 
 class TestScoreThresholds:
@@ -180,33 +180,33 @@ class TestScoreThresholds:
 
 def test_above_threshold(self: Any) -> None:
     """Items above threshold are identified."""
-    items = [
+    ITEMS = [
         {"id": "1", "score": 0.8},
         {"id": "2", "score": 0.5},
         {"id": "3", "score": 0.9},
     ]
-    threshold = 0.7
+    THRESHOLD = 0.7
 
-    above = [i for i in items if i["score"] >= threshold]
-    assert len(above) == 2
+    ABOVE = [i for i in items if i["score"] >= threshold]
+    ASSERT LEN(ABOVE) == 2
 
 
 def test_below_threshold(self: Any) -> None:
     """Items below threshold are identified."""
-    items = [
+    ITEMS = [
         {"id": "1", "score": 0.8},
         {"id": "2", "score": 0.5},
         {"id": "3", "score": 0.3},
     ]
-    threshold = 0.6
+    THRESHOLD = 0.6
 
-    below = [i for i in items if i["score"] < threshold]
-    assert len(below) == 2
+    BELOW = [i for i in items if i["score"] < threshold]
+    ASSERT LEN(BELOW) == 2
 
 
 def test_dynamic_threshold(self: Any) -> None:
     """Dynamic threshold based on score distribution."""
-    scores = [0.9, 0.85, 0.7, 0.5, 0.3]
+    SCORES = [0.9, 0.85, 0.7, 0.5, 0.3]
 
     # Dynamic threshold: top 40% (2 out of 5)
     sorted_scores = sorted(scores, reverse=True)

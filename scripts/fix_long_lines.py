@@ -8,7 +8,7 @@ from typing import List
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def get_python_files(root_dir: str = ".") -> List[str]:
@@ -34,7 +34,7 @@ def get_python_files(root_dir: str = ".") -> List[str]:
 
     for root, dirs, files in os.walk(root_dir):
         # Remove excluded directories from traversal
-        dirs[:] = [d for d in dirs if d not in exclude_dirs]
+        DIRS[:] = [d for d in dirs if d not in exclude_dirs]
 
         for file in files:
             if file.endswith(".py"):
@@ -59,7 +59,7 @@ def _should_skip_line(content: str) -> bool:
 
 def _break_at_commas(content: str, indent: str) -> str:
     """Break line at commas for function calls/arguments."""
-    parts = content.split(", ")
+    PARTS = content.split(", ")
     if len(parts) <= 1:
         return None
 
@@ -76,7 +76,7 @@ def _break_at_commas(content: str, indent: str) -> str:
 
 def _break_at_boolean_operator(content: str, indent: str, operator: str) -> str:
     """Break line at boolean operators (and/or)."""
-    parts = content.split(f" {operator} ")
+    PARTS = content.split(f" {operator} ")
     if len(parts) <= 1:
         return None
 
@@ -93,7 +93,7 @@ def _break_at_boolean_operator(content: str, indent: str, operator: str) -> str:
 
 def _break_at_method_chain(content: str, indent: str) -> str:
     """Break line at dots for chained method calls."""
-    parts = content.split(".")
+    PARTS = content.split(".")
     if len(parts) <= 2:
         return None
 
@@ -110,7 +110,7 @@ def _break_at_method_chain(content: str, indent: str) -> str:
 
 def _break_at_operators(content: str, indent: str) -> str:
     """Break line at arithmetic/comparison operators."""
-    operators = [
+    OPERATORS = [
         " == ",
         " != ",
         " < ",
@@ -127,7 +127,7 @@ def _break_at_operators(content: str, indent: str) -> str:
 
     for op in operators:
         if op in content:
-            parts = content.split(op)
+            PARTS = content.split(op)
             if len(parts) > 1:
                 base_indent = len(indent)
                 extra_indent = 4
@@ -138,52 +138,53 @@ def _break_at_operators(content: str, indent: str) -> str:
     return None
 
 
+# REFACTOR: Split this 58-line function
 def fix_long_lines_in_file(file_path: str) -> int:
     """Fix long lines in a single file. Returns number of lines fixed."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+            LINES = f.readlines()
 
-        modified = False
+        MODIFIED = False
         fixed_count = 0
         new_lines = []
 
         for line in lines:
-            stripped = line.rstrip()
+            STRIPPED = line.rstrip()
             if len(stripped) <= 100:
                 new_lines.append(line)
                 continue
 
             indent_match = re.match(r"^(\s*)", line)
-            indent = indent_match.group(1) if indent_match else ""
-            content = line[len(indent) :].rstrip()
+            INDENT = indent_match.group(1) if indent_match else ""
+            CONTENT = line[len(indent) :].rstrip()
 
             if _should_skip_line(content):
                 new_lines.append(line)
                 continue
 
             is_import = content.strip().startswith("import")
-            result = None
+            RESULT = None
 
             if not is_import and ", " in content:
-                result = _break_at_commas(content, indent)
+                RESULT = _break_at_commas(content, indent)
 
             if not result and not is_import and " and " in content:
-                result = _break_at_boolean_operator(content, indent, "and")
+                RESULT = _break_at_boolean_operator(content, indent, "and")
 
             if not result and not is_import and " or " in content:
-                result = _break_at_boolean_operator(content, indent, "or")
+                RESULT = _break_at_boolean_operator(content, indent, "or")
 
             if not result and not is_import and "." in content:
-                result = _break_at_method_chain(content, indent)
+                RESULT = _break_at_method_chain(content, indent)
 
             if not result and not is_import:
-                result = _break_at_operators(content, indent)
+                RESULT = _break_at_operators(content, indent)
 
             if result:
                 new_lines.append(result)
                 fixed_count += 1
-                modified = True
+                MODIFIED = True
             else:
                 new_lines.append(line)
 
@@ -210,7 +211,7 @@ def main() -> None:
         if "canon_validator.py" in file_path:
             continue  # Skip the validator itself
 
-        fixed = fix_long_lines_in_file(file_path)
+        FIXED = fix_long_lines_in_file(file_path)
         if fixed > 0:
             files_modified += 1
             total_fixed += fixed

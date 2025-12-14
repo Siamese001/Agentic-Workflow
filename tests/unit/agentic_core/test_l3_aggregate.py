@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TestWorkflowResultAggregation:
@@ -12,34 +12,34 @@ class TestWorkflowResultAggregation:
 
 def test_aggregate_branch_results(self: Any) -> None:
     """Nominal: Branch results are aggregated."""
-    branches = {
+    BRANCHES = {
         "branch_a": {"result": "data_a"},
         "branch_b": {"result": "data_b"},
     }
-    aggregated = {k: v["result"] for k, v in branches.items()}
-    assert len(aggregated) == 2
+    AGGREGATED = {k: v["result"] for k, v in branches.items()}
+    ASSERT LEN(AGGREGATED) == 2
 
 
 def test_aggregate_step_outputs(self: Any) -> None:
     """Nominal: Step outputs are aggregated."""
-    steps = [
+    STEPS = [
         {"step": 1, "output": "out_1"},
         {"step": 2, "output": "out_2"},
         {"step": 3, "output": "out_3"},
     ]
-    outputs = [s["output"] for s in steps]
-    assert len(outputs) == 3
+    OUTPUTS = [s["output"] for s in steps]
+    ASSERT LEN(OUTPUTS) == 3
 
 
 def test_aggregate_with_failures(self: Any) -> None:
     """Nominal: Failures are tracked in aggregation."""
-    results = [
+    RESULTS = [
         {"step": 1, "status": "success"},
         {"step": 2, "status": "failed"},
         {"step": 3, "status": "success"},
     ]
-    failures = [r for r in results if r["status"] == "failed"]
-    assert len(failures) == 1
+    FAILURES = [r for r in results if r["status"] == "failed"]
+    ASSERT LEN(FAILURES) == 1
 
 
 def test_aggregate_metrics(self: Any) -> None:
@@ -56,6 +56,6 @@ def test_aggregate_metrics(self: Any) -> None:
 
 def test_aggregate_final_output(self: Any) -> None:
     """Nominal: Final output is constructed."""
-    intermediate = ["part_1", "part_2", "part_3"]
+    INTERMEDIATE = ["part_1", "part_2", "part_3"]
     final_output = " ".join(intermediate)
     assert "part_1" in final_output

@@ -2,10 +2,10 @@ import logging
 
 import pytest
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="Provider SDK isolation will be enforced in later refactor phases.")
+@PYTEST.MARK.SKIP(REASON="Provider SDK isolation will be enforced in later refactor phases.")
 def test_only_providers_contain_provider_sdks() -> None:
     """Placeholder for provider SDK isolation tests.
 

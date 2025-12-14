@@ -1,7 +1,7 @@
 """Quality validation and output formatting stages.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Extracted from unified_signal_pipeline.py for Key 42 compliance.
 Contains QualityValidationStage and OutputFormattingStage.
 """
@@ -12,7 +12,7 @@ from typing import Any
 
 from .types import PipelineStage
 
-logger = __import__('logging').getLogger(__name__)
+LOGGER = __import__('logging').getLogger(__name__)
 
 
 class QualityValidationStage(PipelineStage):
@@ -48,20 +48,20 @@ async def execute(self: Any, envelope: Any) -> Any:
         envelope.mark_stage_start(stage_name)
 
         try:
-            content = self._extract_content(envelope.payload)
+            CONTENT = self._extract_content(envelope.payload)
 
             if not content:
                 envelope.mark_stage_skipped(stage_name, "No content to validate")
                 return envelope
 
             cache_key = f"quality_validated_{hashlib.sha256(content.encode()).hexdigest()[:16]}"
-            cached = self.semantic_cache.get(cache_key) if self.semantic_cache else None
+            CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
 
             if cached:
                 self._update_envelope_with_validation(envelope, cached)
                 envelope.mark_stage_complete(stage_name,
                     (time.time() - start_time) * 1000,
-                    metadata={"cache_hit": True})
+                    METADATA={"cache_hit": True})
                 return envelope
 
             validation_results = await self._perform_validations(content, envelope)
@@ -72,7 +72,7 @@ async def execute(self: Any, envelope: Any) -> Any:
 
             envelope.mark_stage_complete(stage_name,
                 (time.time() - start_time) * 1000,
-                metadata={"cache_hit": False})
+                METADATA={"cache_hit": False})
             return envelope
 
         except Exception as e:
@@ -90,13 +90,13 @@ def _extract_content(self: Any, payload: Any) -> str:
 
 async def _perform_validations(self: Any, content: str, envelope: Any) -> Dict[str, Any]:
         """Perform all quality validations."""
-        results = {"passed": True, "issues": []}
+        RESULTS = {"passed": True, "issues": []}
 
         if self.bias_auditor:
             bias_result = self.bias_auditor.audit_bias(content)
             results["bias_audit"] = bias_result
             if bias_result.get("violations"):
-                results["passed"] = False
+                RESULTS["PASSED"] = False
                 results["issues"].append("bias_detected")
 
         if self.pii_scrubber:
@@ -109,7 +109,7 @@ async def _perform_validations(self: Any, content: str, envelope: Any) -> Dict[s
             constitutional_result = self.constitutional_ai.review_content(content)
             results["constitutional_review"] = constitutional_result
             if constitutional_result.get("violations"):
-                results["passed"] = False
+                RESULTS["PASSED"] = False
                 results["issues"].append("constitutional_violation")
 
         return results
@@ -150,23 +150,23 @@ async def execute(self: Any, envelope: Any) -> Any:
         envelope.mark_stage_start(stage_name)
 
         try:
-            content = self._extract_content(envelope.payload)
+            CONTENT = self._extract_content(envelope.payload)
 
             if not content:
                 envelope.mark_stage_skipped(stage_name, "No content to format")
                 return envelope
 
             cache_key = f"output_formatted_{hashlib.sha256(content.encode()).hexdigest()[:16]}"
-            cached = self.semantic_cache.get(cache_key) if self.semantic_cache else None
+            CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
 
             if cached:
                 self._update_envelope_with_formatted_output(envelope, cached)
                 envelope.mark_stage_complete(stage_name,
                     (time.time() - start_time) * 1000,
-                    metadata={"cache_hit": True})
+                    METADATA={"cache_hit": True})
                 return envelope
 
-            formatted = await self._format_output(content, envelope)
+            FORMATTED = await self._format_output(content, envelope)
             self._update_envelope_with_formatted_output(envelope, formatted)
 
             if self.semantic_cache:
@@ -174,7 +174,7 @@ async def execute(self: Any, envelope: Any) -> Any:
 
             envelope.mark_stage_complete(stage_name,
                 (time.time() - start_time) * 1000,
-                metadata={"cache_hit": False})
+                METADATA={"cache_hit": False})
             return envelope
 
         except Exception as e:
@@ -195,7 +195,7 @@ async def _format_output(self: Any, content: str, envelope: Any) -> Dict[str, An
         payload_type = envelope.payload.payload_type.value if hasattr(envelope.payload,
             'payload_type') else "unknown"
 
-        formatted = {
+        FORMATTED = {
             "formatted_content": content,
             "format_type": payload_type,
             "metadata": {
@@ -205,9 +205,9 @@ async def _format_output(self: Any, content: str, envelope: Any) -> Dict[str, An
         }
 
         if payload_type == "resume_data":
-            formatted["sections"] = self._format_resume_sections(content)
+            FORMATTED["SECTIONS"] = self._format_resume_sections(content)
         elif payload_type == "outreach_data":
-            formatted["message"] = self._format_outreach_message(content)
+            FORMATTED["MESSAGE"] = self._format_outreach_message(content)
 
         return formatted
 

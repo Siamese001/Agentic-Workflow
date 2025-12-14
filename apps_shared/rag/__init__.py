@@ -7,7 +7,7 @@ Provides core functionality and exports for the Rag module.
 import logging
 from typing import Dict, List, Optional, Union
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 # Module metadata
 __version__: str = "1.0.0"

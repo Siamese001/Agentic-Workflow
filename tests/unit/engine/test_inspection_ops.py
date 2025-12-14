@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/inspection_ops/
 Tests inspection operations for content analysis.
 """
@@ -33,9 +33,9 @@ class TestContentInspection:
 
 def test_inspect_content_quality(self: Any) -> None:
     """Content quality is assessed correctly."""
-    content = "This is a well-written, comprehensive document with detailed analysis."
+    CONTENT = "This is a well-written, comprehensive document with detailed analysis."
 
-    metrics = {
+    METRICS = {
         "length": len(content),
         "word_count": len(content.split()),
         "avg_word_length": sum(len(w) for w in content.split()) / len(content.split()),
@@ -43,18 +43,18 @@ def test_inspect_content_quality(self: Any) -> None:
 
     # Quality based on metrics
     if metrics["word_count"] > 5 and metrics["avg_word_length"] > 3:
-        quality = ContentQuality.HIGH
+        QUALITY = ContentQuality.HIGH
     else:
-        quality = ContentQuality.LOW
+        QUALITY = ContentQuality.LOW
 
-    assert quality == ContentQuality.HIGH
+    ASSERT QUALITY == ContentQuality.HIGH
 
 
 def test_inspect_empty_content(self: Any) -> None:
     """Empty content is flagged."""
-    content = ""
+    CONTENT = ""
 
-    issues = []
+    ISSUES = []
     if not content or not content.strip():
         issues.append("Content is empty")
 
@@ -63,27 +63,27 @@ def test_inspect_empty_content(self: Any) -> None:
 
 def test_inspect_short_content(self: Any) -> None:
     """Short content is flagged."""
-    content = "Hi"
+    CONTENT = "Hi"
     min_length = 10
 
-    issues = []
+    ISSUES = []
     if len(content) < min_length:
         issues.append(f"Content too short (min: {min_length})")
 
-    assert len(issues) == 1
+    ASSERT LEN(ISSUES) == 1
 
 
 def test_inspect_formatting(self: Any) -> None:
     """Content formatting is inspected."""
-    content = "   Poorly   formatted    content   "
+    CONTENT = "   Poorly   formatted    content   "
 
-    issues = []
+    ISSUES = []
     if "  " in content:
         issues.append("Multiple consecutive spaces detected")
     if content != content.strip():
         issues.append("Leading/trailing whitespace detected")
 
-    assert len(issues) == 2
+    ASSERT LEN(ISSUES) == 2
 
 
 class TestStructureInspection:
@@ -92,20 +92,20 @@ class TestStructureInspection:
 
 def test_inspect_required_sections(self: Any) -> None:
     """Required sections are verified."""
-    document = {
+    DOCUMENT = {
         "title": "Report",
         "summary": "Brief summary",
         "content": "Main content",
     }
     required_sections = ["title", "summary", "content", "conclusion"]
 
-    missing = [s for s in required_sections if s not in document]
+    MISSING = [s for s in required_sections if s not in document]
     assert "conclusion" in missing
 
 
 def test_inspect_nested_structure(self: Any) -> None:
     """Nested structure is inspected correctly."""
-    data = {"level1": {"level2": {"level3": "value"}}}
+    DATA = {"level1": {"level2": {"level3": "value"}}}
 
     # Check depth
     def get_depth(d: Dict, depth: int = 0) -> int:
@@ -114,22 +114,22 @@ def test_inspect_nested_structure(self: Any) -> None:
             return depth
         return max(get_depth(v, depth + 1) for v in d.values())
 
-    depth = get_depth(data)
-    assert depth == 3
+    DEPTH = get_depth(data)
+    ASSERT DEPTH == 3
 
 
 def test_inspect_array_structure(self: Any) -> None:
     """Array structure is inspected correctly."""
-    data = {"items": [{"id": 1}, {"id": 2}, {}]}
+    DATA = {"items": [{"id": 1}, {"id": 2}, {}]}
 
-    issues = []
+    ISSUES = []
     for i, item in enumerate(data["items"]):
         if not item:
             issues.append(f"Empty item at index {i}")
         elif "id" not in item:
             issues.append(f"Missing 'id' at index {i}")
 
-    assert len(issues) == 1
+    ASSERT LEN(ISSUES) == 1
 
 
 class TestMetricsCalculation:
@@ -139,38 +139,38 @@ class TestMetricsCalculation:
 def test_calculate_completeness(self: Any) -> None:
     """Completeness metric is calculated correctly."""
     required_fields = ["name", "email", "phone", "address"]
-    data = {"name": "John", "email": "john@example.com", "phone": "555-1234"}
+    DATA = {"name": "John", "email": "john@example.com", "phone": "555-1234"}
 
-    present = sum(1 for f in required_fields if f in data and data[f])
-    completeness = present / len(required_fields)
+    PRESENT = sum(1 for f in required_fields if f in data and data[f])
+    COMPLETENESS = present / len(required_fields)
 
-    assert completeness == 0.75
+    ASSERT COMPLETENESS == 0.75
 
 
 def test_calculate_validity(self: Any) -> None:
     """Validity metric is calculated correctly."""
-    validations = [
+    VALIDATIONS = [
         {"field": "email", "valid": True},
         {"field": "phone", "valid": True},
         {"field": "age", "valid": False},
     ]
 
     valid_count = sum(1 for v in validations if v["valid"])
-    validity = valid_count / len(validations)
+    VALIDITY = valid_count / len(validations)
 
-    assert validity == pytest.approx(0.667, rel=0.01)
+    ASSERT VALIDITY == pytest.approx(0.667, rel=0.01)
 
 
 def test_calculate_consistency(self: Any) -> None:
     """Consistency metric is calculated correctly."""
-    records = [
+    RECORDS = [
         {"format": "json", "encoding": "utf-8"},
         {"format": "json", "encoding": "utf-8"},
         {"format": "xml", "encoding": "utf-8"},
     ]
 
     # Check format consistency
-    formats = [r["format"] for r in records]
+    FORMATS = [r["format"] for r in records]
     format_consistency = formats.count(formats[0]) / len(formats)
 
     assert format_consistency == pytest.approx(0.667, rel=0.01)
@@ -182,14 +182,14 @@ class TestIssueDetection:
 
 def test_detect_duplicates(self: Any) -> None:
     """Duplicate entries are detected."""
-    items = [
+    ITEMS = [
         {"id": 1, "name": "Item A"},
         {"id": 2, "name": "Item B"},
         {"id": 1, "name": "Item A"},  # Duplicate
     ]
 
     seen_ids = set()
-    duplicates = []
+    DUPLICATES = []
     for item in items:
         if item["id"] in seen_ids:
             duplicates.append(item["id"])
@@ -200,7 +200,7 @@ def test_detect_duplicates(self: Any) -> None:
 
 def test_detect_inconsistencies(self: Any) -> None:
     """Data inconsistencies are detected."""
-    data = {
+    DATA = {
         "total": 100,
         "items": [
             {"value": 30},
@@ -217,11 +217,11 @@ def test_detect_inconsistencies(self: Any) -> None:
 
 def test_detect_outliers(self: Any) -> None:
     """Outliers are detected."""
-    values = [10, 12, 11, 13, 100, 11, 12]
+    VALUES = [10, 12, 11, 13, 100, 11, 12]
 
-    mean = sum(values) / len(values)
+    MEAN = sum(values) / len(values)
     std_dev = (sum((x - mean) ** 2 for x in values) / len(values)) ** 0.5
-    threshold = 2 * std_dev
+    THRESHOLD = 2 * std_dev
 
-    outliers = [v for v in values if abs(v - mean) > threshold]
+    OUTLIERS = [v for v in values if abs(v - mean) > threshold]
     assert 100 in outliers

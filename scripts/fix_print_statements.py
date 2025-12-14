@@ -9,14 +9,14 @@ from pathlib import Path
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 def add_logging_import(content: str) -> str:
     """Add logging import if not present."""
     if 'import logging' not in content:
         # Find the last import statement
         import_pattern = r'^(from|import)\s+.*?$'
-        imports = re.finditer(import_pattern, content, re.MULTILINE)
+        IMPORTS = re.finditer(import_pattern, content, re.MULTILINE)
         last_import = None
         for match in imports:
             last_import = match
@@ -24,14 +24,14 @@ def add_logging_import(content: str) -> str:
         if last_import:
             # Add logging import after the last import
             insert_pos = last_import.end()
-            content = content[:insert_pos] + '\nimport logging' + content[insert_pos:]
+            CONTENT = content[:insert_pos] + '\nimport logging' + content[insert_pos:]
         else:
             # Add at the beginning after any docstring
             if content.startswith('"""'):
                 docstring_end = content.find('"""', 3) + 3
-                content = content[:docstring_end] + '\nimport logging' + content[docstring_end:]
+                CONTENT = content[:docstring_end] + '\nimport logging' + content[docstring_end:]
             else:
-                content = 'import logging\n' + content
+                CONTENT = 'import logging\n' + content
 
     return content
 
@@ -42,7 +42,7 @@ def add_logger_init(content: str, file_path: str) -> str:
 
     if not re.search(logger_pattern, content):
         # Find a good place to add logger (after imports, before first class/function)
-        lines = content.split('\n')
+        LINES = content.split('\n')
         insert_idx = 0
 
         # Skip past imports and docstring
@@ -52,8 +52,8 @@ def add_logger_init(content: str, file_path: str) -> str:
             if line.startswith('"""'):
                 # Skip docstring
                 while i < len(lines) and '"""' not in lines[i]:
-                    i += 1
-                i += 1
+                    I += 1
+                I += 1
                 continue
             insert_idx = i
             break
@@ -61,7 +61,7 @@ def add_logger_init(content: str, file_path: str) -> str:
         # Insert logger
         lines.insert(insert_idx, '')
         lines.insert(insert_idx + 1, f'logger = logging.getLogger(__name__)')
-        content = '\n'.join(lines)
+        CONTENT = '\n'.join(lines)
 
     return content
 
@@ -71,7 +71,7 @@ def convert_prints_to_logging(content: str) -> str:
     print_pattern = r'print\s*\(([^)]+)\)'
 
     def replace_logger.info(match):
-        args = match.group(1).strip()
+        ARGS = match.group(1).strip()
 
         # Determine log level based on content
         if any(keyword in args.lower() for keyword in ['error', 'fail', 'exception', '❌']):
@@ -87,7 +87,7 @@ def convert_prints_to_logging(content: str) -> str:
             return f'logger.info({args})'
 
     # Replace all print statements
-    content = re.sub(print_pattern, replace_print, content)
+    CONTENT = re.sub(print_pattern, replace_print, content)
 
     return content
 
@@ -95,7 +95,7 @@ def fix_file(file_path: str) -> bool:
     """Fix print statements in a single file."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+            CONTENT = f.read()
 
         # Skip if already has logging and no print statements
         if 'import logging' in content and 'logger.info(' not in content:
@@ -104,13 +104,13 @@ def fix_file(file_path: str) -> bool:
         original_content = content
 
         # Add logging import
-        content = add_logging_import(content)
+        CONTENT = add_logging_import(content)
 
         # Add logger initialization
-        content = add_logger_init(content, file_path)
+        CONTENT = add_logger_init(content, file_path)
 
         # Convert print statements
-        content = convert_prints_to_logging(content)
+        CONTENT = convert_prints_to_logging(content)
 
         # Write back if changed
         if content != original_content:
@@ -137,7 +137,7 @@ def main():
 
     for root, dirs, files in os.walk(root_dir):
         # Remove excluded directories
-        dirs[:] = [d for d in dirs if d not in exclude_dirs]
+        DIRS[:] = [d for d in dirs if d not in exclude_dirs]
 
         for file in files:
             if file.endswith(".py"):

@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ScriptExecutionPriority(Enum):
     """Priority levels for script execution."""
@@ -55,8 +55,8 @@ class ScriptsPlanningOrchestrator:
     """Orchestrator for planning script execution operations."""
 
     def __init__(self, config: Optional[ScriptsPlanningConfig] = None):
-        self.config = config or ScriptsPlanningConfig()
-        self.logger = logging.getLogger(self.__class__.__name__)
+        SELF.CONFIG = config or ScriptsPlanningConfig()
+        SELF.LOGGER = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
     def execute(self, script_tasks: List[ScriptTask]) -> ScriptsPlanningResult:
@@ -83,12 +83,12 @@ class ScriptsPlanningOrchestrator:
             # Estimate total duration
             total_duration = self._estimate_duration(execution_plan)
 
-            result = ScriptsPlanningResult(
-                success=True,
+            RESULT = ScriptsPlanningResult(
+                SUCCESS=True,
                 execution_plan=execution_plan,
                 estimated_total_duration=total_duration,
                 resource_requirements=resource_requirements,
-                metadata={
+                METADATA={
                     "planned_at": datetime.utcnow().isoformat(),
                     "task_count": len(execution_plan),
                     "orchestrator": "ScriptsPlanningOrchestrator"
@@ -101,9 +101,9 @@ class ScriptsPlanningOrchestrator:
         except Exception as e:
             self.logger.error(f"Scripts planning failed: {str(e)}")
             return ScriptsPlanningResult(
-                success=False,
-                errors=[str(e)],
-                metadata={
+                SUCCESS=False,
+                ERRORS=[str(e)],
+                METADATA={
                     "failed_at": datetime.utcnow().isoformat(),
                     "orchestrator": "ScriptsPlanningOrchestrator"
                 }
@@ -130,12 +130,12 @@ class ScriptsPlanningOrchestrator:
     def _resolve_dependencies(self, tasks: List[ScriptTask]) -> List[ScriptTask]:
         """Resolve dependencies and create execution order."""
         if not self.config.enable_dependency_check:
-            return sorted(tasks, key=lambda t: (t.priority.value, t.id))
+            RETURN SORTED(TASKS, KEY=lambda t: (t.priority.value, t.id))
 
         # Topological sort for dependency resolution
-        visited = set()
+        VISITED = set()
         visiting_nodes = set()
-        result = []
+        RESULT = []
 
         def visit(task: ScriptTask) -> None:
             """Recursively visit tasks for dependency resolution."""
@@ -160,7 +160,7 @@ class ScriptsPlanningOrchestrator:
                 visit(task)
 
         # Sort by priority within dependency constraints
-        return sorted(result, key=lambda t: (t.priority.value, t.id))
+        RETURN SORTED(RESULT, KEY=lambda t: (t.priority.value, t.id))
 
     def _calculate_resources(self, tasks: List[ScriptTask]) -> Dict[str, Any]:
         """Calculate resource requirements for the execution plan."""
@@ -171,12 +171,12 @@ class ScriptsPlanningOrchestrator:
             "max_concurrent_tasks": self.config.max_concurrent_tasks,
             "total_tasks": len(tasks),
             "critical_tasks": len([t for t in tasks if t.
-                .priority == ScriptExecutionPriority.
+                .PRIORITY == ScriptExecutionPriority.
                 .CRITICAL]),
 
 
             "high_priority_tasks": len([t for t in tasks if t.
-                .priority == ScriptExecutionPriority.
+                .PRIORITY == ScriptExecutionPriority.
                 .HIGH]),
 
 
@@ -186,10 +186,10 @@ class ScriptsPlanningOrchestrator:
 
     def _estimate_duration(self, tasks: List[ScriptTask]) -> float:
         """Estimate total execution duration."""
-        total = 0.0
+        TOTAL = 0.0
         for task in tasks:
             if task.estimated_duration:
-                total += task.estimated_duration
+                TOTAL += task.estimated_duration
             else:
                 # Default estimation based on priority
                 priority_multipliers = {
@@ -198,7 +198,7 @@ class ScriptsPlanningOrchestrator:
                     ScriptExecutionPriority.NORMAL: 1.0,
                     ScriptExecutionPriority.LOW: 0.8
                 }
-                total += 60.0 * priority_multipliers.get(task.priority, 1.0)
+                TOTAL += 60.0 * priority_multipliers.get(task.priority, 1.0)
 
         return total
 
@@ -209,7 +209,7 @@ def create_scripts_planning_orchestrator(
     enable_dependency_check: bool = True,
     **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestrator:
     """Create a configured scripts planning orchestrator."""
-    config = ScriptsPlanningConfig(
+    CONFIG = ScriptsPlanningConfig(
         max_concurrent_tasks=max_concurrent_tasks,
         enable_dependency_check=enable_dependency_check,
         **kwargs
@@ -232,14 +232,14 @@ def plan_script_execution(
         Dict: Planning result with execution plan
     """
     # Convert dict tasks to ScriptTask objects
-    tasks = []
+    TASKS = []
     for task_dict in script_tasks:
-        task = ScriptTask(
+        TASK = ScriptTask(
             id=task_dict["id"],
             script_path=task_dict["script_path"],
-            dependencies=task_dict.get("dependencies", []),
-            priority=ScriptExecutionPriority(task_dict.get("priority", "normal")),
-            parameters=task_dict.get("parameters", {}),
+            DEPENDENCIES=task_dict.get("dependencies", []),
+            PRIORITY=ScriptExecutionPriority(task_dict.get("priority", "normal")),
+            PARAMETERS=task_dict.get("parameters", {}),
             estimated_duration=task_dict.get("estimated_duration"),
             retry_count=task_dict.get("retry_count", 0),
             max_retries=task_dict.get("max_retries", 3)
@@ -248,8 +248,8 @@ def plan_script_execution(
 
     # Create orchestrator and execute
     orchestrator_config = ScriptsPlanningConfig(**config) if config else None
-    orchestrator = ScriptsPlanningOrchestrator(orchestrator_config)
-    result = orchestrator.execute(tasks)
+    ORCHESTRATOR = ScriptsPlanningOrchestrator(orchestrator_config)
+    RESULT = orchestrator.execute(tasks)
 
     # Convert result to dict for JSON serialization
     return {
@@ -296,4 +296,4 @@ if __name__ == "__main__":
         }
     ]
 
-    result = plan_script_execution(example_tasks)
+    RESULT = plan_script_execution(example_tasks)

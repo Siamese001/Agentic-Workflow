@@ -15,35 +15,35 @@ import logging
     sync_search
 )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 async def test_titanium_search_tool():
     """Test the Titanium search tool functionality."""
-    logger.info("\n=== Testing Titanium Search Tool ===")
+    LOGGER.INFO("\N=== Testing Titanium Search Tool ===")
 
     # Test basic search
-    result = await get_titanium_search_tool(
-        query="machine learning optimization",
+    RESULT = await get_titanium_search_tool(
+        QUERY="machine learning optimization",
         max_results=3
     )
     logger.info(f"Basic search result: {result[:100]}...")
 
     # Test search with context
     result_with_context = await get_titanium_search_tool(
-        query="deep learning",
-        context="production deployment",
+        QUERY="deep learning",
+        CONTEXT="production deployment",
         include_metadata=True
     )
     logger.info(f"Search with context: {result_with_context[:100]}...")
 
     # Test search with sources
     sources_result = await get_titanium_search_with_sources(
-        query="neural network architectures"
+        QUERY="neural network architectures"
     )
     logger.info(f"Sources result keys: {list(sources_result.keys())}")
 
     # Test pipeline stats
-    stats = get_pipeline_stats()
+    STATS = get_pipeline_stats()
     logger.info(f"Pipeline stats: {stats}")
 
     # Test cache clear
@@ -54,17 +54,17 @@ async def test_titanium_search_tool():
 
 def test_sync_wrapper():
     """Test the synchronous wrapper."""
-    logger.info("\n=== Testing Synchronous Wrapper ===")
+    LOGGER.INFO("\N=== Testing Synchronous Wrapper ===")
 
     # Test sync search
-    result = sync_search("test query")
+    RESULT = sync_search("test query")
     logger.info(f"Sync search result: {result[:100]}...")
 
     logger.info("✓ Synchronous wrapper tests passed")
 
 async def test_titanium_integration():
     """Test integration with orchestrator and agents."""
-    logger.info("\n=== Testing Titanium Integration ===")
+    LOGGER.INFO("\N=== Testing Titanium Integration ===")
 
     # Test tool registry
     from titanium_search_tool import TOOL_REGISTRY
@@ -80,13 +80,13 @@ async def test_titanium_integration():
 
 async def test_executive_brief_agent():
     """Test ExecutiveBriefAgent with Titanium integration."""
-    logger.info("\n=== Testing ExecutiveBriefAgent Integration ===")
+    LOGGER.INFO("\N=== Testing ExecutiveBriefAgent Integration ===")
 
     try:
         from executive_brief_agent import ExecutiveBriefAgent
 
         # Initialize agent
-        agent = ExecutiveBriefAgent(
+        AGENT = ExecutiveBriefAgent(
             candidate_name="Test Candidate",
             candidate_background={"experience": "AI/ML Engineer"}
         )
@@ -96,17 +96,17 @@ async def test_executive_brief_agent():
 
         # Test Titanium research
         if agent.titanium_enabled:
-            research = await agent._research_company_with_titanium(
+            RESEARCH = await agent._research_company_with_titanium(
                 company_name="TechCorp",
-                industry="technology"
+                INDUSTRY="technology"
             )
             logger.info(f"Research keys: {list(research.keys())}")
             logger.info(f"Company name: {research['name']}")
 
             # Test brief generation with Titanium
-            brief = await agent.generate_brief_with_titanium(
+            BRIEF = await agent.generate_brief_with_titanium(
                 company_name="TechCorp",
-                industry="technology",
+                INDUSTRY="technology",
                 job_description="Senior AI Engineer position"
             )
             logger.info(f"Generated brief for: {brief.company_name}")
@@ -121,7 +121,7 @@ async def test_executive_brief_agent():
 
 async def test_hardened_orchestrator_integration():
     """Test HardenedWorkflowOrchestrator with Titanium."""
-    logger.info("\n=== Testing Hardened Orchestrator Integration ===")
+    LOGGER.INFO("\N=== Testing Hardened Orchestrator Integration ===")
 
     try:
             inject_titanium_tools,
@@ -130,7 +130,7 @@ async def test_hardened_orchestrator_integration():
         )
 
         # Test context injection
-        context = {"test": "value"}
+        CONTEXT = {"test": "value"}
         enhanced_context = inject_titanium_tools(context)
         logger.info(f"Injected tools: {list(k for k in enhanced_context.keys() if 'titanium' in k)}"
     )
@@ -154,33 +154,33 @@ async def test_hardened_orchestrator_integration():
 
 async def test_dispatch_tools():
     """Test dispatch_resume_tools with Titanium integration."""
-    logger.info("\n=== Testing Dispatch Resume Tools ===")
+    LOGGER.INFO("\N=== Testing Dispatch Resume Tools ===")
 
     try:
 
         # Initialize with Titanium enabled
-        tools = DispatchResumeTools({"use_titanium_search": True})
+        TOOLS = DispatchResumeTools({"use_titanium_search": True})
         logger.info(f"Titanium enabled: {tools.titanium_enabled}")
 
         # Test search action
-        result = tools.execute("search", {
+        RESULT = tools.execute("search", {
             "query": "machine learning",
             "max_results": 3
         })
         logger.info(f"Search action result: {result.success}")
         if result.success:
-            output = result.output
+            OUTPUT = result.output
             logger.info(f"Output keys: {list(output.keys()) if isinstance(output,
                 dict) else 'string output'}")
 
         # Test search with sources
-        result2 = tools.execute("search_with_sources", {
+        RESULT2 = tools.execute("search_with_sources", {
             "query": "deep learning"
         })
         logger.info(f"Search with sources result: {result2.success}")
 
         # Test stats action
-        result3 = tools.execute("get_pipeline_stats", {})
+        RESULT3 = tools.execute("get_pipeline_stats", {})
         logger.info(f"Stats result: {result3.success}")
 
         logger.info("✓ Dispatch resume tools tests passed")
@@ -191,7 +191,7 @@ async def test_dispatch_tools():
 async def run_all_integration_tests():
     """Run all integration tests."""
     logger.info("\n🚀 Starting Titanium RAG Pipeline Integration Tests")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
     try:
         # Core functionality tests
@@ -204,7 +204,7 @@ async def run_all_integration_tests():
         await test_hardened_orchestrator_integration()
         await test_dispatch_tools()
 
-        logger.info("\n" + "=" * 60)
+        LOGGER.INFO("\N" + "=" * 60)
         logger.info("✅ All Titanium RAG Pipeline Integration Tests Passed!")
         logger.info("\nThe Titanium RAG Pipeline has been successfully integrated with:")
         logger.info("  • Universal search tool wrapper")

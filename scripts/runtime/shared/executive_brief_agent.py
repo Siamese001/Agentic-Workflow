@@ -10,7 +10,7 @@ Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
 import logging
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
@@ -23,11 +23,11 @@ except ImportError as e:
 class BriefSection(BaseModel):
     """A single section of an executive brief."""
 
-    heading: str = Field(...,
-        description="Section heading (e.g.,
+    HEADING: STR = Field(...,
+        DESCRIPTION="Section heading (e.g.,
         'Observation: High Inference Costs')")
-    content: str = Field(..., description="Section content (2-3 sentences)")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in this section")
+    CONTENT: STR = Field(..., description="Section content (2-3 sentences)")
+    CONFIDENCE: FLOAT = Field(..., ge=0.0, le=1.0, description="Confidence in this section")
 
     @validator('content')
     def validate_content_length(cls, v):
@@ -170,8 +170,8 @@ class ExecutiveBriefAgent:
 
             # Execute searches using Titanium
             for query in search_queries:
-                results = await get_titanium_search_tool(
-                    query=query,
+                RESULTS = await get_titanium_search_tool(
+                    QUERY=query,
                     max_results=5,
                     include_metadata=True
                 )
@@ -247,20 +247,20 @@ class ExecutiveBriefAgent:
         """
         try:
             # Assemble strategic context
-            context = self._assemble_context(company_data, job_description)
+            CONTEXT = self._assemble_context(company_data, job_description)
 
             # Generate the three sections
-            observation = self._generate_observation(context)
-            insight = self._generate_insight(context, observation)
-            proposition = self._generate_proposition(context, insight)
+            OBSERVATION = self._generate_observation(context)
+            INSIGHT = self._generate_insight(context, observation)
+            PROPOSITION = self._generate_proposition(context, insight)
 
             # Create the brief
-            brief = ExecutiveBrief(
+            BRIEF = ExecutiveBrief(
                 recipient_name=recipient_name or "Hiring Manager",
                 company_name=context["company_name"],
-                observation=observation,
-                insight=insight,
-                proposition=proposition
+                OBSERVATION=observation,
+                INSIGHT=insight,
+                PROPOSITION=proposition
             )
 
             logger.info(f"Generated executive brief for {context['company_name']}")
@@ -287,7 +287,7 @@ class ExecutiveBriefAgent:
             Context dictionary with strategic insights
         """
         try:
-            context = {
+            CONTEXT = {
                 "company_name": company_data.get("name", "the company"),
                 "industry": company_data.get("industry", "technology"),
                 "pain_points": [],
@@ -312,7 +312,7 @@ class ExecutiveBriefAgent:
 
             import re
             for metric, pattern in metric_patterns.items():
-                matches = re.findall(pattern, jd_lower)
+                MATCHES = re.findall(pattern, jd_lower)
                 if matches:
                     context["jd_metrics"].append(f"{metric}: {matches[0]}")
 
@@ -393,52 +393,52 @@ class ExecutiveBriefAgent:
             company_name = context["company_name"]
 
             if pain_point in self.pain_point_solutions:
-                problem = self.pain_point_solutions[pain_point]["problem"]
+                PROBLEM = self.pain_point_solutions[pain_point]["problem"]
 
                 # Check if we have company-specific data
                 if context["recent_news"] or context["risk_factors"] or context["jd_metrics"]:
                     if context["jd_metrics"]:
                         metrics_str = ", ".join(context["jd_metrics"][:2])  # Use first 2 metrics
-                        content = f"{company_name} is facing {problem}, with current metrics showing
+                        CONTENT = f"{company_name} is facing {problem}, with current metrics showing
     {metrics_str}. This is impacting operational efficiency."
                     else:
-                        content = f"{company_name} is facing {problem}, which is impacting operation
+                        CONTENT = f"{company_name} is facing {problem}, which is impacting operation
     al efficiency and competitive positioning."
-                    confidence = 0.9
+                    CONFIDENCE = 0.9
                 else:
                     # Use general industry observation
-                    content = f"Like many leaders in {context['industry']}, {company_name} is likely
+                    CONTENT = f"Like many leaders in {context['industry']}, {company_name} is likely
     navigating {problem} as AI systems scale."
-                    confidence = 0.6
+                    CONFIDENCE = 0.6
 
                 # Apply tone enforcement
                 if self.tone_model and self.target_tone:
-                    content = self._apply_tone_enforcement(content)
+                    CONTENT = self._apply_tone_enforcement(content)
 
                 return BriefSection(
-                    heading=f"Observation: {pain_point.title()} Challenges",
-                    content=content,
-                    confidence=confidence
+                    HEADING=f"Observation: {pain_point.title()} Challenges",
+                    CONTENT=content,
+                    CONFIDENCE=confidence
                 )
             else:
                 # Generic observation
-                content = f"{company_name} is at a critical inflection point in scaling AI capabilit
+                CONTENT = f"{company_name} is at a critical inflection point in scaling AI capabilit
     ies from prototype to production."
                 if self.tone_model and self.target_tone:
-                    content = self._apply_tone_enforcement(content)
+                    CONTENT = self._apply_tone_enforcement(content)
 
                 return BriefSection(
-                    heading="Observation: AI Scaling Challenges",
-                    content=content,
-                    confidence=0.5
+                    HEADING="Observation: AI Scaling Challenges",
+                    CONTENT=content,
+                    CONFIDENCE=0.5
                 )
 
         except Exception as e:
             logger.error(f"Error generating observation: {str(e)}")
             return BriefSection(
-                heading="Observation: Strategic AI Opportunity",
-                content="The company is positioned to leverage AI for competitive advantage.",
-                confidence=0.3
+                HEADING="Observation: Strategic AI Opportunity",
+                CONTENT="The company is positioned to leverage AI for competitive advantage.",
+                CONFIDENCE=0.3
             )
 
     def _apply_tone_enforcement(self, content: str) -> str:
@@ -459,12 +459,12 @@ class ExecutiveBriefAgent:
                 "in order to", "for the purpose of", "in an effort to"
             ]
 
-            adjusted = content
+            ADJUSTED = content
             for phrase in fluff_phrases:
-                adjusted = adjusted.replace(phrase, "")
+                ADJUSTED = adjusted.replace(phrase, "")
 
             # Clean up extra spaces
-            adjusted = re.sub(r'\s+', ' ', adjusted).strip()
+            ADJUSTED = re.sub(r'\s+', ' ', adjusted).strip()
 
             return adjusted
 
@@ -486,34 +486,34 @@ class ExecutiveBriefAgent:
             pain_point = context["pain_points"][0]
 
             if pain_point in self.pain_point_solutions:
-                solution = self.pain_point_solutions[pain_point]["solution"]
-                metric = self.pain_point_solutions[pain_point]["metric"]
+                SOLUTION = self.pain_point_solutions[pain_point]["solution"]
+                METRIC = self.pain_point_solutions[pain_point]["metric"]
 
                 # Generate peer-to-peer insight
-                content = f"Industry leaders are solving this through {solution}, achieving {metric}
+                CONTENT = f"Industry leaders are solving this through {solution}, achieving {metric}
     while maintaining model performance. This requires both technical expertise and
         change management experience."
 
                 return BriefSection(
-                    heading="Insight: Proven Solution Patterns",
-                    content=content,
-                    confidence=0.8
+                    HEADING="Insight: Proven Solution Patterns",
+                    CONTENT=content,
+                    CONFIDENCE=0.8
                 )
             else:
                 # Generic insight
                 return BriefSection(
-                    heading="Insight: Strategic Imperative",
-                    content="Successful AI transformation requires balancing rapid innovation with s
+                    HEADING="Insight: Strategic Imperative",
+                    CONTENT="Successful AI transformation requires balancing rapid innovation with s
     ustainable operations, focusing on measurable business outcomes.",
-                    confidence=0.6
+                    CONFIDENCE=0.6
                 )
 
         except Exception as e:
             logger.error(f"Error generating insight: {str(e)}")
             return BriefSection(
-                heading="Insight: Strategic Approach",
-                content="A systematic approach to AI scaling is essential for long-term success.",
-                confidence=0.4
+                HEADING="Insight: Strategic Approach",
+                CONTENT="A systematic approach to AI scaling is essential for long-term success.",
+                CONFIDENCE=0.4
             )
 
     def _generate_proposition(self, context: Dict[str, Any], insight: BriefSection) -> BriefSection:
@@ -532,28 +532,28 @@ class ExecutiveBriefAgent:
             previous_role = self.candidate_background.get("most_recent_role", "previous role")
 
             if relevant_exp and len(relevant_exp) > 0:
-                exp = relevant_exp[0]  # Use most relevant experience
-                content = f"I led this exact transformation at {previous_role}, {exp}. I have a 90-d
+                EXP = relevant_exp[0]  # Use most relevant experience
+                CONTENT = f"I led this exact transformation at {previous_role}, {exp}. I have a 90-d
     ay roadmap tailored to {context['company_name']}'s context. Worth a brief chat?"
-                confidence = 0.9
+                CONFIDENCE = 0.9
             else:
                 # Generic proposition
-                content = f"I have direct experience scaling AI systems and can provide a 90-day roa
+                CONTENT = f"I have direct experience scaling AI systems and can provide a 90-day roa
     dmap for {context['company_name']}. Available to discuss specific implementation strategies."
-                confidence = 0.6
+                CONFIDENCE = 0.6
 
             return BriefSection(
-                heading="Proposition: 90-Day Strategic Plan",
-                content=content,
-                confidence=confidence
+                HEADING="Proposition: 90-Day Strategic Plan",
+                CONTENT=content,
+                CONFIDENCE=confidence
             )
 
         except Exception as e:
             logger.error(f"Error generating proposition: {str(e)}")
             return BriefSection(
-                heading="Proposition: Strategic Partnership",
-                content="I can help accelerate your AI initiatives with proven methodologies.",
-                confidence=0.3
+                HEADING="Proposition: Strategic Partnership",
+                CONTENT="I can help accelerate your AI initiatives with proven methodologies.",
+                CONFIDENCE=0.3
             )
 
     def _generate_fallback_brief(self, company_data: Dict[str, Any]) -> ExecutiveBrief:
@@ -570,22 +570,22 @@ class ExecutiveBriefAgent:
         return ExecutiveBrief(
             recipient_name="Hiring Manager",
             company_name=company_name,
-            observation=BriefSection(
-                heading="Observation: AI Transformation Opportunity",
-                content=f"{company_name} is positioned to leverage AI for strategic advantage.",
-                confidence=0.4
+            OBSERVATION=BriefSection(
+                HEADING="Observation: AI Transformation Opportunity",
+                CONTENT=f"{company_name} is positioned to leverage AI for strategic advantage.",
+                CONFIDENCE=0.4
             ),
-            insight=BriefSection(
-                heading="Insight: Strategic Approach",
-                content="Successful AI transformation requires technical excellence and business acu
+            INSIGHT=BriefSection(
+                HEADING="Insight: Strategic Approach",
+                CONTENT="Successful AI transformation requires technical excellence and business acu
     men.",
-                confidence=0.4
+                CONFIDENCE=0.4
             ),
-            proposition=BriefSection(
-                heading="Proposition: Strategic Discussion",
-                content="I would welcome the opportunity to discuss how my experience aligns with yo
+            PROPOSITION=BriefSection(
+                HEADING="Proposition: Strategic Discussion",
+                CONTENT="I would welcome the opportunity to discuss how my experience aligns with yo
     ur goals.",
-                confidence=0.4
+                CONFIDENCE=0.4
             )
         )
 
@@ -600,7 +600,7 @@ class ExecutiveBriefAgent:
         """
         try:
             # Header
-            lines = [
+            LINES = [
                 "# MEMO: Strategic Observations for AI Leadership",
                 "",
                 f"**To:** {brief.recipient_name}",
@@ -697,6 +697,6 @@ def generate_executive_brief(
     Returns:
         Rendered Markdown brief
     """
-    agent = create_executive_brief_agent(candidate_name, candidate_background)
-    brief = agent.generate_brief(company_data, job_description)
+    AGENT = create_executive_brief_agent(candidate_name, candidate_background)
+    BRIEF = agent.generate_brief(company_data, job_description)
     return agent.render_markdown(brief)

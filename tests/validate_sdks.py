@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 #!/usr/bin/env python3
 """Validate all SDKs and MCPs in the Agentic Workflow."""
@@ -16,15 +16,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 def main() -> None:
     """TODO: Add docstring."""
 
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info("AGENTIC WORKFLOW - SDK & MCP VALIDATION")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
     # 1. Validate all SDKs
     logger.info("\n1. SDK VALIDATION")
     logger.info("-" * 40)
 
-    report = sdk_registry.validate_all_sdks()
+    REPORT = sdk_registry.validate_all_sdks()
 
     logger.info(f"Total SDKs: {report['total']}")
     logger.info(f"Available: {report['available']}")
@@ -51,13 +51,13 @@ def main() -> None:
 
     try:
         mcp_server = mcp_tools.create_mcp_server()
-        tools = mcp_server.list_tools()
+        TOOLS = mcp_server.list_tools()
         logger.info(f"MCP Server: OK")
         logger.info(f"Registered Tools: {len(tools)}")
         logger.info(f"Tools: {', '.join(tools)}")
 
         # Test tool execution
-        result = mcp_server.execute_tool("calculator", {"operation": "add", "a": 1, "b": 2})
+        RESULT = mcp_server.execute_tool("calculator", {"operation": "add", "a": 1, "b": 2})
         logger.info(f"Tool Execution Test: OK (1 + 2 = {result.result})")
 
     except Exception as e:
@@ -68,7 +68,7 @@ def main() -> None:
     logger.info("-" * 40)
 
     try:
-        providers = mp_clients.get_available_providers()
+        PROVIDERS = mp_clients.get_available_providers()
         logger.info(f"Available Providers: {len(providers)}")
         for provider in providers:
             logger.info(f"  - {provider.value}")
@@ -94,7 +94,7 @@ def main() -> None:
         logger.info("\nTo fix missing API keys:")
         logger.info("  Set the required environment variables listed above")
 
-    logger.info("\n" + "=" * 60)
+    LOGGER.INFO("\N" + "=" * 60)
 
     return 0 if all_good else 1
 

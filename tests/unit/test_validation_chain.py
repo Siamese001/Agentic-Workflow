@@ -5,7 +5,7 @@ Shows how the self-healing validation pipeline works with
 atomic checkpointing and oscillation detection.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -30,7 +30,7 @@ class MockExecutor:
         user_content = messages[-1]["content"]
         rubric_start = user_content.find("Rubric:") + 8
         rubric_end = user_content.find("\n\nContent to validate:")
-        rubric = user_content[rubric_start:rubric_end].strip()
+        RUBRIC = user_content[rubric_start:rubric_end].strip()
 
         # Simulate different responses based on rubric
         if "Syntax" in rubric:
@@ -89,8 +89,8 @@ class MockStateManager:
     """Mock state manager for testing."""
 
     def __init__(self):
-        self.states = {}
-        self.checkpoints = []
+        SELF.STATES = {}
+        SELF.CHECKPOINTS = []
 
     async def load_state(self, workflow_id: str) -> Any:
         """Load state from mock storage."""
@@ -126,7 +126,7 @@ async def mock_repair_agent(
 
 async def demonstrate_validation_chain():
     """Demonstrate the ResilientValidationChain."""
-    logger.info("\n=== DEMONSTRATION: ResilientValidationChain ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: ResilientValidationChain ===\n")
 
     # Import the validation chain components
         ResilientValidationChain,
@@ -136,30 +136,30 @@ async def demonstrate_validation_chain():
     )
 
     # Create mock components
-    executor = MockExecutor()
+    EXECUTOR = MockExecutor()
     state_manager = MockStateManager()
     workflow_id = "demo_workflow_001"
 
     # Create validation chain
-    chain = ResilientValidationChain(executor, state_manager, workflow_id)
+    CHAIN = ResilientValidationChain(executor, state_manager, workflow_id)
 
     # Define gates
-    gates = [
+    GATES = [
         ValidationGate(
             gate_name="SyntaxCheck",
-            rubric="Ensure strict JSON compliance and schema validity.",
+            RUBRIC="Ensure strict JSON compliance and schema validity.",
             fatal_on_fail=True,
             max_repair_attempts=2
         ),
         ValidationGate(
             gate_name="SafetyCheck",
-            rubric="Ensure no PII is leaked and tone is professional.",
+            RUBRIC="Ensure no PII is leaked and tone is professional.",
             fatal_on_fail=True,
             max_repair_attempts=3
         ),
         ValidationGate(
             gate_name="QualityCheck",
-            rubric="Ensure confidence score is above 0.8.",
+            RUBRIC="Ensure confidence score is above 0.8.",
             fatal_on_fail=False,
             max_repair_attempts=5,
             detect_oscillation=True,
@@ -181,7 +181,7 @@ async def demonstrate_validation_chain():
     try:
         final_content = await chain.execute_chain(
             initial_content=initial_content,
-            gates=gates,
+            GATES=gates,
             repair_agent_func=mock_repair_agent
         )
 
@@ -194,7 +194,7 @@ async def demonstrate_validation_chain():
             logger.info(f"  {i}. {checkpoint['step']}")
 
         # Show chain status
-        status = chain.get_chain_status()
+        STATUS = chain.get_chain_status()
         logger.info(f"\nChain Status:")
         for gate_name, info in status["gate_histories"].items():
             logger.info(f"  {gate_name}:")
@@ -209,7 +209,7 @@ async def demonstrate_validation_chain():
 
 async def demonstrate_checkpoint_recovery():
     """Demonstrate recovery from checkpoint after failure."""
-    logger.info("\n=== DEMONSTRATION: Checkpoint Recovery ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Checkpoint Recovery ===\n")
 
         ResilientValidationChain,
         ValidationGate,
@@ -217,7 +217,7 @@ async def demonstrate_checkpoint_recovery():
     )
 
     # Create components
-    executor = MockExecutor()
+    EXECUTOR = MockExecutor()
     state_manager = MockStateManager()
     workflow_id = "recovery_demo_001"
 
@@ -231,7 +231,7 @@ async def demonstrate_checkpoint_recovery():
             "last_passed_gate": "SyntaxCheck",
             "repair_attempts": {"SyntaxCheck": 1}
         },
-        checksum=""
+        CHECKSUM=""
     )
 
     # Pre-populate state manager with checkpoint
@@ -242,18 +242,18 @@ async def demonstrate_checkpoint_recovery():
     logger.info(f"Content: {checkpoint_state.data_payload['valid_content']}")
 
     # Create chain with remaining gates
-    chain = ResilientValidationChain(executor, state_manager, workflow_id)
+    CHAIN = ResilientValidationChain(executor, state_manager, workflow_id)
 
-    gates = [
+    GATES = [
         ValidationGate(
             gate_name="SafetyCheck",
-            rubric="Ensure no PII is leaked.",
+            RUBRIC="Ensure no PII is leaked.",
             fatal_on_fail=True,
             max_repair_attempts=2
         ),
         ValidationGate(
             gate_name="QualityCheck",
-            rubric="Ensure high quality content.",
+            RUBRIC="Ensure high quality content.",
             fatal_on_fail=False,
             max_repair_attempts=2
         )
@@ -265,7 +265,7 @@ async def demonstrate_checkpoint_recovery():
     try:
         final_content = await chain.execute_chain(
             initial_content="dummy",  # Won't be used due to checkpoint
-            gates=gates,
+            GATES=gates,
             repair_agent_func=mock_repair_agent
         )
 
@@ -277,7 +277,7 @@ async def demonstrate_checkpoint_recovery():
 
 async def demonstrate_oscillation_detection():
     """Demonstrate oscillation detection in repair loops."""
-    logger.info("\n=== DEMONSTRATION: Oscillation Detection ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Oscillation Detection ===\n")
 
         ResilientValidationChain,
         ValidationGate,
@@ -296,16 +296,16 @@ async def demonstrate_oscillation_detection():
                 "retry_suggestion": "Try again"
             })
 
-    executor = OscillatingExecutor()
+    EXECUTOR = OscillatingExecutor()
     state_manager = MockStateManager()
     workflow_id = "oscillation_demo"
 
-    chain = ResilientValidationChain(executor, state_manager, workflow_id)
+    CHAIN = ResilientValidationChain(executor, state_manager, workflow_id)
 
     # Create gate with oscillation detection
-    gate = ValidationGate(
+    GATE = ValidationGate(
         gate_name="OscillatingGate",
-        rubric="A gate that will cause oscillation.",
+        RUBRIC="A gate that will cause oscillation.",
         fatal_on_fail=True,
         max_repair_attempts=5,
         detect_oscillation=True,
@@ -318,7 +318,7 @@ async def demonstrate_oscillation_detection():
     try:
         await chain.execute_chain(
             initial_content="test content",
-            gates=[gate],
+            GATES=[gate],
             repair_agent_func=mock_repair_agent
         )
 
@@ -327,19 +327,19 @@ async def demonstrate_oscillation_detection():
         logger.info(f"Error: {e}")
 
         # Show chain status
-        status = chain.get_chain_status()
-        history = status["gate_histories"]["OscillatingGate"]
+        STATUS = chain.get_chain_status()
+        HISTORY = status["gate_histories"]["OscillatingGate"]
         logger.info(f"\nGate History:")
         logger.info(f"  Total attempts: {history['attempts']}")
         logger.info(f"  Last failures: {history['last_failures']}")
 
 async def demonstrate_standard_gates():
     """Demonstrate the standard gate configurations."""
-    logger.info("\n=== DEMONSTRATION: Standard Gates ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Standard Gates ===\n")
 
 
     # Get standard gates
-    gates = create_standard_gates()
+    GATES = create_standard_gates()
 
     logger.info("Standard Validation Gates:")
     for gate in gates:
@@ -351,17 +351,17 @@ async def demonstrate_standard_gates():
 
 async def main():
     """Run all demonstrations."""
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
     logger.info("RESILIENT VALIDATION CHAIN DEMONSTRATION")
     logger.info("Self-Healing Pipeline with Atomic Checkpointing")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
     await demonstrate_validation_chain()
     await demonstrate_checkpoint_recovery()
     await demonstrate_oscillation_detection()
     await demonstrate_standard_gates()
 
-    logger.info("\n" + "=" * 80)
+    LOGGER.INFO("\N" + "=" * 80)
     logger.info("DEMONSTRATION COMPLETE")
     logger.info("\nKey Features Demonstrated:")
     logger.info("✓ Self-healing validation loops")
@@ -370,7 +370,7 @@ async def main():
     logger.info("✓ Recovery from checkpoints after failures")
     logger.info("✓ Configurable gate behaviors")
     logger.info("✓ Progress persistence and resume")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
 if __name__ == "__main__":
     asyncio.run(main())

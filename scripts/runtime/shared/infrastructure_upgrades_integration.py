@@ -7,7 +7,7 @@ performance, and brand compliance across all engines.
 
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class InfrastructureUpgradesOrchestrator:
     """Orchestrates all infrastructure upgrade components."""
@@ -36,7 +36,7 @@ class InfrastructureUpgradesOrchestrator:
         self.tone_enforcer = get_tone_enforcer()
 
         # Get infrastructure orchestrator
-        self.infrastructure = await InfrastructureOrchestrator()
+        SELF.INFRASTRUCTURE = await InfrastructureOrchestrator()
 
         # Setup event subscriptions
         await self._setup_event_subscriptions()
@@ -74,22 +74,22 @@ class InfrastructureUpgradesOrchestrator:
         """
         try:
             # Extract content
-            payload = event.payload
-            content = payload.get("content", "")
+            PAYLOAD = event.payload
+            CONTENT = payload.get("content", "")
 
             if content:
                 # Verify claims in content
-                violations = await self._verify_content_facts(content, event.trace_id)
+                VIOLATIONS = await self._verify_content_facts(content, event.trace_id)
 
                 if violations:
                     # Publish fact violations event
                     await self.infrastructure.event_bus.publish(
                         "events.fact_violations",
                         SystemEvent(
-                            type=EventType.ERROR_OCCURRED,
+                            TYPE=EventType.ERROR_OCCURRED,
                             trace_id=event.trace_id,
                             source_component="InfrastructureUpgradesOrchestrator",
-                            payload={
+                            PAYLOAD={
                                 "violations": [v.dict() for v in violations],
                                 "content_length": len(content)
                             },
@@ -108,8 +108,8 @@ class InfrastructureUpgradesOrchestrator:
         """
         try:
             # Log cache miss for analytics
-            payload = event.payload
-            query = payload.get("query", "")
+            PAYLOAD = event.payload
+            QUERY = payload.get("query", "")
             cache_type = payload.get("cache_type", "unknown")
 
             logger.debug(f"Cache miss for {cache_type}: {query[:50]}...")
@@ -127,8 +127,8 @@ class InfrastructureUpgradesOrchestrator:
         """
         try:
             # Extract violations
-            payload = event.payload
-            violations = payload.get("violations", [])
+            PAYLOAD = event.payload
+            VIOLATIONS = payload.get("violations", [])
 
             # Log violations for analytics
             violation_types = [v.get("type", "unknown") for v in violations]
@@ -151,14 +151,14 @@ class InfrastructureUpgradesOrchestrator:
         """
         # Split content into sentences/claims
         import re
-        sentences = re.split(r'[.!?]+', content)
-        sentences = [s.strip() for s in sentences if s.strip()]
+        SENTENCES = re.split(r'[.!?]+', content)
+        SENTENCES = [s.strip() for s in sentences if s.strip()]
 
-        violations = []
+        VIOLATIONS = []
 
         for sentence in sentences:
             # Verify each claim
-            result = self.fact_ledger.verify_claim(sentence)
+            RESULT = self.fact_ledger.verify_claim(sentence)
 
             if result.status == "CONFLICT":
                 violations.append(result)
@@ -167,10 +167,10 @@ class InfrastructureUpgradesOrchestrator:
                 await self.infrastructure.event_bus.publish(
                     "events.fact_conflict",
                     SystemEvent(
-                        type=EventType.ERROR_OCCURRED,
+                        TYPE=EventType.ERROR_OCCURRED,
                         trace_id=trace_id,
                         source_component="InfrastructureUpgradesOrchestrator",
-                        payload={
+                        PAYLOAD={
                             "claim": sentence,
                             "correction": result.correction_suggestion,
                             "verified_value": result.verified_fact.value if result.verified_fact els
@@ -223,10 +223,10 @@ class InfrastructureUpgradesOrchestrator:
                 await self.infrastructure.event_bus.publish(
                     "events.cache_hit",
                     SystemEvent(
-                        type=EventType.AGENT_THINKING,
+                        TYPE=EventType.AGENT_THINKING,
                         trace_id=trace_id,
                         source_component="InfrastructureUpgradesOrchestrator",
-                        payload={"cache_key": cache_key}
+                        PAYLOAD={"cache_key": cache_key}
                     )
                 )
 
@@ -236,10 +236,10 @@ class InfrastructureUpgradesOrchestrator:
         await self.infrastructure.event_bus.publish(
             "events.upgraded_generation_started",
             SystemEvent(
-                type=EventType.WORKFLOW_STARTED,
+                TYPE=EventType.WORKFLOW_STARTED,
                 trace_id=trace_id,
                 source_component="InfrastructureUpgradesOrchestrator",
-                payload={
+                PAYLOAD={
                     "task_type": task_type.value,
                     "verify_facts": verify_facts,
                     "enforce_tone": enforce_tone
@@ -249,29 +249,29 @@ class InfrastructureUpgradesOrchestrator:
 
         try:
             # Generate base content
-            result = await self.infrastructure.execute_with_infrastructure(
+            RESULT = await self.infrastructure.execute_with_infrastructure(
                 task_type,
                 prompt,
                 complexity_score=5,
                 trace_id=trace_id
             )
 
-            content = result["result"]
+            CONTENT = result["result"]
 
             # Apply tone enforcement if requested
             tone_violations = []
             if enforce_tone and tone_voice:
-                settings = self.tone_enforcer.get_profile(tone_voice)
+                SETTINGS = self.tone_enforcer.get_profile(tone_voice)
                 tone_violations = self.tone_enforcer.audit_content(content, settings)
 
                 if tone_violations:
                     await self.infrastructure.event_bus.publish(
                         "events.tone_violation",
                         SystemEvent(
-                            type=EventType.ERROR_OCCURRED,
+                            TYPE=EventType.ERROR_OCCURRED,
                             trace_id=trace_id,
                             source_component="InfrastructureUpgradesOrchestrator",
-                            payload={
+                            PAYLOAD={
                                 "violations": [v.dict() for v in tone_violations],
                                 "tone_voice": tone_voice.value
                             }
@@ -297,10 +297,10 @@ class InfrastructureUpgradesOrchestrator:
             await self.infrastructure.event_bus.publish(
                 "events.upgraded_generation_complete",
                 SystemEvent(
-                    type=EventType.ARTIFACT_GENERATED,
+                    TYPE=EventType.ARTIFACT_GENERATED,
                     trace_id=trace_id,
                     source_component="InfrastructureUpgradesOrchestrator",
-                    payload={
+                    PAYLOAD={
                         "content_length": len(content),
                         "tone_violations": len(tone_violations),
                         "fact_violations": len(fact_violations),
@@ -331,10 +331,10 @@ class InfrastructureUpgradesOrchestrator:
             await self.infrastructure.event_bus.publish(
                 "events.upgraded_generation_failed",
                 SystemEvent(
-                    type=EventType.ERROR_OCCURRED,
+                    TYPE=EventType.ERROR_OCCURRED,
                     trace_id=trace_id,
                     source_component="InfrastructureUpgradesOrchestrator",
-                    payload={"error": str(e)},
+                    PAYLOAD={"error": str(e)},
                     causation_id=trace_id
                 )
             )
@@ -413,7 +413,7 @@ async def generate_with_consistency(
     Returns:
         Generated content with metadata
     """
-    orchestrator = await get_infrastructure_upgrades_orchestrator()
+    ORCHESTRATOR = await get_infrastructure_upgrades_orchestrator()
     return await orchestrator.generate_with_upgrades(
         task_type,
         prompt,
@@ -433,15 +433,15 @@ async def verify_claims(content: str) -> List[VerificationResult]:
     Returns:
         List of verification results
     """
-    ledger = get_fact_ledger()
+    LEDGER = get_fact_ledger()
 
     # Split into claims
-    sentences = re.split(r'[.!?]+', content)
-    sentences = [s.strip() for s in sentences if s.strip()]
+    SENTENCES = re.split(r'[.!?]+', content)
+    SENTENCES = [s.strip() for s in sentences if s.strip()]
 
-    results = []
+    RESULTS = []
     for sentence in sentences:
-        result = ledger.verify_claim(sentence)
+        RESULT = ledger.verify_claim(sentence)
         if result.status != "UNVERIFIED":
             results.append(result)
 
@@ -457,6 +457,6 @@ def audit_tone(text: str, voice: ToneVoice) -> List[ToneViolation]:
     Returns:
         List of tone violations
     """
-    enforcer = get_tone_enforcer()
-    settings = enforcer.get_profile(voice)
+    ENFORCER = get_tone_enforcer()
+    SETTINGS = enforcer.get_profile(voice)
     return enforcer.audit_content(text, settings)

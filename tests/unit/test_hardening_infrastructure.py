@@ -6,7 +6,7 @@ resilience through circuit breaking, retry logic, atomic state management,
 and intelligent provider routing.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -29,11 +29,11 @@ from datetime import datetime
 
 async def demonstrate_circuit_breaker():
     """Demonstrate circuit breaker pattern."""
-    logger.info("\n=== DEMONSTRATION: Circuit Breaker ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Circuit Breaker ===\n")
 
     # Create circuit breaker
-    circuit = CircuitBreaker(
-        name="demo_service",
+    CIRCUIT = CircuitBreaker(
+        NAME="demo_service",
         fail_max=3,
         reset_timeout=5
     )
@@ -66,20 +66,20 @@ async def demonstrate_circuit_breaker():
     logger.info(f"After success: State = {circuit.state.value}")
 
     # Show statistics
-    status = circuit.get_status()
+    STATUS = circuit.get_status()
     logger.info(f"\nCircuit Statistics:")
     logger.info(f"  Total requests: {status['stats']['total_requests']}")
     logger.info(f"  Success rate: {status['stats']['success_rate']:.2%}")
 
 async def demonstrate_atomic_state_manager():
     """Demonstrate atomic state management with ACID properties."""
-    logger.info("\n=== DEMONSTRATION: Atomic State Manager ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Atomic State Manager ===\n")
 
     # Note: This requires a Redis connection
     # For demo purposes, we'll show the structure
 
     logger.info("Creating workflow state...")
-    state = WorkflowState(
+    STATE = WorkflowState(
         workflow_id="demo_workflow_001",
         current_step="K.1.0_INITIALIZE",
         last_checkpoint_time=datetime.now(),
@@ -88,7 +88,7 @@ async def demonstrate_atomic_state_manager():
             "job_description": "Senior Software Engineer",
             "progress": 0.1
         },
-        checksum=""  # Will be computed
+        CHECKSUM=""  # Will be computed
     )
 
     logger.info(f"Workflow ID: {state.workflow_id}")
@@ -106,16 +106,16 @@ async def demonstrate_atomic_state_manager():
     # Show checksum validation
     import hashlib
     data_string = json.dumps(state.data_payload, sort_keys=True, default=str)
-    checksum = hashlib.sha256(data_string.encode('utf-8')).hexdigest()
+    CHECKSUM = hashlib.sha256(data_string.encode('utf-8')).hexdigest()
     logger.info(f"\nChecksum: {checksum[:16]}...")
     logger.info("✓ State integrity verified")
 
 async def demonstrate_hardened_router():
     """Demonstrate hardened LiteLLM router with failover."""
-    logger.info("\n=== DEMONSTRATION: Hardened LiteLLM Router ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Hardened LiteLLM Router ===\n")
 
     # Create provider configuration
-    providers = [
+    PROVIDERS = [
         ProviderConfig(
             provider_name=ProviderType.OPENAI,
             model_id="gpt-4o",
@@ -140,14 +140,14 @@ async def demonstrate_hardened_router():
     ]
 
     # Initialize router
-    router = HardenedLiteLLMRouter(providers)
+    ROUTER = HardenedLiteLLMRouter(providers)
 
     logger.info("Router initialized with providers:")
     for p in providers:
         logger.info(f"  {p.priority_rank}. {p.provider_name.value} ({p.model_id})")
 
     # Show provider health
-    health = router.get_provider_health()
+    HEALTH = router.get_provider_health()
     logger.info("\nProvider Health Status:")
     for provider_name, status in health.items():
         logger.info(f"  {provider_name}:")
@@ -156,7 +156,7 @@ async def demonstrate_hardened_router():
         logger.info(f"    Priority: {status['priority_rank']}")
 
     # Show available providers
-    available = router.get_available_providers()
+    AVAILABLE = router.get_available_providers()
     logger.info(f"\nAvailable providers: {available}")
 
     # Simulate provider failure
@@ -168,7 +168,7 @@ async def demonstrate_hardened_router():
         )
 
     # Check health after failures
-    health = router.get_provider_health()
+    HEALTH = router.get_provider_health()
     openai_health = health[ProviderType.OPENAI.value]
     logger.info(f"\nOpenAI after 3 failures:")
     logger.info(f"  Circuit State: {openai_health['circuit_state']}")
@@ -177,7 +177,7 @@ async def demonstrate_hardened_router():
 
 async def demonstrate_hardening_mixin():
     """Demonstrate HardeningMixin usage."""
-    logger.info("\n=== DEMONSTRATION: HardeningMixin ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: HardeningMixin ===\n")
 
     # Create a simple hardened component
     class DemoComponent(HardeningMixin):
@@ -203,7 +203,7 @@ async def demonstrate_hardening_mixin():
             )
 
     # Create config
-    config = HardeningConfig(
+    CONFIG = HardeningConfig(
         component_name="DemoComponent",
         max_retries=3,
         wait_min_ms=100,
@@ -211,29 +211,29 @@ async def demonstrate_hardening_mixin():
         circuit_breaker_threshold=3
     )
 
-    component = DemoComponent(config)
+    COMPONENT = DemoComponent(config)
 
     # Test successful execution
     logger.info("Test 1: Successful execution")
-    result = await component.execute(should_fail=False)
+    RESULT = await component.execute(should_fail=False)
     logger.info(f"  Result: {result}")
 
     # Test with failures (will retry)
     logger.info("\nTest 2: Execution with retries")
     try:
-        result = await component.execute(should_fail=True)
+        RESULT = await component.execute(should_fail=True)
     except Exception as e:
         logger.info(f"  Failed after retries: {type(e).__name__}")
 
     # Show health status
-    health = component.get_health_status()
+    HEALTH = component.get_health_status()
     logger.info(f"\nComponent Health:")
     logger.info(f"  Healthy: {health['healthy']}")
     logger.info(f"  Circuit State: {health['circuit_breaker']['state']}")
 
     # Show telemetry
     if component.telemetry:
-        stats = component.telemetry.get_component_stats("DemoComponent")
+        STATS = component.telemetry.get_component_stats("DemoComponent")
         logger.info(f"\nTelemetry Statistics:")
         logger.info(f"  Total Operations: {stats['total_operations']}")
         logger.info(f"  Success Rate: {stats['success_rate']:.2%}")
@@ -241,35 +241,35 @@ async def demonstrate_hardening_mixin():
 
 async def demonstrate_telemetry():
     """Demonstrate telemetry system."""
-    logger.info("\n=== DEMONSTRATION: System Telemetry ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: System Telemetry ===\n")
 
-    telemetry = get_telemetry()
+    TELEMETRY = get_telemetry()
 
     # Log some operations
     logger.info("Logging operations...")
     telemetry.log_operation(
-        component="TestComponent",
-        operation="test_operation_1",
-        duration=0.150,
-        tokens=500
+        COMPONENT="TestComponent",
+        OPERATION="test_operation_1",
+        DURATION=0.150,
+        TOKENS=500
     )
 
     telemetry.log_operation(
-        component="TestComponent",
-        operation="test_operation_2",
-        duration=0.250,
-        tokens=750
+        COMPONENT="TestComponent",
+        OPERATION="test_operation_2",
+        DURATION=0.250,
+        TOKENS=750
     )
 
     telemetry.log_operation(
-        component="TestComponent",
-        operation="test_operation_3",
-        duration=0.100,
-        error="Simulated error"
+        COMPONENT="TestComponent",
+        OPERATION="test_operation_3",
+        DURATION=0.100,
+        ERROR="Simulated error"
     )
 
     # Get statistics
-    stats = telemetry.get_component_stats("TestComponent")
+    STATS = telemetry.get_component_stats("TestComponent")
     logger.info(f"\nComponent Statistics:")
     logger.info(f"  Total Operations: {stats['total_operations']}")
     logger.info(f"  Successful: {stats['successful_operations']}")
@@ -279,15 +279,15 @@ async def demonstrate_telemetry():
     logger.info(f"  Total Tokens: {stats['total_tokens']}")
 
     # Get recent metrics
-    recent = telemetry.get_recent_metrics(limit=3)
+    RECENT = telemetry.get_recent_metrics(limit=3)
     logger.info(f"\nRecent Metrics:")
     for metric in recent:
-        status = "✓" if metric['success'] else "✗"
+        STATUS = "✓" if metric['success'] else "✗"
         logger.info(f"  {status} {metric['operation']}: {metric['duration_ms']:.2f}ms")
 
 async def demonstrate_complete_workflow():
     """Demonstrate complete hardened workflow."""
-    logger.info("\n=== DEMONSTRATION: Complete Hardened Workflow ===\n")
+    LOGGER.INFO("\N=== DEMONSTRATION: Complete Hardened Workflow ===\n")
 
     logger.info("Workflow: Resume Generation with Full Hardening")
     logger.info("-" * 60)
@@ -309,7 +309,7 @@ async def demonstrate_complete_workflow():
             "job_title": "Senior Software Engineer",
             "status": "started"
         },
-        checksum=""
+        CHECKSUM=""
     )
     logger.info(f"   ✓ Workflow {workflow_state.workflow_id} initialized")
 
@@ -344,10 +344,10 @@ async def demonstrate_complete_workflow():
 
 async def main():
     """Run all demonstrations."""
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
     logger.info("UNIFIED HARDENING INFRASTRUCTURE DEMONSTRATION")
     logger.info("Windsurf Architecture - Military-Grade Resilience")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
     # Run demonstrations
     await demonstrate_circuit_breaker()
@@ -357,7 +357,7 @@ async def main():
     await demonstrate_telemetry()
     await demonstrate_complete_workflow()
 
-    logger.info("\n" + "=" * 80)
+    LOGGER.INFO("\N" + "=" * 80)
     logger.info("DEMONSTRATION COMPLETE")
     logger.info("\nKey Benefits Achieved:")
     logger.info("✓ Circuit Breaking: Prevents cascading failures")
@@ -366,7 +366,7 @@ async def main():
     logger.info("✓ Provider Routing: Intelligent failover with health monitoring")
     logger.info("✓ Telemetry: Complete observability of system health")
     logger.info("✓ Zero-Downtime: System remains operational during failures")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,7 +1,7 @@
 """Types and models for message_assembler."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class QABlockType(Enum):
     """TODO: Add docstring."""
 

@@ -9,10 +9,10 @@ def fix_micro_fragments():
     """Docstring."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
     """Fix micro-fragment shim files by adding proper content."""
-    root = Path("c:/Git/Agentic-Workflow")
+    ROOT = Path("c:/Git/Agentic-Workflow")
 
     micro_fragments = [
         "shared/result_types.py",
@@ -30,9 +30,9 @@ logger = logging.getLogger(__name__)
     for file_path in micro_fragments:
         full_path = root / file_path
         if full_path.exists():
-            content = full_path.read_text(encoding='utf-8')
+            CONTENT = full_path.read_text(encoding='utf-8')
             if len(content) < 200:
-                stem = full_path.stem
+                STEM = full_path.stem
                 new_content = f'''"""Backward compatibility shim for {stem}.
 
 This module maintains backward compatibility by re-exporting all components
@@ -55,7 +55,7 @@ __all__ = ['*']  # Re-export all imported names
 
 def split_large_types_files():
     """Split remaining _types files with >5 definitions."""
-    root = Path("c:/Git/Agentic-Workflow")
+    ROOT = Path("c:/Git/Agentic-Workflow")
 
     large_files = [
         "shared/result_types_types.py",
@@ -74,8 +74,8 @@ def split_large_types_files():
         full_path = root / file_path
         if full_path.exists():
             try:
-                tree = ast.parse(full_path.read_text(encoding='utf-8'))
-                defs = [n for n in tree.body if isinstance(n,
+                TREE = ast.parse(full_path.read_text(encoding='utf-8'))
+                DEFS = [n for n in tree.body if isinstance(n,
                     (ast.FunctionDef,
                     ast.ClassDef,
                     ast.AsyncFunctionDef))]
@@ -85,11 +85,11 @@ def split_large_types_files():
 
                     # Split into chunks of 5
                     parent_dir = full_path.parent
-                    stem = full_path.stem
+                    STEM = full_path.stem
 
                     for i in range(0, len(defs), 5):
-                        chunk = defs[i:i+5]
-                        suffix = "" if i == 0 else f"_{i//5 + 1}"
+                        CHUNK = defs[i:i+5]
+                        SUFFIX = "" if i == 0 else f"_{i//5 + 1}"
 
                         chunk_content = f'"""Split module {i//5 + 1} for {stem}."""\n\n'
                         chunk_content += "from dataclasses import dataclass, field\n"
@@ -106,7 +106,7 @@ def split_large_types_files():
                     # Update original to re-export
                     shim_content = f'"""Re-export split modules for {stem}."""\n\n'
                     for i in range(0, len(defs), 5):
-                        suffix = "" if i == 0 else f"_{i//5 + 1}"
+                        SUFFIX = "" if i == 0 else f"_{i//5 + 1}"
                         shim_content += f"from .{stem}_part{suffix} import *\n"
 
                     full_path.write_text(shim_content, encoding='utf-8')

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class WorkflowState(Enum):
     """TODO: Add docstring."""
 
@@ -29,7 +29,7 @@ class TestWorkflowStateIntegration:
 
     def test_state_transitions(self):
             """Integration: State transitions are valid."""
-        workflow = Workflow(id="wf_001", state=WorkflowState.CREATED)
+        WORKFLOW = Workflow(id="wf_001", state=WorkflowState.CREATED)
 
         valid_transitions = {
             WorkflowState.CREATED: [WorkflowState.RUNNING],
@@ -40,42 +40,42 @@ class TestWorkflowStateIntegration:
 
         # Transition to RUNNING
         assert WorkflowState.RUNNING in valid_transitions[workflow.state]
-        workflow.state = WorkflowState.RUNNING
+        WORKFLOW.STATE = WorkflowState.RUNNING
 
         # Transition to COMPLETED
         assert WorkflowState.COMPLETED in valid_transitions[workflow.state]
-        workflow.state = WorkflowState.COMPLETED
+        WORKFLOW.STATE = WorkflowState.COMPLETED
 
     def test_checkpoint_creation(self):
             """Integration: Checkpoints are created during execution."""
-        workflow = Workflow(id="wf_002", state=WorkflowState.RUNNING)
+        WORKFLOW = Workflow(id="wf_002", state=WorkflowState.RUNNING)
 
         # Create checkpoints
         workflow.checkpoints.append({"step": 1, "data": {"progress": 25}})
         workflow.checkpoints.append({"step": 2, "data": {"progress": 50}})
 
-        assert len(workflow.checkpoints) == 2
+        ASSERT LEN(WORKFLOW.CHECKPOINTS) == 2
 
     def test_checkpoint_restore(self):
             """Integration: Workflow restores from checkpoint."""
-        checkpoint = {"step": 2, "data": {"progress": 50, "results": ["r1"]}}
+        CHECKPOINT = {"step": 2, "data": {"progress": 50, "results": ["r1"]}}
 
-        workflow = Workflow(
+        WORKFLOW = Workflow(
             id="wf_003",
-            state=WorkflowState.RUNNING,
-            data=checkpoint["data"],
+            STATE=WorkflowState.RUNNING,
+            DATA=checkpoint["data"],
         )
 
-        assert workflow.data["progress"] == 50
+        ASSERT WORKFLOW.DATA["PROGRESS"] == 50
 
     def test_concurrent_workflow_isolation(self):
             """Integration: Concurrent workflows are isolated."""
-        wf1 = Workflow(id="wf_001", state=WorkflowState.RUNNING, data={"value": 1})
-        wf2 = Workflow(id="wf_002", state=WorkflowState.RUNNING, data={"value": 2})
+        WF1 = Workflow(id="wf_001", state=WorkflowState.RUNNING, data={"value": 1})
+        WF2 = Workflow(id="wf_002", state=WorkflowState.RUNNING, data={"value": 2})
 
-        wf1.data["value"] = 100
+        WF1.DATA["VALUE"] = 100
 
-        assert wf2.data["value"] == 2  # Unchanged
+        ASSERT WF2.DATA["VALUE"] == 2  # Unchanged
 
 class TestWorkflowPersistenceIntegration:
     """Integration tests for workflow persistence."""
@@ -84,23 +84,23 @@ class TestWorkflowPersistenceIntegration:
             """Integration: Workflow is saved to storage."""
         storage: Dict[str, Workflow] = {}
 
-        workflow = Workflow(id="wf_001", state=WorkflowState.RUNNING)
-        storage[workflow.id] = workflow
+        WORKFLOW = Workflow(id="wf_001", state=WorkflowState.RUNNING)
+        STORAGE[WORKFLOW.ID] = workflow
 
         assert "wf_001" in storage
 
     def test_workflow_load(self):
             """Integration: Workflow is loaded from storage."""
-        storage = {
+        STORAGE = {
             "wf_001": Workflow(id="wf_001", state=WorkflowState.COMPLETED),
         }
 
-        loaded = storage.get("wf_001")
-        assert loaded.state == WorkflowState.COMPLETED
+        LOADED = storage.get("wf_001")
+        ASSERT LOADED.STATE == WorkflowState.COMPLETED
 
     def test_workflow_update(self):
             """Integration: Workflow updates are persisted."""
-        storage = {
+        STORAGE = {
             "wf_001": Workflow(id="wf_001", state=WorkflowState.RUNNING),
         }
 
@@ -113,44 +113,44 @@ class TestWorkflowOrchestrationIntegration:
 
     def test_sequential_step_execution(self):
             """Integration: Steps execute sequentially."""
-        steps = ["step1", "step2", "step3"]
-        executed = []
+        STEPS = ["step1", "step2", "step3"]
+        EXECUTED = []
 
         for step in steps:
             executed.append(step)
 
-        assert executed == steps
+        ASSERT EXECUTED == steps
 
     def test_parallel_step_execution(self):
             """Integration: Parallel steps execute correctly."""
         parallel_steps = ["search_a", "search_b", "search_c"]
-        results = {}
+        RESULTS = {}
 
         for step in parallel_steps:
-            results[step] = {"completed": True}
+            RESULTS[STEP] = {"completed": True}
 
         assert all(r["completed"] for r in results.values())
 
     def test_conditional_branching(self):
             """Integration: Conditional branches execute correctly."""
-        condition = True
+        CONDITION = True
 
         if condition:
-            branch = "true_branch"
+            BRANCH = "true_branch"
         else:
-            branch = "false_branch"
+            BRANCH = "false_branch"
 
-        assert branch == "true_branch"
+        ASSERT BRANCH == "true_branch"
 
     def test_error_handling_in_workflow(self):
             """Integration: Errors are handled in workflow."""
-        workflow = Workflow(id="wf_001", state=WorkflowState.RUNNING)
+        WORKFLOW = Workflow(id="wf_001", state=WorkflowState.RUNNING)
 
         try:
             raise ValueError("Step failed")
         except ValueError as e:
-            workflow.state = WorkflowState.FAILED
-            workflow.data["error"] = str(e)
+            WORKFLOW.STATE = WorkflowState.FAILED
+            WORKFLOW.DATA["ERROR"] = str(e)
 
-        assert workflow.state == WorkflowState.FAILED
+        ASSERT WORKFLOW.STATE == WorkflowState.FAILED
         assert "error" in workflow.data

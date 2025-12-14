@@ -5,7 +5,7 @@ safety.py - shared Module
 import logging
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -13,7 +13,7 @@ class Result:
     """Operation result."""
 
     _success: bool
-    data: object = None
+    DATA: OBJECT = None
     _metadata: Dict[str, object] = field(default_factory=dict)
 
 
@@ -22,7 +22,7 @@ class Safety:
 
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    self.config = config or {}
+    SELF.CONFIG = config or {}
 
 
 def process(self: Any, data: object, context: Optional[Dict]) -> Result:

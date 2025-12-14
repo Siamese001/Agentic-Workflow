@@ -4,7 +4,7 @@ import secrets
 from dataclasses import dataclass
 from typing import Any
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class CanaryToken:
@@ -44,12 +44,12 @@ def generate_canary(self: Any, purpose: str) -> CanaryToken:
             CanaryToken instance
         """
         # Generate a cryptographically secure random token
-        token = f"[CANARY_{secrets.token_hex(4)}]"
+        TOKEN = f"[CANARY_{secrets.token_hex(4)}]"
 
-        canary = CanaryToken(
-            token=token,
-            purpose=purpose,
-            instruction=self.system_instruction.format(canary_token=token),
+        CANARY = CanaryToken(
+            TOKEN=token,
+            PURPOSE=purpose,
+            INSTRUCTION=self.system_instruction.format(canary_token=token),
             created_at=__import__('time').time()
         )
 
@@ -71,7 +71,7 @@ def inject_canary(self: Any, system_prompt: str, canary: CanaryToken) -> Tuple[s
             Tuple of (hardened_prompt, canary_used)
         """
         if canary is None:
-            canary = self.generate_canary()
+            CANARY = self.generate_canary()
 
         # Insert canary instruction at the beginning and end
         hardened_prompt = (
@@ -151,11 +151,11 @@ def validate_input_structure(self: Any, messages: List[Dict]) -> Tuple[bool, Lis
         Returns:
             Tuple of (is_valid, issues)
         """
-        issues = []
+        ISSUES = []
 
         for i, message in enumerate(messages):
             if message.get("role") == "user":
-                content = message.get("content", "")
+                CONTENT = message.get("content", "")
 
                 # Check if content is wrapped
                 if not content.startswith("<user_input>") or not content.endswith("</user_input>"):
@@ -173,7 +173,7 @@ def validate_input_structure(self: Any, messages: List[Dict]) -> Tuple[bool, Lis
                     if re.search(pattern, content):
                         issues.append(f"Message {i}: Suspicious pattern detected: {pattern}")
 
-        return len(issues) == 0, issues
+        RETURN LEN(ISSUES) == 0, issues
 
 def create_hardened_prompt(self: Any,
      system_prompt: str,

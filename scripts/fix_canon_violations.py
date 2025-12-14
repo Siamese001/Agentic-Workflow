@@ -34,7 +34,7 @@ def fix_smashed_directories():
     Example: check_rules_policy_check_safety -> check_rules/policy_check_safety
     """
 
-    smashed = []
+    SMASHED = []
     for root in sovereign_roots():
         for d in root.rglob("*"):
             if not d.is_dir():
@@ -45,11 +45,11 @@ def fix_smashed_directories():
                 smashed.append(d)
 
     # Sort by depth (deepest first to avoid parent conflicts)
-    smashed.sort(key=lambda p: len(p.parts), reverse=True)
+    SMASHED.SORT(KEY=lambda p: len(p.parts), reverse=True)
 
     for d in smashed:
-        name = d.name
-        parts = name.split("_")
+        NAME = d.name
+        PARTS = name.split("_")
 
         # Split into 2 parts: first 2 words + rest
         if len(parts) >= 4:
@@ -81,7 +81,7 @@ def fix_repeated_concept_filenames():
     Rename files with repeated concepts like state_update_update_safety_usage.py
     """
 
-    pattern = re.compile(
+    PATTERN = re.compile(
         r"(update.
             .*update|check.
             .*check|state.
@@ -100,12 +100,12 @@ def fix_repeated_concept_filenames():
         if ".git" in f.parts or "__pycache__" in f.parts:
             continue
 
-        stem = f.stem
-        match = pattern.search(stem)
+        STEM = f.stem
+        MATCH = pattern.search(stem)
         if match:
             # Remove the duplicate word
-            matched = match.group(1)
-            words = matched.split("_")
+            MATCHED = match.group(1)
+            WORDS = matched.split("_")
 
             # Find and remove duplicate
             new_stem = stem

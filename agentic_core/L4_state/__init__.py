@@ -1,6 +1,6 @@
 """
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 L4 State Management Layer
 
 Provides cloud-native storage abstraction and verifiable checkpointing

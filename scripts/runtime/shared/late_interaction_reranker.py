@@ -8,7 +8,7 @@ import logging
 import time
 from typing import List, Optional, Tuple
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class LateInteractionReranker:
     """Reranks documents using a Cross-Encoder for late interaction scoring.
@@ -128,14 +128,14 @@ def rerank(self: Any,
             top_k = min(top_k, len(documents))
 
         # Create query-document pairs
-        pairs = [(query, doc) for doc in documents]
+        PAIRS = [(query, doc) for doc in documents]
 
         try:
             # Score pairs in batches
             logger.debug(f"Reranking {len(documents)} documents")
             start_time = time.time()
 
-            scores = self._model.predict(
+            SCORES = self._model.predict(
                 pairs,
                 batch_size=batch_size,
                 show_progress_bar=False
@@ -146,9 +146,9 @@ def rerank(self: Any,
             scored_docs.sort(key=lambda x: x[1], reverse=True)
 
             # Extract reranked documents
-            reranked = [doc for doc, _ in scored_docs[:top_k]]
+            RERANKED = [doc for doc, _ in scored_docs[:top_k]]
 
-            elapsed = time.time() - start_time
+            ELAPSED = time.time() - start_time
             logger.debug(f"Reranking completed in {elapsed:.3f}s")
 
             # Log score distribution for monitoring
@@ -207,10 +207,10 @@ def rerank_with_scores(self: Any,
             top_k = min(top_k, len(documents))
 
         # Create pairs and score
-        pairs = [(query, doc) for doc in documents]
+        PAIRS = [(query, doc) for doc in documents]
 
         try:
-            scores = self._model.predict(
+            SCORES = self._model.predict(
                 pairs,
                 batch_size=batch_size,
                 show_progress_bar=False
@@ -232,7 +232,7 @@ def get_model_info(self: Any) -> dict:
         Returns:
             Dictionary with model information
         """
-        info = {
+        INFO = {
             "model_name": self.model_name,
             "loaded": self._model_loaded,
             "fallback_mode": self._fallback_mode,
@@ -274,7 +274,7 @@ def rerank_documents(
     Returns:
         Reranked list of documents
     """
-    reranker = LateInteractionReranker(model_name=model_name)
+    RERANKER = LateInteractionReranker(model_name=model_name)
     return reranker.rerank(query, documents, top_k=top_k)
 
 # Fallback pass-through reranker for when dependencies are missing

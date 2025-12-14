@@ -12,7 +12,7 @@ def test_core_models_have_v1_schema_version_defaults() -> None:
     # Simple models with safe defaults can be instantiated without args.
     simple_plans = [StrategyPlan, DraftingPlan, QAPlan, SafetyPlan, RAGPlan]
     for cls in simple_plans:
-        obj = cls()  # type: ignore[call-arg]
+        OBJ = cls()  # type: ignore[call-arg]
         assert getattr(obj, "schema_version", "v1") == "v1"
 
     # Results require required list fields.
@@ -32,33 +32,33 @@ def test_core_models_have_v1_schema_version_defaults() -> None:
     assert rag_res.schema_version == "v1"
 
     # WorkflowPlanBundle and L2ResultBundle require explicit nested models.
-    bundle = WorkflowPlanBundle(
-        strategy=StrategyPlan(),
-        rag=RAGPlan(),
-        drafting=DraftingPlan(),
+    BUNDLE = WorkflowPlanBundle(
+        STRATEGY=StrategyPlan(),
+        RAG=RAGPlan(),
+        DRAFTING=DraftingPlan(),
         qa=QAPlan(),
-        safety=SafetyPlan(),
+        SAFETY=SafetyPlan(),
     )
     assert bundle.schema_version == "v1"
 
     l2_result = L2ResultBundle(
-        strategy=StrategyResult(branches=[]),
-        rag=RAGResult(evidence=[], used_hyde=False),
-        drafting=DraftingResult(sections=[]),
+        STRATEGY=StrategyResult(branches=[]),
+        RAG=RAGResult(evidence=[], used_hyde=False),
+        DRAFTING=DraftingResult(sections=[]),
         qa=QAResult(findings=[]),
-        safety=SafetyResult(findings=[]),
+        SAFETY=SafetyResult(findings=[]),
     )
     assert l2_result.schema_version == "v1"
 
 def test_validate_schema_version_accepts_matching_models() -> None:
     """TODO: Add docstring."""
 
-    bundle = WorkflowPlanBundle(
-        strategy=StrategyPlan(),
-        rag=RAGPlan(),
-        drafting=DraftingPlan(),
+    BUNDLE = WorkflowPlanBundle(
+        STRATEGY=StrategyPlan(),
+        RAG=RAGPlan(),
+        DRAFTING=DraftingPlan(),
         qa=QAPlan(),
-        safety=SafetyPlan(),
+        SAFETY=SafetyPlan(),
     )
 
     # Should not raise for matching version.

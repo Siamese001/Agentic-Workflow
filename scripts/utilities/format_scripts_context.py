@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.884149
 import logging
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -26,19 +26,19 @@ class FormatScriptsContext:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the formatter with optional configuration."""
-    self.config = config or {}
+    SELF.CONFIG = config or {}
     self.output_format = self.config.get("format", "default")
     logger.info(f"Initialized {self.__class__.__name__}")
 
 
 def format(self: Any, data: object, target_format: Optional[str]) -> FormattedOutput:
     """Format data to target structure."""
-    fmt = target_format or self.output_format
-    transformed = self._transform(data)
-    formatted = self._format_to_target(transformed, fmt)
+    FMT = target_format or self.output_format
+    TRANSFORMED = self._transform(data)
+    FORMATTED = self._format_to_target(transformed, fmt)
 
     return FormattedOutput(
-        data=formatted, format_type=fmt, metadata={"original_type": type(data).__name__}
+        DATA=formatted, format_type=fmt, metadata={"original_type": type(data).__name__}
     )
 
 
@@ -58,7 +58,7 @@ def _format_to_target(self: Any, data: object, fmt: str) -> object:
 
 def _flatten(self: Any, data: Dict, prefix: str) -> Dict[str, object]:
     """Flatten nested dict."""
-    result = {}
+    RESULT = {}
     for key, value in data.items():
         new_key = f"{prefix}.{key}" if prefix else key
         if isinstance(value, dict):

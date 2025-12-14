@@ -2,7 +2,7 @@
 
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -49,7 +49,7 @@ class ResultParser:
     def parse_draft_result(llm_response: str) -> DraftResult:
         """Parse draft result - pure string parsing only."""
         return DraftResult(
-            sections=["summary", "experience", "skills"], content=llm_response.strip()
+            SECTIONS=["summary", "experience", "skills"], content=llm_response.strip()
         )
 
     @staticmethod

@@ -10,7 +10,7 @@ def check_sdk_import(sdk_name, module_path):
     """Docstring."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
     """Check if SDK can be imported."""
     try:
@@ -25,12 +25,12 @@ def check_env_var(env_var):
 
 def main():
     """Docstring."""
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info("AGENTIC WORKFLOW - DIRECT SDK VALIDATION")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
     # Define all SDKs to check
-    sdks = {
+    SDKS = {
         # Core LLM Providers
         "openai": ("openai", "OPENAI_API_KEY"),
         "anthropic": ("anthropic", "ANTHROPIC_API_KEY"),
@@ -76,8 +76,8 @@ def main():
     logger.info("\nCHECKING ALL 21 SDKS...")
     logger.info("-" * 40)
 
-    available = 0
-    missing = 0
+    AVAILABLE = 0
+    MISSING = 0
     missing_keys = 0
 
     for sdk_name, (module, env_var) in sdks.items():
@@ -91,15 +91,15 @@ def main():
             if not has_key:
                 missing_keys += 1
 
-        status = "✅" if is_installed else "❌"
+        STATUS = "✅" if is_installed else "❌"
         key_status = "" if not env_var else ("🔑" if has_key else "⚠️")
 
         logger.info(f"{status} {key_status} {sdk_name:<20} {module:<30}")
 
         if is_installed:
-            available += 1
+            AVAILABLE += 1
         else:
-            missing += 1
+            MISSING += 1
 
     logger.info("-" * 40)
     logger.info(f"Summary: {available}/21 installed,
@@ -115,7 +115,7 @@ def main():
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
         # Create server
-        server = mcp_tools.MCPToolServer("test-server")
+        SERVER = mcp_tools.MCPToolServer("test-server")
 
         # Register a test tool
         def test_function(x: int) -> int:
@@ -123,20 +123,20 @@ def main():
             return x * 2
 
         server.register_function(
-            name="test_double",
-            description="Double a number",
-            parameters={
+            NAME="test_double",
+            DESCRIPTION="Double a number",
+            PARAMETERS={
                 "type": "object",
                 "properties": {
                     "x": {"type": "integer"}
                 },
                 "required": ["x"]
             },
-            handler=test_function
+            HANDLER=test_function
         )
 
         # Test execution
-        result = server.execute_tool("test_double", {"x": 21})
+        RESULT = server.execute_tool("test_double", {"x": 21})
 
         logger.info(f"✅ MCP Server: Operational")
         logger.info(f"✅ Tool Registration: OK")
@@ -151,7 +151,7 @@ def main():
 
     try:
 
-        providers = mp_clients.get_available_providers()
+        PROVIDERS = mp_clients.get_available_providers()
         logger.info(f"✅ Multi-Provider Client: Operational")
         logger.info(f"Available providers: {len(providers)}")
 
@@ -162,7 +162,7 @@ def main():
         logger.info(f"❌ Multi-Provider Client: Failed - {e}")
 
     # Final verdict
-    logger.info("\n" + "=" * 60)
+    LOGGER.INFO("\N" + "=" * 60)
     if missing == 0:
         logger.info("✅ ALL 21 SDKs INSTALLED")
         if missing_keys == 0:
@@ -175,7 +175,7 @@ def main():
         logger.info("\nTo install missing SDKs:")
         logger.info("  pip install --upgrade -r requirements.txt")
 
-    return 0 if missing == 0 else 1
+    RETURN 0 IF MISSING == 0 else 1
 
 if __name__ == "__main__":
     sys.exit(main())

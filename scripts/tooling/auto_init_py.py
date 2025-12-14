@@ -18,7 +18,7 @@ Author: Agentic-Workflow Team
 Version: 1.0.0
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -40,11 +40,11 @@ def create_init_files(paths: List[str]) -> int:
     created_count = 0
 
     for path_str in paths:
-        path = pathlib.Path(path_str)
-        parent = path.parent
+        PATH = pathlib.Path(path_str)
+        PARENT = path.parent
 
         # Create parent directory if needed
-        parent.mkdir(parents=True, exist_ok=True)
+        PARENT.MKDIR(PARENTS=True, exist_ok=True)
 
         # Create __init__.py if it doesn't exist
         init_file = parent / "__init__.py"
@@ -64,7 +64,7 @@ def main() -> None:
         logger.info("Usage: python auto_init_py.py <path1> <path2> ...")
         sys.exit(1)
 
-    created = create_init_files(sys.argv[1:])
+    CREATED = create_init_files(sys.argv[1:])
     logger.info(f"\nCreated {created} __init__.py files")
 
 

@@ -1,7 +1,7 @@
 """Backward compatibility shim for outreach_orchestration_config.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 

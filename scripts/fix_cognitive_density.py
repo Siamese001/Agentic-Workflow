@@ -9,11 +9,11 @@ def count_top_level_defs(filepath: Path) -> int:
     """Docstring."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
     """Count top-level definitions in a Python file."""
     try:
-        tree = ast.parse(filepath.read_text(encoding='utf-8'))
+        TREE = ast.parse(filepath.read_text(encoding='utf-8'))
         return sum(1 for n in tree.body if isinstance(n,
             (ast.FunctionDef,
             ast.ClassDef,
@@ -23,14 +23,14 @@ logger = logging.getLogger(__name__)
 
 def split_file_by_type(filepath: Path) -> None:
     """Split a file into submodules by grouping enums, dataclasses, classes, and functions."""
-    content = filepath.read_text(encoding='utf-8')
-    tree = ast.parse(content)
+    CONTENT = filepath.read_text(encoding='utf-8')
+    TREE = ast.parse(content)
 
     # Group definitions by type
-    enums = []
-    dataclasses = []
-    classes = []
-    functions = []
+    ENUMS = []
+    DATACLASSES = []
+    CLASSES = []
+    FUNCTIONS = []
 
     for node in tree.body:
         if isinstance(node, ast.ClassDef):
@@ -63,7 +63,7 @@ def split_file_by_type(filepath: Path) -> None:
 
     # Create submodules
     parent_dir = filepath.parent
-    stem = filepath.stem
+    STEM = filepath.stem
 
     # Create types module (enums + dataclasses), split if >5 defs
     if enums or dataclasses:
@@ -95,8 +95,8 @@ def split_file_by_type(filepath: Path) -> None:
             if dataclasses:
                 # Split dataclasses into chunks of 5
                 for i in range(0, len(dataclasses), 5):
-                    chunk = dataclasses[i:i+5]
-                    suffix = "" if i == 0 else f"_{i//5 + 1}"
+                    CHUNK = dataclasses[i:i+5]
+                    SUFFIX = "" if i == 0 else f"_{i//5 + 1}"
                     dc_content = f'"""Dataclass models for {stem}."""\n\n'
                     dc_content += "from dataclasses import dataclass, field\n"
                     dc_content += "from typing import Any, Dict, List, Optional\n"
@@ -171,12 +171,12 @@ files_to_fix = [
     "config/logic/data_access/get_info/store_v5_impl.py",
 ]
 
-root = Path("c:/Git/Agentic-Workflow")
+ROOT = Path("c:/Git/Agentic-Workflow")
 
 for file_path in files_to_fix:
     full_path = root / file_path
     if full_path.exists():
-        defs = count_top_level_defs(full_path)
+        DEFS = count_top_level_defs(full_path)
         if defs > 5:
             split_file_by_type(full_path)
 

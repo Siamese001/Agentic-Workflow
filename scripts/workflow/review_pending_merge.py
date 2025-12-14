@@ -4,7 +4,7 @@ Deep comparison of review_pending files vs approved files.
 Determine if any review_pending files have MORE content than approved versions.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -30,12 +30,12 @@ APPROVED_FOLDERS = [
 def count_real_lines(path: Path) -> int:
     """Count non-empty, non-comment, non-docstring lines."""
     try:
-        content = path.read_text(encoding="utf-8", errors="ignore")
-        lines = content.split("\n")
-        real = 0
+        CONTENT = path.read_text(encoding="utf-8", errors="ignore")
+        LINES = content.split("\n")
+        REAL = 0
         in_docstring = False
         for line in lines:
-            stripped = line.strip()
+            STRIPPED = line.strip()
             if '"""' in stripped or "'''" in stripped:
                 in_docstring = not in_docstring
                 continue
@@ -45,7 +45,7 @@ def count_real_lines(path: Path) -> int:
                 continue
             if stripped.startswith("from __future__") or stripped.startswith("import "):
                 continue
-            real += 1
+            REAL += 1
         return real
     except (ValueError, TypeError, KeyError):
         return 0
@@ -77,11 +77,11 @@ def _has_real_implementation(lines: List[str], i: int) -> bool:
 def has_real_code(path: Path) -> bool:
     """Check if file has real implementation beyond stubs."""
     try:
-        content = path.read_text(encoding="utf-8", errors="ignore")
+        CONTENT = path.read_text(encoding="utf-8", errors="ignore")
         if _is_stub_marker(content):
             return False
 
-        lines = content.split("\n")
+        LINES = content.split("\n")
         for i, line in enumerate(lines):
             if line.strip().startswith("def ") or line.strip().startswith("class "):
                 if _has_real_implementation(lines, i):
@@ -112,7 +112,7 @@ def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -
     pending_real = count_real_lines(f)
     pending_has_code = has_real_code(f)
 
-    result = {
+    RESULT = {
         "file": f,
         "pending_real": pending_real,
         "pending_has_code": pending_has_code,
@@ -126,20 +126,20 @@ def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -
             approved_has_code = has_real_code(approved)
 
             if pending_real > approved_real and pending_has_code:
-                result["category"] = "has_more_code"
+                RESULT["CATEGORY"] = "has_more_code"
                 break
             elif pending_has_code and not approved_has_code:
-                result["category"] = "has_code_vs_stub"
+                RESULT["CATEGORY"] = "has_code_vs_stub"
                 break
             elif pending_real <= approved_real:
-                result["category"] = "same_or_less"
+                RESULT["CATEGORY"] = "same_or_less"
                 break
     else:
         # Unique file
         if pending_has_code:
-            result["category"] = "unique_with_code"
+            RESULT["CATEGORY"] = "unique_with_code"
         else:
-            result["category"] = "unique_stub"
+            RESULT["CATEGORY"] = "unique_stub"
 
     return result
 
@@ -148,7 +148,7 @@ def _categorize_files(
     pending_files: List[Path], approved_by_name: Dict[str, List[Path]]
 ) -> Dict[str, List[Path]]:
     """Categorize pending files into different buckets."""
-    categories = {
+    CATEGORIES = {
         "has_more_code": [],
         "has_code_vs_stub": [],
         "same_or_less": [],
@@ -158,7 +158,7 @@ def _categorize_files(
 
     for f in pending_files:
         category_info = _categorize_pending_file(f, approved_by_name)
-        category = category_info["category"]
+        CATEGORY = category_info["category"]
         if category in categories:
             categories[category].append(f)
 
@@ -170,7 +170,7 @@ def main() -> None:
     approved_by_name = _build_approved_name_index()
     pending_files = [f for f in REVIEW_PENDING.rglob("*.py") if "__pycache__" not in str(f)]
 
-    categories = _categorize_files(pending_files, approved_by_name)
+    CATEGORIES = _categorize_files(pending_files, approved_by_name)
     pending_has_more_code = categories["has_more_code"]
     pending_is_stub = categories["has_code_vs_stub"]
     pending_same_or_less = categories["same_or_less"]

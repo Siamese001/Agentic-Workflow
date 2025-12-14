@@ -23,10 +23,10 @@ def get_existing_files() -> Set[str]:
     """Docstring."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
     """Get set of all Python files in sovereign codebase."""
-    existing = set()
+    EXISTING = set()
     repo_root = Path(".")
 
     for root in SOVEREIGN_ROOTS:
@@ -59,7 +59,7 @@ def extract_net_incremental() -> None:
             continue
 
         # Get filename only for comparison (since legacy_lic has different structure)
-        filename = py_file.name
+        FILENAME = py_file.name
 
         # Check if any file with this name already exists in sovereign codebase
         name_exists = any(filename in existing for existing in existing_files)
@@ -73,7 +73,7 @@ def extract_net_incremental() -> None:
     return extracted_files
 
 if __name__ == "__main__":
-    extracted = extract_net_incremental()
+    EXTRACTED = extract_net_incremental()
 
     if extracted:
         #logger.info(f"Extracted {len(extracted)} files:")

@@ -14,7 +14,7 @@ import logging
 import os
 from dataclasses import dataclass
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class HardenedAnthropicConfig:
@@ -31,16 +31,16 @@ class HardenedAnthropicConfig:
 
     def __init__(
         self,
-        model: str = "claude-3-5-sonnet-20241022",
-        temperature: float = 0.7,
+        MODEL: STR = "claude-3-5-sonnet-20241022",
+        TEMPERATURE: FLOAT = 0.7,
         max_tokens: int = 4096,
         timeout_s: int = 60,
         max_retries: int = 3,
         failure_threshold: int = 5,
         reset_timeout_s: int = 30,
     ):
-        self.model = model
-        self.temperature = temperature
+        SELF.MODEL = model
+        SELF.TEMPERATURE = temperature
         self.max_tokens = max_tokens
         self.timeout_s = timeout_s
         self.max_retries = max_retries
@@ -70,7 +70,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
             config: Optional configuration
             telemetry: Optional telemetry instance
         """
-        self.config = config or HardenedAnthropicConfig()
+        SELF.CONFIG = config or HardenedAnthropicConfig()
 
         # Initialize hardening mixin
         super().__init__(
@@ -78,7 +78,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
             failure_threshold=self.config.failure_threshold,
             reset_timeout_s=self.config.reset_timeout_s,
             max_retries=self.config.max_retries,
-            telemetry=telemetry,
+            TELEMETRY=telemetry,
         )
 
         # Initialize Anthropic client
@@ -99,7 +99,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
         self._client = anthropic.Anthropic(
             api_key=api_key,
-            timeout=self.config.timeout_s,
+            TIMEOUT=self.config.timeout_s,
         )
 
     def _validate_token_budget(self, prompt: str) -> None:
@@ -186,12 +186,12 @@ class HardenedAnthropicExecutor(HardeningMixin):
         # Define async operation
         async def _completion():
                 """Docstring."""
-            response = self._client.messages.create(
-                model=self.config.model,
-                messages=anthropic_messages,
-                temperature=temperature or self.config.temperature,
+            RESPONSE = self._client.messages.create(
+                MODEL=self.config.model,
+                MESSAGES=anthropic_messages,
+                TEMPERATURE=temperature or self.config.temperature,
                 max_tokens=max_tokens or self.config.max_tokens,
-                system=sys_prompt,
+                SYSTEM=sys_prompt,
             )
 
             # Extract content
@@ -201,10 +201,10 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
         # Execute with hardening
         return await self.execute_hardened(
-            operation="messages_create",
+            OPERATION="messages_create",
             fn=_completion,
             validate_token_budget=lambda: self._validate_token_budget(combined_prompt),
-            metadata={
+            METADATA={
                 "model": self.config.model,
                 "temperature": temperature or self.config.temperature,
                 "max_tokens": max_tokens or self.config.max_tokens,
@@ -246,21 +246,21 @@ class HardenedAnthropicExecutor(HardeningMixin):
         # Define async operation with response capture
         async def _completion():
                 """Docstring."""
-            response = self._client.messages.create(
-                model=self.config.model,
-                messages=anthropic_messages,
-                temperature=temperature or self.config.temperature,
+            RESPONSE = self._client.messages.create(
+                MODEL=self.config.model,
+                MESSAGES=anthropic_messages,
+                TEMPERATURE=temperature or self.config.temperature,
                 max_tokens=max_tokens or self.config.max_tokens,
-                system=sys_prompt,
+                SYSTEM=sys_prompt,
             )
             return response
 
         # Execute with hardening
         raw_response = await self.execute_hardened(
-            operation="messages_create",
+            OPERATION="messages_create",
             fn=_completion,
             validate_token_budget=lambda: self._validate_token_budget(combined_prompt),
-            metadata={
+            METADATA={
                 "model": self.config.model,
                 "temperature": temperature or self.config.temperature,
                 "max_tokens": max_tokens or self.config.max_tokens,
@@ -269,23 +269,23 @@ class HardenedAnthropicExecutor(HardeningMixin):
         )
 
         # Extract response data
-        content = ""
-        usage = None
+        CONTENT = ""
+        USAGE = None
 
         if raw_response.content:
-            content = raw_response.content[0].text
+            CONTENT = raw_response.content[0].text
 
         if hasattr(raw_response, 'usage'):
-            usage = {
+            USAGE = {
                 "prompt_tokens": raw_response.usage.input_tokens,
                 "completion_tokens": raw_response.usage.output_tokens,
                 "total_tokens": raw_response.usage.input_tokens + raw_response.usage.output_tokens,
             }
 
         return AgentResponse(
-            content=content,
-            model=self.config.model,
-            usage=usage,
+            CONTENT=content,
+            MODEL=self.config.model,
+            USAGE=usage,
             finish_reason=raw_response.stop_reason if raw_response else None,
         )
 
@@ -314,12 +314,12 @@ class HardenedAnthropicExecutor(HardeningMixin):
         import asyncio
 
         # Run async method in event loop
-        loop = asyncio.get_event_loop()
+        LOOP = asyncio.get_event_loop()
         if loop.is_running():
             # If already in event loop, use run_in_executor
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(
+                FUTURE = executor.submit(
                     asyncio.run,
                     self.run_llm(prompt, temperature=temperature, max_tokens=max_tokens,
                                 system_prompt=system_prompt, messages=messages)
@@ -334,8 +334,8 @@ class HardenedAnthropicExecutor(HardeningMixin):
 # Factory function for backward compatibility
     """Docstring."""
 def create_hardened_anthropic_executor(
-    model: str = "claude-3-5-sonnet-20241022",
-    temperature: float = 0.7,
+    MODEL: STR = "claude-3-5-sonnet-20241022",
+    TEMPERATURE: FLOAT = 0.7,
     **kwargs
 ) -> HardenedAnthropicExecutor:
     """Create a hardened Anthropic executor.
@@ -348,5 +348,5 @@ def create_hardened_anthropic_executor(
     Returns:
         HardenedAnthropicExecutor instance
     """
-    config = HardenedAnthropicConfig(model=model, temperature=temperature, **kwargs)
+    CONFIG = HardenedAnthropicConfig(model=model, temperature=temperature, **kwargs)
     return HardenedAnthropicExecutor(config)

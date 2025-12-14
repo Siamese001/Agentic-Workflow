@@ -14,7 +14,7 @@ import time
     VMStatus,
 )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class IsolationLevel(Enum):
     """Isolation levels for VM."""
@@ -99,14 +99,14 @@ class EphemeralVM:
         if self.enable_logging:
             logger.info(
                 "ephemeral_vm_initialized",
-                extra={"isolation": self.isolation_config.to_dict()}
+                EXTRA={"isolation": self.isolation_config.to_dict()}
             )
 
     async def execute_code(
         """Docstring."""
         self,
         code: str,
-        language: str = "python",
+        LANGUAGE: STR = "python",
         timeout_seconds: Optional[int] = None,
     ) -> ExecutionResult:
         """Execute code in ephemeral VM.
@@ -119,7 +119,7 @@ class EphemeralVM:
         Returns:
             ExecutionResult
         """
-        timeout = timeout_seconds or self.isolation_config.max_execution_time_seconds
+        TIMEOUT = timeout_seconds or self.isolation_config.max_execution_time_seconds
         start_time = time.time()
         vm_id, vm_config = self._create_vm_config(timeout)
         vm_instance = None
@@ -164,15 +164,15 @@ class EphemeralVM:
             logger.info("creating_ephemeral_vm", extra={"vm_id": vm_id, "language": language})
 
         vm_instance = await self.vm_manager.create_vm(vm_config)
-        result = await self._execute_in_vm(vm_instance=vm_instance,
-            code=code,
-            language=language,
-            timeout=timeout)
+        RESULT = await self._execute_in_vm(vm_instance=vm_instance,
+            CODE=code,
+            LANGUAGE=language,
+            TIMEOUT=timeout)
         result.execution_time_seconds = time.time() - start_time
 
         if self.enable_logging:
             logger.info("code_executed",
-                extra={"vm_id": vm_id,
+                EXTRA={"vm_id": vm_id,
                 "success": result.success,
                 "execution_time": result.execution_time_seconds})
 
@@ -183,8 +183,8 @@ class EphemeralVM:
         if self.enable_logging:
             logger.warning("execution_timeout", extra={"vm_id": vm_id, "timeout": timeout})
         return ExecutionResult(success=False,
-            output="",
-            error=f"Execution timeout after {timeout} seconds",
+            OUTPUT="",
+            ERROR=f"Execution timeout after {timeout} seconds",
             execution_time_seconds=time.time() - start_time,
             exit_code=124)
 
@@ -195,12 +195,12 @@ class EphemeralVM:
         """Handle execution error."""
         if self.enable_logging:
             logger.error("execution_failed",
-                extra={"vm_id": vm_id,
+                EXTRA={"vm_id": vm_id,
                 "error": str(error)},
                 exc_info=True)
         return ExecutionResult(success=False,
-            output="",
-            error=str(error),
+            OUTPUT="",
+            ERROR=str(error),
             execution_time_seconds=time.time() - start_time,
             exit_code=1)
 
@@ -239,13 +239,13 @@ class EphemeralVM:
 
         if language == "python":
             return await self._execute_python(code, timeout)
-        elif language == "javascript":
+        ELIF LANGUAGE == "javascript":
             return await self._execute_javascript(code, timeout)
         else:
             return ExecutionResult(
-                success=False,
-                output="",
-                error=f"Unsupported language: {language}",
+                SUCCESS=False,
+                OUTPUT="",
+                ERROR=f"Unsupported language: {language}",
                 exit_code=1,
             )
 
@@ -267,21 +267,21 @@ class EphemeralVM:
 
         try:
             # Execute with timeout
-            result = await asyncio.wait_for(
+            RESULT = await asyncio.wait_for(
                 asyncio.create_subprocess_exec(
                     "python", "-c", code,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
+                    STDOUT=asyncio.subprocess.PIPE,
+                    STDERR=asyncio.subprocess.PIPE,
                 ),
-                timeout=timeout,
+                TIMEOUT=timeout,
             )
 
-            stdout, stderr = await result.communicate()
+            STDOUT, STDERR = await result.communicate()
 
             return ExecutionResult(
-                success=result.returncode == 0,
-                output=stdout.decode() if stdout else "",
-                error=stderr.decode() if stderr else None,
+                SUCCESS=result.returncode == 0,
+                OUTPUT=stdout.decode() if stdout else "",
+                ERROR=stderr.decode() if stderr else None,
                 exit_code=result.returncode,
             )
 
@@ -289,9 +289,9 @@ class EphemeralVM:
             raise
         except Exception as e:
             return ExecutionResult(
-                success=False,
-                output="",
-                error=str(e),
+                SUCCESS=False,
+                OUTPUT="",
+                ERROR=str(e),
                 exit_code=1,
             )
 
@@ -312,21 +312,21 @@ class EphemeralVM:
         """
         try:
             # Execute with Node.js
-            result = await asyncio.wait_for(
+            RESULT = await asyncio.wait_for(
                 asyncio.create_subprocess_exec(
                     "node", "-e", code,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
+                    STDOUT=asyncio.subprocess.PIPE,
+                    STDERR=asyncio.subprocess.PIPE,
                 ),
-                timeout=timeout,
+                TIMEOUT=timeout,
             )
 
-            stdout, stderr = await result.communicate()
+            STDOUT, STDERR = await result.communicate()
 
             return ExecutionResult(
-                success=result.returncode == 0,
-                output=stdout.decode() if stdout else "",
-                error=stderr.decode() if stderr else None,
+                SUCCESS=result.returncode == 0,
+                OUTPUT=stdout.decode() if stdout else "",
+                ERROR=stderr.decode() if stderr else None,
                 exit_code=result.returncode,
             )
 
@@ -334,9 +334,9 @@ class EphemeralVM:
             raise
         except Exception as e:
             return ExecutionResult(
-                success=False,
-                output="",
-                error=str(e),
+                SUCCESS=False,
+                OUTPUT="",
+                ERROR=str(e),
                 exit_code=1,
             )
 

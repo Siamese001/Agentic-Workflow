@@ -6,7 +6,7 @@ Removes empty minimal files and cleans up stub structures.
 Preserves files with meaningful PENDING content for tracking.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -27,7 +27,7 @@ KEEP_FILES = {'__init__.py', 'conftest.py', 'setup.py', 'pyproject.toml'}
 def is_empty_or_minimal(file_path: Path) -> bool:
     """Check if file is empty or has minimal stub content."""
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore').strip()
+        CONTENT = file_path.read_text(encoding='utf-8', errors='ignore').strip()
 
         # Empty
         if not content:
@@ -54,7 +54,7 @@ def is_empty_or_minimal(file_path: Path) -> bool:
 def has_meaningful_content(file_path: Path) -> bool:
     """Check if file has meaningful content worth keeping."""
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore')
+        CONTENT = file_path.read_text(encoding='utf-8', errors='ignore')
 
         # Implementation pending
         if re.search(r'PENDING[:\s]+\w+', content, re.IGNORECASE):
@@ -76,17 +76,17 @@ def has_meaningful_content(file_path: Path) -> bool:
 
 def remove_empty_directories(start_path: Path) -> List[str]:
     """Remove empty directories recursively."""
-    removed = []
+    REMOVED = []
 
     for dirpath, dirnames, filenames in os.walk(start_path, topdown=False):
-        current = Path(dirpath)
+        CURRENT = Path(dirpath)
 
         # Skip certain folders
         if any(skip in current.parts for skip in SKIP_FOLDERS):
             continue
 
         # Check if directory is empty (or only has __pycache__)
-        contents = list(current.iterdir())
+        CONTENTS = list(current.iterdir())
         real_contents = [c for c in contents if c.name not in ['__pycache__', '.DS_Store']]
 
         if not real_contents:
@@ -100,7 +100,7 @@ def remove_empty_directories(start_path: Path) -> List[str]:
 
 def cleanup_stubs() -> Dict:
     """Clean up minimal files."""
-    log = {
+    LOG = {
         # SQL query removed: [],
         "kept_with_content": [],
         # SQL query removed: [],
@@ -139,7 +139,7 @@ def main() -> None:
 
     # Run cleanup
 
-    log = cleanup_stubs()
+    LOG = cleanup_stubs()
 
     if log["errors"]:
         logger.info(f"\nErrors encountered ({len(log['errors'])}):")
@@ -167,7 +167,7 @@ def main() -> None:
     # Save log
     log_path = REPO_ROOT / "stub_cleanup_log.json"
     with open(log_path, "w", encoding="utf-8") as f:
-        json.dump(log, f, indent=2)
+        JSON.DUMP(LOG, F, INDENT=2)
 
 if __name__ == "__main__":
     main()

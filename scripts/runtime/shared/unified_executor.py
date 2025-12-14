@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ExecutionStatus(Enum):
     """Status of execution."""
@@ -120,45 +120,45 @@ class LLMExecutionStrategy(ExecutionStrategy):
             # Check rate limit
             if not self.rate_limiter.can_proceed():
                 return ExecutionResult(
-                    status=ExecutionStatus.RATE_LIMITED,
-                    data=None,
-                    context=context,
-                    error="Rate limit exceeded"
+                    STATUS=ExecutionStatus.RATE_LIMITED,
+                    DATA=None,
+                    CONTEXT=context,
+                    ERROR="Rate limit exceeded"
                 )
 
             # Execute with circuit breaker
-            result = await self.circuit_breaker.call(
+            RESULT = await self.circuit_breaker.call(
                 self._execute_llm,
                 context
             )
 
             # Update metrics
-            metrics = {
+            METRICS = {
                 "llm_calls": 1,
                 "tokens_used": self._estimate_tokens(context.input_data),
                 "execution_time": time.time() - start_time
             }
 
             return ExecutionResult(
-                status=ExecutionStatus.COMPLETED,
-                data=result,
-                context=context,
-                metrics=metrics
+                STATUS=ExecutionStatus.COMPLETED,
+                DATA=result,
+                CONTEXT=context,
+                METRICS=metrics
             )
 
         except CircuitOpenError:
             return ExecutionResult(
-                status=ExecutionStatus.CIRCUIT_OPEN,
-                data=None,
-                context=context,
-                error="Circuit breaker is open"
+                STATUS=ExecutionStatus.CIRCUIT_OPEN,
+                DATA=None,
+                CONTEXT=context,
+                ERROR="Circuit breaker is open"
             )
         except Exception as e:
             return ExecutionResult(
-                status=ExecutionStatus.FAILED,
-                data=None,
-                context=context,
-                error=str(e)
+                STATUS=ExecutionStatus.FAILED,
+                DATA=None,
+                CONTEXT=context,
+                ERROR=str(e)
             )
 
     async def _execute_llm(self, context: ExecutionContext) -> Any:
@@ -222,7 +222,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
         Returns:
             Estimated token count
         """
-        text = json.dumps(input_data, default=str)
+        TEXT = json.dumps(input_data, default=str)
         return len(text.split()) * 1.3  # Rough estimate
 
     @property
@@ -241,7 +241,7 @@ class APIExecutionStrategy(ExecutionStrategy):
             timeout: Request timeout
         """
         self.api_endpoint = api_endpoint
-        self.timeout = timeout
+        SELF.TIMEOUT = timeout
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
             f"api_{api_endpoint}",
             failure_threshold=3,
@@ -261,36 +261,36 @@ class APIExecutionStrategy(ExecutionStrategy):
 
         try:
             # Execute with circuit breaker
-            result = await self.circuit_breaker.call(
+            RESULT = await self.circuit_breaker.call(
                 self._execute_api,
                 context
             )
 
-            metrics = {
+            METRICS = {
                 "api_calls": 1,
                 "response_time": time.time() - start_time
             }
 
             return ExecutionResult(
-                status=ExecutionStatus.COMPLETED,
-                data=result,
-                context=context,
-                metrics=metrics
+                STATUS=ExecutionStatus.COMPLETED,
+                DATA=result,
+                CONTEXT=context,
+                METRICS=metrics
             )
 
         except CircuitOpenError:
             return ExecutionResult(
-                status=ExecutionStatus.CIRCUIT_OPEN,
-                data=None,
-                context=context,
-                error="API circuit breaker is open"
+                STATUS=ExecutionStatus.CIRCUIT_OPEN,
+                DATA=None,
+                CONTEXT=context,
+                ERROR="API circuit breaker is open"
             )
         except Exception as e:
             return ExecutionResult(
-                status=ExecutionStatus.FAILED,
-                data=None,
-                context=context,
-                error=str(e)
+                STATUS=ExecutionStatus.FAILED,
+                DATA=None,
+                CONTEXT=context,
+                ERROR=str(e)
             )
 
     async def _execute_api(self, context: ExecutionContext) -> Any:
@@ -328,8 +328,8 @@ class BatchExecutionStrategy(ExecutionStrategy):
             concurrency: Maximum concurrent operations
         """
         self.batch_size = batch_size
-        self.concurrency = concurrency
-        self.semaphore = asyncio.Semaphore(concurrency)
+        SELF.CONCURRENCY = concurrency
+        SELF.SEMAPHORE = asyncio.Semaphore(concurrency)
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
             """Execute batch operation.
@@ -344,38 +344,38 @@ class BatchExecutionStrategy(ExecutionStrategy):
 
         try:
             # Get input items
-            items = context.input_data if isinstance(context.input_data,
+            ITEMS = context.input_data if isinstance(context.input_data,
                 list) else [context.input_data]
 
             # Process in batches
-            results = []
+            RESULTS = []
             for i in range(0, len(items), self.batch_size):
-                batch = items[i:i + self.batch_size]
+                BATCH = items[i:i + self.batch_size]
                 batch_results = await asyncio.gather(
                     *[self._process_item(item, context) for item in batch],
                     return_exceptions=True
                 )
                 results.extend(batch_results)
 
-            metrics = {
+            METRICS = {
                 "items_processed": len(results),
                 "batches_processed": len(range(0, len(items), self.batch_size)),
                 "execution_time": time.time() - start_time
             }
 
             return ExecutionResult(
-                status=ExecutionStatus.COMPLETED,
-                data=results,
-                context=context,
-                metrics=metrics
+                STATUS=ExecutionStatus.COMPLETED,
+                DATA=results,
+                CONTEXT=context,
+                METRICS=metrics
             )
 
         except Exception as e:
             return ExecutionResult(
-                status=ExecutionStatus.FAILED,
-                data=None,
-                context=context,
-                error=str(e)
+                STATUS=ExecutionStatus.FAILED,
+                DATA=None,
+                CONTEXT=context,
+                ERROR=str(e)
             )
 
     async def _process_item(self, item: Any, context: ExecutionContext) -> Any:
@@ -407,7 +407,7 @@ class UnifiedExecutor:
 
     def __init__(self):
             """Initialize the unified executor."""
-        self.strategies = {
+        SELF.STRATEGIES = {
             "llm": LLMExecutionStrategy(),
             "api": APIExecutionStrategy("default"),
             "batch": BatchExecutionStrategy()
@@ -449,22 +449,22 @@ class UnifiedExecutor:
             operation_id = f"{engine_type.value}_{strategy}_{int(time.time())}"
 
         # Create execution context
-        context = ExecutionContext(
+        CONTEXT = ExecutionContext(
             engine_type=engine_type,
             operation_id=operation_id,
             input_data=input_data,
-            config=config or {},
+            CONFIG=config or {},
             start_time=datetime.now()
         )
 
         # Get strategy
-        executor = self.strategies.get(strategy)
+        EXECUTOR = self.strategies.get(strategy)
         if not executor:
-            result = ExecutionResult(
-                status=ExecutionStatus.FAILED,
-                data=None,
-                context=context,
-                error=f"Unknown strategy: {strategy}"
+            RESULT = ExecutionResult(
+                STATUS=ExecutionStatus.FAILED,
+                DATA=None,
+                CONTEXT=context,
+                ERROR=f"Unknown strategy: {strategy}"
             )
             return result
 
@@ -473,7 +473,7 @@ class UnifiedExecutor:
         self._stats["strategy_usage"][strategy] += 1
 
         # Execute
-        result = await executor.execute(context)
+        RESULT = await executor.execute(context)
         context.end_time = datetime.now()
 
         # Update stats
@@ -491,7 +491,7 @@ class UnifiedExecutor:
             name: Strategy name
             strategy: Execution strategy
         """
-        self.strategies[name] = strategy
+        SELF.STRATEGIES[NAME] = strategy
         logger.info(f"Registered custom strategy: {name}")
 
     def get_stats(self) -> Dict[str, Any]:
@@ -500,7 +500,7 @@ class UnifiedExecutor:
         Returns:
             Statistics dictionary
         """
-        stats = self._stats.copy()
+        STATS = self._stats.copy()
         if stats["total_executions"] > 0:
             stats["success_rate"] = stats["successful_executions"] / stats["total_executions"]
         else:
@@ -518,11 +518,11 @@ class EngineExecutor:
         """
         self.engine_type = engine_type
         self.unified_executor = UnifiedExecutor()
-        self.formatter = get_unified_formatter()
+        SELF.FORMATTER = get_unified_formatter()
         self.shared_infra = get_shared_infrastructure()
 
         # Engine-specific configuration
-        self.config = self._get_engine_config()
+        SELF.CONFIG = self._get_engine_config()
 
         logger.info(f"Initialized {engine_type.value} executor")
 
@@ -547,7 +547,7 @@ class EngineExecutor:
         merged_config = {**self.config, **(config or {})}
 
         # Execute with LLM strategy
-        result = await self.unified_executor.execute(
+        RESULT = await self.unified_executor.execute(
             input_data,
             "llm",
             self.engine_type,
@@ -557,13 +557,13 @@ class EngineExecutor:
         # Format output if successful
         if result.status == ExecutionStatus.COMPLETED:
             format_type = self._get_format_type(content_type)
-            formatted = self.formatter.format(
+            FORMATTED = self.formatter.format(
                 result.data,
                 format_type,
                 self.engine_type,
                 merged_config
             )
-            result.data = formatted.data
+            RESULT.DATA = formatted.data
 
         return result
 
@@ -665,7 +665,7 @@ async def execute_resume_generation(
     Returns:
         Execution result
     """
-    executor = get_engine_executor(EngineType.RESUME)
+    EXECUTOR = get_engine_executor(EngineType.RESUME)
     return await executor.generate_content(input_data, content_type, config)
 
     """Docstring."""
@@ -684,5 +684,5 @@ async def execute_outreach_generation(
     Returns:
         Execution result
     """
-    executor = get_engine_executor(EngineType.OUTREACH)
+    EXECUTOR = get_engine_executor(EngineType.OUTREACH)
     return await executor.generate_content(input_data, content_type, config)

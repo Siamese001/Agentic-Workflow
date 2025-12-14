@@ -1,6 +1,6 @@
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """E2E Validation Script for Subatomic Pipeline"""
 
@@ -13,21 +13,21 @@ PROJECT_ROOT = Path(r"C:/Git/Agentic-Workflow")
 def run_e2e_tests():
     """TODO: Add docstring."""
 
-    results = {}
+    RESULTS = {}
 
     # E2E-01: 10 canonical roots
-    roots = ['agentic_core','schemas','runtime','prompt_governance',
+    ROOTS = ['agentic_core','schemas','runtime','prompt_governance',
              'config','06_data','observability','scripts','09_apps','tests']
     results['E2E-01'] = all((PROJECT_ROOT/r).exists() for r in roots)
 
     # E2E-02: SSoT YAMLs
-    ssot = PROJECT_ROOT/'unified_structure_subatomic.yaml'
-    meta = PROJECT_ROOT/'unified_structure_subatomic_meta.yaml'
+    SSOT = PROJECT_ROOT/'unified_structure_subatomic.yaml'
+    META = PROJECT_ROOT/'unified_structure_subatomic_meta.yaml'
     results['E2E-02'] = ssot.exists() and meta.exists()
 
     # E2E-03: Semantic cache
-    cache = PROJECT_ROOT/'06_data'/'semantic_cache'
-    domains = ['ast','golden','semantic','integrity','embeddings','diffs','graphs','meta','safety']
+    CACHE = PROJECT_ROOT/'06_data'/'semantic_cache'
+    DOMAINS = ['ast','golden','semantic','integrity','embeddings','diffs','graphs','meta','safety']
     results['E2E-03'] = all((cache/d).exists() for d in domains)
 
     # E2E-04: Freeze reports
@@ -35,11 +35,11 @@ def run_e2e_tests():
     results['E2E-04'] = len(freeze_reports) == 10
 
     # E2E-05: Migration plans
-    plans = list((PROJECT_ROOT/'schemas').glob('*_migration_and_rewrite_plan.json'))
+    PLANS = list((PROJECT_ROOT/'schemas').glob('*_migration_and_rewrite_plan.json'))
     results['E2E-05'] = len(plans) == 8
 
     # E2E-06: Phase 3 success
-    reports = list((PROJECT_ROOT/'06_data'/'meta').glob('phase3_*_report.json'))
+    REPORTS = list((PROJECT_ROOT/'06_data'/'meta').glob('phase3_*_report.json'))
     results['E2E-06'] = len(reports) == 8 and all(json.load(open(r))['success'] for r in reports)
 
     # E2E-07: No rollbacks

@@ -7,7 +7,7 @@ Rewrites and optimizes resume content based on job analysis results.
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ResumeGenerator:
     """Generates tailored resumes using LLM based on job analysis."""
@@ -26,7 +26,7 @@ class ResumeGenerator:
             provider: Provider to use if client not supplied (defaults to Google/Gemini)
         """
         self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)
-        self.provider = provider or Provider.GOOGLE
+        SELF.PROVIDER = provider or Provider.GOOGLE
         self.creative_brief = creative_brief  # Store creative brief configuration
         self.validation_rules = validation_rules or {}  # Store validation rules
 
@@ -97,7 +97,7 @@ class ResumeGenerator:
             word_count_range = f"{self.creative_brief.executive_summary_word_count.min_words}-{self.
     creative_brief.executive_summary_word_count.max_words}"
 
-        prompt = f"""Rewrite the following professional summary to align with the target job require
+        PROMPT = f"""Rewrite the following professional summary to align with the target job require
     ments.
 
 ORIGINAL SUMMARY:
@@ -118,7 +118,7 @@ Please rewrite the summary to:
 Return ONLY the rewritten summary, no additional text."""
 
         try:
-            response = self._generate_response(prompt)
+            RESPONSE = self._generate_response(prompt)
             return response.strip()
         except Exception as e:
             logger.error(f"Error tailoring summary: {e}")
@@ -214,7 +214,7 @@ Return ONLY the rewritten summary, no additional text."""
             word_count_max = self.creative_brief.unify_bullet_word_count.max_words
 
         for bullet in bullets:
-            prompt = f"""Rewrite the following resume bullet point to emphasize the target skills an
+            PROMPT = f"""Rewrite the following resume bullet point to emphasize the target skills an
     d responsibilities.
 
 ORIGINAL BULLET:
@@ -234,7 +234,7 @@ Please rewrite the bullet to:
 Return ONLY the rewritten bullet, no additional text."""
 
             try:
-                response = self._generate_response(prompt)
+                RESPONSE = self._generate_response(prompt)
                 tailored_bullets.append(response.strip())
             except Exception as e:
                 logger.error(f"Error tailoring bullet: {e}")
@@ -244,7 +244,7 @@ Return ONLY the rewritten bullet, no additional text."""
 
     def _tailor_description(self, description: str, target_skills: List[str]) -> str:
         """Tailor job description to highlight relevant skills."""
-        prompt = f"""Rewrite the following job description to emphasize the target skills.
+        PROMPT = f"""Rewrite the following job description to emphasize the target skills.
 
 ORIGINAL DESCRIPTION:
 {description}
@@ -260,7 +260,7 @@ Please rewrite to:
 Return ONLY the rewritten description, no additional text."""
 
         try:
-            response = self._generate_response(prompt)
+            RESPONSE = self._generate_response(prompt)
             return response.strip()
         except Exception as e:
             logger.error(f"Error tailoring description: {e}")
@@ -276,18 +276,18 @@ Return ONLY the rewritten description, no additional text."""
     def _generate_with_gemini(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using Google Gemini."""
 
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        MODEL = genai.GenerativeModel('gemini-1.5-flash')
         generation_config = genai.types.GenerationConfig(temperature=temperature)
-        response = model.generate_content(prompt, generation_config=generation_config)
+        RESPONSE = model.generate_content(prompt, generation_config=generation_config)
         return response.text
 
     def _generate_with_generic_client(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using generic client interface."""
         if hasattr(self.llm_client, 'generate'):
-            response = self.llm_client.generate(prompt, temperature=temperature)
+            RESPONSE = self.llm_client.generate(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
         else:
-            response = self.llm_client.complete(prompt, temperature=temperature)
+            RESPONSE = self.llm_client.complete(prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
 
     def optimize_for_ats(self,
@@ -307,7 +307,7 @@ Return ONLY the rewritten description, no additional text."""
         Returns:
             ATS-optimized resume data
         """
-        optimized = resume_data.copy()
+        OPTIMIZED = resume_data.copy()
 
         # Add keywords section for ATS
         all_keywords = (

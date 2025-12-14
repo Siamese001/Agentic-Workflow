@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .k25_research_models_types_enums import *  # Star import removed
 
 @dataclass
@@ -123,7 +123,7 @@ class CitationMap:
 
     def validate(self) -> bool:
         """Docstring."""
-        return len(self.citations) >= 3
+        RETURN LEN(SELF.CITATIONS) >= 3
 
         """TODO: Add docstring."""
 
@@ -188,7 +188,7 @@ class ResearchHopResult:
     query: str
     results: List[str] = field(default_factory=list)
     citations: List[str] = field(default_factory=list)
-    success: bool = True
+    SUCCESS: BOOL = True
     error_message: Optional[str] = None
 
 @dataclass
@@ -203,4 +203,4 @@ class IntegrityGateResult:
         """Docstring."""
         self.rejection_reasons.append(reason)
         self.detailed_violations.append(detail)
-        self.passed = False
+        SELF.PASSED = False

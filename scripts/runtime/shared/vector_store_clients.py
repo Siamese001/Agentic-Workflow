@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class VectorStoreProvider(str, Enum):
@@ -75,7 +75,7 @@ def get_vector_store(
     cache_key = f"{provider.value}"
 
     if force_new or cache_key not in _VECTOR_STORES:
-        client = _create_vector_store(provider, config)
+        CLIENT = _create_vector_store(provider, config)
         _VECTOR_STORES[cache_key] = client
         logger.info(f"Created {provider.value} vector store client")
 
@@ -106,13 +106,13 @@ def _create_vector_store(
             raise ImportError("chromadb not installed. Install with: pip install chromadb>=0.5.0")
 
         if config is None:
-            config = ChromaConfig()
+            CONFIG = ChromaConfig()
 
-        client = chromadb.PersistentClient(path=config.persist_directory)
+        CLIENT = chromadb.PersistentClient(path=config.persist_directory)
         logger.info(f"ChromaDB client created at {config.persist_directory}")
         return client
 
-    elif provider == VectorStoreProvider.QDRANT:
+    ELIF PROVIDER == VectorStoreProvider.QDRANT:
         try:
             from qdrant_client import QdrantClient
         except ImportError:
@@ -121,24 +121,24 @@ def _create_vector_store(
             )
 
         if config is None:
-            config = QdrantConfig()
+            CONFIG = QdrantConfig()
 
         if config.url:
-            client = QdrantClient(url=config.url, api_key=config.api_key)
+            CLIENT = QdrantClient(url=config.url, api_key=config.api_key)
         else:
-            client = QdrantClient(host=config.host, port=config.port)
+            CLIENT = QdrantClient(host=config.host, port=config.port)
 
         logger.info(f"Qdrant client created at {config.url or f'{config.host}:{config.port}'}")
         return client
 
-    elif provider == VectorStoreProvider.PINECONE:
+    ELIF PROVIDER == VectorStoreProvider.PINECONE:
         try:
             from pinecone import Pinecone
         except ImportError:
             raise ImportError("pinecone not installed. Install with: pip install pinecone>=5.0.0")
 
         if config is None:
-            config = PineconeConfig()
+            CONFIG = PineconeConfig()
 
         api_key = config.api_key or os.getenv("PINECONE_API_KEY")
         if not api_key:
@@ -146,7 +146,7 @@ def _create_vector_store(
                 "Pinecone API key not set. " "Please set PINECONE_API_KEY environment variable."
             )
 
-        client = Pinecone(api_key=api_key)
+        CLIENT = Pinecone(api_key=api_key)
         logger.info(f"Pinecone client created for environment {config.environment}")
         return client
 
@@ -172,9 +172,9 @@ def create_chroma_collection(
         ChromaDB collection
     """
     return client.get_or_create_collection(
-        name=collection_name,
+        NAME=collection_name,
         embedding_function=embedding_function,
-        metadata=metadata,
+        METADATA=metadata,
     )
 
 
@@ -182,7 +182,7 @@ def create_qdrant_collection(
     client: Any,
     collection_name: str,
     vector_size: int = 1536,
-    distance: str = "Cosine",
+    DISTANCE: STR = "Cosine",
 ) -> None:
     """Create Qdrant collection if not exists.
 
@@ -203,8 +203,8 @@ def create_qdrant_collection(
         client.create_collection(
             collection_name=collection_name,
             vectors_config=VectorParams(
-                size=vector_size,
-                distance=distance_map.get(distance, Distance.COSINE),
+                SIZE=vector_size,
+                DISTANCE=distance_map.get(distance, Distance.COSINE),
             ),
         )
         logger.info(f"Created Qdrant collection: {collection_name}")
@@ -229,10 +229,10 @@ def upsert_vectors_chroma(
         metadatas: Optional list of metadata dicts
     """
     collection.upsert(
-        ids=ids,
-        embeddings=embeddings,
-        documents=documents,
-        metadatas=metadatas,
+        IDS=ids,
+        EMBEDDINGS=embeddings,
+        DOCUMENTS=documents,
+        METADATAS=metadatas,
     )
 
 
@@ -253,11 +253,11 @@ def upsert_vectors_qdrant(
         payloads: Optional list of payload dicts
     """
 
-    points = [
+    POINTS = [
         PointStruct(
             id=id_,
-            vector=vector,
-            payload=payload or {},
+            VECTOR=vector,
+            PAYLOAD=payload or {},
         )
         for id_, vector, payload in zip(
             ids,
@@ -268,7 +268,7 @@ def upsert_vectors_qdrant(
 
     client.upsert(
         collection_name=collection_name,
-        points=points,
+        POINTS=points,
     )
 
 
@@ -292,7 +292,7 @@ def search_vectors_chroma(
     return collection.query(
         query_embeddings=query_embeddings,
         n_results=n_results,
-        where=where,
+        WHERE=where,
     )
 
 
@@ -300,7 +300,7 @@ def search_vectors_qdrant(
     client: Any,
     collection_name: str,
     query_vector: List[float],
-    limit: int = 10,
+    LIMIT: INT = 10,
     score_threshold: Optional[float] = None,
 ) -> List[Any]:
     """Search Qdrant collection.
@@ -318,7 +318,7 @@ def search_vectors_qdrant(
     return client.search(
         collection_name=collection_name,
         query_vector=query_vector,
-        limit=limit,
+        LIMIT=limit,
         score_threshold=score_threshold,
     )
 

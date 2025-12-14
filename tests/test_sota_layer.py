@@ -7,7 +7,7 @@ Redis-speed responses.
 Run with: python runtime.shared.test_sota_layer.py
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -31,8 +31,8 @@ class SOTALayerTestSuite:
 
     def __init__(self):
             """Initialize the test suite."""
-        self.reranker = LateInteractionReranker()
-        self.cache = ContrastiveSemanticCache(similarity_threshold=0.92)
+        SELF.RERANKER = LateInteractionReranker()
+        SELF.CACHE = ContrastiveSemanticCache(similarity_threshold=0.92)
 
         # Sample documents for reranking test
         self.sample_docs = [
@@ -70,9 +70,9 @@ class SOTALayerTestSuite:
 
     def test_late_interaction_reranker(self):
             """Test the Late Interaction Reranker with various queries."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Late Interaction Reranker")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Test queries with expected top documents
         test_cases = [
@@ -98,7 +98,7 @@ class SOTALayerTestSuite:
             logger.info("\n⚠️  Reranker not available (missing dependencies),
                 testing fallback mode")
             # Test fallback mode
-            result = self.reranker.rerank("test query", self.sample_docs[:3])
+            RESULT = self.reranker.rerank("test query", self.sample_docs[:3])
             logger.info(f"✅ Fallback mode returned {len(result)} documents")
             return
 
@@ -108,12 +108,12 @@ class SOTALayerTestSuite:
             logger.info("-" * 40)
 
             start_time = time.time()
-            reranked = self.reranker.rerank(
-                query=test_case['query'],
-                documents=self.sample_docs,
+            RERANKED = self.reranker.rerank(
+                QUERY=test_case['query'],
+                DOCUMENTS=self.sample_docs,
                 top_k=5
             )
-            elapsed = time.time() - start_time
+            ELAPSED = time.time() - start_time
 
             logger.info(f"✅ Reranking completed in {elapsed:.3f}s")
 
@@ -137,8 +137,8 @@ class SOTALayerTestSuite:
             # Test with scores
             logger.info(f"\n   Testing with scores:")
             scored_results = self.reranker.rerank_with_scores(
-                query=test_case['query'],
-                documents=self.sample_docs[:3],
+                QUERY=test_case['query'],
+                DOCUMENTS=self.sample_docs[:3],
                 top_k=3
             )
 
@@ -147,15 +147,15 @@ class SOTALayerTestSuite:
 
     def test_contrastive_semantic_cache(self):
             """Test the Contrastive Semantic Cache with semantic similarity."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Contrastive Semantic Cache")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Check if cache is available
         if not self.cache.is_available:
             logger.info("\n⚠️  Cache not available (missing dependencies), testing fallback mode")
             # Test fallback mode
-            result = self.cache.get("test query")
+            RESULT = self.cache.get("test query")
             logger.info(f"✅ Fallback mode returned: {result}")
             return
 
@@ -166,7 +166,7 @@ class SOTALayerTestSuite:
 
             # Store original query with response
             original_response = f"Response for: {test_case['query']}"
-            success = self.cache.put(test_case['query'], original_response)
+            SUCCESS = self.cache.put(test_case['query'], original_response)
 
             if success:
                 logger.info(f"✅ Cached original query")
@@ -180,7 +180,7 @@ class SOTALayerTestSuite:
 
                 start_time = time.time()
                 cached_response = self.cache.get(similar_query)
-                elapsed = time.time() - start_time
+                ELAPSED = time.time() - start_time
 
                 if cached_response:
                     logger.info(f"   ✅ Cache hit in {elapsed*1000:.2f}ms")
@@ -196,9 +196,9 @@ class SOTALayerTestSuite:
 
     def test_cache_features(self):
             """Test additional cache features."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Cache Features")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         if not self.cache.is_available:
             logger.info("\n⚠️  Cache not available, skipping feature tests")
@@ -210,14 +210,14 @@ class SOTALayerTestSuite:
         ttl_cache.put("test", "response")
 
         # Should find it immediately
-        result = ttl_cache.get("test")
+        RESULT = ttl_cache.get("test")
         logger.info(f"   Immediate lookup: {'Found' if result else 'Not found'}")
 
         # Wait for expiry
         logger.info("   Waiting 2 seconds for TTL expiry...")
         await asyncio.sleep(2)
 
-        result = ttl_cache.get("test")
+        RESULT = ttl_cache.get("test")
         logger.info(f"   After TTL expiry: {'Found' if result else 'Not found'}")
 
         # Test statistics
@@ -230,7 +230,7 @@ class SOTALayerTestSuite:
         self.cache.get("query2")  # Miss
         self.cache.put("query2", "response2")
 
-        stats = self.cache.get_stats()
+        STATS = self.cache.get_stats()
         logger.info(f"   Entries: {stats['entries']}")
         logger.info(f"   Hits: {stats['hits']}")
         logger.info(f"   Misses: {stats['misses']}")
@@ -254,7 +254,7 @@ class SOTALayerTestSuite:
             logger.info(f"   ✅ Imported cache from {temp_file}")
 
             # Verify import
-            result = self.cache.get("export_test")
+            RESULT = self.cache.get("export_test")
             logger.info(f"   Verification: {'Found' if result else 'Not found'}")
 
         finally:
@@ -264,9 +264,9 @@ class SOTALayerTestSuite:
 
     def test_integration_scenario(self):
             """Test both components working together in a realistic scenario."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Integration Scenario")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Simulate an executive query flow
         executive_query = "Compare our system performance against industry benchmarks"
@@ -297,8 +297,8 @@ class SOTALayerTestSuite:
         if self.reranker.is_available:
             start_time = time.time()
             reranked_docs = self.reranker.rerank(
-                query=executive_query,
-                documents=retrieved_docs,
+                QUERY=executive_query,
+                DOCUMENTS=retrieved_docs,
                 top_k=3
             )
             rerank_time = time.time() - start_time
@@ -313,13 +313,13 @@ class SOTALayerTestSuite:
 
         # Step 4: Generate response (mock)
         logger.info("\n4. Generating response...")
-        response = f"Based on analysis: Our system shows 50ms latency while industry averages are 10
+        RESPONSE = f"Based on analysis: Our system shows 50ms latency while industry averages are 10
     0ms. This represents a 2x performance advantage."
         logger.info(f"   Response generated")
 
         # Step 5: Cache the result
         logger.info("\n5. Caching the result...")
-        success = self.cache.put(executive_query, response)
+        SUCCESS = self.cache.put(executive_query, response)
         if success:
             logger.info(f"   ✅ Response cached for future queries")
 
@@ -338,16 +338,16 @@ class SOTALayerTestSuite:
 
     def test_fallback_modes(self):
             """Test fallback behavior when dependencies are missing."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Fallback Modes")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Test PassThroughReranker
         logger.info("\n1. Testing PassThroughReranker:")
         fallback_reranker = PassThroughReranker()
         test_docs = self.sample_docs[:3]
 
-        result = fallback_reranker.rerank("test query", test_docs, top_k=2)
+        RESULT = fallback_reranker.rerank("test query", test_docs, top_k=2)
         logger.info(f"   Input: {len(test_docs)} documents")
         logger.info(f"   Output: {len(result)} documents")
         logger.info(f"   Order preserved: {result == test_docs[:2]}")
@@ -366,20 +366,20 @@ class SOTALayerTestSuite:
     lue'}")
 
         # Test stats
-        stats = null_cache.get_stats()
+        STATS = null_cache.get_stats()
         logger.info(f"   Stats: {stats}")
 
     def test_convenience_functions(self):
             """Test convenience functions for direct usage."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Convenience Functions")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Test rerank_documents function
         logger.info("\n1. Testing rerank_documents() function:")
-        result = rerank_documents(
-            query="Python API performance",
-            documents=self.sample_docs[:5],
+        RESULT = rerank_documents(
+            QUERY="Python API performance",
+            DOCUMENTS=self.sample_docs[:5],
             top_k=3
         )
         logger.info(f"   Reranked {len(result)} documents")
@@ -393,7 +393,7 @@ class SOTALayerTestSuite:
             self.cache.put("test query", "test response")
 
             # Then retrieve it
-            response = get_cached_response("test query", self.cache)
+            RESPONSE = get_cached_response("test query", self.cache)
             logger.info(f"   Retrieved: {response}")
         else:
             logger.info(f"   Cache not available")
@@ -401,7 +401,7 @@ class SOTALayerTestSuite:
     def run_all_tests(self):
             """Run all tests sequentially."""
         logger.info("🚀 Starting Phase 3 SOTA Layer Test Suite")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Check dependencies
         logger.info("\nChecking dependencies...")
@@ -421,9 +421,9 @@ class SOTALayerTestSuite:
         self.test_fallback_modes()
         self.test_convenience_functions()
 
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("✅ ALL TESTS COMPLETED")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
         logger.info("\nPhase 3 SOTA Layer is ready for integration!")
         logger.info("\nKey Benefits Achieved:")
         logger.info("  • Google-quality ranking with Cross-Encoder reranking")

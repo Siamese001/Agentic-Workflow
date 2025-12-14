@@ -1,10 +1,9 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # Ownership: apps_rg / unknown
 # -*- coding: utf-8 -*-
 """Test Rg Scoring - atomic execution layer."""
 
 
-import logging
 from typing import Dict
 
 

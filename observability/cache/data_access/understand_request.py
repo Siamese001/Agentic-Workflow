@@ -24,7 +24,7 @@ import traceback
 from typing import Any, Dict, List, Optional, Union
 
 # Configure module-specific logger
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
@@ -47,14 +47,14 @@ class ExecutionContext:
 
     def start(self) -> None:
         """Mark execution as started."""
-        self.status = ExecutionStatus.RUNNING
+        SELF.STATUS = ExecutionStatus.RUNNING
         self.start_time = time.time()
         logger.info(f"Execution started for operation: {self.operation_id}")
 
     def complete(self, success: bool = True, error: Optional[Exception] = None) -> None:
         """Mark execution as completed."""
         self.end_time = time.time()
-        self.status = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
+        SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
 
         if error:
             self.error_details = {
@@ -86,16 +86,16 @@ class GetInfoUnderstandRequest:
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize with optional configuration."""
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         self._setup_logging()
         self._validate_config()
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        SELF.LOGGER = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         if not self.logger.handlers:
-            executor = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter(
+            EXECUTOR = logging.StreamHandler(sys.stdout)
+            FORMATTER = logging.Formatter(
                 '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
             )
             executor.setFormatter(formatter)
@@ -105,7 +105,7 @@ class GetInfoUnderstandRequest:
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ["enabled", "mode", "timeout"]
-        missing = [key for key in required_keys if key not in self.config]
+        MISSING = [key for key in required_keys if key not in self.config]
         if missing:
             raise ValueError(f"Missing required config keys: {missing}")
 
@@ -125,7 +125,7 @@ class GetInfoUnderstandRequest:
         """
         exec_ctx = ExecutionContext(
             operation_id=self.config.get("operation_id", "default"),
-            metadata=context or {}
+            METADATA=context or {}
         )
 
         try:
@@ -136,13 +136,13 @@ class GetInfoUnderstandRequest:
                 raise ValueError("Payload cannot be None")
 
             # Execute main logic
-            result = self._execute_core(payload, context)
+            RESULT = self._execute_core(payload, context)
 
             exec_ctx.complete(success=True)
 
             return ProcessingResult(
-                success=True,
-                data=result,
+                SUCCESS=True,
+                DATA=result,
                 execution_context=exec_ctx,
                 additional_info={
                     "processed_at": time.time(),
@@ -154,7 +154,7 @@ class GetInfoUnderstandRequest:
             exec_ctx.complete(success=False, error=e)
 
             return ProcessingResult(
-                success=False,
+                SUCCESS=False,
                 error_message=str(e),
                 execution_context=exec_ctx
             )
@@ -183,7 +183,7 @@ def create_processor(config: Optional[Dict[str, Any]] = None) -> GetInfoUndersta
 def validate_module_config(config: Dict[str, Any]) -> bool:
     """Validate module configuration dictionary."""
     try:
-        executor = create_processor(config)
+        EXECUTOR = create_processor(config)
         return True
     except Exception:
         return False

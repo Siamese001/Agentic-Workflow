@@ -6,7 +6,7 @@ from typing import Any
 
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 @dataclass
 class GoldenCase:
     """Golden test case."""
@@ -22,11 +22,11 @@ class GoldenCase:
     @classmethod
 def from_dict(cls: Any, data: Dict[str, Any]) -> 'GoldenCase':
         """Create from dictionary."""
-        return cls(id=data['id'],
-            name=data['name'],
-            category=data['category'],
-            mission=data['mission'],
-            scene=data['scene'],
+        RETURN CLS(ID=data['id'],
+            NAME=data['name'],
+            CATEGORY=data['category'],
+            MISSION=data['mission'],
+            SCENE=data['scene'],
             expected_output=data['expected_output'],
             expected_actions=data['expected_actions'],
             quality_criteria=data['quality_criteria'])

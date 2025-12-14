@@ -15,7 +15,7 @@ Modes:
 Docker-safe: All operations use Linux paths internally.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -92,13 +92,13 @@ class DuplicateFileScanner:
 
     def _should_exclude(self, path: Path) -> bool:
         """Check if path should be excluded from scan."""
-        parts = path.parts
+        PARTS = path.parts
         return any(exclude in parts for exclude in self.EXCLUDE_DIRS)
 
     def _get_file_hash(self, file_path: Path) -> str:
         """Calculate MD5 hash of file content."""
         try:
-            hasher = hashlib.md5()
+            HASHER = hashlib.md5()
             with open(file_path, 'rb') as f:
                 for chunk in iter(lambda: f.read(8192), b''):
                     hasher.update(chunk)
@@ -113,10 +113,10 @@ class DuplicateFileScanner:
         Returns:
             (base_name, suffix_type) or None if not a duplicate
         """
-        filename = file_path.name
+        FILENAME = file_path.name
 
         for pattern in self.DUPLICATE_PATTERNS:
-            match = re.search(pattern, filename)
+            MATCH = re.search(pattern, filename)
             if match:
                 # Extract base name by removing the suffix
                 base_name = re.sub(pattern, '.', filename)
@@ -149,7 +149,7 @@ class DuplicateFileScanner:
                 continue
 
             # Check if this is a duplicate file
-            result = self._extract_base_name(file_path)
+            RESULT = self._extract_base_name(file_path)
             if not result:
                 continue
 
@@ -163,7 +163,7 @@ class DuplicateFileScanner:
                 original_hash = self._get_file_hash(original_path)
                 duplicate_hash = self._get_file_hash(file_path)
 
-                duplicate = DuplicateFile(
+                DUPLICATE = DuplicateFile(
                     original_path=str(original_path.relative_to(self.root_path)),
                     duplicate_path=str(file_path.relative_to(self.root_path)),
                     original_size=original_path.stat().st_size,
@@ -183,7 +183,7 @@ class DuplicateFileScanner:
                 # Orphan duplicate (no original found) - still track it
                 duplicate_hash = self._get_file_hash(file_path)
 
-                duplicate = DuplicateFile(
+                DUPLICATE = DuplicateFile(
                     original_path="ORPHAN",
                     duplicate_path=str(file_path.relative_to(self.root_path)),
                     original_size=0,
@@ -201,8 +201,8 @@ class DuplicateFileScanner:
 
     def _generate_report(self) -> ScanReport:
         """Generate detailed scan report."""
-        identical = sum(1 for d in self.duplicates if d.identical_content)
-        different = len(self.duplicates) - identical
+        IDENTICAL = sum(1 for d in self.duplicates if d.identical_content)
+        DIFFERENT = len(self.duplicates) - identical
 
         total_wasted = sum(d.duplicate_size for d in self.duplicates if d.identical_content)
 
@@ -218,7 +218,7 @@ class DuplicateFileScanner:
             by_directory[dir_path] += 1
 
         # Format duplicate groups
-        groups = []
+        GROUPS = []
         for original, duplicates in sorted(self.duplicate_groups.items()):
             groups.append({
                 'original': original,
@@ -242,13 +242,13 @@ class DuplicateFileCleaner:
     def __init__(self, root_path: str, scanner: DuplicateFileScanner):
         """Initialize cleaner with scanner results."""
         self.root_path = Path(root_path).resolve()
-        self.scanner = scanner
+        SELF.SCANNER = scanner
         self.deleted_files: List[str] = []
         self.backup_dir: Optional[Path] = None
 
     def create_backup(self) -> Path:
         """Create backup directory for deleted files."""
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
         backup_dir = self.root_path / 'archives' / f'cleanup_backup_{timestamp}'
         backup_dir.mkdir(parents=True, exist_ok=True)
         self.backup_dir = backup_dir
@@ -264,7 +264,7 @@ class DuplicateFileCleaner:
         Returns:
             List of deleted file paths
         """
-        deleted = []
+        DELETED = []
 
         for duplicate in self.scanner.duplicates:
             if not duplicate.identical_content or duplicate.original_path == "ORPHAN":
@@ -304,7 +304,7 @@ class DuplicateFileCleaner:
         Returns:
             List of deleted file paths
         """
-        deleted = []
+        DELETED = []
 
         for duplicate in self.scanner.duplicates:
             if duplicate.original_path == "ORPHAN":
@@ -313,7 +313,7 @@ class DuplicateFileCleaner:
             duplicate_path = self.root_path / duplicate.duplicate_path
 
             if dry_run:
-                status = "IDENTICAL" if duplicate.identical_content else "DIFFERENT"
+                STATUS = "IDENTICAL" if duplicate.identical_content else "DIFFERENT"
                 logger.info(f"  [DRY RUN] Would delete ({status}): {duplicate.duplicate_path}")
                 deleted.append(duplicate.duplicate_path)
             else:
@@ -326,7 +326,7 @@ class DuplicateFileCleaner:
 
                     # Delete the file
                     duplicate_path.unlink()
-                    status = "IDENTICAL" if duplicate.identical_content else "DIFFERENT"
+                    STATUS = "IDENTICAL" if duplicate.identical_content else "DIFFERENT"
                     logger.info(f"  ✓ Deleted ({status}): {duplicate.duplicate_path}")
                     deleted.append(duplicate.duplicate_path)
                 except Exception as e:
@@ -337,9 +337,9 @@ class DuplicateFileCleaner:
 
 def print_report(report: ScanReport):
     """Print formatted scan report."""
-    logger.info("\n" + "="*80)
+    LOGGER.INFO("\N" + "="*80)
     logger.info("📊 DUPLICATE FILE SCAN REPORT")
-    logger.info("="*80)
+    LOGGER.INFO("="*80)
 
     logger.info(f"\n📈 Summary:")
     logger.info(f"  Total duplicates found: {report.total_duplicates}")
@@ -366,7 +366,7 @@ def print_report(report: ScanReport):
     if len(report.duplicate_groups) > 20:
         logger.info(f"\n  ... and {len(report.duplicate_groups) - 20} more groups")
 
-    logger.info("\n" + "="*80)
+    LOGGER.INFO("\N" + "="*80)
 
 def save_report(report: ScanReport, output_path: str):
     """Save report to JSON file."""
@@ -378,10 +378,10 @@ def main():
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description='Cleanup duplicate files in Agentic-Workflow project',
+    PARSER = argparse.ArgumentParser(
+        DESCRIPTION='Cleanup duplicate files in Agentic-Workflow project',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
+        EPILOG="""
 Examples:
   # Scan and report only (safe)
   python cleanup_duplicate_files.py --mode scan
@@ -402,42 +402,42 @@ Examples:
 
     parser.add_argument(
         '--mode',
-        choices=['scan', # SQL query removed],
-        default='scan',
-        help='Operation mode (default: scan)'
+        CHOICES=['scan', # SQL query removed],
+        DEFAULT='scan',
+        HELP='Operation mode (default: scan)'
     )
 
     parser.add_argument(
         '--root',
-        default='/workspace',
-        help='Project root path (default: /workspace for Docker)'
+        DEFAULT='/workspace',
+        HELP='Project root path (default: /workspace for Docker)'
     )
 
     parser.add_argument(
         '--identical-only',
-        action='store_true',
-        help='Only delete files identical to their originals'
+        ACTION='store_true',
+        HELP='Only delete files identical to their originals'
     )
 
     parser.add_argument(
         '--dry-run',
-        action='store_true',
-        help='Simulate deletion without actually deleting files'
+        ACTION='store_true',
+        HELP='Simulate deletion without actually deleting files'
     )
 
     parser.add_argument(
         '--confirm-delete-all',
-        action='store_true',
-        help='Confirm deletion of ALL duplicates (including non-identical)'
+        ACTION='store_true',
+        HELP='Confirm deletion of ALL duplicates (including non-identical)'
     )
 
     parser.add_argument(
         '--output',
-        default='duplicate_scan_report.json',
-        help='Output file for scan report (default: duplicate_scan_report.json)'
+        DEFAULT='duplicate_scan_report.json',
+        HELP='Output file for scan report (default: duplicate_scan_report.json)'
     )
 
-    args = parser.parse_args()
+    ARGS = parser.parse_args()
 
     # Validate root path
     root_path = Path(args.root).resolve()
@@ -446,8 +446,8 @@ Examples:
         return 1
 
     # Run scanner
-    scanner = DuplicateFileScanner(str(root_path))
-    report = scanner.scan()
+    SCANNER = DuplicateFileScanner(str(root_path))
+    REPORT = scanner.scan()
 
     # Print report
     print_report(report)
@@ -462,7 +462,7 @@ Examples:
             logger.info("\n✅ No duplicates to delete!")
             return 0
 
-        cleaner = DuplicateFileCleaner(str(root_path), scanner)
+        CLEANER = DuplicateFileCleaner(str(root_path), scanner)
 
         # Create backup directory
         if not args.dry_run:
@@ -473,15 +473,15 @@ Examples:
 
         if args.identical_only:
             logger.info("  Mode: Delete identical duplicates only")
-            deleted = cleaner.delete_identical_duplicates(dry_run=args.dry_run)
+            DELETED = cleaner.delete_identical_duplicates(dry_run=args.dry_run)
         elif args.confirm_delete_all:
             logger.info("  Mode: Delete ALL duplicates (including non-identical)")
             if not args.dry_run:
-                confirm = input("\n⚠️  WARNING: This will delete ALL duplicates. Type '# SQL remo...
+                CONFIRM = input("\n⚠️  WARNING: This will delete ALL duplicates. Type '# SQL remo...
                 if confirm != "# SQL removed: DELETE ALL":
                     logger.info("❌ Deletion cancelled.")
                     return 1
-            deleted = cleaner.delete_all_duplicates(dry_run=args.dry_run)
+            DELETED = cleaner.delete_all_duplicates(dry_run=args.dry_run)
         else:
             logger.info("❌ Error: Must specify --identical-only or --confirm-delete-all")
             return 1

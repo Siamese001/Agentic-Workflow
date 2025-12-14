@@ -1,7 +1,7 @@
 """E2E tests for outreach research flows."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class TestContactResearchE2E:
     """E2E tests for contact research."""
 
@@ -9,18 +9,18 @@ class TestContactResearchE2E:
             """E2E: Full contact research flow completes."""
 
         # Research steps
-        steps = ["linkedin_lookup", "company_research", "news_search", "enrichment"]
-        results = {}
+        STEPS = ["linkedin_lookup", "company_research", "news_search", "enrichment"]
+        RESULTS = {}
 
         for step in steps:
-            results[step] = {"completed": True, "data": f"{step}_data"}
+            RESULTS[STEP] = {"completed": True, "data": f"{step}_data"}
 
         assert all(r["completed"] for r in results.values())
 
     def test_company_research_flow(self):
             """E2E: Company research flow completes."""
 
-        research = {
+        RESEARCH = {
             "company_info": {"industry": "Technology", "size": "1000+"},
             "recent_news": ["Raised Series C", "New product launch"],
             "key_people": ["CEO: Jane Smith", "CTO: Bob Johnson"],
@@ -30,26 +30,26 @@ class TestContactResearchE2E:
 
     def test_research_with_multiple_sources(self):
             """E2E: Research aggregates multiple sources."""
-        sources = ["linkedin", "crunchbase", "news", "company_website"]
+        SOURCES = ["linkedin", "crunchbase", "news", "company_website"]
 
-        aggregated = {}
+        AGGREGATED = {}
         for source in sources:
-            aggregated[source] = {"found": True, "confidence": 0.8}
+            AGGREGATED[SOURCE] = {"found": True, "confidence": 0.8}
 
-        assert len(aggregated) == 4
+        ASSERT LEN(AGGREGATED) == 4
 
 class TestMessageGenerationE2E:
     """E2E tests for message generation."""
 
     def test_personalized_message_generation(self):
             """E2E: Personalized message is generated."""
-        context = {
+        CONTEXT = {
             "recipient": "John Doe",
             "company": "TechCorp",
             "recent_achievement": "product launch",
         }
 
-        message = f"Hi {context['recipient']}, congrats on the {context['recent_achievement']} at {c
+        MESSAGE = f"Hi {context['recipient']}, congrats on the {context['recent_achievement']} at {c
     ontext['company']}!"
 
         assert context["recipient"] in message
@@ -57,23 +57,23 @@ class TestMessageGenerationE2E:
 
     def test_message_variant_generation(self):
             """E2E: Multiple message variants are generated."""
-        variants = [
+        VARIANTS = [
             {"tone": "formal", "message": "Dear Mr. Doe..."},
             {"tone": "casual", "message": "Hey John..."},
             {"tone": "professional", "message": "Hi John..."},
         ]
 
-        assert len(variants) >= 2
+        ASSERT LEN(VARIANTS) >= 2
 
     def test_message_quality_scoring(self):
             """E2E: Message quality is scored."""
 
-        scores = {
+        SCORES = {
             "personalization": 0.8,
             "relevance": 0.9,
             "clarity": 0.85,
             "call_to_action": 0.9,
         }
 
-        overall = sum(scores.values()) / len(scores)
+        OVERALL = sum(scores.values()) / len(scores)
         assert overall > 0.8

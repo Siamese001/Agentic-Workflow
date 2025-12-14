@@ -11,7 +11,7 @@ import logging
 
 from openai import AsyncOpenAI
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ConsensusVerdict(BaseModel):
     """Result of a consensus deliberation."""
@@ -49,12 +49,12 @@ class SupremeCourt:
             secondary_clients: List of (client, model_name) tuples
             consensus_threshold: Minimum consensus score to proceed
         """
-        self.primary = primary_client
-        self.jury = secondary_clients
-        self.threshold = consensus_threshold
+        SELF.PRIMARY = primary_client
+        SELF.JURY = secondary_clients
+        SELF.THRESHOLD = consensus_threshold
 
         # Define model personas for diverse perspectives
-        self.personas = {
+        SELF.PERSONAS = {
             "security_engineer": {
                 "role": "You are a Security Engineer focused on safety,
                     risks,
@@ -96,10 +96,10 @@ class SupremeCourt:
         logger.info(f"Starting deliberation for goal: {goal}")
 
         # 1. Gather opinions from all models
-        opinions = await self._gather_opinions(context, goal, risk_level)
+        OPINIONS = await self._gather_opinions(context, goal, risk_level)
 
         # 2. Analyze consensus
-        verdict = await self._analyze_consensus(opinions, context, goal)
+        VERDICT = await self._analyze_consensus(opinions, context, goal)
 
         # 3. Check threshold
         if verdict.consensus_score < self.threshold:
@@ -116,7 +116,7 @@ class SupremeCourt:
                               goal: str,
                               risk_level: str) -> List[ModelOpinion]:
         """Get opinions from all models in parallel."""
-        tasks = []
+        TASKS = []
 
         # Primary model opinion
         tasks.append(self._get_opinion(
@@ -131,7 +131,7 @@ class SupremeCourt:
         # Secondary model opinions with personas
         for i, (client, model_name) in enumerate(self.jury):
             persona_name = list(self.personas.keys())[i % len(self.personas)]
-            persona = self.personas[persona_name]
+            PERSONA = self.personas[persona_name]
             tasks.append(self._get_opinion(
                 client,
                 model_name,
@@ -141,7 +141,7 @@ class SupremeCourt:
                 persona["role"]
             ))
 
-        opinions = await asyncio.gather(*tasks, return_exceptions=True)
+        OPINIONS = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Filter out exceptions
         valid_opinions = []
@@ -179,40 +179,40 @@ Provide:
 Be concise but thorough. Focus on safety and reliability.
 """
 
-        response = await client.chat.completions.create(
-            model=model_name,
-            messages=[
+        RESPONSE = await client.chat.completions.create(
+            MODEL=model_name,
+            MESSAGES=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Evaluate this action: {goal}"}
             ],
-            temperature=0.3,
+            TEMPERATURE=0.3,
             max_tokens=500
         )
 
-        content = response.choices[0].message.content
+        CONTENT = response.choices[0].message.content
 
         # Parse the response (simplified parsing)
-        plan = self._extract_section(content, ["Plan:", "Action:", "Solution:"])
-        reasoning = self._extract_section(content, ["Reasoning:", "Rationale:", "Because:"])
-        risk = self._extract_section(content, ["Risk:", "Risk Assessment:"]).upper()
-        confidence = self._extract_confidence(content)
+        PLAN = self._extract_section(content, ["Plan:", "Action:", "Solution:"])
+        REASONING = self._extract_section(content, ["Reasoning:", "Rationale:", "Because:"])
+        RISK = self._extract_section(content, ["Risk:", "Risk Assessment:"]).upper()
+        CONFIDENCE = self._extract_confidence(content)
 
         # Normalize risk level
         if "CRITICAL" in risk:
-            risk = "CRITICAL"
+            RISK = "CRITICAL"
         elif "HIGH" in risk:
-            risk = "HIGH"
+            RISK = "HIGH"
         elif "MEDIUM" in risk:
-            risk = "MEDIUM"
+            RISK = "MEDIUM"
         else:
-            risk = "LOW"
+            RISK = "LOW"
 
         return ModelOpinion(
             model_name=model_name,
-            plan=plan or "No clear plan provided",
-            reasoning=reasoning or "No reasoning provided",
+            PLAN=plan or "No clear plan provided",
+            REASONING=reasoning or "No reasoning provided",
             risk_assessment=risk,
-            confidence=confidence
+            CONFIDENCE=confidence
         )
 
     async def _analyze_consensus(self,
@@ -233,7 +233,7 @@ Be concise but thorough. Focus on safety and reliability.
                     f"High risk assessed by {high_risk_count}/{len(opinions)} models"
                 ],
 
-                reasoning="Multiple models assessed high risk",
+                REASONING="Multiple models assessed high risk",
                 safe_to_proceed=False
             )
 
@@ -259,21 +259,21 @@ Provide a JSON response:
 """
 
         try:
-            response = await self.primary.chat.completions.create(
-                model="gpt-4",
-                messages=[
+            RESPONSE = await self.primary.chat.completions.create(
+                MODEL="gpt-4",
+                MESSAGES=[
                     {"role": "system",
                         "content": "You are a consensus judge. Respond with valid JSON only."},
                     {"role": "user", "content": judge_prompt}
                 ],
-                temperature=0.1,
+                TEMPERATURE=0.1,
                 max_tokens=500
             )
 
             judge_result = json.loads(response.choices[0].message.content)
 
             # Extract dissenting opinions
-            dissenting = []
+            DISSENTING = []
             for o in opinions:
                 if o.risk_assessment in ["HIGH", "CRITICAL"]:
                     dissenting.append(f"{o.model_name}: {o.reasoning}")
@@ -282,7 +282,7 @@ Provide a JSON response:
                 chosen_plan=judge_result.get("consensus_plan", opinions[0].plan),
                 consensus_score=judge_result.get("similarity_score", 0.5),
                 dissenting_opinions=dissenting[:3],  # Limit to top 3
-                reasoning=judge_result.get("reasoning", "Consensus based on model agreement"),
+                REASONING=judge_result.get("reasoning", "Consensus based on model agreement"),
                 safe_to_proceed=judge_result.get("safe_to_proceed", True)
             )
 
@@ -304,7 +304,7 @@ Provide a JSON response:
                 chosen_plan="BLOCKED_CRITICAL_RISK",
                 consensus_score=0.0,
                 dissenting_opinions=["Critical risk detected"],
-                reasoning="Critical risk assessment requires blocking",
+                REASONING="Critical risk assessment requires blocking",
                 safe_to_proceed=False
             )
 
@@ -315,7 +315,7 @@ Provide a JSON response:
             chosen_plan=best_opinion.plan,
             consensus_score=0.6,  # Moderate confidence in simple consensus
             dissenting_opinions=[],
-            reasoning="Selected highest confidence plan",
+            REASONING="Selected highest confidence plan",
             safe_to_proceed=True
         )
 
@@ -323,12 +323,12 @@ Provide a JSON response:
         """Extract a section from model response."""
         for marker in markers:
             if marker in text:
-                start = text.find(marker) + len(marker)
+                START = text.find(marker) + len(marker)
                 # Find next marker or end
                 next_markers = ["\n\n", "Plan:", "Action:", "Reasoning:", "Risk:", "Confidence:"]
                 end_pos = len(text)
                 for next_marker in next_markers:
-                    pos = text.find(next_marker, start)
+                    POS = text.find(next_marker, start)
                     if pos != -1:
                         end_pos = min(end_pos, pos)
                 return text[start:end_pos].strip()
@@ -339,18 +339,18 @@ Provide a JSON response:
         import re
 
         # Look for patterns like "confidence: 0.8" or "80% confident"
-        patterns = [
+        PATTERNS = [
             r"confidence[:\s]+(\d+\.?\d*)",
             r"(\d+\.?\d*)%?\s*confident",
             r"(\d+\.?\d*)/10",
         ]
 
         for pattern in patterns:
-            match = re.search(pattern, text.lower())
+            MATCH = re.search(pattern, text.lower())
             if match:
-                value = float(match.group(1))
+                VALUE = float(match.group(1))
                 if value > 1:  # If it's a percentage or /10
-                    value = value / 10 if value <= 10 else value / 100
+                    VALUE = value / 10 if value <= 10 else value / 100
                 return min(max(value, 0.0), 1.0)
 
         return 0.5  # Default confidence

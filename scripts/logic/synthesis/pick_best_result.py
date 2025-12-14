@@ -19,7 +19,7 @@ import logging
 from datetime import datetime
 
 # Configure module logger
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ProcessingError(Exception):
     """Custom exception for processing errors."""
@@ -28,7 +28,7 @@ def process_data(data: Dict[str,
     """Docstring."""
     object],
     config: Optional[Dict[str,
-    object]] = None) -> Dict[str,
+    OBJECT]] = None) -> Dict[str,
     object]:
     """
     Process data with optional configuration.

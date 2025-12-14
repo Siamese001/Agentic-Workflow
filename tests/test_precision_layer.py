@@ -6,7 +6,7 @@ working together to improve RAG efficiency and accuracy.
 Run with: python runtime.shared.test_precision_layer.py
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -26,8 +26,8 @@ class PrecisionLayerTestSuite:
 
     def __init__(self):
             """Initialize the test suite."""
-        self.compressor = ContextualCompressor(similarity_threshold=0.1)
-        self.gate = AdaptiveRetrievalGate()
+        SELF.COMPRESSOR = ContextualCompressor(similarity_threshold=0.1)
+        SELF.GATE = AdaptiveRetrievalGate()
 
         # Test data - sample retrieved chunks
         self.sample_chunks = [
@@ -75,9 +75,9 @@ class PrecisionLayerTestSuite:
 
     def test_contextual_compressor(self):
             """Test the Contextual Compressor with various queries."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Contextual Compressor")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         test_cases = [
             {
@@ -111,11 +111,11 @@ class PrecisionLayerTestSuite:
             logger.info("-" * 40)
 
             start_time = time.time()
-            result = self.compressor.compress(
-                chunks=self.sample_chunks,
-                query=test_case['query']
+            RESULT = self.compressor.compress(
+                CHUNKS=self.sample_chunks,
+                QUERY=test_case['query']
             )
-            elapsed = time.time() - start_time
+            ELAPSED = time.time() - start_time
 
             logger.info(f"✅ Compression completed in {elapsed:.3f}s")
             logger.info(f"   Original length: {result.original_length} chars")
@@ -130,21 +130,21 @@ class PrecisionLayerTestSuite:
                       f"({test_case['min_ratio']:.2f} - {test_case['max_ratio']:.2f})")
 
             # Show compressed text preview
-            preview = result.compressed_text[:200] + "..." if len(result.compressed_text) > 200 else
+            PREVIEW = result.compressed_text[:200] + "..." if len(result.compressed_text) > 200 else
     result.compressed_text
             logger.info(f"   Preview: {preview}")
 
     def test_adaptive_retrieval_gate(self):
             """Test the Adaptive Retrieval Gate with various queries."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Adaptive Retrieval Gate")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         correct_decisions = 0
         total_tests = len(self.test_queries)
 
         for query, expected_type, expected_retrieve in self.test_queries:
-            decision = self.gate.should_retrieve(query)
+            DECISION = self.gate.should_retrieve(query)
 
             logger.info(f"\nQuery: '{query}'")
             logger.info(f"   Type: {decision.query_type}")
@@ -167,18 +167,18 @@ class PrecisionLayerTestSuite:
                     logger.info(f"   ⚠️  Retrieval mismatch: expected {expected_retrieve},
                         got {decision.should_retrieve}")
 
-        accuracy = correct_decisions / total_tests
-        logger.info(f"\n{'='*60}")
+        ACCURACY = correct_decisions / total_tests
+        LOGGER.INFO(F"\N{'='*60}")
         logger.info(f"Gate Accuracy: {accuracy:.1%} ({correct_decisions}/{total_tests})")
 
     def test_integration_scenario(self):
             """Test both components working together in a realistic scenario."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Integration Scenario")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Simulate a conversation
-        conversation = [
+        CONVERSATION = [
             {"role": "user", "content": "Hi there!"},
             {"role": "assistant", "content": "Hello! How can I help you today?"},
             {"role": "user", "content": "What are the best practices for microservices deployment?"}
@@ -193,7 +193,7 @@ class PrecisionLayerTestSuite:
         logger.info("\nProcessing through Adaptive Retrieval Gate:")
         for msg in conversation:
             if msg['role'] == 'user':
-                decision = self.gate.should_retrieve(msg['content'])
+                DECISION = self.gate.should_retrieve(msg['content'])
                 logger.info(f"  '{msg['content']}' -> {'RETRIEVE' if decision.should_retrieve else '
     NO RETRIEVAL'}")
                 logger.info(f"    Reason: {decision.reason}")
@@ -201,25 +201,25 @@ class PrecisionLayerTestSuite:
                 # If retrieval is needed, simulate compression
                 if decision.should_retrieve:
                     logger.info(f"\n  Simulating retrieval and compression...")
-                    result = self.compressor.compress(
-                        chunks=self.sample_chunks,
-                        query=msg['content']
+                    RESULT = self.compressor.compress(
+                        CHUNKS=self.sample_chunks,
+                        QUERY=msg['content']
                     )
                     logger.info(f"    Retrieved chunks compressed by {(1-result.compression_ratio):.
     1%}")
                     logger.info(f"    Compressed content: {result.compressed_text[:150]}...")
 
         # Performance metrics
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("PERFORMANCE METRICS")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Test compression performance
         start_time = time.time()
         for _ in range(100):
             self.compressor.compress(
-                chunks=self.sample_chunks,
-                query="microservices architecture best practices"
+                CHUNKS=self.sample_chunks,
+                QUERY="microservices architecture best practices"
             )
         avg_compression_time = (time.time() - start_time) / 100
 
@@ -240,15 +240,15 @@ class PrecisionLayerTestSuite:
 
     def test_convenience_functions(self):
             """Test the convenience functions for direct usage."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Convenience Functions")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Test compress_chunks function
         logger.info("\n1. Testing compress_chunks() function:")
-        compressed = compress_chunks(
-            chunks=self.sample_chunks,
-            query="database performance optimization",
+        COMPRESSED = compress_chunks(
+            CHUNKS=self.sample_chunks,
+            QUERY="database performance optimization",
             similarity_threshold=0.15
         )
         logger.info(f"   Compressed text length: {len(compressed)} chars")
@@ -264,22 +264,22 @@ class PrecisionLayerTestSuite:
         ]
 
         for query in test_queries:
-            result = should_retrieve(query)
+            RESULT = should_retrieve(query)
             logger.info(f"   '{query}' -> {result}")
 
     def run_all_tests(self):
             """Run all tests sequentially."""
         logger.info("🚀 Starting Phase 1 Precision Layer Test Suite")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         self.test_contextual_compressor()
         self.test_adaptive_retrieval_gate()
         self.test_integration_scenario()
         self.test_convenience_functions()
 
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("✅ ALL TESTS COMPLETED")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
         logger.info("\nPhase 1 Precision Layer is ready for integration!")
         logger.info("\nKey Benefits Achieved:")
         logger.info("  • Reduced noise in RAG through contextual compression")

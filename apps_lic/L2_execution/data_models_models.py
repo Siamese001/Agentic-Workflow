@@ -2,7 +2,7 @@
 
 import logging
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # from .data_models_models import *  # Star import removed
 
 
@@ -70,7 +70,7 @@ class RAGResult:
     _source_weight: float
     _age_days: int
     _recipient_specific: bool
-    confidence: float = 1.0
+    CONFIDENCE: FLOAT = 1.0
 
 
 @dataclass

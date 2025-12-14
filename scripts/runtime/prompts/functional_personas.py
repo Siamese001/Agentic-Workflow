@@ -1,7 +1,7 @@
 """Functional Persona Templates - Clean prompts without legacy K-node references.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 This module provides sanitized prompt templates that use functional personas
 instead of numbered nodes. All references to K.X have been eliminated.
 """
@@ -218,12 +218,12 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
         Returns:
             Formatted prompt string
         """
-        persona = cls.PERSONAS.get(role)
+        PERSONA = cls.PERSONAS.get(role)
         if not persona:
             raise ValueError(f"No persona defined for role: {role}")
 
         # Format the base template
-        prompt = cls.BASE_TEMPLATE.format(
+        PROMPT = cls.BASE_TEMPLATE.format(
             FUNCTIONAL_ROLE=persona["functional_role"],
             OBJECTIVE=persona["objective"],
             CONSUMER_ROLE=persona["consumer_role"],
@@ -233,7 +233,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
         )
 
         # Add role-specific system prompt
-        prompt += f"\n\n# SYSTEM PROMPT\n{persona['system_prompt']}"
+        PROMPT += f"\n\n# SYSTEM PROMPT\n{persona['system_prompt']}"
 
         return prompt
 
@@ -248,7 +248,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
         Returns:
             Formatted context string
         """
-        formatted = []
+        FORMATTED = []
 
         # Add role-specific context
         if role == AgentRole.CONTEXT_GATHERER:
@@ -257,7 +257,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
             if "sources" in context:
                 formatted.append(f"Available Sources: {context['sources']}")
 
-        elif role == AgentRole.STRATEGIC_PLANNER:
+        ELIF ROLE == AgentRole.STRATEGIC_PLANNER:
             if "research_results" in context:
                 formatted.append(f"Research Findings: {context['research_results']}")
             if "objectives" in context:
@@ -272,13 +272,13 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
             if "target_audience" in context:
                 formatted.append(f"Target Audience: {context['target_audience']}")
 
-        elif role == AgentRole.QUALITY_CRITIC:
+        ELIF ROLE == AgentRole.QUALITY_CRITIC:
             if "content" in context:
                 formatted.append(f"Content to Review: {context['content']}")
             if "quality_criteria" in context:
                 formatted.append(f"Quality Criteria: {context['quality_criteria']}")
 
-        elif role == AgentRole.PROTOCOL_ENFORCER:
+        ELIF ROLE == AgentRole.PROTOCOL_ENFORCER:
             if "content" in context:
                 formatted.append(f"Content to Check: {context['content']}")
             if "protocol_rules" in context:
@@ -319,18 +319,18 @@ class PromptSanitizer:
         """
         import re
 
-        sanitized = prompt
+        SANITIZED = prompt
 
         # Apply legacy pattern replacements
         for pattern, replacement in cls.LEGACY_PATTERNS.items():
-            sanitized = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
+            SANITIZED = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
 
         # Add functional persona header if target role provided
         if target_role:
-            persona = PersonaTemplate.PERSONAS.get(target_role)
+            PERSONA = PersonaTemplate.PERSONAS.get(target_role)
             if persona:
-                header = f"# FUNCTIONAL ROLE: {persona['functional_role']}\n"
-                sanitized = header + sanitized
+                HEADER = f"# FUNCTIONAL ROLE: {persona['functional_role']}\n"
+                SANITIZED = header + sanitized
 
         return sanitized
 

@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
     PromptInjectionLoader,
     InjectionPattern,
     InjectionType,
@@ -24,12 +24,12 @@ class TestPromptInjectionLoader:
     def setup_method(self):
             """Setup test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
-        self.config = InjectionConfig(
+        SELF.CONFIG = InjectionConfig(
             injection_dir=Path(self.temp_dir),
             max_injections_per_hop=3,
             relevance_threshold=0.5
         )
-        self.loader = PromptInjectionLoader(self.config)
+        SELF.LOADER = PromptInjectionLoader(self.config)
 
     def teardown_method(self):
             """Cleanup test fixtures."""
@@ -66,24 +66,24 @@ class TestPromptInjectionLoader:
             json.dump(test_injection, f)
 
         # Reload loader
-        loader = PromptInjectionLoader(self.config)
+        LOADER = PromptInjectionLoader(self.config)
 
         assert "test_injection" in loader.injections
-        injection = loader.injections["test_injection"]
-        assert injection.name == "Test Injection"
-        assert injection.type == InjectionType.QUALITY_BOOST
+        INJECTION = loader.injections["test_injection"]
+        ASSERT INJECTION.NAME == "Test Injection"
+        ASSERT INJECTION.TYPE == InjectionType.QUALITY_BOOST
 
     def test_find_matching_injections(self):
             """Test finding matching injections."""
         hop_type = "resume_writer"
-        stage = "THINK"
-        context = {
+        STAGE = "THINK"
+        CONTEXT = {
             "section": "experience",
             "has_achievement": True,
             "target_role": "Software Engineer"
         }
 
-        matches = self.loader.find_matching_injections(
+        MATCHES = self.loader.find_matching_injections(
             hop_type, stage, context
         )
 
@@ -93,75 +93,75 @@ class TestPromptInjectionLoader:
 
     def test_relevance_scoring(self):
             """Test relevance score calculation."""
-        injection = InjectionPattern(
+        INJECTION = InjectionPattern(
             id="test",
-            name="Test",
-            type=InjectionType.QUALITY_BOOST,
-            description="Test injection for content",
-            template="Test: {content}",
-            variables=["content"],
-            scope=InjectionScope(
+            NAME="Test",
+            TYPE=InjectionType.QUALITY_BOOST,
+            DESCRIPTION="Test injection for content",
+            TEMPLATE="Test: {content}",
+            VARIABLES=["content"],
+            SCOPE=InjectionScope(
                 hop_types=["resume_writer"],
-                stages=["THINK"],
-                contexts={"has_achievement": True}
+                STAGES=["THINK"],
+                CONTEXTS={"has_achievement": True}
             )
         )
 
         # High relevance
-        score = self.loader._calculate_relevance(
+        SCORE = self.loader._calculate_relevance(
             injection, "resume_writer", "THINK", {"has_achievement": True}, "test content"
         )
         assert score > 0.5
 
         # Low relevance (wrong hop type)
-        score = self.loader._calculate_relevance(
+        SCORE = self.loader._calculate_relevance(
             injection, "message_writer", "THINK", {"has_achievement": True}, "test content"
         )
-        assert score == 0.0
+        ASSERT SCORE == 0.0
 
     def test_variable_extraction(self):
             """Test variable extraction from context."""
-        injection = InjectionPattern(
+        INJECTION = InjectionPattern(
             id="test",
-            name="Test",
-            type=InjectionType.QUALITY_BOOST,
-            description="Test",
-            template="Test: {content}, {role}",
-            variables=["content", "role"],
-            scope=InjectionScope()
+            NAME="Test",
+            TYPE=InjectionType.QUALITY_BOOST,
+            DESCRIPTION="Test",
+            TEMPLATE="Test: {content}, {role}",
+            VARIABLES=["content", "role"],
+            SCOPE=InjectionScope()
         )
 
-        context = {"role": "Engineer", "other": "value"}
-        content = "Test content"
+        CONTEXT = {"role": "Engineer", "other": "value"}
+        CONTENT = "Test content"
 
-        values = self.loader._extract_variables(injection, context, content)
+        VALUES = self.loader._extract_variables(injection, context, content)
 
-        assert values["content"] == "Test content"
-        assert values["role"] == "Engineer"
-        assert values["other"] != "value"  # Should not extract non-variable
+        ASSERT VALUES["CONTENT"] == "Test content"
+        ASSERT VALUES["ROLE"] == "Engineer"
+        ASSERT VALUES["OTHER"] != "value"  # Should not extract non-variable
 
     def test_apply_injections(self):
             """Test applying injections to base prompt."""
         base_prompt = "Generate a resume"
 
         # Create test match
-        injection = InjectionPattern(
+        INJECTION = InjectionPattern(
             id="test",
-            name="Test",
-            type=InjectionType.QUALITY_BOOST,
-            description="Test",
-            template="Add metrics: {achievement}",
-            variables=["achievement"],
-            scope=InjectionScope()
+            NAME="Test",
+            TYPE=InjectionType.QUALITY_BOOST,
+            DESCRIPTION="Test",
+            TEMPLATE="Add metrics: {achievement}",
+            VARIABLES=["achievement"],
+            SCOPE=InjectionScope()
         )
 
-        match = InjectionMatch(
-            injection=injection,
+        MATCH = InjectionMatch(
+            INJECTION=injection,
             relevance_score=0.8,
             variable_values={"achievement": "Increased sales by 50%"}
         )
 
-        enhanced = self.loader.apply_injections(base_prompt, [match])
+        ENHANCED = self.loader.apply_injections(base_prompt, [match])
 
         assert "Generate a resume" in enhanced
         assert "Add metrics: Increased sales by 50%" in enhanced
@@ -169,32 +169,32 @@ class TestPromptInjectionLoader:
 
     def test_keyword_generation(self):
             """Test keyword generation for roles."""
-        keywords = self.loader._generate_keywords("Software Engineer")
+        KEYWORDS = self.loader._generate_keywords("Software Engineer")
         assert "Python" in keywords
         assert "JavaScript" in keywords
 
-        keywords = self.loader._generate_keywords("Unknown Role")
+        KEYWORDS = self.loader._generate_keywords("Unknown Role")
         assert "Leadership" in keywords
         assert "Communication" in keywords
 
     def test_caching(self):
             """Test injection caching."""
         hop_type = "resume_writer"
-        stage = "THINK"
-        context = {"test": True}
+        STAGE = "THINK"
+        CONTEXT = {"test": True}
 
         # First call
-        matches1 = self.loader.find_matching_injections(hop_type, stage, context)
+        MATCHES1 = self.loader.find_matching_injections(hop_type, stage, context)
 
         # Second call (should use cache)
-        matches2 = self.loader.find_matching_injections(hop_type, stage, context)
+        MATCHES2 = self.loader.find_matching_injections(hop_type, stage, context)
 
-        assert matches1 == matches2
+        ASSERT MATCHES1 == matches2
         assert len(self.loader.cache) > 0
 
     def test_get_stats(self):
             """Test statistics reporting."""
-        stats = self.loader.get_injection_stats()
+        STATS = self.loader.get_injection_stats()
 
         assert "total_injections" in stats
         assert "enabled_injections" in stats
@@ -206,51 +206,51 @@ class TestInjectionPatterns:
 
     def setup_method(self):
             """Setup test fixtures."""
-        self.loader = PromptInjectionLoader()
+        SELF.LOADER = PromptInjectionLoader()
 
     def test_resume_achievement_injection(self):
             """Test resume achievement quantification injection."""
-        injection = self.loader.injections["resume_achievement_quantification"]
+        INJECTION = self.loader.injections["resume_achievement_quantification"]
 
-        assert injection.type == InjectionType.RESUME_ENHANCEMENT
+        ASSERT INJECTION.TYPE == InjectionType.RESUME_ENHANCEMENT
         assert "metrics" in injection.template.lower()
         assert "achievement" in injection.variables
         assert "resume_writer" in injection.scope.hop_types
 
     def test_message_personalization_injection(self):
             """Test message personalization injection."""
-        injection = self.loader.injections["message_personalization"]
+        INJECTION = self.loader.injections["message_personalization"]
 
-        assert injection.type == InjectionType.MESSAGE_PERSONALIZATION
+        ASSERT INJECTION.TYPE == InjectionType.MESSAGE_PERSONALIZATION
         assert "personalize" in injection.template.lower()
         assert "recipient_name" in injection.variables
         assert "message_generator" in injection.scope.hop_types
 
     def test_keyword_optimization_injection(self):
             """Test keyword optimization injection."""
-        injection = self.loader.injections["resume_keyword_optimization"]
+        INJECTION = self.loader.injections["resume_keyword_optimization"]
 
-        assert injection.type == InjectionType.KEYWORD_OPTIMIZATION
+        ASSERT INJECTION.TYPE == InjectionType.KEYWORD_OPTIMIZATION
         assert "keywords" in injection.template.lower()
-        assert injection.priority == 6
+        ASSERT INJECTION.PRIORITY == 6
 
     def test_injection_priorities(self):
             """Test that injections have proper priorities."""
-        priorities = [inj.priority for inj in self.loader.injections.values()]
+        PRIORITIES = [inj.priority for inj in self.loader.injections.values()]
 
         # All priorities should be within range
-        assert all(0 <= p <= 10 for p in priorities)
+        ASSERT ALL(0 <= p <= 10 for p in priorities)
 
         # Some injections should have high priority
-        assert any(p >= 7 for p in priorities)
+        ASSERT ANY(P >= 7 for p in priorities)
 
 class TestIntegration:
     """Integration tests for prompt injection system."""
 
     def test_global_loader(self):
             """Test global loader instance."""
-        loader1 = get_injection_loader()
-        loader2 = get_injection_loader()
+        LOADER1 = get_injection_loader()
+        LOADER2 = get_injection_loader()
 
         # Should return same instance
         assert loader1 is loader2
@@ -259,11 +259,11 @@ class TestIntegration:
             """Test convenience function for enhancing prompts."""
         base_prompt = "Write a resume section"
 
-        enhanced = enhance_prompt(
+        ENHANCED = enhance_prompt(
             base_prompt=base_prompt,
             hop_type="resume_writer",
-            stage="THINK",
-            context={
+            STAGE="THINK",
+            CONTEXT={
                 "section": "experience",
                 "has_achievement": True
             }
@@ -277,60 +277,60 @@ class TestIntegration:
             """Test behavior when no injections match."""
         base_prompt = "Simple task"
 
-        enhanced = enhance_prompt(
+        ENHANCED = enhance_prompt(
             base_prompt=base_prompt,
             hop_type="unknown_hop_type",
-            stage="UNKNOWN",
-            context={}
+            STAGE="UNKNOWN",
+            CONTEXT={}
         )
 
         # Should return original prompt unchanged
-        assert enhanced == base_prompt
+        ASSERT ENHANCED == base_prompt
 
     def test_max_injections_limit(self):
             """Test that max injections limit is respected."""
-        config = InjectionConfig(max_injections_per_hop=1)
-        loader = PromptInjectionLoader(config)
+        CONFIG = InjectionConfig(max_injections_per_hop=1)
+        LOADER = PromptInjectionLoader(config)
 
         # Create context that would match multiple injections
-        context = {
+        CONTEXT = {
             "section": "experience",
             "has_achievement": True,
             "target_role": "Software Engineer",
             "needs_expansion": True
         }
 
-        matches = loader.find_matching_injections(
+        MATCHES = loader.find_matching_injections(
             "resume_writer", "THINK", context
         )
 
         # Should not exceed max
-        assert len(matches) <= 1
+        ASSERT LEN(MATCHES) <= 1
 
 class TestRealWorldScenarios:
     """Test real-world usage scenarios."""
 
     def setup_method(self):
             """Setup test fixtures."""
-        self.loader = PromptInjectionLoader()
+        SELF.LOADER = PromptInjectionLoader()
 
     def test_resume_writer_scenario(self):
             """Test resume writer with injection enhancement."""
         base_prompt = "Write experience section for Software Engineer"
 
-        context = {
+        CONTEXT = {
             "section": "experience",
             "has_achievement": True,
             "target_role": "Software Engineer",
             "input": "Led team project"
         }
 
-        enhanced = enhance_prompt(
+        ENHANCED = enhance_prompt(
             base_prompt=base_prompt,
             hop_type="resume_writer",
-            stage="ACT",
-            context=context,
-            content="Led team project"
+            STAGE="ACT",
+            CONTEXT=context,
+            CONTENT="Led team project"
         )
 
         # Should include relevant injections
@@ -341,7 +341,7 @@ class TestRealWorldScenarios:
             """Test message generator with injection enhancement."""
         base_prompt = "Write outreach message"
 
-        context = {
+        CONTEXT = {
             "has_recipient_info": True,
             "recipient_name": "John Doe",
             "company": "Acme Corp",
@@ -349,11 +349,11 @@ class TestRealWorldScenarios:
             "desired_tone": "professional"
         }
 
-        enhanced = enhance_prompt(
+        ENHANCED = enhance_prompt(
             base_prompt=base_prompt,
             hop_type="message_generator",
-            stage="ACT",
-            context=context
+            STAGE="ACT",
+            CONTEXT=context
         )
 
         # Should include personalization
@@ -365,17 +365,17 @@ class TestRealWorldScenarios:
             """Test content expansion with injection enhancement."""
         base_prompt = "Write job description"
 
-        context = {
+        CONTEXT = {
             "needs_expansion": True,
             "domain": "technology",
             "specificity_level": "detailed"
         }
 
-        enhanced = enhance_prompt(
+        ENHANCED = enhance_prompt(
             base_prompt=base_prompt,
             hop_type="content_generator",
-            stage="THINK",
-            context=context
+            STAGE="THINK",
+            CONTEXT=context
         )
 
         # Should include expansion instructions
@@ -386,16 +386,16 @@ class TestRealWorldScenarios:
             """Test structure improvement with injection enhancement."""
         base_prompt = "Format this content"
 
-        context = {
+        CONTEXT = {
             "structure_issues": True,
             "structure_type": "bullet points"
         }
 
-        enhanced = enhance_prompt(
+        ENHANCED = enhance_prompt(
             base_prompt=base_prompt,
             hop_type="formatter",
-            stage="ACT",
-            context=context
+            STAGE="ACT",
+            CONTEXT=context
         )
 
         # Should include structure instructions

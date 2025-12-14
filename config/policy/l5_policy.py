@@ -7,7 +7,7 @@ import logging
 import uuid
 from datetime import UTC, datetime
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class PolicyConfigurationError(Exception):
     """Raised when policy configuration is invalid."""
@@ -27,7 +27,7 @@ class PolicyResult:
             return Verdict.ALLOW
 
         # Most restrictive verdict wins
-        verdicts = [d.verdict for d in self.decisions]
+        VERDICTS = [d.verdict for d in self.decisions]
         if Verdict.BLOCK in verdicts:
             return Verdict.BLOCK
         elif Verdict.REVIEW in verdicts:
@@ -37,7 +37,7 @@ class PolicyResult:
     @property
     def all_findings(self) -> List[SafetyFinding]:
         """Get all findings from all policy decisions."""
-        findings = []
+        FINDINGS = []
         for decision in self.decisions:
             findings.extend(decision.findings)
         return findings
@@ -128,7 +128,7 @@ class SafetyEngine:
             logger.warning("No policies registered in safety engine")
             return PolicyResult()
 
-        threshold = severity_threshold or self._default_severity_threshold
+        THRESHOLD = severity_threshold or self._default_severity_threshold
         policies_to_evaluate = self._get_policies_to_evaluate(policy_ids)
 
         if not policies_to_evaluate:
@@ -139,7 +139,7 @@ class SafetyEngine:
 
         for policy in policies_to_evaluate:
             try:
-                decision = policy.evaluate(context)
+                DECISION = policy.evaluate(context)
                 decisions.append(decision)
 
                 logger.debug(
@@ -154,23 +154,23 @@ class SafetyEngine:
                 # Create a blocking decision for the failed policy
                 decisions.append(PolicyDecision(
                     policy_id=policy.policy_id,
-                    verdict=Verdict.BLOCK,
-                    findings=[
+                    VERDICT=Verdict.BLOCK,
+                    FINDINGS=[
                         SafetyFinding(
                             id=f"error-{uuid.uuid4()}",
-                            type="policy",
-                            severity=Severity.CRITICAL,
-                            message=f"Policy evaluation failed: {str(e)}",
-                            details={"error": str(e)},
-                            location=policy.policy_id
+                            TYPE="policy",
+                            SEVERITY=Severity.CRITICAL,
+                            MESSAGE=f"Policy evaluation failed: {str(e)}",
+                            DETAILS={"error": str(e)},
+                            LOCATION=policy.policy_id
                         )
                     ]
                 ))
 
         # Create the final result
-        result = PolicyResult(
-            decisions=decisions,
-            metadata={
+        RESULT = PolicyResult(
+            DECISIONS=decisions,
+            METADATA={
                 "evaluated_at": datetime.now(UTC).isoformat(),
                 "policy_count": len(decisions),
                 "finding_count": sum(len(d.findings) for d in decisions),
@@ -202,7 +202,7 @@ class SafetyEngine:
         if policy_ids is None:
             return list(self._policies.values())
 
-        policies = []
+        POLICIES = []
         for pid in policy_ids:
             if pid in self._policies:
                 policies.append(self._policies[pid])
@@ -232,5 +232,5 @@ class SafetyEngine:
         Returns:
             bool: True if the content is safe, False if it should be blocked
         """
-        result = self.evaluate(context, policy_ids, severity_threshold)
+        RESULT = self.evaluate(context, policy_ids, severity_threshold)
         return result.final_verdict != Verdict.BLOCK

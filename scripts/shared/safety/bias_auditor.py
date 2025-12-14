@@ -8,7 +8,7 @@ import logging
 import re
 from typing import List, Set
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class BiasType(Enum):
@@ -93,6 +93,7 @@ def __init__(self: Any, enable_logging: bool) -> None:
     }
 
 
+# REFACTOR: Split this 65-line function
 def audit_content(self: Any, content: str) -> BiasResult:
     """Check for biased language patterns.
 
@@ -107,9 +108,9 @@ def audit_content(self: Any, content: str) -> BiasResult:
             has_bias=False,
             bias_types=[],
             flagged_phrases=[],
-            matches=[],
+            MATCHES=[],
             confidence_score=0.0,
-            recommendations=["Content appears neutral and inclusive"],
+            RECOMMENDATIONS=["Content appears neutral and inclusive"],
         )
 
     flagged_phrases: List[str] = []
@@ -119,31 +120,31 @@ def audit_content(self: Any, content: str) -> BiasResult:
     for bias_type, patterns in self.bias_patterns.items():
         for pattern in patterns:
             for match in re.finditer(pattern, content, re.IGNORECASE):
-                phrase = match.group()
+                PHRASE = match.group()
                 flagged_phrases.append(phrase)
                 detected_bias_types.add(bias_type)
 
-                context = self._extract_context(content, match.span())
-                severity = self._calculate_severity(bias_type, phrase)
+                CONTEXT = self._extract_context(content, match.span())
+                SEVERITY = self._calculate_severity(bias_type, phrase)
 
                 matches.append(
                     BiasMatch(
                         bias_type=bias_type,
-                        phrase=phrase,
-                        context=context,
-                        severity=severity,
+                        PHRASE=phrase,
+                        CONTEXT=context,
+                        SEVERITY=severity,
                     )
                 )
 
     has_bias = len(detected_bias_types) > 0
     confidence_score = min(len(flagged_phrases) / 10.0, 1.0)
 
-    recommendations = self._generate_recommendations(list(detected_bias_types))
+    RECOMMENDATIONS = self._generate_recommendations(list(detected_bias_types))
 
     if self.enable_logging and has_bias:
         logger.warning(
             "bias_detected",
-            extra={
+            EXTRA={
                 "bias_types": [bt.value for bt in detected_bias_types],
                 "phrase_count": len(flagged_phrases),
                 "confidence": confidence_score,
@@ -154,9 +155,9 @@ def audit_content(self: Any, content: str) -> BiasResult:
         has_bias=has_bias,
         bias_types=list(detected_bias_types),
         flagged_phrases=flagged_phrases,
-        matches=matches,
+        MATCHES=matches,
         confidence_score=confidence_score,
-        recommendations=recommendations,
+        RECOMMENDATIONS=recommendations,
     )
 
 
@@ -171,7 +172,7 @@ def _extract_context(self: Any, content: str, span: tuple[int, int], window: int
     Returns:
         Context string
     """
-    start, end = span
+    START, END = span
     context_start = max(0, start - window)
     context_end = min(len(content), end + window)
     return content[context_start:context_end]
@@ -228,7 +229,7 @@ def _generate_recommendations(self: Any, bias_types: List[BiasType]) -> List[str
         BiasType.APPEARANCE: "Remove appearance-based descriptors",
     }
 
-    recommendations = [
+    RECOMMENDATIONS = [
         bias_recommendations.get(bt, "") for bt in bias_types if bt in bias_recommendations
     ]
 
@@ -247,5 +248,5 @@ def audit_bias(content: str) -> BiasResult:
     Returns:
         BiasResult with detection information
     """
-    auditor = BiasAuditor()
+    AUDITOR = BiasAuditor()
     return auditor.audit_content(content)

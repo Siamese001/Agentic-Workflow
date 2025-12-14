@@ -7,7 +7,7 @@ with graph-based reasoning, context retrieval, and state management.
 import json
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class GraphContext(BaseModel):
     """Context retrieved from knowledge graph."""
@@ -15,7 +15,7 @@ class GraphContext(BaseModel):
     entities: List[Dict[str, Any]] = Field(default_factory=list)
     relationships: List[Dict[str, Any]] = Field(default_factory=list)
     paths: List[List[Dict[str, Any]]] = Field(default_factory=list)
-    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+    CONFIDENCE: FLOAT = Field(default=0.0, ge=0.0, le=1.0)
 
 class KnowledgeGraphAgent:
     """Neo4j-powered knowledge graph agent for agentic architectures."""
@@ -29,7 +29,7 @@ class KnowledgeGraphAgent:
             password: Database password
             similarity_threshold: Threshold for entity similarity matching
         """
-        self.driver = GraphDatabase.driver(uri, auth=(user, password))
+        SELF.DRIVER = GraphDatabase.driver(uri, auth=(user, password))
         self.similarity_threshold = similarity_threshold
 
         # Initialize indexes if needed
@@ -69,7 +69,7 @@ class KnowledgeGraphAgent:
         try:
             with self.driver.session() as session:
                 # Use PageRank to prioritize influential neighbors
-                cypher = """
+                CYPHER = """
                 MATCH (start:Entity {name: $entity})
                 CALL gds.pageRank.stream('agentGraph', {
                     sourceNodes: [start],
@@ -89,10 +89,10 @@ class KnowledgeGraphAgent:
                 LIMIT $limit
                 """
 
-                result = session.run(cypher, entity=entity, limit=limit)
+                RESULT = session.run(cypher, entity=entity, limit=limit)
 
-                entities = []
-                relationships = []
+                ENTITIES = []
+                RELATIONSHIPS = []
 
                 for record in result:
                     entities.append({
@@ -113,10 +113,10 @@ class KnowledgeGraphAgent:
                         })
 
                 return GraphContext(
-                    entities=entities,
-                    relationships=relationships,
-                    paths=[],
-                    confidence=entities[0]["influence_score"] if entities else 0.0
+                    ENTITIES=entities,
+                    RELATIONSHIPS=relationships,
+                    PATHS=[],
+                    CONFIDENCE=entities[0]["influence_score"] if entities else 0.0
                 )
 
         except Exception as e:
@@ -136,7 +136,7 @@ class KnowledgeGraphAgent:
         """
         try:
             with self.driver.session() as session:
-                cypher = """
+                CYPHER = """
                 MATCH (start:Entity {name: $entity})
                 MATCH (start)-[r*1..2]-(related)
                 WITH related, count(*) as connection_count
@@ -149,9 +149,9 @@ class KnowledgeGraphAgent:
                 LIMIT $limit
                 """
 
-                result = session.run(cypher, entity=entity, limit=limit)
+                RESULT = session.run(cypher, entity=entity, limit=limit)
 
-                entities = []
+                ENTITIES = []
                 for record in result:
                     entities.append({
                         "name": record["entity_name"],
@@ -161,10 +161,10 @@ class KnowledgeGraphAgent:
                     })
 
                 return GraphContext(
-                    entities=entities,
-                    relationships=[],
-                    paths=[],
-                    confidence=1.0
+                    ENTITIES=entities,
+                    RELATIONSHIPS=[],
+                    PATHS=[],
+                    CONFIDENCE=1.0
                 )
 
         except Exception as e:
@@ -177,8 +177,8 @@ class KnowledgeGraphAgent:
         subject: str,
         relation: str,
         object: str,
-        confidence: float = 1.0,
-        source: str = "agent"
+        CONFIDENCE: FLOAT = 1.0,
+        SOURCE: STR = "agent"
     ) -> bool:
             """Store a new relationship in the knowledge graph.
 
@@ -205,8 +205,8 @@ class KnowledgeGraphAgent:
         subject: str,
         relation: str,
         object: str,
-        confidence: float = 1.0,
-        source: str = "agent"
+        CONFIDENCE: FLOAT = 1.0,
+        SOURCE: STR = "agent"
     ) -> bool:
             """Store relationship with entity disambiguation to prevent duplicates.
 
@@ -233,7 +233,7 @@ class KnowledgeGraphAgent:
             final_object = existing_object if existing_object else object
 
             with self.driver.session() as session:
-                cypher = """
+                CYPHER = """
                 MERGE (s:Entity {name: $final_subject})
                 ON CREATE SET s.embedding = $sub_embedding, s.created_at = timestamp()
                 ON MATCH SET s.embedding = $sub_embedding, s.last_seen = timestamp()
@@ -243,19 +243,19 @@ class KnowledgeGraphAgent:
                 MERGE (s)-[r:RELATION {type: $relation}]->(o)
                 SET r.confidence = $confidence,
                     r.last_verified = timestamp(),
-                    r.weight = coalesce(r.weight, 0) + 1,
-                    r.source = $source
+                    R.WEIGHT = coalesce(r.weight, 0) + 1,
+                    R.SOURCE = $source
                 RETURN r
                 """
 
                 session.run(cypher,
                     final_subject=final_subject,
                     final_object=final_object,
-                    relation=relation,
+                    RELATION=relation,
                     sub_embedding=sub_embedding,
                     obj_embedding=obj_embedding,
-                    confidence=confidence,
-                    source=source
+                    CONFIDENCE=confidence,
+                    SOURCE=source
                 )
 
                 logger.debug(f"Stored relationship: {final_subject}-{relation}->{final_object}")
@@ -277,7 +277,7 @@ class KnowledgeGraphAgent:
         """
         try:
             with self.driver.session() as session:
-                cypher = """
+                CYPHER = """
                 MATCH (n {id: $node_id})
                 CALL apoc.path.expandConfig(n, {
                     relationshipFilter: ">",
@@ -292,11 +292,11 @@ class KnowledgeGraphAgent:
                     collect(DISTINCT rel) as rels
                 """
 
-                result = session.run(cypher, node_id=node_id, hops=hops)
-                record = result.single()
+                RESULT = session.run(cypher, node_id=node_id, hops=hops)
+                RECORD = result.single()
 
                 if record:
-                    entities = [
+                    ENTITIES = [
                         {
                             "id": node.id,
                             "labels": list(node.labels),
@@ -305,7 +305,7 @@ class KnowledgeGraphAgent:
                         for node in record["nodes"]
                     ]
 
-                    relationships = [
+                    RELATIONSHIPS = [
                         {
                             "type": rel.type,
                             "properties": dict(rel),
@@ -316,10 +316,10 @@ class KnowledgeGraphAgent:
                     ]
 
                     return GraphContext(
-                        entities=entities,
-                        relationships=relationships,
-                        paths=[],
-                        confidence=1.0
+                        ENTITIES=entities,
+                        RELATIONSHIPS=relationships,
+                        PATHS=[],
+                        CONFIDENCE=1.0
                     )
 
                 return GraphContext()
@@ -353,7 +353,7 @@ class KnowledgeGraphAgent:
                 state_embedding = self._get_embedding(json.dumps(step_data))
 
             with self.driver.session() as session:
-                cypher = """
+                CYPHER = """
                 // Create new step with embedding
                 CREATE (s:Step {
                     id: $step_id,
@@ -382,8 +382,8 @@ class KnowledgeGraphAgent:
                 session.run(cypher,
                     agent_id=agent_id,
                     step_id=step_id,
-                    data=json.dumps(step_data),
-                    embedding=state_embedding
+                    DATA=json.dumps(step_data),
+                    EMBEDDING=state_embedding
                 )
 
                 return True
@@ -396,7 +396,7 @@ class KnowledgeGraphAgent:
     def find_similar_decisions(
         self,
         current_state_embedding: List[float],
-        limit: int = 3
+        LIMIT: INT = 3
     ) -> List[Dict[str, Any]]:
             """Find past decisions made in similar contexts.
 
@@ -409,7 +409,7 @@ class KnowledgeGraphAgent:
         """
         try:
             with self.driver.session() as session:
-                cypher = """
+                CYPHER = """
                 CALL db.index.vector.queryNodes('reasoningEmbeddings', $limit, $embedding)
                 YIELD node, score
                 OPTIONAL MATCH (node)<-[:NEXT*]-(context_chain)
@@ -425,12 +425,12 @@ class KnowledgeGraphAgent:
                 LIMIT $limit
                 """
 
-                result = session.run(cypher,
-                    embedding=current_state_embedding,
-                    limit=limit
+                RESULT = session.run(cypher,
+                    EMBEDDING=current_state_embedding,
+                    LIMIT=limit
                 )
 
-                decisions = []
+                DECISIONS = []
                 for record in result:
                     decisions.append({
                         "step_id": record["step_id"],
@@ -464,7 +464,7 @@ class KnowledgeGraphAgent:
         """
         try:
             with self.driver.session() as session:
-                cypher = """
+                CYPHER = """
                 CALL db.index.vector.queryNodes('entityEmbeddings', $top_k, $embedding)
                 YIELD node, score
 
@@ -475,12 +475,12 @@ class KnowledgeGraphAgent:
                 LIMIT $top_k
                 """
 
-                result = session.run(cypher,
-                    embedding=query_embedding,
+                RESULT = session.run(cypher,
+                    EMBEDDING=query_embedding,
                     top_k=top_k
                 )
 
-                entities = []
+                ENTITIES = []
                 for record in result:
                     entities.append({
                         "id": record["node"].id,
@@ -498,10 +498,10 @@ class KnowledgeGraphAgent:
                     })
 
                 return GraphContext(
-                    entities=entities,
-                    relationships=[],
-                    paths=[],
-                    confidence=entities[0]["score"] if entities else 0.0
+                    ENTITIES=entities,
+                    RELATIONSHIPS=[],
+                    PATHS=[],
+                    CONFIDENCE=entities[0]["score"] if entities else 0.0
                 )
 
         except Exception as e:
@@ -564,7 +564,7 @@ class KnowledgeGraphAgent:
         try:
             with self.driver.session() as session:
                 # Check if projection exists
-                result = session.run("""
+                RESULT = session.run("""
                 CALL gds.graph.exists('agentGraph') YIELD exists
                 RETURN exists
                 """)
@@ -610,10 +610,10 @@ class KnowledgeGraphAgent:
             Name of matching entity or None
         """
         try:
-            threshold = threshold or self.similarity_threshold
+            THRESHOLD = threshold or self.similarity_threshold
 
             with self.driver.session() as session:
-                cypher = """
+                CYPHER = """
                 CALL db.index.vector.queryNodes('entityEmbeddings', 5, $embedding)
                 YIELD node, score
                 WHERE score > $threshold AND node.name <> $entity
@@ -622,13 +622,13 @@ class KnowledgeGraphAgent:
                 LIMIT 1
                 """
 
-                result = session.run(cypher,
-                    embedding=embedding,
-                    threshold=threshold,
-                    entity=entity
+                RESULT = session.run(cypher,
+                    EMBEDDING=embedding,
+                    THRESHOLD=threshold,
+                    ENTITY=entity
                 )
 
-                record = result.single()
+                RECORD = result.single()
                 return record["name"] if record else None
 
         except Exception as e:
@@ -651,7 +651,7 @@ class KnowledgeGraphAgent:
         hash_hex = hash_obj.hexdigest()
 
         # Convert to float vector
-        embedding = []
+        EMBEDDING = []
         for i in range(0, len(hash_hex), 2):
             hex_pair = hash_hex[i:i+2]
             embedding.append(int(hex_pair, 16) / 255.0)
@@ -678,25 +678,25 @@ class KnowledgeGraphAgent:
             Dictionary with prune statistics
         """
         try:
-            stats = {"relationships_deleted": 0, "entities_deleted": 0}
+            STATS = {"relationships_deleted": 0, "entities_deleted": 0}
 
             with self.driver.session() as session:
                 # Delete weak relationships
-                result = session.run("""
+                RESULT = session.run("""
                 MATCH ()-[r:RELATION]->()
                 WHERE r.confidence < $threshold
                 OR (timestamp() - coalesce(r.last_verified, 0) > $cutoff_time)
                 DELETE r
                 RETURN count(r) as deleted
                 """,
-                threshold=confidence_threshold,
+                THRESHOLD=confidence_threshold,
                 cutoff_time=days_old * 24 * 60 * 60 * 1000  # Convert to milliseconds
                 )
 
                 stats["relationships_deleted"] = result.single()[# SQL query removed]
 
                 # Delete orphaned entities
-                result = session.run("""
+                RESULT = session.run("""
                 MATCH (e:Entity)
                 WHERE NOT (e)-[]-()
                 DELETE e

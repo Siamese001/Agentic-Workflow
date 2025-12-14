@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
     CitationMap,
     DeepResearchOutput,
@@ -20,22 +20,22 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
         financial_proof_points=[
             FinancialMetric(
                 metric_name="Q2 2025 Revenue",
-                value="$3.3B",
-                period="Q2 2025",
+                VALUE="$3.3B",
+                PERIOD="Q2 2025",
                 yoy_change="+25%",
                 source_citation="cite_17"
             ),
             FinancialMetric(
                 metric_name="GAAP Net Income",
-                value="$285M",
-                period="Q2 2025",
+                VALUE="$285M",
+                PERIOD="Q2 2025",
                 yoy_change="First profitable quarter",
                 source_citation="cite_17"
             ),
             FinancialMetric(
                 metric_name="Operating Margin",
-                value="Expansion",
-                period="Q2 2025",
+                VALUE="Expansion",
+                PERIOD="Q2 2025",
                 yoy_change="Insurance expense decreased as % of GOV",
                 source_citation="cite_17"
             ),
@@ -77,21 +77,21 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
     leadership_layer = LeadershipLayer(
         key_executives=[
             ExecutiveProfile(
-                name="Stanley Tang",
-                title="Co-founder & Head of DoorDash Labs",
-                ownership="Autonomous delivery initiatives, robotics partnerships",
+                NAME="Stanley Tang",
+                TITLE="Co-founder & Head of DoorDash Labs",
+                OWNERSHIP="Autonomous delivery initiatives, robotics partnerships",
                 strategic_focus="Next-generation delivery technologies"
             ),
             ExecutiveProfile(
-                name="Ravi Inukonda",
-                title="CFO",
-                ownership="Risk & Insurance function, financial operations",
+                NAME="Ravi Inukonda",
+                TITLE="CFO",
+                OWNERSHIP="Risk & Insurance function, financial operations",
                 strategic_focus="Path to sustained profitability, margin expansion"
             ),
             ExecutiveProfile(
-                name="Sudeep Das",
-                title="Head of ML for New Verticals",
-                ownership="Personalization algorithms, expansion beyond food",
+                NAME="Sudeep Das",
+                TITLE="Head of ML for New Verticals",
+                OWNERSHIP="Personalization algorithms, expansion beyond food",
                 strategic_focus="Grocery, retail, and convenience store ML models"
             ),
         ],
@@ -121,23 +121,23 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
 
 def example_usage():
     """Docstring."""
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
     logger.info("K.2.5 Deep Research Protocol - Example Usage")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
-    agent = create_k25_research_agent(
+    AGENT = create_k25_research_agent(
         company_name="DoorDash",
         company_url="https://www.doordash.com"
     )
 
     logger.info("\n[1] Generated Research Prompt:")
     logger.info("-" * 80)
-    prompt = agent.generate_research_prompt()
+    PROMPT = agent.generate_research_prompt()
     logger.info(prompt[:500] + "...\n")
 
     logger.info("\n[2] DoorDash Benchmark Example:")
     logger.info("-" * 80)
-    benchmark = create_doordash_benchmark_example()
+    BENCHMARK = create_doordash_benchmark_example()
 
     logger.info(f"\nCompany: {benchmark.company_name}")
     logger.info(f"\nStrategic Thesis: {benchmark.strategic_layer.core_thesis}")
@@ -185,9 +185,9 @@ def example_usage():
     output_dict = benchmark.to_dict()
     logger.info(json.dumps(output_dict, indent=2)[:1000] + "...\n")
 
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
     logger.info("Example Complete")
-    logger.info("=" * 80)
+    LOGGER.INFO("=" * 80)
 
 if __name__ == "__main__":
     example_usage()

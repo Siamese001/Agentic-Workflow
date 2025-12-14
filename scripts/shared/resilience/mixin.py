@@ -1,7 +1,7 @@
 """Hardening mixin for resilient execution.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Provides a unified way to add circuit breaking, retries, and telemetry
 to any component that executes external operations.
 
@@ -48,7 +48,7 @@ class HardeningMixin:
         """
         self.component_name = component_name
         self.circuit_breaker = get_breaker(
-            name=f"{component_name}_breaker",
+            NAME=f"{component_name}_breaker",
             failure_threshold=failure_threshold,
             reset_after_s=reset_timeout_s,
         )
@@ -58,7 +58,7 @@ class HardeningMixin:
             jitter_ms=jitter_ms,
             enable_circuit_breaker=True,
         )
-        self.telemetry = telemetry or get_telemetry()
+        SELF.TELEMETRY = telemetry or get_telemetry()
 
     async def execute_hardened(
         """Docstring."""
@@ -94,10 +94,10 @@ class HardeningMixin:
 
         try:
             # Execute with retry and circuit breaking
-            result = await self.error_recovery.invoke_with_retry(
+            RESULT = await self.error_recovery.invoke_with_retry(
                 fn=fn,
                 breaker_name=self.circuit_breaker.name,
-                context=metadata or {},
+                CONTEXT=metadata or {},
             )
 
             # Calculate latency
@@ -105,10 +105,10 @@ class HardeningMixin:
 
             # Log success
             self.telemetry.log_success(
-                component=self.component_name,
-                operation=operation,
+                COMPONENT=self.component_name,
+                OPERATION=operation,
                 latency_ms=latency_ms,
-                metadata=metadata,
+                METADATA=metadata,
             )
 
             return result
@@ -118,10 +118,10 @@ class HardeningMixin:
             latency_ms = (time.time() - start_time) * 1000
 
             self.telemetry.log_circuit_breaker(
-                component=self.component_name,
+                COMPONENT=self.component_name,
                 breaker_name=e.breaker_name,
-                state="OPEN",
-                metadata=metadata,
+                STATE="OPEN",
+                METADATA=metadata,
             )
 
             raise
@@ -131,12 +131,12 @@ class HardeningMixin:
             latency_ms = (time.time() - start_time) * 1000
 
             self.telemetry.log_failure(
-                component=self.component_name,
-                operation=operation,
+                COMPONENT=self.component_name,
+                OPERATION=operation,
                 latency_ms=latency_ms,
                 error_type=e.__class__.__name__,
                 error_message=str(e),
-                metadata=metadata,
+                METADATA=metadata,
             )
 
             raise
@@ -167,18 +167,18 @@ class HardeningMixin:
         # Get encoding for model
         try:
             if model.startswith("gpt-4"):
-                encoding = tiktoken.encoding_for_model("gpt-4")
+                ENCODING = tiktoken.encoding_for_model("gpt-4")
             elif model.startswith("gpt-3.5"):
-                encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+                ENCODING = tiktoken.encoding_for_model("gpt-3.5-turbo")
             else:
                 # Default to cl100k_base (most models)
-                encoding = tiktoken.get_encoding("cl100k_base")
+                ENCODING = tiktoken.get_encoding("cl100k_base")
         except KeyError:
             # Unknown model - use default
-            encoding = tiktoken.get_encoding("cl100k_base")
+            ENCODING = tiktoken.get_encoding("cl100k_base")
 
         # Count tokens
-        tokens = len(encoding.encode(prompt))
+        TOKENS = len(encoding.encode(prompt))
 
         # Model-specific limits
         model_limits = {
@@ -196,7 +196,7 @@ class HardeningMixin:
         }
 
         # Find model limit
-        limit = max_tokens or model_limits.get(model, 4096)
+        LIMIT = max_tokens or model_limits.get(model, 4096)
 
         # Check if over limit
         if tokens > limit:

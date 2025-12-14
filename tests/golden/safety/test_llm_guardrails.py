@@ -1,6 +1,6 @@
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # MERGED FROM UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.281754+00:00
 # Original location: 10_tests\_unassigned_tests_invalid\test_llm_guardrails.py
 # High-signal content preserved below — zero-loss migration
@@ -23,27 +23,27 @@ class TestLLMGuardrails:
 
 def setup_method(self: Any) -> None:
         """Setup test fixtures"""
-        self.config = PolicyEngineConfig()
-        self.engine = PolicyEngine(self.config)
+        SELF.CONFIG = PolicyEngineConfig()
+        SELF.ENGINE = PolicyEngine(self.config)
 
-    @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
+    @PYTEST.MARK.SKIP(REASON="Placeholder test for zero-tolerance compliance")
 def test_llm_guardrails_initialization(self: Any) -> None:
         """Test LLM guardrails initialization"""
         # Placeholder implementation
         assert self.engine is not None
 
-    @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
+    @PYTEST.MARK.SKIP(REASON="Placeholder test for zero-tolerance compliance")
 def test_content_filtering_guardrails(self: Any) -> None:
         """Test content filtering guardrails"""
         # Placeholder implementation
-        result = self.engine.check_content_safety("test content")
+        RESULT = self.engine.check_content_safety("test content")
         assert result is not None
 
-    @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
+    @PYTEST.MARK.SKIP(REASON="Placeholder test for zero-tolerance compliance")
 def test_prompt_injection_protection(self: Any) -> None:
         """Test prompt injection protection"""
         # Placeholder implementation
-        protection = self.engine.evaluate_policies("test", {}, [PolicyType.CONTENT_FILTER])
+        PROTECTION = self.engine.evaluate_policies("test", {}, [PolicyType.CONTENT_FILTER])
         assert protection is not None
 
 __all__ = ["TestLLMGuardrails"]

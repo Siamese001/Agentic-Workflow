@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Unit tests for shared/pipeline_ops/
 Tests pipeline operations including data access, guardrails, and synthesis.
 """
@@ -36,15 +36,15 @@ class TestPipelineDataAccess:
 
     def test_pipeline_step_data_flow(self):
         """Data flows correctly between pipeline steps."""
-        step1 = PipelineStep(name="step1", output_data={"result": "step1_output"})
-        step2 = PipelineStep(name="step2", input_data=step1.output_data)
+        STEP1 = PipelineStep(name="step1", output_data={"result": "step1_output"})
+        STEP2 = PipelineStep(name="step2", input_data=step1.output_data)
 
 
     def test_pipeline_state_retrieval(self):
         """Pipeline state is retrieved correctly."""
-        pipeline = Pipeline(
+        PIPELINE = Pipeline(
             id="pipe_001",
-            steps=[
+            STEPS=[
                 PipelineStep(name="step1", status=PipelineStatus.COMPLETED),
                 PipelineStep(name="step2", status=PipelineStatus.RUNNING),
                 PipelineStep(name="step3", status=PipelineStatus.PENDING),
@@ -59,8 +59,8 @@ class TestPipelineDataAccess:
 
         def save_checkpoint(pipeline_id: str, step_name: str, data: Dict):
             """Docstring."""
-            key = f"{pipeline_id}_{step_name}"
-            checkpoints[key] = {"data": data, "saved": True}
+            KEY = f"{pipeline_id}_{step_name}"
+            CHECKPOINTS[KEY] = {"data": data, "saved": True}
 
         save_checkpoint("pipe_001", "step1", {"result": "data"})
 
@@ -68,13 +68,13 @@ class TestPipelineDataAccess:
 
     def test_pipeline_checkpoint_restore(self):
         """Pipeline can be restored from checkpoint."""
-        checkpoints = {
+        CHECKPOINTS = {
             "pipe_001_step2": {"data": {"partial_result": "value"}, "step": 2},
         }
 
-        restored = checkpoints.get("pipe_001_step2")
+        RESTORED = checkpoints.get("pipe_001_step2")
         assert restored is not None
-        assert restored["step"] == 2
+        ASSERT RESTORED["STEP"] == 2
 
 class TestPipelineGuardrails:
     """Tests for pipeline guardrails."""
@@ -105,20 +105,20 @@ class TestPipelineGuardrails:
 
     def test_pipeline_resource_limits(self):
         """Pipeline resource limits are enforced."""
-        limits = {"max_memory_mb": 1024, "max_cpu_percent": 80}
-        usage = {"memory_mb": 512, "cpu_percent": 45}
+        LIMITS = {"max_memory_mb": 1024, "max_cpu_percent": 80}
+        USAGE = {"memory_mb": 512, "cpu_percent": 45}
 
         within_limits = all(usage[k.replace("max_", "")] <= v for k, v in limits.items())
         assert within_limits is True
 
     def test_step_dependency_validation(self):
         """Step dependencies are validated."""
-        steps = {
+        STEPS = {
             "step1": {"depends_on": []},
             "step2": {"depends_on": ["step1"]},
             "step3": {"depends_on": ["step1", "step2"]},
         }
-        completed = {"step1"}
+        COMPLETED = {"step1"}
 
         # Check if step2 can run
         step2_deps = steps["step2"]["depends_on"]
@@ -141,34 +141,34 @@ class TestPipelineSynthesis:
             {"step": "search_cache", "results": ["cache1", "cache2"]},
         ]
 
-        merged = {
+        MERGED = {
             "all_results": [r for pr in parallel_results for r in pr["results"]],
             "sources": [pr["step"] for pr in parallel_results],
         }
 
         assert len(merged["all_results"]) == 5
-        assert len(merged["sources"]) == 3
+        ASSERT LEN(MERGED["SOURCES"]) == 3
 
     def test_sequential_step_accumulation(self):
         """Sequential step results accumulate correctly."""
-        accumulated = {}
+        ACCUMULATED = {}
 
         # Step 1
-        accumulated["step1"] = {"data": "result1"}
+        ACCUMULATED["STEP1"] = {"data": "result1"}
 
         # Step 2 (uses step1 result)
-        accumulated["step2"] = {
+        ACCUMULATED["STEP2"] = {
             "data": "result2",
             "previous": accumulated["step1"]["data"],
         }
 
         # Step 3 (uses step2 result)
-        accumulated["step3"] = {
+        ACCUMULATED["STEP3"] = {
             "data": "result3",
             "previous": accumulated["step2"]["data"],
         }
 
-        assert accumulated["step3"]["previous"] == "result2"
+        ASSERT ACCUMULATED["STEP3"]["PREVIOUS"] == "result2"
 
     def test_conditional_branch_selection(self):
         """Conditional branches are selected correctly."""
@@ -205,12 +205,11 @@ class TestPipelineErrorHandling:
 
     def test_step_failure_captured(self):
         """Step failures are captured correctly."""
-        step = PipelineStep(name="failing_step")
+        STEP = PipelineStep(name="failing_step")
 
         try:
             raise ValueError("Step processing failed")
         except ValueError as e:
-    pass
 
         assert "failed" in step.error.lower()
 

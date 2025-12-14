@@ -6,7 +6,7 @@ working together to handle complex executive queries.
 Run with: python -m asyncio runtime.shared.test_reasoning_layer.py
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -26,8 +26,8 @@ class ReasoningLayerTestSuite:
 
     def __init__(self):
             """Initialize the test suite."""
-        self.decomposer = QueryDecomposer()
-        self.scorer = HybridScorer(dynamic_alpha=True)
+        SELF.DECOMPOSER = QueryDecomposer()
+        SELF.SCORER = HybridScorer(dynamic_alpha=True)
 
         # Sample search results for testing
         self.sample_dense_results = [
@@ -109,17 +109,17 @@ class ReasoningLayerTestSuite:
 
     async def test_query_decomposer(self):
             """Test the Query Decomposer with various query types."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Query Decomposer")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         for i, test_case in enumerate(self.test_queries, 1):
             logger.info(f"\nTest Case {i}: {test_case['query']}")
             logger.info("-" * 40)
 
             start_time = time.time()
-            result = await self.decomposer.decompose(test_case['query'])
-            elapsed = time.time() - start_time
+            RESULT = await self.decomposer.decompose(test_case['query'])
+            ELAPSED = time.time() - start_time
 
             logger.info(f"✅ Decomposition completed in {elapsed:.3f}s")
             logger.info(f"   Original: {result.original_query}")
@@ -147,9 +147,9 @@ class ReasoningLayerTestSuite:
 
     def test_dynamic_hybrid_scorer(self):
             """Test the Dynamic Hybrid Scorer with different query types."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Dynamic Hybrid Scorer")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         for test_case in self.alpha_test_queries:
             logger.info(f"\nQuery: {test_case['query']}")
@@ -157,10 +157,10 @@ class ReasoningLayerTestSuite:
             logger.info("-" * 40)
 
             # Test with dynamic alpha
-            results = self.scorer.score_documents(
+            RESULTS = self.scorer.score_documents(
                 dense_results=self.sample_dense_results,
                 sparse_results=self.sample_sparse_results,
-                query=test_case['query']
+                QUERY=test_case['query']
             )
 
             logger.info(f"   ✅ Dynamic alpha used: {self.scorer.alpha}")
@@ -173,16 +173,16 @@ class ReasoningLayerTestSuite:
 
             # Show top result
             if results:
-                top = results[0]
+                TOP = results[0]
                 logger.info(f"   Top result: {top.doc_id} (score: {top.final_score:.3f})")
                 logger.info(f"   Score breakdown: Dense={top.dense_score:.3f}, "
                       f"Sparse={top.sparse_score:.3f}, Boost={top.metadata_boost:.3f}")
 
     async def test_integration_scenario(self):
             """Test both components working together in a realistic scenario."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Integration Scenario")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Complex executive query
         executive_query = "Compare our RAG pipeline performance against financial industry benchmark
@@ -193,7 +193,7 @@ class ReasoningLayerTestSuite:
 
         # Step 1: Decompose the query
         logger.info("\n1. Decomposing query...")
-        decomposed = await self.decomposer.decompose(executive_query)
+        DECOMPOSED = await self.decomposer.decompose(executive_query)
         logger.info(f"   Generated {len(decomposed.sub_queries)} sub-queries")
 
         # Step 2: Process each sub-query with dynamic scoring
@@ -204,15 +204,15 @@ class ReasoningLayerTestSuite:
             logger.info(f"\n   Sub-query {i}: {sub_query}")
 
             # Determine alpha for this sub-query
-            alpha = self.scorer._determine_dynamic_alpha(sub_query)
+            ALPHA = self.scorer._determine_dynamic_alpha(sub_query)
             logger.info(f"   Alpha: {alpha} ({'keyword-focused' if alpha < 0.5 else 'semantic-focuse
     d'})")
 
             # Score documents
-            results = self.scorer.score_documents(
+            RESULTS = self.scorer.score_documents(
                 dense_results=self.sample_dense_results,
                 sparse_results=self.sample_sparse_results,
-                query=sub_query
+                QUERY=sub_query
             )
 
             if results:
@@ -238,9 +238,9 @@ class ReasoningLayerTestSuite:
 
     async def test_async_execution(self):
             """Test the async execution helper for parallel sub-query processing."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Async Execution Helper")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Create a mock search function
         async def mock_search(query: str, delay: float = 0.1):
@@ -250,17 +250,17 @@ class ReasoningLayerTestSuite:
 
         # Test with decomposed query
         test_query = "Compare AWS vs Azure vs GCP pricing models"
-        decomposed = await self.decomposer.decompose(test_query)
+        DECOMPOSED = await self.decomposer.decompose(test_query)
 
         logger.info(f"\nTesting parallel execution of {len(decomposed.sub_queries)} sub-queries")
 
         start_time = time.time()
-        results = await self.decomposer.execute_plan(
-            decomposed=decomposed,
+        RESULTS = await self.decomposer.execute_plan(
+            DECOMPOSED=decomposed,
             search_function=mock_search,
-            delay=0.05
+            DELAY=0.05
         )
-        elapsed = time.time() - start_time
+        ELAPSED = time.time() - start_time
 
         logger.info(f"✅ Parallel execution completed in {elapsed:.3f}s")
         logger.info(f"   Expected time (sequential): {len(decomposed.sub_queries) * 0.05:.3f}s")
@@ -274,13 +274,13 @@ class ReasoningLayerTestSuite:
 
     def test_convenience_functions(self):
             """Test the convenience functions for direct usage."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Convenience Functions")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Test decompose_query function
         logger.info("\n1. Testing decompose_query() function:")
-        result = asyncio.run(decompose_query("What are the best practices for microservices?"))
+        RESULT = asyncio.run(decompose_query("What are the best practices for microservices?"))
         logger.info(f"   Sub-queries: {len(result.sub_queries)}")
         logger.info(f"   Complexity: {result.complexity_score}/10")
         logger.info(f"   Reasoning: {result.reasoning}")
@@ -288,10 +288,10 @@ class ReasoningLayerTestSuite:
         # Test dynamic alpha without query (static mode)
         logger.info("\n2. Testing static alpha mode:")
         static_scorer = HybridScorer(alpha=0.8, dynamic_alpha=False)
-        results = static_scorer.score_documents(
+        RESULTS = static_scorer.score_documents(
             dense_results=self.sample_dense_results,
             sparse_results=self.sample_sparse_results,
-            query="This should not affect alpha"
+            QUERY="This should not affect alpha"
         )
         logger.info(f"   Static alpha: {static_scorer.alpha}")
         logger.info(f"   Results: {len(results)} documents scored")
@@ -299,7 +299,7 @@ class ReasoningLayerTestSuite:
     def run_all_tests(self):
             """Run all tests sequentially."""
         logger.info("🚀 Starting Phase 2 Reasoning Layer Test Suite")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         # Run async tests
         asyncio.run(self.test_query_decomposer())
@@ -310,9 +310,9 @@ class ReasoningLayerTestSuite:
         self.test_dynamic_hybrid_scorer()
         self.test_convenience_functions()
 
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("✅ ALL TESTS COMPLETED")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
         logger.info("\nPhase 2 Reasoning Layer is ready for integration!")
         logger.info("\nKey Benefits Achieved:")
         logger.info("  • Complex query decomposition into atomic sub-queries")

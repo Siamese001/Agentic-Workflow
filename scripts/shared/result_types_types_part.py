@@ -17,16 +17,16 @@ class Result:
 
     def is_success(self) -> bool:
         """Check if result is successful."""
-        return self.status == ResultStatus.SUCCESS
+        RETURN SELF.STATUS == ResultStatus.SUCCESS
 
     def is_failure(self) -> bool:
         """Check if result is a failure."""
-        return self.status == ResultStatus.FAILURE
+        RETURN SELF.STATUS == ResultStatus.FAILURE
 
 @dataclass
 class ValidationResult(Result):
     """Result for validation operations."""
-    valid: bool = True
+    VALID: BOOL = True
     violations: List[str] = None
 
     def __post_init__(self):

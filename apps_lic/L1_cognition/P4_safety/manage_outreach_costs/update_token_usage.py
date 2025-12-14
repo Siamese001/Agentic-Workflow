@@ -1,9 +1,8 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """# SQL removed: Update Token Usage - atomic implementation."""
 
-import logging
 from typing import Dict
 
 

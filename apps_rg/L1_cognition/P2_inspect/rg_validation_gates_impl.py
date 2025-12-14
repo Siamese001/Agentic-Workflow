@@ -1,7 +1,7 @@
 """Implementation for rg_validation_gates."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .rg_validation_gates_types import *  # Star import removed
 
 class RGValidationGates:
@@ -27,80 +27,80 @@ class RGValidationGates:
     def _register_critical_gates(self) -> None:
         """Register critical validation gates."""
         self.register_gate(ValidationGate(gate_id=self.VG_SUMMARY_GROUNDING_CHECK,
-            name='Summary Grounding Check',
-            description='Verifies that the executive summary is grounded in source material and does
+            NAME='Summary Grounding Check',
+            DESCRIPTION='Verifies that the executive summary is grounded in source material and does
     not contain hallucinated claims.',
-            severity=GateSeverity.CRITICAL,
-            validator=self._validate_summary_grounding))
+            SEVERITY=GateSeverity.CRITICAL,
+            VALIDATOR=self._validate_summary_grounding))
         self.register_gate(ValidationGate(gate_id=self.VG_BULLET_HALLUCINATION_CHECK,
-            name='Bullet Hallucination Check',
-            description='Checks that all bullet points are derived from source material with proper
+            NAME='Bullet Hallucination Check',
+            DESCRIPTION='Checks that all bullet points are derived from source material with proper
     provenance.',
-            severity=GateSeverity.CRITICAL,
-            validator=self._validate_bullet_hallucination))
+            SEVERITY=GateSeverity.CRITICAL,
+            VALIDATOR=self._validate_bullet_hallucination))
 
     def _register_high_priority_gates(self) -> None:
         """Register high priority validation gates."""
         self.register_gate(ValidationGate(gate_id=self.VG_THEMATIC_UNIQUENESS,
-            name='Thematic Uniqueness',
-            description='Ensures each bullet point covers a unique theme without redundancy across s
+            NAME='Thematic Uniqueness',
+            DESCRIPTION='Ensures each bullet point covers a unique theme without redundancy across s
     ections.',
-            severity=GateSeverity.HIGH,
-            validator=self._validate_thematic_uniqueness))
+            SEVERITY=GateSeverity.HIGH,
+            VALIDATOR=self._validate_thematic_uniqueness))
         self.register_gate(ValidationGate(gate_id=self.VG_CREATIVE_BRIEF_ADHERENCE,
-            name='Creative Brief Adherence',
-            description='Validates that all content adheres to the creative brief constraints includ
+            NAME='Creative Brief Adherence',
+            DESCRIPTION='Validates that all content adheres to the creative brief constraints includ
     ing word counts and structure.',
-            severity=GateSeverity.HIGH,
-            validator=self._validate_creative_brief_adherence))
+            SEVERITY=GateSeverity.HIGH,
+            VALIDATOR=self._validate_creative_brief_adherence))
         self.register_gate(ValidationGate(gate_id=self.VG_BULLET_PROVENANCE_CHECK,
-            name='Bullet Provenance Check',
-            description='Ensures each bullet can be traced back to source material with documented p
+            NAME='Bullet Provenance Check',
+            DESCRIPTION='Ensures each bullet can be traced back to source material with documented p
     rovenance.',
-            severity=GateSeverity.HIGH,
-            validator=self._validate_bullet_provenance))
+            SEVERITY=GateSeverity.HIGH,
+            VALIDATOR=self._validate_bullet_provenance))
         self.register_gate(ValidationGate(gate_id=self.VG_AGENTIC_OUTPUT_VALIDATION,
-            name='Agentic Output Validation',
-            description='Validates that agentic outputs meet all quality standards.',
-            severity=GateSeverity.HIGH,
-            validator=self._validate_agentic_output))
+            NAME='Agentic Output Validation',
+            DESCRIPTION='Validates that agentic outputs meet all quality standards.',
+            SEVERITY=GateSeverity.HIGH,
+            VALIDATOR=self._validate_agentic_output))
 
     def _register_medium_priority_gates(self) -> None:
         """Register medium priority validation gates."""
         self.register_gate(ValidationGate(gate_id=self.VG_HEADER_INTEGRITY_CHECK,
-            name='Header Integrity Check',
-            description='Verifies that all section headers are correctly formatted and consistent.',
-            severity=GateSeverity.MEDIUM,
-            validator=self._validate_header_integrity))
+            NAME='Header Integrity Check',
+            DESCRIPTION='Verifies that all section headers are correctly formatted and consistent.',
+            SEVERITY=GateSeverity.MEDIUM,
+            VALIDATOR=self._validate_header_integrity))
         self.register_gate(ValidationGate(gate_id=self.VG_REDUNDANCY_CHECK,
-            name='Redundancy Check',
-            description='Detects and flags redundant content across the resume.',
-            severity=GateSeverity.MEDIUM,
-            validator=self._validate_redundancy))
+            NAME='Redundancy Check',
+            DESCRIPTION='Detects and flags redundant content across the resume.',
+            SEVERITY=GateSeverity.MEDIUM,
+            VALIDATOR=self._validate_redundancy))
         self.register_gate(ValidationGate(gate_id=self.VG_COMPETENCY_WORD_COUNT_BALANCE,
-            name='Competency Word Count Balance',
-            description='Validates that competency descriptions are balanced in word count.',
-            severity=GateSeverity.MEDIUM,
-            validator=self._validate_competency_balance))
+            NAME='Competency Word Count Balance',
+            DESCRIPTION='Validates that competency descriptions are balanced in word count.',
+            SEVERITY=GateSeverity.MEDIUM,
+            VALIDATOR=self._validate_competency_balance))
         self.register_gate(ValidationGate(gate_id=self.VG_SUMMARY_VOICE_TENSE,
-            name='Summary Voice and Tense',
-            description='Validates that the executive summary uses correct voice and tense throughou
+            NAME='Summary Voice and Tense',
+            DESCRIPTION='Validates that the executive summary uses correct voice and tense throughou
     t.',
-            severity=GateSeverity.MEDIUM,
-            validator=self._validate_summary_voice_tense))
+            SEVERITY=GateSeverity.MEDIUM,
+            VALIDATOR=self._validate_summary_voice_tense))
 
     def _register_low_priority_gates(self) -> None:
         """Register low priority validation gates."""
         self.register_gate(ValidationGate(gate_id=self.VG_NATURAL_HYPHEN_PRESERVATION,
-            name='Natural Hyphen Preservation',
-            description='Ensures natural hyphens in compound words are preserved correctly.',
-            severity=GateSeverity.LOW,
-            validator=self._validate_hyphen_preservation))
+            NAME='Natural Hyphen Preservation',
+            DESCRIPTION='Ensures natural hyphens in compound words are preserved correctly.',
+            SEVERITY=GateSeverity.LOW,
+            VALIDATOR=self._validate_hyphen_preservation))
         self.register_gate(ValidationGate(gate_id=self.VG_BULLET_PUNCTUATION,
-            name='Bullet Punctuation',
-            description='Ensures consistent punctuation across all bullet points.',
-            severity=GateSeverity.LOW,
-            validator=self._validate_bullet_punctuation))
+            NAME='Bullet Punctuation',
+            DESCRIPTION='Ensures consistent punctuation across all bullet points.',
+            SEVERITY=GateSeverity.LOW,
+            VALIDATOR=self._validate_bullet_punctuation))
 
     def _register_default_gates(self) -> None:
         """Register all default validation gates."""
@@ -126,7 +126,7 @@ class RGValidationGates:
         gate_id: str,
         content: object,
         context: Optional[Dict[str,
-        object]]=None) -> GateResult:
+        OBJECT]]=None) -> GateResult:
         """
         Run a specific validation gate.
 
@@ -138,20 +138,20 @@ class RGValidationGates:
         Returns:
             GateResult with validation outcome
         """
-        gate = self._gates.get(gate_id)
+        GATE = self._gates.get(gate_id)
         if gate is None:
             return GateResult(gate_id=gate_id,
-                decision=GateDecision.FAIL,
-                severity=GateSeverity.CRITICAL,
-                message=f'Unknown gate: {gate_id}')
-        context = context or {}
+                DECISION=GateDecision.FAIL,
+                SEVERITY=GateSeverity.CRITICAL,
+                MESSAGE=f'Unknown gate: {gate_id}')
+        CONTEXT = context or {}
         return gate.validator(content, context)
 
     def run_all_gates(self,
         """Docstring."""
         content: object,
         context: Optional[Dict[str,
-        object]]=None) -> List[GateResult]:
+        OBJECT]]=None) -> List[GateResult]:
         """
         Run all validation gates.
 
@@ -162,9 +162,9 @@ class RGValidationGates:
         Returns:
             List of GateResults
         """
-        results = []
+        RESULTS = []
         for gate_id in self._gates:
-            result = self.run_gate(gate_id, content, context)
+            RESULT = self.run_gate(gate_id, content, context)
             results.append(result)
         return results
 
@@ -173,91 +173,91 @@ class RGValidationGates:
         context: Dict[str,
         object]) -> GateResult:
         """Validate summary grounding."""
-        violations = []
+        VIOLATIONS = []
         if isinstance(content, str):
-            text = content
+            TEXT = content
         elif isinstance(content, dict):
-            text = content.get('executive_summary', '')
+            TEXT = content.get('executive_summary', '')
         else:
-            text = str(content)
+            TEXT = str(content)
         template_patterns = ['\\[.*?\\]', '\\{.*?\\}', '<.*?>', 'TODO', 'XXX']
         for pattern in template_patterns:
-            matches = re.findall(pattern, text)
+            MATCHES = re.findall(pattern, text)
             if matches:
                 violations.append(f'Template marker found: {matches}')
         unsupported_markers = ['reportedly', 'allegedly', 'it is said', 'some say', 'many believe']
         for marker in unsupported_markers:
             if marker.lower() in text.lower():
                 violations.append(f'Unsupported claim marker: {marker}')
-        decision = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_SUMMARY_GROUNDING_CHECK,
-            decision=decision,
-            severity=GateSeverity.CRITICAL,
-            message='Summary grounding check completed',
-            violations=violations,
-            details={'text_length': len(text)})
+            DECISION=decision,
+            SEVERITY=GateSeverity.CRITICAL,
+            MESSAGE='Summary grounding check completed',
+            VIOLATIONS=violations,
+            DETAILS={'text_length': len(text)})
 
     def _validate_bullet_hallucination(self,
         content: object,
         context: Dict[str,
         object]) -> GateResult:
         """Validate bullet hallucination."""
-        violations = []
-        bullets = []
+        VIOLATIONS = []
+        BULLETS = []
         if isinstance(content, list):
-            bullets = content
+            BULLETS = content
         elif isinstance(content, dict):
-            bullets = content.get('bullets', [])
+            BULLETS = content.get('bullets', [])
         source_material = context.get('source_material', '')
         for i, bullet in enumerate(bullets):
             bullet_text = bullet if isinstance(bullet, str) else bullet.get('text', '')
-            metrics = re.findall('\\d+%|\\$\\d+|\\d+x|\\d+\\+', bullet_text)
+            METRICS = re.findall('\\d+%|\\$\\d+|\\d+x|\\d+\\+', bullet_text)
             for metric in metrics:
                 if metric not in source_material:
                     violations.append(f"Bullet {i + 1}: Metric '{metric}' not found in source")
-        decision = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_BULLET_HALLUCINATION_CHECK,
-            decision=decision,
-            severity=GateSeverity.CRITICAL,
-            message='Bullet hallucination check completed',
-            violations=violations,
-            details={'bullet_count': len(bullets)})
+            DECISION=decision,
+            SEVERITY=GateSeverity.CRITICAL,
+            MESSAGE='Bullet hallucination check completed',
+            VIOLATIONS=violations,
+            DETAILS={'bullet_count': len(bullets)})
 
     def _validate_thematic_uniqueness(self,
         content: object,
         context: Dict[str,
         object]) -> GateResult:
         """Validate thematic uniqueness."""
-        violations = []
-        bullets = []
+        VIOLATIONS = []
+        BULLETS = []
         if isinstance(content, list):
-            bullets = [b if isinstance(b, str) else b.get('text', '') for b in content]
+            BULLETS = [b if isinstance(b, str) else b.get('text', '') for b in content]
         elif isinstance(content, dict):
-            bullets = content.get('bullets', [])
+            BULLETS = content.get('bullets', [])
         for i, bullet1 in enumerate(bullets):
             for j, bullet2 in enumerate(bullets[i + 1:], start=i + 1):
-                words1 = set(bullet1.lower().split())
-                words2 = set(bullet2.lower().split())
-                overlap = len(words1 & words2) / max(len(words1 | words2), 1)
+                WORDS1 = set(bullet1.lower().split())
+                WORDS2 = set(bullet2.lower().split())
+                OVERLAP = len(words1 & words2) / max(len(words1 | words2), 1)
                 if overlap > 0.6:
                     violations.append(f'Bullets {i + 1} and {j + 1} have high similarity ({overlap:.
     0%})')
-        decision = GateDecision.PASS if not violations else GateDecision.WARN
+        DECISION = GateDecision.PASS if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_THEMATIC_UNIQUENESS,
-            decision=decision,
-            severity=GateSeverity.HIGH,
-            message='Thematic uniqueness check completed',
-            violations=violations)
+            DECISION=decision,
+            SEVERITY=GateSeverity.HIGH,
+            MESSAGE='Thematic uniqueness check completed',
+            VIOLATIONS=violations)
 
     def _validate_creative_brief_adherence(self,
         content: object,
         context: Dict[str,
         object]) -> GateResult:
         """Validate creative brief adherence."""
-        violations = []
-        brief = context.get('creative_brief', {})
+        VIOLATIONS = []
+        BRIEF = context.get('creative_brief', {})
         if isinstance(content, dict):
-            headline = content.get('headline', '')
+            HEADLINE = content.get('headline', '')
             if headline:
                 word_count = len(headline.split())
                 min_words = brief.get('headline', {}).get('min_words', 8)
@@ -265,7 +265,7 @@ class RGValidationGates:
                 if word_count < min_words or word_count > max_words:
                     violations.append(f'Headline word count {word_count} outside range [{min_words},
                         {max_words}]')
-            summary = content.get('executive_summary', '')
+            SUMMARY = content.get('executive_summary', '')
             if summary:
                 word_count = len(summary.split())
                 min_words = brief.get('executive_summary', {}).get('min_words', 120)
@@ -273,16 +273,16 @@ class RGValidationGates:
                 if word_count < min_words or word_count > max_words:
                     violations.append(f'Summary word count {word_count} outside range [{min_words},
                         {max_words}]')
-        decision = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_CREATIVE_BRIEF_ADHERENCE,
-            decision=decision,
-            severity=GateSeverity.HIGH,
-            message='Creative brief adherence check completed',
-            violations=violations)
+            DECISION=decision,
+            SEVERITY=GateSeverity.HIGH,
+            MESSAGE='Creative brief adherence check completed',
+            VIOLATIONS=violations)
 
     def _validate_header_integrity(self, content: object, context: Dict[str, object]) -> GateResult:
         """Validate header integrity."""
-        violations = []
+        VIOLATIONS = []
         if isinstance(content, dict):
             required_sections = context.get('required_sections',
                 ['headline',
@@ -292,41 +292,41 @@ class RGValidationGates:
             for section in required_sections:
                 if section not in content or not content[section]:
                     violations.append(f'Missing required section: {section}')
-        decision = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_HEADER_INTEGRITY_CHECK,
-            decision=decision,
-            severity=GateSeverity.MEDIUM,
-            message='Header integrity check completed',
-            violations=violations)
+            DECISION=decision,
+            SEVERITY=GateSeverity.MEDIUM,
+            MESSAGE='Header integrity check completed',
+            VIOLATIONS=violations)
 
     def _validate_bullet_provenance(self,
         content: object,
         context: Dict[str,
         object]) -> GateResult:
         """Validate bullet provenance."""
-        violations = []
-        bullets = []
+        VIOLATIONS = []
+        BULLETS = []
         if isinstance(content, list):
-            bullets = content
+            BULLETS = content
         elif isinstance(content, dict):
-            bullets = content.get('bullets', [])
+            BULLETS = content.get('bullets', [])
         for i, bullet in enumerate(bullets):
             if isinstance(bullet, dict):
                 if 'source' not in bullet and 'provenance' not in bullet:
                     violations.append(f'Bullet {i + 1}: Missing provenance information')
-        decision = GateDecision.PASS if not violations else GateDecision.WARN
+        DECISION = GateDecision.PASS if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_BULLET_PROVENANCE_CHECK,
-            decision=decision,
-            severity=GateSeverity.HIGH,
-            message='Bullet provenance check completed',
-            violations=violations)
+            DECISION=decision,
+            SEVERITY=GateSeverity.HIGH,
+            MESSAGE='Bullet provenance check completed',
+            VIOLATIONS=violations)
 
     def _validate_redundancy(self, content: object, context: Dict[str, object]) -> GateResult:
         """Validate for redundancy."""
         return GateResult(gate_id=self.VG_REDUNDANCY_CHECK,
-            decision=GateDecision.PASS,
-            severity=GateSeverity.MEDIUM,
-            message='Redundancy check completed')
+            DECISION=GateDecision.PASS,
+            SEVERITY=GateSeverity.MEDIUM,
+            MESSAGE='Redundancy check completed')
 
     def _validate_hyphen_preservation(self,
         content: object,
@@ -334,93 +334,93 @@ class RGValidationGates:
         object]) -> GateResult:
         """Validate hyphen preservation."""
         return GateResult(gate_id=self.VG_NATURAL_HYPHEN_PRESERVATION,
-            decision=GateDecision.PASS,
-            severity=GateSeverity.LOW,
-            message='Hyphen preservation check completed')
+            DECISION=GateDecision.PASS,
+            SEVERITY=GateSeverity.LOW,
+            MESSAGE='Hyphen preservation check completed')
 
     def _validate_competency_balance(self,
         content: object,
         context: Dict[str,
         object]) -> GateResult:
         """Validate competency word count balance."""
-        violations = []
-        competencies = []
+        VIOLATIONS = []
+        COMPETENCIES = []
         if isinstance(content, list):
-            competencies = content
+            COMPETENCIES = content
         elif isinstance(content, dict):
-            competencies = content.get('competencies', [])
+            COMPETENCIES = content.get('competencies', [])
         if competencies:
             word_counts = [len(c.split()) if isinstance(c, str) else 0 for c in competencies]
             if word_counts:
-                avg = sum(word_counts) / len(word_counts)
+                AVG = sum(word_counts) / len(word_counts)
                 for i, wc in enumerate(word_counts):
                     if abs(wc - avg) > avg * 0.5:
                         violations.append(f'Competency {i + 1}: Word count {wc} significantly differ
     s from average {avg:.0f}')
-        decision = GateDecision.PASS if not violations else GateDecision.WARN
+        DECISION = GateDecision.PASS if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_COMPETENCY_WORD_COUNT_BALANCE,
-            decision=decision,
-            severity=GateSeverity.MEDIUM,
-            message='Competency balance check completed',
-            violations=violations)
+            DECISION=decision,
+            SEVERITY=GateSeverity.MEDIUM,
+            MESSAGE='Competency balance check completed',
+            VIOLATIONS=violations)
 
     def _validate_bullet_punctuation(self,
         content: object,
         context: Dict[str,
         object]) -> GateResult:
         """Validate bullet punctuation."""
-        violations = []
-        bullets = []
+        VIOLATIONS = []
+        BULLETS = []
         if isinstance(content, list):
-            bullets = [b if isinstance(b, str) else b.get('text', '') for b in content]
+            BULLETS = [b if isinstance(b, str) else b.get('text', '') for b in content]
         elif isinstance(content, dict):
-            bullets = content.get('bullets', [])
+            BULLETS = content.get('bullets', [])
         for i, bullet in enumerate(bullets):
             if bullet and (not bullet.rstrip().endswith(('.', '!', '?'))):
                 violations.append(f'Bullet {i + 1}: Missing ending punctuation')
-        decision = GateDecision.PASS if not violations else GateDecision.WARN
+        DECISION = GateDecision.PASS if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_BULLET_PUNCTUATION,
-            decision=decision,
-            severity=GateSeverity.LOW,
-            message='Bullet punctuation check completed',
-            violations=violations)
+            DECISION=decision,
+            SEVERITY=GateSeverity.LOW,
+            MESSAGE='Bullet punctuation check completed',
+            VIOLATIONS=violations)
 
     def _validate_summary_voice_tense(self,
         content: object,
         context: Dict[str,
         object]) -> GateResult:
         """Validate summary voice and tense."""
-        violations = []
-        text = ''
+        VIOLATIONS = []
+        TEXT = ''
         if isinstance(content, str):
-            text = content
+            TEXT = content
         elif isinstance(content, dict):
-            text = content.get('executive_summary', '')
+            TEXT = content.get('executive_summary', '')
         first_person_markers = [' I ', " I'm ", " I've ", ' my ', ' me ']
         for marker in first_person_markers:
             if marker.lower() in f' {text.lower()} ':
                 violations.append(f'First person marker found: {marker.strip()}')
-        decision = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_SUMMARY_VOICE_TENSE,
-            decision=decision,
-            severity=GateSeverity.MEDIUM,
-            message='Summary voice and tense check completed',
-            violations=violations)
+            DECISION=decision,
+            SEVERITY=GateSeverity.MEDIUM,
+            MESSAGE='Summary voice and tense check completed',
+            VIOLATIONS=violations)
 
     def _validate_agentic_output(self, content: object, context: Dict[str, object]) -> GateResult:
         """Validate agentic output."""
-        violations = []
+        VIOLATIONS = []
         if isinstance(content, dict):
             required_fields = context.get('required_fields', ['status', 'output'])
             for field_name in required_fields:
                 if field_name not in content:
                     violations.append(f'Missing required field: {field_name}')
-        decision = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_AGENTIC_OUTPUT_VALIDATION,
-            decision=decision,
-            severity=GateSeverity.HIGH,
-            message='Agentic output validation completed',
-            violations=violations)
+            DECISION=decision,
+            SEVERITY=GateSeverity.HIGH,
+            MESSAGE='Agentic output validation completed',
+            VIOLATIONS=violations)
 
 def create_validation_gates() -> RGValidationGates:
     """builder function to create validation gates."""
@@ -430,7 +430,7 @@ def run_gate(gate_id: str,
     """Docstring."""
     content: object,
     context: Optional[Dict[str,
-    object]]=None) -> GateResult:
+    OBJECT]]=None) -> GateResult:
     """Run a specific validation gate."""
-    gates = RGValidationGates()
+    GATES = RGValidationGates()
     return gates.run_gate(gate_id, content, context)

@@ -37,18 +37,18 @@ class ReasoningToggles:
     the outreach stack's reasoning behavior.
     """
     def __init__(self):
-        self.flag1 = True
-        self.flag2 = False
+        SELF.FLAG1 = True
+        SELF.FLAG2 = False
     """TODO: Add docstring."""
 
 
 class OutreachStack:
     """Docstring."""
     def __init__(self, toggles: ReasoningToggles):
-        self.toggles = toggles
+        SELF.TOGGLES = toggles
         """TODO: Add docstring."""
 
-        self.architect = type('architect', (), {'compose': lambda msg: msg})()
+        SELF.ARCHITECT = type('architect', (), {'compose': lambda msg: msg})()
 
     def run(self, inputs: StackInputs) -> Dict[str, Any]:
             """Docstring."""
@@ -57,7 +57,7 @@ class OutreachStack:
             "verdict": type('verdict', (), {'passed': True})()
         }
 
-@pytest.mark.skip(reason="Waiting for ReasoningToggles and OutreachStack implementation")
+@PYTEST.MARK.SKIP(REASON="Waiting for ReasoningToggles and OutreachStack implementation")
 def test_outreach_stack_blocks_high_risk_prompt() -> None:
     """Test that high-risk prompts are blocked by the outreach stack.
 
@@ -74,10 +74,10 @@ def test_outreach_stack_blocks_high_risk_prompt() -> None:
 
 def test_outreach_stack_handles_string_draft_from_architect() -> None:
     """Docstring."""
-    stack = OutreachStack(ReasoningToggles())
+    STACK = OutreachStack(ReasoningToggles())
 
     with patch.object(stack.architect, "compose", return_value="Subject: Hi\n\nBody"):
-        result = stack.run(StackInputs(prompt="Hello", company_id="ACME", contact_id="C1"))
+        RESULT = stack.run(StackInputs(prompt="Hello", company_id="ACME", contact_id="C1"))
 
     assert result["draft"].startswith("Subject: Hi")
     assert result["verdict"].passed

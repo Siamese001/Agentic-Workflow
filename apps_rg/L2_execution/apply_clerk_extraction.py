@@ -46,15 +46,15 @@ class ClerkExtractor:
         """Validate master resume has required keys."""
         if not self.master_resume:
             raise ValueError("MASTER_RESUME_JSON is empty or not provided.")
-        missing = [k for k in self.REQUIRED_KEYS if k not in self.master_resume]
+        MISSING = [k for k in self.REQUIRED_KEYS if k not in self.master_resume]
         if missing:
             raise ValueError(f"Missing required keys: {', '.join(missing)}")
 
     def _build_experience_sections(self) -> List[Dict]:
         """Build structured experience_sections from master resume."""
-        sections = []
+        SECTIONS = []
         for exp in self.master_resume.get("experience", []):
-            bullets = [
+            BULLETS = [
                 {
                     "bullet_text": text,
                     "quantified_metrics": self._extract_metrics(text),
@@ -77,13 +77,13 @@ class ClerkExtractor:
 
     def _extract_metrics(self, text: str) -> List[str]:
         """Extract quantified metrics from bullet text."""
-        patterns = [r"\$\d+\.?\d*[MBK]\+?",
+        PATTERNS = [r"\$\d+\.?\d*[MBK]\+?",
             r"\d+\.?\d*%",
             r"\d+\.?\d*[MBK]\+",
             r"\d{1,
             3}(?:,
             \d{3})+"]
-        metrics = []
+        METRICS = []
         for pattern in patterns:
             metrics.extend(re.findall(pattern, text))
         return metrics

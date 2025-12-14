@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class RetryStrategy(str, Enum):
     """Retry strategy types."""
@@ -35,8 +35,8 @@ class RetryConfig:
     strategy: RetryStrategy = RetryStrategy.EXPONENTIAL_BACKOFF
     base_delay: float = 1.0  # seconds
     max_delay: float = 60.0  # seconds
-    multiplier: float = 2.0  # for exponential backoff
-    jitter: bool = True  # Add randomness to prevent thundering herd
+    MULTIPLIER: FLOAT = 2.0  # for exponential backoff
+    JITTER: BOOL = True  # Add randomness to prevent thundering herd
     retryable_exceptions: List[Type[Exception]] = field(default_factory=lambda: [
         ConnectionError,
         TimeoutError,
@@ -92,7 +92,7 @@ class RetryResult:
     """Result of retry execution."""
     success: bool
     result: Any = None
-    attempts: int = 0
+    ATTEMPTS: INT = 0
     total_delay: float = 0.0
     attempts_history: List[RetryAttempt] = field(default_factory=list)
     final_exception: Optional[Exception] = None
@@ -117,28 +117,28 @@ class DelayCalculator:
         Returns:
             Delay in seconds
         """
-        base = base_delay or config.base_delay
+        BASE = base_delay or config.base_delay
 
         if config.strategy == RetryStrategy.IMMEDIATE:
-            delay = 0.0
-        elif config.strategy == RetryStrategy.FIXED_DELAY:
-            delay = base
-        elif config.strategy == RetryStrategy.LINEAR_BACKOFF:
-            delay = base * (attempt + 1)
-        elif config.strategy == RetryStrategy.EXPONENTIAL_BACKOFF:
-            delay = base * (config.multiplier ** attempt)
+            DELAY = 0.0
+        ELIF CONFIG.STRATEGY == RetryStrategy.FIXED_DELAY:
+            DELAY = base
+        ELIF CONFIG.STRATEGY == RetryStrategy.LINEAR_BACKOFF:
+            DELAY = base * (attempt + 1)
+        ELIF CONFIG.STRATEGY == RetryStrategy.EXPONENTIAL_BACKOFF:
+            DELAY = base * (config.multiplier ** attempt)
         else:
-            delay = base
+            DELAY = base
 
         # Apply max delay limit
-        delay = min(delay, config.max_delay)
+        DELAY = min(delay, config.max_delay)
 
         # Add jitter if enabled
         if config.jitter and delay > 0:
             # Add up to ±25% jitter
             jitter_range = delay * 0.25
-            delay += random.uniform(-jitter_range, jitter_range)
-            delay = max(0, delay)  # Ensure non-negative
+            DELAY += random.uniform(-jitter_range, jitter_range)
+            DELAY = max(0, delay)  # Ensure non-negative
 
         return delay
 
@@ -151,7 +151,7 @@ class RetryPolicy:
         Args:
             config: Retry configuration
         """
-        self.config = config or RetryConfig()
+        SELF.CONFIG = config or RetryConfig()
         self._stats = {
             "total_retries": 0,
             "successful_retries": 0,
@@ -193,17 +193,17 @@ class RetryPolicy:
             try:
                 # Execute function
                 if asyncio.iscoroutinefunction(func):
-                    result = await func(*args, **kwargs)
+                    RESULT = await func(*args, **kwargs)
                 else:
-                    result = func(*args, **kwargs)
+                    RESULT = func(*args, **kwargs)
 
                 # Success
                 attempt_info = RetryAttempt(
-                    attempt=attempt + 1,
-                    delay=0.0,
-                    exception=None,
-                    timestamp=datetime.utcnow(),
-                    success=True
+                    ATTEMPT=attempt + 1,
+                    DELAY=0.0,
+                    EXCEPTION=None,
+                    TIMESTAMP=datetime.utcnow(),
+                    SUCCESS=True
                 )
                 attempts_history.append(attempt_info)
 
@@ -213,24 +213,24 @@ class RetryPolicy:
                 logger.debug(f"Function succeeded on attempt {attempt + 1}")
 
                 return RetryResult(
-                    success=True,
-                    result=result,
-                    attempts=attempt + 1,
+                    SUCCESS=True,
+                    RESULT=result,
+                    ATTEMPTS=attempt + 1,
                     total_delay=total_delay,
                     attempts_history=attempts_history
                 )
 
             except Exception as e:
                 last_exception = e
-                delay = DelayCalculator.calculate_delay(retry_config, attempt)
+                DELAY = DelayCalculator.calculate_delay(retry_config, attempt)
                 total_delay += delay
 
                 attempt_info = RetryAttempt(
-                    attempt=attempt + 1,
-                    delay=delay,
-                    exception=e,
-                    timestamp=datetime.utcnow(),
-                    success=False
+                    ATTEMPT=attempt + 1,
+                    DELAY=delay,
+                    EXCEPTION=e,
+                    TIMESTAMP=datetime.utcnow(),
+                    SUCCESS=False
                 )
                 attempts_history.append(attempt_info)
 
@@ -262,9 +262,9 @@ class RetryPolicy:
         self._update_stats(len(attempts_history), False)
 
         return RetryResult(
-            success=False,
-            result=None,
-            attempts=len(attempts_history),
+            SUCCESS=False,
+            RESULT=None,
+            ATTEMPTS=len(attempts_history),
             total_delay=total_delay,
             attempts_history=attempts_history,
             final_exception=last_exception
@@ -285,7 +285,7 @@ class RetryPolicy:
             self._stats["failed_retries"] += 1
 
         # Update average attempts
-        total = self._stats["total_retries"]
+        TOTAL = self._stats["total_retries"]
         if total > 0:
             current_avg = self._stats["average_attempts"]
             self._stats["average_attempts"] = (
@@ -298,7 +298,7 @@ class RetryPolicy:
         Returns:
             Statistics dictionary
         """
-        stats = self._stats.copy()
+        STATS = self._stats.copy()
         if stats["total_retries"] > 0:
             stats["success_rate"] = stats["successful_retries"] / stats["total_retries"]
         else:
@@ -324,7 +324,7 @@ class RetryableExecutor:
             name: Policy name
             config: Retry configuration
         """
-        self.policies[name] = RetryPolicy(config)
+        SELF.POLICIES[NAME] = RetryPolicy(config)
         logger.debug(f"Registered retry policy: {name}")
 
         """Docstring."""
@@ -358,7 +358,7 @@ class RetryableExecutor:
             retry_policy = RetryPolicy(config or self.default_config)
 
         # Execute with retry
-        result = await retry_policy.execute(func, *args, **kwargs)
+        RESULT = await retry_policy.execute(func, *args, **kwargs)
 
         if not result.success:
             raise result.final_exception
@@ -406,16 +406,16 @@ def retry(
             """Docstring."""
         async def async_wrapper(*args, **kwargs):
                 """Docstring."""
-            config = RetryConfig(
+            CONFIG = RetryConfig(
                 max_attempts=max_attempts,
-                strategy=strategy,
+                STRATEGY=strategy,
                 base_delay=base_delay,
                 max_delay=max_delay,
                 retryable_exceptions=retryable_exceptions or []
             )
 
             retry_policy = RetryPolicy(config)
-            result = await retry_policy.execute(func, *args, **kwargs)
+            RESULT = await retry_policy.execute(func, *args, **kwargs)
 
             if not result.success:
                 raise result.final_exception
@@ -451,8 +451,8 @@ def retry_with_policy(policy_name: str):
             """Docstring."""
         async def wrapper(*args, **kwargs):
                 """Docstring."""
-            executor = await get_retry_executor()
-            return await executor.execute(func, *args, policy=policy_name, **kwargs)
+            EXECUTOR = await get_retry_executor()
+            RETURN AWAIT EXECUTOR.EXECUTE(FUNC, *ARGS, POLICY=policy_name, **kwargs)
         return wrapper
     return decorator
 
@@ -460,25 +460,25 @@ def retry_with_policy(policy_name: str):
 RETRY_CONFIGS = {
     "aggressive": RetryConfig(
         max_attempts=5,
-        strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
+        STRATEGY=RetryStrategy.EXPONENTIAL_BACKOFF,
         base_delay=0.5,
         max_delay=30.0
     ),
     "conservative": RetryConfig(
         max_attempts=3,
-        strategy=RetryStrategy.LINEAR_BACKOFF,
+        STRATEGY=RetryStrategy.LINEAR_BACKOFF,
         base_delay=2.0,
         max_delay=60.0
     ),
     "fast": RetryConfig(
         max_attempts=3,
-        strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
+        STRATEGY=RetryStrategy.EXPONENTIAL_BACKOFF,
         base_delay=0.1,
         max_delay=5.0
     ),
     "slow": RetryConfig(
         max_attempts=5,
-        strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
+        STRATEGY=RetryStrategy.EXPONENTIAL_BACKOFF,
         base_delay=5.0,
         max_delay=300.0
     )
@@ -487,7 +487,7 @@ RETRY_CONFIGS = {
 # Initialize default policies
 async def init_default_policies() -> None:
     """Initialize default retry policies."""
-    executor = await get_retry_executor()
+    EXECUTOR = await get_retry_executor()
 
     for name, config in RETRY_CONFIGS.items():
         executor.register_policy(name, config)

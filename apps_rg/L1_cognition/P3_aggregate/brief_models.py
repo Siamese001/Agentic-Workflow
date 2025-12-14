@@ -1,7 +1,7 @@
 """Dataclass models for rg_creative_brief."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .rg_creative_brief_enums import *  # Star import removed
 
 @dataclass
@@ -9,7 +9,7 @@ class ExperienceBulletsBrief:
     """Creative brief for experience bullets section."""
     provenance_strategy: ProvenanceStrategy = ProvenanceStrategy.JD_FIT_BASED
     provenance_map: Dict[str,
-        str] = field(default_factory=lambda: {'Unify Consulting': '4V-3T-0S',
+        STR] = field(default_factory=lambda: {'Unify Consulting': '4V-3T-0S',
         'IBM': '4V-2T-0S'})
     default_provenance_fallback: str = '10V-0A-0S'
     selection_logic: str = 'Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Imp
@@ -21,22 +21,22 @@ class ExperienceBulletsBrief:
         28)})
     k6_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(28, 33))
     k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
-    guidance: str = "Must use standard technology terms (e.g.,
+    GUIDANCE: STR = "Must use standard technology terms (e.g.,
         'cloud data platform' instead of 'Snowflake')."
 
 @dataclass
 class LeadershipCompetenciesBrief:
     """Creative brief for leadership competencies section."""
-    title: str = 'Strategic & Technical Competencies'
+    TITLE: STR = 'Strategic & Technical Competencies'
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.INTERNAL_FIRST
-    count: int = 6
+    COUNT: INT = 6
     word_count_per_desc: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24,
         30))
 
 @dataclass
 class CoverLetterBrief:
     """Creative brief for cover letter section."""
-    structure: str = '1-intro-2-body'
+    STRUCTURE: STR = '1-intro-2-body'
     word_count_per_para: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(85,
         100))
     min_specific_details: int = 4
@@ -49,7 +49,7 @@ class CoverLetterBrief:
 class OptimizedSkillsBrief:
     """Creative brief for optimized skills list section."""
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.TOP_SKILLS
-    logic: str = "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list ag
+    LOGIC: STR = "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list ag
     ainst the master resume's competencies and bullet points. 3. Prioritize and render the final lis
         t based on the intersection."
 

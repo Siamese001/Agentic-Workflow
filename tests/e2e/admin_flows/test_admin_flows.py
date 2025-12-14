@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class AdminAction(Enum):
@@ -27,13 +27,13 @@ class TestAdminUserManagement:
 
 def test_create_user_flow(self: Any) -> None:
     """E2E: Admin creates new user successfully."""
-    request = AdminRequest(
-        action=AdminAction.CREATE_USER,
-        payload={"username": "newuser", "email": "new@example.com", "role": "viewer"},
+    REQUEST = AdminRequest(
+        ACTION=AdminAction.CREATE_USER,
+        PAYLOAD={"username": "newuser", "email": "new@example.com", "role": "viewer"},
         admin_id="admin_001",
     )
     # Simulate flow
-    assert request.action == AdminAction.CREATE_USER
+    ASSERT REQUEST.ACTION == AdminAction.CREATE_USER
     assert "username" in request.payload
 
 
@@ -47,23 +47,23 @@ def test_create_user_duplicate_rejected(self: Any) -> None:
 
 def test_update_user_permissions(self: Any) -> None:
     """E2E: Admin updates user permissions."""
-    user = {"id": "user_001", "permissions": ["read"]}
+    USER = {"id": "user_001", "permissions": ["read"]}
     new_permissions = ["read", "write"]
-    user["permissions"] = new_permissions
+    USER["PERMISSIONS"] = new_permissions
     assert "write" in user["permissions"]
 
 
 def test_deactivate_user(self: Any) -> None:
     """E2E: Admin deactivates user account."""
-    user = {"id": "user_001", "active": True}
-    user["active"] = False
+    USER = {"id": "user_001", "active": True}
+    USER["ACTIVE"] = False
     assert user["active"] is False
 
 
 def test_admin_audit_logging(self: Any) -> None:
     """E2E: Admin actions are logged."""
     audit_log: List[Dict] = []
-    action = {"admin": "admin_001", "action": "create_user", "target": "user_002"}
+    ACTION = {"admin": "admin_001", "action": "create_user", "target": "user_002"}
     audit_log.append(action)
     assert len(audit_log) == 1
 
@@ -74,7 +74,7 @@ class TestAdminConfigManagement:
 
 def test_update_system_config(self: Any) -> None:
     """E2E: Admin updates system configuration."""
-    config = {"max_tokens": 4000, "temperature": 0.7}
+    CONFIG = {"max_tokens": 4000, "temperature": 0.7}
     config["max_tokens"] = 8000
     assert config["max_tokens"] == 8000
 
@@ -98,15 +98,15 @@ def test_config_rollback(self: Any) -> None:
 
 def test_feature_flag_toggle(self: Any) -> None:
     """E2E: Admin toggles feature flags."""
-    flags = {"new_ui": False, "beta_features": False}
+    FLAGS = {"new_ui": False, "beta_features": False}
     flags["new_ui"] = True
     assert flags["new_ui"] is True
 
 
 def test_config_export(self: Any) -> None:
     """E2E: Config can be exported."""
-    config = {"setting1": "value1", "setting2": "value2"}
-    exported = str(config)
+    CONFIG = {"setting1": "value1", "setting2": "value2"}
+    EXPORTED = str(config)
     assert "setting1" in exported
 
 
@@ -116,7 +116,7 @@ class TestAdminMonitoring:
 
 def test_view_system_logs(self: Any) -> None:
     """E2E: Admin views system logs."""
-    logs = [
+    LOGS = [
         {"level": "INFO", "message": "System started"},
         {"level": "ERROR", "message": "Connection failed"},
     ]
@@ -126,7 +126,7 @@ def test_view_system_logs(self: Any) -> None:
 
 def test_view_usage_metrics(self: Any) -> None:
     """E2E: Admin views usage metrics."""
-    metrics = {
+    METRICS = {
         "requests_today": 1500,
         "active_users": 42,
         "avg_latency_ms": 150,
@@ -136,28 +136,28 @@ def test_view_usage_metrics(self: Any) -> None:
 
 def test_alert_configuration(self: Any) -> None:
     """E2E: Admin configures alerts."""
-    alert = {
+    ALERT = {
         "name": "high_latency",
         "condition": "latency > 500ms",
         "action": "email",
     }
-    assert alert["condition"] == "latency > 500ms"
+    ASSERT ALERT["CONDITION"] == "latency > 500ms"
 
 
 def test_health_dashboard(self: Any) -> None:
     """E2E: Admin views health dashboard."""
-    health = {
+    HEALTH = {
         "api": "healthy",
         "database": "healthy",
         "cache": "degraded",
     }
-    unhealthy = [k for k, v in health.items() if v != "healthy"]
+    UNHEALTHY = [k for k, v in health.items() if v != "healthy"]
     assert "cache" in unhealthy
 
 
 def test_resource_utilization(self: Any) -> None:
     """E2E: Admin views resource utilization."""
-    resources = {
+    RESOURCES = {
         "cpu_percent": 45,
         "memory_percent": 60,
         "disk_percent": 30,

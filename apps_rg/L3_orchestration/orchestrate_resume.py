@@ -1,9 +1,8 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L3_orchestration
 # -*- coding: utf-8 -*-
 """Pure orchestration of resume generation using shared atoms."""
 
-import logging
 from typing import Dict, List
 
 from shared.configuration.config import ContentConstraintsConfig
@@ -18,7 +17,7 @@ def __init__(self: Any, master_resume: Dict, test_mode: bool) -> None:
     self.master_resume = master_resume
     self.test_mode = test_mode
     self.hop_checkpoints: List[HopCheckpoint] = []
-    self.constraints = ContentConstraintsConfig()
+    SELF.CONSTRAINTS = ContentConstraintsConfig()
     self.jd_enforcer = JDEnforcementValidator()
 
 
@@ -30,12 +29,12 @@ def run(self: Any, job_description: str) -> Dict[str, object]:
         raise HopExecutionError("JD validation failed")
 
     # HOP-1: Extract from master resume
-    clerk = ClerkExtractor(self.master_resume)
+    CLERK = ClerkExtractor(self.master_resume)
     extracted_data, hop1_results = clerk.extract()
     self._record_hop("HOP-1", hop1_results)
 
     # HOP-2: Enrich data
-    enricher = DataEnricher()
+    ENRICHER = DataEnricher()
     enriched_data, hop2_results = enricher.enrich(extracted_data, None, self)
     self._record_hop("HOP-2", hop2_results)
 
@@ -48,11 +47,11 @@ def run(self: Any, job_description: str) -> Dict[str, object]:
 
 def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None:
     """Record a hop checkpoint."""
-    status = HopStatus.COMPLETED if all(r.passed for r in results) else HopStatus.FAILED
+    STATUS = HopStatus.COMPLETED if all(r.passed for r in results) else HopStatus.FAILED
     self.hop_checkpoints.append(HopCheckpoint(hop_id=hop_id, status=status))
 
 
 def orchestrate_resume(master_resume: Dict, job_description: str) -> Dict[str, object]:
     """Single public function - pure routing between atoms."""
-    orchestrator = ResumeOrchestrator(master_resume)
+    ORCHESTRATOR = ResumeOrchestrator(master_resume)
     return orchestrator.run(job_description)

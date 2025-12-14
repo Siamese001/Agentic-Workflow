@@ -2,7 +2,7 @@
 
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Simple aggregation utilities over error / success events that can be
 used by tests or higher-level evaluation code.
 """
@@ -19,7 +19,7 @@ def compute_error_rate(events: List[Dict[str, object]]) -> float:
     if not events:
         return 0.0
 
-    errors = sum(1 for evt in events if evt.get("event_type") == "error")
+    ERRORS = sum(1 for evt in events if evt.get("event_type") == "error")
     return errors / float(len(events))
 
 
@@ -30,6 +30,6 @@ def count_failures_by_code(events: List[Dict[str, object]]) -> Dict[str, int]:
     for evt in events:
         if evt.get("event_type") != "error":
             continue
-        code = str(evt.get("error_code") or "unknown")
-        counts[code] = counts.get(code, 0) + 1
+        CODE = str(evt.get("error_code") or "unknown")
+        COUNTS[CODE] = counts.get(code, 0) + 1
     return counts

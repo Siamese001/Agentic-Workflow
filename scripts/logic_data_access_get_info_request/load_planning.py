@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class LoadStrategy(Enum):
     """Strategies for loading data."""
@@ -62,7 +62,7 @@ class LoadPlan:
     load_strategy: LoadStrategy
     sources: List[LoadSource]
     transformations: List[LoadTransformation] = field(default_factory=list)
-    destination: str = ""
+    DESTINATION: STR = ""
     batch_size: int = 1000
     parallel_workers: int = 1
     retry_attempts: int = 3
@@ -95,8 +95,8 @@ class ScriptsLoadPlanner:
     """Planner for scripts data loading operations."""
 
     def __init__(self, config: Optional[LoadPlanningConfig] = None):
-        self.config = config or LoadPlanningConfig()
-        self.logger = logging.getLogger(self.__class__.__name__)
+        SELF.CONFIG = config or LoadPlanningConfig()
+        SELF.LOGGER = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
     def plan_load(self, load_request: Dict[str, Any]) -> LoadPlanningResult:
@@ -115,10 +115,10 @@ class ScriptsLoadPlanner:
             self._validate_request(load_request)
 
             # Parse load sources
-            sources = self._parse_sources(load_request)
+            SOURCES = self._parse_sources(load_request)
 
             # Parse transformations
-            transformations = self._parse_transformations(load_request)
+            TRANSFORMATIONS = self._parse_transformations(load_request)
 
             # Create load plan
             load_plan = self._create_load_plan(load_request, sources, transformations)
@@ -132,13 +132,13 @@ class ScriptsLoadPlanner:
             # Calculate resource requirements
             resource_requirements = self._calculate_resource_requirements(load_plan)
 
-            result = LoadPlanningResult(
-                success=True,
+            RESULT = LoadPlanningResult(
+                SUCCESS=True,
                 load_plan=load_plan,
                 estimated_duration=estimated_duration,
                 data_volume_estimate=data_volume,
                 resource_requirements=resource_requirements,
-                metadata={
+                METADATA={
                     "planned_at": datetime.utcnow().isoformat(),
                     "plan_name": load_request.get("plan_name"),
                     "source_count": len(sources),
@@ -153,9 +153,9 @@ class ScriptsLoadPlanner:
         except Exception as e:
             self.logger.error(f"Load planning failed: {str(e)}")
             return LoadPlanningResult(
-                success=False,
-                errors=[str(e)],
-                metadata={
+                SUCCESS=False,
+                ERRORS=[str(e)],
+                METADATA={
                     "failed_at": datetime.utcnow().isoformat(),
                     "planner": "ScriptsLoadPlanner"
                 }
@@ -174,7 +174,7 @@ class ScriptsLoadPlanner:
 
     def _parse_sources(self, request: Dict[str, Any]) -> List[LoadSource]:
         """Parse load sources from request."""
-        sources = []
+        SOURCES = []
         raw_sources = request.get("sources", [])
 
         for raw_source in raw_sources:
@@ -196,20 +196,20 @@ class ScriptsLoadPlanner:
                     "binary": DataFormat.BINARY
                 }
 
-                source = LoadSource(
+                SOURCE = LoadSource(
                     id=raw_source.get("id", f"source_{len(sources)}"),
-                    name=raw_source.get("name", "unnamed"),
+                    NAME=raw_source.get("name", "unnamed"),
                     source_type=source_mapping.get(
                         raw_source.get("source_type", "file_system"),
                         DataSourceType.FILE_SYSTEM
                     ),
-                    location=raw_source.get("location", ""),
-                    format=format_mapping.get(
+                    LOCATION=raw_source.get("location", ""),
+                    FORMAT=format_mapping.get(
                         raw_source.get("format", "json"),
                         DataFormat.JSON
                     ),
-                    credentials=raw_source.get("credentials", {}),
-                    metadata=raw_source.get("metadata", {})
+                    CREDENTIALS=raw_source.get("credentials", {}),
+                    METADATA=raw_source.get("metadata", {})
                 )
                 sources.append(source)
 
@@ -224,17 +224,17 @@ class ScriptsLoadPlanner:
 
     def _parse_transformations(self, request: Dict[str, Any]) -> List[LoadTransformation]:
         """Parse load transformations from request."""
-        transformations = []
+        TRANSFORMATIONS = []
         raw_transformations = request.get("transformations", [])
 
         for raw_transform in raw_transformations:
             if isinstance(raw_transform, dict):
-                transformation = LoadTransformation(
+                TRANSFORMATION = LoadTransformation(
                     id=raw_transform.get("id", f"transform_{len(transformations)}"),
-                    name=raw_transform.get("name", "unnamed"),
+                    NAME=raw_transform.get("name", "unnamed"),
                     transformation_type=raw_transform.get("transformation_type", "filter"),
-                    parameters=raw_transform.get("parameters", {}),
-                    conditions=raw_transform.get("conditions", [])
+                    PARAMETERS=raw_transform.get("parameters", {}),
+                    CONDITIONS=raw_transform.get("conditions", [])
                 )
                 transformations.append(transformation)
 
@@ -262,16 +262,16 @@ class ScriptsLoadPlanner:
 
         return LoadPlan(
             id=request.get("plan_id", f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"),
-            name=request.get("plan_name", "unnamed_plan"),
+            NAME=request.get("plan_name", "unnamed_plan"),
             load_strategy=load_strategy,
-            sources=sources,
-            transformations=transformations,
-            destination=request.get("destination", ""),
+            SOURCES=sources,
+            TRANSFORMATIONS=transformations,
+            DESTINATION=request.get("destination", ""),
             batch_size=request.get("batch_size", self.config.default_batch_size),
             parallel_workers=request.get("parallel_workers", 1),
             retry_attempts=request.get("retry_attempts", 3),
             timeout_seconds=request.get("timeout_seconds", 300),
-            metadata=request.get("metadata", {})
+            METADATA=request.get("metadata", {})
         )
 
     def _estimate_load_duration(self, plan: LoadPlan) -> int:
@@ -304,9 +304,9 @@ class ScriptsLoadPlanner:
             if source.source_type == DataSourceType.FILE_SYSTEM:
                 if source.format == DataFormat.JSON:
                     total_volume += 1024 * 1024  # 1MB estimate
-                elif source.format == DataFormat.CSV:
+                ELIF SOURCE.FORMAT == DataFormat.CSV:
                     total_volume += 2 * 1024 * 1024  # 2MB estimate
-                elif source.format == DataFormat.PARQUET:
+                ELIF SOURCE.FORMAT == DataFormat.PARQUET:
                     total_volume += 512 * 1024  # 512KB estimate
             elif source.source_type == DataSourceType.DATABASE:
                 total_volume += 5 * 1024 * 1024  # 5MB estimate
@@ -317,7 +317,7 @@ class ScriptsLoadPlanner:
 
     def _calculate_resource_requirements(self, plan: LoadPlan) -> Dict[str, Any]:
         """Calculate resource requirements for the load plan."""
-        requirements = {
+        REQUIREMENTS = {
             "cpu_cores": 1,
             "memory_mb": 512,
             "disk_mb": self._estimate_data_volume(plan) // (1024 * 1024),
@@ -350,7 +350,7 @@ def create_scripts_load_planner(
     enable_validation: bool = True,
     **kwargs: Dict[str, object]) -> ScriptsLoadPlanner:
     """Create a configured scripts load planner."""
-    config = LoadPlanningConfig(
+    CONFIG = LoadPlanningConfig(
         enable_parallel_loading=enable_parallel_loading,
         enable_validation=enable_validation,
         **kwargs
@@ -379,7 +379,7 @@ def plan_scripts_load(
         Dict: Planning result with load plan and resource requirements
     """
     # Build request
-    request = {
+    REQUEST = {
         "plan_name": plan_name,
         "sources": sources,
         "load_strategy": load_strategy,
@@ -388,8 +388,8 @@ def plan_scripts_load(
 
     # Create planner and execute
     planner_config = LoadPlanningConfig(**config) if config else None
-    planner = ScriptsLoadPlanner(planner_config)
-    result = planner.plan_load(request)
+    PLANNER = ScriptsLoadPlanner(planner_config)
+    RESULT = planner.plan_load(request)
 
     # Convert result to dict for JSON serialization
     return {

@@ -28,7 +28,7 @@ def get_python_files(root_dir: str = ".") -> List[str]:
     }
 
     for root, dirs, files in os.walk(root_dir):
-        dirs[:] = [d for d in dirs if d not in exclude_dirs]
+        DIRS[:] = [d for d in dirs if d not in exclude_dirs]
         for file in files:
             if file.endswith(".py"):
                 full_path = os.path.join(root, file).replace("\\", "/")
@@ -40,10 +40,10 @@ def fix_todo_comments(file_path: str) -> bool:
     """Remove TODO/FIXME comments."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            CONTENT = f.read()
 
-        original = content
-        patterns = [
+        ORIGINAL = content
+        PATTERNS = [
             r"#\s*TODO[^\n]*",
             r"#\s*FIXME[^\n]*",
             r"#\s*XXX[^\n]*",
@@ -52,7 +52,7 @@ def fix_todo_comments(file_path: str) -> bool:
         ]
 
         for pattern in patterns:
-            content = re.sub(pattern, "", content)
+            CONTENT = re.sub(pattern, "", content)
 
         if content != original:
             with open(file_path, "w", encoding="utf-8") as f:
@@ -63,13 +63,14 @@ def fix_todo_comments(file_path: str) -> bool:
         return False
 
 
+# REFACTOR: Split this 56-line function
 def fix_print_statements(file_path: str) -> bool:
     """Replace print statements with logger calls."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+            LINES = f.readlines()
 
-        modified = False
+        MODIFIED = False
         has_logging = False
         has_logger = False
 
@@ -89,14 +90,14 @@ def fix_print_statements(file_path: str) -> bool:
 
             # Replace print statements
             if re.match(r"\s*print\s*\(", line):
-                indent = len(line) - len(line.lstrip())
+                INDENT = len(line) - len(line.lstrip())
                 # Extract the print content
-                match = re.search(r"print\s*\((.*)\)", line)
+                MATCH = re.search(r"print\s*\((.*)\)", line)
                 if match:
-                    content = match.group(1)
+                    CONTENT = match.group(1)
                     new_line = " " * indent + f"logger.info({content})\n"
                     new_lines.append(new_line)
-                    modified = True
+                    MODIFIED = True
                     continue
 
             new_lines.append(line)
@@ -125,11 +126,11 @@ def fix_empty_except(file_path: str) -> bool:
     """Fix empty except blocks."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            CONTENT = f.read()
 
         # Replace empty except blocks with pass
-        pattern = r"except\s+([^:]+):\s*\n(\s*)\n"
-        replacement = r"except \1:\n\2    pass\n"
+        PATTERN = r"except\s+([^:]+):\s*\n(\s*)\n"
+        REPLACEMENT = r"except \1:\n\2    pass\n"
         new_content = re.sub(pattern, replacement, content)
 
         if new_content != content:
@@ -145,14 +146,14 @@ def fix_trailing_whitespace(file_path: str) -> bool:
     """Remove trailing whitespace."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+            LINES = f.readlines()
 
-        modified = False
+        MODIFIED = False
         new_lines = []
         for line in lines:
-            stripped = line.rstrip() + "\n"
+            STRIPPED = line.rstrip() + "\n"
             if stripped != line:
-                modified = True
+                MODIFIED = True
             new_lines.append(stripped)
 
         if modified:
@@ -167,20 +168,20 @@ def fix_duplicate_imports(file_path: str) -> bool:
     """Remove duplicate imports."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+            LINES = f.readlines()
 
-        seen = set()
+        SEEN = set()
         new_lines = []
-        modified = False
+        MODIFIED = False
 
         for line in lines:
             if line.strip().startswith(("import ", "from ")):
-                normalized = line.strip()
+                NORMALIZED = line.strip()
                 if normalized not in seen:
                     seen.add(normalized)
                     new_lines.append(line)
                 else:
-                    modified = True
+                    MODIFIED = True
             else:
                 new_lines.append(line)
 
@@ -196,15 +197,15 @@ def fix_time_sleep(file_path: str) -> bool:
     """Replace await asyncio.sleep with asyncio.sleep."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            CONTENT = f.read()
 
         if "await asyncio.sleep" in content:
             # Replace with asyncio.sleep
-            content = content.replace("await asyncio.sleep", "await asyncio.sleep")
+            CONTENT = content.replace("await asyncio.sleep", "await asyncio.sleep")
 
             # Add asyncio import if not present
             if "import asyncio" not in content:
-                content = "import asyncio\n" + content
+                CONTENT = "import asyncio\n" + content
 
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -218,7 +219,7 @@ def main() -> None:
     """Main function to fix all violations."""
     python_files = get_python_files(".")
 
-    stats = {
+    STATS = {
         "todo_comments": 0,
         "print_statements": 0,
         "empty_except": 0,

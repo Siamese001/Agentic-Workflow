@@ -1,7 +1,7 @@
 """Circuit Breaker implementation for fault tolerance.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Migrated from archives/legacy_root_folders/tools/runtime_utils.py
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
@@ -59,11 +59,11 @@ class CircuitBreaker:
         Returns:
             True if execution is allowed, False if circuit is open
         """
-        now = time.time()
+        NOW = time.time()
 
         if self.state == CircuitBreakerState.OPEN:
             if now - self.opened_at >= self.reset_after_s:
-                self.state = CircuitBreakerState.HALF_OPEN
+                SELF.STATE = CircuitBreakerState.HALF_OPEN
                 self.failure_count = 0
                 self.success_count = 0
             else:
@@ -71,7 +71,7 @@ class CircuitBreaker:
 
         if (self.state == CircuitBreakerState.HALF_OPEN and
             self.success_count >= self.half_open_max_calls):
-            self.state = CircuitBreakerState.CLOSED
+            SELF.STATE = CircuitBreakerState.CLOSED
             self.failure_count = 0
             self.success_count = 0
 
@@ -83,7 +83,7 @@ class CircuitBreaker:
 
         if (self.state in {CircuitBreakerState.OPEN, CircuitBreakerState.HALF_OPEN} and
             self.success_count >= self.half_open_max_calls):
-            self.state = CircuitBreakerState.CLOSED
+            SELF.STATE = CircuitBreakerState.CLOSED
             self.failure_count = 0
             self.success_count = 0
 
@@ -92,7 +92,7 @@ class CircuitBreaker:
         self.failure_count += 1
 
         if self.failure_count >= self.failure_threshold:
-            self.state = CircuitBreakerState.OPEN
+            SELF.STATE = CircuitBreakerState.OPEN
             self.opened_at = time.time()
 
 _BREAKERS: Dict[str, CircuitBreaker] = {}
@@ -117,7 +117,7 @@ def get_breaker(
     """
     if name not in _BREAKERS:
         _BREAKERS[name] = CircuitBreaker(
-            name=name,
+            NAME=name,
             failure_threshold=failure_threshold,
             reset_after_s=reset_after_s,
             half_open_max_calls=half_open_max_calls,

@@ -1,7 +1,7 @@
 """Types and models for autonomic_monitor."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class HealthStatus(Enum):
     """Agent health status."""
     HEALTHY = 'healthy'
@@ -25,7 +25,7 @@ class HealthMetrics:
     error_rate: float
     circuit_breaker_trips: int
     total_requests: int
-    timestamp: float = field(default_factory=time.time)
+    TIMESTAMP: FLOAT = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -42,7 +42,7 @@ class HealthAlert:
     message: str
     metrics: HealthMetrics
     recommended_actions: List[str] = field(default_factory=list)
-    timestamp: float = field(default_factory=time.time)
+    TIMESTAMP: FLOAT = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""

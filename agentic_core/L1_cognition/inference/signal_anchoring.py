@@ -13,7 +13,7 @@ import re
 from datetime import datetime
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ClaimType(str, Enum):
     """Types of claims that can be extracted from content."""
@@ -101,12 +101,12 @@ class ClaimExtractor:
         Returns:
             List of extracted claims
         """
-        claims = []
+        CLAIMS = []
 
         # Extract claims based on patterns
         for claim_type, patterns in self._extraction_patterns.items():
             for pattern in patterns:
-                matches = re.finditer(pattern, content, re.IGNORECASE | re.MULTILINE)
+                MATCHES = re.finditer(pattern, content, re.IGNORECASE | re.MULTILINE)
 
                 for match in matches:
                     claim_text = self._clean_claim_text(match.group(1))
@@ -118,30 +118,30 @@ class ClaimExtractor:
                         source_metadata.source_type, 0.5
                     )
                     pattern_confidence = self._get_pattern_confidence(pattern)
-                    confidence = min(base_confidence * pattern_confidence, 1.0)
+                    CONFIDENCE = min(base_confidence * pattern_confidence, 1.0)
 
                     # Extract context window
-                    start = max(0, match.start() - 100)
-                    end = min(len(content), match.end() + 100)
+                    START = max(0, match.start() - 100)
+                    END = min(len(content), match.end() + 100)
                     context_window = content[start:end].strip()
 
-                    claim = ExtractedClaim(
+                    CLAIM = ExtractedClaim(
                         claim_text=claim_text,
                         claim_type=ClaimType(claim_type),
                         source_metadata=source_metadata,
-                        confidence=confidence,
+                        CONFIDENCE=confidence,
                         evidence_snippet=match.group(0),
                         context_window=context_window
                     )
                     claims.append(claim)
 
         # Deduplicate claims
-        claims = self._deduplicate_claims(claims)
+        CLAIMS = self._deduplicate_claims(claims)
 
         if self.enable_logging:
             logger.info(
                 "claims_extracted",
-                extra={
+                EXTRA={
                     "source_id": source_metadata.source_id,
                     "source_type": source_metadata.source_type.value,
                     "claim_count": len(claims)
@@ -209,13 +209,13 @@ class ClaimExtractor:
             Cleaned claim text
         """
         # Remove extra whitespace
-        text = re.sub(r'\s+', ' ', text.strip())
+        TEXT = re.sub(r'\s+', ' ', text.strip())
 
         # Remove trailing punctuation
-        text = text.rstrip('.,;:!?"\'')
+        TEXT = text.rstrip('.,;:!?"\'')
 
         # Normalize quotes
-        text = text.replace('"', '').replace("'", "")
+        TEXT = text.replace('"', '').replace("'", "")
 
         return text
 
@@ -249,12 +249,12 @@ class ClaimExtractor:
         Returns:
             Deduplicated claim list
         """
-        seen = set()
-        deduplicated = []
+        SEEN = set()
+        DEDUPLICATED = []
 
         for claim in claims:
             # Create a normalized key for comparison
-            key = self._normalize_claim_key(claim.claim_text)
+            KEY = self._normalize_claim_key(claim.claim_text)
 
             if key not in seen:
                 seen.add(key)
@@ -264,7 +264,7 @@ class ClaimExtractor:
                 for i, existing in enumerate(deduplicated):
                     if self._normalize_claim_key(existing.claim_text) == key:
                         if claim.confidence > existing.confidence:
-                            deduplicated[i] = claim
+                            DEDUPLICATED[I] = claim
                         break
 
         return deduplicated
@@ -279,7 +279,7 @@ class ClaimExtractor:
             Normalized key
         """
         # Lowercase and remove non-alphanumeric
-        normalized = re.sub(r'[^a-z0-9]', '', text.lower())
+        NORMALIZED = re.sub(r'[^a-z0-9]', '', text.lower())
         return normalized
 
 class SignalAnchor:
@@ -309,7 +309,7 @@ class SignalAnchor:
 
         logger.info(
             "signal_anchor_initialized",
-            extra={
+            EXTRA={
                 "min_confidence": min_confidence,
                 "max_claims_per_source": max_claims_per_source
             }
@@ -338,7 +338,7 @@ class SignalAnchor:
             source_metadata = self._extract_source_metadata(item)
 
             # Extract claims from content
-            content = item.get("content", item.get("text", ""))
+            CONTENT = item.get("content", item.get("text", ""))
             if not content:
                 continue
 
@@ -355,10 +355,10 @@ class SignalAnchor:
             # Convert to signed claims and add to context
             for claim in valid_claims:
                 signed_claim = SignedClaim(
-                    claim=claim.claim_text,
-                    source=f"{source_metadata.source_type.value}:{source_metadata.source_id}",
-                    confidence=claim.confidence,
-                    evidence=claim.evidence_snippet
+                    CLAIM=claim.claim_text,
+                    SOURCE=f"{source_metadata.source_type.value}:{source_metadata.source_id}",
+                    CONFIDENCE=claim.confidence,
+                    EVIDENCE=claim.evidence_snippet
                 )
                 context.add_signed_claim(
                     claim.claim_text,
@@ -371,7 +371,7 @@ class SignalAnchor:
 
         logger.info(
             "rag_content_anchored",
-            extra={
+            EXTRA={
                 "execution_id": context.hard_state.execution_id,
                 "content_items": len(rag_content),
                 "claims_added": total_claims
@@ -405,15 +405,15 @@ class SignalAnchor:
             source_type = SourceType.REFERENCE
 
         # Create source ID from content hash
-        content = item.get("content", item.get("text", ""))
+        CONTENT = item.get("content", item.get("text", ""))
         source_id = hashlib.md5(content.encode()).hexdigest()[:8]
 
         return SourceMetadata(
             source_type=source_type,
             source_id=source_id,
-            title=item.get("title"),
-            author=item.get("author"),
-            date=item.get("date"),
+            TITLE=item.get("title"),
+            AUTHOR=item.get("author"),
+            DATE=item.get("date"),
             reliability_score=item.get("reliability", 0.8)
         )
 
@@ -487,7 +487,7 @@ def anchor_resume_content(
     Returns:
         Updated context with anchored claims
     """
-    anchor = create_resume_anchor()
+    ANCHOR = create_resume_anchor()
 
     rag_content = [{
         "content": resume_text,

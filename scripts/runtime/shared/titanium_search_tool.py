@@ -11,7 +11,7 @@ import logging
     create_titanium_pipeline
 )
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 # Global singleton to preserve Cache/Lazy Models
 _TITANIUM_PIPELINE: Optional[TitaniumRAGPipeline] = None
@@ -102,7 +102,7 @@ async def get_titanium_search_tool(
 
     try:
         # Get or initialize pipeline
-        pipeline = await _initialize_pipeline()
+        PIPELINE = await _initialize_pipeline()
 
         # Connect to actual vector stores
         # In production, this would connect to your configured vector stores
@@ -115,14 +115,14 @@ async def get_titanium_search_tool(
                 vector_store = get_vector_store()
 
                 # Perform semantic search
-                results = await vector_store.similarity_search(
-                    query=query,
+                RESULTS = await vector_store.similarity_search(
+                    QUERY=query,
                     n_results=max_docs
                 )
 
                 # Convert to document format expected by pipeline
-                documents = []
-                metadatas = []
+                DOCUMENTS = []
+                METADATAS = []
 
                 for i, doc in enumerate(results):
                     documents.append(doc.page_content if hasattr(doc, 'page_content') else str(doc))
@@ -140,8 +140,8 @@ async def get_titanium_search_tool(
                 return [], []
 
         # Execute the full pipeline (Gate -> Decompose -> Search -> Rerank)
-        results = await pipeline.query(
-            query=query,
+        RESULTS = await pipeline.query(
+            QUERY=query,
             retrieval_function=actual_retrieval
         )
 
@@ -150,7 +150,7 @@ async def get_titanium_search_tool(
             return f"No relevant information found for: {query}"
 
         formatted_results = []
-        docs = results['documents'][:max_results]
+        DOCS = results['documents'][:max_results]
 
         for i, doc in enumerate(docs, 1):
             # Extract text content
@@ -163,20 +163,20 @@ async def get_titanium_search_tool(
                 text_content = doc.content
 
             # Format result
-            result = f"[Source {i}]: {text_content}"
+            RESULT = f"[Source {i}]: {text_content}"
 
             # Add metadata if requested
             if include_metadata and hasattr(doc, 'metadata'):
-                metadata = doc.metadata
+                METADATA = doc.metadata
                 if 'source' in metadata:
-                    result += f"\n  Source: {metadata['source']}"
+                    RESULT += f"\n  Source: {metadata['source']}"
                 if 'date' in metadata:
-                    result += f"\n  Date: {metadata['date']}"
+                    RESULT += f"\n  Date: {metadata['date']}"
 
             formatted_results.append(result)
 
         # Add pipeline metadata
-        metadata = results.get('metadata', {})
+        METADATA = results.get('metadata', {})
         if metadata.get('cached'):
             formatted_results.append("\n[Results retrieved from semantic cache]")
         if metadata.get('decomposed'):
@@ -208,7 +208,7 @@ async def get_titanium_search_with_sources(
         Dictionary with results and metadata
     """
     try:
-        pipeline = await _initialize_pipeline()
+        PIPELINE = await _initialize_pipeline()
 
         # Use the same actual_retrieval function as get_titanium_search_tool
         async def actual_retrieval(query: str, max_docs: int = 10):
@@ -220,14 +220,14 @@ async def get_titanium_search_with_sources(
                 vector_store = get_vector_store()
 
                 # Perform semantic search
-                results = await vector_store.similarity_search(
-                    query=query,
+                RESULTS = await vector_store.similarity_search(
+                    QUERY=query,
                     n_results=max_docs
                 )
 
                 # Convert to document format expected by pipeline
-                documents = []
-                metadatas = []
+                DOCUMENTS = []
+                METADATAS = []
 
                 for i, doc in enumerate(results):
                     documents.append(doc.page_content if hasattr(doc, 'page_content') else str(doc))
@@ -244,13 +244,13 @@ async def get_titanium_search_with_sources(
                 # Fallback to empty results
                 return [], []
 
-        results = await pipeline.query(
-            query=query,
+        RESULTS = await pipeline.query(
+            QUERY=query,
             retrieval_function=actual_retrieval
         )
 
         # Extract sources
-        sources = []
+        SOURCES = []
         for doc in results.get('documents', []):
             source_info = {
                 'content': '',
@@ -295,7 +295,7 @@ def get_pipeline_stats() -> Dict[str, Any]:
         return {'status': 'not_initialized'}
 
     try:
-        stats = _TITANIUM_PIPELINE.get_stats()
+        STATS = _TITANIUM_PIPELINE.get_stats()
         component_info = _TITANIUM_PIPELINE.get_component_info()
 
         return {
@@ -311,7 +311,7 @@ async def clear_cache():
 
     Useful for testing or when fresh results are needed.
     """
-    pipeline = await _initialize_pipeline()
+    PIPELINE = await _initialize_pipeline()
     if hasattr(pipeline, 'cache') and pipeline.cache:
         pipeline.cache.clear()
         logger.info("Semantic cache cleared")
@@ -329,7 +329,7 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
     """
     try:
         # Try to get current event loop
-        loop = asyncio.get_running_loop()
+        LOOP = asyncio.get_running_loop()
         # If we're in an async context, we can't use run_until_complete
         # Use run_coroutine_threadsafe instead
 
@@ -343,8 +343,8 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
                 new_loop.close()
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(run_in_thread)
-            return future.result(timeout=30)
+            FUTURE = executor.submit(run_in_thread)
+            RETURN FUTURE.RESULT(TIMEOUT=30)
 
     except RuntimeError:
         # No running loop, safe to create new one

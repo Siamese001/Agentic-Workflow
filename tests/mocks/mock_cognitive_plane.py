@@ -1,7 +1,7 @@
 """Mock Cognitive Plane for testing.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Simple mock implementation that returns predefined plans.
 """
@@ -47,11 +47,11 @@ class MockCognitivePlane(ICognitivePlane):
         })
 
         if self.predefined_plans and self.plan_index < len(self.predefined_plans):
-            plan = self.predefined_plans[self.plan_index]
+            PLAN = self.predefined_plans[self.plan_index]
             self.plan_index += 1
         else:
             # Default mock plan
-            plan = [
+            PLAN = [
                 {
                     "type": "action",
                     "action_type": "tool_call",
@@ -62,14 +62,14 @@ class MockCognitivePlane(ICognitivePlane):
             ]
 
         return PlanningResult(
-            success=True,
-            plan=plan,
+            SUCCESS=True,
+            PLAN=plan,
             reasoning_trace=[
                 {"step": "think", "content": f"Planning for: {request.task}"},
                 {"step": "decide", "content": "Decided on mock action"},
             ],
-            confidence=0.9,
-            metadata={"mock": True},
+            CONFIDENCE=0.9,
+            METADATA={"mock": True},
         )
 
         """Docstring."""
@@ -77,7 +77,7 @@ class MockCognitivePlane(ICognitivePlane):
         self,
         query: str,
         context: Dict[str, Any],
-        mode: str = "react",
+        MODE: STR = "react",
     ) -> Dict[str, Any]:
             """Apply mock reasoning.
 
@@ -127,7 +127,7 @@ class MockCognitivePlane(ICognitivePlane):
         })
 
         # Just pick first option
-        selected = options[0] if options else {}
+        SELECTED = options[0] if options else {}
 
         return {
             "selected": selected,

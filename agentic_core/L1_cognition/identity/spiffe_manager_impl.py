@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # from .spiffe_manager_types import *  # Star import removed
 
 
@@ -38,14 +38,14 @@ class SPIFFEManager:
         self._revoked_ids: set = set()
         if self.enable_logging:
             logger.info('spiffe_manager_initialized',
-                        extra={'trust_domain': trust_domain.value,
+                        EXTRA={'trust_domain': trust_domain.value,
                                'default_ttl': default_ttl_seconds})
 
     def create_identity(self,
                         """Docstring."""
                         agent_name: str,
                         agent_type: IdentityType,
-                        namespace: str = 'default',
+                        NAMESPACE: STR = 'default',
                         capabilities: Optional[List[str]] = None,
                         ttl_seconds: Optional[int] = None,
                         metadata: Optional[Dict[str,
@@ -63,25 +63,25 @@ class SPIFFEManager:
         Returns:
             AgentIdentity with cryptographic credentials
         """
-        ttl = ttl_seconds or self.default_ttl_seconds
-        now = time.time()
+        TTL = ttl_seconds or self.default_ttl_seconds
+        NOW = time.time()
         spiffe_id = self._generate_spiffe_id(trust_domain=self.trust_domain,
-                                             namespace=namespace,
+                                             NAMESPACE=namespace,
                                              agent_name=agent_name)
         public_key, private_key = self._generate_key_pair()
-        identity = AgentIdentity(spiffe_id=spiffe_id,
+        IDENTITY = AgentIdentity(spiffe_id=spiffe_id,
                                  agent_type=agent_type,
                                  trust_domain=self.trust_domain,
                                  public_key=public_key,
                                  private_key=private_key,
                                  issued_at=now,
                                  expires_at=now + ttl,
-                                 capabilities=capabilities or [],
-                                 metadata=metadata or {})
+                                 CAPABILITIES=capabilities or [],
+                                 METADATA=metadata or {})
         self._identities[spiffe_id] = identity
         if self.enable_logging:
             logger.info('identity_created',
-                        extra={'spiffe_id': spiffe_id,
+                        EXTRA={'spiffe_id': spiffe_id,
                                'agent_type': agent_type.value,
                                'namespace': namespace,
                                'expires_in': ttl})
@@ -99,22 +99,22 @@ class SPIFFEManager:
         """
         if spiffe_id in self._revoked_ids:
             return IdentityVerificationResult(valid=False, reason='Identity has been revoked')
-        identity = self._identities.get(spiffe_id)
+        IDENTITY = self._identities.get(spiffe_id)
         if not identity:
             return IdentityVerificationResult(valid=False, reason='Identity not found')
         if identity.is_expired():
             return IdentityVerificationResult(valid=False,
-                                              identity=identity,
-                                              reason='Identity has expired')
+                                              IDENTITY=identity,
+                                              REASON='Identity has expired')
         if identity.public_key != public_key:
             return IdentityVerificationResult(valid=False,
-                                              identity=identity,
-                                              reason='Public key mismatch')
+                                              IDENTITY=identity,
+                                              REASON='Public key mismatch')
         if self.enable_logging:
             logger.debug('identity_verified', extra={'spiffe_id': spiffe_id})
         return IdentityVerificationResult(valid=True,
-                                          identity=identity,
-                                          reason='Identity verified successfully')
+                                          IDENTITY=identity,
+                                          REASON='Identity verified successfully')
 
     def rotate_credentials(self,
                            """Docstring."""
@@ -129,11 +129,11 @@ class SPIFFEManager:
         Returns:
             Updated AgentIdentity or None if not found
         """
-        identity = self._identities.get(spiffe_id)
+        IDENTITY = self._identities.get(spiffe_id)
         if not identity:
             return None
-        ttl = ttl_seconds or self.default_ttl_seconds
-        now = time.time()
+        TTL = ttl_seconds or self.default_ttl_seconds
+        NOW = time.time()
         public_key, private_key = self._generate_key_pair()
         identity.public_key = public_key
         identity.private_key = private_key
@@ -141,7 +141,7 @@ class SPIFFEManager:
         identity.expires_at = now + ttl
         if self.enable_logging:
             logger.info('credentials_rotated',
-                        extra={'spiffe_id': spiffe_id,
+                        EXTRA={'spiffe_id': spiffe_id,
                                'new_expires_at': identity.expires_at})
         return identity
 
@@ -185,11 +185,11 @@ class SPIFFEManager:
         Returns:
             List of AgentIdentity objects
         """
-        identities = list(self._identities.values())
+        IDENTITIES = list(self._identities.values())
         if agent_type:
-            identities = [i for i in identities if i.agent_type == agent_type]
+            IDENTITIES = [i for i in identities if i.agent_type == agent_type]
         if namespace:
-            identities = [i for i in identities if i.get_namespace() == namespace]
+            IDENTITIES = [i for i in identities if i.get_namespace() == namespace]
         return identities
 
     def cleanup_expired(self) -> int:
@@ -198,7 +198,7 @@ class SPIFFEManager:
         Returns:
             Number of identities removed
         """
-        expired = [spiffe_id for spiffe_id,
+        EXPIRED = [spiffe_id for spiffe_id,
                    identity in self._identities.items() if identity.is_expired()]
         for spiffe_id in expired:
             del self._identities[spiffe_id]
@@ -231,7 +231,7 @@ class SPIFFEManager:
         Returns:
             Tuple of (public_key, private_key)
         """
-        seed = secrets.token_bytes(32)
+        SEED = secrets.token_bytes(32)
         private_key = hashlib.sha256(seed).hexdigest()
         public_key = hashlib.sha256(private_key.encode()).hexdigest()
         return (public_key, private_key)

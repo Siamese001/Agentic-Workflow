@@ -3,7 +3,7 @@
 import logging
 from typing import Dict, List
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TestExecutionResultAggregation:
@@ -12,7 +12,7 @@ class TestExecutionResultAggregation:
 
 def test_aggregate_multiple_results(self: Any) -> None:
     """Nominal: Multiple results are aggregated."""
-    results = [
+    RESULTS = [
         {"tool": "search", "data": [1, 2]},
         {"tool": "fetch", "data": [3, 4]},
     ]
@@ -22,33 +22,33 @@ def test_aggregate_multiple_results(self: Any) -> None:
 
 def test_aggregate_with_errors(self: Any) -> None:
     """Nominal: Errors are collected separately."""
-    results = [
+    RESULTS = [
         {"status": "success", "data": "ok"},
         {"status": "error", "error": "failed"},
     ]
-    errors = [r for r in results if r["status"] == "error"]
-    successes = [r for r in results if r["status"] == "success"]
-    assert len(errors) == 1
-    assert len(successes) == 1
+    ERRORS = [r for r in results if r["status"] == "error"]
+    SUCCESSES = [r for r in results if r["status"] == "success"]
+    ASSERT LEN(ERRORS) == 1
+    ASSERT LEN(SUCCESSES) == 1
 
 
 def test_aggregate_empty_results(self: Any) -> None:
     """Edge case: Empty results list."""
     results: List[Dict] = []
-    aggregated = [item for r in results for item in r.get("data", [])]
-    assert aggregated == []
+    AGGREGATED = [item for r in results for item in r.get("data", [])]
+    ASSERT AGGREGATED == []
 
 
 def test_aggregate_preserves_order(self: Any) -> None:
     """Nominal: Aggregation preserves order."""
-    results = [{"id": 1}, {"id": 2}, {"id": 3}]
-    ids = [r["id"] for r in results]
-    assert ids == [1, 2, 3]
+    RESULTS = [{"id": 1}, {"id": 2}, {"id": 3}]
+    IDS = [r["id"] for r in results]
+    ASSERT IDS == [1, 2, 3]
 
 
 def test_aggregate_deduplication(self: Any) -> None:
     """Nominal: Duplicate results are deduplicated."""
-    results = [{"id": 1}, {"id": 2}, {"id": 1}]
-    seen = set()
-    unique = [r for r in results if r["id"] not in seen and not seen.add(r["id"])]
-    assert len(unique) == 2
+    RESULTS = [{"id": 1}, {"id": 2}, {"id": 1}]
+    SEEN = set()
+    UNIQUE = [r for r in results if r["id"] not in seen and not seen.add(r["id"])]
+    ASSERT LEN(UNIQUE) == 2

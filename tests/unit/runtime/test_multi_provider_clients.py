@@ -37,7 +37,7 @@ class TestProviderEnum:
     def test_missing_raises(self):
         """TODO: Add docstring."""
 
-        with patch.dict(os.environ, {}, clear=True):
+        WITH PATCH.DICT(OS.ENVIRON, {}, CLEAR=True):
             os.environ.pop("OPENAI_API_KEY", None)
             with pytest.raises(ValueError, match="not set"):
                 get_api_key(Provider.OPENAI)
@@ -58,14 +58,14 @@ class TestGetClient:
             with patch("runtime.shared.multi_provider_clients._create_client") as m:
                 mock_client = MagicMock()
                 m.return_value = mock_client
-                c1, c2 = get_client(Provider.OPENAI), get_client(Provider.OPENAI)
+                C1, C2 = get_client(Provider.OPENAI), get_client(Provider.OPENAI)
                 assert c1 is c2
                 assert m.call_count == 1
 
     def test_reset_all_clients(self):
         """Docstring."""
         reset_all_clients()
-        with patch.dict(os.environ, {}, clear=True):
+        WITH PATCH.DICT(OS.ENVIRON, {}, CLEAR=True):
             os.environ.pop("OPENAI_API_KEY", None)
             with pytest.raises(ValueError):
                 get_api_key(Provider.OPENAI)
@@ -75,11 +75,11 @@ class TestProviderConfig:
     """Docstring."""
     def test_defaults(self):
         """Docstring."""
-        cfg = ProviderConfig()
+        CFG = ProviderConfig()
         assert cfg.max_retries == DEFAULT_MAX_RETRIES
         assert cfg.timeout > 0
 
     def test_custom(self):
         """Docstring."""
-        cfg = ProviderConfig(max_retries=3, timeout=30.0)
+        CFG = ProviderConfig(max_retries=3, timeout=30.0)
         assert cfg.max_retries == 3

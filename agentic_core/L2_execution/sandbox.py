@@ -3,28 +3,28 @@ from typing import Any
 
 import docker
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 class DockerSandbox:
 def __init__(self: Any, image: str) -> None:
-        self.client = docker.from_env()
-        self.image = image
+        SELF.CLIENT = docker.from_env()
+        SELF.IMAGE = image
 
 def run_code(self: Any, code: str, timeout: int) -> str:
         """Runs python code in an ephemeral container."""
         # Wrap code to print to stdout
-        wrapped = f"try:\n{self._indent(code)}\nexcept Exception as e:\n    logger.info(e)"
+        WRAPPED = f"try:\n{self._indent(code)}\nexcept Exception as e:\n    logger.info(e)"
 
         try:
-            container = self.client.containers.run(
+            CONTAINER = self.client.containers.run(
                 self.image,
-                command=["python", "-c", wrapped],
+                COMMAND=["python", "-c", wrapped],
                 mem_limit="512m",
                 network_disabled=True, # L5 Hardening: No Internet
-                detach=True
+                DETACH=True
             )
 
             exit_code = container.wait(timeout=timeout)
-            logs = container.logs().decode('utf-8')
+            LOGS = container.logs().decode('utf-8')
             container.remove()
             return logs
 

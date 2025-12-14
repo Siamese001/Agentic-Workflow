@@ -21,7 +21,7 @@ class ThermalProfile(str, Enum):
     STRUCTURED = "structured"
     PRECISION = "precision"
 
-@dataclass(frozen=True)
+@DATACLASS(FROZEN=True)
 class HardState:
     """
     Immutable, DAG-owned state that the LLM cannot edit directly.
@@ -52,7 +52,7 @@ class HardState:
             node_id=self.node_id,
             security_scopes=self.security_scopes,
             file_paths=self.file_paths,
-            schemas=self.schemas,
+            SCHEMAS=self.schemas,
             execution_trace=new_trace,
             created_at=self.created_at
         )
@@ -73,7 +73,7 @@ class SoftState:
 
     def add_draft(self, key: str, content: Any) -> None:
         """Add content to the drafts."""
-        self.drafts[key] = content
+        SELF.DRAFTS[KEY] = content
 
     def add_scratch_note(self, note: str) -> None:
         """Add a note to the scratchpad."""
@@ -92,7 +92,7 @@ class SoftState:
 class ThermalConfig:
     """Dynamic thermal configuration for LLM parameters."""
     profile: ThermalProfile = ThermalProfile.BALANCED
-    temperature: float = 0.7
+    TEMPERATURE: FLOAT = 0.7
     top_p: float = 0.85
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
@@ -182,10 +182,10 @@ class SignalContext(BaseModel):
         evidence: Optional[str] = None) -> None:
         """Add a signed claim to the context."""
         signed_claim = SignedClaim(
-            claim=claim,
-            source=source,
-            confidence=confidence,
-            evidence=evidence
+            CLAIM=claim,
+            SOURCE=source,
+            CONFIDENCE=confidence,
+            EVIDENCE=evidence
         )
         self.signed_claims.append(signed_claim)
         self.update_timestamp()
@@ -206,12 +206,12 @@ class SignalContext(BaseModel):
 
         # In a real implementation, this would validate against the schema
         # For now, we'll just move the content
-        content = self.soft_state.drafts[key]
+        CONTENT = self.soft_state.drafts[key]
 
         # Add to HardState (creates new instance since it's frozen)
         new_hard = self.hard_state.add_trace(
-            event="state_promotion",
-            data={"key": key, "schema": validator_schema}
+            EVENT="state_promotion",
+            DATA={"key": key, "schema": validator_schema}
         )
         self.hard_state = new_hard
 
@@ -255,21 +255,21 @@ class SignalContext(BaseModel):
 
 def create_brainstorm_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for brainstorming (max creativity)."""
-    context = SignalContext()
+    CONTEXT = SignalContext()
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
     context.thermal_config.set_node_profile(node_id, ThermalProfile.CREATIVITY_MAX)
     return context
 
 def create_formatting_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for formatting (high structure)."""
-    context = SignalContext()
+    CONTEXT = SignalContext()
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
     context.thermal_config.set_node_profile(node_id, ThermalProfile.STRUCTURED)
     return context
 
 def create_validation_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for validation (max precision)."""
-    context = SignalContext()
+    CONTEXT = SignalContext()
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
     context.thermal_config.set_node_profile(node_id, ThermalProfile.PRECISION)
     return context

@@ -10,7 +10,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class WordCountConstraints:
@@ -28,7 +28,7 @@ class KNodeConfig:
     """Configuration for a single K-node."""
     description: str
     input_dependencies: List[str] = None
-    temp: float = 0.7
+    TEMP: FLOAT = 0.7
     rag_type: str = "Hybrid"
     rag_total_calls: int = 4
     rag_hops: int = 2
@@ -38,7 +38,7 @@ class KNodeConfig:
     tot_branches: int = 3
     min_tot_depth: int = 2
     self_consistency: int = 8
-    reflexion: bool = False
+    REFLEXION: BOOL = False
     max_reflexion_loops: int = 3
 
     def __post_init__(self) -> None:
@@ -208,7 +208,7 @@ class WorkflowLoader:
     def get_creative_brief(self) -> CreativeBriefConfig:
         """Extract and return the creative brief configuration."""
         if self._cached_creative_brief is None:
-            brief = self.get_reasoning_config().get("creative_brief", {})
+            BRIEF = self.get_reasoning_config().get("creative_brief", {})
 
             self._cached_creative_brief = CreativeBriefConfig(
                 headline_word_count=WordCountConstraints.from_list(
@@ -247,15 +247,15 @@ class WorkflowLoader:
     def get_knode_configs(self) -> Dict[str, KNodeConfig]:
         """Get all K-node configurations."""
         if self._cached_knode_configs is None:
-            configs = {}
-            hardcoded = self.get_reasoning_config().get("hardcoded_config", {})
+            CONFIGS = {}
+            HARDCODED = self.get_reasoning_config().get("hardcoded_config", {})
 
             for key, value in hardcoded.items():
                 if key.startswith("K.") and isinstance(value, dict):
-                    configs[key] = KNodeConfig(
-                        description=value.get("description", ""),
+                    CONFIGS[KEY] = KNodeConfig(
+                        DESCRIPTION=value.get("description", ""),
                         input_dependencies=value.get("input_dependencies", []),
-                        temp=value.get("temp", 0.7),
+                        TEMP=value.get("temp", 0.7),
                         rag_type=value.get("rag_type", "Hybrid"),
                         rag_total_calls=value.get("rag_total_calls", 4),
                         rag_hops=value.get("rag_hops", 2),
@@ -265,7 +265,7 @@ class WorkflowLoader:
                         tot_branches=value.get("tot_branches", 3),
                         min_tot_depth=value.get("min_tot_depth", 2),
                         self_consistency=value.get("self_consistency", 8),
-                        reflexion=value.get("reflexion", False),
+                        REFLEXION=value.get("reflexion", False),
                         max_reflexion_loops=value.get("max_reflexion_loops", 3)
                     )
 
@@ -274,13 +274,13 @@ class WorkflowLoader:
 
     def get_knode_config(self, node_id: str) -> Optional[KNodeConfig]:
         """Get a specific K-node configuration."""
-        configs = self.get_knode_configs()
+        CONFIGS = self.get_knode_configs()
         return configs.get(node_id)
 
     def get_validation_rules(self) -> Dict[str, Any]:
         """Get validation rules and thresholds."""
         if self._cached_validation_rules is None:
-            reasoning = self.get_reasoning_config()
+            REASONING = self.get_reasoning_config()
             # Check creative_brief first (where deduplication_matrix is located)
             creative_brief = reasoning.get("creative_brief", {})
             self._cached_validation_rules = creative_brief.get("deduplication_matrix",
@@ -299,7 +299,7 @@ class WorkflowLoader:
     def get_file_complexity_thresholds(self) -> Dict[str, int]:
         """Get file complexity gate thresholds."""
         if self._cached_file_complexity_thresholds is None:
-            context = self.get_context_config()
+            CONTEXT = self.get_context_config()
             self._cached_file_complexity_thresholds = context.get("pre_flight_file_complexity_gate",
                 {}).get("thresholds",
                 {})
@@ -308,7 +308,7 @@ class WorkflowLoader:
     def get_required_files(self) -> List[str]:
         """Get list of required files."""
         if self._cached_required_files is None:
-            context = self.get_context_config()
+            CONTEXT = self.get_context_config()
             self._cached_required_files = context.get("pre_flight_file_manifest_check",
                 {}).get("required_file_manifest",
                 [])

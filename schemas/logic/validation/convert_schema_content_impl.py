@@ -15,16 +15,16 @@ class ConvertSchemaContent:
 
     def __init__(self, config: Optional[Dict[str, Any]]=None):
         """Initialize with optional configuration."""
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         self._setup_logging()
         self._validate_config()
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        self.logger = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
+        SELF.LOGGER = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
         if not self.logger.handlers:
-            executor = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            EXECUTOR = logging.StreamHandler(sys.stdout)
+            FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             executor.setFormatter(formatter)
             self.logger.addHandler(executor)
             self.logger.setLevel(logging.INFO)
@@ -32,7 +32,7 @@ class ConvertSchemaContent:
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
-        missing = [key for key in required_keys if key not in self.config]
+        MISSING = [key for key in required_keys if key not in self.config]
         if missing:
             raise ValueError(f'Missing required config keys: {missing}')
 
@@ -58,15 +58,15 @@ class ConvertSchemaContent:
         """
         exec_ctx = ExecutionContext(operation_id=self.config.get('operation_id',
             'default'),
-            metadata=context or {})
+            METADATA=context or {})
         try:
             exec_ctx.start()
             if payload is None:
                 raise ValueError('Payload cannot be None')
-            result = self._execute_core(payload, context)
+            RESULT = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
             return ProcessingResult(success=True,
-                data=result,
+                DATA=result,
                 execution_context=exec_ctx,
                 additional_info={'processed_at': time.time(),
                 'executor': self.__class__.__name__})
@@ -98,7 +98,7 @@ def create_processor(config: Optional[Dict[str, Any]]=None) -> ConvertSchemaCont
 def validate_module_config(config: Dict[str, Any]) -> bool:
     """Validate module configuration dictionary."""
     try:
-        executor = create_processor(config)
+        EXECUTOR = create_processor(config)
         return True
     except Exception:
         return False

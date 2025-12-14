@@ -7,10 +7,10 @@ import re
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 # List of specific files and lines to fix
-violations = [
+VIOLATIONS = [
     ("./agentic_core/L1_cognition/consensus.py", 231),
     ("./agentic_core/L1_cognition/inference/signal_anchoring.py", 163),
     ("./agentic_core/L1_cognition/inference/signal_anchoring.py", 184),
@@ -63,22 +63,22 @@ violations = [
 def fix_long_line(filepath: str, line_num: int) -> bool:
     """Fix a specific long line in a file."""
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+        WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+            LINES = f.readlines()
 
         if line_num > len(lines):
             logger.warning(f"Line {line_num} not found in {filepath}")
             return False
 
-        line = lines[line_num - 1]
-        stripped = line.rstrip()
+        LINE = lines[line_num - 1]
+        STRIPPED = line.rstrip()
 
         # Skip if already fixed
         if len(stripped) <= 100:
             return False
 
         # Get indentation
-        indent = len(line) - len(line.lstrip())
+        INDENT = len(line) - len(line.lstrip())
 
         # Fix strategies
         new_lines = []
@@ -88,7 +88,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             ("(" in stripped and ")" in stripped)
             or stripped.strip().startswith(("import ", "from "))
         ):
-            parts = stripped.split(",")
+            PARTS = stripped.split(",")
             if len(parts) > 1:
                 new_lines.append(parts[0] + ",\n")
                 indent_str = " " * (indent + 4)
@@ -100,22 +100,22 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         elif 'f"' in stripped or "f'" in stripped:
             # Find the f-string boundaries
             if 'f"' in stripped:
-                start = stripped.find('f"')
-                end = stripped.rfind('"')
+                START = stripped.find('f"')
+                END = stripped.rfind('"')
             else:
-                start = stripped.find("f'")
-                end = stripped.rfind("'")
+                START = stripped.find("f'")
+                END = stripped.rfind("'")
 
             if start != -1 and end != -1 and end > start + 2:
-                prefix = stripped[:start]
-                content = stripped[start + 2 : end]
-                suffix = stripped[end + 2 :]
+                PREFIX = stripped[:start]
+                CONTENT = stripped[start + 2 : end]
+                SUFFIX = stripped[end + 2 :]
 
                 # Break the f-string content
                 new_lines.append(prefix + 'f"(\n')
                 indent_str = " " * (indent + 4)
                 # Simple split - break at spaces
-                words = content.split()
+                WORDS = content.split()
                 current_line = indent_str
                 for word in words:
                     if len(current_line) + len(word) + 1 > 100:
@@ -129,7 +129,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
 
         # Strategy 3: Break long boolean expressions
         elif " and " in stripped or " or " in stripped:
-            parts = re.split(r" (and|or) ", stripped)
+            PARTS = re.split(r" (and|or) ", stripped)
             if len(parts) > 2:
                 new_lines.append(parts[0] + "\n")
                 indent_str = " " * (indent + 4)
@@ -139,7 +139,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
 
         # Strategy 4: Generic break at operators
         elif " + " in stripped or " - " in stripped or " * " in stripped or " / " in stripped:
-            parts = re.split(r" (\+|-|\*|/) ", stripped)
+            PARTS = re.split(r" (\+|-|\*|/) ", stripped)
             if len(parts) > 2:
                 new_lines.append(parts[0] + "\n")
                 indent_str = " " * (indent + 4)
@@ -149,7 +149,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
 
         # Strategy 5: Break long method chains
         elif "." in stripped and stripped.count(".") > 2:
-            parts = stripped.split(".")
+            PARTS = stripped.split(".")
             if len(parts) > 2:
                 new_lines.append(parts[0] + ".\n")
                 indent_str = " " * (indent + 4)
@@ -174,7 +174,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         lines[line_num - 1 : line_num] = new_lines
 
         # Write back
-        with open(filepath, "w", encoding="utf-8") as f:
+        WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
             f.writelines(lines)
 
         return True
@@ -185,12 +185,12 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
 
 def main() -> None:
     """Fix all specific long lines."""
-    fixed = 0
+    FIXED = 0
     for filepath, line_num in violations:
         if os.path.exists(filepath):
             if fix_long_line(filepath, line_num):
                 logger.info(f"Fixed {filepath}:{line_num}")
-                fixed += 1
+                FIXED += 1
         else:
             logger.warning(f"File not found: {filepath}")
 

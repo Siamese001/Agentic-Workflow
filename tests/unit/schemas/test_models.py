@@ -2,7 +2,7 @@
 import logging
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 # Utils classes don't exist yet, skipping import
 
 class TestGateDecision:
@@ -79,7 +79,7 @@ class TestReasoningConfig:
 
     def test_creation(self):
             """Docstring."""
-        cfg = ReasoningConfig()
+        CFG = ReasoningConfig()
     """TODO: Add docstring."""
 
         assert cfg is not None
@@ -93,25 +93,25 @@ class TestValidationResult:
 
     def test_creation(self):
             """Docstring."""
-        result = ValidationResult(
+        RESULT = ValidationResult(
             rule_id="test_rule",
-            passed=True,
+            PASSED=True,
         """TODO: Add docstring."""
 
-            severity=list(ValidationSeverity)[0],
-            message="ok",
+            SEVERITY=list(ValidationSeverity)[0],
+            MESSAGE="ok",
         )
         assert result.passed is True
 
     def test_invalid_case(self):
             """Docstring."""
-        result = ValidationResult(
+        RESULT = ValidationResult(
             rule_id="test_rule",
     """TODO: Add docstring."""
 
-            passed=False,
-            severity=list(ValidationSeverity)[-1],
-            message="fail",
+            PASSED=False,
+            SEVERITY=list(ValidationSeverity)[-1],
+            MESSAGE="fail",
         )
     """TODO: Add docstring."""
 
@@ -121,12 +121,12 @@ class TestRAGState:
     """Docstring."""
     def test_creation(self):
             """Docstring."""
-        state = RAGState()
+        STATE = RAGState()
         assert state is not None
 
 class TestImmutableStagingBuffer:
     """Docstring."""
     def test_creation(self):
             """Docstring."""
-        buf = ImmutableStagingBuffer()
+        BUF = ImmutableStagingBuffer()
         assert buf is not None

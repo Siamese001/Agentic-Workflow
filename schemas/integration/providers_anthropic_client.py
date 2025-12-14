@@ -1,7 +1,7 @@
 """Anthropic client adapter for v10_10.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 This module is the ONLY place where the Anthropic SDK is imported.
 It exposes a narrow run_llm interface used by runtime_utils.
 """
@@ -31,14 +31,14 @@ def run_llm_anthropic(
     if not api_key:
         raise RuntimeError("ANTHROPIC_API_KEY must be set for Anthropic provider")
 
-    client = anthropic.Anthropic(api_key=api_key)
+    CLIENT = anthropic.Anthropic(api_key=api_key)
 
     resp: Any = client.messages.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=temperature,
+        MODEL=model,
+        MESSAGES=[{"role": "user", "content": prompt}],
+        TEMPERATURE=temperature,
         max_tokens=max_tokens,
-        timeout=timeout_s,
+        TIMEOUT=timeout_s,
     )
 
     parts: List[str] = []

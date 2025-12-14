@@ -24,7 +24,7 @@ import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class UberSignalTestSuite:
     """Test suite for the three Uber High Signal agents."""
@@ -70,16 +70,16 @@ class UberSignalTestSuite:
 
     async def test_architecture_visualizer(self):
             """Test the Architecture Visualizer Agent."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Architecture Visualizer Agent")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         try:
             # Test 1: Generate diagram from bullet
             diagram_artifact = await self.architecture_agent.generate_diagram(
-                description=self.test_architecture_bullet,
+                DESCRIPTION=self.test_architecture_bullet,
                 diagram_type=DiagramType.FLOWCHART,
-                caption="RAG Pipeline Architecture"
+                CAPTION="RAG Pipeline Architecture"
             )
 
             if diagram_artifact:
@@ -88,7 +88,7 @@ class UberSignalTestSuite:
                 logger.info(f"   - Complexity: {diagram_artifact.complexity_score:.1%}")
 
                 # Render the diagram
-                rendered = self.architecture_agent.render_artifact(diagram_artifact)
+                RENDERED = self.architecture_agent.render_artifact(diagram_artifact)
                 logger.info("\n📊 Generated Mermaid Diagram:")
                 logger.info(rendered)
             else:
@@ -109,9 +109,9 @@ class UberSignalTestSuite:
 
     async def test_cultural_decoder(self):
             """Test the Cultural Decoder Agent."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Cultural Decoder Agent")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         try:
             # Test 1: Load pre-loaded DNA
@@ -137,7 +137,7 @@ class UberSignalTestSuite:
 
             # Test 3: Audit cultural fit
             audit_result = self.cultural_agent.audit_fit(
-                text=self.test_resume_summary,
+                TEXT=self.test_resume_summary,
                 company_name="Google"
             )
 
@@ -155,9 +155,9 @@ class UberSignalTestSuite:
 
     async def test_pre_mortem_agent(self):
             """Test the Pre-Mortem Agent."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Pre-Mortem Agent")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         try:
             # Test 1: Analyze onboarding plan
@@ -196,9 +196,9 @@ class UberSignalTestSuite:
 
     async def test_integration_scenario(self):
             """Test all three agents working together on a complete scenario."""
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("TESTING: Integrated Scenario")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         try:
             # Scenario: A candidate applying for Head of AI at Netflix
@@ -228,9 +228,9 @@ class UberSignalTestSuite:
             content search, serving 200M+ users with 95% accuracy.
             """
             architecture_diagram = await self.architecture_agent.generate_diagram(
-                description=tech_bullet,
+                DESCRIPTION=tech_bullet,
                 diagram_type=DiagramType.FLOWCHART,
-                caption="Netflix ML Architecture"
+                CAPTION="Netflix ML Architecture"
             )
 
             logger.info("✅ Step 2: Architecture diagram generated")
@@ -254,9 +254,9 @@ class UberSignalTestSuite:
             logger.info(f"   Risk Score: {risk_analysis.overall_risk_score:.1%}")
 
             # Generate integrated output
-            logger.info("\n" + "="*60)
+            LOGGER.INFO("\N" + "="*60)
             logger.info("🚀 INTEGRATED OUTPUT FOR NETFLIX APPLICATION")
-            logger.info("="*60)
+            LOGGER.INFO("="*60)
 
             logger.info("\n📋 Executive Summary (Culturally Aligned):")
             logger.info(aligned_summary.aligned_text)
@@ -276,16 +276,16 @@ class UberSignalTestSuite:
     async def run_all_tests(self):
             """Run all tests sequentially."""
         logger.info("🚀 Starting Uber High Signal Agents Test Suite")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
         await self.test_architecture_visualizer()
         await self.test_cultural_decoder()
         await self.test_pre_mortem_agent()
         await self.test_integration_scenario()
 
-        logger.info("\n" + "="*60)
+        LOGGER.INFO("\N" + "="*60)
         logger.info("✅ ALL TESTS COMPLETED")
-        logger.info("="*60)
+        LOGGER.INFO("="*60)
 
 async def main():
     """Main entry point for running tests."""

@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TestCostEstimationConsistency:
@@ -25,9 +25,9 @@ def test_provider_cost_tiers_defined(self: Any) -> None:
 
 def test_provider_enum_determinism(self: Any) -> None:
     """Provider enum values are stable for cost mapping."""
-    values1 = {p.value for p in Provider}
-    values2 = {p.value for p in Provider}
-    assert values1 == values2
+    VALUES1 = {p.value for p in Provider}
+    VALUES2 = {p.value for p in Provider}
+    ASSERT VALUES1 == values2
 
 
 def test_cost_tier_categorization(self: Any) -> None:
@@ -53,27 +53,27 @@ class TestTokenEstimation:
 
 def test_message_token_estimation_determinism(self: Any) -> None:
     """Same message produces same token estimate."""
-    message = "This is a test message for token estimation."
+    MESSAGE = "This is a test message for token estimation."
     # basic heuristic: ~4 chars per token
-    estimate1 = len(message) // 4
-    estimate2 = len(message) // 4
-    assert estimate1 == estimate2
+    ESTIMATE1 = len(message) // 4
+    ESTIMATE2 = len(message) // 4
+    ASSERT ESTIMATE1 == estimate2
 
 
 def test_empty_message_token_count(self: Any) -> None:
     """Empty message has zero or minimal tokens."""
-    estimate = len("") // 4
-    assert estimate == 0
+    ESTIMATE = len("") // 4
+    ASSERT ESTIMATE == 0
 
 
 def test_long_message_scaling(self: Any) -> None:
     """Token estimate scales linearly with message length."""
-    short = "Hello"
-    long = short * 100  # Use same base string repeated 100 times
+    SHORT = "Hello"
+    LONG = short * 100  # Use same base string repeated 100 times
 
     short_est = len(short) / 4  # Use float division for more accurate estimate
     long_est = len(long) / 4
 
     # Long should be roughly 100x short
-    ratio = long_est / max(short_est, 1)
+    RATIO = long_est / max(short_est, 1)
     assert 90 < ratio < 110  # Tighter range for exact 100x scaling

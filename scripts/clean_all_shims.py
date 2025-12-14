@@ -3,7 +3,7 @@
 Comprehensive script to clean up all shim chains across the repository.
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 
@@ -13,7 +13,7 @@ from pathlib import Path
 
 def find_shim_chains(directory: Path) -> Dict[str, List[Path]]:
     """Find all shim chains in a directory."""
-    chains = {}
+    CHAINS = {}
 
     # Get all Python files
     py_files = [f for f in directory.rglob("*.py") if f.name != "__init__.py"]
@@ -22,9 +22,9 @@ def find_shim_chains(directory: Path) -> Dict[str, List[Path]]:
     base_groups = {}
     for file_path in py_files:
         # Extract base name before any _impl
-        match = re.match(r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
+        MATCH = re.match(r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
         if match:
-            base = match.group(1)
+            BASE = match.group(1)
             if base not in base_groups:
                 base_groups[base] = []
             base_groups[base].append(file_path)
@@ -33,15 +33,15 @@ def find_shim_chains(directory: Path) -> Dict[str, List[Path]]:
     for base, files in base_groups.items():
         if len(files) > 1:
             # Sort by number of _impl suffixes
-            files.sort(key=lambda f: f.name.count('_impl'))
-            chains[base] = files
+            FILES.SORT(KEY=lambda f: f.name.count('_impl'))
+            CHAINS[BASE] = files
 
     return chains
 
 def is_shim_file(file_path: Path) -> bool:
     """Check if a file is a shim."""
     try:
-        content = file_path.read_text(encoding='utf-8')
+        CONTENT = file_path.read_text(encoding='utf-8')
 
         # Check size
         if file_path.stat().st_size > 2000:
@@ -52,7 +52,7 @@ def is_shim_file(file_path: Path) -> bool:
             return True
 
         # Check for simple import structure
-        lines = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith...
+        LINES = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith...
         if len(lines) <= 3 and any('from .' in l and 'import *' in l for l in lines):
             return True
 
@@ -70,9 +70,9 @@ def find_real_implementation(chain: List[Path]) -> Path:
 
 def clean_directory(directory: Path, dry_run: bool = True) -> Dict[str, int]:
     """Clean all shim chains in a directory."""
-    chains = find_shim_chains(directory)
+    CHAINS = find_shim_chains(directory)
 
-    stats = {
+    STATS = {
         "chains_found": len(chains),
         "files_deleted": 0,
         "files_updated": 0
@@ -86,10 +86,10 @@ def clean_directory(directory: Path, dry_run: bool = True) -> Dict[str, int]:
             continue
 
         # Find real implementation
-        impl = find_real_implementation(chain)
+        IMPL = find_real_implementation(chain)
 
         # Root shim (first in chain)
-        root = chain[0]
+        ROOT = chain[0]
 
         # Intermediate shims to delete
         to_delete = chain[1:-1] if impl != chain[-1] else chain[1:]
@@ -99,12 +99,12 @@ def clean_directory(directory: Path, dry_run: bool = True) -> Dict[str, int]:
         if not dry_run:
             # Update root shim
             try:
-                content = root.read_text(encoding='utf-8')
+                CONTENT = root.read_text(encoding='utf-8')
                 # Replace import
-                lines = content.split('\n')
+                LINES = content.split('\n')
                 for i, line in enumerate(lines):
                     if line.startswith('from .') and 'import *' in line:
-                        lines[i] = f"from .{impl.stem} import *"
+                        LINES[I] = f"from .{impl.stem} import *"
                         break
                 root.write_text('\n'.join(lines), encoding='utf-8')
                 stats["files_updated"] += 1
@@ -129,7 +129,7 @@ def main():
     repo_root = Path("c:/Git/Agentic-Workflow")
 
     logger.info("Scanning for shim chains...")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
     # Directories to clean
     dirs_to_clean = [
@@ -151,18 +151,18 @@ def main():
     for dir_name in dirs_to_clean:
         dir_path = repo_root / dir_name
         if dir_path.exists():
-            stats = clean_directory(dir_path, dry_run=True)
+            STATS = clean_directory(dir_path, dry_run=True)
             for key in total_stats:
                 total_stats[key] += stats[key]
 
-    logger.info("\n" + "=" * 60)
+    LOGGER.INFO("\N" + "=" * 60)
     logger.info("DRY RUN SUMMARY:")
     logger.info(f"  Total chains found: {total_stats['chains_found']}")
     logger.info(f"  Files to delete: {total_stats['files_deleted']}")
     logger.info(f"  Files to update: {total_stats['files_updated']}")
 
     # Ask for confirmation
-    response = input("\nProceed with cleanup? (y/N): ")
+    RESPONSE = input("\nProceed with cleanup? (y/N): ")
     if response.lower() != 'y':
         logger.info("Aborted.")
         return
@@ -181,7 +181,7 @@ def main():
     for dir_name in dirs_to_clean:
         dir_path = repo_root / dir_name
         if dir_path.exists():
-            stats = clean_directory(dir_path, dry_run=False)
+            STATS = clean_directory(dir_path, dry_run=False)
             # The clean_directory function returns files_to_delete for dry run
             # but files_deleted for actual run
             if "files_deleted" in stats:
@@ -193,7 +193,7 @@ def main():
                 for key in total_stats:
                     total_stats[key] += stats.get(key, 0)
 
-    logger.info("\n" + "=" * 60)
+    LOGGER.INFO("\N" + "=" * 60)
     logger.info("CLEANUP COMPLETE:")
     logger.info(f"  Total chains cleaned: {total_stats['chains_found']}")
     logger.info(f"  Files deleted: {total_stats['files_deleted']}")

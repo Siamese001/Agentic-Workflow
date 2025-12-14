@@ -11,7 +11,7 @@ import logging
 import time
 from typing import Any, Dict, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class OperationStatus(Enum):
     """Status of an operation."""
@@ -43,7 +43,7 @@ class SystemTelemetry:
 
     def __init__(self, service_name: str = "agentic-workflow"):
         self.service_name = service_name
-        self.logger = logging.getLogger(f"{__name__}.{service_name}")
+        SELF.LOGGER = logging.getLogger(f"{__name__}.{service_name}")
 
     def log_metric(
         """Docstring."""
@@ -69,16 +69,16 @@ class SystemTelemetry:
             error_message: Error message (if any)
             metadata: Additional metadata
         """
-        event = TelemetryEvent(
-            timestamp=time.time(),
-            component=component,
-            operation=operation,
-            status=status,
+        EVENT = TelemetryEvent(
+            TIMESTAMP=time.time(),
+            COMPONENT=component,
+            OPERATION=operation,
+            STATUS=status,
             latency_ms=latency_ms,
             token_usage=token_usage,
             error_type=error_type,
             error_message=error_message,
-            metadata=metadata or {},
+            METADATA=metadata or {},
         )
 
         # Convert to structured log format
@@ -106,7 +106,7 @@ class SystemTelemetry:
         # Log with appropriate level
         if status in [OperationStatus.FAILURE, OperationStatus.CIRCUIT_OPEN]:
             self.logger.error(json.dumps(log_data))
-        elif status == OperationStatus.RETRY:
+        ELIF STATUS == OperationStatus.RETRY:
             self.logger.warning(json.dumps(log_data))
         else:
             self.logger.info(json.dumps(log_data))
@@ -122,12 +122,12 @@ class SystemTelemetry:
     ) -> None:
         """Log a successful operation."""
         self.log_metric(
-            component=component,
-            operation=operation,
-            status=OperationStatus.SUCCESS,
+            COMPONENT=component,
+            OPERATION=operation,
+            STATUS=OperationStatus.SUCCESS,
             latency_ms=latency_ms,
             token_usage=token_usage,
-            metadata=metadata,
+            METADATA=metadata,
         )
 
     def log_failure(
@@ -142,13 +142,13 @@ class SystemTelemetry:
     ) -> None:
         """Log a failed operation."""
         self.log_metric(
-            component=component,
-            operation=operation,
-            status=OperationStatus.FAILURE,
+            COMPONENT=component,
+            OPERATION=operation,
+            STATUS=OperationStatus.FAILURE,
             latency_ms=latency_ms,
             error_type=error_type,
             error_message=error_message,
-            metadata=metadata,
+            METADATA=metadata,
         )
 
     def log_retry(
@@ -172,12 +172,12 @@ class SystemTelemetry:
             retry_metadata.update(metadata)
 
         self.log_metric(
-            component=component,
-            operation=operation,
-            status=OperationStatus.RETRY,
+            COMPONENT=component,
+            OPERATION=operation,
+            STATUS=OperationStatus.RETRY,
             latency_ms=0.0,  # Retry events don't have operation latency
             error_type=error_type,
-            metadata=retry_metadata,
+            METADATA=retry_metadata,
         )
 
     def log_circuit_breaker(
@@ -197,11 +197,11 @@ class SystemTelemetry:
             cb_metadata.update(metadata)
 
         self.log_metric(
-            component=component,
-            operation="circuit_breaker",
-            status=OperationStatus.CIRCUIT_OPEN,
+            COMPONENT=component,
+            OPERATION="circuit_breaker",
+            STATUS=OperationStatus.CIRCUIT_OPEN,
             latency_ms=0.0,
-            metadata=cb_metadata,
+            METADATA=cb_metadata,
         )
 
 # Global telemetry instance

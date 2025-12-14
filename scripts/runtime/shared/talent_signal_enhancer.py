@@ -8,14 +8,14 @@ AI leadership roles.
 import logging
 import re
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class TalentMetrics(BaseModel):
     """Metrics describing talent acquisition and management capabilities."""
 
     team_size: int = Field(..., ge=0, description="Size of team managed")
     pedigree_keywords: List[str] = Field(default_factory=list,
-        description="Prestige markers in team")
+        DESCRIPTION="Prestige markers in team")
     retention_rate: Optional[str] = Field(None, description="Team retention rate")
     hiring_velocity: Optional[str] = Field(None, description="Hiring speed metric")
 
@@ -30,7 +30,7 @@ class TalentMetrics(BaseModel):
             'cmu', 'berkeley', 'open-source', 'github', 'kaggle'
         }
 
-        filtered = [kw for kw in v if any(term in kw.lower() for term in prestigious_terms)]
+        FILTERED = [kw for kw in v if any(term in kw.lower() for term in prestigious_terms)]
         return filtered
 
 class TalentSignalEnhancer:
@@ -107,25 +107,25 @@ class TalentSignalEnhancer:
             team_size = self._extract_team_size(bullet_text)
 
             # Detect pedigree in context
-            pedigree = self._detect_pedigree(bullet_text)
+            PEDIGREE = self._detect_pedigree(bullet_text)
 
             # Extract hiring/retention metrics
             hiring_metric = self._extract_hiring_metric(bullet_text)
             retention_metric = self._extract_retention_metric(bullet_text)
 
             # Build enhanced bullet
-            enhanced = bullet_text
+            ENHANCED = bullet_text
 
             # Add team size with pedigree
             if team_size > 0:
                 if pedigree:
                     pedigree_str = ", ".join(pedigree[:3])  # Limit to top 3
-                    enhanced = enhanced.replace(
+                    ENHANCED = enhanced.replace(
                         f"team of {team_size}",
                         f"team of {team_size} (including **{pedigree_str}**)"
                     )
                 else:
-                    enhanced = enhanced.replace(
+                    ENHANCED = enhanced.replace(
                         f"team of {team_size}",
                         f"high-performance team of {team_size}"
                     )
@@ -133,18 +133,18 @@ class TalentSignalEnhancer:
             # Add hiring velocity
             if hiring_metric:
                 if "hired" in enhanced.lower():
-                    enhanced = enhanced.replace(
+                    ENHANCED = enhanced.replace(
                         "hired",
                         f"recruited **{hiring_metric}**"
                     )
 
             # Add retention rate
             if retention_metric:
-                enhanced += f", achieving **{retention_metric} retention**"
+                ENHANCED += f", achieving **{retention_metric} retention**"
 
             # If no specific metrics, strengthen language
             if not pedigree and not hiring_metric and not retention_metric:
-                enhanced = self._strengthen_generic_bullet(enhanced, team_size)
+                ENHANCED = self._strengthen_generic_bullet(enhanced, team_size)
 
             logger.debug(f"Enhanced bullet: {bullet_text[:50]}... -> {enhanced[:50]}...")
 
@@ -177,7 +177,7 @@ class TalentSignalEnhancer:
                 return None
 
             # Generate hook
-            hook = f"P.S. I have a specialized network of {role_network} {target_role}s who often fo
+            HOOK = f"P.S. I have a specialized network of {role_network} {target_role}s who often fo
     llow me to new ventures. I could likely fill your open {target_role} roles within 60 days."
 
             logger.info(f"Generated network hook for {target_role} with network size {role_network}"
@@ -228,20 +228,20 @@ class TalentSignalEnhancer:
         """
         try:
             text_lower = text.lower()
-            detected = []
+            DETECTED = []
 
             # Scan all patterns
             for category, patterns in self.pedigree_patterns.items():
                 for pattern in patterns:
-                    matches = re.findall(pattern, text_lower)
+                    MATCHES = re.findall(pattern, text_lower)
                     for match in matches:
                         # Format match appropriately
                         if category == "experience":
-                            formatted = f"Ex-{match.title()}"
-                        elif category == "education":
-                            formatted = match.title()
+                            FORMATTED = f"Ex-{match.title()}"
+                        ELIF CATEGORY == "education":
+                            FORMATTED = match.title()
                         else:
-                            formatted = match.title()
+                            FORMATTED = match.title()
 
                         if formatted not in detected:
                             detected.append(formatted)
@@ -267,7 +267,7 @@ class TalentSignalEnhancer:
         """
         try:
             # Look for "team of X", "X people", "X engineers"
-            patterns = [
+            PATTERNS = [
                 r"team of (\d+)",
                 r"(\d+) (?:people|engineers|developers|members)",
                 r"managed (\d+)",
@@ -276,7 +276,7 @@ class TalentSignalEnhancer:
             ]
 
             for pattern in patterns:
-                match = re.search(pattern, text.lower())
+                MATCH = re.search(pattern, text.lower())
                 if match:
                     return int(match.group(1))
 
@@ -297,20 +297,20 @@ class TalentSignalEnhancer:
         """
         try:
             # Look for time-based hiring metrics
-            patterns = [
+            PATTERNS = [
                 r"hired (\d+) in (\d+) months?",
                 r"recruited (\d+) within (\d+) months?",
                 r"built team from (\d+) to (\d+) in (\d+) months?"
             ]
 
             for pattern in patterns:
-                match = re.search(pattern, text.lower())
+                MATCH = re.search(pattern, text.lower())
                 if match:
-                    groups = match.groups()
+                    GROUPS = match.groups()
                     if len(groups) == 2:
                         return f"{groups[0]} in <{groups[1]} months"
-                    elif len(groups) == 3:
-                        growth = int(groups[1]) - int(groups[0])
+                    ELIF LEN(GROUPS) == 3:
+                        GROWTH = int(groups[1]) - int(groups[0])
                         return f"{growth} in <{groups[2]} months"
 
             return None
@@ -330,14 +330,14 @@ class TalentSignalEnhancer:
         """
         try:
             # Look for retention percentages
-            patterns = [
+            PATTERNS = [
                 r"(\d+)% retention",
                 r"retention of (\d+)%",
                 r"retained (\d+)%"
             ]
 
             for pattern in patterns:
-                match = re.search(pattern, text.lower())
+                MATCH = re.search(pattern, text.lower())
                 if match:
                     return f"{match.group(1)}%"
 
@@ -368,24 +368,24 @@ class TalentSignalEnhancer:
             if team_size > 0:
                 # Add prestige without making false claims
                 if team_size >= 20:
-                    bullet = bullet.replace(
+                    BULLET = bullet.replace(
                         f"team of {team_size}",
                         f"team of {team_size} **senior engineers**"
                     )
                 elif team_size >= 10:
-                    bullet = bullet.replace(
+                    BULLET = bullet.replace(
                         f"team of {team_size}",
                         f"team of {team_size} **high-caliber engineers**"
                     )
                 else:
-                    bullet = bullet.replace(
+                    BULLET = bullet.replace(
                         f"team of {team_size}",
                         f"team of {team_size} **specialized engineers**"
                     )
 
             # Add leadership emphasis
             if "managed" in bullet.lower():
-                bullet = bullet.replace("managed", "built and led")
+                BULLET = bullet.replace("managed", "built and led")
 
             return bullet
 
@@ -420,12 +420,12 @@ def enhance_talent_signals(
     Returns:
         Tuple of (enhanced bullets, network hook)
     """
-    enhancer = create_talent_signal_enhancer(candidate_background)
-    enhanced = [enhancer.enhance_management_bullet(b) for b in bullets]
+    ENHANCER = create_talent_signal_enhancer(candidate_background)
+    ENHANCED = [enhancer.enhance_management_bullet(b) for b in bullets]
 
     # Generate network hook for first suitable role
-    hook = None
+    HOOK = None
     if enhancer.has_management_experience:
-        hook = enhancer.generate_network_hook("Senior AI Engineer")
+        HOOK = enhancer.generate_network_hook("Senior AI Engineer")
 
     return enhanced, hook

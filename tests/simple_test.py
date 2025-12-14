@@ -9,10 +9,10 @@ async def test_first_case():
     """Docstring."""
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
     """Test the first case that's failing."""
-    logger.info("\n=== Test First Case ===")
+    LOGGER.INFO("\N=== Test First Case ===")
 
     with tempfile.TemporaryDirectory() as temp_dir:
         # Reset singletons
@@ -21,9 +21,9 @@ logger = logging.getLogger(__name__)
 
         # Create workflow spec
         workflow_spec = WorkflowSpec(
-            name="Test Resume Generation",
-            version="1.0",
-            hops=[
+            NAME="Test Resume Generation",
+            VERSION="1.0",
+            HOPS=[
                 HopSpec(id="K.1", script="test_k1.py", description="Executive Summary"),
                 HopSpec(id="K.4", script="test_k4.py", description="Professional Headline"),
                 HopSpec(id="K.5", script="test_k5.py", description="Experience Bullets"),
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
         )
 
         # Create hardened orchestrator
-        orchestrator = create_hardened_orchestrator(
+        ORCHESTRATOR = create_hardened_orchestrator(
             workflow_spec=workflow_spec,
             run_base_dir=temp_dir,
             storage_path=temp_dir,
@@ -52,9 +52,9 @@ logger = logging.getLogger(__name__)
             call_count["count"] += 1
             hop_id = ["K.1", "K.4", "K.5"][call_count["count"] - 1]
             return AgentResponse(
-                content=mock_responses.get(hop_id, "Default response"),
+                CONTENT=mock_responses.get(hop_id, "Default response"),
                 finish_reason="stop",
-                metadata={
+                METADATA={
                     "provider": "openai",
                     "model": "gpt-4",
                     "duration_ms": 150.0,
@@ -67,12 +67,12 @@ logger = logging.getLogger(__name__)
         # Test 1: New workflow execution
         logger.info("\n--- New Workflow Execution ---")
         workflow_id = "test_workflow_001"
-        context = {
+        CONTEXT = {
             "prompt": "Test prompt",
             "temperature": 0.7,
         }
 
-        results = await orchestrator.execute_workflow_with_resilience(
+        RESULTS = await orchestrator.execute_workflow_with_resilience(
             workflow_id,
             context,
         )

@@ -11,14 +11,14 @@ from typing import Any, List
 
 from pydantic import BaseModel, Field, validator
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class DecomposedQuery(BaseModel):
     """Result of query decomposition."""
 
     original_query: str = Field(..., description="Original complex query")
     sub_queries: List[str] = Field(..., description="Decomposed atomic sub-queries")
-    reasoning: str = Field(..., description="Reasoning for decomposition")
+    REASONING: STR = Field(..., description="Reasoning for decomposition")
     complexity_score: int = Field(..., ge=1, le=10, description="Complexity score (1-10)")
 
     @validator('sub_queries')
@@ -40,7 +40,7 @@ class SimpleAgentBase:
             name: Agent name for logging
             model_name: LLM model to use
         """
-        self.name = name
+        SELF.NAME = name
         self.model_name = model_name
         logger.info(f"Initialized {self.__class__.__name__}: model={model_name}")
 
@@ -63,10 +63,10 @@ class QueryDecomposer(SimpleAgentBase):
 
         # Import AdaptiveRetrievalGate for heuristic check
         try:
-            self.gate = AdaptiveRetrievalGate()
+            SELF.GATE = AdaptiveRetrievalGate()
         except ImportError:
             logger.warning("AdaptiveRetrievalGate not available, skipping heuristic check")
-            self.gate = None
+            SELF.GATE = None
 
         # Simple patterns to detect complex queries
         self.complexity_indicators = {
@@ -92,24 +92,24 @@ class QueryDecomposer(SimpleAgentBase):
         Returns:
             Complexity score from 1 (simple) to 10 (very complex)
         """
-        score = 1  # Base score
+        SCORE = 1  # Base score
 
         # Check for complexity indicators
         for indicator_type, pattern in self.complexity_indicators.items():
             if pattern.search(query):
-                score += 2
+                SCORE += 2
 
         # Word count contributes to complexity
         word_count = len(query.split())
         if word_count > 15:
-            score += 2
+            SCORE += 2
         elif word_count > 10:
-            score += 1
+            SCORE += 1
 
         # Question words increase complexity
         question_words = ['what', 'how', 'why', 'where', 'when', 'which', 'who']
         question_count = sum(1 for word in question_words if word in query.lower())
-        score += min(question_count, 2)
+        SCORE += min(question_count, 2)
 
         # Cap at 10
         return min(score, 10)
@@ -128,20 +128,20 @@ class QueryDecomposer(SimpleAgentBase):
             # Import here to avoid circular imports
 
             # Get Anthropic client
-            client = get_client(Provider.ANTHROPIC)
+            CLIENT = get_client(Provider.ANTHROPIC)
 
             # Call LLM with token limit
-            response = await client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+            RESPONSE = await client.messages.create(
+                MODEL="claude-3-5-sonnet-20241022",
                 max_tokens=200,  # Strict token limit for cost control
-                temperature=temperature,
-                messages=[{"role": "user", "content": prompt}]
+                TEMPERATURE=temperature,
+                MESSAGES=[{"role": "user", "content": prompt}]
             )
 
             class LLMResponseImpl:
                 """Docstring."""
             def __init__(self, content: str):
-                self.content = content
+                SELF.CONTENT = content
 
             return LLMResponseImpl(response.content[0].text)
 
@@ -151,7 +151,7 @@ class QueryDecomposer(SimpleAgentBase):
             class LLMResponseImpl:
                 """Docstring."""
             def __init__(self, content: str):
-                self.content = content
+                SELF.CONTENT = content
 
             return LLMResponseImpl('{"sub_queries": ["query"], "reasoning": "fallback"}')
 
@@ -166,19 +166,19 @@ class QueryDecomposer(SimpleAgentBase):
         """
         # Heuristic check: if gate says simple, skip LLM
         if self.gate:
-            decision = self.gate.should_retrieve(query)
+            DECISION = self.gate.should_retrieve(query)
             if decision.query_type in ["CONVERSATIONAL",
                 "FACTUAL"] and not decision.should_retrieve:
                 logger.info(f"Simple query detected, skipping decomposition: {query}")
                 return DecomposedQuery(
                     original_query=query,
                     sub_queries=[query],
-                    reasoning="Query is simple, no decomposition needed",
+                    REASONING="Query is simple, no decomposition needed",
                     complexity_score=1
                 )
 
         # Calculate complexity score
-        complexity = self._calculate_complexity_score(query)
+        COMPLEXITY = self._calculate_complexity_score(query)
 
         # If complexity is low, return as-is
         if complexity <= 3:
@@ -186,12 +186,12 @@ class QueryDecomposer(SimpleAgentBase):
             return DecomposedQuery(
                 original_query=query,
                 sub_queries=[query],
-                reasoning="Query complexity is low, no decomposition needed",
+                REASONING="Query complexity is low, no decomposition needed",
                 complexity_score=complexity
             )
 
         # Build decomposition prompt
-        prompt = f"""You are an Expert Research Assistant. Break the following complex user query in
+        PROMPT = f"""You are an Expert Research Assistant. Break the following complex user query in
     to 2-4 atomic, factual sub-queries that a search engine can answer.
 
 Rules:
@@ -218,11 +218,11 @@ Output: {{
 
         try:
             # Call LLM
-            response = await self._call_llm(prompt, temperature=0.1)
+            RESPONSE = await self._call_llm(prompt, temperature=0.1)
 
             # Parse JSON response
             import json
-            result = json.loads(response.content.strip())
+            RESULT = json.loads(response.content.strip())
 
             # Validate and limit sub-queries
             sub_queries = result.get("sub_queries", [query])
@@ -235,12 +235,12 @@ Output: {{
             if not sub_queries:
                 sub_queries = [query]
 
-            reasoning = result.get("reasoning", "Decomposed using LLM analysis")
+            REASONING = result.get("reasoning", "Decomposed using LLM analysis")
 
             return DecomposedQuery(
                 original_query=query,
                 sub_queries=sub_queries,
-                reasoning=reasoning,
+                REASONING=reasoning,
                 complexity_score=complexity
             )
 
@@ -250,7 +250,7 @@ Output: {{
             return DecomposedQuery(
                 original_query=query,
                 sub_queries=[query],
-                reasoning="Decomposition failed, using original query",
+                REASONING="Decomposition failed, using original query",
                 complexity_score=complexity
             )
 
@@ -274,14 +274,14 @@ Output: {{
         logger.info(f"Executing {len(decomposed_query.sub_queries)} sub-queries in parallel")
 
         # Create tasks for parallel execution
-        tasks = []
+        TASKS = []
         for sub_query in decomposed_query.sub_queries:
-            task = search_function(sub_query, **kwargs)
+            TASK = search_function(sub_query, **kwargs)
             tasks.append(task)
 
         # Execute all tasks concurrently
         try:
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+            RESULTS = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Process results
             processed_results = []
@@ -312,5 +312,5 @@ async def decompose_query(query: str, model_name: str = "gpt-4") -> DecomposedQu
     Returns:
         DecomposedQuery result
     """
-    decomposer = QueryDecomposer(model_name=model_name)
+    DECOMPOSER = QueryDecomposer(model_name=model_name)
     return await decomposer.decompose(query)

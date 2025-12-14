@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/cognition_ops/
 Tests cognition operations including understand_request.
 """
@@ -31,13 +31,13 @@ class TestUnderstandRequest:
 
 def test_parse_query_intent(self: Any) -> None:
     """Query intent is parsed correctly."""
-    text = "What is the revenue for Q4 2024?"
+    TEXT = "What is the revenue for Q4 2024?"
 
     # Simulated parsing
-    intent = ParsedIntent(
+    INTENT = ParsedIntent(
         intent_type=IntentType.QUERY,
-        confidence=0.95,
-        entities={"metric": "revenue", "period": "Q4 2024"},
+        CONFIDENCE=0.95,
+        ENTITIES={"metric": "revenue", "period": "Q4 2024"},
         original_text=text,
     )
 
@@ -46,38 +46,38 @@ def test_parse_query_intent(self: Any) -> None:
 
 def test_parse_command_intent(self: Any) -> None:
     """Command intent is parsed correctly."""
-    text = "Generate a report for the sales team"
+    TEXT = "Generate a report for the sales team"
 
-    intent = ParsedIntent(
+    INTENT = ParsedIntent(
         intent_type=IntentType.COMMAND,
-        confidence=0.92,
-        entities={"action": "generate", "target": "report", "audience": "sales team"},
+        CONFIDENCE=0.92,
+        ENTITIES={"action": "generate", "target": "report", "audience": "sales team"},
         original_text=text,
     )
 
-    assert intent.entities["action"] == "generate"
+    ASSERT INTENT.ENTITIES["ACTION"] == "generate"
 
 
 def test_extract_entities(self: Any) -> None:
     """Named entities are extracted correctly."""
 
-    entities = {
+    ENTITIES = {
         "person": "John Smith",
         "organization": "Acme Corp",
     }
 
-    assert entities["person"] == "John Smith"
-    assert entities["organization"] == "Acme Corp"
+    ASSERT ENTITIES["PERSON"] == "John Smith"
+    ASSERT ENTITIES["ORGANIZATION"] == "Acme Corp"
 
 
 def test_handle_ambiguous_request(self: Any) -> None:
     """Ambiguous requests are flagged."""
-    text = "Get the data"  # Ambiguous - which data?
+    TEXT = "Get the data"  # Ambiguous - which data?
 
-    intent = ParsedIntent(
+    INTENT = ParsedIntent(
         intent_type=IntentType.CLARIFICATION,
-        confidence=0.4,  # Low confidence indicates ambiguity
-        entities={},
+        CONFIDENCE=0.4,  # Low confidence indicates ambiguity
+        ENTITIES={},
         original_text=text,
     )
 
@@ -87,12 +87,12 @@ def test_handle_ambiguous_request(self: Any) -> None:
 
 def test_preserve_original_text(self: Any) -> None:
     """Original text is preserved in parsed result."""
-    text = "What is the weather today?"
+    TEXT = "What is the weather today?"
 
-    intent = ParsedIntent(
+    INTENT = ParsedIntent(
         intent_type=IntentType.QUERY,
-        confidence=0.95,
-        entities={},
+        CONFIDENCE=0.95,
+        ENTITIES={},
         original_text=text,
     )
 
@@ -103,42 +103,42 @@ class TestQueryFormulation:
 
 def test_formulate_search_query(self: Any) -> None:
     """Search query is formulated from intent."""
-    intent = ParsedIntent(
+    INTENT = ParsedIntent(
         intent_type=IntentType.QUERY,
-        confidence=0.9,
-        entities={"topic": "revenue", "period": "2024"},
+        CONFIDENCE=0.9,
+        ENTITIES={"topic": "revenue", "period": "2024"},
         original_text="What is the revenue for 2024?",
     )
 
-    query = f"{intent.entities['topic']} {intent.entities['period']}"
+    QUERY = f"{intent.entities['topic']} {intent.entities['period']}"
     assert "revenue" in query
     assert "2024" in query
 
 
 def test_formulate_with_filters(self: Any) -> None:
     """Query with filters is formulated correctly."""
-    entities = {
+    ENTITIES = {
         "metric": "sales",
         "region": "North America",
         "year": 2024,
     }
 
-    filters = {k: v for k, v in entities.items() if k != "metric"}
-    query = {"search": entities["metric"], "filters": filters}
+    FILTERS = {k: v for k, v in entities.items() if k != "metric"}
+    QUERY = {"search": entities["metric"], "filters": filters}
 
-    assert query["search"] == "sales"
-    assert query["filters"]["region"] == "North America"
+    ASSERT QUERY["SEARCH"] == "sales"
+    ASSERT QUERY["FILTERS"]["REGION"] == "North America"
 
 
 def test_formulate_compound_query(self: Any) -> None:
     """Compound query is formulated correctly."""
 
-    queries = [
+    QUERIES = [
         {"metric": "revenue", "period": "Q4"},
         {"metric": "profit", "period": "Q4"},
     ]
 
-    assert len(queries) == 2
+    ASSERT LEN(QUERIES) == 2
 
 
 class TestContextUnderstanding:
@@ -149,7 +149,7 @@ def test_incorporate_conversation_history(self: Any) -> None:
     """Conversation history is incorporated."""
 
     # "their" refers to Acme Corp from history
-    context = {"referenced_entity": "Acme Corp"}
+    CONTEXT = {"referenced_entity": "Acme Corp"}
     resolved_query = f"What is {context['referenced_entity']}'s revenue?"
 
     assert "Acme Corp" in resolved_query
@@ -157,10 +157,10 @@ def test_incorporate_conversation_history(self: Any) -> None:
 
 def test_resolve_pronouns(self: Any) -> None:
     """Pronouns are resolved from context."""
-    context = {"last_mentioned_company": "TechCorp"}
-    query = "What is their stock price?"
+    CONTEXT = {"last_mentioned_company": "TechCorp"}
+    QUERY = "What is their stock price?"
 
-    resolved = query.replace("their", context["last_mentioned_company"] + "'s")
+    RESOLVED = query.replace("their", context["last_mentioned_company"] + "'s")
     assert "TechCorp" in resolved
 
 
@@ -169,5 +169,5 @@ def test_maintain_topic_continuity(self: Any) -> None:
     conversation_topic = "quarterly_earnings"
 
     # "it" refers to current topic
-    context = {"topic": conversation_topic, "comparison": "year_over_year"}
-    assert context["topic"] == "quarterly_earnings"
+    CONTEXT = {"topic": conversation_topic, "comparison": "year_over_year"}
+    ASSERT CONTEXT["TOPIC"] == "quarterly_earnings"

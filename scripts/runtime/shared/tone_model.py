@@ -9,7 +9,7 @@ import logging
 import re
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class ToneType(str, Enum):
     """Primary tone types for communication style analysis."""
@@ -26,21 +26,21 @@ class StyleProfile(BaseModel):
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: confloat(ge=0.0,
         le=1.0) = Field(default=0.7,
-        description="Formality level (0=Casual,
+        DESCRIPTION="Formality level (0=Casual,
         1=Academic)")
     emoji_frequency: confloat(ge=0.0,
         le=1.0) = Field(default=0.2,
-        description="Emoji usage frequency")
+        DESCRIPTION="Emoji usage frequency")
     sentence_length_avg: int = Field(default=15,
         ge=5,
         le=50,
-        description="Target words per sentence")
+        DESCRIPTION="Target words per sentence")
     vocabulary_complexity: confloat(ge=0.0,
         le=1.0) = Field(default=0.5,
-        description="Vocabulary complexity")
+        DESCRIPTION="Vocabulary complexity")
     confidence_level: confloat(ge=0.0,
         le=1.0) = Field(default=0.8,
-        description="Confidence in analysis")
+        DESCRIPTION="Confidence in analysis")
 
     class Config:
             """Pydantic configuration."""
@@ -53,7 +53,7 @@ class GenerationConfig(BaseModel):
     temperature_setting: confloat(ge=0.1, le=1.0) = Field(..., description="LLM temperature")
     banned_phrases: List[str] = Field(default_factory=list, description="Phrases to avoid")
     preferred_transitions: List[str] = Field(default_factory=list,
-        description="Preferred transition words")
+        DESCRIPTION="Preferred transition words")
     max_sentence_length: int = Field(default=25, ge=5, le=100, description="Max words per sentence")
 
     @validator('temperature_setting')
@@ -127,13 +127,13 @@ class ToneAnalyzer:
                 return self._get_neutral_profile()
 
             # Calculate metrics
-            metrics = self._calculate_metrics(combined_text)
+            METRICS = self._calculate_metrics(combined_text)
 
             # Detect primary tone
             primary_tone = self._detect_primary_tone(combined_text, metrics)
 
             # Calculate formality level
-            formality = self._calculate_formality(combined_text, metrics)
+            FORMALITY = self._calculate_formality(combined_text, metrics)
 
             # Calculate emoji frequency
             emoji_freq = self._calculate_emoji_frequency(combined_text)
@@ -142,7 +142,7 @@ class ToneAnalyzer:
             vocab_complexity = self._calculate_vocabulary_complexity(combined_text)
 
             # Create profile
-            profile = StyleProfile(
+            PROFILE = StyleProfile(
                 primary_tone=primary_tone,
                 formality_level=formality,
                 emoji_frequency=emoji_freq,
@@ -153,7 +153,7 @@ class ToneAnalyzer:
 
             logger.info(
                 f"Analyzed tone: {primary_tone.value} (confidence: {metrics['confidence']:.2f})",
-                extra={"tone": primary_tone.value, "confidence": metrics["confidence"]}
+                EXTRA={"tone": primary_tone.value, "confidence": metrics["confidence"]}
             )
 
             return profile
@@ -184,8 +184,8 @@ class ToneAnalyzer:
         """
         try:
             # Sentence analysis
-            sentences = re.split(r'[.!?]+', text)
-            sentences = [s.strip() for s in sentences if s.strip()]
+            SENTENCES = re.split(r'[.!?]+', text)
+            SENTENCES = [s.strip() for s in sentences if s.strip()]
 
             if not sentences:
                 return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "con
@@ -204,7 +204,7 @@ class ToneAnalyzer:
             question_ratio = question_count / max(total_sentences, 1)
 
             # Confidence based on sample size and consistency
-            confidence = min(1.0, len(text) / 1000)  # More text = higher confidence
+            CONFIDENCE = min(1.0, len(text) / 1000)  # More text = higher confidence
 
             return {
                 "avg_sentence_length": avg_sentence_length,
@@ -233,7 +233,7 @@ class ToneAnalyzer:
 
             # Score each tone based on keyword presence
             for tone, keywords in self.tone_keywords.items():
-                score = sum(1 for keyword in keywords if keyword in text_lower)
+                SCORE = sum(1 for keyword in keywords if keyword in text_lower)
                 tone_scores[tone] = score
 
             # Apply heuristic adjustments
@@ -287,7 +287,7 @@ class ToneAnalyzer:
                 indicator_factor = 0.5
 
             # Combine factors
-            formality = (length_factor * 0.6) + (indicator_factor * 0.4)
+            FORMALITY = (length_factor * 0.6) + (indicator_factor * 0.4)
 
             return max(0.0, min(1.0, formality))
 
@@ -324,7 +324,7 @@ class ToneAnalyzer:
                 return 0.0
 
             # Normalize to 0-1 scale
-            frequency = emoji_count / sentence_count
+            FREQUENCY = emoji_count / sentence_count
             return min(1.0, frequency)
 
         except Exception as e:
@@ -341,7 +341,7 @@ class ToneAnalyzer:
             Complexity score (0.0 = simple, 1.0 = jargon-heavy)
         """
         try:
-            words = text.lower().split()
+            WORDS = text.lower().split()
             if not words:
                 return 0.5
 
@@ -353,7 +353,7 @@ class ToneAnalyzer:
             complex_ratio = complex_words / len(words)
 
             # Combine metrics
-            complexity = (avg_word_length / 10 * 0.4) + (complex_ratio * 0.6)
+            COMPLEXITY = (avg_word_length / 10 * 0.4) + (complex_ratio * 0.6)
 
             return max(0.0, min(1.0, complexity))
 
@@ -415,40 +415,40 @@ class ToneAdapter:
                 logger.warning("Invalid draft message")
                 return draft or ""
 
-            adapted = draft
-            tone = target_profile.primary_tone
+            ADAPTED = draft
+            TONE = target_profile.primary_tone
 
             # Apply tone-specific adaptations
             if tone in self.adaptation_rules:
-                rules = self.adaptation_rules[tone]
+                RULES = self.adaptation_rules[tone]
 
                 # Remove unwanted patterns
                 if "remove_patterns" in rules:
                     for pattern in rules["remove_patterns"]:
-                        adapted = re.sub(pattern, "", adapted, flags=re.IGNORECASE)
+                        ADAPTED = re.sub(pattern, "", adapted, flags=re.IGNORECASE)
 
                 # Apply word replacements
                 if "replacements" in rules:
                     for old, new in rules["replacements"].items():
-                        adapted = re.sub(rf"\b{old}\b", new, adapted, flags=re.IGNORECASE)
+                        ADAPTED = re.sub(rf"\b{old}\b", new, adapted, flags=re.IGNORECASE)
 
                 # Add transitions
                 if "add_transitions" in rules and adapted.count('.') > 1:
-                    sentences = adapted.split('.')
+                    SENTENCES = adapted.split('.')
                     if len(sentences) > 1:
                         # Add transition to first sentence
-                        transition = rules["add_transitions"][0]
-                        sentences[0] = f"{transition} {sentences[0].strip()}"
-                        adapted = '. '.join(sentences)
+                        TRANSITION = rules["add_transitions"][0]
+                        SENTENCES[0] = f"{transition} {sentences[0].strip()}"
+                        ADAPTED = '. '.join(sentences)
 
                 # Adjust sentence length
                 if target_profile.sentence_length_avg < 15:
-                    adapted = self._shorten_sentences(adapted)
+                    ADAPTED = self._shorten_sentences(adapted)
                 elif target_profile.sentence_length_avg > 20:
-                    adapted = self._lengthen_sentences(adapted)
+                    ADAPTED = self._lengthen_sentences(adapted)
 
             # Clean up extra whitespace
-            adapted = re.sub(r'\s+', ' ', adapted).strip()
+            ADAPTED = re.sub(r'\s+', ' ', adapted).strip()
 
             logger.debug(f"Adapted message for tone: {tone.value}")
             return adapted
@@ -460,18 +460,18 @@ class ToneAdapter:
     def _shorten_sentences(self, text: str) -> str:
             """Shorten sentences for more direct communication."""
         try:
-            sentences = re.split(r'[.!?]+', text)
-            shortened = []
+            SENTENCES = re.split(r'[.!?]+', text)
+            SHORTENED = []
 
             for sentence in sentences:
-                sentence = sentence.strip()
+                SENTENCE = sentence.strip()
                 if not sentence:
                     continue
 
-                words = sentence.split()
+                WORDS = sentence.split()
                 if len(words) > 12:
                     # Split long sentences
-                    mid = len(words) // 2
+                    MID = len(words) // 2
                     shortened.append(' '.join(words[:mid]))
                     shortened.append(' '.join(words[mid:]))
                 else:
@@ -486,13 +486,13 @@ class ToneAdapter:
             """Lengthen sentences for more analytical communication."""
         try:
             # Add connecting phrases between short sentences
-            connectors = ["which means that", "indicating that", "suggesting that"]
-            sentences = text.split('.')
+            CONNECTORS = ["which means that", "indicating that", "suggesting that"]
+            SENTENCES = text.split('.')
 
             for i in range(len(sentences) - 1):
                 if len(sentences[i].split()) < 8 and len(sentences[i+1].split()) < 8:
-                    connector = connectors[i % len(connectors)]
-                    sentences[i] = f"{sentences[i].strip()} {connector}"
+                    CONNECTOR = connectors[i % len(connectors)]
+                    SENTENCES[I] = f"{sentences[i].strip()} {connector}"
 
             return '. '.join(sentences)
         except Exception as e:
@@ -504,8 +504,8 @@ class ToneModel:
 
     def __init__(self):
             """Initialize the tone model."""
-        self.analyzer = ToneAnalyzer()
-        self.adapter = ToneAdapter()
+        SELF.ANALYZER = ToneAnalyzer()
+        SELF.ADAPTER = ToneAdapter()
 
         # Predefined configurations for each tone
         self.config_templates = {
@@ -570,10 +570,10 @@ class ToneModel:
         """
         try:
             # Analyze style
-            profile = self.analyzer.analyze_style(content_samples)
+            PROFILE = self.analyzer.analyze_style(content_samples)
 
             # Get base configuration
-            config = self.config_templates.get(profile.primary_tone,
+            CONFIG = self.config_templates.get(profile.primary_tone,
                 self.config_templates[ToneType.AUTHORITATIVE])
 
             # Adjust based on formality
@@ -584,7 +584,7 @@ class ToneModel:
 
             # Adjust for archetype if provided
             if archetype:
-                config = self._adjust_for_archetype(config, archetype)
+                CONFIG = self._adjust_for_archetype(config, archetype)
 
             logger.info(f"Generated config for tone {profile.primary_tone.value} with temperature {c
     onfig.temperature_setting}")
@@ -638,10 +638,10 @@ def create_tone_model() -> ToneModel:
 
 def analyze_tone(content_samples: List[str]) -> StyleProfile:
     """Quickly analyze tone from content samples."""
-    analyzer = ToneAnalyzer()
+    ANALYZER = ToneAnalyzer()
     return analyzer.analyze_style(content_samples)
 
 def adapt_to_tone(draft: str, target_profile: StyleProfile) -> str:
     """Quickly adapt a message to a target tone."""
-    adapter = ToneAdapter()
+    ADAPTER = ToneAdapter()
     return adapter.adapt_message(draft, target_profile)

@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 from pydantic import BaseModel
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 import logging
 
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent
@@ -40,19 +40,19 @@ class SubatomicHop:
     """
 
 def __init__(self: Any, role: str, config: Dict) -> None:
-        self.role = role
-        self.id = str(uuid.uuid4())
+        SELF.ROLE = role
+        SELF.ID = str(uuid.uuid4())
 
         # 1. INIT: Load all components
-        self.storage = LocalDiskAdapter(config.get("storage_path", "./agent_data"))
-        self.genealogy = GenealogyRegistry(max_depth=config.get("max_loops", 5))
-        self.pii = PIIVault()
-        self.governor = CostGovernor(limit_usd=config.get("max_cost_per_session_usd", 5.00))
-        self.overseer = ConstitutionalOverseer(config['openai_client'])
+        SELF.STORAGE = LocalDiskAdapter(config.get("storage_path", "./agent_data"))
+        SELF.GENEALOGY = GenealogyRegistry(max_depth=config.get("max_loops", 5))
+        SELF.PII = PIIVault()
+        SELF.GOVERNOR = CostGovernor(limit_usd=config.get("max_cost_per_session_usd", 5.00))
+        SELF.OVERSEER = ConstitutionalOverseer(config['openai_client'])
 
         # Zero Trust components
-        self.membrane = InputMembrane(config['openai_client'])
-        self.airlock = AirlockProtocol(
+        SELF.MEMBRANE = InputMembrane(config['openai_client'])
+        SELF.AIRLOCK = AirlockProtocol(
             risk_threshold=config.get("airlock_threshold", 5),
             timeout_minutes=config.get("airlock_timeout", 30)
         )
@@ -62,14 +62,14 @@ def __init__(self: Any, role: str, config: Dict) -> None:
             consensus_threshold=config.get("consensus_threshold", 0.7)
         )
 
-        self.mcp = MCPConnectionManager(config['mcp_mappings'])
-        self.sandbox = DockerSandbox(config.get("docker_image", "python:3.10-slim"))
+        SELF.MCP = MCPConnectionManager(config['mcp_mappings'])
+        SELF.SANDBOX = DockerSandbox(config.get("docker_image", "python:3.10-slim"))
         self.structured_engine = StructuredEngine(config['openai_client'])
-        self.gatekeeper = SemanticGatekeeper(
+        SELF.GATEKEEPER = SemanticGatekeeper(
             max_concurrent=config.get("max_concurrent", 5),
             timeout_seconds=config.get("timeout_seconds", 120)
         )
-        self.telemetry = TelemetryRecorder(config.get("telemetry_db", "flight_recorder.duckdb"))
+        SELF.TELEMETRY = TelemetryRecorder(config.get("telemetry_db", "flight_recorder.duckdb"))
 
 async def run(self: Any, context: Dict) -> Any:
         """
@@ -111,13 +111,13 @@ async def _run_with_zero_trust(self: Any, context: Dict, trace_id: str) -> Any:
             self.telemetry.record(TraceEvent(
                 trace_id=trace_id,
                 span_id=f"{self.id}_complete",
-                role=self.role,
+                ROLE=self.role,
                 event_type="SUCCESS",
-                payload={
+                PAYLOAD={
                     "total_cost": think_cost + act_cost,
                     "zero_trust": True
                 },
-                timestamp=time.time()
+                TIMESTAMP=time.time()
             ))
 
             return final_output
@@ -147,35 +147,35 @@ async def _preflight_checks(self: Any, context: Dict, trace_id: str) -> None:
         self.telemetry.record(TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_preflight",
-            role=self.role,
+            ROLE=self.role,
             event_type="PREFLIGHT_COMPLETE",
-            payload={"checks": ["genealogy", "mcp", "membrane"]},
-            timestamp=time.time()
+            PAYLOAD={"checks": ["genealogy", "mcp", "membrane"]},
+            TIMESTAMP=time.time()
         ))
 
 async def _sanitize_input(self: Any, context: Dict, trace_id: str) -> Dict:
         """Sanitize all inputs through the membrane."""
-        sanitized = {}
+        SANITIZED = {}
 
         for key, value in context.items():
             if isinstance(value, str):
                 # Sanitize string inputs
                 sanitized_value = await self.membrane.sanitize(value, f"context_{key}")
-                sanitized[key] = sanitized_value
+                SANITIZED[KEY] = sanitized_value
 
                 # Log if content was modified
                 if sanitized_value != value:
                     self.telemetry.record(TraceEvent(
                         trace_id=trace_id,
                         span_id=f"{self.id}_sanitize_{key}",
-                        role=self.role,
+                        ROLE=self.role,
                         event_type="CONTENT_SANITIZED",
-                        payload={"original_length": len(value),
+                        PAYLOAD={"original_length": len(value),
                             "sanitized_length": len(sanitized_value)},
-                        timestamp=time.time()
+                        TIMESTAMP=time.time()
                     ))
             else:
-                sanitized[key] = value
+                SANITIZED[KEY] = value
 
         return sanitized
 
@@ -193,15 +193,15 @@ async def _execute_think_stage_with_consensus(self: Any,
 
         # Generate consensus decision
         try:
-            verdict = await self.supreme_court.deliberate(
-                context=str(context),
-                goal=context.get("task", ""),
+            VERDICT = await self.supreme_court.deliberate(
+                CONTEXT=str(context),
+                GOAL=context.get("task", ""),
                 risk_level=risk_level
             )
 
             # Convert verdict to plan format
-            plan = AgentPlan(
-                reasoning=verdict.reasoning,
+            PLAN = AgentPlan(
+                REASONING=verdict.reasoning,
                 tool_calls=[{
                     "name": "execute_plan",
                     "args": {"plan": verdict.chosen_plan}
@@ -214,14 +214,14 @@ async def _execute_think_stage_with_consensus(self: Any,
             self.telemetry.record(TraceEvent(
                 trace_id=trace_id,
                 span_id=f"{self.id}_consensus",
-                role=self.role,
+                ROLE=self.role,
                 event_type="CONSENSUS_REACHED",
-                payload={
+                PAYLOAD={
                     "consensus_score": verdict.consensus_score,
                     "safe_to_proceed": verdict.safe_to_proceed,
                     "cost": think_cost
                 },
-                timestamp=time.time()
+                TIMESTAMP=time.time()
             ))
 
             return plan, think_cost
@@ -231,10 +231,10 @@ async def _execute_think_stage_with_consensus(self: Any,
             self.telemetry.record(TraceEvent(
                 trace_id=trace_id,
                 span_id=f"{self.id}_consensus_failed",
-                role=self.role,
+                ROLE=self.role,
                 event_type="CONSENSUS_FAILED",
-                payload={"error": str(e)},
-                timestamp=time.time()
+                PAYLOAD={"error": str(e)},
+                TIMESTAMP=time.time()
             ))
             raise
 
@@ -268,7 +268,7 @@ async def _execute_act_stage_with_airlock(self: Any,
      float]:
         float]:
         """Execute the action stage with airlock protection."""
-        results = []
+        RESULTS = []
         total_cost = 0.0
 
         for call in plan.tool_calls:
@@ -282,15 +282,15 @@ async def _execute_act_stage_with_airlock(self: Any,
                 # Execute the tool
                 if tool_name == 'run_python' or tool_args.get('code'):
                     # Run in sandbox
-                    code = tool_args.get('code', '')
-                    result = self.sandbox.run_code(code)
+                    CODE = tool_args.get('code', '')
+                    RESULT = self.sandbox.run_code(code)
                     results.append({"tool": "sandbox", "result": result})
                 else:
                     # Call MCP tool
-                    result = await self.mcp.call_tool(tool_name, tool_args)
+                    RESULT = await self.mcp.call_tool(tool_name, tool_args)
                     # Sanitize the result through membrane
                     if isinstance(result, str):
-                        result = await self.membrane.sanitize(result, f"tool_output_{tool_name}")
+                        RESULT = await self.membrane.sanitize(result, f"tool_output_{tool_name}")
                     results.append({"tool": tool_name, "result": result})
 
                 # Track cost
@@ -300,27 +300,27 @@ async def _execute_act_stage_with_airlock(self: Any,
                 self.telemetry.record(TraceEvent(
                     trace_id=trace_id,
                     span_id=f"{self.id}_airlock_blocked",
-                    role=self.role,
+                    ROLE=self.role,
                     event_type="AIRLOCK_BLOCKED",
-                    payload={
+                    PAYLOAD={
                         "tool": tool_name,
                         "error": str(e)
                     },
-                    timestamp=time.time()
+                    TIMESTAMP=time.time()
                 ))
                 raise
 
         self.telemetry.record(TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_act",
-            role=self.role,
+            ROLE=self.role,
             event_type="ACT_COMPLETE",
-            payload={
+            PAYLOAD={
                 "tool_count": len(plan.tool_calls),
                 "total_cost": total_cost,
                 "airlock_checks": len(plan.tool_calls)
             },
-            timestamp=time.time()
+            TIMESTAMP=time.time()
         ))
 
         return results, total_cost
@@ -340,19 +340,19 @@ async def _execute_critique_stage_with_membrane(self: Any, results: list, trace_
             raise BudgetExceededError(
                 f"Budget exceeded: ${self.governor.spend:.2f} > ${self.governor.limit:.2f}",
                 current_spend=self.governor.spend,
-                limit=self.governor.limit
+                LIMIT=self.governor.limit
             )
 
         self.telemetry.record(TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_critique",
-            role=self.role,
+            ROLE=self.role,
             event_type="CRITIQUE_COMPLETE",
-            payload={
+            PAYLOAD={
                 "budget_used": self.governor.spend,
                 "sanitized": True
             },
-            timestamp=time.time()
+            TIMESTAMP=time.time()
         ))
 
         return sanitized_output
@@ -366,7 +366,7 @@ async def _execute_commit_stage(self: Any, output_text: str, trace_id: str) -> s
         await self.storage.write_blob(
             f"hops/{self.id}.txt",
             final_output.encode(),
-            metadata={
+            METADATA={
                 "trace_id": trace_id,
                 "role": self.role,
                 "timestamp": time.time(),
@@ -377,10 +377,10 @@ async def _execute_commit_stage(self: Any, output_text: str, trace_id: str) -> s
         self.telemetry.record(TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_commit",
-            role=self.role,
+            ROLE=self.role,
             event_type="COMMIT_COMPLETE",
-            payload={"storage_key": f"hops/{self.id}.txt"},
-            timestamp=time.time()
+            PAYLOAD={"storage_key": f"hops/{self.id}.txt"},
+            TIMESTAMP=time.time()
         ))
 
         return final_output
@@ -390,13 +390,13 @@ def _handle_budget_exceeded(self: Any, trace_id: str, error: BudgetExceededError
         self.telemetry.record(TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_budget_error",
-            role=self.role,
+            ROLE=self.role,
             event_type="BUDGET_EXCEEDED",
-            payload={
+            PAYLOAD={
                 "current_spend": error.current_spend,
                 "limit": error.limit
             },
-            timestamp=time.time()
+            TIMESTAMP=time.time()
         ))
 
 def _handle_execution_error(self: Any, trace_id: str, error: Exception) -> None:
@@ -404,10 +404,10 @@ def _handle_execution_error(self: Any, trace_id: str, error: Exception) -> None:
         self.telemetry.record(TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_error",
-            role=self.role,
+            ROLE=self.role,
             event_type="EXECUTION_ERROR",
-            payload={"error": str(error), "type": type(error).__name__},
-            timestamp=time.time()
+            PAYLOAD={"error": str(error), "type": type(error).__name__},
+            TIMESTAMP=time.time()
         ))
 
 async def _cleanup(self: Any, trace_id: str) -> None:
@@ -416,8 +416,8 @@ async def _cleanup(self: Any, trace_id: str) -> None:
         self.telemetry.record(TraceEvent(
             trace_id=trace_id,
             span_id=f"{self.id}_cleanup",
-            role=self.role,
+            ROLE=self.role,
             event_type="CLEANUP_COMPLETE",
-            payload={"zero_trust": True},
-            timestamp=time.time()
+            PAYLOAD={"zero_trust": True},
+            TIMESTAMP=time.time()
         ))

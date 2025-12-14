@@ -8,7 +8,7 @@ import asyncio
 import logging
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class SemanticGatekeeper:
     """
@@ -23,12 +23,12 @@ class SemanticGatekeeper:
             max_concurrent: Maximum number of concurrent executions
             timeout_seconds: Default timeout for operations
         """
-        self.semaphore = asyncio.Semaphore(max_concurrent)
+        SELF.SEMAPHORE = asyncio.Semaphore(max_concurrent)
         self.timeout_seconds = timeout_seconds
         self.dead_letter_queue = []
 
         logger.info(f"Gatekeeper initialized: max_concurrent={max_concurrent},
-            timeout={timeout_seconds}s")
+            TIMEOUT={timeout_seconds}s")
 
     @asynccontextmanager
     async def execute(self, trace_id: str, operation: str):
@@ -89,7 +89,7 @@ class SemanticGatekeeper:
             # Execute with timeout
             return await asyncio.wait_for(
                 coro,
-                timeout=self.timeout_seconds
+                TIMEOUT=self.timeout_seconds
             )
 
     def get_dead_letters(self) -> list:
@@ -132,5 +132,5 @@ async def with_gatekeeping(trace_id: str, operation: str, coro):
     Returns:
         Result of the coroutine
     """
-    gatekeeper = get_gatekeeper()
+    GATEKEEPER = get_gatekeeper()
     return await gatekeeper.run_with_gating(trace_id, operation, coro)

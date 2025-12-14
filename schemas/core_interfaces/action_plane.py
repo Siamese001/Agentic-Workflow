@@ -1,7 +1,7 @@
 """Action Plane Interface - The Hands.
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Defines the contract for all tool execution and external interactions.
 L2 Execution: Side effects allowed, but controlled and observable.
@@ -50,7 +50,7 @@ class ActionResult:
     error: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
     execution_time_ms: float = 0.0
-    retries: int = 0
+    RETRIES: INT = 0
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -94,7 +94,7 @@ class IActionPlane(ABC):
         """Docstring."""
         self,
         requests: List[ActionRequest],
-        parallel: bool = False,
+        PARALLEL: BOOL = False,
     ) -> List[ActionResult]:
         """Execute multiple actions.
 

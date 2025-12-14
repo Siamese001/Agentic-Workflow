@@ -1,18 +1,17 @@
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 # python servers/telemetry_server.py
-import logging
 
 import duckdb
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP("TelemetryServer")
+MCP = FastMCP("TelemetryServer")
 CONN = duckdb.connect("flight_recorder.duckdb", read_only=True)
 
 
 @mcp.tool()
 def search_errors(trace_id: str) -> str:
     """Finds error logs for a specific trace."""
-    res = CONN.execute(
+    RES = CONN.execute(
         "SELECT payload FROM traces WHERE trace_id = ? AND event_type LIKE '%ERROR%'", [trace_id]
     ).fetchall()
     return "\n".join([str(r[0]) for r in res])

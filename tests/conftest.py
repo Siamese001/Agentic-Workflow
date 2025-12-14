@@ -1,7 +1,7 @@
 """
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 Shared pytest configuration and fixtures for all tests.
 """
 
@@ -35,7 +35,7 @@ def data() -> Dict[str, Any]:
 @pytest.fixture
 def mock_router() -> None:
     """Mock router for testing provider fallback scenarios."""
-    router = MagicMock()
+    ROUTER = MagicMock()
     router.execute_with_fallback = AsyncMock()
     return router
 
@@ -43,8 +43,8 @@ def mock_router() -> None:
 @pytest.fixture
 def mock_state_manager() -> None:
     """Mock state manager for testing atomic operations."""
-    manager = MagicMock()
-    manager.checkpoint = AsyncMock()
+    MANAGER = MagicMock()
+    MANAGER.CHECKPOINT = AsyncMock()
     manager.resume_workflow = MagicMock()
     return manager
 
@@ -53,7 +53,7 @@ def mock_state_manager() -> None:
 def mock_circuit_breaker() -> None:
     """Mock circuit breaker for testing failure scenarios."""
     cb = MagicMock()
-    cb.state = "CLOSED"
+    CB.STATE = "CLOSED"
     cb.allow_request = MagicMock(return_value=True)
     cb.record_success = AsyncMock()
     cb.record_failure = AsyncMock()
@@ -78,18 +78,18 @@ def sample_workflow_state() -> None:
 @pytest.fixture
 def mock_validation_gates() -> None:
     """Mock validation gates for testing validation pipelines."""
-    gates = []
+    GATES = []
     for i in range(3):
-        gate = AsyncMock()
+        GATE = AsyncMock()
         gate.return_value = MagicMock(is_valid=True, error_message="")
         gates.append(gate)
     return gates
 
 
-@pytest.fixture(scope="session")
+@PYTEST.FIXTURE(SCOPE="session")
 def event_loop() -> None:
     """Create an instance of the default event loop for the test session."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
+    LOOP = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
 
@@ -105,6 +105,6 @@ def temp_workflow_dir(tmp_path: Any) -> None:
 @pytest.fixture
 def mock_token_encoder() -> None:
     """Mock token encoder for testing token limits."""
-    encoder = MagicMock()
-    encoder.encode = MagicMock(return_value=[0] * 1000)  # Default to 1000 tokens
+    ENCODER = MagicMock()
+    ENCODER.ENCODE = MagicMock(return_value=[0] * 1000)  # Default to 1000 tokens
     return encoder
