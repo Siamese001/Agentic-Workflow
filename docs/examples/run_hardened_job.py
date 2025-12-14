@@ -44,20 +44,91 @@ TEST_CONFIG = {
     "routing_tier": RoutingTier.REASONING
 }
 
-# Create a minimal workflow spec for testing
-def create_test_workflow_spec() -> WorkflowSpec:
+def create_test_workflow_spec():
     """Create a minimal workflow spec for the acceptance test."""
-    test_hop = HopSpec(
-        id="test_hop",
-        script="echo 'Test hop executed successfully'",
-        description="Test hop for acceptance test"
+    return {
+        "name": "Titanium Acceptance Test Workflow",
+        "version": "v2.0",
+        "hops": [{
+            "id": "test_hop",
+            "script": "echo 'Test hop executed successfully'",
+            "description": "Test hop for acceptance test"
+        }]
+    }
+
+def _initialize_orchestrator():
+    """Initialize the hardened workflow orchestrator."""
+    logger.info("⚡ Initializing HardenedWorkflowOrchestrator...")
+    workflow_spec = create_test_workflow_spec()
+    
+    from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
+    orchestrator = HardenedWorkflowOrchestrator(
+        workflow_spec=workflow_spec,
+        run_base_dir="./pipeline_runs",
+        storage_path="./state_storage"
+    )
+    logger.info("✅ Orchestrator initialized successfully")
+    return orchestrator
+
+def _prepare_workflow_context():
+    """Prepare initial workflow context."""
+    logger.info(f"📋 Initializing workflow: {TEST_JOB_ID}")
+    return {
+        "target_role": TEST_CONFIG["target_role"],
+        "target_company": TEST_CONFIG["target_company"],
+        "job_url": TEST_CONFIG["job_url"],
+        "routing_tier": TEST_CONFIG["routing_tier"]
+    }
+
+def _execute_workflow(orchestrator, context):
+    """Execute the workflow with resilience."""
+    logger.info("⚙️ Executing hardened workflow...")
+    logger.info(f"Target Role: {TEST_CONFIG['target_role']}")
+    logger.info(f"Target Company: {TEST_CONFIG['target_company']}")
+    return orchestrator.execute_workflow_with_resilience(
+        workflow_id=TEST_JOB_ID,
+        context=context
     )
 
-    return WorkflowSpec(
-        name="Titanium Acceptance Test Workflow",
-        version="v2.0",
-        hops=[test_hop]
-    )
+def _extract_result_content(result):
+    """Extract content from workflow result."""
+    if isinstance(result, dict):
+        return result.get("final_output", result)
+    return result
+
+def _display_results(content):
+    """Display workflow results."""
+    logger.info("=" * 60)
+    logger.info("📄 WORKFLOW RESULTS:")
+    logger.info("-" * 60)
+
+    if isinstance(content, dict):
+        for key, value in content.items():
+            logger.info(f"{key}: {value}")
+    elif isinstance(content, str):
+        if len(content) > 1000:
+            logger.info(f"Content (truncated): {content[:1000]}...")
+        else:
+            logger.info(f"Content: {content}")
+    else:
+        logger.info(f"Result: {content}")
+
+def _get_state_location(orchestrator):
+    """Get state persistence location."""
+    if hasattr(orchestrator, 'state_manager') and orchestrator.state_manager:
+        return getattr(orchestrator.state_manager, 'storage_path', './state_storage')
+    return "State manager not available"
+
+def _print_success_report(state_location, execution_time):
+    """Print success criteria report."""
+    logger.info("=" * 60)
+    logger.info("[SUCCESS] TITANIUM WORKFLOW COMPLETE")
+    logger.info(f"State persisted to: {state_location}")
+    logger.info("Router Execution: HEALTHY")
+    logger.info(f"⏱️ Total Execution Time: {execution_time:.2f} seconds")
+    logger.info("=" * 60)
+    logger.info("🎉 ACCEPTANCE TEST PASSED")
+    logger.info("=" * 60)
 
 async def main():
     """Main execution function for the hardened job test."""
@@ -67,32 +138,14 @@ async def main():
 
     start_time = time.time()
     orchestrator = None
-    state_location = None
 
     try:
-        # 1. Initialize Orchestrator
-        logger.info("⚡ Initializing HardenedWorkflowOrchestrator...")
-        workflow_spec = create_test_workflow_spec()
-        orchestrator = HardenedWorkflowOrchestrator(
-            workflow_spec=workflow_spec,
-            run_base_dir="./pipeline_runs",
-            storage_path="./state_storage"
-        )
-        logger.info("✅ Orchestrator initialized successfully")
+        orchestrator = _initialize_orchestrator()
+        context = _prepare_workflow_context()
 
-        # 2. Prepare Context and Initialize Workflow
-        logger.info(f"📋 Initializing workflow: {TEST_JOB_ID}")
-        context = {
-            "target_role": TEST_CONFIG["target_role"],
-            "target_company": TEST_CONFIG["target_company"],
-            "job_url": TEST_CONFIG["job_url"],
-            "routing_tier": TEST_CONFIG["routing_tier"]
-        }
-
-        # Initialize or resume workflow (returns updated context)
         updated_context = orchestrator.initialize_or_resume_workflow(
             workflow_id=TEST_JOB_ID,
-            total_k_nodes=5,  # Example: 5 K-nodes in the workflow
+            total_k_nodes=5,
             context=context
         )
 
@@ -101,61 +154,15 @@ async def main():
         else:
             logger.info("🆕 Started new workflow")
 
-        # 3. Execute Workflow with Resilience
-        logger.info("⚙️ Executing hardened workflow...")
-        logger.info(f"Target Role: {TEST_CONFIG['target_role']}")
-        logger.info(f"Target Company: {TEST_CONFIG['target_company']}")
-
-        result = await orchestrator.execute_workflow_with_resilience(
-            workflow_id=TEST_JOB_ID,
-            context=updated_context
-        )
-
-        # 4. Handle Result (Dict format)
+        result = await _execute_workflow(orchestrator, updated_context)
         logger.info("📦 Received workflow results")
 
-        # Extract final output from result
-        if isinstance(result, dict):
-            content = result.get("final_output", result)
-            result.get("metadata", {})
-        else:
-            content = result
+        content = _extract_result_content(result)
+        _display_results(content)
 
-        # 5. Display Results
-        logger.info("=" * 60)
-        logger.info("📄 WORKFLOW RESULTS:")
-        logger.info("-" * 60)
-
-        if isinstance(content, dict):
-            for key, value in content.items():
-                logger.info(f"{key}: {value}")
-        elif isinstance(content, str):
-            # Truncate very long responses for readability
-            if len(content) > 1000:
-                logger.info(f"Content (truncated): {content[:1000]}...")
-            else:
-                logger.info(f"Content: {content}")
-        else:
-            logger.info(f"Result: {content}")
-
-        # 6. Get State Persistence Location
-        if hasattr(orchestrator, 'state_manager') and orchestrator.state_manager:
-            state_location = getattr(orchestrator.state_manager, 'storage_path', './state_storage')
-        else:
-            state_location = "State manager not available"
-
-        # 7. Calculate Execution Metrics
+        state_location = _get_state_location(orchestrator)
         execution_time = time.time() - start_time
-
-        # 8. Print Success Criteria
-        logger.info("=" * 60)
-        logger.info("[SUCCESS] TITANIUM WORKFLOW COMPLETE")
-        logger.info(f"State persisted to: {state_location}")
-        logger.info("Router Execution: HEALTHY")
-        logger.info(f"⏱️ Total Execution Time: {execution_time:.2f} seconds")
-        logger.info("=" * 60)
-        logger.info("🎉 ACCEPTANCE TEST PASSED")
-        logger.info("=" * 60)
+        _print_success_report(state_location, execution_time)
 
         return 0
 
@@ -164,7 +171,6 @@ async def main():
         logger.error("❌ WORKFLOW FAILED")
         logger.error(f"Error: {type(e).__name__}: {e}")
 
-        # Print stack trace for debugging
         import traceback
         logger.error("Stack Trace:")
         logger.error(traceback.format_exc())
@@ -176,11 +182,8 @@ async def main():
         return 1
 
     finally:
-        # Cleanup
         if orchestrator:
             try:
-                # HardenedWorkflowOrchestrator doesn't have cleanup method
-                # Just log completion
                 logger.info("🧹 Workflow execution completed")
             except Exception as e:
                 logger.warning(f"Cleanup warning: {e}")
