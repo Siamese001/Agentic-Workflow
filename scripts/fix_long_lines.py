@@ -143,6 +143,14 @@ def _break_at_operators(content: str, indent: str) -> str:
 # L4 REFACTOR: Function 'fix_long_lines_in_file' exceeds 55 lines
 # TODO: Manual split required - see refactor plan .\scripts\fix_long_lines.py:fix_long_lines_in_file
 
+
+# L4 REFACTOR: Function 'fix_long_lines_in_file' exceeds 55 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_long_lines.py:fix_long_lines_in_file
+
+
+# L4 REFACTOR: Function 'fix_long_lines_in_file' exceeds 55 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_long_lines.py:fix_long_lines_in_file
+
 def fix_long_lines_in_file(file_path: str) -> int:
     """Fix long lines in a single file. Returns number of lines fixed."""
     try:

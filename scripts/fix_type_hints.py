@@ -5,6 +5,12 @@ import ast
 import os
 import re
 
+# L4 REFACTOR: Function 'add_type_hints_to_file' exceeds 82 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_type_hints.py:add_type_hints_to_file
+
+
+# L4 REFACTOR: Function 'add_type_hints_to_file' exceeds 82 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_type_hints.py:add_type_hints_to_file
 
 
 # L4 REFACTOR: Function 'add_type_hints_to_file' exceeds 82 lines
