@@ -2592,7 +2592,7 @@ class PolicyEvolutionAgent(SubAtomicAgent):
         analysis = self._analyze_execution_outcomes(history)
 
         # Evolve validation rules based on analysis
-        evolved_rules = self._evolve_validation_rules(analysis)
+        evolved_rules = self._evolve_validation_rules(analysis, history)
 
         # Evolve agent prompts based on patterns
         self._evolve_agent_prompts(analysis)
@@ -2659,7 +2659,7 @@ class PolicyEvolutionAgent(SubAtomicAgent):
 
         return analysis
 
-    def _evolve_validation_rules(self, analysis: dict) -> dict:
+    def _evolve_validation_rules(self, analysis: dict, history: dict) -> dict:
         """Evolve validation rules based on execution analysis."""
         import json
         from pathlib import Path

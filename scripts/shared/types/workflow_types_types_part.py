@@ -1,24 +1,23 @@
 """Split module 1 for workflow_types_types."""
 import logging
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
-
 
 class CircuitState(Enum):
     """Circuit breaker states."""
 
-
 class HopStatus(Enum):
     """Status of a workflow hop/step."""
-
 
 class GateDecision(Enum):
     """Decision from a workflow gate."""
 
-
 class BulletProvenance(Enum):
     """Source of a bullet point."""
-
 
 @dataclass
 class HopCheckpoint:

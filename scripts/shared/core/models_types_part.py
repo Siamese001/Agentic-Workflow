@@ -1,21 +1,21 @@
 """Split module 1 for models_types."""
 import logging
 from typing import Any, Dict, List, Optional
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
-
 
 class ValidationSeverity(Enum):
     """Severity levels for validation results."""
 
-
 class Provider(str, Enum):
     """Available LLM providers."""
 
-
 class APICallStatus(Enum):
     """Status of API calls."""
-
 
 @dataclass
 class ValidationResult:
@@ -25,7 +25,6 @@ class ValidationResult:
     _severity: ValidationSeverity
     _message: str
     _details: Dict[str, object] = field(default_factory=dict)
-
 
 @dataclass
 class ThematicAnalysis:
@@ -42,7 +41,6 @@ class ThematicAnalysis:
     _retrieval_sources: List[Any] = field(default_factory=list)
     _weighting_formula: Optional[Dict[str, object]] = None
 
-
 @dataclass
 class APICallMetrics:
     """Metrics for API call tracking"""
@@ -53,7 +51,6 @@ class APICallMetrics:
     _total_latency_ms: float = 0
     _safety_blocks: int = 0
     _rate_limits: int = 0
-
 
 @dataclass
 class RAGState:
@@ -66,7 +63,6 @@ class RAGState:
     _generation_confidence: float = 0.0
     _metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
 class ImmutableStagingBuffer:
     """Immutable buffer for staging data transformations."""
@@ -75,12 +71,9 @@ class ImmutableStagingBuffer:
     _timestamp: datetime = field(default_factory=datetime.utcnow)
     _checksum: Optional[str] = None
 
-
 def with_data(self: Any, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
     """Return a new buffer with updated data."""
-    return ImmutableStagingBuffer(DATA={**self.data, **new_data}, VERSION=self.version +
-                                  1, TIMESTAMP=datetime.utcnow(), CHECKSUM=None)
-
+    return ImmutableStagingBuffer(DATA={**self.data, **new_data}, VERSION=self.version + 1, TIMESTAMP=datetime.utcnow(), CHECKSUM=None)
 
 def clear(self: Any) -> ImmutableStagingBuffer:
     """Return a new empty buffer."""

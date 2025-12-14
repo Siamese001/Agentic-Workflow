@@ -3,8 +3,11 @@ import logging
 import subprocess
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
-
 
 def check_npx() -> None:
     """Check npx accessibility."""
@@ -24,12 +27,9 @@ def check_npx() -> None:
     except Exception as e:
         ConfigurationService().logger.error(f'Failed to run npx with full path: {e}')
     try:
-        RESULT = subprocess.run(['npm', 'view', '@modelcontextprotocol/server-filesystem',
-                                'name'], capture_output=True, TEXT=True)
+        RESULT = subprocess.run(['npm', 'view', '@modelcontextprotocol/server-filesystem', 'name'], capture_output=True, TEXT=True)
         ConfigurationService().logger.info(f'Package check: {ConfigurationService().result.stdout.strip()}')
     except Exception as e:
         ConfigurationService().logger.error(f'Failed to check package: {e}')
-
-
 if __name__ == '__main__':
     check_npx()

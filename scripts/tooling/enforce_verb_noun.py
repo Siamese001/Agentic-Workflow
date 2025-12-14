@@ -4,6 +4,10 @@ import shutil
 import logging
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 for f in sys.argv[1:]:

@@ -57,7 +57,7 @@ class RepositoryCleaner:
                 for line in code_lines:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import:
-# if line.startswith('from .') and 'import *' in line:
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # if line.startswith('from .') and 'import *' in line:
                         return True
 
         except Exception as e:
@@ -147,10 +147,10 @@ class RepositoryCleaner:
             # Replace the import
             LINES = content.split('\n')
             for i, line in enumerate(lines):
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import:
-# lines[i] = f"from .{implementation.stem} import *"
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # lines[i] = f"from .{implementation.stem} import *"
                     break
 
             root_shim.write_text('\n'.join(lines), encoding='utf-8')

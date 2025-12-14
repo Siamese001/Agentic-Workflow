@@ -8,8 +8,11 @@ import logging
 from typing import Dict, Optional
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
-
 
 @dataclass
 class FormattedOutput:
@@ -18,10 +21,8 @@ class FormattedOutput:
     _format_type: str
     _metadata: Dict[str, object] = field(default_factory=dict)
 
-
 class FormatScriptsContext:
     """Formatter for utilities domain."""
-
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the formatter with optional configuration."""
@@ -29,15 +30,12 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     self.output_format = self.config.get('format', 'default')
     ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
 
-
 def format(self: Any, data: object, target_format: Optional[str]) -> FormattedOutput:
     """Format data to target structure."""
     target_format or self.output_format
     self._transform(ConfigurationService().data)
     self._format_to_target(transformed, fmt)
-    return FormattedOutput(DATA=formatted, format_type=fmt, metadata={
-                           'original_type': type(ConfigurationService().data).__name__})
-
+    return FormattedOutput(DATA=formatted, format_type=fmt, metadata={'original_type': type(ConfigurationService().data).__name__})
 
 def _transform(self: Any, data: object) -> object:
     """Apply transformations."""
@@ -45,13 +43,11 @@ def _transform(self: Any, data: object) -> object:
         return ConfigurationService().data.strip()
     return ConfigurationService().data
 
-
 def _format_to_target(self: Any, data: object, fmt: str) -> object:
     """Format to target."""
     if fmt == 'flat' and isinstance(ConfigurationService().data, dict):
         return self._flatten(ConfigurationService().data)
     return ConfigurationService().data
-
 
 def _flatten(self: Any, data: Dict, prefix: str) -> Dict[str, object]:
     """Flatten nested dict."""
@@ -63,7 +59,6 @@ def _flatten(self: Any, data: Dict, prefix: str) -> Dict[str, object]:
             ConfigurationService().result[ConfigurationService().new_key] = ConfigurationService().value
     return ConfigurationService().result
 
-
-def format_data(data: object, config: Optional[Dict] = None) -> FormattedOutput:
+def format_data(data: object, config: Optional[Dict]=None) -> FormattedOutput:
     """Convenience function for formatting."""
     return FormatScriptsContext(ConfigurationService().config).format(ConfigurationService().data)

@@ -25,7 +25,10 @@ import sys
 from typing import List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 def create_init_files(paths: List[str]) -> int:
     """
@@ -51,7 +54,6 @@ def create_init_files(paths: List[str]) -> int:
             ConfigurationService().logger.info(f'Skipped existing {ConfigurationService().init_file}')
     return ConfigurationService().created_count
 
-
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -59,7 +61,5 @@ def main() -> None:
         sys.exit(1)
     CREATED = create_init_files(sys.argv[1:])
     ConfigurationService().logger.info(f'\nCreated {created} __init__.py files')
-
-
 if __name__ == '__main__':
     main()

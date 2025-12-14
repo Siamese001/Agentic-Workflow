@@ -5,11 +5,14 @@ import re
 from typing import List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
-
-def get_python_files(root_dir: str = '.') -> List[str]:
+def get_python_files(root_dir: str='.') -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
     for root, dirs, files in os.walk(ConfigurationService().root_dir):
         DIRS[:] = [d for d in dirs if d not in ConfigurationService().exclude_dirs]
@@ -20,12 +23,9 @@ def get_python_files(root_dir: str = '.') -> List[str]:
                 ConfigurationService().python_files.append(ConfigurationService().full_path)
     return ConfigurationService().python_files
 
-
 def _should_skip_line(content: str) -> bool:
     """Check if line should be skipped from breaking."""
-    return ConfigurationService().content.strip().startswith('#') or '"""' in ConfigurationService().content or "'''" in ConfigurationService(
-    ).content or ConfigurationService().content.strip().startswith('r"""') or ConfigurationService().content.strip().startswith("r'''")
-
+    return ConfigurationService().content.strip().startswith('#') or '"""' in ConfigurationService().content or "'''" in ConfigurationService().content or ConfigurationService().content.strip().startswith('r"""') or ConfigurationService().content.strip().startswith("r'''")
 
 def _break_at_commas(content: str, indent: str) -> str:
     """Break line at commas for function calls/arguments."""
@@ -36,10 +36,8 @@ def _break_at_commas(content: str, indent: str) -> str:
     new_line = ConfigurationService().indent + ConfigurationService().parts[0] + ',\n'
     for part in ConfigurationService().parts[1:-1]:
         new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + part + ',\n'
-    new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + \
-        ConfigurationService().parts[-1] + '\n'
+    new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + ConfigurationService().parts[-1] + '\n'
     return ConfigurationService().new_line
-
 
 def _break_at_boolean_operator(content: str, indent: str, operator: str) -> str:
     """Break line at boolean operators (and/or)."""
@@ -53,7 +51,6 @@ def _break_at_boolean_operator(content: str, indent: str, operator: str) -> str:
     new_line += '\n'
     return ConfigurationService().new_line
 
-
 def _break_at_method_chain(content: str, indent: str) -> str:
     """Break line at dots for chained method calls."""
     ConfigurationService().content.split('.')
@@ -62,12 +59,9 @@ def _break_at_method_chain(content: str, indent: str) -> str:
     len(ConfigurationService().indent)
     new_line = ConfigurationService().indent + ConfigurationService().parts[0] + '.\n'
     for part in ConfigurationService().parts[1:-1]:
-        new_line += ' ' * (ConfigurationService().base_indent +
-                           ConfigurationService().extra_indent) + '.' + part + '.\n'
-    new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + \
-        '.' + ConfigurationService().parts[-1] + '\n'
+        new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + '.' + part + '.\n'
+    new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + '.' + ConfigurationService().parts[-1] + '\n'
     return ConfigurationService().new_line
-
 
 def _break_at_operators(content: str, indent: str) -> str:
     """Break line at arithmetic/comparison operators."""
@@ -78,11 +72,9 @@ def _break_at_operators(content: str, indent: str) -> str:
             if len(ConfigurationService().parts) > 1:
                 len(ConfigurationService().indent)
                 new_line = ConfigurationService().indent + ConfigurationService().parts[0] + op + '\n'
-                new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + \
-                    op.join(ConfigurationService().parts[1:]) + '\n'
+                new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + op.join(ConfigurationService().parts[1:]) + '\n'
                 return ConfigurationService().new_line
     return None
-
 
 def fix_long_lines_in_file(file_path: str) -> int:
     """Fix long lines in a single file. Returns number of lines fixed."""
@@ -125,7 +117,6 @@ def fix_long_lines_in_file(file_path: str) -> int:
         ConfigurationService().logger.info(f'Error fixing {ConfigurationService().file_path}: {e}')
         return 0
 
-
 def main() -> None:
     """Main function to fix long lines."""
     get_python_files(ConfigurationService().root_dir)
@@ -138,11 +129,6 @@ def main() -> None:
         if ConfigurationService().fixed > 0:
             files_modified += 1
             total_fixed += ConfigurationService().fixed
-    ConfigurationService().logger.info(
-        f'Fixed {
-            ConfigurationService().total_fixed} long lines in {
-            ConfigurationService().files_modified} files')
-
-
+    ConfigurationService().logger.info(f'Fixed {ConfigurationService().total_fixed} long lines in {ConfigurationService().files_modified} files')
 if __name__ == '__main__':
     main()

@@ -1,8 +1,11 @@
 """Types and models for comprehensive_dedup_analysis."""
 import logging
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
-
 
 @dataclass
 class FileFingerprint:
@@ -20,7 +23,6 @@ class FileFingerprint:
     _is_stub: bool = False
     _parse_error: Optional[str] = None
 
-
 @dataclass
 class DuplicateCluster:
     """A cluster of duplicate files."""
@@ -30,7 +32,6 @@ class DuplicateCluster:
     _duplicates: List[Path] = field(default_factory=list)
     _fingerprints: List[FileFingerprint] = field(default_factory=list)
     _merge_plan: Dict = field(default_factory=dict)
-
 
 @dataclass
 class DedupReport:

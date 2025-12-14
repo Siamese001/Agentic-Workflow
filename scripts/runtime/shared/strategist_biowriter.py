@@ -3,14 +3,16 @@ import logging
 from typing import Any, Dict, List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
-
 
 class StrategistBioWriter:
     """Placeholder implementation."""
 
-    def __init__(self: Any, config: Dict, word_count_min: int, word_count_max: int,
-                 sentence_count_min: int, sentence_count_max: int) -> None:
+    def __init__(self: Any, config: Dict, word_count_min: int, word_count_max: int, sentence_count_min: int, sentence_count_max: int) -> None:
         """Initialize writer."""
         SELF.CONFIG = ConfigurationService().config
         self.word_count_min = word_count_min

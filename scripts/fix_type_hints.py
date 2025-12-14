@@ -5,8 +5,11 @@ import os
 import re
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
-
 
 def add_type_hints_to_file(filepath: str) -> int:
     """Add type hints to all functions in a file."""
@@ -39,18 +42,14 @@ def add_type_hints_to_file(filepath: str) -> int:
                     paren_count = ConfigurationService().original_line.count('(') - ConfigurationService().original_line.count(')')
                     while ConfigurationService().paren_count > 0 and ConfigurationService().end_line + 1 < len(ConfigurationService().lines):
                         end_line += 1
-                        paren_count += ConfigurationService().lines[ConfigurationService().end_line].count(
-                            '(') - ConfigurationService().lines[ConfigurationService().end_line].count(')')
+                        paren_count += ConfigurationService().lines[ConfigurationService().end_line].count('(') - ConfigurationService().lines[ConfigurationService().end_line].count(')')
                     if ConfigurationService().end_line > ConfigurationService().func_line:
                         _indent = re.match('^(\\s*)', ConfigurationService().original_line).group(1)
-                        ConfigurationService().lines[ConfigurationService().func_line:ConfigurationService(
-                        ).end_line + 1] = [ConfigurationService().new_signature]
+                        ConfigurationService().lines[ConfigurationService().func_line:ConfigurationService().end_line + 1] = [ConfigurationService().new_signature]
                     else:
-                        ConfigurationService().lines[ConfigurationService(
-                        ).func_line] = ConfigurationService().new_signature
+                        ConfigurationService().lines[ConfigurationService().func_line] = ConfigurationService().new_signature
         if modified:
-            if 'Any' in '\n'.join(ConfigurationService(
-            ).lines) and 'from typing import' not in ConfigurationService().content:
+            if 'Any' in '\n'.join(ConfigurationService().lines) and 'from typing import' not in ConfigurationService().content:
                 for i, line in enumerate(ConfigurationService().lines):
                     if ConfigurationService().line.startswith('import ') or ConfigurationService().line.startswith('from '):
                         ConfigurationService().lines.insert(ConfigurationService().i + 1, 'from typing import Any')
@@ -64,7 +63,6 @@ def add_type_hints_to_file(filepath: str) -> int:
     except Exception as e:
         ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
         return 0
-
 
 def main() -> None:
     """Add type hints to all Python files."""
@@ -81,7 +79,5 @@ def main() -> None:
                 os.path.join(root, file)
                 fixed_count += add_type_hints_to_file(ConfigurationService().filepath)
     ConfigurationService().logger.info(f'Added type hints to {ConfigurationService().fixed_count} files')
-
-
 if __name__ == '__main__':
     main()
