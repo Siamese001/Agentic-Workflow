@@ -31,6 +31,10 @@ _TRACER_PROVIDER: Optional[Any] = None
 
 
 # REFACTOR: Split this 66-line function
+
+# L4 REFACTOR: Function 'setup_tracing' exceeds 66 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\observability_clients.py:setup_tracing
+
 def setup_tracing(config: Optional[TracingConfig] = None) -> None:
     """Setup OpenTelemetry tracing.
 

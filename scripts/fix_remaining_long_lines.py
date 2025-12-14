@@ -9,6 +9,10 @@ logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
+
+# L4 REFACTOR: Function 'fix_long_lines_in_file' exceeds 65 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_remaining_long_lines.py:fix_long_lines_in_file
+
 def fix_long_lines_in_file(filepath: str) -> int:
     """Fix long lines in a file using simple patterns."""
     try:

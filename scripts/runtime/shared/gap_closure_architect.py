@@ -188,6 +188,10 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
 
 # REFACTOR: Split this 57-line function
 
+
+# L4 REFACTOR: Function '_build_initial_prompt' exceeds 57 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\gap_closure_architect.py:_build_initial_prompt
+
 def _build_initial_prompt(
     self: Any,
     jd_keyword_gap: List[str],

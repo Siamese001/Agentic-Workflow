@@ -82,6 +82,10 @@ def get_vector_store(
     return _VECTOR_STORES[cache_key]
 
 
+
+# L4 REFACTOR: Function '_create_vector_store' exceeds 70 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\vector_store_clients.py:_create_vector_store
+
 def _create_vector_store(
     provider: VectorStoreProvider,
     config: Optional[Any] = None,
