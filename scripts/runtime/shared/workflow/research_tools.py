@@ -49,7 +49,8 @@ class TavilyResearcher:
                     search_depth="advanced",
                     max_results=3,
                     include_domains=[], # Optional: Restrict to legitimate tech sites if needed
-                    exclude_domains=["glassdoor.com", "comparably.com"] # Exclude generic salary sites
+                    exclude_domains=["glassdoor.com",
+                        "comparably.com"] # Exclude generic salary sites
                 )
 
                 for res in response.get("results", []):
@@ -82,6 +83,10 @@ class TavilyResearcher:
         context_str = "SEARCH CONTEXT (AUTO-RETRIEVED):\n"
         for i, r in enumerate(unique_results[:8]): # Cap at top 8 to save tokens
             context_str += f"[{i+1}] Source: {r.source_url}\n"
-            context_str += f"Content: {r.content_snippet[:800]}...\n\n" # Truncate individual snippets
+            context_str += f"Content: {r.
+                .content_snippet[:800]}.
+                ..
+                ..
+                .\n\n" # Truncate individual snippets
 
         return context_str

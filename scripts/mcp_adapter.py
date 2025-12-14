@@ -4,7 +4,6 @@ Manages async lifecycle of multiple MCP servers and aggregates their tools
 for use by executive agents.
 """
 
-import asyncio
 import os
 import json
 import logging

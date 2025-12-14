@@ -88,12 +88,21 @@ class SignalQualityPipeline:
             # Tier 1: Official financial/regulatory documents
             "tier_1": {
                 "score": 1.0,
-                "sources": {"10-k", "10-q", "official_report", "sec_filing", "annual_report", "proxy_statement"}
+                "sources": {"10-k",
+                    "10-q",
+                    "official_report",
+                    "sec_filing",
+                    "annual_report",
+                    "proxy_statement"}
             },
             # Tier 2: Professional profiles and verified resumes
             "tier_2": {
                 "score": 0.8,
-                "sources": {"linkedin", "resume_v1", "official_resume", "company_profile", "verified_profile"}
+                "sources": {"linkedin",
+                    "resume_v1",
+                    "official_resume",
+                    "company_profile",
+                    "verified_profile"}
             },
             # Tier 3: Notes and informal sources
             "tier_3": {

@@ -8,7 +8,6 @@ Phase 2 - Resilient Routing Layer
 """
 
 from typing import List, Optional
-import logging
 
 
 class RoutingTier(str, Enum):

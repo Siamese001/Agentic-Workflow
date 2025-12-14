@@ -7,7 +7,6 @@ Tests scoring operations for ranking and evaluation.
 import pytest
 from typing import Dict
 from dataclasses import dataclass
-import logging
 
 @dataclass
 class ScoredItem:

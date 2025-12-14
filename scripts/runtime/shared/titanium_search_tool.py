@@ -43,7 +43,8 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
             logger.info(f"Pipeline initialized successfully:")
             logger.info(f"  - Phase 1 (Precision): Available")
             logger.info(f"  - Phase 2 (Reasoning): Available")
-            logger.info(f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']},
+            logger.info(f"  -
+                Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']},
 
                 "
                        f"Cache={component_info['phase_3_sota']['cache_available']}")

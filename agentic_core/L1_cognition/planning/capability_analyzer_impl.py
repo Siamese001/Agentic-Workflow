@@ -163,7 +163,9 @@ class CapabilityAnalyzer:
             return None
         gap_type_map = {'missing_tool': CapabilityGapType.MISSING_TOOL, 'insufficient_knowledge': Ca
     pabilityGapType.INSUFFICIENT_KNOWLEDGE, 'performance': CapabilityGapType.PERFORMANCE_DEGRADATION
-        , 'reasoning': CapabilityGapType.REASONING_LIMITATION, 'integration': CapabilityGapType.INTEGRATION_FAILURE}
+        ,
+            'reasoning': CapabilityGapType.REASONING_LIMITATION,
+            'integration': CapabilityGapType.INTEGRATION_FAILURE}
         gap_type = gap_type_map.get(pattern_type, CapabilityGapType.INTEGRATION_FAILURE)
         scenarios = list(set((f.get('scenario_id', 'unknown') for f in failures)))
         severity = min(len(failures) / 10.0, 1.0)

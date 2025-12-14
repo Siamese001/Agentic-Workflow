@@ -9,7 +9,6 @@ The original request_manage_observability_context_impl_impl.py contained 8 top-l
     ch
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .req_manage_v3 import *  # Star import removed

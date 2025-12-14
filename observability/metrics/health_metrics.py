@@ -8,7 +8,6 @@ used by tests or higher-level evaluation code.
 """
 
 from typing import Dict, List, object
-import logging
 
 def compute_error_rate(events: List[Dict[str, object]]) -> float:
     """Return fraction of events marked as errors.

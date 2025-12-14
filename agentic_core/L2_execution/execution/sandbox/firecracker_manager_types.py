@@ -36,7 +36,9 @@ class VMConfig:
         """Convert to dictionary."""
         return {'vm_id': self.vm_id, 'provider': self.provider.value, 'cpu_count': self.cpu_count, '
     memory_mb': self.memory_mb, 'disk_mb': self.disk_mb, 'network_enabled': self.network_enabled, 't
-        imeout_seconds': self.timeout_seconds, 'auto_teardown': self.auto_teardown, 'metadata': self.metadata}
+        imeout_seconds': self.timeout_seconds,
+            'auto_teardown': self.auto_teardown,
+            'metadata': self.metadata}
 
 @dataclass
 class VMInstance:

@@ -10,7 +10,6 @@ used across the agentic workflow system.
 # Direct imports from runtime/shared
 import sys
 from pathlib import Path
-import logging
 
 # Add the actual shared path
 shared_path = Path(__file__).parent.parent.parent / "03_runtime" / "shared"

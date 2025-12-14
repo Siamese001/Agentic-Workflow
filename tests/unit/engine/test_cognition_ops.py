@@ -7,7 +7,6 @@ Tests cognition operations including understand_request.
 from typing import Dict
 from enum import Enum
 from dataclasses import dataclass
-import logging
 
 class IntentType(Enum):
     """TODO: Add docstring."""

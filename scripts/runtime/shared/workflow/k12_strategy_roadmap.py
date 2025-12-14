@@ -1,6 +1,5 @@
 """K.12 Strategy Roadmap Agent - 30-60-90 Day Architect."""
 
-import logging
 from typing import Dict, Any, Optional
 from .base_agent import BaseExecutiveAgent
 from .schema_definitions import TechnicalSWOT, StrategyRoadmap
@@ -48,13 +47,16 @@ class K12StrategyRoadmapAgent(BaseExecutiveAgent):
         # Return mock response if instructor not available
         if not hasattr(self, 'openai_client') or not self.openai_client:
             return StrategyRoadmap(
-                executive_summary="Transform engineering organization to deliver scalable AI-powered solutions while improving developer productivity and system reliability.",
-                primary_objective="Establish modern MLOps infrastructure and high-performing engineering culture",
+                executive_summary="Transform engineering organization to deliver scalable AI-powered solutions while improving developer productivity and
+                    system reliability.",
+                primary_objective="Establish modern MLOps infrastructure and
+                    high-performing engineering culture",
                 milestones=[
                     {
                         "timeframe": "Day 30",
                         "focus_area": "People",
-                        "initiative": "Conduct team assessments and establish 1:1s with all engineers",
+                        "initiative": "Conduct team assessments and
+                            establish 1:1s with all engineers",
                         "success_metric": "100% team assessment completion",
                         "risk_level": "Low"
                     },
@@ -95,7 +97,8 @@ class K12StrategyRoadmapAgent(BaseExecutiveAgent):
                     }
                 ],
                 key_stakeholders=["CTO", "VP Engineering", "Product Lead", "Engineering Managers"],
-                success_criteria="90% deployment success rate, 40% reduction in incident response time"
+                success_criteria="90% deployment success rate,
+                    40% reduction in incident response time"
             )
 
         # Execute with structured output
@@ -111,7 +114,8 @@ class K12StrategyRoadmapAgent(BaseExecutiveAgent):
                 response_model=StrategyRoadmap,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Job Description:\n\n{job_description}\n\nTechnical SWOT:\n\n{technical_swot}"}
+                    {"role": "user",
+                        "content": f"Job Description:\n\n{job_description}\n\nTechnical SWOT:\n\n{technical_swot}"}
                 ],
                 temperature=temperature
             )

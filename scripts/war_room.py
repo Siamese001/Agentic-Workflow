@@ -10,8 +10,6 @@ logger = logging.getLogger(__name__)
 # Import your new subatomic architecture modules
 try:
     # Import directly to bypass broken __init__.py
-    import sys
-    import os
     sys.path.append(os.path.join(os.path.dirname(__file__), 'runtime', 'shared', 'workflow'))
     from executive_orchestrator import ExecutiveAgentOrchestrator
     from schema_definitions import TechnicalSWOT, StrategyRoadmap, InterviewerProfile
@@ -48,7 +46,13 @@ class WarRoom:
 
         company_name = Prompt.ask("Target Company Name")
 
-        self.console.logger.info(f"[green]🕵️  Using autonomous deep search for {company_name}...[/green]")
+        self.
+            .console.
+            .logger.
+            .info(f"[green]🕵️  Using autonomous deep search for {company_name}.
+            ..
+            ..
+            .[/green]")
 
         with self.console.status(f"[bold green]Running Shadow Audit on {company_name}..."):
             swot = await self.orchestrator.execute_k11_shadow_audit(
@@ -58,17 +62,29 @@ class WarRoom:
             )
 
         # Display Results
-        self.console.logger.info(Panel(f"[bold]Technical SWOT Analysis for {company_name}[/bold]", style="blue"))
+        self.console.logger.info(Panel(f"[bold]Technical SWOT Analysis for {company_name}[/bold]",
+            style="blue"))
 
         self.console.logger.info("[bold]Inferred Tech Stack:[/bold]")
         for item in swot.current_stack:
-            self.console.logger.info(f" - [cyan]{item.tool_name}[/cyan] ({item.category}): {item.confidence_score*100:.0f}% confidence")
+            self.
+                .console.
+                .logger.
+                .info(f" - [cyan]{item.
+                .tool_name}[/cyan] ({item.
+                .category}): {item.
+                .confidence_score*100:.
+                .0f}% confidence")
 
         self.console.logger.info("\n[bold red]Suspected Bottlenecks:[/bold red]")
         for b in swot.suspected_bottlenecks:
             self.console.logger.info(f" - {b}")
 
-        self.console.logger.info(f"\n[bold green]Strategic Opportunity:[/bold green] {swot.strategic_opportunity}")
+        self.
+            .console.
+            .logger.
+            .info(f"\n[bold green]Strategic Opportunity:[/bold green] {swot.
+            .strategic_opportunity}")
 
         return swot
 
@@ -76,7 +92,12 @@ class WarRoom:
         """Execute K.12: 30-60-90 Day Strategy"""
         self.console.rule("[bold blue]K.12 STRATEGY GENERATOR")
 
-        self.console.logger.info("[yellow]Paste the full Job Description. Press Ctrl+D (Linux/Mac) or Ctrl+Z (Windows) when done:[/yellow]")
+        self.
+            .console.
+            .logger.
+            .info("[yellow]Paste the full Job Description.
+            . Press Ctrl+D (Linux/Mac) or
+            Ctrl+Z (Windows) when done:[/yellow]")
         # Clear stdin buffer if needed or re-open (simplified for script flow)
         # Using input() loop for simpler copy-paste handling in basic terminals
         lines = []
@@ -95,11 +116,23 @@ class WarRoom:
                 config=self.config.get("K.12_strategy_roadmap", {})
             )
 
-        self.console.logger.info(Panel(Markdown(f"# {roadmap.executive_summary}"), title="Executive Vision", style="green"))
+        self.console.logger.info(Panel(Markdown(f"# {roadmap.executive_summary}"),
+            title="Executive Vision",
+            style="green"))
 
         for milestone in roadmap.milestones:
-            self.console.logger.info(f"[bold]{milestone.timeframe}[/bold] ({milestone.focus_area}): {milestone.initiative}")
-            self.console.logger.info(f"   [italic]Success Metric: {milestone.success_metric}[/italic]")
+            self.
+                .console.
+                .logger.
+                .info(f"[bold]{milestone.
+                .timeframe}[/bold] ({milestone.
+                .focus_area}): {milestone.
+                .initiative}")
+            self.
+                .console.
+                .logger.
+                .info(f"   [italic]Success Metric: {milestone.
+                .success_metric}[/italic]")
 
         self.console.logger.info("\n[bold yellow]Immediate Wins (Week 1):[/bold yellow]")
         for win in roadmap.immediate_wins:
@@ -122,12 +155,23 @@ class WarRoom:
             )
 
         # Display Results
-        self.console.logger.info(Panel(f"[bold]Interviewer Analysis for {role} at {company_name}[/bold]", style="purple"))
+        self.
+            .console.
+            .logger.
+            .info(Panel(f"[bold]Interviewer Analysis for {role} at {company_name}[/bold]",
+            style="purple"))
 
         self.console.logger.info("[bold]Likely Interviewer Archetypes:[/bold]")
         for interviewer in profile.interviewers:
-            self.console.logger.info(f" - [cyan]{interviewer.name}[/cyan] ({interviewer.archetype}): {interviewer.background}")
-            self.console.logger.info(f"   [italic]Focus Areas: {', '.join(interviewer.focus_areas)}[/italic]")
+            self.
+                .console.
+                .logger.
+                .info(f" - [cyan]{interviewer.
+                .name}[/cyan] ({interviewer.
+                .archetype}): {interviewer.
+                .background}")
+            self.console.logger.info(f"   [italic]Focus Areas: {',
+                '.join(interviewer.focus_areas)}[/italic]")
 
         self.console.logger.info("\n[bold yellow]Predicted Questions:[/bold yellow]")
         for question in profile.predicted_questions[:5]:  # Show first 5

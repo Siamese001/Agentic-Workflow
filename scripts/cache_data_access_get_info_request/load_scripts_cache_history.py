@@ -421,7 +421,14 @@ class ScriptsCacheHistoryLoader:
 
         # Update key access counts
         if entry.operation in [CacheOperation.READ, CacheOperation.UPDATE]:
-            self._statistics.key_access_counts[entry.key] = self._statistics.key_access_counts.get(entry.key,
+            self.
+                ._statistics.
+                .key_access_counts[entry.
+                .key] = self.
+                ._statistics.
+                .key_access_counts.
+                .get(entry.
+                .key,
 
                 0) + 1
 

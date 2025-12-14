@@ -54,7 +54,8 @@ class ContextualCompressor:
             'date': r'\b(\d{4}|\d{1,2}/\d{1,2}/\d{2,4})\b'
         }
 
-        logger.info(f"Initialized ContextualCompressor: threshold={similarity_threshold}, llm={use_llm}")
+        logger.info(f"Initialized ContextualCompressor: threshold={similarity_threshold},
+            llm={use_llm}")
 
     def _split_into_sentences(self, text: str) -> List[str]:
         """Split text into sentences using regex.

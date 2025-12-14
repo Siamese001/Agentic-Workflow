@@ -10,7 +10,6 @@ This module validates:
 """
 
 import pytest
-import logging
 
 class TestInstructionalPromptStructure:
     """Test v6 prompt structure and functionality."""

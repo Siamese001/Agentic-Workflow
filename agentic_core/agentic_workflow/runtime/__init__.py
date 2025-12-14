@@ -10,7 +10,6 @@ for the agentic workflow system.
 # Import shared components from the actual location
 import sys
 from pathlib import Path
-import logging
 
 # Add the actual runtime directories to Python path
 runtime_path = Path(__file__).parent.parent.parent / "03_runtime"

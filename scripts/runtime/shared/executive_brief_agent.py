@@ -491,7 +491,8 @@ class ExecutiveBriefAgent:
 
                 # Generate peer-to-peer insight
                 content = f"Industry leaders are solving this through {solution}, achieving {metric}
-    while maintaining model performance. This requires both technical expertise and change management experience."
+    while maintaining model performance. This requires both technical expertise and
+        change management experience."
 
                 return BriefSection(
                     heading="Insight: Proven Solution Patterns",

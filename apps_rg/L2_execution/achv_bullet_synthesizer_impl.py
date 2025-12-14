@@ -131,7 +131,15 @@ class AchvBulletSynthesizer:
     e costs by 40% while improving system reliability', f'Architected microservices platform with Py
         thon and Node.js, enabling 3x faster feature deployment through strategic API design', f'Man
             aged cross-functional team of 12 engineers, delivering $2M revenue-generating product us
-                ing agile methodologies and CI/CD automation', f'Drove data pipeline optimization with Spark and PostgreSQL, processing 10M+ daily transactions with 99.9% uptime', f'Built ML-powered recommendation engine using TensorFlow, increasing user engagement by 35% through collaborative innovation', f'Implemented DevOps best practices with Docker and Jenkins, reducing deployment time from 4 hours to 15 minutes', f'Established technical mentorship program, developing 8 junior engineers into senior contributors through strategic leadership']
+                ing agile methodologies and CI/CD automation',
+                    f'Drove data pipeline optimization with Spark and PostgreSQL,
+                    processing 10M+ daily transactions with 99.9% uptime',
+                    f'Built ML-powered recommendation engine using TensorFlow,
+                    increasing user engagement by 35% through collaborative innovation',
+                    f'Implemented DevOps best practices with Docker and Jenkins,
+                    reducing deployment time from 4 hours to 15 minutes',
+                    f'Established technical mentorship program,
+                    developing 8 junior engineers into senior contributors through strategic leadership']
         return bullets[:self.config.bullet_count]
 
     def _validate_bullet_word_count(self, bullet: str, bullet_num: int) -> ValidationResult:
@@ -179,7 +187,12 @@ class AchvBulletSynthesizer:
     nanceType.TECH])}T-{len(provenance_items[ProvenanceType.SOFT])}S'
         pattern_match = len(provenance_items[ProvenanceType.VERB]) >= self.config.provenance_pattern
     .verb_count and len(provenance_items[ProvenanceType.TECH]) >= self.config.provenance_pattern.tec
-        h_count and (len(provenance_items[ProvenanceType.SOFT]) >= self.config.provenance_pattern.soft_count)
+        h_count and
+            (len(provenance_items[ProvenanceType.
+                .SOFT]) >= self.
+                .config.
+                .provenance_pattern.
+                .soft_count)
         return BulletProvenanceLog(bullet_text=bullet,
             word_count=len(bullet.split()),
             provenance_items=provenance_items,

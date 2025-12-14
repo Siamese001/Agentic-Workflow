@@ -183,7 +183,9 @@ class SectionScopeIntegrator:
         Placeholder for actual LLM integration.
         """
         return "Directed strategic technology initiatives across cloud infrastructure and data engin
-    eering, delivering scalable solutions that drove measurable business impact and operational excellence."
+    eering,
+        delivering scalable solutions that drove measurable business impact and
+            operational excellence."
 
     def _validate_no_redundant_prefix(self, overview: str) -> ValidationResult:
         """

@@ -8,7 +8,6 @@ modules to comply with cognitive density limits (max 5 top-level definitions).
 The original request_manage_observability_context.py contained 9 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .request_manage_observability_context_impl_impl import *  # Star import removed

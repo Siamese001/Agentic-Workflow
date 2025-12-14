@@ -287,7 +287,10 @@ class CircuitBreaker:
             "state": self.state.value,
             "failure_count": self.failure_count,
             "success_count": self.success_count,
-            "last_failure_time": self.last_failure_time.isoformat() if self.last_failure_time else None,
+            "last_failure_time": self.
+                .last_failure_time.
+                .isoformat() if self.
+                .last_failure_time else None,
 
 
             "last_state_change": self.last_state_change.isoformat(),

@@ -5,7 +5,6 @@ CMS (Content Management System) schemas for prompt validation.
 
 This module provides schema definitions for prompt validation and structure.
 """
-import logging
 
 
 class PromptType(str, Enum):

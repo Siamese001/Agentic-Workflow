@@ -31,7 +31,10 @@ class ExecutiveAgentOrchestrator:
     their implementation details.
     """
 
-    def __init__(self, data_source_provider: Optional[DataSourceProvider] = None, workflow_config: Optional[Dict[str, Any]] = None):
+    def __init__(self,
+        data_source_provider: Optional[DataSourceProvider] = None,
+        workflow_config: Optional[Dict[str,
+        Any]] = None):
         """Initialize the orchestrator.
 
         Args:
@@ -40,7 +43,8 @@ class ExecutiveAgentOrchestrator:
         """
         # Initialize data sources with Tavily API key if available
         tavily_api_key = os.getenv("TAVILY_API_KEY")
-        self.data_sources = data_source_provider or DataSourceProvider(tavily_api_key=tavily_api_key)
+        self.data_sources = data_source_provider or
+            DataSourceProvider(tavily_api_key=tavily_api_key)
         self.schema_registry = get_executive_schema_registry()
 
         # Initialize autonomous researcher
@@ -124,7 +128,9 @@ class ExecutiveAgentOrchestrator:
                         enriched_context += f"Content: {item['content']}\n---\n"
 
                     search_context = enriched_context
-                    self.logger.info(f"✅ Enriched context with {len(browsed_content)} browsed pages")
+                    self.
+                        .logger.
+                        .info(f"✅ Enriched context with {len(browsed_content)} browsed pages")
 
             except Exception as e:
                 self.logger.error(f"Autonomous browsing failed: {e}")
@@ -193,9 +199,15 @@ class ExecutiveAgentOrchestrator:
                 try:
                     await self.mcp.execute_tool("postgres_memory__query", {
                         "query": f"""
-                        INSERT INTO strategies (timestamp, company, roadmap_summary, primary_objective)
-                        VALUES (NOW(), '{technical_swot.company_name if hasattr(technical_swot, 'company_name') else 'Unknown'}',
-                                '{roadmap.executive_summary[:500]}', '{roadmap.primary_objective[:500]}')
+                        INSERT INTO strategies (timestamp,
+                            company,
+                            roadmap_summary,
+                            primary_objective)
+                        VALUES (NOW(),
+                            '{technical_swot.company_name if hasattr(technical_swot,
+                            'company_name') else 'Unknown'}',
+                                '{roadmap.executive_summary[:500]}',
+                                    '{roadmap.primary_objective[:500]}')
                         """
                     })
                     self.logger.info("🗄️ Roadmap saved to episodic memory")

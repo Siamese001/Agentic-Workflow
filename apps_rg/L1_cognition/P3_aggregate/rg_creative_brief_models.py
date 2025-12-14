@@ -68,4 +68,6 @@ class ExecutiveSummaryBrief:
         'At [COMPANY],
         I'])
     guidance: str = "Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly ma
-    intaining the narrative voice of a professional executive biography. Do not use phrasing from the job posting."
+    intaining the narrative voice of a professional executive biography.
+        . Do not use phrasing from the job posting.
+        ."

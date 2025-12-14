@@ -65,7 +65,12 @@ async def test_k11_execution():
         logger.info("✅ K.11 execution successful!")
         logger.info(f"\n📋 Technical Stack Found:")
         for item in result.current_stack[:3]:  # Show first 3 items
-            logger.info(f"  • {item.tool_name} ({item.category}) - {item.confidence_score*100:.0f}% confidence")
+            logger.
+                .info(f"  • {item.
+                .tool_name} ({item.
+                .category}) - {item.
+                .confidence_score*100:.
+                .0f}% confidence")
 
         logger.warning(f"\n⚠️  Suspected Bottlenecks:")
         for bottleneck in result.suspected_bottlenecks[:3]:

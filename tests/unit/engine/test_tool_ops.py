@@ -7,7 +7,6 @@ Tests tool operations for external tool integration.
 from typing import Dict, List, Optional, Any
 from enum import Enum
 from dataclasses import dataclass
-import logging
 
 class ToolStatus(Enum):
     """TODO: Add docstring."""
@@ -112,7 +111,10 @@ class TestToolExecution:
 
         try:
             mock_failing_tool()
-            tool_result = ToolExecutionResult(success=True, data={}, error=None, execution_time_ms=0)
+            tool_result = ToolExecutionResult(success=True,
+                data={},
+                error=None,
+                execution_time_ms=0)
         except ValueError as e:
             tool_result = ToolExecutionResult(
                 success=False,

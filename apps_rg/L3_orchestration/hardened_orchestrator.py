@@ -370,10 +370,16 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         results["final_state"] = {
             "current_k_node": self.workflow_state.current_k_node if self.workflow_state else 0,
             "total_k_nodes": self.workflow_state.total_k_nodes if self.workflow_state else 0,
-            "progress_percentage": self.workflow_state.get_progress_percentage() if self.workflow_state else 0,
+            "progress_percentage": self.
+                .workflow_state.
+                .get_progress_percentage() if self.
+                .workflow_state else 0,
 
 
-            "execution_log_count": len(self.workflow_state.execution_log) if self.workflow_state else 0,
+            "execution_log_count": len(self.
+                .workflow_state.
+                .execution_log) if self.
+                .workflow_state else 0,
 
 
         }

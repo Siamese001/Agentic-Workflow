@@ -22,9 +22,14 @@ from unittest.mock import Mock, patch, AsyncMock
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
 # Import mcp_tools directly to avoid problematic __init__.py imports
-import importlib.util
-import logging
-spec = importlib.util.spec_from_file_location("mcp_tools", os.path.join(os.path.dirname(__file__), '..', '..', '..', 'runtime', 'shared', 'mcp_tools.py'))
+spec = importlib.util.spec_from_file_location("mcp_tools",
+    os.path.join(os.path.dirname(__file__),
+    '..',
+    '..',
+    '..',
+    'runtime',
+    'shared',
+    'mcp_tools.py'))
 mcp_tools = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mcp_tools)
 
@@ -575,13 +580,12 @@ class TestMCPToolServerPerformance:
 
         def slow_tool():
             import time
-            time.sleep(0.1)
+            await asyncio.sleep(0.1)
             return "slow"
 
         server.register_function("fast_tool", "Fast tool", {}, fast_tool)
         server.register_function("slow_tool", "Slow tool", {}, slow_tool)
 
-        import time
         start = time.time()
         server.execute_tool("fast_tool", {})
         fast_time = time.time() - start

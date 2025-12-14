@@ -7,7 +7,6 @@ Tests runtime operations including data access, guardrails, synthesis, and valid
 from typing import Dict
 from datetime import datetime
 from dataclasses import dataclass
-import logging
 
 @dataclass
 class RuntimeContext:

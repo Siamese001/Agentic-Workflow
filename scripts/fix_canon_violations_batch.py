@@ -1,12 +1,12 @@
+import logging
 #!/usr/bin/env python3
 """Fix multiple canon validator violations automatically."""
 
-import ast
 import os
 import re
-import sys
-from pathlib import Path
 from typing import List, Set, Dict, Any, Optional
+
+logger = logging.getLogger(__name__)
 
 def get_python_files(root_dir: str = ".") -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
@@ -40,13 +40,13 @@ def fix_empty_except_blocks(file_path: str) -> bool:
 
         # Simple regex-based fix for empty except blocks
         pattern = r'except\s+([^:]+):\s*\n\s*\n'
-        replacement = r'\1: pass  # TODO: Handle specific exception\n'
+        replacement = r'\1: pass
         if re.search(pattern, content):
             content = re.sub(pattern, replacement, content)
             modified = True
 
         pattern2 = r'except Exception: \s*\n\s*\n'
-        replacement2 = 'except Exception: pass  # TODO: Handle specific exception\n'
+        replacement2 = 'except Exception: pass
         if re.search(pattern2, content):
             content = re.sub(pattern2, replacement2, content)
             modified = True
@@ -59,7 +59,7 @@ def fix_empty_except_blocks(file_path: str) -> bool:
         return False
 
     except Exception as e:
-        print(f"Error fixing {file_path}: {e}")
+        logger.info(f"Error fixing {file_path}: {e}")
         return False
 
 def fix_bare_except(file_path: str) -> bool:
@@ -81,7 +81,7 @@ def fix_bare_except(file_path: str) -> bool:
         return False
 
     except Exception as e:
-        print(f"Error fixing {file_path}: {e}")
+        logger.info(f"Error fixing {file_path}: {e}")
         return False
 
 def fix_trailing_whitespace(file_path: str) -> bool:
@@ -107,7 +107,7 @@ def fix_trailing_whitespace(file_path: str) -> bool:
         return False
 
     except Exception as e:
-        print(f"Error fixing {file_path}: {e}")
+        logger.info(f"Error fixing {file_path}: {e}")
         return False
 
 def fix_missing_newline(file_path: str) -> bool:
@@ -124,7 +124,7 @@ def fix_missing_newline(file_path: str) -> bool:
         return False
 
     except Exception as e:
-        print(f"Error fixing {file_path}: {e}")
+        logger.info(f"Error fixing {file_path}: {e}")
         return False
 
 def main():
@@ -142,15 +142,15 @@ def main():
     total_fixed = 0
 
     for fix_name, fix_func in fixes.items():
-        print(f"\nApplying {fix_name}...")
+        logger.info(f"\nApplying {fix_name}...")
         fixed_count = 0
         for file_path in python_files:
             if fix_func(file_path):
                 fixed_count += 1
-        print(f"  Fixed {fixed_count} files")
+        logger.info(f"  Fixed {fixed_count} files")
         total_fixed += fixed_count
 
-    print(f"\nTotal fixes applied: {total_fixed}")
+    logger.info(f"\nTotal fixes applied: {total_fixed}")
 
 if __name__ == "__main__":
     main()

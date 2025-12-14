@@ -12,7 +12,6 @@ The Subatomic Canon requires files to either:
 This shim file satisfies requirement #2 by providing comprehensive documentation
 about the refactoring that was performed to split the original module.
 """
-import logging
 
 # Re-export all components for backward compatibility
 # from .error_recovery_impl import *  # Star import removed
