@@ -1,6 +1,9 @@
 """Test that all vector search modules can be imported."""
 import pytest
+import logging
 
+
+logger = logging.getLogger(__name__)
 def _can_import_pinecone() -> bool:
     """Check if Pinecone SDK is properly installed."""
     try:

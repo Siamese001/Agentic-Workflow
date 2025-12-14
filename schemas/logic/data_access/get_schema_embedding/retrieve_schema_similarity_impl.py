@@ -1,6 +1,7 @@
 """Implementation for retrieve_schema_similarity."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .retrieve_schema_similarity_types import *  # Star import removed
 
 class SchemaSimilarityRetriever:

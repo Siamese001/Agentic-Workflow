@@ -3,7 +3,10 @@ import re
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+import logging
 
+
+logger = logging.getLogger(__name__)
 class LayerType(Enum):
     """TODO: Add docstring."""
 

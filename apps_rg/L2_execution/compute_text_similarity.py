@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg
@@ -10,6 +12,7 @@ Provides core similarity calculation with sklearn alternative path.
 
 import math
 from typing import List, Tuple
+import logging
 
 try:
     from sklearn.metrics.pairwise import cosine_similarity

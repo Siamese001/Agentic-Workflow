@@ -1,7 +1,10 @@
 """Integration tests for LinkedIn outreach + data layer integration."""
 from typing import Dict, List, Optional
 from dataclasses import dataclass
+import logging
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class ContactData:
     """TODO: Add docstring."""

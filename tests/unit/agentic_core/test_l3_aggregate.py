@@ -1,5 +1,8 @@
 """Unit tests for L3_orchestration/P3_aggregate - workflow result aggregation."""
+import logging
 
+
+logger = logging.getLogger(__name__)
 class TestWorkflowResultAggregation:
     """Tests for aggregating workflow results."""
 

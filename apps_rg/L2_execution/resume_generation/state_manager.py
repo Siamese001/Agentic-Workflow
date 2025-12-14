@@ -1,9 +1,12 @@
+
+logger = logging.getLogger(__name__)
 # File: state_manager_RES.py
 # Version: 16.30
 # State serialization and deserialization layer for workflow hops
 
 import json
 import os
+import logging
 
 class StateSerializer:
     """

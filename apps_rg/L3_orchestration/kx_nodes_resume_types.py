@@ -1,7 +1,10 @@
 """Types and models for kx_nodes_resume."""
 
 from typing import Any, Dict, List, Optional
+import logging
 
+
+logger = logging.getLogger(__name__)
 class ResumeKNodeType(str, Enum):
     """Resume K.X node type classification."""
     HEADER = 'header'

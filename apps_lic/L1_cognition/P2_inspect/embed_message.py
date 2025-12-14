@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Embed Message Template - atomic implementation."""
 
 from typing import Dict
+import logging
 
 class EmbedMessageTemplate:
     """EmbedMessageTemplate implementation."""

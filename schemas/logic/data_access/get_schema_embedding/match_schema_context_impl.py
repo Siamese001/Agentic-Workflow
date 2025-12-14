@@ -1,6 +1,7 @@
 """Implementation for match_schema_context."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .match_schema_context_types import *  # Star import removed
 
 class SchemaContextMatcher:

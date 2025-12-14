@@ -1,6 +1,7 @@
 """Implementation for tool_perform_observability_operation."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .tool_perform_observability_operation_types import *  # Star import removed
 
 class ObservabilityOperationPerformer:

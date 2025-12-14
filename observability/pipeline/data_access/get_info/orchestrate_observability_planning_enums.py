@@ -1,6 +1,9 @@
 """Enum types for orchestrate_observability_planning."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class MetricType(Enum):
     """Types of metrics for observability."""
     COUNTER = 'counter'

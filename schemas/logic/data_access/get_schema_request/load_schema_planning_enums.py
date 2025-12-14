@@ -1,6 +1,9 @@
 """Enum types for load_schema_planning."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class SchemaType(Enum):
     """Types of schemas."""
     JSON = 'json'

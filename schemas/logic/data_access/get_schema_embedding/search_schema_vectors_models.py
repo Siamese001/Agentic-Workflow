@@ -1,6 +1,9 @@
 """Dataclass models for search_schema_vectors."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .search_schema_vectors_enums import *  # Star import removed
 
 @dataclass

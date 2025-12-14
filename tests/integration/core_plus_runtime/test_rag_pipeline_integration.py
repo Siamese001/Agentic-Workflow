@@ -1,8 +1,11 @@
 """
+
+logger = logging.getLogger(__name__)
 Integration tests for RAG Pipeline
 Tests RAG retrieval, augmentation, and generation behaviors
 """
 import pytest
+import logging
 
 # Import actual RAG components when available
 try:

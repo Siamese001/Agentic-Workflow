@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Clerk extraction for resume generation HOP-1."""
 
 from typing import Dict, List, Tuple
+import logging
 
 
 class ClerkExtractor:

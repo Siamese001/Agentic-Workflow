@@ -1,6 +1,7 @@
 """Implementation for tool_invoke_observability_tool."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .tool_invoke_observability_tool_types import *  # Star import removed
 
 class ObservabilityToolInvoker:

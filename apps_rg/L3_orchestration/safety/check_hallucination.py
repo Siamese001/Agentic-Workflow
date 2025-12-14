@@ -1,8 +1,11 @@
 """
+
+logger = logging.getLogger(__name__)
 Hallucination checking module for apps_rg.
 
 Provides basic hallucination detection for resume generation.
 """
+import logging
 
 
 class HallucinationDetector:

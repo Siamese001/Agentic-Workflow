@@ -1,11 +1,14 @@
 """Orchestrator Interface - The Nervous System.
 
+
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Coordinates between Brain (cognitive) and Hands (action).
 L3 Orchestration: Manages the Think-Act-Observe cycle.
 """
 
 from typing import Any, Dict, List, Optional
+import logging
 
 
 class ExecutionPhase(Enum):

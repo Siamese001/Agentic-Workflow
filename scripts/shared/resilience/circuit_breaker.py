@@ -1,10 +1,13 @@
 """Circuit Breaker implementation for fault tolerance.
 
+
+logger = logging.getLogger(__name__)
 Migrated from archives/legacy_root_folders/tools/runtime_utils.py
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
 import time
+import logging
 
 class CircuitBreakerState(Enum):
     """TODO: Add docstring."""

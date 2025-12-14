@@ -3,7 +3,10 @@ import functools
 from typing import Dict, Any, Callable
 from openai import APIConnectionError, APITimeoutError as OpenAITimeout
 from anthropic import APIConnectionError as AnthropicConnectionError, APITimeoutError as AnthropicTimeout
+import logging
 
+
+logger = logging.getLogger(__name__)
 # Define a unified tuple of retryable errors
 RETRYABLE_ERRORS = (
     APIConnectionError, 
@@ -32,15 +35,15 @@ def resilient_execution(fallback_model: str = "gpt-4o"):
                 
                 except RETRYABLE_ERRORS as e:
                     attempt += 1
-                    print(f"⚡ Circuit Breaker: Caught error {type(e).__name__} (Attempt {attempt})")
+                    logger.error(f"⚡ Circuit Breaker: Caught error {type(e).__name__} (Attempt {attempt})")
                     
                     if attempt > max_retries:
-                        print("💥 Circuit Breaker: Max retries exceeded. Raising exception.")
+                        logger.error("💥 Circuit Breaker: Max retries exceeded. Raising exception.")
                         raise e
                     
                     # Exponential Backoff
                     sleep_time = 2 ** attempt
-                    print(f"⏳ Sleeping {sleep_time}s...")
+                    logger.info(f"⏳ Sleeping {sleep_time}s...")
                     time.sleep(sleep_time)
                     
                     # FALLBACK STRATEGY
@@ -51,7 +54,7 @@ def resilient_execution(fallback_model: str = "gpt-4o"):
                         
                         # Only switch if we haven't already
                         if current_model != fallback_model:
-                            print(f"🔄 Circuit Breaker: Switching {current_model} -> {fallback_model}")
+                            logger.info(f"🔄 Circuit Breaker: Switching {current_model} -> {fallback_model}")
                             # Patch the config dictionary in place for the next attempt
                             kwargs['config']['infrastructure_config']['primary_model'] = fallback_model
                             # If switching providers (e.g., Claude -> GPT), the client routing inside 'func' 

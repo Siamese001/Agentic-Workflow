@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L2_execution
 # -*- coding: utf-8 -*-
 """Apply Lic Execution Safety - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def apply_lic_execution_safety(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply lic execution safety data."""

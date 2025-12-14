@@ -1,6 +1,9 @@
 """Types and models for tools_use_a_tool."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING = 'pending'

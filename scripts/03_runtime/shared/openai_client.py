@@ -226,14 +226,14 @@ def test_openai_connection():
             model="gpt-3.5-turbo",
             max_tokens=50
         )
-        print(response.choices[0].message.content)
+        logger.info(response.choices[0].message.content)
         return True
     except Exception as e:
-        print(f"OpenAI connection failed: {e}")
+        logger.error(f"OpenAI connection failed: {e}")
         return False
 
 
 if __name__ == "__main__":
     # Example usage
-    print("Testing OpenAI configuration...")
+    logger.info("Testing OpenAI configuration...")
     test_openai_connection()

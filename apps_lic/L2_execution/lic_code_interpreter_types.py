@@ -1,6 +1,9 @@
 """Types and models for lic_code_interpreter."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class ScoredCandidate:
     """A scored candidate message."""

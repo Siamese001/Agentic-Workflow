@@ -1,5 +1,8 @@
 """Dataclass models for lic_cta_patterns."""
+import logging
 
+
+logger = logging.getLogger(__name__)
 # from .lic_cta_patterns_enums import *  # Star import removed
 
 @dataclass

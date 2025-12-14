@@ -1,6 +1,7 @@
 """Implementation for search_schema_vectors."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .search_schema_vectors_types import *  # Star import removed
 
 class SchemaVectorSearcher:

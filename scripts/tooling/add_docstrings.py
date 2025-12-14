@@ -2,7 +2,10 @@
 import ast
 import os
 from pathlib import Path
+import logging
 
+
+logger = logging.getLogger(__name__)
 sovereign_dirs = [
     'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared',
     'schemas', 'prompt_governance', 'observability', 'config'

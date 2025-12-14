@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg
@@ -9,6 +11,7 @@ Canonicalizes action verbs to approved list and detects forbidden verbs.
 """
 
 from typing import Dict, List
+import logging
 
 class VerbCanonicalizer:
     """Canonicalize action verbs to approved list."""

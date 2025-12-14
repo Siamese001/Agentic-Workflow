@@ -1,6 +1,9 @@
 """Integration tests for cross-domain interactions."""
 from typing import Dict
+import logging
 
+
+logger = logging.getLogger(__name__)
 class TestCrossDomainDataFlow:
     """Integration tests for cross-domain data flow."""
 

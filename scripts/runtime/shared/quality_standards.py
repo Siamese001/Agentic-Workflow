@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 from enum import Enum
+import logging
 """Cross-Engine Quality Standards - Unified quality benchmarks.
 
+
+logger = logging.getLogger(__name__)
 This module defines unified quality standards that apply across all engines
 while allowing for domain-specific customizations.
 """

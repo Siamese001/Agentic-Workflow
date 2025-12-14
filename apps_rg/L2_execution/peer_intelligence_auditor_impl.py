@@ -1,6 +1,9 @@
 """Implementation for peer_intelligence_auditor."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .peer_intelligence_auditor_types import *  # Star import removed
 
 class PeerIntelligenceAuditor:

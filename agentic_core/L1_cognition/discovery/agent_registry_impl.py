@@ -1,6 +1,9 @@
 """Implementation for agent_registry."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .agent_registry_types import *  # Star import removed
 
 class AgentRegistry:

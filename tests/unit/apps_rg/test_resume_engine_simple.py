@@ -1,7 +1,10 @@
 """Simple Unit Tests for Resume Engine
 
+
+logger = logging.getLogger(__name__)
 Tests the Resume Engine functionality with proper mocking to avoid API calls.
 """
+import logging
 
 
 # Test the core logic without requiring API keys

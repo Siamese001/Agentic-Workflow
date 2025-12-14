@@ -1,6 +1,9 @@
 """Implementation for achv_bullet_synthesizer."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .achv_bullet_synthesizer_types import *  # Star import removed
 
 class AchvBulletSynthesizer:

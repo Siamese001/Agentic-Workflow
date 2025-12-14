@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: shared
 # Layer: shared
 # Agent: all
@@ -11,6 +13,7 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 
 
 from typing import Dict
+import logging
 
 def build_reasoning_prompt_addendum(params: Dict) -> str:
     """Construct system prompt addendum based on reasoning parameters."""

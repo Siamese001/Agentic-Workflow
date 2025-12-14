@@ -1,6 +1,9 @@
 """Enum types for rg_creative_brief."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class VoiceType(Enum):
     """Voice type for content generation."""
     FIRST_PERSON = 'first_person'

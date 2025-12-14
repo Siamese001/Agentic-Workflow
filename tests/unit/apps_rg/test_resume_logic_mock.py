@@ -1,5 +1,7 @@
 """Unit Tests for Resume Engine Logic (Mocked)
 
+
+logger = logging.getLogger(__name__)
 Tests the Resume Engine functionality with mocked LLM responses to avoid API calls.
 """
 
@@ -8,6 +10,7 @@ Tests the Resume Engine functionality with mocked LLM responses to avoid API cal
 from apps_rg.L2_execution.job_analyzer import JobAnalyzer
 from apps_rg.L2_execution.resume_generator import ResumeGenerator
 from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
+import logging
 
 class TestJobAnalyzerMocked:
     """Test JobAnalyzer with mocked LLM responses."""

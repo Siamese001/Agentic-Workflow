@@ -1,5 +1,7 @@
 """Strategist BioWriter Agent - Executive Summary Generator (K.1)
 
+
+logger = logging.getLogger(__name__)
 This agent generates executive summaries with zero-tolerance validation.
 Enforces strict word count, voice constraints, and grounding requirements.
 
@@ -19,6 +21,7 @@ Non-responsibilities:
 
 import re
 from typing import Any, Dict, List, Optional
+import logging
 
 
 @dataclass

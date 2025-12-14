@@ -1,11 +1,14 @@
 """Pydantic models for reasoning traces.
 
+
+logger = logging.getLogger(__name__)
 Phase 1 - Pillar 6: Reasoning Models (Structured Reasoning)
 Formal data models for separating reasoning from action outputs.
 """
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+import logging
 
 class ThinkStep(BaseModel):
     """Represents a thinking/reasoning step.

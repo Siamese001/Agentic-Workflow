@@ -1,5 +1,7 @@
 """Integrity Gate Executor - The Critic
 
+
+logger = logging.getLogger(__name__)
 This module implements cryptographic validation gates for both Resume and Outreach engines.
 Enforces H10.3 Cryptographic Signatures and v16.1 Hygiene Scans.
 
@@ -23,6 +25,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 from dataclasses import dataclass
+import logging
 
 class ValidationSeverity(Enum):
     """TODO: Add docstring."""

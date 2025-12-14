@@ -1,6 +1,9 @@
 """Implementation for agent_gym."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .agent_gym_types import *  # Star import removed
 
 class AgentGym:

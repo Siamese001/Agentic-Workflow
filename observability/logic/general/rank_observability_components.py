@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # ======================================================================
 
@@ -10,6 +12,7 @@ to support resume timeline analysis and job alignment.
 
 from typing import List, Optional
 from datetime import datetime
+import logging
 
 try:
 #     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPR...

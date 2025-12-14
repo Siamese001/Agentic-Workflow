@@ -1,6 +1,9 @@
 """Integration tests for API provider routing and fallbacks."""
 import os
 import pytest
+import logging
+
+logger = logging.getLogger(__name__)
     er, get_client
 
 # Skip integration tests if no API keys are present - DISABLED FOR FINAL VALIDATION

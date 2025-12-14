@@ -1,10 +1,13 @@
 """Schema Types and Data Models - Core definitions for schema operations.
 
+
+logger = logging.getLogger(__name__)
 This module contains all enum types and dataclass definitions used across
 schema planning and orchestration operations.
 """
 
 from typing import Dict, List, Optional, Any
+import logging
 
 class SchemaType(Enum):
     """Types of schemas for different data formats."""

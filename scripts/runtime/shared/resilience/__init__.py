@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Unified Hardening Infrastructure - Resilience patterns for the Windsurf architecture.
 
 This module provides military-grade resilience patterns including:
@@ -17,6 +19,7 @@ Usage:
         get_telemetry
     )
 """
+import logging
 
     AtomicStateManager,
     WorkflowState,

@@ -1,6 +1,7 @@
 """Implementation for use_observability_execution."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .use_observability_execution_types import *  # Star import removed
 
 class ObservabilityExecutionEngine:

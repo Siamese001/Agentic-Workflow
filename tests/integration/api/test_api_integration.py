@@ -2,7 +2,10 @@
 from typing import Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
+import logging
 
+
+logger = logging.getLogger(__name__)
 class HTTPMethod(Enum):
     """TODO: Add docstring."""
 

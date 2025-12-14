@@ -1,5 +1,8 @@
 """Implementation for model_router."""
+import logging
 
+
+logger = logging.getLogger(__name__)
 # from .model_router_types import *  # Star import removed
 
 class ModelRouter:

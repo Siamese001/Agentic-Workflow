@@ -1,6 +1,9 @@
 """Enum types for use_observability_execution."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ExecutionStrategy(Enum):
     """Strategies for execution."""
     IMMEDIATE = 'immediate'

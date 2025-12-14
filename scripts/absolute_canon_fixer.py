@@ -28,13 +28,13 @@ def get_python_files() -> List[Path]:
 
 def absolute_fix_print():
     """Key 02: Absolute elimination of print statements."""
-    print("ABSOLUTE print elimination...")
+    logger.info("ABSOLUTE print elimination...")
     fixed = 0
     
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
-            if 'print(' not in content:
+            if 'logger.info(' not in content:
                 continue
             
             # Force logging infrastructure
@@ -60,11 +60,11 @@ def absolute_fix_print():
         except Exception:
             pass
     
-    print(f"  Eliminated print in {fixed} files")
+    logger.info(f"  Eliminated print in {fixed} files")
 
 def absolute_fix_empty_except():
     """Key 04: Absolute fix of empty except blocks."""
-    print("ABSOLUTE empty except fix...")
+    logger.info("ABSOLUTE empty except fix...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -90,11 +90,11 @@ def absolute_fix_empty_except():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def absolute_fix_bare_except():
     """Key 05: Absolute fix of bare except."""
-    print("ABSOLUTE bare except fix...")
+    logger.info("ABSOLUTE bare except fix...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -112,11 +112,11 @@ def absolute_fix_bare_except():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def absolute_fix_unused_imports():
     """Key 09: Absolute removal of unused imports."""
-    print("ABSOLUTE unused import removal...")
+    logger.info("ABSOLUTE unused import removal...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -155,11 +155,11 @@ def absolute_fix_unused_imports():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def absolute_fix_long_lines():
     """Key 10: Absolute fix of long lines."""
-    print("ABSOLUTE long line fix...")
+    logger.info("ABSOLUTE long line fix...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -193,11 +193,11 @@ def absolute_fix_long_lines():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def absolute_fix_trailing_whitespace():
     """Key 11: Absolute trailing whitespace removal."""
-    print("ABSOLUTE trailing whitespace removal...")
+    logger.info("ABSOLUTE trailing whitespace removal...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -215,11 +215,11 @@ def absolute_fix_trailing_whitespace():
         except Exception:
             pass
     
-    print(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {fixed} files")
 
 def absolute_fix_docstrings():
     """Key 21: Absolute docstring addition."""
-    print("ABSOLUTE docstring addition...")
+    logger.info("ABSOLUTE docstring addition...")
     fixed = 0
     
     for file_path in get_python_files():
@@ -250,11 +250,11 @@ def absolute_fix_docstrings():
         except Exception:
             pass
     
-    print(f"  Added {fixed} docstrings")
+    logger.info(f"  Added {fixed} docstrings")
 
 def absolute_fix_naming():
     """Key 47: Absolute naming fix."""
-    print("ABSOLUTE naming fix...")
+    logger.info("ABSOLUTE naming fix...")
     
     # Find and fix all underscore class names
     for file_path in get_python_files():
@@ -273,19 +273,19 @@ def absolute_fix_naming():
         except Exception:
             pass
     
-    print("  Fixed naming conventions")
+    logger.info("  Fixed naming conventions")
 
 def main():
     """Execute absolute canon fixes."""
-    print("="*60)
-    print("ABSOLUTE CANON FIXER - FINAL PUSH TO 100%")
-    print("="*60)
+    logger.info("="*60)
+    logger.info("ABSOLUTE CANON FIXER - FINAL PUSH TO 100%")
+    logger.info("="*60)
     
     os.chdir('c:/Git/Agentic-Workflow')
     
     # Run multiple iterations to catch all violations
     for iteration in range(3):
-        print(f"\n=== ITERATION {iteration + 1} ===")
+        logger.info(f"\n=== ITERATION {iteration + 1} ===")
         
         absolute_fix_print()
         absolute_fix_empty_except()
@@ -296,10 +296,10 @@ def main():
         absolute_fix_docstrings()
         absolute_fix_naming()
     
-    print("\n" + "="*60)
-    print("ABSOLUTE FIXES COMPLETE")
-    print("="*60)
-    print("\nRun canon_validator.py for final verification.")
+    logger.info("\n" + "="*60)
+    logger.info("ABSOLUTE FIXES COMPLETE")
+    logger.info("="*60)
+    logger.info("\nRun canon_validator.py for final verification.")
 
 if __name__ == '__main__':
     main()

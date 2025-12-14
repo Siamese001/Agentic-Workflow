@@ -1,10 +1,13 @@
 """
+
+logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/aggregation_ops/
 Tests aggregation operations including pick_best_result.
 """
 import pytest
 from typing import Dict, List, Optional
 from dataclasses import dataclass
+import logging
 
 @dataclass
 class ScoredResult:

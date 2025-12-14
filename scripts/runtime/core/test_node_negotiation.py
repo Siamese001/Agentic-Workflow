@@ -2,7 +2,10 @@
 
 import pytest
 import asyncio
+import logging
 
+
+logger = logging.getLogger(__name__)
     NodeNegotiator,
     NegotiationMessage,
     NegotiationRound,

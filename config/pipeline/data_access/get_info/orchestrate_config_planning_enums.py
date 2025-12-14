@@ -1,6 +1,9 @@
 """Enum types for orchestrate_config_planning."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ConfigEnvironment(Enum):
     """Deployment environments for configuration."""
     DEVELOPMENT = 'development'

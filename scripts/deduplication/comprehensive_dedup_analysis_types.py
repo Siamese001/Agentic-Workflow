@@ -1,6 +1,9 @@
 """Types and models for comprehensive_dedup_analysis."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class FileFingerprint:
     """Complete fingerprint for a Python file."""

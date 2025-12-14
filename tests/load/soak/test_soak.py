@@ -3,7 +3,10 @@ import time
 from typing import Dict, List
 import gc
 from dataclasses import dataclass
+import logging
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class SoakMetrics:
     """TODO: Add docstring."""

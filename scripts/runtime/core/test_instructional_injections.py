@@ -1,11 +1,14 @@
 """Test suite for instructional injection system.
 
+
+logger = logging.getLogger(__name__)
 Tests all 30 instructional injection types across the 6 layers
 and their integration with SubatomicHop stages.
 """
 
 import pytest
 from pathlib import Path
+import logging
 
     get_instructional_injections,
     get_stage_applicable_injections,

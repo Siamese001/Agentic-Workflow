@@ -2,17 +2,20 @@
 
 import sys
 import os
+import logging
 
+
+logger = logging.getLogger(__name__)
 # Add project to path
 sys.path.insert(0, os.path.dirname(__file__))
 
-print("=" * 60)
-print("MCP Installation Verification")
-print("=" * 60)
-print()
+logger.info("=" * 60)
+logger.info("MCP Installation Verification")
+logger.info("=" * 60)
+logger.info("")
 
 # Test 1: Node.js Installation
-print("1. Testing Node.js installation...")
+logger.info("1. Testing Node.js installation...")
 try:
     import subprocess
     result = subprocess.run(
@@ -21,56 +24,56 @@ try:
         text=True
     )
     if result.returncode == 0:
-        print(f"   ✓ Node.js installed: {result.stdout.strip()}")
+        logger.info(f"   ✓ Node.js installed: {result.stdout.strip()}")
     else:
-        print("   ✗ Node.js not found")
+        logger.info("   ✗ Node.js not found")
 except Exception as e:
-    print(f"   ✗ Error: {e}")
+    logger.error(f"   ✗ Error: {e}")
 
-print()
+logger.info("")
 
 # Test 2: Python MCP Tools
-print("2. Testing Python MCP Tools...")
+logger.info("2. Testing Python MCP Tools...")
 try:
     from runtime.shared.workflow.python_mcp_tools import PythonMCPToolkit
     toolkit = PythonMCPToolkit()
     tools = toolkit.get_available_tools()
-    print(f"   ✓ Python MCP Toolkit loaded")
-    print(f"   ✓ Available tools: {', '.join(tools)}")
+    logger.info(f"   ✓ Python MCP Toolkit loaded")
+    logger.info(f"   ✓ Available tools: {', '.join(tools)}")
 except Exception as e:
-    print(f"   ✗ Error loading toolkit: {e}")
+    logger.error(f"   ✗ Error loading toolkit: {e}")
 
-print()
+logger.info("")
 
 # Test 3: Playwright
-print("3. Testing Playwright...")
+logger.info("3. Testing Playwright...")
 try:
     from playwright.sync_api import sync_playwright
-    print("   ✓ Playwright library installed")
-    print("   ✓ Chromium browser installed")
+    logger.info("   ✓ Playwright library installed")
+    logger.info("   ✓ Chromium browser installed")
 except Exception as e:
-    print(f"   ✗ Error: {e}")
+    logger.error(f"   ✗ Error: {e}")
 
-print()
+logger.info("")
 
 # Test 4: Reddit (PRAW)
-print("4. Testing Reddit (PRAW)...")
+logger.info("4. Testing Reddit (PRAW)...")
 try:
     import praw
     client_id = os.getenv("REDDIT_CLIENT_ID")
     if client_id:
-        print("   ✓ PRAW library installed")
-        print("   ✓ Reddit credentials configured")
+        logger.info("   ✓ PRAW library installed")
+        logger.info("   ✓ Reddit credentials configured")
     else:
-        print("   ✓ PRAW library installed")
-        print("   ⚠ Reddit credentials not set (optional)")
+        logger.info("   ✓ PRAW library installed")
+        logger.info("   ⚠ Reddit credentials not set (optional)")
 except Exception as e:
-    print(f"   ✗ Error: {e}")
+    logger.error(f"   ✗ Error: {e}")
 
-print()
+logger.info("")
 
 # Test 5: Required Python packages
-print("5. Testing required Python packages...")
+logger.info("5. Testing required Python packages...")
 packages = {
     "requests": "Web requests",
     "beautifulsoup4": "HTML parsing",
@@ -81,23 +84,23 @@ packages = {
 for package, description in packages.items():
     try:
         __import__(package.replace("-", "_"))
-        print(f"   ✓ {package}: {description}")
+        logger.info(f"   ✓ {package}: {description}")
     except ImportError:
-        print(f"   ✗ {package}: Not installed")
+        logger.info(f"   ✗ {package}: Not installed")
 
-print()
-print("=" * 60)
-print("Installation Status Summary")
-print("=" * 60)
-print()
-print("✓ Node.js v24.12.0 installed")
-print("✓ Python MCP tools created")
-print("✓ Playwright with Chromium installed")
-print("✓ Reddit (PRAW) library installed")
-print("✓ All required Python packages installed")
-print()
-print("Next steps:")
-print("1. Set environment variables for Reddit and Figma (optional)")
-print("2. Review integration guide: docs/MCP_INTEGRATION_GUIDE.md")
-print("3. Start using MCP-enhanced agents")
-print()
+logger.info("")
+logger.info("=" * 60)
+logger.info("Installation Status Summary")
+logger.info("=" * 60)
+logger.info("")
+logger.info("✓ Node.js v24.12.0 installed")
+logger.info("✓ Python MCP tools created")
+logger.info("✓ Playwright with Chromium installed")
+logger.info("✓ Reddit (PRAW) library installed")
+logger.info("✓ All required Python packages installed")
+logger.info("")
+logger.info("Next steps:")
+logger.info("1. Set environment variables for Reddit and Figma (optional)")
+logger.info("2. Review integration guide: docs/MCP_INTEGRATION_GUIDE.md")
+logger.info("3. Start using MCP-enhanced agents")
+logger.info("")

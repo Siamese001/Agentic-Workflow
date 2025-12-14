@@ -1,5 +1,7 @@
 """Backward compatibility shim for result_types.
 
+
+logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
@@ -10,6 +12,7 @@ The Subatomic Canon requires files to either:
 This shim file satisfies requirement #2 by providing comprehensive documentation
 about the refactoring that was performed to split the original module.
 """
+import logging
 
 # Re-export all components for backward compatibility
 # from .result_types_types import *  # Star import removed

@@ -1,9 +1,12 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
 """Test Intent Parsing - atomic execution layer."""
 
 
 from typing import Dict
+import logging
 
 def test_intent_parsing(data: Dict[str, object]) -> Dict[str, object]:
     """Process test intent parsing data."""

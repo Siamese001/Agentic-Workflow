@@ -1,10 +1,13 @@
 """End-to-End Workflow Tests
 
+
+logger = logging.getLogger(__name__)
 Tests complete workflows from job input to final output,
 integrating all layers and components.
 """
 
 import pytest
+import logging
 
 # from archives.legacy_root_folders.core.models.models import ExecutionContext, JobInput, ResumeI...
 

@@ -1,5 +1,7 @@
 """Anthropic client adapter for v10_10.
 
+
+logger = logging.getLogger(__name__)
 This module is the ONLY place where the Anthropic SDK is imported.
 It exposes a narrow run_llm interface used by runtime_utils.
 """
@@ -7,6 +9,7 @@ It exposes a narrow run_llm interface used by runtime_utils.
 
 import os
 from typing import Any, List
+import logging
 
 def run_llm_anthropic(
     """Docstring."""

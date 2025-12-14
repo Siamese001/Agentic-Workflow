@@ -1,6 +1,7 @@
 """Implementation for convert_to_config_model."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .convert_to_config_model_types import *  # Star import removed
 
 class ConfigModelConverter:

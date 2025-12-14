@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Ar...
 # from archives.legacy_root_folders.meta.metacognition.refinement import refine_low_confidence  #...
 

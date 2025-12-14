@@ -1,9 +1,12 @@
 """Rate limiting implementations for API throttling.
 
+
+logger = logging.getLogger(__name__)
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
 import time
+import logging
 
 class RateLimitExceeded(Exception):
     """Raised when rate limit is exceeded."""

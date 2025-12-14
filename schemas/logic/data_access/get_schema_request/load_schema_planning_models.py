@@ -1,6 +1,9 @@
 """Dataclass models for load_schema_planning."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .load_schema_planning_enums import *  # Star import removed
 
 @dataclass

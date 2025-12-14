@@ -1,11 +1,14 @@
 """Routing configuration schema for multi-provider fallback.
 
+
+logger = logging.getLogger(__name__)
 Defines the structure for routing tiers and provider fallback chains.
 
 Phase 2 - Resilient Routing Layer
 """
 
 from typing import List, Optional
+import logging
 
 
 class RoutingTier(str, Enum):

@@ -1,6 +1,9 @@
 """Types and models for judge_evaluator."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class JudgmentCriterion(Enum):
     """Criteria for judging output quality."""
     ACCURACY = 'accuracy'

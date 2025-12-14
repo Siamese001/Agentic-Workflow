@@ -1,6 +1,9 @@
 """Types and models for rules_policy_check_safety."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING = 'pending'

@@ -1,6 +1,9 @@
 """Unit tests for L4_memory/P4_safety - memory safety operations."""
 import re
+import logging
 
+
+logger = logging.getLogger(__name__)
 class TestMemorySafety:
     """Tests for memory safety operations."""
 

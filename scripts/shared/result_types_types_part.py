@@ -1,7 +1,10 @@
 """Split module 1 for result_types_types."""
 
 from typing import Any, Dict, List, Optional
+import logging
 
+
+logger = logging.getLogger(__name__)
 class ResultStatus(Enum):
     """Status of an operation result."""
     SUCCESS = 'success'

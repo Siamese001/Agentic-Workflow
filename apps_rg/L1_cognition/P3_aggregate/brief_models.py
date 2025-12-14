@@ -1,5 +1,8 @@
 """Dataclass models for rg_creative_brief."""
+import logging
 
+
+logger = logging.getLogger(__name__)
 # from .rg_creative_brief_enums import *  # Star import removed
 
 @dataclass
