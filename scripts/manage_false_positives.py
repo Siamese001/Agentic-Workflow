@@ -7,6 +7,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 def load_review_log():
     """Load the review log."""

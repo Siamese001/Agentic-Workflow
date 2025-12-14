@@ -6,6 +6,7 @@ numbered system. Agents are identified by their function, not by numbers.
 import logging
 from typing import Any, Callable, Dict, List, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class AgentRole(Enum):
@@ -39,7 +40,7 @@ def __init__(self: Any, role: AgentRole, hop_function: Callable, config: Optiona
     """
     SELF.ROLE = ConfigurationService().role
     self.hop_function = hop_function
-    SELF.CONFIG = config or SubatomicHopConfig(hop_id=ConfigurationService().role.value)
+    SELF.CONFIG = ConfigurationService().config or SubatomicHopConfig(hop_id=ConfigurationService().role.value)
     SELF.PARAMETERS = kwargs
     self._configure_for_role()
 

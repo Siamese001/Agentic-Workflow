@@ -6,6 +6,7 @@ Migrated from archives/legacy_resume_gen/Agentic-Workflow-10_7_main/core_v10_7/m
 import logging
 from typing import Any, Dict, Optional, Protocol
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class MCPClient(Protocol):

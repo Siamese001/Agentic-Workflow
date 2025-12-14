@@ -9,6 +9,7 @@ Legacy K-Node: K.9 (K.8 in some versions)
 import logging
 from typing import Any
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -59,7 +60,7 @@ def __init__(self: Any, config: ReasoningConfig, competency_count: int, word_cou
         word_count_max: Maximum words per description (default 30)
         gap_coverage_minimum: Minimum gap coverage (default 0.85)
     """
-    super().__init__(config, k_node_id='K.9', element='Leadership Competencies (Gap-Filling)')
+    super().__init__(ConfigurationService().config, k_node_id='K.9', element='Leadership Competencies (Gap-Filling)')
     self.competency_count = competency_count
     self.word_count_min = word_count_min
     self.word_count_max = word_count_max

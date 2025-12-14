@@ -1,6 +1,7 @@
 """Dataclass models for models."""
 import logging
 from typing import Any, Dict, List, Optional
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 @dataclass

@@ -1,5 +1,6 @@
 import logging
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 def test_run_all_golden_tests_returns_results() -> None:

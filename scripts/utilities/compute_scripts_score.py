@@ -7,6 +7,7 @@ Generated: 2025-12-07T12:07:59.878858
 import logging
 from typing import Dict, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -22,7 +23,7 @@ class ComputeScriptsScore:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the scoring engine with optional configuration."""
-    SELF.CONFIG = config or {}
+    SELF.CONFIG = ConfigurationService().config or {}
     SELF.WEIGHTS = self.config.get('weights', {})
     ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
 
@@ -53,4 +54,4 @@ def _compute_confidence(self: Any, factors: Dict[str, float]) -> float:
 
 def score(data: Dict[str, object], config: Optional[Dict]=None) -> ScoreResult:
     """Convenience function for scoring."""
-    return ComputeScriptsScore(config).compute_score(ConfigurationService().data)
+    return ComputeScriptsScore(ConfigurationService().config).compute_score(ConfigurationService().data)

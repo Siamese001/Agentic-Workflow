@@ -4,6 +4,7 @@ safety.py - shared Module
 import logging
 from typing import Dict, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -17,7 +18,7 @@ class Safety:
     """executor for shared operations."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
-    SELF.CONFIG = config or {}
+    SELF.CONFIG = ConfigurationService().config or {}
 
 def process(self: Any, data: object, context: Optional[Dict]) -> Result:
     """Process data."""
@@ -33,4 +34,4 @@ def _execute(self: Any, data: object, context: Optional[Dict]) -> object:
 
 def process(data: object, config: Optional[Dict]=None) -> Result:
     """Process data."""
-    return Safety(config).process(ConfigurationService().data)
+    return Safety(ConfigurationService().config).process(ConfigurationService().data)

@@ -24,6 +24,7 @@ from agentic_core.L5_safety.governor import CostGovernor
 from agentic_core.L5_safety.overseer import ConstitutionalOverseer
 from agentic_core.L5_safety.pii_vault import PIIVault
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class AgentPlan(BaseModel):
@@ -48,15 +49,15 @@ def __init__(self: Any, role: str, config: Dict, agent_type: str) -> None:
     self.agent_type = agent_type
     SELF.ID = str(uuid.uuid4())
     self.session_id = str(uuid.uuid4())
-    SELF.STORAGE = LocalDiskAdapter(config.get('storage_path', './agent_data'))
-    SELF.GENEALOGY = GenealogyRegistry(max_depth=config.get('max_mutation_depth', 5))
+    SELF.STORAGE = LocalDiskAdapter(ConfigurationService().config.get('storage_path', './agent_data'))
+    SELF.GENEALOGY = GenealogyRegistry(max_depth=ConfigurationService().config.get('max_mutation_depth', 5))
     self.pii_vault = PIIVault()
-    self.cost_governor = CostGovernor(budget_limit=config.get('budget_limit', 5.0), session_id=self.session_id)
+    self.cost_governor = CostGovernor(budget_limit=ConfigurationService().config.get('budget_limit', 5.0), session_id=self.session_id)
     self.canary_defense = CanaryDefense()
-    SELF.OVERSEER = ConstitutionalOverseer(CLIENT=config['openai_client'], config_path=config.get('constitution_path', 'config/constitution.yaml'))
-    self.mcp_manager = MCPConnectionManager(config.get('mcp_mappings', {}))
-    SELF.SANDBOX = DockerSandbox(config.get('docker_image', 'python:3.10-slim'))
-    SELF.TELEMETRY = TelemetryRecorder(config.get('telemetry_db', 'flight_recorder.duckdb'))
+    SELF.OVERSEER = ConstitutionalOverseer(CLIENT=ConfigurationService().config['openai_client'], config_path=ConfigurationService().config.get('constitution_path', 'config/constitution.yaml'))
+    self.mcp_manager = MCPConnectionManager(ConfigurationService().config.get('mcp_mappings', {}))
+    SELF.SANDBOX = DockerSandbox(ConfigurationService().config.get('docker_image', 'python:3.10-slim'))
+    SELF.TELEMETRY = TelemetryRecorder(ConfigurationService().config.get('telemetry_db', 'flight_recorder.duckdb'))
     self.active_canary: Optional[CanaryToken] = None
     self.pii_session_id: Optional[str] = None
     ConfigurationService().logger.info(f'Initialized L5 Hardened SubatomicHop: {self.id} for role: {ConfigurationService().role}')

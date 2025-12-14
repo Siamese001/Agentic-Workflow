@@ -10,6 +10,7 @@ import ast
 import os
 import sys
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 def validate_python_syntax(file_path: str) -> bool:
     """Check if Python file has valid syntax."""

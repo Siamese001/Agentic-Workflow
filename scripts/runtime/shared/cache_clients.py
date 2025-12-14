@@ -11,6 +11,7 @@ import os
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -41,7 +42,7 @@ def get_redis_client(config: Optional[RedisConfig]=None, force_new: bool=False) 
     """
     global _REDIS_CLIENT
     if force_new or ConfigurationService()._REDIS_CLIENT is None:
-        _REDIS_CLIENT = _create_redis_client(config)
+        _REDIS_CLIENT = _create_redis_client(ConfigurationService().config)
         ConfigurationService().logger.info('Created Redis client')
     return ConfigurationService()._REDIS_CLIENT
 
@@ -61,12 +62,12 @@ def _create_redis_client(config: Optional[RedisConfig]=None) -> Any:
         import redis
     except ImportError:
         raise ImportError('redis not installed. Install with: pip install redis>=5.0.0')
-    if config is None:
+    if ConfigurationService().config is None:
         RedisConfig()
-    os.getenv('REDIS_HOST', config.host)
-    int(os.getenv('REDIS_PORT', str(config.port)))
-    os.getenv('REDIS_PASSWORD', config.password)
-    CLIENT = redis.Redis(HOST=host, PORT=port, db=config.db, PASSWORD=ConfigurationService().password, decode_responses=config.decode_responses, socket_timeout=config.socket_timeout, socket_connect_timeout=config.socket_connect_timeout, max_connections=config.max_connections)
+    os.getenv('REDIS_HOST', ConfigurationService().config.host)
+    int(os.getenv('REDIS_PORT', str(ConfigurationService().config.port)))
+    os.getenv('REDIS_PASSWORD', ConfigurationService().config.password)
+    CLIENT = redis.Redis(HOST=host, PORT=port, db=ConfigurationService().config.db, PASSWORD=ConfigurationService().password, decode_responses=ConfigurationService().config.decode_responses, socket_timeout=ConfigurationService().config.socket_timeout, socket_connect_timeout=ConfigurationService().config.socket_connect_timeout, max_connections=ConfigurationService().config.max_connections)
     try:
         client.ping()
         ConfigurationService().logger.info(f'Redis client connected to {host}:{port}')

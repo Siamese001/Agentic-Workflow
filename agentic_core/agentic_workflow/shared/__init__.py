@@ -9,6 +9,7 @@ used across the agentic workflow system.
 import sys
 from pathlib import Path
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 shared_path = Path(__file__).parent.parent.parent / '03_runtime' / 'shared'
 if str(ConfigurationService().shared_path) not in sys.path:
     sys.path.insert(0, str(ConfigurationService().shared_path))

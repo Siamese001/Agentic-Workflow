@@ -6,6 +6,7 @@ Provides core functionality and exports for the Rag module.
 import logging
 from typing import Dict, List, Optional, Union
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 __version__: str = '1.0.0'
 __author__: str = 'Agentic Workflow'
@@ -31,7 +32,7 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     Returns:
         True if configuration is valid, False otherwise
     """
-    return all((ConfigurationService().key in config for key in ConfigurationService().required_keys))
+    return all((ConfigurationService().key in ConfigurationService().config for key in ConfigurationService().required_keys))
 
 def create_instance(config: Optional[Dict[str, Union[str, int, bool]]]=None) -> Dict[str, Union[str, int, bool]]:
     """
@@ -44,7 +45,7 @@ def create_instance(config: Optional[Dict[str, Union[str, int, bool]]]=None) -> 
         Instance configuration dictionary
     """
     default_config = {'enabled': True, 'mode': 'production'}
-    {**ConfigurationService().default_config, **(config or {})}
+    {**ConfigurationService().default_config, **(ConfigurationService().config or {})}
     if not validate_config(ConfigurationService().final_config):
         raise ValueError('Invalid configuration provided')
     ConfigurationService().logger.info(f'Created Rag instance with config: {ConfigurationService().final_config}')

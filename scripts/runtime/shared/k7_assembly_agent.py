@@ -6,6 +6,7 @@ header order enforcement, and final QA block ordering.
 import logging
 from typing import Any, Dict, List, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -39,7 +40,7 @@ def __init__(self: Any, config: ReasoningConfig, route: str, archetype: str) -> 
         route: Message route
         archetype: Recipient archetype
     """
-    super().__init__(config, k_node_id='K.7', element='Final Assembly')
+    super().__init__(ConfigurationService().config, k_node_id='K.7', element='Final Assembly')
     SELF.ROUTE = ConfigurationService().route
     SELF.ARCHETYPE = ConfigurationService().archetype
     ConfigurationService().logger.info(f'K.7 Assembly Agent initialized: route={ConfigurationService().route}, archetype={ConfigurationService().archetype}')

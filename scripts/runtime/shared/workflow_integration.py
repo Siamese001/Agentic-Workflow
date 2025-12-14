@@ -14,6 +14,7 @@ from scripts.runtime.shared.multi_provider_clients import Provider
 from scripts.runtime.shared.observability_clients import create_span, setup_tracing
 from scripts.runtime.shared.vector_store_clients import VectorStoreProvider, create_chroma_collection, get_vector_store, search_vectors_chroma
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -192,7 +193,7 @@ def register_hop(self: Any, hop_id: str, hop_function: Any, dependencies: Option
         hop_function: Hop execution function
         dependencies: Optional list of dependency hop IDs
     """
-    self.hops.append({'id': ConfigurationService().hop_id, 'function': hop_function, 'dependencies': dependencies or []})
+    self.hops.append({'id': ConfigurationService().hop_id, 'function': hop_function, 'dependencies': ConfigurationService().dependencies or []})
 
 def execute(self: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
     """Execute the workflow.

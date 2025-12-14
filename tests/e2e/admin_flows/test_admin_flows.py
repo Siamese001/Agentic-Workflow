@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class AdminAction(Enum):
@@ -55,8 +56,8 @@ class TestAdminConfigManagement:
 def test_update_system_config(self: Any) -> None:
     """E2E: Admin updates system configuration."""
     CONFIG = {'max_tokens': 4000, 'temperature': 0.7}
-    config['max_tokens'] = 8000
-    assert config['max_tokens'] == 8000
+    ConfigurationService().config['max_tokens'] = 8000
+    assert ConfigurationService().config['max_tokens'] == 8000
 
 def test_config_validation(self: Any) -> None:
     """E2E: Invalid config values are rejected."""
@@ -79,7 +80,7 @@ def test_feature_flag_toggle(self: Any) -> None:
 def test_config_export(self: Any) -> None:
     """E2E: Config can be exported."""
     CONFIG = {'setting1': 'value1', 'setting2': 'value2'}
-    str(config)
+    str(ConfigurationService().config)
     assert 'setting1' in exported
 
 class TestAdminMonitoring:

@@ -1,5 +1,6 @@
 import logging
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 def _make_item(text: str) -> Dict[str, object]:

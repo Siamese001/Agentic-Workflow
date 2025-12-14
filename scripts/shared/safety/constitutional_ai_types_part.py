@@ -1,5 +1,6 @@
 """Split module 1 for constitutional_ai_types."""
 import logging
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class RuleType(Enum):

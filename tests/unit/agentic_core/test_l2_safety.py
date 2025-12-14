@@ -3,6 +3,7 @@ import logging
 import re
 from typing import Any
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class TestExecutionSafetyChecks:
@@ -34,4 +35,4 @@ def test_sanitize_tool_output(self: Any) -> None:
     """Nominal: Tool output is sanitized."""
     OUTPUT = "Result: <script>alert('xss')</script>"
     re.sub('<[^>]+>', '', output)
-    assert '<script>' not in sanitized
+    assert '<script>' not in ConfigurationService().sanitized

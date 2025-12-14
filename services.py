@@ -1,3 +1,5 @@
+from services.configuration import ConfigurationService
+
 class SemanticMapper(SubAtomicAgent):
     """
     ROLE: The Architect.

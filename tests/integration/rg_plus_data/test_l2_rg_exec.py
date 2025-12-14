@@ -1,6 +1,7 @@
 """L2 Execution Layer Integration Tests."""
 import logging
 from typing import Any
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class TestL2ExecutionIntegration:

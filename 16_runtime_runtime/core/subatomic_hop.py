@@ -3,6 +3,7 @@ import uuid
 from typing import Any, Dict
 from pydantic import BaseModel
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent
 from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
@@ -35,19 +36,19 @@ class SubatomicHop:
 def __init__(self: Any, role: str, config: Dict) -> None:
     SELF.ROLE = ConfigurationService().role
     SELF.ID = str(uuid.uuid4())
-    SELF.STORAGE = LocalDiskAdapter(config.get('storage_path', './agent_data'))
-    SELF.GENEALOGY = GenealogyRegistry(max_depth=config.get('max_loops', 5))
+    SELF.STORAGE = LocalDiskAdapter(ConfigurationService().config.get('storage_path', './agent_data'))
+    SELF.GENEALOGY = GenealogyRegistry(max_depth=ConfigurationService().config.get('max_loops', 5))
     SELF.PII = PIIVault()
-    SELF.GOVERNOR = CostGovernor(limit_usd=config.get('max_cost_per_session_usd', 5.0))
-    SELF.OVERSEER = ConstitutionalOverseer(config['openai_client'])
-    SELF.MEMBRANE = InputMembrane(config['openai_client'])
-    SELF.AIRLOCK = AirlockProtocol(risk_threshold=config.get('airlock_threshold', 5), timeout_minutes=config.get('airlock_timeout', 30))
-    self.supreme_court = SupremeCourt(primary_client=config['openai_client'], secondary_clients=[], consensus_threshold=config.get('consensus_threshold', 0.7))
-    SELF.MCP = MCPConnectionManager(config['mcp_mappings'])
-    SELF.SANDBOX = DockerSandbox(config.get('docker_image', 'python:3.10-slim'))
-    self.structured_engine = StructuredEngine(config['openai_client'])
-    SELF.GATEKEEPER = SemanticGatekeeper(max_concurrent=config.get('max_concurrent', 5), timeout_seconds=config.get('timeout_seconds', 120))
-    SELF.TELEMETRY = TelemetryRecorder(config.get('telemetry_db', 'flight_recorder.duckdb'))
+    SELF.GOVERNOR = CostGovernor(limit_usd=ConfigurationService().config.get('max_cost_per_session_usd', 5.0))
+    SELF.OVERSEER = ConstitutionalOverseer(ConfigurationService().config['openai_client'])
+    SELF.MEMBRANE = InputMembrane(ConfigurationService().config['openai_client'])
+    SELF.AIRLOCK = AirlockProtocol(risk_threshold=ConfigurationService().config.get('airlock_threshold', 5), timeout_minutes=ConfigurationService().config.get('airlock_timeout', 30))
+    self.supreme_court = SupremeCourt(primary_client=ConfigurationService().config['openai_client'], secondary_clients=[], consensus_threshold=ConfigurationService().config.get('consensus_threshold', 0.7))
+    SELF.MCP = MCPConnectionManager(ConfigurationService().config['mcp_mappings'])
+    SELF.SANDBOX = DockerSandbox(ConfigurationService().config.get('docker_image', 'python:3.10-slim'))
+    self.structured_engine = StructuredEngine(ConfigurationService().config['openai_client'])
+    SELF.GATEKEEPER = SemanticGatekeeper(max_concurrent=ConfigurationService().config.get('max_concurrent', 5), timeout_seconds=ConfigurationService().config.get('timeout_seconds', 120))
+    SELF.TELEMETRY = TelemetryRecorder(ConfigurationService().config.get('telemetry_db', 'flight_recorder.duckdb'))
 
 async def run(self: Any, context: Dict) -> Any:
     """
@@ -100,7 +101,7 @@ async def _sanitize_input(self: Any, context: Dict, trace_id: str) -> Dict:
                 self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_sanitize_{ConfigurationService().key}', ROLE=self.role, event_type='CONTENT_SANITIZED', PAYLOAD={'original_length': len(ConfigurationService().value), 'sanitized_length': len(ConfigurationService().sanitized_value)}, TIMESTAMP=time.time()))
         else:
             ConfigurationService().SANITIZED[ConfigurationService().KEY] = ConfigurationService().value
-    return sanitized
+    return ConfigurationService().sanitized
 
 async def _execute_think_stage_with_consensus(self: Any, context: Dict, trace_id: str) -> tuple[AgentPlan, float]:
     """Execute the thinking stage with multi-model consensus."""

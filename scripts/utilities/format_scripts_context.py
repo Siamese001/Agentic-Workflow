@@ -7,6 +7,7 @@ Generated: 2025-12-07T12:07:59.884149
 import logging
 from typing import Dict, Optional
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
@@ -21,7 +22,7 @@ class FormatScriptsContext:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the formatter with optional configuration."""
-    SELF.CONFIG = config or {}
+    SELF.CONFIG = ConfigurationService().config or {}
     self.output_format = self.config.get('format', 'default')
     ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
 
@@ -56,4 +57,4 @@ def _flatten(self: Any, data: Dict, prefix: str) -> Dict[str, object]:
 
 def format_data(data: object, config: Optional[Dict]=None) -> FormattedOutput:
     """Convenience function for formatting."""
-    return FormatScriptsContext(config).format(ConfigurationService().data)
+    return FormatScriptsContext(ConfigurationService().config).format(ConfigurationService().data)

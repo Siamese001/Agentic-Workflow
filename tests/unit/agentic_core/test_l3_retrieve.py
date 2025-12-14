@@ -2,6 +2,7 @@
 import logging
 from typing import Dict
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class TestWorkflowContextRetrieval:
@@ -21,7 +22,7 @@ def test_retrieve_step_history(self: Any) -> None:
 def test_retrieve_workflow_config(self: Any) -> None:
     """Nominal: Workflow configuration is retrieved."""
     CONFIG = {'max_retries': 3, 'timeout': 300, 'parallel': True}
-    assert config['parallel'] is True
+    assert ConfigurationService().config['parallel'] is True
 
 def test_retrieve_checkpoint(self: Any) -> None:
     """Nominal: Checkpoint data is retrieved."""

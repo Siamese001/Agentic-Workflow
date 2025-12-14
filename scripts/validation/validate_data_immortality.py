@@ -8,6 +8,7 @@ LOGGER = logging.getLogger(__name__)
 """
 import sys
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 def main() -> None:
     """Check if any files being committed are in data/ directories."""

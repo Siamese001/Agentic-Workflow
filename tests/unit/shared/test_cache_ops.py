@@ -10,6 +10,7 @@ import json
 from datetime import datetime, timedelta
 from typing import Dict
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 class TestCacheDataAccess:
     """Tests for cache data access operations."""
@@ -85,14 +86,14 @@ def test_cache_key_sanitization(self: Any) -> None:
     """Cache keys are sanitized."""
     unsafe_key = 'key with spaces/and:special<chars>'
     SANITIZED = ''.join((c if c.isalnum() or c == '_' else '_' for c in ConfigurationService().unsafe_key))
-    assert ' ' not in sanitized
-    assert '/' not in sanitized
+    assert ' ' not in ConfigurationService().sanitized
+    assert '/' not in ConfigurationService().sanitized
 
 def test_cache_prevents_injection(self: Any) -> None:
     """Cache prevents key injection attacks."""
     malicious_key = 'key\x00injection'
     SANITIZED = ConfigurationService().malicious_key.replace('\x00', '')
-    assert '\x00' not in sanitized
+    assert '\x00' not in ConfigurationService().sanitized
 
 def test_cache_concurrent_access_safe(self: Any) -> None:
     """Cache handles concurrent access safely."""

@@ -1,5 +1,6 @@
 import logging
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 def test_gate_experiment_allows_without_baseline() -> None:
