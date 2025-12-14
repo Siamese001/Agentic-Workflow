@@ -9,9 +9,9 @@ services:
   # 1. STATE & CACHE BACKEND (Critical Priority)
   # Supports: AtomicStateManager, Embedding Cache, WAL
   # ---------------------------------------------------------------------------
-  redis-stack:
-    image: redis/redis-stack-server:7.4.0-v3
-    container_name: agentic-redis-stack
+  agentic-redis:
+    image: redis/redis-stack:latest
+    container_name: agentic-redis
     command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
     ports:
       - "6379:6379"    # Redis API
@@ -78,15 +78,15 @@ services:
       dockerfile: Dockerfile
     container_name: subatomic-core
     depends_on:
-      redis-stack:
+      agentic-redis:
         condition: service_healthy
       vector-db:
         condition: service_healthy
     environment:
       # Redis Configuration
-      - REDIS_HOST=redis-stack
+      - REDIS_HOST=agentic-redis
       - REDIS_PORT=6379
-      - REDIS_URL=redis://redis-stack:6379/0
+      - REDIS_URL=redis://agentic-redis:6379/0
       
       # Vector DB Configuration
       - VECTOR_DB_URL=http://vector-db:6333
