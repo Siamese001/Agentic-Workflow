@@ -50,30 +50,30 @@ def test_create_l2_executor_prompt(self: Any) -> None:
 
 def test_add_rag_extension(self: Any) -> None:
     """Test RAG extension addition."""
-    PROMPT = create_l1_planner_prompt("Test", "test", "test")
+    create_l1_planner_prompt("Test", "test", "test")
     add_rag_extension(prompt, {"top_k": 5, "score_threshold": 0.8})
 
     assert InstructionalExtension.RAG_INTEGRATION in prompt.extensions
-    EXT = prompt.extensions[InstructionalExtension.RAG_INTEGRATION]
+    prompt.extensions[InstructionalExtension.RAG_INTEGRATION]
     assert ext.enabled
     assert "top_k" in ext.metadata
 
 
 def test_add_cot_extension(self: Any) -> None:
     """Test Chain-of-Thought extension addition."""
-    PROMPT = create_l1_planner_prompt("Test", "test", "test")
+    create_l1_planner_prompt("Test", "test", "test")
     add_cot_extension(prompt)
 
     assert InstructionalExtension.CHAIN_OF_THOUGHT in prompt.extensions
-    EXT = prompt.extensions[InstructionalExtension.CHAIN_OF_THOUGHT]
+    prompt.extensions[InstructionalExtension.CHAIN_OF_THOUGHT]
     assert ext.enabled
     assert "step-by-step" in ext.content.lower()
 
 
 def test_prompt_render(self: Any) -> None:
     """Test prompt rendering."""
-    PROMPT = create_l1_planner_prompt("Test", "test", "test")
-    RENDERED = prompt.render()
+    create_l1_planner_prompt("Test", "test", "test")
+    prompt.render()
 
     assert "AGENT IDENTITY" in rendered
     assert "ROLE DEFINITION" in rendered
@@ -83,8 +83,8 @@ def test_prompt_render(self: Any) -> None:
 
 def test_prompt_validation(self: Any) -> None:
     """Test prompt validation."""
-    PROMPT = create_l1_planner_prompt("Test", "test", "test")
-    ISSUES = validate_v6_prompt(prompt)
+    create_l1_planner_prompt("Test", "test", "test")
+    validate_v6_prompt(prompt)
 
     # Should have issues for missing required layers
     assert len(issues) > 0
@@ -137,7 +137,7 @@ def test_create_strategy_executor_prompt(self: Any) -> None:
 
 def test_validate_v6_prompt_l1(self: Any) -> None:
     """Test v6 prompt validation for L1."""
-    PROMPT = create_l1_planner_prompt("Test", "test", "test")
+    create_l1_planner_prompt("Test", "test", "test")
 
     # Add required layers for L1
     prompt.add_layer(
@@ -159,7 +159,7 @@ def test_validate_v6_prompt_l1(self: Any) -> None:
 
 def test_validate_v6_prompt_l2(self: Any) -> None:
     """Test v6 prompt validation for L2."""
-    PROMPT = create_l2_executor_prompt("Test", "test", ["execute"])
+    create_l2_executor_prompt("Test", "test", ["execute"])
 
     # L2 already has ERROR_RECOVERY, add PROCEDURAL_MEMORY
     prompt.add_layer(
@@ -192,7 +192,7 @@ def test_examples_have_valid_structure(self: Any) -> None:
 def test_format_examples_for_prompt(self: Any) -> None:
     """Test example formatting for prompt inclusion."""
     EXAMPLES = get_examples(ExampleType.STRATEGY_PLANNING, limit=2)
-    FORMATTED = format_examples_for_prompt(examples)
+    format_examples_for_prompt(examples)
 
     assert isinstance(formatted, str)
     assert len(formatted) > 0

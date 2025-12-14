@@ -55,7 +55,7 @@ def test_aggregate_summarize(self: Any) -> None:
         {"content": "User asked about news"},
         {"content": "User asked about sports"},
     ]
-    SUMMARY = f"User made {len(memories)} queries about various topics"
+    f"User made {len(memories)} queries about various topics"
     assert "3 queries" in summary
 
 

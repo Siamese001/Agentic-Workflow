@@ -48,7 +48,7 @@ def get_metrics(self: Any, name: Optional[str]) -> List[Metric]:
 
 def get_latest(self: Any, name: str) -> Optional[Metric]:
     """Get latest metric value."""
-    METRICS = self.metrics.get(name, [])
+    self.metrics.get(name, [])
     return metrics[-1] if metrics else None
 
 

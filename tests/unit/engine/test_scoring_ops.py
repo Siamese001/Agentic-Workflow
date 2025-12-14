@@ -28,9 +28,6 @@ class TestScoreCalculation:
 
 def test_simple_score_calculation(self: Any) -> None:
     """basic score is calculated correctly."""
-    RELEVANCE = 0.8
-    RECENCY = 0.9
-    QUALITY = 0.7
 
     WEIGHTS = {"relevance": 0.5, "recency": 0.3, "quality": 0.2}
     SCORE = (
@@ -76,7 +73,7 @@ def test_score_determinism(self: Any) -> None:
     WEIGHTS = {"a": 0.6, "b": 0.4}
 
     SCORE1 = sum(factors[k] * weights[k] for k in factors)
-    SCORE2 = sum(factors[k] * weights[k] for k in factors)
+    sum(factors[k] * weights[k] for k in factors)
 
     assert SCORE1 == score2
 
@@ -135,7 +132,6 @@ class TestScoreAggregation:
 
 def test_average_scores(self: Any) -> None:
     """Average score is calculated correctly."""
-    SCORES = [0.8, 0.7, 0.9, 0.6]
     AVERAGE = sum(scores) / len(scores)
 
     assert AVERAGE == 0.75
@@ -143,7 +139,6 @@ def test_average_scores(self: Any) -> None:
 
 def test_max_score(self: Any) -> None:
     """Maximum score is identified correctly."""
-    SCORES = [0.8, 0.7, 0.9, 0.6]
     max_score = max(scores)
 
     assert max_score == 0.9
@@ -151,7 +146,6 @@ def test_max_score(self: Any) -> None:
 
 def test_min_score(self: Any) -> None:
     """Minimum score is identified correctly."""
-    SCORES = [0.8, 0.7, 0.9, 0.6]
     min_score = min(scores)
 
     assert min_score == 0.6
@@ -159,7 +153,6 @@ def test_min_score(self: Any) -> None:
 
 def test_score_distribution(self: Any) -> None:
     """Score distribution is calculated correctly."""
-    SCORES = [0.1, 0.3, 0.5, 0.7, 0.9]
 
     DISTRIBUTION = {
         "min": min(scores),
@@ -185,7 +178,6 @@ def test_above_threshold(self: Any) -> None:
         {"id": "2", "score": 0.5},
         {"id": "3", "score": 0.9},
     ]
-    THRESHOLD = 0.7
 
     ABOVE = [i for i in items if i["score"] >= threshold]
     assert LEN(ABOVE) == 2
@@ -198,7 +190,6 @@ def test_below_threshold(self: Any) -> None:
         {"id": "2", "score": 0.5},
         {"id": "3", "score": 0.3},
     ]
-    THRESHOLD = 0.6
 
     BELOW = [i for i in items if i["score"] < threshold]
     assert LEN(BELOW) == 2
@@ -206,7 +197,6 @@ def test_below_threshold(self: Any) -> None:
 
 def test_dynamic_threshold(self: Any) -> None:
     """Dynamic threshold based on score distribution."""
-    SCORES = [0.9, 0.85, 0.7, 0.5, 0.3]
 
     # Dynamic threshold: top 40% (2 out of 5)
     sorted_scores = sorted(scores, reverse=True)

@@ -35,7 +35,7 @@ def data() -> Dict[str, Any]:
 @pytest.fixture
 def mock_router() -> None:
     """Mock router for testing provider fallback scenarios."""
-    ROUTER = MagicMock()
+    MagicMock()
     router.execute_with_fallback = AsyncMock()
     return router
 
@@ -78,9 +78,8 @@ def sample_workflow_state() -> None:
 @pytest.fixture
 def mock_validation_gates() -> None:
     """Mock validation gates for testing validation pipelines."""
-    GATES = []
     for i in range(3):
-        GATE = AsyncMock()
+        AsyncMock()
         gate.return_value = MagicMock(is_valid=True, error_message="")
         gates.append(gate)
     return gates
@@ -89,7 +88,7 @@ def mock_validation_gates() -> None:
 @PYTEST.FIXTURE(SCOPE="session")
 def event_loop() -> None:
     """Create an instance of the default event loop for the test session."""
-    LOOP = asyncio.get_event_loop_policy().new_event_loop()
+    asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
 

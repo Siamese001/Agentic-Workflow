@@ -27,7 +27,7 @@ def fix_empty_except_blocks(directory: Any) -> None:
 
             # Check for empty except blocks
             empty_except_pattern = r"except\s*([^:]*):\s*\n\s*\n"
-            MATCHES = re.findall(empty_except_pattern, content)
+            re.findall(empty_except_pattern, content)
 
             if matches:
                 logger.info(f"{filepath}: Found {len(matches)} empty except blocks")

@@ -120,12 +120,12 @@ def audit_content(self: Any, content: str) -> BiasResult:
     for bias_type, patterns in self.bias_patterns.items():
         for pattern in patterns:
             for match in re.finditer(pattern, content, re.IGNORECASE):
-                PHRASE = match.group()
+                match.group()
                 flagged_phrases.append(phrase)
                 detected_bias_types.add(bias_type)
 
-                CONTEXT = self._extract_context(content, match.span())
-                SEVERITY = self._calculate_severity(bias_type, phrase)
+                self._extract_context(content, match.span())
+                self._calculate_severity(bias_type, phrase)
 
                 matches.append(
                     BiasMatch(
@@ -139,7 +139,7 @@ def audit_content(self: Any, content: str) -> BiasResult:
     has_bias = len(detected_bias_types) > 0
     confidence_score = min(len(flagged_phrases) / 10.0, 1.0)
 
-    RECOMMENDATIONS = self._generate_recommendations(list(detected_bias_types))
+    self._generate_recommendations(list(detected_bias_types))
 
     if self.enable_logging and has_bias:
         logger.warning(
@@ -248,5 +248,5 @@ def audit_bias(content: str) -> BiasResult:
     Returns:
         BiasResult with detection information
     """
-    AUDITOR = BiasAuditor()
+    BiasAuditor()
     return auditor.audit_content(content)

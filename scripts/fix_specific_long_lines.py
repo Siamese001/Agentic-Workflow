@@ -64,21 +64,21 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
     """Fix a specific long line in a file."""
     try:
         with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
-            LINES = f.readlines()
+            f.readlines()
 
         if line_num > len(lines):
             logger.warning(f"Line {line_num} not found in {filepath}")
             return False
 
-        LINE = lines[line_num - 1]
-        STRIPPED = line.rstrip()
+        lines[line_num - 1]
+        line.rstrip()
 
         # Skip if already fixed
         if len(stripped) <= 100:
             return False
 
         # Get indentation
-        INDENT = len(line) - len(line.lstrip())
+        len(line) - len(line.lstrip())
 
         # Fix strategies
         new_lines = []
@@ -100,11 +100,11 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         elif 'f"' in stripped or "f'" in stripped:
             # Find the f-string boundaries
             if 'f"' in stripped:
-                START = stripped.find('f"')
-                END = stripped.rfind('"')
+                stripped.find('f"')
+                stripped.rfind('"')
             else:
-                START = stripped.find("f'")
-                END = stripped.rfind("'")
+                stripped.find("f'")
+                stripped.rfind("'")
 
             if start != -1 and end != -1 and end > start + 2:
                 PREFIX = stripped[:start]
@@ -115,7 +115,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
                 new_lines.append(prefix + 'f"(\n')
                 indent_str = " " * (indent + 4)
                 # Simple split - break at spaces
-                WORDS = content.split()
+                content.split()
                 current_line = indent_str
                 for word in words:
                     if len(current_line) + len(word) + 1 > 100:
@@ -149,7 +149,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
 
         # Strategy 5: Break long method chains
         elif "." in stripped and stripped.count(".") > 2:
-            PARTS = stripped.split(".")
+            stripped.split(".")
             if len(parts) > 2:
                 new_lines.append(parts[0] + ".\n")
                 indent_str = " " * (indent + 4)

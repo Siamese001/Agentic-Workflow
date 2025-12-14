@@ -31,7 +31,6 @@ class TestUnderstandRequest:
 
 def test_parse_query_intent(self: Any) -> None:
     """Query intent is parsed correctly."""
-    TEXT = "What is the revenue for Q4 2024?"
 
     # Simulated parsing
     INTENT = ParsedIntent(
@@ -46,7 +45,6 @@ def test_parse_query_intent(self: Any) -> None:
 
 def test_parse_command_intent(self: Any) -> None:
     """Command intent is parsed correctly."""
-    TEXT = "Generate a report for the sales team"
 
     INTENT = ParsedIntent(
         intent_type=IntentType.COMMAND,
@@ -87,7 +85,6 @@ def test_handle_ambiguous_request(self: Any) -> None:
 
 def test_preserve_original_text(self: Any) -> None:
     """Original text is preserved in parsed result."""
-    TEXT = "What is the weather today?"
 
     INTENT = ParsedIntent(
         intent_type=IntentType.QUERY,
@@ -110,7 +107,7 @@ def test_formulate_search_query(self: Any) -> None:
         original_text="What is the revenue for 2024?",
     )
 
-    QUERY = f"{intent.entities['topic']} {intent.entities['period']}"
+    f"{intent.entities['topic']} {intent.entities['period']}"
     assert "revenue" in query
     assert "2024" in query
 
@@ -158,9 +155,8 @@ def test_incorporate_conversation_history(self: Any) -> None:
 def test_resolve_pronouns(self: Any) -> None:
     """Pronouns are resolved from context."""
     CONTEXT = {"last_mentioned_company": "TechCorp"}
-    QUERY = "What is their stock price?"
 
-    RESOLVED = query.replace("their", context["last_mentioned_company"] + "'s")
+    query.replace("their", context["last_mentioned_company"] + "'s")
     assert "TechCorp" in resolved
 
 

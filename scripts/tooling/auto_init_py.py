@@ -40,7 +40,7 @@ def create_init_files(paths: List[str]) -> int:
     created_count = 0
 
     for path_str in paths:
-        PATH = pathlib.Path(path_str)
+        pathlib.Path(path_str)
         PARENT = path.parent
 
         # Create parent directory if needed

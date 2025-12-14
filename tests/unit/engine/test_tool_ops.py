@@ -65,14 +65,14 @@ def test_get_registered_tool(self: Any) -> None:
         ),
     }
 
-    TOOL = tools.get("search")
+    tools.get("search")
     assert tool is not None
 
 
 def test_unregistered_tool_returns_none(self: Any) -> None:
     """Unregistered tool returns None."""
     tools: Dict[str, ToolDefinition] = {}
-    TOOL = tools.get("nonexistent")
+    tools.get("nonexistent")
     assert tool is None
 
 
@@ -99,7 +99,7 @@ def test_execute_tool_success(self: Any) -> None:
         """Docstring."""
         return {"results": [f"Result for: {query}"]}
 
-    RESULT = mock_search("test query")
+    mock_search("test query")
 
     tool_result = ToolExecutionResult(
         SUCCESS=True,
@@ -147,12 +147,11 @@ def test_execute_with_retry(self: Any) -> None:
     """Tool execution retries on failure."""
     max_retries = 3
     ATTEMPTS = 0
-    SUCCESS = False
 
     while attempts < max_retries and not success:
         ATTEMPTS += 1
         if attempts == 2:  # Succeeds on second attempt
-            SUCCESS = True
+            pass
 
     assert success is True
     assert ATTEMPTS == 2
@@ -173,7 +172,7 @@ def test_validate_required_params(self: Any) -> None:
 
     PARAMS = {"limit": 10}  # Missing required 'query'
 
-    MISSING = [p for p in tool.required_params if p not in params]
+    [p for p in tool.required_params if p not in params]
     assert "query" in missing
 
 
@@ -197,7 +196,7 @@ def test_validate_param_values(self: Any) -> None:
 
     VIOLATIONS = []
     for param, bounds in constraints.items():
-        VALUE = params.get(param)
+        params.get(param)
         if value is not None:
             if value < bounds["min"] or value > bounds["max"]:
                 violations.append(f"{param} out of range")

@@ -83,7 +83,7 @@ def test_timeout_check(self: Any) -> None:
         METADATA={},
     )
 
-    ELAPSED = (datetime.now() - ctx.start_time).total_seconds()
+    (datetime.now() - ctx.start_time).total_seconds()
     is_timed_out = elapsed > ctx.timeout_seconds
     assert is_timed_out is False
 

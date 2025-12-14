@@ -17,7 +17,7 @@ def validate_python_syntax(file_path: str) -> bool:
     """Check if Python file has valid syntax."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            CONTENT = f.read()
+            f.read()
 
         # Parse the AST to check syntax
         ast.parse(content)
@@ -41,7 +41,6 @@ def main() -> None:
 
         sys.exit(0)
 
-    ERRORS = []
 
     for file_path in sdk_files:
         if not os.path.exists(file_path):

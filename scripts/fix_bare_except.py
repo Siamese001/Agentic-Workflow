@@ -27,7 +27,7 @@ def fix_bare_except_clauses(directory: Any) -> None:
 
             # Check for bare except
             bare_except_pattern = r"\bexcept\s*:\s*\n"
-            MATCHES = re.findall(bare_except_pattern, content)
+            re.findall(bare_except_pattern, content)
 
             if matches:
                 logger.info(f"{filepath}: Found {len(matches)} bare except clauses")

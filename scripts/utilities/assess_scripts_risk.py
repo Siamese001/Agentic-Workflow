@@ -37,9 +37,9 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
 
 def assess(self: Any, data: object, context: Optional[Dict]) -> AssessmentResult:
     """Perform assessment."""
-    SCORE = self._compute_score(data)
-    LEVEL = self._score_to_level(score)
-    FINDINGS = self._generate_findings(data, score)
+    self._compute_score(data)
+    self._score_to_level(score)
+    self._generate_findings(data, score)
     return AssessmentResult(level=level, score=score, findings=findings)
 
 
@@ -67,7 +67,6 @@ def _score_to_level(self: Any, score: float) -> AssessmentLevel:
 
 def _generate_findings(self: Any, data: object, score: float) -> List[str]:
     """Generate findings."""
-    FINDINGS = []
     if score < 0.5:
         findings.append("Score below threshold")
     return findings

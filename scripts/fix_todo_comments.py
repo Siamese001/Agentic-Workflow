@@ -19,7 +19,7 @@ def fix_todo_comments(directory: Any) -> None:
                 CONTENT = f.read()
 
             # Count TODO/FIXME comments
-            MATCHES = todo_pattern.findall(content)
+            todo_pattern.findall(content)
             if matches:
                 logger.info(f"{filepath}: Found {len(matches)} TODO/FIXME comments")
 

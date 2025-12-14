@@ -83,7 +83,7 @@ def search_vector_store(
     if self.vector_store is None:
         return []
 
-    COLLECTION = create_chroma_collection(self.vector_store, collection_name)
+    create_chroma_collection(self.vector_store, collection_name)
     RESULTS = search_vectors_chroma(
         collection,
         query_embeddings=[query_embedding],
@@ -301,7 +301,6 @@ def execute(self: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
         # Simple sequential execution for now
         # Add dependency resolution and parallel execution
         current_inputs = inputs
-        OUTPUTS = {}
 
         for hop in self.hops:
             hop_outputs = execute_hop_with_agent(

@@ -83,16 +83,16 @@ async def run_debugging_cycle(self: Any, context: Dict[str, Any]) -> Dict[str, A
         # Step 1: Find errors to debug
         if "trace_id" in context:
             # Debug specific trace
-            ERRORS = await self._debug_specific_trace(context["trace_id"])
+            await self._debug_specific_trace(context["trace_id"])
         else:
             # Find recent errors
-            ERRORS = await self._find_recent_errors()
+            await self._find_recent_errors()
 
         results["errors_found"] = errors
 
         # Step 2: Analyze each error
         for error in errors[:3]:  # Limit to top 3 errors
-            ANALYSIS = await self._analyze_error(error)
+            await self._analyze_error(error)
             results["analyses"].append(analysis)
 
             # Step 3: Propose fix
@@ -102,12 +102,12 @@ async def run_debugging_cycle(self: Any, context: Dict[str, Any]) -> Dict[str, A
                     results["circuit_breaker_triggered"] = True
                     continue
 
-                FIX = await self._propose_fix(analysis)
+                await self._propose_fix(analysis)
                 results["fixes_proposed"].append(fix)
 
                 # Step 4: Implement fix if possible
                 if fix.get("auto_applicable", False):
-                    IMPLEMENTED = await self._implement_fix(fix)
+                    await self._implement_fix(fix)
                     results["fixes_implemented"].append(implemented)
 
         # Step 5: Generate summary
@@ -350,7 +350,7 @@ async def _implement_fix(self: Any, fix: Dict) -> Dict:
 
     # Step 5: Verify the fix worked
     if implementation["success"]:
-        VERIFICATION = await self._verify_fix(fix["trace_id"], fix)
+        await self._verify_fix(fix["trace_id"], fix)
         IMPLEMENTATION["VERIFICATION"] = verification
         implementation["final_success"] = verification.get("error_resolved", False)
 

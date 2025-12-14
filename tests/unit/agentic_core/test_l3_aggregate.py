@@ -56,6 +56,5 @@ def test_aggregate_metrics(self: Any) -> None:
 
 def test_aggregate_final_output(self: Any) -> None:
     """Nominal: Final output is constructed."""
-    INTERMEDIATE = ["part_1", "part_2", "part_3"]
     final_output = " ".join(intermediate)
     assert "part_1" in final_output

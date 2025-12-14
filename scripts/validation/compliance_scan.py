@@ -38,7 +38,7 @@ SKIP_DOMAINS = {"data", "tests"}
 def extract_yaml_files(obj: object, prefix: str = "", files: set = None) -> set:
     """Extract all file paths from YAML structure."""
     if files is None:
-        FILES = set()
+        pass
     if isinstance(obj, dict):
         for key, value in obj.items():
             if key.startswith("__"):
@@ -53,7 +53,6 @@ def extract_yaml_files(obj: object, prefix: str = "", files: set = None) -> set:
 
 def get_actual_files(folder_path: str) -> set:
     """Get all Python files in folder, excluding noise."""
-    ACTUAL = set()
     if not folder_path.exists():
         return actual
     for f in folder_path.rglob("*.py"):
@@ -79,7 +78,7 @@ def get_actual_files(folder_path: str) -> set:
 def main() -> None:
     """Main entry point for compliance scan."""
     with open(REPO / "unified_structure_subatomic.yaml", "r", encoding="utf-8") as f:
-        SPEC = yaml.safe_load(f)
+        yaml.safe_load(f)
 
     total_yaml = 0
     total_missing = 0
@@ -93,8 +92,8 @@ def main() -> None:
         folder_path = REPO / folder
         actual_files = get_actual_files(folder_path)
 
-        MISSING = yaml_files - actual_files
-        EXTRA = actual_files - yaml_files
+        yaml_files - actual_files
+        actual_files - yaml_files
 
         total_yaml += len(yaml_files)
         len(actual_files)

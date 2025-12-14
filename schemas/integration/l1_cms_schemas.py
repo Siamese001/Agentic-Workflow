@@ -48,8 +48,6 @@ def __post_init__(self: Any) -> None:
 
 def validate_prompt(prompt: str, schema: PromptSchema) -> ValidationResult:
     """Validate a prompt against a schema."""
-    ERRORS = []
-    WARNINGS = []
 
     # Basic validation logic
     if not prompt:

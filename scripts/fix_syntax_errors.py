@@ -14,7 +14,7 @@ def fix_docstring_in_signature(content: str) -> str:
     i = 0
 
     while i < len(lines):
-        LINE = lines[i]
+        lines[i]
 
         # Check if we have a docstring after opening parenthesis
         if "def " in line and "(" in line and ")" not in line:
@@ -24,15 +24,13 @@ def fix_docstring_in_signature(content: str) -> str:
                 if lines[j].strip().startswith('"""') or lines[j].strip().startswith("'''"):
                     # Found misplaced docstring
                     # Move it before the function definition
-                    DOCSTRING = lines[j]
+                    lines[j]
                     del lines[j]
                     fixed_lines.append(docstring)
                     break
-                J += 1
             fixed_lines.append(line)
         else:
             fixed_lines.append(line)
-        I += 1
 
     return "\n".join(fixed_lines)
 
@@ -121,7 +119,7 @@ def has_syntax_errors(file_path: Path) -> bool:
     """Check if a Python file has syntax errors."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            CONTENT = f.read()
+            f.read()
         ast.parse(content)
         return False
     except (SyntaxError, IndentationError):
@@ -134,25 +132,23 @@ def fix_file(file_path: Path) -> bool:
         with open(file_path, "r", encoding="utf-8") as f:
             original_content = f.read()
 
-        CONTENT = original_content
-        CHANGED = False
 
         # Apply fixes
-        CONTENT = fix_docstring_in_signature(content)
+        fix_docstring_in_signature(content)
         if content != original_content:
-            CHANGED = True
+            pass
 
         content, dataclass_added = fix_missing_dataclass_import(content)
         if dataclass_added:
-            CHANGED = True
+            pass
 
         content, enum_added = fix_missing_enum_import(content)
         if enum_added:
-            CHANGED = True
+            pass
 
-        CONTENT = fix_indentation_errors(content)
+        fix_indentation_errors(content)
         if content != original_content:
-            CHANGED = True
+            pass
 
         # Write back if changed
         if changed:

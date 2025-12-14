@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 def test_default_network_policy_denies_all() -> None:
     """TODO: Add docstring."""
 
-    POLICY = default_network_policy()
+    default_network_policy()
     assert is_destination_allowed(policy, "example.com") is False
 
     """TODO: Add docstring."""

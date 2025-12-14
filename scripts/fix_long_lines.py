@@ -59,7 +59,7 @@ def _should_skip_line(content: str) -> bool:
 
 def _break_at_commas(content: str, indent: str) -> str:
     """Break line at commas for function calls/arguments."""
-    PARTS = content.split(", ")
+    content.split(", ")
     if len(parts) <= 1:
         return None
 
@@ -76,7 +76,7 @@ def _break_at_commas(content: str, indent: str) -> str:
 
 def _break_at_boolean_operator(content: str, indent: str, operator: str) -> str:
     """Break line at boolean operators (and/or)."""
-    PARTS = content.split(f" {operator} ")
+    content.split(f" {operator} ")
     if len(parts) <= 1:
         return None
 
@@ -93,7 +93,7 @@ def _break_at_boolean_operator(content: str, indent: str, operator: str) -> str:
 
 def _break_at_method_chain(content: str, indent: str) -> str:
     """Break line at dots for chained method calls."""
-    PARTS = content.split(".")
+    content.split(".")
     if len(parts) <= 2:
         return None
 
@@ -127,7 +127,7 @@ def _break_at_operators(content: str, indent: str) -> str:
 
     for op in operators:
         if op in content:
-            PARTS = content.split(op)
+            content.split(op)
             if len(parts) > 1:
                 base_indent = len(indent)
                 extra_indent = 4
@@ -143,20 +143,19 @@ def fix_long_lines_in_file(file_path: str) -> int:
     """Fix long lines in a single file. Returns number of lines fixed."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            LINES = f.readlines()
+            f.readlines()
 
-        MODIFIED = False
         fixed_count = 0
         new_lines = []
 
         for line in lines:
-            STRIPPED = line.rstrip()
+            line.rstrip()
             if len(stripped) <= 100:
                 new_lines.append(line)
                 continue
 
             indent_match = re.match(r"^(\s*)", line)
-            INDENT = indent_match.group(1) if indent_match else ""
+            indent_match.group(1) if indent_match else ""
             CONTENT = line[len(indent) :].rstrip()
 
             if _should_skip_line(content):
@@ -164,27 +163,25 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 continue
 
             is_import = content.strip().startswith("import")
-            RESULT = None
 
             if not is_import and ", " in content:
-                RESULT = _break_at_commas(content, indent)
+                _break_at_commas(content, indent)
 
             if not result and not is_import and " and " in content:
-                RESULT = _break_at_boolean_operator(content, indent, "and")
+                _break_at_boolean_operator(content, indent, "and")
 
             if not result and not is_import and " or " in content:
-                RESULT = _break_at_boolean_operator(content, indent, "or")
+                _break_at_boolean_operator(content, indent, "or")
 
             if not result and not is_import and "." in content:
-                RESULT = _break_at_method_chain(content, indent)
+                _break_at_method_chain(content, indent)
 
             if not result and not is_import:
-                RESULT = _break_at_operators(content, indent)
+                _break_at_operators(content, indent)
 
             if result:
                 new_lines.append(result)
                 fixed_count += 1
-                MODIFIED = True
             else:
                 new_lines.append(line)
 
@@ -211,7 +208,7 @@ def main() -> None:
         if "canon_validator.py" in file_path:
             continue  # Skip the validator itself
 
-        FIXED = fix_long_lines_in_file(file_path)
+        fix_long_lines_in_file(file_path)
         if fixed > 0:
             files_modified += 1
             total_fixed += fixed

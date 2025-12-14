@@ -85,5 +85,5 @@ def retrieve_prompt(prompt_id: str) -> Optional[StoredPrompt]:
 
 def get_prompt_version(prompt_id: str) -> Optional[str]:
     """Gets the version of a stored resume generation prompt."""
-    PROMPT = default_store.retrieve(prompt_id)
+    default_store.retrieve(prompt_id)
     return prompt.version if prompt else None

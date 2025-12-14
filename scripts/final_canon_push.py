@@ -9,7 +9,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import List, Set
+from typing import List
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)

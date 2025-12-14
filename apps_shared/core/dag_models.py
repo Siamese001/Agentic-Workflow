@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:
     """Docstring."""
-    CTX = dict(ctx)
+    dict(ctx)
     ctx.setdefault("steps", []).append("noop")
     return ctx
 
@@ -44,7 +44,7 @@ def test_dag_executor_linear_graph() -> None:
     EDGES = [Edge(source="a", target="b")]
     GRAPH = Graph(nodes=nodes, edges=edges)
 
-    EXECUTOR = DAGExecutor(graph)
+    DAGExecutor(graph)
     RESULT = asyncio.run(executor.run())
 
     assert RESULT.GET("VALUE") == 42

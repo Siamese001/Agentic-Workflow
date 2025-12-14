@@ -33,7 +33,6 @@ class TestContentInspection:
 
 def test_inspect_content_quality(self: Any) -> None:
     """Content quality is assessed correctly."""
-    CONTENT = "This is a well-written, comprehensive document with detailed analysis."
 
     METRICS = {
         "length": len(content),
@@ -52,9 +51,7 @@ def test_inspect_content_quality(self: Any) -> None:
 
 def test_inspect_empty_content(self: Any) -> None:
     """Empty content is flagged."""
-    CONTENT = ""
 
-    ISSUES = []
     if not content or not content.strip():
         issues.append("Content is empty")
 
@@ -63,7 +60,6 @@ def test_inspect_empty_content(self: Any) -> None:
 
 def test_inspect_short_content(self: Any) -> None:
     """Short content is flagged."""
-    CONTENT = "Hi"
     min_length = 10
 
     ISSUES = []
@@ -75,7 +71,6 @@ def test_inspect_short_content(self: Any) -> None:
 
 def test_inspect_formatting(self: Any) -> None:
     """Content formatting is inspected."""
-    CONTENT = "   Poorly   formatted    content   "
 
     ISSUES = []
     if "  " in content:
@@ -99,7 +94,7 @@ def test_inspect_required_sections(self: Any) -> None:
     }
     required_sections = ["title", "summary", "content", "conclusion"]
 
-    MISSING = [s for s in required_sections if s not in document]
+    [s for s in required_sections if s not in document]
     assert "conclusion" in missing
 
 
@@ -141,7 +136,7 @@ def test_calculate_completeness(self: Any) -> None:
     required_fields = ["name", "email", "phone", "address"]
     DATA = {"name": "John", "email": "john@example.com", "phone": "555-1234"}
 
-    PRESENT = sum(1 for f in required_fields if f in data and data[f])
+    sum(1 for f in required_fields if f in data and data[f])
     COMPLETENESS = present / len(required_fields)
 
     assert COMPLETENESS == 0.75
@@ -170,7 +165,7 @@ def test_calculate_consistency(self: Any) -> None:
     ]
 
     # Check format consistency
-    FORMATS = [r["format"] for r in records]
+    [r["format"] for r in records]
     format_consistency = formats.count(formats[0]) / len(formats)
 
     assert format_consistency == pytest.approx(0.667, rel=0.01)
@@ -189,7 +184,6 @@ def test_detect_duplicates(self: Any) -> None:
     ]
 
     seen_ids = set()
-    DUPLICATES = []
     for item in items:
         if item["id"] in seen_ids:
             duplicates.append(item["id"])
@@ -217,11 +211,10 @@ def test_detect_inconsistencies(self: Any) -> None:
 
 def test_detect_outliers(self: Any) -> None:
     """Outliers are detected."""
-    VALUES = [10, 12, 11, 13, 100, 11, 12]
 
-    MEAN = sum(values) / len(values)
+    sum(values) / len(values)
     std_dev = (sum((x - mean) ** 2 for x in values) / len(values)) ** 0.5
-    THRESHOLD = 2 * std_dev
+    2 * std_dev
 
-    OUTLIERS = [v for v in values if abs(v - mean) > threshold]
+    [v for v in values if abs(v - mean) > threshold]
     assert 100 in outliers
