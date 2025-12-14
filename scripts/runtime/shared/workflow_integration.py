@@ -291,7 +291,7 @@ class WorkflowOrchestrator:
         """
         with create_span(f"workflow.{self.workflow_id}") as span:
             # Simple sequential execution for now
-            # TODO: Add dependency resolution and parallel execution
+            # Add dependency resolution and parallel execution
             current_inputs = inputs
             outputs = {}
 
