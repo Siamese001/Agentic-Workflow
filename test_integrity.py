@@ -57,10 +57,17 @@ def run_integrity_test():
     # Create CanonEntry with proper structure
     from schemas_connectivity import CanonMetadata, generate_ast_structure
     
+    # Create a valid Python code snippet for AST parsing
+    test_code = f"""
+def test_function():
+    '''{test_content}'''
+    return True
+"""
+    
     entry = CanonEntry(
-        id=test_id,
-        code_snippet=test_content,
-        ast_structure=generate_ast_structure(test_content),
+        id=uuid.uuid4(),  # Generate a proper UUID
+        code_snippet=test_code,
+        ast_structure=generate_ast_structure(test_code),
         embedding=embedding,
         metadata=CanonMetadata(
             failure_count=0,
