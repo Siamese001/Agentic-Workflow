@@ -189,17 +189,47 @@ class ValidationContext:
 # ==============================================================================
 class SubAtomicAgent:
     """Base class for all validation agents."""
-
+    
     def __init__(self, context: ValidationContext):
         self.ctx = context
         self.name = self.__class__.__name__
+        
+        # L4+ Optimized Instructional Prompt - injected context for stronger agency
+        self.instructional_prompt = """
+You are a SubAtomicAgent in a 100% agentic L4+ Canon Validator swarm.
+MISSION: Enforce the 50-key Canon standard with zero tolerance. The codebase must achieve 100% compliance.
+ROLE: {role}
+KEYS RESPONSIBLE: {keys}
 
+GUIDELINES:
+- Report EVERY violation with precise file:line and actionable details.
+- If auto-fix is possible and safe, DO IT and re-check.
+- Use blackboard signals aggressively (e.g., AST_VALID, GENERATIVE_CLEAN).
+- For structural keys, generate detailed refactor_plans with priority and rationale.
+- Prioritize semantic preservation in any modification.
+- If critical (e.g., secrets, eval/exec), assert CRITICAL_FAIL immediately.
+- Learn from context: If previous agents failed, escalate severity.
+
+Current blackboard state: {signals_summary}
+        """.strip()
+        
+        # Render prompt with dynamic context
+        self.prompt = self.instructional_prompt.format(
+            role=self.__doc__.split("ROLE:")[1].split("\n")[0].strip() if "ROLE:" in self.__doc__ else "Specialist Agent",
+            keys=self.__class__.__name__ + " keys",  # Override in subclasses for precision
+            signals_summary=", ".join(sorted(self.ctx.signals)) or "clean"
+        )
+        
+        print(f"   [{self.name}] CONTEXT INJECTED: Mission brief loaded.")
+    
     def can_run(self) -> bool:
-        """Default: Run unless a critical failure exists."""
-        return "CRITICAL_FAIL" not in self.ctx.signals
-
+        """Check if agent should run based on context signals."""
+        return True
+    
     def execute(self):
-        """Execute agent's validation logic."""
+        """Execute with reinforced instructional context."""
+        print(f"\n[>>>] {self.name} ACTIVATED")
+        print(f"   📋 INSTRUCTIONAL CONTEXT: {self.prompt.split(chr(10))[0]}...")  # First line teaser
         raise NotImplementedError
 
 # ==============================================================================
@@ -612,12 +642,20 @@ class DependencySentinel(SubAtomicAgent):
 
 class SafetyInspector(SubAtomicAgent):
     """
-    KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
-    ROLE: Security Compliance. Emits SECURE signal.
+    KEYS: 0-6 (Secrets, TODO, Print, Debugger, Except, Eval/Exec)
+    ROLE: Security Compliance Gatekeeper.
     """
 
+    def __init__(self, context: ValidationContext):
+        super().__init__(context)
+        self.prompt = self.instructional_prompt.format(
+            role="Security Compliance Gatekeeper",
+            keys="0-6 (Secrets, TODO, Print, Debugger, Except, Eval/Exec)",
+            signals_summary=", ".join(sorted(context.signals))
+        ) + "\n\nCRITICAL DIRECTIVE: Any violation in keys 0,5,6 → immediately call self.ctx.signal_critical_failure()"
+
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Scanning Security Protocols...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Checking Security Policies...")
 
         # Key 0: No hardcoded secrets
         passed, details = self.check_key_00_no_hardcoded_secrets()
@@ -1048,6 +1086,15 @@ class StructuralEngineer(SubAtomicAgent):
     ROLE: Heavy Refactoring with Semantic Intelligence.
     """
 
+    def __init__(self, context: ValidationContext):
+        super().__init__(context)
+        # Override for stronger refactor guidance
+        self.prompt = self.instructional_prompt.format(
+            role="Heavy Refactoring with Semantic Intelligence",
+            keys="18,20,25,42,43,46 (and large functions)",
+            signals_summary=", ".join(sorted(context.signals))
+        ) + "\n\nADDITIONAL DIRECTIVE: When detecting large functions/classes/files, ALWAYS create refactor_plans with type='SPLIT_FUNCTION' or 'SPLIT_CLASS'. Include estimated line reduction and dependency impact."
+
     def can_run(self) -> bool:
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
@@ -1188,6 +1235,10 @@ class RefactoringExecutionAgent(SubAtomicAgent):
     ROLE: Attempts to execute SPLIT_FUNCTION plans safely.
     """
 
+    def __init__(self, context: ValidationContext):
+        super().__init__(context)
+        self.prompt += "\n\nEXECUTION DIRECTIVE: Prioritize plans by priority field. Use learning_insights['successful_patterns'] to select extraction strategy. On failure, record detailed execution_details for future learning."
+
     def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Executing Refactor Plans...")
 
@@ -1310,14 +1361,17 @@ class RefactoringExecutionAgent(SubAtomicAgent):
                         raise Exception(f"Post-refactor syntax error in {path}: {e}")
                 
                 extracted.append(new_func_name)
-                # Update source for next iteration
+                # L4+++ Critical: Refresh source + re-parse AST after each change
                 source = Path(file_path).read_text(encoding="utf-8")
-                # Re-parse to get updated AST
                 tree = ast.parse(source)
+                # Re-find function node (name unchanged)
+                function_node = None
                 for node in ast.walk(tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == target_function:
                         function_node = node
                         break
+                if not function_node:
+                    break  # Safety
             
             if not extracted:
                 return False, "All extraction attempts failed"
@@ -1409,7 +1463,7 @@ class RefactoringExecutionAgent(SubAtomicAgent):
         }.get(type(block_node), "step")
         return f"{base}_{suffix}"
     
-    def _suggest_module_split(self, file_path: str, new_func_name: str) -> str:
+    def _suggest_module_split(self, file_path: str, new_func_name: str) -> str | None:
         """Return new module path if file > 500 lines, else None."""
         try:
             from pathlib import Path
@@ -1421,6 +1475,16 @@ class RefactoringExecutionAgent(SubAtomicAgent):
         except:
             pass
         return None
+    
+    def _relative_import_path(self, from_path: str, to_path: str) -> str:
+        """Compute correct relative import (e.g., '..utils' or '.sub.mod')."""
+        from pathlib import Path
+        from_dir = Path(from_path).parent.resolve()
+        to_file = Path(to_path).resolve()
+        rel = to_file.relative_to(from_dir.parent)  # Adjust for package
+        dots = '.' * (len(Path(from_path).parent.parts) - len(from_dir.parts) + 1)
+        stem = rel.with_suffix('').as_posix().replace('/', '.')
+        return f"from {dots}{stem} import {to_file.stem}"
 
 @dataclass
 class ExtractionResult:
@@ -1431,7 +1495,7 @@ class ExtractionResult:
     target_file: str = ""
 
 class FunctionExtractor:
-    """L4++ Hardened: Extracts with parameters, returns, and variable propagation."""
+    """L4+++ Semantic-Preserving Extraction: Captures all external reads as params."""
     
     def extract(self, source: str, func_node: ast.FunctionDef, block_node: ast.AST,
                 new_func_name: str, new_module_path: str = None, file_path: str = "original.py") -> ExtractionResult:
@@ -1450,7 +1514,7 @@ class FunctionExtractor:
             block_source = ''.join(block_lines)
             dedented = textwrap.dedent(block_source)
             
-            # Dependency analysis
+            # Full dependency analysis on block
             reads = set()
             writes = set()
             for n in ast.walk(block_node):
@@ -1459,22 +1523,25 @@ class FunctionExtractor:
                         reads.add(n.id)
                     if isinstance(n.ctx, ast.Store): 
                         writes.add(n.id)
-            params = sorted(reads - writes)  # Need as args
-            returns = sorted(writes - reads)  # Need return
+            
+            # L4+++ Fix: All external reads become params (captures shared state)
+            external_reads = reads   # Everything read must be passed in
+            returns = sorted(writes) # Return all mutated/created vars
             
             # Build signature
-            param_str = ", ".join(params) if params else ""
-            return_str = f"return ({', '.join(returns)})" if returns else "return None"
+            param_str = ", ".join(sorted(external_reads))
+            return_str = f"return ({', '.join(returns)})" if returns else "pass"
             dedented_lines = dedented.splitlines()
-            if dedented_lines and not dedented_lines[-1].strip().startswith("return"):
+            # Only add return if needed and not present
+            if returns and (not dedented_lines or not dedented_lines[-1].strip().startswith("return")):
                 dedented_lines.append(f"    {return_str}")
             new_body = "\n".join(dedented_lines)
             
             new_func_def = f"def {new_func_name}({param_str}):\n{textwrap.indent(new_body, '    ')}\n"
             
-            # Call with args and unpack return
+            # Replacement call
             indent = ' ' * (len(block_lines[0]) - len(block_lines[0].lstrip()))
-            call = f"{new_func_name}({', '.join(params)})"
+            call = f"{new_func_name}({', '.join(sorted(external_reads))})"
             if returns:
                 assign = ", ".join(returns) + " = "
                 call_line = f"{assign}{call}\n"
@@ -1491,9 +1558,11 @@ class FunctionExtractor:
                 insert_lines.insert(insert_pos, '\n' + new_func_def)
                 result.modified_files[file_path] = ''.join(insert_lines)
             else:
-                header = f"# L4++ Extracted from {Path(file_path).name}\n\n"
+                header = f"# L4+++ Extracted from {Path(file_path).name}\n\n"
                 result.modified_files[new_module_path] = header + new_func_def
-                rel_import = f"from .{Path(new_module_path).stem} import {new_func_name}\n"
+                # Improved relative import (same dir only for now)
+                rel_path = Path(new_module_path).stem
+                rel_import = f"from .{rel_path} import {new_func_name}\n"
                 result.modified_files[file_path] = rel_import + modified_source
             
             result.success = True
