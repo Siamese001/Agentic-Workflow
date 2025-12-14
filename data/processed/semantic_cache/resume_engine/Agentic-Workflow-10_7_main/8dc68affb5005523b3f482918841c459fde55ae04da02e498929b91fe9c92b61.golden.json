@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Safety simulation models.\"\"\"\nfrom pydantic import BaseModel\nfrom .simulation_base import SimulationInput, SimulationResult\nclass SafetySimRequest(SimulationInput):\n\"\"\"Input payload for safety simulation.\"\"\"\ntext: str\nclass SafetySimMetrics(BaseModel):\n\"\"\"Metrics produced by safety simulations.\"\"\"\npii_risk: float\ninjection_risk: float\nbias_risk: float\nclass SafetySimResult(SimulationResult):\n\"\"\"Result model for safety simulations.\"\"\"\npass",
-  "normalized_signature": "class:SafetySimRequest;class:SafetySimMetrics;class:SafetySimResult",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

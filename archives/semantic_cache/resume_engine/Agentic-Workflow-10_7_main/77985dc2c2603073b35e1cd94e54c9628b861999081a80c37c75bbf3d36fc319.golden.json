@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Synthetic safety simulator.\"\"\"\nimport random\nfrom simulations.models.safety_simulation import (\nSafetySimMetrics,\nSafetySimRequest,\nSafetySimResult,\n)\nfrom simulations.utils import model_to_payload\nclass SafetySimulator:\n\"\"\"Simulates safety assessments.\"\"\"\nasync def run(self, request: SafetySimRequest) -> SafetySimResult:\nbase_risk = 0.2 if len(request.text) < 100 else 0.4\npii_risk = round(min(1.0, base_risk + random.uniform(0.0, 0.4)), 3)\ninjection_risk = round(min(1.0, 0.1 + random.uniform(0.0, 0.5)), 3)\nbias_risk = round(max(0.0, 0.05 + random.uniform(0.0, 0.4)), 3)\nmetrics = SafetySimMetrics(\npii_risk=pii_risk,\ninjection_risk=injection_risk,\nbias_risk=bias_risk,\n)\nsnippet = request.text[:100]\nreturn SafetySimResult(\nsimulation_id=request.simulation_id,\nsuccess=True,\nmetrics=model_to_payload(metrics),\ndetails={\"text_snippet\": snippet},\n)",
-  "normalized_signature": "class:SafetySimulator",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

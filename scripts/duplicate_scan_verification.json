@@ -1,0 +1,36 @@
+{
+  "total_duplicates": 8,
+  "identical_duplicates": 0,
+  "different_duplicates": 8,
+  "total_wasted_bytes": 0,
+  "duplicates_by_suffix": {
+    "_2": 7,
+    "_2025": 1
+  },
+  "duplicates_by_directory": {
+    "shared\\safety": 1,
+    "shared\\types": 1,
+    "scripts\\workflow": 1,
+    "observability\\pipeline\\data_access\\get_info": 1,
+    "config\\logic\\data_access\\get_info": 1,
+    "apps_rg\\L3_orchestration": 1,
+    "apps_rg\\L1_cognition\\P3_aggregate": 1,
+    "apps_lic\\L1_cognition\\P3_aggregate": 1
+  },
+  "duplicate_groups": [
+    {
+      "original": "ORPHANS",
+      "duplicates": [
+        "apps_lic\\L1_cognition\\P3_aggregate\\route_models_2.py",
+        "apps_rg\\L1_cognition\\P3_aggregate\\brief_models_2.py",
+        "apps_rg\\L3_orchestration\\wf_types_models_2.py",
+        "config\\logic\\data_access\\get_info\\load_models_2.py",
+        "observability\\pipeline\\data_access\\get_info\\obs_models_2.py",
+        "scripts\\workflow\\sovereign_promoter_2025.py",
+        "shared\\safety\\const_ai_part_2.py",
+        "shared\\types\\wf_types_part_2.py"
+      ],
+      "count": 8
+    }
+  ]
+}

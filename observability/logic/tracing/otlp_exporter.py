@@ -5,13 +5,11 @@ Domain: tracing
 Generated: 2025-12-07T12:07:59.860156
 """
 
-import logging
 import json
+import logging
 from typing import Dict, List, Optional
-from dataclasses import dataclass
-from abc import ABC, abstractmethod
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -36,35 +34,32 @@ class OtlpExporter(BaseExporter):
     """Exporter for tracing domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
-        self.destination = self.config.get("destination", "stdout")
+        SELF.CONFIG = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def export(self, data: object) -> ExportResult:
         """Export data to destination."""
         try:
-            items = data if isinstance(data, list) else [data]
+            ITEMS = data if isinstance(data, list) else [data]
 
-            if self.destination == "stdout":
-                for item in items:
-                    logger.debug(json.dumps(item, default=str, indent=2))
-            elif self.destination == "file":
-                filepath = self.config.get("filepath", "export.json")
+               for item in items:
+                    LOGGER.DEBUG(JSON.DUMPS(ITEM, DEFAULT=str, indent=2))
+                FILEPATH = self.config.get("filepath", "export.json")
                 with open(filepath, "w") as f:
-                    json.dump(items, f, default=str, indent=2)
+                    JSON.DUMP(ITEMS, F, DEFAULT=str, indent=2)
 
             return ExportResult(
-                success=True,
+                SUCCESS=True,
                 items_exported=len(items),
-                destination=self.destination
+                DESTINATION=self.destination
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.error(f"Export failed: {e}")
             return ExportResult(
-                success=False,
+                SUCCESS=False,
                 items_exported=0,
-                destination=self.destination,
-                errors=[str(e)]
+                DESTINATION=self.destination,
+                ERRORS=[str(e)]
             )
 
 

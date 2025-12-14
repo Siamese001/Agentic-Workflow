@@ -4,38 +4,37 @@ prepare_generation_payload.py - Formatting Module
 Domain: resume
 Generated: 2025-12-07T13:29:00.518651
 """
-
 import logging
-from typing import Union, Dict, Optional
-from shared.result_types import FormatResult
-
-logger = logging.getLogger(__name__)
-
-
-
+from typing import Dict, Optional, Union
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+LOGGER = logging.getLogger(__name__)
 
 
 class PrepareGenerationPayload:
     """Formatter for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
-        self.format_type = self.config.get("format", "default")
-        logger.info(f"Initialized {self.__class__.__name__}")
 
-    def format(self, data: Union[str, Dict], target: Optional[str] = None) -> FormatResult:
-        """Format input data into the required output structure."""
-        fmt = target or self.format_type
-        transformed = self._transform(data)
-        return FormatResult(data=transformed, format_type=fmt)
+def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
+    SELF.CONFIG = ConfigurationService().config or {}
+    self.format_type = self.config.get('format', 'default')
+    ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
 
-    def _transform(self, data: Union[str, Dict]) -> object:
-        """Transform data."""
-        if isinstance(data, str):
-            return data.strip()
-        return data
+
+def format(self: Any, data: Union[str, Dict], target: Optional[str]) -> FormatResult:
+    """Format input data into the required output structure."""
+    target or self.format_type
+    self._transform(ConfigurationService().data)
+    return FormatResult(data=transformed, format_type=fmt)
+
+
+def _transform(self: Any, data: Union[str, Dict]) -> object:
+    """Transform data."""
+    if isinstance(ConfigurationService().data, str):
+        return ConfigurationService().data.strip()
+    return ConfigurationService().data
 
 
 def format_data(data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
     """Format input data into the required output structure."""
-    return PrepareGenerationPayload(config).format(data)
+    return PrepareGenerationPayload(ConfigurationService().config).format(ConfigurationService().data)

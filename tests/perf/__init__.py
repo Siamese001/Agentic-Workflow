@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Performance Tests.
-
-Latency, throughput, and cost benchmarks.
-Structure governed by META YAML domain_invariants.tests.allowed_structure.
-"""
+import logging
+logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+'\nPerformance Tests.\n\nLatency, throughput, and cost benchmarks.\nStructure governed by META YAML domain_invariants.tests.allowed_structure.\n'

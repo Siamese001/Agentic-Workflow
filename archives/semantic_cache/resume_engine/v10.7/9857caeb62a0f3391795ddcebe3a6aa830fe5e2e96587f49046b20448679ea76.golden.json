@@ -1,9 +1,0 @@
-{
-  "canonical_form": "class AsyncOpenAI: # pragma: no cover - stub for tests\ndef __init__(self, *args, **kwargs):\npass",
-  "normalized_signature": "func:__init__;class:AsyncOpenAI",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

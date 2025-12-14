@@ -3,17 +3,16 @@ Production-ready minimal client for quick integration with grounding.
 """
 
 import os
-import json
-from vertexai.generative_models import GenerativeModel, Content, Part
+from vertexai.generative_models import GenerativeModel
 from vertexai import init as vertex_init
 
 def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:
     """Simple content generation with Vertex AI.
-    
+
     Args:
         prompt: Input prompt text
         model: Vertex AI model to use
-        
+
     Returns:
         Generated response text
     """
@@ -22,9 +21,9 @@ def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:
         project=os.getenv("GOOGLE_CLOUD_PROJECT"),
         location="us-central1"
     )
-    
+
     model_client = GenerativeModel(model)
-    
+
     response = model_client.generate_content(
         prompt,
         generation_config={
@@ -32,28 +31,28 @@ def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:
             "max_output_tokens": 1000
         }
     )
-    
+
     return response.text
 
 def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
     """Generation with Google Search grounding and citations.
-    
+
     Args:
         prompt: Input prompt text
         threshold: Grounding threshold (0.0-1.0)
-        
+
     Returns:
         Response with grounding metadata
     """
     from vertexai.generative_models import Tool, grounding as vertex_grounding
-    
+
     vertex_init(
         project=os.getenv("GOOGLE_CLOUD_PROJECT"),
         location="us-central1"
     )
-    
+
     model_client = GenerativeModel("gemini-1.5-pro-002")
-    
+
     # Create grounding tool
     grounding_tool = Tool.from_google_search_retrieval(
         vertex_grounding.GoogleSearchRetrieval(
@@ -63,7 +62,7 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
             )
         )
     )
-    
+
     response = model_client.generate_content(
         prompt,
         tools=[grounding_tool],
@@ -72,7 +71,7 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
             "max_output_tokens": 2000
         }
     )
-    
+
     # Extract grounding metadata
     grounding_metadata = None
     if hasattr(response, 'candidates') and response.candidates:
@@ -82,7 +81,7 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
                 "grounding_score": candidate.grounding_metadata.grounding_score,
                 "has_grounding": True
             }
-    
+
     return {
         "content": response.text,
         "grounding_metadata": grounding_metadata
@@ -90,23 +89,23 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
 
 def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
     """Generation with configurable safety settings.
-    
+
     Args:
         prompt: Input prompt text
         safety_threshold: Safety threshold level
-        
+
     Returns:
         Response with safety metadata
     """
     from vertexai.generative_models import SafetySetting, HarmCategory, HarmBlockThreshold
-    
+
     vertex_init(
         project=os.getenv("GOOGLE_CLOUD_PROJECT"),
         location="us-central1"
     )
-    
+
     model_client = GenerativeModel("gemini-1.5-pro-002")
-    
+
     # Safety settings
     safety_settings = [
         SafetySetting(
@@ -126,7 +125,7 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
             threshold=HarmBlockThreshold[safety_threshold]
         )
     ]
-    
+
     response = model_client.generate_content(
         prompt,
         safety_settings=safety_settings,
@@ -135,7 +134,7 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
             "max_output_tokens": 1000
         }
     )
-    
+
     # Extract safety ratings
     safety_ratings = []
     if hasattr(response, 'candidates') and response.candidates:
@@ -146,7 +145,7 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
                     "category": rating.category.name,
                     "probability": rating.probability.name if rating.probability else None
                 })
-    
+
     return {
         "content": response.text,
         "safety_ratings": safety_ratings
@@ -154,11 +153,8 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
 
 if __name__ == "__main__":
     # Test simple generation
-    result = simple_generation("Explain AI in one sentence")
 
     # Test grounded generation
-    grounded = grounded_generation("What are the latest developments in AI?")
 
     # Test safe generation
-    safe = safe_generation("Write a professional email")
 

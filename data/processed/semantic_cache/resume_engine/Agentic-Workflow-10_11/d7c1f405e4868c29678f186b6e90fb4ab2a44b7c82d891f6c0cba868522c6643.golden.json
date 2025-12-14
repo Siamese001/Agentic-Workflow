@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Dict, List, Optional\nfrom pydantic import BaseModel, Field\nclass ToolCallRequest(BaseModel):\n\"\"\"Structured request for executing a tool inside the sandbox.\nThis model is intentionally generic and does not depend on any\nparticular tool implementation.\n\"\"\"\ntool_name: str\nargs: List[str] = Field(default_factory=list)\nenv: Dict[str, str] = Field(default_factory=dict)\ntimeout_s: float = 30.0\nresource_limits: Dict[str, Any] = Field(default_factory=dict)\nclass ToolCallResult(BaseModel):\n\"\"\"Result of running a tool inside the sandbox microVM.\"\"\"\nsuccess: bool\nstdout: str = \"\"\nstderr: str = \"\"\nexit_code: int = 0\nresource_usage: Dict[str, Any] = Field(default_factory=dict)\nduration_ms: int = 0\nclass SandboxEvent(BaseModel):\n\"\"\"Typed event emitted for sandbox observability hooks.\"\"\"\nname: str\nts_ms: int\nvm_id: Optional[str] = None\ntool_name: Optional[str] = None\nattributes: Dict[str, Any] = Field(default_factory=dict)",
-  "normalized_signature": "class:ToolCallRequest;class:ToolCallResult;class:SandboxEvent",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

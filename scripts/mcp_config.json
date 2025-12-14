@@ -1,0 +1,54 @@
+{
+  "mcpServers": {
+    "dockerhub": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-dockerhub"],
+      "description": "Access DockerHub for container image information and deployment automation",
+      "capabilities": ["search_images", "get_image_details", "list_tags"]
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@context7/mcp-server"],
+      "description": "Advanced context management and semantic search",
+      "capabilities": ["semantic_search", "context_retrieval", "knowledge_graph"]
+    },
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-figma"],
+      "env": {
+        "FIGMA_ACCESS_TOKEN": "${FIGMA_ACCESS_TOKEN}"
+      },
+      "description": "Access Figma designs for UI/UX analysis and design system integration",
+      "capabilities": ["get_file", "get_comments", "get_components"]
+    },
+    "reddit": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-reddit"],
+      "env": {
+        "REDDIT_CLIENT_ID": "${REDDIT_CLIENT_ID}",
+        "REDDIT_CLIENT_SECRET": "${REDDIT_CLIENT_SECRET}",
+        "REDDIT_USER_AGENT": "${REDDIT_USER_AGENT}"
+      },
+      "description": "Access Reddit for market research, sentiment analysis, and community insights",
+      "capabilities": ["search_posts", "get_subreddit", "analyze_sentiment"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Enhanced reasoning with chain-of-thought and step-by-step problem solving",
+      "capabilities": ["chain_of_thought", "step_by_step_reasoning", "problem_decomposition"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@executeautomation/playwright-mcp-server"],
+      "description": "Browser automation for web scraping, testing, and interaction",
+      "capabilities": ["navigate", "click", "fill_form", "screenshot", "extract_data"]
+    }
+  },
+  "integration_config": {
+    "enabled": true,
+    "auto_discover": true,
+    "timeout_seconds": 30,
+    "retry_attempts": 3
+  }
+}

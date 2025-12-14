@@ -1,9 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\n\"\"\"Snapshot-local observability fa\u00e7ade for v10_10.\nThis makes ``from runtime.observability import ...`` work inside the\nAgentic-Workflow-10_10 test snapshot by re-exporting symbols from the\nnested observability modules.\n\"\"\"\nfrom .spans import start_span, end_span\nfrom .events import TelemetryEvent # type: ignore[F401]\nfrom .emitters import (\nemit_node_event,\nemit_telemetry_event,\nemit_ranking_event,\nemit_cost_snapshot,\nemit_golden_eval_event,\nemit_scenario_start_event,\nemit_scenario_end_event,\nemit_scenario_simulation_event,\nemit_council_arbitration_event,\nemit_resilience_event,\nemit_resilience_trace_event,\nlog_exception,\nrecord_event,\nrecord_exception,\n)\nfrom .collectors import get_events, clear_events # noqa: F401\ndef get_all_events():\n\"\"\"Backward-compatible alias used by routing.\nHistorically, callers imported get_all_events from observability; in the\nnew layout, collectors exposes get_events. This adapter preserves the\nolder name.\n\"\"\"\nreturn list(get_events())\n__all__ = [\n\"start_span\",\n\"end_span\",\n\"emit_node_event\",\n\"emit_telemetry_event\",\n\"emit_ranking_event\",\n\"emit_cost_snapshot\",\n\"emit_golden_eval_event\",\n\"emit_scenario_start_event\",\n\"emit_scenario_end_event\",\n\"emit_scenario_simulation_event\",\n\"emit_council_arbitration_event\",\n\"emit_resilience_event\",\n\"emit_resilience_trace_event\",\n\"log_exception\",\n\"record_event\",\n\"record_exception\",\n\"get_events\",\n\"get_all_events\",\n\"clear_events\",\n]",
-  "normalized_signature": "func:get_all_events",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:get_all_events",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

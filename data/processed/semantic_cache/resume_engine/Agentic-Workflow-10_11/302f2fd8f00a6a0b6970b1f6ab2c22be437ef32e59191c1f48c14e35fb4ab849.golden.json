@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nChecks import validity to ensure resume generation system works properly.\nVerifies all modules can be imported without errors to maintain\ncode quality and ensure smooth resume generation functionality.\n\"\"\"\nimport pkgutil\nprint(\"=== IMPORT CHECK START ===\")\nfor m in pkgutil.walk_packages([\"\"]):\nname = (m.name or \"\").lstrip(\"\")\nif not name:\ncontinue\ntry:\n__import__(name)\nexcept Exception as e:\nprint(\"FAILED:\", name, \"->\", type(e).__name__, str(e))\nprint(\"=== IMPORT CHECK END ===\")",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

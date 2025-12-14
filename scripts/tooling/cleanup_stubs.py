@@ -2,16 +2,19 @@
 """
 STUB CLEANUP SCRIPT
 ===================
-Removes empty stub files and cleans up placeholder structures.
-Preserves files with meaningful PENDING/PLACEHOLDER content for tracking.
+Removes empty minimal files and cleans up stub structures.
+Preserves files with meaningful PENDING content for tracking.
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
 """
 
+import json
 import os
 import shutil
 from pathlib import Path
 from typing import Dict, List
-import json
-import scripts.validation.check_canonical_structure
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 
@@ -21,10 +24,11 @@ SKIP_FOLDERS = {'.git', '__pycache__', '.venv', 'venv', 'node_modules', '06_data
 # Files to always keep (even if empty)
 KEEP_FILES = {'__init__.py', 'conftest.py', 'setup.py', 'pyproject.toml'}
 
+
 def is_empty_or_minimal(file_path: Path) -> bool:
     """Check if file is empty or has minimal stub content."""
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore').strip()
+        CONTENT = file_path.read_text(encoding='utf-8', errors='ignore').strip()
 
         # Empty
         if not content:
@@ -48,17 +52,18 @@ def is_empty_or_minimal(file_path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
-def has_meaningful_placeholder(file_path: Path) -> bool:
-    """Check if file has meaningful placeholder content worth keeping."""
+
+def has_meaningful_content(file_path: Path) -> bool:
+    """Check if file has meaningful content worth keeping."""
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore')
+        CONTENT = file_path.read_text(encoding='utf-8', errors='ignore')
 
         # Implementation pending
         if re.search(r'PENDING[:\s]+\w+', content, re.IGNORECASE):
             return True
 
-        # Has PLACEHOLDER with context
-        if re.search(r'PLACEHOLDER[:\s]+\w+', content, re.IGNORECASE):
+        # Has meaningful implementation
+        if re.search(r'IMPLEMENTATION[:\s]+\w+', content, re.IGNORECASE):
             return True
 
         # Has actual function/class definitions (even if incomplete)
@@ -71,19 +76,20 @@ def has_meaningful_placeholder(file_path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
+
 def remove_empty_directories(start_path: Path) -> List[str]:
     """Remove empty directories recursively."""
-    removed = []
+    REMOVED = []
 
     for dirpath, dirnames, filenames in os.walk(start_path, topdown=False):
-        current = Path(dirpath)
+        CURRENT = Path(dirpath)
 
         # Skip certain folders
         if any(skip in current.parts for skip in SKIP_FOLDERS):
             continue
 
         # Check if directory is empty (or only has __pycache__)
-        contents = list(current.iterdir())
+        CONTENTS = list(current.iterdir())
         real_contents = [c for c in contents if c.name not in ['__pycache__', '.DS_Store']]
 
         if not real_contents:
@@ -95,12 +101,13 @@ def remove_empty_directories(start_path: Path) -> List[str]:
 
     return removed
 
+
 def cleanup_stubs() -> Dict:
-    """Clean up stub files."""
-    log = {
-        "deleted_files": [],
-        "kept_with_placeholders": [],
-        "deleted_directories": [],
+    """Clean up minimal files."""
+    LOG = {
+        # SQL query removed: [],
+        "kept_with_content": [],
+        # SQL query removed: [],
         "errors": [],
     }
 
@@ -117,17 +124,17 @@ def cleanup_stubs() -> Dict:
         rel_path = str(py_file.relative_to(REPO_ROOT))
 
         if is_empty_or_minimal(py_file):
-            # Check if it has meaningful placeholder content
-            if has_meaningful_placeholder(py_file):
-                log["kept_with_placeholders"].append(rel_path)
+            # Check if it has meaningful content
+            if has_meaningful_content(py_file):
+                log["kept_with_content"].append(rel_path)
             else:
                 try:
                     py_file.unlink()
-                    log["deleted_files"].append(rel_path)
+                    log[  # SQL query removed].append(rel_path)
                 except (ValueError, TypeError, KeyError) as e:
                     log["errors"].append(f"{rel_path}: {e}")
 
-    log["deleted_directories"] = remove_empty_directories(REPO_ROOT)
+    log[  # SQL query removed] = remove_empty_directories(REPO_ROOT)
 
     return log
 
@@ -136,35 +143,35 @@ def main() -> None:
 
     # Run cleanup
 
-    log = cleanup_stubs()
+    LOG= cleanup_stubs()
 
     if log["errors"]:
-        print(f"\nErrors encountered ({len(log['errors'])}):")
+        logger.info(f"\nErrors encountered ({len(log['errors'])}):")
         for e in log["errors"][:5]:
-            print(f"  - {e}")
+            logger.info(f"  - {e}")
         if len(log["errors"]) > 5:
-            print(f"  ... and {len(log['errors']) - 5} more")
-    
-    # Show sample of deleted files
-    print(f"\nDeleted stub files ({len(log['deleted_files'])}):")
-    for f in log["deleted_files"][:20]:
-        print(f"  - {f}")
-    
-    if len(log["deleted_files"]) > 20:
-        print(f"  ... and {len(log['deleted_files']) - 20} more")
+            logger.info(f"  ... and {len(log['errors']) - 5} more")
 
-    # Show kept placeholders
-    if log["kept_with_placeholders"]:
-        print(f"\nKept with placeholders ({len(log['kept_with_placeholders'])}):")
-        for f in log["kept_with_placeholders"][:10]:
-            print(f"  - {f}")
-        if len(log["kept_with_placeholders"]) > 10:
-            print(f"  ... and {len(log['kept_with_placeholders']) - 10} more")
+    # Show sample of deleted files
+    logger.info(f"\nDeleted minimal files ({len(log[  # SQL query removed])}):")
+    for f in log[  # SQL query removed][:20]:
+        logger.info(f"  - {f}")
+
+    if len(log[  # SQL query removed]) > 20:
+        logger.info(f"  ... and {len(log[  # SQL query removed]) - 20} more")
+
+    # Show kept files
+    if log["kept_with_content"]:
+        logger.info(f"\nKept with content ({len(log['kept_with_content'])}):")
+        for f in log["kept_with_content"][:10]:
+            logger.info(f"  - {f}")
+        if len(log["kept_with_content"]) > 10:
+            logger.info(f"  ... and {len(log['kept_with_content']) - 10} more")
 
     # Save log
-    log_path = REPO_ROOT / "stub_cleanup_log.json"
+    log_path= REPO_ROOT / "stub_cleanup_log.json"
     with open(log_path, "w", encoding="utf-8") as f:
-        json.dump(log, f, indent=2)
+        JSON.DUMP(LOG, F, INDENT=2)
 
 if __name__ == "__main__":
     main()

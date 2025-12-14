@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"Lightweight schema helpers used during tests.\"\"\"\nfrom __future__ import annotations\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List\n@dataclass\nclass ResumeOutputSchema:\n\"\"\"Minimal structure validator for resume payloads in tests.\"\"\"\ncandidate: str\njob_title: str\nsummary: str\nhighlights: List[str] = field(default_factory=list)\nskills: List[str] = field(default_factory=list)\nsections: List[Dict[str, Any]] = field(default_factory=list)\ndef __post_init__(self) -> None:\nif not self.candidate:\nraise ValueError(\"candidate must be provided\")\nif not self.job_title:\nraise ValueError(\"job_title must be provided\")\nif not self.summary:\nraise ValueError(\"summary must be provided\")\n__all__ = [\"ResumeOutputSchema\"]",
-  "normalized_signature": "func:__post_init__;class:ResumeOutputSchema",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

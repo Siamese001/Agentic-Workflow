@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom core.models.models import (\nTelemetryEvent,\nRetrievalAttemptEvent,\nRetrievalSuccessEvent,\nRetrievalFailureEvent,\nRankingEvent,\nCostSnapshot,\n)\n__all__ = [\n\"TelemetryEvent\",\n\"RetrievalAttemptEvent\",\n\"RetrievalSuccessEvent\",\n\"RetrievalFailureEvent\",\n\"RankingEvent\",\n\"CostSnapshot\",\n]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

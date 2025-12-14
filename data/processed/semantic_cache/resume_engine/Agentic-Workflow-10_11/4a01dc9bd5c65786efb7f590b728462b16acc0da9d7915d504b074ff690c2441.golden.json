@@ -1,7 +1,0 @@
-{
-  "canonical_form": "try:\nfrom neo4j import GraphDatabase\nexcept Exception:\nGraphDatabase = None\nclass Neo4jGraphStore:\n\"\"\"\nStub graph store class used when Neo4j is not installed.\nProvides import-safe behavior only.\n\"\"\"\ndef __init__(self, uri=None, auth=None):\nif GraphDatabase is None:\nraise ImportError(\"Neo4j driver not installed\")\nself.driver = None\ndef write_node(self, *args, **kwargs):\nreturn {\"status\": \"neo4j_unavailable\"}\ndef write_relationship(self, *args, **kwargs):\nreturn {\"status\": \"neo4j_unavailable\"}\ndef close(self):\nreturn\n__all__ = [\"Neo4jGraphStore\", \"GraphDatabase\"]",
-  "normalized_signature": "func:__init__;func:write_node;func:write_relationship;func:close;class:Neo4jGraphStore",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:write_node,write_relationship,close",
-  "test_coverage": []
-}

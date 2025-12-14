@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Utilities namespace for the local chromadb shim.\"\"\"\nfrom vendor.chromadb_stub import embedding_functions\n__all__ = [\"embedding_functions\"]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

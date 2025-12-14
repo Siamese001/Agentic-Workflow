@@ -1,3 +1,4 @@
+
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # ======================================================================
 
@@ -8,18 +9,20 @@ Writes entities, relations, and events to Neo4jGraphStore
 to support resume timeline analysis and job alignment.
 """
 
-
-from typing import List, Optional
+import logging
 from datetime import datetime
+from typing import List, Optional
+
+logger = logging.getLogger(__name__)
+
 
 try:
-#     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPRECATED: Archive import removed to protect archives from validation edits
+    #     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPR...
     _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()
     _NEO4J_AVAILABLE = True
 except ImportError:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
-
 
 
 async def insert_entity(entity: TemporalEntity) -> None:
@@ -35,9 +38,9 @@ async def insert_entity(entity: TemporalEntity) -> None:
         if _neo4j_graph is not None:
             _neo4j_graph.upsert_entity(
                 entity_id=entity.entity_id,
-                etype=entity.entity_type,
-                name=entity.entity_id,  # Use entity_id as name for now
-                metadata={
+                ETYPE=entity.entity_type,
+                NAME=entity.entity_id,  # Use entity_id as name for now
+                METADATA={
                     "canonical_id": entity.canonical_id,
                     "aliases": list(entity.aliases),
                     "confidence": entity.confidence,
@@ -64,11 +67,18 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
             _neo4j_graph.upsert_relation(
                 rel_id=triplet.triplet_id,
                 subject_id=triplet.subject,
-                predicate=triplet.predicate,
+                PREDICATE=triplet.predicate,
                 object_id=triplet.object,
                 valid_at=triplet.temporal_range.valid_at.isoformat(),
-                invalid_at=triplet.temporal_range.invalid_at.isoformat() if triplet.temporal_range.invalid_at else None,
-                attrs={
+                invalid_at=triplet.
+                .temporal_range.
+                .invalid_at.
+                .isoformat() if triplet.
+                .temporal_range.
+                .invalid_at else None,
+
+
+                ATTRS={
                     "confidence": triplet.confidence,
                     "source": triplet.source,
                     "status": triplet.status.value,
@@ -98,7 +108,9 @@ async def insert_event(event: TemporalEvent) -> None:
 
                 _neo4j_graph.update_relation_invalidity(
                     rel_id=event.triplet_id,
-                    invalid_at=invalid_at.isoformat() if isinstance(invalid_at, datetime) else invalid_at,
+                    invalid_at=invalid_at.isoformat() if isinstance(invalid_at,
+                                                                    datetime) else invalid_at,
+
                     invalidated_by=invalidated_by,
                 )
     except (ValueError, TypeError, RuntimeError, KeyError):
@@ -107,6 +119,7 @@ async def insert_event(event: TemporalEvent) -> None:
 
 
 async def batch_process_invalidation(
+    """Docstring."""
     events_to_update: List[TemporalEvent]
 ) -> None:
     """
@@ -122,6 +135,7 @@ async def batch_process_invalidation(
 
 
 async def ingest_transcript(
+    """Docstring."""
     transcript_id: str,
     entities: List[TemporalEntity],
     triplets: List[TemporalTriplet],

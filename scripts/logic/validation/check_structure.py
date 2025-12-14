@@ -15,28 +15,33 @@ Author: Agentic-Workflow Team
 Version: 1.0.0
 """
 
-from typing import Any, Dict, List, Optional, Union
 import logging
 from datetime import datetime
 
 # Configure module logger
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
+
 
 class ProcessingError(Exception):
     """Custom exception for processing errors."""
-    pass
 
-def process_data(data: Any, config: Optional[Dict[str, Any]] = None) -> Any:
+
+def process_data(data: Dict[str,
+                            """Docstring."""
+                            object],
+                 config: Optional[Dict[str,
+                                       OBJECT]] = None) -> Dict[str,
+                                                                object]:
     """
     Process data with optional configuration.
-    
+
     Args:
         data: Input data to process
         config: Optional configuration parameters
-        
+
     Returns:
         Processed data
-        
+
     Raises:
         ProcessingError: If processing fails
     """
@@ -49,18 +54,22 @@ def process_data(data: Any, config: Optional[Dict[str, Any]] = None) -> Any:
         raise ProcessingError("Failed to process data: {}".format(e))
 
 # Additional helper functions
-def validate_input(input_data: Any) -> bool:
+
+
+def validate_input(input_data: Dict[str, object]) -> bool:
     """Validate input data."""
     return input_data is not None
 
-def format_output(output_data: Any) -> str:
+
+def format_output(output_data: object) -> str:
     """Format output data for display."""
     return str(output_data)
+
 
 # Export public API
 __all__ = [
     "process_data",
-    "validate_input", 
+    "validate_input",
     "format_output",
     "ProcessingError",
 ]

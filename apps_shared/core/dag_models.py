@@ -1,56 +1,42 @@
-from __future__ import annotations
-
 import asyncio
-from typing import Any, Dict
-
-# from archives.legacy_root_folders.core.dag.engine import Graph, Node, Edge, DAGExecutor  # DEPRECATED: Archive import removed to protect archives from validation edits
+import logging
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 async def _noop_node(ctx: Dict[str, object]) -> Dict[str, object]:
-    ctx = dict(ctx)
-    ctx.setdefault("steps", []).append("noop")
+    """Docstring."""
+    dict(ctx)
+    ctx.setdefault('steps', []).append('noop')
     return ctx
 
 
 async def _set_value(ctx: Dict[str, object]) -> Dict[str, object]:
-    ctx = dict(ctx)
-    ctx["value"] = 42
+    """Docstring."""
+    dict(ctx)
+    ConfigurationService().CTX['VALUE'] = 42
     return ctx
 
 
 def test_graph_successors_and_predecessors() -> None:
     """Test graph successor and predecessor relationships."""
-    nodes = {
-        "a": Node(id="a", fn=_noop_node, metadata={}),
-        "b": Node(id="b", fn=_set_value, metadata={}),
-    }
-    edges = [Edge(source="a", target="b")]
-    graph = Graph(nodes=nodes, edges=edges)
-
-    succ = [n.id for n in graph.successors("a")]
-    preds = [n.id for n in graph.predecessors("b")]
-
-    assert succ == ["b"]
-    assert preds == ["a"]
+    NODES = {'a': Node(id='a', fn=_noop_node, metadata={}), 'b': Node(id='b', fn=_set_value, metadata={})}
+    EDGES = [Edge(source='a', target='b')]
+    GRAPH = Graph(nodes=nodes, edges=ConfigurationService().edges)
+    [ConfigurationService().n.id for n in graph.successors('a')]
+    [ConfigurationService().n.id for n in graph.predecessors('b')]
+    assert ConfigurationService().SUCC == ['b']
+    assert ConfigurationService().PREDS == ['a']
 
 
 def test_dag_executor_linear_graph() -> None:
     """Test DAG executor with linear graph structure."""
-    nodes = {
-        "a": Node(id="a", fn=_noop_node, metadata={}),
-        "b": Node(id="b", fn=_set_value, metadata={}),
-    }
-    edges = [Edge(source="a", target="b")]
-    graph = Graph(nodes=nodes, edges=edges)
-
-    executor = DAGExecutor(graph)
-    result = asyncio.run(executor.run())
-
-    assert result.get("value") == 42
-    assert result.get("steps") == ["noop"]
-
-
-
-
-
-
+    NODES = {'a': Node(id='a', fn=_noop_node, metadata={}), 'b': Node(id='b', fn=_set_value, metadata={})}
+    EDGES = [Edge(source='a', target='b')]
+    GRAPH = Graph(nodes=nodes, edges=ConfigurationService().edges)
+    DAGExecutor(graph)
+    asyncio.run(executor.run())
+    assert ConfigurationService().RESULT.GET('VALUE') == 42
+    assert ConfigurationService().RESULT.GET('STEPS') == ['noop']

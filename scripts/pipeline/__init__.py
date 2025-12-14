@@ -1,30 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-08_scripts.pipeline_ops — Package initialization
-
-This module provides pipeline orchestration and data flow management for the Agentic-Workflow system.
-It includes components for:
-- Pipeline definition and execution
-- Data flow coordination between stages
-- Pipeline state management and persistence
-- Stage-wise error handling and recovery
-- Pipeline performance monitoring
-- Dynamic pipeline reconfiguration
-
-The pipeline system enables complex data processing workflows to be
-executed reliably with proper stage coordination and error handling.
-
-Auto-generated to satisfy SSoT structure requirements.
-"""
-
-from .data_access import get_info, get_info_request
-from .synthesis import use_tools
-
-__version__ = "1.0.0"
-__author__ = "Agentic-Workflow Team"
-
-__all__: list = [
-    "get_info",
-    "get_info_request",
-    "use_tools",
-]
+import logging
+from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+'\n08_scripts.pipeline_ops — Package initialization\n\nThis module provides pipeline orchestration and data flow management for the Agentic-Workflow system\n    .\nIt includes components for:\n- Pipeline definition and execution\n- Data flow coordination between stages\n- Pipeline state management and persistence\n- Stage-wise error handling and recovery\n- Pipeline performance monitoring\n- Dynamic pipeline reconfiguration\n\nThe pipeline system enables complex data processing workflows to be\nexecuted reliably with proper stage coordination and error handling.\n\nAuto-generated to satisfy SSoT structure requirements.\n'
+__version__ = '1.0.0'
+__author__ = 'Agentic-Workflow Team'
+__all__: list = ['get_info', 'get_info_request', 'use_tools']

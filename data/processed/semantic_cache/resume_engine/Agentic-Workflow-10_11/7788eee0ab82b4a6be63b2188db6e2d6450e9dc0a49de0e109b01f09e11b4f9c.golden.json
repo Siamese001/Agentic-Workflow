@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"OpenAI client adapter for v10_10.\nThis module is the ONLY place where the OpenAI SDK is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\nfrom __future__ import annotations\nimport os\nfrom typing import Any\ndef run_llm_openai(\nmodel: str,\nprompt: str,\n*,\ntemperature: float,\nmax_tokens: int,\ntimeout_s: int,\n) -> str:\n\"\"\"Run an OpenAI chat completion and return the response text.\nThis helper performs no routing or caching; it is a thin wrapper\naround the OpenAI SDK. Errors are allowed to propagate and will be\nwrapped by the caller (runtime_utils.invoke_model).\n\"\"\"\ntry:\nimport openai # type: ignore\nexcept ImportError as exc: # pragma: no cover - optional dependency\nraise ImportError(\"openai package not installed\") from exc\napi_key = os.getenv(\"OPENAI_API_KEY\")\nif not api_key:\nraise RuntimeError(\"OPENAI_API_KEY must be set for OpenAI provider\")\nclient = openai.OpenAI(api_key=api_key)\nresp: Any = client.chat.completions.create(\nmodel=model,\nmessages=[{\"role\": \"user\", \"content\": prompt}],\ntemperature=temperature,\nmax_tokens=max_tokens,\ntimeout=timeout_s,\n)\nreturn str(resp.choices[0].message.content or \"\")",
-  "normalized_signature": "func:run_llm_openai",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:run_llm_openai",
-  "test_coverage": []
-}

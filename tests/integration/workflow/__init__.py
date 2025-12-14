@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-10_tests.integration.workflow — Package initialization
-
-Auto-generated to satisfy SSoT structure requirements.
-"""
-
+import logging
+logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+'\n10_tests.integration.workflow — Package initialization\n\nAuto-generated to satisfy SSoT structure requirements.\n'
 __all__: list = []

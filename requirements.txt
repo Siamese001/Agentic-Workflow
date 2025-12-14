@@ -18,7 +18,8 @@
 # -----------------------------------------------------------------------------
 openai>=1.50.0                  # GPT-4o, o1, embeddings, function calling
 anthropic>=0.34.0               # Claude 3.5 Sonnet, tool use, extended context
-google-generativeai>=0.8.0      # Gemini 2.0, multimodal, grounding
+google-generativeai>=0.8.0      # Gemini 2.0, multimodal, grounding (legacy)
+google-genai>=1.0.0b1           # Gemini v1beta Interactions API (NEW)
 mistralai>=1.2.0                # Mistral Large, code generation, EU compliance
 cohere>=5.11.0                  # Command R+, RAG, reranking, embeddings
 
@@ -88,11 +89,19 @@ fastmcp>=0.1.0                  # FastAPI-style MCP server framework
 # pip-tools>=7.4.0              # Deterministic lockfiles (install separately: pip install pip-tools)
 pydantic>=2.5.0                 # Data validation (required by instructor, litellm)
 httpx>=0.27.0                   # Async HTTP client (required by most SDKs)
-tenacity>=8.2.0                 # Retry logic for API calls
-tiktoken>=0.7.0                 # Token counting for OpenAI models
-numpy>=1.26.0                   # Numerical operations
+autopep8>=2.0.0                 # Auto-format Python code (PEP 8)
+autoflake>=2.0.0                # Remove unused imports and variables
+isort>=5.12.0                   # Sort and organize imports
+redisvl>=0.1.0                  # Redis Vector Library for semantic search
+sentence-transformers>=2.2.2   # SOTA embeddings and cross-encoders for RAG
+pinecone-client>=3.0.0          # Pinecone vector database for long-term memory
 aiohttp>=3.9.0                  # Async HTTP for parallel requests
 uvicorn>=0.30.0                 # ASGI server for MCP/FastAPI
+rich>=13.0.0                     # Rich terminal formatting for War Room UI
+tavily-python>=0.3.0              # Search API for automated intelligence gathering
+pyyaml>=6.0.1                   # YAML configuration parsing for ETL pipeline
+gitpython>=3.1.0                # Git repository access for backfill
+boto3>=1.34.0                   # AWS S3 client for cloud extraction
 
 # =============================================================================
 # COVERAGE MATRIX (21 SDKs)

@@ -8,11 +8,9 @@ Generated: 2025-12-07T12:07:59.857725
 import logging
 import time
 import uuid
-from typing import Generator, Dict, List, Optional
-from dataclasses import dataclass, field
-from contextlib import contextmanager
+from typing import Dict, Generator, List, Optional
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,22 +37,27 @@ class JsonTraceExporter:
     """Tracer for tracing domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         self.spans: List[Span] = []
         self._current_span: Optional[Span] = None
         logger.info(f"Initialized {self.__class__.__name__}")
 
     @contextmanager
-    def start_span(self, name: str, attributes: Optional[Dict] = None) -> Generator[Span, None, None]:
+    def start_span(self,
+                   """Docstring."""
+                   name: str,
+                   attributes: Optional[Dict] = None) -> Generator[Span,
+                                                                   None,
+                                                                   None]:
         """Start a new span."""
         trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
 
-        span = Span(
+        SPAN = Span(
             trace_id=trace_id,
             span_id=str(uuid.uuid4()),
-            name=name,
-            attributes=attributes or {},
+            NAME=name,
+            ATTRIBUTES=attributes or {},
             parent_id=parent_id
         )
 

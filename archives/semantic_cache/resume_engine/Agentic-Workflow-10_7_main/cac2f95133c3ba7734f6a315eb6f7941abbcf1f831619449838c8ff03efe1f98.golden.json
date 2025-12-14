@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nanthropic_stub \u2013 safe, minimal test stub for Anthropic.\nThis DOES NOT override the real SDK in runtime.\nIt ONLY serves as an optional testing fallback.\n\"\"\"\nfrom __future__ import annotations\nimport asyncio\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional\ndef _fake_usage() -> Dict[str, int]:\nreturn {\"input_tokens\": 50, \"output_tokens\": 15}\n@dataclass\nclass Client:\napi_key: Optional[str] = None\n@property\ndef messages(self) -> \"Client\":\nreturn self\ndef create(\nself,\n*,\nmodel: str,\nmessages: List[Dict[str, Any]],\nmax_tokens: int = 2048,\ntemperature: float = 0.7,\n**kwargs: Any,\n) -> Dict[str, Any]:\nreturn {\n\"model\": model,\n\"content\": [{\"type\": \"text\", \"text\": \"stubbed anthropic response\"}],\n\"usage\": _fake_usage(),\n}\nclass AsyncAnthropic:\ndef __init__(self, api_key: Optional[str] = None):\nself.api_key = api_key\n@property\ndef messages(self) -> \"AsyncAnthropic\":\nreturn self\nasync def create(\nself,\n*,\nmodel: str,\nmessages: List[Dict[str, Any]],\nmax_tokens: int = 2048,\ntemperature: float = 0.7,\n**kwargs: Any,\n) -> Dict[str, Any]:\nawait asyncio.sleep(0) # maintain async contract\nreturn {\n\"model\": model,\n\"content\": [{\"type\": \"text\", \"text\": \"stubbed anthropic async response\"}],\n\"usage\": _fake_usage(),\n}\n__all__ = [\"Client\", \"AsyncAnthropic\"]",
-  "normalized_signature": "func:_fake_usage;func:messages;func:create;func:__init__;class:Client;class:AsyncAnthropic",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:messages,create,messages",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

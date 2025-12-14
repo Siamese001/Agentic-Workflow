@@ -44,7 +44,7 @@ class RouterConfig:
 
 class MultiProviderRouter:
     """Production router with intelligent provider selection and failover."""
-    
+
     def __init__(self, config: Optional[RouterConfig] = None):
         self.config = config or self._default_config()
         self.clients = {}
@@ -53,14 +53,14 @@ class MultiProviderRouter:
         self.usage_stats = {}
         self.request_count = 0
         self._lock = threading.Lock()
-        
+
         # Initialize clients
         self._initialize_clients()
-        
+
         # Start health monitoring
         if self.config.health_check_interval > 0:
             self._start_health_monitoring()
-    
+
     def _default_config(self) -> RouterConfig:
         """Create default router configuration."""
         return RouterConfig(
@@ -90,29 +90,29 @@ class MultiProviderRouter:
             default_strategy="priority",
             enable_failover=True
         )
-    
+
     def _initialize_clients(self):
         """Initialize all enabled provider clients."""
         for provider_config in self.config.providers:
             if not provider_config.enabled:
                 continue
-            
+
             try:
                 if provider_config.provider == Provider.OPENAI:
                     client_config = OpenAIConfig(**provider_config.config)
                     client = OpenAIClient(client_config)
-                
+
                 elif provider_config.provider == Provider.ANTHROPIC:
                     client_config = AnthropicConfig(**provider_config.config)
                     client = AnthropicClient(client_config)
-                
+
                 elif provider_config.provider == Provider.GOOGLE_VERTEX:
                     client_config = VertexConfig(**provider_config.config)
                     client = VertexClient(client_config)
-                
+
                 else:
                     continue
-                
+
                 self.clients[provider_config.provider] = client
                 self.health_status[provider_config.provider] = {
                     "healthy": True,
@@ -131,12 +131,13 @@ class MultiProviderRouter:
                     "avg_latency": 0.0,
                     "total_cost": 0.0
                 }
-                
+
             except Exception as e:
+    pass
 
                 if provider_config.provider in self.health_status:
                     self.health_status[provider_config.provider]["healthy"] = False
-    
+
     def chat_completion(
         self,
         messages: List[Dict[str, object]],
@@ -144,38 +145,38 @@ class MultiProviderRouter:
         providers: Optional[List[Provider]] = None,
         **kwargs: Dict[str, object]) -> Dict[str, object]:
         """Route chat completion request to optimal provider.
-        
+
         Args:
             messages: List of message dictionaries
             strategy: Routing strategy (priority, round_robin, weighted, fastest)
             providers: Specific providers to use
             **kwargs: Provider-specific parameters
-            
+
         Returns:
             Response with provider metadata
         """
         strategy = strategy or self.config.default_strategy
-        
+
         # Select providers to try
         available_providers = self._select_providers(providers, strategy)
-        
+
         if not available_providers:
             raise Exception("No healthy providers available")
-        
+
         last_error = None
-        
+
         for provider in available_providers:
             if not self._is_provider_available(provider):
                 continue
-            
+
             try:
                 start_time = time.time()
                 response = self._call_provider(provider, messages, **kwargs)
                 end_time = time.time()
-                
+
                 # Update success stats
                 self._update_success_stats(provider, end_time - start_time, response)
-                
+
                 return {
                     "success": True,
                     "provider": provider.value,
@@ -187,14 +188,14 @@ class MultiProviderRouter:
                         "latency": end_time - start_time
                     }
                 }
-                
+
             except Exception as e:
                 last_error = e
                 self._update_failure_stats(provider, e)
-                
+
                 if not self.config.enable_failover:
                     break
-        
+
         # All providers failed
         return {
             "success": False,
@@ -205,7 +206,7 @@ class MultiProviderRouter:
                 "all_providers_failed": True
             }
         }
-    
+
     def structured_completion(
         self,
         messages: List[Dict[str, object]],
@@ -214,19 +215,19 @@ class MultiProviderRouter:
         """Route structured output completion to optimal provider."""
         # Prefer OpenAI for structured output (best JSON schema support)
         preferred_providers = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GOOGLE_VERTEX]
-        
+
         result = self.chat_completion(
             messages=messages,
             providers=preferred_providers,
             schema=schema,
             **kwargs
         )
-        
+
         if result["success"]:
             # Apply structured output parsing based on provider
             provider = Provider(result["provider"])
             response = result["response"]
-            
+
             if provider == Provider.OPENAI:
                 # OpenAI already returns structured data
                 return result
@@ -249,9 +250,9 @@ class MultiProviderRouter:
                 except Exception as e:
                     result["success"] = False
                     result["error"] = f"Failed to parse structured output: {e}"
-        
+
         return result
-    
+
     def batch_completion(
         self,
         batch_requests: List[Dict[str, object]],
@@ -260,9 +261,9 @@ class MultiProviderRouter:
         """Route batch requests across multiple providers."""
         # Distribute requests across providers
         provider_distribution = self._distribute_batch_requests(batch_requests, strategy)
-        
+
         results = []
-        
+
         for provider, requests in provider_distribution.items():
             if not self._is_provider_available(provider):
                 # Mark all requests as failed
@@ -273,7 +274,7 @@ class MultiProviderRouter:
                         "request_id": req.get("id", "unknown")
                     })
                 continue
-            
+
             try:
                 client = self.clients[provider]
                 if provider == Provider.OPENAI:
@@ -297,9 +298,9 @@ class MultiProviderRouter:
                                 "error": str(e),
                                 "request_id": req.get("id", "unknown")
                             })
-                
+
                 results.extend(client_results)
-                
+
             except Exception as e:
                 # Mark all requests as failed
                 for req in requests:
@@ -308,60 +309,67 @@ class MultiProviderRouter:
                         "error": str(e),
                         "request_id": req.get("id", "unknown")
                     })
-        
+
         return results
-    
-    def _select_providers(self, providers: Optional[List[Provider]], strategy: str) -> List[Provider]:
+
+    def _select_providers(self,
+         providers: Optional[List[Provider]],
+         strategy: str) -> List[Provider]:
         """Select providers based on strategy and health."""
         if providers:
             candidate_providers = [p for p in providers if p in self.clients]
         else:
             candidate_providers = list(self.clients.keys())
-        
+
         # Filter by health status
         healthy_providers = [p for p in candidate_providers if self._is_provider_available(p)]
-        
+
         if not healthy_providers:
             return candidate_providers  # Return all if none healthy
-        
+
         # Sort by strategy
         if strategy == "priority":
             return sorted(healthy_providers, key=lambda p: self._get_provider_config(p).priority)
-        
+
         elif strategy == "round_robin":
             return sorted(healthy_providers, key=lambda p: (self.request_count + list(healthy_providers).index(p)) % len(healthy_providers))
-        
+
         elif strategy == "weighted":
             # Weighted random selection
             weights = [self._get_provider_config(p).weight for p in healthy_providers]
             return random.choices(healthy_providers, weights=weights, k=len(healthy_providers))
-        
+
         elif strategy == "fastest":
             # Sort by average latency
             return sorted(healthy_providers, key=lambda p: self.usage_stats[p]["avg_latency"])
-        
+
         else:
             return healthy_providers
-    
-    def _distribute_batch_requests(self, requests: List[Dict[str, object]], strategy: str) -> Dict[Provider, List[Dict[str, object]]]:
+
+    def _distribute_batch_requests(self,
+         requests: List[Dict[str,
+         object]],
+         strategy: str) -> Dict[Provider,
+         List[Dict[str,
+         object]]]:
         """Distribute batch requests across providers."""
         available_providers = self._select_providers(None, strategy)
-        
+
         if not available_providers:
             return {}
-        
+
         distribution = {provider: [] for provider in available_providers}
-        
+
         if strategy == "weighted":
             # Distribute based on weights
             weights = [self._get_provider_config(p).weight for p in available_providers]
             total_weight = sum(weights)
-            
+
             for i, request in enumerate(requests):
                 # Select provider based on cumulative weights
                 cumulative = 0
                 rand = random.random() * total_weight
-                
+
                 for provider, weight in zip(available_providers, weights):
                     cumulative += weight
                     if rand <= cumulative:
@@ -372,16 +380,21 @@ class MultiProviderRouter:
             for i, request in enumerate(requests):
                 provider = available_providers[i % len(available_providers)]
                 distribution[provider].append(request)
-        
+
         return distribution
-    
-    def _call_provider(self, provider: Provider, messages: List[Dict[str, object]], **kwargs: Dict[str, object]) -> Any:
+
+    def _call_provider(self,
+         provider: Provider,
+         messages: List[Dict[str,
+         object]],
+         **kwargs: Dict[str,
+         object]) -> Any:
         """Call the specific provider with appropriate format."""
         client = self.clients[provider]
-        
+
         if provider == Provider.OPENAI:
             return client.chat_completion(messages=messages, **kwargs)
-        
+
         elif provider == Provider.ANTHROPIC:
             # Convert messages to Anthropic format
             anthropic_messages = []
@@ -391,9 +404,9 @@ class MultiProviderRouter:
                     "content": [{"type": "text", "text": msg["content"]}]
                 }
                 anthropic_messages.append(anthropic_msg)
-            
+
             return client.message(messages=anthropic_messages, **kwargs)
-        
+
         elif provider == Provider.GOOGLE_VERTEX:
             # Convert to single prompt for Vertex
             prompt = ""
@@ -404,18 +417,18 @@ class MultiProviderRouter:
                     prompt += f"User: {msg['content']}\n\n"
                 elif msg["role"] == "assistant":
                     prompt += f"Assistant: {msg['content']}\n\n"
-            
+
             return client.generate_content(prompt=prompt.strip(), **kwargs)
-    
+
     def _is_provider_available(self, provider: Provider) -> bool:
         """Check if provider is available (healthy and circuit not open)."""
         if provider not in self.health_status:
             return False
-        
+
         # Check health status
         if not self.health_status[provider]["healthy"]:
             return False
-        
+
         # Check circuit breaker
         circuit = self.circuit_breakers.get(provider, {"state": "closed"})
         if circuit["state"] == "open":
@@ -424,67 +437,68 @@ class MultiProviderRouter:
                 circuit["state"] = "half_open"
             else:
                 return False
-        
+
         return True
-    
+
     def _get_provider_config(self, provider: Provider) -> ProviderConfig:
         """Get configuration for a provider."""
         for config in self.config.providers:
             if config.provider == provider:
                 return config
         raise ValueError(f"No configuration found for provider {provider}")
-    
+
     def _update_success_stats(self, provider: Provider, latency: float, response):
         """Update provider success statistics."""
         with self._lock:
             stats = self.usage_stats[provider]
             stats["requests"] += 1
             stats["successes"] += 1
-            
+
             # Update average latency
             total_requests = stats["requests"]
-            stats["avg_latency"] = (stats["avg_latency"] * (total_requests - 1) + latency) / total_requests
-            
+            stats["avg_latency"] = (stats["avg_latency"] * (total_requests - 1)
+                + latency) / total_requests
+
             # Reset circuit breaker if it was failing
             circuit = self.circuit_breakers[provider]
             if circuit["state"] == "half_open":
                 circuit["state"] = "closed"
                 circuit["failure_count"] = 0
-            
+
             # Update health status
             self.health_status[provider]["consecutive_failures"] = 0
             self.health_status[provider]["healthy"] = True
-    
+
     def _update_failure_stats(self, provider: Provider, error: Exception):
         """Update provider failure statistics."""
         with self._lock:
             stats = self.usage_stats[provider]
             stats["requests"] += 1
             stats["failures"] += 1
-            
+
             # Update circuit breaker
             circuit = self.circuit_breakers[provider]
             circuit["failure_count"] += 1
             circuit["last_failure"] = time.time()
-            
+
             if circuit["failure_count"] >= self.config.circuit_breaker_threshold:
                 circuit["state"] = "open"
-            
+
             # Update health status
             self.health_status[provider]["consecutive_failures"] += 1
             if self.health_status[provider]["consecutive_failures"] >= 3:
                 self.health_status[provider]["healthy"] = False
-    
+
     def _start_health_monitoring(self):
         """Start background health monitoring thread."""
         def health_check():
             while True:
                 time.sleep(self.config.health_check_interval)
                 self._perform_health_checks()
-        
+
         thread = threading.Thread(target=health_check, daemon=True)
         thread.start()
-    
+
     def _perform_health_checks(self):
         """Perform health checks on all providers."""
         for provider in self.clients:
@@ -505,23 +519,24 @@ class MultiProviderRouter:
                 elif provider == Provider.GOOGLE_VERTEX:
                     client = self.clients[provider]
                     client.generate_content(prompt="Hi", max_tokens=1)
-                
+
                 # Health check passed
                 self.health_status[provider]["healthy"] = True
                 self.health_status[provider]["consecutive_failures"] = 0
-                
+
             except Exception as e:
+    pass
 
                 self.health_status[provider]["consecutive_failures"] += 1
                 if self.health_status[provider]["consecutive_failures"] >= 3:
                     self.health_status[provider]["healthy"] = False
-    
+
     def get_router_stats(self) -> Dict[str, object]:
         """Get comprehensive router statistics."""
         total_requests = sum(stats["requests"] for stats in self.usage_stats.values())
         total_successes = sum(stats["successes"] for stats in self.usage_stats.values())
         total_failures = sum(stats["failures"] for stats in self.usage_stats.values())
-        
+
         return {
             "total_requests": total_requests,
             "total_successes": total_successes,
@@ -544,27 +559,27 @@ def create_multi_provider_router(
     enable_vertex: bool = None,
     **kwargs: Dict[str, object]) -> MultiProviderRouter:
     """Create configured multi-provider router.
-    
+
     Args:
         enable_openai: Enable OpenAI provider
         enable_anthropic: Enable Anthropic provider
         enable_vertex: Enable Google Vertex provider
         **kwargs: Additional router configuration
-        
+
     Returns:
         Configured multi-provider router
     """
     provider_configs = []
-    
+
     if enable_openai is None:
         enable_openai = bool(os.getenv("OPENAI_API_KEY"))
-    
+
     if enable_anthropic is None:
         enable_anthropic = bool(os.getenv("ANTHROPIC_API_KEY"))
-    
+
     if enable_vertex is None:
         enable_vertex = bool(os.getenv("GOOGLE_CLOUD_PROJECT"))
-    
+
     if enable_openai:
         provider_configs.append(ProviderConfig(
             provider=Provider.OPENAI,
@@ -573,7 +588,7 @@ def create_multi_provider_router(
             weight=1.0,
             config={"model": "gpt-4o-2024-08-06"}
         ))
-    
+
     if enable_anthropic:
         provider_configs.append(ProviderConfig(
             provider=Provider.ANTHROPIC,
@@ -582,7 +597,7 @@ def create_multi_provider_router(
             weight=1.0,
             config={"model": "claude-3-5-sonnet-20241022", "enable_caching": True}
         ))
-    
+
     if enable_vertex:
         provider_configs.append(ProviderConfig(
             provider=Provider.GOOGLE_VERTEX,
@@ -591,7 +606,7 @@ def create_multi_provider_router(
             weight=0.8,
             config={"model": "gemini-1.5-pro-002", "enable_grounding": True}
         ))
-    
+
     config = RouterConfig(providers=provider_configs, **kwargs)
     return MultiProviderRouter(config)
 
@@ -599,12 +614,12 @@ def create_multi_provider_router(
 if __name__ == "__main__":
     # Create router with all available providers
     router = create_multi_provider_router()
-    
+
     # Test simple completion
     messages = [
         {"role": "user", "content": "Explain quantum computing in 50 words."}
     ]
-    
+
     try:
         result = router.chat_completion(messages, strategy="priority")
 
@@ -620,3 +635,4 @@ if __name__ == "__main__":
         stats = router.get_router_stats()
 
     except Exception as e:
+    pass

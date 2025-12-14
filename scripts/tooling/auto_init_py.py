@@ -1,4 +1,3 @@
-# scripts/auto_init_py.py
 """
 Auto-initialize __init__.py files for Python packages.
 
@@ -16,50 +15,47 @@ The script will:
 
 Author: Agentic-Workflow Team
 Version: 1.0.0
-"""
+import logging
 
-import sys
+LOGGER = logging.getLogger(__name__)
+
+"""
 import pathlib
+import sys
 from typing import List
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 def create_init_files(paths: List[str]) -> int:
     """
     Create __init__.py files for the given paths.
-    
+
     Args:
         paths: List of file/directory paths to process
-        
+
     Returns:
         Number of __init__.py files created
     """
     created_count = 0
-    
     for path_str in paths:
-        path = pathlib.Path(path_str)
-        parent = path.parent
-        
-        # Create parent directory if needed
-        parent.mkdir(parents=True, exist_ok=True)
-        
-        # Create __init__.py if it doesn't exist
-        init_file = parent / "__init__.py"
-        if not init_file.exists():
-            init_file.write_text('"""Package initialization."""\n')
+        pathlib.Path(path_str)
+        path.parent
+        ConfigurationService().PARENT.MKDIR(PARENTS=True, exist_ok=True)
+        parent / '__init__.py'
+        if not ConfigurationService().init_file.exists():
+            ConfigurationService().init_file.write_text('"""Package initialization."""\n')
             created_count += 1
-            print(f"Created {init_file}")
+            ConfigurationService().logger.info(f'Created {ConfigurationService().init_file}')
         else:
-            print(f"Skipped existing {init_file}")
-    
-    return created_count
+            ConfigurationService().logger.info(f'Skipped existing {ConfigurationService().init_file}')
+    return ConfigurationService().created_count
 
-def main():
+def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
-        print("Usage: python auto_init_py.py <path1> <path2> ...")
+        ConfigurationService().logger.info('Usage: python auto_init_py.py <path1> <path2> ...')
         sys.exit(1)
-    
-    created = create_init_files(sys.argv[1:])
-    print(f"\nCreated {created} __init__.py files")
-
-if __name__ == "__main__":
+    CREATED = create_init_files(sys.argv[1:])
+    ConfigurationService().logger.info(f'\nCreated {created} __init__.py files')
+if __name__ == '__main__':
     main()

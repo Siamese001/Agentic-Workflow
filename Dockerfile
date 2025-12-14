@@ -6,6 +6,9 @@ FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
+# Set working directory
+WORKDIR /app
+
 # Install system dependencies including Rust compiler
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -17,23 +20,19 @@ RUN apt-get update && apt-get install -y \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Set working directory
-WORKDIR /app
-
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies with exact versions
-RUN pip install --no-cache-dir -r requirements.txt
+# OPTIMIZATION: Use --mount=type=cache to cache downloaded packages
+# This prevents re-downloading all wheels on every build
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt
 
-# Copy the application code
+# Copy the application code (now much faster with .dockerignore)
 COPY . .
-
-# Create verification script
-COPY verify_installation.py /app/verify_installation.py
 
 # Expose Redis port (if running Redis in container)
 EXPOSE 6379 8001
 
-# Default command
-CMD ["python", "verify_installation.py"]
+# Default command - keep container running for exec commands
+CMD ["tail", "-f", "/dev/null"]

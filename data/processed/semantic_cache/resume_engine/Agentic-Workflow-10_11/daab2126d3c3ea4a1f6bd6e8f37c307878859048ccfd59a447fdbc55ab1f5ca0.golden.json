@@ -1,7 +1,0 @@
-{
-  "canonical_form": "- Only L2 may execute tools.\n- Tools require explicit schemas (input/output).\n- Must implement retries, backoff, timeouts, circuit breakers.\n- No tool logic allowed in L1, L3, L4, or L5.\n- MCP MUST be used when available.\n- SDK allowed only when MCP unavailable.\n- SDK usage must remain in L2 and be sandboxed.\n- Tools must not access host filesystem or environment.\n- Must run in isolated execution environments.\n- No shell escapes or OS command execution.\n- Trace IDs required.\n- DAG-level spans mandatory.\n- Logs must exclude secrets/PII.\n- Tool calls must emit latency, cost, and failure data.",
-  "normalized_signature": "",
-  "core_functionality": "configuration_or_data",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

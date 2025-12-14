@@ -1,0 +1,24 @@
+{
+  "run_sha": "359378128190a2b8",
+  "timestamp": "2025-12-12T18:22:08.559231",
+  "duration_seconds": 0.00018358230590820312,
+  "success": false,
+  "error": null,
+  "decision_path": [],
+  "temperature_log": [],
+  "validation_failures": [],
+  "artifacts": [
+    {
+      "type": "CLASSIFICATION",
+      "length": 6,
+      "metadata": {},
+      "timestamp": "2025-12-12T18:22:08.559259"
+    }
+  ],
+  "stats": {
+    "total_decisions": 0,
+    "total_temp_adjustments": 0,
+    "total_validation_failures": 0,
+    "total_artifacts": 1
+  }
+}

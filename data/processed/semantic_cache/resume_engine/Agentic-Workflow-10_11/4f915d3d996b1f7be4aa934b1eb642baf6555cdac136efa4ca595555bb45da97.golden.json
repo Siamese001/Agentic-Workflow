@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nOrchestration DAG models - re-exported from core.models for backward compatibility.\nThis module re-exports DAG models from core.models to maintain import compatibility\nduring the canonical structure cleanup.\n\"\"\"\nfrom core.models.dag_models import *",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

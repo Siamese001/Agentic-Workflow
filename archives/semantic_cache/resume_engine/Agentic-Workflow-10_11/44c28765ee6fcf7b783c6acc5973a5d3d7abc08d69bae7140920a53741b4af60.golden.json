@@ -1,9 +1,0 @@
-{
-  "canonical_form": "- DAG must be typed, acyclic, resumable.\n- All node transitions validate OutputSchema \u2192 InputSchema.\n- Only L3 may orchestrate; agents must not self-route.\n- Branching must be explicit and validated.\n- /l1 = planning\n- /l2 = tools\n- /l3 = orchestration\n- /l4 = state/memory\n- /l5 = safety\n- /prompts = templates & constitutions\n- /tests mirrors module topology\n- /refactoring = notes/docs only; no `.py`\n- Each layer must expose a single stable facade:\n- l1.api, l2.api, l3.api, l4.api, l5.api\nAll modules must satisfy the layer import matrix without exception.",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

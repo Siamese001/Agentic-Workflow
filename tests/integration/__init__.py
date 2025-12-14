@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Integration Tests.
-
-Cross-component tests for system integration.
-Structure governed by META YAML domain_invariants.tests.allowed_structure.
-"""
+import logging
+logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+'\nIntegration Tests.\n\nCross-component tests for system integration.\nStructure governed by META YAML domain_invariants.tests.allowed_structure.\n'

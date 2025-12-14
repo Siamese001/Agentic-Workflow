@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Golden Tests.
-
-Reference output validation for prompts, semantics, and safety.
-Structure governed by META YAML domain_invariants.tests.allowed_structure.
-"""
+import logging
+logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+'\nGolden Tests.\n\nReference output validation for prompts, semantics, and safety.\nStructure governed by META YAML domain_invariants.tests.allowed_structure.\n'

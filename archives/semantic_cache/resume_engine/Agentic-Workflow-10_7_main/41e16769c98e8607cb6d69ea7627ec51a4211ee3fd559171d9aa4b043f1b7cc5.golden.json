@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Workflow v10.7 conceptual DAG specification package.\"\"\"\nfrom .dag_spec import CONCEPTUAL_DAG, ConceptualNode\n__all__ = [\"CONCEPTUAL_DAG\", \"ConceptualNode\"]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nL3 strategy orchestrator for resume job alignment workflows.\nCoordinates strategy planning and execution for resume enhancement.\n\"\"\"\nfrom typing import Any\nfrom l1.strategy_planning import plan_strategy\nfrom l2.strategy_executor import StrategyExecutor\nfrom runtime.observability import record_event\nclass StrategyOrchestrator:\n\"\"\"Pure orchestration for resume strategy job alignment workflows.\"\"\"\ndef __init__(self, strategy_executor: StrategyExecutor):\nself.strategy_executor = strategy_executor\ndef orchestrate_strategy(self, job: Any, resume: Any, config: Any) -> str:\n\"\"\"Orchestrates resume strategy workflow for job alignment processing.\"\"\"\nrecord_event(\"strategy_orchestration_start\", {})\nstrategy_plan = plan_strategy(job, resume, config)\nresult = self.strategy_executor.execute_strategy(\nf\"Execute strategy for: {strategy_plan.reasoning}\"\n)\nrecord_event(\"strategy_orchestration_complete\", {})\nreturn result",
-  "normalized_signature": "func:__init__;func:orchestrate_strategy;class:StrategyOrchestrator",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:orchestrate_strategy",
-  "test_coverage": []
-}

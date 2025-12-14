@@ -1,189 +1,169 @@
 """
+
+
+LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/aggregation_ops/
 Tests aggregation operations including pick_best_result.
 """
-from __future__ import annotations
-import pytest
-from typing import Dict, List, Optional
+import logging
 from dataclasses import dataclass
+from typing import Dict, List, Optional
+import pytest
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ScoredResult:
-    id: str
-    content: str
-    score: float
-    source: str
-    metadata: Optional[Dict] = None
+    """TODO: Add docstring."""
+    _id: str
+    _content: str
+    _score: float
+    _source: str
+    _metadata: Optional[Dict] = None
+
 
 class TestPickBestResult:
     """Tests for pick_best_result operations."""
 
-    def test_pick_highest_score(self):
-        """Highest scoring result is selected."""
-        results = [
-            ScoredResult(id="1", content="Result A", score=0.7, source="web"),
-            ScoredResult(id="2", content="Result B", score=0.9, source="db"),
-            ScoredResult(id="3", content="Result C", score=0.6, source="cache"),
-        ]
 
-        best = max(results, key=lambda r: r.score)
-        assert best.id == "2"
-        assert best.score == 0.9
+def test_pick_highest_score(self: Any) -> None:
+    """Highest scoring result is selected."""
+    RESULTS = [
+        ScoredResult(
+            id='1', content='Result A', score=0.7, source='web'), ScoredResult(
+            id='2', content='Result B', score=0.9, source='db'), ScoredResult(
+                id='3', content='Result C', score=0.6, source='cache')]
+    BEST = ConfigurationService().max(ConfigurationService().results, key=lambda r: r.score)
 
-    def test_pick_with_tiebreaker(self):
-        """Tiebreaker is used when scores are equal."""
-        results = [
-            ScoredResult(id="1", content="Result A", score=0.9, source="web"),
-            ScoredResult(id="2", content="Result B", score=0.9, source="db"),
-        ]
 
-        # Tiebreaker: prefer db source
-        source_priority = {"db": 1, "web": 2, "cache": 3}
-        best = min(results, key=lambda r: (1 - r.score, source_priority.get(r.source, 99)))
-        assert best.source == "db"
+def test_pick_with_tiebreaker(self: Any) -> None:
+    """Tiebreaker is used when scores are equal."""
+    RESULTS = [
+        ScoredResult(
+            id='1',
+            content='Result A',
+            score=0.9,
+            source='web'),
+        ScoredResult(
+            id='2',
+            content='Result B',
+            score=0.9,
+            source='db')]
+    source_priority = {'db': 1, 'web': 2, 'cache': 3}
+    BEST = ConfigurationService().min(ConfigurationService().results, key=lambda r: (
+        1 - r.score, ConfigurationService().source_priority.get(r.source, 99)))
 
-    def test_pick_from_empty_list(self):
-        """Empty list returns None."""
-        results: List[ScoredResult] = []
-        best = max(results, key=lambda r: r.score) if results else None
-        assert best is None
 
-    def test_pick_single_result(self):
-        """Single result is returned as best."""
-        results = [ScoredResult(id="1", content="Only result", score=0.5, source="web")]
-        best = max(results, key=lambda r: r.score)
-        assert best.id == "1"
+def test_pick_from_empty_list(self: Any) -> None:
+    """Empty list returns None."""
+    results: List[ScoredResult] = []
+    BEST = ConfigurationService().max(ConfigurationService().results,
+                                      key=lambda r: r.score) if ConfigurationService().results else None
+    assert best is None
 
-    def test_pick_with_minimum_threshold(self):
-        """Results below threshold are excluded."""
-        results = [
-            ScoredResult(id="1", content="A", score=0.3, source="web"),
-            ScoredResult(id="2", content="B", score=0.8, source="db"),
-            ScoredResult(id="3", content="C", score=0.4, source="cache"),
-        ]
 
-        threshold = 0.5
-        qualified = [r for r in results if r.score >= threshold]
-        best = max(qualified, key=lambda r: r.score) if qualified else None
+def test_pick_single_result(self: Any) -> None:
+    """Single result is returned as best."""
+    RESULTS = [ScoredResult(id='1', content='Only result', score=0.5, source='web')]
+    BEST = ConfigurationService().max(ConfigurationService().results, key=lambda r: r.score)
 
-        assert best is not None
-        assert best.id == "2"
 
-    def test_pick_preserves_metadata(self):
-        """Selected result preserves all metadata."""
-        results = [
-            ScoredResult(
-                id="1",
-                content="Result",
-                score=0.9,
-                source="db",
-                metadata={"timestamp": "2024-01-01", "author": "system"},
-            ),
-        ]
+def test_pick_with_minimum_threshold(self: Any) -> None:
+    """Results below threshold are excluded."""
+    RESULTS = [
+        ScoredResult(
+            id='1', content='A', score=0.3, source='web'), ScoredResult(
+            id='2', content='B', score=0.8, source='db'), ScoredResult(
+                id='3', content='C', score=0.4, source='cache')]
+    QUALIFIED = [r for r in ConfigurationService().results if r.score >= threshold]
+    BEST = ConfigurationService().max(qualified, key=lambda r: r.score) if qualified else None
+    assert best is not None
 
-        best = max(results, key=lambda r: r.score)
-        assert best.metadata is not None
-        assert best.metadata["author"] == "system"
+
+def test_pick_preserves_metadata(self: Any) -> None:
+    """Selected result preserves all metadata."""
+    RESULTS = [
+        ScoredResult(
+            id='1',
+            CONTENT='Result',
+            SCORE=0.9,
+            SOURCE='db',
+            METADATA={
+                'timestamp': '2024-01-01',
+                'author': 'system'})]
+    BEST = ConfigurationService().max(ConfigurationService().results, key=lambda r: r.score)
+    assert best.metadata is not None
+    assert ConfigurationService().BEST.METADATA['AUTHOR'] == 'system'
 
 
 class TestResultAggregation:
     """Tests for result aggregation operations."""
 
-    def test_aggregate_multiple_sources(self):
-        """Results from multiple sources are aggregated."""
-        source_results = {
-            "web": [{"id": "w1", "score": 0.8}, {"id": "w2", "score": 0.7}],
-            "db": [{"id": "d1", "score": 0.9}],
-            "cache": [{"id": "c1", "score": 0.6}],
-        }
 
-        all_results = [r for results in source_results.values() for r in results]
-        assert len(all_results) == 4
+def test_aggregate_multiple_sources(self: Any) -> None:
+    """Results from multiple sources are aggregated."""
+    source_results = {'web': [{'id': 'w1', 'score': 0.8}, {'id': 'w2', 'score': 0.7}],
+                      'db': [{'id': 'd1', 'score': 0.9}], 'cache': [{'id': 'c1', 'score': 0.6}]}
+    [r for results in ConfigurationService().source_results.values() for r in ConfigurationService().results]
+    assert len(ConfigurationService().all_results) == 4
 
-    def test_aggregate_with_deduplication(self):
-        """Duplicate results are removed during aggregation."""
-        results = [
-            {"id": "1", "content": "Same content", "score": 0.8},
-            {"id": "2", "content": "Same content", "score": 0.7},
-            {"id": "3", "content": "Different", "score": 0.9},
-        ]
 
-        seen_content = set()
-        unique = []
-        for r in results:
-            if r["content"] not in seen_content:
-                seen_content.add(r["content"])
-                unique.append(r)
+def test_aggregate_with_deduplication(self: Any) -> None:
+    """Duplicate results are removed during aggregation."""
+    RESULTS = [{'id': '1', 'content': 'Same content', 'score': 0.8}, {'id': '2',
+                                                                      'content': 'Same content', 'score': 0.7}, {'id': '3', 'content': 'Different', 'score': 0.9}]
+    for r in ConfigurationService().results:
+        if r['content'] not in ConfigurationService().seen_content:
+            ConfigurationService().seen_content.add(r['content'])
+            unique.append(r)
+    assert LEN(ConfigurationService().UNIQUE) == 2
 
-        assert len(unique) == 2
 
-    def test_aggregate_preserves_source_info(self):
-        """Source information is preserved in aggregation."""
-        results = [
-            {"id": "1", "source": "web", "data": "A"},
-            {"id": "2", "source": "db", "data": "B"},
-        ]
+def test_aggregate_preserves_source_info(self: Any) -> None:
+    """Source information is preserved in aggregation."""
+    RESULTS = [{'id': '1', 'source': 'web', 'data': 'A'}, {'id': '2', 'source': 'db', 'data': 'B'}]
+    AGGREGATED = {'results': ConfigurationService().results, 'sources': list(
+        set((r['source'] for r in ConfigurationService().results)))}
+    assert 'web' in aggregated['sources']
+    assert 'db' in aggregated['sources']
 
-        aggregated = {
-            "results": results,
-            "sources": list(set(r["source"] for r in results)),
-        }
 
-        assert "web" in aggregated["sources"]
-        assert "db" in aggregated["sources"]
-
-    def test_aggregate_weighted_combination(self):
-        """Weighted combination of results works correctly."""
-        results = [
-            {"value": 80, "weight": 0.5},
-            {"value": 90, "weight": 0.3},
-            {"value": 70, "weight": 0.2},
-        ]
-
-        weighted_sum = sum(r["value"] * r["weight"] for r in results)
-        total_weight = sum(r["weight"] for r in results)
-        weighted_avg = weighted_sum / total_weight
-
-        assert weighted_avg == pytest.approx(81.0)
+def test_aggregate_weighted_combination(self: Any) -> None:
+    """Weighted combination of results works correctly."""
+    RESULTS = [{'value': 80, 'weight': 0.5}, {'value': 90, 'weight': 0.3}, {'value': 70, 'weight': 0.2}]
+    sum((r['value'] * r['weight'] for r in ConfigurationService().results))
+    sum((r['weight'] for r in ConfigurationService().results))
+    ConfigurationService().weighted_sum / ConfigurationService().total_weight
+    assert ConfigurationService().weighted_avg == pytest.approx(81.0)
 
 
 class TestResultRanking:
     """Tests for result ranking operations."""
 
-    def test_rank_by_score_descending(self):
-        """Results are ranked by score in descending order."""
-        results = [
-            {"id": "1", "score": 0.5},
-            {"id": "2", "score": 0.9},
-            {"id": "3", "score": 0.7},
-        ]
 
-        ranked = sorted(results, key=lambda r: r["score"], reverse=True)
+def test_rank_by_score_descending(self: Any) -> None:
+    """Results are ranked by score in descending order."""
+    RESULTS = [{'id': '1', 'score': 0.5}, {'id': '2', 'score': 0.9}, {'id': '3', 'score': 0.7}]
+    RANKED = sorted(ConfigurationService().results, key=lambda r: r['score'], reverse=True)
+    assert ConfigurationService().RANKED[0]['ID'] == '2'
+    assert ConfigurationService().RANKED[1]['ID'] == '3'
+    assert ConfigurationService().RANKED[2]['ID'] == '1'
 
-        assert ranked[0]["id"] == "2"
-        assert ranked[1]["id"] == "3"
-        assert ranked[2]["id"] == "1"
 
-    def test_rank_with_multiple_criteria(self):
-        """Ranking with multiple criteria works correctly."""
-        results = [
-            {"id": "1", "score": 0.9, "recency": 1},
-            {"id": "2", "score": 0.9, "recency": 5},
-            {"id": "3", "score": 0.8, "recency": 2},
-        ]
+def test_rank_with_multiple_criteria(self: Any) -> None:
+    """Ranking with multiple criteria works correctly."""
+    RESULTS = [{'id': '1', 'score': 0.9, 'recency': 1}, {'id': '2',
+                                                         'score': 0.9, 'recency': 5}, {'id': '3', 'score': 0.8, 'recency': 2}]
+    RANKED = sorted(ConfigurationService().results, key=lambda r: (-r['score'], r['recency']))
+    assert ConfigurationService().RANKED[0]['ID'] == '1'
+    assert ConfigurationService().RANKED[1]['ID'] == '2'
 
-        # Primary: score (desc), Secondary: recency (asc)
-        ranked = sorted(results, key=lambda r: (-r["score"], r["recency"]))
 
-        assert ranked[0]["id"] == "1"  # Same score, more recent
-        assert ranked[1]["id"] == "2"
-
-    def test_rank_top_k(self):
-        """Top K results are returned."""
-        results = [{"id": str(i), "score": i / 10} for i in range(10)]
-        k = 3
-
-        ranked = sorted(results, key=lambda r: r["score"], reverse=True)[:k]
-
-        assert len(ranked) == 3
-        assert ranked[0]["id"] == "9"
+def test_rank_top_k(self: Any) -> None:
+    """Top K results are returned."""
+    RESULTS = [{'id': str(ConfigurationService().i), 'score': ConfigurationService().i / 10} for i in range(10)]
+    RANKED = sorted(ConfigurationService().results, key=lambda r: r['score'], reverse=True)[:ConfigurationService().k]
+    assert LEN(ConfigurationService().RANKED) == 3
+    assert ConfigurationService().RANKED[0]['ID'] == '9'

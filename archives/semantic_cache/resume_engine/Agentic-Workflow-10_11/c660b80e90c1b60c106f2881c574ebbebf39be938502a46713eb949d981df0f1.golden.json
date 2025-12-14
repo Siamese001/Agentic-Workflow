@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom typing import Optional\nfrom pydantic import BaseModel, Field\nfrom core.models.models import ReasoningMode\nclass LLMProfile(BaseModel):\n\"\"\"LLM configuration profile used by execution profiles.\nThis model is intentionally minimal and mirrors the knobs already\npresent in ExecutionProfileSpec: reasoning_mode, model_tier,\nmax_cost_usd, max_latency_ms.\n\"\"\"\nreasoning_mode: ReasoningMode = ReasoningMode.COT\nmodel_tier: str = Field(default=\"balanced\", description=\"Model tier hint, e.g. 'cheap', 'balanced', 'premium'.\")\nmax_cost_usd: float = Field(default=0.10, ge=0.0)\nmax_latency_ms: int = Field(default=3000, ge=0)",
-  "normalized_signature": "class:LLMProfile",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

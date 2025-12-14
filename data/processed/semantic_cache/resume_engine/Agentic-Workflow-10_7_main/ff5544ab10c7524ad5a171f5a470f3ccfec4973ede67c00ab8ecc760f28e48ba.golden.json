@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Compatibility shim that exposes the vendored stub as \"pydantic\".\"\"\"\nfrom pydantic_stub import * # noqa: F401,F403",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

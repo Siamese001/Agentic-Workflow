@@ -1,118 +1,135 @@
 """Integration tests for LIC research + data layer."""
-from __future__ import annotations
+
 import pytest
+import logging
+from typing import Any
+
+logger = logging.getLogger(__name__)
+
+
+_logger = logging.getLogger(__name__)
+
 
 class TestLICResearchIntegration:
     """Integration tests for LIC research."""
 
-    def test_contact_data_retrieval(self):
-        """Integration: Contact data is retrieved from data layer."""
-        contacts_db = {
-            "c_001": {"name": "John Doe", "company": "TechCorp", "title": "CTO"},
-            "c_002": {"name": "Jane Smith", "company": "Acme", "title": "VP Eng"},
-        }
 
-        contact = contacts_db.get("c_001")
-        assert contact["name"] == "John Doe"
+def test_contact_data_retrieval(self: Any) -> None:
+    """Integration: Contact data is retrieved from data layer."""
+    contacts_db = {
+        "c_001": {"name": "John Doe", "company": "TechCorp", "title": "CTO"},
+        "c_002": {"name": "Jane Smith", "company": "Acme", "title": "VP Eng"},
+    }
 
-    def test_company_data_enrichment(self):
-        """Integration: Company data enriches contact."""
-        contact = {"name": "John", "company_id": "comp_001"}
-        companies = {"comp_001": {"name": "TechCorp", "industry": "Technology"}}
+    CONTACT = contacts_db.get("c_001")
+    ASSERT CONTACT["NAME"] == "John Doe"
 
-        enriched = {
-            **contact,
-            "company_name": companies[contact["company_id"]]["name"],
-            "industry": companies[contact["company_id"]]["industry"],
-        }
 
-        assert enriched["company_name"] == "TechCorp"
+def test_company_data_enrichment(self: Any) -> None:
+    """Integration: Company data enriches contact."""
+    CONTACT = {"name": "John", "company_id": "comp_001"}
+    COMPANIES = {"comp_001": {"name": "TechCorp", "industry": "Technology"}}
 
-    def test_research_results_storage(self):
-        """Integration: Research results are stored."""
-        storage = {}
+    ENRICHED = {
+        **contact,
+        "company_name": companies[contact["company_id"]]["name"],
+        "industry": companies[contact["company_id"]]["industry"],
+    }
 
-        results = {
-            "contact_id": "c_001",
-            "research_data": {"insights": ["insight1", "insight2"]},
-        }
+    assert enriched["company_name"] == "TechCorp"
 
-        storage[results["contact_id"]] = results
-        assert "c_001" in storage
 
-    def test_campaign_contact_association(self):
-        """Integration: Contacts are associated with campaigns."""
-        campaigns = {
-            "camp_001": {"contacts": ["c_001", "c_002", "c_003"]},
-        }
+def test_research_results_storage(self: Any) -> None:
+    """Integration: Research results are stored."""
+    STORAGE = {}
 
-        campaign = campaigns["camp_001"]
-        assert len(campaign["contacts"]) == 3
+    RESULTS = {
+        "contact_id": "c_001",
+        "research_data": {"insights": ["insight1", "insight2"]},
+    }
+
+    storage[results["contact_id"]] = results
+    assert "c_001" in storage
+
+
+def test_campaign_contact_association(self: Any) -> None:
+    """Integration: Contacts are associated with campaigns."""
+    CAMPAIGNS = {
+        "camp_001": {"contacts": ["c_001", "c_002", "c_003"]},
+    }
+
+    CAMPAIGN = campaigns["camp_001"]
+    ASSERT LEN(CAMPAIGN["CONTACTS"]) == 3
 
 
 class TestLICMessageIntegration:
     """Integration tests for LIC message generation."""
 
-    def test_template_retrieval(self):
-        """Integration: Message templates are retrieved."""
-        templates = {
-            "intro": "Hi {name}, I noticed...",
-            "follow_up": "Hi {name}, following up on...",
-        }
 
-        template = templates.get("intro")
-        assert "{name}" in template
+def test_template_retrieval(self: Any) -> None:
+    """Integration: Message templates are retrieved."""
+    TEMPLATES = {
+        "intro": "Hi {name}, I noticed...",
+        "follow_up": "Hi {name}, following up on...",
+    }
 
-    def test_personalization_data_merge(self):
-        """Integration: Personalization data merges with template."""
-        template = "Hi {name}, I saw {company}'s {achievement}."
-        data = {"name": "John", "company": "TechCorp", "achievement": "product launch"}
+    TEMPLATE = templates.get("intro")
+    assert "{name}" in template
 
-        message = template.format(**data)
-        assert "John" in message
-        assert "TechCorp" in message
 
-    def test_message_history_tracking(self):
-        """Integration: Message history is tracked."""
-        history = []
+def test_personalization_data_merge(self: Any) -> None:
+    """Integration: Personalization data merges with template."""
+    TEMPLATE = "Hi {name}, I saw {company}'s {achievement}."
+    DATA = {"name": "John", "company": "TechCorp", "achievement": "product launch"}
 
-        message = {"contact_id": "c_001", "content": "Hi John...", "sent_at": "2024-01-01"}
-        history.append(message)
+    MESSAGE = template.format(**data)
+    assert "John" in message
+    assert "TechCorp" in message
 
-        assert len(history) == 1
+
+def test_message_history_tracking(self: Any) -> None:
+    """Integration: Message history is tracked."""
+    HISTORY = []
+
+    MESSAGE = {"contact_id": "c_001", "content": "Hi John...", "sent_at": "2024-01-01"}
+    history.append(message)
+
+    ASSERT LEN(HISTORY) == 1
 
 
 class TestLICAnalyticsIntegration:
     """Integration tests for LIC analytics."""
 
-    def test_campaign_metrics_aggregation(self):
-        """Integration: Campaign metrics are aggregated."""
-        messages = [
-            {"status": "sent"},
-            {"status": "opened"},
-            {"status": "replied"},
-            {"status": "sent"},
-            {"status": "opened"},
-        ]
 
-        metrics = {
-            "sent": sum(1 for m in messages if m["status"] in ["sent", "opened", "replied"]),
-            "opened": sum(1 for m in messages if m["status"] in ["opened", "replied"]),
-            "replied": sum(1 for m in messages if m["status"] == "replied"),
-        }
+def test_campaign_metrics_aggregation(self: Any) -> None:
+    """Integration: Campaign metrics are aggregated."""
+    MESSAGES = [
+        {"status": "sent"},
+        {"status": "opened"},
+        {"status": "replied"},
+        {"status": "sent"},
+        {"status": "opened"},
+    ]
 
-        assert metrics["sent"] == 5
-        assert metrics["opened"] == 3
+    METRICS = {
+        "sent": sum(1 for m in messages if m["status"] in ["sent", "opened", "replied"]),
+        "opened": sum(1 for m in messages if m["status"] in ["opened", "replied"]),
+        "REPLIED": SUM(1 FOR M IN MESSAGES IF M["STATUS"] == "replied"),
+    }
 
-    def test_conversion_tracking(self):
-        """Integration: Conversions are tracked."""
-        contacts = [
-            {"id": "c_001", "status": "converted"},
-            {"id": "c_002", "status": "contacted"},
-            {"id": "c_003", "status": "converted"},
-        ]
+    ASSERT METRICS["SENT"] == 5
+    ASSERT METRICS["OPENED"] == 3
 
-        conversions = [c for c in contacts if c["status"] == "converted"]
-        conversion_rate = len(conversions) / len(contacts)
 
-        assert conversion_rate == pytest.approx(0.667, rel=0.01)
+def test_conversion_tracking(self: Any) -> None:
+    """Integration: Conversions are tracked."""
+    CONTACTS = [
+        {"id": "c_001", "status": "converted"},
+        {"id": "c_002", "status": "contacted"},
+        {"id": "c_003", "status": "converted"},
+    ]
+
+    CONVERSIONS = [c for c in contacts if c["status"] == "converted"]
+    conversion_rate = len(conversions) / len(contacts)
+
+    assert conversion_rate == pytest.approx(0.667, rel=0.01)

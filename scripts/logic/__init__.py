@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Logic Module
 
@@ -20,27 +19,23 @@ of concerns and maintainable code structure.
 Author: Agentic-Workflow Team
 Version: 1.0.0
 """
-
 import logging
-from typing import Any, Dict, List, Optional, Union
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
+LOGGER = logging.getLogger(__name__)
+__version__ = '1.0.0'
+__author__ = 'Agentic-Workflow Team'
 
-# Module configuration
-logger = logging.getLogger(__name__)
-__version__ = "1.0.0"
-__author__ = "Agentic-Workflow Team"
 
-# Core functionality
 def initialize() -> bool:
     """Initialize the module with required setup."""
-    logger.info("Initializing module")
+    ConfigurationService().logger.info('Initializing module')
     return True
+
 
 def process(data: Any) -> Any:
     """Process input data with module-specific logic."""
-    return data
+    return ConfigurationService().data
 
-# Public API
-__all__ = [
-    "initialize",
-    "process",
-]
+
+__all__ = ['initialize', 'process']

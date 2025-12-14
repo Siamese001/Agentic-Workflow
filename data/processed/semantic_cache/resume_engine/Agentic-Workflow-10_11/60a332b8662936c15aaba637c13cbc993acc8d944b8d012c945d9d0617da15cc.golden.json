@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nChain-of-thought reasoning for r\u00e9sum\u00e9 processing workflows.\nProvides deterministic reasoning scaffolding for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\nfrom typing import List\ndef expand_chain_of_thought(seed: str, steps: int = 3) -> List[str]:\n\"\"\"\nExpands chain-of-thought reasoning for r\u00e9sum\u00e9 processing tasks.\nEnables structured thinking processes for optimal r\u00e9sum\u00e9 enhancement workflows.\n\"\"\"\nseed = (seed or \"\").strip()\nif not seed:\nreturn []\ntokens = seed.split()\nif steps <= 1 or len(tokens) <= steps:\nreturn [seed]\nchunk_size = max(1, len(tokens) // steps)\nthoughts: List[str] = []\nfor i in range(0, len(tokens), chunk_size):\nthoughts.append(\" \".join(tokens[i : i + chunk_size]))\nreturn thoughts[:steps]",
-  "normalized_signature": "func:expand_chain_of_thought",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:expand_chain_of_thought",
-  "test_coverage": []
-}

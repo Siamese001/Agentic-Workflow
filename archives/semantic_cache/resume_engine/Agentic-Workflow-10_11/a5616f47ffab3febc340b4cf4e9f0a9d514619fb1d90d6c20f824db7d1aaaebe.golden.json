@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom typing import Dict\ndef gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, float]) -> bool:\n\"\"\"Return True if the experiment meets or exceeds baseline.\nFor now we only enforce that avg_score is not worse and that\npass_count is not lower when both metrics are present.\n\"\"\"\nif not baseline_scores:\nreturn True\nnew_avg = float(new_scores.get(\"avg_score\", 0.0))\nbase_avg = float(baseline_scores.get(\"avg_score\", 0.0))\nif new_avg < base_avg:\nreturn False\nif \"pass_count\" in baseline_scores and \"pass_count\" in new_scores:\nif float(new_scores[\"pass_count\"]) < float(baseline_scores[\"pass_count\"]):\nreturn False\nreturn True\ndef gate_against_baseline(\ncurrent_scores: Dict[str, float],\nbaseline_scores: Dict[str, float],\ntolerance: float = 0.0,\n) -> bool:\nif not baseline_scores:\nreturn True\nadjusted_baseline = dict(baseline_scores)\nbase_avg = float(baseline_scores.get(\"avg_score\", 0.0))\nadjusted_baseline[\"avg_score\"] = max(0.0, base_avg - tolerance)\nreturn gate_experiment(current_scores, adjusted_baseline)",
-  "normalized_signature": "func:gate_experiment;func:gate_against_baseline",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:gate_experiment,gate_against_baseline",
-  "test_coverage": []
-}

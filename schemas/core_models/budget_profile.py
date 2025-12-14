@@ -1,6 +1,6 @@
-from __future__ import annotations
-
-from pydantic import BaseModel, Field
+import logging
+logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class BudgetProfile(BaseModel):
@@ -9,9 +9,5 @@ class BudgetProfile(BaseModel):
     This duplicates some of the fields from ExecutionProfileSpec so that
     future callers can reason about budget in a single nested object.
     """
-
-    max_cost_usd: float = Field(default=0.10, ge=0.0)
-    max_latency_ms: int = Field(default=3000, ge=0)
-
-
-
+    _max_cost_usd: float = Field(default=0.1, ge=0.0)
+    _max_latency_ms: int = Field(default=3000, ge=0)
