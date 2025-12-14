@@ -67,6 +67,14 @@ def fix_todo_comments(file_path: str) -> bool:
 # L4 REFACTOR: Function 'fix_print_statements' exceeds 54 lines
 # TODO: Manual split required - see refactor plan .\scripts\fix_all_canon_violations.py:fix_print_statements
 
+
+# L4 REFACTOR: Function 'fix_print_statements' exceeds 54 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_all_canon_violations.py:fix_print_statements
+
+
+# L4 REFACTOR: Function 'fix_print_statements' exceeds 54 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_all_canon_violations.py:fix_print_statements
+
 def fix_print_statements(file_path: str) -> bool:
     """Replace print statements with logger calls."""
     try:

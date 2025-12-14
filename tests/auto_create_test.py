@@ -27,8 +27,15 @@ import sys
 from pathlib import Path
 from typing import List
 
-
 # REFACTOR: Split this 77-line function
+
+# L4 REFACTOR: Function 'create_test_files' exceeds 77 lines
+# TODO: Manual split required - see refactor plan .\tests\auto_create_test.py:create_test_files
+
+
+# L4 REFACTOR: Function 'create_test_files' exceeds 77 lines
+# TODO: Manual split required - see refactor plan .\tests\auto_create_test.py:create_test_files
+
 
 # L4 REFACTOR: Function 'create_test_files' exceeds 77 lines
 # TODO: Manual split required - see refactor plan .\tests\auto_create_test.py:create_test_files

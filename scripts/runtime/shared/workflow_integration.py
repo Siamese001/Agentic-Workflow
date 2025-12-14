@@ -155,6 +155,14 @@ def set_output(self: Any, key: str, value: Any) -> None:
 # L4 REFACTOR: Function 'create_workflow_context' exceeds 58 lines
 # TODO: Manual split required - see refactor plan .\scripts\runtime\shared\workflow_integration.py:create_workflow_context
 
+
+# L4 REFACTOR: Function 'create_workflow_context' exceeds 58 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\workflow_integration.py:create_workflow_context
+
+
+# L4 REFACTOR: Function 'create_workflow_context' exceeds 58 lines
+# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\workflow_integration.py:create_workflow_context
+
 def create_workflow_context(
     workflow_id: str,
     provider: Provider = Provider.OPENAI,

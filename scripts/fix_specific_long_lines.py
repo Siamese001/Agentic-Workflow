@@ -64,6 +64,14 @@ VIOLATIONS = [
 # L4 REFACTOR: Function 'fix_long_line' exceeds 121 lines
 # TODO: Manual split required - see refactor plan .\scripts\fix_specific_long_lines.py:fix_long_line
 
+
+# L4 REFACTOR: Function 'fix_long_line' exceeds 121 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_specific_long_lines.py:fix_long_line
+
+
+# L4 REFACTOR: Function 'fix_long_line' exceeds 121 lines
+# TODO: Manual split required - see refactor plan .\scripts\fix_specific_long_lines.py:fix_long_line
+
 def fix_long_line(filepath: str, line_num: int) -> bool:
     """Fix a specific long line in a file."""
     try:
