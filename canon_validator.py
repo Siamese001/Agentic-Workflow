@@ -2,13 +2,12 @@ import sys
 import os
 import re
 import ast
-import json
 import subprocess
+import hashlib
 import logging
-from dataclasses import dataclass, field
-from typing import List, Dict, Set, Any
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Dict, Set, Tuple, Optional, Any
+from dataclasses import dataclass, field
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -458,7 +457,7 @@ class SafetyInspector(SubAtomicAgent):
 
 class TypeMechanic(SubAtomicAgent):
     """
-    KEYS: 22 (Missing Types), 24 (Unused Vars)
+    KEYS: 22 (Missing Types), 23 (Unreachable Code), 24 (Unused Vars)
     ROLE: Precision Engineering. Requires AST_VALID signal.
     """
     def can_run(self):
@@ -468,13 +467,21 @@ class TypeMechanic(SubAtomicAgent):
     def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Safety...")
 
-        # [WINDSURF: MIGRATE KEYS 22, 24]
+        # Check Key 22: Missing type hints
         try:
             passed, details = check_key_22_no_missing_type_hints()
             self.ctx.report(self.name, 22, passed, details)
         except Exception as e:
             self.ctx.report(self.name, 22, False, [str(e)])
 
+        # Check Key 23: Unreachable code
+        try:
+            passed, details = check_key_23_no_unreachable_code()
+            self.ctx.report(self.name, 23, passed, details)
+        except Exception as e:
+            self.ctx.report(self.name, 23, False, [str(e)])
+
+        # Check Key 24: Unused variables
         try:
             passed, details = check_key_24_no_unused_variables()
             self.ctx.report(self.name, 24, passed, details)
@@ -483,7 +490,7 @@ class TypeMechanic(SubAtomicAgent):
 
 class StructuralEngineer(SubAtomicAgent):
     """
-    KEYS: 17 (Large Funcs), 19 (Complexity), 25 (Globals), 42 (Large Files), 43 (Class Density)
+    KEYS: 17 (Large Funcs), 19 (Complexity), 25 (Globals), 42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
     ROLE: Heavy Refactoring with Semantic Intelligence.
     """
     def can_run(self):
@@ -524,6 +531,13 @@ class StructuralEngineer(SubAtomicAgent):
             self.ctx.report(self.name, 43, passed, details)
         except Exception as e:
             self.ctx.report(self.name, 43, False, [str(e)])
+        
+        # Key 46: Duplicate code check
+        try:
+            passed, details = check_key_46_no_duplicate_code()
+            self.ctx.report(self.name, 46, passed, details)
+        except Exception as e:
+            self.ctx.report(self.name, 46, False, [str(e)])
         
         # Now use semantic plans for intelligent refactoring
         if not hasattr(self.ctx, 'refactor_plan') or not self.ctx.refactor_plan:
@@ -627,7 +641,7 @@ class BudgetAgent(SubAtomicAgent):
 
 class DependencySentinel(SubAtomicAgent):
     """
-    KEYS: 09 (Unused Imports), 14 (Duplicate Imports)
+    KEYS: 09 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
     """
     def can_run(self):
@@ -690,6 +704,14 @@ class DependencySentinel(SubAtomicAgent):
         # Report success signals
         self.ctx.report(self.name, 9, True, "Auto-fixed by Sentinel.")
         self.ctx.report(self.name, 14, True, "Auto-fixed by Sentinel.")
+        
+        # Check Key 44: Circular imports
+        try:
+            passed, details = check_key_44_no_circular_imports()
+            self.ctx.report(self.name, 44, passed, details)
+        except Exception as e:
+            self.ctx.report(self.name, 44, False, [str(e)])
+        
         self.ctx.signals.add("DEPS_VALID") # This is the crucial signal to unblock TypeMechanic
 
 class DocumentationAgent(SubAtomicAgent):
@@ -1589,9 +1611,39 @@ def check_key_22_no_missing_type_hints() -> tuple[bool, List[str]]:
 def check_key_23_no_unreachable_code() -> tuple[bool, List[str]]:
     """Key 23: No unreachable code."""
     info("Checking for unreachable code...")
-    # Stub implementation
-    success("23", "No unreachable code (stub implementation)")
-    return (True, [])
+    violations = []
+    python_files = get_python_files()
+    
+    for file_path in python_files:
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                tree = ast.parse(f.read())
+                
+            # Walk through all nodes that have a body
+            for node in ast.walk(tree):
+                if hasattr(node, 'body') and node.body:
+                    # Skip try/except/finally blocks as they have valid control flow
+                    if isinstance(node, (ast.Try, ast.ExceptHandler, ast.Finally)):
+                        continue
+                    
+                    # Check for statements after return/raise in the same block
+                    statements = node.body
+                    for i in range(len(statements) - 1):
+                        current = statements[i]
+                        next_stmt = statements[i + 1]
+                        
+                        # If current statement is return or raise, next is unreachable
+                        if isinstance(current, (ast.Return, ast.Raise)):
+                            violations.append(f"{file_path}:{next_stmt.lineno}")
+        except Exception:
+            continue
+    
+    if violations:
+        fail("23", f"Found {len(violations)} instances of unreachable code")
+        return (False, violations)
+    else:
+        success("23", "No unreachable code found")
+        return (True, [])
 
 def check_key_24_no_unused_variables() -> tuple[bool, List[str]]:
     """Key 24: No unused variables."""
@@ -1641,9 +1693,36 @@ def check_key_24_no_unused_variables() -> tuple[bool, List[str]]:
 def check_key_25_no_global_variables() -> tuple[bool, List[str]]:
     """Key 25: No global variables."""
     info("Checking for global variables...")
-    # Stub implementation
-    success("25", "No global variables (stub implementation)")
-    return (True, [])
+    violations = []
+    python_files = get_python_files()
+    
+    for file_path in python_files:
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                tree = ast.parse(f.read())
+                
+            # Check top-level statements for global variables (non-constants)
+            for node in tree.body:
+                if isinstance(node, ast.Assign):
+                    for target in node.targets:
+                        if isinstance(target, ast.Name):
+                            # Skip if it's a constant (ALL_CAPS)
+                            if target.id.isupper():
+                                continue
+                            # Skip if it's a dunder variable (__name__, etc.)
+                            if target.id.startswith("__") and target.id.endswith("__"):
+                                continue
+                            # This is a mutable global variable
+                            violations.append(f"{file_path}:{node.lineno} {target.id}")
+        except Exception:
+            continue
+    
+    if violations:
+        fail("25", f"Found {len(violations)} global variables")
+        return (False, violations)
+    else:
+        success("25", "No global variables found")
+        return (True, [])
 
 # --- PHASE 5: PATTERNS (Keys 26-39) ---
 
@@ -1778,9 +1857,57 @@ def check_key_43_no_many_classes() -> tuple[bool, List[str]]:
 def check_key_44_no_circular_imports() -> tuple[bool, List[str]]:
     """Key 44: No circular imports."""
     info("Checking for circular imports...")
-    # Stub implementation
-    success("44", "No circular imports (stub implementation)")
-    return (True, [])
+    violations = []
+    python_files = get_python_files()
+    
+    # Build import map: {file: set_of_imported_modules}
+    import_map = {}
+    
+    for file_path in python_files:
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                tree = ast.parse(f.read())
+                
+            imported_modules = set()
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    for alias in node.names:
+                        imported_modules.add(alias.name.split('.')[0])
+                elif isinstance(node, ast.ImportFrom):
+                    if node.module:
+                        imported_modules.add(node.module.split('.')[0])
+            
+            import_map[file_path] = imported_modules
+        except Exception:
+            continue
+    
+    # Check for reciprocal circular imports
+    checked_pairs = set()
+    for file_a, imports_a in import_map.items():
+        base_a = os.path.splitext(os.path.basename(file_a))[0]
+        
+        for file_b, imports_b in import_map.items():
+            if file_a == file_b:
+                continue
+                
+            # Avoid checking the same pair twice
+            pair = tuple(sorted([file_a, file_b]))
+            if pair in checked_pairs:
+                continue
+            checked_pairs.add(pair)
+            
+            base_b = os.path.splitext(os.path.basename(file_b))[0]
+            
+            # Check for reciprocal loop: A imports B AND B imports A
+            if base_b in imports_a and base_a in imports_b:
+                violations.append(f"Circular import: {file_a} <-> {file_b}")
+    
+    if violations:
+        fail("44", f"Found {len(violations)} circular imports")
+        return (False, violations)
+    else:
+        success("44", "No circular imports found")
+        return (True, [])
 
 def check_key_45_no_dead_code() -> tuple[bool, List[str]]:
     """Key 45: No dead code."""
@@ -1792,9 +1919,46 @@ def check_key_45_no_dead_code() -> tuple[bool, List[str]]:
 def check_key_46_no_duplicate_code() -> tuple[bool, List[str]]:
     """Key 46: No duplicate code."""
     info("Checking for duplicate code...")
-    # Stub implementation
-    success("46", "No duplicate code (stub implementation)")
-    return (True, [])
+    violations = []
+    python_files = get_python_files()
+    
+    # Store file hashes and their paths
+    content_hashes = {}
+    
+    for file_path in python_files:
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                
+            # Parse AST to strip comments and normalize content
+            tree = ast.parse(content)
+            
+            # Remove comments and docstrings, normalize whitespace
+            # Using ast.unparse to get clean code without comments
+            clean_content = ast.unparse(tree)
+            
+            # Normalize whitespace
+            clean_content = '\n'.join(line.strip() for line in clean_content.splitlines() if line.strip())
+            
+            # Calculate hash
+            content_hash = hashlib.md5(clean_content.encode()).hexdigest()
+            
+            if content_hash in content_hashes:
+                # Found duplicate
+                original_file = content_hashes[content_hash]
+                violations.append(f"Duplicate code: {file_path} duplicates {original_file}")
+            else:
+                content_hashes[content_hash] = file_path
+                
+        except Exception:
+            continue
+    
+    if violations:
+        fail("46", f"Found {len(violations)} duplicate code files")
+        return (False, violations)
+    else:
+        success("46", "No duplicate code found")
+        return (True, [])
 
 def check_key_47_follow_naming_conventions() -> tuple[bool, List[str]]:
     """Key 47: Follow naming conventions."""
