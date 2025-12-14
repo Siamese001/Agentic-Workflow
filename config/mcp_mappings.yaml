@@ -16,6 +16,65 @@ defaults:
 # Role-Specific Mappings
 # Each role gets default servers + their specific servers
 roles:
+  # DEBUGGER role has full access to telemetry for introspection and self-correction
+  DEBUGGER:
+    - server: "telemetry"
+      command: "python"
+      args: ["servers/telemetry_server.py"]
+      description: "Telemetry and introspection tools for debugging"
+      env:
+        PYTHONPATH: "."
+    - server: "filesystem"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "./"]
+      description: "File system access"
+
+  # MANAGER role can oversee all operations with telemetry
+  MANAGER:
+    - server: "telemetry"
+      command: "python"
+      args: ["servers/telemetry_server.py"]
+      description: "Telemetry and performance monitoring"
+      env:
+        PYTHONPATH: "."
+    - server: "filesystem"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "./"]
+      description: "File system access"
+
+  # CODER gets access to telemetry for self-correction loops
+  CODER:
+    - server: "telemetry"
+      command: "python"
+      args: ["servers/telemetry_server.py"]
+      description: "Telemetry for self-correction and debugging"
+      env:
+        PYTHONPATH: "."
+    - server: "github"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-github"]
+      env:
+        GITHUB_TOKEN: "${GITHUB_TOKEN}"
+      description: "GitHub repository access and operations"
+    
+    - server: "git"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-git"]
+      description: "Local git operations"
+
+  # REVIEWER needs telemetry to check quality metrics
+  REVIEWER:
+    - server: "telemetry"
+      command: "python"
+      args: ["servers/telemetry_server.py"]
+      description: "Quality metrics and performance data"
+      env:
+        PYTHONPATH: "."
+    - server: "filesystem"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "./"]
+      description: "Read generated files for validation"
+
   RESEARCHER:
     - server: "brave-search"
       command: "npx"
@@ -28,19 +87,6 @@ roles:
       command: "npx"
       args: ["-y", "@modelcontextprotocol/server-fetch"]
       description: "HTTP fetch for retrieving web content"
-
-  CODER:
-    - server: "github"
-      command: "npx"
-      args: ["-y", "@modelcontextprotocol/server-github"]
-      env:
-        GITHUB_TOKEN: "${GITHUB_TOKEN}"
-      description: "GitHub repository access and operations"
-    
-    - server: "git"
-      command: "npx"
-      args: ["-y", "@modelcontextprotocol/server-git"]
-      description: "Local git operations"
 
   DATA_ANALYST:
     - server: "postgres"
@@ -106,3 +152,4 @@ env_templates:
   BRAVE_API_KEY: "Required for Brave Search access"
   GITHUB_TOKEN: "Required for GitHub API access"
   DATABASE_URL: "PostgreSQL connection string"
+  PYTHONPATH: "Python path for MCP servers"
