@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Pydantic schemas for workflow node validation.
 
 Defines strict models for each K-node to enforce structure

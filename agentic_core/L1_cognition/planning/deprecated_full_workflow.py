@@ -1,7 +1,6 @@
 """End-to-End Workflow Tests
 
 
-logger = logging.getLogger(__name__)
 Tests complete workflows from job input to final output,
 integrating all layers and components.
 """

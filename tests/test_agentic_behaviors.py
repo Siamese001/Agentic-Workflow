@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Test Suite: Agentic Behaviors
 
 This module tests complex agentic behaviors including:

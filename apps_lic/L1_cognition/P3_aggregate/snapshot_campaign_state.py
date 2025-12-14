@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Snapshot Campaign State - atomic implementation."""

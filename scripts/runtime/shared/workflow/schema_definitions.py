@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Executive Strategy Schema Definitions - Pydantic models for K.11, K.12, K.13 agents.
 
 Defines structured outputs for:

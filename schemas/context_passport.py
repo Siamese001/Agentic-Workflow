@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Context Passport - Thermostatic Containment Field for High-Temperature/High-Signal Architecture.
 
 The Context Passport implements dual-state isolation to safely maximize LLM creativity

@@ -29,7 +29,7 @@ FIRST_PERSON_PATTERNS = [
     r'\bwe\b', r'\bwe\'re\b', r'\bwe\'ve\b', r'\bour\b', r'\bours\b',
 ]
 
-class Strategist_BioWriter(Agent):
+class StrategistBioWriter(Agent):
     """Strategist BioWriter agent for executive summary generation.
 
     This agent generates executive summaries with strict constraints:

@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Google Generative AI (Gemini) client adapter for v10_10.\nThis module is the ONLY place where google.generativeai is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n\"\"\"\nfrom __future__ import annotations\nimport os\nfrom typing import Any\ndef run_llm_google(\nmodel: str,\nprompt: str,\n*,\ntemperature: float,\nmax_tokens: int,\ntimeout_s: int,\n) -> str:\n\"\"\"Run a Gemini generate_content call and return the response text.\"\"\"\ntry:\nimport google.generativeai as genai # type: ignore\nexcept ImportError as exc: # pragma: no cover - optional dependency\nraise ImportError(\"google-generativeai package not installed\") from exc\napi_key = os.getenv(\"GOOGLE_API_KEY\") or os.getenv(\"GEMINI_API_KEY\")\nif not api_key:\nraise RuntimeError(\"GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider\")\ngenai.configure(api_key=api_key)\nmodel_client = genai.GenerativeModel(model)\nresp: Any = model_client.generate_content(prompt)\nreturn str(getattr(resp, \"text\", \"\") or \"\")",
-  "normalized_signature": "func:run_llm_google",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:run_llm_google",
-  "test_coverage": []
-}

@@ -1,6 +1,5 @@
 import logging
 
-logger = logging.getLogger(__name__)
 # FILE: tests/golden_state/test_runner.py
 
 # from archives.legacy_root_folders.core.models.models import ExecutionProfile, RetrievalConfig  ...

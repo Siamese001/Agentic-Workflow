@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 # Ownership: apps_lic / unknown
 # -*- coding: utf-8 -*-
 """Test Lic Research Planner - atomic execution layer."""

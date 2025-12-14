@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Test Suite: Hardened Infrastructure Edge Cases
 
 This module tests catastrophic failure scenarios and edge cases

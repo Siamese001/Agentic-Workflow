@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
 """RAG configuration for resume generation."""

@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Shared runtime components for Agentic Workflow.
 
 This is a minimal version to unblock testing while syntax errors are fixed.
