@@ -10,11 +10,12 @@ This module validates:
 """
 
 import pytest
+from typing import Any
 
 class TestInstructionalPromptStructure:
     """Test v6 prompt structure and functionality."""
 
-    def test_create_l1_planner_prompt(self) -> None:
+def test_create_l1_planner_prompt(self: Any) -> None:
         """Test L1 planner prompt creation."""
         prompt = create_l1_planner_prompt(
             agent_name="Test Planner",
@@ -29,7 +30,7 @@ class TestInstructionalPromptStructure:
         assert InstructionalLayer.PRIMARY_OBJECTIVE in prompt.layers
         assert InstructionalLayer.OUTPUT_FORMAT in prompt.layers
 
-    def test_create_l2_executor_prompt(self) -> None:
+def test_create_l2_executor_prompt(self: Any) -> None:
         """Test L2 executor prompt creation."""
         prompt = create_l2_executor_prompt(
             agent_name="Test Executor",
@@ -42,7 +43,7 @@ class TestInstructionalPromptStructure:
         assert InstructionalLayer.AGENT_IDENTITY in prompt.layers
         assert InstructionalLayer.ERROR_RECOVERY in prompt.layers
 
-    def test_add_rag_extension(self) -> None:
+def test_add_rag_extension(self: Any) -> None:
         """Test RAG extension addition."""
         prompt = create_l1_planner_prompt("Test", "test", "test")
         add_rag_extension(prompt, {"top_k": 5, "score_threshold": 0.8})
@@ -52,7 +53,7 @@ class TestInstructionalPromptStructure:
         assert ext.enabled
         assert "top_k" in ext.metadata
 
-    def test_add_cot_extension(self) -> None:
+def test_add_cot_extension(self: Any) -> None:
         """Test Chain-of-Thought extension addition."""
         prompt = create_l1_planner_prompt("Test", "test", "test")
         add_cot_extension(prompt)
@@ -62,7 +63,7 @@ class TestInstructionalPromptStructure:
         assert ext.enabled
         assert "step-by-step" in ext.content.lower()
 
-    def test_prompt_render(self) -> None:
+def test_prompt_render(self: Any) -> None:
         """Test prompt rendering."""
         prompt = create_l1_planner_prompt("Test", "test", "test")
         rendered = prompt.render()
@@ -72,7 +73,7 @@ class TestInstructionalPromptStructure:
         assert "PRIMARY OBJECTIVE" in rendered
         assert "OUTPUT FORMAT" in rendered
 
-    def test_prompt_validation(self) -> None:
+def test_prompt_validation(self: Any) -> None:
         """Test prompt validation."""
         prompt = create_l1_planner_prompt("Test", "test", "test")
         issues = validate_v6_prompt(prompt)
@@ -83,28 +84,28 @@ class TestInstructionalPromptStructure:
 class TestPromptIntegration:
     """Test prompt integration with specific agent types."""
 
-    def test_create_strategy_planner_prompt(self) -> None:
+def test_create_strategy_planner_prompt(self: Any) -> None:
         """Test strategy planner prompt creation."""
         prompt = create_strategy_planner_prompt(include_examples=False)
 
         assert "Strategy Planner" in prompt
         assert "planning" in prompt.lower()
 
-    def test_create_rag_planner_prompt(self) -> None:
+def test_create_rag_planner_prompt(self: Any) -> None:
         """Test RAG planner prompt creation."""
         prompt = create_rag_planner_prompt(include_examples=False)
 
         assert "RAG Planner" in prompt
         assert "retrieval" in prompt.lower()
 
-    def test_create_qa_planner_prompt(self) -> None:
+def test_create_qa_planner_prompt(self: Any) -> None:
         """Test QA planner prompt creation."""
         prompt = create_qa_planner_prompt(include_examples=False)
 
         assert "QA Planner" in prompt
         assert "quality assurance" in prompt.lower()
 
-    def test_create_safety_planner_prompt(self) -> None:
+def test_create_safety_planner_prompt(self: Any) -> None:
         """Test safety planner prompt creation."""
         prompt = create_safety_planner_prompt(include_examples=False)
 
@@ -112,14 +113,14 @@ class TestPromptIntegration:
         assert "SAFETY CONSTRAINTS" in prompt
         assert "ETHICAL GUIDELINES" in prompt
 
-    def test_create_strategy_executor_prompt(self) -> None:
+def test_create_strategy_executor_prompt(self: Any) -> None:
         """Test strategy executor prompt creation."""
         prompt = create_strategy_executor_prompt(include_examples=True)
 
         assert "Strategy Executor" in prompt
         assert "executor" in prompt.lower()
 
-    def test_validate_v6_prompt_l1(self) -> None:
+def test_validate_v6_prompt_l1(self: Any) -> None:
         """Test v6 prompt validation for L1."""
         prompt = create_l1_planner_prompt("Test", "test", "test")
 
@@ -136,7 +137,7 @@ class TestPromptIntegration:
         issues = validate_v6_prompt(prompt)
         assert len(issues) == 0
 
-    def test_validate_v6_prompt_l2(self) -> None:
+def test_validate_v6_prompt_l2(self: Any) -> None:
         """Test v6 prompt validation for L2."""
         prompt = create_l2_executor_prompt("Test", "test", ["execute"])
 
@@ -152,7 +153,7 @@ class TestPromptIntegration:
 class TestManyShotExamples:
     """Test many-shot example quality and structure."""
 
-    def test_examples_have_valid_structure(self) -> None:
+def test_examples_have_valid_structure(self: Any) -> None:
         """Test that all examples have valid structure."""
         all_examples = (
             STRATEGY_PLANNING_EXAMPLES +
@@ -166,7 +167,7 @@ class TestManyShotExamples:
             assert isinstance(example.expected_output, dict)
             assert 0.0 <= example.quality_score <= 1.0
 
-    def test_format_examples_for_prompt(self) -> None:
+def test_format_examples_for_prompt(self: Any) -> None:
         """Test example formatting for prompt inclusion."""
         examples = get_examples(ExampleType.STRATEGY_PLANNING, limit=2)
         formatted = format_examples_for_prompt(examples)
@@ -175,7 +176,7 @@ class TestManyShotExamples:
         assert len(formatted) > 0
         assert "EXAMPLE" in formatted
 
-    def test_example_quality_filtering(self) -> None:
+def test_example_quality_filtering(self: Any) -> None:
         """Test that examples can be filtered by quality."""
         examples = get_examples(ExampleType.STRATEGY_PLANNING, min_quality=0.8)
 
@@ -185,7 +186,7 @@ class TestManyShotExamples:
 class TestPromptQuality:
     """Test prompt quality and completeness."""
 
-    def test_all_l1_prompts_have_required_layers(self) -> None:
+def test_all_l1_prompts_have_required_layers(self: Any) -> None:
         """Test that all L1 prompts have required layers."""
         prompts = [
             create_strategy_planner_prompt(include_examples=False, enable_cot=False),
@@ -200,14 +201,14 @@ class TestPromptQuality:
             assert "PRIMARY OBJECTIVE" in prompt_str
             assert "OUTPUT FORMAT" in prompt_str
 
-    def test_prompt_length_reasonable(self) -> None:
+def test_prompt_length_reasonable(self: Any) -> None:
         """Test that prompts are not too short or too long."""
         prompt = create_strategy_planner_prompt(include_examples=True)
 
         # Should be substantial but not excessive
         assert 1000 < len(prompt) < 50000
 
-    def test_extensions_are_optional(self) -> None:
+def test_extensions_are_optional(self: Any) -> None:
         """Test that extensions can be disabled."""
         # Create prompt without CoT
         prompt_no_cot = create_strategy_planner_prompt(
@@ -224,7 +225,7 @@ class TestPromptQuality:
         # With CoT should be longer
         assert len(prompt_with_cot) > len(prompt_no_cot)
 
-    def test_prompt_consistency(self) -> None:
+def test_prompt_consistency(self: Any) -> None:
         """Test that prompts maintain consistent formatting."""
         prompts = [
             create_strategy_planner_prompt(include_examples=False),

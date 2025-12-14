@@ -1,4 +1,3 @@
-from typing import Any
 """
 Tool Verification Loop - The "Compiler Check"
 
@@ -45,7 +44,7 @@ class ToolVerifier:
     Acts as a compiler check - if it doesn't verify, it doesn't run.
     """
 
-    def __init__(self, sandbox=None, enable_strict_mode: bool = True):
+def __init__(self: Any, sandbox: Any, enable_strict_mode: bool) -> None:
         """
         Initialize the tool verifier.
 
@@ -61,7 +60,7 @@ class ToolVerifier:
 
         logger.info(f"Tool verifier initialized (strict_mode={strict_mode})")
 
-    def _init_patterns(self):
+def _init_patterns(self: Any) -> None:
         """Initialize patterns for detecting common issues."""
 
         # Hallucinated imports
@@ -91,12 +90,7 @@ class ToolVerifier:
             for tool, patterns in self.tool_requirements.items()
         }
 
-    async def verify_tool_call(
-        self,
-        tool_name: str,
-        tool_args: Dict[str, Any],
-        context: Optional[Dict] = None
-    ) -> ToolVerificationReport:
+async def verify_tool_call(self: Any, tool_name: str, tool_args: Dict[str, Any], context: Optional[Dict]) -> ToolVerificationReport:
         """
         Verify a tool call before execution.
 
@@ -148,11 +142,7 @@ class ToolVerifier:
             execution_plan=self._generate_execution_plan(tool_name, tool_args)
         )
 
-    def _validate_basic_tool_call(
-        self,
-        tool_name: str,
-        tool_args: Dict[str, Any]
-    ) -> List[VerificationIssue]:
+def _validate_basic_tool_call(self: Any, tool_name: str, tool_args: Dict[str, Any]) -> List[VerificationIssue]:
         """Basic validation of tool call structure."""
         issues = []
 
@@ -180,7 +170,7 @@ class ToolVerifier:
 
         return issues
 
-    async def _verify_code(self, code: str) -> List[VerificationIssue]:
+async def _verify_code(self: Any, code: str) -> List[VerificationIssue]:
         """Verify Python code for common issues."""
         issues = []
 
@@ -246,12 +236,7 @@ class ToolVerifier:
 
         return issues
 
-    async def _verify_tool_specific(
-        self,
-        tool_name: str,
-        tool_args: Dict[str, Any],
-        context: Optional[Dict]
-    ) -> List[VerificationIssue]:
+async def _verify_tool_specific(self: Any, tool_name: str, tool_args: Dict[str, Any], context: Optional[Dict]) -> List[VerificationIssue]:
         """Tool-specific verification logic."""
         issues = []
 
@@ -300,7 +285,7 @@ class ToolVerifier:
 
         return issues
 
-    async def _dry_run_code(self, code: str) -> List[VerificationIssue]:
+async def _dry_run_code(self: Any, code: str) -> List[VerificationIssue]:
         """Dry-run code in sandbox to check for runtime errors."""
         if not self.sandbox:
             return []
@@ -327,11 +312,7 @@ class ToolVerifier:
 
         return issues
 
-    def _generate_execution_plan(
-        self,
-        tool_name: str,
-        tool_args: Dict[str, Any]
-    ) -> str:
+def _generate_execution_plan(self: Any, tool_name: str, tool_args: Dict[str, Any]) -> str:
         """Generate a human-readable execution plan."""
         plan_parts = [f"Tool: {tool_name}"]
 
@@ -343,7 +324,7 @@ class ToolVerifier:
 
         return " | ".join(plan_parts)
 
-    def get_verification_summary(self, report: ToolVerificationReport) -> str:
+def get_verification_summary(self: Any, report: ToolVerificationReport) -> str:
         """Get a human-readable summary of verification results."""
         summary = f"Verification: {report.result.value.upper()}\n"
 
@@ -380,3 +361,4 @@ def create_tool_verifier(
         sandbox=sandbox,
         enable_strict_mode=enable_strict_mode
     )
+def create_tool_verifier(sandbox: Any, enable_strict_mode: bool) -> ToolVerifier:

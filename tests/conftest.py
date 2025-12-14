@@ -30,14 +30,14 @@ def data() -> Dict[str, Any]:
     }
 
 @pytest.fixture
-def mock_router():
+def mock_router() -> None:
     """Mock router for testing provider fallback scenarios."""
     router = MagicMock()
     router.execute_with_fallback = AsyncMock()
     return router
 
 @pytest.fixture
-def mock_state_manager():
+def mock_state_manager() -> None:
     """Mock state manager for testing atomic operations."""
     manager = MagicMock()
     manager.checkpoint = AsyncMock()
@@ -45,7 +45,7 @@ def mock_state_manager():
     return manager
 
 @pytest.fixture
-def mock_circuit_breaker():
+def mock_circuit_breaker() -> None:
     """Mock circuit breaker for testing failure scenarios."""
     cb = MagicMock()
     cb.state = "CLOSED"
@@ -61,7 +61,7 @@ def mock_circuit_breaker():
     return cb
 
 @pytest.fixture
-def sample_workflow_state():
+def sample_workflow_state() -> None:
     """Sample workflow state for testing."""
     return {
         "workflow_id": "test_workflow_001",
@@ -78,7 +78,7 @@ def sample_workflow_state():
     }
 
 @pytest.fixture
-def mock_validation_gates():
+def mock_validation_gates() -> None:
     """Mock validation gates for testing validation pipelines."""
     gates = []
     for i in range(3):
@@ -88,21 +88,21 @@ def mock_validation_gates():
     return gates
 
 @pytest.fixture(scope="session")
-def event_loop():
+def event_loop() -> None:
     """Create an instance of the default event loop for the test session."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
 
 @pytest.fixture
-def temp_workflow_dir(tmp_path):
+def temp_workflow_dir(tmp_path: Any) -> None:
     """Create a temporary directory for workflow files."""
     workflow_dir = tmp_path / "workflows"
     workflow_dir.mkdir()
     return workflow_dir
 
 @pytest.fixture
-def mock_token_encoder():
+def mock_token_encoder() -> None:
     """Mock token encoder for testing token limits."""
     encoder = MagicMock()
     encoder.encode = MagicMock(return_value=[0] * 1000)  # Default to 1000 tokens

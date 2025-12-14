@@ -43,13 +43,7 @@ class AgentCapability:
 class AgentSpec:
     """Specification for creating an agent instance."""
 
-    def __init__(
-        self,
-        role: AgentRole,
-        hop_function: Callable,
-        config: Optional[SubatomicHopConfig] = None,
-        **kwargs
-    ):
+def __init__(self: Any, role: AgentRole, hop_function: Callable, config: Optional[SubatomicHopConfig]) -> None:
         """Initialize agent specification.
 
         Args:
@@ -66,7 +60,7 @@ class AgentSpec:
         # Configure based on role
         self._configure_for_role()
 
-    def _configure_for_role(self):
+def _configure_for_role(self: Any) -> None:
         """Configure the agent spec based on its role."""
         capability = AGENT_CAPABILITIES.get(self.role)
         if not capability:
@@ -85,7 +79,7 @@ class AgentSpec:
             "primary_function": capability.primary_function
         })
 
-    def create_hop(self) -> SubatomicHop:
+def create_hop(self: Any) -> SubatomicHop:
         """Create a SubatomicHop instance from this spec."""
         return SubatomicHop(
             hop_function=self.hop_function,
@@ -270,7 +264,7 @@ LEGACY_MAPPING: Dict[str, AgentRole] = {
 class AgentRegistry:
     """Registry for managing agent capabilities and specifications."""
 
-    def __init__(self):
+def __init__(self: Any) -> None:
         """Initialize the agent registry."""
         self._capabilities = AGENT_CAPABILITIES
         self._specs: Dict[AgentRole, AgentSpec] = {}
@@ -278,7 +272,7 @@ class AgentRegistry:
 
         logger.info("Initialized AgentRegistry")
 
-    def get_capability(self, role: AgentRole) -> AgentCapability:
+def get_capability(self: Any, role: AgentRole) -> AgentCapability:
         """Get the capability definition for a role.
 
         Args:
@@ -289,7 +283,7 @@ class AgentRegistry:
         """
         return self._capabilities.get(role) or self._custom_capabilities.get(role)
 
-    def register_agent(self, spec: AgentSpec) -> None:
+def register_agent(self: Any, spec: AgentSpec) -> None:
         """Register an agent specification.
 
         Args:
@@ -298,7 +292,7 @@ class AgentRegistry:
         self._specs[spec.role] = spec
         logger.info(f"Registered agent for role: {spec.role.value}")
 
-    def get_agent_spec(self, role: AgentRole) -> Optional[AgentSpec]:
+def get_agent_spec(self: Any, role: AgentRole) -> Optional[AgentSpec]:
         """Get a registered agent specification.
 
         Args:
@@ -309,7 +303,7 @@ class AgentRegistry:
         """
         return self._specs.get(role)
 
-    def create_agent(self, role: AgentRole, **kwargs) -> Optional[SubatomicHop]:
+def create_agent(self: Any, role: AgentRole) -> Optional[SubatomicHop]:
         """Create an agent instance for the given role.
 
         Args:
@@ -326,7 +320,7 @@ class AgentRegistry:
 
         return spec.create_hop()
 
-    def list_roles(self) -> List[AgentRole]:
+def list_roles(self: Any) -> List[AgentRole]:
         """List all available agent roles.
 
         Returns:
@@ -334,7 +328,7 @@ class AgentRegistry:
         """
         return list(self._capabilities.keys()) + list(self._custom_capabilities.keys())
 
-    def map_legacy_to_role(self, legacy_reference: str) -> Optional[AgentRole]:
+def map_legacy_to_role(self: Any, legacy_reference: str) -> Optional[AgentRole]:
         """Map a legacy K-node reference to a functional role.
 
         Args:
@@ -345,7 +339,7 @@ class AgentRegistry:
         """
         return LEGACY_MAPPING.get(legacy_reference)
 
-    def validate_no_legacy_references(self, text: str) -> List[str]:
+def validate_no_legacy_references(self: Any, text: str) -> List[str]:
         """Check text for legacy K-node references.
 
         Args:
@@ -360,7 +354,7 @@ class AgentRegistry:
                 found.append(legacy_ref)
         return found
 
-    def get_registry_stats(self) -> Dict[str, Any]:
+def get_registry_stats(self: Any) -> Dict[str, Any]:
         """Get statistics about the registry.
 
         Returns:

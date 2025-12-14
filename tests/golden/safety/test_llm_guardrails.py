@@ -12,32 +12,33 @@ LEVEL 5 - Unit tests for LLM guardrails and safety enforcement functionality
 """
 
 import pytest
+from typing import Any
 import logging
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.l5_policy_engine import PolicyEngine...
 
 class TestLLMGuardrails:
     """Test suite for LLM guardrails and safety enforcement"""
 
-    def setup_method(self):
+def setup_method(self: Any) -> None:
         """Setup test fixtures"""
         self.config = PolicyEngineConfig()
         self.engine = PolicyEngine(self.config)
 
     @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
-    def test_llm_guardrails_initialization(self):
+def test_llm_guardrails_initialization(self: Any) -> None:
         """Test LLM guardrails initialization"""
         # Placeholder implementation
         assert self.engine is not None
 
     @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
-    def test_content_filtering_guardrails(self):
+def test_content_filtering_guardrails(self: Any) -> None:
         """Test content filtering guardrails"""
         # Placeholder implementation
         result = self.engine.check_content_safety("test content")
         assert result is not None
 
     @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
-    def test_prompt_injection_protection(self):
+def test_prompt_injection_protection(self: Any) -> None:
         """Test prompt injection protection"""
         # Placeholder implementation
         protection = self.engine.evaluate_policies("test", {}, [PolicyType.CONTENT_FILTER])

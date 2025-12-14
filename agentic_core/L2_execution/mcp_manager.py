@@ -1,4 +1,3 @@
-from typing import Any
 """
 MCP Connection Manager
 
@@ -30,7 +29,7 @@ class MCPConnectionManager:
     Aggregates tools from all servers into a single 'toolbox' for the agent.
     """
 
-    def __init__(self, mappings: Dict[str, Any]):
+def __init__(self: Any, mappings: Dict[str, Any]) -> None:
         """
         Initialize the MCP Connection Manager.
 
@@ -47,7 +46,7 @@ class MCPConnectionManager:
 
         logger.info("MCP Connection Manager initialized")
 
-    async def connect(self, role: str):
+async def connect(self: Any, role: str) -> None:
         """Connects to all servers defined for this role."""
         configs = self.mappings.get('global', []) + self.mappings.get('roles', {}).get(role, [])
 
@@ -70,7 +69,8 @@ class MCPConnectionManager:
             tool_list = await session.list_tools()
             self.tools.extend(tool_list.tools)
 
-    async def call_tool(self, name: str, args: Dict) -> Any:
+async def call_tool(self: Any, name: str, args: Dict) -> Any:
+        """Call a tool by name across all connected MCP sessions."""
         for session in self.sessions:
             try:
                 # Try to call on every session (simplified router)
@@ -79,7 +79,8 @@ class MCPConnectionManager:
                 continue
         raise ValueError(f"Tool {name} not found or failed.")
 
-    async def cleanup(self):
+async def cleanup(self: Any) -> None:
+        """Clean up all MCP sessions and connections."""
         await self.exit_stack.aclose()
 
 

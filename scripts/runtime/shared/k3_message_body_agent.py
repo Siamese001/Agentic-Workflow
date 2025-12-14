@@ -75,13 +75,7 @@ class K3MessageBodyAgent(Agent):
     - Metric source binding enforcement (LIC-QA-041)
     """
 
-    def __init__(
-        self,
-        config: ReasoningConfig,
-        archetype: str,
-        route: str,
-        char_limit: Optional[int] = None,
-    ):
+def __init__(self: Any, config: ReasoningConfig, archetype: str, route: str, char_limit: Optional[int]) -> None:
         """Initialize K.3 message body agent.
 
         Args:
@@ -102,7 +96,7 @@ class K3MessageBodyAgent(Agent):
             f"archetype={archetype}, route={route}, char_limit={char_limit}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> K3Output:
+async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
         """Execute K.3 message body generation.
 
         Args:
@@ -181,13 +175,7 @@ class K3MessageBodyAgent(Agent):
 
         return output
 
-    def _build_initial_prompt(
-        self,
-        company_name: str,
-        recipient_name: str,
-        rag_insights: List[str],
-        sender_bullets: List[str],
-    ) -> str:
+def _build_initial_prompt(self: Any, company_name: str, recipient_name: str, rag_insights: List[str], sender_bullets: List[str]) -> str:
         """Build initial generation prompt.
 
         Args:
@@ -249,11 +237,7 @@ Generate the message body now:
 
         return prompt
 
-    def _build_regeneration_prompt(
-        self,
-        context: Dict[str, Any],
-        feedback: str,
-    ) -> str:
+def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str) -> str:
         """Build regeneration prompt with validation feedback.
 
         Args:
@@ -287,7 +271,7 @@ Generate the corrected message body:
 
         return prompt
 
-    def _extract_transition_phrase(self, body: str, company_name: str) -> str:
+def _extract_transition_phrase(self: Any, body: str, company_name: str) -> str:
         """Extract transition phrase from body.
 
         Args:
@@ -307,7 +291,7 @@ Generate the corrected message body:
 
         return ""
 
-    def _count_insights(self, body: str) -> int:
+def _count_insights(self: Any, body: str) -> int:
         """Count numbered insights in body.
 
         Args:
@@ -321,7 +305,7 @@ Generate the corrected message body:
         insights = re.findall(r'\n\d+\.\s+', body)
         return len(insights)
 
-    def _count_bullets(self, body: str) -> int:
+def _count_bullets(self: Any, body: str) -> int:
         """Count bullets in body.
 
         Args:

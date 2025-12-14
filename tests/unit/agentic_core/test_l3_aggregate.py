@@ -1,5 +1,6 @@
 """Unit tests for L3_orchestration/P3_aggregate - workflow result aggregation."""
 import logging
+from typing import Any
 
 
 
@@ -7,7 +8,7 @@ logger = logging.getLogger(__name__)
 class TestWorkflowResultAggregation:
     """Tests for aggregating workflow results."""
 
-    def test_aggregate_branch_results(self):
+def test_aggregate_branch_results(self: Any) -> None:
         """Nominal: Branch results are aggregated."""
         branches = {
             "branch_a": {"result": "data_a"},
@@ -16,7 +17,7 @@ class TestWorkflowResultAggregation:
         aggregated = {k: v["result"] for k, v in branches.items()}
         assert len(aggregated) == 2
 
-    def test_aggregate_step_outputs(self):
+def test_aggregate_step_outputs(self: Any) -> None:
         """Nominal: Step outputs are aggregated."""
         steps = [
             {"step": 1, "output": "out_1"},
@@ -26,7 +27,7 @@ class TestWorkflowResultAggregation:
         outputs = [s["output"] for s in steps]
         assert len(outputs) == 3
 
-    def test_aggregate_with_failures(self):
+def test_aggregate_with_failures(self: Any) -> None:
         """Nominal: Failures are tracked in aggregation."""
         results = [
             {"step": 1, "status": "success"},
@@ -36,7 +37,7 @@ class TestWorkflowResultAggregation:
         failures = [r for r in results if r["status"] == "failed"]
         assert len(failures) == 1
 
-    def test_aggregate_metrics(self):
+def test_aggregate_metrics(self: Any) -> None:
         """Nominal: Metrics are aggregated."""
         step_metrics = [
             {"latency_ms": 100, "tokens": 500},
@@ -47,7 +48,7 @@ class TestWorkflowResultAggregation:
         assert total_latency == 250
         assert total_tokens == 1100
 
-    def test_aggregate_final_output(self):
+def test_aggregate_final_output(self: Any) -> None:
         """Nominal: Final output is constructed."""
         intermediate = ["part_1", "part_2", "part_3"]
         final_output = " ".join(intermediate)

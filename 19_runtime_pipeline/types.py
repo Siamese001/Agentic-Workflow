@@ -35,7 +35,7 @@ class PipelineContext:
     metadata: Dict[str, Any] = field(default_factory=dict)
     cache_keys: Set[str] = field(default_factory=set)
 
-    def get_cache_key(self, component: str, data: Any) -> str:
+def get_cache_key(self: Any, component: str, data: Any) -> str:
         """Generate cache key for component.
 
         Args:
@@ -55,7 +55,7 @@ class PipelineStage(ABC):
     """Abstract base for pipeline stages."""
 
     @abstractmethod
-    async def execute(self, envelope: Any) -> Any:
+async def execute(self: Any, envelope: Any) -> Any:
         """Execute the pipeline stage.
 
         Args:
@@ -68,7 +68,7 @@ class PipelineStage(ABC):
 
     @property
     @abstractmethod
-    def stage_name(self) -> str:
+def stage_name(self: Any) -> str:
         """Get stage name."""
         pass
 
@@ -76,7 +76,7 @@ class PipelineStage(ABC):
 class PipelineExecutionError(Exception):
     """Error raised when pipeline execution fails."""
 
-    def __init__(self, stage: str, message: str, original_error: Exception = None):
+def __init__(self: Any, stage: str, message: str, original_error: Exception) -> None:
         """Initialize pipeline execution error.
 
         Args:

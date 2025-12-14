@@ -6,6 +6,7 @@ constraints (28-33 words per bullet).
 """
 
 import logging
+from typing import Any
 import re
 
 logger = logging.getLogger(__name__)
@@ -18,12 +19,12 @@ class ProvenanceRule:
     _synthetic: int  # Number of _synthetic bullets
 
     @property
-    def total(self) -> int:
+def total(self: Any) -> int:
         """Total bullet count."""
         return self.verbatim + self.transformed + self.synthetic
 
     @property
-    def pattern(self) -> str:
+def pattern(self: Any) -> str:
         """Provenance pattern string."""
         return f"{self.verbatim}V-{self.transformed}T-{self.synthetic}S"
 
@@ -45,13 +46,7 @@ class K5AGenerationAgent(Agent):
     - Differentiator integration: Must include required differentiators
     """
 
-    def __init__(
-        self,
-        config: ReasoningConfig,
-        provenance_rule: ProvenanceRule,
-        word_count_min: int = 28,
-        word_count_max: int = 33,
-    ):
+def __init__(self: Any, config: ReasoningConfig, provenance_rule: ProvenanceRule, word_count_min: int, word_count_max: int) -> None:
         """Initialize K.5A agent.
 
         Args:
@@ -72,7 +67,7 @@ class K5AGenerationAgent(Agent):
             f"word_count={word_count_min}-{word_count_max}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> K5AOutput:
+async def execute(self: Any, context: Dict[str, Any]) -> K5AOutput:
         """Execute K.5A bullet generation.
 
         Args:
@@ -150,12 +145,7 @@ class K5AGenerationAgent(Agent):
 
         return output
 
-    def _build_initial_prompt(
-        self,
-        master_bullets: List[str],
-        differentiators: List[str],
-        job_description: str,
-    ) -> str:
+def _build_initial_prompt(self: Any, master_bullets: List[str], differentiators: List[str], job_description: str) -> str:
         """Build initial generation prompt.
 
         Args:
@@ -196,11 +186,7 @@ Generate the {self.provenance_rule.total} bullets now:
 
         return prompt
 
-    def _build_regeneration_prompt(
-        self,
-        context: Dict[str, Any],
-        feedback: str,
-    ) -> str:
+def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str) -> str:
         """Build regeneration prompt with validation feedback.
 
         Args:
@@ -234,7 +220,7 @@ Generate the corrected bullets:
 
         return prompt
 
-    def _parse_bullets(self, response: str) -> List[str]:
+def _parse_bullets(self: Any, response: str) -> List[str]:
         """Parse bullets from LLM response.
 
         Args:
@@ -255,11 +241,7 @@ Generate the corrected bullets:
 
         return bullets
 
-    def _assign_provenance(
-        self,
-        bullets: List[str],
-        master_bullets: List[str],
-    ) -> List[str]:
+def _assign_provenance(self: Any, bullets: List[str], master_bullets: List[str]) -> List[str]:
         """Assign provenance to bullets.
 
         This is a simplified implementation. A production version would use

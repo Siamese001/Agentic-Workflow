@@ -3,6 +3,7 @@
 """Fix trailing whitespace in all Python files."""
 
 import os
+from typing import Any
 import glob
 import logging
 
@@ -10,7 +11,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def fix_trailing_whitespace(directory="."):
+def fix_trailing_whitespace(directory: Any) -> None:
     """Remove trailing whitespace from all Python files."""
     count = 0
     for filepath in glob.glob(os.path.join(directory, "**/*.py"), recursive=True):

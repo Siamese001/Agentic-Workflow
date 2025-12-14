@@ -1,4 +1,3 @@
-from typing import Any
 """Universal MCP Client Adapter for Agentic Workflow.
 
 Manages async lifecycle of multiple MCP servers and aggregates their tools
@@ -17,14 +16,15 @@ from mcp.client.stdio import stdio_client
 class UniversalMCPClient:
     """Universal adapter for managing multiple MCP server connections."""
 
-    def __init__(self, config_path: str = "config/mcp_server_config.json"):
+def __init__(self: Any, config_path: str) -> None:
+        """Initialize the MCP client with the specified config path."""
         self.config_path = config_path
         self.servers = {}
         self.logger = logging.getLogger(__name__)
         self.exit_stack = AsyncExitStack()
         self.sessions: Dict[str, ClientSession] = {}
 
-    async def connect_all(self):
+async def connect_all(self: Any) -> None:
         """Initializes connections to all servers defined in JSON."""
         if not os.path.exists(self.config_path):
             raise FileNotFoundError(f"Config not found at {self.config_path}")
@@ -70,7 +70,7 @@ class UniversalMCPClient:
             except Exception as e:
                 self.logger.error(f"Failed to connect to {name}: {e}")
 
-    async def get_tools_for_llm(self) -> List[Dict[str, Any]]:
+async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
         """Returns tools formatted for OpenAI/Anthropic.
 
         Returns:
@@ -91,7 +91,7 @@ class UniversalMCPClient:
                 self.logger.warning(f"Could not list tools for {name}: {e}")
         return all_tools
 
-    async def execute_tool(self, namespaced_tool_name: str, arguments: Dict[str, Any]):
+async def execute_tool(self: Any, namespaced_tool_name: str, arguments: Dict[str, Any]) -> None:
         """Execute a tool on the appropriate MCP server.
 
         Args:
@@ -111,6 +111,6 @@ class UniversalMCPClient:
         except Exception as e:
             return f"Error executing {namespaced_tool_name}: {str(e)}"
 
-    async def cleanup(self):
+async def cleanup(self: Any) -> None:
         """Cleanup all MCP server connections."""
         await self.exit_stack.aclose()

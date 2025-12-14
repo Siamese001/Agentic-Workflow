@@ -8,6 +8,7 @@ Legacy K-Node: K.9 (K.8 in some versions)
 """
 
 import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -49,14 +50,7 @@ class GapClosureArchitect(Agent):
     - VG_K8_PLAUSIBILITY_CHECK (≥2 authentic)
     """
 
-    def __init__(
-        self,
-        config: ReasoningConfig,
-        competency_count: int = 6,
-        word_count_min: int = 24,
-        word_count_max: int = 30,
-        gap_coverage_minimum: float = 0.85,
-    ):
+def __init__(self: Any, config: ReasoningConfig, competency_count: int, word_count_min: int, word_count_max: int, gap_coverage_minimum: float) -> None:
         """Initialize Gap Closure Architect.
 
         Args:
@@ -83,7 +77,7 @@ class GapClosureArchitect(Agent):
             f"gap_coverage≥{gap_coverage_minimum:.0%}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> CompetenciesOutput:
+async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
         """Execute competency generation with gap filling.
 
         Args:
@@ -179,13 +173,7 @@ class GapClosureArchitect(Agent):
 
         return output
 
-    def _build_initial_prompt(
-        self,
-        jd_keyword_gap: List[str],
-        authentic_phrasing: List[str],
-        base_competency_pool: List[str],
-        target_industry: str,
-    ) -> str:
+def _build_initial_prompt(self: Any, jd_keyword_gap: List[str], authentic_phrasing: List[str], base_competency_pool: List[str], target_industry: str) -> str:
         """Build initial generation prompt with gap coverage enforcement.
 
         Args:
@@ -237,11 +225,7 @@ Generate the {self.competency_count} competencies now (≥{self.gap_coverage_min
 
         return prompt
 
-    def _build_regeneration_prompt(
-        self,
-        context: Dict[str, Any],
-        feedback: str,
-    ) -> str:
+def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str) -> str:
         """Build regeneration prompt with validation feedback.
 
         Args:
@@ -276,7 +260,7 @@ Generate the corrected competencies:
 
         return prompt
 
-    def _parse_competencies(self, response: str) -> List[CompetencyItem]:
+def _parse_competencies(self: Any, response: str) -> List[CompetencyItem]:
         """Parse competencies from LLM response.
 
         Args:
@@ -320,7 +304,7 @@ Generate the corrected competencies:
 
         return competencies
 
-    def _extract_gap_keywords(self, text: str) -> List[str]:
+def _extract_gap_keywords(self: Any, text: str) -> List[str]:
         """Extract gap keywords from text.
 
         Args:
@@ -343,11 +327,7 @@ Generate the corrected competencies:
 
         return keywords
 
-    def _calculate_gap_coverage(
-        self,
-        competencies: List[CompetencyItem],
-        jd_keyword_gap: List[str],
-    ) -> Set[str]:
+def _calculate_gap_coverage(self: Any, competencies: List[CompetencyItem], jd_keyword_gap: List[str]) -> Set[str]:
         """Calculate gap coverage.
 
         Args:
@@ -371,11 +351,7 @@ Generate the corrected competencies:
 
         return covered
 
-    def _check_industry_first_ranking(
-        self,
-        competencies: List[CompetencyItem],
-        target_industry: str,
-    ) -> bool:
+def _check_industry_first_ranking(self: Any, competencies: List[CompetencyItem], target_industry: str) -> bool:
         """Check if competencies follow Industry-First ranking.
 
         Args:

@@ -31,7 +31,7 @@ class WorkflowContext:
     cache_client: Optional[Any] = None
     _metadata: Dict[str, Any] = field(default_factory=dict)
 
-    def get_from_cache(self, key: str) -> Optional[Any]:
+def get_from_cache(self: Any, key: str) -> Optional[Any]:
         """Get value from cache.
 
         Args:
@@ -46,7 +46,7 @@ class WorkflowContext:
         cache_key = f"workflow:{self.workflow_id}:{key}"
         return cache_get(self.cache_client, cache_key)
 
-    def set_in_cache(self, key: str, value: Any, ttl: int = 3600) -> bool:
+def set_in_cache(self: Any, key: str, value: Any, ttl: int) -> bool:
         """Set value in cache.
 
         Args:
@@ -63,12 +63,7 @@ class WorkflowContext:
         cache_key = f"workflow:{self.workflow_id}:{key}"
         return cache_set(self.cache_client, cache_key, value, ttl=ttl)
 
-    def search_vector_store(
-        self,
-        query_embedding: List[float],
-        collection_name: str = "default",
-        n_results: int = 10,
-    ) -> List[Dict[str, Any]]:
+def search_vector_store(self: Any, query_embedding: List[float], collection_name: str, n_results: int) -> List[Dict[str, Any]]:
         """Search vector store for relevant knowledge.
 
         Args:
@@ -99,12 +94,7 @@ class HopExecutionContext:
     inputs: Dict[str, Any] = field(default_factory=dict)
     outputs: Dict[str, Any] = field(default_factory=dict)
 
-    def execute_agent(
-        self,
-        messages: List[AgentMessage],
-        system_prompt: Optional[str] = None,
-        tools: Optional[List[Dict[str, Any]]] = None,
-    ) -> Any:
+def execute_agent(self: Any, messages: List[AgentMessage], system_prompt: Optional[str], tools: Optional[List[Dict[str, Any]]]) -> Any:
         """Execute agent with messages.
 
         Args:
@@ -122,7 +112,7 @@ class HopExecutionContext:
                 tools=tools,
             )
 
-    def get_input(self, key: str, default: Any = None) -> Any:
+def get_input(self: Any, key: str, default: Any) -> Any:
         """Get input value.
 
         Args:
@@ -134,7 +124,7 @@ class HopExecutionContext:
         """
         return self.inputs.get(key, default)
 
-    def set_output(self, key: str, value: Any) -> None:
+def set_output(self: Any, key: str, value: Any) -> None:
         """Set output value.
 
         Args:
@@ -240,12 +230,7 @@ def execute_hop_with_agent(
 class WorkflowOrchestrator:
     """Workflow orchestrator with SDK integration."""
 
-    def __init__(
-        self,
-        workflow_id: str,
-        provider: Provider = Provider.OPENAI,
-        model: Optional[str] = None,
-    ):
+def __init__(self: Any, workflow_id: str, provider: Provider, model: Optional[str]) -> None:
         """Initialize workflow orchestrator.
 
         Args:
@@ -261,12 +246,7 @@ class WorkflowOrchestrator:
         )
         self.hops: List[Dict[str, Any]] = []
 
-    def register_hop(
-        self,
-        hop_id: str,
-        hop_function: Any,
-        dependencies: Optional[List[str]] = None,
-    ) -> None:
+def register_hop(self: Any, hop_id: str, hop_function: Any, dependencies: Optional[List[str]]) -> None:
         """Register a hop in the workflow.
 
         Args:
@@ -280,7 +260,7 @@ class WorkflowOrchestrator:
             "dependencies": dependencies or [],
         })
 
-    def execute(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+def execute(self: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
         """Execute the workflow.
 
         Args:

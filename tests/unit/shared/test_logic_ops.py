@@ -25,7 +25,7 @@ class ValidationResult:
 class TestLogicDataAccess:
     """Tests for logic data access operations."""
 
-    def test_data_retrieval_by_id(self):
+def test_data_retrieval_by_id(self: Any) -> None:
         """Data is retrieved correctly by ID."""
         data_store = {
             "doc_001": {"title": "Document 1", "content": "Content 1"},
@@ -35,7 +35,7 @@ class TestLogicDataAccess:
         assert result is not None
         assert result["title"] == "Document 1"
 
-    def test_data_retrieval_with_filter(self):
+def test_data_retrieval_with_filter(self: Any) -> None:
         """Data is filtered correctly."""
         documents = [
             {"id": 1, "type": "report", "status": "active"},
@@ -46,7 +46,7 @@ class TestLogicDataAccess:
         assert len(filtered) == 1
         assert filtered[0]["id"] == 1
 
-    def test_data_pagination(self):
+def test_data_pagination(self: Any) -> None:
         """Data pagination works correctly."""
         all_items = list(range(100))
         page_size = 10
@@ -59,7 +59,7 @@ class TestLogicDataAccess:
         assert len(page_items) == 10
         assert page_items[0] == 20
 
-    def test_data_sorting(self):
+def test_data_sorting(self: Any) -> None:
         """Data sorting works correctly."""
         items = [
             {"name": "Charlie", "score": 85},
@@ -72,35 +72,35 @@ class TestLogicDataAccess:
 class TestLogicGuardrails:
     """Tests for logic guardrails."""
 
-    def test_input_sanitization(self):
+def test_input_sanitization(self: Any) -> None:
         """Inputs are sanitized before processing."""
         raw_input = "  Hello <script>alert('xss')</script> World  "
         sanitized = re.sub(r'<[^>]+>', '', raw_input).strip()
         assert "<script>" not in sanitized
         assert sanitized == "Hello alert('xss') World"
 
-    def test_output_validation(self):
+def test_output_validation(self: Any) -> None:
         """Outputs are validated before returning."""
         output = {"result": "data", "status": "success"}
         required_fields = ["result", "status"]
         is_valid = all(f in output for f in required_fields)
         assert is_valid is True
 
-    def test_rate_limiting(self):
+def test_rate_limiting(self: Any) -> None:
         """Rate limiting is enforced."""
         max_requests = 10
         current_requests = 15
         is_rate_limited = current_requests > max_requests
         assert is_rate_limited is True
 
-    def test_resource_bounds_check(self):
+def test_resource_bounds_check(self: Any) -> None:
         """Resource usage is within bounds."""
         max_memory_mb = 512
         current_memory_mb = 256
         is_within_bounds = current_memory_mb <= max_memory_mb
         assert is_within_bounds is True
 
-    def test_timeout_enforcement(self):
+def test_timeout_enforcement(self: Any) -> None:
         """Timeouts are enforced."""
         max_timeout_seconds = 30
         elapsed_seconds = 25
@@ -110,7 +110,7 @@ class TestLogicGuardrails:
 class TestLogicSynthesis:
     """Tests for logic synthesis operations."""
 
-    def test_result_combination(self):
+def test_result_combination(self: Any) -> None:
         """Multiple results are combined correctly."""
         results = [
             {"source": "A", "data": [1, 2]},
@@ -123,7 +123,7 @@ class TestLogicSynthesis:
         }
         assert len(combined["all_data"]) == 5
 
-    def test_conflict_resolution(self):
+def test_conflict_resolution(self: Any) -> None:
         """Conflicts are resolved correctly."""
         source_a = {"value": 100, "confidence": 0.9}
         source_b = {"value": 110, "confidence": 0.7}
@@ -132,7 +132,7 @@ class TestLogicSynthesis:
         resolved = source_a if source_a["confidence"] > source_b["confidence"] else source_b
         assert resolved["value"] == 100
 
-    def test_weighted_aggregation(self):
+def test_weighted_aggregation(self: Any) -> None:
         """Weighted aggregation is calculated correctly."""
         values = [
             {"value": 80, "weight": 0.5},
@@ -144,7 +144,7 @@ class TestLogicSynthesis:
         weighted_avg = weighted_sum / total_weight
         assert weighted_avg == pytest.approx(81.0)
 
-    def test_deduplication(self):
+def test_deduplication(self: Any) -> None:
         """Duplicate results are removed."""
         results = [
             {"id": 1, "content": "A"},
@@ -162,7 +162,7 @@ class TestLogicSynthesis:
 class TestLogicValidation:
     """Tests for logic validation operations."""
 
-    def test_schema_validation_pass(self):
+def test_schema_validation_pass(self: Any) -> None:
         """Valid data passes schema validation."""
         schema = {"name": str, "age": int, "active": bool}
         data = {"name": "John", "age": 30, "active": True}
@@ -170,7 +170,7 @@ class TestLogicValidation:
         is_valid = all(isinstance(data.get(k), t) for k, t in schema.items())
         assert is_valid is True
 
-    def test_schema_validation_fail(self):
+def test_schema_validation_fail(self: Any) -> None:
         """Invalid data fails schema validation."""
         schema = {"name": str, "age": int}
         data = {"name": "John", "age": "thirty"}  # Wrong type
@@ -182,7 +182,7 @@ class TestLogicValidation:
 
         assert len(errors) == 1
 
-    def test_required_field_validation(self):
+def test_required_field_validation(self: Any) -> None:
         """Required fields are validated."""
         required = ["id", "name", "email"]
         data = {"id": "123", "name": "John"}  # Missing email
@@ -190,7 +190,7 @@ class TestLogicValidation:
         missing = [f for f in required if f not in data]
         assert "email" in missing
 
-    def test_value_range_validation(self):
+def test_value_range_validation(self: Any) -> None:
         """Value ranges are validated."""
         constraints = {
             "age": {"min": 0, "max": 150},
@@ -207,7 +207,7 @@ class TestLogicValidation:
 
         assert "age" in violations
 
-    def test_validation_levels(self):
+def test_validation_levels(self: Any) -> None:
         """Different validation levels work correctly."""
         data = {"name": "J", "description": ""}  # Short name, empty description
 

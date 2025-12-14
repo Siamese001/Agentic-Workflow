@@ -21,7 +21,7 @@ class MCPTool:
     handler: Callable
     requires_approval: bool = False
 
-    def to_openai_format(self) -> Dict[str, Any]:
+def to_openai_format(self: Any) -> Dict[str, Any]:
         """Convert to OpenAI function calling format.
 
         Returns:
@@ -36,7 +36,7 @@ class MCPTool:
             },
         }
 
-    def to_anthropic_format(self) -> Dict[str, Any]:
+def to_anthropic_format(self: Any) -> Dict[str, Any]:
         """Convert to Anthropic tool format.
 
         Returns:
@@ -60,7 +60,7 @@ class MCPToolResult:
 class MCPToolServer:
     """MCP tool server for managing and executing tools."""
 
-    def __init__(self, name: str = "agentic-workflow-tools"):
+def __init__(self: Any, name: str) -> None:
         """Initialize MCP tool server.
 
         Args:
@@ -70,7 +70,7 @@ class MCPToolServer:
         self._tools: Dict[str, MCPTool] = {}
         logger.info(f"MCP tool server initialized: {name}")
 
-    def register_tool(self, tool: MCPTool) -> None:
+def register_tool(self: Any, tool: MCPTool) -> None:
         """Register a tool.
 
         Args:
@@ -79,14 +79,7 @@ class MCPToolServer:
         self._tools[tool.name] = tool
         logger.info(f"Registered MCP tool: {tool.name}")
 
-    def register_function(
-        self,
-        name: str,
-        description: str,
-        parameters: Dict[str, Any],
-        handler: Callable,
-        requires_approval: bool = False,
-    ) -> None:
+def register_function(self: Any, name: str, description: str, parameters: Dict[str, Any], handler: Callable, requires_approval: bool) -> None:
         """Register a function as an MCP tool.
 
         Args:
@@ -105,7 +98,7 @@ class MCPToolServer:
         )
         self.register_tool(tool)
 
-    def get_tool(self, name: str) -> Optional[MCPTool]:
+def get_tool(self: Any, name: str) -> Optional[MCPTool]:
         """Get a tool by name.
 
         Args:
@@ -116,7 +109,7 @@ class MCPToolServer:
         """
         return self._tools.get(name)
 
-    def list_tools(self) -> List[str]:
+def list_tools(self: Any) -> List[str]:
         """List all registered tool names.
 
         Returns:
@@ -124,10 +117,7 @@ class MCPToolServer:
         """
         return list(self._tools.keys())
 
-    def get_tools_for_provider(
-        self,
-        provider: str = "openai",
-    ) -> List[Dict[str, Any]]:
+def get_tools_for_provider(self: Any, provider: str) -> List[Dict[str, Any]]:
         """Get tools in provider-specific format.
 
         Args:
@@ -146,11 +136,7 @@ class MCPToolServer:
 
         return tools
 
-    def execute_tool(
-        self,
-        name: str,
-        arguments: Dict[str, Any],
-    ) -> MCPToolResult:
+def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResult:
         """Execute a tool.
 
         Args:

@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class TestMemoryInspection:
     """Tests for memory inspection operations."""
 
-    def test_inspect_memory_freshness(self):
+def test_inspect_memory_freshness(self: Any) -> None:
         """Nominal: Memory freshness is checked."""
         memory = {"timestamp": datetime.now() - timedelta(hours=1)}
         max_age_hours = 24
@@ -17,7 +17,7 @@ class TestMemoryInspection:
         is_fresh = age_hours <= max_age_hours
         assert is_fresh is True
 
-    def test_inspect_stale_memory(self):
+def test_inspect_stale_memory(self: Any) -> None:
         """Nominal: Stale memory is identified."""
         memory = {"timestamp": datetime.now() - timedelta(days=30)}
         max_age_days = 7
@@ -25,13 +25,13 @@ class TestMemoryInspection:
         is_stale = age_days > max_age_days
         assert is_stale is True
 
-    def test_inspect_memory_quality(self):
+def test_inspect_memory_quality(self: Any) -> None:
         """Nominal: Memory quality is assessed."""
         memory = {"content": "User prefers formal communication", "confidence": 0.95}
         is_high_quality = memory["confidence"] > 0.8
         assert is_high_quality is True
 
-    def test_inspect_memory_conflicts(self):
+def test_inspect_memory_conflicts(self: Any) -> None:
         """Nominal: Conflicting memories are detected."""
         memories = [
             {"topic": "preference", "value": "dark_mode"},
@@ -43,7 +43,7 @@ class TestMemoryInspection:
         has_conflict = any(len(set(v)) > 1 for v in by_topic.values())
         assert has_conflict is True
 
-    def test_inspect_memory_completeness(self):
+def test_inspect_memory_completeness(self: Any) -> None:
         """Nominal: Memory completeness is checked."""
         required_fields = ["content", "timestamp", "source"]
         memory = {"content": "data", "timestamp": datetime.now(), "source": "user"}

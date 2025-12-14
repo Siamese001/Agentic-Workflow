@@ -11,6 +11,7 @@ Tests all MCP servers with the executive orchestrator:
 """
 
 import asyncio
+from typing import Any
 import os
 import sys
 from datetime import datetime
@@ -20,7 +21,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from mcp_adapter import UniversalMCPClient
 
-async def test_filesystem_mcp(client):
+async def test_filesystem_mcp(client: Any) -> None:
     """Test filesystem MCP read/write operations."""
     logger.info("\n📁 Testing Filesystem MCP...")
 
@@ -56,7 +57,7 @@ Generated: {datetime.now().isoformat()}
 
     return True
 
-async def test_browser_mcp(client):
+async def test_browser_mcp(client: Any) -> None:
     """Test browser MCP navigation and content extraction."""
     logger.info("\n🌐 Testing Browser MCP...")
 
@@ -78,7 +79,7 @@ async def test_browser_mcp(client):
 
     return True
 
-async def test_github_mcp(client):
+async def test_github_mcp(client: Any) -> None:
     """Test GitHub MCP repository access."""
     logger.info("\n🐙 Testing GitHub MCP...")
 
@@ -106,7 +107,7 @@ async def test_github_mcp(client):
         logger.error(f"  ❌ GitHub test failed: {e}")
         return False
 
-async def test_postgres_mcp(client):
+async def test_postgres_mcp(client: Any) -> None:
     """Test Postgres MCP memory operations."""
     logger.info("\n🗄️ Testing Postgres MCP...")
 
@@ -147,7 +148,7 @@ async def test_postgres_mcp(client):
         logger.error(f"  ❌ Postgres test failed: {e}")
         return False
 
-async def test_pinecone_mcp(client):
+async def test_pinecone_mcp(client: Any) -> None:
     """Test Pinecone MCP vector operations."""
     logger.info("\n🌲 Testing Pinecone MCP...")
 
@@ -194,7 +195,7 @@ async def test_pinecone_mcp(client):
         logger.error(f"  ❌ Pinecone test failed: {e}")
         return False
 
-async def test_terminal_mcp(client):
+async def test_terminal_mcp(client: Any) -> None:
     """Test Terminal MCP safe command execution."""
     logger.info("\n💻 Testing Terminal MCP...")
 
@@ -218,7 +219,7 @@ async def test_terminal_mcp(client):
         logger.error(f"  ❌ Terminal test failed: {e}")
         return False
 
-async def test_sequential_thinking_mcp(client):
+async def test_sequential_thinking_mcp(client: Any) -> None:
     """Test Sequential Thinking MCP reasoning capabilities."""
     logger.info("\n🧠 Testing Sequential Thinking MCP...")
 
@@ -242,7 +243,7 @@ async def test_sequential_thinking_mcp(client):
         logger.error(f"  ❌ Sequential thinking test failed: {e}")
         return False
 
-async def test_executive_orchestrator_integration():
+async def test_executive_orchestrator_integration() -> None:
     """Test integration with ExecutiveAgentOrchestrator."""
     logger.info("\n🤖 Testing Executive Orchestrator Integration...")
 
@@ -280,7 +281,7 @@ async def test_executive_orchestrator_integration():
         logger.error(f"  ❌ Orchestrator test failed: {e}")
         return False
 
-async def main():
+async def main() -> None:
     """Run all MCP integration tests."""
     logger.info("=" * 60)
     logger.info("🚀 MCP Integration End-to-End Test")

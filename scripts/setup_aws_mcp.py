@@ -12,7 +12,7 @@ from pathlib import Path
 import logging
 
 
-def setup_aws_credentials():
+def setup_aws_credentials() -> None:
     """Setup AWS credentials file."""
     aws_dir = Path.home() / ".aws"
     aws_dir.mkdir(exist_ok=True)
@@ -74,7 +74,7 @@ output = json
     return True
 
 
-def setup_mcp_config():
+def setup_mcp_config() -> None:
     """Setup MCP configuration for AWS."""
     logger.info("\n=== MCP Configuration Setup ===")
 
@@ -101,7 +101,7 @@ def setup_mcp_config():
     return True
 
 
-def test_aws_connection():
+def test_aws_connection() -> None:
     """Test AWS connection."""
     logger.info("\n=== Testing AWS Connection ===")
 
@@ -125,7 +125,7 @@ def test_aws_connection():
         return False
 
 
-def main():
+def main() -> None:
     """Main setup function."""
     logger.info("AWS MCP Server Setup")
     logger.info("=" * 50)

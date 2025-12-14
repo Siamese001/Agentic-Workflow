@@ -38,7 +38,7 @@ __all__ = [
 ]
 
 # Module initialization
-def _initialize_module():
+def _initialize_module() -> None:
     """Initialize module with required setup."""
     logger.debug(f"Initializing Get Info Request module v{MODULE_VERSION}")
     # Add any initialization logic here

@@ -6,19 +6,20 @@ Unit tests for shared_engine_ops/embedding_ops/
 Tests embedding operations including similarity calculation, vector search, etc.
 """
 import pytest
+from typing import Any
 import math
 
 class TestComputeEmbeddings:
     """Tests for embedding computation."""
 
-    def test_embedding_dimension(self):
+def test_embedding_dimension(self: Any) -> None:
         """Embeddings have correct dimension."""
         expected_dim = 1536  # OpenAI ada-002 dimension
         embedding = [0.1] * expected_dim
 
         assert len(embedding) == expected_dim
 
-    def test_embedding_normalization(self):
+def test_embedding_normalization(self: Any) -> None:
         """Embeddings are normalized to unit length."""
         embedding = [0.6, 0.8]  # 3-4-5 triangle scaled
         magnitude = math.sqrt(sum(x**2 for x in embedding))
@@ -28,7 +29,7 @@ class TestComputeEmbeddings:
 
         assert normalized_magnitude == pytest.approx(1.0, rel=1e-6)
 
-    def test_embedding_determinism(self):
+def test_embedding_determinism(self: Any) -> None:
         """Same text produces same embedding."""
         text = "Hello world"
         # Simulated: same input -> same output
@@ -37,7 +38,7 @@ class TestComputeEmbeddings:
 
         assert embedding1 == embedding2
 
-    def test_different_text_different_embedding(self):
+def test_different_text_different_embedding(self: Any) -> None:
         """Different text produces different embeddings."""
         text1 = "Hello world"
         text2 = "Goodbye world"
@@ -51,7 +52,7 @@ class TestComputeEmbeddings:
 class TestCalculateSimilarity:
     """Tests for similarity calculation."""
 
-    def test_cosine_similarity_identical(self):
+def test_cosine_similarity_identical(self: Any) -> None:
         """Identical vectors have similarity 1.0."""
         vec1 = [1.0, 0.0, 0.0]
         vec2 = [1.0, 0.0, 0.0]
@@ -63,7 +64,7 @@ class TestCalculateSimilarity:
 
         assert similarity == pytest.approx(1.0)
 
-    def test_cosine_similarity_orthogonal(self):
+def test_cosine_similarity_orthogonal(self: Any) -> None:
         """Orthogonal vectors have similarity 0.0."""
         vec1 = [1.0, 0.0]
         vec2 = [0.0, 1.0]
@@ -75,7 +76,7 @@ class TestCalculateSimilarity:
 
         assert similarity == pytest.approx(0.0)
 
-    def test_cosine_similarity_opposite(self):
+def test_cosine_similarity_opposite(self: Any) -> None:
         """Opposite vectors have similarity -1.0."""
         vec1 = [1.0, 0.0]
         vec2 = [-1.0, 0.0]
@@ -87,7 +88,7 @@ class TestCalculateSimilarity:
 
         assert similarity == pytest.approx(-1.0)
 
-    def test_similarity_range(self):
+def test_similarity_range(self: Any) -> None:
         """Similarity is always in [-1, 1] range."""
         import random
         for _ in range(10):
@@ -104,7 +105,7 @@ class TestCalculateSimilarity:
 class TestSearchVectors:
     """Tests for vector search operations."""
 
-    def test_search_returns_top_k(self):
+def test_search_returns_top_k(self: Any) -> None:
         """Search returns top K most similar vectors."""
         query = [1.0, 0.0, 0.0]
         vectors = [
@@ -113,7 +114,7 @@ class TestSearchVectors:
             {"id": "3", "vector": [0.1, 0.9, 0.0]},
         ]
 
-        def cosine_sim(v1, v2):
+def cosine_sim(v1: Any, v2: Any) -> None:
             """TODO: Add docstring."""
 
             dot = sum(a * b for a, b in zip(v1, v2))
@@ -130,7 +131,7 @@ class TestSearchVectors:
         assert len(results) == 2
         assert results[0][0] == "1"  # Most similar
 
-    def test_search_with_threshold(self):
+def test_search_with_threshold(self: Any) -> None:
         """Search filters by similarity threshold."""
         threshold = 0.7
         results = [
@@ -142,7 +143,7 @@ class TestSearchVectors:
         filtered = [r for r in results if r["similarity"] >= threshold]
         assert len(filtered) == 2
 
-    def test_search_empty_index(self):
+def test_search_empty_index(self: Any) -> None:
         """Search on empty index returns empty results."""
 
         results = []  # No vectors to search
@@ -151,7 +152,7 @@ class TestSearchVectors:
 class TestNormalizeVectors:
     """Tests for vector normalization."""
 
-    def test_normalize_to_unit_length(self):
+def test_normalize_to_unit_length(self: Any) -> None:
         """Vectors are normalized to unit length."""
         vector = [3.0, 4.0]  # 3-4-5 triangle
         magnitude = math.sqrt(sum(x**2 for x in vector))
@@ -160,7 +161,7 @@ class TestNormalizeVectors:
         new_magnitude = math.sqrt(sum(x**2 for x in normalized))
         assert new_magnitude == pytest.approx(1.0)
 
-    def test_normalize_preserves_direction(self):
+def test_normalize_preserves_direction(self: Any) -> None:
         """Normalization preserves vector direction."""
         vector = [3.0, 4.0]
         magnitude = math.sqrt(sum(x**2 for x in vector))
@@ -172,7 +173,7 @@ class TestNormalizeVectors:
 
         assert original_ratio == pytest.approx(normalized_ratio)
 
-    def test_normalize_zero_vector(self):
+def test_normalize_zero_vector(self: Any) -> None:
         """Zero vector normalization is handled."""
         vector = [0.0, 0.0, 0.0]
         magnitude = math.sqrt(sum(x**2 for x in vector))
@@ -187,7 +188,7 @@ class TestNormalizeVectors:
 class TestMatchContext:
     """Tests for context matching operations."""
 
-    def test_match_relevant_context(self):
+def test_match_relevant_context(self: Any) -> None:
         """Relevant context is matched correctly."""
         query_embedding = [1.0, 0.0]
         contexts = [
@@ -195,7 +196,7 @@ class TestMatchContext:
             {"id": "ctx2", "embedding": [0.1, 0.9], "text": "Irrelevant context"},
         ]
 
-        def similarity(v1, v2):
+def similarity(v1: Any, v2: Any) -> None:
             """Docstring."""
             dot = sum(a * b for a, b in zip(v1, v2))
             m1 = math.sqrt(sum(x**2 for x in v1))
@@ -207,7 +208,7 @@ class TestMatchContext:
 
         assert best_match[0]["id"] == "ctx1"
 
-    def test_match_multiple_contexts(self):
+def test_match_multiple_contexts(self: Any) -> None:
         """Multiple relevant contexts are matched."""
         threshold = 0.7
         contexts = [

@@ -2,6 +2,7 @@
 """Simple unused import remover."""
 
 import ast
+from typing import Any
 import os
 import logging
 
@@ -9,7 +10,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def find_unused_imports(filepath):
+def find_unused_imports(filepath: Any) -> None:
     """Find unused imports in a file."""
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -45,10 +46,10 @@ def find_unused_imports(filepath):
                   if name not in used and name != '__future__']
 
         return sorted(unused, reverse=True)
-    except:
+    except Exception:
         return []
 
-def main():
+def main() -> None:
     """Fix unused imports in all Python files."""
     count = 0
     for root, dirs, files in os.walk('.'):

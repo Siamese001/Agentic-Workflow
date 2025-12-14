@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
@@ -7,7 +8,7 @@ logger = logging.getLogger(__name__)
 class InternalDummyOutcome:
     """TODO: Add docstring."""
 
-    def __init__(self, score: float, conflicts: int) -> None:
+def __init__(self: Any, score: float, conflicts: int) -> None:
         self.outcome = {"golden_eval_score": score, "correction_iterations": conflicts}
         self.agent_conflict_count = conflicts
 

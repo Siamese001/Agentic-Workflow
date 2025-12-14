@@ -8,12 +8,12 @@ from presidio_anonymizer.entities import OperatorConfig
 import logging
 
 class PIIVault:
-    def __init__(self):
+def __init__(self: Any) -> None:
         self.analyzer = AnalyzerEngine()
         self.anonymizer = AnonymizerEngine()
         self._mappings: Dict[str, Dict[str, str]] = {}
 
-    def redact(self, session_id: str, text: str) -> str:
+def redact(self: Any, session_id: str, text: str) -> str:
         """Replace PII with tokens <ENTITY>."""
         results = self.analyzer.analyze(text=text,
             entities=["PERSON",
@@ -29,7 +29,7 @@ class PIIVault:
         )
         return anonymized.text
 
-    def restore(self, session_id: str, text: str) -> str:
+def restore(self: Any, session_id: str, text: str) -> str:
         # Implementation would use stored mappings to reverse the redaction
         # For L5 MVP, we simply pass through or warn.
         return text

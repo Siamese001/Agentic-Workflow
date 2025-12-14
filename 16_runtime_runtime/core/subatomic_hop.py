@@ -35,7 +35,7 @@ class SubatomicHop:
     - L5: Safety (PII + Cost + Constitution + Membrane)
     """
 
-    def __init__(self, role: str, config: Dict):
+def __init__(self: Any, role: str, config: Dict) -> None:
         self.role = role
         self.id = str(uuid.uuid4())
 
@@ -67,7 +67,7 @@ class SubatomicHop:
         )
         self.telemetry = TelemetryRecorder(config.get("telemetry_db", "flight_recorder.duckdb"))
 
-    async def run(self, context: Dict) -> Any:
+async def run(self: Any, context: Dict) -> Any:
         """
         Execute the hardened hop with full L5.5 Zero Trust protection.
 
@@ -85,7 +85,7 @@ class SubatomicHop:
             self._run_with_zero_trust(context, trace_id)
         )
 
-    async def _run_with_zero_trust(self, context: Dict, trace_id: str) -> Any:
+async def _run_with_zero_trust(self: Any, context: Dict, trace_id: str) -> Any:
         """Internal method with all L5.5 Zero Trust protections applied."""
         try:
             # 2. PRE-FLIGHT
@@ -127,7 +127,7 @@ class SubatomicHop:
         finally:
             await self._cleanup(trace_id)
 
-    async def _preflight_checks(self, context: Dict, trace_id: str):
+async def _preflight_checks(self: Any, context: Dict, trace_id: str) -> None:
         """Pre-flight validation and setup."""
         # Check genealogy (am I in a loop?)
         context_hash = str(hash(str(context)))
@@ -149,7 +149,7 @@ class SubatomicHop:
             timestamp=time.time()
         ))
 
-    async def _sanitize_input(self, context: Dict, trace_id: str) -> Dict:
+async def _sanitize_input(self: Any, context: Dict, trace_id: str) -> Dict:
         """Sanitize all inputs through the membrane."""
         sanitized = {}
 
@@ -175,9 +175,7 @@ class SubatomicHop:
 
         return sanitized
 
-    async def _execute_think_stage_with_consensus(self,
-        context: Dict,
-        trace_id: str) -> tuple[AgentPlan,
+async def _execute_think_stage_with_consensus(self: Any, context: Dict, trace_id: str) -> tuple[AgentPlan, float]:
         float]:
         """Execute the thinking stage with multi-model consensus."""
         # Determine risk level for consensus
@@ -233,7 +231,7 @@ class SubatomicHop:
             ))
             raise
 
-    def _assess_task_risk(self, task: str) -> str:
+def _assess_task_risk(self: Any, task: str) -> str:
         """Assess the risk level of a task."""
         high_risk_keywords = [
             "delete", "remove", "destroy", "push", "deploy", "execute",
@@ -248,7 +246,7 @@ class SubatomicHop:
         else:
             return "low"
 
-    async def _check_past_failures(self, task: str) -> str:
+async def _check_past_failures(self: Any, task: str) -> str:
         """Check telemetry for past failures on similar tasks."""
         try:
             # This would query telemetry via MCP
@@ -257,9 +255,7 @@ class SubatomicHop:
         except Exception:
             return "Unable to check past failures"
 
-    async def _execute_act_stage_with_airlock(self,
-        plan: AgentPlan,
-        trace_id: str) -> tuple[list,
+async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: str) -> tuple[list, float]:
         float]:
         """Execute the action stage with airlock protection."""
         results = []
@@ -319,7 +315,7 @@ class SubatomicHop:
 
         return results, total_cost
 
-    async def _execute_critique_stage_with_membrane(self, results: list, trace_id: str) -> str:
+async def _execute_critique_stage_with_membrane(self: Any, results: list, trace_id: str) -> str:
         """Apply L5 safety checks with membrane sanitization."""
         output_text = f"Plan executed. Results: {results}"
 
@@ -351,7 +347,7 @@ class SubatomicHop:
 
         return sanitized_output
 
-    async def _execute_commit_stage(self, output_text: str, trace_id: str) -> str:
+async def _execute_commit_stage(self: Any, output_text: str, trace_id: str) -> str:
         """Commit results to storage."""
         # Restore PII if needed
         final_output = self.pii.restore(trace_id, output_text)
@@ -379,7 +375,7 @@ class SubatomicHop:
 
         return final_output
 
-    def _handle_budget_exceeded(self, trace_id: str, error: BudgetExceededError):
+def _handle_budget_exceeded(self: Any, trace_id: str, error: BudgetExceededError) -> None:
         """Handle budget exceeded scenario."""
         self.telemetry.record(TraceEvent(
             trace_id=trace_id,
@@ -393,7 +389,7 @@ class SubatomicHop:
             timestamp=time.time()
         ))
 
-    def _handle_execution_error(self, trace_id: str, error: Exception):
+def _handle_execution_error(self: Any, trace_id: str, error: Exception) -> None:
         """Handle general execution errors."""
         self.telemetry.record(TraceEvent(
             trace_id=trace_id,
@@ -404,7 +400,7 @@ class SubatomicHop:
             timestamp=time.time()
         ))
 
-    async def _cleanup(self, trace_id: str):
+async def _cleanup(self: Any, trace_id: str) -> None:
         """Cleanup resources."""
         await self.mcp.cleanup()
         self.telemetry.record(TraceEvent(

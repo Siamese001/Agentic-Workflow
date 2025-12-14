@@ -64,7 +64,7 @@ def fix_hardcoded_secrets():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception as e:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -111,7 +111,7 @@ def fix_print_statements():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -134,7 +134,7 @@ def fix_debugger_statements():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -159,7 +159,7 @@ def fix_empty_except_blocks():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -180,7 +180,7 @@ def fix_bare_except():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -211,7 +211,7 @@ def fix_star_imports():
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            # Skip files that can't be processed
 
     logger.info(f"  Fixed {fixed} files")
 

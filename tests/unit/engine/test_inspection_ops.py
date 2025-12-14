@@ -25,7 +25,7 @@ class InspectionResult:
 class TestContentInspection:
     """Tests for content inspection operations."""
 
-    def test_inspect_content_quality(self):
+def test_inspect_content_quality(self: Any) -> None:
         """Content quality is assessed correctly."""
         content = "This is a well-written, comprehensive document with detailed analysis."
 
@@ -43,7 +43,7 @@ class TestContentInspection:
 
         assert quality == ContentQuality.HIGH
 
-    def test_inspect_empty_content(self):
+def test_inspect_empty_content(self: Any) -> None:
         """Empty content is flagged."""
         content = ""
 
@@ -53,7 +53,7 @@ class TestContentInspection:
 
         assert "Content is empty" in issues
 
-    def test_inspect_short_content(self):
+def test_inspect_short_content(self: Any) -> None:
         """Short content is flagged."""
         content = "Hi"
         min_length = 10
@@ -64,7 +64,7 @@ class TestContentInspection:
 
         assert len(issues) == 1
 
-    def test_inspect_formatting(self):
+def test_inspect_formatting(self: Any) -> None:
         """Content formatting is inspected."""
         content = "   Poorly   formatted    content   "
 
@@ -79,7 +79,7 @@ class TestContentInspection:
 class TestStructureInspection:
     """Tests for structure inspection."""
 
-    def test_inspect_required_sections(self):
+def test_inspect_required_sections(self: Any) -> None:
         """Required sections are verified."""
         document = {
             "title": "Report",
@@ -91,7 +91,7 @@ class TestStructureInspection:
         missing = [s for s in required_sections if s not in document]
         assert "conclusion" in missing
 
-    def test_inspect_nested_structure(self):
+def test_inspect_nested_structure(self: Any) -> None:
         """Nested structure is inspected correctly."""
         data = {
             "level1": {
@@ -111,7 +111,7 @@ class TestStructureInspection:
         depth = get_depth(data)
         assert depth == 3
 
-    def test_inspect_array_structure(self):
+def test_inspect_array_structure(self: Any) -> None:
         """Array structure is inspected correctly."""
         data = {"items": [{"id": 1}, {"id": 2}, {}]}
 
@@ -127,7 +127,7 @@ class TestStructureInspection:
 class TestMetricsCalculation:
     """Tests for metrics calculation during inspection."""
 
-    def test_calculate_completeness(self):
+def test_calculate_completeness(self: Any) -> None:
         """Completeness metric is calculated correctly."""
         required_fields = ["name", "email", "phone", "address"]
         data = {"name": "John", "email": "john@example.com", "phone": "555-1234"}
@@ -137,7 +137,7 @@ class TestMetricsCalculation:
 
         assert completeness == 0.75
 
-    def test_calculate_validity(self):
+def test_calculate_validity(self: Any) -> None:
         """Validity metric is calculated correctly."""
         validations = [
             {"field": "email", "valid": True},
@@ -150,7 +150,7 @@ class TestMetricsCalculation:
 
         assert validity == pytest.approx(0.667, rel=0.01)
 
-    def test_calculate_consistency(self):
+def test_calculate_consistency(self: Any) -> None:
         """Consistency metric is calculated correctly."""
         records = [
             {"format": "json", "encoding": "utf-8"},
@@ -167,7 +167,7 @@ class TestMetricsCalculation:
 class TestIssueDetection:
     """Tests for issue detection during inspection."""
 
-    def test_detect_duplicates(self):
+def test_detect_duplicates(self: Any) -> None:
         """Duplicate entries are detected."""
         items = [
             {"id": 1, "name": "Item A"},
@@ -184,7 +184,7 @@ class TestIssueDetection:
 
         assert 1 in duplicates
 
-    def test_detect_inconsistencies(self):
+def test_detect_inconsistencies(self: Any) -> None:
         """Data inconsistencies are detected."""
         data = {
             "total": 100,
@@ -200,7 +200,7 @@ class TestIssueDetection:
 
         assert is_consistent is False
 
-    def test_detect_outliers(self):
+def test_detect_outliers(self: Any) -> None:
         """Outliers are detected."""
         values = [10, 12, 11, 13, 100, 11, 12]
 

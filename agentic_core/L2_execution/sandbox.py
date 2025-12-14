@@ -1,14 +1,15 @@
 import docker
+from typing import Any
 import logging
 
 
 logger = logging.getLogger(__name__)
 class DockerSandbox:
-    def __init__(self, image: str = "python:3.10-slim"):
+def __init__(self: Any, image: str) -> None:
         self.client = docker.from_env()
         self.image = image
 
-    def run_code(self, code: str, timeout: int = 30) -> str:
+def run_code(self: Any, code: str, timeout: int) -> str:
         """Runs python code in an ephemeral container."""
         # Wrap code to print to stdout
         wrapped = f"try:\n{self._indent(code)}\nexcept Exception as e:\n    logger.info(e)"
@@ -30,5 +31,5 @@ class DockerSandbox:
         except Exception as e:
             return f"Sandbox Error: {str(e)}"
 
-    def _indent(self, text: str) -> str:
+def _indent(self: Any, text: str) -> str:
         return "\n".join("    " + line for line in text.splitlines())

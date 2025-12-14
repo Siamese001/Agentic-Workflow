@@ -20,13 +20,13 @@ class CollectedItem:
 class BaseCollector:
     """Collector for metrics domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
         self.config = config or {}
         self.items: Dict[str, List[CollectedItem]] = defaultdict(list)
         self.max_items = self.config.get("max_items", 1000)
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def collect(self, source: str, data: object) -> None:
+def collect(self: Any, source: str, data: object) -> None:
         """Collect data from source."""
         item = CollectedItem(source=source, data=data)
         self.items[source].append(item)
@@ -37,13 +37,13 @@ class BaseCollector:
 
         logger.debug(f"Collected item from {source}")
 
-    def get_items(self, source: Optional[str] = None) -> List[CollectedItem]:
+def get_items(self: Any, source: Optional[str]) -> List[CollectedItem]:
         """Get collected items."""
         if source:
             return self.items.get(source, [])
         return [item for items in self.items.values() for item in items]
 
-    def flush(self, source: Optional[str] = None) -> List[CollectedItem]:
+def flush(self: Any, source: Optional[str]) -> List[CollectedItem]:
         """Flush and return items."""
         if source:
             items = self.items.pop(source, [])

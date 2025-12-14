@@ -198,7 +198,7 @@ class AirlockProtocol:
                     raise PermissionError(f"Human rejected action: {reason}")
 
             except (json.JSONDecodeError, IOError):
-                pass
+                # Ticket file may be corrupted or unreadable, continue waiting
 
             # Wait before next check
             await asyncio.sleep(5)

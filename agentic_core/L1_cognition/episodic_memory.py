@@ -10,8 +10,7 @@ import json
 import time
 import logging
 from dataclasses import dataclass, asdict
-from dataclasses import dataclass
-from typing import List, Dict, Any, Optional, Any
+from typing import List, Dict, Optional
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -56,7 +55,7 @@ class EpisodicMemory:
     - BlobStorageAdapter for persistent storage
     """
 
-    def __init__(self, storage_adapter, embedder, similarity_threshold: float = 0.85):
+def __init__(self: Any, storage_adapter: Any, embedder: Any, similarity_threshold: float) -> None:
         """
         Initialize episodic memory.
 
@@ -76,7 +75,7 @@ class EpisodicMemory:
         # Load existing episodes on startup
         self._load_episodes()
 
-    async def _load_episodes(self):
+async def _load_episodes(self: Any) -> None:
         """Load existing episodes from storage."""
         try:
             # List all episode files in storage
@@ -95,7 +94,7 @@ class EpisodicMemory:
         except Exception as e:
             logger.error(f"Failed to load episodes: {e}")
 
-    def _rebuild_embedding_matrix(self):
+def _rebuild_embedding_matrix(self: Any) -> None:
         """Rebuild the embedding matrix for efficient similarity search."""
         if self._episodes:
             self._embedding_matrix = np.array([
@@ -104,9 +103,7 @@ class EpisodicMemory:
         else:
             self._embedding_matrix = None
 
-    def _filter_episode_candidates(self,
-        agent_role: Optional[str],
-        min_rating: float) -> List[tuple]:
+def _filter_episode_candidates(self: Any, agent_role: Optional[str], min_rating: float) -> List[tuple]:
         """Filter episodes by role and rating."""
         candidates = []
         for i, episode in enumerate(self._episodes):
@@ -115,13 +112,13 @@ class EpisodicMemory:
                     candidates.append((i, episode))
         return candidates
 
-    def _calculate_similarity(self, query_vec: np.ndarray, episode_vec: np.ndarray) -> float:
+def _calculate_similarity(self: Any, query_vec: np.ndarray, episode_vec: np.ndarray) -> float:
         """Calculate cosine similarity between query and episode vectors."""
         return np.dot(query_vec, episode_vec) / (
             np.linalg.norm(query_vec) * np.linalg.norm(episode_vec)
         )
 
-    def _find_best_match(self, query_vec: np.ndarray, candidates: List[tuple]) -> tuple:
+def _find_best_match(self: Any, query_vec: np.ndarray, candidates: List[tuple]) -> tuple:
         """Find the best matching episode from candidates."""
         best_score = -1.0
         best_episode = None
@@ -136,7 +133,7 @@ class EpisodicMemory:
 
         return best_episode, best_score
 
-    def _format_memory_context(self, episode: Episode, score: float) -> str:
+def _format_memory_context(self: Any, episode: Episode, score: float) -> str:
         """Format episode as memory context string."""
         memory_context = (
             f"MEMORY RECALL (similarity={score:.2f}):\n"
@@ -151,12 +148,7 @@ class EpisodicMemory:
 
         return memory_context
 
-    async def recall_relevant_experience(
-        self,
-        current_task: str,
-        agent_role: Optional[str] = None,
-        min_rating: float = 0.6
-    ) -> Optional[str]:
+async def recall_relevant_experience(self: Any, current_task: str, agent_role: Optional[str], min_rating: float) -> Optional[str]:
         """
         Retrieves the 'Lesson Learned' from the most similar past task.
 
@@ -188,7 +180,7 @@ class EpisodicMemory:
 
         return None
 
-    async def commit_episode(self, data: EpisodeData) -> str:
+async def commit_episode(self: Any, data: EpisodeData) -> str:
         """
         Saves the experience for future self.
 
@@ -232,7 +224,7 @@ class EpisodicMemory:
         logger.info(f"Committed episode {episode_id} (rating={data.rating:.2f})")
         return episode_id
 
-    async def _persist_episode(self, episode: Episode):
+async def _persist_episode(self: Any, episode: Episode) -> None:
         """Persist an episode to storage."""
         episode_key = f"episodes/{episode.episode_id}.json"
         episode_data = asdict(episode)
@@ -252,12 +244,7 @@ class EpisodicMemory:
             }
         )
 
-    async def get_successful_patterns(
-        self,
-        task_type: Optional[str] = None,
-        min_rating: float = 0.8,
-        limit: int = 5
-    ) -> List[Dict[str, Any]]:
+async def get_successful_patterns(self: Any, task_type: Optional[str], min_rating: float, limit: int) -> List[Dict[str, Any]]:
         """
         Get successful patterns for learning.
 
@@ -291,10 +278,7 @@ class EpisodicMemory:
 
         return patterns
 
-    async def analyze_failure_patterns(
-        self,
-        agent_role: Optional[str] = None
-    ) -> Dict[str, int]:
+async def analyze_failure_patterns(self: Any, agent_role: Optional[str]) -> Dict[str, int]:
         """
         Analyze common failure patterns.
 
@@ -321,7 +305,7 @@ class EpisodicMemory:
 
         return failure_types
 
-    def get_stats(self) -> Dict[str, Any]:
+def get_stats(self: Any) -> Dict[str, Any]:
         """Get memory statistics."""
         if not self._episodes:
             return {"total_episodes": 0}
@@ -351,7 +335,7 @@ def create_episodic_memory(
 
     Returns:
         EpisodicMemory instance
-    """
+def create_episodic_memory(storage_adapter: Any, embedder: Any, similarity_threshold: float) -> EpisodicMemory:
     return EpisodicMemory(
         storage_adapter=storage_adapter,
         embedder=embedder,

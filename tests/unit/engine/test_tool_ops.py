@@ -32,7 +32,7 @@ class ToolExecutionResult:
 class TestToolRegistration:
     """Tests for tool registration."""
 
-    def test_register_tool(self):
+def test_register_tool(self: Any) -> None:
         """Tool is registered correctly."""
         tools: Dict[str, ToolDefinition] = {}
 
@@ -46,7 +46,7 @@ class TestToolRegistration:
 
         assert "search" in tools
 
-    def test_get_registered_tool(self):
+def test_get_registered_tool(self: Any) -> None:
         """Registered tool is retrieved correctly."""
         tools = {
             "search": ToolDefinition(
@@ -60,13 +60,13 @@ class TestToolRegistration:
         tool = tools.get("search")
         assert tool is not None
 
-    def test_unregistered_tool_returns_none(self):
+def test_unregistered_tool_returns_none(self: Any) -> None:
         """Unregistered tool returns None."""
         tools: Dict[str, ToolDefinition] = {}
         tool = tools.get("nonexistent")
         assert tool is None
 
-    def test_list_available_tools(self):
+def test_list_available_tools(self: Any) -> None:
         """Available tools are listed correctly."""
         tools = {
             "search": ToolDefinition("search", "Search", {}, []),
@@ -80,7 +80,7 @@ class TestToolRegistration:
 class TestToolExecution:
     """Tests for tool execution."""
 
-    def test_execute_tool_success(self):
+def test_execute_tool_success(self: Any) -> None:
         """Tool executes successfully."""
         def mock_search(query: str) -> Dict:
             """Docstring."""
@@ -98,7 +98,7 @@ class TestToolExecution:
         assert tool_result.success is True
         assert tool_result.data is not None
 
-    def test_execute_tool_failure(self):
+def test_execute_tool_failure(self: Any) -> None:
         """Tool failure is handled correctly."""
         def mock_failing_tool() -> Dict:
             """Docstring."""
@@ -121,7 +121,7 @@ class TestToolExecution:
         assert tool_result.success is False
         assert tool_result.error is not None
 
-    def test_execute_with_timeout(self):
+def test_execute_with_timeout(self: Any) -> None:
         """Tool execution respects timeout."""
         timeout_ms = 1000
         execution_time_ms = 500
@@ -129,7 +129,7 @@ class TestToolExecution:
         timed_out = execution_time_ms > timeout_ms
         assert timed_out is False
 
-    def test_execute_with_retry(self):
+def test_execute_with_retry(self: Any) -> None:
         """Tool execution retries on failure."""
         max_retries = 3
         attempts = 0
@@ -146,7 +146,7 @@ class TestToolExecution:
 class TestToolParameterValidation:
     """Tests for tool parameter validation."""
 
-    def test_validate_required_params(self):
+def test_validate_required_params(self: Any) -> None:
         """Required parameters are validated."""
         tool = ToolDefinition(
             name="search",
@@ -160,7 +160,7 @@ class TestToolParameterValidation:
         missing = [p for p in tool.required_params if p not in params]
         assert "query" in missing
 
-    def test_validate_param_types(self):
+def test_validate_param_types(self: Any) -> None:
         """Parameter types are validated."""
         expected_types = {"query": str, "limit": int}
         params = {"query": "test", "limit": "ten"}  # Wrong type for limit
@@ -172,7 +172,7 @@ class TestToolParameterValidation:
 
         assert len(type_errors) == 1
 
-    def test_validate_param_values(self):
+def test_validate_param_values(self: Any) -> None:
         """Parameter values are validated."""
         constraints = {"limit": {"min": 1, "max": 100}}
         params = {"limit": 150}
@@ -189,7 +189,7 @@ class TestToolParameterValidation:
 class TestToolStatusCheck:
     """Tests for tool status checking."""
 
-    def test_tool_available(self):
+def test_tool_available(self: Any) -> None:
         """Available tool status is detected."""
         tool_statuses = {
             "search": ToolStatus.AVAILABLE,
@@ -199,7 +199,7 @@ class TestToolStatusCheck:
         is_available = tool_statuses.get("search") == ToolStatus.AVAILABLE
         assert is_available is True
 
-    def test_tool_unavailable(self):
+def test_tool_unavailable(self: Any) -> None:
         """Unavailable tool status is detected."""
         tool_statuses = {
             "search": ToolStatus.UNAVAILABLE,
@@ -208,7 +208,7 @@ class TestToolStatusCheck:
         is_available = tool_statuses.get("search") == ToolStatus.AVAILABLE
         assert is_available is False
 
-    def test_tool_rate_limited(self):
+def test_tool_rate_limited(self: Any) -> None:
         """Rate-limited tool status is detected."""
         tool_statuses = {
             "api_call": ToolStatus.RATE_LIMITED,
@@ -217,7 +217,7 @@ class TestToolStatusCheck:
         status = tool_statuses.get("api_call")
         assert status == ToolStatus.RATE_LIMITED
 
-    def test_check_all_tools_status(self):
+def test_check_all_tools_status(self: Any) -> None:
         """All tools status is checked."""
         tool_statuses = {
             "tool1": ToolStatus.AVAILABLE,

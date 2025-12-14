@@ -16,10 +16,10 @@ class Result:
 class Safety:
     """executor for shared operations."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
         self.config = config or {}
 
-    def process(self, data: object, context: Optional[Dict] = None) -> Result:
+def process(self: Any, data: object, context: Optional[Dict]) -> Result:
         """Process data."""
         try:
             return Result(success=True, data=self._execute(data, context))
@@ -27,7 +27,7 @@ class Safety:
             logger.error(f"Processing failed: {e}")
             return Result(success=False, metadata={"error": str(e)})
 
-    def _execute(self, data: object, context: Optional[Dict]) -> object:
+def _execute(self: Any, data: object, context: Optional[Dict]) -> object:
         """Execute processing."""
         return data
 

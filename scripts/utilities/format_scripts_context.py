@@ -20,12 +20,13 @@ class FormattedOutput:
 class FormatScriptsContext:
     """Formatter for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
+        """Initialize the formatter with optional configuration."""
         self.config = config or {}
         self.output_format = self.config.get("format", "default")
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def format(self, data: object, target_format: Optional[str] = None) -> FormattedOutput:
+def format(self: Any, data: object, target_format: Optional[str]) -> FormattedOutput:
         """Format data to target structure."""
         fmt = target_format or self.output_format
         transformed = self._transform(data)
@@ -37,19 +38,19 @@ class FormatScriptsContext:
             metadata={"original_type": type(data).__name__}
         )
 
-    def _transform(self, data: object) -> object:
+def _transform(self: Any, data: object) -> object:
         """Apply transformations."""
         if isinstance(data, str):
             return data.strip()
         return data
 
-    def _format_to_target(self, data: object, fmt: str) -> object:
+def _format_to_target(self: Any, data: object, fmt: str) -> object:
         """Format to target."""
         if fmt == "flat" and isinstance(data, dict):
             return self._flatten(data)
         return data
 
-    def _flatten(self, data: Dict, prefix: str = "") -> Dict[str, object]:
+def _flatten(self: Any, data: Dict, prefix: str) -> Dict[str, object]:
         """Flatten nested dict."""
         result = {}
         for key, value in data.items():

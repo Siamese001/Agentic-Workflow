@@ -1,5 +1,6 @@
 """Integration tests for LIC research + data layer."""
 import pytest
+from typing import Any
 import logging
 
 
@@ -8,7 +9,7 @@ logger = logging.getLogger(__name__)
 class TestLICResearchIntegration:
     """Integration tests for LIC research."""
 
-    def test_contact_data_retrieval(self):
+def test_contact_data_retrieval(self: Any) -> None:
         """Integration: Contact data is retrieved from data layer."""
         contacts_db = {
             "c_001": {"name": "John Doe", "company": "TechCorp", "title": "CTO"},
@@ -18,7 +19,7 @@ class TestLICResearchIntegration:
         contact = contacts_db.get("c_001")
         assert contact["name"] == "John Doe"
 
-    def test_company_data_enrichment(self):
+def test_company_data_enrichment(self: Any) -> None:
         """Integration: Company data enriches contact."""
         contact = {"name": "John", "company_id": "comp_001"}
         companies = {"comp_001": {"name": "TechCorp", "industry": "Technology"}}
@@ -31,7 +32,7 @@ class TestLICResearchIntegration:
 
         assert enriched["company_name"] == "TechCorp"
 
-    def test_research_results_storage(self):
+def test_research_results_storage(self: Any) -> None:
         """Integration: Research results are stored."""
         storage = {}
 
@@ -43,7 +44,7 @@ class TestLICResearchIntegration:
         storage[results["contact_id"]] = results
         assert "c_001" in storage
 
-    def test_campaign_contact_association(self):
+def test_campaign_contact_association(self: Any) -> None:
         """Integration: Contacts are associated with campaigns."""
         campaigns = {
             "camp_001": {"contacts": ["c_001", "c_002", "c_003"]},
@@ -55,7 +56,7 @@ class TestLICResearchIntegration:
 class TestLICMessageIntegration:
     """Integration tests for LIC message generation."""
 
-    def test_template_retrieval(self):
+def test_template_retrieval(self: Any) -> None:
         """Integration: Message templates are retrieved."""
         templates = {
             "intro": "Hi {name}, I noticed...",
@@ -65,7 +66,7 @@ class TestLICMessageIntegration:
         template = templates.get("intro")
         assert "{name}" in template
 
-    def test_personalization_data_merge(self):
+def test_personalization_data_merge(self: Any) -> None:
         """Integration: Personalization data merges with template."""
         template = "Hi {name}, I saw {company}'s {achievement}."
         data = {"name": "John", "company": "TechCorp", "achievement": "product launch"}
@@ -74,7 +75,7 @@ class TestLICMessageIntegration:
         assert "John" in message
         assert "TechCorp" in message
 
-    def test_message_history_tracking(self):
+def test_message_history_tracking(self: Any) -> None:
         """Integration: Message history is tracked."""
         history = []
 
@@ -86,7 +87,7 @@ class TestLICMessageIntegration:
 class TestLICAnalyticsIntegration:
     """Integration tests for LIC analytics."""
 
-    def test_campaign_metrics_aggregation(self):
+def test_campaign_metrics_aggregation(self: Any) -> None:
         """Integration: Campaign metrics are aggregated."""
         messages = [
             {"status": "sent"},
@@ -105,7 +106,7 @@ class TestLICAnalyticsIntegration:
         assert metrics["sent"] == 5
         assert metrics["opened"] == 3
 
-    def test_conversion_tracking(self):
+def test_conversion_tracking(self: Any) -> None:
         """Integration: Conversions are tracked."""
         contacts = [
             {"id": "c_001", "status": "converted"},

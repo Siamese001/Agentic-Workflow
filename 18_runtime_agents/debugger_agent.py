@@ -11,6 +11,7 @@ This represents Level 4 Autonomy - the system can observe, analyze, and correct 
 """
 
 import logging
+from typing import Any
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class DebuggerAgent:
     to debug and fix issues in the system.
     """
 
-    def __init__(self, mcp_manager, llm_client):
+def __init__(self: Any, mcp_manager: Any, llm_client: Any) -> None:
         """
         Initialize the DEBUGGER agent.
 
@@ -56,7 +57,7 @@ Always:
 - Track the effectiveness of your fixes
 """
 
-    async def run_debugging_cycle(self, context: Dict[str, Any]) -> Dict[str, Any]:
+async def run_debugging_cycle(self: Any, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute a complete debugging cycle.
 
@@ -115,7 +116,7 @@ Always:
 
         return results
 
-    async def _debug_specific_trace(self, trace_id: str) -> List[Dict]:
+async def _debug_specific_trace(self: Any, trace_id: str) -> List[Dict]:
         """Debug a specific trace ID."""
         try:
             # Get trace summary
@@ -136,7 +137,7 @@ Always:
             logger.error(f"Error debugging trace {trace_id}: {e}")
             return []
 
-    async def _find_recent_errors(self, limit: int = 5) -> List[Dict]:
+async def _find_recent_errors(self: Any, limit: int) -> List[Dict]:
         """Find recent errors in the system."""
         try:
             # Get recent errors from telemetry
@@ -168,7 +169,7 @@ Always:
             logger.error(f"Error finding recent errors: {e}")
             return []
 
-    async def _analyze_error(self, error: Dict) -> Dict:
+async def _analyze_error(self: Any, error: Dict) -> Dict:
         """Analyze a specific error to understand root cause."""
         trace_id = error.get("trace_id")
         if not trace_id:
@@ -195,7 +196,7 @@ Always:
             logger.error(f"Error analyzing trace {trace_id}: {e}")
             return {"trace_id": trace_id, "error": str(e)}
 
-    async def _llm_analyze_error(self, error: Dict, telemetry: str) -> Dict:
+async def _llm_analyze_error(self: Any, error: Dict, telemetry: str) -> Dict:
         """Use LLM to analyze error and categorize it."""
         prompt = f"""
 Analyze this error from the telemetry system:
@@ -238,7 +239,7 @@ Provide a JSON response with:
                 "fixable": False
             }
 
-    async def _propose_fix(self, analysis: Dict) -> Dict:
+async def _propose_fix(self: Any, analysis: Dict) -> Dict:
         """Propose a specific fix based on the analysis."""
         category = analysis.get("category", "unknown")
         root_cause = analysis.get("root_cause", "")
@@ -306,7 +307,7 @@ Provide a JSON response with:
 
         return fix_proposal
 
-    async def _implement_fix(self, fix: Dict) -> Dict:
+async def _implement_fix(self: Any, fix: Dict) -> Dict:
         """Implement a proposed fix if auto-applicable."""
         implementation = {
             "fix_id": f"{fix['trace_id']}_{fix['type']}",
@@ -340,7 +341,7 @@ Provide a JSON response with:
 
         return implementation
 
-    async def _verify_fix(self, trace_id: str, fix: Dict) -> Dict:
+async def _verify_fix(self: Any, trace_id: str, fix: Dict) -> Dict:
         """
         Verify that a fix actually resolved the issue by:
         1. Re-running the failed operation
@@ -383,7 +384,7 @@ Provide a JSON response with:
 
         return verification
 
-    async def _record_verification(self, trace_id: str, verification: Dict):
+async def _record_verification(self: Any, trace_id: str, verification: Dict) -> None:
         """Record fix verification to telemetry for audit trail."""
         try:
             # This would record to the telemetry system
@@ -392,7 +393,7 @@ Provide a JSON response with:
         except Exception as e:
             logger.error(f"Error recording verification: {e}")
 
-    async def _check_circuit_breaker(self, trace_id: str, max_attempts: int = 3) -> bool:
+async def _check_circuit_breaker(self: Any, trace_id: str, max_attempts: int) -> bool:
         """
         Check if we've exceeded max fix attempts for this trace.
         Prevents infinite fix-retry loops.
@@ -421,7 +422,7 @@ Provide a JSON response with:
             # Fail safe - allow attempt if we can't check
             return False
 
-    def _generate_summary(self, results: Dict) -> str:
+def _generate_summary(self: Any, results: Dict) -> str:
         """Generate a summary of the debugging cycle."""
         total_errors = len(results["errors_found"])
         total_analyses = len(results["analyses"])
@@ -445,7 +446,7 @@ Effectiveness: {(fixes_implemented / max(fixes_proposed,
         return summary
 
 # Factory function for creating debugger agents
-async def create_debugger_agent(mcp_manager, llm_client) -> DebuggerAgent:
+async def create_debugger_agent(mcp_manager: Any, llm_client: Any) -> DebuggerAgent:
     """Create and initialize a DEBUGGER agent."""
     # Connect to required MCP servers
     await mcp_manager.connect("DEBUGGER")

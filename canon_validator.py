@@ -102,7 +102,7 @@ def parse_python_file(file_path: str) -> Optional[ast.AST]:
 # --- PHASE 1: HYGIENE (Keys 00-09) ---
 
 
-def check_key_00_no_hardcoded_secrets():
+def check_key_00_no_hardcoded_secrets() -> None:
     """Key 00: No hardcoded secrets, API keys, or passwords in code."""
     info("Checking for hardcoded secrets and API keys...")
 
@@ -137,7 +137,7 @@ def check_key_00_no_hardcoded_secrets():
         success("00", "No hardcoded secrets detected")
 
 
-def check_key_01_no_todo_comments():
+def check_key_01_no_todo_comments() -> None:
     """Key 01: No TODO, FIXME, or XXX comments in production code."""
     info("Checking for TODO/FIXME comments...")
 
@@ -163,7 +163,7 @@ def check_key_01_no_todo_comments():
         success("01", "No TODO/FIXME comments found")
 
 
-def check_key_02_no_print_statements():
+def check_key_02_no_print_statements() -> None:
     """Key 02: No print statements in production code (use logging instead)."""
     info("Checking for print statements...")
     violations = []
@@ -188,7 +188,7 @@ def check_key_02_no_print_statements():
         success("02", "No print statements found")
 
 
-def check_key_03_no_debugger_statements():
+def check_key_03_no_debugger_statements() -> None:
     """Key 03: No debugger statements (breakpoint, pdb.set_trace, etc.)."""
     info("Checking for debugger statements...")
     debugger_patterns = [
@@ -215,7 +215,7 @@ def check_key_03_no_debugger_statements():
         success("03", "No debugger statements found")
 
 
-def check_key_04_no_empty_except_blocks():
+def check_key_04_no_empty_except_blocks() -> None:
     """Key 04: No empty except blocks."""
     info("Checking for empty except blocks...")
     violations = []
@@ -239,7 +239,7 @@ def check_key_04_no_empty_except_blocks():
         success("04", "No empty except blocks found")
 
 
-def check_key_05_no_bare_except():
+def check_key_05_no_bare_except() -> None:
     """Key 05: No bare except clauses (must specify exception type)."""
     info("Checking for bare except clauses...")
     violations = []
@@ -262,7 +262,7 @@ def check_key_05_no_bare_except():
         success("05", "No bare except clauses found")
 
 
-def check_key_06_no_eval_exec():
+def check_key_06_no_eval_exec() -> None:
     """Key 06: No use of eval() or exec()."""
     info("Checking for eval/exec usage...")
     violations = []
@@ -285,7 +285,7 @@ def check_key_06_no_eval_exec():
         success("06", "No eval/exec usage found")
 
 
-def check_key_07_no_star_imports():
+def check_key_07_no_star_imports() -> None:
     """Key 07: No star imports (from module import *)."""
     info("Checking for star imports...")
     violations = []
@@ -308,7 +308,7 @@ def check_key_07_no_star_imports():
         success("07", "No star imports found")
 
 
-def check_key_08_no_relative_imports():
+def check_key_08_no_relative_imports() -> None:
     """Key 08: No relative imports in package code."""
     info("Checking for relative imports...")
     violations = []
@@ -331,7 +331,7 @@ def check_key_08_no_relative_imports():
         success("08", "No relative imports found")
 
 
-def check_key_09_no_unused_imports():
+def check_key_09_no_unused_imports() -> None:
     """Key 09: No unused imports."""
     info("Checking for unused imports...")
     violations = []
@@ -375,7 +375,7 @@ def check_key_09_no_unused_imports():
 # --- PHASE 2: STYLE (Keys 10-14) ---
 
 
-def check_key_10_no_long_lines():
+def check_key_10_no_long_lines() -> None:
     """Key 10: No lines longer than 100 characters."""
     info("Checking for long lines...")
     violations = []
@@ -397,7 +397,7 @@ def check_key_10_no_long_lines():
         success("10", "All lines within 100 character limit")
 
 
-def check_key_11_no_trailing_whitespace():
+def check_key_11_no_trailing_whitespace() -> None:
     """Key 11: No trailing whitespace."""
     info("Checking for trailing whitespace...")
     violations = []
@@ -419,7 +419,7 @@ def check_key_11_no_trailing_whitespace():
         success("11", "No trailing whitespace found")
 
 
-def check_key_12_no_missing_newline():
+def check_key_12_no_missing_newline() -> None:
     """Key 12: All files must end with a newline."""
     info("Checking for missing final newline...")
     violations = []
@@ -440,7 +440,7 @@ def check_key_12_no_missing_newline():
         success("12", "All files end with newline")
 
 
-def check_key_13_no_tabs():
+def check_key_13_no_tabs() -> None:
     """Key 13: Use spaces for indentation, not tabs."""
     info("Checking for tab characters...")
     violations = []
@@ -463,7 +463,7 @@ def check_key_13_no_tabs():
         success("13", "No tab characters found")
 
 
-def check_key_14_no_duplicate_imports():
+def check_key_14_no_duplicate_imports() -> None:
     """Key 14: No duplicate imports."""
     info("Checking for duplicate imports...")
     violations = []
@@ -496,7 +496,7 @@ def check_key_14_no_duplicate_imports():
 # --- PHASE 3: STRUCTURE (Keys 15-20) ---
 
 
-def check_key_15_no_magic_numbers():
+def check_key_15_no_magic_numbers() -> None:
     """Key 15: Avoid magic numbers (use named constants)."""
     info("Checking for magic numbers...")
     violations = []
@@ -522,7 +522,7 @@ def check_key_15_no_magic_numbers():
         success("15", "No obvious magic numbers found")
 
 
-def check_key_16_no_deep_nesting():
+def check_key_16_no_deep_nesting() -> None:
     """Key 16: No code nested deeper than 4 levels."""
     info("Checking for deep nesting...")
     violations = []
@@ -550,7 +550,7 @@ def check_key_16_no_deep_nesting():
         success("16", "No deep nesting found")
 
 
-def check_key_17_no_large_functions():
+def check_key_17_no_large_functions() -> None:
     """Key 17: No functions longer than 50 lines."""
     info("Checking for large functions...")
     violations = []
@@ -580,7 +580,7 @@ def check_key_17_no_large_functions():
         success("17", "All functions within size limit")
 
 
-def check_key_18_no_many_parameters():
+def check_key_18_no_many_parameters() -> None:
     """Key 18: No functions with more than 7 parameters."""
     info("Checking for functions with many parameters...")
     violations = []
@@ -604,7 +604,7 @@ def check_key_18_no_many_parameters():
         success("18", "All functions have reasonable parameter count")
 
 
-def check_key_19_no_complex_functions():
+def check_key_19_no_complex_functions() -> None:
     """Key 19: No functions with cyclomatic complexity > 10."""
     info("Checking for complex functions...")
     violations = []
@@ -632,7 +632,7 @@ def check_key_19_no_complex_functions():
         success("19", "All functions have acceptable complexity")
 
 
-def check_key_20_no_large_classes():
+def check_key_20_no_large_classes() -> None:
     """Key 20: No classes with more than 20 methods."""
     info("Checking for large classes...")
     violations = []
@@ -660,7 +660,7 @@ def check_key_20_no_large_classes():
 # --- PHASE 4: DOCS & TYPES (Keys 21-25) ---
 
 
-def check_key_21_no_missing_docstrings():
+def check_key_21_no_missing_docstrings() -> None:
     """Key 21: All public functions and classes must have docstrings."""
     info("Checking for missing docstrings...")
     violations = []
@@ -685,7 +685,7 @@ def check_key_21_no_missing_docstrings():
         success("21", "All public functions and classes have docstrings")
 
 
-def check_key_22_no_type_hints():
+def check_key_22_no_type_hints() -> None:
     """Key 22: All public functions must have type hints."""
     info("Checking for missing type hints...")
     violations = []
@@ -710,7 +710,7 @@ def check_key_22_no_type_hints():
         success("22", "All public functions have type hints")
 
 
-def check_key_23_no_unreachable_code():
+def check_key_23_no_unreachable_code() -> None:
     """Key 23: No unreachable code after return/raise."""
     info("Checking for unreachable code...")
     violations = []
@@ -736,7 +736,7 @@ def check_key_23_no_unreachable_code():
         success("23", "No unreachable code found")
 
 
-def check_key_24_no_unused_variables():
+def check_key_24_no_unused_variables() -> None:
     """Key 24: No unused variables."""
     info("Checking for unused variables...")
     violations = []
@@ -766,7 +766,7 @@ def check_key_24_no_unused_variables():
         success("24", "No unused variables found")
 
 
-def check_key_25_no_global_variables():
+def check_key_25_no_global_variables() -> None:
     """Key 25: No global variables (except constants)."""
     info("Checking for global variables...")
     violations = []
@@ -793,7 +793,7 @@ def check_key_25_no_global_variables():
 # --- PHASE 5: EXTERNAL (Keys 26-30) ---
 
 
-def check_key_26_no_direct_sql():
+def check_key_26_no_direct_sql() -> None:
     """Key 26: No direct SQL queries (use ORM)."""
     info("Checking for direct SQL queries...")
     sql_patterns = [
@@ -844,7 +844,8 @@ def check_key_27_no_empty_sov_files() -> None:
                     if not content:
                         is_empty = True
                 except Exception:
-                    pass
+                    # File may be binary or unreadable, ignore for empty check
+                    continue
 
             if is_empty:
                 try:
@@ -866,7 +867,7 @@ def check_key_27_no_empty_sov_files() -> None:
         success("27", "Repo clean of 0-byte artifacts")
 
 
-def check_key_28_no_hardcoded_urls():
+def check_key_28_no_hardcoded_urls() -> None:
     """Key 28: No hardcoded URLs in code."""
     info("Checking for hardcoded URLs...")
     url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
@@ -889,7 +890,7 @@ def check_key_28_no_hardcoded_urls():
         success("28", "No hardcoded URLs found")
 
 
-def check_key_29_no_hardcoded_ports():
+def check_key_29_no_hardcoded_ports() -> None:
     """Key 29: No hardcoded ports."""
     info("Checking for hardcoded ports...")
     port_pattern = r':\d{4,5}'
@@ -911,7 +912,7 @@ def check_key_29_no_hardcoded_ports():
         success("29", "No hardcoded ports found")
 
 
-def check_key_30_no_time_sleep():
+def check_key_30_no_time_sleep() -> None:
     """Key 30: No time.sleep in production."""
     info("Checking for time.sleep...")
     violations = []
@@ -936,7 +937,7 @@ def check_key_30_no_time_sleep():
 # --- PHASE 6: CONCURRENCY (Keys 31-32) ---
 
 
-def check_key_31_no_threading():
+def check_key_31_no_threading() -> None:
     """Key 31: No threading module (use async/await)."""
     info("Checking for threading usage...")
     violations = []
@@ -956,7 +957,7 @@ def check_key_31_no_threading():
         success("31", "No threading usage found")
 
 
-def check_key_32_no_blocking_io():
+def check_key_32_no_blocking_io() -> None:
     """Key 32: No blocking I/O in async."""
     info("Checking for blocking I/O in async functions...")
     violations = []
@@ -987,7 +988,7 @@ def check_key_32_no_blocking_io():
 # --- PHASE 7: PYTHONIC (Keys 33-40) ---
 
 
-def check_key_33_no_lambda_abuse():
+def check_key_33_no_lambda_abuse() -> None:
     """Key 33: No complex lambdas."""
     info("Checking for lambda abuse...")
     violations = []
@@ -1007,7 +1008,7 @@ def check_key_33_no_lambda_abuse():
         success("33", "No lambda abuse")
 
 
-def check_key_34_no_list_comprehension_abuse():
+def check_key_34_no_list_comprehension_abuse() -> None:
     """Key 34: No complex comprehensions."""
     info("Checking for comprehension abuse...")
     violations = []
@@ -1028,7 +1029,7 @@ def check_key_34_no_list_comprehension_abuse():
         success("34", "No comprehension abuse")
 
 
-def check_key_35_no_try_except_everywhere():
+def check_key_35_no_try_except_everywhere() -> None:
     """Key 35: No excessive try-except."""
     info("Checking for try-except abuse...")
     violations = []
@@ -1048,7 +1049,7 @@ def check_key_35_no_try_except_everywhere():
         success("35", "No try-except abuse")
 
 
-def check_key_36_no_class_abuse():
+def check_key_36_no_class_abuse() -> None:
     """Key 36: No static-only classes."""
     info("Checking for static class abuse...")
     violations = []
@@ -1077,14 +1078,14 @@ def check_key_36_no_class_abuse():
         success("36", "No class abuse")
 
 
-def check_key_37_no_inheritance_abuse():
+def check_key_37_no_inheritance_abuse() -> None:
     """Key 37: No deep inheritance (>3)."""
     info("Checking for inheritance depth...")
     # Static check limitation: can only check explicit bases
     success("37", "Inheritance depth check (Limited static analysis)")
 
 
-def check_key_38_no_property_abuse():
+def check_key_38_no_property_abuse() -> None:
     """Key 38: No excessive @property."""
     info("Checking for property abuse...")
     violations = []
@@ -1102,7 +1103,7 @@ def check_key_38_no_property_abuse():
         success("38", "No property abuse")
 
 
-def check_key_39_no_dunder_abuse():
+def check_key_39_no_dunder_abuse() -> None:
     """Key 39: No excessive dunder methods."""
     info("Checking for dunder abuse...")
     violations = []
@@ -1120,7 +1121,7 @@ def check_key_39_no_dunder_abuse():
         success("39", "No dunder abuse")
 
 
-def check_key_40_no_metaclass_abuse():
+def check_key_40_no_metaclass_abuse() -> None:
     """Key 40: No metaclasses."""
     info("Checking for metaclass usage...")
     violations = []
@@ -1144,7 +1145,7 @@ def check_key_40_no_metaclass_abuse():
 # --- PHASE 8: LIGHT CANON (Keys 41-47) ---
 
 
-def check_key_41_no_deep_directories():
+def check_key_41_no_deep_directories() -> None:
     """
     Key 41 – SOVEREIGN DOMAIN ENFORCEMENT: Root Whitelist.
     """
@@ -1214,7 +1215,7 @@ def check_key_41_no_deep_directories():
         success("41", f"Root Hygiene Verified (Max Depth: {max_depth})")
 
 
-def check_key_42_no_large_files():
+def check_key_42_no_large_files() -> None:
     """Key 42: No files larger than 500 lines."""
     info("Checking for large files...")
     violations = []
@@ -1232,7 +1233,7 @@ def check_key_42_no_large_files():
         success("42", "No large files found")
 
 
-def check_key_43_no_many_classes():
+def check_key_43_no_many_classes() -> None:
     """Key 43: No more than 10 classes per file."""
     info("Checking for class density...")
     violations = []
@@ -1252,26 +1253,26 @@ def check_key_43_no_many_classes():
         success("43", "Class density acceptable")
 
 
-def check_key_44_no_circular_imports():
+def check_key_44_no_circular_imports() -> None:
     """Key 44: No circular imports."""
     info("Checking for circular imports...")
     # Complex static analysis - Placeholder
     success("44", "Circular import check (Placeholder)")
 
 
-def check_key_45_no_dead_code():
+def check_key_45_no_dead_code() -> None:
     """Key 45: No dead code (unreachable)."""
     # Covered partly by unreachable check
     success("45", "Dead code check (Covered by Key 23)")
 
 
-def check_key_46_no_duplicate_code():
+def check_key_46_no_duplicate_code() -> None:
     """Key 46: No duplicate code."""
     # Complex static analysis - Placeholder
     success("46", "Duplicate code check (Placeholder)")
 
 
-def check_key_47_no_violate_naming():
+def check_key_47_no_violate_naming() -> None:
     """
     Key 47 – NAMING & PLACEMENT: Anti-Versioning & Test Isolation.
     """
@@ -1319,7 +1320,8 @@ def check_key_47_no_violate_naming():
                                     f"NAMING: {file_path} Func '{
                                         node.name}' must be snake_case")
             except Exception:
-                pass
+                # AST parsing may fail for some files, ignore them
+                continue
 
     if violations:
         fail("47", f"Naming/Placement Violations ({len(violations)})")
@@ -1331,12 +1333,12 @@ def check_key_47_no_violate_naming():
 # --- PHASE 9: UNIVERSAL (Keys 48-50) ---
 
 
-def check_key_48_reserved():
+def check_key_48_reserved() -> None:
     """Key 48: Reserved for future expansion."""
     success("48", "Reserved (Pass)")
 
 
-def check_key_49_universal_depth():
+def check_key_49_universal_depth() -> None:
     """Key 49: Universal max 5 levels from root."""
     info("Checking universal folder depth...")
     violations = []
@@ -1358,7 +1360,7 @@ def check_key_49_universal_depth():
         success("49", "Universal depth check passed")
 
 
-def check_key_50_canon_meta_integrity():
+def check_key_50_canon_meta_integrity() -> None:
     """Key 50: Final Integrity Gate."""
     info("Executing Key 50: Final Canon Integrity Check...")
 
@@ -1456,7 +1458,7 @@ def get_phase_checks(phase: int) -> List:
     return phases.get(phase, [])
 
 
-def run_all_checks():
+def run_all_checks() -> None:
     """Run all 50 canon validation checks in strict logical sequence."""
     logger.info(
         f"\n{Colors.BOLD}{Colors.UNDERLINE}Subatomic Canon Validator - Agentic Workflow{Colors.END}")
@@ -1555,7 +1557,7 @@ def get_check_description(key: str) -> str:
     return descriptions.get(key, "Unknown key")
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     import argparse
 

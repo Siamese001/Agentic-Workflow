@@ -21,7 +21,7 @@ class ScoredItem:
 class TestScoreCalculation:
     """Tests for score calculation."""
 
-    def test_simple_score_calculation(self):
+def test_simple_score_calculation(self: Any) -> None:
         """basic score is calculated correctly."""
         relevance = 0.8
         recency = 0.9
@@ -36,7 +36,7 @@ class TestScoreCalculation:
 
         assert score == pytest.approx(0.81)
 
-    def test_weighted_score_calculation(self):
+def test_weighted_score_calculation(self: Any) -> None:
         """Weighted score is calculated correctly."""
         factors = [
             {"name": "relevance", "value": 0.9, "weight": 0.5},
@@ -50,7 +50,7 @@ class TestScoreCalculation:
 
         assert score == pytest.approx(0.82)
 
-    def test_score_normalization(self):
+def test_score_normalization(self: Any) -> None:
         """Scores are normalized to [0, 1] range."""
         raw_scores = [10, 50, 100, 25, 75]
         min_score = min(raw_scores)
@@ -62,7 +62,7 @@ class TestScoreCalculation:
         assert min(normalized) == 0.0
         assert max(normalized) == 1.0
 
-    def test_score_determinism(self):
+def test_score_determinism(self: Any) -> None:
         """Same inputs produce same score."""
         factors = {"a": 0.5, "b": 0.3}
         weights = {"a": 0.6, "b": 0.4}
@@ -75,21 +75,21 @@ class TestScoreCalculation:
 class TestScoreComparison:
     """Tests for score comparison operations."""
 
-    def test_compare_scores_greater(self):
+def test_compare_scores_greater(self: Any) -> None:
         """Higher score is correctly identified."""
         score_a = 0.8
         score_b = 0.6
 
         assert score_a > score_b
 
-    def test_compare_scores_equal(self):
+def test_compare_scores_equal(self: Any) -> None:
         """Equal scores are handled correctly."""
         score_a = 0.75
         score_b = 0.75
 
         assert score_a == score_b
 
-    def test_rank_by_score(self):
+def test_rank_by_score(self: Any) -> None:
         """Items are ranked correctly by score."""
         items = [
             {"id": "1", "score": 0.6},
@@ -103,7 +103,7 @@ class TestScoreComparison:
         assert ranked[1]["id"] == "3"
         assert ranked[2]["id"] == "1"
 
-    def test_tiebreaker_scoring(self):
+def test_tiebreaker_scoring(self: Any) -> None:
         """Tiebreaker is applied when scores are equal."""
         items = [
             {"id": "1", "score": 0.8, "recency": 5},
@@ -118,28 +118,28 @@ class TestScoreComparison:
 class TestScoreAggregation:
     """Tests for score aggregation."""
 
-    def test_average_scores(self):
+def test_average_scores(self: Any) -> None:
         """Average score is calculated correctly."""
         scores = [0.8, 0.7, 0.9, 0.6]
         average = sum(scores) / len(scores)
 
         assert average == 0.75
 
-    def test_max_score(self):
+def test_max_score(self: Any) -> None:
         """Maximum score is identified correctly."""
         scores = [0.8, 0.7, 0.9, 0.6]
         max_score = max(scores)
 
         assert max_score == 0.9
 
-    def test_min_score(self):
+def test_min_score(self: Any) -> None:
         """Minimum score is identified correctly."""
         scores = [0.8, 0.7, 0.9, 0.6]
         min_score = min(scores)
 
         assert min_score == 0.6
 
-    def test_score_distribution(self):
+def test_score_distribution(self: Any) -> None:
         """Score distribution is calculated correctly."""
         scores = [0.1, 0.3, 0.5, 0.7, 0.9]
 
@@ -158,7 +158,7 @@ class TestScoreAggregation:
 class TestScoreThresholds:
     """Tests for score threshold operations."""
 
-    def test_above_threshold(self):
+def test_above_threshold(self: Any) -> None:
         """Items above threshold are identified."""
         items = [
             {"id": "1", "score": 0.8},
@@ -170,7 +170,7 @@ class TestScoreThresholds:
         above = [i for i in items if i["score"] >= threshold]
         assert len(above) == 2
 
-    def test_below_threshold(self):
+def test_below_threshold(self: Any) -> None:
         """Items below threshold are identified."""
         items = [
             {"id": "1", "score": 0.8},
@@ -182,7 +182,7 @@ class TestScoreThresholds:
         below = [i for i in items if i["score"] < threshold]
         assert len(below) == 2
 
-    def test_dynamic_threshold(self):
+def test_dynamic_threshold(self: Any) -> None:
         """Dynamic threshold based on score distribution."""
         scores = [0.9, 0.85, 0.7, 0.5, 0.3]
 

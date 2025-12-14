@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
@@ -8,19 +9,19 @@ logger = logging.getLogger(__name__)
 class DummyRAG:
     """TODO: Add docstring."""
 
-    def __init__(self, evidence_count: int) -> None:
+def __init__(self: Any, evidence_count: int) -> None:
         self.evidence = [object() for _ in range(evidence_count)]
 
     """TODO: Add docstring."""
 
 class DummyAgentCard:
     """TODO: Add docstring."""
-    def __init__(self, agent_id: str) -> None:
+def __init__(self: Any, agent_id: str) -> None:
         self.agent_id = agent_id
     """TODO: Add docstring."""
 
 
-def test_generate_initial_hypotheses_with_evidence(self) -> None:
+def test_generate_initial_hypotheses_with_evidence(self: Any) -> None:
     """TODO: Add docstring."""
     rag = DummyRAG(evidence_count=3)
     agent = DummyAgentCard("planner_1")
@@ -32,7 +33,7 @@ def test_generate_initial_hypotheses_with_evidence(self) -> None:
 
     assert {h.agent_id for h in hs} == {"planner_1"}
 
-def test_generate_initial_hypotheses_without_evidence(self) -> None:
+def test_generate_initial_hypotheses_without_evidence(self: Any) -> None:
     """TODO: Add docstring."""
     rag = DummyRAG(evidence_count=0)
     agent = DummyAgentCard("planner_1")

@@ -155,7 +155,7 @@ def fix_file(file_path: Path) -> bool:
         logger.error(f"Error fixing {file_path}: {e}")
         return False
 
-def main():
+def main() -> None:
     """Fix all Python files in runtime/ and tests/ directories."""
     base_dir = Path('.')
     fixed_count = 0

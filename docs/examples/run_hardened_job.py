@@ -8,6 +8,7 @@ objects and fixes Windows Unicode encoding issues.
 """
 
 import asyncio
+from typing import Any
 import logging
 import sys
 import time
@@ -44,7 +45,7 @@ TEST_CONFIG = {
     "routing_tier": RoutingTier.REASONING
 }
 
-def create_test_workflow_spec():
+def create_test_workflow_spec() -> None:
     """Create a minimal workflow spec for the acceptance test."""
     return {
         "name": "Titanium Acceptance Test Workflow",
@@ -56,7 +57,7 @@ def create_test_workflow_spec():
         }]
     }
 
-def _initialize_orchestrator():
+def _initialize_orchestrator() -> None:
     """Initialize the hardened workflow orchestrator."""
     logger.info("⚡ Initializing HardenedWorkflowOrchestrator...")
     workflow_spec = create_test_workflow_spec()
@@ -70,7 +71,7 @@ def _initialize_orchestrator():
     logger.info("✅ Orchestrator initialized successfully")
     return orchestrator
 
-def _prepare_workflow_context():
+def _prepare_workflow_context() -> None:
     """Prepare initial workflow context."""
     logger.info(f"📋 Initializing workflow: {TEST_JOB_ID}")
     return {
@@ -80,7 +81,7 @@ def _prepare_workflow_context():
         "routing_tier": TEST_CONFIG["routing_tier"]
     }
 
-def _execute_workflow(orchestrator, context):
+def _execute_workflow(orchestrator: Any, context: Any) -> None:
     """Execute the workflow with resilience."""
     logger.info("⚙️ Executing hardened workflow...")
     logger.info(f"Target Role: {TEST_CONFIG['target_role']}")
@@ -90,13 +91,13 @@ def _execute_workflow(orchestrator, context):
         context=context
     )
 
-def _extract_result_content(result):
+def _extract_result_content(result: Any) -> None:
     """Extract content from workflow result."""
     if isinstance(result, dict):
         return result.get("final_output", result)
     return result
 
-def _display_results(content):
+def _display_results(content: Any) -> None:
     """Display workflow results."""
     logger.info("=" * 60)
     logger.info("📄 WORKFLOW RESULTS:")
@@ -113,13 +114,13 @@ def _display_results(content):
     else:
         logger.info(f"Result: {content}")
 
-def _get_state_location(orchestrator):
+def _get_state_location(orchestrator: Any) -> None:
     """Get state persistence location."""
     if hasattr(orchestrator, 'state_manager') and orchestrator.state_manager:
         return getattr(orchestrator.state_manager, 'storage_path', './state_storage')
     return "State manager not available"
 
-def _print_success_report(state_location, execution_time):
+def _print_success_report(state_location: Any, execution_time: Any) -> None:
     """Print success criteria report."""
     logger.info("=" * 60)
     logger.info("[SUCCESS] TITANIUM WORKFLOW COMPLETE")
@@ -130,7 +131,7 @@ def _print_success_report(state_location, execution_time):
     logger.info("🎉 ACCEPTANCE TEST PASSED")
     logger.info("=" * 60)
 
-async def main():
+async def main() -> None:
     """Main execution function for the hardened job test."""
     logger.info("=" * 60)
     logger.info("🚀 STARTING TITANIUM WORKFLOW ACCEPTANCE TEST v2")
@@ -188,7 +189,7 @@ async def main():
             except Exception as e:
                 logger.warning(f"Cleanup warning: {e}")
 
-def run_sync():
+def run_sync() -> None:
     """Entry point for synchronous execution."""
     try:
         # Run the async main function

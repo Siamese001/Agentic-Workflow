@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
@@ -6,7 +7,7 @@ logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest  # DEPRECATED: Ar...
 # from archives.legacy_resume_gen.Agentic-Workflow-10_8_core.observability import clear_events, g...
 
-def test_sandbox_observability_events_include_vm_id(self) -> None:
+def test_sandbox_observability_events_include_vm_id(self: Any) -> None:
     """TODO: Add docstring."""
 
     clear_events()
